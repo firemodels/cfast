@@ -112,8 +112,8 @@ contains
                     endif
                 else if(iieq==cylpde)then
                 !  wfluxout is incorrect
-                !    wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    wfluxavg = wfluxin
+                    wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                !    wfluxavg = wfluxin
                     call cylindrical_conductive_flux (xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl)          
                 endif

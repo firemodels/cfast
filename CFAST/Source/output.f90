@@ -538,8 +538,7 @@
             if (targptr%room==i) then
                 tg = tgtarg(itarg)
                 tttemp = xxtarg(idx_tempf_trg,itarg)
-                itctemp = (idx_tempf_trg+idx_tempb_trg)/2
-                if (ixtarg(trgeq,itarg)==cylpde) itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
+                itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
                 tctemp = xxtarg(itctemp,itarg)
                 if (targptr%trgmeth==steady) tctemp = tttemp
                 if (validate.or.netheatflux) then

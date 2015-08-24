@@ -686,6 +686,7 @@
                         ixtarg(trgeq,ntarg) = pde
                     elseif (eqtype(1:3)=='CYL') then
                         ixtarg(trgeq,ntarg) = cylpde
+                        targptr%trgmeth = XPLICIT
                     else
                         write(logerr,913) 'Error',eqtype
                         stop

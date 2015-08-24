@@ -18,7 +18,7 @@ module target_routines
     
 private
 
-public target, target_flux, update_detectors, detector_temp_and_velocity, solid_angle_triangle
+public target, target_flux, update_detectors, detector_temp_and_velocity, solid_angle_triangle, target_nodes
 
 contains
 
@@ -43,8 +43,8 @@ contains
 
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
-    real(eb) :: tderv, sum, wfluxin, wfluxout, wfluxavg, xl
-    integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
+    real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
+    integer :: i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     
     type(target_type), pointer :: targptr
     
@@ -55,21 +55,7 @@ contains
     ! initialize non-dimensional target node locations the first time target is called
     if(first)then
         first = .false.
-        nnn = nnodes_trg - 1
-        tmp(1) = 1.0_eb
-        tmp(nnn) = 1.0_eb
-        do i = 2, nnn/2 
-            tmp(i) = tmp(i-1)*1.50_eb
-            tmp(nnn+1-i) = tmp(i)
-        end do
-        if(mod(nnn,2)==1)tmp(nnn/2+1)=tmp(nnn/2)*1.50_eb
-        sum = 0.0_eb
-        do i = 1, nnn
-            sum = sum + tmp(i)
-        end do
-        do i = 1, nnn
-            tmp(i) = tmp(i)/sum
-        end do
+        call target_nodes (tmp)
     endif
 
     ! calculate net flux striking each side of target
@@ -125,6 +111,33 @@ contains
     end do
     return
     end subroutine target
+    
+! ---------------------------- target_nodes -----------------------------------
+    
+    subroutine target_nodes (tmp)
+    
+        real(eb), intent(out) :: tmp(*)
+        
+        integer :: i, nnn
+        real(eb) :: sum
+    
+        nnn = nnodes_trg - 1
+        tmp(1) = 1.0_eb
+        tmp(nnn) = 1.0_eb
+        do i = 2, nnn/2 
+            tmp(i) = tmp(i-1)*1.50_eb
+            tmp(nnn+1-i) = tmp(i)
+        end do
+        if(mod(nnn,2)==1)tmp(nnn/2+1)=tmp(nnn/2)*1.50_eb
+        sum = 0.0_eb
+        do i = 1, nnn
+            sum = sum + tmp(i)
+        end do
+        do i = 1, nnn
+            tmp(i) = tmp(i)/sum
+        end do
+        
+    end subroutine target_nodes
     
 ! --------------------------- target -------------------------------------------
 

@@ -514,12 +514,13 @@
     use cfast_main
     use cshell
     use fltarget
+    use target_routines, only: target_nodes
     implicit none
 
     integer, intent(in) :: itprt
     
-    integer :: length, i, iw, itarg, itctemp
-    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
+    integer :: length, i, iw, itarg, itctemp, inode
+    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp, tmp(nnodes_trg), depth
     
     type(target_type), pointer :: targptr
 
@@ -538,8 +539,17 @@
             if (targptr%room==i) then
                 tg = tgtarg(itarg)
                 tttemp = xxtarg(idx_tempf_trg,itarg)
-                itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
-                tctemp = xxtarg(itctemp,itarg)
+                
+                call target_nodes(tmp)
+                depth = 0.0
+                do inode = 2, nnodes_trg
+                    if (depth>targptr%thickness*targptr%depth_loc) then
+                        tctemp = (xxtarg(inode-1,itarg)+xxtarg(inode,itarg))/2
+                        itctemp = inode
+                        exit
+                    end if
+                    depth = depth + targptr%thickness*tmp(inode-1)
+                end do
                 if (targptr%trgmeth==steady) tctemp = tttemp
                 if (validate.or.netheatflux) then
                     total = targptr%flux_net_gauge(1)

@@ -31,8 +31,8 @@ GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 # Definition of the object variables
 
 objf = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_int.o initialization.o input.o numerics.o \
-              output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
-              convection.o conduction.o cyl_conduct.o target.o radiation.o \
+              outputsmv.o outputspreadsheet.o ssHeaders.o \
+              convection.o conduction.o cyl_conduct.o target.o output.o radiation.o \
               fire.o flowfan.o flowhorizontal.o flowvertical.o cfast.o 
 
 objwin = $(objf:.o=.obj)

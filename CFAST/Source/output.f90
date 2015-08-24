@@ -531,6 +531,9 @@
 
     if ((itprt==0.and.ntarg<=nm1).or.ntarg==0) return
     write (iofilo,5000)
+    
+    call target_nodes(tmp)
+    
     do i=1,nm1
         write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
 
@@ -539,8 +542,6 @@
             if (targptr%room==i) then
                 tg = tgtarg(itarg)
                 tttemp = xxtarg(idx_tempf_trg,itarg)
-                
-                call target_nodes(tmp)
                 depth = 0.0
                 do inode = 2, nnodes_trg
                     if (depth>targptr%thickness*targptr%depth_loc) then

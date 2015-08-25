@@ -13,18 +13,12 @@ mailTo="gforney@gmail.com, rpeacoc@nist.gov"
 
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
-LABEL=
-while getopts 'al:q:' OPTION
+reponame=~/cfastgitclean
+while getopts 'a' OPTION
 do
 case $OPTION in
    a)
      RUNAUTO="y"
-     ;;
-   l)
-     LABEL="$OPTARG"
-     ;;
-   q)
-     CFASTBOT_QUEUE="$OPTARG"
      ;;
 esac
 done
@@ -761,10 +755,6 @@ archive_validation_stats()
    if [ -e ${CURRENT_STATS_FILE} ] ; then
       # Copy to CFASTbot history
       cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASENAME}_${git_REVISION}.csv"
-      if [ "$LABEL" != "" ]; then
-        cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASENAME}_${git_REVISION}_${LABEL}.csv"
-        cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${git_REVISION}_${LABEL}.csv
-      fi
 
       # Copy to web results
       cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${git_REVISION}.csv

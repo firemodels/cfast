@@ -328,6 +328,7 @@ $RUNCFAST -d PRISME PRS_D2.in
 $RUNCFAST -d PRISME PRS_D3.in
 $RUNCFAST -d PRISME PRS_D4.in
 $RUNCFAST -d PRISME PRS_D5.in
+$RUNCFAST -d PRISME PRS_D6.in
 
 $RUNCFAST -d ../Verification/Energy_Balance sealed_test.in
 $RUNCFAST -d ../Verification/Energy_Balance sealed_test_2_layers.in

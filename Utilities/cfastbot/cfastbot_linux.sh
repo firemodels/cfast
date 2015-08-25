@@ -14,7 +14,7 @@ mailTo="gforney@gmail.com, rpeacoc@nist.gov"
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
 LABEL=
-while getopts 'al:q:s' OPTION
+while getopts 'al:q:' OPTION
 do
 case $OPTION in
    a)
@@ -26,9 +26,6 @@ case $OPTION in
    q)
      CFASTBOT_QUEUE="$OPTARG"
      ;;
-   s)
-     SKIP_git_UPDATE_AND_PROPFIX=true
-     ;;
 esac
 done
 shift $(($OPTIND-1))
@@ -38,7 +35,7 @@ CFASTBOT_HOME_DIR="`pwd`"
 CFASTBOT_DIR="$CFASTBOT_HOME_DIR/cfastbot"
 
 FDS_GITBASE=FDS-SMVgitclean
-export FDS_gitROOT="$CFASTBOT_HOME_DIR/$FDS_GITBASE"
+export FDS_GITROOT="$CFASTBOT_HOME_DIR/$FDS_GITBASE"
 
 CFAST_GITBASE=cfastgitclean
 CFAST_GITROOT="$CFASTBOT_HOME_DIR/$CFAST_GITBASE"
@@ -79,7 +76,7 @@ TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 
 run_auto()
 {
-   SMV_SOURCE=$FDS_gitROOT/SMV/source
+   SMV_SOURCE=$FDS_GITROOT/SMV/source
    git_SMVFILE=$git_LOG/smokeview_source_revision
    git_SMVLOG=$git_LOG/smokeview_source_log
 
@@ -144,7 +141,7 @@ check_time_limit()
 
 set_files_world_readable()
 {
-   cd $FDS_gitROOT
+   cd $FDS_GITROOT
    chmod -R go+r *
    cd $CFAST_GITROOT
    chmod -R go+r *
@@ -170,10 +167,10 @@ clean_cfastbot_history()
 clean_git_repo()
 {
    # Check to see if FDS repository exists
-   if [ -e "$FDS_gitROOT" ]
+   if [ -e "$FDS_GITROOT" ]
    then
       # Revert and clean up temporary unversioned and modified versioned repository files
-      cd $FDS_gitROOT
+      cd $FDS_GITROOT
       git clean -dxf > /dev/null
       git add . > /dev/null
       git reset --hard HEAD > /dev/null
@@ -202,7 +199,7 @@ clean_git_repo()
 
 do_git_checkout()
 {
-   cd $FDS_gitROOT
+   cd $FDS_GITROOT
    echo "Checking out latest FDS-SMV revision." >> $CFASTBOT_DIR/output/stage1 2>&1
    git pull >> $CFASTBOT_DIR/output/stage1 2>&1
 
@@ -216,38 +213,6 @@ check_git_checkout()
 {
    # Check for git errors
    stage1_success=true
-}
-
-fix_svn_properties()
-{
-   # This function fixes git properties
-   # (e.g., svn:executable, svn:keywords, svn:eol-style, and svn:mime-type)
-   # throughout the CFAST repository.
-
-   cd $CFAST_GITROOT
-
-   # Delete all svn:executable properties
-   svn propdel svn:executable --recursive &> /dev/null
-
-   # Restore local executable property to svn-fix-props.pl
-   chmod +x Utilities/Subversion/svn-fix-props.pl &> /dev/null
-
-   # Run svn-fix-props.pl script (fixes all git properties)
-   Utilities/Subversion/svn-fix-props.pl ./ &> /dev/null
-
-   # Commit back results
-   svn commit -m 'CFASTbot: Fix git properties throughout repository' &> /dev/null
-}
-
-print_svn_revision_on_skip()
-{
-   # Prints log output and git revision number when SKIP_git_UPDATE_AND_PROPFIX option is used
-   cd $CFAST_GITROOT
-   git_REVISION=`git log --abbrev-commit . | head -1 | awk '{print $2}'`
-
-   echo "CFASTbot was invoked with the -s option (SKIP_git_UPDATE_AND_PROPFIX)." >> $CFASTBOT_DIR/output/stage1 2>&1
-   echo "Skipping git revert, update, and property fix operations." >> $CFASTBOT_DIR/output/stage1 2>&1
-   echo "The current git revision is ${git_REVISION}" >> $CFASTBOT_DIR/output/stage1 2>&1
 }
 
 #  =================================
@@ -381,10 +346,6 @@ check_vv_cases_debug()
    #  =====================
 
    # Remove all unversioned case files from V&V directories (recursively)
-   cd $CFAST_GITROOT/Verification
-   git clean -dxf
-   
-   cd $CFAST_GITROOT/Validation
    git clean -dxf
 }
 
@@ -504,24 +465,24 @@ check_vv_cases_release()
 compile_smv_utilities()
 {  
    # smokeview libraries
-   cd $FDS_gitROOT/SMV/Build/LIBS/lib_linux_intel_64
+   cd $FDS_GITROOT/SMV/Build/LIBS/lib_linux_intel_64
    echo 'Building Smokeview libraries:' >> $CFASTBOT_DIR/output/stage6a 2>&1
    ./makelibs.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
 
    # smokezip:
-   cd $FDS_gitROOT/Utilities/smokezip/intel_linux_64
+   cd $FDS_GITROOT/Utilities/smokezip/intel_linux_64
    echo 'Compiling smokezip:' >> $CFASTBOT_DIR/output/stage6a 2>&1
    ./make_zip.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
    echo "" >> $CFASTBOT_DIR/output/stage6a 2>&1
    
    # smokediff:
-   cd $FDS_gitROOT/Utilities/smokediff/intel_linux_64
+   cd $FDS_GITROOT/Utilities/smokediff/intel_linux_64
    echo 'Compiling smokediff:' >> $CFASTBOT_DIR/output/stage6a 2>&1
    ./make_diff.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
    echo "" >> $CFASTBOT_DIR/output/stage6a 2>&1
    
    # background:
-   cd $FDS_gitROOT/Utilities/background/intel_linux_32
+   cd $FDS_GITROOT/Utilities/background/intel_linux_32
    echo 'Compiling background:' >> $CFASTBOT_DIR/output/stage6a 2>&1
    ./make_background.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
 }
@@ -529,10 +490,10 @@ compile_smv_utilities()
 check_smv_utilities()
 {
    # Check for errors in SMV utilities compilation
-   cd $FDS_gitROOT
-   if [ -e "$FDS_gitROOT/Utilities/smokezip/intel_linux_64/smokezip_linux_64" ]  && \
-      [ -e "$FDS_gitROOT/Utilities/smokediff/intel_linux_64/smokediff_linux_64" ]  && \
-      [ -e "$FDS_gitROOT/Utilities/background/intel_linux_32/background" ]
+   cd $FDS_GITTOOT
+   if [ -e "$FDS_GITROOT/Utilities/smokezip/intel_linux_64/smokezip_linux_64" ]  && \
+      [ -e "$FDS_GITROOT/Utilities/smokediff/intel_linux_64/smokediff_linux_64" ]  && \
+      [ -e "$FDS_GITROOT/Utilities/background/intel_linux_32/background" ]
    then
       stage6a_success=true
    else
@@ -549,14 +510,14 @@ check_smv_utilities()
 compile_smv_db()
 {
    # Clean and compile SMV DB
-   cd $FDS_gitROOT/SMV/Build/intel_linux_64
+   cd $FDS_GITROOT/SMV/Build/intel_linux_64
    ./make_smv_db.sh &> $CFASTBOT_DIR/output/stage6b
 }
 
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
-   cd $FDS_gitROOT/SMV/Build/intel_linux_64
+   cd $FDS_GITROOT/SMV/Build/intel_linux_64
    if [ -e "smokeview_linux_64_db" ]
    then
       stage6b_success=true
@@ -612,14 +573,14 @@ check_compile_smv_db()
 compile_smv()
 {
    # Clean and compile SMV
-   cd $FDS_gitROOT/SMV/Build/intel_linux_64
+   cd $FDS_GITROOT/SMV/Build/intel_linux_64
    ./make_smv.sh &> $CFASTBOT_DIR/output/stage6d
 }
 
 check_compile_smv()
 {
    # Check for errors in SMV release compilation
-   cd $FDS_gitROOT/SMV/Build/intel_linux_64
+   cd $FDS_GITROOT/SMV/Build/intel_linux_64
    if [ -e "smokeview_linux_64" ]
    then
       stage6d_success=true
@@ -961,14 +922,9 @@ start_time=`date`
 clean_cfastbot_history
 
 ### Stage 1 ###
-if [[ $SKIP_git_UPDATE_AND_PROPFIX ]] ; then
-   print_svn_revision_on_skip
-else
-   clean_git_repo
-   do_git_checkout
-   check_git_checkout
-  # fix_svn_properties
-fi
+clean_git_repo
+do_git_checkout
+check_git_checkout
 
 ### Stage 2 ###
 compile_cfast_db

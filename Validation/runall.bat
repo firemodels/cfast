@@ -270,6 +270,8 @@ echo Running PRISME
 cd PRISME
 call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D1 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D2 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D3 /V
 cd ..
 if %1==PRISME goto end
 

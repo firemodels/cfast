@@ -34,10 +34,11 @@ export FDS_GITROOT="$CFASTBOT_HOME_DIR/$FDS_GITBASE"
 CFAST_GITBASE=cfastgitclean
 CFAST_GITROOT="$CFASTBOT_HOME_DIR/$CFAST_GITBASE"
 
-ERROR_LOG=$CFASTBOT_DIR/output/errors
-TIME_LOG=$CFASTBOT_DIR/output/timings
-WARNING_LOG=$CFASTBOT_DIR/output/warnings
-VALIDATION_STATS_LOG=$CFASTBOT_DIR/output/statistics
+OUTPUT_DIR=$CFASTBOT_DIR/output
+ERROR_LOG=$OUTPUT_DIR/errors
+TIME_LOG=$OUTPUT_DIR/timings
+WARNING_LOG=$OUTPUT_DIR/warnings
+VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 git_LOG=$CFASTBOT_HOME_DIR/git_LOG
 RUNNING=$CFASTBOT_DIR/running
 export TEXINPUTS=".:../LaTeX_Style_Files:"
@@ -111,6 +112,16 @@ run_auto()
    cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo > /dev/null
 }
 
+MKDIR ()
+{
+  DIR=$1
+  if [ ! -d $DIR ]
+  then
+    echo Creating directory $DIR
+    mkdir $DIR
+  fi
+}
+
 check_time_limit()
 {
    if [ "$TIME_LIMIT_EMAIL_NOTIFICATION" == "sent" ]
@@ -145,7 +156,8 @@ clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
    cd $CFASTBOT_DIR
-   rm output/* > /dev/null
+   MKDIR $OUTPUT_DIR &> /dev/null
+   rm -rf $OUTPUT_DIR/* &> /dev/null
 }
 
 #  =========================
@@ -170,9 +182,9 @@ clean_git_repo()
       git reset --hard HEAD > /dev/null
    # If not, create FDS repository and checkout
    else
-      echo "Downloading FDS repository:" >> $CFASTBOT_DIR/output/stage1 2>&1
+      echo "Downloading FDS repository:" >> $OUTPUT_DIR/stage1 2>&1
       cd $CFASTBOT_HOME_DIR
-      git clone git@github.com:firemodels/fds-smv.git $FDS_GITBASE >> $CFASTBOT_DIR/output/stage1 2>&1
+      git clone git@github.com:firemodels/fds-smv.git $FDS_GITBASE >> $OUTPUT_DIR/stage1 2>&1
    fi
    
    # Check to see if CFAST repository exists
@@ -185,22 +197,22 @@ clean_git_repo()
       git reset --hard HEAD > /dev/null
    # If not, create CFAST repository and checkout
    else
-      echo "Downloading CFAST repository:" >> $CFASTBOT_DIR/output/stage1 2>&1
+      echo "Downloading CFAST repository:" >> $OUTPUT_DIR/stage1 2>&1
       cd $CFASTBOT_HOME_DIR
-      git clone git@github.com:firemodels/cfast.git $CFAST_GITBASE >> $CFASTBOT_DIR/output/stage1 2>&1
+      git clone git@github.com:firemodels/cfast.git $CFAST_GITBASE >> $OUTPUT_DIR/stage1 2>&1
    fi
 }
 
 do_git_checkout()
 {
    cd $FDS_GITROOT
-   echo "Checking out latest FDS-SMV revision." >> $CFASTBOT_DIR/output/stage1 2>&1
-   git pull >> $CFASTBOT_DIR/output/stage1 2>&1
+   echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
+   git pull >> $OUTPUT_DIR/stage1 2>&1
 
    cd $CFAST_GITROOT
-   echo "Checking out latest CFAST revision." >> $CFASTBOT_DIR/output/stage1 2>&1
-   git pull >> $CFASTBOT_DIR/output/stage1 2>&1
-   git_REVISION=`tail -n 1 $CFASTBOT_DIR/output/stage1 | sed "s/[^0-9]//g"`
+   echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1 2>&1
+   git pull >> $OUTPUT_DIR/stage1 2>&1
+   git_REVISION=`tail -n 1 $OUTPUT_DIR/stage1 | sed "s/[^0-9]//g"`
 }
 
 check_git_checkout()
@@ -218,7 +230,7 @@ compile_cfast_db()
    # Build debug CFAST
    cd $CFAST_GITROOT/CFAST/intel_linux_64_db
    make -f ../makefile clean &> /dev/null
-   ./make_cfast.sh &> $CFASTBOT_DIR/output/stage2
+   ./make_cfast.sh &> $OUTPUT_DIR/stage2
  }
 
 check_compile_cfast_db()
@@ -230,18 +242,18 @@ check_compile_cfast_db()
       stage2_success=true
    else
       echo "Errors from Stage 2 - Compile CFAST debug:" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage2 >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage2 >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage2` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 2 - Compile CFAST debug:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage2 >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2 >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -255,7 +267,7 @@ wait_vv_cases_debug_start()
    # Scans qstat and waits for V&V cases to start
    while [[ `qstat -a | grep $(whoami) | grep Q` != '' ]]; do
       JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | grep Q | wc -l`
-      echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $CFASTBOT_DIR/output/stage3
+      echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
       sleep 30
@@ -267,7 +279,7 @@ wait_vv_cases_debug_end()
    # Scans qstat and waits for V&V cases to end
    while [[ `qstat -a | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
       JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | wc -l`
-      echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $CFASTBOT_DIR/output/stage3
+      echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
       sleep 30
@@ -283,8 +295,8 @@ run_vv_cases_debug()
    #  =======================
 
    # Submit CFAST V&V cases
-   echo 'Running CFAST V&V cases:' >> $CFASTBOT_DIR/output/stage3 2>&1
-   ./Run_CFAST_Cases.sh -d -q $CFASTBOT_QUEUE >> $CFASTBOT_DIR/output/stage3 2>&1
+   echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
    wait_vv_cases_debug_start
 
    # Wait for V&V cases to end
@@ -296,20 +308,20 @@ check_vv_cases_debug()
    # Scan and report any errors in CFAST Verification cases
    cd $CFAST_GITROOT/Verification
 
-   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage3` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
-      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage3 >> $OUTPUT_DIR/stage3_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage3_errors >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage3_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       THIS_CFAST_FAILED=1
    fi
@@ -317,20 +329,20 @@ check_vv_cases_debug()
    # Scan and report any errors in CFAST Validation cases
    cd $CFAST_GITROOT/Validation
 
-   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage3` == "" ]] && \
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage3` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage3 >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
-      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage3_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage3 >> $OUTPUT_DIR/stage3_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage3_errors >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage3_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       THIS_CFAST_FAILED=1
    fi
@@ -352,7 +364,7 @@ compile_cfast()
    # Build release CFAST
    cd $CFAST_GITROOT/CFAST/intel_linux_64
    make -f ../makefile clean &> /dev/null
-   ./make_cfast.sh &> $CFASTBOT_DIR/output/stage4
+   ./make_cfast.sh &> $OUTPUT_DIR/stage4
 }
 
 check_compile_cfast()
@@ -364,18 +376,18 @@ check_compile_cfast()
       stage4_success=true
    else
       echo "Errors from Stage 4 - Compile CFAST:" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage4 >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage4 >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage4` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage4 >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4 >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -389,7 +401,7 @@ wait_vv_cases_release_end()
    # Scans qstat and waits for V&V cases to end
    while [[ `qstat -a | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
       JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | wc -l`
-      echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $CFASTBOT_DIR/output/stage5
+      echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit
       sleep 60
@@ -400,8 +412,8 @@ run_vv_cases_release()
 {
    # Start running all CFAST V&V cases
    cd $CFAST_GITROOT/Validation/scripts
-   echo 'Running CFAST V&V cases:' >> $CFASTBOT_DIR/output/stage5 2>&1
-   ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $CFASTBOT_DIR/output/stage5 2>&1
+   echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
+   ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
 
    # Wait for all V&V cases to end
    wait_vv_cases_release_end
@@ -412,20 +424,20 @@ check_vv_cases_release()
    # Scan and report any errors in CFAST Verificaion cases
    cd $CFAST_GITROOT/Verification
 
-   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
-      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage5 >> $OUTPUT_DIR/stage5_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage5_errors >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage5_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       THIS_CFAST_FAILED=1
    fi
@@ -433,20 +445,20 @@ check_vv_cases_release()
    # Scan and report any errors in CFAST Validation cases
    cd $CFAST_GITROOT/Validation
 
-   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${CFASTBOT_DIR}/output/stage5` == "" ]] && \
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -riI --include *.log --include *.err $CFASTBOT_DIR/output/stage5 >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
-      grep -A 20 forrtl -riI --include *.log --include *.err * >> $CFASTBOT_DIR/output/stage5_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage5 >> $OUTPUT_DIR/stage5_errors
+      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage5_errors >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage5_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       THIS_CFAST_FAILED=1
    fi
@@ -460,25 +472,25 @@ compile_smv_utilities()
 {  
    # smokeview libraries
    cd $FDS_GITROOT/SMV/Build/LIBS/lib_linux_intel_64
-   echo 'Building Smokeview libraries:' >> $CFASTBOT_DIR/output/stage6a 2>&1
-   ./makelibs.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
+   echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage6a 2>&1
+   ./makelibs.sh >> $OUTPUT_DIR/stage6a 2>&1
 
    # smokezip:
    cd $FDS_GITROOT/Utilities/smokezip/intel_linux_64
-   echo 'Compiling smokezip:' >> $CFASTBOT_DIR/output/stage6a 2>&1
-   ./make_zip.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
-   echo "" >> $CFASTBOT_DIR/output/stage6a 2>&1
+   echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage6a 2>&1
+   ./make_zip.sh >> $OUTPUT_DIR/stage6a 2>&1
+   echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # smokediff:
    cd $FDS_GITROOT/Utilities/smokediff/intel_linux_64
-   echo 'Compiling smokediff:' >> $CFASTBOT_DIR/output/stage6a 2>&1
-   ./make_diff.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
-   echo "" >> $CFASTBOT_DIR/output/stage6a 2>&1
+   echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage6a 2>&1
+   ./make_diff.sh >> $OUTPUT_DIR/stage6a 2>&1
+   echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # background:
    cd $FDS_GITROOT/Utilities/background/intel_linux_32
-   echo 'Compiling background:' >> $CFASTBOT_DIR/output/stage6a 2>&1
-   ./make_background.sh >> $CFASTBOT_DIR/output/stage6a 2>&1
+   echo 'Compiling background:' >> $OUTPUT_DIR/stage6a 2>&1
+   ./make_background.sh >> $OUTPUT_DIR/stage6a 2>&1
 }
 
 check_smv_utilities()
@@ -492,7 +504,7 @@ check_smv_utilities()
       stage6a_success=true
    else
       echo "Errors from Stage 6a - Compile SMV utilities:" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage6a >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 }
@@ -505,7 +517,7 @@ compile_smv_db()
 {
    # Clean and compile SMV DB
    cd $FDS_GITROOT/SMV/Build/intel_linux_64
-   ./make_smv_db.sh &> $CFASTBOT_DIR/output/stage6b
+   ./make_smv_db.sh &> $OUTPUT_DIR/stage6b
 }
 
 check_compile_smv_db()
@@ -517,19 +529,19 @@ check_compile_smv_db()
       stage6b_success=true
    else
       echo "Errors from Stage 6b - Compile SMV DB:" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage6b >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage6b >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
    # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-   if [[ `grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
    then
       # Continue along
       :
    else
       echo "Stage 6b warnings:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -542,20 +554,20 @@ check_compile_smv_db()
 # {
 #    # Run Make SMV Pictures script (debug mode)
 #    cd $CFAST_GITROOT/Verification/scripts
-#    ./Make_SMV_Pictures.sh -d 2>&1 | grep -v FreeFontPath &> $CFASTBOT_DIR/output/stage6c
+#    ./Make_SMV_Pictures.sh -d 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
 # }
 
 # check_cfast_pictures_db()
 # {
 #    # Scan and report any errors in make SMV pictures process
 #    cd $CFASTBOT_DIR
-#    if [[ `grep -B 50 -A 50 "Segmentation" -I $CFASTBOT_DIR/output/stage6c` == "" && `grep "*** Error" -I $CFASTBOT_DIR/output/stage6c` == "" ]]
+#    if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6c` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6c` == "" ]]
 #    then
 #       stage6c_success=true
 #    else
-#       cp $CFASTBOT_DIR/output/stage6c $CFASTBOT_DIR/output/stage6c_errors
+#       cp $OUTPUT_DIR/stage6c $OUTPUT_DIR/stage6c_errors
 #       echo "Errors from Stage 6c - Make SMV pictures (debug mode):" >> $ERROR_LOG
-#       cat $CFASTBOT_DIR/output/stage6c_errors >> $ERROR_LOG
+#       cat $OUTPUT_DIR/stage6c_errors >> $ERROR_LOG
 #       echo "" >> $ERROR_LOG
 #    fi
 # }
@@ -568,7 +580,7 @@ compile_smv()
 {
    # Clean and compile SMV
    cd $FDS_GITROOT/SMV/Build/intel_linux_64
-   ./make_smv.sh &> $CFASTBOT_DIR/output/stage6d
+   ./make_smv.sh &> $OUTPUT_DIR/stage6d
 }
 
 check_compile_smv()
@@ -580,19 +592,19 @@ check_compile_smv()
       stage6d_success=true
    else
       echo "Errors from Stage 6d - Compile SMV release:" >> $ERROR_LOG
-      cat $CFASTBOT_DIR/output/stage6d >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage6d >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
    # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-   if [[ `grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage6d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
    then
       # Continue along
       :
    else
       echo "Stage 6d warnings:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${CFASTBOT_DIR}/output/stage6d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -605,20 +617,20 @@ check_compile_smv()
 # {
 #    # Run Make SMV Pictures script (release mode)
 #    cd $CFAST_GITROOT/Validatio/scripts
-#    ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $CFASTBOT_DIR/output/stage6e
+#    ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6e
 # }
 
 # check_cfast_pictures()
 # {
 #    # Scan and report any errors in make SMV pictures process
 #    cd $CFASTBOT_DIR
-#    if [[ `grep -B 50 -A 50 "Segmentation" -I $CFASTBOT_DIR/output/stage6e` == "" && `grep "*** Error" -I $CFASTBOT_DIR/output/stage6e` == "" ]]
+#    if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6e` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6e` == "" ]]
 #    then
 #       stage6e_success=true
 #    else
-#       cp $CFASTBOT_DIR/output/stage6e  $CFASTBOT_DIR/output/stage6e_errors
+#       cp $OUTPUT_DIR/stage6e  $OUTPUT_DIR/stage6e_errors
 #       echo "Errors from Stage 6e - Make CFAST pictures (release mode):" >> $ERROR_LOG
-#       cat $CFASTBOT_DIR/output/stage6e >> $ERROR_LOG
+#       cat $OUTPUT_DIR/stage6e >> $ERROR_LOG
 #       echo "" >> $ERROR_LOG
 #    fi
 # }
@@ -633,13 +645,13 @@ run_matlab_license_test()
 {
    # Run simple test to see if Matlab license is available
    cd $CFAST_GITROOT/Utilities/Matlab
-   matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7_matlab_license
+   matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7_matlab_license
 }
 
 scan_matlab_license_test()
 {
    # Check for failed license
-   if [[ `grep "License checkout failed" $CFASTBOT_DIR/output/stage7_matlab_license` == "" ]]
+   if [[ `grep "License checkout failed" $OUTPUT_DIR/stage7_matlab_license` == "" ]]
    then
       # Continue along
       :
@@ -667,7 +679,7 @@ run_matlab_verification()
    # Run Matlab plotting script
    cd $CFAST_GITROOT/Utilities/Matlab
 
-   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7a_verification
+   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_verification
 }
 
 check_matlab_verification()
@@ -675,14 +687,14 @@ check_matlab_verification()
    # Scan and report any errors in Matlab scripts
    cd $CFASTBOT_DIR
 
-   if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7a_verification` == "" ]]
+   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7a_verification` == "" ]]
    then
       stage7a_success=true
    else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7a_verification >> $CFASTBOT_DIR/output/stage7a_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage7a_verification >> $OUTPUT_DIR/stage7a_warnings
 
       echo "Warnings from Stage 7a - Matlab plotting (verification):" >> $WARNING_LOG
-      cat $CFASTBOT_DIR/output/stage7a_warnings >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage7a_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -695,21 +707,21 @@ run_matlab_validation()
 {
    # Run Matlab plotting script
    cd $CFAST_GITROOT/Utilities/Matlab
-   matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $CFASTBOT_DIR/output/stage7c_validation
+   matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation
 }
 
 check_matlab_validation()
 {
    # Scan and report any errors in Matlab scripts
    cd $CFASTBOT_DIR
-   if [[ `grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_validation` == "" ]]
+   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7c_validation` == "" ]]
    then
       stage7b_success=true
    else
-      grep -A 50 "Error" $CFASTBOT_DIR/output/stage7c_validation >> $CFASTBOT_DIR/output/stage7c_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage7c_validation >> $OUTPUT_DIR/stage7c_warnings
 
       echo "Warnings from Stage 7c - Matlab plotting and statistics (validation):" >> $WARNING_LOG
-      cat $CFASTBOT_DIR/output/stage7b_warnings >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage7b_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -787,20 +799,20 @@ make_cfast_tech_guide()
 {
    # Build CFAST tech Guide
    cd $CFAST_GITROOT/Docs/Tech_Ref
-   ./make_guide.sh &> $CFASTBOT_DIR/output/stage8_cfast_tech_guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_tech_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $CFASTBOT_DIR/output/stage8_cfast_tech_guide $CFAST_GITROOT/Docs/Tech_Ref/Tech_Ref.pdf 'CFAST Technical Reference Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $CFAST_GITROOT/Docs/Tech_Ref/Tech_Ref.pdf 'CFAST Technical Reference Guide'
 }
 
 make_cfast_vv_guide()
 {
    # Build CFAST tech Guide
    cd $CFAST_GITROOT/Docs/Validation_Guide
-   ./make_guide.sh &> $CFASTBOT_DIR/output/stage8_cfast_vv_guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $CFASTBOT_DIR/output/stage8_cfast_vv_guide $CFAST_GITROOT/Docs/Validation_Guide/Validation_Guide.pdf 'CFAST Verification and Validation Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $CFAST_GITROOT/Docs/Validation_Guide/Validation_Guide.pdf 'CFAST Verification and Validation Guide'
 }
 
 #  =====================================================
@@ -817,26 +829,26 @@ save_build_status()
      cat $WARNING_LOG >> $ERROR_LOG
      echo "Build failure and warnings for Revision ${git_REVISION}." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
      cat $ERROR_LOG > "$CFASTBOT_DIR/history/${git_REVISION}_errors.txt"
-     touch output/status_errors_and_warnings
+     touch $OUTPUT_DIR/status_errors_and_warnings
 
    # Check for errors only
    elif [ -e $ERROR_LOG ]
    then
       echo "Build failure for Revision ${git_REVISION}." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
       cat $ERROR_LOG > "$CFASTBOT_DIR/history/${git_REVISION}_errors.txt"
-      touch output/status_errors
+      touch $OUTPUT_DIR/status_errors
 
    # Check for warnings only
    elif [ -e $WARNING_LOG ]
    then
       echo "Revision ${git_REVISION} has warnings." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
       cat $WARNING_LOG > "$CFASTBOT_DIR/history/${git_REVISION}_warnings.txt"
-      touch output/status_warnings
+      touch $OUTPUT_DIR/status_warnings
 
    # No errors or warnings
    else
       echo "Build success! Revision ${git_REVISION} passed all build tests." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
-      touch output/status_success
+      touch $OUTPUT_DIR/status_success
    fi
 }
 

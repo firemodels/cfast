@@ -61,9 +61,13 @@
     room_depth = (diam/2.0_eb)/nr
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
-    niter = dt/dt_iter + 0.5_eb
-    dt_iter=dt/niter
-    factor = 2.0_eb*alpha*dt_iter/room_depth**2
+    if(dt_iter.gt.0.0_eb)then
+       niter = dt/dt_iter + 0.5_eb
+       dt_iter=dt/niter
+       factor = 2.0_eb*alpha*dt_iter/room_depth**2
+    else
+       niter = 0
+    endif
 
     do iter=1,niter     
        do i = 1, nr

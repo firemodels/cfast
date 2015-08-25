@@ -273,6 +273,7 @@ call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D2 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D3 /V
 ..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D4 /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe PRS_D5 /V
 cd ..
 if %1==PRISME goto end
 

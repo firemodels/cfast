@@ -101,7 +101,11 @@ contains
                     wfluxavg = (wfluxin+wfluxout)/2.0_eb
                 !    wfluxavg = wfluxin
                     call cylindrical_conductive_flux (xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
-                       dt,wk(1),wrho(1),wspec(1),xl)          
+                       dt,wk(1),wrho(1),wspec(1),xl,tgrad)          
+                    if(iimeth==mplicit)then
+                        ieq = iztarg(itarg)
+                        delta(noftt+ieq) = targptr%flux_net_front + wk(1) * tgrad(1)
+                    endif
                 endif
                 ! error, the equation type can has to be either pde or ode if the method is not steady
             else

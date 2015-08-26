@@ -34,7 +34,7 @@
 
 ! --------------------------- cylindrical_conductive_flux -------------------------------------------
 
-    subroutine cylindrical_conductive_flux (wtemp,nr,wfluxin,dt,wk,wrho,wspec,diam)
+    subroutine cylindrical_conductive_flux (wtemp,nr,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
     !     arguments: wtemp    wall temperature profile
     !                nr       number of nodes
@@ -50,6 +50,7 @@
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam
     real(eb), intent(in)  :: wfluxin
     real(eb), intent(inout), dimension(nr) :: wtemp
+    real(eb), intent(out), dimension(2) :: tgrad
 
     ! declare local variables
 
@@ -57,6 +58,7 @@
     real(eb), dimension(nr) :: aim1, ai, aip1, tnew
     real(eb), dimension(nr) :: cc, dd
     real(eb) :: alpha, room_depth, factor, dt_iter
+    real(eb) :: ddif(2)
 
     room_depth = (diam/2.0_eb)/nr
     alpha = wk/(wspec*wrho)
@@ -120,5 +122,17 @@
           wtemp(i) = tnew(i)
        end do
     end do
+    ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that
+    ! interpolates first three data points in the temperature profile.  we will use divided differences.
+
+    ! first divided difference
+    ddif(1) = (tnew(2)-tnew(1))/room_depth
+    ddif(2) = (tnew(3)-tnew(2))/room_depth
+
+    ! second divided difference
+    ddif(2) = (ddif(2)-ddif(1))/(2.0_eb*room_depth)
+
+    tgrad(1) = (ddif(1)-ddif(2)*room_depth)
+    tgrad(2) = (tnew(2)-tnew(1))/room_depth
     return
     end

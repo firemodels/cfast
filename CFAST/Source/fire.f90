@@ -281,8 +281,6 @@
     do lsp = 1, 9
         xtemp = xtemp + stmass(lower,lsp)
     end do
-    ! including the trace species
-    xtemp = xtemp + stmass(lower,11)
     if(xtemp==0.0_eb) xtemp = 1.0_eb
     do lsp = 1, ns
         if (activs(lsp)) then
@@ -433,7 +431,7 @@
     net_hcl = pyrolysis_rate_constrained*nu_hcl*0.036458_eb/molar_mass
     net_hcn = pyrolysis_rate_constrained*nu_hcn*0.027028_eb/molar_mass
     net_soot = pyrolysis_rate_constrained*nu_soot*0.01201_eb/molar_mass
-    net_ct = pyrolysis_rate_constrained
+    net_ct = 0.0_eb
 
     ! set mass "generation" rates in the cfast structure for species
     species_rates(2) = net_o2

@@ -9,7 +9,7 @@ call make_guide.bat
 
 echo Make Validation Guide
 cd ..\Validation_Guide
-make_guide.bat
+call make_guide.bat
 
 echo Make Configuration Guide
 cd ..\Configuration_Guide

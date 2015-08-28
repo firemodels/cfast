@@ -14,7 +14,7 @@ COMPA,Comp 1,4,4,4,0,0,0,OFF,OFF,OFF,50,50,50
 !!Fire keywords
 !!
 !!New Fire
-FIRE,1,2,2,0,1,TIME,0,0,0,0,New Fire
+FIRE,1,2,2,0.2,1,TIME,0,0,0,0,New Fire
 CHEMI,1,4,0,0,0,0.5,5E+07
 TIME,0,5000
 HRR,10000,10000

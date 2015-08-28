@@ -44,7 +44,7 @@ contains
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
-    integer :: i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
+    integer :: itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     
     type(target_type), pointer :: targptr
     
@@ -76,35 +76,38 @@ contains
 
             ! compute the pde residual 
             if(iieq==pde.or.iieq==cylpde)then
-                if(iimeth==mplicit)then
-                    tempin = xxtarg(idx_tempf_trg,itarg)
-                    iwbound = 3
-                else
-                    iwbound = 4
-                endif
                 nmnode(1) = nnodes_trg
                 nmnode(2) = nnodes_trg - 2
                 nslab = 1
                 if(iieq==pde)then
-                    do i = 1, nnodes_trg - 1
-                        walldx(i) = xl*tmp(i)
-                    end do
+                   if(iimeth==mplicit)then
+                       tempin = xxtarg(idx_tempf_trg,itarg)
+                       iwbound = 3
+                   else
+                       iwbound = 4
+                   endif
+                   walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
 
-                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idx_tempf_trg,itarg),walldx,nmnode,nslab,&
+                   call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idx_tempf_trg,itarg),walldx,nmnode,nslab,&
                        wfluxin,wfluxout,iwbound,tgrad,tderv)
-                    if(iimeth==mplicit)then
-                        ieq = iztarg(itarg)
-                        delta(noftt+ieq) = targptr%flux_net_front + wk(1) * tgrad(1)
-                    endif
+                   if(iimeth==mplicit)then
+                      ieq = iztarg(itarg)
+                      delta(noftt+ieq) = wfluxin + wk(1)*tgrad(1)
+                   endif
                 else if(iieq==cylpde)then
-                !  wfluxout is incorrect
                     wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                !    wfluxavg = wfluxin
-                    call cylindrical_conductive_flux (xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
+                    if(iimeth==mplicit)then
+                       tempin = xxtarg(idx_tempb_trg,itarg)
+                       iwbound = 3
+                    else
+                       iwbound = 4
+                    endif
+                    call cylindrical_conductive_flux (iwbound,tempin,xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl,tgrad)          
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
-                        delta(noftt+ieq) = targptr%flux_net_front + wk(1) * tgrad(1)
+                        delta(noftt+ieq) = wfluxavg + wk(1)*tgrad(1)
+                       ! write(0,*)"temp=",xxtarg(idx_tempb_trg,itarg),"delta=",delta(noftt+ieq)
                     endif
                 endif
                 ! error, the equation type can has to be either pde or ode if the method is not steady

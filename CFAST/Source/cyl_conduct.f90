@@ -34,7 +34,7 @@
 
 ! --------------------------- cylindrical_conductive_flux -------------------------------------------
 
-    subroutine cylindrical_conductive_flux (wtemp,nr,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
+    subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nr,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
     !     arguments: wtemp    wall temperature profile
     !                nr       number of nodes
@@ -46,8 +46,8 @@
     use precision_parameters
     implicit none
 
-    integer, intent(in) :: nr
-    real(eb), intent(in)  :: dt, wrho, wk, wspec, diam
+    integer, intent(in) :: nr, iwbound
+    real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin
     real(eb), intent(in)  :: wfluxin
     real(eb), intent(inout), dimension(nr) :: wtemp
     real(eb), intent(out), dimension(2) :: tgrad
@@ -76,25 +76,32 @@
           cc(i)=factor*real(i-1,eb)/(2.0_eb*real(i,eb)-1.0_eb)
           dd(i)=factor*real(i,eb)/(2.0_eb*real(i,eb)-1.0_eb)
        end do
+! if iwbound==3 then constant temperature boundary condition
+!                    flux boundary condition otherwise
 
-      do i = 1, nr-1
-          aim1(i) = -cc(i)
-          ai(i) = 1.0_eb + factor
-          aip1(i) = -dd(i)
-          tnew(i) = wtemp(i)
-      end do
+       aim1(1:nr-1) = -cc(1:nr-1)
+       ai(1:nr-1) = 1.0_eb + factor
+       aip1(1:nr-1) = -dd(1:nr-1)
+       tnew(1:nr-1) = wtemp(1:nr-1)
 
        aim1(nr) = -cc(nr)
        ai(nr) = 1.0_eb + cc(nr)
        aip1(nr) = -dd(nr)
-       tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*room_depth/wk
+
+       if(iwbound==3)then
+          cc(nr) = 0.0_eb
+          dd(nr) = 0.0_eb
+          tnew(nr) = tempin
+       else
+          tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*room_depth/wk
+       endif
 
        ! aim1(nr) = -1.0
        ! ai(nr) = 1.0_eb
        ! aip1(nr) = 0.0
        ! tnew(nr) = wfluxin*room_depth/wk
-       ! now perform an l-u factorization of this matrix (see atkinson p.455)
-       ! note: matrix is diagonally dominant so we don't have to pivot
+       ! now perform an LU factorization of this matrix (see atkinson p.455)
+       ! note: matrix is diagonally dominant so pivoting is not necessary
 
        ! note we do the following in case a(1) is not 1
 
@@ -118,21 +125,19 @@
           tnew(i) = tnew(i) - aip1(i)*tnew(i+1)
        end do
 
-       do i = 1, nr
-          wtemp(i) = tnew(i)
-       end do
+       wtemp(1:nr) = tnew(1:nr)
     end do
     ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that
-    ! interpolates first three data points in the temperature profile.  we will use divided differences.
+    ! interpolates first three data points in the temperature profile using divided differences.
 
     ! first divided difference
-    ddif(1) = (tnew(2)-tnew(1))/room_depth
-    ddif(2) = (tnew(3)-tnew(2))/room_depth
+    ddif(1) = (wtemp(nr-1)-wtemp(nr))/room_depth
+    ddif(2) = (wtemp(nr-2)-wtemp(nr-1))/room_depth
 
     ! second divided difference
     ddif(2) = (ddif(2)-ddif(1))/(2.0_eb*room_depth)
 
     tgrad(1) = (ddif(1)-ddif(2)*room_depth)
-    tgrad(2) = (tnew(2)-tnew(1))/room_depth
+    tgrad(2) = (wtemp(nr-1)-wtemp(nr))/room_depth
     return
     end

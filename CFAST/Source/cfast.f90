@@ -1814,7 +1814,11 @@
             targptr => targetinfo(itarg)
             if(targptr%trgmeth==mplicit) then
                 ieq = iztarg(itarg)
-                xxtarg(idx_tempf_trg,itarg) = p(ieq+noftt)
+                if(ixtarg(trgeq,itarg)==cylpde)then
+                   xxtarg(idx_tempb_trg,itarg) = p(ieq+noftt)
+                else
+                   xxtarg(idx_tempf_trg,itarg) = p(ieq+noftt)
+                endif
             endif
         end do
 

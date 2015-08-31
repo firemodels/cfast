@@ -20,5 +20,7 @@ Key_Position        = char(parameters(find(strcmp(headers,'Key_Position'))));
 Paper_Width_Factor  = str2num(char(parameters(find(strcmp(headers,'Paper_Width_Factor')))));
 Sigma_E             = str2num(char(parameters(find(strcmp(headers,'Sigma_E')))));
 Weight_Data         = char(parameters(find(strcmp(headers,'Weight_Data'))));
+Data_Min            = str2num(char(parameters(find(strcmp(headers,'Data_Min')))));
+Data_Max            = str2num(char(parameters(find(strcmp(headers,'Data_Max')))));
 Plot_Type           = char(parameters(find(strcmp(headers,'Plot_Type'))));
 Plot_Filename       = char(parameters(find(strcmp(headers,'Plot_Filename'))));

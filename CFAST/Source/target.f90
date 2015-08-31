@@ -62,7 +62,7 @@ contains
     call target_flux(method)
 
     ! for each target calculate the residual and update target temperature (if update = 1)
-          do itarg = 1, ntarg
+    do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         if(targptr%trgmeth==method) then
             wfluxin = targptr%flux_net_front

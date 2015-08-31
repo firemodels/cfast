@@ -304,17 +304,17 @@
         if (validate) then
             tttemp = xxtarg(idx_tempb_trg,itarg)
             call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
-            call SSaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_surface(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_gas(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_target(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_net_gauge(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_radiation_gauge(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_convection_gauge(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_net(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_radiation(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_convection(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_fire(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_surface(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_gas(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_target(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_net_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_radiation_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_convection_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_target_gauge(2) / 1000._eb, outarray)
         end if
     end do
 

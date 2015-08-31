@@ -185,15 +185,13 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     end if
 
     ! target devices
-    if (ntarg>nrooms) then
-        do i = 1, ntarg-nrooms
+        do i = 1, ntarg
             write(13,"(a)") "DEVICE"
             write(13,"(a)") "TARGET"
             call getabstarget(i,targetvector)
             write(13,36) targetvector,0,0
 36          format(1x,6f10.2,2i6)
         end do
-    endif
 
     write(13,"(a)") "TIME"
     write(13,40) nscount, stime

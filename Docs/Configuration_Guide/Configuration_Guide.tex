@@ -62,8 +62,7 @@ CFAST -- Consolidated Fire \\
 \headerC{
 \flushright{\mydate\today\\
 CFAST Version \cfastversion \\
-\emph{SVN Repository}~$Revision$}}
-% dummy comment to force svn change - Mon Jan  5 21:57:14 EST 2015
+\emph{GIT Revision:}~\gitrevision}}
 
 \vfill
 
@@ -162,9 +161,9 @@ Document identification and control consists of placing all project files in a c
 
 \section{Project Repository}
 
-CFAST and Smokeview make use of Google Code Project Hosting, a free service offered by Google to support software development for open source applications.  Google Code uses the Subversion (SVN) revision management system. Under this system a centralized repository containing all project files resides on a Google Code server. Subversion uses a single integer that identifies the version of the entire repository rather than a specific file (i.e., anytime a change is made to the repository all files are incremented in version number).  A record of version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository.  Only Team Members described in the previous chapter can commit changes to the repository.
+CFAST and Smokeview make use of GitHub, a free service to support software development for open source applications. GitHub uses Git version control software. Under this system a centralized repository containing all project files resides on an external server.   A record of version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository.  Only Team Members described in the previous chapter can commit changes to the repository. All others must submit a ``pull request.''
 
-The current location of the CFAST repository is \href{http://cfast.googlecode.com/svn/trunk/}{\textct{http://cfast.googlecode.com/svn/trunk/}}. The repository contains the following files:
+The current location of the CFAST repository is \href{https://github.com/firemodels/fds-smv}{\textct{https://github.com/firemodels/cfast}}. The repository contains the following files:
 \begin{enumerate}
 \item Compiled CFAST and Smokeview executables
 \item CFAST source code files
@@ -174,27 +173,28 @@ The current location of the CFAST repository is \href{http://cfast.googlecode.co
 \item Scripts and post-processing utilities used for software testing
 \item Web pages and wikis containing notes and other information
 \end{enumerate}
-In the event of an unexpected change to the Google Code service and/or the CFAST repository, each member of the development team, plus interested third parties, has a copy of the repository on their local computer. At NIST, the staff computers are regularly backed up as well. Thus, there is very little chance that the project repository will be lost. If need be, the files could be moved to another open source software development site, such as SourceForge. It is expected that if Google decides to end its support for Google Code, it will provide its users with the full history of the project.
+
+In the event of an unexpected change to the GitHub service and/or the CFAST repository, each member of the development team, plus interested third parties, has a copy of the repository on their local computer. At NIST, the staff computers are regularly backed up as well. Thus, there is very little chance that the project repository will be lost. If need be, the files could be moved to another open source software development site.
 
 \section{Version Identification}
 
-At the start of a simulation, CFAST writes header information to the Smokeview output file, CFAST output file, and the CFAST log file.  This header information contains the version of CFAST used to perform that simulation. While each release is tagged with a specific version number (e.g., 7.0.0), there may be many commits of source code, documentation, or other files to the SVN repository before a new version is released with an incremented version number.  Thus, if a developer or a user who performs their own compilation between baseline releases discovers an error, the version number written to the output files may not be sufficient to identify the specific set of source code files used.  Rather, one would need to know the SVN revision number of the most recently committed source file. This is accomplished by using source file tagging. In each source file, a series of character parameter strings are defined. For example, near the bottom of the source file {\ct cfast.f90} are lines of the form:
+At the start of a simulation, CFAST writes header information to the Smokeview output file, CFAST output file, and the CFAST log file.  This header information contains the version of CFAST used to perform that simulation. While each release is tagged with a specific version number (e.g., 7.0.0), there may be many commits of source code, documentation, or other files to the git repository before a new version is released with an incremented version number.  Thus, if a developer or a user who performs their own compilation between baseline releases discovers an error, the version number written to the output files may not be sufficient to identify the specific set of source code files used.  Rather, one would need to know the git revision number of the most recently committed source file. This is accomplished by using source file tagging. In each source file, a series of character parameter strings are defined. For example, near the bottom of the source file {\ct cfast.f90} are lines of the form:
 \begin{lstlisting}
 character(255), parameter :: mainrev='$Revision: 2137 $'
 character(255), parameter :: maindate='$Date: 2015-04-14 13:45:07 -0400 (Tue, 14 Apr 2015) $'
 \end{lstlisting}
-The lines contain the name of the source file, the version of the file (this reflects only the source file version and not the overall release version number), the date and time of the file version, and the person who checked the file into the repository. Upon compiling, these strings will be stored in the executable file.  The user can search the executable file for strings beginning with \textct{\$Id:}, which results in a list of all source files compiled and their version. Within the SVN archive, any specific version of a source file can be extracted and differences between versions can be determined.
+The lines contain the name of the source file, the version of the file (this reflects only the source file version and not the overall release version number), the date and time of the file version, and the person who checked the file into the repository. Upon compiling, these strings will be stored in the executable file.  The user can search the executable file for strings beginning with \textct{\$Id:}, which results in a list of all source files compiled and their version. Within the git repository, any specific version of a source file can be extracted and differences between versions can be determined.
 
-Within the source code a series of subroutines were created, one per source file, which parses the \textct{\$Id:} in each file and extracts from it the SVN revision number.  Each of these subroutines is called at the start of an CFAST run and the largest (and hence most recent) revision number is determined.  This number is written along with the CFAST version number to the output header information.  A user can now identify specifically the source code used for a particular compilation of CFAST when reporting an error.
+Within the source code a series of subroutines were created, one per source file, which parses the \textct{\$Id:} in each file and extracts from it the git revision number.  Each of these subroutines is called at the start of an CFAST run and the largest (and hence most recent) revision number is determined.  This number is written along with the CFAST version number to the output header information.  A user can now identify specifically the source code used for a particular compilation of CFAST when reporting an error.
 
 
 \chapter{SQA Documentation}
 
-The released version of CFAST is documented by three primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_7}, the User's Guide \cite{CFAST_Users_Guide_7}, and this Software and Model Evaluation Guide. The documents apply to the newest version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles, provides a review of model verification and validation efforts by NIST and others, and describes the limitations of the model.  The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
+The released version of CFAST is documented by three primary publications, the Technical Reference Guide\cite{CFAST_Tech_Guide_7}, the User's Guide \cite{CFAST_Users_Guide_7}, the Verification and Validation Guide \cite{CFAST_Valid_Guide_7}, and this Configuration Management Guide. The documents apply to the newest version of the model available on the NIST website. The Technical Reference Guide describes the underlying physical principles, provides a review of model verification and validation efforts by NIST and others, and describes the limitations of the model.  The User's Guide describes how to use the model, includes a detailed description of the model inputs and outputs, and provides a process to ensure the correct installation of the model. There are also documents archived on the website that are applicable to older versions of both the model and user interface.
 
 \section{Development Process}
 
-Changes are made to the CFAST source code daily, and tracked via revision control software. However, these daily changes do not constitute a change to the version number. After the developers determine that enough changes have been made to the source, they release a new minor upgrade, 6.2.1 to 6.2.2, for example. This happens every few weeks. A change from 6.2 to 6.3 might happen only once a year, when significant improvements have been made to the model physics or numerics.
+Changes are made to the CFAST source code daily, and tracked via revision control software. However, these daily changes do not constitute a change to the version number. After the developers determine that enough changes have been made to the source, they release a new minor upgrade, 7.0.0 to 7.0.1, for example. This happens every few weeks. A change from 7.0 to 7.1 might happen only once a year, when significant improvements have been made to the model physics or numerics.
 
 There is no formal process by which CFAST is updated. Each developer works on various routines, and makes changes as warranted. Minor bugs are fixed without any communication (the developers are in different locations), but more significant changes are discussed via email or telephone calls. A suite of simple verification calculations (included in this document) are run each night to ensure that the daily bug fixes have not altered any of the important algorithms. A suite of validation calculations (also included here) are run each night. Significant changes to CFAST are made based on the following criteria, in no particular order:
 \begin{description}
@@ -206,29 +206,12 @@ There is no formal process by which CFAST is updated. Each developer works on va
 
 \subsection{Creating a Change Request}
 
-Change requests are submitted using the CFAST Issue Tracker.  The Issue Tracker is an online service provided by Google Code Project Hosting. To submit a new issue to the tracker or to provide follow up comments, the user must sign in using his or her Google account credentials. A change request is initiated by opening a new issue.  The issue report contains the baseline identification (version number, compile date, and SVN revision number), operating system, and a description of the defect or enhancement request.  Input files or other supporting documentation can be attached.
-\begin{figure}[ht!]
-\includegraphics[width=\textwidth]{FIGURES/NewIssue}
-\caption{Screenshot of issue tracker reporting form}
-\label{fig:issueform}
-\end{figure}
-If the issue is opened by a user, it will be given a status of \textct{New} until it is reviewed by a developer. This typically takes a few minutes to a few hours, depending on the time of day the issue is reported. If the issue is opened by a developer, the developer can immediately assign a status and an owner.
-
-\subsection{Processing a Change Request}
-
-A change request may be evaluated by any member of the development team. If the request duplicates an existing request, then the issue status is changed to \textct{Duplicate} and the
-requestor is sent the issue number of the existing request.
-
-If the request is for an enhancement to CFAST, then the issue type is changed to \textct{Type-Enhancement} and the component type is declared. The request is evaluated for suitability.  If it is a valid enhancement request, then the status is changed to \textct{Accepted}.  If the request is not to be addressed under the next baseline, then the status will be changed to \textct{OnHold}.  If the request is denied, then the status is changed to \textct{WontFix}.  An accepted request will be assigned to a developer.
-
-If the request is identifying a defect in CFAST, then the issue type is changed to \textct{Type-Defect} and the component type is declared.  The defect is evaluated for validity.  If insufficient information has been provided in the request, then the status is changed to \textct{MoreInfo} and a description of the additional information required is sent to the requestor.  If the defect is due to user error or is the intended function of CFAST, then the status is changed to \textct{Invalid}.  If the defect is valid, then the request reviewer will change the status to \textct{Accepted} and assign the request to a developer.
-
-Once a change request has be addressed by a developer and changes submitted to the repository, the request status is changed to \textct{Fixed}.  Once either the requestor or another developer has verified that the changes address the original request, then the status is changed to \textct{Verified}.
+Change requests are submitted using the CFAST Issue Tracker.  The Issue Tracker is an online service provided by GitHub. A change request is initiated by opening a new issue.  The issue report contains the baseline identification (version number, compile date, and revision number), operating system, and a description of the defect or enhancement request.  Input files or other supporting documentation can be attached. If the issue is opened by a user, it will be given a status of {\em New} until it is reviewed by a developer. This typically takes a few minutes to a few hours, depending on the time of day the issue is reported. If the issue is opened by a developer, the developer can immediately assign a status and an owner.
 
 
 \subsection{Committing Changes}
 
-Once a developer has addressed a change request, the modified files are committed to the SVN repository.  A description of the changes will be added to the SVN change log.  This description first identifies the primary component being changed (for example: CFAST Source or CFAST Documentation).  This component identification will be followed by a brief summary of the changes made.
+Once a developer has addressed a change request, the modified files are committed to the CFAST repository.  A description of the changes will be added to the change log.  This description first identifies the primary component being changed (for example: CFAST Source or CFAST Documentation).  This component identification will be followed by a brief summary of the changes made.
 
 Changes to the CFAST source code and supporting documentation are reviewed by other members of the team. There is no formal system with which changes are reviewed because the frequency of changes makes it impractical. As a general rule, all team members watch for unintentional commits of copyrighted material or algorithms, and also proprietary data or case studies collected from an end user. CFAST itself does not include copyrighted or proprietary data, but occasionally this kind of information is submitted by an end user who has submitted a bug report.
 
@@ -266,9 +249,9 @@ NIST has developed an automated reporting and resolution tracking website for us
 
 \section{Tools, Techniques, and Methodologies}
 
-The CFAST and Smokeview source codes undergo an automated build, verification, validation, and regression testing process, which is similar to a continuous integration system that automates the build/testing cycle for a project. This automated process is referred to as CFASTbot. The CFASTbot build/test process helps the CFAST development team by performing automatic error checking and collecting performance and accuracy statistics between FDS revisions.
+The CFAST and Smokeview source codes undergo an automated build, verification, validation, and regression testing process, which is similar to a continuous integration system that automates the build/testing cycle for a project. This automated process is referred to as CFASTbot. The CFASTbot build/test process helps the CFAST development team by performing automatic error checking and collecting performance and accuracy statistics between CFAST revisions.
 
-The automated built/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the validation suite set-by-set. For future reference, the results of a build/test process are archived and tagged with the SVN revision number that was used.
+The automated built/test verification process runs on a regular schedule (nightly) to ensure that CFAST and Smokeview are free of compiler errors, verification errors, or any other errors that would result in a failure during the build/test cycle. The automated build/test validation process runs continuously through the validation suite set-by-set. For future reference, the results of a build/test process are archived and tagged with the git revision number that was used.
 
 Upon completion of the automated build/test process, the results of the build/test process are dispatched to the development team. In the event of a failure, the build/test process continues when possible, and the appropriate error logs are dispatched to the development team.
 
@@ -284,11 +267,8 @@ These computer systems are available only to specified personnel, including the 
 
 CFAST is entirely a product of NIST and as such does not include any commercial software libraries. The differential equation solver used by CFAST, DASSL, is a publicly available software package.  Full source code for the solver as used by CFAST is maintained under version control with the rest of the model code.
 
-BFRL currently uses Microsoft Visual Studio 2013 and Intel Fortran Professional 2015 for development\footnote{Certain commercial entities, equipment, or materials may be identified in this document
-in order to describe an experimental procedure or concept adequately. Such identification
-is not intended to imply recommendation or endorsement by the National Institute of
-Standards and Technology, nor is it intended to imply that the entities, materials, or
-equipment are necessarily the best available for the purpose.}.  Prior to any change to a different development system, a full test suite of test cases are compared to verify consistent operation of the model and model results.
+BFRL currently uses Microsoft Visual Studio 2013 and Intel Fortran Professional 2016 for development\footnote{Certain commercial entities, equipment, or materials may be identified in this document
+in order to describe an experimental procedure or concept adequately. Such identification is not intended to imply recommendation or endorsement by the National Institute of Standards and Technology, nor is it intended to imply that the entities, materials, or equipment are necessarily the best available for the purpose.}.  Prior to any change to a different development system, a full test suite of test cases are compared to verify consistent operation of the model and model results.
 
 \section{Records Collection, Maintenance, and Retention}
 

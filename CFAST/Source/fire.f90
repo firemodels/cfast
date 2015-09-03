@@ -1446,6 +1446,7 @@
         if (.not.objon(iobj)) then
             ignflg = objign(iobj)
             itarg = obtarg(iobj)
+            targptr => targetinfo(itarg)
             if (ignflg==1) then
                 if (objcri(1,iobj)<=tnobj) then
                     tobj = min(objcri(1,iobj),tobj)
@@ -1457,10 +1458,9 @@
                     tmpob(2,iobj) = tnobj + dt
                 endif
             else if (ignflg==2) then
-                call check_object_ignition(told,dt,xxtarg(idx_tempf_trg,itarg),objcri(3,iobj),obcond(igntemp,iobj),&
+                call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),objcri(3,iobj),obcond(igntemp,iobj),&
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else if (ignflg==3) then
-                targptr => targetinfo(itarg)
                 call check_object_ignition(told,dt,targptr%flux_front,objcri(2,iobj),obcond(ignflux,iobj),&
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else
@@ -1474,9 +1474,10 @@
         do iobj = 1, numobjl
             if (.not.objon(iobj)) then
                 itarg = obtarg(iobj)
+                targptr => targetinfo(itarg)
                 if (ignflg>1) then 
                     targptr => targetinfo(itarg)
-                    obcond(igntemp,iobj) = xxtarg(idx_tempf_trg,itarg)
+                    obcond(igntemp,iobj) = targptr%temperature(idx_tempf_trg)
                     obcond(ignflux,iobj) = targptr%flux_front
                 end if
                 if (iflag==set_detector_state.and.tmpob(1,iobj)>0.0_eb) then

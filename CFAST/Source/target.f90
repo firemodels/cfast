@@ -81,14 +81,14 @@ contains
                 nslab = 1
                 if(iieq==pde)then
                    if(iimeth==mplicit)then
-                       tempin = xxtarg(idx_tempf_trg,itarg)
+                       tempin = targptr%temperature(idx_tempf_trg)
                        iwbound = 3
                    else
                        iwbound = 4
                    endif
                    walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
 
-                   call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idx_tempf_trg,itarg),walldx,nmnode,nslab,&
+                   call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
                        wfluxin,wfluxout,iwbound,tgrad,tderv)
                    if(iimeth==mplicit)then
                       ieq = iztarg(itarg)
@@ -97,17 +97,17 @@ contains
                 else if(iieq==cylpde)then
                     wfluxavg = (wfluxin+wfluxout)/2.0_eb
                     if(iimeth==mplicit)then
-                       tempin = xxtarg(idx_tempb_trg,itarg)
+                       tempin = targptr%temperature(idx_tempb_trg)
                        iwbound = 3
                     else
                        iwbound = 4
                     endif
-                    call cylindrical_conductive_flux (iwbound,tempin,xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
+                    call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl,tgrad)          
                     if(iimeth==mplicit)then
                         ieq = iztarg(itarg)
                         delta(noftt+ieq) = wfluxavg + wk(1)*tgrad(1)
-                       ! write(0,*)"temp=",xxtarg(idx_tempb_trg,itarg),"delta=",delta(noftt+ieq)
+                       ! write(0,*)"temp=",targptr%temperature(idx_tempb_trg),"delta=",delta(noftt+ieq)
                     endif
                 endif
                 ! error, the equation type can has to be either pde or ode if the method is not steady
@@ -173,8 +173,8 @@ contains
             else
                 niter = 1
             endif
-            ttarg(1) = xxtarg(idx_tempf_trg,itarg)
-            ttarg(2) = xxtarg(idx_tempb_trg,itarg)
+            ttarg(1) = targptr%temperature(idx_tempf_trg)
+            ttarg(2) = targptr%temperature(idx_tempb_trg)
             do iter = 1, niter
                 call targflux(iter,itarg,ttarg,flux,dflux)
                 if(dflux(1)/=0.0_eb.and.method==steady)then
@@ -184,8 +184,8 @@ contains
                 endif
             end do
             if(method==steady)then
-                xxtarg(idx_tempf_trg,itarg) = ttarg(1)
-                xxtarg(idx_tempb_trg,itarg) = ttarg(2)
+                targptr%temperature(idx_tempf_trg) = ttarg(1)
+                targptr%temperature(idx_tempb_trg) = ttarg(2)
             endif
             targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
             targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)

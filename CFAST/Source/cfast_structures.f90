@@ -51,6 +51,7 @@ module cfast_types
         real(eb) :: flux_back       ! incident heat flux to back surface of target (calculated)
         real(eb) :: flux_net_front  ! net heat flux to front surface of target (calculated)
         real(eb) :: flux_net_back   ! net heat flux to back surface of target (calculated)
+        real(eb), dimension(nnodes_trg) :: temperature  ! target temperatures from front to back
         
         integer :: room             ! compartment where the target is located (user input from the input data file)
         integer :: trglayer         ! layer (within the compartment) where the target is located (calculated)

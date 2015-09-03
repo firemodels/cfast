@@ -106,7 +106,7 @@ module cfast_main
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
         duct_length(mxduct),hvconc(mxbranch,ns),qcvpp(4,nr,nr), hvexcn(mxext,ns,2),objpos(3,0:mxfires),fpos(3),hcrf(mxpts), &
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
-        farea(0:mxfire),xxtarg(mxr_trg,mxtarg),cxabs(nr),cyabs(nr)
+        farea(0:mxfire),cxabs(nr),cyabs(nr)
 
     real(eb) :: cp, deltat, tracet(2,mxext)
     real(eb) :: gamma, hcomba, traces(2,mxext)

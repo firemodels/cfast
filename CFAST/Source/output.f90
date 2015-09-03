@@ -541,11 +541,11 @@
             targptr => targetinfo(itarg)
             if (targptr%room==i) then
                 tg = tgtarg(itarg)
-                tttemp = xxtarg(idx_tempf_trg,itarg)
+                tttemp = targptr%temperature(idx_tempf_trg)
                 depth = 0.0
                 do inode = 2, nnodes_trg
                     if (depth>targptr%thickness*targptr%depth_loc) then
-                        tctemp = (xxtarg(inode-1,itarg)+xxtarg(inode,itarg))/2
+                        tctemp = (targptr%temperature(inode-1)+targptr%temperature(inode))/2
                         itctemp = inode
                         exit
                     end if
@@ -1422,6 +1422,7 @@
     use cenviro
     use cfast_main
     use cshell
+    use fltarget, only: targetinfo
     use params
     use wnodes
     implicit none
@@ -1436,6 +1437,8 @@
        '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
     save bmap
+    
+    type(target_type), pointer :: targptr
 
     !     debug printing
     if (firstc) then
@@ -1550,7 +1553,8 @@
         if(ntarg>0)then
             write(*,6090)
             do itarg = 1, ntarg
-                write(*,6095)itarg,xxtarg(idx_tempf_trg,itarg)
+                targptr => targetinfo(itarg)
+                write(*,6095) itarg, targptr%temperature(idx_tempf_trg)
             end do
         endif
     endif

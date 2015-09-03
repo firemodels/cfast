@@ -1815,9 +1815,9 @@
             if(targptr%trgmeth==mplicit) then
                 ieq = iztarg(itarg)
                 if(ixtarg(trgeq,itarg)==cylpde)then
-                   xxtarg(idx_tempb_trg,itarg) = p(ieq+noftt)
+                   targptr%temperature(idx_tempb_trg) = p(ieq+noftt)
                 else
-                   xxtarg(idx_tempf_trg,itarg) = p(ieq+noftt)
+                   targptr%temperature(idx_tempf_trg) = p(ieq+noftt)
                 endif
             endif
         end do

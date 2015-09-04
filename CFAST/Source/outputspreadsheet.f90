@@ -274,7 +274,7 @@
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         tgtemp = tgtarg(itarg)
-        if (ixtarg(trgeq,itarg)==cylpde) then
+        if (targptr%equaton_type==cylpde) then
             tttemp = targptr%temperature(idx_tempb_trg)
             itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
             tctemp = targptr%temperature(itctemp)
@@ -283,7 +283,7 @@
             itctemp = (idx_tempf_trg+idx_tempb_trg)/2
             tctemp = targptr%temperature(itctemp)
         endif
-        if (targptr%trgmeth==steady) tctemp = tttemp
+        if (targptr%method==steady) tctemp = tttemp
             
         call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)

@@ -117,7 +117,7 @@ module cfast_main
 
     logical :: activs(ns), surface_on_switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
 
-    character(128) :: title, compartmentnames(nr), targetnames(mxtarg)
+    character(128) :: title, compartmentnames(nr)
    
     type(fire_type), target :: fireinfo(mxfire)
      

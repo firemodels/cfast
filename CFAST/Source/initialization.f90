@@ -904,7 +904,7 @@
         targptr%method = xplicit
         targptr%equaton_type = pde
         targptr%back = interior
-        targptr%name = 'DEFAULT'
+        targptr%material = 'DEFAULT'
     end do
 
     ! initialize jaccol  
@@ -1270,9 +1270,9 @@
             zloc = zz
             iwall2 = map6(iwall)
             if(surface_on_switch(iwall2,iroom))then
-                targptr%name = cname(iwall2,iroom)
+                targptr%material = cname(iwall2,iroom)
             else
-                targptr%name = ' '
+                targptr%material = ' '
             endif
         endif
 
@@ -1435,10 +1435,10 @@
     ! initialize target data structures
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        tcname = targptr%name
+        tcname = targptr%material
         if (tcname==' ') then
             tcname = 'DEFAULT'
-            targptr%name = tcname
+            targptr%material = tcname
         endif
         icode = 0
         call get_thermal_property(tcname,tp)

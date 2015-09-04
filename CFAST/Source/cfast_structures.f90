@@ -38,7 +38,9 @@ module cfast_types
     
     ! target data structure
     type target_type
-        character(mxthrmplen) :: name   ! user slected name for the target
+        character(128) :: name          ! user selected name for the target
+        character(mxthrmplen) :: material ! material for the target (used to match materials properties)
+        
         real(eb) :: center(3)           ! position of target center
         real(eb) :: normal(3)           ! target normal vector
         real(eb) :: k                   ! target thermal conductivity (from matching thermal properties input)

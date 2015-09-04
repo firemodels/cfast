@@ -571,10 +571,10 @@
                 if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
                 if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
-                    write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                    write(iofilo,5030) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
                         tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
                 else
-                    write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                    write(iofilo,5030) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
                 endif
             endif
         end do
@@ -670,7 +670,7 @@
         call outcomp
         call outvent
         call outthe
-        call outtarg (1)
+        call outtarg
         call outfire
     endif
 
@@ -1037,7 +1037,7 @@
 
 ! --------------------------- outtarg -------------------------------------------
 
-    subroutine outtarg (isw)
+    subroutine outtarg
 
     !      description:  output initial test case target specifications
 
@@ -1045,12 +1045,8 @@
     use cshell
     use fltarget
     implicit none
-
-    integer, intent(in) :: isw
     
     integer :: itarg, j
-
-    character cbuf*255
     
     type(target_type), pointer :: targptr
 
@@ -1060,8 +1056,9 @@
 
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        write(iofilo,5010) itarg, compartmentnames(targptr%room), (targptr%center(j),j=1,3),(targptr%normal(j),j=1,3),cbuf(1:8)
-5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a8)
+!        write(iofilo,5010) itarg, targptr%name, compartmentnames(targptr%room), (targptr%center(j),j=1,3), &
+!            (targptr%normal(j),j=1,3), targptr%material
+5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
     end do
     return
     end subroutine outtarg

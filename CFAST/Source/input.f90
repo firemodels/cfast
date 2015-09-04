@@ -645,15 +645,15 @@
 
                 ! target name
                 if (countargs(lcarray)>=12) then
-                    targetnames(ntarg) = lcarray(12)
+                    targptr%name = lcarray(12)
                 else
-                    write (targetnames(ntarg),'(a5,i0)') 'Targ ', ntarg
+                    write (targptr%name,'(a5,i0)') 'Targ ', ntarg
                 end if
 
                 ! material type
                 tcname = lcarray(8)
                 if(tcname==' ') tcname='DEFAULT'
-                targptr%name = tcname
+                targptr%material = tcname
                 targptr%wall = 0
 
                 ! solution method
@@ -766,7 +766,8 @@
                 obtarg(obpnt) = 0
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                     do i = 1,ntarg
-                        if (targetnames(i)==lcarray(8)) obtarg(obpnt) = i
+                        targptr => targetinfo(i)
+                        if (targptr%name==lcarray(8)) obtarg(obpnt) = i
                     end do
                     if (obtarg(obpnt)==0) then
                         write (logerr,5324) obpnt

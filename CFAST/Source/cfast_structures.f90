@@ -1,7 +1,7 @@
 module cfast_types
     
     use precision_parameters
-    use cparams, only: mxpts, ns, mxfslab, nnodes_trg
+    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen
     
     !  room data structure
     type room_type
@@ -38,25 +38,29 @@ module cfast_types
     
     ! target data structure
     type target_type
-        real(eb) :: center(3)       ! position of target center
-        real(eb) :: normal(3)       ! target normal vector
-        real(eb) :: k               ! target thermal conductivity (from matching thermal properties input)
-        real(eb) :: rho             ! target density (from matching thermal properties input)
-        real(eb) :: cp              ! target heat capacity (from matching thermal properties input)
-        real(eb) :: emissivity      ! target emissivity (from matching thermal properties input)
-                                    !                  (from user input with default of 0.5*thickness)
-        real(eb) :: thickness       ! target thickness (from matching thermal properties input)
-        real(eb) :: depth_loc       ! depth location for output of internal temperature 
-        real(eb) :: flux_front      ! incident heat flux to front surface of target (calculated)
-        real(eb) :: flux_back       ! incident heat flux to back surface of target (calculated)
-        real(eb) :: flux_net_front  ! net heat flux to front surface of target (calculated)
-        real(eb) :: flux_net_back   ! net heat flux to back surface of target (calculated)
+        character(mxthrmplen) :: name   ! user slected name for the target
+        real(eb) :: center(3)           ! position of target center
+        real(eb) :: normal(3)           ! target normal vector
+        real(eb) :: k                   ! target thermal conductivity (from matching thermal properties input)
+        real(eb) :: rho                 ! target density (from matching thermal properties input)
+        real(eb) :: cp                  ! target heat capacity (from matching thermal properties input)
+        real(eb) :: emissivity          ! target emissivity (from matching thermal properties input)
+        real(eb) :: thickness           ! target thickness (from matching thermal properties input)
+        real(eb) :: depth_loc           ! depth location for output of internal temperature 
+                                        !       (from user input with default of 0.5*thickness)
+        real(eb) :: flux_front          ! incident heat flux to front surface of target (calculated)
+        real(eb) :: flux_back           ! incident heat flux to back surface of target (calculated)
+        real(eb) :: flux_net_front      ! net heat flux to front surface of target (calculated)
+        real(eb) :: flux_net_back       ! net heat flux to back surface of target (calculated)
         real(eb), dimension(nnodes_trg) :: temperature  ! target temperatures from front to back
         
-        integer :: room             ! compartment where the target is located (user input from the input data file)
-        integer :: trglayer         ! layer (within the compartment) where the target is located (calculated)
-        integer :: trgmeth          ! calculation method (STEADY, IMPLICIT, EXPLICIT) (user input from the input data file)
-        integer :: trgeq            ! equation type for calculation (ODE, PDE) (user input from input data file)
+        integer :: room                 ! compartment where the target is located (user input from the input data file)
+        integer :: layer                ! layer (within the compartment) where the target is located (calculated)
+        integer :: method               ! calculation method (STEADY, IMPLICIT, EXPLICIT) (user input from the input data file)
+        integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input from input data file)
+        integer :: back                 ! whether the back surface of the target is exposed to interior or exterior temperatures
+        integer :: wall                 ! wall surface the target is located on. Normal wall numbering
+                                    
         
         real(eb),dimension(nnodes_trg) :: trgtemps  ! temperature profile in target ... front surface ... internal ... back surface
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target

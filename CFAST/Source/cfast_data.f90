@@ -78,7 +78,7 @@ module cfast_main
     integer :: hvorien(mxext), hvnode(2,mxext), mpsdat(3), nwv(nr,nr), na(mxbranch), nofsets(14), &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), nw(nr,nr), nslb(nwal,nr), &
         nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
-        froom(0:mxfire), numobjl, ixtarg(mxi_trg,mxtarg), ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
+        froom(0:mxfire), numobjl, ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
         nventijk,nfopt,vface(mxhvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr), &
         cxgrid(nr), cygrid(nr), czgrid(nr), obj_fpos(0:mxfires)
@@ -193,32 +193,7 @@ module fltarget
     save
     
     ! variables for calculation of flux to a target
-      
-    ! indices into floating point target data structure (XXTARG)      
-    integer, parameter :: trgcenx = 1
-    integer, parameter :: trgceny = 2
-    integer, parameter :: trgcenz = 3
-    integer, parameter :: trgnormx = 4
-    integer, parameter :: trgnormy = 5
-    integer, parameter :: trgnormz = 6
-    integer, parameter :: trgk = 7
-    integer, parameter :: trgrho = 8
-    integer, parameter :: trgcp = 9
-    integer, parameter :: trgl = 10
-    integer, parameter :: trginterior = 11
-    integer, parameter :: trgemis = 12
-    integer, parameter :: trgtfluxf = 13
-    integer, parameter :: trgtfluxb = 14
-    integer, parameter :: trgnfluxf = 15
-    integer, parameter :: trgnfluxb = 16
 
-    ! indices into integer target data structure (IXTARG)
-    integer, parameter :: trgroom = 1
-    integer, parameter :: trglayer = 2
-    integer, parameter :: trgwall = 3
-    integer, parameter :: trgmeth = 4
-    integer, parameter :: trgeq = 5
-    integer, parameter :: trgback = 6
     
     integer, parameter :: pde = 2
     integer, parameter :: cylpde = 3
@@ -227,8 +202,6 @@ module fltarget
     integer, parameter :: xplicit = 3
     integer, parameter :: interior = 1
     integer, parameter :: exterior = 2
-
-    character(mxthrmplen) :: cxtarg(mxtarg)
 
     real(eb), dimension(mxtarg,2) :: qtcflux, qtfflux, qtwflux, qtgflux
     real(eb), dimension(mxtarg) :: tgtarg

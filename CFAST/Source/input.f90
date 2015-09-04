@@ -653,8 +653,8 @@
                 ! material type
                 tcname = lcarray(8)
                 if(tcname==' ') tcname='DEFAULT'
-                cxtarg(ntarg) = tcname
-                ixtarg(trgwall,ntarg) = 0
+                targptr%name = tcname
+                targptr%wall = 0
 
                 ! solution method
                 method = ' '
@@ -662,12 +662,12 @@
                 call upperall(method,method)
                 if(method/=' ')then
                     if(method(1:3)=='STE') then
-                        targptr%trgmeth = STEADY
+                        targptr%method = STEADY
                         method = ' '
                     elseif (method(1:3)=='IMP') then
-                        targptr%trgmeth = MPLICIT
+                        targptr%method = MPLICIT
                     elseif (method(1:3)=='EXP') then
-                        targptr%trgmeth = XPLICIT
+                        targptr%method = XPLICIT
                     else
                         write(logerr,912) method
                         stop
@@ -680,13 +680,13 @@
                 call upperall(eqtype,eqtype)
                 if(eqtype/=' '.and.method/=' ')then
                     if (eqtype(1:3)=='ODE') then
-                        ixtarg(trgeq,ntarg) = pde
+                        targptr%equaton_type = pde
                         write (logerr,913) 'Warning', eqtype
                     elseif (eqtype(1:3)=='PDE') then
-                        ixtarg(trgeq,ntarg) = pde
+                        targptr%equaton_type = pde
                     elseif (eqtype(1:3)=='CYL') then
-                        ixtarg(trgeq,ntarg) = cylpde
-                        targptr%trgmeth = XPLICIT
+                        targptr%equaton_type = cylpde
+                        targptr%method = XPLICIT
                     else
                         write(logerr,913) 'Error',eqtype
                         stop

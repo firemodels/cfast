@@ -617,7 +617,7 @@
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        if(targptr%trgmeth==mplicit)then
+        if(targptr%method==mplicit)then
             ieq = iztarg(itarg)
             p(noftt+ieq) = interior_temperature
         endif  
@@ -901,10 +901,10 @@
 
     do itarg = 1, mxtarg
         targptr => targetinfo(itarg)
-        targptr%trgmeth = xplicit
-        ixtarg(trgeq,itarg) = pde
-        ixtarg(trgback,itarg) = interior
-        cxtarg(itarg) = 'DEFAULT'
+        targptr%method = xplicit
+        targptr%equaton_type = pde
+        targptr%back = interior
+        targptr%name = 'DEFAULT'
     end do
 
     ! initialize jaccol  
@@ -1207,7 +1207,7 @@
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
         endif
-        iwall = ixtarg(trgwall,itarg)
+        iwall = targptr%wall
         xloc = targptr%center(1)
         yloc = targptr%center(2)
         zloc = targptr%center(3)
@@ -1270,9 +1270,9 @@
             zloc = zz
             iwall2 = map6(iwall)
             if(surface_on_switch(iwall2,iroom))then
-                cxtarg(itarg) = cname(iwall2,iroom)
+                targptr%name = cname(iwall2,iroom)
             else
-                cxtarg(itarg) = ' '
+                targptr%name = ' '
             endif
         endif
 
@@ -1435,10 +1435,10 @@
     ! initialize target data structures
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        tcname = cxtarg(itarg)
-        if(tcname==' ')then
+        tcname = targptr%name
+        if (tcname==' ') then
             tcname = 'DEFAULT'
-            cxtarg(itarg) = tcname
+            targptr%name = tcname
         endif
         icode = 0
         call get_thermal_property(tcname,tp)
@@ -1552,12 +1552,12 @@
     neqtarg(xplicit) = 0
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if(targptr%trgmeth==mplicit)then
+        if(targptr%method==mplicit)then
             nimtarg = nimtarg + 1
             neqtarg(mplicit) = neqtarg(mplicit) + 1
-        elseif(targptr%trgmeth==steady)then
+        elseif(targptr%method==steady)then
             neqtarg(steady) = neqtarg(steady) + 1
-        elseif(targptr%trgmeth==xplicit)then
+        elseif(targptr%method==xplicit)then
             neqtarg(xplicit) = neqtarg(steady) + 1
         endif
     end do

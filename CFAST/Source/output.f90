@@ -551,7 +551,7 @@
                     end if
                     depth = depth + targptr%thickness*tmp(inode-1)
                 end do
-                if (targptr%trgmeth==steady) tctemp = tttemp
+                if (targptr%method==steady) tctemp = tttemp
                 if (validate.or.netheatflux) then
                     total = targptr%flux_net_gauge(1)
                     ftotal = targptr%flux_fire(1)
@@ -1055,22 +1055,13 @@
     type(target_type), pointer :: targptr
 
     if(ntarg/=0) write(iofilo,5000)
-5000 format(//,'TARGETS',//,'Target',T9,'Compartment',T24,'Position (x, y, z)',T51,&
-         'Direction (x, y, z)',T76,'Material',/,82('-'))
+5000 format(//,'TARGETS',//,'Target',T29,'Compartment',T44,'Position (x, y, z)',T71,&
+         'Direction (x, y, z)',T96,'Material',/,102('-'))
 
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if (itarg<ntarg-nm1+1) then
-            cbuf = cxtarg(itarg)
-        else if (itarg>=ntarg-nm1+1.and.isw/=1) then
-            write (cbuf,5004) itarg-(ntarg-nm1)
-        else 
-            writE (CBUF,5005) CXTARG(ITARG),ITARG-(NTARG-NM1)
-        endif
-5004    format ('Floor, compartment ',I2)
-5005    format (A8,'  Floor, compartment ',I2)
         write(iofilo,5010) itarg, compartmentnames(targptr%room), (targptr%center(j),j=1,3),(targptr%normal(j),j=1,3),cbuf(1:8)
-5010    format(i5,t11,a14,t21,6(f7.2,2x),t76,a8)
+5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a8)
     end do
     return
     end subroutine outtarg

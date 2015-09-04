@@ -64,15 +64,15 @@ contains
     ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if(targptr%trgmeth==method) then
+        if(targptr%method==method) then
             wfluxin = targptr%flux_net_front
             wfluxout = targptr%flux_net_back
             wspec(1) = targptr%cp
             wrho(1) =  targptr%rho
             wk(1) =  targptr%k
             xl = targptr%thickness
-            iimeth = targptr%trgmeth
-            iieq = ixtarg(trgeq,itarg)
+            iimeth = targptr%method
+            iieq = targptr%equaton_type
 
             ! compute the pde residual 
             if(iieq==pde.or.iieq==cylpde)then
@@ -166,7 +166,7 @@ contains
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if(method==targptr%trgmeth) then
+        if(method==targptr%method) then
             iroom = targptr%room
             if(method==steady)then
                 niter = 10
@@ -561,7 +561,7 @@ contains
             if(cosang>=0.0_eb)then
                 qtfflux(itarg,1) = qtfflux(itarg,1) + qft
             else
-                if(ixtarg(trgback,itarg)==interior)then
+                if(targptr%back==interior)then
                     qtfflux(itarg,2) = qtfflux(itarg,2) + qft
                 endif
             endif
@@ -608,7 +608,7 @@ contains
 
             qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
             qgassum(front) = qgassum(front) + qgt*target_factors_front(iwall)
-            if(ixtarg(trgback,itarg)==interior)then
+            if(targptr%back==interior)then
               qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
               qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
             endif
@@ -619,7 +619,7 @@ contains
         qtgflux(itarg,back) = qgassum(back)
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if(ixtarg(trgback,itarg)==exterior.or.qtgflux(itarg,back)==0.0)then
+        if(targptr%back==exterior.or.qtgflux(itarg,back)==0.0)then
             qtgflux(itarg,back) = sigma*interior_temperature**4
         endif
     endif
@@ -643,7 +643,7 @@ contains
     ztarg = targptr%center(3)
     call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
     tgtarg(itarg) = tg
-    if(ixtarg(trgback,itarg)==interior)then
+    if(targptr%back==interior)then
         tgb = tg
     else
         tgb = interior_temperature

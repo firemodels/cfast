@@ -24,7 +24,6 @@ module cfast_types
     
     ! fire data structure
     type fire_type
-        
         ! These are the fire definitions from the input
         integer(eb) :: room, object
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass

@@ -78,7 +78,7 @@
                 ito = ibot
             endif
 
-            ! determine mass and enthalpy fractions
+            ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nm1) then
                 alpha = exp(-(froude(iflow)/2)**2)
                 fu = min(alpha, 1.0_eb)
@@ -98,6 +98,7 @@
                 xxtq = xxqu + xxql
             endif
 
+            ! determine mass and enthalpy fractions for the to room
             fl = 0.0_eb
             if (xxtmp<=zztemp(ito,lower)) fl = 1.0_eb
             fu = 1.0_eb - fl

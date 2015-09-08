@@ -161,7 +161,7 @@ Document identification and control consists of placing all project files in a c
 
 \section{Project Repository}
 
-CFAST and Smokeview make use of GitHub, a free service to support software development for open source applications. GitHub uses Git version control software. Under this system a centralized repository containing all project files resides on an external server.   A record of version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository.  
+CFAST and Smokeview make use of GitHub, a free service to support software development for open source applications. GitHub uses Git version control software. Under this system a centralized repository containing all project files resides on an external server.   A record of version number when a specific file was last changed is maintained. As an open source program, any individual can obtain a copy of the repository or retrieve specific versions of the repository.
 
 Each member of the CFAST development team has an account and password access~\footnote{Access to the CFAST repository is by means of two-factor identification.} to the CFAST repository. In addition, anonymous users can ``fork,'' or copy, the repository and receive the latest versions of the source code, manuals, and other items. These users may make changes to their own copy of the repository and can suggest these changes to the CFAST developers by means of a ``pull request.'' If the changes are approved by one of the developers, these changes then merge into the main branch of the repository.
 
@@ -230,7 +230,7 @@ Individual testing of model algorithms are made by the developers during any rev
 \item Examination of results of standard test cases included with the release version of the model. Any changes in the output from prior versions is explained (and documented in the software testing and validation results report) by modifications made to the model.
 
 \item For major new releases of the model, a complete suite of test cases should be compared to those from previous versions of the model.  At a minimum this includes the set of validation exercises described in NUREG 1824 \cite{NRCNUREG1824}, but may include additional example cases or validation exercises as appropriate.
-    
+
 \item For all changes to the model, an automated testing process is used that provides automatic error checking and collecting performance and accuracy statistics between CFAST revisions. Results of this process for release version of the model are included in the Verification and Validation Guide \cite{CFAST_Valid_Guide_7}.
 \end{itemize}
 
@@ -277,9 +277,9 @@ No specific training is identified for use of this SQAP.  Details of training re
 
 The primary risk management tool for software developed and released by NIST is the official NIST review process for software, documents, and other products of NIST. Official approval is required prior to release of the model for general use.
 
-\section{Summary}
+\chapter{Summary}
 
-This document describes the processes used during the development and deployment of the Consolidated Fire and Smoke Transport model (CFAST). This includes 
+This document describes the processes used during the development and deployment of the Consolidated Fire and Smoke Transport model (CFAST). This includes
 
 \begin{itemize}
 \item Relevant documentation for the model: a Technical Reference Guide \cite{CFAST_Tech_Guide_7}, a User's Guide \cite{CFAST_Users_Guide_7}, a Validation Guide \cite{CFAST_Valid_Guide_7}, this Configuration Management Guide, and publications by others on the accuracy of the model.
@@ -291,6 +291,8 @@ This document describes the processes used during the development and deployment
 \item Details of the review process used by the developers and NIST to ensure the quality of the model and related publications.
 
 \end{itemize}
+
+Besides formal internal and peer review, CFAST is subjected to continuous scrutiny because it is available free of charge to the general public and is used internationally by those involved in fire safety design and post-fire reconstruction. The quality of the CFAST and Smokeview User Guides is checked implicitly by the fact that the majority of model users do not require a formal CFAST-specific training course, but are able to read the supporting documents, perform a few sample simulations, and then systematically build up a level of expertise appropriate for their applications. The developers receive daily feedback from users on the clarity of the documentation and add clarifications when needed. Before new versions of the model are released, there is a  ``beta test'' period in which users test the new version using the updated documentation. This process is similar, although less formal, to that which most computer software programs undergo. Also, the source code for CFAST is released publicly, and has been used at various universities world-wide, both in the classroom as a teaching tool as well as for research. As a result, flaws in the theoretical development and the computer program itself have been identified and corrected. As CFAST continues to evolve, the user base will continue to serve as a means to evaluate the model. We consider this process as important to the development of CFAST as the formal internal and external peer-review processes.
 
 \backmatter
 

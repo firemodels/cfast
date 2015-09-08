@@ -10,6 +10,8 @@ set emailto=%4
 
 set fdsbasename=%fdsrepo%
 set cfastbasename=%cfastrepo%
+::set cfastbasename=%~n1
+::set fdsbasename=%~n2
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -31,6 +33,8 @@ erase %OUTDIR%\*.txt 1> Nul 2>&1
 
 set cfastroot=%userprofile%\%cfastbasename%
 set FDSroot=%userprofile%\%fdsbasename%
+::set cfastroot=%~f1
+::set FDSroot=%~f2
 
 set email=%FDSroot%\SMV\scripts\email.bat
 set emailexe=%userprofile%\bin\mailsend.exe

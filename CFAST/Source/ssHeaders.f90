@@ -119,7 +119,7 @@
     character(35) :: headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     logical tooutput(ns), molfrac(ns)
     data tooutput /9*.true.,.false.,.true./ 
-    data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
+    data molfrac /8*.true.,3*.false./
     integer position, i, j, lsp
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
@@ -130,8 +130,8 @@
        'C-T Product Lower Layer', 'Trace Species Lower Layer' / 
     data LabelsShort / 'Time', 'ULN2', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_',&
        'ULCT_', 'ULTS_', 'LLN2', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
-    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg', &
-       'mol %', 'mol %', 'mol %', 'PPM', 'PPM', 'PPM', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg' /
+    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg', &
+       'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg' /
 
     !  spreadsheet header.  Add time first
     if (validate) then
@@ -149,7 +149,7 @@
     do i = 1, nm1
         do j = upper, lower
             if (j==upper.or.izshaft(i)==0) then
-                do lsp = 1, NS
+                do lsp = 1, ns
                     if(tooutput(lsp)) then
                         position = position + 1
                         if (validate) then
@@ -223,7 +223,7 @@
         'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
 
     data LabelUnits / 's', 7*'C', 11*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
-    data frontorback / 'F_','B_'/
+    data frontorback / '','B_'/
 
     !  spreadsheet header.  Add time first
     if (validate) then

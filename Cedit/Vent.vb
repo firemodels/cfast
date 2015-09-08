@@ -16,13 +16,11 @@ Public Class Vent
     ' All units within the class are assumed to be consistent and typically SI
     Private aVentType As Integer                ' Type of vent; 0 = horizontal flow, 1 = vertical flow, 2 = mechanical flow
     Private aFirstCompartment As Integer        ' First of compartments connected by vent
-    Private aFirstOffset As Single              ' vent position along wall from end of first compartment for horizontal flow vents
-    Private aSecondCompartment As Integer       ' Second of compartments connected by vent
-    Private aSecondOffset As Single             ' Vent position along wall from end of second compartment for horizontal flow vents
+    Private aSecondCompartment As Integer       ' Vent position along wall from end of second compartment for horizontal flow vents
+    Private aOffset As Single                   ' vent position along wall from end of first compartment for horizontal flow vents
     Private aWidth As Single                    ' Width of the horizontal flow vent
     Private aSoffit As Single                   ' Soffit (top of vent) height from floor of first compartment for horizontal flow vents
-    Private aSill As Single                     ' Sill (bottom of vent) height from floor of first comparment for horizontal flow vents
-    Private aWindCosine As Single                ' Wind coefficient (cosine of angle of wind vector and vent opening) for horizontal flow vents
+    Private aSill As Single                     ' Sill (bottom of vent) height from floor of first comparment for horizontal flow vents               ' Wind coefficient (cosine of angle of wind vector and vent opening) for horizontal flow vents
     Private aInitialOpening As Single           ' Fraction vent is open at t=0 for horizontal flow vents
     Private aFace As Integer                    ' Defines which wall on which to display vent in Smokeview, 1 for front, 2 for left, 3 for back, 4 for right
     Private aFinalOpening As Single             ' EVENT vent opening fraction or HHEAT connected fraction
@@ -46,7 +44,6 @@ Public Class Vent
     Public Sub New()
         aFirstCompartment = -2
         aSecondCompartment = -2
-        aWindCosine = 1.0
         aInitialOpening = 1.0
         aFinalOpening = 1.0
         aFinalOpeningTime = 0.0
@@ -77,17 +74,29 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aFirstCompartment Then
                 aFirstCompartment = Value
+                Me.Offset = -1
                 aChanged = True
             End If
         End Set
     End Property
-    Public Property FirstOffset() As Single
+    Public Property Offset() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aFirstOffset)
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aOffset)
         End Get
         Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aFirstOffset Then
-                aFirstOffset = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+            If Value = -1 Then
+                If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
+                    Dim aCompartment As New Compartment
+                    aCompartment = myCompartments.Item(aFirstCompartment)
+                    If aFace = 1 Or aFace = 3 Then
+                        aOffset = aCompartment.RoomWidth / 2 - aWidth / 2
+                    Else
+                        aOffset = aCompartment.RoomDepth / 2 - aWidth / 2
+                    End If
+                End If
+
+            ElseIf myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffset Then
+                aOffset = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
@@ -99,17 +108,6 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aSecondCompartment Then
                 aSecondCompartment = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property SecondOffset() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aSecondOffset)
-        End Get
-        Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aSecondOffset Then
-                aSecondOffset = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
@@ -143,28 +141,6 @@ Public Class Vent
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aSoffit Then
                 aSoffit = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property WindAngle() As Single
-        Get
-            Return Math.Acos(aWindCosine) * 180.0 / Math.PI
-        End Get
-        Set(ByVal Value As Single)
-            If Math.Cos(Value * Math.PI / 180.0) <> aWindCosine Then
-                aWindCosine = Math.Cos(Value * Math.PI / 180.0)
-                aChanged = True
-            End If
-        End Set
-    End Property
-    Public Property WindCosine() As Single
-        Get
-            Return aWindCosine
-        End Get
-        Set(ByVal Value As Single)
-            If Value <> aWindCosine Then
-                aWindCosine = Value
                 aChanged = True
             End If
         End Set
@@ -209,6 +185,7 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aFace Then
                 aFace = Value
+                Me.Offset = -1
                 aChanged = True
             End If
         End Set
@@ -390,13 +367,11 @@ Public Class Vent
         ' Horizontal flow vent connection
         aVentType = TypeHVent
         aFirstCompartment = FirstCompartment
-        aFirstOffset = 0.0
+        aOffset = 0.0
         aSecondCompartment = SecondCompartment
-        aSecondOffset = 0.0
         aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Width)
         aSoffit = myUnits.Convert(UnitsNum.Length).ToSI(Soffit)
         aSill = myUnits.Convert(UnitsNum.Length).ToSI(Sill)
-        aWindCosine = 0.0
         aFace = 1
     End Sub
     Public Sub GetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
@@ -496,10 +471,6 @@ Public Class Vent
                                 HasErrors += 1
                             End If
                         End If
-                    End If
-                    If Me.WindAngle < 0.0 Or Me.WindAngle > 360.0 Then
-                        myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Angle of wind to vent opening is less than 0° or greater than 360°.", ErrorMessages.TypeFatal)
-                        HasErrors += 1
                     End If
                     If aInitialOpening < 0.0 Or aInitialOpening > 1.0 Then
                         myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Initial opening fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
@@ -637,13 +608,11 @@ Public Class VentCollection
         FromVent = CType(List.Item(indexFrom), Vent)
         ToVent.VentType = FromVent.VentType
         ToVent.FirstCompartment = FromVent.FirstCompartment
-        ToVent.FirstOffset = FromVent.FirstOffset
+        ToVent.Offset = FromVent.Offset
         ToVent.SecondCompartment = FromVent.SecondCompartment
-        ToVent.SecondOffset = FromVent.SecondOffset
         ToVent.Width = FromVent.Width
         ToVent.Soffit = FromVent.Soffit
         ToVent.Sill = FromVent.Sill
-        ToVent.WindAngle = FromVent.WindAngle
         ToVent.InitialOpening = FromVent.InitialOpening
         ToVent.Face = FromVent.Face
         ToVent.FinalOpening = FromVent.FinalOpening

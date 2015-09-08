@@ -97,14 +97,14 @@
             do j = 1, nrmfire
                 xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
                 yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
-                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
+                !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
                 ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
                 call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) 
-                !if(fheight+xfire(ifire+j-1,f_fire_zpos)>room_height(i))then
-                !    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (room_height(i)-xfire(ifire+j,f_fire_zpos))/3.0_eb
-                !else
-                !    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
-                !end if
+                if(fheight+xfire(ifire+j-1,f_fire_zpos)>room_height(i))then
+                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (room_height(i)-xfire(ifire+j,f_fire_zpos))/3.0_eb
+                else
+                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
+                end if
             end do
             if(.not.black)then
                if(option(frad)==4.or.lfbt==1)then
@@ -877,89 +877,89 @@
     !    rg = ideal gas constant (atm-m^3/mol-k)
 
     integer :: xco2, yco2, xh2o, yh2o
-    real(eb) :: tco2(co2xsize), plco2(co2ysize), eco2(co2xsize,co2ysize), th2o(h2oxsize), plh2o(h2oysize),&
-       eh2o(h2oxsize,h2oysize), mwco2, mwh2o, k, rhos, l, ng
-    real(eb) :: tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs, rg
+    real(eb) :: l, ng, tg, rtv, ag, plg, cplg, tglog, aco2, ah2o, vfs
 
     ! declare module data
 
     ! physical constants [mw in kg/mol; rg in m^3-atm/mol-kelvin]
     
-    data mwco2, mwh2o, rg, k, rhos /44.0088e-3_eb, 18.0153e-3_eb, 82.0562e-6_eb, 1195.5_eb, 1800.0_eb/
+    real(eb) :: mwco2 = 44.0088e-3_eb, mwh2o = 18.0153e-3_eb, rg = 82.0562e-6_eb, k = 1195.5_eb, rhos = 1800.0_eb
 
     ! log(t) data for co2 [t in k]
     
-    data tco2  /2.3010_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, 2.9031_eb, &
-       2.9542_eb,3.0000_eb, 3.3010_eb, 3.4771_eb        /
+    real(eb), dimension(co2xsize) :: tco2 = (/2.3010_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, &
+        2.8451_eb, 2.9031_eb, 2.9542_eb, 3.0000_eb, 3.3010_eb, 3.4771_eb /)
 
     ! log(pl) data for co2 [pl in atm-m]
     
-    data plco2 /-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, -1.0000_eb, -0.6990_eb, &
-       -0.3979_eb,  0.0000_eb,  0.3010_eb,  0.6021_eb/
+    real(eb), dimension(co2ysize) :: plco2 = (/-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, &
+        -1.3979_eb, -1.0000_eb, -0.6990_eb, -0.3979_eb,  0.0000_eb,  0.3010_eb,  0.6021_eb /)
 
     ! log(emiss) data for co2 [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
     
-    data eco2  /-1.8508_eb, -1.8416_eb, -1.8508_eb, -1.7799_eb, -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6990_eb, -1.7399_eb,&
-       -2.3706_eb, -2.8996_eb, &
-    -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6308_eb, -1.5498_eb, -1.5302_eb, -1.5302_eb, -1.5498_eb, -1.5800_eb, -2.1002_eb,&
-       -2.6108_eb, &
-    -1.5406_eb, -1.5200_eb, -1.5498_eb, -1.4895_eb, -1.4401_eb, -1.3904_eb, -1.3904_eb, -1.4101_eb, -1.4202_eb, -1.8894_eb, &
-       -2.3002_eb, &
-    -1.3799_eb, -1.3298_eb, -1.3497_eb, -1.3298_eb, -1.2700_eb, -1.2403_eb, -1.2403_eb, -1.2503_eb, -1.2700_eb, -1.6596_eb,&
-       -2.0400_eb, &
-    -1.2403_eb, -1.2000_eb, -1.2403_eb, -1.2104_eb, -1.1599_eb, -1.1403_eb, -1.1302_eb, -1.1403_eb, -1.1500_eb, -1.5200_eb,&
-       -1.8894_eb, &
-    -1.1403_eb, -1.1002_eb, -1.1403_eb, -1.1203_eb, -1.0799_eb, -1.0400_eb, -1.0301_eb, -1.0301_eb, -1.0600_eb, -1.3799_eb,&
-       -1.7305_eb, &
-    -1.0400_eb, -0.9914_eb, -1.0200_eb, -1.0200_eb, -0.9706_eb, -0.9547_eb, -0.9431_eb, -0.9355_eb, -0.9431_eb, -1.1599_eb,&
-       -1.4802_eb, &
-    -0.9914_eb, -0.9431_eb, -0.9547_eb, -0.9508_eb, -0.9136_eb, -0.8827_eb, -0.8666_eb, -0.8539_eb, -0.8601_eb, -1.1002_eb,&
-       -1.3706_eb, &
-    -0.9355_eb, -0.8697_eb, -0.8928_eb, -0.8827_eb, -0.8477_eb, -0.8097_eb, -0.7932_eb, -0.7852_eb, -0.7932_eb, -1.0000_eb,&
-       -1.2700_eb, &
-    -0.8762_eb, -0.8013_eb, -0.8097_eb, -0.8013_eb, -0.7645_eb, -0.7352_eb, -0.7100_eb, -0.6990_eb, -0.6990_eb, -0.8962_eb&
-       , -1.1331_eb, &
-    -0.8297_eb, -0.7496_eb, -0.7645_eb, -0.7472_eb, -0.7055_eb, -0.6696_eb, -0.6421_eb, -0.6326_eb, -0.6402_eb, -0.8097_eb,&
-       -1.0301_eb, &
-    -0.8013_eb, -0.7144_eb, -0.7144_eb, -0.6840_eb, -0.6478_eb, -0.6108_eb, -0.5884_eb, -0.5817_eb, -0.5817_eb, -0.7352_eb,&
-       -0.9431_eb  /
+    real(eb), dimension(co2xsize,co2ysize) :: eco2 = &
+      (/-1.8508_eb, -1.8416_eb, -1.8508_eb, -1.7799_eb, -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6990_eb, -1.7399_eb, &
+        -2.3706_eb, -2.8996_eb, &
+        -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6308_eb, -1.5498_eb, -1.5302_eb, -1.5302_eb, -1.5498_eb, -1.5800_eb, &
+        -2.1002_eb, -2.6108_eb, &
+        -1.5406_eb, -1.5200_eb, -1.5498_eb, -1.4895_eb, -1.4401_eb, -1.3904_eb, -1.3904_eb, -1.4101_eb, -1.4202_eb, &
+        -1.8894_eb, -2.3002_eb, &
+        -1.3799_eb, -1.3298_eb, -1.3497_eb, -1.3298_eb, -1.2700_eb, -1.2403_eb, -1.2403_eb, -1.2503_eb, -1.2700_eb, &
+        -1.6596_eb, -2.0400_eb, &
+        -1.2403_eb, -1.2000_eb, -1.2403_eb, -1.2104_eb, -1.1599_eb, -1.1403_eb, -1.1302_eb, -1.1403_eb, -1.1500_eb, &
+        -1.5200_eb, -1.8894_eb, &
+        -1.1403_eb, -1.1002_eb, -1.1403_eb, -1.1203_eb, -1.0799_eb, -1.0400_eb, -1.0301_eb, -1.0301_eb, -1.0600_eb, &
+        -1.3799_eb, -1.7305_eb, &
+        -1.0400_eb, -0.9914_eb, -1.0200_eb, -1.0200_eb, -0.9706_eb, -0.9547_eb, -0.9431_eb, -0.9355_eb, -0.9431_eb, &
+        -1.1599_eb, -1.4802_eb, &
+        -0.9914_eb, -0.9431_eb, -0.9547_eb, -0.9508_eb, -0.9136_eb, -0.8827_eb, -0.8666_eb, -0.8539_eb, -0.8601_eb, &
+        -1.1002_eb, -1.3706_eb, &
+        -0.9355_eb, -0.8697_eb, -0.8928_eb, -0.8827_eb, -0.8477_eb, -0.8097_eb, -0.7932_eb, -0.7852_eb, -0.7932_eb, &
+        -1.0000_eb, -1.2700_eb, &
+        -0.8762_eb, -0.8013_eb, -0.8097_eb, -0.8013_eb, -0.7645_eb, -0.7352_eb, -0.7100_eb, -0.6990_eb, -0.6990_eb, &
+        -0.8962_eb, -1.1331_eb, &
+        -0.8297_eb, -0.7496_eb, -0.7645_eb, -0.7472_eb, -0.7055_eb, -0.6696_eb, -0.6421_eb, -0.6326_eb, -0.6402_eb, &
+        -0.8097_eb, -1.0301_eb, &
+        -0.8013_eb, -0.7144_eb, -0.7144_eb, -0.6840_eb, -0.6478_eb, -0.6108_eb, -0.5884_eb, -0.5817_eb, -0.5817_eb, &
+        -0.7352_eb, -0.9431_eb  /)
 
     !log(t) data for h2o [t in k]
     
-    data th2o  /2.3201_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, 2.9031_eb, 2.9542_eb,3.0000_eb, &
-       3.3010_eb, 3.4771_eb/
+    real(eb), dimension(h2oxsize) :: th2o = (/2.3201_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, &
+        2.9031_eb, 2.9542_eb, 3.0000_eb, 3.3010_eb, 3.4771_eb /)
 
     ! log(pl) data for h2o [pl in atm-m]
     
-    data plh2o /-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, -1.0000_eb, -0.6990_eb,-0.3979_eb, &
-       0.0000_eb,  0.3010_eb,  0.6021_eb/
+    real(eb), dimension(h2oysize) :: plh2o = (/-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, &
+        -1.0000_eb, -0.6990_eb, -0.3979_eb, 0.0000_eb,  0.3010_eb,  0.6021_eb /)
 
     ! log(emiss) data for h2o [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
     
-    data eh2o  /-1.1500_eb, -1.5200_eb, -1.7496_eb, -1.8996_eb, -2.0000_eb, -2.1002_eb, -2.1898_eb, -2.2798_eb, -2.3706_eb, &
-       -3.0555_eb, -3.4437_eb, &
-    -1.0200_eb, -1.3298_eb, -1.5302_eb, -1.6596_eb, -1.7595_eb, -1.8416_eb, -1.9208_eb, -2.0000_eb, -2.0799_eb, -2.7496_eb,&
-       -3.1871_eb, &
-    -0.8962_eb, -1.1701_eb, -1.3242_eb, -1.4597_eb, -1.5406_eb, -1.6003_eb, -1.6596_eb, -1.7305_eb, -1.7905_eb, -2.4202_eb,&
-       -2.8794_eb, &
-    -0.7696_eb, -1.0000_eb, -1.1302_eb, -1.2204_eb, -1.3002_eb, -1.3497_eb, -1.4001_eb, -1.4401_eb, -1.4802_eb, -1.9914_eb,&
-       -2.5200_eb, &
-    -0.6402_eb, -0.8729_eb, -0.9957_eb, -1.0799_eb, -1.1302_eb, -1.1701_eb, -1.2104_eb, -1.2503_eb, -1.2899_eb, -1.6904_eb,&
-       -2.1500_eb, &
-    -0.5884_eb, -0.7645_eb, -0.8729_eb, -0.9355_eb, -0.9788_eb, -1.0200_eb, -1.0400_eb, -1.0701_eb, -1.1002_eb, -1.4101_eb,&
-       -1.8210_eb, &
-    -0.5003_eb, -0.6556_eb, -0.7258_eb, -0.7545_eb, -0.7932_eb, -0.8153_eb, -0.8447_eb, -0.8665_eb, -0.8894_eb, -1.0799_eb,&
-       -1.4401_eb, &
-    -0.4437_eb, -0.5670_eb, -0.6271_eb, -0.6402_eb, -0.6517_eb, -0.6696_eb, -0.6861_eb, -0.6990_eb, -0.7190_eb, -0.8729_eb,&
-       -1.1403_eb, &
-    -0.3936_eb, -0.5086_eb, -0.5302_eb, -0.5376_eb, -0.5482_eb, -0.5528_eb, -0.5670_eb, -0.5719_eb, -0.5817_eb, -0.7122_eb,&
-       -0.9431_eb, &
-    -0.3458_eb, -0.4295_eb, -0.4401_eb, -0.4365_eb, -0.4401_eb, -0.4413_eb, -0.4510_eb, -0.4535_eb, -0.4584_eb, -0.5376_eb,&
-       -0.7144_eb, &
-    -0.2958_eb, -0.3686_eb, -0.3686_eb, -0.3645_eb, -0.3645_eb, -0.3686_eb, -0.3706_eb, -0.3757_eb, -0.3757_eb, -0.4510_eb,&
-       -0.5952_eb, &
-    -0.2620_eb, -0.3307_eb, -0.3233_eb, -0.3045_eb, -0.3010_eb, -0.3045_eb, -0.3045_eb, -0.3054_eb, -0.3080_eb, -0.3605_eb,&
-    -0.5086_eb /
+    real(eb), dimension(h2oxsize,h2oysize) :: eh2o = &
+      (/-1.1500_eb, -1.5200_eb, -1.7496_eb, -1.8996_eb, -2.0000_eb, -2.1002_eb, -2.1898_eb, -2.2798_eb, -2.3706_eb, &
+        -3.0555_eb, -3.4437_eb, &
+        -1.0200_eb, -1.3298_eb, -1.5302_eb, -1.6596_eb, -1.7595_eb, -1.8416_eb, -1.9208_eb, -2.0000_eb, -2.0799_eb, &
+        -2.7496_eb, -3.1871_eb, &
+        -0.8962_eb, -1.1701_eb, -1.3242_eb, -1.4597_eb, -1.5406_eb, -1.6003_eb, -1.6596_eb, -1.7305_eb, -1.7905_eb, &
+        -2.4202_eb, -2.8794_eb, &
+        -0.7696_eb, -1.0000_eb, -1.1302_eb, -1.2204_eb, -1.3002_eb, -1.3497_eb, -1.4001_eb, -1.4401_eb, -1.4802_eb, &
+        -1.9914_eb, -2.5200_eb, &
+        -0.6402_eb, -0.8729_eb, -0.9957_eb, -1.0799_eb, -1.1302_eb, -1.1701_eb, -1.2104_eb, -1.2503_eb, -1.2899_eb, &
+        -1.6904_eb, -2.1500_eb, &
+        -0.5884_eb, -0.7645_eb, -0.8729_eb, -0.9355_eb, -0.9788_eb, -1.0200_eb, -1.0400_eb, -1.0701_eb, -1.1002_eb, &
+        -1.4101_eb, -1.8210_eb, &
+        -0.5003_eb, -0.6556_eb, -0.7258_eb, -0.7545_eb, -0.7932_eb, -0.8153_eb, -0.8447_eb, -0.8665_eb, -0.8894_eb, &
+        -1.0799_eb, -1.4401_eb, &
+        -0.4437_eb, -0.5670_eb, -0.6271_eb, -0.6402_eb, -0.6517_eb, -0.6696_eb, -0.6861_eb, -0.6990_eb, -0.7190_eb, &
+        -0.8729_eb, -1.1403_eb, &
+        -0.3936_eb, -0.5086_eb, -0.5302_eb, -0.5376_eb, -0.5482_eb, -0.5528_eb, -0.5670_eb, -0.5719_eb, -0.5817_eb, &
+        -0.7122_eb, -0.9431_eb, &
+        -0.3458_eb, -0.4295_eb, -0.4401_eb, -0.4365_eb, -0.4401_eb, -0.4413_eb, -0.4510_eb, -0.4535_eb, -0.4584_eb, &
+        -0.5376_eb, -0.7144_eb, &
+        -0.2958_eb, -0.3686_eb, -0.3686_eb, -0.3645_eb, -0.3645_eb, -0.3686_eb, -0.3706_eb, -0.3757_eb, -0.3757_eb, &
+        -0.4510_eb, -0.5952_eb, &
+        -0.2620_eb, -0.3307_eb, -0.3233_eb, -0.3045_eb, -0.3010_eb, -0.3045_eb, -0.3045_eb, -0.3054_eb, -0.3080_eb, &
+        -0.3605_eb, -0.5086_eb  /)
 
     ! calculate layer-specific factors
     

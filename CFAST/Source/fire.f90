@@ -281,8 +281,6 @@
     do lsp = 1, 9
         xtemp = xtemp + stmass(lower,lsp)
     end do
-    ! including the trace species
-    xtemp = xtemp + stmass(lower,11)
     if(xtemp==0.0_eb) xtemp = 1.0_eb
     do lsp = 1, ns
         if (activs(lsp)) then
@@ -433,7 +431,7 @@
     net_hcl = pyrolysis_rate_constrained*nu_hcl*0.036458_eb/molar_mass
     net_hcn = pyrolysis_rate_constrained*nu_hcn*0.027028_eb/molar_mass
     net_soot = pyrolysis_rate_constrained*nu_soot*0.01201_eb/molar_mass
-    net_ct = pyrolysis_rate_constrained
+    net_ct = 0.0_eb
 
     ! set mass "generation" rates in the cfast structure for species
     species_rates(2) = net_o2
@@ -1270,13 +1268,11 @@
     
     real(eb) :: aweigh(ns), air(2), v(2), aweigh7, avagad
     integer i, k, lsp
-    logical ppmcal(ns)
 
     ! aweigh's are molar weights of the species, avagad is the reciprocal
     ! of avagadro's number (so you can't have less than an atom of a species
     data aweigh, aweigh7 /28.0_eb, 32.0_eb, 44.0_eb, 28.0_eb, 27.0_eb, 37.0_eb, 12.0_eb, 18.0_eb, 12.0_eb, 0.0_eb, 0.0_eb, 12.0_eb/
     data avagad /1.66e-24_eb/
-    data ppmcal /3*.false., 3*.true., 5*.false./
     aweigh(7) = aweigh7*(1.0_eb+hcratt)
 
     do i = 1, nm1
@@ -1290,7 +1286,7 @@
             air(k) = max(avagad,air(k))
         end do
 
-        ! calcluate the mass density in kg/m^3
+        ! calculate the mass density in kg/m^3
         do lsp = 1, ns
             if (activs(lsp)) then
                 do k = upper, lower
@@ -1299,15 +1295,11 @@
             endif
         end do
 
-        ! calculate the molar density
+        ! calculate the molar density in percent
         do lsp = 1, 8
             if (activs(lsp)) then
                 do k = upper, lower
-                    if (ppmcal(lsp)) then
-                        toxict(i,k,lsp) = 1.0e+6_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
-                    else
-                        toxict(i,k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
-                    endif
+                    toxict(i,k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
                 end do
             endif
         end do
@@ -1465,7 +1457,8 @@
                     tmpob(2,iobj) = tnobj + dt
                 endif
             else if (ignflg==2) then
-                call check_object_ignition(told,dt,xxtarg(idx_tempf_trg,itarg),objcri(3,iobj),obcond(igntemp,iobj),&
+                targptr => targetinfo(itarg)
+                call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),objcri(3,iobj),obcond(igntemp,iobj),&
                    iobj,ifobj,tobj,tmpob(1,iobj))
             else if (ignflg==3) then
                 targptr => targetinfo(itarg)
@@ -1484,7 +1477,7 @@
                 itarg = obtarg(iobj)
                 if (ignflg>1) then 
                     targptr => targetinfo(itarg)
-                    obcond(igntemp,iobj) = xxtarg(idx_tempf_trg,itarg)
+                    obcond(igntemp,iobj) = targptr%temperature(idx_tempf_trg)
                     obcond(ignflux,iobj) = targptr%flux_front
                 end if
                 if (iflag==set_detector_state.and.tmpob(1,iobj)>0.0_eb) then

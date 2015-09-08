@@ -227,7 +227,7 @@
     integer :: length, i, j, layer, ic, lsp
 
     data lnames /'UPPER', 'LOWER'/
-    data sunits /'(%)', '(%)', '(%)', '(ppm)', '(ppm)', '(ppm)','(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/
+    data sunits /8*'(%)', '(1/m)', '(g-min/m3)', ' kg '/
     data stype /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/
     if (nlspct/=0) then
         do i = 1, nwal
@@ -514,12 +514,13 @@
     use cfast_main
     use cshell
     use fltarget
+    use target_routines, only: target_nodes
     implicit none
 
     integer, intent(in) :: itprt
     
-    integer :: length, i, iw, itarg, itctemp
-    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp
+    integer :: length, i, iw, itarg, itctemp, inode
+    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp, tmp(nnodes_trg), depth
     
     type(target_type), pointer :: targptr
 
@@ -530,6 +531,9 @@
 
     if ((itprt==0.and.ntarg<=nm1).or.ntarg==0) return
     write (iofilo,5000)
+    
+    call target_nodes(tmp)
+    
     do i=1,nm1
         write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
 
@@ -537,11 +541,17 @@
             targptr => targetinfo(itarg)
             if (targptr%room==i) then
                 tg = tgtarg(itarg)
-                tttemp = xxtarg(idx_tempf_trg,itarg)
-                itctemp = (idx_tempf_trg+idx_tempb_trg)/2
-                if (ixtarg(trgeq,itarg)==cylpde) itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
-                tctemp = xxtarg(itctemp,itarg)
-                if (targptr%trgmeth==steady) tctemp = tttemp
+                tttemp = targptr%temperature(idx_tempf_trg)
+                depth = 0.0
+                do inode = 2, nnodes_trg
+                    if (depth>targptr%thickness*targptr%depth_loc) then
+                        tctemp = (targptr%temperature(inode-1)+targptr%temperature(inode))/2
+                        itctemp = inode
+                        exit
+                    end if
+                    depth = depth + targptr%thickness*tmp(inode-1)
+                end do
+                if (targptr%method==steady) tctemp = tttemp
                 if (validate.or.netheatflux) then
                     total = targptr%flux_net_gauge(1)
                     ftotal = targptr%flux_fire(1)
@@ -561,10 +571,10 @@
                 if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
                 if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
-                    write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                    write(iofilo,5030) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
                         tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
                 else
-                    write(iofilo,5030) targetnames(itarg), tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                    write(iofilo,5030) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
                 endif
             endif
         end do
@@ -660,7 +670,7 @@
         call outcomp
         call outvent
         call outthe
-        call outtarg (1)
+        call outtarg
         call outfire
     endif
 
@@ -1027,7 +1037,7 @@
 
 ! --------------------------- outtarg -------------------------------------------
 
-    subroutine outtarg (isw)
+    subroutine outtarg
 
     !      description:  output initial test case target specifications
 
@@ -1035,32 +1045,20 @@
     use cshell
     use fltarget
     implicit none
-
-    integer, intent(in) :: isw
     
     integer :: itarg, j
-
-    character cbuf*255
     
     type(target_type), pointer :: targptr
 
     if(ntarg/=0) write(iofilo,5000)
-5000 format(//,'TARGETS',//,'Target',T9,'Compartment',T24,'Position (x, y, z)',T51,&
-         'Direction (x, y, z)',T76,'Material',/,82('-'))
+5000 format(//,'TARGETS',//,'Target',T29,'Compartment',T44,'Position (x, y, z)',T71,&
+         'Direction (x, y, z)',T96,'Material',/,102('-'))
 
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if (itarg<ntarg-nm1+1) then
-            cbuf = cxtarg(itarg)
-        else if (itarg>=ntarg-nm1+1.and.isw/=1) then
-            write (cbuf,5004) itarg-(ntarg-nm1)
-        else 
-            writE (CBUF,5005) CXTARG(ITARG),ITARG-(NTARG-NM1)
-        endif
-5004    format ('Floor, compartment ',I2)
-5005    format (A8,'  Floor, compartment ',I2)
-        write(iofilo,5010) itarg, compartmentnames(targptr%room), (targptr%center(j),j=1,3),(targptr%normal(j),j=1,3),cbuf(1:8)
-5010    format(i5,t11,a14,t21,6(f7.2,2x),t76,a8)
+!        write(iofilo,5010) itarg, targptr%name, compartmentnames(targptr%room), (targptr%center(j),j=1,3), &
+!            (targptr%normal(j),j=1,3), targptr%material
+5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
     end do
     return
     end subroutine outtarg
@@ -1412,6 +1410,7 @@
     use cenviro
     use cfast_main
     use cshell
+    use fltarget, only: targetinfo
     use params
     use wnodes
     implicit none
@@ -1426,6 +1425,8 @@
        '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
     save bmap
+    
+    type(target_type), pointer :: targptr
 
     !     debug printing
     if (firstc) then
@@ -1540,7 +1541,8 @@
         if(ntarg>0)then
             write(*,6090)
             do itarg = 1, ntarg
-                write(*,6095)itarg,xxtarg(idx_tempf_trg,itarg)
+                targptr => targetinfo(itarg)
+                write(*,6095) itarg, targptr%temperature(idx_tempf_trg)
             end do
         endif
     endif

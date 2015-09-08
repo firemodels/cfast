@@ -129,6 +129,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     do i = 1, nsliceinfo
        sf=>sliceinfo(i)
        
+       if(sf%skip.eq.1)cycle
        write(13,"(a,1x,i3,' &',6(i4,1x))")"SLCF",sf%roomnum,sf%ijk(1),sf%ijk(2),sf%ijk(3),sf%ijk(4),sf%ijk(5),sf%ijk(6)
        write(13,"(1x,a)")trim(sf%filename)
        write(13,"(1x,a)")trim(sf%menu_label)
@@ -184,15 +185,13 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     end if
 
     ! target devices
-    if (ntarg>nrooms) then
-        do i = 1, ntarg-nrooms
+        do i = 1, ntarg
             write(13,"(a)") "DEVICE"
             write(13,"(a)") "TARGET"
             call getabstarget(i,targetvector)
             write(13,36) targetvector,0,0
 36          format(1x,6f10.2,2i6)
         end do
-    endif
 
     write(13,"(a)") "TIME"
     write(13,40) nscount, stime
@@ -297,6 +296,7 @@ subroutine output_slicedata(time,first_time)
       sf => sliceinfo(i)
       rm => roominfo(sf%roomnum)
       
+      if(sf%skip.eq.1)cycle
       nx = sf%ijk(2) + 1 - sf%ijk(1)
       ny = sf%ijk(4) + 1 - sf%ijk(3)
       nz = sf%ijk(6) + 1 - sf%ijk(5)

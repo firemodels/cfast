@@ -645,16 +645,16 @@
 
                 ! target name
                 if (countargs(lcarray)>=12) then
-                    targetnames(ntarg) = lcarray(12)
+                    targptr%name = lcarray(12)
                 else
-                    write (targetnames(ntarg),'(a5,i0)') 'Targ ', ntarg
+                    write (targptr%name,'(a5,i0)') 'Targ ', ntarg
                 end if
 
                 ! material type
                 tcname = lcarray(8)
                 if(tcname==' ') tcname='DEFAULT'
-                cxtarg(ntarg) = tcname
-                ixtarg(trgwall,ntarg) = 0
+                targptr%material = tcname
+                targptr%wall = 0
 
                 ! solution method
                 method = ' '
@@ -662,12 +662,12 @@
                 call upperall(method,method)
                 if(method/=' ')then
                     if(method(1:3)=='STE') then
-                        targptr%trgmeth = STEADY
+                        targptr%method = STEADY
                         method = ' '
                     elseif (method(1:3)=='IMP') then
-                        targptr%trgmeth = MPLICIT
+                        targptr%method = MPLICIT
                     elseif (method(1:3)=='EXP') then
-                        targptr%trgmeth = XPLICIT
+                        targptr%method = XPLICIT
                     else
                         write(logerr,912) method
                         stop
@@ -680,12 +680,13 @@
                 call upperall(eqtype,eqtype)
                 if(eqtype/=' '.and.method/=' ')then
                     if (eqtype(1:3)=='ODE') then
-                        ixtarg(trgeq,ntarg) = pde
+                        targptr%equaton_type = pde
                         write (logerr,913) 'Warning', eqtype
                     elseif (eqtype(1:3)=='PDE') then
-                        ixtarg(trgeq,ntarg) = pde
+                        targptr%equaton_type = pde
                     elseif (eqtype(1:3)=='CYL') then
-                        ixtarg(trgeq,ntarg) = cylpde
+                        targptr%equaton_type = cylpde
+                        targptr%method = XPLICIT
                     else
                         write(logerr,913) 'Error',eqtype
                         stop
@@ -765,7 +766,8 @@
                 obtarg(obpnt) = 0
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                     do i = 1,ntarg
-                        if (targetnames(i)==lcarray(8)) obtarg(obpnt) = i
+                        targptr => targetinfo(i)
+                        if (targptr%name==lcarray(8)) obtarg(obpnt) = i
                     end do
                     if (obtarg(obpnt)==0) then
                         write (logerr,5324) obpnt
@@ -1198,7 +1200,7 @@
         ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
         ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation 
         ! for flow through the external nodes
-        duct_length(ndt) = 1.0_eb
+        duct_length(ndt) = 0.0_eb
         eff_duct_diameter(ndt) = lrarray(6)
         ibrd(ndt) = nbr
 
@@ -2162,6 +2164,7 @@
    type(visual_type), pointer :: vptr
    integer :: ntypes, ir, ibeg, iend
    real(eb) :: position_offset
+   integer skipslice
 
 
    nsliceinfo = 0
@@ -2250,6 +2253,7 @@
            ijkslice(4) = rm%jbar
            ijkslice(5) = 0
            ijkslice(6) = rm%kbar
+           skipslice=0
            if(vptr%vtype.eq.1)then
                position_offset = 0.0_eb
                if(vptr%axis.eq.1)then
@@ -2257,24 +2261,28 @@
                    xb(1) = vptr%position + position_offset
                    xb(2) = vptr%position + position_offset
                    ijkslice(1) = get_igrid(xb(1),rm%xplt,rm%ibar)
+                   if(ijkslice(1)<0)skipslice=1
                    ijkslice(2) = ijkslice(1)
                else if(vptr%axis.eq.2)then
                    if(ir/=0) position_offset = rm%y0
                    xb(3) = vptr%position + position_offset
                    xb(4) = vptr%position + position_offset
                    ijkslice(3) = get_igrid(xb(3),rm%yplt,rm%jbar)
+                   if(ijkslice(3)<0)skipslice=1
                    ijkslice(4) = ijkslice(3)
                else if(vptr%axis.eq.3)then
                    if(ir/=0) position_offset = rm%z0
                    xb(5) = vptr%position + position_offset
                    xb(6) = vptr%position + position_offset
                    ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
+                   if(ijkslice(5)<0)skipslice=1
                    ijkslice(6) = ijkslice(5)
                endif
            endif
            do j = 1, 5
                sliceptr => sliceinfo(islice)
 
+               sliceptr%skip=skipslice
                write(slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
                if(j.eq.1)then
                    menu_label="Temperature"

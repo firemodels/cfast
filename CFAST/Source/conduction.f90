@@ -263,8 +263,8 @@ module conduction_routines
     do islab = 2, nslab
         nintx = numnode(islab)
         ibreak = ibreak + nintx + 1
-        b(ibreak) = wspec(islab-1)*wrho(islab-1)/walldx(ibreak-1)
-        c(ibreak) = wspec(islab)*wrho(islab)/walldx(ibreak)
+        b(ibreak) = wk(islab-1)/walldx(ibreak-1)
+        c(ibreak) = wk(islab)/walldx(ibreak)
         a(ibreak) = -(b(ibreak)+c(ibreak))
         tnew(ibreak) = 0.0_eb
     end do

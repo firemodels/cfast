@@ -11,18 +11,19 @@
 
 VPATH = Source
 
-GIT_HASH := $(shell git describe --long --dirty)
-GIT_DATE := $(shell git log -1 --format=%cd)
-GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)\" -DGITDATE_PP=\""$(GIT_DATE)\""
-
 ifeq ($(shell echo "check_quotes"),"check_quotes")
 # windows
+  GIT_HASH := $(shell ..\scripts\githash)
+  GIT_DATE := $(shell ..\scripts\gitlog)
   BUILD_DATE := $(shell date /t) $(shell time /t)
 else
 # linux/osx
+  GIT_HASH := $(shell git describe --long --dirty)
+  GIT_DATE := $(shell git log -1 --format=%cd)
   BUILD_DATE := $(shell date "+%b %d, %Y  %T")
 endif
 
+GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)\" -DGITDATE_PP=\""$(GIT_DATE)\""
 GITINFO=-fpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 
@@ -31,15 +32,15 @@ GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 # Definition of the object variables
 
 objf = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_int.o initialization.o input.o numerics.o \
-              output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
-              convection.o conduction.o cyl_conduct.o target.o radiation.o \
+              outputsmv.o outputspreadsheet.o ssHeaders.o \
+              convection.o conduction.o cyl_conduct.o target.o output.o radiation.o \
               fire.o flowfan.o flowhorizontal.o flowvertical.o cfast.o 
 
 objwin = $(objf:.o=.obj)
 
 objfgnu = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_gnu.o initialization.o input.o numerics.o \
-              output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
-              convection.o conduction.o cyl_conduct.o radiation.o target.o \
+              outputsmv.o outputspreadsheet.o ssHeaders.o \
+              convection.o conduction.o cyl_conduct.o target.o output.o radiation.o \
               fire.o flowfan.o flowhorizontal.o flowvertical.o cfast.o 
 
 
@@ -120,7 +121,7 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # gnu osx
-gnu_osx : FFLAGS = -O2 $(GITINFO)
+gnu_osx : FFLAGS = -O2 $(GITINFOGNU)
 gnu_osx : FCOMPL = gfortran
 gnu_osx : LFLAGS = 
 gnu_osx : obj = cfast7_gnu_osx

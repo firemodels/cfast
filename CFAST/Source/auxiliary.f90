@@ -1282,7 +1282,11 @@ integer function get_igrid (x,xgrid,n)
          return
       endif
    end do
-   get_igrid=n
+   if(xgrid(n).eq.x)then
+     get_igrid=n
+   else
+     get_igrid=-1
+   endif
    return
 end function get_igrid   
 

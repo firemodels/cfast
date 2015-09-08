@@ -274,16 +274,16 @@
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         tgtemp = tgtarg(itarg)
-        if (ixtarg(trgeq,itarg)==cylpde) then
-            tttemp = xxtarg(idx_tempb_trg,itarg)
-            itctemp = idx_tempf_trg+ targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
-            tctemp = xxtarg(itctemp,itarg)
+        if (targptr%equaton_type==cylpde) then
+            tttemp = targptr%temperature(idx_tempb_trg)
+            itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
+            tctemp = targptr%temperature(itctemp)
         else
-            tttemp = xxtarg(idx_tempf_trg,itarg)
+            tttemp = targptr%temperature(idx_tempf_trg)
             itctemp = (idx_tempf_trg+idx_tempb_trg)/2
-            tctemp = xxtarg(itctemp,itarg)
+            tctemp = targptr%temperature(itctemp)
         endif
-        if (targptr%trgmeth==steady) tctemp = tttemp
+        if (targptr%method==steady) tctemp = tttemp
             
         call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
@@ -302,19 +302,19 @@
         call SSaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
         ! back surface
         if (validate) then
-            tttemp = xxtarg(idx_tempb_trg,itarg)
+            tttemp = targptr%temperature(idx_tempb_trg)
             call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
-            call SSaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_surface(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_gas(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_target(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_net_gauge(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_radiation_gauge(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_convection_gauge(1) / 1000._eb, outarray)
-            call SSaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_net(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_radiation(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_convection(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_fire(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_surface(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_gas(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_target(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_net_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_radiation_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_convection_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_target_gauge(2) / 1000._eb, outarray)
         end if
     end do
 
@@ -363,7 +363,7 @@
     logical :: tooutput(ns),  molfrac(ns), firstc
     
     data tooutput /9*.true.,.false.,.true./ 
-    data molfrac /3*.true.,3*.false.,2*.true.,3*.false./
+    data molfrac /8*.true.,3*.false./
     data firstc /.true./
 
     save outarray, firstc

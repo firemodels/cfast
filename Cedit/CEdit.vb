@@ -1095,7 +1095,7 @@ Public Class CeditMain
         Me.GroupBox8.Size = New System.Drawing.Size(392, 227)
         Me.GroupBox8.TabIndex = 11
         Me.GroupBox8.TabStop = False
-        Me.GroupBox8.Text = "Simulaiton Conditions"
+        Me.GroupBox8.Text = "Simulation Conditions"
         '
         'EnvAdiabatic
         '
@@ -2781,6 +2781,7 @@ Public Class CeditMain
         Me.FireSummary.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
         Me.FireSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.FireSummary.ColumnInfo = resources.GetString("FireSummary.ColumnInfo")
+        Me.FireSummary.ExtendLastCol = True
         Me.FireSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.FireSummary.Location = New System.Drawing.Point(168, 16)
         Me.FireSummary.Name = "FireSummary"
@@ -5214,7 +5215,7 @@ Public Class CeditMain
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
-            If sender Is Me.HVentOffset Then aVent.FirstOffset = Val(Me.HVentOffset.Text)
+            If sender Is Me.HVentOffset Then aVent.Offset = Val(Me.HVentOffset.Text)
             If sender Is Me.HVentSill Then aVent.Sill = Val(Me.HVentSill.Text)
             If sender Is Me.HVentSoffit Then aVent.Soffit = Val(Me.HVentSoffit.Text)
             If sender Is Me.HVentWidth Then aVent.Width = Val(Me.HVentWidth.Text)

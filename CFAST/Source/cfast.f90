@@ -1657,7 +1657,7 @@
         ieq = 0
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
-            if(targptr%trgmeth==mplicit)then
+            if(targptr%method==mplicit)then
                 ieq = ieq + 1
                 iztarg(itarg) = ieq
             else
@@ -1801,9 +1801,9 @@
             ylay = zzhlay(iroom,lower)
             ytarg = targptr%center(3)
             if(ytarg>=ylay)then
-                ixtarg(trglayer,itarg) = upper
+                targptr%layer = upper
             else
-                ixtarg(trglayer,itarg) = lower
+                targptr%layer = lower
             endif
         end do
 
@@ -1812,9 +1812,13 @@
 
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
-            if(targptr%trgmeth==mplicit) then
+            if(targptr%method==mplicit) then
                 ieq = iztarg(itarg)
-                xxtarg(idx_tempf_trg,itarg) = p(ieq+noftt)
+                if(targptr%equaton_type==cylpde)then
+                   targptr%temperature(idx_tempb_trg) = p(ieq+noftt)
+                else
+                   targptr%temperature(idx_tempf_trg) = p(ieq+noftt)
+                endif
             endif
         end do
 

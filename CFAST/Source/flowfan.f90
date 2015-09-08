@@ -131,10 +131,15 @@
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that 
         !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,upper) = max(0.0_eb,filter*flwmv(i,13,upper))
-        filtered(i,13,lower) = max(0.0_eb,filter*flwmv(i,13,lower))
-        filtered(i,11,upper) = max(0.0_eb,filter*flwmv(i,11,upper))
-        filtered(i,11,lower) = max(0.0_eb,filter*flwmv(i,11,lower))
+        filtered(i,13,upper) = filtered(i,13,upper) + max(0.0_eb,filter*hvexcn(ii,11,upper)*hveflo(upper,ii))
+        filtered(i,13,lower) = filtered(i,13,lower) + max(0.0_eb,filter*hvexcn(ii,11,lower)*hveflo(lower,ii))
+        filtered(i,11,upper) = filtered(i,11,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
+        filtered(i,11,lower) = filtered(i,11,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
+        !   remove filtered smoke mass and energy from the total mass and eneergy added to the system (likely a small effect)
+        filtered(i,m,upper) = filtered(i,m,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
+        filtered(i,m,lower) = filtered(i,m,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
+        filtered(i,q,upper) = filtered(i,q,upper) + max(0.0_eb,cp*hvextt(ii,upper)*filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
+        filtered(i,q,lower) = filtered(i,q,lower) + max(0.0_eb,cp*hvextt(ii,lower)*filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
     end do
 
     if(option(fmodjac)==on)then
@@ -362,8 +367,7 @@
 
     ! the hyperbolic tangent allows for smooth transition from full flow to no flow within the fan cuttoff pressure range
     f = 0.5_eb - tanh(8.0_eb/(hmax(k)-hmin(k))*(dp-hmin(k))-4.0_eb)/2.0_eb
-    f = max(minimumopen, f)
-    hvfanl = f*qmax(k)*roh
+    hvfanl = max(minimumopen, f*qmax(k)*roh)
     openfraction = max (minimumopen, qcffraction (qcvm, k, tsec))
     hvfan = hvfanl*openfraction
     return
@@ -573,8 +577,8 @@
                     if (zzhvm(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = zzhvpr(isys,k)/zzhvm(isys)
                         hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
-                        ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass) 
-                        !         - see keywordcases to change this
+                    ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass) 
+                    !         - see keywordcases to change this
                     elseif(hvmfsys(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = -(dhvprsys(isys,k)/hvmfsys(isys))
                         hvexcn(ii,k,lower) = hvexcn(ii,k,upper)

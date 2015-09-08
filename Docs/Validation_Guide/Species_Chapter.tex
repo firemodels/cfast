@@ -4,30 +4,22 @@ CFAST simulates a fire as a mass of fuel that burns at a prescribed pyrolysis ra
 
 The fire chemistry scheme in CFAST is essentially a species balance from user-prescribed species yields and the oxygen available for combustion.  Once generated, it is a matter of bookkeeping to track the mass of species throughout the various control volumes in a simulated building.  It does, however, provide a check of the flow algorithms within the model. Since the major species (CO and CO$_2$) are generated only by the fire, the relative accuracy of the predicted values throughout multiple rooms of a structure should be comparable.
 
-\section{Oxygen and CO$_2$}
+\section{Oxygen, CO$_2$, and CO}
 
 Gas sampling data are available from a number of the experimental tests.  Figure \ref{fig:Species_Scatter} shows a comparison of predicted and measured values for oxygen and carbon dioxide concentrations, along with a summary of the relative difference for the tests.
 \label{Oxygen Concentration}
 \label{Carbon Dioxide Concentration}
+\label{Carbon Monoxide Concentration}
 
 \begin{figure}
-\begin{center}
-\includegraphics[width=4.0in]{FIGURES/ScatterPlots/Oxygen_Concentration}  \\
-\includegraphics[width=4.0in]{FIGURES/ScatterPlots/Carbon_Dioxide_Concentration}  \\
-%\includegraphics[width=4.0in]{FIGURES/Relative_Diff/Gases}
-\end{center}
-\caption{Comparison of Measured and Predicted Oxygen Concentration and Carbon Dioxide Concentration.} \label{fig:Species_Scatter}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/ScatterPlots/Oxygen_Concentration} &
+\includegraphics[width=3.0in]{FIGURES/ScatterPlots/Carbon_Dioxide_Concentration} \\
+\multicolumn{2}{c}{\includegraphics[width=3.0in]{FIGURES/ScatterPlots/Carbon_Monoxide_Concentration}} \\
+\end{tabular*}
+\caption{Comparison of Measured and Predicted Oxygen Concentration, Carbon Dioxide Concentration, and Carbon Monoxide Concentration.} \label{fig:Species_Scatter}
 \end{figure}
 
-CFAST predicts the upper-layer concentrations of oxygen and carbon dioxide within an average of \Speciesavg~\% of experimental values for a broad range of fire and compartment sizes.  In CFAST, the burning rate simply decreases as the oxygen level decreases.  A user prescribed lower limit determines the point below which burning will not take place.  This parameter could be finessed to provide better agreement with the experiment.  For the present comparisons, it was always left at the default value. Since this parameter impacts the overall combustion chemistry in CFAST and the generation of all species, it would impact both oxygen and carbon dioxide.
-
-In addition, species concentrations measured for large fires in small spaces can show considerable spatial variation within the upper layer of the fire compartment \cite{Bundy:2007}. For under-ventliated fires, the representation of the species concentration in a hot gas layer by a single representative average value may not be valid. For example, two measurement locations in test F6 in the NBS one room tests show and underprediction in one measurement location and an overprediction in the other.
-
-\begin{itemize}
-\item CFAST uses a simple user-specified combustion chemistry scheme based on a prescribed pyrolysis rate and species yields that is appropriate for the applications studied.
-\item CFAST predicts the major gas species to within \Speciesavg ~\% of experimental measurements.
-\item For large fires in small compartments or where mixing within a compartment may be important, local species concentration may vary considerably from a bulk average value.  Thus higher uncertainty can be expected for predictions of species concentrations in these scenarios.
-\end{itemize}
 
 \section{NIST/NRC Test Series, Smoke}
 
@@ -41,14 +33,3 @@ CFAST treats smoke like all other combustion products, with an overall mass bala
 \end{center}
 \caption{Comparison of Measured and Predicted Smoke Concentration.} \label{fig:Smoke_Scatter}
 \end{figure}
-
-Only the NIST/NRC test series has been used to assess predictions of smoke concentration.  For these tests, the smoke yield was specified as one of the test parameters.  There are two obvious trends in the results.  First, the predicted concentrations are within or near experimental uncertainties in the open-door tests.  Second, the predicted concentrations are roughly three to five times the measured concentrations in the closed-door tests.  The experimental uncertainty for these measurements has been estimated to be 33~\%.  The closed-door tests cannot be explained from the experimental uncertainty.
-
-The difference between model and experiment is far more pronounced in the closed-door tests.  Given that the oxygen and carbon dioxide predictions are no worse (and indeed even better) in the closed-door tests, there is reason to believe either that the smoke is not transported with the other exhaust gases or the specified smoke yield, developed from free-burning experiments, is not appropriate for the closed-door tests.  These qualitative differences between the open- and closed-door tests are consistent with the FDS predictions (see reference \cite{NRCNUREG1824}).
-
-Use of CFAST calculations of smoke concentration requires care for the following reasons:
-
-\begin{itemize}
-\item CFAST is capable of transporting smoke throughout a compartment, assuming that the production rate is known and its transport properties are comparable to gaseous exhaust products.
-\item CFAST typically over-predicts the smoke concentration in all of the NIST/NRC tests, with the exception of Test 17.  Predicted concentrations for open-door tests are within experimental uncertainties, but those for closed-door tests are far higher.  No firm conclusions can be drawn from this single data set.  The measurements in the closed-door experiments are inconsistent with basic conservation of mass arguments, or there is a fundamental change in the combustion process as the fire becomes oxygen-starved.
-\end{itemize} 

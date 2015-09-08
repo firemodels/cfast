@@ -18,7 +18,7 @@ module target_routines
     
 private
 
-public target, target_flux, update_detectors, detector_temp_and_velocity, solid_angle_triangle
+public target, target_flux, update_detectors, detector_temp_and_velocity, solid_angle_triangle, target_nodes
 
 contains
 
@@ -43,8 +43,8 @@ contains
 
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
-    real(eb) :: tderv, sum, wfluxin, wfluxout, wfluxavg, xl
-    integer :: nnn, i, itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
+    real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
+    integer :: itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
     
     type(target_type), pointer :: targptr
     
@@ -55,6 +55,79 @@ contains
     ! initialize non-dimensional target node locations the first time target is called
     if(first)then
         first = .false.
+        call target_nodes (tmp)
+    endif
+
+    ! calculate net flux striking each side of target
+    call target_flux(method)
+
+    ! for each target calculate the residual and update target temperature (if update = 1)
+    do itarg = 1, ntarg
+        targptr => targetinfo(itarg)
+        if(targptr%method==method) then
+            wfluxin = targptr%flux_net_front
+            wfluxout = targptr%flux_net_back
+            wspec(1) = targptr%cp
+            wrho(1) =  targptr%rho
+            wk(1) =  targptr%k
+            xl = targptr%thickness
+            iimeth = targptr%method
+            iieq = targptr%equaton_type
+
+            ! compute the pde residual 
+            if(iieq==pde.or.iieq==cylpde)then
+                nmnode(1) = nnodes_trg
+                nmnode(2) = nnodes_trg - 2
+                nslab = 1
+                if(iieq==pde)then
+                   if(iimeth==mplicit)then
+                       tempin = targptr%temperature(idx_tempf_trg)
+                       iwbound = 3
+                   else
+                       iwbound = 4
+                   endif
+                   walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
+
+                   call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
+                       wfluxin,wfluxout,iwbound,tgrad,tderv)
+                   if(iimeth==mplicit)then
+                      ieq = iztarg(itarg)
+                      delta(noftt+ieq) = wfluxin + wk(1)*tgrad(1)
+                   endif
+                else if(iieq==cylpde)then
+                    wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                    if(iimeth==mplicit)then
+                       tempin = targptr%temperature(idx_tempb_trg)
+                       iwbound = 3
+                    else
+                       iwbound = 4
+                    endif
+                    call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
+                       dt,wk(1),wrho(1),wspec(1),xl,tgrad)          
+                    if(iimeth==mplicit)then
+                        ieq = iztarg(itarg)
+                        delta(noftt+ieq) = wfluxavg + wk(1)*tgrad(1)
+                       ! write(0,*)"temp=",targptr%temperature(idx_tempb_trg),"delta=",delta(noftt+ieq)
+                    endif
+                endif
+                ! error, the equation type can has to be either pde or ode if the method is not steady
+            else
+
+            endif
+        end if
+    end do
+    return
+    end subroutine target
+    
+! ---------------------------- target_nodes -----------------------------------
+    
+    subroutine target_nodes (tmp)
+    
+        real(eb), intent(out) :: tmp(*)
+        
+        integer :: i, nnn
+        real(eb) :: sum
+    
         nnn = nnodes_trg - 1
         tmp(1) = 1.0_eb
         tmp(nnn) = 1.0_eb
@@ -70,61 +143,8 @@ contains
         do i = 1, nnn
             tmp(i) = tmp(i)/sum
         end do
-    endif
-
-    ! calculate net flux striking each side of target
-    call target_flux(method)
-
-    ! for each target calculate the residual and update target temperature (if update = 1)
-          do itarg = 1, ntarg
-        targptr => targetinfo(itarg)
-        if(targptr%trgmeth==method) then
-            wfluxin = targptr%flux_net_front
-            wfluxout = targptr%flux_net_back
-            wspec(1) = targptr%cp
-            wrho(1) =  targptr%rho
-            wk(1) =  targptr%k
-            xl = targptr%thickness
-            iimeth = targptr%trgmeth
-            iieq = ixtarg(trgeq,itarg)
-
-            ! compute the pde residual 
-            if(iieq==pde.or.iieq==cylpde)then
-                if(iimeth==mplicit)then
-                    tempin = xxtarg(idx_tempf_trg,itarg)
-                    iwbound = 3
-                else
-                    iwbound = 4
-                endif
-                nmnode(1) = nnodes_trg
-                nmnode(2) = nnodes_trg - 2
-                nslab = 1
-                if(iieq==pde)then
-                    do i = 1, nnodes_trg - 1
-                        walldx(i) = xl*tmp(i)
-                    end do
-
-                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,xxtarg(idx_tempf_trg,itarg),walldx,nmnode,nslab,&
-                       wfluxin,wfluxout,iwbound,tgrad,tderv)
-                    if(iimeth==mplicit)then
-                        ieq = iztarg(itarg)
-                        delta(noftt+ieq) = targptr%flux_net_front + wk(1) * tgrad(1)
-                    endif
-                else if(iieq==cylpde)then
-                !  wfluxout is incorrect
-                !    wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    wfluxavg = wfluxin
-                    call cylindrical_conductive_flux (xxtarg(idx_tempf_trg,itarg),nmnode(1),wfluxavg,&
-                       dt,wk(1),wrho(1),wspec(1),xl)          
-                endif
-                ! error, the equation type can has to be either pde or ode if the method is not steady
-            else
-
-            endif
-        end if
-    end do
-    return
-    end subroutine target
+        
+    end subroutine target_nodes
     
 ! --------------------------- target -------------------------------------------
 
@@ -146,15 +166,15 @@ contains
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if(method==targptr%trgmeth) then
+        if(method==targptr%method) then
             iroom = targptr%room
             if(method==steady)then
                 niter = 10
             else
                 niter = 1
             endif
-            ttarg(1) = xxtarg(idx_tempf_trg,itarg)
-            ttarg(2) = xxtarg(idx_tempb_trg,itarg)
+            ttarg(1) = targptr%temperature(idx_tempf_trg)
+            ttarg(2) = targptr%temperature(idx_tempb_trg)
             do iter = 1, niter
                 call targflux(iter,itarg,ttarg,flux,dflux)
                 if(dflux(1)/=0.0_eb.and.method==steady)then
@@ -164,8 +184,8 @@ contains
                 endif
             end do
             if(method==steady)then
-                xxtarg(idx_tempf_trg,itarg) = ttarg(1)
-                xxtarg(idx_tempb_trg,itarg) = ttarg(2)
+                targptr%temperature(idx_tempf_trg) = ttarg(1)
+                targptr%temperature(idx_tempb_trg) = ttarg(2)
             endif
             targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
             targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
@@ -498,14 +518,14 @@ contains
         do ifire = istart, istart + nfirerm - 1
             svect(1) = targptr%center(1) - xfire(ifire,f_fire_xpos)
             svect(2) = targptr%center(2) - xfire(ifire,f_fire_ypos)
-            svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
+            !svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
             ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
             call flame_height (xfire(ifire,f_qfr),xfire(ifire,f_obj_area),fheight)
-            !if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
-            !    svect(3) = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/3.0_eb
-            !else
-            !    svect(3) = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
-            !end if
+            if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
+                svect(3) = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/3.0_eb
+            else
+                svect(3) = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
+            end if
             cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),objclen(ifire))
             if(s/=0.0_eb)then
@@ -541,7 +561,7 @@ contains
             if(cosang>=0.0_eb)then
                 qtfflux(itarg,1) = qtfflux(itarg,1) + qft
             else
-                if(ixtarg(trgback,itarg)==interior)then
+                if(targptr%back==interior)then
                     qtfflux(itarg,2) = qtfflux(itarg,2) + qft
                 endif
             endif
@@ -588,7 +608,7 @@ contains
 
             qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
             qgassum(front) = qgassum(front) + qgt*target_factors_front(iwall)
-            if(ixtarg(trgback,itarg)==interior)then
+            if(targptr%back==interior)then
               qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
               qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
             endif
@@ -599,7 +619,7 @@ contains
         qtgflux(itarg,back) = qgassum(back)
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if(ixtarg(trgback,itarg)==exterior.or.qtgflux(itarg,back)==0.0)then
+        if(targptr%back==exterior.or.qtgflux(itarg,back)==0.0)then
             qtgflux(itarg,back) = sigma*interior_temperature**4
         endif
     endif
@@ -623,7 +643,7 @@ contains
     ztarg = targptr%center(3)
     call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
     tgtarg(itarg) = tg
-    if(ixtarg(trgback,itarg)==interior)then
+    if(targptr%back==interior)then
         tgb = tg
     else
         tgb = interior_temperature

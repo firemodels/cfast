@@ -8,6 +8,8 @@ set usematlab=1
 set stopscript=0
 set cfastrepo=cfastgitclean
 set fdsrepo=FDS-SMVgitclean
+:: set cfastrepo=%userprofile%\cfastgitclean
+:: set fdsrepo=%userprofile%\FDS-SMVgitclean
 set stopscript=0
 
 call :getopts %*

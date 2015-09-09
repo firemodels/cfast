@@ -14,14 +14,14 @@ if "%CFASTGIT%" NEQ "" (
 )
 
 set fdsrepo=%userprofile%\FDS-SMVgitclean
-if "%FDSGIT%" NEQ "" (
+if not x"%FDSGIT%" == x (
   if EXIST %FDSGIT% (
     set fdsrepo=%FDSGIT%
   )
 )
 
 set emailto=
-if "%EMAILGIT%" NEQ "" (
+if not x%EMAILGIT% == x (
   set emailto=%EMAILGIT%
 )
 
@@ -42,7 +42,7 @@ set cfastbotdir=%temparg%
 call :normalise %cfastrepo% 
 set cfastrepo=%temparg%
 
-if not "%fdsrepo" == "none" (
+if not %fdsrepo% == none (
   call :normalise %fdsrepo%
   set fdsrepo=%temparg%
 )

@@ -245,10 +245,14 @@ if "%cfastbasename%" == "cfastgitclean" (
 ::*** update cfast repository
 
 echo             updating %cfastbasename% repository
+
 cd %cfastroot%
+
 git pull  1> %OUTDIR%\stage0.txt 2>&1
 
+
 git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilestring%
+
 set /p revisionstring=<%revisionfilestring%
 
 git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilenum%
@@ -261,8 +265,8 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 ::*** revert FDS repository
 
-if "%havefds%" == "1" (
-  if "%FDSbasename%" == "FDS-SMVgitclean" (
+if %havefds% == 0 goto skip_fdsrepo
+  if %FDSbasename% == FDS-SMVgitclean (
      echo             reverting %FDSbasename% repository
      cd %FDSroot%
      git clean -dxf 1> Nul 2>&1
@@ -270,13 +274,12 @@ if "%havefds%" == "1" (
      git reset --hard HEAD 1> Nul 2>&1
   )
 
-
 ::*** update FDS repository
 
   echo             updating %FDSbasename% repository
   cd %FDSroot%
   git pull  1> %OUTDIR%\stage0.txt 2>&1
-)
+:skip_fdsrepo
 
 :: -------------------------------------------------------------
 ::                           stage 1 - build cfast

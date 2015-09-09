@@ -1056,8 +1056,8 @@
 
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-!        write(iofilo,5010) itarg, targptr%name, compartmentnames(targptr%room), (targptr%center(j),j=1,3), &
-!            (targptr%normal(j),j=1,3), targptr%material
+        write(iofilo,5010) itarg, targptr%name, compartmentnames(targptr%room), (targptr%center(j),j=1,3), &
+            (targptr%normal(j),j=1,3), targptr%material
 5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
     end do
     return

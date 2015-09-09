@@ -6,10 +6,8 @@
 set emailto=
 set usematlab=1
 set stopscript=0
-set cfastrepo=cfastgitclean
-set fdsrepo=FDS-SMVgitclean
-:: set cfastrepo=%userprofile%\cfastgitclean
-:: set fdsrepo=%userprofile%\FDS-SMVgitclean
+set cfastrepo=%userprofile%\cfastgitclean
+set fdsrepo=%userprofile%\FDS-SMVgitclean
 set stopscript=0
 
 call :getopts %*
@@ -17,21 +15,24 @@ if %stopscript% == 1 (
   exit /b
 )
 
-set gitrepo=%userprofile%\%cfastrepo%
-set curdir=%CD%
+call :normalise "%CD%" curdir
+call :normalise "%cfastrepo%\Utilities\cfastbot" cfastbotdir
+call :normalise "%cfastrepo%" cfastrepo
+call :normalise "%fdsrepo%" fdsrepo
 set running=%curdir%\bot.running
 
 if not exist %running% (
-  cd %gitrepo%
-  git fetch origin
-  git pull
-  copy Utilities\cfastbot\cfastbot_win.bat %curdir%
-  cd %curdir%
+  if "%cfastbotdir%" NEQ "%curdir%" (
+    cd "%cfastrepo%"
+    git fetch origin
+    git pull
+    copy Utilities\cfastbot\cfastbot_win.bat %curdir%
+    cd %curdir%
+  )
   echo 1 > %running%
-  echo cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
-  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
+  echo cfastbot_win.bat "%cfastrepo%" "%fdsrepo%" %usematlab% %emailto%
+  call cfastbot_win.bat "%cfastrepo%" "%fdsrepo%" %usematlab% %emailto%
   erase %running%
-  cd %curdir%
 ) else (
   echo cfastbot is currently running.
   echo If this is not the case, erase the file %running%
@@ -83,10 +84,16 @@ exit /b
 echo run_cfastbot [options]
 echo. 
 echo -help           - display this message
-echo -cfastrepo name - specify the cfast repo name (default: cfastgitclean) 
-echo -fdsrepo name   - specify the FDS repo name (default: FDS-SMVgitclean) 
+echo -cfastrepo name - specify the cfast repository
+echo       (default: %cfastrepo%) 
+echo -fdsrepo name   - specify the FDS-SMV repository
+echo       (default: %fdsrepo%) 
 echo -email address  - override "to" email addresses specified in repo 
 echo -nomatlab       - do not use matlab
+exit /b
+
+:normalise
+SET "%2=%~f1"
 exit /b
 
 :eof

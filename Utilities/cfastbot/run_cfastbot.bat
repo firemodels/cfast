@@ -88,6 +88,7 @@ if not exist %running% (
 goto eof
 
 :getopts
+ if (%1)==() exit /b
  set valid=0
  set arg=%1
  if /I "%1" EQU "-help" (

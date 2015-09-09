@@ -17,7 +17,10 @@ if x%CFASTGIT% == x goto skip_cfastgit
   )
 :skip_cfastgit
 
-set fdsrepo=%userprofile%\FDS-SMVgitclean
+set fdsrepo=none
+if exist %userprofile%\FDS-SMVgitclean (
+  set fdsrepo=%userprofile%\FDS-SMVgitclean
+)
 if x%FDSGIT% == x goto skip_fdsgit
   if EXIST %FDSGIT% (
     set fdsrepo=%FDSGIT%

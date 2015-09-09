@@ -7,14 +7,17 @@ set usematlab=1
 set stopscript=0
 
 set cfastrepo=%userprofile%\cfastgitclean
-if "%CFASTGIT%" NEQ "" (
+if exist ..\..\cfast_root.txt (
+  set cfastrepo=..\..
+)
+if not x%CFASTGIT% == x (
   if EXIST %CFASTGIT% (
     set cfastrepo=%CFASTGIT%
   )
 )
 
 set fdsrepo=%userprofile%\FDS-SMVgitclean
-if not x"%FDSGIT%" == x (
+if not x%FDSGIT% == x (
   if EXIST %FDSGIT% (
     set fdsrepo=%FDSGIT%
   )
@@ -25,13 +28,15 @@ if not x%EMAILGIT% == x (
   set emailto=%EMAILGIT%
 )
 
+:: parse command line arguments
+
 set stopscript=0
-
-
 call :getopts %*
 if %stopscript% == 1 (
   exit /b
 )
+
+:: normalize directory paths
 
 call :normalise %CD% curdir
 set curdir=%temparg%
@@ -49,13 +54,19 @@ if not %fdsrepo% == none (
 set running=%curdir%\bot.running
 
 if not exist %running% (
-  if %cfastbotdir% NEQ %curdir% (
+
+:: get latest cfastbot
+
     cd %cfastrepo%
     git fetch origin
     git pull
-    copy Utilities\cfastbot\cfastbot_win.bat %curdir%
+    if not %cfastbotdir% == %curdir% (
+      copy %cfastbotdir%\cfastbot_win.bat %curdir%
+    )
     cd %curdir%
-  )
+
+:: run cfastbot
+
   echo 1 > %running%
   echo cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
   call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%

@@ -1,34 +1,41 @@
 @echo off
+set arg1=%1
+set cfastroot=%~f1
+set cfastbasename=%~n1
+
+set arg2=%2
+set FDSroot=%2
+set fdsbasename=%2
+
 set usematlab=%3
-set emailto=%4
+set update=%4
+set emailto=%5
 
 :: -------------------------------------------------------------
 ::                         set repository names
 :: -------------------------------------------------------------
 
-set abort=0
+:: check for cfast repo
 
-set cfastroot=%~f1
 if NOT exist %cfastroot% (
-  set abort=1
   echo ***error: the repo %cfastroot% does not exist
-)
-
-set FDSroot=%~f2
-if NOT exist %FDSroot% (
-  set abort=1
-  echo ***error: the repo %FDSroot% does not exist
-)
-if %abort% == 1 (
   echo cfastbot aborted
   exit /b
 )
 
-set fdsbasename=%~n2
-set cfastbasename=%~n1
+:: check for FDS repo (if specified)
 
-echo   cfast repository: %cfastroot%
-echo FDS-SMV repository: %FDSroot%
+set havefds=1
+if %arg2% == none (
+  set havefds=0
+) else (
+  set FDSroot=%~f2
+  set fdsbasename=%~n2
+  if not exist %FDSroot% (
+    set havefds=0
+    echo ***warning: the repo %FDSroot% does not exist  
+  )
+)
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -48,7 +55,7 @@ set timefile=%OUTDIR%\time.txt
 
 erase %OUTDIR%\*.txt 1> Nul 2>&1
 
-set email=%FDSroot%\SMV\scripts\email.bat
+set email=%cfastroot%\Utilities\scripts\email.bat
 set emailexe=%userprofile%\bin\mailsend.exe
 
 set errorlog=%OUTDIR%\stage_errors.txt
@@ -65,8 +72,8 @@ set nothaveValidation=0
 set haveerrors=0
 set havewarnings=0
 
-set gettimeexe=%FDSroot%\Utilities\get_time\intel_win_64\get_time.exe
-set runbatchexe=%FDSroot%\SMV\source\runbatch\intel_win_64\runbatch.exe
+set gettimeexe=%cfastroot%\Utilities\get_time\intel_win_64\get_time.exe
+set runbatchexe=%cfastroot%\Utilities\runbatch\intel_win_64\runbatch.exe
 
 date /t > %OUTDIR%\starttime.txt
 set /p startdate=<%OUTDIR%\starttime.txt
@@ -78,16 +85,17 @@ call %cfastroot%\Utilities\cfastbot\cfastbot_email_list.bat 1> Nul 2>&1
 
 set usematlab=%3
 if %usematlab% == 1 (
-  echo using matlab scripts
+  echo matlab: using matlab scripts
 )
 if %usematlab% == 0 (
-  echo using prebuilt matlab executables
+  echo matlab: using prebuilt matlab executables
 )
 if NOT "%emailto%" == "" (
-  echo email results to %emailto%
+  echo  email: %emailto%
   set mailToCFAST=%emailto%
 )
-
+echo cfast repo: %cfastroot%
+echo   FDS repo: %FDSroot%
 :: -------------------------------------------------------------
 ::                           stage 0 - preliminaries
 :: -------------------------------------------------------------
@@ -135,6 +143,13 @@ if %nothaveICC% == 1 (
   call :is_file_installed smokeview|| exit /b 1
   echo             found pre-built smokeview (C/C++ not available to build smokeview)
   set smokeview=smokeview.exe
+)
+if %havefds% == 0 (
+  if %nothaveICC% == 0 (
+    call :is_file_installed smokeview|| exit /b 1
+    echo             found pre-built smokeview (smokeview source not available)
+    set smokeview=smokeview.exe
+  )
 )
 
 ::*** looking for email
@@ -222,21 +237,30 @@ if %nothavematlab% == 1 (
 
 ::*** revert cfast repository
 
-if "%cfastbasename%" == "cfastgitclean" (
+if %update% == 0 goto skip_update0
+if "%cfastbasename%" NEQ "cfastgitclean" goto skip_if1
    echo             reverting %cfastbasename% repository
    cd %cfastroot%
    git clean -dxf 1> Nul 2>&1
    git add . 1> Nul 2>&1
    git reset --hard HEAD 1> Nul 2>&1
-)
+:skip_if1
+:skip_update0
 
 ::*** update cfast repository
 
+if %update% == 0 goto skip_update1
 echo             updating %cfastbasename% repository
+
 cd %cfastroot%
+
+git fetch origin
 git pull  1> %OUTDIR%\stage0.txt 2>&1
+:skip_update1
+
 
 git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilestring%
+
 set /p revisionstring=<%revisionfilestring%
 
 git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilenum%
@@ -249,19 +273,26 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 ::*** revert FDS repository
 
-if "%FDSbasename%" == "FDS-SMVgitclean" (
-   echo             reverting %FDSbasename% repository
-   cd %FDSroot%
-   git clean -dxf 1> Nul 2>&1
-   git add . 1> Nul 2>&1
-   git reset --hard HEAD 1> Nul 2>&1
-)
+if %havefds% == 0 goto skip_fdsrepo
+  if not %FDSbasename% == FDS-SMVgitclean goto skip_if2
+     if %update% == 0 goto skip_update2
+     echo             reverting %FDSbasename% repository
+     cd %FDSroot%
+     git clean -dxf 1> Nul 2>&1
+     git add . 1> Nul 2>&1
+     git reset --hard HEAD 1> Nul 2>&1
+     :skip_update2
+  :skip_if2
 
 ::*** update FDS repository
 
-echo             updating %FDSbasename% repository
-cd %FDSroot%
-git pull  1> %OUTDIR%\stage0.txt 2>&1
+  if %update% == 0 goto skip_update3
+  echo             updating %FDSbasename% repository
+  cd %FDSroot%
+  git fetch origin
+  git pull  1> %OUTDIR%\stage0.txt 2>&1
+  :skip_update3
+:skip_fdsrepo
 
 :: -------------------------------------------------------------
 ::                           stage 1 - build cfast
@@ -302,6 +333,9 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1c.txt "Stage 1c"
 :: -------------------------------------------------------------
 
 if %nothaveICC% == 1 (
+  goto skip_stage2
+)
+if %havefds% == 0 (
   goto skip_stage2
 )
 

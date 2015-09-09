@@ -3,12 +3,30 @@
 ::  run_cfastbot -cfastrepo name -fdsrepo name echo -email address -nomatlab
 ::  (all command arguements are optional)
 
-set emailto=
 set usematlab=1
 set stopscript=0
+
 set cfastrepo=%userprofile%\cfastgitclean
+if "%CFASTGIT%" NEQ "" (
+  if EXIST %CFASTGIT% (
+    set cfastrepo=%CFASTGIT%
+  )
+)
+
 set fdsrepo=%userprofile%\FDS-SMVgitclean
+if "%FDSGIT%" NEQ "" (
+  if EXIST %FDSGIT% (
+    set fdsrepo=%FDSGIT%
+  )
+)
+
+set emailto=
+if "%EMAILGIT%" NEQ "" (
+  set emailto=%EMAILGIT%
+)
+
 set stopscript=0
+
 
 call :getopts %*
 if %stopscript% == 1 (
@@ -89,6 +107,9 @@ echo       (default: %cfastrepo%)
 echo -fdsrepo name   - specify the FDS-SMV repository
 echo       (default: %fdsrepo%) 
 echo -email address  - override "to" email addresses specified in repo 
+if "%emailto%" NEQ "" (
+echo       (default: %emailto%^)
+)
 echo -nomatlab       - do not use matlab
 exit /b
 

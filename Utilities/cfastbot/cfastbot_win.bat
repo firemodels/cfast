@@ -1,6 +1,4 @@
 @echo off
-set cfastrepo=%1
-set fdsrepo=%2
 set usematlab=%3
 set emailto=%4
 
@@ -8,10 +6,29 @@ set emailto=%4
 ::                         set repository names
 :: -------------------------------------------------------------
 
-set fdsbasename=%fdsrepo%
-set cfastbasename=%cfastrepo%
-::set cfastbasename=%~n1
-::set fdsbasename=%~n2
+set abort=0
+
+set cfastroot=%~f1
+if NOT exist %cfastroot% (
+  set abort=1
+  echo ***error: the repo %cfastroot% does not exist
+)
+
+set FDSroot=%~f2
+if NOT exist %FDSroot% (
+  set abort=1
+  echo ***error: the repo %FDSroot% does not exist
+)
+if %abort% == 1 (
+  echo cfastbot aborted
+  exit /b
+)
+
+set fdsbasename=%~n2
+set cfastbasename=%~n1
+
+echo   cfast repository: %cfastroot%
+echo FDS-SMV repository: %FDSroot%
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -30,11 +47,6 @@ set timefile=%OUTDIR%\time.txt
 
 
 erase %OUTDIR%\*.txt 1> Nul 2>&1
-
-set cfastroot=%userprofile%\%cfastbasename%
-set FDSroot=%userprofile%\%fdsbasename%
-::set cfastroot=%~f1
-::set FDSroot=%~f2
 
 set email=%FDSroot%\SMV\scripts\email.bat
 set emailexe=%userprofile%\bin\mailsend.exe
@@ -61,10 +73,9 @@ set /p startdate=<%OUTDIR%\starttime.txt
 time /t > %OUTDIR%\starttime.txt
 set /p starttime=<%OUTDIR%\starttime.txt
 
-call "%cfastroot%\scripts\setup_intel_compilers.bat" 1> Nul 2>&1
-call "%cfastroot%\Utilities\cfastbot\cfastbot_email_list.bat" 1> Nul 2>&1
-echo cfast repo=%cfastrepo%
-echo FDS repo=%fdsrepo%
+call %cfastroot%\scripts\setup_intel_compilers.bat 1> Nul 2>&1
+call %cfastroot%\Utilities\cfastbot\cfastbot_email_list.bat 1> Nul 2>&1
+
 set usematlab=%3
 if %usematlab% == 1 (
   echo using matlab scripts

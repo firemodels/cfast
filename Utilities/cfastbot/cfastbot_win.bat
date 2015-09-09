@@ -1,4 +1,12 @@
 @echo off
+set arg1=%1
+set cfastroot=%~f1
+set cfastbasename=%~n1
+
+set arg2=%2
+set FDSroot=%~f2
+set fdsbasename=%~n2
+
 set usematlab=%3
 set emailto=%4
 
@@ -8,31 +16,23 @@ set emailto=%4
 
 :: check for cfast repo
 
-set cfastroot=%~f1
 if NOT exist %cfastroot% (
   echo ***error: the repo %cfastroot% does not exist
   echo cfastbot aborted
   exit /b
 )
-set cfastbasename=%~n1
 echo   cfast repository: %cfastroot%
 
 :: check for FDS repo (if specified)
 
 set havefds=1
-if "%2" EQU "null" (
+if %arg2% == none (
   set havefds=0
-)
-if "%2" NEQ "null" (
-  set FDSroot=%~f2
-  if exist %FDSroot% (
-    set fdsbasename=%~n2
-    echo FDS-SMV repository: %FDSroot%
-  ) else (
+) else (
+  if not exist %FDSroot% (
     set havefds=0
     echo ***warning: the repo %FDSroot% does not exist  
   )
-  
 )
 
 :: -------------------------------------------------------------

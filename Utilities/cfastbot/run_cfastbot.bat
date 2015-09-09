@@ -34,9 +34,18 @@ if %stopscript% == 1 (
 )
 
 call :normalise %CD% curdir
-call :normalise %cfastrepo%\Utilities\cfastbot cfastbotdir
-call :normalise %cfastrepo% cfastrepo
-call :normalise %fdsrepo% fdsrepo
+set curdir=%temparg%
+
+call :normalise %cfastrepo%\Utilities\cfastbot
+set cfastbotdir=%temparg%
+
+call :normalise %cfastrepo% 
+set cfastrepo=%temparg%
+
+if not "%fdsrepo" == "none" (
+  call :normalise %fdsrepo%
+  set fdsrepo=%temparg%
+)
 set running=%curdir%\bot.running
 
 if not exist %running% (
@@ -114,7 +123,7 @@ echo -nomatlab       - do not use matlab
 exit /b
 
 :normalise
-SET "%2=%~f1"
+set temparg=%~f1
 exit /b
 
 :eof

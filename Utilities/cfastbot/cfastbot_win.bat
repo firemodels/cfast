@@ -1,4 +1,4 @@
-@echo on
+@echo off
 set arg1=%1
 set cfastroot=%~f1
 set cfastbasename=%~n1
@@ -148,7 +148,7 @@ if %nothaveICC% == 1 (
 if %havefds% == 0 (
   if %nothaveICC% == 0 (
     call :is_file_installed smokeview|| exit /b 1
-    echo             found pre-built smokeview (FDS-SMV repo not available to build smokeview)
+    echo             found pre-built smokeview (smokeview source not available)
     set smokeview=smokeview.exe
   )
 )

@@ -1388,7 +1388,7 @@ Public Class CeditMain
         Me.HVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.HVentSummary.Location = New System.Drawing.Point(157, 41)
         Me.HVentSummary.Name = "HVentSummary"
-        Me.HVentSummary.Rows.Count = 101
+        Me.HVentSummary.Rows.Count = 401
         Me.HVentSummary.Rows.DefaultSize = 19
         Me.HVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.HVentSummary.SelectionMode = C1.Win.C1FlexGrid.SelectionModeEnum.Row
@@ -1659,7 +1659,7 @@ Public Class CeditMain
         Me.VVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.VVentSummary.Location = New System.Drawing.Point(278, 64)
         Me.VVentSummary.Name = "VVentSummary"
-        Me.VVentSummary.Rows.Count = 101
+        Me.VVentSummary.Rows.Count = 401
         Me.VVentSummary.Rows.DefaultSize = 19
         Me.VVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VVentSummary.Size = New System.Drawing.Size(421, 114)
@@ -1868,6 +1868,7 @@ Public Class CeditMain
         Me.CompSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.CompSummary.Location = New System.Drawing.Point(32, 16)
         Me.CompSummary.Name = "CompSummary"
+        Me.CompSummary.Rows.Count = 101
         Me.CompSummary.Rows.DefaultSize = 19
         Me.CompSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.CompSummary.Size = New System.Drawing.Size(902, 106)
@@ -2376,7 +2377,7 @@ Public Class CeditMain
         Me.MVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.MVentSummary.Location = New System.Drawing.Point(57, 57)
         Me.MVentSummary.Name = "MVentSummary"
-        Me.MVentSummary.Rows.Count = 101
+        Me.MVentSummary.Rows.Count = 401
         Me.MVentSummary.Rows.DefaultSize = 19
         Me.MVentSummary.Size = New System.Drawing.Size(862, 120)
         Me.MVentSummary.StyleInfo = resources.GetString("MVentSummary.StyleInfo")
@@ -2785,7 +2786,7 @@ Public Class CeditMain
         Me.FireSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.FireSummary.Location = New System.Drawing.Point(168, 16)
         Me.FireSummary.Name = "FireSummary"
-        Me.FireSummary.Rows.Count = 101
+        Me.FireSummary.Rows.Count = 401
         Me.FireSummary.Rows.DefaultSize = 19
         Me.FireSummary.Size = New System.Drawing.Size(641, 81)
         Me.FireSummary.StyleInfo = resources.GetString("FireSummary.StyleInfo")
@@ -3251,7 +3252,7 @@ Public Class CeditMain
         Me.DetectorSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.DetectorSummary.Location = New System.Drawing.Point(117, 53)
         Me.DetectorSummary.Name = "DetectorSummary"
-        Me.DetectorSummary.Rows.Count = 101
+        Me.DetectorSummary.Rows.Count = 401
         Me.DetectorSummary.Rows.DefaultSize = 19
         Me.DetectorSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.DetectorSummary.Size = New System.Drawing.Size(742, 136)
@@ -3501,7 +3502,7 @@ Public Class CeditMain
         Me.TargetSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.TargetSummary.Location = New System.Drawing.Point(117, 55)
         Me.TargetSummary.Name = "TargetSummary"
-        Me.TargetSummary.Rows.Count = 101
+        Me.TargetSummary.Rows.Count = 1001
         Me.TargetSummary.Rows.DefaultSize = 19
         Me.TargetSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.TargetSummary.Size = New System.Drawing.Size(742, 136)
@@ -3919,7 +3920,7 @@ Public Class CeditMain
         Me.VHeatSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.VHeatSummary.Location = New System.Drawing.Point(38, 43)
         Me.VHeatSummary.Name = "VHeatSummary"
-        Me.VHeatSummary.Rows.Count = 181
+        Me.VHeatSummary.Rows.Count = 1001
         Me.VHeatSummary.Rows.DefaultSize = 19
         Me.VHeatSummary.Size = New System.Drawing.Size(364, 168)
         Me.VHeatSummary.StyleInfo = resources.GetString("VHeatSummary.StyleInfo")
@@ -4023,7 +4024,7 @@ Public Class CeditMain
         Me.HHeatSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.HHeatSummary.Location = New System.Drawing.Point(9, 43)
         Me.HHeatSummary.Name = "HHeatSummary"
-        Me.HHeatSummary.Rows.Count = 181
+        Me.HHeatSummary.Rows.Count = 1001
         Me.HHeatSummary.Rows.DefaultSize = 19
         Me.HHeatSummary.Size = New System.Drawing.Size(423, 168)
         Me.HHeatSummary.StyleInfo = resources.GetString("HHeatSummary.StyleInfo")
@@ -4469,6 +4470,7 @@ Public Class CeditMain
         Me.VisualResolutionSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.VisualResolutionSummary.Location = New System.Drawing.Point(24, 18)
         Me.VisualResolutionSummary.Name = "VisualResolutionSummary"
+        Me.VisualResolutionSummary.Rows.Count = 101
         Me.VisualResolutionSummary.Rows.DefaultSize = 19
         Me.VisualResolutionSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VisualResolutionSummary.Size = New System.Drawing.Size(417, 187)
@@ -4522,6 +4524,7 @@ Public Class CeditMain
         Me.VisualSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.VisualSummary.Location = New System.Drawing.Point(34, 28)
         Me.VisualSummary.Name = "VisualSummary"
+        Me.VisualSummary.Rows.Count = 401
         Me.VisualSummary.Rows.DefaultSize = 19
         Me.VisualSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VisualSummary.Size = New System.Drawing.Size(407, 197)

@@ -4,8 +4,8 @@ set cfastroot=%~f1
 set cfastbasename=%~n1
 
 set arg2=%2
-set FDSroot=%~f2
-set fdsbasename=%~n2
+set FDSroot=%2
+set fdsbasename=%2
 
 set usematlab=%3
 set update=%4
@@ -30,6 +30,8 @@ set havefds=1
 if %arg2% == none (
   set havefds=0
 ) else (
+  set FDSroot=%~f2
+  set fdsbasename=%~n2
   if not exist %FDSroot% (
     set havefds=0
     echo ***warning: the repo %FDSroot% does not exist  

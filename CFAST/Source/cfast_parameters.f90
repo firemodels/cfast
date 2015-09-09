@@ -5,7 +5,7 @@ module cparams
     use precision_parameters
 
     ! geometry parameters
-    integer, parameter :: nr = 31               ! maximum number of compartments
+    integer, parameter :: nr = 101               ! maximum number of compartments
     integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material 
                                                 !                        (at the moment, the gui only support 1)
     integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
@@ -16,7 +16,7 @@ module cparams
     ! fire related input parameters    
     integer, parameter :: mxpts = 199           ! maximum number of data points in a time-dependent input curve
     integer, parameter :: ns = 11               ! number of species
-    integer, parameter :: mxfires = 125         ! maximum number of fire objects
+    integer, parameter :: mxfires = 200         ! maximum number of fire objects
     integer, parameter :: mxfirp = 20           ! number of parameters for each fire object
     integer, parameter :: mxfire = 2*mxfires    ! maximum number of fires in a single simulation
     integer, parameter :: igntemp = 1           ! object ignition criteria index for temperature
@@ -37,8 +37,8 @@ module cparams
     integer, parameter :: mxvvents=2*nr         ! maximum number of vertical flow vents
     integer, parameter :: mxvvent = mxvvents*2  ! maximum number of connections in vertical flow vents 
     
-    integer, parameter :: mxhvsys=60                ! maximum number of mechanical ventilation systems
-    integer, parameter :: mxfan = 15                ! maximum number of fans in a mechanical ventilation system
+    integer, parameter :: mxhvsys=200                ! maximum number of mechanical ventilation systems
+    integer, parameter :: mxfan = 100                ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 5               ! maximum order of fan curve (here, 5th order polynomial. at the moment, 
                                                     !   the gui limits to constant flow)
     integer, parameter :: mxcon = 3                 ! maximum number of connections to a node in a mechanical ventilation system

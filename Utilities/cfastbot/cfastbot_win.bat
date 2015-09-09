@@ -1,4 +1,4 @@
-@echo off
+@echo on
 set arg1=%1
 set cfastroot=%~f1
 set cfastbasename=%~n1
@@ -7,8 +7,8 @@ set arg2=%2
 set FDSroot=%~f2
 set fdsbasename=%~n2
 
-set update=%3
-set usematlab=%4
+set usematlab=%3
+set update=%4
 set emailto=%5
 
 :: -------------------------------------------------------------
@@ -95,7 +95,8 @@ if NOT "%emailto%" == "" (
   echo  email: %emailto%
   set mailToCFAST=%emailto%
 )
-
+echo cfast repo: %cfastroot%
+echo   FDS repo: %FDSroot%
 :: -------------------------------------------------------------
 ::                           stage 0 - preliminaries
 :: -------------------------------------------------------------
@@ -237,13 +238,15 @@ if %nothavematlab% == 1 (
 
 ::*** revert cfast repository
 
-if "%cfastbasename%" == "cfastgitclean" (
+if %update% == 0 goto skip_update0
+if "%cfastbasename%" NEQ "cfastgitclean" goto skip_if1
    echo             reverting %cfastbasename% repository
    cd %cfastroot%
    git clean -dxf 1> Nul 2>&1
    git add . 1> Nul 2>&1
    git reset --hard HEAD 1> Nul 2>&1
-)
+:skip_if1
+:skip_update0
 
 ::*** update cfast repository
 
@@ -272,7 +275,7 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 ::*** revert FDS repository
 
 if %havefds% == 0 goto skip_fdsrepo
-  if %FDSbasename% == FDS-SMVgitclean (
+  if not %FDSbasename% == FDS-SMVgitclean goto skip_if2
      if %update% == 0 goto skip_update2
      echo             reverting %FDSbasename% repository
      cd %FDSroot%
@@ -280,7 +283,7 @@ if %havefds% == 0 goto skip_fdsrepo
      git add . 1> Nul 2>&1
      git reset --hard HEAD 1> Nul 2>&1
      :skip_update2
-  )
+  :skip_if2
 
 ::*** update FDS repository
 

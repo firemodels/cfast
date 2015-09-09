@@ -6,29 +6,34 @@ set emailto=%4
 ::                         set repository names
 :: -------------------------------------------------------------
 
-set abort=0
+:: check for cfast repo
 
 set cfastroot=%~f1
 if NOT exist %cfastroot% (
-  set abort=1
   echo ***error: the repo %cfastroot% does not exist
-)
-
-set FDSroot=%~f2
-if NOT exist %FDSroot% (
-  set abort=1
-  echo ***error: the repo %FDSroot% does not exist
-)
-if %abort% == 1 (
   echo cfastbot aborted
   exit /b
 )
-
-set fdsbasename=%~n2
 set cfastbasename=%~n1
-
 echo   cfast repository: %cfastroot%
-echo FDS-SMV repository: %FDSroot%
+
+:: check for FDS repo (if specified)
+
+set havefds=1
+if "%2" EQU "null" (
+  set havefds=0
+)
+if "%2" NEQ "null" (
+  set FDSroot=%~f2
+  if exist %FDSroot% (
+    set fdsbasename=%~n2
+    echo FDS-SMV repository: %FDSroot%
+  ) else (
+    set havefds=0
+    echo ***warning: the repo %FDSroot% does not exist  
+  )
+  
+)
 
 :: -------------------------------------------------------------
 ::                         setup environment
@@ -48,7 +53,7 @@ set timefile=%OUTDIR%\time.txt
 
 erase %OUTDIR%\*.txt 1> Nul 2>&1
 
-set email=%FDSroot%\SMV\scripts\email.bat
+set email=%cfastroot%\Utilities\scripts\email.bat
 set emailexe=%userprofile%\bin\mailsend.exe
 
 set errorlog=%OUTDIR%\stage_errors.txt
@@ -65,8 +70,8 @@ set nothaveValidation=0
 set haveerrors=0
 set havewarnings=0
 
-set gettimeexe=%FDSroot%\Utilities\get_time\intel_win_64\get_time.exe
-set runbatchexe=%FDSroot%\SMV\source\runbatch\intel_win_64\runbatch.exe
+set gettimeexe=%cfastroot%\Utilities\get_time\intel_win_64\get_time.exe
+set runbatchexe=%cfastroot%\Utilities\runbatch\intel_win_64\runbatch.exe
 
 date /t > %OUTDIR%\starttime.txt
 set /p startdate=<%OUTDIR%\starttime.txt
@@ -135,6 +140,13 @@ if %nothaveICC% == 1 (
   call :is_file_installed smokeview|| exit /b 1
   echo             found pre-built smokeview (C/C++ not available to build smokeview)
   set smokeview=smokeview.exe
+)
+if %havefds% == 0 (
+  if %nothaveICC% == 0 (
+    call :is_file_installed smokeview|| exit /b 1
+    echo             found pre-built smokeview (FDS-SMV repo not available to build smokeview)
+    set smokeview=smokeview.exe
+  )
 )
 
 ::*** looking for email
@@ -249,19 +261,22 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 ::*** revert FDS repository
 
-if "%FDSbasename%" == "FDS-SMVgitclean" (
-   echo             reverting %FDSbasename% repository
-   cd %FDSroot%
-   git clean -dxf 1> Nul 2>&1
-   git add . 1> Nul 2>&1
-   git reset --hard HEAD 1> Nul 2>&1
-)
+if "%havefds%" == "1" (
+  if "%FDSbasename%" == "FDS-SMVgitclean" (
+     echo             reverting %FDSbasename% repository
+     cd %FDSroot%
+     git clean -dxf 1> Nul 2>&1
+     git add . 1> Nul 2>&1
+     git reset --hard HEAD 1> Nul 2>&1
+  )
+
 
 ::*** update FDS repository
 
-echo             updating %FDSbasename% repository
-cd %FDSroot%
-git pull  1> %OUTDIR%\stage0.txt 2>&1
+  echo             updating %FDSbasename% repository
+  cd %FDSroot%
+  git pull  1> %OUTDIR%\stage0.txt 2>&1
+)
 
 :: -------------------------------------------------------------
 ::                           stage 1 - build cfast
@@ -302,6 +317,9 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1c.txt "Stage 1c"
 :: -------------------------------------------------------------
 
 if %nothaveICC% == 1 (
+  goto skip_stage2
+)
+if %havefds% == 0 (
   goto skip_stage2
 )
 

@@ -22,7 +22,6 @@ if NOT exist %cfastroot% (
   echo cfastbot aborted
   exit /b
 )
-echo   cfast repository: %cfastroot%
 
 :: check for FDS repo (if specified)
 
@@ -35,8 +34,6 @@ if %arg2% == none (
   if not exist %FDSroot% (
     set havefds=0
     echo ***warning: the repo %FDSroot% does not exist  
-  ) else (
-  echo   FDS repository: %FDSroot%
   )
 )
 

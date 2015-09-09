@@ -10,18 +10,18 @@ set cfastrepo=%userprofile%\cfastgitclean
 if exist ..\..\cfast_root.txt (
   set cfastrepo=..\..
 )
-if not x%CFASTGIT% == x (
+if x%CFASTGIT% == x goto skip_cfastgit
   if EXIST %CFASTGIT% (
     set cfastrepo=%CFASTGIT%
   )
-)
+:skip_cfastgit
 
 set fdsrepo=%userprofile%\FDS-SMVgitclean
-if not x%FDSGIT% == x (
+if x%FDSGIT% == x goto skip_fdsgit
   if EXIST %FDSGIT% (
     set fdsrepo=%FDSGIT%
   )
-)
+:skip_fdsgit
 
 set emailto=
 if not x%EMAILGIT% == x (
@@ -29,6 +29,15 @@ if not x%EMAILGIT% == x (
 )
 
 :: parse command line arguments
+
+call :normalise %cfastrepo% 
+set cfastrepo=%temparg%
+
+if %fdsrepo% == none gotto skip_fdsrepo
+  call :normalise %fdsrepo%
+  set fdsrepo=%temparg%
+)
+:skip_fdsrepo
 
 set stopscript=0
 call :getopts %*

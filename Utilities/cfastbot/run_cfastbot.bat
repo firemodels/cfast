@@ -15,23 +15,23 @@ if %stopscript% == 1 (
   exit /b
 )
 
-call :normalise "%CD%" curdir
-call :normalise "%cfastrepo%\Utilities\cfastbot" cfastbotdir
-call :normalise "%cfastrepo%" cfastrepo
-call :normalise "%fdsrepo%" fdsrepo
+call :normalise %CD% curdir
+call :normalise %cfastrepo%\Utilities\cfastbot cfastbotdir
+call :normalise %cfastrepo% cfastrepo
+call :normalise %fdsrepo% fdsrepo
 set running=%curdir%\bot.running
 
 if not exist %running% (
-  if "%cfastbotdir%" NEQ "%curdir%" (
-    cd "%cfastrepo%"
+  if %cfastbotdir% NEQ %curdir% (
+    cd %cfastrepo%
     git fetch origin
     git pull
     copy Utilities\cfastbot\cfastbot_win.bat %curdir%
     cd %curdir%
   )
   echo 1 > %running%
-  echo cfastbot_win.bat "%cfastrepo%" "%fdsrepo%" %usematlab% %emailto%
-  call cfastbot_win.bat "%cfastrepo%" "%fdsrepo%" %usematlab% %emailto%
+  echo cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
+  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
   erase %running%
 ) else (
   echo cfastbot is currently running.

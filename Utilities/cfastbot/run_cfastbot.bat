@@ -4,6 +4,7 @@
 ::  (all command arguements are optional)
 
 set usematlab=1
+set update=1
 set stopscript=0
 
 set cfastrepo=%userprofile%\cfastgitclean
@@ -33,7 +34,7 @@ if not x%EMAILGIT% == x (
 call :normalise %cfastrepo% 
 set cfastrepo=%temparg%
 
-if %fdsrepo% == none gotto skip_fdsrepo
+if %fdsrepo% == none goto skip_fdsrepo
   call :normalise %fdsrepo%
   set fdsrepo=%temparg%
 )
@@ -56,29 +57,32 @@ set cfastbotdir=%temparg%
 call :normalise %cfastrepo% 
 set cfastrepo=%temparg%
 
-if not %fdsrepo% == none (
+if %fdsrepo% == none goto skip_fdsrepo2
   call :normalise %fdsrepo%
   set fdsrepo=%temparg%
-)
+:skip_fdsrepo2
+
 set running=%curdir%\bot.running
 
 if exist %running% goto skip_running
 
 :: get latest cfastbot
 
+    if %update% == 0 goto no_update
+    echo getting latest cfastbot
     cd %cfastrepo%
     git fetch origin
-    git pull
+    git pull 1> Nul 2>&1
     if not %cfastbotdir% == %curdir% (
       copy %cfastbotdir%\cfastbot_win.bat %curdir%
     )
     cd %curdir%
+    :no_update
 
 :: run cfastbot
 
   echo 1 > %running%
-  echo cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
-  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
+  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %update% %emailto%
   erase %running%
   goto end_running
 :skip_running
@@ -116,6 +120,10 @@ goto eof
    set valid=1
    set usematlab=0
  )
+ if /I "%1" EQU "-noupdate" (
+   set valid=1
+   set update=0
+ )
  shift
  if %valid% == 0 (
    echo.
@@ -141,6 +149,7 @@ echo -email address  - override "to" email addresses specified in repo
 if "%emailto%" NEQ "" (
 echo       (default: %emailto%^)
 )
+echo -noupdate       - do not update repository
 echo -nomatlab       - do not use matlab
 exit /b
 

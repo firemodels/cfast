@@ -7,8 +7,9 @@ set arg2=%2
 set FDSroot=%~f2
 set fdsbasename=%~n2
 
-set usematlab=%3
-set emailto=%4
+set update=%3
+set usematlab=%4
+set emailto=%5
 
 :: -------------------------------------------------------------
 ::                         set repository names
@@ -32,6 +33,8 @@ if %arg2% == none (
   if not exist %FDSroot% (
     set havefds=0
     echo ***warning: the repo %FDSroot% does not exist  
+  ) else (
+  echo   FDS repository: %FDSroot%
   )
 )
 
@@ -83,13 +86,13 @@ call %cfastroot%\Utilities\cfastbot\cfastbot_email_list.bat 1> Nul 2>&1
 
 set usematlab=%3
 if %usematlab% == 1 (
-  echo using matlab scripts
+  echo matlab: using matlab scripts
 )
 if %usematlab% == 0 (
-  echo using prebuilt matlab executables
+  echo matlab: using prebuilt matlab executables
 )
 if NOT "%emailto%" == "" (
-  echo email results to %emailto%
+  echo  email: %emailto%
   set mailToCFAST=%emailto%
 )
 
@@ -244,11 +247,14 @@ if "%cfastbasename%" == "cfastgitclean" (
 
 ::*** update cfast repository
 
+if %update% == 0 goto skip_update1
 echo             updating %cfastbasename% repository
 
 cd %cfastroot%
 
+git fetch origin
 git pull  1> %OUTDIR%\stage0.txt 2>&1
+:skip_update1
 
 
 git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilestring%
@@ -267,18 +273,23 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 if %havefds% == 0 goto skip_fdsrepo
   if %FDSbasename% == FDS-SMVgitclean (
+     if %update% == 0 goto skip_update2
      echo             reverting %FDSbasename% repository
      cd %FDSroot%
      git clean -dxf 1> Nul 2>&1
      git add . 1> Nul 2>&1
      git reset --hard HEAD 1> Nul 2>&1
+     :skip_update2
   )
 
 ::*** update FDS repository
 
+  if %update% == 0 goto skip_update3
   echo             updating %FDSbasename% repository
   cd %FDSroot%
+  git fetch origin
   git pull  1> %OUTDIR%\stage0.txt 2>&1
+  :skip_update3
 :skip_fdsrepo
 
 :: -------------------------------------------------------------

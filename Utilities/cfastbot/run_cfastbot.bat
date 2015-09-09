@@ -62,7 +62,7 @@ if not %fdsrepo% == none (
 )
 set running=%curdir%\bot.running
 
-if not exist %running% (
+if exist %running% goto skip_running
 
 :: get latest cfastbot
 
@@ -80,10 +80,11 @@ if not exist %running% (
   echo cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
   call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %emailto%
   erase %running%
-) else (
+  goto end_running
+:skip_running
   echo cfastbot is currently running.
   echo If this is not the case, erase the file %running%
-)
+:end_running
 
 goto eof
 

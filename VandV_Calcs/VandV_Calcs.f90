@@ -12,7 +12,7 @@
     integer, parameter :: do_flux_profile = 5           ! if calculating radiative heat flux at a number of distances from a fire
 
 
-    integer, parameter :: ntests = 200, nrow = 10000, ncol = 500, list_nrow = 1000, list_ncol = 100
+    integer, parameter :: ntests = 200, nrow = 1000, ncol = 7100, list_nrow = 1000, list_ncol = 100
 
     character :: base_folder*128, comparelist_file*128, partial_filename*128, filename*128
     character :: list_carray(list_nrow, list_ncol)*128, model_carray(nrow,ncol)*50, switch_id*3
@@ -90,6 +90,7 @@
         open (unit=8,file=d2_filename,form='formatted',action='read',iostat=io_error)
         call readcsv(8,model_rarray,model_carray,nrow,ncol,1,model_numr, model_numc)
         close (unit=8)
+        write (*,*) 'Read file ',trim(d2_filename)
 
         d2_calculation_type = list_rarray(ir,d2_calculation_type_column)
         d2_col_name_row = list_rarray(ir,d2_col_name_row_column)

@@ -9,6 +9,7 @@
     integer, parameter :: do_temperature_profile = 2    ! if calculating temperature profiles in a compartment
     integer, parameter :: do_pressure_correction = 3    ! if calculating pressure corrected to measurement height
     integer, parameter :: do_add_columns = 4            ! if calculating total net flows through multiple vents
+    integer, parameter :: do_flux_profile = 5           ! if calculating radiative heat flux at a number of distances from a fire
 
 
     integer, parameter :: ntests = 200, nrow = 10000, ncol = 500, list_nrow = 1000, list_ncol = 100

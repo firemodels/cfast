@@ -80,11 +80,7 @@ Steve Nowlen of Sandia National Laboratory. In particular, Tests 4, 5, and 21 we
 a correction applied for the carbon dioxide in the upper layer of the compartment. The
 uncertainty of the fuel mass flow was not documented. Several tests selected for this study had
 the same target peak heat release rate of 516~kW following a 4~min ``t-squared'' growth
-profile. The test report contains time histories of the measured HRR, for which the average,
-sustained HRR following the ramp up for Tests 4, 5, and 21 have been estimated as 510~kW, 480~kW, and 470~kW, respectively.
-Once reached, the peak HRR was maintained essentially constant
-during a steady-burn period of 6~min in Tests~4 and 5, and 16~min in Test~21. Note that in Test 21, Nowlen reports a
-``significant'' loss of effluent from the exhaust hood that could lead to an under-estimate of the HRR towards the end of the experiment.
+profile. 
 \item[Radiative Fraction:] The radiative fraction was not measured during the experiment, but
 in this study it is assumed to equal 0.35, which is typical for a smoky hydrocarbons.
 It was further assumed that the radiative fraction was about the same in
@@ -99,9 +95,10 @@ as systematic radiative exchange measurement error is reduced.
 the HGL height and temperature. For the majority of the tests, Sectors 1, 2, and 3 were used,
 all weighted evenly. For Tests 21 and 22, Sectors 1 and 3 were used, evenly weighted. Sector 2 was
 partially within the fire plume.
+item[Ventilation:] All of the tests involved forced ventilation to simulate typical nuclear power plant installation practices.
 \end{description}
 
-\begin{table}[h!]
+\begin{table}[!ht]
 \caption{Summary of FM/SNL Experiments.}
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|c|}
@@ -138,7 +135,7 @@ No.     &  Type             & HRR (kW)      & Position      & Rate (ach)        
 \label{FM_SNL_Matrix}
 \end{table}
 
-\begin{figure}
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/FM_SNL/FM_SNL_Drawing}\\
 \end{center}
@@ -146,26 +143,15 @@ No.     &  Type             & HRR (kW)      & Position      & Rate (ach)        
  \label{fig:FMSNL_Detailed}
 \end{figure}
 
-All of the tests involved forced ventilation to simulate typical nuclear power plant installation practices.
 
-\begin{figure}[\figoptions{t}]
-\begin{center}
-\includegraphics[width=3.0in]{FIGURES/FM_SNL/FMSNL_HRR}\\
-\end{center}
-\caption{Prescribed (dotted line) and measured (solid line) heat release rate as a function of time during Test 21 of the FM/SNL test series}
- \label{fig:FMSNL_HRR}
-\end{figure}
+\clearpage
+
 
 \section{iBMB Compartment Tests}
 
-A series of small compartment kerosene pool fire experiments, conducted at the
-Institut f\"ur Baustoffe, Massivbau und Brandschutz (iBMB) of Braunschweig University of
-Technology in Germany in 2004 \cite{Klein-Helbetaling:2005}.  The results from Test 1 were
-considered here.  These experiments involved relatively large fires in a relatively small (3.6 m x 3.6 m x 5.7 m) concrete enclosure. Figure  \ref{fig:iBMB_Pool_Detailed} shows plan, side and perspective schematic drawings
-of the experimental arrangement, including the location of the fuel pan, which was located at the
-center of the compartment.
+A series of small compartment kerosene pool fire experiments, conducted at the Institut f\"ur Baustoffe, Massivbau und Brandschutz (iBMB) of Braunschweig University of Technology in Germany in 2004 ~\cite{Klein-Helbetaling:2005}. These experiments involved relatively large fires in a relatively small (3.6 m by 3.6 m by 5.7 m) concrete enclosure. Figure~\ref{fig:iBMB_Pool_Detailed} shows plan, side and perspective schematic drawings of the experimental arrangement, including the location of the fuel pan, which was located at the center of the compartment.
 
-\begin{figure}
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/iBMB/iBMB_Pool}\\
 \end{center}
@@ -173,20 +159,9 @@ center of the compartment.
  \label{fig:iBMB_Pool_Detailed}
 \end{figure}
 
- Only a portion of Test 1 was selected for consideration in the present study, because a significant amount of data was lost in Test 2, and the measured ${\dQ}$  during Test 3 exhibited significant amounts of fluctuation. Five types of measurements that were conducted during the test series were used in the model evaluation reported here.  These included the HGL temperature and depth, the temperature of targets and compartment surfaces, and heat flux. In addition, figure \ref{fig:iBMB_HRR} shows the heat release rate for Test 1, which was estimated from a mass loss rate measurement.  In this calculation, the heat of combustion and the combustion efficiency were taken as 42.8~MJ/kg and 1, respectively, as suggested by Refs.~\cite{NRCNUREG1824, Riese:2004}.  There were several reported difficulties in measuring the mass loss rate, including data loss due to an instrument malfunction and significant fluctuations in the measured mass loss rate. Due to these measurement issues and because the combustion efficiency was not well-characterized, the ${\dQ}$ uncertainty was assigned a relatively large expanded uncertainty of $\pm$ 25~\%~\cite{NRCNUREG1824}.
+A second series of fire experiments in 2004, conducted under the International Collaborative Fire Model Project (ICFMP) involved realistically routed cable trays inside the same concrete enclosure at iBMB~\cite{Riese:2004}. The compartment was configured slightly differently with a ceiling height of 5.6 m. A schematic diagram from plan, side, and perspective views of the experimental arrangement is shown in figure \ref{fig:iBMB_Cable_Detailed}. 
 
- \begin{figure}
-\begin{center}
-\includegraphics[width=4.0in]{FIGURES/iBMB/iBMB_HRR}\\
-\end{center}
-\caption{Estimated heat release rate for the iBMB fire experiments.}
- \label{fig:iBMB_HRR}
-\end{figure}
-
-A second series of fire experiments in 2004, conducted under the International Collaborative Fire Model Project (ICFMP) involved realistically routed cable
-trays inside the same concrete enclosure at iBMB \cite{Riese:2004}. The compartment was configured slightly differently with a ceiling height of 5.6 m. A schematic diagram from plan, side, and perspective views of the experimental arrangement is shown in figure \ref{fig:iBMB_Cable_Detailed}. Six types of measurements conducted during the test series were used in the evaluation conducted here, including the HGL temperature and depth, oxygen gas concentration, the temperature of targets and compartment surfaces, and heat flux.
-
-\begin{figure}
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/iBMB/iBMB_Cable}\\
 \end{center}
@@ -194,18 +169,7 @@ trays inside the same concrete enclosure at iBMB \cite{Riese:2004}. The compartm
  \label{fig:iBMB_Cable_Detailed}
 \end{figure}
 
-The results of four tests were
-available, of which one has been used in the current study.
-These tests were conducted primarily for the evaluation of cable ignition and flame spread.
-The results were erratic, and no replicate experiments were performed. Given the primitive
-nature of the ignition and spread algorithms within the models, it was decided that only
-a qualitative analysis would be possible with the data from three of the four experiments.
-However, in one experiment, the first 20 minutes involved a fairly well-characterized ethanol
-pool fire burning on the opposite side of the compartment from the cable tray. This part of
-the experiment has been used as part of the model evaluation.
-
-The first part of the test consisted of preheating the cable trays in the room with a 1 m$^2$ round pan on the floor filled with ethanol (ethyl alcohol) used as the preheating source.  At 30 min, a propane gas burner was used as the fire source; this was not considered because only the first 20 min of the test was used in this validation study.
-Exhaust products were collected in an exhaust duct and the $\dQ$  was measured using the oxygen calorimetry.  For the purpose of this study, the measured $\dQ$ was used as direct input to the various fire models.  The first 20 min of data were used for the model evaluation. After 20 min, the  $\dQ$ became relatively noisy.  Figure \ref{fig:iBMB_HRR} shows the HRR. The relative combined expanded uncertainty was assigned a value of $\pm$15 \%, consistent with typical values of this parameter \cite{NRCNUREG1824}.
+\clearpage
 
 \section{LLNL Enclosure Tests}
 
@@ -304,7 +268,7 @@ For the second test series, room furnishings consisted of a 1.37 m wide x 1.91 m
 
 \section{NBS Multi-Compartment Test Series}
 
-The National Bureau of Standards (NBS, former name of NIST) Multi-Compartment Test Series consisted of 45 fire tests representing 9 different sets of conditions were conducted in a three-room suite.  The experiments were conducted in 1985 and are described in detail in reference \cite{Peacock:1988}.  The suite consisted of two relatively small rooms, connected via a relatively long corridor. Total volume of the structure was approximately 100 m$^2$. The fire source, a gas burner, was located against the rear wall of one of the small compartments as seen in Figure \ref{fig:NBS_100kW_fire} for a 100 kW fire.  Figures \ref{fig:NBS_Summary} and \ref{fig:NBS_Detailed} presents the experimental arrangement in the form of plan, side and perspective schematic drawings of the compartments. Fire tests of 100 kW, 300 kW and 500 kW were conducted. For the current  study, three 100 kW fire experiments have been used, including Test 100A from Set 1, Test 100O from Set 2, and Test 100Z from Set 4. For the NBS Multi-room series, Tests 100A, 100O and 100Z were selected for study, because they were constructively used in a previous validation study [\cite{EPRI}, and because these tests had  the steadiest values of measured heat release rate during the steady burning period. The selected data are also available in Reference \cite{EPRI}.   Reference \cite{NRCNUREG1824} provides information used as model input for simulation of the NBS tests, including information on the compartment, the fire, the ventilation, and ambient conditions. The data in the NBS data set was acquired every 10 s with a 6 s time-average.  This time-averaging interval was somewhat smaller than all of the other experimental series, which were time-averaged over a 10 s interval.
+The National Bureau of Standards (NBS, former name of NIST) Multi-Compartment Test Series consisted of 45 fire tests representing 9 different sets of conditions were conducted in a three-room suite.  The experiments were conducted in 1985 and are described in detail in reference \cite{Peacock:1988}.  The suite consisted of two relatively small rooms, connected via a relatively long corridor. Total volume of the structure was approximately 100 m$^2$. The fire source, a gas burner, was located against the rear wall of one of the small compartments as seen in Figure \ref{fig:NBS_100kW_fire} for a 100 kW fire.  Figure~\ref{fig:NBS_Detailed} presents the experimental arrangement in the form of plan, side and perspective schematic drawings of the compartments. Fire tests of 100 kW, 300 kW and 500 kW were conducted. For the current  study, three 100 kW fire experiments have been used, including Test 100A from Set 1, Test 100O from Set 2, and Test 100Z from Set 4. For the NBS Multi-room series, Tests 100A, 100O and 100Z were selected for study, because they were constructively used in a previous validation study [\cite{EPRI}, and because these tests had  the steadiest values of measured heat release rate during the steady burning period. The selected data are also available in Reference \cite{EPRI}.   Reference \cite{NRCNUREG1824} provides information used as model input for simulation of the NBS tests, including information on the compartment, the fire, the ventilation, and ambient conditions. The data in the NBS data set was acquired every 10 s with a 6 s time-average.  This time-averaging interval was somewhat smaller than all of the other experimental series, which were time-averaged over a 10 s interval.
 
 \begin{figure}
 \begin{center}
@@ -316,31 +280,12 @@ The National Bureau of Standards (NBS, former name of NIST) Multi-Compartment Te
 
 \begin{figure}[\figoptions{t}]
 \begin{center}
-\includegraphics[width=5.0in]{FIGURES/NBS/NBS_Summary}\\
-\end{center}
-\caption{Overview of the NBS Test Configuration.}
- \label{fig:NBS_Summary}
-\end{figure}
-
-\begin{figure}[\figoptions{t}]
-\begin{center}
 \includegraphics[width=6.5in]{FIGURES/NBS/NBS_Drawing}\\
 \end{center}
 \caption{Plan, side and perspective schematic drawings of the NBS experimental arrangement, including the burner.}
  \label{fig:NBS_Detailed}
 \end{figure}
 
-Figures \ref{fig:NBS_HRR} show the experimentally measured $\dQ$ as a function of time during Tests 100A and 100Z, respectively, of the NBS multi-room test series, typically averaging about 100 kW.  In these two tests, for which the door was open, the $\dQ$ during the steady burning period measured via oxygen consumption calorimetry was about 110 kW $\pm$ 17 kW ($\pm$ 15 \%). The combined relative expanded (2$\sigma$) uncertainty in the calorimetric  $\dQ$ is assigned a value of $\pm$~15~\%, consistent with the replicate measurements made during the experimental series and the uncertainty typical of oxygen consumption calorimetry. This value is also consistent with the measurement variation evident in the figures.  It was assumed that the closed door test (Test 100O) had the same $\dQ$ as the open door tests~\cite{NRCNUREG1824}.
-
-\begin{figure}[\figoptions{t}]
-\begin{center}
-\begin{tabular}{cc}
-\includegraphics[width=3.0in]{FIGURES/NBS/NBS_HRR_100A} & \includegraphics[width=3.0in]{FIGURES/NBS/NBS_HRR_100Z}\\
-\end{tabular}
-\end{center}
-\caption{Prescribed and measured heat release rate as a function of time during Tests 100A and 100Z of the NBS multi-room test series.}
- \label{fig:NBS_HRR}
-\end{figure}
 
 The specified or prescribed  $\dQ$ is also shown in the figures.   The mass flow of the fuel (natural gas in Test 100A, or natural gas mixed with acetylene in Tests 100O and 100Z) was not metered; rather, the effluent was captured in a hood mounted above the open door in the corridor and the   was measured using oxygen consumption calorimetry.  The manner by which the fuel flow was controlled is not documented.  In Test 100A, candles were used to increase smoke in the upper layer to promote visualization. In Tests 100O and 100Z, acetylene was used (about 20 \% by volume) to produce smoke.  In those tests, the flow of natural gas and acetylene were adjusted to obtain approximately the same $\dQ$  as in Test 100A.  The addition of acetylene increased the radiative fraction of the fire.
 
@@ -444,7 +389,7 @@ SDC39     &  Mattress     &  Bedroom        &  200              &  180         &
 
 \section{NIST / NRC Test Series}
 
-These experiments, sponsored by the US NRC and conducted at NIST, consisted of 15 large-scale experiments performed in June 2003. All 15 tests were included in the validation study. The experiments are documented in Ref.~\cite{Hamins:2005}. The fire sizes ranged from 350 kW to 2.2 MW in a compartment with dimensions 21.7~m by 7.1~m by 3.8~m high, designed to represent a compartment in a nuclear power plant containing power and control cables. A photo of the fire seen through the compartment doorway is shown in figure \ref{fig:NISTNRC_1MW_fire}. Figure \ref{fig:NISTNRC_Summary} shows the important features of the test hall. Figure \ref{fig:NISTNRC_Detailed} shows detailed plan, side and perspective schematic diagrams of the experimental arrangement. The walls and ceiling were covered with two layers of marinate boards, each layer 0.0125~m thick. The floor was covered with one layer of gypsum board on top of a layer of plywood. Thermophysical and optical properties of the marinate and other materials used in the compartment are given in reference \cite{Hamins:2005}. The room had one door and a mechanical air injection and extraction system. Ventilation conditions, the fire size, and fire location were varied. Numerous measurements (approximately 350 per test) were made including gas and surface temperatures, heat fluxes and gas velocities. Detailed schematic diagrams of the experimental arrangement are shown in figure \ref{fig:NISTNRC_Detailed}. Table \ref{tab:NISTNRC_Matrix} shows the experimental conditions for all 15 tests.
+These experiments, sponsored by the US NRC and conducted at NIST, consisted of 15 large-scale experiments performed in June 2003. All 15 tests were included in the validation study. The experiments are documented in Ref.~\cite{Hamins:2005}. The fire sizes ranged from 350 kW to 2.2 MW in a compartment with dimensions 21.7~m by 7.1~m by 3.8~m high, designed to represent a compartment in a nuclear power plant containing power and control cables. A photo of the fire seen through the compartment doorway is shown in figure \ref{fig:NISTNRC_1MW_fire}. Figure \ref{fig:NISTNRC_Detailed} shows detailed plan, side and perspective schematic diagrams of the experimental arrangement. The walls and ceiling were covered with two layers of marinate boards, each layer 0.0125~m thick. The floor was covered with one layer of gypsum board on top of a layer of plywood. Thermophysical and optical properties of the marinate and other materials used in the compartment are given in reference \cite{Hamins:2005}. The room had one door and a mechanical air injection and extraction system. Ventilation conditions, the fire size, and fire location were varied. Numerous measurements (approximately 350 per test) were made including gas and surface temperatures, heat fluxes and gas velocities. Detailed schematic diagrams of the experimental arrangement are shown in figure \ref{fig:NISTNRC_Detailed}. Table \ref{tab:NISTNRC_Matrix} shows the experimental conditions for all 15 tests.
 
 \begin{figure}[\figoptions{t}]
 \begin{center}
@@ -452,14 +397,6 @@ These experiments, sponsored by the US NRC and conducted at NIST, consisted of 1
 \end{center}
 \caption{Photograph of a 1 MW heptane fire seen through the open doorway. Photo provided by Anthony Hamins, NIST.}
  \label{fig:NISTNRC_1MW_fire}
-\end{figure}
-
-\begin{figure}[\figoptions{t}]
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/NIST_NRC/NISTNRC_Summary}\\
-\end{center}
-\caption{Cross-section View of the NIST NRC Test Configuration.}
- \label{fig:NISTNRC_Summary}
 \end{figure}
 
 \begin{figure}[\figoptions{t}]
@@ -511,15 +448,7 @@ The compartment had a 2 m by 2 m door in the middle of the west wall. Some of th
 
 The mechanical ventilation and exhaust was used during some test, providing about 5 air changes per hour. The supply duct was positioned on the long wall, about 2 m off the floor. An exhaust duct of equal area to the supply duct was positioned on the opposite wall at a comparable location. The flow rates through the supply and exhaust ducts were measured in detail during breaks in the testing, in the absence of a fire. During the tests, the flows were monitored with single bi-directional probes during the tests themselves.
 
-A single nozzle was used to spray liquid hydrocarbon fuels onto a 1 m by 2 m fire pan that was about 0.02 m deep. The test plan originally called for the use of two nozzles to provide the fuel spray. Experimental observation suggested that the fire was more steady with the use of a single nozzle. In addition, it was observed that the actual extent of the liquid pool was well-approximated by a 1 m circle in the center of the pan. For safety reasons, the fuel flow was terminated when the lower-layer oxygen concentration dropped to approximately 15~\% by volume. The fuel used in 14 of the tests was heptane, while toluene was used for one test. The HRR was determined using oxygen consumption calorimetry (figure \ref{fig:NISTNRC_HRR} shows a sample heat release rate for one of the tests in the series). The recommended uncertainty values for HRR were 17~\% for all of the tests. The radiative fraction was measured in an independent study for the same fuels using the same spray burner as used in the test series \cite{Hamins:2003}. The value of the radiative fraction and its uncertainty were reported as 0.44 $\pm$ 16 \% and 0.40 $\pm$ 23 \% for heptane and toluene, respectively. Further details of the model inputs used for these simulations are included in reference \cite{NRCNUREG1824}.
-
-\begin{figure}[\figoptions{t}]
-\begin{center}
-\includegraphics[width=3.0in]{FIGURES/NIST_NRC/NISTNRC_HRR}\\
-\end{center}
-\caption{Measured and prescribed heat release rate as a function of time during Test 3 of the NIST NRC test series}
- \label{fig:NISTNRC_HRR}
-\end{figure}
+A single nozzle was used to spray liquid hydrocarbon fuels onto a 1 m by 2 m fire pan that was about 0.02 m deep. 
 
 
 \section{PRISME Project}
@@ -840,15 +769,7 @@ Vettori~\cite{Vettori:1} analyzed a series of 45 experiments conducted at NIST t
 
 \section{VTT Large Hall Tests}
 
-The experiments are described in reference~\cite{Hostikka:2001}. The series consisted three unique fire scenarios with replications for a total of 8 experiments. The experiments were undertaken to study the movement of smoke in a large hall with a sloped ceiling. The tests were conducted inside the VTT Fire Test Hall, with dimensions of 19 m high by 27 m long by 14 m wide. Figure \ref{fig:VTT_cutaway} shows the important features of the test hall. Figure \ref{fig:VTT_Schematic} shows detailed plan, side and perspective schematic diagrams of the experimental arrangement. Each test involved a single heptane pool fire, ranging from 2~MW to 4~MW. Figure \ref{fig:VTT_2MW_fire} is a photo of a 2~MW fire. Four types of measurements were used in the present evaluation -- the hot gas layer temperature and depth, average flame height and the plume temperature. Three vertical arrays of thermocouples, plus two thermocouples in the plume, were compared to model simulation results. The hot gas layer temperature and height were reduced from an average of the three thermocouple arrays using a standard algorithm. The ceiling jet temperature was not considered, because the ceiling in the test hall is not flat, and the model algorithm is not appropriate for these conditions.
-
-\begin{figure}[\figoptions{b}]
-\begin{center}
-\includegraphics[width=5.0in]{FIGURES/VTT/VTT_Cut_Away}\\
-\end{center}
-\caption{Cut-Away View of Case 2 of the VTT Large Hall Tests.}
- \label{fig:VTT_cutaway}
-\end{figure}
+The experiments are described in reference~\cite{Hostikka:2001}. The series consisted three unique fire scenarios with replications for a total of 8 experiments. The experiments were undertaken to study the movement of smoke in a large hall with a sloped ceiling. The tests were conducted inside the VTT Fire Test Hall, with dimensions of 19 m high by 27 m long by 14 m wide. Figure \ref{fig:VTT_Schematic} shows detailed plan, side and perspective schematic diagrams of the experimental arrangement. Each test involved a single heptane pool fire, ranging from 2~MW to 4~MW. Figure \ref{fig:VTT_2MW_fire} is a photo of a 2~MW fire. Four types of measurements were used in the present evaluation -- the hot gas layer temperature and depth, average flame height and the plume temperature. Three vertical arrays of thermocouples, plus two thermocouples in the plume, were compared to model simulation results. The hot gas layer temperature and height were reduced from an average of the three thermocouple arrays using a standard algorithm. The ceiling jet temperature was not considered, because the ceiling in the test hall is not flat, and the model algorithm is not appropriate for these conditions.
 
 \begin{figure}[\figoptions{b}]
 \begin{center}

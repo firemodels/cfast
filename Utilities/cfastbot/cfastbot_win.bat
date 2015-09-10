@@ -9,7 +9,8 @@ set fdsbasename=%2
 
 set usematlab=%3
 set update=%4
-set emailto=%5
+set skipdebug=%5
+set emailto=%6
 
 :: -------------------------------------------------------------
 ::                         set repository names
@@ -298,16 +299,19 @@ if %havefds% == 0 goto skip_fdsrepo
 :: -------------------------------------------------------------
 
 echo Stage 1 - Building CFAST and VandV_Calcs
+
+if %skipdebug% == 1 goto skip_debug
 echo             debug cfast
 
 cd %cfastroot%\CFAST\intel_win_64_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
-make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64_db 1>> %OUTDIR%\stage1a.txt 2>&1
+make VPATH="../Source:../Include" SHELL="%ComSpec%" INCLUDE="../Include" -f ..\makefile intel_win_64_db 1>> %OUTDIR%\stage1a.txt 2>&1
 
 
 call :does_file_exist cfast7_win_64_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
 
 call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
+:skip_debug
 
 echo             release cfast
 
@@ -376,6 +380,7 @@ call :GET_DURATION PRELIM %PRELIM_beg%
 call :GET_TIME RUNVV_beg
 
 echo Stage 3 - Running validation cases
+if %skipdebug% == 1 goto skip_rundebug
 echo             debug
 
 cd %cfastroot%\Validation\scripts
@@ -391,6 +396,7 @@ if "%cfastbasename%" == "cfastgitclean" (
    cd %cfastroot%\Validation
    git clean -dxf 1> Nul 2>&1
 )
+:skip_rundebug
 
 echo             release
 

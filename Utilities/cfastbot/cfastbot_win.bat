@@ -317,7 +317,7 @@ echo             release cfast
 
 cd %cfastroot%\CFAST\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
-make VPATH="../Source:../Include" INCLUDE="../Include"  -f ..\makefile intel_win_64 1>> %OUTDIR%\stage1b.txt 2>&1
+make VPATH="../Source:../Include" SHELL="%ComSpec%" INCLUDE="../Include"  -f ..\makefile intel_win_64 1>> %OUTDIR%\stage1b.txt 2>&1
 
 call :does_file_exist cfast7_win_64.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"

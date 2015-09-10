@@ -6,6 +6,7 @@
 set usematlab=1
 set update=1
 set stopscript=0
+set skipdebug=0
 
 set cfastrepo=%userprofile%\cfastgitclean
 if exist ..\..\cfast_root.txt (
@@ -85,7 +86,7 @@ if exist %running% goto skip_running
 :: run cfastbot
 
   echo 1 > %running%
-  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %update% %emailto%
+  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %update% %skipdebug% %emailto%
   erase %running%
   goto end_running
 :skip_running
@@ -118,6 +119,10 @@ goto eof
    set emailto=%2
    set valid=1
    shift
+ )
+ if /I "%1" EQU "-skipdebug" (
+   set skipdebug=1
+   set valid=1
  )
  if /I "%1" EQU "-nomatlab" (
    set valid=1
@@ -154,6 +159,7 @@ echo       (default: %emailto%^)
 )
 echo -noupdate       - do not update repository
 echo -nomatlab       - do not use matlab
+echo -skipdebug      - skip debug stage
 exit /b
 
 :normalise

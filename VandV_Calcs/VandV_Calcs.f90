@@ -23,7 +23,7 @@
         d2_data_col_name_column, d2_data_column_count_column, d2_constants_count_column, d2_constants_column, d2_text_column
 
     character :: d2_filename*128, d2_ind_col_name*128, d2_data_col_names(list_ncol)*128, d2_data_col_name*128
-    integer :: d2_calculation_type, d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_data_column_count, d2x_len, d2y_len, d2ys_len(list_ncol), &
+    integer :: d2_calculation_type, d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_column_count, d2x_len, d2y_len, d2ys_len(list_ncol), &
         d2_constants_count, d2_constants(list_ncol)
 
     real :: list_rarray(list_nrow, list_ncol), model_rarray(nrow,ncol), d2x(nrow), d2y(nrow), d2ys(nrow,list_ncol)
@@ -46,6 +46,8 @@
     real :: add_columns_data(ntests,nrow,2)           ! for flow summing calculation
     integer :: ntest_add_columns, numrows_add_columns(ntests), max_numrows_add_columns
     character :: add_columns_name(ntests)*30
+    
+    logical :: columns_match
 
     ! Body of ModelVandV
     base_folder=''
@@ -86,19 +88,18 @@
     if (switch_id=='d') then
         ! read in the model data   
         d2_filename = trim(base_folder) // list_carray(ir,d2_filename_column)
-        write (*,*) ir,trim(d2_filename)
         open (unit=8,file=d2_filename,form='formatted',action='read',iostat=io_error)
         call readcsv(8,model_rarray,model_carray,nrow,ncol,1,model_numr, model_numc)
         close (unit=8)
-        write (*,*) 'Read file ',trim(d2_filename)
+        write (*,'(i0,2a)') ir,' Finished reading file ',trim(d2_filename)
 
         d2_calculation_type = list_rarray(ir,d2_calculation_type_column)
         d2_col_name_row = list_rarray(ir,d2_col_name_row_column)
         d2_ind_col_name = list_carray(ir,d2_ind_col_name_column)
         d2_ind_data_col = find_column(model_carray,nrow,ncol,d2_col_name_row,d2_ind_col_name)
         d2_data_row = list_rarray(ir,d2_data_row_column)
-        d2_data_column_count = list_rarray(ir,d2_data_column_count_column)
-        do ic = 1, d2_data_column_count
+        d2_column_count = list_rarray(ir,d2_data_column_count_column)
+        do ic = 1, d2_column_count
             d2_data_col_names(ic) = list_carray(ir,d2_data_col_name_column+ic-1)
         end do
         d2_constants_count = list_rarray(ir,d2_constants_count_column)
@@ -110,7 +111,7 @@
         call load_vector(model_rarray,model_carray,nrow,model_numr,d2_ind_data_col,d2_data_row,d2x,d2x_len)
 
         do while (len_trim(d2_data_col_names(1))>0)
-            do ic = 1,d2_data_column_count
+            do ic = 1,d2_column_count
                 call find_column_name(d2_data_col_names(ic),d2_data_col_name)
                 d2_data_data_col(ic) = find_column(model_carray,nrow,ncol,d2_col_name_row,d2_data_col_name) 
                 call load_vector(model_rarray,model_carray,nrow,model_numr,d2_data_data_col(ic),d2_data_row,d2y,d2y_len)
@@ -122,7 +123,7 @@
                 
             ! Calculations to add flow columns together
             case (do_add_columns)
-                do ic = 1,d2_data_column_count
+                do ic = 1,d2_column_count
                     if (d2x_len/=d2ys_len(ic)) then
                         write (*,*) 'Data error, x and y lengths are not equal', d2x_len, d2ys_len(ic),ic
                         stop
@@ -139,7 +140,7 @@
                 do irr = 1, d2x_len
                     add_columns_data(ntest_add_columns,irr,1) = d2x(irr)
                     add_columns_data(ntest_add_columns,irr,2) = 0.0
-                    do ic = 1, d2_data_column_count
+                    do ic = 1, d2_column_count
                         add_columns_data(ntest_add_columns,irr,2) = add_columns_data(ntest_add_columns,irr,2) + d2ys(irr,ic)
                     end do
                 end do
@@ -222,6 +223,19 @@
                     end if
                 end if
                 
+            ! Fleury heat flux profiles
+            case (do_flux_profile)
+                if (d2_column_count==d2_constants_count) then
+                    columns_match = .true.
+                    do i = 1, d2_column_count
+                        if (d2x_len/=d2ys_len(i)) then
+                            columns_match = .false.
+                        end if
+                    end do
+                    if (columns_match) then
+                        write (*,*) 'All columns match'
+                    end if
+                end if
             ! Incorrect inputs, just throw up hands and quit
             case default
             stop 'Invalid specifier for d2_calculation_type'

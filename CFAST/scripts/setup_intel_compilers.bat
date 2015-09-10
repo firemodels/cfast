@@ -1,5 +1,5 @@
 @echo off
-set size=%1
+set size=intel64
 
 IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
 

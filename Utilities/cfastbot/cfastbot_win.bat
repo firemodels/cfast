@@ -740,6 +740,10 @@ set guideout=%OUTDIR%\stage6_%guide%.txt
 
 cd %guide_dir%
 
+git describe --long --dirty > gitinfo.txt
+set /p gitrevision=<gitinfo.txt
+echo \newcommand^{\gitrevision^}^{%gitrevision%^} > ..\Bibliography\gitrevision.tex
+
 pdflatex -interaction nonstopmode %guide% 1> %guideout% 2>&1
 bibtex %guide% 1> %guideout% 2>&1
 pdflatex -interaction nonstopmode %guide% 1> %guideout% 2>&1

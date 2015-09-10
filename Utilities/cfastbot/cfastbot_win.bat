@@ -181,6 +181,21 @@ echo             found cut
 call :is_file_installed sed|| exit /b 1
 echo             found sed
 
+if %usematlab% == 0 goto skip_matlab
+
+::*** looking for matlab
+
+where matlab 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+set /p nothavematlab=<%OUTDIR%\stage_count0a.txt
+if %nothavematlab% == 0 (
+  echo             found matlab
+)
+if %nothavematlab% == 1 (
+  echo             matlab not found - looking for executables
+  set usematlab=0
+)
+:skip_matlab
+
 if %usematlab% == 1 goto skip_matlabexe
 ::*** looking for Validation
 
@@ -217,21 +232,6 @@ if %nothaveVerification% == 1 (
   set nothaveValidation=1
 )
 :skip_matlabexe
-
-if %usematlab% == 0 goto skip_matlab
-
-::*** looking for matlab
-
-where matlab 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
-set /p nothavematlab=<%OUTDIR%\stage_count0a.txt
-if %nothavematlab% == 0 (
-  echo             found matlab
-)
-if %nothavematlab% == 1 (
-  echo             matlab not found - Validation guide will not be built
-  set nothaveValidation=1
-)
-:skip_matlab
 
 :: --------------------setting up repositories ------------------------------
 

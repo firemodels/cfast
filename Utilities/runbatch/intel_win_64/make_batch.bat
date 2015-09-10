@@ -1,14 +1,6 @@
 @echo off
-
-Rem windows batch file to build smokeview from the command line
-
-IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
-
-set SETUP_IFORT_COMPILER_64=1
-
-echo Setting up compiler environment
-call "%IFORT_COMPILER14%\bin\compilervars" intel64
-:envexist
+:: setup compiler environment
+call ..\..\..\CFAST\scripts\setup_intel_compilers.bat intel64
 
 set SMV_TESTFLAG=
 set SMV_TESTSTRING=

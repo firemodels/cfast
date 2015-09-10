@@ -253,12 +253,11 @@ if %update% == 0 goto skip_update1
 echo             updating %cfastbasename% repository
 
 cd %cfastroot%
-
 git fetch origin
 git pull  1> %OUTDIR%\stage0.txt 2>&1
 :skip_update1
 
-
+cd %cfastroot%
 git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilestring%
 
 set /p revisionstring=<%revisionfilestring%

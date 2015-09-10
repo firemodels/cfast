@@ -141,13 +141,13 @@ if %nothaveICC% == 0 (
 )
 if %nothaveICC% == 1 (
   call :is_file_installed smokeview|| exit /b 1
-  echo             found pre-built smokeview (C/C++ not available to build smokeview)
+  echo             found smokeview
   set smokeview=smokeview.exe
 )
 if %havefds% == 0 (
   if %nothaveICC% == 0 (
     call :is_file_installed smokeview|| exit /b 1
-    echo             found pre-built smokeview (smokeview source not available)
+    echo             found smokeview
     set smokeview=smokeview.exe
   )
 )
@@ -332,9 +332,11 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1c.txt "Stage 1c"
 :: -------------------------------------------------------------
 
 if %nothaveICC% == 1 (
+  echo Stage 2 - Building Smokeview - skipping - C/C++ not available
   goto skip_stage2
 )
 if %havefds% == 0 (
+  echo Stage 2 - Building Smokeview - skipping - source not available
   goto skip_stage2
 )
 

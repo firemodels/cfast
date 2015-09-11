@@ -445,6 +445,8 @@ cd %cfastroot%\Validation
 copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y 1> Nul 2>&1
 ..\VandV_Calcs\\intel_win_64\VandV_Calcs_win_64.exe CFAST_Temperature_Profile_inputs.csv 1> Nul 2>&1
 copy profiles.csv Steckler_Compartment /Y 1> Nul 2>&1
+..\VandV_Calcs\\intel_win_64\VandV_Calcs_win_64.exe CFAST_Heat_Flux_Profile_inputs.csv 1> Nul 2>&1
+copy flux_profiles.csv Fleury_Heat_Flux /Y 1> Nul 2>&1
 
 
 

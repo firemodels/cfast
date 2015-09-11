@@ -5,6 +5,7 @@ if "%1"=="" goto Help
 if %1==ALL goto ALL
 if %1==ATF goto ATF
 if %1==Dunes_2000 goto Dunes2000
+if %1==Fleury_Heat_Flux goto FLeury_Heat_Flux
 if %1==FM_NBS goto FM_NBS
 if %1==FM_SNL goto FM_SNL
 if %1==High_Bay goto High_Bay
@@ -42,6 +43,28 @@ call ..\cleancfast.bat
 ..\scripts\background -u 98 ..\..\bin\cfast.exe ATF_Corridors_Mix_kW /V
 cd ..
 if %1==ATF goto end
+
+:Fleury_Heat_Flux
+echo Running Fleury Heat Flux Tests
+cd Fleury_Heat_Flux
+call ..\cleancfast.bat
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_1t1_100_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_1t1_150_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_1t1_200_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_1t1_250_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_1t1_300_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_2t1_100_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_2t1_150_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_2t1_200_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_2t1_250_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_2t1_300_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_3t1_100_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_3t1_150_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_3t1_200_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_3t1_250_kW /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Fleury_3t1_300_kW /V
+cd ..
+if %1==Fleury_Heat_Flux goto end
 
 :FM_NBS
 echo FM NBS 4 room tests 19, 21

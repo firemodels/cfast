@@ -16,7 +16,7 @@
     
     real x(numr,numc)
     integer :: maxr, maxc, i, j, nstart, iunit, nr, nc, ic, icomma, ios, numr, numc
-    character in*50000,token*100, c(numr,numc)*(*)
+    character in*150000,token*100, c(numr,numc)*(*)
     
     maxr = 0
     maxc = 0

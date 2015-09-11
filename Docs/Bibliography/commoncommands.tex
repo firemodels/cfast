@@ -93,6 +93,18 @@
         plainpages=false,
         verbose]{hyperref}
 
+\usepackage{siunitx}
+\sisetup{
+    detect-all = true,
+    input-decimal-markers = {.},
+    input-ignore = {,},
+    inter-unit-product = \ensuremath{{}\cdot{}},
+    multi-part-units = repeat,
+    number-unit-product = \text{~},
+    per-mode = fraction,
+    separate-uncertainty = true,
+}
+
 % CFAST Version String
 \newcommand{\cfastversion}{7.0.0}
 

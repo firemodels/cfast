@@ -24,30 +24,32 @@
 
     character :: d2_filename*128, d2_ind_col_name*128, d2_data_col_names(list_ncol)*128, d2_data_col_name*128
     integer :: d2_calculation_type, d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_column_count, d2x_len, d2y_len, d2ys_len(list_ncol), &
-        d2_constants_count, d2_constants(list_ncol)
+        d2_constants_count
+    real :: list_rarray(list_nrow, list_ncol), model_rarray(nrow,ncol), d2x(nrow), d2y(nrow), d2ys(nrow,list_ncol), d2_constants(list_ncol)
 
-    real :: list_rarray(list_nrow, list_ncol), model_rarray(nrow,ncol), d2x(nrow), d2y(nrow), d2ys(nrow,list_ncol)
     character(30) :: print_array(32000)
     integer :: position
 
     ! Calculation specific variables
-    real :: activation_time                         ! for activation time calculation
+    real :: activation_time                             ! for activation time calculation
 
-    real :: temperature_profile_data(ntests,3)      ! for temperature profile calculation
+    real :: temperature_profile_data(ntests,3)          ! for temperature profile calculation
     character :: temperature_profile_name(ntests)*30
     integer ::  ntest_temperature_profile
 
-    real :: pressure_correction_data(ntests,nrow,2) ! for pressure correction calculation
+    real :: pressure_correction_data(ntests,nrow,2)     ! for pressure correction calculation
     real :: tu1, tl1, h1, delta_pf1, rhou1, rhol1, delta_p1, tu2, tl2, h2, delta_pf2, rhou2, rhol2, delta_p2
     real :: delta_py, rhoinf, g, hflr, y
     character :: pressure_correction_name(ntests)*30
     integer :: ntest_pressure_correction, numrows_pressure_correction(ntests), max_numrows_pressure_correction
     
-    real :: add_columns_data(ntests,nrow,2)           ! for flow summing calculation
+    real :: add_columns_data(ntests,nrow,2)             ! for flow summing calculation
     integer :: ntest_add_columns, numrows_add_columns(ntests), max_numrows_add_columns
     character :: add_columns_name(ntests)*30
     
-    logical :: columns_match
+    real :: flux_profile_data(ntests,nrow,2), d2ysum    ! for heat flux profile calculation
+    character :: flux_profile_name(ntests)*30
+    integer ::  ntest_flux_profile, numrows_flux_profile(ntests), max_numrows_flux_profile, irrcount
 
     ! Body of ModelVandV
     base_folder=''
@@ -80,8 +82,11 @@
     ntest_temperature_profile = 0
     ntest_pressure_correction = 0
     ntest_add_columns = 0
+    ntest_flux_profile = 0
     max_numrows_pressure_correction = 0
     max_numrows_add_columns = 0
+    max_numrows_flux_profile = 0
+    
 10  ir = ir + 1
     switch_id = list_carray(ir,switch_id_column)
 
@@ -226,16 +231,22 @@
             ! Fleury heat flux profiles
             case (do_flux_profile)
                 if (d2_column_count==d2_constants_count) then
-                    columns_match = .true.
-                    do i = 1, d2_column_count
-                        if (d2x_len/=d2ys_len(i)) then
-                            columns_match = .false.
-                        end if
+                    ntest_flux_profile = ntest_flux_profile + 1
+                    flux_profile_name(ntest_flux_profile) = list_carray(ir,d2_text_column)
+                    numrows_flux_profile(ntest_flux_profile) = d2_column_count
+                    max_numrows_flux_profile = max(max_numrows_flux_profile,numrows_flux_profile(ntest_flux_profile))
+                    do i = 1,d2_column_count
+                        irrcount = 0
+                        d2ysum = 0.
+                        do irr = d2x_len/2, d2x_len
+                            irrcount = irrcount + 1
+                            d2ysum = d2ysum + d2ys(irr,i)
+                        end do
+                        flux_profile_data(ntest_flux_profile,i,1) = d2_constants(i)
+                        flux_profile_data(ntest_flux_profile,i,2) = d2ysum/irrcount
                     end do
-                    if (columns_match) then
-                        write (*,*) 'All columns match'
-                    end if
                 end if
+                
             ! Incorrect inputs, just throw up hands and quit
             case default
             stop 'Invalid specifier for d2_calculation_type'
@@ -246,6 +257,7 @@
     if (ir.le.list_numr.and.list_carray(ir,1).ne.'End') go to 10
     close (unit=9)
     
+    ! Summed flows output
     if (ntest_add_columns>=1) then
         open (unit=10,file='summed_flows.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
@@ -267,7 +279,8 @@
         end if
         close (unit=10)
     end if
-        
+     
+    ! Temperature profile output
     if (ntest_temperature_profile>=1) then
         open (unit=10,file='profiles.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
@@ -281,6 +294,7 @@
         end if
     end if
     
+    ! Pressure height correction output
     if (ntest_pressure_correction>=1) then
         open (unit=10,file='pressures.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
@@ -302,6 +316,30 @@
         end if
         close (unit=10)
     end if
+    
+    ! Heat flux profile output
+    if (ntest_flux_profile>=1) then
+        open (unit=10,file='flux_profile.csv',form='formatted', action='write', iostat=io_error)
+        if (io_error==0) then
+            write (10,'(2000(a,'',''))') ('DIST_'//trim(flux_profile_name(ic)),'FLUX_'//trim(flux_profile_name(ic)), ic=1,ntest_flux_profile)
+            write (10,'(2000(a,'',''))') ('m','KW/m^2', ic=1,ntest_flux_profile)
+            do irr = 1, max_numrows_flux_profile
+                position = 0
+                do it = 1, ntest_flux_profile
+                    if (irr<=numrows_flux_profile(it)) then
+                        call SSaddtolist(position,1,flux_profile_data(it,irr,1),' ',print_array)
+                        call SSaddtolist(position,1,flux_profile_data(it,irr,2),' ',print_array)
+                    else
+                        call SSaddtolist(position,2,0.0,'NaN',print_array)
+                        call SSaddtolist(position,2,0.0,'NaN',print_array)
+                    end if
+                end do
+                    call SSprintresults(10,position,print_array)
+            end do
+        end if
+        close (unit=10)
+    end if
+        
 
     end program VandV_Calcs
 

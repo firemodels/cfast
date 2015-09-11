@@ -14,7 +14,7 @@
 
     integer, parameter :: ntests = 200, nrow = 1000, ncol = 7100, list_nrow = 1000, list_ncol = 100
 
-    character :: base_folder*128, comparelist_file*128, partial_filename*128, filename*128
+    character :: base_folder*128, comparelist_file*128, partial_filename*128, filename*128, old_filename*128
     character :: list_carray(list_nrow, list_ncol)*128, model_carray(nrow,ncol)*50, switch_id*3
 
     integer list_numr, list_numc, model_numr, model_numc, find_column, io_error, ir, ic, it, i, istat, irr
@@ -86,6 +86,7 @@
     max_numrows_pressure_correction = 0
     max_numrows_add_columns = 0
     max_numrows_flux_profile = 0
+    old_filename = ' '
     
 10  ir = ir + 1
     switch_id = list_carray(ir,switch_id_column)
@@ -93,10 +94,18 @@
     if (switch_id=='d') then
         ! read in the model data   
         d2_filename = trim(base_folder) // list_carray(ir,d2_filename_column)
-        open (unit=8,file=d2_filename,form='formatted',action='read',iostat=io_error)
-        call readcsv(8,model_rarray,model_carray,nrow,ncol,1,model_numr, model_numc)
-        close (unit=8)
-        write (*,'(i0,2a)') ir,' Finished reading file ',trim(d2_filename)
+        if (old_filename/=d2_filename) then
+            open (unit=8,file=d2_filename,form='formatted',action='read',iostat=io_error)
+            if (io_error==0) then
+                call readcsv(8,model_rarray,model_carray,nrow,ncol,1,model_numr, model_numc)
+                close (unit=8)
+                write (*,'(i0,2a)') ir,' Finished reading file ',trim(d2_filename)
+                old_filename = d2_filename
+            else
+                write (*,'(a,i0)') 'Error opening file, iostat = ',io_error
+                stop
+            endif
+        end if
 
         d2_calculation_type = list_rarray(ir,d2_calculation_type_column)
         d2_col_name_row = list_rarray(ir,d2_col_name_row_column)
@@ -319,7 +328,7 @@
     
     ! Heat flux profile output
     if (ntest_flux_profile>=1) then
-        open (unit=10,file='flux_profile.csv',form='formatted', action='write', iostat=io_error)
+        open (unit=10,file='flux_profiles.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
             write (10,'(2000(a,'',''))') ('DIST_'//trim(flux_profile_name(ic)),'FLUX_'//trim(flux_profile_name(ic)), ic=1,ntest_flux_profile)
             write (10,'(2000(a,'',''))') ('m','KW/m^2', ic=1,ntest_flux_profile)

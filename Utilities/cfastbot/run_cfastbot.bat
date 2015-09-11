@@ -9,7 +9,7 @@ set stopscript=0
 set skipdebug=0
 
 set cfastrepo=%userprofile%\cfastgitclean
-if exist ..\..\cfast_root.txt (
+if exist .cfast_git (
   set cfastrepo=..\..
 )
 if x%CFASTGIT% == x goto skip_cfastgit

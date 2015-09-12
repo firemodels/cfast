@@ -528,7 +528,7 @@ contains
             end if
             svect(3) = targptr%center(3) - zfire
             cosang = 0.0_eb
-            s = max(dnrm2(3,svect,1),objclen(ifire))
+            s = max(dnrm2(3,svect,1),mx_hsep)
             if(s/=0.0_eb)then
                 cosang = -ddot(3,svect,1,targptr%normal(1),1)/s
             endif

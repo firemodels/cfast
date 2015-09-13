@@ -5,15 +5,15 @@ VERSN,7,CFAST Simulation
 TIMES,1800,50,10,10
 EAMB,293.15,101325,0
 TAMB,293.15,101325,0,50
+ADIAB
 !!
 !!Material Properties
 !!
-MATL,GYPSUM,0.16,900,790,0.016,0.9,Gypsum Board (5/8 in)
 MATL,STEELSHT,48,559,7854,0.0015,0.9,"Steel, Plain Carbon (1/16 in)"
 !!
 !!Compartment keywords
 !!
-COMPA,Compartment 1,100,100,100,0,0,0,GYPSUM,OFF,GYPSUM,50,50,50
+COMPA,Compartment 1,100,100,100,0,0,0,OFF,OFF,OFF,50,50,50
 !!
 !!Vent keywords
 !!

@@ -32,7 +32,7 @@ addpath 'scripts'
 
 Dataplot_Inputs_File = [pwd,'/CFAST_validation_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Validation/'];
-Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/FIGURES/'];
+Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];
 Output_File = [pwd, '/CFAST_validation_scatterplot_output.csv'];
 Stats_Output = 'Validation';
@@ -43,7 +43,7 @@ Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/
 NRC_Options = true;
 Append_To_Scatterplot_Title = ' (CFAST)';
 
-[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir,'Fleury Heat Flux');
+[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);
 scatplot(saved_data, drange, ...
          'Scatterplot_Inputs_File', Scatterplot_Inputs_File, ...
          'Manuals_Dir', Manuals_Dir, ...

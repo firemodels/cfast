@@ -53,6 +53,45 @@ mkdir "%cfaststartmenu%\Guides"
 "%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Software Development and Model Evaluation Guide.lnk" /T:"%CFASTBINDIR%\Documents\Validation_Guide.pdf"    /A:C >NUL
 "%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Configuration Management.lnk"                        /T:"%CFASTBINDIR%\Documents\Configuration_Guide.pdf" /A:C >NUL
 "%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\CEdit.lnk"                                                        /T:"%CFASTBINDIR%\CEdit.exe"                         /A:C >NUL
+"%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Uninstall.lnk"                                                    /T:"%CFASTBINDIR%\Uninstall\uninstall.bat"           /A:C >NUL
+
+:: ----------- setting up uninstall file
+
+echo.
+echo *** Setting up Uninstall script.
+echo echo.                                                                >> Uninstall\uninstall_base.bat
+
+:: remove smokeview path and directory
+echo if %%fdsinstalled%% == 1 goto skip2                                  >> Uninstall\uninstall_base.bat
+echo echo Removing directory, %SMVBINDIR%, from the System Path           >> Uninstall\uninstall_base.bat
+echo call "%CFASTBINDIR%\Uninstall\set_path.exe" -s -b -r "%SMVBINDIR%"   >> Uninstall\uninstall_base.bat
+echo rmdir /s /q "%SMVBINDIR%"                                            >> Uninstall\Uninstall_base.bat
+echo :skip2                                                               >> Uninstall\uninstall_base.bat
+
+:: remove cfast path and directory
+echo echo Removing directory, %CFASTBINDIR% , from the System Path        >> Uninstall\uninstall_base.bat
+echo call "%CFASTBINDIR%\Uninstall\set_path.exe" -s -b -r "%CFASTBINDIR%" >> Uninstall\uninstall_base.bat
+echo echo.                                                                >> Uninstall\uninstall_base.bat
+echo echo Removing %CFASTBINDIR%                                          >> Uninstall\uninstall_base.bat
+echo rmdir /s /q "%CFASTBINDIR%"                                          >> Uninstall\Uninstall_base.bat
+echo pause                                                                >> Uninstall\Uninstall_base.bat
+
+echo echo *** Uninstall complete                                          >> Uninstall\uninstall_base.bat
+echo pause>Nul                                                            >> Uninstall\uninstall_base.bat
+
+type Uninstall\uninstall_base2.bat                                        >> Uninstall\uninstall_base.bat
+erase Uninstall\uninstall_base2.bat
+
+echo "%CFASTBINDIR%\Uninstall\uninstall.vbs"                              >> Uninstall\uninstall.bat
+echo echo Uninstall complete                                              >> Uninstall\uninstall.bat
+echo pause                                                                >> Uninstall\uninstall.bat
+
+set ELEVATE_APP=%CFASTBINDIR%\Uninstall\Uninstall_base.bat
+set ELEVATE_PARMS=
+echo Set objShell = CreateObject("Shell.Application")                       > Uninstall\uninstall.vbs
+echo Set objWshShell = WScript.CreateObject("WScript.Shell")               >> Uninstall\uninstall.vbs
+echo Set objWshProcessEnv = objWshShell.Environment("PROCESS")             >> Uninstall\uninstall.vbs
+echo objShell.ShellExecute "%ELEVATE_APP%", "%ELEVATE_PARMS%", "", "runas" >> Uninstall\uninstall.vbs
 
 erase "%CFASTBINDIR%"\set_path.exe
 erase "%CFASTBINDIR%"\shortcut.exe

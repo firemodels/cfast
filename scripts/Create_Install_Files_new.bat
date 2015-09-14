@@ -1,6 +1,7 @@
+@echo off
 
-set bindir=%svn_root%\bin
-set docdir=%svn_root%\Docs
+set bindir=%git_root%\bin
+set docdir=%git_root%\Docs
 
 echo.
 echo ***making directories
@@ -10,6 +11,10 @@ if exist %DISTDIR% rmdir /s /q %DISTDIR%
 mkdir %DISTDIR%
 mkdir %DISTDIR%\Examples
 mkdir %DISTDIR%\Documents
+
+set SMVDISTDIR=%DISTDIR%\..\SMV6
+if exist %SMVDISTDIR% rmdir /s /q %SMVDISTDIR%
+mkdir %SMVDISTDIR%
 
 echo.
 echo ***Copying executables
@@ -71,10 +76,10 @@ echo.
 echo ***Copying Smokeview files
 echo.
 
-call :COPY  %bindir%\objects.svo %DISTDIR%\
-call :COPY  %bindir%\pthreadVC2_x64.dll %DISTDIR%\
-call :COPY  %bindir%\smokediff.exe %DISTDIR%\
-call :COPY  %bindir%\smokeview.exe %DISTDIR%\
+call :COPY  %bindir%\objects.svo        %SMVDISTDIR%\
+call :COPY  %bindir%\pthreadVC2_x64.dll %SMVDISTDIR%\
+call :COPY  %bindir%\smokediff.exe      %SMVDISTDIR%\
+call :COPY  %bindir%\smokeview.exe      %SMVDISTDIR%\
 
 
 

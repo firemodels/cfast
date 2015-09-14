@@ -1,4 +1,3 @@
-
 @echo off
 Title Bundle cfast for Windows
 
@@ -13,14 +12,14 @@ set distname=cfast7
 
 set CURDIR=%CD%
 cd ..
-set svn_root=%CD%
+set git_root=%CD%
 cd %CURDIR%
-set svn_drive=c:
+set git_drive=c:
 
-%svn_drive%
+%git_drive%
 
-set DISTDIR=%svn_root%\scripts\BUNDLEDIR\%installerbase%
-set bundleinfo=%svn_root%\scripts\bundleinfo
+set DISTDIR=%git_root%\scripts\BUNDLEDIR\%installerbase%
+set bundleinfo=%git_root%\scripts\bundleinfo
 
 call Create_Install_Files_new.bat
 
@@ -29,7 +28,7 @@ copy "%bundleinfo%\shortcut.exe" "%DISTDIR%\shortcut.exe"
 copy "%bundleinfo%\set_path.exe" "%DISTDIR%\set_path.exe"
 
 cd %DISTDIR%
-wzzip -a -r -P ..\%installerbase%.zip * > Nul
+wzzip -a -r -P ..\%installerbase%.zip * ..\SMV6 > Nul
 
 :: create an installation file from the zipped bundle directory
 
@@ -43,7 +42,7 @@ echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
 wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\firemodels\%distname%" -c wrapup_cfast_install.bat
 
-copy %installerbase%.exe %svn_root%\scripts\cftest.exe"
+copy %installerbase%.exe %git_root%\scripts\cftest.exe"
 
 
 echo.

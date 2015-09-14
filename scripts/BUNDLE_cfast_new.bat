@@ -24,8 +24,8 @@ set bundleinfo=%git_root%\scripts\bundleinfo
 call Create_Install_Files_new.bat
 
 copy "%bundleinfo%\wrapup_cfast_install_new.bat" "%DISTDIR%\wrapup_cfast_install.bat"
-copy "%bundleinfo%\shortcut.exe" "%DISTDIR%\shortcut.exe"
-copy "%bundleinfo%\set_path.exe" "%DISTDIR%\set_path.exe"
+copy "%bundleinfo%\shortcut.exe"                 "%DISTDIR%\shortcut.exe"
+copy "%bundleinfo%\set_path.exe"                 "%DISTDIR%\set_path.exe"
 
 cd %DISTDIR%
 wzzip -a -r -P ..\%installerbase%.zip * ..\SMV6 > Nul
@@ -37,7 +37,7 @@ echo ***Creating installer
 echo.
 
 cd %DISTDIR%\..
-echo Setup is about to install CFAST 7 > %bundleinfo%\message.txt
+echo Setup is about to install CFAST 7  > %bundleinfo%\message.txt
 echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
 wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\firemodels\%distname%" -c wrapup_cfast_install.bat

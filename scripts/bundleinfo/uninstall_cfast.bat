@@ -9,6 +9,11 @@ IF %ERRORLEVEL% NEQ 0 (
     exit
 )
 
+echo.
+echo *** Removing the association between .in and Cedcit
+assoc .in=
+ftype ceditDoc=
+
 call :is_fds_installed
 if %fdsinstalled% == 1 goto skip1
   echo.

@@ -11,10 +11,12 @@ The process of determining the degree to which a calculation method is an accura
 \end{quote}
 Simply put, verification is a check of the math; validation is a check of the physics. If the model predictions closely match the results of experiments, using whatever metric is appropriate, it is assumed by most that the model suitably describes, via its mathematical equations, what is happening. It is also assumed that the solution of these equations must be correct. So why do we need to perform model verification? Why not just skip to validation and be done with it? The reason is that rarely do model and measurement agree so well in all applications that anyone would just accept its results unquestionably. Because there is inevitably differences between model and experiment, we need to know if these differences are due to limitations or errors in the numerical solution, or the physical sub-models, or both.
 
-Whereas model validation consists mainly of comparing predictions with experimental measurements, as documented later in this guide, model verification consists of a much broader range of activities, from checking the computer program itself to comparing calculations to analytical (exact) solutions to understanding the impact on model outputs from a range of different model inputs.
+Whereas model validation consists mainly of comparing predictions with experimental measurements, as documented later in this guide, model verification consists of a much broader range of activities, from checking the computer program itself, to comparing calculations to analytical (exact) solutions, to understanding the impact on model outputs from a range of different model inputs.
+
+A series of verification test cases follow, examining the energy balance, mass balance, ventilation, heat transfer and sprinkler effects modeled by CFAST. These test cases are routinely run to ensure the calculations in the model are correct for a range of simple calculations where analytical solutions exist. The energy and mass balance examples test the underlying fundamental equations that determine conditions within a compartment in the model. The ventilation examples test the flow of gases between compartments through doors, windows, holes in floors/ceilings, and mechanical ventilation systems.  The heat transfer examples test the flow of energy through walls of compartments or to user-defined objects within a compartment. The sprinkler example tests the algorithm used to simulate the response of heat detectors and fire sprinklers in CFAST.
 
 
-\section{Thermal Equlibrium}
+\section{Energy Balance}
 
 For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment.
 
@@ -22,29 +24,29 @@ For most of the examples presented in this section, the same basic geometry is u
 
 As a simple test of the energy balance, raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the internal temperature to equilibrate to the exterior. From the ideal gas law, the pressure inside the compartment is expected to rise to
 \begin{equation}
-   P_{\rm final} = P_{\rm initial} \; \frac{T_{\rm final}}{T_{\rm initial}} = 101325 \; {\rm Pa} \times \frac{298.15 \; {\rm K}}{293.15 \; {\rm K}} = 103027.78 \; {\rm Pa} \label{eq:Temperature_Equilibrium}
+   P_{\rm final} = P_{\rm initial} \; \frac{T_{\rm final}}{T_{\rm initial}} = 101325 \; {\rm Pa} \times \frac{298.15 \; {\rm K}}{293.15 \; {\rm K}} = 103027 \; {\rm Pa} \label{eq:Temperature_Equilibrium}
 \end{equation}
-or a pressure rise of 1728.21, matching the output from CFAST.  Figure \ref{fig:Temperature_Equilibrium} shows the simulated conditions for this test.
+or a pressure rise of 1728 Pa, matching the output from CFAST.  Figure \ref{fig:Temperature_Equilibrium} shows the simulated conditions for this test.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_temp} &
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_pres}
 \end{tabular*}
-\caption[Results of the test case {\ct basic\_tempequilib.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib.in}.}
+\caption[Results of the test case {\ct basic\_tempequilib.in}]{Interior temperature and pressure in equilibrium with the exterior in the case {\ct basic\_tempequilib.in}.}
 \label{fig:Temperature_Equilibrium}
 \end{figure}
 
 \subsection{Temperature Equilibrium via a Window}
 
-Now an open window is added to the compartment, with an with an exterior temperature of 25~\degc. Figure~\ref{fig:Temperature_Equilibrium_With_Window} shows the interior conditions coming into equilibrium with the exterior.
+Now an open window is added to the compartment, with an exterior temperature of 25~\degc. Figure~\ref{fig:Temperature_Equilibrium_With_Window} shows the interior conditions coming into equilibrium with the exterior.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_temp} &
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_pres}
 \end{tabular*}
-\caption[Results of the test case {\ct basic\_tempequilib\_window.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib\_window.in}.}
+\caption[Results of the test case {\ct basic\_tempequilib\_window.in}]{Interior temperature and pressure in equilibrium with the exterior in the case {\ct basic\_tempequilib\_window.in}.}
 \label{fig:Temperature_Equilibrium_With_Window}
 \end{figure}
 
@@ -57,7 +59,7 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_elevation_temp} &
 \includegraphics[width=3.0in]{FIGURES/Verification/basic_tempequilib_window_elevation_pres}
 \end{tabular*}
-\caption[Results of the test case {\ct basic\_tempequilib\_window\_elevation.in}]{Interior temperature and pressure in equilibrium with exterior in the case {\ct basic\_tempequilib\_window\_elevation.in}.}
+\caption[Results of the test case {\ct basic\_tempequilib\_window\_elevation.in}]{Interior temperature and pressure in equilibrium with the exterior in the case {\ct basic\_tempequilib\_window\_elevation.in}.}
 \label{fig:Temperature_Equilibrium_Elevation}
 \end{figure}
 
@@ -69,13 +71,14 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \label{mass_conservation}
 \subsection{A Fire in a Single, Sealed Compartment}
 \label{sec:spec1}
-A natural gas fire burns in a sealed compartment of dimension 5~m by 6~m by 3~m. The heat release rate ramps up linearly to 1~kW in 30~s, then remains steady for 5~min, and then ramps down linearly to 0 in 30~s. The total energy released is 330~kJ, and the total mass of fuel consumed is
+A methane fire burns in a sealed compartment of dimension 5~m by 6~m by 3~m. The heat release rate ramps up linearly to 1~kW in 30~s, then remains steady for 5~min, and then ramps down linearly to 0 in 30~s. The total energy released is 330~kJ, and the total mass of fuel consumed is
 \begin{equation}
-  \frac{ 330 \; {\rm kJ} }{ 50000 \; {\rm kJ/kg} } = 0.0066 \; {\rm kg}
+  \frac{ 330 \; {\rm kJ} }{ 50000 \; {\rm kJ/kg} } = 0.00660 \; {\rm kg}
 \end{equation}
-The combustion chemistry is given by
+where the heat of combustion of methane is taken to be 50 000 kJ/kg. For complete combustion of methane, the combustion chemistry is given by
 \begin{equation}
    \mathrm{CH_4 + 2 \, O_2 \to CO_2 + 2 \, H_2O}
+   \label{eq:Methane_Combustion}
 \end{equation}
 The molecular weight of CH$_4$ is 16~g/mol and CO$_2$ is 44~g/mol; thus, the mass of CO$_2$ produced by the fire is
 \begin{equation}
@@ -85,7 +88,7 @@ The molecular weight of H$_2$O is 18~g/mol; thus, the mass of H$_2$O produced by
 \begin{equation}
    m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg}
 \end{equation}
-CFAST predicts that the mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively. The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
+CFAST predicts that the mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively (calculated by the model consistent with eq. \ref{eq:Methane_Combustion}; see \cite{CFAST_Tech_Guide_7} for details of the combustion chemistry calculations in CFAST). The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
 \begin{equation}
 Y_k = \frac{X_{k} M_{k}}{\sum_{i=1}^N X_{i}M_{i}}
 \end{equation}
@@ -97,7 +100,7 @@ The mass of CO$_2$ and H$_2$O produced is given by
 \begin{equation}
 m_{k} = m_{\rm u} \, Y_{k}
 \end{equation}
-Figure~\ref{specmass1} shows the resulting product masses.
+Figure~\ref{specmass1} shows the resulting product masses, which are consistent with the expected results.
 
 \begin{figure}[!ht]
 \centering
@@ -110,7 +113,7 @@ Figure~\ref{specmass1} shows the resulting product masses.
 \subsection{A Fire in a Compartment Connected to Another via a Door}
 \label{sec:spec2}
 
-The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. Figure~\ref{specmass2} shows the resulting product masses.
+The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. Figure~\ref{specmass2} shows the resulting product masses, which are consistent with the expected results.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=3.0in]{FIGURES/Verification/species_mass_2}
@@ -121,7 +124,7 @@ The same natural gas fire described in Section~\ref{sec:spec1} burns in a compar
 \subsection{A Fire in a Compartment Connected to Another via a Ceiling Vent}
 
 The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a square ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in Section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
-Figure~\ref{specmass2} shows the resulting product masses.
+Figure~\ref{specmass2} shows the resulting product masses, which are consistent with the expected results.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=3.0in]{FIGURES/Verification/species_mass_3}
@@ -132,9 +135,7 @@ Figure~\ref{specmass2} shows the resulting product masses.
 \subsection{A Fire in a Four Compartment Assembly}
 \label{sec:specmass4}
 
-Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time. Figure~\ref{fig:specmass4TP} shows comparisons of the expected temperature and pressure values of compartment one with the values produced by CFAST.
-
-
+Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time. Figure~\ref{fig:specmass4TP} shows that the expected temperature and pressure values of compartment one are consistent with the values produced by CFAST.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -171,7 +172,7 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \subsection{A Fire in a Single, Sealed Compartment with a Single Zone}
 \label{sealed_test}
 
-A 100~kW natural gas (methane) fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  The governing equation for the pressure and temperature of the single zone compartment are:
+A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  The governing equation for the pressure and temperature of the single zone compartment are:
 \begin{eqnarray}
    \frac{{\rm d} P}{{\rm d}t} &=& \frac{\gamma-1}{V} \, \dot{h} \quad ; \quad \dot{h} = \dot{Q} + c_p \, \dot{m}_{\rm f} \, T_\infty \\[0.1in]
    \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{h} - c_p \, \dot{m}_{\rm f} \, T + V \, \frac{{\rm d} P}{{\rm d}t} \right)
@@ -188,7 +189,7 @@ where $\dm_{\rm f}$ is the fuel flow rate and $m$ is the total mass. Figure~\ref
 
 \subsection{A Fire in a Single, Sealed Compartment with Two Zones}
 
-Consider now the same case as in Section~\ref{sealed_test}, but now with two zones rather than one. The compartment pressure ought to be the same as before, and the upper layer temperature ought to converge to the single layer temperature (Fig.~\ref{fig:Analytical_Closed_Compartment2}).
+Consider now the same case as in Section~\ref{sealed_test}, but now with two zones rather than one. The compartment pressure ought to be the same as before, and the upper layer temperature ought to converge to the single layer temperature as seen in Fig.~\ref{fig:Analytical_Closed_Compartment2}.
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_2_layers_temp} &
@@ -204,11 +205,11 @@ Consider now the same case as in Section~\ref{sealed_test}, but now with two zon
 \section{Ventilation}
 
 \subsection{Pressure Change as Air Flows Through a Single Compartment}
-The setup for this test case includes a 5~m by 5~m by 3~m compartment that contains a mechanical vent and a wall vent. Air is pumped into a single compartment through a 1~m by 1~m mechanical vent, at a rate of 0.01~m$^3$/s. The air is allowed to exit the compartment through a 1~cm by 1~cm vent located on the opposite side of the compartment. The governing equation for the change in pressure in the compartment is:
+The setup for this test case includes a 5~m by 5~m by 3~m compartment that contains a mechanical vent and a wall vent. Air is pumped into a single compartment through a 1~m by 1~m mechanical vent, at a rate of 0.01~m$^3$/s. The air is allowed to exit the compartment through a 1~cm by 1~cm vent located on the opposite side of the compartment. The governing equation for the change in pressure in the compartment is \cite{Emmons:SFPE}:
 \begin{equation}
 \Delta{P} = \frac{1}{2\rho}\brackets{\frac{\dot{m}}{CA}}^2
 \end{equation}
-where $\rho$ , $\dot{m}$ and $C$ are given by
+where $\rho$ , $\dot{m}$ and $C$ are consistent with CFAST calculations
 \begin{equation}
 \rho = \frac{P}{RT} \quad ; \quad  \dot{m} = \rho_{\infty} \dot{V} \quad ; \quad C = 0.70
 \end{equation}
@@ -275,30 +276,6 @@ where $\delta A$ represents the infinitesimal area of the door segment and $\rho
 \label{fig:vel}
 \end{figure}
 
-
-\section{Sprinklers}
-
-\subsection{Utilizing a Sprinkler to Detect and Suppress a Fire}
-
-A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40~$^\circ$C and a spray density of 0.07~mm/s. The sprinkler link temperature can be calculated by integrating the following equation:
-\begin{equation}
-\frac{{\rm d} \TL}{{\rm d} t} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}
-\end{equation}
-where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. After the sprinkler link temperature reaches the activation temperature, $t > t_{\rm act}$, the sprinkler will begin to suppress the fire by diminishing its heat release rate at the exponential rate described by:
-\begin{equation}
-\dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
-\end{equation}
-where $u_{\rm w}$ is the water spray density, expressed in units of mm/s. Figure~\ref{sprinkler1} shows the sprinkler link temperature rising as the fire burns in the compartment and the heat release rate decreasing exponentially once the sprinkler has been activated.
-
-\begin{figure}[!ht]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{FIGURES/Verification/sprinkler_1_link_temp} &
-\includegraphics[width=3.0in]{FIGURES/Verification/sprinkler_1_HRR}
-\end{tabular*}
-\caption[Results of the test case {\ct sprinkler\_1.in}]{Expected and CFAST calculated values for the sprinkler link temperature and the heat release rate of the fire for the case {\ct sprinkler\_1.in}.}
-\label{sprinkler1}
-\end{figure}
-
 \section{Heat Transfer}
 
 \subsection{Measuring the Temperature Change of a Thermally Thin Target}
@@ -311,7 +288,7 @@ where $\epsilon$ is the emissivity of the target, $\chi_{\rm r}$ represents the 
 \begin{equation}
 \dqc'' = h(T_{\rm g}-T_{\rm s}) \quad ; \quad  h = C|T_{\rm g} - T_{\rm s}|^{1/3}
 \end{equation}
-where $h$ is the convective heat transfer coefficient and $C$ is an empirical coefficient determined to be 1.31 for vertical targets. In order to determine what the temperature of the target's surface will be at any given time, the following equation must be integrated:
+where $h$ is the convective heat transfer coefficient and $C$ is an empirical coefficient determined to be 1.31 for vertical targets \cite{Holman:1990}. In order to determine what the temperature of the target's surface will be at any given time, the following equation must be integrated \cite{Moss:1992}:
 \begin{equation}
 \frac{{\rm d} T}{{\rm d} t} = \frac{\dqr'' + 2\dqc''}{\delta \, \rho \, C_{\rm p}}
 \end{equation}
@@ -338,7 +315,7 @@ where $\dq''$ is the sum of the net radiative and convective heat fluxes:
 \begin{equation}
 \dqr'' = \epsilon \sigma \brackets{ T_{\rm g}^4 - T_{\rm s}^4 } \quad ; \quad \dqc'' = h \brackets{T_{\rm g} - T_{\rm s}}  \quad ; \quad h = C|T_{\rm g} - T_{\rm s}|^{1/3}
 \end{equation}
-where $\epsilon$ is the emissivity of the target, $\sigma$ is the Stefan-Boltzmann constant, $T_{\rm g}$ is the temperature of the gas surrounding the target, $T_{\rm s}$ is the temperature of the target's surface, $h$ is the convective heat transfer coefficient, and $C$ is 1.31 for vertical targets. Figure~\ref{fig:rad2} shows how the surface temperature for each of the plates and the rod increases with respect to time.
+where $\epsilon$ is the emissivity of the target (taken here to be 1), $\sigma$ is the Stefan-Boltzmann constant, $T_{\rm g}$ is the temperature of the gas surrounding the target, $T_{\rm s}$ is the temperature of the target's surface, $h$ is the convective heat transfer coefficient, and $C$ is 1.31 for vertical targets. Figure~\ref{fig:rad2} shows how the surface temperature for each of the plates and the rod increases with respect to time.
 
 \begin{figure}[!ht]
 \centering
@@ -346,3 +323,41 @@ where $\epsilon$ is the emissivity of the target, $\sigma$ is the Stefan-Boltzma
 \caption[Results of the test case {\ct radiation\_2.in}]{Expected and CFAST calculated surface temperature values for three different types of targets for the case {\ct radiation\_2.in}.}
 \label{fig:rad2}
 \end{figure}
+
+
+\section{Sprinklers}
+
+\subsection{Utilizing a Sprinkler to Detect and Suppress a Fire}
+
+A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40~$^\circ$C and a spray density of 0.07~mm/s. The sprinkler link temperature can be calculated by integrating the following equation \cite{Schifiliti:2002}:
+\begin{equation}
+\frac{{\rm d} \TL}{{\rm d} t} = \frac{\sqrt{v}}{\rm RTI} \brackets{\Tg - \TL}
+\end{equation}
+where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, and RTI (Response Time Index) is a measure of the sensor's thermal inertia. After the sprinkler link temperature reaches the activation temperature, $t > t_{\rm act}$, the sprinkler will begin to suppress the fire by diminishing its heat release rate at the exponential rate described by \cite{Evans:1993}:
+\begin{equation}
+\dQ(t) = \dQ(t_{\rm act}) \; {\rm e}^{-(t-t_{\rm act}) /\tau}   \quad ; \quad \tau = 3 \, u_{\rm w}^{-1.8}
+\end{equation}
+where $u_{\rm w}$ is the water spray density, expressed in units of mm/s. Figure~\ref{sprinkler1} shows the sprinkler link temperature rising as the fire burns in the compartment and the heat release rate decreasing exponentially once the sprinkler has been activated.
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{FIGURES/Verification/sprinkler_1_link_temp} &
+\includegraphics[width=3.0in]{FIGURES/Verification/sprinkler_1_HRR}
+\end{tabular*}
+\caption[Results of the test case {\ct sprinkler\_1.in}]{Expected and CFAST calculated values for the sprinkler link temperature and the heat release rate of the fire for the case {\ct sprinkler\_1.in}.}
+\label{sprinkler1}
+\end{figure}
+
+\section{Summary of Verification Results}
+
+The tests included in this chapter test the energy and mass balance equations in CFAST and various heat transfer (through walls, targets, and fire detectors/sprinklers) and mass transfer (flow through vents) calculations included in the model with comparisons to analytical calculations. These comparisons are an integral part of a process known as regression testing, which aims to evaluate the accuracy of outputs predicted by a numerical software package. The results from this chapter can be compared to another version of CFAST as a way of measurement the quality of results between versions.  These results also help determine the impact of code additions and modifications on the overall accuracy of CFAST and can help identify errors in the CFAST source code.
+
+
+\begin{table}
+
+\label{tab:Summary_Verification_Diffs}
+\vspace{0.1in}
+
+\IfFileExists{FIGURES/ScatterPlots/verification_statistics.tex}{\input{FIGURES/ScatterPlots/verification_statistics.tex}}{\typeout{Error: Missing file FIGURES/ScatterPlots/verification_statistics.tex}}
+
+\end{table}

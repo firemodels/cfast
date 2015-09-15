@@ -344,7 +344,7 @@ for i=2:n_plots
         
         % Wrap entire plot/save routine in try loop
         % Skips case upon any Matlab error
-        try
+
             if strcmp(Plot_Type,'linear') & strcmp(Flip_Axis,'no')
                 X_Title_Position = Min_Ind+Title_Position(1)*(Max_Ind-Min_Ind);
                 Y_Title_Position = Min_Dep+Title_Position(2)*(Max_Dep-Min_Dep);
@@ -428,10 +428,7 @@ for i=2:n_plots
             set(gcf,'PaperPosition',[0 0 PDF_Paper_Width Paper_Height]); 
             display(['Printing plot ',num2str(i),'...'])
             print(gcf,Image_File_Type,[Manuals_Dir,Plot_Filename])
-        catch
-            display(['Error: Problem with dataplot row ', num2str(i), ' (', Dataname, '); check syntax of plot/save settings. Skipping case.'])
-            continue
-        end    
+
         
     end
     clear S1 S2 K style H M X Y P parameters

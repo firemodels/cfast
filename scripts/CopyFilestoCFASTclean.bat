@@ -1,11 +1,21 @@
-@echo off
+#@echo off
 
-@echo *** Copying Executables
-copy ..\Bin\CFAST.exe c:\Users\rpeacoc\cfastgitclean\bin /Y
-copy ..\Bin\CEdit.exe c:\Users\rpeacoc\cfastgitclean\bin /Y
-copy ..\Bin\Smokeview.exe c:\Users\rpeacoc\cfastgitclean\bin /Y
-copy ..\Bin\Smokediff.exe c:\Users\rpeacoc\cfastgitclean\bin /Y
+set cfastroot=c:\Users\rpeacoc\cfastgitclean
+
+@echo *** Copying CFAST Executables
+copy ..\Bin\CFAST.exe %cfastroot%\bin /Y
+copy ..\Bin\CEdit.exe %cfastroot%\bin /Y
+
+@echo *** Copying Smokeview executables
+
+if NOT exist %cfastroot%\SMV6 (
+   mkdir %cfastroot%\SMV6
+)
+copy ..\SMV6\*.* %cfastroot%\SMV6\ /Y
+if NOT exist %cfastroot%\SMV6\textures (
+   mkdir %cfastroot%\SMV6\textures
+)
+copy ..\SMV6\textures\*.* %cfastroot%\SMV6\textures\ /Y
 
 @echo *** copying DLLs
-copy ..\bin\C1*.dll c:\Users\rpeacoc\cfastgitclean\bin /Y
-copy ..\bin\pthreadVC2_x64.dll c:\Users\rpeacoc\cfastgitclean\bin /Y
+copy ..\bin\C1*.dll %cfastroot%\bin /Y

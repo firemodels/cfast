@@ -77,10 +77,28 @@ echo.
 echo ***Copying Smokeview files
 echo.
 
-call :COPY  %bindir%\objects.svo        %SMVDISTDIR%\
-call :COPY  %bindir%\pthreadVC2_x64.dll %SMVDISTDIR%\
-call :COPY  %bindir%\smokediff.exe      %SMVDISTDIR%\
-call :COPY  %bindir%\smokeview.exe      %SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\glew32_x64.dll			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\list.txt				%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\pthreadVC2_x64.dll			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\smokediff.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\smokeview.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\smokeview.ini			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\smokezip.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\textures				%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\volrender.ssf			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\textures\Cb4052t.jpg		%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\Csv2023t.jpg		%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\day2.jpg			%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\grass.jpg			%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\nistleft.jpg		%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\Peach2(54).jpg		%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\Pine(36).jpg		%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\sphere_cover_01.png	%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\sphere_cover_02.png	%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\sphere_cover_03.png	%SMVDISTDIR%\textures\
+call :COPY %bindir%\..\SMV6\textures\sphere_cover_04.png	%SMVDISTDIR%\textures\
 
 echo.
 echo ***Copying Uninstall files

@@ -76,6 +76,7 @@ if strcmp(Stats_Output, 'Verification')
         fprintf(fid, '%s', num2str(tol, '%1.2e'), ' & ');
         fprintf(fid, '%s%s\n', within_tolerance, ' \\');
     end
+    fprintf(fid, '%s\n', '\hline');
     fprintf(fid,'%s\n','\end{longtable}');
     fprintf(fid,'%s\n','\normalsize');
 end

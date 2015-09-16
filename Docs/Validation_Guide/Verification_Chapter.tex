@@ -13,7 +13,7 @@ Simply put, verification is a check of the math; validation is a check of the ph
 
 Whereas model validation consists mainly of comparing predictions with experimental measurements, as documented later in this guide, model verification consists of a much broader range of activities, from checking the computer program itself, to comparing calculations to analytical (exact) solutions, to understanding the impact on model outputs from a range of different model inputs.
 
-A series of verification test cases follow, examining the energy balance, mass balance, ventilation, heat transfer and sprinkler effects modeled by CFAST. These test cases are routinely run to ensure the calculations in the model are correct for a range of simple calculations where analytical solutions exist. The energy and mass balance examples test the underlying fundamental equations that determine conditions within a compartment in the model. The ventilation examples test the flow of gases between compartments through doors, windows, holes in floors/ceilings, and mechanical ventilation systems.  The heat transfer examples test the flow of energy through walls of compartments or to user-defined objects within a compartment. The sprinkler example tests the algorithm used to simulate the response of heat detectors and fire sprinklers in CFAST.
+A series of verification test cases follow, examining the energy balance, mass balance, ventilation, heat transfer and sprinkler effects modeled by CFAST. These test cases are routinely run to ensure the calculations in the model are correct for a range of simple calculations where analytical solutions exist. The energy and mass balance examples test the underlying fundamental equations that determine conditions within a compartment in the model. The ventilation examples test the flow of gases between compartments through doors, windows, holes in floors/ceilings, and mechanical ventilation systems.  The heat transfer examples test the flow of energy through walls of compartments or to user-defined objects within a compartment. The sprinkler example tests the algorithm used to simulate the response of heat detectors and fire sprinklers in CFAST.  For each of the examples, an analytical solution is presented and compared to the results of a matching CFAST simulation.
 
 
 \section{Energy Balance}
@@ -26,7 +26,7 @@ As a simple test of the energy balance, raising the external temperature of the 
 \begin{equation}
    P_{\rm final} = P_{\rm initial} \; \frac{T_{\rm final}}{T_{\rm initial}} = 101325 \; {\rm Pa} \times \frac{298.15 \; {\rm K}}{293.15 \; {\rm K}} = 103027 \; {\rm Pa} \label{eq:Temperature_Equilibrium}
 \end{equation}
-or a pressure rise of 1728 Pa, matching the output from CFAST.  Figure \ref{fig:Temperature_Equilibrium} shows the simulated conditions for this test.
+or a final pressure rise of 1728 Pa.  Figure \ref{fig:Temperature_Equilibrium} shows the simulated conditions for this test, which are consistent with the expected results..
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -39,7 +39,7 @@ or a pressure rise of 1728 Pa, matching the output from CFAST.  Figure \ref{fig:
 
 \subsection{Temperature Equilibrium via a Window}
 
-Now an open window is added to the compartment, with an exterior temperature of 25~\degc. Figure~\ref{fig:Temperature_Equilibrium_With_Window} shows the interior conditions coming into equilibrium with the exterior.
+Now an open window is added to the compartment, with an exterior temperature of 25~\degc. Figure~\ref{fig:Temperature_Equilibrium_With_Window} shows the interior conditions coming into equilibrium with the exterior, which are consistent with the expected results..
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -52,7 +52,7 @@ Now an open window is added to the compartment, with an exterior temperature of 
 
 \subsection{Temperature Equilibrium via a Window at a High Elevation}
 
-With the exterior temperature still set to 25~\degc, the elevation is raised to 1500~m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case.
+With the exterior temperature still set to 25~\degc, the elevation is raised to 1500~m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case, which are consistent with the expected results..
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -80,15 +80,15 @@ where the heat of combustion of methane is taken to be 50 000 kJ/kg. For complet
    \mathrm{CH_4 + 2 \, O_2 \to CO_2 + 2 \, H_2O}
    \label{eq:Methane_Combustion}
 \end{equation}
-The molecular weight of CH$_4$ is 16~g/mol and CO$_2$ is 44~g/mol; thus, the mass of CO$_2$ produced by the fire is
+The molecular weight of CH$_4$ is 16~g/mol and CO$_2$ is 44~g/mol; thus, the total mass of CO$_2$ produced by the fire is
 \begin{equation}
    m_{\rm CO_2} = 0.0066 \; {\rm kg} \times  \frac{ 44 \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01815 \; {\rm kg}
 \end{equation}
-The molecular weight of H$_2$O is 18~g/mol; thus, the mass of H$_2$O produced by the fire is
+The molecular weight of H$_2$O is 18~g/mol; thus, the total mass of H$_2$O produced by the fire is
 \begin{equation}
    m_{\rm H_2O} = 0.0066 \; {\rm kg} \times  \frac{ 2(18) \; {\rm g/mol} }{ 16 \; {\rm g/mol} } = 0.01485 \; {\rm kg}
 \end{equation}
-CFAST predicts that the mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively (calculated by the model consistent with eq. \ref{eq:Methane_Combustion}; see \cite{CFAST_Tech_Guide_7} for details of the combustion chemistry calculations in CFAST). The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
+CFAST predicts that the final mole fractions of O$_2$, CO$_2$ and H$_2$O in the upper layer are 0.2069, 0.00012 and 0.00024, respectively (calculated by the model consistent with eq. \ref{eq:Methane_Combustion}; see \cite{CFAST_Tech_Guide_7} for details of the combustion chemistry calculations in CFAST). The remainder is N$_2$, whose mole fraction is 0.7927. These mole fractions can be converted to mass fractions by
 \begin{equation}
 Y_k = \frac{X_{k} M_{k}}{\sum_{i=1}^N X_{i}M_{i}}
 \end{equation}

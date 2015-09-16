@@ -87,17 +87,8 @@ call :COPY %bindir%\..\SMV6\smokezip.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\textures				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\volrender.ssf			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\textures\Cb4052t.jpg		%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\Csv2023t.jpg		%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\day2.jpg			%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\grass.jpg			%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\nistleft.jpg		%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\Peach2(54).jpg		%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\Pine(36).jpg		%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\sphere_cover_01.png	%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\sphere_cover_02.png	%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\sphere_cover_03.png	%SMVDISTDIR%\textures\
-call :COPY %bindir%\..\SMV6\textures\sphere_cover_04.png	%SMVDISTDIR%\textures\
+copy %bindir%\..\SMV6\textures\*.jpg				%SMVDISTDIR%\textures\
+copy %bindir%\..\SMV6\textures\*.png				%SMVDISTDIR%\textures\
 
 echo.
 echo ***Copying Uninstall files

@@ -1,4 +1,4 @@
-#@echo off
+@echo off
 
 set cfastroot=c:\Users\rpeacoc\cfastgitclean
 

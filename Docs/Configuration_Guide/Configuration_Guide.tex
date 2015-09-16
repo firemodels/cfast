@@ -116,7 +116,7 @@ The idea for this Guide originated with Jason Floyd, a co-developer of FDS and p
 
 \chapter{Overview}
 
-CFAST is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure. Each compartment is divided into an upper and lower gas layer. The fire drives combustion products from the lower to the upper layer via the plume. The temperature within each layer is uniform, and its evolution in time is described by a set of ordinary differential equations derived from the fundamental laws of mass and energy conservation. The transport of smoke and heat from zone to zone is dictated by empirical correlations. Because the governing equations are relatively simple, CFAST simulations typically require a few tens of seconds of CPU time on typical personal computers.
+The Consolidate Model of Fire and Smoke Transport (CFAST) is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure. Each compartment is divided into an upper and lower gas layer. The fire drives combustion products from the lower to the upper layer via the plume. The temperature within each layer is uniform, and its evolution in time is described by a set of ordinary differential equations derived from the fundamental laws of mass and energy conservation. The transport of smoke and heat from zone to zone is dictated by empirical correlations. Because the governing equations are relatively simple, CFAST simulations typically require a few tens of seconds of CPU time on typical personal computers.
 
 The purpose of this document is to describe the policies and procedures for developing and maintaining CFAST. Such a document is commonly referred to as a {\em Configuration Management Plan}, known through the rest of this document as ``the Plan.'' This document will be updated as the necessity arises and will establish and provide the basis for a uniform and concise standard of practice for CFAST development. It is based in part on IEEE Standard 828~\cite{IEEE-828} and ASTM~E1355~\cite{ASTM:E1355}.
 
@@ -133,7 +133,7 @@ Documentation and configuration management for its companion visualization progr
 
 \chapter{Relevant Publications}
 
-To accompany the model and simplify its use, NIST has developed a Technical Reference Guide \cite{CFAST_Tech_Guide_7}, a User's Guide \cite{CFAST_Users_Guide_7}, a Validation Guide \cite{CFAST_Valid_Guide_7}, and this Configuration Management Guide.  The Technical Reference Guide describes the underlying physical principles and summarizes sensitivity analysis, model validation, and model limitations consistent with ASTM E 1355 \cite{ASTM:E1355}.  The User's Guide describes how to use the model.  The Validation Guide documents sensitivity analyses, model verification, model validation, and model limitations consistent with ASTM~E1355~\cite{ASTM:E1355}.
+To accompany the model and simplify its use, at the National Institute of Standards and Technology (NIST) has developed a Technical Reference Guide \cite{CFAST_Tech_Guide_7}, a User's Guide \cite{CFAST_Users_Guide_7}, a Validation Guide \cite{CFAST_Valid_Guide_7}, and this Configuration Management Guide.  The Technical Reference Guide describes the underlying physical principles and summarizes sensitivity analysis, model validation, and model limitations consistent with ASTM E 1355 \cite{ASTM:E1355}.  The User's Guide describes how to use the model.  The Validation Guide documents sensitivity analyses, model verification, model validation, and model limitations consistent with ASTM~E1355~\cite{ASTM:E1355}.
 
 The U.S. Nuclear Regulatory Commission has published a verification and validation study of five selected fire models commonly used in support of risk-informed and performance-based fire protection at nuclear power plants \cite{NRCNUREG1824}. In addition to an extensive study of the CFAST model, the report compares the output of several other models ranging from simple hand calculations to more complex CFD codes such as the Fire Dynamics Simulator (FDS) developed by NIST.
 
@@ -143,7 +143,7 @@ In addition, numerous related documents available at http://cfast.nist.gov provi
 
 \chapter{Model Identification and Control}
 
-CFAST is developed and maintained by the Engineering Laboratory (EL) at the National Institute of Standards and Technology (NIST). Like all projects at NIST, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development.  The organization chart in Figure \ref{figOrgChart} provides a graphical representation of the software quality organization structure for CFAST
+CFAST is developed and maintained by the Engineering Laboratory (EL), NIST). Like all projects at NIST, a designated project leader is responsible for directing and prioritizing model development, error correction, and preparation of documentation for the model development.  The organization chart in Figure \ref{figOrgChart} provides a graphical representation of the software quality organization structure for CFAST
 
 \begin{figure}
 \begin{center}

@@ -6423,9 +6423,9 @@ Public Class CeditMain
         Try
             found = myEnvironment.InputFileName.IndexOf(" ", 0)
             If found <= 0 Then
-                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName)
+                CommandString = """" + Application.StartupPath + "\..\SMV6\smokeview.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName)
             Else
-                CommandString = """" + Application.StartupPath + "\smokeview.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """"
+                CommandString = """" + Application.StartupPath + "\..\SMV6\smokeview.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """"
             End If
             ProcessID = Shell(CommandString, AppWinStyle.NormalFocus, True)
         Catch ex As Exception

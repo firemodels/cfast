@@ -78,7 +78,6 @@ echo ***Copying Smokeview files
 echo.
 
 call :COPY %bindir%\..\SMV6\glew32_x64.dll			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\list.txt				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\pthreadVC2_x64.dll			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokediff.exe			%SMVDISTDIR%\

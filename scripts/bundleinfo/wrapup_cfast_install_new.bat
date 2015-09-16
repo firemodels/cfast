@@ -42,7 +42,7 @@ assoc .smv=smvDoc>Nul
 echo. 
 echo *** Adding document shortcuts to the Start menu.
 
-set cfaststartmenu=%ALLUSERSPROFILE%\Start Menu\Programs\cfast
+set cfaststartmenu=%ALLUSERSPROFILE%\Start Menu\Programs\CFAST7
 if exist "%cfaststartmenu%" rmdir /q /s "%cfaststartmenu%" >Nul
 
 mkdir "%cfaststartmenu%"
@@ -52,7 +52,8 @@ mkdir "%cfaststartmenu%\Guides"
 "%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Technical Reference Guide.lnk"                       /T:"%CFASTBINDIR%\Documents\Tech_Ref.pdf"            /A:C >NUL
 "%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Software Development and Model Evaluation Guide.lnk" /T:"%CFASTBINDIR%\Documents\Validation_Guide.pdf"    /A:C >NUL
 "%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Guides\CFAST Configuration Management.lnk"                        /T:"%CFASTBINDIR%\Documents\Configuration_Guide.pdf" /A:C >NUL
-"%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\CEdit.lnk"                                                        /T:"%CFASTBINDIR%\CEdit.exe"                         /A:C >NUL
+"%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\CFAST7.lnk"                                                       /T:"%CFASTBINDIR%\CEdit.exe"                         /A:C >NUL
+"%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Smokeview.lnk"                                                    /T:"%SMVBINDIR%\smokeview.exe"                       /A:C >NUL
 "%CFASTBINDIR%\shortcut.exe" /F:"%cfaststartmenu%\Uninstall.lnk"                                                    /T:"%CFASTBINDIR%\Uninstall\uninstall.bat"           /A:C >NUL
 
 :: ----------- setting up uninstall file

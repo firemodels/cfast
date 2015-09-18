@@ -13,7 +13,7 @@
 
 \begin{minipage}[t][9in][s]{6.5in}
 
-\headerA{XXXX\\}
+\headerA{XXXX-1\\}
 
 \headerB{
 CFAST -- Consolidated Fire \\
@@ -47,7 +47,7 @@ CFAST -- Consolidated Fire \\
 
 \begin{minipage}[t][9in][s]{6.5in}
 
-\headerA{XXXX\\}
+\headerA{XXXX-1\\}
 
 \headerB{
 CFAST -- Consolidated Fire \\
@@ -564,7 +564,7 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \label{radiationwallsetup}
 \centering
 \includegraphics[width=4.0in]{FIGURES/radiationwall}
-\caption{The net radiative flux, $\Delta \dot{q}_{{\rm r},k}''$, at each wall surface $k$ is determined so that the 
+\caption{The net radiative flux, $\Delta \dot{q}_{{\rm r},k}''$, at each wall surface $k$ is determined so that the
 incoming and outgoing radiation balance.}
 \end{figure}
 
@@ -584,7 +584,7 @@ The net radiative flux entering a surface, given by $\dq_{{\rm r},k}''=-\Delta \
 
 \subsection{Solving the Radiation Equations}
 
-Eq. (\ref{RTE}) is solved by noting that it is a system of linear equations of the form 
+Eq. (\ref{RTE}) is solved by noting that it is a system of linear equations of the form
 \begin{equation}
 Ax=Be-c
 \label{eq:linearsystem}
@@ -641,7 +641,7 @@ A more efficient procedure is to compute configuration factors between the ceili
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \label{eq:configrect}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}). 
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}).
 Second, configuration factors for surfaces forming an enclosure satisfy
 \begin{eqnarray}
 \label{eq:factorsum}

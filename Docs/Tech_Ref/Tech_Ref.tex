@@ -262,7 +262,7 @@ A system of ordinary differential equations for the compartment pressure, upper 
 \dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dhl + \dhu \right)  \label{eq1} \\[.1in]
 \dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dhu - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
 \dbydt{\Tu} &=& \frac{1}{c_p \, m_{\rm u}} \left( \dhu - c_p \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
-\dbydt{\Tl} &=& \frac{1}{c_p \, m_{\rm l}} \left( \dhl - c_p \, \dmau \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
+\dbydt{\Tl} &=& \frac{1}{c_p \, m_{\rm l}} \left( \dhl - c_p \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
 Equation~(\ref{eq1}) is derived by summing Eq.~(\ref{eq:first_law}) for the upper and lower layer, applying the equation of state~(\ref{EoS}), and noting that the time derivative of the total room volume is zero. Equation~(\ref{eq2}) is derived by rearranging Eq.~(\ref{eq:first_law}) applied to the upper layer and applying the equation of state to replace the internal energy term. Equations~(\ref{eq3}) and (\ref{eq4}) are derived from Eq.~(\ref{eq:first_law}) applied to each layer, along with substitutions of the equation of state and mass conservation equation.
 
@@ -576,7 +576,7 @@ These fluxes are found by solving the simplified radiation transport equation gi
 \ee
 where $F_{k-j}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{k-j}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, and $T_k$ is the temperature of surface $k$. The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
-   c_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, \Tu^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi}  \label{ckeq}
+   c_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, T_j^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi} \label{ckeq}
 \ee
 where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
 

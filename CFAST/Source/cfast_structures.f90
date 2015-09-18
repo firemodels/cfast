@@ -27,7 +27,7 @@ module cfast_types
         ! These are the fire definitions from the input
         integer(eb) :: room, object
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass
-        real(eb) :: mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), y_co_i(mxpts), y_trace_i(mxpts)
+        real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), y_co_i(mxpts), y_trace_i(mxpts)
         
         ! These are calculated values for the current time step
         real(eb) :: x_position, y_position, z_position, area
@@ -64,6 +64,8 @@ module cfast_types
                                     
         
         real(eb),dimension(nnodes_trg) :: trgtemps  ! temperature profile in target ... front surface ... internal ... back surface
+        
+        ! these are the results of the target calculations that are used for printout and spreadsheet output
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
     end type target_type

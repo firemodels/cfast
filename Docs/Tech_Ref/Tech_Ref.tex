@@ -257,7 +257,7 @@ The enthalpy source term, $\dot h_i$, consists of the fire's heat release rate, 
 \be
   P \, V_i = m_i \, R \, T_i \label{EoS}
 \ee
-A system of ordinary differential equations for the compartment pressure, upper layer volume, and layer temperatures can be derived from these three basic principles 
+A system of ordinary differential equations for the compartment pressure, upper layer volume, and layer temperatures can be derived from these three basic principles
 ( Eqs.~\ref{mass_con}-\ref{EoS}):
 \begin{eqnarray}
 \dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dhl + \dhu \right)  \label{eq1} \\[.1in]
@@ -562,8 +562,8 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \end{itemize}
 
 % define commands for qin and qout to make it easier to change/improve notation
-\newcommand{\qout}[1]{q_{#1}^{''{\rm out}}}
-\newcommand{\qin}{q_{k}^{''{\rm in}}}
+\newcommand{\qout}[1]{q_{{\rm out},#1}''}
+\newcommand{\qin}{q_{{\rm out},k}''}
 
 The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $k$ consisting of an emissive power and reflectance term is given by
 
@@ -579,7 +579,7 @@ The compartment lining is divided into four surfaces: the ceiling, the floor, an
 \label{eq:qin}
 \ee
 
-\noindent and $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $T_k$ is the temperature  and $c_k''$ is the radiative flux from gas layers and fire of surface $k$ . The problem then is to determine the net radiative flux $\dot{q}_{{\rm r},k}''$ defined as the difference in incoming and outgoing fluxes\footnote{The sign for $\dot{q}_{{\rm r},k}''$ is chosen so that positive radiant fluxes $\dot{q}_{{\rm r},k}''$ heat up wall segments consistent with how convective fluxes are defined.  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}
+\noindent and $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $T_k$ is the temperature  and $c_k''$ is the radiative flux from gas layers and fire of surface $k$ . The problem then is to determine the net radiative flux $\dot{q}_{{\rm r},k}''$ defined as the difference in incoming and outgoing fluxes\footnote{The sign for the net radiative flux $\dot{q}_{{\rm r},k}''$ is chosen to be consistent with how convective fluxes are defined so that positive radiant fluxes heat up wall segments.  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}
 at each of these surfaces as in
 
 \be
@@ -588,7 +588,7 @@ at each of these surfaces as in
 \label{eq:raddiff}
 \ee
 
-Solving Eqs.~\ref{eq:qout}, \ref{eq:qin} and \ref{eq:raddiff} 
+Solving Eqs.~\ref{eq:qout}, \ref{eq:qin} and \ref{eq:raddiff}
 for $\dot{q}_{{\rm r},k}''$ results in a simplified form of the radiation transport
 equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
@@ -759,7 +759,7 @@ where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is 
 \label{eq:qoutb}
 \ee
 
-\noindent is the outgoing radiative flux at the $j$'th wall surface (See Eq.~(17-15) in Siegel and Howell~\cite{SiegelandHowell:1981})\ where $\dq_{{\rm r},j}''$ is the net radiative flux striking the wall surface found using Eq.~(\ref{RTE}). Equation~(\ref{eq:qoutb}) is derived by solving 
+\noindent is the outgoing radiative flux at the $j$'th wall surface (See Eq.~(17-15) in Siegel and Howell~\cite{SiegelandHowell:1981})\ where $\dq_{{\rm r},j}''$ is the net radiative flux striking the wall surface found using Eq.~(\ref{RTE}). Equation~(\ref{eq:qoutb}) is derived by solving
 Eqs.~\ref{eq:qout} and \ref{eq:raddiff} for $\qout{j}$.
 
 

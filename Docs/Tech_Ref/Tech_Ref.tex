@@ -575,29 +575,26 @@ q_k^{\rm out}=A_k\sigma\epsilon T_k^4+\left(1-\epsilon_k\right)q_k^{\rm in}
 \label{eq:qout}
 \ee
 
-where $q_k^{\rm in}$ is the 
-the incoming radiant energy at surface $k$ given by
+\noindent where $q_k^{\rm in}$ is the the incoming radiant energy at surface $k$ given by
 
 \be
 q_k^{\rm in}=\sum_{j=1}^4q_k^{\rm out}F_{j-k}\tau_{j-k}+c_k
 \label{eq:qin}
 \ee
 
-\noindent and $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, $T_k$ is the temperature  and $c_k$ is the radiation from gas layers and fire of surface $k$ .
-The problem then is to determine the net radiative flux
-$\dot{q}_{{\rm r},k}''$ so that incoming and outgoing radiant energy balance at each of these surfaces as in
+\noindent and $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, $T_k$ is the temperature  and $c_k$ is the radiation from gas layers and fire of surface $k$ . The problem then is to determine the net radiative flux $\dot{q}_{{\rm r},k}''$ defined as the difference in incoming and outgoing fluxes
+at each of these surfaces as in
 
 \be
-\overbrace{A_k\sigma\epsilon T_k^4+\left(1-\epsilon_k\right)q_k^{\rm in}}^{\rm outgoing} =
-\overbrace{q_k^{\rm in}}^{\rm incoming} -
-\overbrace{A_k\dot{q}_{{\rm r},k}''}^{\rm net}
+\dot{q}_{{\rm r},k}'' =
+\frac{ q_k^{\rm in} - q_k^{\rm out}}{A_k}
 \label{eq:radbalance}
 \ee
 
-Dividing by the area $A_k$ and solving Eqs \ref{eq:qout}, \ref{eq:qin} and \ref{eq:radbalance} 
-for $\dot{q}_{{\rm r},k}''$,
-the energy balance equation, Eq.~\ref{eq:radbalance}, can be transformed into
-an energy flux equation, a simplified form of the radiation transport equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981} to obtain:
+Solving Eqs \ref{eq:qout}, \ref{eq:qin} and \ref{eq:radbalance} 
+for $\dot{q}_{{\rm r},k}''$ results in a simplified form of the radiation transport
+equation\footnote{The sign for $\dot{q}_{{\rm r},k}''$ is chosen so that positive fluxes heat up the wall segment consistent with how convective fluxes are defined.  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}
+given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
    -\frac{\dot{q}_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dot{q}_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
 \ee

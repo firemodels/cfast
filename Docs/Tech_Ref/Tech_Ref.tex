@@ -560,47 +560,42 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \item Rooms or compartments are assumed to be rectangular boxes.  Each wall is either perpendicular or parallel to every other wall.  Radiation transfer through vent openings is lost from the room.
 \end{itemize}
 
-\begin{figure}[!ht]
-\label{radiationwallsetup}
-\centering
-\includegraphics[width=4.0in]{FIGURES/radiationwall}
-\caption{The net radiative flux, $\dot{q}_{{\rm r},k}''$, at each wall surface $k$ is determined so that the incoming and outgoing radiation balance.}
-\end{figure}
+% define commands for qin and qout to make it easier to change/improve notation
+\newcommand{\qout}[1]{q_{#1}^{''{\rm out}}}
+\newcommand{\qin}{q_{k}^{''{\rm in}}}
 
-The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  As illustrated in Figure \ref{radiationwallsetup},
-the outgoing radiant energy at surface $k$ is given by
+The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $k$ consisting of an emissive power and reflectance term is given by
 
 \be
-q_k^{\rm out}=A_k\sigma\epsilon T_k^4+\left(1-\epsilon_k\right)q_k^{\rm in}
+\qout{k}=\sigma\epsilon T_k^4+\left(1-\epsilon_k\right)\qin
 \label{eq:qout}
 \ee
 
-\noindent where $q_k^{\rm in}$ is the the incoming radiant energy at surface $k$ given by
+\noindent where $\qin$ is the the incoming radiant flux from all sources incident at surface $k$ and given by
 
 \be
-q_k^{\rm in}=\sum_{j=1}^4q_k^{\rm out}F_{j-k}\tau_{j-k}+c_k
+\qin=\sum_{j=1}^4\qout{j}F_{j-k}\tau_{j-k}+c''_k
 \label{eq:qin}
 \ee
 
-\noindent and $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $A_k$ is the area, $T_k$ is the temperature  and $c_k$ is the radiation from gas layers and fire of surface $k$ . The problem then is to determine the net radiative flux $\dot{q}_{{\rm r},k}''$ defined as the difference in incoming and outgoing fluxes
+\noindent and $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $T_k$ is the temperature  and $c_k''$ is the radiative flux from gas layers and fire of surface $k$ . The problem then is to determine the net radiative flux $\dot{q}_{{\rm r},k}''$ defined as the difference in incoming and outgoing fluxes\footnote{The sign for $\dot{q}_{{\rm r},k}''$ is chosen so that positive radiant fluxes $\dot{q}_{{\rm r},k}''$ heat up wall segments consistent with how convective fluxes are defined.  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}
 at each of these surfaces as in
 
 \be
 \dot{q}_{{\rm r},k}'' =
-\frac{ q_k^{\rm in} - q_k^{\rm out}}{A_k}
+\qin - \qout{k}
 \label{eq:radbalance}
 \ee
 
 Solving Eqs \ref{eq:qout}, \ref{eq:qin} and \ref{eq:radbalance} 
 for $\dot{q}_{{\rm r},k}''$ results in a simplified form of the radiation transport
-equation\footnote{The sign for $\dot{q}_{{\rm r},k}''$ is chosen so that positive fluxes heat up the wall segment consistent with how convective fluxes are defined.  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}
-given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
+equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
-   -\frac{\dot{q}_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dot{q}_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c_k \label{RTE}
+   -\frac{\dot{q}_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dot{q}_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c''_k \label{RTE}
 \ee
 The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
-   c_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, T_j^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi} \label{ckeq}
+   c''_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, T_j^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi} \label{ckeq}
 \ee
 where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1.
 

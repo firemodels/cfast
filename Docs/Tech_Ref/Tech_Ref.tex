@@ -257,7 +257,8 @@ The enthalpy source term, $\dot h_i$, consists of the fire's heat release rate, 
 \be
   P \, V_i = m_i \, R \, T_i \label{EoS}
 \ee
-A system of ordinary differential equations for the compartment pressure, upper layer volume, and layer temperatures can be derived from these three basic principles ( Eqs. \ref{mass_con}-\ref{EoS}):
+A system of ordinary differential equations for the compartment pressure, upper layer volume, and layer temperatures can be derived from these three basic principles 
+( Eqs.~\ref{mass_con}-\ref{EoS}):
 \begin{eqnarray}
 \dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dhl + \dhu \right)  \label{eq1} \\[.1in]
 \dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dhu - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
@@ -584,10 +585,10 @@ at each of these surfaces as in
 \be
 \dot{q}_{{\rm r},k}'' =
 \qin - \qout{k}
-\label{eq:radbalance}
+\label{eq:raddiff}
 \ee
 
-Solving Eqs \ref{eq:qout}, \ref{eq:qin} and \ref{eq:radbalance} 
+Solving Eqs \ref{eq:qout}, \ref{eq:qin} and \ref{eq:raddiff} 
 for $\dot{q}_{{\rm r},k}''$ results in a simplified form of the radiation transport
 equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
@@ -603,7 +604,7 @@ The net radiative flux entering a surface, $\dq_{{\rm r},k}''$, along with the c
 
 \subsection{Solving the Radiation Equations}
 
-Eq. (\ref{RTE}) is solved by noting that it is a system of linear equations of the form
+Eq.~(\ref{RTE}) is solved by noting that it is a system of linear equations of the form
 \begin{equation}
 Ax=Be-c
 \label{eq:linearsystem}
@@ -625,7 +626,7 @@ The $k$'th component of the $n$-vector $e$ is $e_k=\sigma T_k^4$, $c_k$ is given
 \end{eqnarray*}
 
 In order to avoid a division by zero when $\epsilon_k=0$ and ensure that the
-linear system is diagonally dominant, Eq. (\ref{eq:linearsystem}) is tranformed using the substitution
+linear system is diagonally dominant, Eq.~\ref{eq:linearsystem} is tranformed using the substitution
 $\Delta q_k= \Delta \dot{q}_{{\rm r},k}''/\epsilon_k$.  The coefficients $a_{k,j}$ then become
 \begin{eqnarray*}
 a_{k,j}&=&\delta_{k,j}-F_{k-j}\tau_{k-j}(1-\epsilon_j)
@@ -660,7 +661,7 @@ A more efficient procedure is to compute configuration factors between the ceili
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \label{eq:configrect}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq. (\ref{eq:config_factor}).
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq.~\ref{eq:config_factor}.
 Second, configuration factors for surfaces forming an enclosure satisfy
 \begin{eqnarray}
 \label{eq:factorsum}
@@ -677,7 +678,7 @@ $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ are determined using equation (\ref{eq:config
 Since the
 floor and the ceiling is assumed to be a
 flat rectangular surface it follows that $F_{1-1}=F_{4-4}=0$.
-From Eq. (\ref{eq:factorsum}) and that due to symmetery
+From Eq.~\ref{eq:factorsum} and that due to symmetery
 $F_{2-1}=F_{2-d}$, it follows that
 
 \begin{eqnarray}
@@ -699,7 +700,7 @@ F_{4-3}&=&1-F_{4-d}\\
 F_{3-4}&=&\frac{A_4}{A_3}F_{4-3}\\
 F_{3-3}&=&1-2F_{3-4}
 \end{eqnarray*}
-Using the above configuration factors and Eq. (\ref{eq:factorsum}), it follows that
+Using the above configuration factors and Eq.~\ref{eq:factorsum}, it follows that
 \begin{eqnarray*}
 F_{1-3}&=&1-F_{1-4} - F_{1-2}\\
 F_{3-1}&=&\frac{A_1}{A_3}F_{1-3}\\
@@ -749,9 +750,17 @@ The effective path length, $L$, is calculated between the center-points of the e
 Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is then given by:
 \be
    \dq_{\rm r}'' = \epsilon_{\rm t} \left(
-   \displaystyle\sum_{f=1}^{n_{\rm fires}} \cos \, \theta_f \; \frac{\chi_{\rm r} \, \dQ_f}{4 \pi R_f^2}  + \displaystyle\sum_{j=1}^{10} \tau_j \, F_j \, \epsilon_j \, q''_{{\rm out},j}  +  \displaystyle\sum_{j=1}^2 \left(\tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
+   \displaystyle\sum_{f=1}^{n_{\rm fires}} \cos \, \theta_f \; \frac{\chi_{\rm r} \, \dQ_f}{4 \pi R_f^2}  + \displaystyle\sum_{j=1}^{10} \tau_j \, F_j \, \epsilon_j \, \qout{j}  +  \displaystyle\sum_{j=1}^2 \left(\tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
 \ee
-where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is the emissivity of the wall surface, $\theta_f$ is the angle formed by the line of sight segment (between the fire $f$ and the target) of length $R_f$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer and $T_{\rm t}$ is the temperature of the target.  The term $q''_{{\rm out},j}=\sigma T_j^4-\frac{1-\epsilon_j}{\epsilon_j}\dq_{{\rm r},j}''$ is the radiative flux leaving the $j$'th wall surface (See Eq.~(17-15) in Siegel and Howell~\cite{SiegelandHowell:1981})\ where $\dq_{{\rm r},j}''$ is the net radiative flux leaving the wall surface found using Eq.~(\ref{RTE}).
+where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is the emissivity of the wall surface, $\theta_f$ is the angle formed by the line of sight segment (between the fire $f$ and the target) of length $R_f$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer, $T_{\rm t}$ is the temperature of the target.  The term $\qout{j}$ given by
+
+\be
+\qout{j}=\sigma T_j^4+\frac{1-\epsilon_j}{\epsilon_j}\dq_{{\rm r},j}''
+\label{eq:qoutb}
+\ee
+
+\noindent is the outgoing radiative flux at the $j$'th wall surface (See Eq.~(17-15) in Siegel and Howell~\cite{SiegelandHowell:1981})\ where $\dq_{{\rm r},j}''$ is the net radiative flux striking the wall surface found using Eq.~\ref{RTE}. Eq.~\ref{eq:qoutb} is derived by solving 
+Eqs.~\ref{eq:qout} and \ref{eq:raddiff} for $\qout{j}$.
 
 
 

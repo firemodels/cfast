@@ -27,7 +27,8 @@ module cfast_types
         ! These are the fire definitions from the input
         integer(eb) :: room, object
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass
-        real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), y_co_i(mxpts), y_trace_i(mxpts)
+        real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
+            y_co_i(mxpts), y_trace_i(mxpts)
         
         ! These are calculated values for the current time step
         real(eb) :: x_position, y_position, z_position, area

@@ -563,175 +563,163 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 
 % define commands for qin and qout to make it easier to change/improve notation
 \newcommand{\qout}[1]{q_{{\rm out},#1}''}
-\newcommand{\qin}{q_{{\rm in},k}''}
+\newcommand{\qin}{q_{{\rm in},i}''}
 
-The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $k$ consists of an emissive power and reflectance term given by
-
+The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $i$ consists of an emissive power and reflectance term given by
 \be
-\qout{k}=\sigma\epsilon T_k^4+\left(1-\epsilon_k\right)\qin
+\qout{i}=\sigma\epsilon T_i^4+\left(1-\epsilon_i\right)\qin
 \label{eq:qout}
 \ee
-
-\noindent where $\qin$ is the radiant flux striking surface $k$ from all sources (wall segments, gas layers and fires).  This incoming radiant flux is given by
-
+where $\qin$ is the radiant flux striking surface $i$ from all sources (wall segments, gas layers and fires).  This incoming radiant flux is given by
 \be
-\qin=\sum_{j=1}^4\qout{j}F_{j-k}\tau_{j-k}+c''_k
+\qin=\sum_{j=1}^4\qout{j} \, F_{j-i} \, \tau_{j-i}+c''_i
 \label{eq:qin}
 \ee
+The term $F_{j-i}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $i$), $\tau_{j-i}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_i$ is the emissivity, $T_i$ is the temperature  and $c_i''$ is the radiative flux from gas layers and fire of surface $i$ .
 
-\noindent The term $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $T_k$ is the temperature  and $c_k''$ is the radiative flux from gas layers and fire of surface $k$ .
-
-The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},k}''$, at each of these surfaces.  This flux is defined as the difference between the incoming and outgoing radiative flux\footnote{The sign for the net radiative flux, $\dot{q}_{{\rm r},k}''$, is defined so that positive radiant fluxes heat up wall segments, consistent with how convective fluxes are defined .  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}:
-
+The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},i}''$, at each of these surfaces.  This flux is defined as the difference between the incoming and outgoing radiative flux\footnote{The sign for the net radiative flux, $\dot{q}_{{\rm r},i}''$, is defined so that positive radiant fluxes heat up wall segments, consistent with how convective fluxes are defined.  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}:
 \be
-\dot{q}_{{\rm r},k}'' = \qin - \qout{k}
+\dot{q}_{{\rm r},i}'' = \qin - \qout{i}
 \label{eq:raddiff}
 \ee
-
-\noindent Solving Eqs.~(\ref{eq:qout}), (\ref{eq:qin}) and (\ref{eq:raddiff})
-for $\dot{q}_{{\rm r},k}''$ results in a simplified form of the radiation transport
-equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
+Equation~(\ref{eq:raddiff}) is written as a system of four linear equations following Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \be
-   -\frac{\dot{q}_{{\rm r},k}''}{\epsilon_k} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{k-j} \; \tau_{k-j} \; \dot{q}_{{\rm r},j}'' = \sigma T_k^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{k-j} \; \tau_{k-j} \; \sigma T_j^4 \, } - c''_k \label{RTE}
+   -\frac{\dot{q}_{{\rm r},i}''}{\epsilon_i} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{i-j} \; \tau_{i-j} \; \dot{q}_{{\rm r},j}'' = \sigma T_i^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{i-j} \; \tau_{i-j} \; \sigma T_j^4 \, } - c''_i \label{RTE}
 \ee
-
-\noindent The radiation from the gases in the upper and lower layers and the fire is included in the last term:
+The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
-   c''_k = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{k-j} \, \sigma \, T_j^4 + \frac{\omega_{k-{\rm f}}}{A_k} \frac{\chi_{\rm r} \, \dQ}{4 \pi} \label{ckeq}
+   c''_i = \displaystyle\sum_{j=1}^2 \epsilon_j \, F_{i-j} \, \sigma \, T_j^4 + \frac{\omega_{i-{\rm f}}}{A_i} \frac{\chi_{\rm r} \, \dQ}{4 \pi} \label{ckeq}
 \ee
-where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1. Eq.~(\ref{RTE}) is a set of linear equations (4 equations and 4 unknowns) whose solution is discussed in the next section.
+where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{i-j}$ is the view factor between the layer and solid surface, $\omega_{i-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $i$ shrinks to zero, $\omega_{i-{\rm f}}/A_i \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $i$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{i-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1. Eq.~(\ref{RTE}) is a set of linear equations (4 equations and 4 unknowns) whose solution is discussed in the next section.
 
-The net radiative flux, $\dq_{{\rm r},k}''$ found in Eq.~(\ref{RTE}), along with the convective flux discussed in Section~\ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls. The outgoing radiative flux, $\qout{k}$ is used in Section~\ref{section:target} for computing radiative flux to a target.  It may be rewritten in terms of known quantities, in particular the net radiative flux found in Eq. (\ref{RTE}), by eliminating $\qin$ in Eqs.~\ref{eq:qout} and~\ref{eq:raddiff} and is given by
-
+The net radiative flux, $\dq_{{\rm r},i}''$ found in Eq.~(\ref{RTE}), along with the convective flux discussed in Section~\ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls. The outgoing radiative flux, $\qout{i}$ is used in Section~\ref{section:target} for computing radiative flux to a target.  It may be rewritten in terms of known quantities, in particular the net radiative flux found in Eq. (\ref{RTE}), by eliminating $\qin$ in Eqs.~\ref{eq:qout} and~\ref{eq:raddiff} and is given by
 \be
-\qout{k}=\sigma T_k^4+\frac{1-\epsilon_k}{\epsilon_k}\dq_{{\rm r},k}''
+\qout{i}=\sigma T_i^4+\frac{1-\epsilon_i}{\epsilon_i}\dq_{{\rm r},i}''
 \label{eq:qoutb}
 \ee
 
 \subsection{Solving the Radiation Equations}
 
-Equation~(\ref{RTE}) is solved by noting that it is a system of linear equations of the form
+Equation~(\ref{RTE}) is a system of linear equations of the form
 \begin{equation}
-Ax=Be-c
+   \mathbf{A \, q} = \mathbf{B \, e - c}
 \label{eq:linearsystem}
 \end{equation}
-where $A$ and $B$ are $n\times n$ matrices and $x$ is the unknown $n$-vector of net radiative fluxes.  The $k,j$'th components of $A$ and $B$
-are given by
+where $\mathbf A$ and $\mathbf B$ are $4\times 4$ matrices, $\mathbf q$ is the unknown vector of net radiative fluxes, and $\mathbf e$ is the vector of emission terms:
+\begin{eqnarray}
+a_{ij}  &=& \delta_{ij} - F_{i-j} \, \tau_{i-j} \, (1-\epsilon_j) \\
+b_{ij}  &=& \delta_{ij} - F_{i-j} \, \tau_{i-j} \\
+q_j     &=& -\dot{q}_{{\rm r},j}''/\epsilon_j \\
+e_j     &=& \sigma \, T_j^4
+\end{eqnarray}
+The components of the source term vector, $c_j$, are given by Eq.~(\ref{ckeq}).  The term $\delta_{ij}$ is the usual Kronecker delta function:
 \begin{eqnarray*}
-a_{k,j}&=&\frac{\delta_{k,j}}{\epsilon_k}-F_{k-j}\tau_{k-j}\frac{1-\epsilon_j}{\epsilon_j}\\
-b_{k,j}&=&\delta_{k,j}-F_{k-j}\tau_{k-j}
-\end{eqnarray*}
-The $k$'th component of the $n$-vector $e$ is $e_k=\sigma T_k^4$, $c_k$ is given by Eq.~(\ref{ckeq}) and the $k$'th component of the solution vector is $x_k=\dot{q}_{{\rm r},k}''$.  The term $\delta$ is the usual Kronekar delta function with
-\begin{eqnarray*}
-\delta_{k,j}=\left\{
+\delta_{ij}=\left\{
 \begin{array}{cc}
-1&k=j\\
-0&k\ne j
+1&i=j\\
+0&i\ne j
 \end{array}
 \right.
 \end{eqnarray*}
 
-In order to avoid a division by zero when $\epsilon_k=0$ and ensure that the
-linear system is diagonally dominant, Eq.~(\ref{eq:linearsystem}) is tranformed using the substitution
-$\hat{q}_k= \dot{q}_{{\rm r},k}''/\epsilon_k$.  The coefficients $a_{k,j}$ then become
-\begin{eqnarray*}
-a_{k,j}&=&\delta_{k,j}-F_{k-j}\tau_{k-j}(1-\epsilon_j)
-\end{eqnarray*}
-
-The solution to the original problem is then $\dot{q}_{{\rm r},k}''=\hat{q}_k\epsilon_k$
-where $\hat{q}_k$ is the solution to the transformed problem.
 
 
 \subsection{Configuration Factors}
 
-A configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by  surface $j$.  Sixteen configuration factor are required for each compartment since as illustrated in Figure~\ref{configfactorsetup} a compartment has four wall surfaces .
-
-In general these factors may be computed using
+The configuration factor, $F_{i-j}$, is the fraction of radiant energy emitted by surface $i$ that is intercepted by surface $j$.  Sixteen configuration factors are required for each compartment. Figure~\ref{configfactorsetup} depicts the system of indices for the wall surfaces and layer interface. In general, these factors may be computed using
 \be
    F_{i-j} = \frac{1}{A_i} \int_{A_i} \int_{A_j} \frac{\cos \theta_i \, \cos \theta_j}{\pi L^2} \, dA_j \, dA_i \label{eq:config_factor}
 \ee
 where $L$ is the distance along the line of integration,  $\theta_i$ and $\theta_j$ are the angles for surface $i$ and $j$ between the respective normal vectors and the line of integration, and $A_i$ and $A_j$ are the areas of the two surfaces.
 
 \begin{figure}[!ht]
-\label{configfactorsetup}
 \centering
-\includegraphics[width=3.0in]{FIGURES/configfactorsetup}
-\caption{Schematic diagram of a compartment showing walls and interface for computing configuration factors.}
+\setlength{\unitlength}{1in}
+\begin{picture}(3,2)
+\thicklines
+\put(0,0){\framebox(3,2){ }}
+\thinlines
+\put(0,1.5){\dashbox{0.1}(3,.5){ }}
+\put(1.5,0.1){\makebox(0,0){4 - Floor}}
+\put(1.5,1.35){\makebox(0,0){d - Layer Interface}}
+\put(1.5,1.85){\makebox(0,0){1 - Ceiling}}
+\put(0.1,0.7){\makebox(0,0)[l]{3 - Lower Wall}}
+\put(0.1,1.7){\makebox(0,0)[l]{2 - Upper Wall}}
+\end{picture}
+\caption{Schematic diagram of a compartment with indices for computing configuration factors.}
+\label{configfactorsetup}
 \end{figure}
 
-A more efficient procedure is to compute configuration factors between the ceiling and floor denoted $F_{1-4}$, between the ceiling and layer interface denoted $F_{1-d}$, and between the floor and layer interface denoted $F_{4-d}$ using a formula for a configuration factor between parallel plates
-(see Appendix~C of Ref.~\cite{SiegelandHowell:1981}) given by:
-
+A more efficient procedure is to compute configuration factors between the ceiling and floor, $F_{1-4}$, between the ceiling and layer interface, $F_{1-d}$, and between the floor and layer interface, $F_{4-d}$, using a formula for the configuration factor between parallel plates (Appendix~C of Ref.~\cite{SiegelandHowell:1981}):
 \begin{eqnarray}
 \lefteqn{F_{i-j} = \frac{2}{\pi \, X \, Y} \left\{ \ln \left[ \frac{(1+X^2)(1+Y^2)}{1+X^2+Y^2} \right]^{1/2} + X \sqrt{1+Y^2} \, \tan^{-1} \frac{X}{\sqrt{1+Y^2}} + \right.} \nonumber \\[.1in]
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \label{eq:configrect}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, $A_iF_{i-j}=A_jF_{j-i}$, follows from Eq.~(\ref{eq:config_factor}).
-Second, configuration factors for surfaces forming an enclosure satisfy
-\begin{eqnarray}
-\label{eq:factorsum}
-\sum_{j=1}^4F_{i-j}=1
-\end{eqnarray}
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, 
+\begin{equation}
+   A_i \, F_{i-j}=A_j \, F_{j-i}
+   \label{symrel}
+\end{equation} 
+follows from Eq.~(\ref{eq:config_factor}). Second, configuration factors for surfaces forming an enclosure satisfy
+\begin{equation}
+   \sum_{j=1}^4F_{i-j}=1
+   \label{eq:factorsum}
+\end{equation}
+The configuration factor $F_{1-4}$ does not change during a simulation since its value depends only on the compartment height and floor/ceiling area. Therefore, $F_{1-4}$ need only be computed once. Configuration factors $F_{1-d}$ and $F_{4-d}$ depend on the layer interface height so need to be determined each time the radiation exchange is calculated.
 
-\noindent since all radiation must be accounted for within the enclosure.  The configuration factor $F_{1-4}$
-does not change during a simulation since its value depends only on the compartment height and floor/ceiling area. Therefore, $F_{1-4}$ need only be computed once. Configuration
-factors, $F_{1-d}$ and $F_{4-d}$ depend on the layer interface height so need to be determined each
-time the radiation exchange is calculated.
-
-$F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ are determined using equation (\ref{eq:configrect}). Since $A_1 = A_4$ it follows that $F_{4-1} = F_{1-4}$. The other
-14 configuration factors can be calculated using simple algebraic formulas.
-Since the
-floor and the ceiling is assumed to be a
-flat rectangular surface it follows that $F_{1-1}=F_{4-4}=0$.
-From Eq.~(\ref{eq:factorsum}) and that due to symmetery
-$F_{2-1}=F_{2-d}$, it follows that
-
+$F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ are determined using Eq.~(\ref{eq:configrect}). Since $A_1 = A_4$ it follows that $F_{4-1} = F_{1-4}$. The other 14 configuration factors can be calculated using simple algebraic formulas.
+Since the floor and the ceiling are assumed to be flat rectangular surfaces, it follows that $F_{1-1}=F_{4-4}=0$. From Eq.~(\ref{eq:factorsum}) and the symmetry condition, $F_{2-1}=F_{2-d}$, it follows that
 \begin{eqnarray}
 \label{eq:config1}
-F_{1-2}&+&F_{1-d}=1\\
-\label{eq:config2}
-F_{2-1}+F_{2-2}&+&F_{2-d}=2F_{2-1}+F_{2-2}=2\frac{A_1}{A_2}F_{1-2}+F_{2-2}=1
+   F_{1-2} + F_{1-d} &=& 1\\
+   F_{2-1}+F_{2-2} + F_{2-d} &=& 2 \, F_{2-1}+F_{2-2}=2 \, \frac{A_1}{A_2} \, F_{1-2}+F_{2-2}=1
+   \label{eq:config2}
 \end{eqnarray}
-
-\noindent Solving equations (\ref{eq:config1}) and (\ref{eq:config2}) for $F_{1-2}$ and $F_{2-2}$ gives
+Solving equations (\ref{eq:config1}) and (\ref{eq:config2}) for $F_{1-2}$ and $F_{2-2}$ gives
 \begin{eqnarray*}
 F_{1-2}&=&1-F_{1-d}\\
-F_{2-1}&=&\frac{A_1}{A_2}F_{1-2}\\
-F_{2-2}&=&1-2F_{2-1}
+F_{2-2}&=&1-2 \, F_{2-1}
 \end{eqnarray*}
 Similarly,
 \begin{eqnarray*}
 F_{4-3}&=&1-F_{4-d}\\
-F_{3-4}&=&\frac{A_4}{A_3}F_{4-3}\\
-F_{3-3}&=&1-2F_{3-4}
+F_{3-3}&=&1-2 \, F_{3-4}
 \end{eqnarray*}
 Using the above configuration factors and Eq.~(\ref{eq:factorsum}), it follows that
 \begin{eqnarray*}
-F_{1-3}&=&1-F_{1-4} - F_{1-2}\\
-F_{3-1}&=&\frac{A_1}{A_3}F_{1-3}\\
-F_{3-2}&=&1-F_{3-1}-F_{3-3}-F_{3-4}\\
-F_{2-3}&=&\frac{A_3}{A_2}F_{3-2}\\
-F_{2-4}&=&1-F_{2-1}-F_{2-2}-F_{2-3}\\
-F_{4-2}&=&\frac{A_2}{A_4}F_{2-4}
+F_{1-3}&=&1-F_{1-4} - F_{1-2} \\
+F_{3-2}&=&1-F_{3-1} - F_{3-3} - F_{3-4} \\
+F_{2-4}&=&1-F_{2-1} - F_{2-2} - F_{2-3}
 \end{eqnarray*}
 
 \subsection{Solid Angles}
 
+The normalized solid angle $\omega$ in Eq.~(\ref{ckeq}) is the view factor between a given point, say the fire, and a solid wall. In other words, it is the fraction of radiant energy emitted by the fire that is intercepted by a particular wall surface. Normalized solid angles are also used to determine the fraction of radiation from each wall surface that strikes a target as in Eq.~(\ref{target_rad}).
+
 \begin{figure}[!ht]
-\label{solidanglesetup}
 \centering
-\includegraphics[width=3.5in]{FIGURES/solidanglesetup}
-\caption{Schematic diagram of an origin and a triangle for computing solid angles.}
+\setlength{\unitlength}{1in}
+\begin{picture}(3,2)
+\thicklines
+\put(0,.5){\framebox(3,1.5){ }}
+\put(1,0){\vector(-2,1){1}}
+\put(1,0){\vector(-1,2){1}}
+\put(1,0){\vector(1,1){2}}
+\put(0.4,0.2){\makebox(0,0){$\mathbf{v}_1$}}
+\put(0.4,1.0){\makebox(0,0){$\mathbf{v}_2$}}
+\put(2.4,1.2){\makebox(0,0){$\mathbf{v}_3$}}
+\end{picture}
+\caption{Solid angle formed by the vectors $\mathbf{v}_1$, $\mathbf{v}_2$, and $\mathbf{v}_3$.}
+\label{solidanglesetup}
 \end{figure}
 
-The solid angle $\Omega$ of an object is the area of that object projected onto a unit sphere. Normalized solid angles, solid angles divided by $4\pi$, the area of a unit sphere, are used for determining the fraction of a fire's radiant heat flux striking each wall surface as in Eq.~(\ref{ckeq}) and determining the fraction of each wall surface's radiant heat flux striking a target as in Eq.~(\ref{target_rad}).
-
-To compute a solid angle, consider an origin $v_0$ and a triangle defined by vertices $v_1$, $v_2$ and $v_3$ as illustrated in Figure~\ref{solidanglesetup}.  The solid angle of this triangle with respect to the origin $v_0$ may be computed using
+To compute a solid angle, consider the triangle defined by the vertices $\mathbf{v}_1$, $\mathbf{v}_2$, and $\mathbf{v}_3$ as illustrated in Fig.~\ref{solidanglesetup}. The solid angle of this triangle with respect to the origin is computed
 \begin{eqnarray*}
-\tan\frac{\Omega}{2} = \frac{|\hat{v}_1\times \hat{v}_2\cdot \hat{v}_3|}{1+\hat{v}_1\cdot \hat{v}_2+\hat{v}_1\cdot \hat{v}_3+\hat{v}_2\cdot \hat{v}_3}
+\omega = \frac{1}{2\pi} \; \tan^{-1} \left( \frac{|\hat{\mathbf v}_1\times \hat{\mathbf v}_2\cdot \hat{\mathbf v}_3|}
+   {1+\hat{\mathbf v}_1\cdot \hat{\mathbf v}_2+\hat{\mathbf v}_1\cdot \hat{\mathbf v}_3+\hat{\mathbf v}_2\cdot \hat{\mathbf v}_3} \right)
 \end{eqnarray*}
-where $\hat{v}_i=v_i/||v_i||$ are unit vectors\cite{vanOosterom:1983}. A solid angle for a rectangular wall surface is computed by splitting the surface into two triangles, computing the solid angle for each triangle and summing.
+where $\hat{\mathbf v}$ denotes the normalized vector~\cite{vanOosterom:1983}. The normalized solid angle for a rectangular wall surface is computed by splitting the surface into two triangles, computing the solid angle for each triangle and summing.
 
 \subsection{Transmittance and Absorptance}
 
@@ -754,10 +742,10 @@ The effective path length, $L$, is calculated between the center-points of the e
 \subsection{Radiation Heat Flux to a Target}
 \label{section:target}
 
-Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is then given by:
+Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is given by:
 \be
    \dq_{\rm r}'' = \epsilon_{\rm t} \left(
-   \displaystyle\sum_{f=1}^{n_{\rm fires}} \cos \, \theta_f \; \frac{\chi_{\rm r} \, \dQ_f}{4 \pi R_f^2}  + \displaystyle\sum_{j=1}^{10} \tau_j \, F_j \, \epsilon_j \, \qout{j}  +  \displaystyle\sum_{j=1}^2 \left(\tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
+   \displaystyle\sum_{{\rm f}=1}^{n_{\rm fires}} \cos(\theta_{\rm f}) \; \frac{\chi_{\rm r} \, \dQ_{\rm f}}{4 \pi R_{\rm f}^2}  + \displaystyle\sum_{j=1}^{10} \tau_j \, F_j \, \epsilon_j \, \qout{j}  +  \displaystyle\sum_{j=1}^2 \left(\tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
 \ee
 where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is the emissivity of the wall surface, $\theta_f$ is the angle formed by the line of sight segment (between the fire $f$ and the target) of length $R_f$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer, $T_{\rm t}$ is the temperature of the target.  The term $\qout{j}$, given by Eq.~(\ref{eq:qoutb}), is the outgoing radiative flux at the $j$'th wall surface.
 

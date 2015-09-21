@@ -565,21 +565,21 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 \newcommand{\qout}[1]{q_{{\rm out},#1}''}
 \newcommand{\qin}{q_{{\rm in},k}''}
 
-The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $k$ consists of an emissive power and reflectance term and is given by
+The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $k$ consists of an emissive power and reflectance term given by
 
 \be
 \qout{k}=\sigma\epsilon T_k^4+\left(1-\epsilon_k\right)\qin
 \label{eq:qout}
 \ee
 
-\noindent where $\qin$ is the radiant flux striking surface $k$ from all sources (wall segments, gas layers and fires).  The term $\qin$ is given by
+\noindent where $\qin$ is the radiant flux striking surface $k$ from all sources (wall segments, gas layers and fires).  This incoming radiant flux is given by
 
 \be
 \qin=\sum_{j=1}^4\qout{j}F_{j-k}\tau_{j-k}+c''_k
 \label{eq:qin}
 \ee
 
-\noindent The term $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $T_k$ is the temperature  and $c_k''$ is the radiative flux from gas layers and fire of surface $k$ . 
+\noindent The term $F_{j-k}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $k$), $\tau_{j-k}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_k$ is the emissivity, $T_k$ is the temperature  and $c_k''$ is the radiative flux from gas layers and fire of surface $k$ .
 
 The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},k}''$, at each of these surfaces.  This flux is defined as the difference between the incoming and outgoing radiative flux\footnote{The sign for the net radiative flux, $\dot{q}_{{\rm r},k}''$, is defined so that positive radiant fluxes heat up wall segments, consistent with how convective fluxes are defined .  This is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}}:
 
@@ -601,7 +601,7 @@ equation given by Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
 \ee
 where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{k-j}$ is the view factor between the layer and solid surface, $\omega_{k-{\rm f}}$ is the {\em normalized} solid angle between the fire and wall\footnote{Note that as the area of surface $k$ shrinks to zero, $\omega_{k-{\rm f}}/A_k \to 1/R^2$, yielding the classic point source radiation model}, and $\dQ$ is the heat release rate of the fire. If the solid surface, $k$, is the floor or the lower wall and the gas layer, $j$, is the upper layer, the view factor, $F_{k-j}$, refers to the layer interface. If the solid surface is the upper wall or ceiling, the view factor is 1. Eq.~(\ref{RTE}) is a set of linear equations (4 equations and 4 unknowns) whose solution is discussed in the next section.
 
-The net radiative flux, $\dq_{{\rm r},k}''$ found in Eq.~(\ref{RTE}), along with the convective flux discussed in Section~\ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls. The outgoing radiative flux, $\qout{k}$ is used in Section~\ref{section:target} for computing radiative flux to a target.  It is found by eliminating $\qin$ in Eqs.~\ref{eq:qout} and~\ref{eq:raddiff} and is given by
+The net radiative flux, $\dq_{{\rm r},k}''$ found in Eq.~(\ref{RTE}), along with the convective flux discussed in Section~\ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls. The outgoing radiative flux, $\qout{k}$ is used in Section~\ref{section:target} for computing radiative flux to a target.  It may be rewritten in terms of known quantities, in particular the net radiative flux found in Eq. (\ref{RTE}), by eliminating $\qin$ in Eqs.~\ref{eq:qout} and~\ref{eq:raddiff} and is given by
 
 \be
 \qout{k}=\sigma T_k^4+\frac{1-\epsilon_k}{\epsilon_k}\dq_{{\rm r},k}''
@@ -759,7 +759,7 @@ Objects, often referred to as ``targets,'' may be added to any compartment  to r
    \dq_{\rm r}'' = \epsilon_{\rm t} \left(
    \displaystyle\sum_{f=1}^{n_{\rm fires}} \cos \, \theta_f \; \frac{\chi_{\rm r} \, \dQ_f}{4 \pi R_f^2}  + \displaystyle\sum_{j=1}^{10} \tau_j \, F_j \, \epsilon_j \, \qout{j}  +  \displaystyle\sum_{j=1}^2 \left(\tau_j \, F_j \, \epsilon_j \sigma \, T_j^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
 \ee
-where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is the emissivity of the wall surface, $\theta_f$ is the angle formed by the line of sight segment (between the fire $f$ and the target) of length $R_f$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer, $T_{\rm t}$ is the temperature of the target.  The term $\qout{j}$, given by Eq.~(\ref{eq:qoutb}), is the outgoing radiative flux at the $j$'th wall surface. 
+where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is the emissivity of the wall surface, $\theta_f$ is the angle formed by the line of sight segment (between the fire $f$ and the target) of length $R_f$ and the normal direction to the target surface, $F_j$ and $F_{\rm u}$ are view factors for the walls and upper layer, $\tau_j$ and $\tau_{\rm u}$ are the values of transmittance for the path between the target and the walls and upper layer, $T_{\rm t}$ is the temperature of the target.  The term $\qout{j}$, given by Eq.~(\ref{eq:qoutb}), is the outgoing radiative flux at the $j$'th wall surface.
 
 
 

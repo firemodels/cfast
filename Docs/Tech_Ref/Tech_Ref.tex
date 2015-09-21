@@ -567,7 +567,7 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 
 The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $i$ consists of an emissive power and reflectance term given by
 \be
-\qout{i}=\sigma\epsilon T_i^4+\left(1-\epsilon_i\right)\qin
+\qout{i}=\sigma\epsilon_i T_i^4+\left(1-\epsilon_i\right)\qin
 \label{eq:qout}
 \ee
 where $\qin$ is the radiant flux striking surface $i$ from all sources (wall segments, gas layers and fires).  This incoming radiant flux is given by
@@ -582,7 +582,7 @@ The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},i}''$
 \dot{q}_{{\rm r},i}'' = \qin - \qout{i}
 \label{eq:raddiff}
 \ee
-Equation~(\ref{eq:raddiff}) is written as a system of four linear equations following Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}:
+Following Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}, Eq.~(\ref{eq:raddiff}) is written as a system of four linear equations (after using Eqs.~(\ref{eq:qout}) and (\ref{eq:qin}) to eliminate $\qout{i}$ and $\qin$):
 \be
    -\frac{\dot{q}_{{\rm r},i}''}{\epsilon_i} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{i-j} \; \tau_{i-j} \; \dot{q}_{{\rm r},j}'' = \sigma T_i^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{i-j} \; \tau_{i-j} \; \sigma T_j^4 \, } - c''_i \label{RTE}
 \ee
@@ -658,11 +658,11 @@ A more efficient procedure is to compute configuration factors between the ceili
 & \quad \quad \quad \quad \quad \quad & \left. Y \sqrt{1+X^2} \, \tan^{-1} \frac{Y}{\sqrt{1+X^2}} - X \, \tan^{-1} X - Y\, \tan^{-1} Y \right\}
 \label{eq:configrect}
 \end{eqnarray}
-where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation, 
+where $a$ and $b$ are the rectangle dimensions, $c$ is the separation distance, $X=a/c$ and $Y=b/c$. Algebraic relations in terms of $F_{1-4}$, $F_{1-d}$ and $F_{4-d}$ may then be used to determine the 16 required configuration factors.  Two properties are used to derive these relations.  First, the symmetry relation,
 \begin{equation}
    A_i \, F_{i-j}=A_j \, F_{j-i}
    \label{symrel}
-\end{equation} 
+\end{equation}
 follows from Eq.~(\ref{eq:config_factor}). Second, configuration factors for surfaces forming an enclosure satisfy
 \begin{equation}
    \sum_{j=1}^4F_{i-j}=1

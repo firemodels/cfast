@@ -572,7 +572,7 @@ The compartment lining is divided into four surfaces: the ceiling, the floor, an
 \ee
 where $\qin$ is the radiant flux striking surface $i$ from all sources (wall segments, gas layers and fires).  This incoming radiant flux is given by
 \be
-\qin=\sum_{j=1}^4\qout{j} \, F_{j-i} \, \tau_{j-i}+c''_i
+\qin=\left(\frac{1}{A_i}\sum_{j=1}^4A_j\qout{j} \, F_{j-i} \, \tau_{j-i}\right)+c''_i
 \label{eq:qin}
 \ee
 The term $F_{j-i}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $i$), $\tau_{j-i}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_i$ is the emissivity, $T_i$ is the temperature  and $c_i''$ is the radiative flux from gas layers and fire of surface $i$ .
@@ -584,7 +584,7 @@ The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},i}''$
 \ee
 Following Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}, Eq.~(\ref{eq:raddiff}) is written as a system of four linear equations (after using Eqs.~(\ref{eq:qout}) and (\ref{eq:qin}) to eliminate $\qout{i}$ and $\qin$):
 \be
-   -\frac{\dot{q}_{{\rm r},i}''}{\epsilon_i} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{i-j} \; \tau_{i-j} \; \dot{q}_{{\rm r},j}'' = \sigma T_i^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{i-j} \; \tau_{i-j} \; \sigma T_j^4 \, } - c''_i \label{RTE}
+   -\frac{\dot{q}_{{\rm r},i}''}{\epsilon_i} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{i-j} \; \tau_{j-i} \; \dot{q}_{{\rm r},j}'' = \sigma T_i^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{i-j} \; \tau_{j-i} \; \sigma T_j^4 \, } - c''_i \label{RTE}
 \ee
 The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be

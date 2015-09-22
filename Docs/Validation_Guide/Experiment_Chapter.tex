@@ -2,7 +2,7 @@
 
 \label{Experiment_Chapter}
 
-This chapter summarizes the range of experiments used in the current evaluation of the CFAST model. Much of the content follows the FDS Validation Guide \cite{FDS_Validation_Guide_6} and the verification and validation guide for nuclear power plants developed by the US NRC \cite{NRCNUREG1824}. This study focused on the predicted results of the CFAST fire model and did not include an assessment of the user interface for the model.  However, all input files used for the simulations were prepared using the CFAST graphical user interface (GUI) and reviewed for correctness prior to the simulations.  The comparisons between the experiments and model predictions were characterized as open calculations, i.e., the modelers were given detailed descriptions of the test conditions, test geometry, and fire source, but did not modify model inputs from these given conditions to improve model predictions.  As such, the comparisons in this report provide an assessment of the predictive capability of the model, but not an assessment of the ability of different modelers to develop appropriate model inputs. 
+This chapter summarizes the range of experiments used in the current evaluation of the CFAST model. Much of the content follows the FDS Validation Guide \cite{FDS_Validation_Guide_6} and the verification and validation guide for nuclear power plants developed by the US NRC \cite{NRCNUREG1824}. This study focused on the predicted results of the CFAST fire model and did not include an assessment of the user interface for the model.  However, all input files used for the simulations were prepared using the CFAST graphical user interface (GUI) and reviewed for correctness prior to the simulations.  The comparisons between the experiments and model predictions were characterized as open calculations, i.e., the modelers were given detailed descriptions of the test conditions, test geometry, and fire source, but did not modify model inputs from these given conditions to improve model predictions.  As such, the comparisons in this report provide an assessment of the predictive capability of the model, but not an assessment of the ability of different modelers to develop appropriate model inputs.
 
 \label{experiment_summary}
 
@@ -424,7 +424,7 @@ were approximately 2.1~m in height. The slope of the ceiling was approximately 8
 \begin{center}
 \includegraphics[width=6.5in]{FIGURES/NIST_Dunes_2000/Manufactured_Home_Drawing}
 \end{center}
-\caption[Geometry of the NIST Dunes 2000 Experiments]{Geometry of the NIST Smoke Alarm Experiments.}
+\caption[Geometry of the NIST Home Smoke Alarm Experiments]{Geometry of the NIST Smoke Alarm Experiments.}
 \label{NIST_Dunes_2000_Drawing}
 \end{figure}
 
@@ -457,7 +457,7 @@ The resulting HRR curve was input into FDS as a fire ramp.
 A summary of the nine tests selected for model validation is shown in Table~\ref{tab:NIST_Dunes_2000_Summary}.
 
 \begin{table}[h!]
-\caption{Summary of NIST Dunes 2000 experiments selected for model validation.}
+\caption{Summary of NIST home smoke alarm experiments selected for model validation.}
 \begin{center}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
@@ -520,7 +520,7 @@ A second series of experiments involving plate thermometers was carried out in 2
 
 \section{Steckler Compartment Experiments}
 
-Steckler, Quintiere and Rinkinen performed a set of 55 compartment fire tests at NBS in 1979 \cite{Steckler:1982}. The compartment was 2.8~m by 2.8~m by 2.13~m high\footnote{The test report
+Steckler, Quintiere and Rinkinen performed a set of 55 compartment fire tests at NBS in 1979 \cite{Steckler:1982}. The compartment was 2.80~m by 2.80~m by 2.13~m high\footnote{The test report
 gives the height of the compartment as 2.18~m. This is a misprint. The compartment was 2.13~m high.}, with a single door of
 various widths, or alternatively a single window with various heights. A 30~cm diameter methane burner was used to generate fires with heat release rates of
 31.6~kW, 62.9~kW, 105.3~kW and 158~kW. Vertical profiles of velocity and temperature were measured in the doorway, along with a single vertical profile of temperature
@@ -859,7 +859,7 @@ The steel used to construct the column and truss flanges was 0.64~cm thick.  The
 
 Two fuels were used in the tests. The properties of the fuels were obtained from measurements made on a series of unconfined burns that are referenced in the test report.
 The first fuel was a blend of heptane isomers, C$_7$H$_{16}$. Its soot yield in CFAST was set at a constant 1.5~\%. The second fuel was a mixture (40~\% - 60~\% by volume) of toluene, C$_7$H$_8$,
-and heptane. Because FDS only considers the burning of a single hydrocarbon fuel, the mixture was taken to be C$_7$H$_{12}$ with a soot yield of 11.2~\%.
+and heptane. Because a fire in CFAST only considers the burning of a single hydrocarbon fuel, the mixture was taken to be C$_7$H$_{12}$ with a soot yield of 11.2~\%.
 The radiative fraction for the heptane blend was 0.44; for the heptane/toluene mixture it was 0.39.
 The heat release rate of the simulated burner was set to that which was measured in the experiments with the fire placed on the floor at the center of the fire pan.
 

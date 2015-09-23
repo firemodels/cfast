@@ -49,20 +49,7 @@ module cenviro
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal
-
-    type(room_type), target :: roominfo(nr)
     
-    integer :: nramps = 0
-    type(ramp_type), target :: rampinfo(mxramps)
-    
-    type(visual_type), dimension (mxslice), target :: visual_info
-    integer :: nvisualinfo = 0
-
-    type(slice_type), allocatable, dimension(:), target :: sliceinfo  
-    integer :: nsliceinfo
-    type(iso_type), allocatable, dimension(:), target :: isoinfo  
-    integer :: nisoinfo
-
 end module cenviro
 
 ! --------------------------- cfast_main -------------------------------------------
@@ -118,8 +105,22 @@ module cfast_main
     logical :: activs(ns), surface_on_switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
 
     character(128) :: title, compartmentnames(nr)
+
+    type(room_type), target :: roominfo(nr)
    
     type(fire_type), target :: fireinfo(mxfire)
+    
+    integer :: nramps = 0
+    type(ramp_type), target :: rampinfo(mxramps)
+    
+    type(visual_type), dimension (mxslice), target :: visual_info
+    integer :: nvisualinfo = 0
+
+    type(slice_type), allocatable, dimension(:), target :: sliceinfo  
+    integer :: nsliceinfo
+    type(iso_type), allocatable, dimension(:), target :: isoinfo  
+    integer :: nisoinfo
+
      
 end module cfast_main
 

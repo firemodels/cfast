@@ -32,7 +32,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     use iofiles
     use cfast_types
     use cenviro
-    use cfast_main, only: ndtect, ixdtect
+    use cfast_main, only: ndtect, ixdtect, roominfo, sliceinfo, nsliceinfo, isoinfo, nisoinfo
     use dsize
     implicit none
 

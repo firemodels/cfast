@@ -162,7 +162,7 @@
     
     use precision_parameters
     use cenviro
-    use cfast_main, only: qcvv
+    use cfast_main, only: qcvv, nramps, rampinfo
     implicit none
     
     character, intent(in) :: venttype

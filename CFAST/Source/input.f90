@@ -657,22 +657,7 @@
                 targptr%wall = 0
 
                 ! solution method
-                method = ' '
-                method = lcarray(9)
-                call upperall(method,method)
-                if(method/=' ')then
-                    if(method(1:3)=='STE') then
-                        targptr%method = STEADY
-                        method = ' '
-                    elseif (method(1:3)=='IMP') then
-                        targptr%method = MPLICIT
-                    elseif (method(1:3)=='EXP') then
-                        targptr%method = XPLICIT
-                    else
-                        write(logerr,912) method
-                        stop
-                    endif
-                endif
+                targptr%method = XPLICIT
 
                 ! equation type, PDE or CYL.  ODE is outdated and changed to PDE if it's in an input file.
                 eqtype = ' '
@@ -686,7 +671,6 @@
                         targptr%equaton_type = pde
                     elseif (eqtype(1:3)=='CYL') then
                         targptr%equaton_type = cylpde
-                        targptr%method = XPLICIT
                     else
                         write(logerr,913) 'Error',eqtype
                         stop

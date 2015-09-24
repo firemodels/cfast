@@ -24,27 +24,21 @@ contains
 
 ! --------------------------- target -------------------------------------------
 
-    subroutine target(update,method,dt,delta)
+    subroutine target(update,method,dt)
 
     !     routine: target (main target routine)
     !     purpose: compute dassl residuals associated with targets
     !     arguments: update   variable indicating whether temperature profile should be updated
     !                method   one of steady, mplicit or xplicit (note: these are parameter values, not mis-pelld)
     !                dt       time step
-    !                xpsolve  dassl derivative estimate
-    !                delta    dassl residual array
-    !     revision: $revision: 464 $
-    !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
     integer, intent(in) :: update, method
     real(eb), intent(in) :: dt
-    
-    real(eb), intent(out) :: delta(*)
 
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
-    integer :: itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
+    integer :: itarg, nmnode(2), iieq, iwbound, nslab, iimeth
     
     type(target_type), pointer :: targptr
     
@@ -80,35 +74,16 @@ contains
                 nmnode(2) = nnodes_trg - 2
                 nslab = 1
                 if(iieq==pde)then
-                   if(iimeth==mplicit)then
-                       tempin = targptr%temperature(idx_tempf_trg)
-                       iwbound = 3
-                   else
-                       iwbound = 4
-                   endif
+                   iwbound = 4
                    walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
 
                    call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
                        wfluxin,wfluxout,iwbound,tgrad,tderv)
-                   if(iimeth==mplicit)then
-                      ieq = iztarg(itarg)
-                      delta(noftt+ieq) = wfluxin + wk(1)*tgrad(1)
-                   endif
                 else if(iieq==cylpde)then
                     wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    if(iimeth==mplicit)then
-                       tempin = targptr%temperature(idx_tempb_trg)
-                       iwbound = 3
-                    else
-                       iwbound = 4
-                    endif
+                    iwbound = 4
                     call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
                        dt,wk(1),wrho(1),wspec(1),xl,tgrad)          
-                    if(iimeth==mplicit)then
-                        ieq = iztarg(itarg)
-                        delta(noftt+ieq) = wfluxavg + wk(1)*tgrad(1)
-                       ! write(0,*)"temp=",targptr%temperature(idx_tempb_trg),"delta=",delta(noftt+ieq)
-                    endif
                 endif
                 ! error, the equation type can has to be either pde or ode if the method is not steady
             else

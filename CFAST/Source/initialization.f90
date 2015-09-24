@@ -617,10 +617,6 @@
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        if(targptr%method==mplicit)then
-            ieq = iztarg(itarg)
-            p(noftt+ieq) = interior_temperature
-        endif  
         do i=idx_tempf_trg,idx_tempb_trg
             targptr%temperature(i) = interior_temperature
         end do

@@ -551,7 +551,6 @@
                     end if
                     depth = depth + targptr%thickness*tmp(inode-1)
                 end do
-                if (targptr%method==steady) tctemp = tttemp
                 if (validate.or.netheatflux) then
                     total = targptr%flux_net_gauge(1)
                     ftotal = targptr%flux_fire(1)
@@ -1376,7 +1375,7 @@
             write(lbuf,'(a,i2)')' oxygen component ',icomp-nofoxyl
             call xerror(lbuf,0,1,0)
         else
-            write(lbuf,'(a,i2)')' target number ',icomp-noftt
+            write(lbuf,'(a,i2)')' target number ',icomp
             call xerror(lbuf,0,1,0)
         endif
     else if (icomp<=nofprd) then

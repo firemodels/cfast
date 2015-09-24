@@ -415,7 +415,6 @@
 
     ! If we are running only an initialization test then we do not need to solve anything
     if (initializeonly) then
-        call target_flux(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
         ! then we need the output now
         call remap_fires (nfires)
@@ -502,15 +501,6 @@
 
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
 
-            ! update target temperatures (only need to update just before we print target temperatures).
-            ! if we actually use target temperatures in a calculation then this call will need to be moved to 
-            ! inside calculate_residuals.
-
-            if(.not.ltarg)then
-                call target_flux(steady)
-                ltarg = .true.
-            endif
-
             itmstp = tprint
             call output_results (t,1)
             call output_status (t, dt)
@@ -524,10 +514,6 @@
 
         if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
             itmstp = tsmv
-            if(.not.ltarg)then
-                call target_flux(steady)
-                ltarg = .true.
-            endif
 
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -553,10 +539,6 @@
 
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
             itmstp = tspread
-            if(.not.ltarg)then
-                call target_flux(steady)
-                ltarg = .true.
-            endif
             call output_spreadsheet_normal (t)
             call output_spreadsheet_species (t)
             call output_spreadsheet_flow (t)
@@ -794,8 +776,8 @@
         pdold(i) = pdnew(i)
     end do
 
-    ! advance explicit target temperatures
-    call target (1,xplicit,dt)
+    ! advance target temperatures
+    call target (1,dt)
     
     ! make sure species mass adds up to total mass
     if (nlspct>0) call synchronize_species_mass (p,nodes+1)

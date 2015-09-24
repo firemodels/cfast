@@ -656,9 +656,6 @@
                 targptr%material = tcname
                 targptr%wall = 0
 
-                ! solution method
-                targptr%method = XPLICIT
-
                 ! equation type, PDE or CYL.  ODE is outdated and changed to PDE if it's in an input file.
                 eqtype = ' '
                 eqtype = lcarray(10)

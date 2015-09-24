@@ -357,9 +357,9 @@ for j=2:length(Q);
         output_stats{stat_line,1} = Scatter_Plot_Title; % Quantity
         output_stats{stat_line,2} = size(B, 2); % Number of data sets
         output_stats{stat_line,3} = size(Predicted_Values, 1); % Number of data points
-        output_stats{stat_line,4} = sprintf('%0.2f', Sigma_E); % Sigma_E
-        output_stats{stat_line,5} = sprintf('%0.2f', Sigma_M); % Sigma_M
-        output_stats{stat_line,6} = sprintf('%0.2f', delta); % Bias
+        output_stats{stat_line,4} = sprintf('%0.10e', Sigma_E); % Sigma_E
+        output_stats{stat_line,5} = sprintf('%0.10e', Sigma_M); % Sigma_M
+        output_stats{stat_line,6} = sprintf('%0.10e', delta); % Bias
         stat_line = stat_line + 1;
         
     elseif k == 0 && strcmp(Stats_Output, 'Validation')

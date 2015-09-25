@@ -213,7 +213,6 @@ Public Class CeditMain
     Friend WithEvents Label72 As System.Windows.Forms.Label
     Friend WithEvents Label73 As System.Windows.Forms.Label
     Friend WithEvents Label79 As System.Windows.Forms.Label
-    Friend WithEvents Label80 As System.Windows.Forms.Label
     Friend WithEvents Label78 As System.Windows.Forms.Label
     Friend WithEvents Label74 As System.Windows.Forms.Label
     Friend WithEvents GroupBox28 As System.Windows.Forms.GroupBox
@@ -364,7 +363,6 @@ Public Class CeditMain
     Friend WithEvents MVentSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents TargetSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents TargetSolutionType As System.Windows.Forms.ComboBox
-    Friend WithEvents TargetSolutionMethod As System.Windows.Forms.ComboBox
     Friend WithEvents DetectorSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents HHeatSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents HHeatRemove As System.Windows.Forms.Button
@@ -719,9 +717,7 @@ Public Class CeditMain
         Me.TargetConduct = New System.Windows.Forms.Label()
         Me.TargetMaterial = New System.Windows.Forms.ComboBox()
         Me.Label78 = New System.Windows.Forms.Label()
-        Me.Label80 = New System.Windows.Forms.Label()
         Me.Label79 = New System.Windows.Forms.Label()
-        Me.TargetSolutionMethod = New System.Windows.Forms.ComboBox()
         Me.TargetComp = New System.Windows.Forms.ComboBox()
         Me.Label74 = New System.Windows.Forms.Label()
         Me.TargetSolutionType = New System.Windows.Forms.ComboBox()
@@ -3516,9 +3512,7 @@ Public Class CeditMain
         Me.GroupTargets.Controls.Add(Me.TargetName)
         Me.GroupTargets.Controls.Add(Me.Label116)
         Me.GroupTargets.Controls.Add(Me.GroupBox3)
-        Me.GroupTargets.Controls.Add(Me.Label80)
         Me.GroupTargets.Controls.Add(Me.Label79)
-        Me.GroupTargets.Controls.Add(Me.TargetSolutionMethod)
         Me.GroupTargets.Controls.Add(Me.TargetComp)
         Me.GroupTargets.Controls.Add(Me.Label74)
         Me.GroupTargets.Controls.Add(Me.TargetSolutionType)
@@ -3637,35 +3631,15 @@ Public Class CeditMain
         Me.Label78.Text = "Material:"
         Me.Label78.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'Label80
-        '
-        Me.Label80.AutoSize = True
-        Me.Label80.Location = New System.Drawing.Point(588, 52)
-        Me.Label80.Name = "Label80"
-        Me.Label80.Size = New System.Drawing.Size(87, 13)
-        Me.Label80.TabIndex = 29
-        Me.Label80.Text = "Solution Method:"
-        Me.Label80.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
         'Label79
         '
         Me.Label79.AutoSize = True
-        Me.Label79.Location = New System.Drawing.Point(607, 23)
+        Me.Label79.Location = New System.Drawing.Point(607, 37)
         Me.Label79.Name = "Label79"
         Me.Label79.Size = New System.Drawing.Size(68, 13)
         Me.Label79.TabIndex = 40
         Me.Label79.Text = "Target Type:"
         Me.Label79.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'TargetSolutionMethod
-        '
-        Me.TargetSolutionMethod.ItemHeight = 13
-        Me.TargetSolutionMethod.Items.AddRange(New Object() {"Implicit", "Explicit", "Steady"})
-        Me.TargetSolutionMethod.Location = New System.Drawing.Point(684, 48)
-        Me.TargetSolutionMethod.Name = "TargetSolutionMethod"
-        Me.TargetSolutionMethod.Size = New System.Drawing.Size(104, 21)
-        Me.TargetSolutionMethod.TabIndex = 810
-        Me.TargetSolutionMethod.Text = "Implicit"
         '
         'TargetComp
         '
@@ -3690,7 +3664,7 @@ Public Class CeditMain
         '
         Me.TargetSolutionType.ItemHeight = 13
         Me.TargetSolutionType.Items.AddRange(New Object() {"Plate", "Cylinder"})
-        Me.TargetSolutionType.Location = New System.Drawing.Point(684, 19)
+        Me.TargetSolutionType.Location = New System.Drawing.Point(684, 33)
         Me.TargetSolutionType.Name = "TargetSolutionType"
         Me.TargetSolutionType.Size = New System.Drawing.Size(104, 21)
         Me.TargetSolutionType.TabIndex = 809
@@ -5691,7 +5665,7 @@ Public Class CeditMain
             UpdateGUI.Targets(CurrentTarget)
         End If
     End Sub
-    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionMethod.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
+    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
         Dim aTarget As New Target, numFires As Integer, i As Integer
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
@@ -5704,7 +5678,6 @@ Public Class CeditMain
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
             If sender Is Me.TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
-            If sender Is Me.TargetSolutionMethod Then aTarget.SolutionMethod = Me.TargetSolutionMethod.SelectedIndex
             If sender Is Me.TargetSolutionType Then
                 aTarget.SolutionType = Me.TargetSolutionType.SelectedIndex
             End If

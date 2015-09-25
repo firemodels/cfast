@@ -31,7 +31,6 @@ Public Class Target
     Private aInternalLocation As Single         ' Location for reporting of internal temperature as a fraction of thickness. Default is 0.5 (center)
     Private aMaterial As String                 ' Target material from material database
     Private aSolutionType As Integer            ' 0 for thermally thick plate which is the PDE option or 1 for cylindrical coordinates.  ODE is no loger supported
-    Private aSolutionMethod As Integer          ' 0 for implicit solution or 1 for explicit solution or 2 for steady solution
     Private aDetectorType As Integer            ' 0 for heat detector, 1 for smoke detector, 2 for sprinkler 
     Private aActivationTemperature As Single    ' Activation temperature for all detector types.  Default depends on type
     Private aRTI As Single                      ' Detector RTI value
@@ -52,7 +51,6 @@ Public Class Target
         aInternalLocation = 0.5
         aMaterial = "Off"
         aSolutionType = 0
-        aSolutionMethod = 0
         aDetectorType = 1
         aActivationTemperature = 10.0 + 273.15
         aRTI = 100
@@ -220,17 +218,6 @@ Public Class Target
             End If
         End Set
     End Property
-    Public Property SolutionMethod() As Integer
-        Get
-            Return aSolutionMethod
-        End Get
-        Set(ByVal Value As Integer)
-            If Value <> aSolutionMethod Then
-                Me.aSolutionMethod = Value
-                aChanged = True
-            End If
-        End Set
-    End Property
     Public Property SolutionType() As Integer
         Get
             Return aSolutionType
@@ -307,7 +294,7 @@ Public Class Target
         Me.YNormal = YNormal
         Me.ZNormal = ZNormal
     End Sub
-    Public Sub SetTarget(ByVal index As Integer, ByVal Material As String, ByVal SolutionType As Integer, ByVal SolutionMethod As Integer)
+    Public Sub SetTarget(ByVal index As Integer, ByVal Material As String, ByVal SolutionType As Integer)
         ' This one defines a target
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
@@ -319,13 +306,6 @@ Public Class Target
                 Me.SolutionType = Cylindrical
             Else
                 Me.SolutionType = ThermallyThick
-            End If
-            If SolutionMethod = Explicit Then
-                Me.SolutionMethod = Explicit
-            ElseIf SolutionMethod = Steady Then
-                Me.SolutionMethod = Steady
-            Else
-                Me.SolutionMethod = Implicit
             End If
             If Me.XPosition = -1 Then Me.XPosition = aCompartment.RoomWidth / 2
             If Me.YPosition = -1 Then Me.YPosition = aCompartment.RoomDepth / 2
@@ -468,7 +448,6 @@ Public Class TargetCollection
         ToTarget.ZNormal = FromTarget.ZNormal
         ToTarget.Material = FromTarget.Material
         ToTarget.SolutionType = FromTarget.SolutionType
-        ToTarget.SolutionMethod = FromTarget.SolutionMethod
         ToTarget.DetectorType = FromTarget.DetectorType
         ToTarget.ActivationTemperature = FromTarget.ActivationTemperature
         ToTarget.RTI = FromTarget.RTI

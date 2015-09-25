@@ -565,13 +565,7 @@ Public Class UpdateGUI
             MainWin.TargetYNormal.Text = aTarget.YNormal.ToString
             MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
             MainWin.TargetMaterial.Text = myThermalProperties.GetLongName(aTarget.Material)
-            MainWin.TargetSolutionMethod.SelectedIndex = aTarget.SolutionMethod
             MainWin.TargetSolutionType.SelectedIndex = aTarget.SolutionType
-            If aTarget.SolutionType = 2 Then
-                MainWin.TargetSolutionMethod.Enabled = False
-            Else
-                MainWin.TargetSolutionMethod.Enabled = True
-            End If
             MainWin.TargetInternalLocation.Text = aTarget.InternalLocation.ToString
             If aTarget.Material <> "Default" And aTarget.Material <> "Off" Then
                 Dim aThermalProperty As New ThermalProperty
@@ -612,7 +606,6 @@ Public Class UpdateGUI
                     MainWin.TargetSummary(i, 7) = aTarget.YNormal.ToString
                     MainWin.TargetSummary(i, 8) = aTarget.ZNormal.ToString
                     MainWin.TargetSummary(i, 9) = aTarget.Material
-                    MainWin.TargetSummary(i, 10) = SolutionMethodNames.Substring((aTarget.SolutionMethod) * 8, 8)
                     MainWin.TargetSummary(i, 11) = SolutionTypeNames.Substring((aTarget.SolutionType) * 11, 11)
                 Next
                 MainWin.TargetSummary.Select(index + 1, 0, index + 1, MainWin.TargetSummary.Cols.Count - 1, True)

@@ -62,29 +62,20 @@ contains
         wk(1) =  targptr%k
         xl = targptr%thickness
         iieq = targptr%equaton_type
-
-        ! compute the pde residual
-        if(iieq==pde.or.iieq==cylpde)then
-            nmnode(1) = nnodes_trg
-            nmnode(2) = nnodes_trg - 2
-            nslab = 1
-            if(iieq==pde)then
-                iwbound = 4
-                walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
-
-                call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
-                    wfluxin,wfluxout,iwbound,tgrad,tderv)
-            else if(iieq==cylpde)then
-                wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                iwbound = 4
-                call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
-                    dt,wk(1),wrho(1),wspec(1),xl,tgrad)
-            endif
-            ! error, the equation type can has to be either pde or ode if the method is not steady
-        else
-
+        nmnode(1) = nnodes_trg
+        nmnode(2) = nnodes_trg - 2
+        nslab = 1
+        if(iieq==pde)then
+            iwbound = 4
+            walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
+            call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
+                wfluxin,wfluxout,iwbound,tgrad,tderv)
+        else if(iieq==cylpde)then
+            wfluxavg = (wfluxin+wfluxout)/2.0_eb
+            iwbound = 4
+            call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
+                dt,wk(1),wrho(1),wspec(1),xl,tgrad)
         endif
-
     end do
     return
     end subroutine target

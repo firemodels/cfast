@@ -118,7 +118,7 @@ contains
 
     
     real(eb) :: flux(2), dflux(2), ttarg(2)
-    integer :: itarg, iroom, niter, iter
+    integer :: itarg, iroom
         
     type(target_type), pointer :: targptr
 
@@ -128,10 +128,10 @@ contains
         iroom = targptr%room
         ttarg(1) = targptr%temperature(idx_tempf_trg)
         ttarg(2) = targptr%temperature(idx_tempb_trg)
-        call targflux(iter,itarg,ttarg,flux,dflux)
+        call targflux(1,itarg,ttarg,flux,dflux)
         targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
         targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
-        call targflux(niter+1,itarg,ttarg,flux,dflux)
+        call targflux(2,itarg,ttarg,flux,dflux)
         targptr%flux_net_front = flux(1)
         targptr%flux_net_back = flux(2)
     end do

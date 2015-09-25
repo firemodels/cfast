@@ -283,7 +283,6 @@
             itctemp = (idx_tempf_trg+idx_tempb_trg)/2
             tctemp = targptr%temperature(itctemp)
         endif
-        if (targptr%method==steady) tctemp = tttemp
             
         call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)

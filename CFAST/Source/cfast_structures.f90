@@ -58,7 +58,6 @@ module cfast_types
         
         integer :: room                 ! compartment where the target is located (user input from the input data file)
         integer :: layer                ! layer (within the compartment) where the target is located (calculated)
-        integer :: method               ! calculation method (STEADY, IMPLICIT, EXPLICIT) (user input from the input data file)
         integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input from input data file)
         integer :: back                 ! whether the back surface of the target is exposed to interior or exterior temperatures
         integer :: wall                 ! wall surface the target is located on. Normal wall numbering

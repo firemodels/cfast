@@ -59,7 +59,7 @@ Module IO
                     aDetect.SetPosition(csv.Num(i, targetNum.xPosition), csv.Num(i, targetNum.yPosition), _
                         csv.Num(i, targetNum.zPosition), csv.Num(i, targetNum.xNormal), csv.Num(i, targetNum.yNormal), _
                         csv.Num(i, targetNum.zNormal))
-                    Dim type, method As Integer
+                    Dim type As Integer
                     If csv.str(i, targetNum.equationType) = "CYL" Then
                         type = 1
                     ElseIf csv.str(i, targetNum.equationType) = "ODE" Then
@@ -68,14 +68,7 @@ Module IO
                     Else ' PDE
                         type = 0
                     End If
-                    If csv.str(i, targetNum.method) = "STEADY" Then
-                        method = 2
-                    ElseIf csv.str(i, targetNum.method) = "EXPLICIT" Then
-                        method = 1
-                    Else ' IMPLICIT
-                        method = 0
-                    End If
-                    aDetect.SetTarget(csv.Num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), type, method)
+                    aDetect.SetTarget(csv.Num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), type)
                     If (csv.str(i, targetNum.internalLocation) <> "") Then
                         aDetect.InternalLocation = csv.Num(i, targetNum.internalLocation)
                     Else
@@ -737,7 +730,7 @@ Module IO
                                 aTarget.Type = Target.TypeTarget
                                 aTarget.Name = "Ign_" + aFireObject.Name
                                 aTarget.SetPosition(aFireObject.XPosition, aFireObject.YPosition, aFireObject.ZPosition, csv.Num(iFire, fireNum.xNormal), csv.Num(iFire, fireNum.yNormal), csv.Num(iFire, fireNum.zNormal))
-                                aTarget.SetTarget(aFireObject.Compartment, csv.str(iChemie, chemieNum.Material), Target.ThermallyThick, Target.Explicit)
+                                aTarget.SetTarget(aFireObject.Compartment, csv.str(iChemie, chemieNum.Material), Target.ThermallyThick)
                                 myTargets.Add(aTarget)
                                 aFireObject.Target = aTarget.Name
                             End If
@@ -1114,13 +1107,7 @@ Module IO
             Else
                 csv.str(i, targetNum.equationType) = "PDE"
             End If
-            If aDetect.SolutionMethod = 2 Then
-                csv.str(i, targetNum.method) = "STEADY"
-            ElseIf aDetect.SolutionMethod = 1 Then
-                csv.str(i, targetNum.method) = "EXPLICIT"
-            Else
-                csv.str(i, targetNum.method) = "IMPLICIT"
-            End If
+            csv.str(i, targetNum.method) = "EXPLICIT"
             csv.str(i, targetNum.name) = aDetect.Name
             aDetect.Changed = False
             i += 1

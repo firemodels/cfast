@@ -380,10 +380,6 @@
         vatol(i+nofwt) = awtol
         vrtol(i+nofwt) = rwtol
     end do
-    do i = 1, neqtarg(mplicit)
-        vatol(i+noftt) = awtol
-        vrtol(i+noftt) = rwtol
-    end do
 
     ovtime = 0.0_eb
     tovtime = 0.0_eb
@@ -419,7 +415,6 @@
 
     ! If we are running only an initialization test then we do not need to solve anything
     if (initializeonly) then
-        call target_flux(steady)
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
         ! then we need the output now
         call remap_fires (nfires)
@@ -506,15 +501,6 @@
 
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
 
-            ! update target temperatures (only need to update just before we print target temperatures).
-            ! if we actually use target temperatures in a calculation then this call will need to be moved to 
-            ! inside calculate_residuals.
-
-            if(.not.ltarg)then
-                call target_flux(steady)
-                ltarg = .true.
-            endif
-
             itmstp = tprint
             call output_results (t,1)
             call output_status (t, dt)
@@ -528,10 +514,6 @@
 
         if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
             itmstp = tsmv
-            if(.not.ltarg)then
-                call target_flux(steady)
-                ltarg = .true.
-            endif
 
             ! this ought to go earlier and drop the logical test. however, not all of the information 
             ! is available until this point
@@ -557,10 +539,6 @@
 
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
             itmstp = tspread
-            if(.not.ltarg)then
-                call target_flux(steady)
-                ltarg = .true.
-            endif
             call output_spreadsheet_normal (t)
             call output_spreadsheet_species (t)
             call output_spreadsheet_flow (t)
@@ -782,9 +760,9 @@
     implicit none
 
     integer, intent(in) :: nodes, nequals, nlspct
-    real(eb), intent(in) :: t, told
+    real(eb), intent(in) :: t, told, pdnew(*)
     
-    real(eb), intent(out) :: p(*), pold(*), pdold(*), pdnew(*)
+    real(eb), intent(out) :: p(*), pold(*), pdold(*)
     
     integer :: i
     real(eb) :: dt 
@@ -798,9 +776,10 @@
         pdold(i) = pdnew(i)
     end do
 
-    ! advance explicit target temperatures and update implicit temperatures
-    call target (1,xplicit,dt,pdnew)
-    call target (1,mplicit,dt,pdnew)
+    ! advance target temperatures
+    call target (1,dt)
+    
+    ! make sure species mass adds up to total mass
     if (nlspct>0) call synchronize_species_mass (p,nodes+1)
 
     do i = 1, nequals
@@ -1301,9 +1280,6 @@
     ! conduction residual
     call conduction (update,dt,flxtot,delta)
 
-    ! target residual
-    call target (0,mplicit,dt,delta)
-
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then
 
@@ -1657,12 +1633,7 @@
         ieq = 0
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
-            if(targptr%method==mplicit)then
-                ieq = ieq + 1
-                iztarg(itarg) = ieq
-            else
-                iztarg(itarg) = 0
-            endif
+            iztarg(itarg) = 0
         end do
 
         ! associate an equation type (ie pressure, temperature etc as defined by offsets)
@@ -1804,21 +1775,6 @@
                 targptr%layer = upper
             else
                 targptr%layer = lower
-            endif
-        end do
-
-        ! stuff dassl estimate of target temperature's solved implicitly
-        ! (ie solved by dassl)
-
-        do itarg = 1, ntarg
-            targptr => targetinfo(itarg)
-            if(targptr%method==mplicit) then
-                ieq = iztarg(itarg)
-                if(targptr%equaton_type==cylpde)then
-                   targptr%temperature(idx_tempb_trg) = p(ieq+noftt)
-                else
-                   targptr%temperature(idx_tempf_trg) = p(ieq+noftt)
-                endif
             endif
         end do
 

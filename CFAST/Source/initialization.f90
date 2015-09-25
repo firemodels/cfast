@@ -500,7 +500,7 @@
     real(eb), intent(out) :: yinter(*)
     
     real(eb) :: dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
-    integer i, ii, iwall, iroom, itarg, ieq
+    integer i, ii, iwall, iroom, itarg
     
     type(target_type), pointer :: targptr
 
@@ -617,10 +617,6 @@
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        if(targptr%method==mplicit)then
-            ieq = iztarg(itarg)
-            p(noftt+ieq) = interior_temperature
-        endif  
         do i=idx_tempf_trg,idx_tempb_trg
             targptr%temperature(i) = interior_temperature
         end do
@@ -901,7 +897,6 @@
 
     do itarg = 1, mxtarg
         targptr => targetinfo(itarg)
-        targptr%method = xplicit
         targptr%equaton_type = pde
         targptr%back = interior
         targptr%material = 'DEFAULT'
@@ -1474,7 +1469,6 @@
     ! noftu = upper layer temperature
     ! nofvu = upper layer volume
     ! noftl = lower layer temperature
-    ! noftt = target temperatures
     ! nofwt = wall surface temperatures (equivalent to the number of profiles)
     ! nofprd = species
     ! nequals = last element in the array.
@@ -1493,8 +1487,7 @@
     implicit none
     
     
-    integer :: i, j, ib, itarg, nimtarg, noxygen
-    type(target_type), pointer :: targptr
+    integer :: i, j, ib, nimtarg, noxygen
 
     ! count the of nodes (largest of ns and ne)
     nnode = max(na(1),ne(1))
@@ -1547,21 +1540,6 @@
 
     ! count the number of implicit targets
     nimtarg = 0
-    neqtarg(mplicit) = 0
-    neqtarg(steady) = 0
-    neqtarg(xplicit) = 0
-    do itarg = 1, ntarg
-        targptr => targetinfo(itarg)
-        if(targptr%method==mplicit)then
-            nimtarg = nimtarg + 1
-            neqtarg(mplicit) = neqtarg(mplicit) + 1
-        elseif(targptr%method==steady)then
-            neqtarg(steady) = neqtarg(steady) + 1
-        elseif(targptr%method==xplicit)then
-            neqtarg(xplicit) = neqtarg(steady) + 1
-        endif
-    end do
-
     ! set number of implicit oxygen variables
     if(lfbt==1)option(foxygen) = off
     if(option(foxygen)==on)then
@@ -1582,8 +1560,7 @@
     noftl = nofvu + nm1
     nofoxyl = noftl + nm1
     nofoxyu = nofoxyl + noxygen
-    noftt = nofoxyu + noxygen
-    nofwt = noftt + nimtarg
+    nofwt = nofoxyu + noxygen
     nofprd = nofwt + nwalls
     nofhvpr = nofprd + 2*nm1*nlspct
 

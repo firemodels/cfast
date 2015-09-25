@@ -24,33 +24,24 @@ contains
 
 ! --------------------------- target -------------------------------------------
 
-    subroutine target(update,method,dt,delta)
+    subroutine target(update,dt)
 
     !     routine: target (main target routine)
     !     purpose: compute dassl residuals associated with targets
     !     arguments: update   variable indicating whether temperature profile should be updated
-    !                method   one of steady, mplicit or xplicit (note: these are parameter values, not mis-pelld)
     !                dt       time step
-    !                xpsolve  dassl derivative estimate
-    !                delta    dassl residual array
-    !     revision: $revision: 464 $
-    !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
 
-    integer, intent(in) :: update, method
+    integer, intent(in) :: update
     real(eb), intent(in) :: dt
-    
-    real(eb), intent(out) :: delta(*)
 
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
-    integer :: itarg, nmnode(2), ieq, iieq, iwbound, nslab, iimeth
+    integer :: itarg, nmnode(2), iieq, iwbound, nslab
     
     type(target_type), pointer :: targptr
     
     save first,tmp
-
-    if(method==steady)return
 
     ! initialize non-dimensional target node locations the first time target is called
     if(first)then
@@ -59,62 +50,32 @@ contains
     endif
 
     ! calculate net flux striking each side of target
-    call target_flux(method)
+    call target_flux
 
     ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if(targptr%method==method) then
-            wfluxin = targptr%flux_net_front
-            wfluxout = targptr%flux_net_back
-            wspec(1) = targptr%cp
-            wrho(1) =  targptr%rho
-            wk(1) =  targptr%k
-            xl = targptr%thickness
-            iimeth = targptr%method
-            iieq = targptr%equaton_type
-
-            ! compute the pde residual 
-            if(iieq==pde.or.iieq==cylpde)then
-                nmnode(1) = nnodes_trg
-                nmnode(2) = nnodes_trg - 2
-                nslab = 1
-                if(iieq==pde)then
-                   if(iimeth==mplicit)then
-                       tempin = targptr%temperature(idx_tempf_trg)
-                       iwbound = 3
-                   else
-                       iwbound = 4
-                   endif
-                   walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
-
-                   call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
-                       wfluxin,wfluxout,iwbound,tgrad,tderv)
-                   if(iimeth==mplicit)then
-                      ieq = iztarg(itarg)
-                      delta(noftt+ieq) = wfluxin + wk(1)*tgrad(1)
-                   endif
-                else if(iieq==cylpde)then
-                    wfluxavg = (wfluxin+wfluxout)/2.0_eb
-                    if(iimeth==mplicit)then
-                       tempin = targptr%temperature(idx_tempb_trg)
-                       iwbound = 3
-                    else
-                       iwbound = 4
-                    endif
-                    call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
-                       dt,wk(1),wrho(1),wspec(1),xl,tgrad)          
-                    if(iimeth==mplicit)then
-                        ieq = iztarg(itarg)
-                        delta(noftt+ieq) = wfluxavg + wk(1)*tgrad(1)
-                       ! write(0,*)"temp=",targptr%temperature(idx_tempb_trg),"delta=",delta(noftt+ieq)
-                    endif
-                endif
-                ! error, the equation type can has to be either pde or ode if the method is not steady
-            else
-
-            endif
-        end if
+        wfluxin = targptr%flux_net_front
+        wfluxout = targptr%flux_net_back
+        wspec(1) = targptr%cp
+        wrho(1) =  targptr%rho
+        wk(1) =  targptr%k
+        xl = targptr%thickness
+        iieq = targptr%equaton_type
+        nmnode(1) = nnodes_trg
+        nmnode(2) = nnodes_trg - 2
+        nslab = 1
+        if(iieq==pde)then
+            iwbound = 4
+            walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
+            call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
+                wfluxin,wfluxout,iwbound,tgrad,tderv)
+        else if(iieq==cylpde)then
+            wfluxavg = (wfluxin+wfluxout)/2.0_eb
+            iwbound = 4
+            call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
+                dt,wk(1),wrho(1),wspec(1),xl,tgrad)
+        endif
     end do
     return
     end subroutine target
@@ -148,17 +109,15 @@ contains
     
 ! --------------------------- target -------------------------------------------
 
-    subroutine target_flux(method)
+    subroutine target_flux
 
     !     routine: target
     !     purpose: routine to calculate total flux striking a target. this flux is used to calculate a target temperature,
     !              assuming that the sum of incoming and outgoing flux is zero, ie, assuming that the target is at steady state.
     !     arguments: method  (steady or pde
 
-
-    integer, intent(in) :: method
     
-    real(eb) :: flux(2), dflux(2), ttarg(2), ddif
+    real(eb) :: flux(2), dflux(2), ttarg(2)
     integer :: itarg, iroom, niter, iter
         
     type(target_type), pointer :: targptr
@@ -166,33 +125,15 @@ contains
     ! calculate flux to user specified targets, assuming target is at thermal equilibrium
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        if(method==targptr%method) then
-            iroom = targptr%room
-            if(method==steady)then
-                niter = 10
-            else
-                niter = 1
-            endif
-            ttarg(1) = targptr%temperature(idx_tempf_trg)
-            ttarg(2) = targptr%temperature(idx_tempb_trg)
-            do iter = 1, niter
-                call targflux(iter,itarg,ttarg,flux,dflux)
-                if(dflux(1)/=0.0_eb.and.method==steady)then
-                    ddif = flux(1)/dflux(1)
-                    ttarg(1) = ttarg(1) - ddif
-                    if(abs(ddif)<=1.0e-5_eb*ttarg(1)) exit
-                endif
-            end do
-            if(method==steady)then
-                targptr%temperature(idx_tempf_trg) = ttarg(1)
-                targptr%temperature(idx_tempb_trg) = ttarg(2)
-            endif
-            targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
-            targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
-            call targflux(niter+1,itarg,ttarg,flux,dflux)
-            targptr%flux_net_front = flux(1)
-            targptr%flux_net_back = flux(2)
-        end if
+        iroom = targptr%room
+        ttarg(1) = targptr%temperature(idx_tempf_trg)
+        ttarg(2) = targptr%temperature(idx_tempb_trg)
+        call targflux(iter,itarg,ttarg,flux,dflux)
+        targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
+        targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
+        call targflux(niter+1,itarg,ttarg,flux,dflux)
+        targptr%flux_net_front = flux(1)
+        targptr%flux_net_back = flux(2)
     end do
 
     return

@@ -9,18 +9,8 @@ Public Class CeditMain
     Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
-    Friend WithEvents FireTSYield As System.Windows.Forms.TextBox
-    Friend WithEvents Label115 As System.Windows.Forms.Label
-    Friend WithEvents TargetName As System.Windows.Forms.TextBox
-    Friend WithEvents Label116 As System.Windows.Forms.Label
-    Friend WithEvents FireTarget As System.Windows.Forms.ComboBox
-    Friend WithEvents OutputValidation As System.Windows.Forms.CheckBox
-    Friend WithEvents OutputShowCFAST As System.Windows.Forms.CheckBox
-    Friend WithEvents OutputDebug As System.Windows.Forms.CheckBox
-    Friend WithEvents OutputTotalMass As System.Windows.Forms.CheckBox
-    Friend WithEvents Output As System.Windows.Forms.StatusBarPanel
-    Friend WithEvents MenuHelpUpdate As System.Windows.Forms.MenuItem
-    Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
+    Private Const OK As Integer = 1, Cancel As Integer = 2
+
 #Region " Windows Form Designer generated code "
 
     Public Sub New()
@@ -49,7 +39,18 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents FireTSYield As System.Windows.Forms.TextBox
+    Friend WithEvents Label115 As System.Windows.Forms.Label
+    Friend WithEvents TargetName As System.Windows.Forms.TextBox
+    Friend WithEvents Label116 As System.Windows.Forms.Label
+    Friend WithEvents FireTarget As System.Windows.Forms.ComboBox
+    Friend WithEvents OutputValidation As System.Windows.Forms.CheckBox
+    Friend WithEvents OutputShowCFAST As System.Windows.Forms.CheckBox
+    Friend WithEvents OutputDebug As System.Windows.Forms.CheckBox
+    Friend WithEvents OutputTotalMass As System.Windows.Forms.CheckBox
+    Friend WithEvents Output As System.Windows.Forms.StatusBarPanel
+    Friend WithEvents MenuHelpUpdate As System.Windows.Forms.MenuItem
+    Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
     Friend WithEvents TabMaterials As System.Windows.Forms.TabPage
     Friend WithEvents ThermalFromFile As System.Windows.Forms.Button
     Friend WithEvents ThermalRemove As System.Windows.Forms.Button

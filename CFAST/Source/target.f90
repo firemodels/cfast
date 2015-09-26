@@ -18,7 +18,7 @@ module target_routines
     
 private
 
-public target, target_flux, update_detectors, detector_temp_and_velocity, solid_angle_triangle, target_nodes
+public target, update_detectors, detector_temp_and_velocity, solid_angle_triangle, target_nodes
 
 contains
 
@@ -91,7 +91,7 @@ contains
     return
     end subroutine target
     
-! --------------------------- targflux -------------------------------------------
+! --------------------------- target_flux -------------------------------------------
 
     subroutine target_flux(iter,itarg,ttarg,flux,dflux)
 

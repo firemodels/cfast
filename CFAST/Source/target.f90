@@ -37,7 +37,8 @@ contains
     logical :: first=.true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
-    integer :: itarg, nmnode(2), iieq, iwbound, nslab
+    real(eb) :: flux(2), dflux(2), ttarg(2)
+    integer :: itarg, nmnode(2), iieq, iwbound, nslab, iroom
     
     type(target_type), pointer :: targptr
     
@@ -49,12 +50,22 @@ contains
         call target_nodes (tmp)
     endif
 
-    ! calculate net flux striking each side of target
-    call target_flux
-
     ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
+        
+        ! calculate net flux striking each side of target
+        iroom = targptr%room
+        ttarg(1) = targptr%temperature(idx_tempf_trg)
+        ttarg(2) = targptr%temperature(idx_tempb_trg)
+        call target_flux(1,itarg,ttarg,flux,dflux)
+        call target_flux(2,itarg,ttarg,flux,dflux)
+        targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
+        targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
+        targptr%flux_net_front = flux(1)
+        targptr%flux_net_back = flux(2)
+        
+        ! do conduction into target
         wfluxin = targptr%flux_net_front
         wfluxout = targptr%flux_net_back
         wspec(1) = targptr%cp
@@ -79,6 +90,238 @@ contains
     end do
     return
     end subroutine target
+    
+! --------------------------- targflux -------------------------------------------
+
+    subroutine target_flux(iter,itarg,ttarg,flux,dflux)
+
+    !     routine: target
+    !     purpose: routine to calculate flux (and later, temperature) of a target.
+    !     arguments: iter   iteration number
+    !                itarg  targetnumber
+    !                ttarg  front and back target input temperature
+    !                flux   front and back output flux
+    !                dflux  front and back output flux derivative
+
+    integer, intent(in) :: iter, itarg
+    real(eb), intent(in) :: ttarg(2)
+    real(eb), intent(out) :: flux(2), dflux(2)
+    
+    real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, dnrm2, ddot, zfire, fheight
+    real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau
+    real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
+    real(eb) :: ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
+    real(eb) :: target_factors_front(10), target_factors_back(10)
+    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
+    integer, parameter :: front=1, back=2
+    
+    type(room_type), pointer :: roomptr
+    type(target_type), pointer :: targptr
+
+    data map10/1,3,3,3,3,4,4,4,4,2/
+
+    absu = 0.50_eb
+    absl = 0.01_eb
+    
+    targptr => targetinfo(itarg)
+    iroom = targptr%room
+    roomptr => roominfo(iroom)
+    
+    ! terms that do not depend upon the target temperature only need to be calculated once
+    if(iter==1)then
+
+        ! initialize flux counters: total, fire, wall, gas 
+        do i = 1, 2
+            qtfflux(itarg,i) = 0.0_eb
+            qtgflux(itarg,i) = 0.0_eb
+            qtwflux(itarg,i) = 0.0_eb
+        end do
+
+        nfirerm = ifrpnt(iroom,1)
+        istart = ifrpnt(iroom,2)
+
+        ! compute radiative flux from fire
+        do ifire = istart, istart + nfirerm - 1
+            svect(1) = targptr%center(1) - xfire(ifire,f_fire_xpos)
+            svect(2) = targptr%center(2) - xfire(ifire,f_fire_ypos)
+            !svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
+            ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
+            call flame_height (xfire(ifire,f_qfr)+xfire(ifire,f_qfc),xfire(ifire,f_obj_area),fheight)
+            if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
+                zfire = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/3.0_eb
+            else
+                zfire = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
+            end if
+            svect(3) = targptr%center(3) - zfire
+            cosang = 0.0_eb
+            s = max(dnrm2(3,svect,1),mx_hsep)
+            if(s/=0.0_eb)then
+                cosang = -ddot(3,svect,1,targptr%normal(1),1)/s
+            endif
+            ztarg = targptr%center(3)
+            zlay = zzhlay(iroom,lower)
+
+            ! compute portion of path in lower and upper layers
+            call getylyu(zfire,zlay,ztarg,s,zl,zu)
+            if(nfurn>0)then
+                absl=0.0
+                absu=0.0
+                taul = 1.0_eb
+                tauu = 1.0_eb
+                qfire = 0.0_eb
+            else
+                absl = absorb(iroom, lower)
+                absu = absorb(iroom, upper)
+                taul = exp(-absl*zl)
+                tauu = exp(-absu*zu)
+                qfire = xfire(ifire,f_qfr)
+            endif
+            if(s/=0.0_eb)then
+                qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
+            else
+                qft = 0.0_eb
+            endif
+
+            ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution
+            ! if the target is interior to the room
+            if(cosang>=0.0_eb)then
+                qtfflux(itarg,1) = qtfflux(itarg,1) + qft
+            else
+                if(targptr%back==interior)then
+                    qtfflux(itarg,2) = qtfflux(itarg,2) + qft
+                endif
+            endif
+
+        end do
+
+        ! compute radiative flux from walls and gas
+        qwtsum(front) = 0.0_eb
+        qgassum(front) = 0.0_eb
+        qwtsum(back) = 0.0_eb
+        qgassum(back) = 0.0_eb
+        call get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
+        do iwall = 1, 10
+            if(nfurn>0)then
+                qout=qfurnout
+            else
+                qout = rdqout(map10(iwall),iroom)
+            endif
+            svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
+            s = dnrm2(3,svect,1)
+            zwall = roomptr%wall_center(3,iwall)
+            ztarg = targptr%center(3)
+            zlay = zzhlay(iroom,lower)
+            tl = zztemp(iroom,lower)
+            tu = zztemp(iroom,upper)
+
+            ! compute path length in lower (zl) and upper (zu) layer
+            call getylyu(zwall,zlay,ztarg,s,zl,zu)
+
+            ! find fractions transmitted and absorbed in lower and upper layer
+            taul = exp(-absl*zl)
+            alphal = 1.0_eb - taul
+            tauu = exp(-absu*zu)
+            alphau = 1.0_eb - tauu
+
+            qwt = qout*taul*tauu
+            if(iwall<=5)then
+                qgas = tl**4*alphal*tauu + tu**4*alphau
+            else
+                qgas = tu**4*alphau*taul + tl**4*alphal
+            endif
+            qgt = sigma*qgas
+
+            qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
+            qgassum(front) = qgassum(front) + qgt*target_factors_front(iwall)
+            if(targptr%back==interior)then
+              qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
+              qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
+            endif
+        end do
+        qtwflux(itarg,front) = qwtsum(front)
+        qtgflux(itarg,front) = qgassum(front)
+        qtwflux(itarg,back) = qwtsum(back)
+        qtgflux(itarg,back) = qgassum(back)
+
+        ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
+        if(targptr%back==exterior.or.qtgflux(itarg,back)==0.0)then
+            qtgflux(itarg,back) = sigma*interior_temperature**4
+        endif
+    endif
+
+    ! compute convective flux
+    ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.  
+    zznorm = targptr%normal(3)
+    if(zznorm<=1.0_eb.and.zznorm>=cos45)then
+        iw = 2
+        iwb = 1
+    elseif(zznorm>=-1.0_eb.and.zznorm<=-cos45)then
+        iw = 1
+        iwb = 2
+    else
+        iw = 3
+        iwb = 3
+    endif
+
+    xtarg = targptr%center(1)
+    ytarg = targptr%center(2)
+    ztarg = targptr%center(3)
+    call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
+    tgtarg(itarg) = tg
+    if(targptr%back==interior)then
+        tgb = tg
+    else
+        tgb = interior_temperature
+    endif
+    ttargb = ttarg(back)
+    dttarg = 1.0e-7_eb*ttarg(front)
+    dttargb = 1.0e-7_eb*ttarg(back)
+
+    temis = targptr%emissivity
+
+    ! convection for the front
+    call convective_flux (iw,tg,ttarg(front),q1)
+    call convective_flux (iw,tg,ttarg(front)+dttarg,q2)
+    qtcflux(itarg,1) = q1
+    dqdtarg = (q2-q1)/dttarg
+
+    flux(front) = temis*(qtfflux(itarg,front) + qtwflux(itarg,front) + qtgflux(itarg,front)) + &
+                  qtcflux(itarg,front) - temis*sigma*ttarg(front)**4
+    dflux(front) = -4.0_eb*temis*sigma*ttarg(front)**3 + dqdtarg
+    
+    ! convection for the back
+    call convective_flux(iwb,tgb,ttargb,q1b)
+    call convective_flux(iwb,tgb,ttargb+dttargb,q2b)
+    qtcflux(itarg,back) = q1b
+    dqdtargb = (q2b-q1b)/dttargb
+
+    flux(back) = temis*(qtfflux(itarg,back) + qtwflux(itarg,back) + qtgflux(itarg,back)) + &
+                 qtcflux(itarg,back) - temis*sigma*ttargb**4
+    dflux(back) = -4.0_eb*temis*sigma*ttargb**3 + dqdtargb
+
+    ! store fluxes for printout
+    do i = front,back
+        targptr%flux_fire(i) = temis*qtfflux(itarg,i)
+        targptr%flux_gas(i) = temis*qtgflux(itarg,i)
+        targptr%flux_surface(i) = temis*qtwflux(itarg,i)
+        targptr%flux_convection(i) = qtcflux(itarg,i)
+        targptr%flux_target(i) = -temis*sigma*ttarg(i)**4
+        targptr%flux_radiation(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_target(i)
+        targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_convection(i) + targptr%flux_target(i)
+
+        call convective_flux (iw,tg,interior_temperature,q1g)
+        targptr%flux_convection_gauge = q1g
+        targptr%flux_target_gauge(i) = -temis*sigma*interior_temperature**4
+        targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_target_gauge(i)
+        targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
+            targptr%flux_convection_gauge(i) + targptr%flux_target_gauge(i)
+    end do
+
+    return
+    end subroutine target_flux
     
 ! ---------------------------- target_nodes -----------------------------------
     
@@ -106,38 +349,6 @@ contains
         end do
         
     end subroutine target_nodes
-    
-! --------------------------- target -------------------------------------------
-
-    subroutine target_flux
-
-    !     routine: target
-    !     purpose: routine to calculate total flux striking a target. this flux is used to calculate a target temperature,
-    !              assuming that the sum of incoming and outgoing flux is zero, ie, assuming that the target is at steady state.
-    !     arguments: method  (steady or pde
-
-    
-    real(eb) :: flux(2), dflux(2), ttarg(2)
-    integer :: itarg, iroom
-        
-    type(target_type), pointer :: targptr
-
-    ! calculate flux to user specified targets, assuming target is at thermal equilibrium
-    do itarg = 1, ntarg
-        targptr => targetinfo(itarg)
-        iroom = targptr%room
-        ttarg(1) = targptr%temperature(idx_tempf_trg)
-        ttarg(2) = targptr%temperature(idx_tempb_trg)
-        call targflux(1,itarg,ttarg,flux,dflux)
-        targptr%flux_front = qtwflux(itarg,1) + qtfflux(itarg,1) + qtcflux(itarg,1) + qtgflux(itarg,1)
-        targptr%flux_back = qtwflux(itarg,2) + qtfflux(itarg,2) + qtcflux(itarg,2) + qtgflux(itarg,2)
-        call targflux(2,itarg,ttarg,flux,dflux)
-        targptr%flux_net_front = flux(1)
-        targptr%flux_net_back = flux(2)
-    end do
-
-    return
-    end subroutine target_flux
     
     subroutine cross_product(c,a,b)
 
@@ -405,239 +616,6 @@ contains
        endif
     end do
     end subroutine get_target_factors
-    
-! --------------------------- targflux -------------------------------------------
-
-    subroutine targflux(iter,itarg,ttarg,flux,dflux)
-
-    !     routine: target
-    !     purpose: routine to calculate flux (and later, temperature) of a target.
-    !     arguments: iter   iteration number
-    !                itarg  targetnumber
-    !                ttarg  front and back target input temperature
-    !                flux   front and back output flux
-    !                dflux  front and back output flux derivative
-
-    integer, intent(in) :: iter, itarg
-    real(eb), intent(in) :: ttarg(2)
-    real(eb), intent(out) :: flux(2), dflux(2)
-    
-    real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, dnrm2, ddot, zfire, fheight
-    real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau
-    real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
-    real(eb) :: ttargb, dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
-    real(eb) :: target_factors_front(10), target_factors_back(10)
-    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
-    integer, parameter :: front=1, back=2
-    
-    type(room_type), pointer :: roomptr
-    type(target_type), pointer :: targptr
-
-    data map10/1,3,3,3,3,4,4,4,4,2/
-
-    absu = 0.50_eb
-    absl = 0.01_eb
-    
-    targptr => targetinfo(itarg)
-    iroom = targptr%room
-    roomptr => roominfo(iroom)
-    
-    ! terms that do not depend upon the target temperature only need to be calculated once
-    if(iter==1)then
-
-        ! initialize flux counters: total, fire, wall, gas 
-        do i = 1, 2
-            qtfflux(itarg,i) = 0.0_eb
-            qtgflux(itarg,i) = 0.0_eb
-            qtwflux(itarg,i) = 0.0_eb
-        end do
-
-        nfirerm = ifrpnt(iroom,1)
-        istart = ifrpnt(iroom,2)
-
-        ! compute radiative flux from fire
-        do ifire = istart, istart + nfirerm - 1
-            svect(1) = targptr%center(1) - xfire(ifire,f_fire_xpos)
-            svect(2) = targptr%center(2) - xfire(ifire,f_fire_ypos)
-            !svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
-            ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
-            call flame_height (xfire(ifire,f_qfr)+xfire(ifire,f_qfc),xfire(ifire,f_obj_area),fheight)
-            if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
-                zfire = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/3.0_eb
-            else
-                zfire = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
-            end if
-            svect(3) = targptr%center(3) - zfire
-            cosang = 0.0_eb
-            s = max(dnrm2(3,svect,1),mx_hsep)
-            if(s/=0.0_eb)then
-                cosang = -ddot(3,svect,1,targptr%normal(1),1)/s
-            endif
-            ztarg = targptr%center(3)
-            zlay = zzhlay(iroom,lower)
-
-            ! compute portion of path in lower and upper layers
-            call getylyu(zfire,zlay,ztarg,s,zl,zu)
-            if(nfurn>0)then
-                absl=0.0
-                absu=0.0
-                taul = 1.0_eb
-                tauu = 1.0_eb
-                qfire = 0.0_eb
-            else
-                absl = absorb(iroom, lower)
-                absu = absorb(iroom, upper)
-                taul = exp(-absl*zl)
-                tauu = exp(-absu*zu)
-                qfire = xfire(ifire,f_qfr)
-            endif
-            if(s/=0.0_eb)then
-                qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
-            else
-                qft = 0.0_eb
-            endif
-
-            ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution
-            ! if the target is interior to the room
-            if(cosang>=0.0_eb)then
-                qtfflux(itarg,1) = qtfflux(itarg,1) + qft
-            else
-                if(targptr%back==interior)then
-                    qtfflux(itarg,2) = qtfflux(itarg,2) + qft
-                endif
-            endif
-
-        end do
-
-        ! compute radiative flux from walls and gas
-
-        qwtsum(front) = 0.0_eb
-        qgassum(front) = 0.0_eb
-        qwtsum(back) = 0.0_eb
-        qgassum(back) = 0.0_eb
-        call get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
-        do iwall = 1, 10
-            if(nfurn>0)then
-                qout=qfurnout
-            else
-                qout = rdqout(map10(iwall),iroom)
-            endif
-            svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
-            s = dnrm2(3,svect,1)
-            zwall = roomptr%wall_center(3,iwall)
-            ztarg = targptr%center(3)
-            zlay = zzhlay(iroom,lower)
-            tl = zztemp(iroom,lower)
-            tu = zztemp(iroom,upper)
-
-            ! compute path length in lower (zl) and upper (zu) layer
-            call getylyu(zwall,zlay,ztarg,s,zl,zu)
-
-            ! find fractions transmitted and absorbed in lower and upper layer
-            taul = exp(-absl*zl)
-            alphal = 1.0_eb - taul
-            tauu = exp(-absu*zu)
-            alphau = 1.0_eb - tauu
-
-            qwt = qout*taul*tauu
-            if(iwall<=5)then
-                qgas = tl**4*alphal*tauu + tu**4*alphau
-            else
-                qgas = tu**4*alphau*taul + tl**4*alphal
-            endif
-            qgt = sigma*qgas
-
-            qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
-            qgassum(front) = qgassum(front) + qgt*target_factors_front(iwall)
-            if(targptr%back==interior)then
-              qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
-              qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
-            endif
-        end do
-        qtwflux(itarg,front) = qwtsum(front)
-        qtgflux(itarg,front) = qgassum(front)
-        qtwflux(itarg,back) = qwtsum(back)
-        qtgflux(itarg,back) = qgassum(back)
-
-        ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if(targptr%back==exterior.or.qtgflux(itarg,back)==0.0)then
-            qtgflux(itarg,back) = sigma*interior_temperature**4
-        endif
-    endif
-
-    ! compute convective flux
-    ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.  
-    zznorm = targptr%normal(3)
-    if(zznorm<=1.0_eb.and.zznorm>=cos45)then
-        iw = 2
-        iwb = 1
-    elseif(zznorm>=-1.0_eb.and.zznorm<=-cos45)then
-        iw = 1
-        iwb = 2
-    else
-        iw = 3
-        iwb = 3
-    endif
-
-    xtarg = targptr%center(1)
-    ytarg = targptr%center(2)
-    ztarg = targptr%center(3)
-    call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
-    tgtarg(itarg) = tg
-    if(targptr%back==interior)then
-        tgb = tg
-    else
-        tgb = interior_temperature
-    endif
-    ttargb = ttarg(back)
-    dttarg = 1.0e-7_eb*ttarg(front)
-    dttargb = 1.0e-7_eb*ttarg(back)
-
-    temis = targptr%emissivity
-
-    ! convection for the front
-    call convective_flux (iw,tg,ttarg(front),q1)
-    call convective_flux (iw,tg,ttarg(front)+dttarg,q2)
-    qtcflux(itarg,1) = q1
-    dqdtarg = (q2-q1)/dttarg
-
-    flux(front) = temis*(qtfflux(itarg,front) + qtwflux(itarg,front) + qtgflux(itarg,front)) + &
-                  qtcflux(itarg,front) - temis*sigma*ttarg(front)**4
-    dflux(front) = -4.0_eb*temis*sigma*ttarg(front)**3 + dqdtarg
-    
-    ! convection for the back
-    call convective_flux(iwb,tgb,ttargb,q1b)
-    call convective_flux(iwb,tgb,ttargb+dttargb,q2b)
-    qtcflux(itarg,back) = q1b
-    dqdtargb = (q2b-q1b)/dttargb
-
-    flux(back) = temis*(qtfflux(itarg,back) + qtwflux(itarg,back) + qtgflux(itarg,back)) + &
-                 qtcflux(itarg,back) - temis*sigma*ttargb**4
-    dflux(back) = -4.0_eb*temis*sigma*ttargb**3 + dqdtargb
-
-    ! store fluxes for printout
-    do i = front,back
-        targptr%flux_fire(i) = temis*qtfflux(itarg,i)
-        targptr%flux_gas(i) = temis*qtgflux(itarg,i)
-        targptr%flux_surface(i) = temis*qtwflux(itarg,i)
-        targptr%flux_convection(i) = qtcflux(itarg,i)
-        targptr%flux_target(i) = -temis*sigma*ttarg(i)**4
-        targptr%flux_radiation(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
-            targptr%flux_target(i)
-        targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
-            targptr%flux_convection(i) + targptr%flux_target(i)
-
-        call convective_flux (iw,tg,interior_temperature,q1g)
-        targptr%flux_convection_gauge = q1g
-        targptr%flux_target_gauge(i) = -temis*sigma*interior_temperature**4
-        targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
-            targptr%flux_target_gauge(i)
-        targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
-            targptr%flux_convection_gauge(i) + targptr%flux_target_gauge(i)
-    end do
-
-    return
-    end subroutine targflux
     
 ! --------------------------- getylyu -------------------------------------------
 

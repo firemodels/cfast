@@ -83,7 +83,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
        rm=>roominfo(i)
        
        write(13,"(a,1x)")"ROOM"
-       write(13,10) rm%dx, rm%dy, rm%dz
+       write(13,10) rm%width, rm%depth, rm%height
        write(13,10) x0(i), y0(i), z0(i)
 10     format(1x,e11.4,1x,e11.4,1x,e11.4)
 
@@ -94,9 +94,9 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
 
           write(13,"(a,1x)")"GRID"
           write(13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
-          x1 = x0(i) + rm%dx
-          y1 = y0(i) + rm%dy
-          z1 = z0(i) + rm%dz
+          x1 = x0(i) + rm%width
+          y1 = y0(i) + rm%depth
+          z1 = z0(i) + rm%height
            
           write(13,"(a,1x)")"PDIM"
           write(13,"(9(f14.5,1x))")x0(i),x1,y0(i),y1,z0(i),z1,0.0_eb,0.0_eb,0.0_eb

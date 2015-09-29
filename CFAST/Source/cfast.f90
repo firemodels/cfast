@@ -1179,7 +1179,7 @@
     do iroom = 1, nirm
         roomptr => roominfo(iroom)
         aroom = room_area(iroom)
-        hceil = roomptr%dz
+        hceil = roomptr%height
         pabs = zzpabs(iroom)
         hinter = zzhlay(iroom,ll)
         ql = flwtot(iroom,q,ll)
@@ -1235,7 +1235,7 @@
         do iprod = 1, nprod
             do iroom = 1, nm1
                 roomptr => roominfo(iroom)
-                hceil = roomptr%dz
+                hceil = roomptr%height
                 hinter = zzhlay(iroom,ll)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
@@ -1375,17 +1375,17 @@
             roomptr%x0 = cxabs(iroom)
             roomptr%y0 = cyabs(iroom)
             roomptr%z0 = floor_height(iroom)
-            roomptr%x1 = roomptr%x0 + roomptr%dx
-            roomptr%y1 = roomptr%y0 + roomptr%dy
-            roomptr%z1 = roomptr%z0 + roomptr%dz
+            roomptr%x1 = roomptr%x0 + roomptr%width
+            roomptr%y1 = roomptr%y0 + roomptr%depth
+            roomptr%z1 = roomptr%z0 + roomptr%height
             roomptr%ibar = cxgrid(iroom)
             roomptr%jbar = cygrid(iroom)
             roomptr%kbar = czgrid(iroom)
             
             ! define wall centers
-            xmax = roomptr%dx
+            xmax = roomptr%width
             xmid = xmax/2.0_eb
-            ymax = roomptr%dy
+            ymax = roomptr%depth
             ymid = ymax/2.0_eb
             zmax = roomptr%yceil
 
@@ -1683,7 +1683,7 @@
                 zzhlay(iroom,lower) = zzvol(iroom,lower)/room_area(iroom)
             else
                 call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
-                zzhlay(iroom,upper) = roomptr%dz - zzhlay(iroom,lower)
+                zzhlay(iroom,upper) = roomptr%height - zzhlay(iroom,lower)
             endif
 
             zzrelp(iroom) = pdif(iroom)
@@ -1713,8 +1713,8 @@
             endif
 
             ! compute area of 10 wall segments
-            xmax = roomptr%dx
-            ymax = roomptr%dy
+            xmax = roomptr%width
+            ymax = roomptr%depth
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
             zzwarea2(iroom,1) = room_area(iroom)

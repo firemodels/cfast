@@ -409,7 +409,7 @@
 
         ! then the bottom of the vent (above the floor)
         roomptr => roominfo(i)
-        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(roomptr%dz-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(roomptr%height-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))

@@ -114,23 +114,23 @@
     ! floor plan dependent parameters
     do i = 1, nm1
         roomptr => roominfo(i)
-        ceiling_height(i) = roomptr%dz + floor_height(i)
+        ceiling_height(i) = roomptr%height + floor_height(i)
     end do
 
     ! check and/or set heat source fire position
     if (heatfl) then
         roomptr => roominfo(heatfr)
-        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>roomptr%dx)) heatfp(1) = roomptr%dx/2.0_eb
-        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>roomptr%dy)) heatfp(2) = roomptr%dy/2.0_eb
-        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>roomptr%dz)) heatfp(3) = 0.0_eb
+        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>roomptr%width)) heatfp(1) = roomptr%width/2.0_eb
+        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>roomptr%depth)) heatfp(2) = roomptr%depth/2.0_eb
+        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>roomptr%height)) heatfp(3) = 0.0_eb
     endif
 
     ! check and/or set position of fire objects
     do i = 1, numobjl
         roomptr => roominfo(objrm(i))
-        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%dx)) objpos(1,i) = roomptr%dx/2.0_eb
-        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%dy)) objpos(2,i) = roomptr%dy/2.0_eb
-        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%dz)) objpos(3,i) = 0.0_eb
+        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%width)) objpos(1,i) = roomptr%width/2.0_eb
+        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%depth)) objpos(2,i) = roomptr%depth/2.0_eb
+        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%height)) objpos(3,i) = 0.0_eb
     end do
 
     ! make sure horizontal vent specifications are correct -  we have to do this
@@ -181,8 +181,8 @@
     ! Compartment area and volume
     do i = 1, nm1
         roomptr => roominfo(i)
-        room_area(i) = roomptr%dx*roomptr%dy
-        room_volume(i) = room_area(i)*roomptr%dz
+        room_area(i) = roomptr%width*roomptr%depth
+        room_volume(i) = room_area(i)*roomptr%height
     end do
 
 
@@ -279,10 +279,10 @@
             end do
 
             ! force last elevation to be at the ceiling (as defined by room_height(i)
-            if(roomptr%dz/=zzrhgt(npts,i))then
+            if(roomptr%height/=zzrhgt(npts,i))then
                 ioff2 = 1
                 temparea(npts+ioff+ioff2) = zzrarea(npts,i)
-                temphgt(npts+ioff+ioff2) = roomptr%dz
+                temphgt(npts+ioff+ioff2) = roomptr%height
             else
                 ioff2 = 0
             endif
@@ -317,10 +317,10 @@
             ! the width and depth  commands.
 
             room_volume(i) = zzrvol(npts,i)
-            room_area(i) = room_volume(i)/roomptr%dz
-            xx = roomptr%dx/roomptr%dy
-            roomptr%dx = sqrt(room_area(i)*xx)
-            roomptr%dy = sqrt(room_area(i)/xx)
+            room_area(i) = room_volume(i)/roomptr%height
+            xx = roomptr%width/roomptr%depth
+            roomptr%width = sqrt(room_area(i)*xx)
+            roomptr%depth = sqrt(room_area(i)/xx)
         endif
     end do
 
@@ -348,7 +348,7 @@
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
-        if(xloc<0.0_eb.or.xloc>roomptr%dx.or.yloc<0.0_eb.or.yloc>roomptr%dy.or.zloc<0.0_eb.or.zloc>roomptr%dz) then
+        if(xloc<0.0_eb.or.xloc>roomptr%width.or.yloc<0.0_eb.or.yloc>roomptr%depth.or.zloc<0.0_eb.or.zloc>roomptr%height) then
             write(logerr,102) xloc,yloc,zloc
 102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
             stop
@@ -548,9 +548,9 @@
                 roomptr%name = lcarray(1)
 
                 ! Size
-                roomptr%dx = lrarray(2)
-                roomptr%dy = lrarray(3)
-                roomptr%dz = lrarray(4)
+                roomptr%width = lrarray(2)
+                roomptr%depth = lrarray(3)
+                roomptr%height = lrarray(4)
                 cxabs(ncomp) = lrarray(5)
                 cyabs(ncomp) = lrarray(6)
                 floor_height(ncomp) = lrarray(7)
@@ -720,15 +720,15 @@
             objpos(1,obpnt) = lrarray(2)
             objpos(2,obpnt) = lrarray(3)
             objpos(3,obpnt) = lrarray(4)
-            if (objpos(1,obpnt)>roomptr%dx.or.objpos(2,obpnt)>roomptr%dy.or.objpos(3,obpnt)>roomptr%dz) then
+            if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
                 write(logerr,5323) obpnt
                 stop
             endif
             obj_fpos(obpnt) = 1
-            if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .or. &
-                min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-            if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .and. &
-                min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
+                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
+                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
             fplume(numobjl) = lrarray(5)
             if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
@@ -945,7 +945,7 @@
 
         nw(j,i) = nw(i,j)
         roomptr => roominfo(j)
-        hh(jik) = min(roomptr%dz,max(0.0_eb,hhp(jik)-floor_height(j)))
+        hh(jik) = min(roomptr%height,max(0.0_eb,hhp(jik)-floor_height(j)))
         hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-floor_height(j)))
 
         ! assure ourselves that the connections are symmetrical
@@ -953,7 +953,7 @@
         hhp(jik) = hh(jik) + floor_height(j)
         hlp(jik) = hl(jik) + floor_height(j)
         roomptr => roominfo(i)
-        hh(iijk) = min(roomptr%dz,max(0.0_eb,hhp(iijk)-floor_height(i)))
+        hh(iijk) = min(roomptr%height,max(0.0_eb,hhp(iijk)-floor_height(i)))
         hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-floor_height(i)))
         
     ! DEADROOM dead_room_num connected_room_num
@@ -1220,15 +1220,15 @@
         objpos(1,obpnt) = lrarray(3)
         objpos(2,obpnt) = lrarray(4)
         objpos(3,obpnt) = lrarray(5)
-        if (objpos(1,obpnt)>roomptr%dx.or.objpos(2,obpnt)>roomptr%dy.or.objpos(3,obpnt)>roomptr%dz) then
+        if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
             write(logerr,5323) obpnt
             stop
         endif
         obj_fpos(obpnt) = 1
-        if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .or. &
-            min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-        if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .and. &
-            min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+        if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
+            min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+        if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
+            min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
         fplume(numobjl) = lrarray(6)
         if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
@@ -1343,7 +1343,7 @@
                 write(*,*)
             endif
 
-            if(xdtect(ndtect,dxloc)>roomptr%dx.or.xdtect(ndtect,dyloc)>roomptr%dy.or.xdtect(ndtect,dzloc)>roomptr%dz) then
+            if(xdtect(ndtect,dxloc)>roomptr%width.or.xdtect(ndtect,dyloc)>roomptr%depth.or.xdtect(ndtect,dzloc)>roomptr%height) then
                 write(logerr,5339) ndtect,roomptr%name
                 stop
             endif
@@ -1605,7 +1605,7 @@
                         sliceptr%axis = 1
                         if (sliceptr%roomnum>0) then
                             roomptr => roominfo(sliceptr%roomnum)
-                            if (sliceptr%position>roomptr%dx.or.sliceptr%position<0.0_eb) then
+                            if (sliceptr%position>roomptr%width.or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
                                 stop
                             end if
@@ -1614,7 +1614,7 @@
                         sliceptr%axis = 2
                         if (sliceptr%roomnum>0) then
                             roomptr => roominfo(sliceptr%roomnum)
-                            if (sliceptr%position>roomptr%dy.or.sliceptr%position<0.0_eb) then
+                            if (sliceptr%position>roomptr%depth.or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
                                 stop
                             end if
@@ -1623,7 +1623,7 @@
                         sliceptr%axis = 3
                         if (sliceptr%roomnum>0) then
                             roomptr => roominfo(sliceptr%roomnum)
-                            if (sliceptr%position>roomptr%dz.or.sliceptr%position<0.0_eb) then
+                            if (sliceptr%position>roomptr%height.or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
                                 stop
                             end if
@@ -1872,9 +1872,9 @@
 
     ! Position the object
     roomptr => roominfo(objrm(iobj))
-    call positionobject(objpos,1,iobj,roomptr%dx,midpoint,mx_hsep)
-    call positionobject(objpos,2,iobj,roomptr%dy,midpoint,mx_hsep)
-    call positionobject(objpos,3,iobj,roomptr%dz,base,mx_hsep)
+    call positionobject(objpos,1,iobj,roomptr%width,midpoint,mx_hsep)
+    call positionobject(objpos,2,iobj,roomptr%depth,midpoint,mx_hsep)
+    call positionobject(objpos,3,iobj,roomptr%height,base,mx_hsep)
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -2180,7 +2180,7 @@
 
    do iroom = 1, nrooms
        rm=>roominfo(iroom)
-       rm%ibar = min(max(2,int(rm%dx/dxyz)),rm%ibar)
+       rm%ibar = min(max(2,int(rm%width/dxyz)),rm%ibar)
 
        ceiljet_depth = 0.2_eb * rm%z1 ! placeholder now, change to a calculation
 
@@ -2191,7 +2191,7 @@
            rm%xpltf(i) = real(rm%xplt(i),fb)
        end do
 
-       rm%jbar = min(max(2,int(rm%dy/dxyz)),rm%jbar)
+       rm%jbar = min(max(2,int(rm%depth/dxyz)),rm%jbar)
        allocate(rm%yplt(0:rm%jbar))
        allocate(rm%ypltf(0:rm%jbar))
        call set_grid(rm%yplt,rm%jbar+1,rm%y0,rm%y1,rm%y1,0)
@@ -2199,7 +2199,7 @@
            rm%ypltf(j) = real(rm%yplt(j),fb)
        end do
 
-       rm%kbar = min(max(2,int(rm%dz/dxyz)),rm%kbar)
+       rm%kbar = min(max(2,int(rm%height/dxyz)),rm%kbar)
        allocate(rm%zplt(0:rm%kbar))
        allocate(rm%zpltf(0:rm%kbar))
        call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/3)

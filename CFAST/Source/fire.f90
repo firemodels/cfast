@@ -70,7 +70,7 @@
                 stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
 
-            call do_fire(i,iroom,oplume(1,iobj),roomptr%dz,roomptr%dx,roomptr%dy,objhct,y_soot,y_co, &
+            call do_fire(i,iroom,oplume(1,iobj),roomptr%height,roomptr%width,roomptr%depth,objhct,y_soot,y_co, &
                y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat, &
                oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
@@ -1039,15 +1039,15 @@
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = zzhlay(iroom,lower)
-            zceil = roomptr%dz
+            zceil = roomptr%height
             r = sqrt(xdistance**2 + ydistance**2)
             if (izhall(iroom,ishall)==1) then
                 if (izhall(iroom,ihxy)==1) then
                     distance = ydistance
-                    hall_width = roomptr%dx
+                    hall_width = roomptr%width
                 else
                     distance = xdistance
-                    hall_width = roomptr%dy
+                    hall_width = roomptr%depth
                 end if
             else
                 hall_width = 0.0_eb

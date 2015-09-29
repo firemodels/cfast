@@ -5,9 +5,9 @@ module cfast_types
     
     !  room data structure
     type room_type
-        character(128) :: name          ! user selected name for the compartment
+        character(128) :: name              ! user selected name for the compartment
         
-        real(eb) :: dx, dy, dz          ! width, depth, and height for the compartment
+        real(eb) :: width, depth, height    ! width, depth, and height for the compartment
         
         real(eb) :: yflor, yceil
         real(eb) :: wall_center(3,10)

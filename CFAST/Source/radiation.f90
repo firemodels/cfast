@@ -71,8 +71,8 @@
 
     do i = 1, nm1
         roomptr => roominfo(i)
-        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(room_area(i) + zzhlay(i, lower)*(roomptr%dy + roomptr%dx))
-        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(room_area(i) + zzhlay(i, upper)*(roomptr%dy + roomptr%dx))
+        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(room_area(i) + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
+        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(room_area(i) + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
     end do
 
     defabsup = 0.50_eb
@@ -83,8 +83,8 @@
             roomptr => roominfo(i)
             tg(upper) = zztemp(i,upper)
             tg(lower) = zztemp(i,lower)
-            zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(room_area(i) + zzhlay(i, lower)*(roomptr%dy + roomptr%dx))
-            zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(room_area(i) + zzhlay(i, upper)*(roomptr%dy + roomptr%dx))
+            zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(room_area(i) + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
+            zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(room_area(i) + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
             do iwall = 1, 4
                 if(mod(iwall,2)==1)then
                     ilay = upper
@@ -103,8 +103,8 @@
                 !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
                 ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
                 call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) 
-                if(fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%dz)then
-                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%dz-xfire(ifire+j,f_fire_zpos))/3.0_eb
+                if(fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%height)then
+                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%height-xfire(ifire+j,f_fire_zpos))/3.0_eb
                 else
                     zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
                 end if
@@ -118,7 +118,7 @@
                   zzabsb(lower,i) = absorb(i, lower)
                endif
             endif
-            call rad4(twall,tg,emis,zzabsb(1,i),i,roomptr%dx,roomptr%dy,roomptr%dz,zzhlay(i,lower), &
+            call rad4(twall,tg,emis,zzabsb(1,i),i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
                       xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
                       qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
             do j = 1, nwal

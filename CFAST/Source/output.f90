@@ -751,7 +751,7 @@
     write (iofilo,5000)
     do i = 1, nm1
         roomptr => roominfo(i)
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%dx, roomptr%dy, roomptr%dz, &
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%width, roomptr%depth, roomptr%height, &
             ceiling_height(i), floor_height(i)
     end do
     return
@@ -818,7 +818,7 @@
                     if (vshape(i,j)==2) csout = 'Square'
                     if (j<n) then
                         roomptr => roominfo(j)
-                        hrx = roomptr%dz
+                        hrx = roomptr%height
                         hrpx = ceiling_height(j)
                     else
                         hrx = floor_height(i)

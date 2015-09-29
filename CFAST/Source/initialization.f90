@@ -273,7 +273,7 @@
             stop
         endif
         roomptr => roominfo(i)
-        hvelxt(ii) = min(roomptr%dz,max(0.0_eb,hvelxt(ii)))
+        hvelxt(ii) = min(roomptr%height,max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + floor_height(i)
     end do
 
@@ -578,9 +578,9 @@
     do i = 1, ndtect
         iroom=ixdtect(i,droom)
         roomptr => roominfo(iroom)
-        if(xdtect(i,dxloc)<0.0_eb) xdtect(i,dxloc)=roomptr%dx*0.5_eb
-        if(xdtect(i,dyloc)<0.0_eb) xdtect(i,dyloc)=roomptr%dy*0.5_eb
-        if(xdtect(i,dzloc)<0.0_eb) xdtect(i,dzloc)=roomptr%dz-mx_vsep
+        if(xdtect(i,dxloc)<0.0_eb) xdtect(i,dxloc)=roomptr%width*0.5_eb
+        if(xdtect(i,dyloc)<0.0_eb) xdtect(i,dyloc)=roomptr%depth*0.5_eb
+        if(xdtect(i,dzloc)<0.0_eb) xdtect(i,dzloc)=roomptr%height-mx_vsep
         tdspray = xdtect(i,dspray)
 
         ! if tdspray>0 then interpret it as a spray density and convert
@@ -642,7 +642,7 @@
     do i = 1, nm1
         roomptr => roominfo(i)
         if(izhall(i,ishall)==1)then
-            if(roomptr%dy>roomptr%dx)then
+            if(roomptr%depth>roomptr%width)then
                 izhall(i,ihxy) = 1
             else
                 izhall(i,ihxy) = 2
@@ -743,9 +743,9 @@
     xlrg = 1.0e+5_eb
     do i = 1, nr
         roomptr => roominfo(i)
-        roomptr%dx = xlrg
-        roomptr%dy = xlrg
-        roomptr%dz = xlrg
+        roomptr%width = xlrg
+        roomptr%depth = xlrg
+        roomptr%height = xlrg
         ceiling_height(i) = xlrg
         floor_height(i) = 0.0_eb
         cxabs(i) = 0.0_eb
@@ -753,8 +753,8 @@
         cxgrid(i) = 50
         cygrid(i) = 50
         czgrid(i) = 50
-        room_area(i) = roomptr%dx*roomptr%dy
-        room_volume(i) = roomptr%dz*room_area(i)
+        room_area(i) = roomptr%width*roomptr%depth
+        room_volume(i) = roomptr%height*room_area(i)
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qscnv(j,i) = 0.0_eb
@@ -1215,9 +1215,9 @@
         xxnorm = targptr%normal(1)
         yynorm = targptr%normal(2)
         zznorm = targptr%normal(3)
-        xsize = roomptr%dx
-        ysize = roomptr%dy
-        zsize = roomptr%dz
+        xsize = roomptr%width
+        ysize = roomptr%depth
+        zsize = roomptr%height
 
         ! if the locator is -1, set to center of room on the floor
         if(xloc==-1.0_eb) xloc = 0.5_eb*xsize

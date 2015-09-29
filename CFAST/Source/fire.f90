@@ -43,6 +43,7 @@
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr
     integer lsp, iroom, nobj, iobj, i, j
+    type(room_type), pointer :: roomptr
 
     ! initialize summations and local data
     do lsp = 1, ns + 2
@@ -59,6 +60,7 @@
     do i = 1, numobjl
         if (objpnt(i)>0) then
             iroom = objrm(i)
+            roomptr => roominfo(iroom)
             iobj = objpnt(i)
             call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
             oplume(1,iobj) = omasst
@@ -68,7 +70,7 @@
                 stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
 
-            call do_fire(i,iroom,oplume(1,iobj),room_height(iroom),room_width(iroom),room_depth(iroom),objhct,y_soot,y_co, &
+            call do_fire(i,iroom,oplume(1,iobj),roomptr%dz,roomptr%dx,roomptr%dy,objhct,y_soot,y_co, &
                y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat, &
                oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
 
@@ -1012,8 +1014,8 @@
         
     real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
     real(eb) :: xdistance, ydistance, distance, hall_width
-
     integer :: i
+    type(room_type), pointer :: roomptr
 
     ! default is the appropriate layer temperature and a velocity of 0.1 m/s
     if (z>=zzhlay(iroom,lower)) then
@@ -1025,6 +1027,7 @@
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,nfire
         if (ifroom(i)==iroom) then
+            roomptr => roominfo(iroom)
             qdot = fqf(i)
             xrad = radconsplit(i)
             area = farea(i)
@@ -1036,15 +1039,15 @@
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = zzhlay(iroom,lower)
-            zceil = room_height(iroom)
+            zceil = roomptr%dz
             r = sqrt(xdistance**2 + ydistance**2)
             if (izhall(iroom,ishall)==1) then
                 if (izhall(iroom,ihxy)==1) then
                     distance = ydistance
-                    hall_width = room_width(iroom)
+                    hall_width = roomptr%dx
                 else
                     distance = xdistance
-                    hall_width = room_depth(iroom)
+                    hall_width = roomptr%dy
                 end if
             else
                 hall_width = 0.0_eb

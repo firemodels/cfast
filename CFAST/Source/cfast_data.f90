@@ -81,7 +81,7 @@ module cfast_main
     real(eb) :: mass(2,nr,ns), minmas, lower_o2_limit, qf(nr), p(maxteq), objmaspy(0:mxfire), tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), oplume(3,mxfires),  &
-        qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), room_width(nr), room_depth(nr), room_height(nr), room_area(nr), &
+        qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), room_area(nr), &
         ceiling_height(nr), room_volume(nr), floor_height(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
         radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
@@ -104,7 +104,7 @@ module cfast_main
 
     logical :: activs(ns), surface_on_switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
 
-    character(128) :: title, compartmentnames(nr)
+    character(128) :: title
 
     type(room_type), target :: roominfo(nr)
    

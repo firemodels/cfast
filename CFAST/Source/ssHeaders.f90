@@ -15,6 +15,7 @@
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     character(35) :: headertext(3,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
+    type(room_type), pointer :: roomptr
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
     'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
@@ -37,6 +38,7 @@
 
     ! Compartment variables
     do j = 1, nm1
+        roomptr => roominfo(j)
         do i = 1, 5
             if (i/=2.or.izshaft(j)==0) then
                 if (i/=3.or.izshaft(j)==0) then
@@ -48,7 +50,7 @@
                         headertext(3,position) = ' '
                     else
                         headertext(1,position) = Labels(i+1)
-                        headertext(2,position) = compartmentnames(j)
+                        headertext(2,position) = roomptr%name
                         headertext(3,position) = LabelUnits(i+1)
                     endif
                 endif
@@ -58,6 +60,7 @@
 
     ! Door jet fires
     do i = 1, n
+        roomptr => roominfo(i)
         position = position + 1
         if (validate) then
             call toIntString(i,cRoom)
@@ -73,7 +76,7 @@
             if (i==n) then
                 headertext(2,position) = 'Outside'
             else
-                headertext(2,position) = compartmentnames(i)
+                headertext(2,position) = roomptr%name
             end if
             headertext(3,position) = LabelUnits(7)
         endif
@@ -121,6 +124,7 @@
     data tooutput /9*.true.,.false.,.true./ 
     data molfrac /8*.true.,3*.false./
     integer position, i, j, lsp
+    type(room_type), pointer :: roomptr
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
        'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
@@ -147,6 +151,7 @@
 
     ! Species by compartment, then layer, then species type
     do i = 1, nm1
+        roomptr => roominfo(i)
         do j = upper, lower
             if (j==upper.or.izshaft(i)==0) then
                 do lsp = 1, ns
@@ -161,7 +166,7 @@
                             headertext(3,1) = ' '
                         else
                             headertext(1,position) = Labels((j-1)*11+lsp+1)
-                            headertext(2,position) = compartmentnames(i)
+                            headertext(2,position) = roomptr%name
                             headertext(3,position) = LabelUnits((j-1)*11+lsp+1)
                         endif
                     endif
@@ -208,6 +213,7 @@
     integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
     character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
     integer position, i, j, itarg, itype
+    type(room_type), pointer :: roomptr
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
         'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
@@ -239,6 +245,7 @@
 
     ! Compartment surfaces temperatures
     do i = 1, nm1
+        roomptr => roominfo(i)
         do j = 1, 4
             position = position + 1
             if (validate) then
@@ -248,7 +255,7 @@
                 headertext(3,position) = ' '
             else
                 headertext(1,position) = Labels(j+1)
-                headertext(2,position) = compartmentnames(i)
+                headertext(2,position) = roomptr%name
                 headertext(3,position) = LabelUnits(j+1)
             endif
         end do
@@ -658,6 +665,7 @@
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
     character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2), Species(9)
     integer position, i, j, k, l, nprod
+    type(room_type), pointer :: roomptr
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow',&
        'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
@@ -676,49 +684,51 @@
 
     ! Compartment variables
     do j = 1, nm1
+        roomptr => roominfo(j)
         position = position + 1
         headertext(1,position) = trim(Labels(2))
-        headertext(2,position) = compartmentnames(j)
+        headertext(2,position) = roomptr%name
         headertext(3,position) = LabelUnits(2)
         position = position + 1
         headertext(1,position) = trim(Labels(3))
-        headertext(2,position) = compartmentnames(j)
+        headertext(2,position) = roomptr%name
         headertext(3,position) = LabelUnits(3)
         position = position + 1
         headertext(1,position) = trim(Labels(4))
-        headertext(2,position) = compartmentnames(j)
+        headertext(2,position) = roomptr%name
         headertext(3,position) = LabelUnits(4)
         position = position + 1
         headertext(1,position) = trim(Labels(5))
-        headertext(2,position) = compartmentnames(j)
+        headertext(2,position) = roomptr%name
         headertext(3,position) = LabelUnits(5)
         do i = 1, 2
             do k = 1, 2
                 do l = 2, 8
                     position = position + 1
                     headertext(1,position) = trim(Labels(l+4))//trim(Layers(i))
-                    headertext(2,position) = compartmentnames(j)
+                    headertext(2,position) = roomptr%name
                     headertext(3,position) = LabelUnits(k+5)
                 end do
             end do
             position = position + 1
             headertext(1,position) = trim(Labels(13))//trim(Layers(i))
-            headertext(2,position) = compartmentnames(j)
+            headertext(2,position) = roomptr%name
             headertext(3,position) = LabelUnits(7)
             position = position + 1
             headertext(1,position) = trim(Labels(14))//trim(Layers(i))
-            headertext(2,position) = compartmentnames(j)
+            headertext(2,position) = roomptr%name
             headertext(3,position) = LabelUnits(7)
         end do
     end do
         
     ! Species 
     do j = 1, nm1
+        roomptr => roominfo(j)
         do i = 1, 2
             do k = 1, 9
                 position = position + 1
                 headertext(1,position) = trim(Species(k))//trim(Layers(i))
-                headertext(2,position) = compartmentnames(j)
+                headertext(2,position) = roomptr%name
                 headertext(3,position) = LabelUnits(8)
             end do
         end do

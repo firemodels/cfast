@@ -26,10 +26,13 @@
 
 
     real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
+    
     real(eb) :: flwcv0(nr,2), flxcv0(nr,nwal), qconv, qconv_avg
     
     integer i, j, ieqtyp, iroom, iwall, iw, nrmfire, ilay, ifire
     logical roomflg(nr), wallflg(4*nr)
+    type(room_type), pointer :: roomptr
+    
     save flwcv0, flxcv0
 
     do i = 1, nm1
@@ -80,6 +83,7 @@
     do iw = 1, nwalls
         if(wallflg(iw)) then
             i = izwall(iw,w_from_room)
+            roomptr => roominfo(i)
             iwall = izwall(iw,w_from_wall)
             nrmfire = ifrpnt(i,1)
             if(mod(iwall,2)==1)then
@@ -95,7 +99,7 @@
                 do ifire = 1, nrmfire
                     qconv = max(qconv,xfire(ifrpnt(i,2)+ifire-1,f_qfc))
                 end do
-                qconv_avg = 0.27_eb*qconv/((room_width(i)*room_depth(i))**0.68_eb*room_height(i)**0.64_eb)
+                qconv_avg = 0.27_eb*qconv/((roomptr%dx*roomptr%dy)**0.68_eb*roomptr%dz**0.64_eb)
                 if (qconv_avg>flxcv(i,iwall)) flxcv(i,iwall) = qconv_avg
             end if
             flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)

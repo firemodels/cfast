@@ -418,8 +418,8 @@
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
         ! then we need the output now
         call remap_fires (nfires)
-        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, floor_height, room_width, &
-            room_depth, room_height, n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, 0.0_eb, 1)
+        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, floor_height,  &
+             n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
         return
@@ -523,8 +523,7 @@
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
                 call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
-                    floor_height, room_width, room_depth, room_height, n_hvents, n_vvents, nfires, flocal, fxlocal, &
-                    fylocal,fzlocal,ntarg,t,itmstp)
+                    floor_height, n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, itmstp)
                 call output_smokeview_header (version,nm1,nfires)
             endif
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
@@ -1002,6 +1001,9 @@
 
     ! data structures for dassl, the numerical solver
     real(eb) :: xprime(maxteq)
+    
+    ! data structures for rooms
+    type(room_type), pointer :: roomptr
 
     ! data structure for total flows and fluxes
     real(eb) :: flwtot(nr,mxfprd+2,2), flxtot(nr,nwal)
@@ -1175,8 +1177,9 @@
 
     ! calculate rhs of ode's for each room
     do iroom = 1, nirm
+        roomptr => roominfo(iroom)
         aroom = room_area(iroom)
-        hceil = room_height(iroom)
+        hceil = roomptr%dz
         pabs = zzpabs(iroom)
         hinter = zzhlay(iroom,ll)
         ql = flwtot(iroom,q,ll)
@@ -1231,7 +1234,8 @@
         iprodu = nofprd - 1
         do iprod = 1, nprod
             do iroom = 1, nm1
-                hceil = room_height(iroom)
+                roomptr => roominfo(iroom)
+                hceil = roomptr%dz
                 hinter = zzhlay(iroom,ll)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
@@ -1371,9 +1375,6 @@
             roomptr%x0 = cxabs(iroom)
             roomptr%y0 = cyabs(iroom)
             roomptr%z0 = floor_height(iroom)
-            roomptr%dx = room_width(iroom)
-            roomptr%dy = room_depth(iroom)
-            roomptr%dz = room_height(iroom)
             roomptr%x1 = roomptr%x0 + roomptr%dx
             roomptr%y1 = roomptr%y0 + roomptr%dy
             roomptr%z1 = roomptr%z0 + roomptr%dz
@@ -1382,11 +1383,11 @@
             roomptr%kbar = czgrid(iroom)
             
             ! define wall centers
-            xmax = room_width(iroom)
+            xmax = roomptr%dx
             xmid = xmax/2.0_eb
-            ymax = room_depth(iroom)
+            ymax = roomptr%dy
             ymid = ymax/2.0_eb
-            zmax = ceiling_height(iroom)
+            zmax = roomptr%yceil
 
             ! ceiling
             roomptr%wall_center(1,1) = xmid
@@ -1682,7 +1683,7 @@
                 zzhlay(iroom,lower) = zzvol(iroom,lower)/room_area(iroom)
             else
                 call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
-                zzhlay(iroom,upper) = room_height(iroom) - zzhlay(iroom,lower)
+                zzhlay(iroom,upper) = roomptr%dz - zzhlay(iroom,lower)
             endif
 
             zzrelp(iroom) = pdif(iroom)
@@ -1712,8 +1713,8 @@
             endif
 
             ! compute area of 10 wall segments
-            xmax = room_width(iroom)
-            ymax = room_depth(iroom)
+            xmax = roomptr%dx
+            ymax = roomptr%dy
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
             zzwarea2(iroom,1) = room_area(iroom)

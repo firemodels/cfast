@@ -1,7 +1,7 @@
 
 ! --------------------------- output_smokeview -------------------------------------------
 
-subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvents, n_vvents, nfires,froom_number,&
+subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vvents, nfires,froom_number,&
    fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
@@ -16,7 +16,6 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
     !  tamb -       ambient temperature
     !  nrooms -     number of rooms
     !  x0,y0,z0 -   room origin
-    !  dx,dy,dz -   room dimensions
     !  n_hvents -     number of vents
     !  vfrom -      from room number
     !  vto =        to room number 
@@ -38,7 +37,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, n_hvents, nfires, n_vvents, ntarg
-    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0, dx, dy, dz
+    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
     
@@ -84,7 +83,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
        rm=>roominfo(i)
        
        write(13,"(a,1x)")"ROOM"
-       write(13,10) dx(i), dy(i), dz(i)
+       write(13,10) rm%dx, rm%dy, rm%dz
        write(13,10) x0(i), y0(i), z0(i)
 10     format(1x,e11.4,1x,e11.4,1x,e11.4)
 
@@ -95,9 +94,9 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0,dx,dy,dz, n_hvent
 
           write(13,"(a,1x)")"GRID"
           write(13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
-          x1 = x0(i) + dx(i)
-          y1 = y0(i) + dy(i)
-          z1 = z0(i) + dz(i)
+          x1 = x0(i) + rm%dx
+          y1 = y0(i) + rm%dy
+          z1 = z0(i) + rm%dz
            
           write(13,"(a,1x)")"PDIM"
           write(13,"(9(f14.5,1x))")x0(i),x1,y0(i),y1,z0(i),z1,0.0_eb,0.0_eb,0.0_eb

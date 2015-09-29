@@ -112,22 +112,25 @@
     use fltarget
     implicit none
 
-    integer :: i, izzvol
+    integer :: icomp, izzvol
+    type(room_type), pointer :: roomptr
+    
 
     write (iofilo,5000)
     write (iofilo,5010)
     write (iofilo,5020)
     write (iofilo,5030)
     write (iofilo,5040)
-    do i = 1, nm1
-        izzvol = zzvol(i,upper)/room_volume(i)*100.0_eb+0.5_eb
-        if (izshaft(i)==1) then
-            write (iofilo,5071) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zzvol(i,upper), &
-            zzabsb(upper,i),zzrelp(i)-interior_rel_pressure(i)
+    do icomp = 1, nm1
+        roomptr =>roominfo(icomp)
+        izzvol = zzvol(icomp,upper)/room_volume(icomp)*100.0_eb+0.5_eb
+        if (izshaft(icomp)==1) then
+            write (iofilo,5071) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zzvol(icomp,upper), &
+            zzabsb(upper,icomp),zzrelp(icomp)-interior_rel_pressure(icomp)
         else
-            write (iofilo,5070) compartmentnames(i), zztemp(i,upper)-kelvin_c_offset, zztemp(i,lower)-kelvin_c_offset, &
-            zzhlay(i,lower), zzvol(i,upper), izzvol, zzabsb(upper,i),zzabsb(lower,i), &
-               zzrelp(i)-interior_rel_pressure(i)
+            write (iofilo,5070) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zztemp(icomp,lower)-kelvin_c_offset, &
+            zzhlay(icomp,lower), zzvol(icomp,upper), izzvol, zzabsb(upper,icomp),zzabsb(lower,icomp), &
+               zzrelp(icomp)-interior_rel_pressure(icomp)
         endif
     end do
     return
@@ -157,8 +160,9 @@
 
     integer, intent(in) :: isw
     
-    integer length, i, ir, j
+    integer length, i, j, icomp
     real(eb) :: fheight, xems, xemp, xqf, xqupr, xqlow
+    type(room_type), pointer :: roomptr
 
     external length
     write (iofilo,5000)
@@ -177,14 +181,16 @@
         end do
     endif
     write (iofilo,'(a)') ' '
-    do ir = 1, nm1
+    do icomp = 1, nm1
+        roomptr => roominfo(icomp)
+        
         xems = 0.0_eb
         xemp = 0.0_eb
         xqf = 0.0_eb
         xqupr = 0.0_eb
         xqlow = 0.0_eb
         do i = 1, numobjl
-            if (ir==froom(i)) then
+            if (icomp==froom(i)) then
                 xems = xems + fems(i)
                 xemp = xemp + femp(i)
                 xqf = xqf + fqf(i)
@@ -192,9 +198,9 @@
                 xqlow = xqlow + fqlow(i)
             endif
         end do
-        xqf = xqf + fqdj(ir)
-        if (xems+xemp+xqf+xqupr+xqlow+fqdj(ir)/=0.0_eb) write (iofilo,5030) compartmentnames(ir), &
-           xems, xemp, xqf, xqupr, xqlow, fqdj(ir)
+        xqf = xqf + fqdj(icomp)
+        if (xems+xemp+xqf+xqupr+xqlow+fqdj(icomp)/=0.0_eb) write (iofilo,5030) roomptr%name, &
+           xems, xemp, xqf, xqupr, xqlow, fqdj(icomp)
     end do
     if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
@@ -221,21 +227,15 @@
     use cshell
     implicit none
 
-    logical :: swl(4)
-    character :: stype(ns)*10, sunits(ns)*11, ciout*255, cjout*255, lnames(2)*5
+    character(10), dimension(ns) :: stype = (/'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/)
+    character(11), dimension(ns) :: sunits = (/'(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/)
+    character(5), dimension(2) :: lnames = (/'UPPER', 'LOWER'/)
+    character :: ciout*255, cjout*255
     external length
-    integer :: length, i, j, layer, ic, lsp
+    integer :: length, i, icomp, layer, ic, lsp
+    type(room_type), pointer :: roomptr
 
-    data lnames /'UPPER', 'LOWER'/
-    data sunits /8*'(%)', '(1/m)', '(g-min/m3)', ' kg '/
-    data stype /'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/
     if (nlspct/=0) then
-        do i = 1, nwal
-            swl(i) = .false.
-            do j = 1, nm1
-                swl(i) = swl(i) .or. surface_on_switch(i,j)
-            end do
-        end do
 
         do layer = upper, lower
             write (iofilo,5050) lnames(layer)
@@ -253,12 +253,13 @@
             write (iofilo,5020) cjout(1:length(cjout))
             write (iofilo,5030) ('-',i = 1,ic)
             write (ciout,5010)
-            do i = 1, nm1
-                write (ciout,5060) compartmentnames(i)
+            do icomp = 1, nm1
+                roomptr => roominfo(icomp)
+                write (ciout,5060) roomptr%name
                 ic = 14
-                if (layer==upper.or.izshaft(i)==0) then
+                if (layer==upper.or.izshaft(icomp)==0) then
                     do lsp = 1, ns
-                        write (ciout(ic:ic+9),5040) toxict(i,layer,lsp)
+                        write (ciout(ic:ic+9),5040) toxict(icomp,layer,lsp)
                         ic = ic + 11
                     end do
                 endif
@@ -294,6 +295,7 @@
 
     character outbuf*132, cifrom*12, cito*12
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomptr
     
     write (iofilo,5000)
     
@@ -304,10 +306,12 @@
         ventptr=>hventinfo(i)
 
         ifrom = ventptr%from
-        write (cifrom,'(a12)') compartmentnames(ifrom)
+        roomptr => roominfo(ifrom)
+        write (cifrom,'(a12)') roomptr%name
         if (ifrom==n) cifrom = 'Outside'
         ito = ventptr%to
-        write (cito,'(a12)') compartmentnames(ito)
+        roomptr => roominfo(ito)
+        write (cito,'(a12)') roomptr%name
         if (ito==n) cito = 'Outside'
         
         call flwout(outbuf,ventptr%mflow(1,1,1),ventptr%mflow(1,1,2),ventptr%mflow(1,2,1),ventptr%mflow(1,2,2),&
@@ -319,10 +323,12 @@
     do i = 1, n_vvents
 
         ifrom = ivvent(i,botrm)
-        write (cifrom,'(a12)') compartmentnames(ifrom)
+        roomptr => roominfo(ifrom)
+        write (cifrom,'(a12)') roomptr%name
         if (ifrom==n) cifrom = 'Outside'
         ito = ivvent(i,toprm)
-        write (cito,'(a12)') compartmentnames(ito)
+        roomptr => roominfo(ito)
+        write (cito,'(a12)') roomptr%name
         if (ito==n) cito = 'Outside'
         
         flow = 0.0_eb
@@ -346,11 +352,13 @@
         do i = 1, next-1, 2
             
             ii = hvnode(1,i)
-             write (cifrom,'(a12)') compartmentnames(ii)
+            roomptr => roominfo(ii)
+            write (cifrom,'(a12)') roomptr%name
             if (ii==n) cifrom = 'Outside'
             
             ii = hvnode(1,i+1)
-            write (cito,'(a12)') compartmentnames(ii)
+            roomptr => roominfo(ii)
+            write (cito,'(a12)') roomptr%name
             if (ii==n) cito = 'Outside'
             
             flow = 0.0_eb
@@ -363,9 +371,6 @@
             if (hveflo(upper,i+1)<0.0_eb) flow(6) = -hveflo(upper,i+1)
             if (hveflo(lower,i+1)>=0.0_eb) flow(7) = hveflo(lower,i+1)
             if (hveflo(lower,i+1)<0.0_eb) flow(8) = -hveflo(lower,i+1)
-            !flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
-            !flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
-            !call flwout(outbuf_from,flow(1),flow(2),flow(3),flow(4),0.0_eb,0.0_eb,flow(5),flow(6))
             
             call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))            
             write (iofilo,5020) 'M', i, cifrom, cito, outbuf
@@ -401,13 +406,15 @@
 
     character :: ciout*14, cjout*12, outbuf*132
     logical first
+    type(room_type), pointer :: roomptr
     
     write (iofilo,5000)
 
     do irm = 1, n
+        roomptr => roominfo(irm)
         i = irm
         first = .true.
-        write (ciout,'(a14)') compartmentnames(irm)
+        write (ciout,'(a14)') roomptr%name
         if (irm==n) ciout = 'Outside'
 
         ! horizontal flow natural vents
@@ -523,6 +530,7 @@
     real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp, tmp(nnodes_trg), depth
     
     type(target_type), pointer :: targptr
+    type(room_type), pointer :: roomptr
 
     integer :: iwptr(4)
     
@@ -535,7 +543,8 @@
     call target_nodes(tmp)
     
     do i=1,nm1
-        write (iofilo,5010) compartmentnames(i),(zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
+        roomptr => roominfo(i)
+        write (iofilo,5010) roomptr%name, (zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
 
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
@@ -737,10 +746,12 @@
     implicit none
 
     integer i
+    type(room_type), pointer :: roomptr
 
     write (iofilo,5000)
     do i = 1, nm1
-        write (iofilo,5010) i, trim(compartmentnames(i)), room_width(i), room_depth(i), room_height(i), &
+        roomptr => roominfo(i)
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%dx, roomptr%dy, roomptr%dz, &
             ceiling_height(i), floor_height(i)
     end do
     return
@@ -768,6 +779,7 @@
     real(eb) :: hrx, hrpx
     character :: ciout*8, cjout*14, csout*6
     logical :: first
+    type(room_type), pointer :: roomptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
@@ -777,11 +789,13 @@
         do i = 1, nm1
             do j = i + 1, n
                 do k = 1, 4
-                    write (cjout,'(a14)') compartmentnames(j)
+                    roomptr => roominfo(j)
+                    write (cjout,'(a14)') roomptr%name
                     if (j==n) cjout = ' Outside'
                     if (iand(1,ishft(nw(i,j),-k))/=0) then
                         iijk = ijk(i,j,k)
-                        write (iofilo,5020) compartmentnames(i), cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk)
+                        roomptr => roominfo(i)
+                        write (iofilo,5020) roomptr%name, cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk)
                     endif
                 end do
             end do
@@ -803,7 +817,8 @@
                     csout = 'Round'
                     if (vshape(i,j)==2) csout = 'Square'
                     if (j<n) then
-                        hrx = room_height(j)
+                        roomptr => roominfo(j)
+                        hrx = roomptr%dz
                         hrpx = ceiling_height(j)
                     else
                         hrx = floor_height(i)
@@ -931,6 +946,7 @@
     implicit none
 
     integer i, j
+    type(room_type), pointer :: roomptr
 
     ! check to see if any heat transfer is on
     if (.not.adiabatic_wall) then
@@ -946,7 +962,8 @@
     ! some surfaces are on, do the printout of the surfaces
 30  write (iofilo,5010)
     do  i = 1, nm1
-        write (iofilo,5020) compartmentnames(i), cname(1,i), cname(3,i), cname(2,i)
+        roomptr => roominfo(i)
+        write (iofilo,5020) roomptr%name, cname(1,i), cname(3,i), cname(2,i)
     end do
 
     !     print out the properties of the materials used
@@ -990,19 +1007,21 @@
     integer :: io, i, j, nnv, length, is
     real(eb) :: y_hcn, y_hcl
 
-    character cbuf*255, ftype(0:4)*13, fire_geometry(1:3)*6
+    character cbuf*255
+    character(13), dimension(0:4) :: ftype =(/'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
+    character(6), dimension(1:3) :: fire_geometry = (/'Normal', 'Wall', 'Corner'/)
     external length
-    data ftype /'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/
-    data fire_geometry /'Normal', 'Wall', 'Corner'/
     
+    type(room_type), pointer :: roomptr
 
     if (numobjl>0) then
         do io = 1, mxfires
             if (objpnt(io)/=0) then
                 j = objpnt(io)
                 nnv = objlfm(j)
+                roomptr => roominfo(objrm(j))
                 write (iofilo,5020) objnin(j)(1:length(objnin(j))), j, fire_geometry(obj_fpos(j))
-                write (iofilo,5030) compartmentnames(objrm(j)),ftype(objtyp(j)),objpos(1,j), objpos(2,j), &
+                write (iofilo,5030) roomptr%name, ftype(objtyp(j)), objpos(1,j), objpos(2,j), &
                    objpos(3,j), relhum*100., lower_o2_limit*100.,radconsplit(j)
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
                 write (cbuf,5040)
@@ -1048,6 +1067,7 @@
     integer :: itarg, j
     
     type(target_type), pointer :: targptr
+    type(room_type), pointer :: roomptr
 
     if(ntarg/=0) write(iofilo,5000)
 5000 format(//,'TARGETS',//,'Target',T29,'Compartment',T44,'Position (x, y, z)',T71,&
@@ -1055,7 +1075,8 @@
 
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        write(iofilo,5010) itarg, targptr%name, compartmentnames(targptr%room), (targptr%center(j),j=1,3), &
+        roomptr => roominfo(targptr%room)
+        write(iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), &
             (targptr%normal(j),j=1,3), targptr%material
 5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
     end do

@@ -5,16 +5,19 @@ module cfast_types
     
     !  room data structure
     type room_type
-      real(eb) :: yflor, yceil
-      real(eb) :: wall_center(3,10)
-      real(eb) :: x0, y0, z0
-      real(eb) :: x1, y1, z1
-      real(eb), allocatable, dimension(:) :: xplt, yplt, zplt
-      real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
-      real(eb) :: dx, dy, dz
-      integer :: ibar, jbar, kbar
+        character(128) :: name          ! user selected name for the compartment
+        
+        real(eb) :: dx, dy, dz          ! width, depth, and height for the compartment
+        
+        real(eb) :: yflor, yceil
+        real(eb) :: wall_center(3,10)
+        real(eb) :: x0, y0, z0
+        real(eb) :: x1, y1, z1
+        real(eb), allocatable, dimension(:) :: xplt, yplt, zplt
+        real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
+        integer :: ibar, jbar, kbar
     end type room_type
-    
+
     ! ramp data structure
     type ramp_type
         character :: type

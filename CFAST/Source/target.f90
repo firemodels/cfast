@@ -147,8 +147,8 @@ contains
             !svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
             ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
             call flame_height (xfire(ifire,f_qfr)+xfire(ifire,f_qfc),xfire(ifire,f_obj_area),fheight)
-            if(fheight+xfire(ifire,f_fire_zpos)>room_height(i))then
-                zfire = xfire(ifire,f_fire_zpos) + (room_height(i)-xfire(ifire,f_fire_zpos))/3.0_eb
+            if(fheight+xfire(ifire,f_fire_zpos)>roomptr%dz)then
+                zfire = xfire(ifire,f_fire_zpos) + (roomptr%dz-xfire(ifire,f_fire_zpos))/3.0_eb
             else
                 zfire = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
             end if

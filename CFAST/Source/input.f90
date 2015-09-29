@@ -20,6 +20,7 @@
     integer :: numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: aversion*5
+    type(room_type), pointer :: roomptr
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
@@ -112,33 +113,24 @@
 
     ! floor plan dependent parameters
     do i = 1, nm1
-        ceiling_height(i) = room_height(i) + floor_height(i)
+        roomptr => roominfo(i)
+        ceiling_height(i) = roomptr%dz + floor_height(i)
     end do
 
     ! check and/or set heat source fire position
     if (heatfl) then
-        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>room_width(heatfr))) then
-            heatfp(1) = room_width(heatfr)/2.0_eb
-        endif
-        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>room_depth(heatfr))) then
-            heatfp(2) = room_depth(heatfr)/2.0_eb
-        endif
-        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>room_height(heatfr))) then
-            heatfp(3) = 0.0_eb
-        endif
+        roomptr => roominfo(heatfr)
+        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>roomptr%dx)) heatfp(1) = roomptr%dx/2.0_eb
+        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>roomptr%dy)) heatfp(2) = roomptr%dy/2.0_eb
+        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>roomptr%dz)) heatfp(3) = 0.0_eb
     endif
 
     ! check and/or set position of fire objects
     do i = 1, numobjl
-        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>room_width(objrm(i)))) then
-            objpos(1,i) = room_width(objrm(i))/2.0_eb
-        endif
-        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>room_depth(objrm(i)))) then
-            objpos(2,i) = room_depth(objrm(i))/2.0_eb
-        endif
-        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>room_height(objrm(i)))) then
-            objpos(3,i) = 0.0_eb
-        endif
+        roomptr => roominfo(objrm(i))
+        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%dx)) objpos(1,i) = roomptr%dx/2.0_eb
+        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%dy)) objpos(2,i) = roomptr%dy/2.0_eb
+        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%dz)) objpos(3,i) = 0.0_eb
     end do
 
     ! make sure horizontal vent specifications are correct -  we have to do this
@@ -188,8 +180,9 @@
 
     ! Compartment area and volume
     do i = 1, nm1
-        room_area(i) = room_width(i)*room_depth(i)
-        room_volume(i) = room_area(i)*room_height(i)
+        roomptr => roominfo(i)
+        room_area(i) = roomptr%dx*roomptr%dy
+        room_volume(i) = room_area(i)*roomptr%dz
     end do
 
 
@@ -268,7 +261,8 @@
     do i = 1, nm1
         npts = izrvol(i)
         if(npts/=0)then
-
+            roomptr => roominfo(i)
+            
             ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
             if(zzrhgt(1,i)/=0.0_eb)then
                 temparea(1) = zzrarea(1,i)
@@ -285,10 +279,10 @@
             end do
 
             ! force last elevation to be at the ceiling (as defined by room_height(i)
-            if(room_height(i)/=zzrhgt(npts,i))then
+            if(roomptr%dz/=zzrhgt(npts,i))then
                 ioff2 = 1
                 temparea(npts+ioff+ioff2) = zzrarea(npts,i)
-                temphgt(npts+ioff+ioff2) = room_height(i)
+                temphgt(npts+ioff+ioff2) = roomptr%dz
             else
                 ioff2 = 0
             endif
@@ -323,10 +317,10 @@
             ! the width and depth  commands.
 
             room_volume(i) = zzrvol(npts,i)
-            room_area(i) = room_volume(i)/room_height(i)
-            xx = room_width(i)/room_depth(i)
-            room_width(i) = sqrt(room_area(i)*xx)
-            room_depth(i) = sqrt(room_area(i)/xx)
+            room_area(i) = room_volume(i)/roomptr%dz
+            xx = roomptr%dx/roomptr%dy
+            roomptr%dx = sqrt(room_area(i)*xx)
+            roomptr%dy = sqrt(room_area(i)/xx)
         endif
     end do
 
@@ -344,6 +338,7 @@
 104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
             stop
         endif
+        roomptr => roominfo(iroom)
         rti = xdtect(i,drti)
         if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
             write (logerr,101) rti 
@@ -353,8 +348,7 @@
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
-        if(xloc<0.0_eb.or.xloc>room_width(iroom).or.yloc<0.0_eb.or.yloc>room_depth(iroom) &
-            .or.zloc<0.0_eb.or.zloc>ceiling_height(iroom))then
+        if(xloc<0.0_eb.or.xloc>roomptr%dx.or.yloc<0.0_eb.or.yloc>roomptr%dy.or.zloc<0.0_eb.or.zloc>roomptr%dz) then
             write(logerr,102) xloc,yloc,zloc
 102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
             stop
@@ -472,12 +466,13 @@
     integer, intent(in) :: inumr, inumc
     
     logical :: lfupdat
-    integer :: obpnt, compartment, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir, countargs
-    integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp
+    integer :: obpnt, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir, countargs
+    integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
     character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
+    type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     type(ramp_type), pointer :: rampptr
     type(visual_type), pointer :: sliceptr
@@ -491,7 +486,7 @@
             surface_on_switch(j,i) = .false.
         end do
     end do
-    compartment = 0
+    ncomp = 0
 
     ! Read in thermal properties first
     do ir = 2, inumr
@@ -542,28 +537,29 @@
         if (label=='COMPA') then
             if (countargs(lcarray)>=10) then
 
-                compartment = compartment + 1
-                if (compartment>nr) then
-                    write (logerr, 5062) compartment
+                ncomp = ncomp + 1
+                if (ncomp>nr) then
+                    write (logerr, 5062) ncomp
                     stop
                 endif
 
+                roomptr => roominfo(ncomp)
                 ! Name
-                compartmentnames(compartment) = lcarray(1)
+                roomptr%name = lcarray(1)
 
                 ! Size
-                room_width(compartment) = lrarray(2)
-                room_depth(compartment) = lrarray(3)
-                room_height(compartment) = lrarray(4)
-                cxabs(compartment) = lrarray(5)
-                cyabs(compartment) = lrarray(6)
-                floor_height(compartment) = lrarray(7)
+                roomptr%dx = lrarray(2)
+                roomptr%dy = lrarray(3)
+                roomptr%dz = lrarray(4)
+                cxabs(ncomp) = lrarray(5)
+                cyabs(ncomp) = lrarray(6)
+                floor_height(ncomp) = lrarray(7)
 
                 ! Ceiling
                 tcname = lcarray(8)
                 if (tcname/='OFF') then
-                    surface_on_switch(1,compartment) = .true.
-                    cname(1,compartment) = tcname
+                    surface_on_switch(1,ncomp) = .true.
+                    cname(1,ncomp) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
                 endif
@@ -571,8 +567,8 @@
                 ! floor
                 tcname = lcarray(9)
                 if (tcname/='OFF') then
-                    surface_on_switch(2,compartment) = .true.
-                    cname(2,compartment) = tcname
+                    surface_on_switch(2,ncomp) = .true.
+                    cname(2,ncomp) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
                 endif
@@ -580,23 +576,23 @@
                 ! walls
                 tcname = lcarray(10)
                 if (tcname/='OFF') then
-                    surface_on_switch(3,compartment) = .true.
-                    cname(3,compartment) = tcname
-                    surface_on_switch(4,compartment) = .true.
-                    cname(4,compartment) = tcname
+                    surface_on_switch(3,ncomp) = .true.
+                    cname(3,ncomp) = tcname
+                    surface_on_switch(4,ncomp) = .true.
+                    cname(4,ncomp) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
                 endif
 
                 ! If there are more than 10 arguments, it's the new format that includes grid spacing
                 if (countargs(lcarray)==13) then
-                    cxgrid(compartment) = lrarray(11)
-                    cygrid(compartment) = lrarray(12)
-                    czgrid(compartment) = lrarray(13)
+                    cxgrid(ncomp) = lrarray(11)
+                    cygrid(ncomp) = lrarray(12)
+                    czgrid(ncomp) = lrarray(13)
                 end if
 
                 ! Reset this each time in case this is the last entry
-                n = compartment+1
+                n = ncomp+1
             else
                 write (logerr,*) '***Error: Bad COMPA input. At least 10 arguments required.'
                 stop
@@ -712,6 +708,7 @@
             endif
             obpnt = numobjl + 1
             numobjl = obpnt
+            roomptr => roominfo(iroom)
 
             ! Only constrained fires
             objtyp(numobjl) = 2
@@ -723,15 +720,15 @@
             objpos(1,obpnt) = lrarray(2)
             objpos(2,obpnt) = lrarray(3)
             objpos(3,obpnt) = lrarray(4)
-            if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
+            if (objpos(1,obpnt)>roomptr%dx.or.objpos(2,obpnt)>roomptr%dy.or.objpos(3,obpnt)>roomptr%dz) then
                 write(logerr,5323) obpnt
                 stop
             endif
             obj_fpos(obpnt) = 1
-            if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
-                min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-            if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .and. &
-                min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+            if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .or. &
+                min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+            if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .and. &
+                min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
             fplume(numobjl) = lrarray(5)
             if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
@@ -947,14 +944,16 @@
         ! connections are bidirectional
 
         nw(j,i) = nw(i,j)
-        hh(jik) = min(room_height(j),max(0.0_eb,hhp(jik)-floor_height(j)))
+        roomptr => roominfo(j)
+        hh(jik) = min(roomptr%dz,max(0.0_eb,hhp(jik)-floor_height(j)))
         hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-floor_height(j)))
 
         ! assure ourselves that the connections are symmetrical
 
         hhp(jik) = hh(jik) + floor_height(j)
         hlp(jik) = hl(jik) + floor_height(j)
-        hh(iijk) = min(room_height(i),max(0.0_eb,hhp(iijk)-floor_height(i)))
+        roomptr => roominfo(i)
+        hh(iijk) = min(roomptr%dz,max(0.0_eb,hhp(iijk)-floor_height(i)))
         hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-floor_height(i)))
         
     ! DEADROOM dead_room_num connected_room_num
@@ -1209,6 +1208,7 @@
         endif
         obpnt = numobjl + 1
         numobjl = obpnt
+        roomptr => roominfo(iroom)
 
         ! Only constrained fires
         objtyp(numobjl) = 2
@@ -1220,15 +1220,15 @@
         objpos(1,obpnt) = lrarray(3)
         objpos(2,obpnt) = lrarray(4)
         objpos(3,obpnt) = lrarray(5)
-        if (objpos(1,obpnt)>room_width(iroom).or.objpos(2,obpnt)>room_depth(iroom).or.objpos(3,obpnt)>room_height(iroom)) then
+        if (objpos(1,obpnt)>roomptr%dx.or.objpos(2,obpnt)>roomptr%dy.or.objpos(3,obpnt)>roomptr%dz) then
             write(logerr,5323) obpnt
             stop
         endif
         obj_fpos(obpnt) = 1
-        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .or. &
-            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-        if (min(objpos(1,obpnt),room_width(iroom)-objpos(1,obpnt))<=mx_hsep .and. &
-            min(objpos(2,obpnt),room_depth(iroom)-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+        if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .or. &
+            min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+        if (min(objpos(1,obpnt),roomptr%dx-objpos(1,obpnt))<=mx_hsep .and. &
+            min(objpos(2,obpnt),roomptr%dy-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
         fplume(numobjl) = lrarray(6)
         if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
@@ -1331,7 +1331,8 @@
                     stpmax = 1.0_eb
                 endif
             endif
-            if (compartmentnames(i2)==' ') then
+            roomptr => roominfo(ir)
+            if (roomptr%name==' ') then
                 write(logerr,5344) i2
                 stop
             endif
@@ -1342,9 +1343,8 @@
                 write(*,*)
             endif
 
-            if(xdtect(ndtect,dxloc)>room_width(i2).or.xdtect(ndtect,dyloc)>room_depth(i2) &
-                .or.xdtect(ndtect,dzloc)>room_height(i2)) then
-                write(logerr,5339) ndtect,compartmentnames(i2)
+            if(xdtect(ndtect,dxloc)>roomptr%dx.or.xdtect(ndtect,dyloc)>roomptr%dy.or.xdtect(ndtect,dzloc)>roomptr%dz) then
+                write(logerr,5339) ndtect,roomptr%name
                 stop
             endif
 
@@ -1578,7 +1578,6 @@
         if (countargs(lcarray)>=1) then
             nvisualinfo = nvisualinfo + 1
             sliceptr => visual_info(nvisualinfo)
-
             if (lcarray(1)=='2-D') then
                 sliceptr%vtype = 1
             else if (lcarray(1)=='3-D') then
@@ -1605,7 +1604,8 @@
                     if (lcarray(2) =='X') then
                         sliceptr%axis = 1
                         if (sliceptr%roomnum>0) then
-                            if (sliceptr%position>room_width(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                            roomptr => roominfo(sliceptr%roomnum)
+                            if (sliceptr%position>roomptr%dx.or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
                                 stop
                             end if
@@ -1613,7 +1613,8 @@
                     else if (lcarray(2) =='Y') then
                         sliceptr%axis = 2
                         if (sliceptr%roomnum>0) then
-                            if (sliceptr%position>room_depth(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                            roomptr => roominfo(sliceptr%roomnum)
+                            if (sliceptr%position>roomptr%dy.or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
                                 stop
                             end if
@@ -1621,7 +1622,8 @@
                     else if (lcarray(2) =='Z') then
                         sliceptr%axis = 3
                         if (sliceptr%roomnum>0) then
-                            if (sliceptr%position>room_height(sliceptr%roomnum).or.sliceptr%position<0.0_eb) then
+                            roomptr => roominfo(sliceptr%roomnum)
+                            if (sliceptr%position>roomptr%dz.or.sliceptr%position<0.0_eb) then
                                 write (logerr, 5403) nvisualinfo
                                 stop
                             end if
@@ -1744,8 +1746,7 @@
     !              followed by CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH keywords (read in here)
     !     Arguments: objname: name of this fire object
     !                iroom:   compartment where this fire is located
-    !                ir:      current row in the input file.  We begin one row after this one
-    !                inumr:   number of rows in the input file
+    !                lrowcount: current row in the input file.  We begin one row after this one
     !                inumc:   number of columns in the input file
     !                iobj:    pointer to the fire object that will contain all the data we read in here
 
@@ -1763,6 +1764,7 @@
     character(5) :: label
     integer :: logerr = 3, midpoint = 1, base = 2, ir, i, ii, nret, countargs
     real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, area, flamelength
+    type(room_type), pointer :: roomptr
 
     ! there are eight required inputs for each fire
     lrarray = 0.0_eb
@@ -1869,9 +1871,10 @@
     call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
-    call positionobject(objpos,1,iobj,objrm(iobj),room_width,midpoint,mx_hsep)
-    call positionobject(objpos,2,iobj,objrm(iobj),room_depth,midpoint,mx_hsep)
-    call positionobject(objpos,3,iobj,objrm(iobj),room_height,base,mx_hsep)
+    roomptr => roominfo(objrm(iobj))
+    call positionobject(objpos,1,iobj,roomptr%dx,midpoint,mx_hsep)
+    call positionobject(objpos,2,iobj,roomptr%dy,midpoint,mx_hsep)
+    call positionobject(objpos,3,iobj,roomptr%dz,base,mx_hsep)
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -1980,7 +1983,7 @@
 
 ! --------------------------- positionobject -------------------------------------------
 
-    subroutine positionobject (xyz,index,opoint,rpoint,criterion,defaultposition,minimumseparation)
+    subroutine positionobject (xyz,index,opoint,pos_max,defaultposition,minimumseparation)
 
     !     routine: positionobject
     !     purpose: Position an object in a compartment
@@ -1988,7 +1991,7 @@
     !                index: 1, 2 or 3 for x, y or z
     !		         opoint: the object pointer
     !		         rpoint: the compartment
-    !		         criterion: the maximum extent
+    !		         pos_max: the maximum extent
     !		         defaultposition: to set to zero (base)(2) or midpoint(1)
     !		         minimumseparation: the closest the object can be to a wall
 
@@ -1996,14 +1999,14 @@
     use cshell, only: logerr
     implicit none
     
-    integer, intent(in) :: index, defaultposition, opoint,rpoint
-    real(eb), intent(in) :: minimumseparation, criterion(*)
+    integer, intent(in) :: index, defaultposition, opoint
+    real(eb), intent(in) :: minimumseparation, pos_max
     real(eb), intent(inout) :: xyz(3,0:*)
     
-    if ((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>criterion(rpoint))) then
+    if ((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>pos_max)) then
         select case (defaultposition)
         case (1) 
-            xyz(index,opoint) = criterion(rpoint)/2.0_eb
+            xyz(index,opoint) = pos_max/2.0_eb
         case (2) 
             xyz(index,opoint) = minimumseparation
         case default
@@ -2012,8 +2015,8 @@
         end select
     else if (xyz(index,opoint)==0.0_eb) then
         xyz(index,opoint) = minimumseparation
-    else if (xyz(index,opoint)==criterion(rpoint)) then
-        xyz(index,opoint) = criterion(rpoint)-minimumseparation
+    else if (xyz(index,opoint)==pos_max) then
+        xyz(index,opoint) = pos_max-minimumseparation
     endif
 
     return

@@ -206,6 +206,7 @@
     
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
+    type(room_type), pointer :: roomptr
 
     !    calculate min & max values for fan curve
 
@@ -271,7 +272,8 @@
             write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
             stop
         endif
-        hvelxt(ii) = min(room_height(i),max(0.0_eb,hvelxt(ii)))
+        roomptr => roominfo(i)
+        hvelxt(ii) = min(roomptr%dz,max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + floor_height(i)
     end do
 
@@ -503,6 +505,7 @@
     integer i, ii, iwall, iroom, itarg
     
     type(target_type), pointer :: targptr
+    type(room_type), pointer :: roomptr
 
     ! simplify and make initial pressure calculations consistent.  inside pressures
     ! were calculated using rho*g*h .  but outside pressures were calculated using
@@ -574,11 +577,10 @@
     ! establish default values for detector data
     do i = 1, ndtect
         iroom=ixdtect(i,droom)
-        if(xdtect(i,dxloc)<0.0_eb)xdtect(i,dxloc)=room_width(iroom)*.5_eb
-        if(xdtect(i,dyloc)<0.0_eb)xdtect(i,dyloc)=room_depth(iroom)*.5_eb
-        if(xdtect(i,dzloc)<0.0_eb)then
-            xdtect(i,dzloc)=ceiling_height(iroom)+xdtect(i,dzloc)
-        endif
+        roomptr => roominfo(iroom)
+        if(xdtect(i,dxloc)<0.0_eb) xdtect(i,dxloc)=roomptr%dx*0.5_eb
+        if(xdtect(i,dyloc)<0.0_eb) xdtect(i,dyloc)=roomptr%dy*0.5_eb
+        if(xdtect(i,dzloc)<0.0_eb) xdtect(i,dzloc)=roomptr%dz-mx_vsep
         tdspray = xdtect(i,dspray)
 
         ! if tdspray>0 then interpret it as a spray density and convert
@@ -638,8 +640,9 @@
 
     ! define ihxy in izhall (dimension that is longest)
     do i = 1, nm1
+        roomptr => roominfo(i)
         if(izhall(i,ishall)==1)then
-            if(room_depth(i)>room_width(i))then
+            if(roomptr%dy>roomptr%dx)then
                 izhall(i,ihxy) = 1
             else
                 izhall(i,ihxy) = 2
@@ -671,6 +674,7 @@
     real(eb) :: xlrg
     integer :: i, j, k, ivent, itarg, lsp, nfurn
     type(target_type), pointer :: targptr
+    type(room_type), pointer :: roomptr
 
     ! set some initialization - simple control stuff
     exset = .false.
@@ -738,19 +742,19 @@
     ! define the outside world as infinity
     xlrg = 1.0e+5_eb
     do i = 1, nr
-        room_depth(i) = xlrg
-        room_width(i) = xlrg
-        room_height(i) = xlrg
+        roomptr => roominfo(i)
+        roomptr%dx = xlrg
+        roomptr%dy = xlrg
+        roomptr%dz = xlrg
         ceiling_height(i) = xlrg
-        floor_height(i) = 0.0_eb
         floor_height(i) = 0.0_eb
         cxabs(i) = 0.0_eb
         cyabs(i) = 0.0_eb
         cxgrid(i) = 50
         cygrid(i) = 50
         czgrid(i) = 50
-        room_area(i) = room_width(i)*room_depth(i)
-        room_volume(i) = room_height(i)*room_area(i)
+        room_area(i) = roomptr%dx*roomptr%dy
+        room_volume(i) = roomptr%dz*room_area(i)
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qscnv(j,i) = 0.0_eb
@@ -1191,6 +1195,7 @@
     integer :: map6(6) = (/1,3,3,3,3,2/)
     
     type(target_type), pointer :: targptr
+    type(room_type), pointer :: roomptr
 
     ifail = 0
     do itarg = 1, ntarg
@@ -1202,6 +1207,7 @@
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
         endif
+        roomptr => roominfo(iroom)
         iwall = targptr%wall
         xloc = targptr%center(1)
         yloc = targptr%center(2)
@@ -1209,9 +1215,9 @@
         xxnorm = targptr%normal(1)
         yynorm = targptr%normal(2)
         zznorm = targptr%normal(3)
-        xsize = room_width(iroom)
-        ysize = room_depth(iroom)
-        zsize = ceiling_height(iroom)
+        xsize = roomptr%dx
+        ysize = roomptr%dy
+        zsize = roomptr%dz
 
         ! if the locator is -1, set to center of room on the floor
         if(xloc==-1.0_eb) xloc = 0.5_eb*xsize

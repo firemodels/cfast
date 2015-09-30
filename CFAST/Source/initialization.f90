@@ -824,11 +824,6 @@
     fpos(2) = -1.0_eb
     fpos(3) = -1.0_eb
 
-    ! set up default values for the chemistry
-    do i = 1, mxpts
-        hcratio(i) = onethird
-    end do
-
     ! Start with vents open: h for hvent, v for vvent, and m for mvent
     do i = 1,mxhvents
         qcvh(1,i) = 0.0_eb
@@ -858,8 +853,6 @@
         qcvm(3,i) = 0.0_eb
         qcvm(4,i) = 1.0_eb
     end do
-
-    hcratt = hcratio(1)
 
     ! turn hvac off initially
 

@@ -87,7 +87,7 @@ module cfast_main
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
         rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal), fopos(3,0:mxfire), &
-        toxict(nr,2,ns), femr(0:mxfire), hcratio(mxpts), hlp(mxhvents), hvextt(mxext,2), &
+        toxict(nr,2,ns), femr(0:mxfire), hlp(mxhvents), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
@@ -393,11 +393,7 @@ module params
 
     real(eb) :: qfc(2,nr), qscnv(nwal,nr), o2n2(ns), &
         volfru(nr), volfrl(nr), hvfrac(2,mxext), exterior_abs_pressure, &
-        hcratt, chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
-
-    !common qfr, qfc, qscnv, qdout, qsradw, hmflow, mapltw, qdin, exterior_abs_pressure, exta, exra, qcvent, o2n2, hwjdot, &
-    !    htot, htflow, htfnet, volfru, volfrl, hvfrac, hcratt, ihmlar, hvmfsys,dhvprsys,hvtm,hvdara,hvt,chv,ductcv, &
-    !    exset, allowed, izhvmapi,izhvmape,izhvie,nhvpvar,nhvtvar, izhvsys,izhvbsys,nhvsys
+        chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
 
 end module params
 

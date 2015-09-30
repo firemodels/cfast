@@ -107,10 +107,6 @@
             xfire(nfire,f_objct) = objhct
             xfire(nfire,f_ysoot) = y_soot
             xfire(nfire,f_yco) = y_co
-            !xfire(nfire,15) = hcratt
-            !xfire(nfire,16) = ocratt
-            !xfire(nfire,17) = clfrat
-            !xfire(nfire,18) = cnfrat
             xfire(nfire,f_obj_length) = objclen(iobj)
             xfire(nfire,f_obj_area) = oareat
             nobj = nobj + 1
@@ -1276,7 +1272,7 @@
     ! of avagadro's number (so you can't have less than an atom of a species
     data aweigh, aweigh7 /28.0_eb, 32.0_eb, 44.0_eb, 28.0_eb, 27.0_eb, 37.0_eb, 12.0_eb, 18.0_eb, 12.0_eb, 0.0_eb, 0.0_eb, 12.0_eb/
     data avagad /1.66e-24_eb/
-    aweigh(7) = aweigh7*(1.0_eb+hcratt)
+    aweigh(7) = aweigh7
 
     do i = 1, nm1
         v(upper) = zzvol(i,upper)

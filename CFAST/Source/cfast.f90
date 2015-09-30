@@ -418,7 +418,7 @@
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
         ! then we need the output now
         call remap_fires (nfires)
-        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, floor_height,  &
+        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1,  &
              n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, 5004)
@@ -522,8 +522,8 @@
                 firstpassforsmokeview = .false.            
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
-                call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, cxabs, cyabs, &
-                    floor_height, n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, itmstp)
+                call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, &
+                    n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, itmstp)
                 call output_smokeview_header (version,nm1,nfires)
             endif
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
@@ -1369,12 +1369,9 @@
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
             
-            roomptr%zflor = floor_height(iroom)
-            roomptr%zceil = ceiling_height(iroom)
+            roomptr%zflor = roomptr%z0
+            roomptr%zceil = roomptr%z1
             
-            roomptr%x0 = cxabs(iroom)
-            roomptr%y0 = cyabs(iroom)
-            roomptr%z0 = floor_height(iroom)
             roomptr%x1 = roomptr%x0 + roomptr%width
             roomptr%y1 = roomptr%y0 + roomptr%depth
             roomptr%z1 = roomptr%z0 + roomptr%height

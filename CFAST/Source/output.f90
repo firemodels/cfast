@@ -751,12 +751,11 @@
     write (iofilo,5000)
     do i = 1, nm1
         roomptr => roominfo(i)
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%width, roomptr%depth, roomptr%height, &
-            ceiling_height(i), floor_height(i)
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%width, roomptr%depth, roomptr%height, roomptr%z0, roomptr%z1
     end do
     return
 5000 format (//,'COMPARTMENTS',//, &
-    'Compartment  Name                Width        Depth        Height       Ceiling      Floor     ',/, &
+    'Compartment  Name                Width        Depth        Height       Floor        Ceiling   ',/, &
     '                                                                        Height       Height    ',/, & 
     33x,5('(m)',10x),/,' ',96('-'))
 5010 format (i5,8x,a13,5(f12.2,1x))
@@ -816,15 +815,15 @@
                     if (j==n) cjout = ' Outside'
                     csout = 'Round'
                     if (vshape(i,j)==2) csout = 'Square'
+                    roomptr => roominfo(j)
                     if (j<n) then
-                        roomptr => roominfo(j)
                         hrx = roomptr%height
-                        hrpx = ceiling_height(j)
+                        hrpx = roomptr%z1
                     else
-                        hrx = floor_height(i)
-                        hrpx = floor_height(i)
+                        hrx = roomptr%z0
+                        hrpx = roomptr%z0
                     endif
-                    write (iofilo,5050) ciout, cjout, csout, vvarea(i,j), hrx,hrpx
+                    write (iofilo,5050) ciout, cjout, csout, vvarea(i,j), hrx, hrpx
                 endif
             end do
         end do
@@ -1159,10 +1158,12 @@
 
     integer, intent(in) :: detectornumber
     real(eb), intent(out) :: positionvector(*)
+    type(room_type), pointer :: roomptr
 
-    positionvector(1) = xdtect(detectornumber,dxloc) + cxabs(ixdtect(detectornumber,droom))
-    positionvector(2) = xdtect(detectornumber,dyloc) + cyabs(ixdtect(detectornumber,droom))
-    positionvector(3) = xdtect(detectornumber,dzloc) + floor_height(ixdtect(detectornumber,droom))
+    roomptr => roominfo(ixdtect(detectornumber,droom))
+    positionvector(1) = xdtect(detectornumber,dxloc) + roomptr%x0
+    positionvector(2) = xdtect(detectornumber,dyloc) + roomptr%y0
+    positionvector(3) = xdtect(detectornumber,dzloc) + roomptr%z0
     positionvector(4) = 0.0_eb
     positionvector(5) = 0.0_eb
     positionvector(6) = -1.0_eb
@@ -1186,16 +1187,19 @@
 
     integer, intent(in) :: itarg
     real(eb), intent(out) :: positionvector(*)
-    
+
+    type(room_type), pointer :: roomptr    
     type(target_type), pointer :: targptr
 
     targptr => targetinfo(itarg)
+    roomptr => roominfo(targptr%room)
+    
     positionvector(1:3) = targptr%center(1:3)
     positionvector(4:6) = targptr%normal(1:3)
 
-    positionvector(1) = positionvector(1) + cxabs(targptr%room)
-    positionvector(2) = positionvector(2) + cyabs(targptr%room)
-    positionvector(3) = positionvector(3) + floor_height(targptr%room)
+    positionvector(1) = positionvector(1) + roomptr%x0
+    positionvector(2) = positionvector(2) + roomptr%y0
+    positionvector(3) = positionvector(3) + roomptr%z0
 
     return
 

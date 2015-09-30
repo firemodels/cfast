@@ -274,7 +274,7 @@
         endif
         roomptr => roominfo(i)
         hvelxt(ii) = min(roomptr%height,max(0.0_eb,hvelxt(ii)))
-        hvght(j) = hvelxt(ii) + floor_height(i)
+        hvght(j) = hvelxt(ii) + roomptr%z0
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
@@ -514,8 +514,9 @@
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.  
     do i = 1, nm1
-        interior_rel_pressure(i) = -interior_density*grav_con*floor_height(i)
-        exterior_rel_pressure(i) = -exterior_density*grav_con*floor_height(i)
+        roomptr => roominfo(i)
+        interior_rel_pressure(i) = -interior_density*grav_con*roomptr%z0
+        exterior_rel_pressure(i) = -exterior_density*grav_con*roomptr%z0
     end do
     exterior_rel_pressure(n) = 0.0_eb
 
@@ -746,10 +747,12 @@
         roomptr%width = xlrg
         roomptr%depth = xlrg
         roomptr%height = xlrg
-        ceiling_height(i) = xlrg
-        floor_height(i) = 0.0_eb
-        cxabs(i) = 0.0_eb
-        cyabs(i) = 0.0_eb
+        roomptr%x0 = 0.0_eb
+        roomptr%y0 = 0.0_eb
+        roomptr%z0 = 0.0_eb
+        roomptr%x1 = xlrg
+        roomptr%y1 = xlrg
+        roomptr%z1 = xlrg
         cxgrid(i) = 50
         cygrid(i) = 50
         czgrid(i) = 50

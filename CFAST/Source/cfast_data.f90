@@ -82,7 +82,7 @@ module cfast_main
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), oplume(3,mxfires),  &
         qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), room_area(nr), &
-        ceiling_height(nr), room_volume(nr), floor_height(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
+        room_volume(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
         radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
@@ -93,7 +93,7 @@ module cfast_main
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
         duct_length(mxduct),hvconc(mxbranch,ns),qcvpp(4,nr,nr), hvexcn(mxext,ns,2),objpos(3,0:mxfires),fpos(3),hcrf(mxpts), &
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
-        farea(0:mxfire),cxabs(nr),cyabs(nr)
+        farea(0:mxfire)
 
     real(eb) :: cp, deltat, tracet(2,mxext)
     real(eb) :: gamma, hcomba, traces(2,mxext)

@@ -1,7 +1,7 @@
 
 ! --------------------------- output_smokeview -------------------------------------------
 
-subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vvents, nfires,froom_number,&
+subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms, n_hvents, n_vvents, nfires, froom_number,&
    fx0,fy0,fz0, ntarg, stime, nscount)
     ! 
     ! this routine creates the .smv file used by smokeview to determine size and location of
@@ -37,7 +37,6 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, n_hvents, nfires, n_vvents, ntarg
-    real(eb), dimension(nrooms), intent(in) :: x0, y0, z0
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
     
@@ -50,7 +49,6 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
     integer :: ifrom, ito, iface
 
     integer ibar, jbar, kbar
-    real(eb) :: x1, y1, z1
     integer :: j
     type(room_type), pointer :: rm
     type(slice_type), pointer :: sf
@@ -84,7 +82,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
        
        write(13,"(a,1x)")"ROOM"
        write(13,10) rm%width, rm%depth, rm%height
-       write(13,10) x0(i), y0(i), z0(i)
+       write(13,10) rm%x0, rm%y0, rm%z0
 10     format(1x,e11.4,1x,e11.4,1x,e11.4)
 
        if(nsliceinfo.gt.0)then
@@ -94,12 +92,9 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
 
           write(13,"(a,1x)")"GRID"
           write(13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
-          x1 = x0(i) + rm%width
-          y1 = y0(i) + rm%depth
-          z1 = z0(i) + rm%height
            
           write(13,"(a,1x)")"PDIM"
-          write(13,"(9(f14.5,1x))")x0(i),x1,y0(i),y1,z0(i),z1,0.0_eb,0.0_eb,0.0_eb
+          write(13,"(9(f14.5,1x))")rm%x0,rm%x1,rm%y0,rm%y1,rm%z0,rm%z1,0.0_eb,0.0_eb,0.0_eb
           write(13,"(a,1x)")"TRNX"
           write(13,"(1x,i1)")0
           do j = 0, ibar

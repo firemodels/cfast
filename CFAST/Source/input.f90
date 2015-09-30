@@ -97,6 +97,15 @@
         write(logerr,5022) interior_temperature
         stop
     endif
+    
+    ! Compartment geometry related data 
+    nm1 = n - 1
+    do i = 1, nm1
+        roomptr => roominfo(i)
+        roomptr%x1 = roomptr%x0 + roomptr%width
+        roomptr%y1 = roomptr%y0 + roomptr%depth
+        roomptr%z1 = roomptr%z0 + roomptr%height
+    end do
 
     ! We now know what output is going to be generated, so create the files
     call openoutputfiles
@@ -105,17 +114,10 @@
     exterior_density = exterior_abs_pressure/exterior_temperature/rgas
 
     ! initialize the targets. 
-    nm1 = n - 1
     call inittarg
 
     ! now calculate the offsets - the order is important
     call offset
-
-    ! floor plan dependent parameters
-    do i = 1, nm1
-        roomptr => roominfo(i)
-        ceiling_height(i) = roomptr%height + floor_height(i)
-    end do
 
     ! check and/or set heat source fire position
     if (heatfl) then
@@ -146,8 +148,8 @@
             if (nwv(itop,ibot)/=0.or.nwv(ibot,itop)/=0) then
 
                 ! see which room is on top (if any) - this is like a bubble sort
-                deps1 = floor_height(itop) - ceiling_height(ibot)
-                deps2 = floor_height(ibot) - ceiling_height(itop)
+                deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
+                deps2 = roominfo(ibot)%z0 - roominfo(itop)%z1
                 if (nwv(itop,ibot)/=1.or.abs(deps1)>=mx_vsep) then
                     if (nwv(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
                         if (nwv(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
@@ -216,8 +218,8 @@
         endif
 
         ! floor of one room must be adjacent to ceiling of the other
-        dwall1 = abs(floor_height(iroom1) - ceiling_height(iroom2))
-        dwall2 = abs(floor_height(iroom2) - ceiling_height(iroom1))
+        dwall1 = abs(roominfo(iroom1)%z0 - roominfo(iroom2)%z1)
+        dwall2 = abs(roominfo(iroom2)%z0 - roominfo(iroom1)%z1)
         if(dwall1<mx_vsep.or.dwall2<=mx_vsep)then
             if(dwall1<mx_vsep)then
                 izswal(ii,w_from_wall) = 2
@@ -551,9 +553,9 @@
                 roomptr%width = lrarray(2)
                 roomptr%depth = lrarray(3)
                 roomptr%height = lrarray(4)
-                cxabs(ncomp) = lrarray(5)
-                cyabs(ncomp) = lrarray(6)
-                floor_height(ncomp) = lrarray(7)
+                roomptr%x0 = lrarray(5)
+                roomptr%y0 = lrarray(6)
+                roomptr%z0 = lrarray(7)
 
                 ! Ceiling
                 tcname = lcarray(8)
@@ -938,23 +940,24 @@
         qcvh(2,iijk) = initialopening
         qcvh(4,iijk) = initialopening
 
-        hhp(iijk) = hh(iijk) + floor_height(i)
-        hlp(iijk) = hl(iijk) + floor_height(i)
+        roomptr => roominfo(i)
+        hhp(iijk) = hh(iijk) + roomptr%z0
+        hlp(iijk) = hl(iijk) + roomptr%z0
 
         ! connections are bidirectional
 
         nw(j,i) = nw(i,j)
         roomptr => roominfo(j)
-        hh(jik) = min(roomptr%height,max(0.0_eb,hhp(jik)-floor_height(j)))
-        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-floor_height(j)))
+        hh(jik) = min(roomptr%height,max(0.0_eb,hhp(jik)-roomptr%z0))
+        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomptr%z0))
 
         ! assure ourselves that the connections are symmetrical
 
-        hhp(jik) = hh(jik) + floor_height(j)
-        hlp(jik) = hl(jik) + floor_height(j)
+        hhp(jik) = hh(jik) + roomptr%z0
+        hlp(jik) = hl(jik) + roomptr%z0
         roomptr => roominfo(i)
-        hh(iijk) = min(roomptr%height,max(0.0_eb,hhp(iijk)-floor_height(i)))
-        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-floor_height(i)))
+        hh(iijk) = min(roomptr%height,max(0.0_eb,hhp(iijk)-roomptr%z0))
+        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-roomptr%z0))
         
     ! DEADROOM dead_room_num connected_room_num
     ! pressure in dead_room_num is not solved.  pressure for this room

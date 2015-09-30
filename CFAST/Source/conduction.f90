@@ -106,12 +106,12 @@ module conduction_routines
                         frac = zzhtfrac(iroom,j)
                         if(iwall==3)then
                             yb = zzhlay(iroom,lower)
-                            yt = roomptr%yceil
+                            yt = roomptr%zceil
                         elseif(iwall==4)then
                             yb = 0.0_eb
                             yt = zzhlay(iroom,lower)
                         endif
-                        dflor = roominfo(j)%yflor - roomptr%yflor
+                        dflor = roominfo(j)%zflor - roomptr%zflor
                         yy = zzhlay(j,lower) + dflor
                         if(j/=nm1+1)then
                             if(yy>yt)then

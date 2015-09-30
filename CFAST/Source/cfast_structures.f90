@@ -9,7 +9,7 @@ module cfast_types
         
         real(eb) :: width, depth, height    ! width, depth, and height for the compartment
         
-        real(eb) :: yflor, yceil
+        real(eb) :: zflor, zceil
         real(eb) :: wall_center(3,10)
         real(eb) :: x0, y0, z0
         real(eb) :: x1, y1, z1

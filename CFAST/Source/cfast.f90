@@ -1346,7 +1346,7 @@
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, vminfrac 
     real(eb) :: xdelt, tstop, zzu, zzl
-    real(eb) :: ylay, ytarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv
+    real(eb) :: zlay, ztarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv
     real(eb) :: xt, xtemp, xh2o, ptemp, epscut
     real(eb) :: xmax, xmid, ymax, ymid, zmax
     
@@ -1369,8 +1369,8 @@
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
             
-            roomptr%yflor = floor_height(iroom)
-            roomptr%yceil = ceiling_height(iroom)
+            roomptr%zflor = floor_height(iroom)
+            roomptr%zceil = ceiling_height(iroom)
             
             roomptr%x0 = cxabs(iroom)
             roomptr%y0 = cyabs(iroom)
@@ -1387,7 +1387,7 @@
             xmid = xmax/2.0_eb
             ymax = roomptr%depth
             ymid = ymax/2.0_eb
-            zmax = roomptr%yceil
+            zmax = roomptr%zceil
 
             ! ceiling
             roomptr%wall_center(1,1) = xmid
@@ -1434,8 +1434,8 @@
 
         roomptr=>roominfo(n)
         
-        roomptr%yflor = 0.0_eb
-        roomptr%yceil = 100000.0_eb
+        roomptr%zflor = 0.0_eb
+        roomptr%zceil = 100000.0_eb
         
         zzvol(n,upper) = 0.0_eb
         zzvol(n,lower) = 100000.0_eb
@@ -1738,9 +1738,9 @@
             ! (other coordinates are static and are defined earlier)
 
             do i = 1, 4
-                ylay = zzhlay(iroom,lower)
-                roomptr%wall_center(3,i+1) =  (roomptr%yceil+ylay)/2.0_eb
-                roomptr%wall_center(3,i+5) = ylay/2.0_eb
+                zlay = zzhlay(iroom,lower)
+                roomptr%wall_center(3,i+1) =  (roomptr%zceil+zlay)/2.0_eb
+                roomptr%wall_center(3,i+5) = zlay/2.0_eb
             end do
 
             ! Eliminate very small noise in the pressure equation. This was added to correct
@@ -1770,9 +1770,9 @@
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
             iroom = targptr%room
-            ylay = zzhlay(iroom,lower)
-            ytarg = targptr%center(3)
-            if(ytarg>=ylay)then
+            zlay = zzhlay(iroom,lower)
+            ztarg = targptr%center(3)
+            if(ztarg>=zlay)then
                 targptr%layer = upper
             else
                 targptr%layer = lower

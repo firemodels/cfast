@@ -29,7 +29,7 @@
 
     real(eb) :: conl(mxfprd,2), conu(mxfprd,2), pmix(mxfprd)
     real(eb) :: uflw3(2,mxfprd+2,2), uflw2(2,mxfprd+2,2)
-    real(eb) :: yflor(2), yceil(2), ylay(2), pflor(2)
+    real(eb) :: zflor(2), zceil(2), zlay(2), pflor(2)
     real(eb) :: denl(2), denu(2), tu(2), tl(2)
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
     real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
@@ -82,13 +82,13 @@
                 end do
 
                 ! setup data structures for from and to room
-                call getvars(iroom1,iroom2,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+                call getvars(iroom1,iroom2,nprod,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
 
                 ! convert vent dimensions to absolute dimensions
-                yvbot = ventptr%sill + yflor(1)
-                yvtop = ventptr%soffit + yflor(1)
-                ylay(1) = ylay(1) + yflor(1)
-                ylay(2) = ylay(2) + yflor(2)
+                yvbot = ventptr%sill + zflor(1)
+                yvtop = ventptr%soffit + zflor(1)
+                zlay(1) = zlay(1) + zflor(1)
+                zlay(2) = zlay(2) + zflor(2)
 
                 !  use new interpolator to find vent opening fraction
                 im = min(iroom1,iroom2)
@@ -99,7 +99,7 @@
                 avent = height*width
 
                 if (avent>=1.0e-10_eb) then
-                    call vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
+                    call vent(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
                         epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
                         yvelev,xmslab,nslab)
 
@@ -113,12 +113,12 @@
 
                     if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
 
-                    call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
+                    call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
 
                     !  calculate entrainment type mixing at the vents
 
                     if (option(fentrain)==on) then
-                        call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
+                        call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
                             uflw3,vsas(1,i),vasa(1,i))
                         do ilay = 1, 2
                             ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
@@ -196,7 +196,7 @@
 
     ! --------------------------- spill_plume -------------------------------------------
 
-    subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,ylay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,uflw3,vsas,vasa)
+    subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,uflw3,vsas,vasa)
 
     !     routine: spill_plume
     !     purpose:
@@ -207,7 +207,7 @@
     !                nslab  - number of slabs between bottom and top of vent
     !                tu     - upper layer temperature in each room [k]
     !                tl     - lower layer temperature in each room [k]
-    !                ylay   - height of layer in each room above absolute reference elevation [m]
+    !                zlay   - height of layer in each room above absolute reference elevation [m]
     !                uflw3(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or
     !                         lower (j=1) layer of room i due to entrainment
     !                uflw3(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or
@@ -220,7 +220,7 @@
     implicit none
 
     integer, intent(in) :: dirs12(10), nprod, nslab, mxfprd
-    real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, ylay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
+    real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
     real(eb), intent(out) :: uflw3(2,mxfprd+2,2), vsas(2), vasa(2), pmix(mxfprd)
 
     integer :: i, iprod,n , ifrom, ito
@@ -240,8 +240,8 @@
 
         ! eliminate cases where entrainment does not occur, i.e. a slab which is adjacent to the upper layer on
         !    both sides or a slab which is adjacent to the lower layer on both sides
-        if (yslab(n)<ylay(1).or.yslab(n)<ylay(2)) then
-            if (yslab(n)>=ylay(1).or.yslab(n)>=ylay(2)) then
+        if (yslab(n)<zlay(1).or.yslab(n)<zlay(2)) then
+            if (yslab(n)>=zlay(1).or.yslab(n)>=zlay(2)) then
 
                 ! slabs with no flow cause no entrainment
                 if (xmslab(n)/=0.0_eb) then
@@ -258,7 +258,7 @@
                     endif
 
                     ! determine temperature and product concentrations of entrained flow
-                    if (yslab(n)<ylay(ito)) then
+                    if (yslab(n)<zlay(ito)) then
                         tmix = tl(ito)
                         do iprod = 1, nprod
                             pmix(iprod) = conl(iprod,ito)
@@ -271,11 +271,11 @@
                     endif
 
                     ! compute the size of the entrained mass flow
-                    if (yslab(n)>=ylay(ifrom)) then
+                    if (yslab(n)>=zlay(ifrom)) then
 
                         ! into upper
                         if (tu(ifrom)>tl(ito).and.xmslab(n)/=0.0_eb) then
-                            zd = max(0.0_eb,ylay(ito)-max(yvbot,ylay(ifrom)))
+                            zd = max(0.0_eb,zlay(ito)-max(yvbot,zlay(ifrom)))
                             call poreh_plume (tu(ifrom),tl(ito),xmslab(n),zd,width,uflw3(ito,m,u))
                             uflw3(ito,m,l) = -uflw3(ito,m,u)
                             vsas(ito) = uflw3(ito,m,u)
@@ -284,11 +284,11 @@
 
                         ! into lower
                         if (tl(ifrom)<tu(ito).and.xmslab(n)/=0.0_eb) then
-                            ! zd = max(0.0_eb,ylay(ifrom)-max(yvbot,ylay(ito)))
+                            ! zd = max(0.0_eb,zlay(ifrom)-max(yvbot,zlay(ito)))
 
                             ! need to re-work distance zd for both into upper and into upper case.
                             ! the above doesn't work for all cases
-                            zd = min(yvtop,ylay(ifrom)) - max(ylay(ito),yvbot)
+                            zd = min(yvtop,zlay(ifrom)) - max(zlay(ito),yvbot)
                             call poreh_plume (tu(ito),tl(ifrom),xmslab(n),zd,width,uflw3(ito,m,l))
 
                             ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment
@@ -416,14 +416,14 @@
 
     ! --------------------------- vent -------------------------------------------
 
-    subroutine vent(yflor,ylay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
+    subroutine vent(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
         vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
     !     routine: vent
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
     !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing
     !              the two-layer environment in each of the two rooms and other input data calculated in subroutine comwl1.
-    !     arguments: yflor - height of floor above absolute reference elevation [m]
-    !                ylay  - height of layer above absolute reference elevation [m]
+    !     arguments: zflor - height of floor above absolute reference elevation [m]
+    !                zlay  - height of layer above absolute reference elevation [m]
     !                tu    - upper layer temperature [k]
     !                tl    - lower layer temperature [k]
     !                denl  - lower layer density [kg/m**3]
@@ -459,7 +459,7 @@
     integer, intent(in) :: nprod, mxfprd, mxfslab
     integer, intent(out) :: nslab, dirs12(*)
 
-    real(eb), intent(in) :: yflor(*), ylay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
+    real(eb), intent(in) :: zflor(*), zlay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
     real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(mxfprd,2), conu(mxfprd,2),  epsp
 
     real(eb), intent(out) :: yvelev(*), dpv1m2(10)
@@ -472,10 +472,10 @@
     real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, r1m8, sum, ys
 
     ! create initial elevation height array (ignoring neutral planes)
-    call getelev(yvbot,yvtop,ylay,yelev,nelev)
+    call getelev(yvbot,yvtop,zlay,yelev,nelev)
 
     ! find pressure drops at above elevations
-    call delp(yelev,nelev,yflor,ylay,denl,denu,pflor,epsp,dp1m2)
+    call delp(yelev,nelev,zflor,zlay,denl,denu,pflor,epsp,dp1m2)
 
     ! find neutral planes
 
@@ -525,7 +525,7 @@
         endif
 
         ! determine whether temperature and density properties should come from upper or lower layer
-        if (yslab(n)<=ylay(jroom)) then
+        if (yslab(n)<=zlay(jroom)) then
             tslab(n) = tl(jroom)
             rslab(n) = denl(jroom)
             do iprod = 1, nprod
@@ -570,25 +570,25 @@
 
         ! construct cfast data structures ss, sa, as, aa
         ys = yslab(n)
-        if (ys>max(ylay(1),ylay(2))) then
+        if (ys>max(zlay(1),zlay(2))) then
             if (dirs12(n)>0) then
                 vss(1) = xmslab(n)
             else
                 vss(2) = xmslab(n)
             endif
-        else if (ys<min(ylay(1),ylay(2))) then
+        else if (ys<min(zlay(1),zlay(2))) then
             if (dirs12(n)>0) then
                 vaa(1) = xmslab(n)
             else
                 vaa(2) = xmslab(n)
             endif
-        else if (ys>ylay(1)) then
+        else if (ys>zlay(1)) then
             if (dirs12(n)>0) then
                 vsa(1) = xmslab(n)
             else
                 vas(2) = xmslab(n)
             endif
-        else if (ys>ylay(2)) then
+        else if (ys>zlay(2)) then
             if (dirs12(n)>0) then
                 vas(1) = xmslab(n)
             else
@@ -601,18 +601,18 @@
 
     ! --------------------------- getelev -------------------------------------------
 
-    subroutine getelev(yvbot,yvtop,ylay,yelev,nelev)
+    subroutine getelev(yvbot,yvtop,zlay,yelev,nelev)
     use precision_parameters
     implicit none
 
     integer, intent(out) :: nelev
-    real(eb), intent(in) :: ylay(*), yvbot, yvtop
+    real(eb), intent(in) :: zlay(*), yvbot, yvtop
     real(eb), intent(out) :: yelev(*)
 
     real(eb) :: ymin, ymax
 
-    ymin = min(ylay(1),ylay(2))
-    ymax = max(ylay(1),ylay(2))
+    ymin = min(zlay(1),zlay(2))
+    ymax = max(zlay(1),zlay(2))
     if (ymax>=yvtop.and.(ymin>=yvtop.or.ymin<=yvbot)) then
         nelev = 2
         yelev(1) = yvbot
@@ -645,15 +645,15 @@
 
     ! --------------------------- getvars -------------------------------------------
 
-    subroutine getvars(from_room,to_room,nprod,yflor,yceil,ylay,pflor,denl,denu,conl,conu,tl,tu)
+    subroutine getvars(from_room,to_room,nprod,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
 
     !     routine: getvar
     !     purpose: routine to interface between global data structures and natural vent data structures.
     !     arguments: ivent - vent number
     !                iroom - room number
-    !                yflor   height of floor above absolute reference elevation [m]
-    !                yceil - height of ceiling above absolute reference elevation [m]
-    !                ylay    height of layer above absolute reference elevation [m]
+    !                zflor   height of floor above absolute reference elevation [m]
+    !                zceil - height of ceiling above absolute reference elevation [m]
+    !                zlay    height of layer above absolute reference elevation [m]
     !                pflor   pressure at floor relative to ambient [p]
     !                denl    density of lower layer [kg/m**3]
     !                denu    density of upper layer [kg/m**3]
@@ -670,7 +670,7 @@
 
     integer, intent(in) :: from_room, to_room, nprod
     real(eb), intent(out) :: conl(mxfprd,2), conu(mxfprd,2)
-    real(eb), intent(out) :: yflor(2), yceil(2), ylay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
+    real(eb), intent(out) :: zflor(2), zceil(2), zlay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
 
     integer :: up, iprod, ip, room_index(2), iroom, i
 
@@ -685,10 +685,10 @@
         up = upper
         iroom = room_index(i)
         roomptr=>roominfo(iroom)
-        yflor(i) = roomptr%yflor
-        yceil(i) = roomptr%yceil
+        zflor(i) = roomptr%zflor
+        zceil(i) = roomptr%zceil
         pflor(i) = zzrelp(iroom)
-        ylay(i) = zzhlay(iroom,lower)
+        zlay(i) = zzhlay(iroom,lower)
         denu(i) = zzrho(iroom,upper)
         denl(i) = zzrho(iroom,lower)
         do iprod = 1, nprod
@@ -705,7 +705,7 @@
 
     ! --------------------------- flogo -------------------------------------------
 
-    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,ylay,qslab,pslab,mxfprd,nprod,mxfslab,mflows,uflw2)
+    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,mflows,uflw2)
 
     !     routine: flogo
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
@@ -718,7 +718,7 @@
     !                tslab  - temperature of slabs [K]
     !                nslab  - number of slabs between bottom and top of vent
     !                tu,tl  - upper and lower layer temperatures in rooms 1,2
-    !                ylay   - height of layer in each room above absolute reference elevation [m]
+    !                zlay   - height of layer in each room above absolute reference elevation [m]
     !                qslab  - enthalpy flow rate in each slab [w]
     !                pslab  - flow rate of product in each slab [(unit of product/s]
     !                mxfprd  - maximum number of products currently available.
@@ -741,7 +741,7 @@
 
     integer, intent(in) :: dirs12(*)
     integer, intent(in) :: nprod, nslab, mxfprd, mxfslab
-    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), ylay(*), pslab(mxfslab,*), tu(*), tl(*)
+    real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), zlay(*), pslab(mxfslab,*), tu(*), tl(*)
     real(eb), intent(out) :: mflows(2,2,2), uflw2(2,mxfprd+2,2)
 
     integer :: i, iprod, n, ifrom, ito, ilay
@@ -797,7 +797,7 @@
         qterm = qslab(n)
 
         ! take it out of the origin room
-        if (yslab(n)>=ylay(ifrom)) then
+        if (yslab(n)>=zlay(ifrom)) then
             mflows(ifrom,u,2) = mflows(ifrom,u,2) + xmterm
             uflw2(ifrom,m,u) = uflw2(ifrom,m,u) - xmterm
             uflw2(ifrom,q,u) = uflw2(ifrom,q,u) - qterm
@@ -829,7 +829,7 @@
 
     ! --------------------------- delp -------------------------------------------
 
-    subroutine delp(y,nelev,yflor,ylay,denl,denu,pflor,epsp,dp)
+    subroutine delp(y,nelev,zflor,zlay,denl,denu,pflor,epsp,dp)
 
     !     routine: delp
     !     purpose: calculation of the absolute hydrostatic pressures at a specified elevation in each of two adjacent
@@ -837,8 +837,8 @@
     !              hydrostatic pressures above a specified absolute reference pressure.
     !     arguments: y     - vector of heights above absolute reference elevation where pressure difference is to be calculated [m]
     !                nelev - number of heights to be calculated
-    !                yflor - height of floor in each room above absolute reference elevation [m]
-    !                ylay  - height of layer in each room above absolute reference elevation [m]
+    !                zflor - height of floor in each room above absolute reference elevation [m]
+    !                zlay  - height of layer in each room above absolute reference elevation [m]
     !                denl  - lower layer density in each room [kg/m**3]
     !                denu  - upper layer density in each room [kg/m**3]
     !                pflor - pressure at base of each room above absolute reference pressure [kg/(m*s**2) = pascal]
@@ -848,7 +848,7 @@
     implicit none
 
     integer, intent(in) :: nelev
-    real(eb), intent(in) :: y(*),  yflor(*), ylay(*), denl(*), denu(*), pflor(*), epsp
+    real(eb), intent(in) :: y(*),  zflor(*), zlay(*), denl(*), denu(*), pflor(*), epsp
     real(eb), intent(out) :: dp(*)
 
     real(eb) :: proom(2), gdenl(2), gdenu(2), ygden(2)
@@ -856,21 +856,21 @@
     real(eb) :: dp1, dp2, epscut, dpold, zz
 
     do iroom = 1, 2
-        ygden(iroom) = -(ylay(iroom)-yflor(iroom))*denl(iroom)*grav_con
+        ygden(iroom) = -(zlay(iroom)-zflor(iroom))*denl(iroom)*grav_con
         gdenl(iroom) = -denl(iroom)*grav_con
         gdenu(iroom) = -denu(iroom)*grav_con
     end do
 
     do i = 1, nelev
         do iroom = 1, 2
-            if (yflor(iroom)<=y(i).and.y(i)<=ylay(iroom)) then
+            if (zflor(iroom)<=y(i).and.y(i)<=zlay(iroom)) then
 
                 ! the height, y, is in the lower layer
-                proom(iroom) = (y(i)-yflor(iroom))*gdenl(iroom)
-            else if (y(i)>ylay(iroom)) then
+                proom(iroom) = (y(i)-zflor(iroom))*gdenl(iroom)
+            else if (y(i)>zlay(iroom)) then
 
                 ! the height, y, is in the upper layer
-                proom(iroom) = ygden(iroom) + gdenu(iroom)*(y(i) - ylay(iroom))
+                proom(iroom) = ygden(iroom) + gdenu(iroom)*(y(i) - zlay(iroom))
             else
                 proom(iroom) = 0.0_eb
             endif

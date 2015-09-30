@@ -394,7 +394,7 @@ contains
     real(eb), target :: room_verts(3,12), solid_angle_front_verts(3,8), solid_angle_back_verts(3,8)
     real(eb), pointer, dimension(:) :: v1, v2, v3
     real(eb) :: factor, d1, d2, d3, t1(3), t2(3), t3(3), v0(3)
-    real(eb) :: sum_front, sum_back, solid_angle, ylay
+    real(eb) :: sum_front, sum_back, solid_angle, zlay
     
     integer :: nsolid_front_verts, nsolid_back_verts
     integer, parameter :: front=1, back=2
@@ -442,15 +442,15 @@ contains
 
     !define vertex locations
     
-    ylay = roomi%z0 + zzhlay(iroom,lower)
+    zlay = roomi%z0 + zzhlay(iroom,lower)
     room_verts(1:3,1)  = (/roomi%x0, roomi%y0, roomi%z1/)
     room_verts(1:3,2)  = (/roomi%x1, roomi%y0, roomi%z1/)
     room_verts(1:3,3)  = (/roomi%x0, roomi%y1, roomi%z1/)
     room_verts(1:3,4)  = (/roomi%x1, roomi%y1, roomi%z1/)
-    room_verts(1:3,5)  = (/roomi%x0, roomi%y0, ylay/)
-    room_verts(1:3,6)  = (/roomi%x1, roomi%y0, ylay/)
-    room_verts(1:3,7)  = (/roomi%x0, roomi%y1, ylay/)
-    room_verts(1:3,8)  = (/roomi%x1, roomi%y1, ylay/)
+    room_verts(1:3,5)  = (/roomi%x0, roomi%y0, zlay/)
+    room_verts(1:3,6)  = (/roomi%x1, roomi%y0, zlay/)
+    room_verts(1:3,7)  = (/roomi%x0, roomi%y1, zlay/)
+    room_verts(1:3,8)  = (/roomi%x1, roomi%y1, zlay/)
     room_verts(1:3,9)  = (/roomi%x0, roomi%y0, roomi%z0/)
     room_verts(1:3,10) = (/roomi%x1, roomi%y0, roomi%z0/)
     room_verts(1:3,11) = (/roomi%x0, roomi%y1, roomi%z0/)

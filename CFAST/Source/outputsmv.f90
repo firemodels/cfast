@@ -68,7 +68,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
     write(13,"(1x,a)") "P"
     write(13,"(1x,a)") "Pa"
     write(13,"(1x,a)") "Layer Height"
-    write(13,"(1x,a)") "ylay"
+    write(13,"(1x,a)") "zlay"
     write(13,"(1x,a)") "m"
     write(13,"(1x,a)") "TEMPERATURE"                   
     write(13,"(1x,a)") "TEMP"                          
@@ -226,7 +226,7 @@ subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms,x0,y0,z0, n_hvents, n_vven
 
 ! --------------------------- output_smokeview_plot_data -------------------------------------------
 
-subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,height)
+subroutine  output_smokeview_plot_data(time,nrooms,pr,zlay,tl,tu,nfires,qdot,height)
 
 !
 ! this routine records data for the current time step into the smokeview zone fire data file
@@ -234,7 +234,7 @@ subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,hei
 !     time - current time
 !   nrooms   number of rooms
 !       pr - real array of size nrooms of room pressures
-!     ylay - real array of size nrooms of layer interface heights
+!     zlay - real array of size nrooms of layer interface heights
 !       tl - real array of size nrooms of lower layer temperatures 
 !       tu - real array of size nrooms of upper layer temperatures 
 !   nfires - number of fires
@@ -246,7 +246,7 @@ subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,hei
 
     real(eb), intent(in) :: time
     integer, intent(in) :: nrooms
-    real(eb), intent(in), dimension(nrooms) :: pr, ylay, tl, tu
+    real(eb), intent(in), dimension(nrooms) :: pr, zlay, tl, tu
     integer, intent(in) :: nfires
     real(eb), intent(in), dimension(nfires) :: qdot, height
     real xxtime, xxpr, xxylay, xxtl, xxtu, xxheight, xxqdot
@@ -258,7 +258,7 @@ subroutine  output_smokeview_plot_data(time,nrooms,pr,ylay,tl,tu,nfires,qdot,hei
 
     do i = 1, nrooms
         xxpr = pr(i)
-        xxylay = ylay(i)
+        xxylay = zlay(i)
         xxtl = tl(i)
         xxtu = tu(i)
         write(14) xxpr, xxylay, xxtl, xxtu

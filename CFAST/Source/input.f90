@@ -2085,7 +2085,7 @@
 
     ! Cannot exceed work array
     if(maxrow>numr) then
-        write (logerr,'(a,i0)') 'Too many rows or columns in input file, r,c=', maxrow
+        write (logerr,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
         stop
     endif
 

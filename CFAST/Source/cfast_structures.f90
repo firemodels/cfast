@@ -6,19 +6,21 @@ module cfast_types
     !  room data structure
     type room_type
         character(128) :: name                          ! user selected name for the compartment
+        character(mxthrmplen), dimension(nwal) :: matl  ! surface materials for ceiling, floor, upper wall, lower wall
+        
+        integer :: cxgrid, cygrid, czgrid               ! number of grids in x, y, and z direction in compartment
+        integer :: ibar, jbar, kbar
+        integer :: deadroom                             ! if compartment is only connected to a single other compartment
+                                                        ! pressure of other compartment is used for the dead compartment
  
         real(eb) :: x0, y0, z0                          ! absolute coordinates of lower left front corner of compartment       
         real(eb) :: width, depth, height                ! width, depth, and height for the compartment
         real(eb) :: x1, y1, z1                          ! absolute coordinate of upper right rear corner of compartment
-        
-        character(mxthrmplen), dimension(nwal) :: matl  ! surface materials for ceiling, floor, upper wall, lower wall
-        logical, dimension(nwal) :: surface_on           ! true if heat conduction is calculated; otherwise adiabatic
         real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
-        
-        integer :: cxgrid, cygrid, czgrid               ! number of grids in x, y, and z direction in compartment
-        integer :: ibar, jbar, kbar
         real(eb), allocatable, dimension(:) :: xplt, yplt, zplt     ! grid locations for slice / isosurface files
         real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
+        
+        logical, dimension(nwal) :: surface_on           ! true if heat conduction is calculated; otherwise adiabatic
     end type room_type
 
     ! ramp data structure

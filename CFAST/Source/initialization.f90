@@ -697,7 +697,8 @@
     end do
     adiabatic_wall = .false.
     do i = 1, nr
-        deadroom(i) = 0
+        roomptr => roominfo(i)
+        roomptr%deadroom = 0
         izhall(i,ishall) = 0
     end do
     nconfg = 0

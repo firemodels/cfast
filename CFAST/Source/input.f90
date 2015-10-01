@@ -968,7 +968,8 @@
         i = lrarray(1)
         j = lrarray(2)
         if (i.ge.1.and.i.le.nr.and.j.le.1.and.j.le.nr.and.i.ne.j) then
-           deadroom(i) = j
+            roomptr => roominfo(i)
+           roomptr%deadroom = j
         endif
 
     ! EVENT keyword, the four possible formats are:

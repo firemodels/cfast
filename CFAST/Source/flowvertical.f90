@@ -248,7 +248,7 @@
 
     real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
     real(eb) :: v, cshape, d, delpflood, vex
-    integer :: i
+    integer :: i, deadtop, deadbot
 
     ! calculate the pabs(i), delp, the other properties adjacent to the two sides of the vent, and delden.
     dp(1) = 0.0_eb
@@ -273,7 +273,9 @@
     delp = relp(2) + dp(2) - (relp(1)+dp(1))
 
     ! if the room above or the room below is dead then  there is no pressure difference at vent opening
-    if(deadroom(itop).ne.0.and.deadroom(ibot).ne.0.and.deadroom(itop).eq.ibot.or.deadroom(ibot).eq.itop) delp=0.0_eb
+    deadtop = roominfo(itop)%deadroom
+    deadbot = roominfo(ibot)%deadroom
+    if(deadtop.ne.0.and.deadbot.ne.0.and.deadtop.eq.ibot.or.deadbot.eq.itop) delp=0.0_eb
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent

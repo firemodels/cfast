@@ -1191,7 +1191,7 @@
         endif
 
         ! pressure equation
-        if(deadroom(iroom).eq.0)then
+        if(roomptr%deadroom.eq.0)then
             pdot = (gamma-1.0_eb)*(ql + qu)/(aroom*hceil)
         else
             pdot = 0.0_eb
@@ -1754,9 +1754,10 @@
         end do
         
         do i = 1, nm1
-            if(deadroom(i).eq.0)cycle
-            zzrelp(i) = zzrelp(deadroom(i))
-            zzpabs(i) = zzpabs(deadroom(i))
+            roomptr => roominfo(i)
+            if(roomptr%deadroom.eq.0) cycle
+            zzrelp(i) = zzrelp(roomptr%deadroom)
+            zzpabs(i) = zzpabs(roomptr%deadroom)
         end do
 
         ! record which layer target is in

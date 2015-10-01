@@ -565,7 +565,7 @@
     end do
 
     ! define interior surface wall temperatures
-    ii =nofwt 
+    ii = nofwt 
     do i = 1, nm1
         roomptr => roominfo(i)
         do iwall = 1, nwal
@@ -640,18 +640,6 @@
         end do
     endif
 
-    ! define ihxy in izhall (dimension that is longest)
-    do i = 1, nm1
-        roomptr => roominfo(i)
-        if(izhall(i,ishall)==1)then
-            if(roomptr%depth>roomptr%width)then
-                izhall(i,ihxy) = 1
-            else
-                izhall(i,ihxy) = 2
-            endif
-        endif
-    end do
-
     return
     end
 
@@ -699,7 +687,7 @@
     do i = 1, nr
         roomptr => roominfo(i)
         roomptr%deadroom = 0
-        izhall(i,ishall) = 0
+        roomptr%hall = .false.
     end do
     nconfg = 0
     nlspct = 0

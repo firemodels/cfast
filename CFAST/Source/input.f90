@@ -1404,7 +1404,8 @@
                 stop
             endif
 
-            izhall(iroom,ishall) = 1
+            roomptr => roominfo(iroom)
+            roomptr%hall = .true.
             if (countargs(lcarray)>1) write (logerr,5406) iroom
         else
             write (logerr,*) '***Error: Bad HALL input. At least 1 compartment must be specified.'

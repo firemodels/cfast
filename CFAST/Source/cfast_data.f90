@@ -13,10 +13,6 @@ module cenviro
 
     integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
     integer, parameter :: eqp = 1, eqpmv = 2, eqtmv = 3, eqtu = 4, eqvu = 5, eqtl = 6, eqoxyl = 7, eqoxyu = 8, eqtt = 9, eqwt = 10
-
-    ! index into izhall
-    integer, parameter :: ishall = 1, & ! 1 if compartment is a hall
-                          ihxy = 2      ! longest dimension, 1=x 2=y
     
     logical izdtflag, izcon(nr), izhvac(nr)
     
@@ -45,7 +41,6 @@ module cenviro
     integer, dimension(mxtarg) :: iztarg
     integer, dimension(maxeq,2) :: izeqmap
     integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
-    integer, dimension(nr,2) :: izhall
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal

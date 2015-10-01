@@ -1037,8 +1037,8 @@
             zlayer = zzhlay(iroom,lower)
             zceil = roomptr%height
             r = sqrt(xdistance**2 + ydistance**2)
-            if (izhall(iroom,ishall)==1) then
-                if (izhall(iroom,ihxy)==1) then
+            if (roomptr%hall) then
+                if (roomptr%depth>roomptr%width)then
                     distance = ydistance
                     hall_width = roomptr%width
                 else

@@ -567,8 +567,9 @@
     ! define interior surface wall temperatures
     ii =nofwt 
     do i = 1, nm1
+        roomptr => roominfo(i)
         do iwall = 1, nwal
-            if (surface_on_switch(iwall,i)) then
+            if (roomptr%surface_on(iwall)) then
                 ii = ii + 1
                 p(ii) = interior_temperature
             endif
@@ -688,19 +689,16 @@
         activs(i) = .true.
     end do
     do i = 1, nr
+        roomptr => roominfo(i)
         do j = 1, nwal
-            cname(j,i) = 'OFF'
-            surface_on_switch(j,i) = .false.
+            roomptr%matl(j) = 'OFF'
+            roomptr%surface_on(j) = .false.
         end do
     end do
     adiabatic_wall = .false.
     do i = 1, nr
         deadroom(i) = 0
         izhall(i,ishall) = 0
-    end do
-    do i = 1, nr
-        surface_on_switch(1,i) = .true.
-        cname(1,i) = 'DEFAULT'
     end do
     nconfg = 0
     nlspct = 0
@@ -753,9 +751,9 @@
         roomptr%x1 = xlrg
         roomptr%y1 = xlrg
         roomptr%z1 = xlrg
-        cxgrid(i) = 50
-        cygrid(i) = 50
-        czgrid(i) = 50
+        roomptr%cxgrid = 50
+        roomptr%cygrid = 50
+        roomptr%czgrid = 50
         room_area(i) = roomptr%width*roomptr%depth
         room_volume(i) = roomptr%height*room_area(i)
         do  j = 1, nwal
@@ -1049,10 +1047,8 @@
     ! set debug print
     if (option(fdebug)==2) then
         option(fdebug) = off
-        surface_on_switch(1,nr) = .true.
     else if (option(fdebug)>=3) then
         option(fdebug) = on
-        surface_on_switch(1,nr) = .true.
     endif
 
     ! read in wall info
@@ -1266,8 +1262,8 @@
             yloc = yy
             zloc = zz
             iwall2 = map6(iwall)
-            if(surface_on_switch(iwall2,iroom))then
-                targptr%material = cname(iwall2,iroom)
+            if(roomptr%surface_on(iwall2))then
+                targptr%material = roomptr%matl(iwall2)
             else
                 targptr%material = ' '
             endif
@@ -1297,14 +1293,8 @@
     !        flw = thickness of the wall (m)
     !        epw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
-    !        cname contains the name of the thermal data subset in the tpp datafile 
-    !        surface_on_switch is a logical for thermal calculation on/off
-    !        thset is a switch for a properly transferred data set
+    !        matl contains the name of the thermal data subset in the tpp datafile 
     !        maxct is a count of the number of tpp data sets in the database
-    !        surface_on_switch is set if calculation is called for
-    !        thset is set if a name in the list of requested data sets matches one of the names in the 
-    !              list of data set names (nlist). the data from the data base is stored in the local variables 
-    !              lfkw,lcw,lrs,lflw and lepw and is transferred to fkw...
 
     use precision_parameters
     use wallptrs
@@ -1322,6 +1312,7 @@
     ! tp is the pointer into the data base for each material
     integer tp
     
+    type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
 
     data off /'OFF'/, none /'NONE'/
@@ -1330,12 +1321,12 @@
     ! if name is "OFF" or "NONE" then just turn all off
     do i = 1, nwal
         do j = 1, nm1
-            thset(i,j) = .false.
-            if (surface_on_switch(i,j)) then
-                if (cname(i,j)==off.or.cname(i,j)==none) then
-                    surface_on_switch(i,j) = .false.
+            roomptr => roominfo(j)
+            if (roomptr%surface_on(i)) then
+                if (roomptr%matl(i)==off.or.roomptr%matl(i)==none) then
+                    roomptr%surface_on(i) = .false.
                 else
-                    call get_thermal_property(cname(i,j),tp)
+                    call get_thermal_property(roomptr%matl(i),tp)
                     nslb(i,j) = lnslb(tp)
                     do k = 1, nslb(i,j)
                         fkw(k,i,j) = lfkw(k,tp)
@@ -1360,8 +1351,9 @@
 
     ! initialize temperature profile data structures
     do i = 1, nm1
+        roomptr => roominfo(i)
         do j = 1, nwal
-            if (surface_on_switch(j,i)) then
+            if (roomptr%surface_on(j)) then
                 call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),&
                    wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
             endif
@@ -1490,6 +1482,7 @@
     
     
     integer :: i, j, ib, nimtarg, noxygen
+    type(room_type), pointer :: roomptr
 
     ! count the of nodes (largest of ns and ne)
     nnode = max(na(1),ne(1))
@@ -1532,8 +1525,9 @@
     ! count the number of walls
     nwalls = 0
     do i = 1, nm1
+        roomptr => roominfo(i)
         do j = 1, nwal
-            if (surface_on_switch(j,i)) then
+            if (roomptr%surface_on(j)) then
                 nwalls = nwalls + 1
             endif
             if (nwpts/=0) numnode(1,j,i) = nwpts

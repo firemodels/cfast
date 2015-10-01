@@ -67,8 +67,7 @@ module cfast_main
         nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
-        nventijk,nfopt,vface(mxhvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr), &
-        cxgrid(nr), cygrid(nr), czgrid(nr), obj_fpos(0:mxfires)
+        nventijk,nfopt,vface(mxhvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, deadroom(nr), obj_fpos(0:mxfires)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, notwt, nofprd, &
         nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbt, nopmx, nrflow, lprint, nsmax, lsmv, itmmax, idiag, &
@@ -102,7 +101,7 @@ module cfast_main
     real(eb) :: tgignt
     real(eb) :: tref
 
-    logical :: activs(ns), surface_on_switch(nwal,nr), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
+    logical :: activs(ns), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
 
     character(128) :: title
 
@@ -454,10 +453,8 @@ module thermp
     real(eb), dimension(mxslb,mxthrmp) :: lfkw, lcw, lrw, lflw
     real(eb), dimension(mxthrmp) :: lepw
 
-    logical, dimension(nwal,nr) :: thset
     integer maxct, numthrm
     integer, dimension(mxthrmp) :: lnslb
-    character(mxthrmplen), dimension(nwal,nr) :: cname
     character(mxthrmplen), dimension(mxthrmp) :: nlist
 
     end module thermp

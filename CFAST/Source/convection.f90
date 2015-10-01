@@ -66,11 +66,12 @@
 
             ieqtyp = izeqmap(jaccol,1)
             iroom = izeqmap(jaccol,2)
+            roomptr => roominfo(iroom)
             if(ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqwt)then
-                if(ieqtyp==eqwt)iroom = izwall(iroom,w_from_room)
+                if(ieqtyp==eqwt) iroom = izwall(iroom,w_from_room)
                 do iwall = 1, 4
                     roomflg(iroom) = .true.
-                    if(surface_on_switch(iwall,iroom))then
+                    if(roomptr%surface_on(iwall))then
                         iw = izwmap2(iwall,iroom) - nofwt
                         wallflg(iw) = .true.
                     endif

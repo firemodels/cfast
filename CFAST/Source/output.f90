@@ -950,8 +950,9 @@
     ! check to see if any heat transfer is on
     if (.not.adiabatic_wall) then
         do i = 1, nm1
+            roomptr => roominfo(i)
             do j = 1, nwal
-                if (surface_on_switch(j,i).and.cname(j,i)/=' ') go to 30
+                if (roomptr%surface_on(j).and.roomptr%matl(j)/=' ') go to 30
             end do
         end do
     end if
@@ -962,7 +963,7 @@
 30  write (iofilo,5010)
     do  i = 1, nm1
         roomptr => roominfo(i)
-        write (iofilo,5020) roomptr%name, cname(1,i), cname(3,i), cname(2,i)
+        write (iofilo,5020) roomptr%name, roomptr%matl(1), roomptr%matl(3), roomptr%matl(2)
     end do
 
     !     print out the properties of the materials used
@@ -1448,6 +1449,9 @@
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
        '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
+    
+    type(room_type), pointer :: roomptr
+    
     save bmap
     
     type(target_type), pointer :: targptr
@@ -1474,6 +1478,7 @@
     else if (ikey==2) then
         write (iofilo,5000) t, dt
         do i = 1, nm1
+            roomptr => roominfo(i)
             write (*,5010) i
             write (*,5020) '   Upper temp(K)', zztemp(i,upper)
             write (*,5020) '   Lower temp(K)', zztemp(i,lower)
@@ -1486,16 +1491,16 @@
                 endif
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
-            if (surface_on_switch(1,i)) then
+            if (roomptr%surface_on(1)) then
                 write (*,5040) zzwtemp(i,1,1)
             endif
-            if (surface_on_switch(3,i)) then
+            if (roomptr%surface_on(3)) then
                 write (*,5060) zzwtemp(i,3,1)
             endif
-            if (surface_on_switch(4,i)) then
+            if (roomptr%surface_on(4)) then
                 write (iofilo,5070) zzwtemp(i,4,1)
             endif
-            if (surface_on_switch(2,i)) then
+            if (roomptr%surface_on(2)) then
                 write (iofilo,5050) zzwtemp(i,2,1)
             endif
         end do

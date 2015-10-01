@@ -74,10 +74,10 @@ module conduction_routines
         iwall = izwall(iw,w_from_wall)
         icond = nofwt + iw
 
-        if (adiabatic_wall.or..not.surface_on_switch(iwall,iroom)) then
+        roomptr => roominfo(iroom)
+        if (adiabatic_wall.or..not.roomptr%surface_on(iwall)) then
             vtgrad(iw) = 0.0_eb
         else
-            roomptr => roominfo(iroom)
 
             ! use exterior wall temperature from last time step to ...
             twint = zzwtemp(iroom,iwall,1)
@@ -106,12 +106,12 @@ module conduction_routines
                         frac = zzhtfrac(iroom,j)
                         if(iwall==3)then
                             yb = zzhlay(iroom,lower)
-                            yt = roomptr%zceil
+                            yt = roomptr%z1
                         elseif(iwall==4)then
                             yb = 0.0_eb
                             yt = zzhlay(iroom,lower)
                         endif
-                        dflor = roominfo(j)%zflor - roomptr%zflor
+                        dflor = roominfo(j)%z0 - roomptr%z0
                         yy = zzhlay(j,lower) + dflor
                         if(j/=nm1+1)then
                             if(yy>yt)then

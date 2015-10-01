@@ -831,9 +831,6 @@
                     else
                         option(fdebug) = on
                     endif
-                else if (ch==61) then
-                    surface_on_switch(1,nr) = .not. surface_on_switch(1,nr)
-                    write (*,*) 'toggle flow field printing to ',surface_on_switch(1,nr)
                 else if (ch==62) then
                     call output_debug(1,t,dt,ieqmax)
                 else if (ch==63) then
@@ -1162,8 +1159,9 @@
     endif
     ! sum flux for inside rooms
     do iroom = 1, nirm
+        roomptr => roominfo(iroom)
         do iwall = 1, nwal
-            if (surface_on_switch(iwall,iroom)) then
+            if (roomptr%surface_on(iwall)) then
                 flxtot(iroom,iwall) = flxcv(iroom,iwall) + flxrad(iroom,iwall)
             endif
         end do
@@ -1369,22 +1367,19 @@
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
             
-            roomptr%zflor = roomptr%z0
-            roomptr%zceil = roomptr%z1
-            
             roomptr%x1 = roomptr%x0 + roomptr%width
             roomptr%y1 = roomptr%y0 + roomptr%depth
             roomptr%z1 = roomptr%z0 + roomptr%height
-            roomptr%ibar = cxgrid(iroom)
-            roomptr%jbar = cygrid(iroom)
-            roomptr%kbar = czgrid(iroom)
+            roomptr%ibar = roomptr%cxgrid
+            roomptr%jbar = roomptr%cygrid
+            roomptr%kbar = roomptr%czgrid
             
             ! define wall centers
             xmax = roomptr%width
             xmid = xmax/2.0_eb
             ymax = roomptr%depth
             ymid = ymax/2.0_eb
-            zmax = roomptr%zceil
+            zmax = roomptr%z1
 
             ! ceiling
             roomptr%wall_center(1,1) = xmid
@@ -1431,8 +1426,8 @@
 
         roomptr=>roominfo(n)
         
-        roomptr%zflor = 0.0_eb
-        roomptr%zceil = 100000.0_eb
+        roomptr%z0 = 0.0_eb
+        roomptr%z1 = 100000.0_eb
         
         zzvol(n,upper) = 0.0_eb
         zzvol(n,lower) = 100000.0_eb
@@ -1571,10 +1566,11 @@
             izwmap2(iwall,nm1+1) = 0
         end do
         do iroom = 1, nm1
+            roomptr => roominfo(iroom)
             icnt = 0
             iznwall(iroom) = 0
             do iwall = 1, 4
-                if (surface_on_switch(iwall,iroom)) then
+                if (roomptr%surface_on(iwall)) then
                     ieq = ieq + 1
                     izwmap2(iwall,iroom) = ieq
                     icnt = icnt + 1
@@ -1736,7 +1732,7 @@
 
             do i = 1, 4
                 zlay = zzhlay(iroom,lower)
-                roomptr%wall_center(3,i+1) =  (roomptr%zceil+zlay)/2.0_eb
+                roomptr%wall_center(3,i+1) =  (roomptr%z1+zlay)/2.0_eb
                 roomptr%wall_center(3,i+5) = zlay/2.0_eb
             end do
 

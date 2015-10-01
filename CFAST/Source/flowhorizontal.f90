@@ -685,8 +685,8 @@
         up = upper
         iroom = room_index(i)
         roomptr=>roominfo(iroom)
-        zflor(i) = roomptr%zflor
-        zceil(i) = roomptr%zceil
+        zflor(i) = roomptr%z0
+        zceil(i) = roomptr%z1
         pflor(i) = zzrelp(iroom)
         zlay(i) = zzhlay(iroom,lower)
         denu(i) = zzrho(iroom,upper)

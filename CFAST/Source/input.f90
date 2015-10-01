@@ -36,10 +36,10 @@
     !     17 spreadsheet output (species)
     !     18 spreadsheet output (walls and targets)
     !
-    !     surface_on_switch (1) = ceiling properties are defined
-    !                       (2) = floor properties are defined
-    !                       (3) = side wall properties are defined for upper walls
-    !                       (4) = side wall properties are defined for lower walls
+    !     surface_on (1) = ceiling properties are defined
+    !                (2) = floor properties are defined
+    !                (3) = side wall properties are defined for upper walls
+    !                (4) = side wall properties are defined for lower walls
 
     ifail = 0
 
@@ -235,16 +235,16 @@
             stop
         endif
 
-        ! walls must be turned on, ie surface_on_switch must be set
+        ! walls must be turned on, ie surface_on must be set
         ! for the ceiling in the lower room and the floor of the upper room
         iwall1 = izswal(ii,w_from_wall)
         iwall2 = izswal(ii,w_to_wall)
-        if(.not.surface_on_switch(iwall1,iroom1).or..not.surface_on_switch(iwall2,iroom2))then
-            if(.not.surface_on_switch(iwall1,iroom1))then
-                write(logerr,204) iwall1,iroom1
+        if(.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2))then
+            if(.not.roominfo(iroom1)%surface_on(iwall1))then
+                write(logerr,204) iwall1, iroom1
 204             format('***Error: Invalid CFCON specification. Wall ',i0,' of room ',i0,' is adiabatic')
-            else if(.not.surface_on_switch(iwall2,iroom2))then
-                write(logerr,204)iwall2,iroom2
+            else
+                write(logerr,204)iwall2, iroom2
             endif
             stop
         endif
@@ -383,7 +383,8 @@
 
         ! force heat transfer between rooms connected by vents.
         if(izheat(i)==1)then
-            do j = 1, nm1+1
+            do j = 1, n
+                roomptr => roominfo(j)
                 nventij = 0
                 do k = 1, 4
                     nventij = nventij + ijk(i,j,k)
@@ -391,7 +392,7 @@
                 if(nventij/=0)zzhtfrac(i,j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if(j<=nm1.and..not.surface_on_switch(3,j)) zzhtfrac(i,j) = 0.0_eb
+                if(j<=nm1.and..not.roomptr%surface_on(3)) zzhtfrac(i,j) = 0.0_eb
             end do
         endif
 
@@ -483,9 +484,10 @@
 
     lfupdat=.false.
     do i = 1, nr
+        roomptr => roominfo(i)
         do j = 1, 4
-            cname(j,i) = 'OFF'
-            surface_on_switch(j,i) = .false.
+            roomptr%matl(j) = 'OFF'
+            roomptr%surface_on(j) = .false.
         end do
     end do
     ncomp = 0
@@ -560,8 +562,8 @@
                 ! Ceiling
                 tcname = lcarray(8)
                 if (tcname/='OFF') then
-                    surface_on_switch(1,ncomp) = .true.
-                    cname(1,ncomp) = tcname
+                    roomptr%surface_on(1) = .true.
+                    roomptr%matl(1) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
                 endif
@@ -569,8 +571,8 @@
                 ! floor
                 tcname = lcarray(9)
                 if (tcname/='OFF') then
-                    surface_on_switch(2,ncomp) = .true.
-                    cname(2,ncomp) = tcname
+                    roomptr%surface_on(2) = .true.
+                    roomptr%matl(2) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
                 endif
@@ -578,23 +580,23 @@
                 ! walls
                 tcname = lcarray(10)
                 if (tcname/='OFF') then
-                    surface_on_switch(3,ncomp) = .true.
-                    cname(3,ncomp) = tcname
-                    surface_on_switch(4,ncomp) = .true.
-                    cname(4,ncomp) = tcname
+                    roomptr%surface_on(3) = .true.
+                    roomptr%matl(3) = tcname
+                    roomptr%surface_on(4) = .true.
+                    roomptr%matl(4) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
                 endif
 
                 ! If there are more than 10 arguments, it's the new format that includes grid spacing
                 if (countargs(lcarray)==13) then
-                    cxgrid(ncomp) = lrarray(11)
-                    cygrid(ncomp) = lrarray(12)
-                    czgrid(ncomp) = lrarray(13)
+                    roomptr%cxgrid = lrarray(11)
+                    roomptr%cygrid = lrarray(12)
+                    roomptr%czgrid = lrarray(13)
                 end if
 
                 ! Reset this each time in case this is the last entry
-                n = ncomp+1
+                n = ncomp + 1
             else
                 write (logerr,*) '***Error: Bad COMPA input. At least 10 arguments required.'
                 stop

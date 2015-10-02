@@ -124,7 +124,7 @@
     do icomp = 1, nm1
         roomptr =>roominfo(icomp)
         izzvol = zzvol(icomp,upper)/room_volume(icomp)*100.0_eb+0.5_eb
-        if (izshaft(icomp)==1) then
+        if (roomptr%shaft) then
             write (iofilo,5071) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zzvol(icomp,upper), &
             zzabsb(upper,icomp),zzrelp(icomp)-interior_rel_pressure(icomp)
         else
@@ -227,9 +227,11 @@
     use cshell
     implicit none
 
-    character(10), dimension(ns) :: stype = (/'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/)
-    character(11), dimension(ns) :: sunits = (/'(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/)
-    character(5), dimension(2) :: lnames = (/'UPPER', 'LOWER'/)
+    character(4), dimension(ns) :: stype = &
+        (/character(4) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/)
+    character(10), dimension(ns) :: sunits = &
+        (/character(10) :: '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/)
+    character(5), dimension(2) :: lnames = (/character(5) :: 'UPPER', 'LOWER'/)
     character :: ciout*255, cjout*255
     external length
     integer :: length, i, icomp, layer, ic, lsp
@@ -257,7 +259,7 @@
                 roomptr => roominfo(icomp)
                 write (ciout,5060) roomptr%name
                 ic = 14
-                if (layer==upper.or.izshaft(icomp)==0) then
+                if (layer==upper.or..not.roomptr%shaft) then
                     do lsp = 1, ns
                         write (ciout(ic:ic+9),5040) toxict(icomp,layer,lsp)
                         ic = ic + 11
@@ -475,10 +477,12 @@
     
     integer :: i, ir
     real(eb) :: xemp, xqf
+    type(room_type), pointer :: roomptr
 
     write (iounit,5000)
     write (iounit,5010)
     do ir = 1, nm1
+        roomptr => roominfo(ir)
         xemp = 0.0_eb
         xqf = 0.0_eb
         do i = 1, numobjl
@@ -488,7 +492,7 @@
             endif
         end do
         xqf = xqf + fqdj(ir)
-        if (izshaft(ir)==1) then
+        if (roomptr%shaft) then
             write (iounit,5031) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, &
                zzrelp(ir) - interior_rel_pressure(ir)
         else
@@ -1008,8 +1012,9 @@
     real(eb) :: y_hcn, y_hcl
 
     character cbuf*255
-    character(13), dimension(0:4) :: ftype =(/'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
-    character(6), dimension(1:3) :: fire_geometry = (/'Normal', 'Wall', 'Corner'/)
+    character(13), dimension(0:4) :: ftype = &
+        (/character(13) :: 'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
+    character(6), dimension(1:3) :: fire_geometry = (/character(6) :: 'Normal', 'Wall', 'Corner'/)
     external length
     
     type(room_type), pointer :: roomptr

@@ -13,6 +13,7 @@ module cfast_types
         integer :: deadroom                             ! if compartment is only connected to a single other compartment
                                                         ! pressure of other compartment is used for the dead compartment
         logical :: hall                                 ! true if compartment is a hallway
+        logical :: shaft                                ! true if compartment is a shaft (one zone calculation)
  
         real(eb) :: x0, y0, z0                          ! absolute coordinates of lower left front corner of compartment       
         real(eb) :: width, depth, height                ! width, depth, and height for the compartment

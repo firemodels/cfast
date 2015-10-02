@@ -17,7 +17,8 @@
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     real(eb) :: outarray(maxhead), fheight
     logical :: firstc
-    integer :: position, i, itarg, izzvol
+    integer :: position, i, izzvol
+    type(room_type), pointer :: roomptr
 
     data firstc/.true./
     save firstc
@@ -33,10 +34,10 @@
 
     ! compartment information
     do i = 1, nm1
-        itarg = ntarg - nm1 + i
+        roomptr => roominfo(i)
         izzvol = zzvol(i,upper)/room_volume(i)*100.0_eb+0.5_eb
         call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
-        if (izshaft(i)==0) then
+        if (.not.roomptr%shaft) then
             call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call ssaddtolist (position,zzhlay(i,lower),outarray)
         endif
@@ -360,6 +361,7 @@
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
     logical :: tooutput(ns),  molfrac(ns), firstc
+    type(room_type), pointer :: roomptr
     
     data tooutput /9*.true.,.false.,.true./ 
     data molfrac /8*.true.,3*.false./
@@ -381,9 +383,10 @@
     call SSaddtolist (position,time,outarray)
 
     do i = 1, nm1
+        roomptr => roominfo(i)
         do layer = upper, lower
             do lsp = 1, ns
-                if (layer==upper.or.izshaft(i)==0) then
+                if (layer==upper.or..not.roomptr%shaft) then
                     if (tooutput(lsp)) then
                         ssvalue = toxict(i,layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
@@ -427,6 +430,7 @@
 
     
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomptr
 
     data firstc/.true./
     save firstc
@@ -442,16 +446,17 @@
 
     ! compartment information
     do i = 1, nm1
+        roomptr => roominfo(i)
         call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
-        if (izshaft(i)==0) then
+        if (.not.roomptr%shaft) then
             call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call SSaddtolist(position,zzhlay(i,lower),outarray)
         endif
         call SSaddtolist(position,zzrelp(i),outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)
-        if (izshaft(i)==0) call SSaddtolist(position,zzrho(i,lower),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,lower),outarray)
         call SSaddtolist(position,toxict(i,upper,9),outarray)
-        if (izshaft(i)==0) call SSaddtolist(position,toxict(i,lower,9),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,toxict(i,lower,9),outarray)
     end do
 
     ! fires

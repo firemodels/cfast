@@ -40,8 +40,8 @@
     do j = 1, nm1
         roomptr => roominfo(j)
         do i = 1, 5
-            if (i/=2.or.izshaft(j)==0) then
-                if (i/=3.or.izshaft(j)==0) then
+            if (i/=2.or..not.roomptr%shaft) then
+                if (i/=3.or..not.roomptr%shaft) then
                     position = position + 1
                     if (validate) then
                         call toIntString(j,cRoom)
@@ -153,7 +153,7 @@
     do i = 1, nm1
         roomptr => roominfo(i)
         do j = upper, lower
-            if (j==upper.or.izshaft(i)==0) then
+            if (j==upper.or..not.roomptr%shaft) then
                 do lsp = 1, ns
                     if(tooutput(lsp)) then
                         position = position + 1
@@ -495,6 +495,7 @@
     integer, parameter :: maxhead = 1+8*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxhvsys
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(25), LabelUnits(25)
     integer position, i, j
+    type(room_type), pointer :: roomptr
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
@@ -513,8 +514,9 @@
 
     ! Compartment variables
     do j = 1, nm1
+        roomptr => roominfo(j)
         do i = 1, 8
-            if (i==1.or.i==4.or.i==5.or.i==7.or.izshaft(j)==0) then
+            if (i==1.or.i==4.or.i==5.or.i==7.or..not.roomptr%shaft) then
                 position = position + 1
                 call toIntString(j,cRoom)
                 headertext(1,position) = LabelUnits(i+1)

@@ -1095,6 +1095,7 @@
 
     ! sum flow for inside rooms
     do iroom = 1, nirm
+        roomptr => roominfo(iroom)
 
         do iprod = 1, nprod + 2
             ip = izpmap(iprod)
@@ -1131,7 +1132,7 @@
         ! this is done by combining flows from to both
         ! layers into upper layer flow and setting lower layer flow to
         ! zero.
-        if(izshaft(iroom)==1)then
+        if(roomptr%shaft)then
             do iprod = 1, nprod + 2
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwtot(iroom,iprod,ll)
                 flwtot(iroom,iprod,ll) = 0.0_eb
@@ -1208,7 +1209,7 @@
         if (option(fode)==on) then
             vlayd = vlayd - zzvol(iroom,uu)*pdot/(gamma*pabs)
         endif
-        if(izshaft(iroom)==1)vlayd = 0.0_eb
+        if(roomptr%shaft) vlayd = 0.0_eb
 
         ! lower layer temperature equation
         tlaydl = (ql-cp*tml*zztemp(iroom,ll))/(cp*zzmass(iroom,ll))
@@ -1701,7 +1702,7 @@
             if(zztemp(iroom,lower)<0.0_eb)then
                 zztemp(iroom,lower)=zztemp(iroom,upper)
             endif
-            if(izshaft(iroom)==1)then
+            if(roomptr%shaft)then
                 zztemp(iroom,lower) = zztemp(iroom,upper)
             endif
 
@@ -1848,6 +1849,7 @@
         ! rather than total mass (this is equivalent to what was being done 
         ! in chemistry)
         do iroom = 1, nm1
+            roomptr => roominfo(iroom)
             totl = 0.0_eb
             totu = 0.0_eb
             do lsp = 1, min(9,ns)
@@ -1864,7 +1866,7 @@
                 if (activs(lsp)) then
                     zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp)*rtotu
                     zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp)*rtotl
-                    if(izshaft(iroom)==1)then
+                    if(roomptr%shaft)then
                         zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
                     endif
                 endif
@@ -1880,7 +1882,7 @@
                 zzgspec(iroom,upper,2) = oxyu
                 zzcspec(iroom,lower,2) = oxyl/zzmass(iroom,lower)
                 zzcspec(iroom,upper,2) = oxyu/zzmass(iroom,upper)
-                if(izshaft(iroom)==1)then
+                if(roomptr%shaft)then
                     zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
                 endif
             endif

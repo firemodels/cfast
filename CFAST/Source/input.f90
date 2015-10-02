@@ -253,7 +253,8 @@
 
     ! check shafts
     do iroom = nm1 + 1, nr
-        if(izshaft(iroom)/=0)then
+        roomptr => roominfo(iroom)
+        if(roomptr%shaft)then
             write (logerr,'(a,i0,a,i0)') '***Error: Invalid SHAFT specification. Room',iroom,'must be less than or equal to ',nm1
             stop
         endif
@@ -1387,7 +1388,8 @@
                 write(logerr, 5001) i1
                 stop
             endif
-            izshaft(iroom) = 1
+            roomptr => roominfo(iroom)
+            roomptr%shaft = .true.
         else
             write (logerr,*) '***Error: Bad ONEZ input. At least 1 compartment must be specified.'
             stop

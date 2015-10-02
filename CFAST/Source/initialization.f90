@@ -539,6 +539,7 @@
 
     ! define the p array, the solution to the ode
     do i = 1, nm1
+        roomptr => roominfo(i)
         p(i) = interior_rel_pressure(i)
         p(i+noftu) = interior_temperature
 
@@ -551,7 +552,7 @@
             endif
             yinter(i) = 0.0_eb
         endif
-        if(izshaft(i)==1)p(i+nofvu) = zzvmax(i)
+        if(roomptr%shaft) p(i+nofvu) = zzvmax(i)
         p(i+noftl) = interior_temperature
     end do
 
@@ -688,6 +689,7 @@
         roomptr => roominfo(i)
         roomptr%deadroom = 0
         roomptr%hall = .false.
+        roomptr%shaft = .false.
     end do
     nconfg = 0
     nlspct = 0
@@ -697,7 +699,6 @@
 
     ! initialize the flow variables
     do i = 1, nr
-        izshaft(i) = 0
         heatup(i) = 0.0_eb
         heatlp(i) = 0.0_eb
         do j = 1, nr

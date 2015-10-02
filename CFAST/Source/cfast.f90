@@ -1177,7 +1177,7 @@
     ! calculate rhs of ode's for each room
     do iroom = 1, nirm
         roomptr => roominfo(iroom)
-        aroom = room_area(iroom)
+        aroom = roomptr%area
         hceil = roomptr%height
         pabs = zzpabs(iroom)
         hinter = zzhlay(iroom,ll)
@@ -1362,8 +1362,9 @@
     vminfrac = 1.0e-4_eb
     if (iflag==constvar) then
         do iroom = 1, n
-            zzvmin(iroom) = min(vminfrac*room_volume(iroom), 1.0_eb)
-            zzvmax(iroom) = room_volume(iroom) - zzvmin(iroom)
+            roomptr => roominfo(iroom)
+            roomptr%vmin = min(vminfrac*roomptr%volume, 1.0_eb)
+            roomptr%vmax = roomptr%volume - roomptr%vmin
         end do
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
@@ -1371,9 +1372,6 @@
             roomptr%x1 = roomptr%x0 + roomptr%width
             roomptr%y1 = roomptr%y0 + roomptr%depth
             roomptr%z1 = roomptr%z0 + roomptr%height
-            roomptr%ibar = roomptr%cxgrid
-            roomptr%jbar = roomptr%cygrid
-            roomptr%kbar = roomptr%czgrid
             
             ! define wall centers
             xmax = roomptr%width
@@ -1658,14 +1656,14 @@
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
             
-            zzvol(iroom,upper) = max(pdif(iroom+nofvu),zzvmin(iroom))
-            zzvol(iroom,upper) = min(zzvol(iroom,upper),zzvmax(iroom))
-            zzvol(iroom,lower) = max(room_volume(iroom)-zzvol(iroom,upper),zzvmin(iroom))
-            zzvol(iroom,lower) = min(zzvol(iroom,lower),zzvmax(iroom))
+            zzvol(iroom,upper) = max(pdif(iroom+nofvu),roomptr%vmin)
+            zzvol(iroom,upper) = min(zzvol(iroom,upper),roomptr%vmax)
+            zzvol(iroom,lower) = max(roomptr%volume-zzvol(iroom,upper),roomptr%vmin)
+            zzvol(iroom,lower) = min(zzvol(iroom,lower),roomptr%vmax)
 
             ! prevent flow from being withdrawn from a layer if the layer
             ! is at the minimum size
-            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*room_volume(iroom))/room_volume(iroom)*(1.0_eb-2.0_eb*vminfrac)
+            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*roomptr%volume)/roomptr%volume*(1.0_eb-2.0_eb*vminfrac)
             volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
             volfrl(iroom) = 1.0_eb - volfru(iroom)
             volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
@@ -1673,8 +1671,8 @@
             ! calculate layer height for non-rectangular rooms
             npts = izrvol(iroom)
             if(npts==0)then
-                zzhlay(iroom,upper) = zzvol(iroom,upper)/room_area(iroom)
-                zzhlay(iroom,lower) = zzvol(iroom,lower)/room_area(iroom)
+                zzhlay(iroom,upper) = zzvol(iroom,upper)/roomptr%area
+                zzhlay(iroom,lower) = zzvol(iroom,lower)/roomptr%area
             else
                 call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
                 zzhlay(iroom,upper) = roomptr%height - zzhlay(iroom,lower)
@@ -1711,7 +1709,7 @@
             ymax = roomptr%depth
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
-            zzwarea2(iroom,1) = room_area(iroom)
+            zzwarea2(iroom,1) = roomptr%area
             zzwarea2(iroom,2) = zzu*xmax
             zzwarea2(iroom,3) = zzu*ymax
             zzwarea2(iroom,4) = zzu*xmax
@@ -1720,11 +1718,11 @@
             zzwarea2(iroom,7) = zzl*ymax
             zzwarea2(iroom,8) = zzl*xmax
             zzwarea2(iroom,9) = zzl*ymax
-            zzwarea2(iroom,10) = room_area(iroom)
+            zzwarea2(iroom,10) = roomptr%area
 
             ! compute area of 4 wall segments
-            zzwarea(iroom,1) = room_area(iroom)
-            zzwarea(iroom,2) = room_area(iroom)
+            zzwarea(iroom,1) = roomptr%area
+            zzwarea(iroom,2) = roomptr%area
             zzwarea(iroom,3) = (ymax + xmax)*zzu*2.0_eb
             zzwarea(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
 

@@ -183,8 +183,8 @@
     ! Compartment area and volume
     do i = 1, nm1
         roomptr => roominfo(i)
-        room_area(i) = roomptr%width*roomptr%depth
-        room_volume(i) = room_area(i)*roomptr%height
+        roomptr%area = roomptr%width*roomptr%depth
+        roomptr%volume = roomptr%area*roomptr%height
     end do
 
 
@@ -319,11 +319,11 @@
             ! room_width*room_depth=room_area and room_width/room_depth remain the same as entered on
             ! the width and depth  commands.
 
-            room_volume(i) = zzrvol(npts,i)
-            room_area(i) = room_volume(i)/roomptr%height
+            roomptr%volume = zzrvol(npts,i)
+            roomptr%area = roomptr%volume/roomptr%height
             xx = roomptr%width/roomptr%depth
-            roomptr%width = sqrt(room_area(i)*xx)
-            roomptr%depth = sqrt(room_area(i)/xx)
+            roomptr%width = sqrt(roomptr%area*xx)
+            roomptr%depth = sqrt(roomptr%area/xx)
         endif
     end do
 
@@ -591,9 +591,9 @@
 
                 ! If there are more than 10 arguments, it's the new format that includes grid spacing
                 if (countargs(lcarray)==13) then
-                    roomptr%cxgrid = lrarray(11)
-                    roomptr%cygrid = lrarray(12)
-                    roomptr%czgrid = lrarray(13)
+                    roomptr%ibar = lrarray(11)
+                    roomptr%jbar = lrarray(12)
+                    roomptr%kbar = lrarray(13)
                 end if
 
                 ! Reset this each time in case this is the last entry
@@ -2193,6 +2193,7 @@
 
        ceiljet_depth = 0.2_eb * rm%z1 ! placeholder now, change to a calculation
 
+       rm%ibar = min(max(2,int(rm%width/dxyz)),rm%ibar)
        allocate(rm%xplt(0:rm%ibar))
        allocate(rm%xpltf(0:rm%ibar))
        call set_grid(rm%xplt,rm%ibar+1,rm%x0,rm%x1,rm%x1,0)

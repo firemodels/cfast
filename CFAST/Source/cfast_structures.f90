@@ -5,24 +5,25 @@ module cfast_types
     
     !  room data structure
     type room_type
+        ! These are room definitions from or calculated from the input
         character(128) :: name                          ! user selected name for the compartment
         character(mxthrmplen), dimension(nwal) :: matl  ! surface materials for ceiling, floor, upper wall, lower wall
-        
-        integer :: cxgrid, cygrid, czgrid               ! number of grids in x, y, and z direction in compartment
-        integer :: ibar, jbar, kbar
+                   
+        integer :: ibar, jbar, kbar                     ! number of grids in x, y, and z direction in compartment
         integer :: deadroom                             ! if compartment is only connected to a single other compartment
                                                         ! pressure of other compartment is used for the dead compartment
-        logical :: hall                                 ! true if compartment is a hallway
+        logical :: hall                                 ! true if compartment is a hallway (modified ceiling jet)
         logical :: shaft                                ! true if compartment is a shaft (one zone calculation)
- 
+        logical, dimension(nwal) :: surface_on          ! true if heat conduction is calculated; otherwise adiabatic
         real(eb) :: x0, y0, z0                          ! absolute coordinates of lower left front corner of compartment       
         real(eb) :: width, depth, height                ! width, depth, and height for the compartment
         real(eb) :: x1, y1, z1                          ! absolute coordinate of upper right rear corner of compartment
+        real(eb) :: area                                ! compartment floor area
+        real(eb) :: volume                              ! compartment volume
+        real(eb) :: vmin, vmax                          ! minimum and maximum layer volume for compartment
         real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
-        real(eb), allocatable, dimension(:) :: xplt, yplt, zplt     ! grid locations for slice / isosurface files
+        real(eb), allocatable, dimension(:) :: xplt, yplt, zplt     ! grid for slice / isosurface files
         real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
-        
-        logical, dimension(nwal) :: surface_on           ! true if heat conduction is calculated; otherwise adiabatic
     end type room_type
 
     ! ramp data structure

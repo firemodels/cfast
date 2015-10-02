@@ -123,7 +123,7 @@
     write (iofilo,5040)
     do icomp = 1, nm1
         roomptr =>roominfo(icomp)
-        izzvol = zzvol(icomp,upper)/room_volume(icomp)*100.0_eb+0.5_eb
+        izzvol = zzvol(icomp,upper)/roomptr%volume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
             write (iofilo,5071) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zzvol(icomp,upper), &
             zzabsb(upper,icomp),zzrelp(icomp)-interior_rel_pressure(icomp)

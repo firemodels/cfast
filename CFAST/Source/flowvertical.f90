@@ -279,12 +279,12 @@
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
-    if (zzvol(itop,l)<=2.0_eb*zzvmin(itop)) then
+    if (zzvol(itop,l)<=2.0_eb*roominfo(itop)%vmin) then
         ilay(1) = u
     else
         ilay(1) = l
     endif
-    if (zzvol(ibot,u)<=2.0_eb*zzvmin(ibot)) then
+    if (zzvol(ibot,u)<=2.0_eb*roominfo(ibot)%vmin) then
         ilay(2) = l
     else
         ilay(2) = u

@@ -16,7 +16,7 @@ module cenviro
     
     logical izdtflag, izcon(nr), izhvac(nr)
     
-    real(eb), dimension(nr) :: zzvmin, zzvmax, zzrelp, zzpabs
+    real(eb), dimension(nr) :: zzrelp, zzpabs
     real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
     real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
     real(eb), dimension(nr,nwal) :: zzwspec
@@ -75,8 +75,8 @@ module cfast_main
     real(eb) :: mass(2,nr,ns), minmas, lower_o2_limit, qf(nr), p(maxteq), objmaspy(0:mxfire), tradio, &
         heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
         hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), oplume(3,mxfires),  &
-        qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), room_area(nr), &
-        room_volume(nr), vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
+        qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), &
+        vmflo(nr,nr,2), xdtect(mxdtect,dtxcol), qspray(0:mxfire,2), &
         radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
 
     real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &

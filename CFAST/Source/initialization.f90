@@ -546,13 +546,13 @@
         ! check for a special setting of the interface height
         if (iflag==1) then
             if (yinter(i)<0.0_eb) then
-                p(i+nofvu) = zzvmin(i)
+                p(i+nofvu) = roomptr%vmin
             else
-                p(i+nofvu) = min(zzvmax(i),max(zzvmin(i),yinter(i)*room_area(i)))
+                p(i+nofvu) = min(roomptr%vmax,max(roomptr%vmin,yinter(i)*roomptr%area))
             endif
             yinter(i) = 0.0_eb
         endif
-        if(roomptr%shaft) p(i+nofvu) = zzvmax(i)
+        if(roomptr%shaft) p(i+nofvu) = roomptr%vmax
         p(i+noftl) = interior_temperature
     end do
 
@@ -741,11 +741,11 @@
         roomptr%x1 = xlrg
         roomptr%y1 = xlrg
         roomptr%z1 = xlrg
-        roomptr%cxgrid = 50
-        roomptr%cygrid = 50
-        roomptr%czgrid = 50
-        room_area(i) = roomptr%width*roomptr%depth
-        room_volume(i) = roomptr%height*room_area(i)
+        roomptr%ibar = 50
+        roomptr%jbar = 50
+        roomptr%kbar = 50
+        roomptr%area = roomptr%width*roomptr%depth
+        roomptr%volume = roomptr%height*roomptr%area
         do  j = 1, nwal
             epw(j,i) = 0.0_eb
             qscnv(j,i) = 0.0_eb

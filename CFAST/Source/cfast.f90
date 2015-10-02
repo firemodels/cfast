@@ -1079,14 +1079,6 @@
     call convection (flwcv,flxcv)
     call radiation (flwrad,flxrad)
 
-    ! reset parallel data structures
-    do i = 1, nm1
-        ! add in vent fires to the total.  do_fire does the total of
-        ! qf for normal fires, but vent fires are done afterwards with door_jet
-        do j = 1, nwal
-            qscnv(j,i) = flxcv(i,j)
-        end do
-    end do
     if(djetflg)then
         do i = 1, nm1
             qf(i) = qf(i) + flwdjf(i,q,ll) + flwdjf(i,q,uu)
@@ -1449,8 +1441,7 @@
         
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
-        ! tables in the handbook of physics and chemistry.  we are being clever
-        ! here.  the final result in o2n2 should be the value used in stport for
+        ! tables in the handbook of physics and chemistry. the final result should be the value used for
         ! the outside ambient.
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
@@ -1469,12 +1460,10 @@
         end do
         n_hvents = 0
         do i = 1, nm1
-            roomptr=>roominfo(i)
-            
             do j = i + 1, n
-                if (nw(i,j)/=0) then
+                if (ihvent_connections(i,j)/=0) then
                     do k = 1, mxccv
-                        if (iand(frmask(k),nw(i,j))/=0) then
+                        if (iand(frmask(k),ihvent_connections(i,j))/=0) then
                             n_hvents = n_hvents + 1
                             ventptr => hventinfo(n_hvents)
                             iijk = ijk(i,j,k)
@@ -1500,7 +1489,7 @@
         n_vvents = 0
         do i = 1, n
             do j = 1, n
-                if (nwv(i,j)/=0) then
+                if (ivvent_connections(i,j)/=0) then
                     n_vvents = n_vvents + 1
                     ivvent(n_vvents,1) = i
                     ivvent(n_vvents,2) = j

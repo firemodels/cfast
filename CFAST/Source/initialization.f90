@@ -479,16 +479,12 @@
 
     subroutine initamb(yinter,iflag)
 
-    !     routine: hvmap
     !     purpose: this routine computes initializations for varialbes
     !     related to ambient conditions.  when iflag=1 the array
     !     yinter is used to compute upper layer volumes.  otherwise,
     !     upper layer volumes are not computed.  if iflag is set to 1
     !     then yinter must be a floating point array of at least size nr
     !     (nr = number of rooms) in the calling routine.
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: yinter, iflag
 
     use precision_parameters
     use cenviro
@@ -662,114 +658,30 @@
     use vents
     implicit none
     
-    real(eb) :: xlrg
     integer :: i, j, k, ivent, itarg, lsp, nfurn
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    ! set some initialization - simple control stuff
+    ! simple control stuff
     exset = .false.
-    debugging = .false.
-
-    ! initialize the common block
-    do i = 1, ns
-        o2n2(i) = 0.0_eb
-        allowed(i) = .false.
-        activs(i) = .true.
-    end do
-    do i = 1, nr
-        roomptr => roominfo(i)
-        do j = 1, nwal
-            roomptr%matl(j) = 'OFF'
-            roomptr%surface_on(j) = .false.
-        end do
-    end do
-    adiabatic_wall = .false.
-    do i = 1, nr
-        roomptr => roominfo(i)
-        roomptr%deadroom = 0
-        roomptr%hall = .false.
-        roomptr%shaft = .false.
-    end do
-    nconfg = 0
-    nlspct = 0
-    nrestr = 0
-    numthrm = 0
-    n = 0
-
-    ! initialize the flow variables
-    do i = 1, nr
-        heatup(i) = 0.0_eb
-        heatlp(i) = 0.0_eb
-        do j = 1, nr
-            ! do vertical vents (vvent,...)
-            vshape(i,j) = 0
-            nwv(i,j) = 0
-            vvarea(i,j) = 0.0_eb
-            ! do horizontal vents (hvent,...)
-            nw(i,j) = 0
-        end do
-    end do
-
-    do i = 1, mxext
-        hveflot(upper,i) = 0.0_eb
-        hveflot(lower,i) = 0.0_eb
-        tracet(upper,i) = 0.0_eb
-        tracet(lower,i) = 0.0_eb
-    end do
-
-    ! initialize the forcing functions
-    do i = 1, nr
-        do k = upper, lower
-            qfc(k,i) = 0.0_eb
-        end do
-    end do
-    do i = 1, maxteq
-        p(i) = 0.0_eb
-    end do
-
-    ! define the outside world as infinity
-    xlrg = 1.0e+5_eb
-    do i = 1, nr
-        roomptr => roominfo(i)
-        roomptr%width = xlrg
-        roomptr%depth = xlrg
-        roomptr%height = xlrg
-        roomptr%x0 = 0.0_eb
-        roomptr%y0 = 0.0_eb
-        roomptr%z0 = 0.0_eb
-        roomptr%x1 = xlrg
-        roomptr%y1 = xlrg
-        roomptr%z1 = xlrg
-        roomptr%ibar = 50
-        roomptr%jbar = 50
-        roomptr%kbar = 50
-        roomptr%area = roomptr%width*roomptr%depth
-        roomptr%volume = roomptr%height*roomptr%area
-        do  j = 1, nwal
-            epw(j,i) = 0.0_eb
-            qscnv(j,i) = 0.0_eb
-        end do
-        do j = 1, nr
-            nw(i,j) = 0
-        end do
-    end do
-
-    ! initialize all vents to zero size
-    do ivent = 1, mxhvents
-        bw(ivent) = 0.0_eb
-        hh(ivent) = 0.0_eb
-        hl(ivent) = 0.0_eb
-        hhp(ivent) = 0.0_eb
-        hlp(ivent) = 0.0_eb
-        vface(ivent) = 1
-    end do
+    debugging = .false.  
+    jaccol = -2
+    neqoff = 10
+     
+    ! DASSL forcing functions
+    p(1:maxteq) = 0.0_eb
 
     ! set the time step and inner step division for time splitting
     ! we do not let the user choose these
     deltat = 1.0_eb
 
-    ! define all the "universal constants
+    ! time step checking
+    zzdtcrit = 1.0e-09_eb
+    izdtnum = 0
+    izdtmax = 100
+    izdtflag = .true.
+
+    ! define universal constants
     cp = 1012.0_eb
     gamma = 1.40_eb
     rgas = (gamma-1.0_eb)/gamma*cp
@@ -787,63 +699,94 @@
     exterior_temperature = interior_temperature
     exterior_abs_pressure = interior_abs_pressure
     relhum = 0.5_eb
-    do i = 0, mxfire
-        objmaspy(i) = 0.0_eb
-        radio(i) = 0.0_eb
-        radconsplit(i) = 0.15_eb
-    end do
-    tradio = 0.0_eb
-
+    
+    ! species
+    allowed(1:ns) = .false.
+    activs(1:ns) = .true.
+    o2n2(1:ns) = 0.0_eb
     ! normal air
     o2n2(1) = 0.77_eb
     o2n2(2) = 0.23_eb
+    zzgspec(1:nr,upper:lower,1:ns) = 0.0_eb
+    zzcspec(1:nr,upper:lower,1:ns) = 0.0_eb
 
-    ! a specified fire in the center of the room
-    lfbt = 2
-    lfmax = 1
-    heatfl = .false.
-    heatfp(1) = -1.0_eb
-    heatfp(2) = -1.0_eb
-    heatfp(3) = -1.0_eb
-
-    ! set to -1 as a flag for nputp initialization - any value not set will be set to the 
-    ! default which is the center of the respective wall
-    fpos(1) = -1.0_eb
-    fpos(2) = -1.0_eb
-    fpos(3) = -1.0_eb
-
-    ! Start with vents open: h for hvent, v for vvent, and m for mvent
-    do i = 1,mxhvents
-        qcvh(1,i) = 0.0_eb
-        qcvh(2,i) = 1.0_eb
-        qcvh(3,i) = 0.0_eb
-        qcvh(4,j) = 1.0_eb
-    end do
-
+    ! rooms
+    roominfo(1:nr)%width = xlrg
+    roominfo(1:nr)%depth = xlrg
+    roominfo(1:nr)%height = xlrg
+    roominfo(1:nr)%x0 = 0.0_eb
+    roominfo(1:nr)%y0 = 0.0_eb
+    roominfo(1:nr)%z0 = 0.0_eb
+    roominfo(1:nr)%x1 = xlrg
+    roominfo(1:nr)%y1 = xlrg
+    roominfo(1:nr)%z1 = xlrg
+    roominfo(1:nr)%ibar = 50
+    roominfo(1:nr)%jbar = 50
+    roominfo(1:nr)%kbar = 50
     do i = 1, nr
-        fqdj(i) = 0.0_eb
-        qcvv(1,i) = 0.0_eb
-        qcvv(2,i) = 1.0_eb
-        qcvv(3,i) = 0.0_eb
-        qcvv(4,i) = 1.0_eb
+        roomptr => roominfo(i)
+        roomptr%area = roomptr%width*roomptr%depth
+        roomptr%volume = roomptr%height*roomptr%area
+        roomptr%matl(1:nwal) = 'OFF'
+        roomptr%surface_on(1:nwal) = .false.
     end do
+    epw(1:nwal,1:nr) = 0.0_eb
+    adiabatic_wall = .false.
+    roominfo(1:nr)%deadroom = 0
+    roominfo(1:nr)%hall = .false.
+    roominfo(1:nr)%shaft = .false.
+    nlspct = 0
+    numthrm = 0
+    n = 0
+    ! room to room heat transfer
+    nswal = 0
+    
+    ! variable cross sectional area
+    izrvol(1:nr) = 0
+    zzrvol(1:mxcross,1:nr) = 0.0_eb
+    zzrarea(1:mxcross,1:nr) = 0.0_eb
+    zzrhgt(1:mxcross,1:nr) = 0.0_eb
 
-    ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since 
-    ! there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
-    ! way to have an intial value other than 0 (no filtering).
-    do i = 1, mxfan
-        qcvf(1,i) = 0.0_eb
-        qcvf(2,i) = 0.0_eb
-        qcvf(3,i) = 0.0_eb
-        qcvf(4,i) = 0.0_eb
-        qcvm(1,i) = 0.0_eb
-        qcvm(2,i) = 1.0_eb
-        qcvm(3,i) = 0.0_eb
-        qcvm(4,i) = 1.0_eb
-    end do
+    ! initialize inter-compartment heat transfer fractions
+    zzhtfrac(1:nr,1:nr) = 0.0_eb
+    izheat(1:nr) = 0
+    izhtfrac(1:nr,1:nr) = 0
 
-    ! turn hvac off initially
+    ! initialize number of furnace temperature nodes
+    nfurn=0
 
+    ! flow variables
+    heatup(1:nr) = 0.0_eb
+    heatlp(1:nr) = 0.0_eb
+    qfc(upper:lower,1:nr) = 0.0_eb
+
+    ! horizontal vents
+    ihvent_connections(1:nr,1:nr) = 0.0_eb
+    bw(1:mxhvents) = 0.0_eb
+    hh(1:mxhvents) = 0.0_eb
+    hl(1:mxhvents) = 0.0_eb
+    hhp(1:mxhvents) = 0.0_eb
+    hlp(1:mxhvents) = 0.0_eb
+    vface(1:mxhvents) = 1
+    ! start with vents open
+    qcvh(1,1:mxhvents) = 0.0_eb
+    qcvh(2,1:mxhvents) = 1.0_eb
+    qcvh(3,1:mxhvents) = 0.0_eb
+    qcvh(4,1:mxhvents) = 1.0_eb
+    ijk(1:nr,1:nr,1:mxccv) = 0
+    nventijk = 0
+
+    ! vertical vents
+    vshape(1:nr,1:nr) = 0
+    ivvent_connections(1:nr,1:nr) = 0
+    vvarea(1:nr,1:nr) = 0.0_eb
+    ! start with vents open
+    qcvv(1,1:nr) = 0.0_eb
+    qcvv(2,1:nr) = 1.0_eb
+    qcvv(3,1:nr) = 0.0_eb
+    qcvv(4,1:nr) = 1.0_eb
+        
+    ! mechanical vents
     nnode = 0
     nft = 0
     nfan = 0
@@ -851,99 +794,50 @@
     nbr = 0
     next = 0
     mvcalc = .false.
-    do i = 1, mxnode
-        hvght(i) = 0.0_eb
-    end do
+    hvght(1:mxnode) = 0.0_eb
+    hveflot(upper:lower,1:mxext) = 0.0_eb
+    tracet(upper:lower,1:mxext) = 0.0_eb
+    ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since 
+    ! there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
+    ! way to have an intial value other than 0 (no filtering).
+    qcvf(1,1:mxfan) = 0.0_eb
+    qcvf(2,1:mxfan) = 0.0_eb
+    qcvf(3,1:mxfan) = 0.0_eb
+    qcvf(4,1:mxfan) = 0.0_eb
+    qcvm(1,1:mxfan) = 0.0_eb
+    qcvm(2,1:mxfan) = 1.0_eb
+    qcvm(3,1:mxfan) = 0.0_eb
+    qcvm(4,1:mxfan) = 1.0_eb
 
-    ! initialize detectors
-    do i = 1, mxdtect
-        xdtect(i,drti) = 50.0_eb
-        xdtect(i,dspray) = -300.0_eb
-        xdtect(i,dxloc) = -1.0_eb
-        xdtect(i,dyloc) = -1.0_eb
-        xdtect(i,dzloc) = -3.0_eb/39.37_eb
-        xdtect(i,dtrig) = 330.3722_eb
-        xdtect(i,dvel) = 0.0_eb
-        xdtect(i,dvelo) = 0.0_eb
-        xdtect(i,dtact) = 99999.0_eb
-        ixdtect(i,dtype) = 2
-        ixdtect(i,droom) = 1
-        ixdtect(i,dquench) = 0
-        ixdtect(i,dact) = 0
-        ixdtect(i,dactreported) = 0
-    end do
+    ! set to -1 as a flag for nputp initialization - any value not set will be set to the 
+    ! default which is the center of the respective wall
+    fpos(1:3) = -1.0_eb
+    fqdj(1:nr) = 0.0_eb
+
+    ! detectors
+    xdtect(1:mxdtect,drti) = 50.0_eb
+    xdtect(1:mxdtect,dspray) = -300.0_eb
+    xdtect(1:mxdtect,dxloc) = -1.0_eb
+    xdtect(1:mxdtect,dyloc) = -1.0_eb
+    xdtect(1:mxdtect,dzloc) = -3.0_eb/39.37_eb
+    xdtect(1:mxdtect,dtrig) = 330.3722_eb
+    xdtect(1:mxdtect,dvel) = 0.0_eb
+    xdtect(1:mxdtect,dvelo) = 0.0_eb
+    xdtect(1:mxdtect,dtact) = 99999.0_eb
+    ixdtect(1:mxdtect,dtype) = 2
+    ixdtect(1:mxdtect,droom) = 1
+    ixdtect(1:mxdtect,dquench) = 0
+    ixdtect(1:mxdtect,dact) = 0
+    ixdtect(1:mxdtect,dactreported) = 0
+
     ndtect = 0
-    do i = 1, nr
-        iquench(i) = 0
-    end do
+    iquench(1:nr) = 0
 
-    ! initialize room to room heat transfer data structures
-    nswal = 0
-
-    ! initialize target counter
+    ! targets
     ntarg = 0
-
-    do itarg = 1, mxtarg
-        targptr => targetinfo(itarg)
-        targptr%equaton_type = pde
-        targptr%back = interior
-        targptr%material = 'DEFAULT'
-    end do
-
-    ! initialize jaccol  
-    jaccol = -2
-    neqoff = 10
-
-    do i = 1, nr
-        do j = 1, nr
-            do k = 1, 4
-                ijk(i,j,k) = 0
-            end do
-        end do
-    end do
-    nventijk = 0
-
-    ! initialize variable cross sectional area to none
-    do i = 1, nr
-        izrvol(i) = 0
-        do j = 1, mxcross
-            zzrvol(j,i) = 0.0_eb
-            zzrarea(j,i) = 0.0_eb
-            zzrhgt(j,i) = 0.0_eb
-        end do
-    end do
-
-    ! initialzie time step checking
-    zzdtcrit = 1.0e-09_eb
-    izdtnum = 0
-    izdtmax = 100
-    izdtflag = .true.
-
-    ! initialize inter-compartment heat transfer fractions
-    do i = 1, nr
-        do j = 1, nr
-            zzhtfrac(i,j) = 0.0_eb
-        end do
-    end do
-
-    do j = 0, nr
-        izheat(j) = 0
-        do i = 1, nr
-            izhtfrac(i,j) = 0
-        end do
-    end do
-
-    do lsp = 1, ns
-        do j = upper, lower
-            do i = 1, nr
-                zzgspec(i,j,lsp) = 0.0_eb
-                zzcspec(i,j,lsp) = 0.0_eb            
-            end do
-        end do
-    end do
-
-    ! initialize number of furnace temperature nodes
-    nfurn=0
+    targetinfo(1:mxtarg)%equaton_type = pde
+    targetinfo(1:mxtarg)%back = interior
+    targetinfo(1:mxtarg)%material = 'DEFAULT'
 
     return
     end
@@ -963,23 +857,30 @@
     
     integer :: i
 
+    ! a specified fire in the center of the room
+    lfbt = 2
+    lfmax = 1
+    heatfl = .false.
+    heatfp(1:3) = -1.0_eb
+    
     ! turn off objects
     numobjl = 0
-    do i = 0, mxfires
-        objon(i) = .false.
-        objpos(1,i) = -1.0
-        objpos(2,i) = -1.0
-        objpos(3,i) = -1.0
-        objrm(i) = 0
-        objnin(i) = ' '
-        objld(i) = .false.
-        objpnt(i) = 0
-        objcri(1,i) = 0.0
-        objcri(2,i) = 0.0
-        objcri(3,i) = 0.0
-        objdef(i) = .false.
-        odbnam(i) = ' '
-    end do
+    objon(0:mxfires) = .false.
+    objpos(1:3,0:mxfires) = -1.0
+    objrm(0:mxfires) = 0
+    objnin(0:mxfires) = ' '
+    objld(0:mxfires) = .false.
+    objpnt(0:mxfires) = 0
+    objcri(1:3,0:mxfires) = 0.0
+    objdef(0:mxfires) = .false.
+    odbnam(0:mxfires) = ' '
+     
+    ! trace species stuff
+    objmaspy(0:mxfire) = 0.0_eb
+    radio(0:mxfire) = 0.0_eb
+    radconsplit(0:mxfire) = 0.35_eb
+    tradio = 0.0_eb
+
     return
     end
 

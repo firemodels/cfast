@@ -57,16 +57,16 @@ module cfast_main
     implicit none
     save
     
-    integer :: hvorien(mxext), hvnode(2,mxext), mpsdat(3), nwv(nr,nr), na(mxbranch), nofsets(13), &
-        ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), nw(nr,nr), nslb(nwal,nr), &
-        nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
+    integer :: hvorien(mxext), hvnode(2,mxext), mpsdat(3), ivvent_connections(nr,nr), na(mxbranch), nofsets(13), &
+        ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), ihvent_connections(nr,nr), &
+        nslb(nwal,nr), nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
         froom(0:mxfire), numobjl, ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
         nventijk,nfopt,vface(mxhvents), fplume(0:mxfire), lcopyss,heatfr, nfilter, obj_fpos(0:mxfires)
     
     integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, notwt, nofprd, &
         nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbt, nopmx, nrflow, lprint, nsmax, lsmv, itmmax, idiag, &
-        nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, nconfg, nrestr, ndt, next, nnode, nft, nfan, nbr
+        nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, ndt, next, nnode, nft, nfan, nbr
     
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)), (nofwt,nofsets(9)), &
@@ -385,7 +385,7 @@ module params
     logical :: allowed(ns), exset
     integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
 
-    real(eb) :: qfc(2,nr), qscnv(nwal,nr), o2n2(ns), &
+    real(eb) :: qfc(2,nr), o2n2(ns), &
         volfru(nr), volfrl(nr), hvfrac(2,mxext), exterior_abs_pressure, &
         chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
 

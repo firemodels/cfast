@@ -53,6 +53,7 @@ module cparams
                                                ! separate elements (connected compartments for example)
     real(eb), parameter :: mx_hsep = 1.0e-3_eb ! maximum horizontal distance below which fire is assumed to 
                                                ! be on a surface for entrainmnt
+    real(eb), parameter :: xlrg = 1.0e+5_eb    ! sizes for outsize room
     
     ! target parameters
     integer, parameter :: mxtarg = 10*nr                    ! maximum number of targets

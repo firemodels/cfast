@@ -795,7 +795,7 @@
                     roomptr => roominfo(j)
                     write (cjout,'(a14)') roomptr%name
                     if (j==n) cjout = ' Outside'
-                    if (iand(1,ishft(nw(i,j),-k))/=0) then
+                    if (iand(1,ishft(ihvent_connections(i,j),-k))/=0) then
                         iijk = ijk(i,j,k)
                         roomptr => roominfo(i)
                         write (iofilo,5020) roomptr%name, cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk)
@@ -812,7 +812,7 @@
         write (iofilo,5040)
         do i = 1, n
             do j = 1, n
-                if (nwv(i,j)/=0) then
+                if (ivvent_connections(i,j)/=0) then
                     write (ciout,'(i5,3x)') i
                     if (i==n) ciout = ' Outside'
                     write (cjout,'(i5,3x)') j

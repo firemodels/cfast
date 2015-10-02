@@ -139,41 +139,41 @@
     ! here rather than right after keywordcases because floor_height and ceiling_height were just defined
     ! above
     do itop = 1, nm1
-        if (nwv(itop,itop)/=0) then
+        if (ivvent_connections(itop,itop)/=0) then
             write (logerr,*) '***Error: A room can not be connected to itself'
             stop
-            nwv(itop,itop) = 0
+            ivvent_connections(itop,itop) = 0
         endif
         do ibot = 1, itop - 1
-            if (nwv(itop,ibot)/=0.or.nwv(ibot,itop)/=0) then
+            if (ivvent_connections(itop,ibot)/=0.or.ivvent_connections(ibot,itop)/=0) then
 
                 ! see which room is on top (if any) - this is like a bubble sort
                 deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
                 deps2 = roominfo(ibot)%z0 - roominfo(itop)%z1
-                if (nwv(itop,ibot)/=1.or.abs(deps1)>=mx_vsep) then
-                    if (nwv(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
-                        if (nwv(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
-                            if (nwv(ibot,itop)/=0) then
+                if (ivvent_connections(itop,ibot)/=1.or.abs(deps1)>=mx_vsep) then
+                    if (ivvent_connections(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
+                        if (ivvent_connections(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
+                            if (ivvent_connections(ibot,itop)/=0) then
                                 write (logerr,*) '***Error: Vent ', ibot, itop, ' is being redefined'
                             endif
-                            nwv(itop,ibot) = 0
-                            nwv(ibot,itop) = 1
+                            ivvent_connections(itop,ibot) = 0
+                            ivvent_connections(ibot,itop) = 1
                             vvarea(ibot,itop) = vvarea(itop,ibot)
                             vshape(ibot,itop) = vshape(itop,ibot)
                             cycle
                         endif
-                        if (nwv(ibot,itop)==1.and.abs(deps1)<mx_vsep) then
-                            if (nwv(itop,ibot)/=0) then
+                        if (ivvent_connections(ibot,itop)==1.and.abs(deps1)<mx_vsep) then
+                            if (ivvent_connections(itop,ibot)/=0) then
                                 write (logerr,*) '***Error: Vent ', itop, ibot, ' is being redefined'
                             endif
-                            nwv(itop,ibot) = 1
-                            nwv(ibot,itop) = 0
+                            ivvent_connections(itop,ibot) = 1
+                            ivvent_connections(ibot,itop) = 0
                             vvarea(itop,ibot) = vvarea(ibot,itop)
                             vshape(itop,ibot) = vshape(ibot,itop)
                             cycle
                         endif
-                        nwv(itop,ibot) = 0
-                        nwv(ibot,itop) = 0
+                        ivvent_connections(itop,ibot) = 0
+                        ivvent_connections(ibot,itop) = 0
                     endif
                 endif
             endif
@@ -907,7 +907,7 @@
                 stop
             endif
             if (k>mxccv) then
-                write (logerr,5080) i, j, k, nw(i,j)
+                write (logerr,5080) i, j, k, ihvent_connections(i,j)
                 stop
             endif
             nventijk = nventijk + 1
@@ -920,7 +920,7 @@
             iijk = ijk(i,j,k)
             jik = iijk
             koffst = 2**k
-            nw(i,j) = ior(nw(i,j),koffst)
+            ihvent_connections(i,j) = ior(ihvent_connections(i,j),koffst)
             bw(iijk) = lrarray(4)
             hh(iijk) = lrarray(5)
             hl(iijk) = lrarray(6)
@@ -949,7 +949,7 @@
 
         ! connections are bidirectional
 
-        nw(j,i) = nw(i,j)
+        ihvent_connections(j,i) = ihvent_connections(i,j)
         roomptr => roominfo(j)
         hh(jik) = min(roomptr%height,max(0.0_eb,hhp(jik)-roomptr%z0))
         hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomptr%z0))
@@ -1069,7 +1069,7 @@
             endif
 
             ! read_input_file will verify the orientation (i is on top of j)
-            nwv(i,j) = 1
+            ivvent_connections(i,j) = 1
             vvarea(i,j) = lrarray(3)
             ! check the shape parameter. the default (1) is a circle)
             if (lrarray(4)<1.or.lrarray(4)>2) then

@@ -267,7 +267,7 @@ contains
     ytarg = targptr%center(2)
     ztarg = targptr%center(3)
     call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
-    tgtarg(itarg) = tg
+    targptr%tgas = tg
     if(targptr%back==interior)then
         tgb = tg
     else

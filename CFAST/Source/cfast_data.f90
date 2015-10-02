@@ -199,7 +199,6 @@ module fltarget
     integer, parameter :: exterior = 2
 
     real(eb), dimension(mxtarg,2) :: qtcflux, qtfflux, qtwflux, qtgflux
-    real(eb), dimension(mxtarg) :: tgtarg
     integer, dimension(3) :: neqtarg
     
     type (target_type), dimension(mxtarg), target :: targetinfo

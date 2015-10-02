@@ -75,6 +75,7 @@ module cfast_types
                                     
         
         real(eb),dimension(nnodes_trg) :: trgtemps  ! temperature profile in target ... front surface ... internal ... back surface
+        real(eb) :: tgas                ! gas temperature near target
         
         ! these are the results of the target calculations that are used for printout and spreadsheet output
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target

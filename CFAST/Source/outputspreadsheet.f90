@@ -274,7 +274,7 @@
     ! now do targets if defined
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        tgtemp = tgtarg(itarg)
+        tgtemp = targptr%tgas
         if (targptr%equaton_type==cylpde) then
             tttemp = targptr%temperature(idx_tempb_trg)
             itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)

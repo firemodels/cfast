@@ -621,7 +621,7 @@
         do i=idx_tempf_trg,idx_tempb_trg
             targptr%temperature(i) = interior_temperature
         end do
-        tgtarg(itarg) = interior_temperature
+        targptr%tgas = interior_temperature
 
         ! scale normal vectors to have length 1
         scale = 1.0_eb/dnrm2(3,targptr%normal(1),1)

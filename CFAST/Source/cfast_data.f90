@@ -189,19 +189,14 @@ module fltarget
     
     ! variables for calculation of flux to a target
 
-    
-    integer, parameter :: pde = 2
-    integer, parameter :: cylpde = 3
-    integer, parameter :: steady = 1
-    integer, parameter :: mplicit = 2
-    integer, parameter :: xplicit = 3
+    integer, parameter :: pde = 1                                   ! plate targets (cartesian coordinates)
+    integer, parameter :: cylpde = 2                                ! cylindrical targets (cylindrical coordinates)
     integer, parameter :: interior = 1
     integer, parameter :: exterior = 2
 
-    real(eb), dimension(mxtarg,2) :: qtcflux, qtfflux, qtwflux, qtgflux
-    integer, dimension(3) :: neqtarg
+    real(eb), dimension(2) :: qtcflux, qtfflux, qtwflux, qtgflux    ! temporary variables for target flux calculation
     
-    type (target_type), dimension(mxtarg), target :: targetinfo
+    type (target_type), dimension(mxtarg), target :: targetinfo     ! stractured target data
     
 end module fltarget
 

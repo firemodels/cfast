@@ -656,10 +656,10 @@
     use params
     use thermp
     use vents
+    use wnodes, only : nfurn
     implicit none
     
-    integer :: i, j, k, ivent, itarg, lsp, nfurn
-    type(target_type), pointer :: targptr
+    integer i
     type(room_type), pointer :: roomptr
 
     ! simple control stuff
@@ -854,8 +854,6 @@
     use objects1
     use objects2
     implicit none
-    
-    integer :: i
 
     ! a specified fire in the center of the room
     lfbt = 2

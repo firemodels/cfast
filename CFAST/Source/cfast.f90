@@ -1024,7 +1024,7 @@
     integer :: update
 
     logical :: vflowflg, hvacflg, djetflg
-    integer :: nprod, nirm, i, iroom, iprod, ip, j, iwall, nprodsv, iprodu, iprodl
+    integer :: nprod, nirm, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
     real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
@@ -1454,7 +1454,7 @@
             zzmass(n,layer) = zzrho(n,layer)*zzvol(n,layer)
         end do
 
-        ! define vent data structures
+        ! define horizontal vent data structures
         do i = 1, mxccv
             frmask(i) = 2**i
         end do
@@ -1485,7 +1485,6 @@
         end do
 
         !define vents for vertical flow
-
         n_vvents = 0
         do i = 1, n
             do j = 1, n

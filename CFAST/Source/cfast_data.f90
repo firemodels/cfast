@@ -38,8 +38,6 @@ module cenviro
     integer, dimension(4,nr) :: izwmap2
     integer, dimension(nr,4) :: izswal
     integer, dimension(4*nr,5) :: izwall
-    integer, dimension(mxtarg) :: iztarg
-    integer, dimension(maxeq,2) :: izeqmap
     integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac

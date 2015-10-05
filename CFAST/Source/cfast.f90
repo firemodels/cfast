@@ -1333,7 +1333,7 @@
     integer frmask(mxccv)
 
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii
-    integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg, itype, ibeg, iend
+    integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp, vminfrac 
     real(eb) :: xdelt, tstop, zzu, zzl
@@ -1609,27 +1609,6 @@
         jacn2 = nofwt - nofpmv
         jacn3 = nofprd - nofwt
         jacdim = jacn1 + jacn2 + jacn3
-
-        ! define maps for dassl eqs <--> target data structures
-        ieq = 0
-        do itarg = 1, ntarg
-            targptr => targetinfo(itarg)
-            iztarg(itarg) = 0
-        end do
-
-        ! associate an equation type (ie pressure, temperature etc as defined by offsets)
-        ! with each dassl equation
-        ieq = 0
-        do itype = 1, neqoff
-            ibeg = nofsets(itype)
-            iend = nofsets(itype+1)-1
-            do i = ibeg, iend
-                ieq = ieq + 1
-                iroom = i + 1 - ibeg
-                izeqmap(ieq,1) = itype
-                izeqmap(ieq,2) = iroom
-            end do
-        end do
 
         ! indicate which rooms are connected to an hvac system
         do i = 1, nm1

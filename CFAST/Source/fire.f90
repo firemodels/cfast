@@ -783,11 +783,10 @@
     logical, intent(out) :: djetflg
     real(eb), intent(out) :: flwdjf(nr,ns+2,2)
 
-    real(eb) :: xntms1(2,ns), xntms2(2,ns), flwdjf0(nr,ns+2,2), flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
-    integer :: i, iroom1, iroom2, ifrom, lsp, iroom
-    save flwdjf0
+    real(eb) :: xntms1(2,ns), xntms2(2,ns), flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
+    integer :: i, iroom1, iroom2, ifrom, lsp
 
-    logical :: dj1flag, dj2flag, ventflg(mxhvent), roomflg(nr), anyvents
+    logical :: dj1flag, dj2flag
     type(vent_type), pointer :: ventptr
 
     ! initialize summations and local data
@@ -835,11 +834,9 @@
     hcombt = 5.005e7_eb
 
     ! calculate the heat for each of the door jet fires
-    call ventflag(ventflg,roomflg,anyvents)
-    if(anyvents)then
+
         do i = 1, n_hvents
             ventptr=>hventinfo(i)
-            if(ventflg(i))then
                 iroom1 = ventptr%from
                 iroom2 = ventptr%to
                 flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
@@ -860,34 +857,7 @@
                         flwdjf(iroom2,lsp+2,upper) = flwdjf(iroom2,lsp+2,upper) + xntms2(upper,lsp)
                     end do
                 endif
-            endif
         end do
-    endif
-
-    if(option(fmodjac)==on)then
-        if(jaccol==0)then
-
-            ! we need to save the solution for later jacobian calculations
-            do iroom = 1, nm1
-                do lsp = 1, ns + 2
-                    flwdjf0(iroom,lsp,lower) = flwdjf(iroom,lsp,lower)
-                    flwdjf0(iroom,lsp,upper) = flwdjf(iroom,lsp,upper)
-                end do
-            end do
-        else if(jaccol>0)then
-
-            ! we are computing a jacobian, so get previously saved solution for rooms
-            ! that are not affected by the perturbed solution variable
-            do iroom = 1, nm1
-                if(.not.roomflg(iroom))then
-                    do lsp = 1, ns+2
-                        flwdjf(iroom,lsp,lower) = flwdjf0(iroom,lsp,lower)
-                        flwdjf(iroom,lsp,upper) = flwdjf0(iroom,lsp,upper)
-                    end do
-                endif
-            end do
-        endif
-    endif
 
     do i = 1, n
         fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)

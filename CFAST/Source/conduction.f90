@@ -39,11 +39,10 @@ module conduction_routines
     real(eb), intent(in) :: dt, flxtot(nr,nwal)
     real(eb), intent(out) :: delta(*)
     
-    real(eb) :: tgrad(2), vtgrad0(4*nr), vtgrad(4*nr)
-    save vtgrad0
+    real(eb) :: tgrad(2), vtgrad(4*nr)
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
-    integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j, ieq
+    integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j
 
     type(room_type), pointer :: roomptr
 
@@ -53,21 +52,6 @@ module conduction_routines
 
     ibeg = 1
     iend = nwalls
-
-    ! if the reduced jacobian option is on and dassl is computing a jacobian
-    ! then solve a conduction problem only if dassl is varying a wall temperature
-
-    if(option(fmodjac)==on.and.jaccol>0)then
-        if(izeqmap(jaccol,1)==eqwt)then
-            ! a wall temperature is being perturbed so solve that walls conduction problem
-            ibeg = jaccol - nofwt
-            iend = ibeg
-        else
-            ! some other variable is being perturbed, so don't solve any conduction problems
-            ibeg = 1
-            iend = 0
-        endif
-    endif
 
     do iw = ibeg, iend
         iroom = izwall(iw,w_from_room)
@@ -146,28 +130,6 @@ module conduction_routines
             ! been computed.  (if they were not then we wouldn't know heat flux striking the wall!
         end if
     end do
-
-    ! save wall gradients during base call to calculate_residuals
-    if(option(fmodjac)==on)then
-
-        ! store wall gradient for later use
-        if(jaccol==0)then
-            do iw = 1, nwalls
-                vtgrad0(iw) = vtgrad(iw)
-            end do
-        elseif(jaccol>0)then
-
-            ! use saved wall temperature gradient except for conduction problem corresponding to the perturbed wall temperature
-            if(izeqmap(jaccol,1)==eqwt)then
-                ieq = jaccol - nofwt
-            else
-                ieq = 0
-            endif
-            do iw = 1, nwalls
-                if(iw/=ieq)vtgrad(iw) = vtgrad0(iw)
-            end do
-        endif
-    endif                 
 
     ! dassl will try to force delta to be zero, so that fourier's law, q = -k dt/dx, is satisfied at the wall surface 
     if(update/=2)then

@@ -33,11 +33,8 @@
     real(eb) :: denl(2), denu(2), tu(2), tl(2)
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
     real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
-    real(eb) :: uflw0(nr,ns+2,2)
-    save uflw0
-    logical :: ventflg(mxhvent), roomflg(nr), anyvents
     real(eb) :: factor2, qchfraction, height, width
-    integer :: nirm, ifrom, ilay, islab, iprod, i, iroom, iroom1, iroom2, ik, im, ix, nslab
+    integer :: nirm, ifrom, ilay, islab, iprod, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
@@ -56,137 +53,108 @@
     end do
     if (option(fhflow)/=on) return
 
-    call ventflag(ventflg,roomflg,anyvents)
-    if(anyvents)then
-        do i = 1, n_hvents
-            if(ventflg(i)) then
-                ventptr=>hventinfo(i)
+    do i = 1, n_hvents
+        ventptr=>hventinfo(i)
 
-                iroom1 = ventptr%from
-                iroom2 = ventptr%to
-                ik = ventptr%counter
+        iroom1 = ventptr%from
+        iroom2 = ventptr%to
+        ik = ventptr%counter
 
-                do ilay = 1,2
-                    ventptr%mflow(1,ilay,1) = 0.0_eb
-                    ventptr%mflow(2,ilay,1) = 0.0_eb
-                    ventptr%mflow(1,ilay,2) = 0.0_eb
-                    ventptr%mflow(2,ilay,2) = 0.0_eb
+        do ilay = 1,2
+            ventptr%mflow(1,ilay,1) = 0.0_eb
+            ventptr%mflow(2,ilay,1) = 0.0_eb
+            ventptr%mflow(1,ilay,2) = 0.0_eb
+            ventptr%mflow(2,ilay,2) = 0.0_eb
+            ventptr%mflow_mix(1,ilay) = 0.0_eb
+            ventptr%mflow_mix(2,ilay) = 0.0_eb
+        end do
+
+        do islab = 1, mxfslab
+            ventptr%temp_slab(islab) = 0.0_eb
+            ventptr%flow_slab(islab) = 0.0_eb
+            ventptr%ybot_slab(islab) = 0.0_eb
+        end do
+
+        ! setup data structures for from and to room
+        call getvars(iroom1,iroom2,nprod,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
+
+        ! convert vent dimensions to absolute dimensions
+        yvbot = ventptr%sill + zflor(1)
+        yvtop = ventptr%soffit + zflor(1)
+        zlay(1) = zlay(1) + zflor(1)
+        zlay(2) = zlay(2) + zflor(2)
+
+        !  use new interpolator to find vent opening fraction
+        im = min(iroom1,iroom2)
+        ix = max(iroom1,iroom2)
+        factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
+        height = ventptr%soffit - ventptr%sill
+        width = ventptr%width*factor2
+        avent = height*width
+
+        if (avent>=1.0e-10_eb) then
+            call vent(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
+                epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
+                yvelev,xmslab,nslab)
+
+            ventptr%n_slabs = nslab
+            do islab = 1,nslab
+                ventptr%temp_slab(islab) = tslab(islab)
+                ventptr%flow_slab(islab) = xmslab(islab)*dirs12(islab)
+                ventptr%ybot_slab(islab) = yvelev(islab)
+                ventptr%ytop_slab(islab) = yvelev(islab+1)
+            end do
+
+            if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
+
+            call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
+
+            !  calculate entrainment type mixing at the vents
+
+            if (option(fentrain)==on) then
+                call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
+                    uflw3,vsas(1,i),vasa(1,i))
+                do ilay = 1, 2
+                    ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
+                    ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
+                end do
+            else
+                do ilay = 1, 2
                     ventptr%mflow_mix(1,ilay) = 0.0_eb
                     ventptr%mflow_mix(2,ilay) = 0.0_eb
                 end do
+            end if
 
-                do islab = 1, mxfslab
-                    ventptr%temp_slab(islab) = 0.0_eb
-                    ventptr%flow_slab(islab) = 0.0_eb
-                    ventptr%ybot_slab(islab) = 0.0_eb
+            ! sum flows from both rooms for each layer and type of product
+            ! (but only if the room is an inside room)
+
+            if (iroom1>=1.and.iroom1<=nirm) then
+                do iprod = 1, nprod + 2
+                    uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw2(1,iprod,l)
+                    uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw2(1,iprod,u)
                 end do
-
-                ! setup data structures for from and to room
-                call getvars(iroom1,iroom2,nprod,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
-
-                ! convert vent dimensions to absolute dimensions
-                yvbot = ventptr%sill + zflor(1)
-                yvtop = ventptr%soffit + zflor(1)
-                zlay(1) = zlay(1) + zflor(1)
-                zlay(2) = zlay(2) + zflor(2)
-
-                !  use new interpolator to find vent opening fraction
-                im = min(iroom1,iroom2)
-                ix = max(iroom1,iroom2)
-                factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
-                height = ventptr%soffit - ventptr%sill
-                width = ventptr%width*factor2
-                avent = height*width
-
-                if (avent>=1.0e-10_eb) then
-                    call vent(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
-                        epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
-                        yvelev,xmslab,nslab)
-
-                    ventptr%n_slabs = nslab
-                    do islab = 1,nslab
-                        ventptr%temp_slab(islab) = tslab(islab)
-                        ventptr%flow_slab(islab) = xmslab(islab)*dirs12(islab)
-                        ventptr%ybot_slab(islab) = yvelev(islab)
-                        ventptr%ytop_slab(islab) = yvelev(islab+1)
+                if (option(fentrain)==on) then
+                    do iprod = 1, nprod + 2
+                        uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw3(1,iprod,l)
+                        uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw3(1,iprod,u)
                     end do
-
-                    if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
-
-                    call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
-
-                    !  calculate entrainment type mixing at the vents
-
-                    if (option(fentrain)==on) then
-                        call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
-                            uflw3,vsas(1,i),vasa(1,i))
-                        do ilay = 1, 2
-                            ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
-                            ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
-                        end do
-                    else
-                        do ilay = 1, 2
-                            ventptr%mflow_mix(1,ilay) = 0.0_eb
-                            ventptr%mflow_mix(2,ilay) = 0.0_eb
-                        end do
-                    end if
-
-                    ! sum flows from both rooms for each layer and type of product
-                    ! (but only if the room is an inside room)
-
-                    if (iroom1>=1.and.iroom1<=nirm) then
-                        do iprod = 1, nprod + 2
-                            uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw2(1,iprod,l)
-                            uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw2(1,iprod,u)
-                        end do
-                        if (option(fentrain)==on) then
-                            do iprod = 1, nprod + 2
-                                uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw3(1,iprod,l)
-                                uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw3(1,iprod,u)
-                            end do
-                        endif
-                    endif
-                    if (iroom2>=1.and.iroom2<=nirm) then
-                        do iprod = 1, nprod + 2
-                            uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw2(2,iprod,l)
-                            uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw2(2,iprod,u)
-                        end do
-                        if (option(fentrain)==on) then
-                            do iprod = 1, nprod + 2
-                                uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw3(2,iprod,l)
-                                uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw3(2,iprod,u)
-                            end do
-                        endif
-                    endif
                 endif
             endif
-        end do
-    endif
-
-    if(option(fmodjac)==on)then
-        if(jaccol==0)then
-
-            ! we need to save the solution for later jacobian calculations
-            do iroom = 1, nm1
+            if (iroom2>=1.and.iroom2<=nirm) then
                 do iprod = 1, nprod + 2
-                    uflw0(iroom,iprod,lower) = uflw(iroom,iprod,lower)
-                    uflw0(iroom,iprod,upper) = uflw(iroom,iprod,upper)
+                    uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw2(2,iprod,l)
+                    uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw2(2,iprod,u)
                 end do
-            end do
-        elseif(jaccol>0)then
-
-            ! we are computing a jacobian, so get previously saved solution for rooms that are not affected
-            ! by perturbed solution variable
-            do iroom = 1, nm1
-                if(.not.roomflg(iroom))then
+                if (option(fentrain)==on) then
                     do iprod = 1, nprod + 2
-                        uflw(iroom,iprod,lower) = uflw0(iroom,iprod,lower)
-                        uflw(iroom,iprod,upper) = uflw0(iroom,iprod,upper)
+                        uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw3(2,iprod,l)
+                        uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw3(2,iprod,u)
                     end do
                 endif
-            end do
+            endif
         endif
-    endif
+
+    end do
 
     if (prnslab) then
         call SSprintslab (position, outarray)
@@ -342,77 +310,6 @@
     fm_entrained = 0.44_eb * (tl/tu)**twothirds * (grav_con*rhol**2/(cp*tl))**onethird * hdot**onethird * w**twothirds * zz
     return
     end subroutine poreh_plume
-
-    ! --------------------------- ventflag -------------------------------------------
-
-    subroutine ventflag(ventflg,roomflg,anyvents)
-
-    use cenviro
-    use cfast_main
-    use opt
-    use vents
-    implicit none
-
-    logical, intent(out) :: ventflg(mxhvent), roomflg(nr), anyvents
-
-    integer i, ieqtyp, iroom, iroom1, iroom2
-    type(vent_type), pointer :: ventptr
-
-    ! turn all vents on
-    anyvents = .true.
-    do i = 1, n_hvents
-        ventflg(i) = .true.
-    end do
-
-    ! if the 2nd modified jacobian option is on and a jacobian is being computed (jaccol>0) then compute
-    !  vent flows only for vents that that are connected
-    ! to rooms whose pressure, layer height, layer temperature,  or oxygen level is being perturbed.
-
-    if(option(fmodjac)==on)then
-        if(jaccol>0)then
-
-            ! we are computing a jacobian
-            ieqtyp = izeqmap(jaccol,1)
-            iroom = izeqmap(jaccol,2)
-            anyvents = .false.
-            do i = 1, n_hvents
-                ventflg(i) = .false.
-            end do
-            do i = 1, nm1
-                roomflg(i) = .false.
-            end do
-            if(ieqtyp==eqp.or.ieqtyp==eqtu.or.ieqtyp==eqvu.or.ieqtyp==eqtl.or.ieqtyp==eqoxyl.or.ieqtyp==eqoxyu)then
-
-                ! determine all rooms connected to perturbed rooms
-                do i = 1, n_hvents
-                    ventptr=>hventinfo(i)
-
-                    iroom1 = ventptr%from
-                    iroom2 = ventptr%to
-                    if(iroom==iroom1.or.iroom==iroom2)then
-                        roomflg(iroom1) = .true.
-                        roomflg(iroom2) = .true.
-                    endif
-                end do
-                roomflg(nm1+1) = .false.
-
-                ! determine all vents connected to the above rooms
-                do i = 1, n_hvents
-                    ventptr=>hventinfo(i)
-
-                    iroom1 = ventptr%from
-                    iroom2 = ventptr%to
-                    if(roomflg(iroom1).or.roomflg(iroom2))then
-                        ventflg(i) = .true.
-                        anyvents = .true.
-                    endif
-                end do
-            endif
-        endif
-    endif
-
-    return
-    end subroutine ventflag
 
     ! --------------------------- vent -------------------------------------------
 

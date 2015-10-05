@@ -23,16 +23,14 @@
     real(eb), intent(out), dimension(nr,nwal) :: flxrad
 
     real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb, fheight
-    integer :: map(nwal) = (/1, 4, 2, 3/), i, j, ieqtyp, iroom, iwall, ilay, imap, ifire, nrmfire
+    integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, ilay, imap, ifire, nrmfire
     logical black
     type(room_type), pointer :: roomptr
 
     ! work and dummy arrays passed to rad2 and rad4
     
-    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(nwal,mxfire), flxrad0(nr,nwal), flwrad0(nr,2)
+    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(nwal,mxfire)
     real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire)
-    logical roomflg(nr)
-    save flxrad0, flwrad0
 
     do i = 1, nm1
         do j = 1, nwal
@@ -46,29 +44,6 @@
     black = .false.
     if(option(frad)==3) black = .true.
 
-    ! initially assume that we compute radiation transfer in every room
-    do i = 1, nm1
-        roomflg(i) = .true.
-    end do
-
-    if(option(fmodjac)==on)then
-        if(jaccol>0)then
-
-            ! if 2nd modified jacobian is active and dassl is computing a jacobian then
-            ! only compute the radiation heat transfer in the room where the dassl 
-            ! solution variable has been perturbed
-            do i = 1, nm1
-                roomflg(i) = .false.
-            end do
-            ieqtyp = izeqmap(jaccol,1)
-            iroom = izeqmap(jaccol,2)
-            if(ieqtyp==eqvu.or.ieqtyp==eqtu.or.ieqtyp==eqtl.or.ieqtyp==eqwt)then
-                if(ieqtyp==eqwt)iroom = izwall(iroom,1)
-                roomflg(iroom) = .true.
-            endif
-        endif
-    endif
-
     do i = 1, nm1
         roomptr => roominfo(i)
         zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
@@ -79,84 +54,55 @@
     defabslow = 0.01_eb
 
     do i = 1, nm1
-        if(roomflg(i))then
-            roomptr => roominfo(i)
-            tg(upper) = zztemp(i,upper)
-            tg(lower) = zztemp(i,lower)
-            zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
-            zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
-            do iwall = 1, 4
-                if(mod(iwall,2)==1)then
-                    ilay = upper
-                else
-                    ilay = lower
-                endif
-                imap = map(iwall)
-                twall(imap) = zzwtemp(i,iwall,1)
-                emis(imap) = epw(iwall,i)
-            end do
-            ifire = ifrpnt(i,2)
-            nrmfire = ifrpnt(i,1)
-            do j = 1, nrmfire
-                xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
-                yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
-                !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
-                ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
-                call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight) 
-                if(fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%height)then
-                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%height-xfire(ifire+j,f_fire_zpos))/3.0_eb
-                else
-                    zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
-                end if
-            end do
-            if(.not.black)then
-               if(option(frad)==4.or.lfbt==1)then
-                  zzabsb(upper,i) = defabsup
-                  zzabsb(lower,i) = defabslow
-               else
-                  zzabsb(upper,i) = absorb(i, upper)
-                  zzabsb(lower,i) = absorb(i, lower)
-               endif
+        roomptr => roominfo(i)
+        tg(upper) = zztemp(i,upper)
+        tg(lower) = zztemp(i,lower)
+        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
+        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
+        do iwall = 1, 4
+            if(mod(iwall,2)==1)then
+                ilay = upper
+            else
+                ilay = lower
             endif
-            call rad4(twall,tg,emis,zzabsb(1,i),i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
-                      xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-                      qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
-            do j = 1, nwal
-                flxrad(i,j) = qflxw(map(j))
-            end do
-
-            flwrad(i,1) = qlay(1)
-            flwrad(i,2) = qlay(2)
+            imap = map(iwall)
+            twall(imap) = zzwtemp(i,iwall,1)
+            emis(imap) = epw(iwall,i)
+        end do
+        ifire = ifrpnt(i,2)
+        nrmfire = ifrpnt(i,1)
+        do j = 1, nrmfire
+            xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
+            yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
+            !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
+            ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
+            call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight)
+            if(fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%height)then
+                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%height-xfire(ifire+j,f_fire_zpos))/3.0_eb
+            else
+                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
+            end if
+        end do
+        if(.not.black)then
+            if(option(frad)==4.or.lfbt==1)then
+                zzabsb(upper,i) = defabsup
+                zzabsb(lower,i) = defabslow
+            else
+                zzabsb(upper,i) = absorb(i, upper)
+                zzabsb(lower,i) = absorb(i, lower)
+            endif
         endif
+        call rad4(twall,tg,emis,zzabsb(1,i),i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
+            xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+            qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
+        do j = 1, nwal
+            flxrad(i,j) = qflxw(map(j))
+        end do
+
+        flwrad(i,1) = qlay(1)
+        flwrad(i,2) = qlay(2)
     end do
 
-    if(option(fmodjac)==on)then
-        if(jaccol==0)then
-
-            ! if the jacobian option is active and dassl is computing the base vector for
-            ! the jacobian calculation then save the flow and flux calculation for later use
-            do iroom = 1, nm1
-                do iwall = 1, nwal
-                    flxrad0(iroom,iwall) = flxrad(iroom,iwall)
-                end do
-                flwrad0(iroom,1) = flwrad(iroom,1)
-                flwrad0(iroom,2) = flwrad(iroom,2)
-            end do
-        else if(jaccol>0)then
-
-            ! dassl is computing the jaccol'th column of a jacobian.  copy values into
-            ! the flow and flux vectors that have not changed from the base vector
-            do iroom = 1, nm1
-                if(.not.roomflg(iroom))then
-                    do iwall = 1, nwal
-                        flxrad(iroom,iwall) = flxrad0(iroom,iwall)
-                    end do
-                    flwrad(iroom,1) = flwrad0(iroom,1)
-                    flwrad(iroom,2) = flwrad0(iroom,2)
-                end if
-            end do
-        endif
-    endif
     return
     end subroutine radiation
 

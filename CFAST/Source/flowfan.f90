@@ -21,10 +21,9 @@
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
     real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
 
-    real(eb) :: filter, qcifraction, flwmv0(nr,ns+2,2), deltpmv0(mxnode), delttmv0(mxbranch) 
-    integer :: i, ii, j, k, ieqtyp, iroom, isys, nprod
-    logical :: first = .true., doit, hvacflg
-    save first,flwmv0,deltpmv0,delttmv0
+    real(eb) :: filter, qcifraction
+    integer :: i, ii, j, k, isys, nprod
+    logical :: hvacflg
 
     ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.  
     ! chv should eventually be defined elsewhere.
@@ -32,18 +31,8 @@
     hvacflg = .false.
     if (.not.mvcalc.or.option(fmvent)/=on.or.(nhvpvar==0.and.nhvtvar==0)) return
     hvacflg = .true.
-    if (first) then
-        first = .false.
-        do i = 1, nbr
-            chv(i) = ductcv
-        end do
-        do i = 1, n
-            do j = 1, ns+2
-                flwmv0(i,j,upper) = 0.0_eb
-                flwmv0(i,j,lower) = 0.0_eb
-            end do
-        end do
-    endif
+
+    chv(1:nbr) = ductcv
 
     do i = 1, n
         do j = 1, ns+2
@@ -59,55 +48,6 @@
     do i = 1, nhvtvar
         delttmv(i) = hvtsolv(i)
     end do
-
-    if(option(fmodjac)==on)then
-
-        ! determine where the hvac calculation should be done.  initially assume that it should be.
-        doit = .true.
-        if(jaccol>0)then
-            ieqtyp = izeqmap(jaccol,1)
-
-            ! if we're computing a jacobian and a hvac pressure or temperature is being perturbed then do it.
-            if(ieqtyp==eqpmv.or.ieqtyp==eqtmv)then
-                doit = .true.
-
-                ! if we're computing a jacobian and a wall or target temperature is being perturbed then don't do it
-            elseif(ieqtyp==eqtt.or.ieqtyp==eqwt)then
-                doit = .false.
-
-                ! if we're computing a jacobian and anything else is being perturbed then do it.  if there are no 
-                ! hvac connections in the room where the variable is being perturbed then we shouldn't have to do 
-                ! the hvac computation but that isn't working now.
-            else
-                iroom = izeqmap(jaccol,2)
-                if(.not.izhvac(iroom))doit = .false.
-                doit = .true.
-            endif
-        endif
-
-        ! if we're not going to do the hvac computation then get the answers from the previously saved vectors
-        if(.not.doit)then
-            do i = 1, nhvpvar
-                deltpmv(i) = deltpmv0(i)
-            end do
-            do i = 1, nhvtvar
-                delttmv(i) = delttmv0(i)
-            end do
-            do i = 1, n
-                flwmv(i,m,upper) = flwmv0(i,m,upper)
-                flwmv(i,m,lower) = flwmv0(i,m,lower)
-                flwmv(i,q,upper) = flwmv0(i,q,upper)
-                flwmv(i,q,lower) = flwmv0(i,q,lower)
-                do j = 1, ns
-                    if(activs(j))then
-                        flwmv(i,j+2,upper) = flwmv0(i,j+2,upper)
-                        flwmv(i,j+2,lower) = flwmv0(i,j+2,lower)
-                    endif
-                end do
-            end do
-            return
-        endif
-    endif
 
     call hvfrex (hvpsolv,hvtsolv)
     call hvmflo (tsec, deltpmv)
@@ -141,31 +81,6 @@
         filtered(i,q,upper) = filtered(i,q,upper) + max(0.0_eb,cp*hvextt(ii,upper)*filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
         filtered(i,q,lower) = filtered(i,q,lower) + max(0.0_eb,cp*hvextt(ii,lower)*filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
     end do
-
-    if(option(fmodjac)==on)then
-        if(jaccol==0)then
-
-            ! save information for a later jacobian calculation
-            do i = 1, nhvpvar
-                deltpmv0(i) = deltpmv(i)
-            end do
-            do i = 1, nhvtvar
-                delttmv0(i) = delttmv(i)
-            end do
-            do i = 1, n
-                flwmv0(i,m,upper) = flwmv(i,m,upper)
-                flwmv0(i,m,lower) = flwmv(i,m,lower)
-                flwmv0(i,q,upper) = flwmv(i,q,upper)
-                flwmv0(i,q,lower) = flwmv(i,q,lower)
-                do j = 1, ns
-                    if(activs(j))then
-                        flwmv0(i,j+2,upper) = flwmv(i,j+2,upper)
-                        flwmv0(i,j+2,lower) = flwmv(i,j+2,lower)
-                    endif
-                end do
-            end do
-        endif
-    endif
 
     return
     end subroutine mechanical_flow

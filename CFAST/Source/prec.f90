@@ -22,10 +22,9 @@ real(eb), parameter :: onethird=1.0_eb/3.0_eb
 real(eb), parameter :: twothirds = 2.0_eb/3.0_eb
 
 real(eb), parameter :: grav_con=9.80665_eb
-!real(eb), parameter :: grav_con=9.8_eb
-real(eb), parameter :: gsqrt=sqrt(grav_con)
+real(eb), parameter :: gsqrt = sqrt(grav_con)
 
 real(eb), parameter :: cos45 = sqrt(2.0_eb)/2.0_eb
-real(eb), parameter :: kelvin_c_offset=273.15_eb
+real(eb), parameter :: kelvin_c_offset = 273.15_eb
 
 end module precision_parameters

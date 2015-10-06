@@ -52,6 +52,8 @@ module conduction_routines
 
     ibeg = 1
     iend = nwalls
+    wfluxin = 0.0_eb
+    wfluxout = 0.0_eb
 
     do iw = ibeg, iend
         iroom = izwall(iw,w_from_room)
@@ -184,9 +186,7 @@ module conduction_routines
 
     ! construct right hand side (rhs) of tri-diagonal system for interior nodes.  rhs at boundary and slab break 
     ! points are defined farther down.
-    do i = 2, nx - 1
-        tnew(i) = wtemp(i)
-    end do
+    tnew(2:nx-1) = wtemp(2:nx-1)
 
     ! set up tri-diagonal coefficient matrix
 
@@ -266,9 +266,7 @@ module conduction_routines
         c(i) = c(i)/a(i)
     end do
     a(nx) = a(nx) - b(nx)*c(nx-1)
-    do i = 1, nx
-        tderiv(i) = 0.0_eb
-    end do
+    tderiv(1:nx) = 0.0_eb
     tderiv(1) = 1.0_eb
 
     ! now construct guess at new temperature profile
@@ -289,10 +287,7 @@ module conduction_routines
 
     ! we don't keep solution unless update is 1 or 2
     if (update/=0) then
-        do i = 1, nx
-            wtemp(i) = tnew(i)
-        end do
-
+        wtemp(1:nx) = tnew(1:nx)
     endif
 
     ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that
@@ -309,6 +304,7 @@ module conduction_routines
     tgrad(2) = (tnew(2)-tnew(1))/walldx(1)
     tderv = tderiv(2)
     return
+    
     end subroutine conductive_flux
     
 end module conduction_routines

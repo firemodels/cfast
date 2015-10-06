@@ -385,10 +385,8 @@
     '               Lower Layer',/, &
     'Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
     '       Outflow      Inflow       Outflow',/,134('-'))
-5010 format (' ')
+
 5020 format (a1,i3,3x,a12,3x,a12,1x,a)
-5030 format (a1,i3,3x,a12,3x,a,3x,a12,3x,a)
-5040 format (22x,a12,1x,a)    
     end subroutine rsltflw
 
 ! --------------------------- rsltflwt -------------------------------------------
@@ -530,7 +528,7 @@
 
     integer, intent(in) :: itprt
     
-    integer :: length, i, iw, itarg, itctemp, inode
+    integer :: length, i, iw, itarg, inode
     real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp, tmp(nnodes_trg), depth
     
     type(target_type), pointer :: targptr
@@ -559,7 +557,6 @@
                 do inode = 2, nnodes_trg
                     if (depth>targptr%thickness*targptr%depth_loc) then
                         tctemp = (targptr%temperature(inode-1)+targptr%temperature(inode))/2
-                        itctemp = inode
                         exit
                     end if
                     depth = depth + targptr%thickness*tmp(inode-1)
@@ -689,8 +686,6 @@
     return
 
 5000 format ('Data file is ',a,'    Title is ',a)
-10  format ('CFAST Version ',i1,'.',i1,'.',i2,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
-20  format ('CFAST Version ',i1,'.',i1,'.',i1,' built ',i4.4,'/',i2.2,'/',i2.2,', run ',i4.4,'/',i2.2,'/',i2.2,/)
     end subroutine output_initial_conditions
 
 ! --------------------------- outover -------------------------------------------
@@ -1764,9 +1759,6 @@
 
     ! error processing
 
-    !	history file
-10  write (logerr,5030) mod(ios,256), trim(historyfile)
-    stop
     !	smokeview file
 11  write(logerr,5040) mod(ios,256),trim(smvhead),trim(smvdata)
     stop
@@ -1774,7 +1766,6 @@
 81  write(logerr,*) '***Fatal error writing to the status file ',ios
     stop
 
-5030 FORMAT ('***Error ',i4,' while accessing history, file = ',A)
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
 
     end subroutine openoutputfiles

@@ -484,19 +484,12 @@
     !                datapath - path (without a file name) to the folder where the project data file resides
     !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of 
     !                          datapath + project cannot exceed 256 characters
-    !                errorcode - error code on return (i*4)
-    !					100 program called with no arguments
-    !					101 the filename has an extension
-    !					102 project files does not exist
-    !					103 total file name length includ path >256
-    !					0 okay
 
     implicit none
     
     character(*), intent(out) :: exepath, datapath, project
     
-    integer :: i, loop, status
-    integer(2) :: n, ld(2), li(2), ln(2), le(2), lb
+    integer :: i, loop, status, n, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
     character (64) :: name(2)
     logical :: doesthefileexist
@@ -798,11 +791,9 @@
     
     implicit none
 
-    integer(2) :: year, month, day
+    integer :: year, month, day, iarg(8), iopt(26), cmdflag, nargs, values(8)
     character :: strs(8)*60
     character(60) :: solveini
-    integer :: iarg(8), iopt(26), cmdflag, nargs
-    integer :: values(8)
     character(10) :: big_ben(3)
 
     ! current date
@@ -856,7 +847,7 @@
     implicit none
 
     integer, intent(in) :: n
-    real(eb), intent(out) :: ra(n)
+    real(eb), intent(inout) :: ra(n)
         
     integer j, i, inc
     real(eb) rra
@@ -886,10 +877,10 @@
     subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
 
     !     routine: sortbrm
-    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to 
+    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to
     !               sort fire and detector data structures by room number.
     !     arguments: x       floating point info to be sorted
-    !                lx      leading dimension of x 
+    !                lx      leading dimension of x
     !                ix      integer info to be sorted
     !                lix     leading dimension of ix in calling routine
     !                nrow    number of rows in x and ix
@@ -903,71 +894,61 @@
     !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
 
     use precision_parameters
+    use cparams, only : nr, mxfires
+    use dsize, only : mxdtect
     implicit none
-  
+
     ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
-    integer, parameter :: lwork=100
-    
-    
+    integer, parameter :: lwork = nr + mxfires + mxdtect
+
+
     integer, intent(in) :: lix, ncolix, ncolx
-    integer, intent(in) :: nrow, isort, nroom, lx, ldp   
-    
-    integer, intent(out) :: ix(lix,ncolix), ipoint(ldp,*)
-    real(eb), intent(out) :: x(lx,ncolx)
-    
+    integer, intent(in) :: nrow, isort, nroom, lx, ldp
+    integer, intent(inout) :: ix(lix,ncolix)
+    integer, intent(out) :: ipoint(ldp,*)
+    real(eb), intent(inout) :: x(lx,ncolx)
+
     integer :: i, j, iroom, iwork(lwork), iperm(lwork)
     real(eb) :: work(lwork)
 
-    ! create a permutation vector using the isort'th column of ix
     if(nrow>lwork)then
-        call xerror('not enough work space in sortbrm',0,1,2)
+        call xerror('Error: Internal error sorting detectors. Not enough work space in sortbrm',0,1,2)
     endif
-    do i = 1, nrow
-        iperm(i) = i
+
+    ! create a permutation vector using the isort'th column of ix
+    iperm(1:nrow) = (/(i,i=1,nrow)/)
+    call indexi(nrow,ix(1,isort),iperm)
+
+    ! reorder integer array using the permutation vector
+    do j = 1, ncolix
+        iwork(1:nrow) = ix(iperm(1:nrow),j)
+        ix(1:nrow,j) = iwork(1:nrow)
     end do
-        call indexi(nrow,ix(1,isort),iperm)
 
-        ! reorder integer array using the permutation vector
-        do j = 1, ncolix
-            do i = 1, nrow
-                iwork(i) = ix(iperm(i),j)
-            end do
-            do i = 1, nrow
-                ix(i,j) = iwork(i)
-            end do
-        end do
+    ! reorder the floating point arrays using the permutation vector
+    do j = 1, ncolx
+        work(1:nrow) = x(iperm(1:nrow),j)
+        x(1:nrow,j) = work(1:nrow)
+    end do
 
-        ! reorder the floating point arrays using the permutation vector
-        do j = 1, ncolx
-            do i = 1, nrow
-                work(i) = x(iperm(i),j)
-            end do
-            do i = 1, nrow
-                x(i,j) = work(i)
-            end do
-        end do
-
-        ! construct the pointer array
-        do i = 1, nroom
-            ipoint(i,1) = 0
-            ipoint(i,2) = 0
-        end do
-        do i = 1, nrow
-            iroom = ix(i,isort)
-            ipoint(iroom,1) = ipoint(iroom,1) + 1
-            if (ipoint(iroom,2)==0) ipoint(iroom,2) = i
-        end do
-        do i = 1, nroom
-            if (ipoint(i,2)==0) ipoint(i,2) = 1
-        end do
-        return
+    ! construct the pointer array
+    ipoint(1:nroom,1:2) = 0
+    do i = 1, nrow
+        iroom = ix(i,isort)
+        ipoint(iroom,1) = ipoint(iroom,1) + 1
+        if (ipoint(iroom,2)==0) ipoint(iroom,2) = i
+    end do
+    do i = 1, nroom
+        if (ipoint(i,2)==0) ipoint(i,2) = 1
+    end do
+    return
+    
     end subroutine sortbrm
 
 ! --------------------------- sort_fire -------------------------------------------
 
     subroutine sort_fire (nfire,ifroom,xfire,ifrpnt,nm1)
 
-    !     routine: sortbrm
     !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used 
     !              in this order by the ceiling jet and radiation algorithms
     !     arguments: nfire   number of fires
@@ -983,41 +964,28 @@
     implicit none
     
     integer, intent(in) :: nm1, nfire
-    
-    integer, intent(out) :: ifroom(mxfire), ifrpnt(nr,2)
-    real(eb), intent(out) :: xfire(mxfire,mxfirp)
+    integer, intent(inout) :: ifroom(mxfire)
+    real(eb), intent(inout) :: xfire(mxfire,mxfirp)
+    integer, intent(out) :: ifrpnt(nr,2)
     
     integer :: iperm(mxfire), iwork(mxfire), i, j, irm
     real(eb) :: work(mxfire)
 
     ! create a permutation vector from the list of fire rooms which is ordered by increasing room number
-    do i = 1, nfire
-        iperm(i) = i
-    end do
+    iperm(1:nfire) = (/(i,i=1,nfire)/)
     call indexi(nfire,ifroom,iperm)
 
     ! reorder the two arrays with the permutation vector
-    do i = 1, nfire
-        iwork(i) = ifroom(iperm(i))
-    end do
-    do i = 1, nfire
-        ifroom(i) = iwork(i)
-    end do
+    iwork(1:nfire) = ifroom(iperm(1:nfire))
+    ifroom(1:nfire) = iwork(1:nfire)
 
     do j = 1, mxfirp
-        do i = 1, nfire
-            work(i) = xfire(iperm(i),j)
-        end do
-        do i = 1, nfire
-            xfire(i,j) = work(i)
-        end do
+        work(1:nfire) = xfire(iperm(1:nfire),j)
+        xfire(1:nfire,j) = work(1:nfire)
     end do
 
     ! do the pointer arrays for the radiation and ceiling jet routines
-    do i = 1, nm1
-        ifrpnt(i,1) = 0
-        ifrpnt(i,2) = 0
-    end do
+    ifrpnt(1:nm1,1:2) = 0
     do i = 1, nfire
         irm = ifroom(i)
         ifrpnt(irm,1) = ifrpnt(irm,1) + 1
@@ -1027,6 +995,7 @@
         if (ifrpnt(i,2)==0) ifrpnt(i,2) = 1
     end do
     return
+    
     end subroutine sort_fire
 
 ! --------------------------- sstrng -------------------------------------------

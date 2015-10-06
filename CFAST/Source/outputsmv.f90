@@ -1300,5 +1300,7 @@ CHARACTER(256) MESSAGE
 IF (IZERO==0) RETURN
  
 WRITE(MESSAGE,'(4A)') 'ERROR: Memory allocation failed for ', TRIM(VarName),' in the routine ',TRIM(CodeSect)
+write (*,*) message
+call cfastexit('CFAST',1)
 
 END SUBROUTINE ChkMemErr

@@ -100,20 +100,16 @@
     integer :: ib, niter, iter, i, ii, j, k
     
     ! calculate average temperatures and densities for each branch
-    do ib = 1, nbr
-        pav = pofset
-        rohb(ib) = pav/(rgas*tbr(ib))
-        bflo(ib) = 1.0_eb
-    end do
+    pav = pofset
+    rohb(1:nbr) = pav/(rgas*tbr(1:nbr))
+    bflo(nbr) = 1.0_eb
 
     ! start the iteration cycle
     niter = 2
     do iter = 1, niter
 
         ! initialize conductance
-        do ib = 1, nbr
-            ce(ib)=0.0_eb
-        end do
+        ce(1:nbr)=0.0_eb
 
         ! convert from pressure to mass flow rate coefficients
         do ib = 1, nbr
@@ -186,9 +182,7 @@
     real(eb) :: hvta, flowin, hvtemp
     integer ib, i, ii, j
 
-    do ib = 1, nbr
-        delttmv(ib) = rohb(ib)*hvdvol(ib)*tprime(ib)/gamma
-    end do
+    delttmv(1:nbr) = rohb(1:nbr)*hvdvol(1:nbr)*tprime(1:nbr)/gamma
 
     do i = 1, nnode
 
@@ -299,7 +293,7 @@
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*)
     
     real(eb) :: z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
-    integer :: i, ii, j, ib, lsp
+    integer :: i, ii, j, lsp
     type(room_type), pointer :: roomptr
 
     do ii = 1, next
@@ -360,10 +354,10 @@
         ii = izhvmapi(i)
         hvp(ii) = hvpsolv(i)
     end do
-    do ib = 1, nhvtvar
-        tbr(ib) = hvtsolv(ib)
-    end do
+
+    tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)
     return
+    
     end subroutine hvfrex
 
 
@@ -386,22 +380,16 @@
     real(eb), intent(out) :: prprime(*) 
     integer, intent(in) :: nprod
     
-    integer i, ii, j, k, ib, isys, isof, nhvpr
+    integer ii, j, k, ib, isys, isof, nhvpr
     
     ! sum product flows entering system
     nhvpr = nlspct*nhvsys
     if(nprod/=0)then
-        do i = 1, nhvpr
-            prprime(i) = 0.0_eb
-        end do
+        prprime(1:nhvpr) = 0.0_eb
     endif
     if(ns>0)then
-        do isys = 1, nhvsys
-            hvmfsys(isys) = 0.0_eb
-            do k = 1, ns
-                dhvprsys(isys,k) = 0.0_eb
-            end do
-        end do
+        hvmfsys(1:nhvsys) = 0.0_eb
+        dhvprsys(1:nhvsys,1:ns) = 0.0_eb
     endif
 
     ! flow into the isys system

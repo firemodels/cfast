@@ -99,7 +99,6 @@
     write (logerr,5004) total_steps
     call cfastexit ('CFAST', 0)
 
-5001 format ('***Error: Error encountered in opening data files; code = ',i4)
 5003 format ('Total execution time = ',1pg10.3,' seconds')
 5004 format ('Total time steps = ',i10)     
     end program cfast
@@ -139,6 +138,7 @@
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nprint, i, info, nodes
     real(eb) :: tol
 
+    ires = 0
 1   continue
 
     call room_connections (t)
@@ -197,7 +197,7 @@
     ! vertical vent then do not use the snsqe pressure solution,
     ! use the original pressure solution that was based on rho*g*h.
     do i = 1, nm1
-        if(izcon(i))p(i+nofp) = hhvp(i)
+        if(izcon(i)) p(i+nofp) = hhvp(i)
     end do
     do i = 1, nhvpvar
         p(i+nofpmv) = hhvp(i+nm1)
@@ -294,20 +294,19 @@
 
     real(eb) :: rwork(lrw), rpar(1)
     integer :: iwork(liw), info(15), ipar(3), info2(15)
-    integer :: izp0(0:maxteq)
-    real(eb) :: pprime(maxteq), pdnew(maxteq), p0(maxteq), vatol(maxeq), vrtol(maxeq)
+    real(eb) :: pprime(maxteq), pdnew(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
-    logical :: iprint, ismv, ltarg, exists, ispread,firstpassforsmokeview
-    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor, isroom
+    logical :: iprint, ismv, exists, ispread,firstpassforsmokeview
+    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
         ostptime, tdtect, tobj
-    character(133) :: messg
     external calculate_residuals, jac
     integer :: funit
     integer :: first_time
     integer :: stopunit, stopiter, ios
 
     call cptime(toff)
+    ires = 0
     tpaws = tstop + 1.0_eb
     tstart = itmstp - 1
     told = tstart
@@ -391,10 +390,6 @@
     ipar(1) = nodes
     ipar(2) = all
     idset = 0
-
-    ! Setting initial vector
-    p0 = 0.0_eb
-    izp0 = off
 
     ! construct initial solution
     do i = 1, nequals
@@ -497,7 +492,6 @@
 
     ! now do normal output (printout, spreadsheets, ...)
     if (idid>0) then
-        ltarg = .false.
 
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
 
@@ -636,7 +630,6 @@
         ! a detector is the first one that went off
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
-            isroom = ixdtect(isensor,droom)
             call update_detectors (set_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
@@ -692,7 +685,7 @@
                 if (idid<0) then
                     call find_error_component (ipar(3))
                     write (logerr,101) idid
-                    write(messg,'(a13,f10.5,1x,a8,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
+                    write(logerr,'(a13,f10.5,1x,a8,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     call cfastexit ('CFAST', idid)
                     stop
                 endif
@@ -761,7 +754,8 @@
     integer, intent(in) :: nodes, nequals, nlspct
     real(eb), intent(in) :: t, told, pdnew(*)
     
-    real(eb), intent(out) :: p(*), pold(*), pdold(*)
+    real(eb), intent(inout) :: p(*), pdold(*)
+    real(eb), intent(out) :: pold(*)
     
     integer :: i
     real(eb) :: dt 
@@ -781,9 +775,7 @@
     ! make sure species mass adds up to total mass
     if (nlspct>0) call synchronize_species_mass (p,nodes+1)
 
-    do i = 1, nequals
-        pold(i) = p(i)
-    end do
+    pold(1:nequals) = p(1:nequals)
 
     return
     end subroutine update_solution
@@ -1426,12 +1418,10 @@
         zzpabs(n) = pofset
         zztemp(n,upper) = exterior_temperature
         zztemp(n,lower) = exterior_temperature
-        do lsp = 3, ns
-            zzcspec(n,upper,lsp) = 0.0_eb
-            zzcspec(n,lower,lsp) = 0.0_eb
-            zzgspec(n,lower,lsp) = 0.0_eb
-            zzgspec(n,upper,lsp) = 0.0_eb
-        end do
+        zzcspec(n,upper,3:ns) = 0.0_eb
+        zzcspec(n,lower,3:ns) = 0.0_eb
+        zzgspec(n,lower,3:ns) = 0.0_eb
+        zzgspec(n,upper,3:ns) = 0.0_eb
         zzcspec(n,upper,1) = 0.770_eb
         zzcspec(n,lower,1) = 0.770_eb
         zzcspec(n,upper,2) = 0.230_eb
@@ -1446,16 +1436,12 @@
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
         zzcspec(n,upper,8) = relhum*xh2o
         zzcspec(n,lower,8) = relhum*xh2o
-        
-        do layer = upper, lower
-            zzrho(n,layer) = zzpabs(n)/rgas/zztemp(n,layer)
-            zzmass(n,layer) = zzrho(n,layer)*zzvol(n,layer)
-        end do
+
+        zzrho(n,upper:lower) = zzpabs(n)/rgas/zztemp(n,upper:lower)
+        zzmass(n,upper:lower) = zzrho(n,layer)*zzvol(n,upper:lower)
 
         ! define horizontal vent data structures
-        do i = 1, mxccv
-            frmask(i) = 2**i
-        end do
+        frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)
         n_hvents = 0
         do i = 1, nm1
             do j = i + 1, n
@@ -1547,9 +1533,7 @@
         icol = 0
         ieq = nofwt
         ! set izwmap2 for the outside room first
-        do iwall = 1,4
-            izwmap2(iwall,nm1+1) = 0
-        end do
+        izwmap2(1:4,nm1+1) = 0
         do iroom = 1, nm1
             roomptr => roominfo(iroom)
             icnt = 0
@@ -1609,9 +1593,7 @@
         jacdim = jacn1 + jacn2 + jacn3
 
         ! indicate which rooms are connected to an hvac system
-        do i = 1, nm1
-            izhvac(i) = .false.
-        end do
+        izhvac(1:nm1) = .false.
         do ii = 1, next
             i = hvnode(1,ii)
             izhvac(i) = .true.
@@ -1856,9 +1838,8 @@
 
     if (nhvsys/=0.and.ns/=0) then
         isof = nofhvpr
-        do isys = 1, nhvsys
-            zzhvm(isys) = 0.0_eb
-        end do
+        zzhvm(1:nhvsys) = 0.0_eb
+   
         do lsp = 1, ns
             if (activs(lsp)) then
                 do isys = 1, nhvsys
@@ -1899,10 +1880,8 @@
     real(eb) :: factor(nr,2)
     integer :: iroom, isof, iprod
 
-    do iroom = 1,nm1
-        factor(iroom,upper) = 0.0_eb
-        factor(iroom,lower) = 0.0_eb
-    end do
+    factor(1:nm1,upper) = 0.0_eb
+    factor(1:nm1,lower) = 0.0_eb
 
     isof = ibeg
     do iprod = 1, min(ns,9)

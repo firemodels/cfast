@@ -870,7 +870,6 @@
     !     compute initial yprime, if necessary.
     !-----------------------------------------------------------------------
     !
-300 continue
     tn=t
     idid=1
     !
@@ -925,7 +924,7 @@
     rwork(lh) = h
     !
     !     load y and h*yprime into phi(*,1) and phi(*,2)
-360 itemp = lphi + neq
+    itemp = lphi + neq
     do i = 1,neq
         rwork(lphi + i - 1) = y(i)
         rwork(itemp + i - 1) = h*yprime(i)
@@ -1283,7 +1282,7 @@
     return
 760 msg = '***Fatal error: dassl--  repeated occurrences of illegal input'
     call xerrwv(msg,len_trim(msg),801,0,0,0,0,0,0.0d0,0.0d0)
-770 msg = '***Fatal error: dassl--  run terminated. apparent infinite loop'
+    msg = '***Fatal error: dassl--  run terminated. apparent infinite loop'
     call xerrwv(msg,len_trim(msg),802,1,0,0,0,0,0.0d0,0.0d0)
     return
     !-----------end of subroutine ddassl------------------------------------

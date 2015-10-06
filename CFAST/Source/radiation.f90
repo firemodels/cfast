@@ -23,7 +23,7 @@
     real(eb), intent(out), dimension(nr,nwal) :: flxrad
 
     real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb, fheight
-    integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, ilay, imap, ifire, nrmfire
+    integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
     type(room_type), pointer :: roomptr
 
@@ -32,13 +32,8 @@
     real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(nwal,mxfire)
     real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire)
 
-    do i = 1, nm1
-        do j = 1, nwal
-            flxrad(i,j) = 0.0_eb
-        end do
-        flwrad(i,1) = 0.0_eb
-        flwrad(i,2) = 0.0_eb
-    end do
+    flxrad(1:nm1,1:nwal) = 0.0_eb
+    flwrad(1:nm1,1:2) = 0.0_eb
 
     if(option(frad)==off) return
     black = .false.
@@ -60,11 +55,6 @@
         zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
         zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
         do iwall = 1, 4
-            if(mod(iwall,2)==1)then
-                ilay = upper
-            else
-                ilay = lower
-            endif
             imap = map(iwall)
             twall(imap) = zzwtemp(i,iwall,1)
             emis(imap) = epw(iwall,i)

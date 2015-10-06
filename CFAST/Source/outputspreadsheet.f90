@@ -17,7 +17,7 @@
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     real(eb) :: outarray(maxhead), fheight
     logical :: firstc
-    integer :: position, i, izzvol
+    integer :: position, i
     type(room_type), pointer :: roomptr
 
     data firstc/.true./
@@ -35,7 +35,6 @@
     ! compartment information
     do i = 1, nm1
         roomptr => roominfo(i)
-        izzvol = zzvol(i,upper)/roomptr%volume*100.0_eb+0.5_eb
         call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
             call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
@@ -144,7 +143,7 @@
     real(eb), intent(in) :: time
     
     real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
-    integer :: position, i, ii, inode, ifrom, ito, toprm = 1, botrm = 2
+    integer :: position, i, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
     save firstc
@@ -200,8 +199,6 @@
     ! finally, mechanical ventilation
     if (nnode/=0.and.next/=0) then
         do i = 1, next
-            ii = hvnode(1,i)
-            inode = hvnode(2,i)
             flow = 0.0_eb
             if (hveflo(upper,i)>=0.0_eb) flow(1)=hveflo(upper,i)
             if (hveflo(upper,i)<0.0_eb) flow(2)=-hveflo(upper,i)
@@ -552,7 +549,7 @@
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
     real(eb) :: outarray(maxhead)
     logical :: firstc
-    integer :: position, i, j, k, nprod
+    integer :: position, i, j, k
     data firstc/.true./
     save firstc
     
@@ -562,7 +559,6 @@
         firstc = .false.
     endif
 
-    nprod = nlspct
     position = 0
     call SSaddtolist (position,time,outarray)
 

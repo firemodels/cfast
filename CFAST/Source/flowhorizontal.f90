@@ -34,7 +34,7 @@
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
     real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
     real(eb) :: factor2, qchfraction, height, width
-    integer :: ifrom, ilay, islab, iprod, i, iroom1, iroom2, ik, im, ix, nslab
+    integer :: islab, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
@@ -56,20 +56,16 @@
         iroom2 = ventptr%to
         ik = ventptr%counter
 
-        do ilay = 1,2
-            ventptr%mflow(1,ilay,1) = 0.0_eb
-            ventptr%mflow(2,ilay,1) = 0.0_eb
-            ventptr%mflow(1,ilay,2) = 0.0_eb
-            ventptr%mflow(2,ilay,2) = 0.0_eb
-            ventptr%mflow_mix(1,ilay) = 0.0_eb
-            ventptr%mflow_mix(2,ilay) = 0.0_eb
-        end do
+        ventptr%mflow(1,1:2,1) = 0.0_eb
+        ventptr%mflow(2,1:2,1) = 0.0_eb
+        ventptr%mflow(1,1:2,2) = 0.0_eb
+        ventptr%mflow(2,1:2,2) = 0.0_eb
+        ventptr%mflow_mix(1,1:2) = 0.0_eb
+        ventptr%mflow_mix(2,1:2) = 0.0_eb
 
-        do islab = 1, mxfslab
-            ventptr%temp_slab(islab) = 0.0_eb
-            ventptr%flow_slab(islab) = 0.0_eb
-            ventptr%ybot_slab(islab) = 0.0_eb
-        end do
+        ventptr%temp_slab(1:mxfslab) = 0.0_eb
+        ventptr%flow_slab(1:mxfslab) = 0.0_eb
+        ventptr%ybot_slab(1:mxfslab) = 0.0_eb
 
         ! setup data structures for from and to room
         call getvars(iroom1,iroom2,nprod,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
@@ -110,42 +106,30 @@
             if (option(fentrain)==on) then
                 call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
                     uflw3,vsas(1,i),vasa(1,i))
-                do ilay = 1, 2
-                    ventptr%mflow_mix(1,ilay) = uflw3(1,m,ilay)
-                    ventptr%mflow_mix(2,ilay) = uflw3(2,m,ilay)
-                end do
+                ventptr%mflow_mix(1,1:2) = uflw3(1,m,1:2)
+                ventptr%mflow_mix(2,1:2) = uflw3(2,m,1:2)
             else
-                do ilay = 1, 2
-                    ventptr%mflow_mix(1,ilay) = 0.0_eb
-                    ventptr%mflow_mix(2,ilay) = 0.0_eb
-                end do
+                ventptr%mflow_mix(1,1:2) = 0.0_eb
+                ventptr%mflow_mix(2,1:2) = 0.0_eb
             end if
 
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
 
             if (iroom1>=1.and.iroom1<=nm1) then
-                do iprod = 1, nprod + 2
-                    uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw2(1,iprod,l)
-                    uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw2(1,iprod,u)
-                end do
+                uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw2(1,1:nprod+2,l)
+                uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw2(1,1:nprod+2,u)
                 if (option(fentrain)==on) then
-                    do iprod = 1, nprod + 2
-                        uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw3(1,iprod,l)
-                        uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw3(1,iprod,u)
-                    end do
+                    uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw3(1,1:nprod+2,l)
+                    uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw3(1,1:nprod+2,u)
                 endif
             endif
             if (iroom2>=1.and.iroom2<=nm1) then
-                do iprod = 1, nprod + 2
-                    uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw2(2,iprod,l)
-                    uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw2(2,iprod,u)
-                end do
+                uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw2(2,1:nprod+2,l)
+                uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw2(2,1:nprod+2,u)
                 if (option(fentrain)==on) then
-                    do iprod = 1, nprod + 2
-                        uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw3(2,iprod,l)
-                        uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw3(2,iprod,u)
-                    end do
+                    uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw3(2,1:nprod+2,l)
+                    uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw3(2,1:nprod+2,u)
                 endif
             endif
         endif
@@ -187,18 +171,14 @@
     real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
     real(eb), intent(out) :: uflw3(2,mxfprd+2,2), vsas(2), vasa(2), pmix(mxfprd)
 
-    integer :: i, iprod,n , ifrom, ito
+    integer :: iprod, n , ifrom, ito
     real(eb) :: tmix, zd
 
     ! initialize outputs
-    do i = 1, 2
-        do iprod = 1, nprod + 2
-            uflw3(i,iprod,l) = 0.0_eb
-            uflw3(i,iprod,u) = 0.0_eb
-        end do
-        vsas(i) = 0.0_eb
-        vasa(i) = 0.0_eb
-    end do
+    uflw3(1:2,1:nprod+2,l) = 0.0_eb
+    uflw3(1:2,1:nprod+2,u) = 0.0_eb
+    vsas(1:2) = 0.0_eb
+    vasa(1:2) = 0.0_eb
 
     do n = 1, nslab
 
@@ -565,17 +545,14 @@
     real(eb), intent(out) :: conl(mxfprd,2), conu(mxfprd,2)
     real(eb), intent(out) :: zflor(2), zceil(2), zlay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
 
-    integer :: up, iprod, ip, room_index(2), iroom, i
+    integer :: iprod, ip, room_index(2), iroom, i
 
-    logical :: hallflag
     type(room_type), pointer :: roomptr
 
     room_index(1)=from_room
     room_index(2)=to_room
 
     do i = 1, 2
-        hallflag = .false.
-        up = upper
         iroom = room_index(i)
         roomptr=>roominfo(iroom)
         zflor(i) = roomptr%z0
@@ -637,18 +614,14 @@
     real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), zlay(*), pslab(mxfslab,*), tu(*), tl(*)
     real(eb), intent(out) :: mflows(2,2,2), uflw2(2,mxfprd+2,2)
 
-    integer :: i, iprod, n, ifrom, ito, ilay
+    integer :: iprod, n, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
     real(eb), parameter :: deltatemp_min = 0.01_eb
 
     ! initialize outputs
     mflows = 0.0_eb
-    do i = 1, 2
-        do iprod = 1, nprod + 2
-            uflw2(i,iprod,l) = 0.0_eb
-            uflw2(i,iprod,u) = 0.0_eb
-        end do
-    end do
+    uflw2(1:2,1:nprod+2,l) = 0.0_eb
+    uflw2(1:2,1:nprod+2,u) = 0.0_eb
 
     ! put each slab flow into appropriate layer of room i to and take slab flow out of appropriate layer of room ifrom
     do n = 1, nslab
@@ -748,11 +721,9 @@
     integer :: iroom, i
     real(eb) :: dp1, dp2, epscut, dpold, zz
 
-    do iroom = 1, 2
-        ygden(iroom) = -(zlay(iroom)-zflor(iroom))*denl(iroom)*grav_con
-        gdenl(iroom) = -denl(iroom)*grav_con
-        gdenu(iroom) = -denu(iroom)*grav_con
-    end do
+    ygden(1:2) = -(zlay(1:2)-zflor(1:2))*denl(1:2)*grav_con
+    gdenl(1:2) = -denl(1:2)*grav_con
+    gdenu(1:2) = -denu(1:2)*grav_con
 
     do i = 1, nelev
         do iroom = 1, 2
@@ -952,6 +923,6 @@
     vgreen = 0.0_eb
     vblue = 1.0_eb
 
-    RETURN
-    END
+    return
+    end
 

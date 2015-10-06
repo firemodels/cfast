@@ -48,6 +48,8 @@ contains
     if(first)then
         first = .false.
         call target_nodes (tmp)
+        tempin = 0.0_eb
+        tempout = 0.0_eb
     endif
 
     ! for each target calculate the residual and update target temperature (if update = 1)

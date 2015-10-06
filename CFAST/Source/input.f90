@@ -17,7 +17,7 @@
     
     real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
-    integer :: numr, numc, ifail, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
+    integer :: numr, numc, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: aversion*5
     type(room_type), pointer :: roomptr
@@ -40,8 +40,6 @@
     !                (2) = floor properties are defined
     !                (3) = side wall properties are defined for upper walls
     !                (4) = side wall properties are defined for lower walls
-
-    ifail = 0
 
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
@@ -142,7 +140,6 @@
         if (ivvent_connections(itop,itop)/=0) then
             write (logerr,*) '***Error: A room can not be connected to itself'
             stop
-            ivvent_connections(itop,itop) = 0
         endif
         do ibot = 1, itop - 1
             if (ivvent_connections(itop,ibot)/=0.or.ivvent_connections(ibot,itop)/=0) then
@@ -197,7 +194,6 @@
 
         ! room numbers must be between 1 and nm1
         if(iroom1<1.or.iroom2<1.or.iroom1>nm1+1.or.iroom2>nm1+1)then
-            ifail = 39
             write (logerr,201) iroom1, iroom2 
 201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
             stop
@@ -229,7 +225,6 @@
                 izswal(ii,w_to_wall) = 2
             endif
         else
-            ifail = 40
             write (logerr,202) iroom1, iroom2 
 202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',i0,'-',i0,' are not connectetd')
             stop
@@ -431,7 +426,6 @@
     return
 
 5002 format ('***Error: Not a compatible version ',2a8,2x,2i10)
-5003 format ('***Error: Too many lines in the main data file')
 5004 format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.') 
 5022 format ('***Error: Initial temperature outside of allowable range (-50 to +100)',f5.2)
 
@@ -469,12 +463,11 @@
     
     integer, intent(in) :: inumr, inumc
     
-    logical :: lfupdat
     integer :: obpnt, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir, countargs
     integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
-    real(eb) :: fanfraction, heatfplume, frac, tmpcond, dnrm2
-    character :: label*5, tcname*64, method*8, eqtype*3, venttype,orientypefrom*1, orientypeto*1
+    real(eb) :: frac, tmpcond, dnrm2
+    character :: label*5, tcname*64, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
@@ -483,7 +476,6 @@
 
     !	Start with a clean slate
 
-    lfupdat=.false.
     do i = 1, nr
         roomptr => roominfo(i)
         do j = 1, 4
@@ -661,7 +653,7 @@
                 eqtype = ' '
                 eqtype = lcarray(10)
                 call upperall(eqtype,eqtype)
-                if(eqtype/=' '.and.method/=' ')then
+                if(eqtype/=' ')then
                     if (eqtype(1:3)=='ODE') then
                         targptr%equaton_type = pde
                         write (logerr,913) 'Warning', eqtype
@@ -735,11 +727,6 @@
             if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
                 min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
-            fplume(numobjl) = lrarray(5)
-            if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
-                write(logerr,5402) fplume(numobjl)
-                stop
-            endif
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire
                 if (lcarray(6)=='TIME') objign(obpnt) = 1
@@ -1114,7 +1101,6 @@
         areato = lrarray(9)
         minpres = lrarray(11)
         maxpres = lrarray(12)
-        fanfraction = lrarray(13)
 
         ! We start with two new nodes for the openings into the compartments for connections to the fan
 
@@ -1237,11 +1223,6 @@
         if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
             min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
-        fplume(numobjl) = lrarray(6)
-        if(fplume(numobjl)<1.or.fplume(numobjl)>2) then
-            write(logerr,5402) fplume(numobjl)
-            stop 
-        endif
         objign(obpnt) =   lrarray(7)
         tmpcond =         lrarray(8)
         objort(1,obpnt) = lrarray(9)
@@ -1576,7 +1557,6 @@
             heatfp(1) = lrarray(2)
             heatfp(2) = lrarray(3)
             heatfp(3) = lrarray(4)
-            heatfplume =  lrarray(5)
         else
             write (logerr,*) '***Error: Bad HEATF input. At least 5 arguments must be specified.'
             stop
@@ -1697,7 +1677,6 @@
     end select
     end do
 
-912 format ('***Error: BAD TARGE input. Invalid method:',A8,'. Valid choices are: STEADY, IMPLICIT OR EXPLICIT')
 913 format('***',a,': BAD TARGE input. Invalid equation type:',A3,' Valid choices are: PDE or CYL')
 5001 format ('***Error: Bad ONEZ input. Referenced compartment is not defined ',i0)
 5002 format ('***Error: BAD TARGE input. Too many targets are being defined')
@@ -1737,7 +1716,6 @@
 5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
 5400 format ('xdtect = ',15f8.1)
 5401 format ('ixdtect = ',4i5)
-5402 format ('***Error: Bad FIRE input. Plume index out of range ',i0)
 5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)  
 5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)    
 5405 format ('***Error: Invalid keyword in CFAST input file ',a) 

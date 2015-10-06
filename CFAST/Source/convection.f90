@@ -29,7 +29,7 @@
     
     real(eb) :: qconv, qconv_avg
     
-    integer i, j, iwall, iw, nrmfire, ilay, ifire
+    integer i, iwall, iw, nrmfire, ilay, ifire
     type(room_type), pointer :: roomptr
 
 

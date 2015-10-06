@@ -58,7 +58,7 @@
     
     data pdzero /maxteq*0.0_eb/
     
-    if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
+    if(1.eq.2) iflag=-1 ! dummy statement to eliminate compiler warnings
     nalg = nm1 + nhvpvar + nhvtvar
     do i = 1, nalg
         p2(i) = hvpsolv(i)
@@ -67,28 +67,29 @@
         p2(i) = pinit(i)
     end do
     if(iprtalg/=0)then
-        write(iofilo,*)'room pressures'
+        write(iofilo,*) 'room pressures'
         do i = 1, nm1
-            write(iofilo,*)i,p2(i)
+            write(iofilo,*) i,p2(i)
         end do
-        if(nhvpvar>0)write (iofilo,*) 'hvac pressures'
+        if(nhvpvar>0) write (iofilo,*) 'hvac pressures'
         do i = 1, nhvpvar
             write(iofilo,*)i,p2(i+nofpmv)
         end do
-        if(nhvtvar>0)write (iofilo,*) 'hvac temperatures'
+        if(nhvtvar>0) write (iofilo,*) 'hvac temperatures'
         do i = 1, nhvtvar
             write(iofilo,*)i,p2(i+noftmv)
         end do
     endif
     t = stime
+    ires = 0
     call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
     do i = 1, nalg
         deltamv(i) = delta(i)
     end do
     do i = 1, nm1
-        if(.not.izcon(i))deltamv(i) = 0.0_eb
+        if(.not.izcon(i)) deltamv(i) = 0.0_eb
     end do
-    if(iprtalg/=0)then
+    if(iprtalg/=0) then
         write(iofilo,*)'room pressure residuals'
         do i = 1, nm1
             write(iofilo,*)i,delta(i)
@@ -159,6 +160,7 @@
         end do
     endif
     t = stime
+    ires = 0
     call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
     do i = 1, nhvpvar
         deltamv(i) = delta(i+nofpmv)
@@ -497,7 +499,7 @@
     integer, intent(in) :: iflag
     real(eb), intent(out) :: yinter(*)
     
-    real(eb) :: dummy(1), xxpmin, tdspray, tdrate, scale, dnrm2
+    real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale, dnrm2
     integer i, ii, iwall, iroom, itarg
     
     type(target_type), pointer :: targptr
@@ -1072,13 +1074,12 @@
     implicit none
        
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
-    integer :: ifail, itarg, iroom, iwall, iwall2
+    integer :: itarg, iroom, iwall, iwall2
     integer :: map6(6) = (/1,3,3,3,3,2/)
     
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    ifail = 0
     do itarg = 1, ntarg
 
         ! room number must be between 1 and nm1
@@ -1195,7 +1196,7 @@
     implicit none
 
     real(eb), intent(in) :: tstop
-    integer :: i, j, jj, k, icode, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
+    integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     character(mxthrmplen) off, none, tcname
 
     ! tp is the pointer into the data base for each material
@@ -1230,13 +1231,7 @@
     end do
 
     ! Initialize the interior temperatures to the interior ambient
-    do i = 1, nm1
-        do j = 1, nwal
-            do k = 1, nnodes 
-                twj(k,i,j) = interior_temperature
-            end do
-        end do
-    end do
+    twj(1:nnodes,1:nm1,1:nwal) = interior_temperature
 
     ! initialize temperature profile data structures
     do i = 1, nm1
@@ -1318,7 +1313,6 @@
             tcname = 'DEFAULT'
             targptr%material = tcname
         endif
-        icode = 0
         call get_thermal_property(tcname,tp)
         targptr%k = lfkw(1,tp)
         targptr%cp = lcw(1,tp)
@@ -1370,7 +1364,7 @@
     implicit none
     
     
-    integer :: i, j, ib, nimtarg, noxygen
+    integer :: i, j, ib, noxygen
     type(room_type), pointer :: roomptr
 
     ! count the of nodes (largest of ns and ne)
@@ -1422,9 +1416,7 @@
             if (nwpts/=0) numnode(1,j,i) = nwpts
         end do
     end do
-
-    ! count the number of implicit targets
-    nimtarg = 0
+    
     ! set number of implicit oxygen variables
     if(lfbt==1)option(foxygen) = off
     if(option(foxygen)==on)then
@@ -1476,16 +1468,14 @@
     real(eb), intent(in) :: tsec
     
     real(eb) :: factor2, qchfraction, height, width, avent
-    integer roomc(nr,nr), tempmat(nr,nr), i, j, iroom1, iroom2, ik, im, ix, matiter
+    integer roomc(nr,nr), tempmat(nr,nr), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
     
     type(vent_type), pointer :: ventptr
 
     ! initially assume that no rooms are connected
+    roomc(1:n,1:n) = 0
     do i = 1, n
-        do j = 1, n
-            roomc(i,j) = 0
-        end do
         roomc(i,i) = 1
     end do
 

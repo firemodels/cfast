@@ -22,9 +22,9 @@
     real(eb), intent(out) :: flwvf(nr,ns+2,2)
     logical, intent(out) :: vflowflg
     
-    real(eb) :: xmvent(2), tmvent(2), crosover, oco, epscut, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu
+    real(eb) :: xmvent(2), tmvent(2), epscut, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu
     real(eb) :: fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
-    integer ::  ilay(2), i, j, itop, ibot, iflow, ifrm, ito, lsp, index
+    integer ::  ilay(2), i, itop, ibot, iflow, ifrm, ito, lsp, index
     real(eb) :: area, vvfraction, froude(2), alpha
 
     type(vent_type), pointer :: ventptr
@@ -232,7 +232,7 @@
     
     integer, intent(out) :: ilay(2)
     
-    real(eb) :: pabs(2), den(2), relp(2), denvnt(2), dp(2), vst(2), vvent(2)
+    real(eb) :: den(2), relp(2), denvnt(2), dp(2), vst(2), vvent(2)
     integer ::  iroom(2)
     
     integer, parameter :: l = 2, u = 1, q = 2, m = 1
@@ -241,7 +241,7 @@
     real(eb) :: v, cshape, d, delpflood, vex
     integer :: i, deadtop, deadbot
 
-    ! calculate the pabs(i), delp, the other properties adjacent to the two sides of the vent, and delden.
+    ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     dp(1) = 0.0_eb
     dp(2) = 0.0_eb
     if (ibot<=nm1) then
@@ -257,8 +257,6 @@
         dp(1) = -grav_con*roominfo(ibot)%z1*exterior_density
         relp(1) = exterior_rel_pressure(ibot)
     endif
-    pabs(1) = relp(1) + dp(1) + pofset
-    pabs(2) = relp(2) + dp(2) + pofset
 
     ! delp is pressure immediately below the vent less pressure immediately above the vent.
     delp = relp(2) + dp(2) - (relp(1)+dp(1))

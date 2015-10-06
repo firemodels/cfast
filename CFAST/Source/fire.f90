@@ -196,11 +196,9 @@
     xqfr = 0.0_eb
     xems = 0.0_eb
 
-    do lsp = 1, ns
-        xntms(upper,lsp) = 0.0_eb
-        xntms(lower,lsp) = 0.0_eb
-        xmass(lsp) = 0.0_eb
-    end do
+    xntms(upper,1:ns) = 0.0_eb
+    xntms(lower,1:ns) = 0.0_eb
+    xmass(1:ns) = 0.0_eb
 
     ! the trace species is assumed to be released by the pyrolysis of the burning object regardless of 
     ! whether the fuel actually combusts here. this is consistent with the earlier chemistry routine. 
@@ -230,7 +228,7 @@
 
         ! calculate the entrainment rate but constrain the actual amount
         ! of air entrained to that required to produce stable stratification
-        call fire_plume(fplume(ifire), object_area, qheatl, qheatl_c, xxfirel, interior_temperature, xemp, xems, xeme, &
+        call fire_plume(object_area, qheatl, qheatl_c, xxfirel, interior_temperature, xemp, xems, xeme, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         ! check for an upper only layer fire
@@ -303,7 +301,7 @@
         qheatu = qheatu_c/(1.0_eb-chirad)
         height = max (0.0_eb, min(xz,xxfireu))
 
-        call fire_plume (fplume(ifire), object_area, qheatu, qheatu_c, height, interior_temperature, uplmep, uplmes, uplmee, &
+        call fire_plume (object_area, qheatu, qheatu_c, height, interior_temperature, uplmep, uplmes, uplmee, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = zzcspec(iroom,upper,2)
@@ -370,12 +368,10 @@
     real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
     real(eb), intent(inout) :: hrr_at_activation
 
-    real(eb) :: o2f, o2fi, o2_entrained, o2_factor, o2_available, quenching_factor
+    real(eb) :: o2_entrained, o2_factor, o2_available, quenching_factor
     real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,nu_hcn
     real(eb) :: net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct
-
-    o2f = 1.31e7_eb
-    o2fi = 1.0_eb/o2f
+    real(eb), parameter :: o2f = 1.31e7_eb
 
     ! calculate the actual burning rate constrained by available o2.
 
@@ -554,7 +550,7 @@
 
 ! --------------------------- fire_plume -------------------------------------------
 
-    subroutine fire_plume (plumetype, object_area, qfire, qfire_c, z, t_inf, xemp, xems, xeme, xfx, xfy)
+    subroutine fire_plume (object_area, qfire, qfire_c, z, t_inf, xemp, xems, xeme, xfx, xfy)
 
     !     routine: fireplm
     !     purpose: physical interface between do_fire and the plume models
@@ -562,75 +558,13 @@
     use precision_parameters
     implicit none
     
-    integer, intent(in) :: plumetype
     real(eb), intent(in) :: qfire, qfire_c, z, xemp, xfx, xfy, object_area, t_inf
     real(eb), intent(out) :: xeme, xems
 
-    select case (plumetype)
-    case (1) !    heskestad
-        call heskestad_plume (qfire, qfire_c,z,t_inf,xemp,xems,xeme,object_area,xfx,xfy)
-        return        
-    case (2) !    mccaffrey plume
-        call mccaffrey_plume (qfire_c,z,xemp,xems,xeme,xfx,xfy)
-        return        
-    end select
-    stop 'bad case in fire_plume'
-    end subroutine fire_plume
-
-! --------------------------- mccaffrey -------------------------------------------
-
-    subroutine mccaffrey_plume (q,z,emp,ems,eme,xfx,xfy)
-
-    !     routine: mccaffrey
-    !     purpose: calculates plume entrainment for a fire from mccaffrey's correlation
-    !     inputs:    q     fire size (w)
-    !                z     plume height (m)
-    !                xemp  mass loss rate of the fire (kg/s)
-    !                xfx   distance from fire to wall in x direction (m)
-    !                xfy   distance from fire to wall in y direction (m)
-    !     outputs:   xems  total mass transfer rate at height z (kg/s)
-    !                xeme  net entrainment rate at height z (kg/s)
-    !     algorithm: "momentum implications for buoyant diffusion flames", combustion and flame 52, 149 (1983)
-
-    use precision_parameters
-    use cparams, only: mx_hsep
-    implicit none
-
-    real(eb), intent(in) :: q, z, emp, xfx, xfy
-    real(eb), intent(out) :: ems,  eme
-    
-    real(eb) :: xf, qj, z_star
-    ! Ensure that mccaffrey correlation is continuous.  
-    ! that is, for a1 = 0.011, compute a2, a3 such that a1*zq**0.566 = a2*zq**0.909  for zq = 0.08 and
-    !                                                   a2*zq**0.909 = a3*zq**1.895 for zq = 0.2
-    
-    real(eb), parameter :: t1 = 0.08_eb, t2 = 0.20_eb, a1 = 0.011_eb
-    real(eb), parameter :: a2 = a1*t1**0.566_eb/t1**0.909_eb, a3 = a2*t2**0.909_eb/t2**1.895_eb
-
-    ! determine which entrainment to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
-    xf = 1.0_eb
-    if (xfx<=mx_hsep.or.xfy<=mx_hsep) xf = 2.0_eb
-    if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
-    
-    qj = 0.001_eb*q
-    
-    if (z>0.0_eb.and.qj>0.0_eb) then
-        z_star = z/(xf*qj)**0.4_eb
-        if (z_star>t2) then
-            ems = (a3*z_star**1.895_eb*qj)/xf
-        else if (z_star>t1) then
-            ems = (a2*z_star**0.909_eb*qj)/xf
-        else
-            ems = (a1*z_star**0.566_eb*qj)/xf
-        endif
-        ems = max(emp,ems)
-        eme = max(ems-emp,0.0_eb)
-    else
-        ems = emp
-        eme = 0.0_eb
-    endif
+    call heskestad_plume (qfire, qfire_c,z,t_inf,xemp,xems,xeme,object_area,xfx,xfy)
     return
-    end subroutine mccaffrey_plume
+
+    end subroutine fire_plume
 
 ! --------------------------- heskestad -------------------------------------------
 
@@ -779,7 +713,7 @@
     real(eb), intent(out) :: flwdjf(nr,ns+2,2)
 
     real(eb) :: xntms1(2,ns), xntms2(2,ns), flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
-    integer :: i, iroom1, iroom2, ifrom, lsp
+    integer :: i, iroom1, iroom2, lsp
 
     logical :: dj1flag, dj2flag
     type(vent_type), pointer :: ventptr
@@ -815,16 +749,9 @@
     end do
 
     if(.not.djetflg)return
-    do ifrom = 1, n
-        do lsp = 1, ns + 2
-            flwdjf(ifrom,lsp,lower) = 0.0_eb
-            flwdjf(ifrom,lsp,upper) = 0.0_eb
-        end do
-    end do
-
-    do i = 1, n
-        fqdj(i) = 0.0_eb
-    end do
+    flwdjf(1:n,1:ns+2,lower) = 0.0_eb
+    flwdjf(1:n,1:ns+2,upper) = 0.0_eb
+    fqdj(1:n) = 0.0_eb
 
     hcombt = 5.005e7_eb
 
@@ -887,7 +814,6 @@
     real(eb), intent(out) :: qpyrol, xntms(2,ns)
 
     real(eb) :: xmass(ns), source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
-    integer :: i
 
     qpyrol = 0.0_eb
     djflowflg = .false.
@@ -899,9 +825,7 @@
         ! although the real chemistry is more complex, for now we don't know
         ! how to handle it.
         djflowflg = .true.
-        do i = 1, ns
-            xmass(i) = 0.0_eb
-        end do
+        xmass(1:ns) = 0.0_eb
         source_o2 = zzcspec(ito,lower,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
@@ -909,10 +833,8 @@
             source_o2, lower_o2_limit, 0, 0, 0.0_eb, 0.0_eb, stime, xxqspray, xqpyrl, xntfl, xmass)
         qpyrol = xqpyrl
 
-        do i = 1, ns
-            xntms(upper,i) = xmass(i)
-            xntms(lower,i) = 0.0_eb
-        end do
+        xntms(upper,1:ns) = xmass(1:ns)
+        xntms(lower,1:ns) = 0.0_eb
     endif
     return
     end subroutine door_jet_fire
@@ -1116,7 +1038,7 @@
             end if
             if (w>0.0_eb.and.xin>w/2) then
                 !compartment is a hallway and we've hit the walls, use delichastsios
-                vcj = max(vcj,0.114*sqrt(h*(tcj-t_layer))*(h/w)**(1.0_eb/6.0_eb))
+                vcj = max(vcj,0.114_eb*sqrt(h*(tcj-t_layer))*(h/w)**(1.0_eb/6.0_eb))
             end if
         end if
     end if

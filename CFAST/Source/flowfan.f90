@@ -34,25 +34,18 @@
 
     chv(1:nbr) = ductcv
 
-    do i = 1, n
-        do j = 1, ns+2
-            flwmv(i,j,upper) = 0.0_eb
-            flwmv(i,j,lower) = 0.0_eb
-            filtered(i,j,upper) = 0.0_eb
-            filtered(i,j,lower) = 0.0_eb
-        end do
-    end do
-    do i = 1, nhvpvar
-        deltpmv(i) = hvpsolv(i)
-    end do
-    do i = 1, nhvtvar
-        delttmv(i) = hvtsolv(i)
-    end do
+    flwmv(1:n,1:ns+2,upper) = 0.0_eb
+    flwmv(1:n,1:ns+2,lower) = 0.0_eb
+    filtered(1:n,1:ns+2,upper) = 0.0_eb
+    filtered(1:n,1:ns+2,lower) = 0.0_eb
+    deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
+    delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
 
     call hvfrex (hvpsolv,hvtsolv)
     call hvmflo (tsec, deltpmv)
     call hvsflo (tprime,delttmv)
     call hvtoex (prprime,nprod)
+    
     do ii = 1, next
         i = hvnode(1,ii)
         j = hvnode(2,ii)

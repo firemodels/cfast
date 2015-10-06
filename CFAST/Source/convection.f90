@@ -32,13 +32,11 @@
     integer i, j, iwall, iw, nrmfire, ilay, ifire
     type(room_type), pointer :: roomptr
 
-    do i = 1, nm1
-        flwcv(i,upper) = 0.0_eb
-        flwcv(i,lower) = 0.0_eb
-        do j = 1, nwal
-            flxcv(i,j) = 0.0_eb
-        end do
-    end do
+
+    flwcv(1:nm1,upper) = 0.0_eb
+    flwcv(1:nm1,lower) = 0.0_eb
+    flxcv(1:nm1,1:nwal) = 0.0_eb
+            
     if (option(fconvec)/=on) return
 
     ! calculate convection for all surfaces in all rooms

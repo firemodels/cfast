@@ -45,13 +45,8 @@
     integer lsp, iroom, nobj, iobj, i, j
     type(room_type), pointer :: roomptr
 
-    ! initialize summations and local data
-    do lsp = 1, ns + 2
-        do iroom = 1, n
-            flwf(iroom,lsp,upper) = 0.0_eb
-            flwf(iroom,lsp,lower) = 0.0_eb
-        end do
-    end do
+    flwf(1:n,1:ns+2,upper) = 0.0_eb
+    flwf(1:n,1:ns+2,lower) = 0.0_eb
     nfire = 0
 
     if (option(ffire)/=fcfast) return

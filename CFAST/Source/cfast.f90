@@ -1024,7 +1024,7 @@
     integer :: update
 
     logical :: vflowflg, hvacflg, djetflg
-    integer :: nprod, nirm, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
+    integer :: nprod, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
     real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
@@ -1033,8 +1033,6 @@
     dt = tsec - told
     numresd = numresd + 1
     stime = tsec
-
-    nirm = nm1
 
     call update_data (x,odevara)
     call update_data (x,odevarb)
@@ -1086,7 +1084,7 @@
     endif
 
     ! sum flow for inside rooms
-    do iroom = 1, nirm
+    do iroom = 1, nm1
         roomptr => roominfo(iroom)
 
         do iprod = 1, nprod + 2
@@ -1151,7 +1149,7 @@
         endif
     endif
     ! sum flux for inside rooms
-    do iroom = 1, nirm
+    do iroom = 1, nm1
         roomptr => roominfo(iroom)
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
@@ -1167,7 +1165,7 @@
     endif
 
     ! calculate rhs of ode's for each room
-    do iroom = 1, nirm
+    do iroom = 1, nm1
         roomptr => roominfo(iroom)
         aroom = roomptr%area
         hceil = roomptr%height

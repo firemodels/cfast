@@ -34,7 +34,7 @@
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
     real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
     real(eb) :: factor2, qchfraction, height, width
-    integer :: nirm, ifrom, ilay, islab, iprod, i, iroom1, iroom2, ik, im, ix, nslab
+    integer :: ifrom, ilay, islab, iprod, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
@@ -43,14 +43,10 @@
     type(vent_type), pointer :: ventptr
 
     position = 0
-    nirm = nm1
 
-    do ifrom = 1, nirm
-        do iprod = 1, nprod + 2
-            uflw(ifrom,iprod,lower) = 0.0_eb
-            uflw(ifrom,iprod,upper) = 0.0_eb
-        end do
-    end do
+    uflw(1:nm1,1:nprod+2,lower) = 0.0_eb
+    uflw(1:nm1,1:nprod+2,upper) = 0.0_eb
+    
     if (option(fhflow)/=on) return
 
     do i = 1, n_hvents
@@ -128,7 +124,7 @@
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
 
-            if (iroom1>=1.and.iroom1<=nirm) then
+            if (iroom1>=1.and.iroom1<=nm1) then
                 do iprod = 1, nprod + 2
                     uflw(iroom1,iprod,lower) = uflw(iroom1,iprod,lower) + uflw2(1,iprod,l)
                     uflw(iroom1,iprod,upper) = uflw(iroom1,iprod,upper) + uflw2(1,iprod,u)
@@ -140,7 +136,7 @@
                     end do
                 endif
             endif
-            if (iroom2>=1.and.iroom2<=nirm) then
+            if (iroom2>=1.and.iroom2<=nm1) then
                 do iprod = 1, nprod + 2
                     uflw(iroom2,iprod,lower) = uflw(iroom2,iprod,lower) + uflw2(2,iprod,l)
                     uflw(iroom2,iprod,upper) = uflw(iroom2,iprod,upper) + uflw2(2,iprod,u)

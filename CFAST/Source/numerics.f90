@@ -3343,6 +3343,8 @@ module numerics_routines
     
     implicit none
     
+    external fcn
+    
     integer :: n, ldfjac, iflag, ml, mu, i, j, k, msum
     real(8) :: x(n), fvec(n), fjac(ldfjac, n), wa1(n), wa2(n), zero, epsmch, eps, epsfcn, temp, h
 
@@ -4394,7 +4396,7 @@ module numerics_routines
     integer :: iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev,i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2,iwa(1)
     real(8) :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, &
        p001, p0001, zero, epsmch, xtol, factor, fnorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
-    external fcn
+    external fcn, jac
     logical :: jeval,sing
     data one,p1,p5,p001,p0001,zero /1.0d0,1.0d-1,5.0d-1,1.0d-3,1.0d-4,0.0d0/
     !

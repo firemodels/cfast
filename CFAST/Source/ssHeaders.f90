@@ -1,17 +1,28 @@
-
+module spreadsheet_header_routines
+    
+    use cenviro
+    use cfast_main
+    use cparams
+    use cshell
+    use debug
+    use fltarget
+    use objects1
+    use vents
+    
+    implicit none
+    
+    private
+    
+    public ssheadersnormal, ssheadersspecies, ssheadersflow, ssheadersflux, ssheaderssmv, ssheadersresid, ssheadersfslabs
+    
+    contains
+    
 ! --------------------------- ssHeadersNormal -------------------------------------------
 
     subroutine ssHeadersNormal
 
     ! This is the header information for the normal spreadsheet output
-
-    use cenviro
-    use cfast_main
-    use cshell
-    use objects1
-    implicit none
-
-    ! local variables     
+   
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     character(35) :: headertext(3,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
@@ -112,11 +123,6 @@
 
     ! This is the header information for the spreadsheet output
 
-    use cenviro
-    use cfast_main
-    use cshell
-    implicit none
-
     ! local variables     
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     character(35) :: headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
@@ -202,14 +208,7 @@
 
     !.....  sensor number
     !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
-
-
-    use cfast_main
-    use cshell
-    use fltarget
-    implicit none
-
-    ! local variables     
+    
     integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
     character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
     integer position, i, j, itarg, itype
@@ -333,12 +332,6 @@
     !	This is the header information for the flow spreadsheet and is called once
     !	The logic is identical to output_spreadsheet_flow so the output should be parallel
 
-    use cfast_main
-    use cshell
-    use vents
-    implicit none
-
-    ! local variables
     integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
     character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
     integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
@@ -484,12 +477,6 @@
 
     ! This is the header information for the smokeview spreadsheet output
 
-    use cenviro
-    use cfast_main
-    use cparams, only: mxfslab
-    use vents
-    implicit none
-
     logical, intent(in) :: lmode
 
     integer, parameter :: maxhead = 1+8*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxhvsys
@@ -614,7 +601,7 @@
 ! --------------------------- smvDeviceTag -------------------------------------------
 
     subroutine smvDeviceTag(string)
-    implicit none
+
     character, intent(in) :: string*(*)
     
     write (13,'(a)') 'DEVICE'
@@ -623,47 +610,12 @@
     return
     end subroutine smvDeviceTag
 
-! --------------------------- toIntString -------------------------------------------
-
-    subroutine toIntString(i,istring)
-    implicit none
-    
-    integer, intent(in) :: i
-    character(len=*), intent(out) :: istring
-    
-    character :: string*256
-    
-    if (i<10) then
-        write (string,'(i1)') i
-    else if (i<100) then
-        write (string,'(i2)') i
-    else if (i<1000) then
-        write (string,'(i3)') i
-    else if (i<10000) then
-        write (string,'(i4)') i
-    else if (i<100000) then
-        write (string,'(i5)') i
-    else if (i<1000000) then
-        write (string,'(i6)') i
-    else
-        string = 'error'
-    endif
-    istring = trim(string)
-    return
-    end subroutine toIntString
-
 ! --------------------------- ssHeadersResid -------------------------------------------
 
  subroutine ssHeadersResid
 
     ! This is the header information for the calculate_residuals spreadsheet output
-
-    use cfast_main
-    use objects1
-    use debug
-    implicit none
-
-    ! local variables     
+    
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
     character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2), Species(9)
     integer position, i, j, k, l, nprod
@@ -748,13 +700,7 @@
   subroutine ssHeadersFSlabs
 
     ! This is the header information for the normal spreadsheet output
-
-    use cparams
-    use debug
-    use vents
-    implicit none
-
-    ! local variables     
+     
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
     integer :: position, i, j
@@ -790,4 +736,32 @@
     write(ioslab,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersFSlabs
- 
+! --------------------------- toIntString -------------------------------------------
+
+    subroutine toIntString(i,istring)
+    
+    integer, intent(in) :: i
+    character(len=*), intent(out) :: istring
+    
+    character :: string*256
+    
+    if (i<10) then
+        write (string,'(i1)') i
+    else if (i<100) then
+        write (string,'(i2)') i
+    else if (i<1000) then
+        write (string,'(i3)') i
+    else if (i<10000) then
+        write (string,'(i4)') i
+    else if (i<100000) then
+        write (string,'(i5)') i
+    else if (i<1000000) then
+        write (string,'(i6)') i
+    else
+        string = 'error'
+    endif
+    istring = trim(string)
+    return
+    end subroutine toIntString
+
+end module spreadsheet_header_routines

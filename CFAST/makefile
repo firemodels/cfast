@@ -32,14 +32,14 @@ GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 # Definition of the object variables
 
 objf = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o keyboard_int.o convection.o conduction.o \
-       cyl_conduct.o utilities.o numerics.o flowvertical.o flowfan.o fire.o outputspreadsheet.o flowhorizontal.o radiation.o \
-       outputsmv.o target.o output.o solve.o initialization.o input.o ssHeaders.o cfast.o 
+       cyl_conduct.o utilities.o numerics.o flowvertical.o flowfan.o fire.o ssHeaders.o outputspreadsheet.o flowhorizontal.o radiation.o \
+       outputsmv.o target.o output.o solve.o initialization.o input.o cfast.o 
 
 objwin = $(objf:.o=.obj)
 
 objfgnu = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o keyboard_gnu.o convection.o conduction.o \
-       cyl_conduct.o utilities.o numerics.o flowvertical.o flowfan.o fire.o outputspreadsheet.o flowhorizontal.o radiation.o \
-       outputsmv.o target.o output.o solve.o initialization.o input.o ssHeaders.o cfast.o  
+       cyl_conduct.o utilities.o numerics.o flowvertical.o flowfan.o fire.o ssHeaders.o outputspreadsheet.o flowhorizontal.o radiation.o \
+       outputsmv.o target.o output.o solve.o initialization.o input.o cfast.o  
 
 
 # General Purpose Rules

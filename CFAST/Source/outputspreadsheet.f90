@@ -2,6 +2,7 @@ module spreadsheet_routines
     use precision_parameters
     use fire_routines, only : flame_height
     use opening_fractions, only : qchfraction
+    use spreadsheet_header_routines
     use utility_routines
     
     private

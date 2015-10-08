@@ -1,14 +1,44 @@
-
+module output_routines
+    
+    use fire_routines, only : flame_height
+    use target_routines, only: target_nodes
+    use utility_routines
+    
+    use cfast_main
+    use cenviro
+    use cfin
+    use cshell
+    use fireptrs
+    use flwptrs
+    use fltarget
+    use iofiles
+    use objects1
+    use objects2
+    use opt
+    use params
+    use solver_parameters
+    use targptrs
+    use thermp
+    use vents
+    use wallptrs
+    use wdervs
+    use wnodes
+    
+    implicit none
+    
+    private
+    
+    public output_version, output_initial_conditions, output_results, deleteoutputfiles, openoutputfiles, &
+        output_status, output_debug, find_error_component
+    
+    contains
+    
 ! --------------------------- output_version -------------------------------------------
 
     subroutine output_version (iunit)
 
     !	a routine to put the header information in the output file. 
     !	we assume the file is open
-
-    use cfast_main
-    use cshell
-    implicit none
     
     integer, intent(in) :: iunit
     integer imajor, iminor, iminorrev
@@ -33,8 +63,6 @@
 ! --------------------------- splitversion -------------------------------------------
 
     subroutine splitversion (version,imajor,iminor,iminorrev)
-    
-    implicit none
     
     integer, intent(in) :: version
     integer, intent(out) :: imajor,iminor,iminorrev
@@ -68,10 +96,6 @@
     !                      printout of object names -- only CFAST knows actual
     !                      names, others just do it by numbers
 
-    use precision_parameters
-    use cshell
-    implicit none
-
     integer, intent(in) :: isw
     real(eb), intent(in) :: time
     
@@ -104,13 +128,6 @@
     subroutine rsltlay
 
     !     Description:  Output the 2 layer environment at the current time
-
-    use precision_parameters
-    use cfast_main
-    use cenviro
-    use cshell
-    use fltarget
-    implicit none
 
     integer :: icomp, izzvol
     type(room_type), pointer :: roomptr
@@ -152,19 +169,12 @@
 
     !     Arguments: ISW    Print switch for object fire printout
 
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use objects1
-    implicit none
-
     integer, intent(in) :: isw
     
-    integer length, i, j, icomp
+    integer i, j, icomp
     real(eb) :: fheight, xems, xemp, xqf, xqupr, xqlow
     type(room_type), pointer :: roomptr
 
-    external length
     write (iofilo,5000)
     if (numobjl/=0) then
         do i = 1, numobjl
@@ -222,19 +232,13 @@
 
     !     Description:  Output the layer and wall species at the current time
 
-    use cfast_main
-    use cenviro
-    use cshell
-    implicit none
-
     character(4), dimension(ns) :: stype = &
         (/character(4) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/)
     character(10), dimension(ns) :: sunits = &
         (/character(10) :: '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/)
     character(5), dimension(2) :: lnames = (/character(5) :: 'UPPER', 'LOWER'/)
     character :: ciout*255, cjout*255
-    external length
-    integer :: length, i, icomp, layer, ic, lsp
+    integer :: i, icomp, layer, ic, lsp
     type(room_type), pointer :: roomptr
 
     if (nlspct/=0) then
@@ -285,13 +289,6 @@
 
     !     Description:  Output the vent flow at the current time
 
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use vents
-    use flwptrs
-    implicit none
-    
     integer :: i, ii, ifrom, ito, toprm = 1, botrm = 2
     real(eb), dimension(8) :: flow
 
@@ -395,12 +392,6 @@
 
     !     Description:  Output the vent flow at the current time
 
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use vents
-    implicit none
-
     integer :: irm, i, ii, iii, inode
     real(eb) :: flow(6)
 
@@ -465,12 +456,6 @@
 
     !     Description:  Output a compressed output for 80 column screens
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use objects2
-    implicit none
-
     integer, intent(in) :: iounit
     
     integer :: i, ir
@@ -517,18 +502,9 @@
     !     description:  output the temperatures and fluxes on surfaces and targets at the current time
     !                itprt 1 if target printout specifically called for, 0 otherwise
 
-    use precision_parameters
-    use targptrs
-    use cenviro, only: zzwtemp
-    use cfast_main
-    use cshell
-    use fltarget
-    use target_routines, only: target_nodes
-    implicit none
-
     integer, intent(in) :: itprt
     
-    integer :: length, i, iw, itarg, inode
+    integer :: i, iw, itarg, inode
     real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp, tmp(nnodes_trg), depth
     
     type(target_type), pointer :: targptr
@@ -536,7 +512,6 @@
 
     integer :: iwptr(4)
     
-    external length
     data iwptr /1, 3, 4, 2/
 
     if ((itprt==0.and.ntarg<=nm1).or.ntarg==0) return
@@ -607,12 +582,6 @@
 
     !     Description:  Output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell
-    implicit none
-
     integer :: i, iroom, itype
     real(eb) :: cjetmin, zdetect, tlay, tjet, vel, tlink
 
@@ -662,14 +631,7 @@
     subroutine output_initial_conditions
 
     !     Description:  Output initial test case description
-
-    use cfast_main
-    use cshell
-    use iofiles
-    implicit none
-
-    external length
-    
+ 
     call output_version (iofilo)
     
     write (iofilo,5000) trim(inputfile), trim(title)
@@ -694,11 +656,6 @@
 
     !     description:  output initial test case overview
 
-    use cfast_main
-    use cshell
-    use vents
-    implicit none
-
     write (iofilo,5000) 
     write (iofilo,5010) nm1, n_hvents, n_vvents, next
     write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
@@ -715,12 +672,6 @@
     subroutine outamb
 
     !     Description:  Output initial test case ambient conditions
-
-    use cfast_main
-    use cshell
-    use cenviro
-    use params
-    implicit none
 
     write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pofset, &
        exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset
@@ -739,11 +690,7 @@
     subroutine outcomp
 
     !     Description:  Output initial test case geometry
-
-    use cfast_main
-    use cshell
-    implicit none
-
+    
     integer i
     type(room_type), pointer :: roomptr
 
@@ -765,13 +712,6 @@
     subroutine outvent
 
     !     Description:  Output initial test case vent connections
-
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use params
-    use vents
-    implicit none
 
     integer :: i,j,k,iijk, isys, ibr, irm, iext
     real(eb) :: hrx, hrpx
@@ -912,9 +852,6 @@
     !                irm   room number if node is an external connection
     !                iext  external node number is node is an external connection
 
-    use cfast_main
-    implicit none
-
     integer, intent(in) :: ind
     integer, intent(out) :: irm, iext
     
@@ -937,11 +874,6 @@
     subroutine outthe
 
     !     description:  output initial test case thermal properties
-
-    use cfast_main
-    use cshell
-    use thermp
-    implicit none
 
     integer i, j
     type(room_type), pointer :: roomptr
@@ -995,22 +927,13 @@
     !     purpose: This routine outputs the fire specification for all the object fires
     !     Arguments: none
 
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use objects1
-    use objects2
-    use params
-    implicit none
-
-    integer :: io, i, j, nnv, length, is
+    integer :: io, i, j, nnv, is
     real(eb) :: y_hcn, y_hcl
 
     character cbuf*255
     character(13), dimension(0:4) :: ftype = &
         (/character(13) :: 'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
     character(6), dimension(1:3) :: fire_geometry = (/character(6) :: 'Normal', 'Wall', 'Corner'/)
-    external length
     
     type(room_type), pointer :: roomptr
 
@@ -1059,11 +982,6 @@
 
     !      description:  output initial test case target specifications
 
-    use cfast_main
-    use cshell
-    use fltarget
-    implicit none
-    
     integer :: itarg, j
     
     type(target_type), pointer :: targptr
@@ -1088,13 +1006,6 @@
     subroutine flwout (outbuf,flow1,flow2,flow3,flow4,flow5,flow6,flow7,flow8)
 
     !     description:  stuff the flow output after blanking appropriate zeros
-
-    use precision_parameters
-    use solver_parameters
-    use cshell, only: validate
-    implicit none
-
-    
     
     real(eb), intent(in) :: flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8
     character, intent(out) :: outbuf*(*)
@@ -1144,80 +1055,11 @@
 5050 format (2x,e11.4)
     end subroutine flwout
 
-    ! --------------------------- getabsdetector -------------------------------------------
-
-    subroutine getabsdetector(detectornumber, positionvector)
-
-    !	Routine to get the absolute position of a target in the computational space
-
-    !	This is the protocol between cfast and smokeview
-
-    use precision_parameters
-    use cfast_main
-    use fltarget
-    implicit none
-
-    integer, intent(in) :: detectornumber
-    real(eb), intent(out) :: positionvector(*)
-    type(room_type), pointer :: roomptr
-
-    roomptr => roominfo(ixdtect(detectornumber,droom))
-    positionvector(1) = xdtect(detectornumber,dxloc) + roomptr%x0
-    positionvector(2) = xdtect(detectornumber,dyloc) + roomptr%y0
-    positionvector(3) = xdtect(detectornumber,dzloc) + roomptr%z0
-    positionvector(4) = 0.0_eb
-    positionvector(5) = 0.0_eb
-    positionvector(6) = -1.0_eb
-
-    return
-
-    end subroutine getabsdetector
-    
-! --------------------------- getabstarget -------------------------------------------
-
-    subroutine getabstarget(itarg, positionvector)
-
-    !	Routine to get the absolute position of a target in the computational space
-
-    !	This is the protocol between cfast and smokeview
-
-    use precision_parameters
-    use cfast_main
-    use fltarget
-    implicit none
-
-    integer, intent(in) :: itarg
-    real(eb), intent(out) :: positionvector(*)
-
-    type(room_type), pointer :: roomptr    
-    type(target_type), pointer :: targptr
-
-    targptr => targetinfo(itarg)
-    roomptr => roominfo(targptr%room)
-    
-    positionvector(1:3) = targptr%center(1:3)
-    positionvector(4:6) = targptr%normal(1:3)
-
-    positionvector(1) = positionvector(1) + roomptr%x0
-    positionvector(2) = positionvector(2) + roomptr%y0
-    positionvector(3) = positionvector(3) + roomptr%z0
-
-    return
-
-    end subroutine getabstarget
-
 ! --------------------------- outjac -------------------------------------------
 
     subroutine outjac (tsec, wm, neqs)
 
     !     description: prints out the magnitude of the jacobian matrix
-
-    use precision_parameters
-    use cfast_main
-    use opt
-    use wdervs
-    
-    implicit none
 
     real(eb), intent(in) :: wm(jacdim,*), tsec
     integer, intent(in) :: neqs
@@ -1328,53 +1170,10 @@
     return
     end subroutine outjac
 
-! --------------------------- outjcmt -------------------------------------------
-
-    subroutine output_jacobian (t)
-
-    !     description: print out numerical performance data; calculate_residuals counts, jac counts, cpu times etc.
-
-    use precision_parameters
-    use opt
-    use wdervs
-    
-    implicit none
-
-    real(eb), intent(in) :: t
-    
-    integer :: iounit
-    logical :: firstc = .true.
-    save iounit
-
-    if (dbugsw(d_jac,d_cnt,1)<=0) return
-    if (firstc) then
-        firstc = .false.
-        iounit = dbugsw(d_jac,d_cnt,1)
-        write(iounit,1002)
-1002    FORMAT(15x,'STEPS',4x,'JACOBIANS',5x,'RESIDS',4x,'NEWT ITERS',9x,'CPU',14x,'OVER HEAD',/,4x,'TIME',4x,'CUR',4x,&
-                'CUM',2x,'CUR',4x,'CUM', 1x,'CUR',4x,'CUM',2x,'CUR',4x,'CUM',4x,'CUR',8x,'CUM',6x,'CUR',7x,'CUM')
-    endif
-    totjac = totjac + numjac
-    totstep = totstep + numstep
-    totresd = totresd + numresd
-    numitr = numresd - numjac*jacdim
-    totitr = totitr + numitr
-    write(iounit,1001)t,numstep,totstep,numjac,totjac,numresd,totresd,numitr,totitr,prttime,tottime,ovtime,tovtime
-1001 format(1x,1pe9.2,4(1x,i4,1x,i6),1x,1pe9.2,1x,1pe9.2,1x,1pe9.2,1x,1pe9.2)
-    return
-    end subroutine output_jacobian
-
 ! --------------------------- find_error_component -------------------------------------------
 
     subroutine find_error_component (icomp)
 
-    use cfast_main
-    use wallptrs
-    use cenviro
-    use cfin
-    use opt
-    implicit none
- 
     integer, intent(in) :: icomp
     
     integer :: itmp, irm, iw
@@ -1429,16 +1228,6 @@
 ! --------------------------- output_debug -------------------------------------------
 
     subroutine output_debug (ikey,t,dt,ieqmax)
-
-    use precision_parameters
-    use fireptrs
-    use cenviro
-    use cfast_main
-    use cshell
-    use fltarget, only: targetinfo
-    use params
-    use wnodes
-    implicit none
 
     integer, intent(in) :: ikey, ieqmax
     real(eb), intent(in) :: t, dt
@@ -1605,10 +1394,7 @@
     subroutine output_status (T, dT)
 
     !  Write the status information to the "statusfile"
-
-    use precision_parameters
-    implicit none
-    
+ 
     real(eb), intent(in) :: T, dT
 
     rewind (12)
@@ -1618,80 +1404,6 @@
 
 5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)
     end subroutine output_status
-
-! --------------------------- writeini -------------------------------------------
-
-    subroutine writeini(file)
-
-    !     description:  this routine creates a solver.ini file for the current
-    !                   version of cfast.  it is created using:
-    !                   cfast -s filename
-    !                   where filename is the name of the file to contain
-    !                   the solver.ini options .  the default name is 
-    !                   solve.ini (so as to not overwrite solver.ini if
-    !                   it is present)
-
-    use opt
-    use params
-    use solver_parameters
-    use wnodes
-    implicit none
-
-    character(*), intent(in) :: file
-    
-    integer :: funit, nnnopt, i, j, iunit
-
-    nnnopt = 21
-
-    iunit = funit(70)
-    open(unit=iunit,file=file)
-
-    write(iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL'
-    write (iunit,11) aptol, rptol, atol, rtol
-11  format(1x,5(1pg11.4,1x))
-
-    write(iunit,'(a)') ' ABS WALL TOL, REL WALL TOL, INITIALIZATION TOLERANCE'
-    write (iunit,11) awtol, rwtol, algtol
-
-    write(iunit,'(a)') ' ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP'
-    write (iunit,11) ahvptol, rhvptol, ahvttol, rhvttol
-
-    write(iunit,'(a)') ' NUMBER OF PHYSICAL OPTION FLAGS'
-    write (iunit,*) nnnopt
-
-    write(iunit,'(a)') ' FIRE,      HFLOW,  ENTRAIN, VFLOW,       CJET'
-    write (iunit,*) (option(j),j = 1,5)
-
-    write(iunit,'(a)') ' DOOR-FIRE, CONVEC, RAD,     CONDUCT, DEBUG PRINT  '
-    write (iunit,*) (option(j),j = 6,10)
-
-    write(iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, TYPE OF INITIALIZATION'
-    write (iunit,*) (option(j),j = 11,15)
-
-    write(iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE    DETECTORS'
-    write (iunit,*) (option(j),j = 16,20)
-
-    write(iunit,'(a)') ' OBJECT BACKTRACKING'
-    write (iunit,*) (option(j),j = 21,21)
-
-    write(iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB'
-    write (iunit,'(1x,i3,1x,3(1pg11.4,1x))') nwpts, (wsplit(i),i=1,3)
-
-    write(iunit,'(a)') ' BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE,   2=INSULATED 3=FLUX)'
-    write (iunit,*) iwbound
-
-    write(iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP -  IF EITHER <0 THEN SOLVER DECIDES'
-    write (iunit,11) stpmax, dasslfts
-
-    write(iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
-    write(iunit,11) ductcv
-
-    write(iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF,   SNSQE PRINT (1=ON)'
-    write(iunit,'(1x,i3,1x,1pg11.4,i3)') jacchk, cutjac, iprtalg
-
-    if (1==1) stop
-    return
-    end subroutine writeini
 
 ! --------------------------- openoutputfiles -------------------------------------------
 
@@ -1718,13 +1430,7 @@
     !     24 spreadsheet output (walls and targets)
 
     !!!! Note that we assume that the default carriage control for formatted files is of type LIST (no fortran controls)
-
-    use cfast_main
-    use cshell
-    use iofiles
-    
-    implicit none
-    
+   
     integer :: ios
 
     ! first the file for "printed" output
@@ -1774,12 +1480,8 @@
 
     subroutine deleteoutputfiles (outputfile)
 
-    implicit none
-
     character(*), intent(in) :: outputfile
-    integer funit,fileunit,stat
-    
-    logical :: doesthefileexist
+    integer fileunit,stat
 
     if (doesthefileexist(outputfile)) then
         fileunit=funit(14)
@@ -1789,3 +1491,5 @@
 
     return
     end subroutine deleteoutputfiles 
+
+end module output_routines

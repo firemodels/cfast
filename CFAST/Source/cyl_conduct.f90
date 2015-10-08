@@ -1,36 +1,14 @@
-
-! --------------------------- get_cylinder_temperature -------------------------------------------
-
-    subroutine get_cylinder_temperature(x,wtemp,nx,rad,tempx)
+module cylinder_routines
+    
     use precision_parameters
+    
     implicit none
-    real(eb), intent(in) :: x, rad
-    integer, intent(in) :: nx
-    real(eb), intent(in), dimension(nx) :: wtemp
-    real(eb), intent(out) :: tempx
-
-    real(eb) :: room_depth, r, rint, factor
-    integer :: left, right
-
-    room_depth = rad/nx
-    r = rad-x
-    if(r<=room_depth/2.0_eb)then
-        tempx = wtemp(1)
-        return
-    endif
-    if(r>=rad-room_depth/2.0_eb)then
-        tempx = wtemp(nx)
-        return
-    endif
-    rint = r/room_depth-0.5_eb
-    left = int(rint)+1
-    left=max(min(left,nx),1)
-    right = left + 1
-    right=max(min(right,nx),1)
-    factor = (rint-int(rint))
-    tempx = factor*wtemp(right) + (1.0_eb-factor)*wtemp(left)
-
-    end subroutine get_cylinder_temperature
+    
+    private
+    
+    public cylindrical_conductive_flux, get_cylinder_temperature
+    
+    contains
 
 ! --------------------------- cylindrical_conductive_flux -------------------------------------------
 
@@ -42,9 +20,6 @@
     !                dt       time step interval from last valid solution point
     !                wrho     wall density
     !                diam     diameter of cable
-
-    use precision_parameters
-    implicit none
 
     integer, intent(in) :: nr, iwbound
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin
@@ -140,4 +115,39 @@
     tgrad(1) = (ddif(1)-ddif(2)*room_depth)
     tgrad(2) = (wtemp(nr-1)-wtemp(nr))/room_depth
     return
-    end
+    
+    end subroutine cylindrical_conductive_flux
+
+! --------------------------- get_cylinder_temperature -------------------------------------------
+
+    subroutine get_cylinder_temperature(x,wtemp,nx,rad,tempx)
+
+    real(eb), intent(in) :: x, rad
+    integer, intent(in) :: nx
+    real(eb), intent(in), dimension(nx) :: wtemp
+    real(eb), intent(out) :: tempx
+
+    real(eb) :: room_depth, r, rint, factor
+    integer :: left, right
+
+    room_depth = rad/nx
+    r = rad-x
+    if(r<=room_depth/2.0_eb)then
+        tempx = wtemp(1)
+        return
+    endif
+    if(r>=rad-room_depth/2.0_eb)then
+        tempx = wtemp(nx)
+        return
+    endif
+    rint = r/room_depth-0.5_eb
+    left = int(rint)+1
+    left=max(min(left,nx),1)
+    right = left + 1
+    right=max(min(right,nx),1)
+    factor = (rint-int(rint))
+    tempx = factor*wtemp(right) + (1.0_eb-factor)*wtemp(left)
+
+    end subroutine get_cylinder_temperature
+    
+end module cylinder_routines

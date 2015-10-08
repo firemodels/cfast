@@ -31,17 +31,15 @@ GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 
 # Definition of the object variables
 
-objf = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_int.o initialization.o input.o numerics.o \
-              outputsmv.o outputspreadsheet.o ssHeaders.o \
-              convection.o conduction.o cyl_conduct.o target.o output.o radiation.o \
-              fire.o flowfan.o flowhorizontal.o flowvertical.o cfast.o 
+objf = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o keyboard_int.o convection.o conduction.o \
+       cyl_conduct.o utilities.o numerics.o flowvertical.o flowfan.o fire.o outputspreadsheet.o flowhorizontal.o radiation.o \
+       outputsmv.o target.o output.o solve.o initialization.o input.o ssHeaders.o cfast.o 
 
 objwin = $(objf:.o=.obj)
 
-objfgnu = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o auxiliary.o keyboard_gnu.o initialization.o input.o numerics.o \
-              outputsmv.o outputspreadsheet.o ssHeaders.o \
-              convection.o conduction.o cyl_conduct.o target.o output.o radiation.o \
-              fire.o flowfan.o flowhorizontal.o flowvertical.o cfast.o 
+objfgnu = prec.o srev.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o keyboard_gnu.o convection.o conduction.o \
+       cyl_conduct.o utilities.o numerics.o flowvertical.o flowfan.o fire.o outputspreadsheet.o flowhorizontal.o radiation.o \
+       outputsmv.o target.o output.o solve.o initialization.o input.o ssHeaders.o cfast.o  
 
 
 # General Purpose Rules
@@ -185,16 +183,16 @@ intel_osx_64_db : setup $(obj)
 # *** Object Dependencies ***
 
 
-cfast.o : auxiliary.o initialization.o input.o numerics.o \
+cfast.o : utilities.o initialization.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               conduction.o cyl_conduct.o convection.o radiation.o target.o \
-              fire.o flowfan.o flowhorizontal.o flowvertical.o
+              fire.o flowfan.o flowhorizontal.o flowvertical.o solve.o
 
 
-cfast.obj : auxiliary.obj initialization.obj input.obj numerics.obj \
+cfast.obj : utilities.obj initialization.obj input.obj numerics.obj \
               output.obj outputsmv.obj outputspreadsheet.obj ssHeaders.obj \
               conduction.obj cyl_conduct.obj convection.obj radiation.obj target.obj \
-              fire.obj flowfan.obj flowhorizontal.obj flowvertical.obj
+              fire.obj flowfan.obj flowhorizontal.obj flowvertical.obj solve.o
 
 #-------------- force compilation of srev.c -----------
 

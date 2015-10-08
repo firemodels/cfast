@@ -1,18 +1,27 @@
 module target_routines
 
     use precision_parameters
+    
+    use conduction_routines
+    use convection_routines
+    use cylinder_routines
+    use fire_routines
+    use numerics_routines, only : ddot, dnrm2
+    use radiation_routines, only : absorb, solid_angle_triangle
+    use smokeview_routines, only: smv_device_activated
+    use utility_routines
+    
     use cenviro
     use cfast_main
     use fltarget
     use cparams
     use dsize
-    use conduction_routines
-    use convection_routines
     use fireptrs
     use targptrs
     use objects2
     use wnodes
     use opt
+    
     implicit none
 
     
@@ -34,7 +43,7 @@ contains
     integer, intent(in) :: update
     real(eb), intent(in) :: dt
 
-    logical :: first=.true.
+    logical :: first = .true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
     real(eb) :: flux(2), dflux(2), ttarg(2)
@@ -109,8 +118,8 @@ contains
     real(eb), intent(in) :: ttarg(2)
     real(eb), intent(out) :: flux(2), dflux(2)
     
-    real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, dnrm2, ddot, zfire, fheight
-    real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, absorb, qft, qout, zwall, tl, tu, alphal, alphau
+    real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, zfire, fheight
+    real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, qft, qout, zwall, tl, tu, alphal, alphau
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
     real(eb) :: dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     real(eb) :: target_factors_front(10), target_factors_back(10)
@@ -344,36 +353,6 @@ contains
         end do
         
     end subroutine target_nodes
-    
-    subroutine cross_product(c,a,b)
-
-! c = a x b
-
-    real(eb), intent(in) :: a(3),b(3)
-    real(eb), intent(out) :: c(3)
-
-    c(1) = a(2)*b(3)-a(3)*b(2)
-    c(2) = a(3)*b(1)-a(1)*b(3)
-    c(3) = a(1)*b(2)-a(2)*b(1)
-
-    end subroutine cross_product
-
-! --------------------------- solid_angle_triangle -------------------------------------------
-
-    subroutine solid_angle_triangle(solid_angle,v1,v2,v3)
-    real(eb), intent(in), dimension(3) :: v1, v2, v3
-    real(eb), intent(out) :: solid_angle
-    
-    real(eb) :: vcross(3), num, denom, ddot
-    ! assuming v1, v2 and v3 are unit vectors
-    ! tan(solid_angle/2) = (v1 x v2 . v3)/(1 + v2.v3 + v3.v1 + v1.v2)
-    
-    call cross_product(vcross,v1,v2)
-    num = ddot(3,vcross,1,v3,1)
-    denom = 1.0_eb + ddot(3,v2,1,v3,1) + ddot(3,v3,1,v1,1) + ddot(3,v1,1,v2,1)
-    solid_angle = ABS(2.0_eb*atan2(num,denom))
-    
-    end subroutine solid_angle_triangle
 
 ! --------------------------- get_target_factors -------------------------------------------
 
@@ -384,7 +363,7 @@ contains
     type(room_type), pointer :: roomi
     type(target_type), pointer :: targptr
 
-    real(eb) :: rel_room_vert(3), dnrm2, ddot
+    real(eb) :: rel_room_vert(3)
     real(eb), dimension(12) :: vert_distance
     real(eb), target :: room_verts(3,12), solid_angle_front_verts(3,8), solid_angle_back_verts(3,8)
     real(eb), pointer, dimension(:) :: v1, v2, v3
@@ -579,7 +558,7 @@ contains
     real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
 
     integer :: iwall
-    real(eb) :: awall_sum(2), svect(3), ddot
+    real(eb) :: awall_sum(2), svect(3)
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     integer, parameter :: front=1, back=2
@@ -793,5 +772,5 @@ contains
     return
     
     end subroutine detector_temp_and_velocity
-
+    
 end module target_routines    

@@ -1,4 +1,5 @@
  module convection_routines
+    
     use precision_parameters
     use fireptrs
     use wallptrs
@@ -7,6 +8,8 @@
     use cfast_main
     use wnodes
     use opt
+    
+    implicit none
     
     private
 

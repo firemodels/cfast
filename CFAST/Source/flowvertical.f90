@@ -1,4 +1,15 @@
-
+module vflow_routines
+    
+    use precision_parameters
+    use opening_fractions, only: qcvfraction
+    
+    implicit none
+    
+    private
+    
+    public vertical_flow, getvventinfo
+    
+    contains
 ! --------------------------- vertical_flow -------------------------------------------
 
     subroutine vertical_flow (tsec,flwvf,vflowflg)
@@ -163,7 +174,7 @@
     
     integer :: iramp, i
     real(eb), parameter :: mintime=1.0e-6_eb
-    real(eb) :: dt, dtfull, dy, dydt, qcvfraction
+    real(eb) :: dt, dtfull, dy, dydt
     type(ramp_type), pointer :: rampptr
     
     fraction = 1.0_eb
@@ -395,3 +406,5 @@
     return
     end
 
+
+end module vflow_routines

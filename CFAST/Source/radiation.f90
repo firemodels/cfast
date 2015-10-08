@@ -1,4 +1,17 @@
-! --------------------------- radiation -------------------------------------------
+module radiation_routines
+    
+    use precision_parameters
+    use fire_routines, only: flame_height
+    use numerics_routines, only : ddot, dnrm2, dgefa, dgesl
+    
+    implicit none
+    
+    private
+    
+    public radiation, absorb, solid_angle_triangle
+    
+    contains
+    ! --------------------------- radiation -------------------------------------------
 
     subroutine radiation(flwrad,flxrad)
 
@@ -22,7 +35,7 @@
     real(eb), intent(out), dimension(nr,2) :: flwrad
     real(eb), intent(out), dimension(nr,nwal) :: flxrad
 
-    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, absorb, fheight
+    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
     type(room_type), pointer :: roomptr
@@ -127,7 +140,6 @@
 
     use precision_parameters
     use cshell, only: logerr
-    use target_routines, only: solid_angle_triangle
     implicit none
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
@@ -140,7 +152,7 @@
 
     real(eb) :: taul(4,4), tauu(4,4), beam(4,4)
     real(eb) :: area(4), figs(4,4), zz(4), a(4,4), b(4,4), e(4), c(4), rhs(4), dq(4), dqde(4), f14(mxroom)
-    real(eb) :: rdparfig, f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ddot, ff14
+    real(eb) :: f1d, f4d, dx2, dy2, dz2, x2, y2, dh2, aij, qllay, qulay, ff14
 
     logical black
 
@@ -491,7 +503,6 @@
     
     real(eb), dimension(3), intent(in) :: v1, vf
     real(eb), dimension(3), intent(out) :: vrel
-    real(eb) :: dnrm2
     
     vrel(1:3) = v1(1:3) - vf(1:3)
     vrel(1:3) = vrel(1:3)/dnrm2(3,vrel,1)
@@ -506,7 +517,6 @@
     !     purpose: 
 
     use precision_parameters
-    use target_routines
     implicit none
 
 
@@ -751,6 +761,39 @@
     end do
     return
     end
+
+! --------------------------- solid_angle_triangle -------------------------------------------
+
+    subroutine solid_angle_triangle(solid_angle,v1,v2,v3)
+    real(eb), intent(in), dimension(3) :: v1, v2, v3
+    real(eb), intent(out) :: solid_angle
+    
+    real(eb) :: vcross(3), num, denom
+    ! assuming v1, v2 and v3 are unit vectors
+    ! tan(solid_angle/2) = (v1 x v2 . v3)/(1 + v2.v3 + v3.v1 + v1.v2)
+    
+    call cross_product(vcross,v1,v2)
+    num = ddot(3,vcross,1,v3,1)
+    denom = 1.0_eb + ddot(3,v2,1,v3,1) + ddot(3,v3,1,v1,1) + ddot(3,v1,1,v2,1)
+    solid_angle = ABS(2.0_eb*atan2(num,denom))
+    
+    end subroutine solid_angle_triangle
+    
+! --------------------------- cross-product -------------------------------------------
+        
+    subroutine cross_product(c,a,b)
+
+! c = a x b
+
+    real(eb), intent(in) :: a(3),b(3)
+    real(eb), intent(out) :: c(3)
+
+    c(1) = a(2)*b(3)-a(3)*b(2)
+    c(2) = a(3)*b(1)-a(1)*b(3)
+    c(3) = a(1)*b(2)-a(2)*b(1)
+
+    end subroutine cross_product
+
 
 ! --------------------------- absorb -------------------------------------------
 
@@ -1048,3 +1091,5 @@
     
     return
     end subroutine linterp
+
+end module radiation_routines

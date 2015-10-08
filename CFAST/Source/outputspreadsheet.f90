@@ -1,4 +1,30 @@
+module spreadsheet_routines
+    use precision_parameters
+    use fire_routines, only : flame_height
+    use opening_fractions, only : qchfraction
+    use utility_routines
+    
+    private
+    
+    public output_spreadsheet, output_smokeview_spreadsheet, output_spreadsheet_residuals, spreadsheetfslabs, ssprintslab
+    
+    contains
+    
+! --------------------------- output_spreadsheet -------------------------------------------    
+    
+    subroutine output_spreadsheet(time)
 
+    real(eb), intent(in) :: time
+
+    call output_spreadsheet_normal (time)
+    call output_spreadsheet_species (time)
+    call output_spreadsheet_flow (time)
+    call output_spreadsheet_flux (time)
+
+    return
+
+    end subroutine output_spreadsheet
+    
 ! --------------------------- output_spreadsheet_normal -------------------------------------------
 
     subroutine output_spreadsheet_normal (time)
@@ -243,7 +269,6 @@
     
     type(target_type), pointer :: targptr
     
-    external length
     data iwptr /1, 3, 4, 2/
     logical :: firstc
     data firstc /.true./
@@ -419,8 +444,7 @@
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxhead), fheight, factor2, qchfraction,  height, width, avent,  &
-        slabs
+    real(eb) :: outarray(maxhead), fheight, factor2, height, width, avent, slabs
     logical :: firstc
     integer :: position
     integer :: i, j, iroom1, iroom2, ik, im, ix
@@ -659,9 +683,11 @@
     real(eb), intent(in) :: outarray(*)
     integer, intent(in) :: position
 
-    call ssprintresid(ioslab, position, outarray)
+    call ssprintresid (ioslab, position, outarray)
     nwline = .true.
 
     return
 
     end subroutine ssprintslab
+    
+end module spreadsheet_routines

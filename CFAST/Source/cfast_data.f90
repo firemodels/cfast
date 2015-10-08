@@ -385,7 +385,7 @@ end module params
 
 ! --------------------------- smkview -------------------------------------------
 
-module smkview
+module smkview_data
 
     use precision_parameters
     use cparams
@@ -397,7 +397,7 @@ module smkview
     logical :: remapfiresdone
     real(eb), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
   
-end module smkview
+end module smkview_data
 
 ! --------------------------- solver_parameters -------------------------------------------
 

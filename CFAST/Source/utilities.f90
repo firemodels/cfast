@@ -1,4 +1,22 @@
-
+module utility_routines
+    
+    use precision_parameters
+ 
+    use cfin 
+    use cparams
+    use cshell 
+    use iofiles, only: ncol
+    use opt
+    use params
+    use solver_parameters
+    use wnodes
+  
+    implicit none
+   
+   public fmix, emix, get_igrid, doesthefileexist, funit, length
+   
+   contains
+   
 ! --------------------------- xerror -------------------------------------------
 
     subroutine xerror(messg,nmessg,nerr,level)
@@ -21,9 +39,6 @@
     !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times 
     !                          this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then 
     !                          a stop. LEVEL=-1,0,1 causes a message to  be printed and then a return.
-
-    use precision_parameters
-    implicit none
 
     character(*), intent(in) :: messg
     integer, intent(in) :: nmessg, level, nerr
@@ -72,10 +87,6 @@
     !                i1,i2 - integers to be printed, depending on ni.
     !                nnr - number of reals (0, 1, or 2) to be printed with message.
     !                r1,r2 - reals to be printed, depending on nnr.
-
-    use precision_parameters
-    use cshell
-    implicit none
 
     integer, intent(in) :: nmes, nerr, level, ni, i1, i2, nnr
     real(eb), intent(in) :: r1, r2
@@ -139,10 +150,7 @@
     !           i1mach(11) = t, the number of base-b digits.
     !           i1mach(12) = emin, the smallest exponent e.
     !           i1mach(13) = emax, the largest exponent e.
-    
-    use precision_parameters
-    implicit none
-    
+
     integer, intent(in) :: i
     
     real(eb) :: b, x
@@ -180,11 +188,6 @@
     !                nnr - number of reals (0, 1, or 2) to be printed with message.
     !                r1,r2 - reals to be printed, depending on nnr.
 
-    use precision_parameters
-    use cparams
-    use cshell
-    implicit none
-
     integer, intent(in) :: nerr, nnr
     real(eb), intent(in) :: r1, r2
     character, intent(in) :: mesg*(*)
@@ -204,34 +207,6 @@
 5002 format('ierror,r1,r2 =',i5,2d14.4)
     end subroutine xerrmod
 
-! --------------------------- cfastexit -------------------------------------------
-
-    subroutine cfastexit (name, errorcode)
-
-    !     routine: cfastexit
-    !     purpose: routine is called when CFAST exits, printing an error code if necessary
-    !     arguments: name - routine name calling for exit ... at this point, it's always "CFAST"
-    !                errorcode - numeric code indicating reason for an error exit.  0 for a normal exit
-
-    use cshell
-    use iofiles, only: stopfile
-
-    character, intent(in) :: name*(*)
-    integer, intent(in) :: errorcode
-
-    if (errorcode==0) then
-        write(logerr, '(''Normal exit from '',a)') trim(name)
-    else
-        write(logerr,'(''***Error exit from '',a,'' code = '',i5)') trim(name), errorcode
-    endif
-    
-    close (unit=4, status='delete')
-    call deleteoutputfiles (stopfile)
-
-    stop
-
-    end subroutine cfastexit
-
 ! --------------------------- cmdline -------------------------------------------
 
     subroutine cmdline (nargs,strs,iarg,iopt)
@@ -243,8 +218,6 @@
     !                strs  returned strings of arguments and options
     !                iarg  returned list of pointers to elements in strs corresponding to arguments 1..nargs
     !                iopt  returned list of pointers to elements in strs corresponding to options a-z
-
-    implicit none
 
     integer, intent(inout) :: nargs
     integer, intent(out) :: iarg(nargs), iopt(26)
@@ -368,8 +341,6 @@
     !     purpose: get command line as a single string
     !     arguments: cmdlin - command line
 
-    use cfin
-
     character, intent(out) :: cmdlin*127
     
     integer first, last, lpoint
@@ -406,10 +377,6 @@
     !     purpose: Count the number of non-blank arguments on the input line. 
     !     arguments: lcarray - character array of arguments.  There should be tocount non-blank entries
     !                numc - dimension limit on lcarray
- 
-    use iofiles, only: ncol
-    implicit none
-
 
     character(128), intent(in) :: lcarray(ncol)
     
@@ -439,10 +406,6 @@
     !              this routine will generally be different for each computer.
     !     arguments: cputim (output) - elapsed cpu time 
 
-    use precision_parameters
-    
-    implicit none
-    
     real(eb), intent(out) :: cputim
     
     call CPU_TIME(cputim)
@@ -457,8 +420,6 @@
     !     purpose: checks for the existence of given file name
     !     arguments: checkfile - file name
 
-    implicit none
-    
     character(*), intent(in) :: checkfile
     logical yesorno
 
@@ -485,14 +446,11 @@
     !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of 
     !                          datapath + project cannot exceed 256 characters
 
-    implicit none
-    
     character(*), intent(out) :: exepath, datapath, project
     
     integer :: i, loop, status, n, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
     character (64) :: name(2)
-    logical :: doesthefileexist
 
     character(3) :: drive(2)
     character(256) :: dir(2)
@@ -586,8 +544,6 @@
     !                n - size of matrix
     !                matiter - unused
 
-    implicit none
-    
     integer, intent(in) :: idim, n
     integer, intent(inout) :: mat1(idim,n)
     integer, intent(out) :: mat2(idim,n)
@@ -623,8 +579,6 @@
     !                arrin array to be passively sorted
     !                indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
 
-    implicit none
-    
     integer, intent(in) :: n, arrin(*)
     integer, intent(out) :: indx(*)
     
@@ -669,9 +623,6 @@
     !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n) 
     !                              and by extrapolation if t < x(1) or    t > x(n)
     !                yint (output) - interpolated value of the y array at t
-
-    use precision_parameters
-    implicit none
 
     real(eb), intent(in) :: x(*), y(*), t
     integer, intent(in) :: n, icode
@@ -749,8 +700,6 @@
 ! --------------------------- cmdflag -------------------------------------------
 
    integer function cmdflag(ic,iopt)
-    
-      implicit none
 
       character(1), intent(in) :: ic
       integer, intent(in) :: iopt(26)
@@ -786,12 +735,9 @@
     !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
     !     n to output just target fluxes relative to ambient (smoke still in od)
 
-    use cparams
-    use cshell
-    
     implicit none
 
-    integer :: year, month, day, iarg(8), iopt(26), cmdflag, nargs, values(8)
+    integer :: year, month, day, iarg(8), iopt(26), nargs, values(8)
     character :: strs(8)*60
     character(60) :: solveini
     character(10) :: big_ben(3)
@@ -839,12 +785,77 @@
 5010 format (i4.4,'/',i2.2,'/',i2.2)
     end   subroutine read_command_options
 
+! --------------------------- writeini -------------------------------------------
+
+    subroutine writeini(file)
+
+    !     description:  this routine creates a solver.ini file for the current
+    !                   version of cfast.  it is created using:
+    !                   cfast -s filename
+    !                   where filename is the name of the file to contain
+    !                   the solver.ini options .  the default name is 
+    !                   solve.ini (so as to not overwrite solver.ini if
+    !                   it is present)
+
+    character(*), intent(in) :: file
+    
+    integer :: nnnopt, i, j, iunit
+
+    nnnopt = 21
+
+    iunit = funit(70)
+    open(unit=iunit,file=file)
+
+    write(iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL'
+    write (iunit,11) aptol, rptol, atol, rtol
+11  format(1x,5(1pg11.4,1x))
+
+    write(iunit,'(a)') ' ABS WALL TOL, REL WALL TOL, INITIALIZATION TOLERANCE'
+    write (iunit,11) awtol, rwtol, algtol
+
+    write(iunit,'(a)') ' ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP'
+    write (iunit,11) ahvptol, rhvptol, ahvttol, rhvttol
+
+    write(iunit,'(a)') ' NUMBER OF PHYSICAL OPTION FLAGS'
+    write (iunit,*) nnnopt
+
+    write(iunit,'(a)') ' FIRE,      HFLOW,  ENTRAIN, VFLOW,       CJET'
+    write (iunit,*) (option(j),j = 1,5)
+
+    write(iunit,'(a)') ' DOOR-FIRE, CONVEC, RAD,     CONDUCT, DEBUG PRINT  '
+    write (iunit,*) (option(j),j = 6,10)
+
+    write(iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, TYPE OF INITIALIZATION'
+    write (iunit,*) (option(j),j = 11,15)
+
+    write(iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE    DETECTORS'
+    write (iunit,*) (option(j),j = 16,20)
+
+    write(iunit,'(a)') ' OBJECT BACKTRACKING'
+    write (iunit,*) (option(j),j = 21,21)
+
+    write(iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB'
+    write (iunit,'(1x,i3,1x,3(1pg11.4,1x))') nwpts, (wsplit(i),i=1,3)
+
+    write(iunit,'(a)') ' BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE,   2=INSULATED 3=FLUX)'
+    write (iunit,*) iwbound
+
+    write(iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP -  IF EITHER <0 THEN SOLVER DECIDES'
+    write (iunit,11) stpmax, dasslfts
+
+    write(iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
+    write(iunit,11) ductcv
+
+    write(iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF,   SNSQE PRINT (1=ON)'
+    write(iunit,'(1x,i3,1x,1pg11.4,i3)') jacchk, cutjac, iprtalg
+
+    if (1==1) stop
+    return
+    end subroutine writeini
+
 ! --------------------------- shellsort -------------------------------------------
 
     subroutine shellsort (ra, n)
-
-    use precision_parameters
-    implicit none
 
     integer, intent(in) :: n
     real(eb), intent(inout) :: ra(n)
@@ -872,79 +883,6 @@
     return
     end  subroutine shellsort
 
-! --------------------------- sortbrm -------------------------------------------
-
-    subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
-
-    !     routine: sortbrm
-    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to
-    !               sort fire and detector data structures by room number.
-    !     arguments: x       floating point info to be sorted
-    !                lx      leading dimension of x
-    !                ix      integer info to be sorted
-    !                lix     leading dimension of ix in calling routine
-    !                nrow    number of rows in x and ix
-    !                ncolx   number of columns in x
-    !                ncolix  number of columns in ix
-    !                isort   column in ix to sort on (usually contains room numbers)
-    !                ldp     leading dimension of ipoint
-    !                nroom   number of elements for which ipoint is defined, also the number of rooms
-    !                ipoint (output)  pointer array for sorted x and ix list.
-    !                                 (r,1) = number of items (fires or detectors so far) in room r
-    !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
-
-    use precision_parameters
-    use cparams, only : nr, mxfires
-    use dsize, only : mxdtect
-    implicit none
-
-    ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
-    integer, parameter :: lwork = nr + mxfires + mxdtect
-
-
-    integer, intent(in) :: lix, ncolix, ncolx
-    integer, intent(in) :: nrow, isort, nroom, lx, ldp
-    integer, intent(inout) :: ix(lix,ncolix)
-    integer, intent(out) :: ipoint(ldp,*)
-    real(eb), intent(inout) :: x(lx,ncolx)
-
-    integer :: i, j, iroom, iwork(lwork), iperm(lwork)
-    real(eb) :: work(lwork)
-
-    if(nrow>lwork)then
-        call xerror('Error: Internal error sorting detectors. Not enough work space in sortbrm',0,1,2)
-    endif
-
-    ! create a permutation vector using the isort'th column of ix
-    iperm(1:nrow) = (/(i,i=1,nrow)/)
-    call indexi(nrow,ix(1,isort),iperm)
-
-    ! reorder integer array using the permutation vector
-    do j = 1, ncolix
-        iwork(1:nrow) = ix(iperm(1:nrow),j)
-        ix(1:nrow,j) = iwork(1:nrow)
-    end do
-
-    ! reorder the floating point arrays using the permutation vector
-    do j = 1, ncolx
-        work(1:nrow) = x(iperm(1:nrow),j)
-        x(1:nrow,j) = work(1:nrow)
-    end do
-
-    ! construct the pointer array
-    ipoint(1:nroom,1:2) = 0
-    do i = 1, nrow
-        iroom = ix(i,isort)
-        ipoint(iroom,1) = ipoint(iroom,1) + 1
-        if (ipoint(iroom,2)==0) ipoint(iroom,2) = i
-    end do
-    do i = 1, nroom
-        if (ipoint(i,2)==0) ipoint(i,2) = 1
-    end do
-    return
-    
-    end subroutine sortbrm
-
 ! --------------------------- sort_fire -------------------------------------------
 
     subroutine sort_fire (nfire,ifroom,xfire,ifrpnt,nm1)
@@ -958,11 +896,6 @@
     !                        (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
     !                nm1 number of compartments minus 1
 
-    use precision_parameters
-    use cparams
-    
-    implicit none
-    
     integer, intent(in) :: nm1, nfire
     integer, intent(inout) :: ifroom(mxfire)
     real(eb), intent(inout) :: xfire(mxfire,mxfirp)
@@ -1015,8 +948,6 @@
     !                slast - ending position of the substring
     !                svalid - true if a valid substring is found
 
-    implicit none
-
     integer, intent(in) :: sstart, wcount
     character, intent(in) :: string(*)
     logical, intent(out) :: svalid
@@ -1068,8 +999,6 @@
     !     arguments: from - string to be converted
     !                to (output) - converted string
 
-    implicit none
-    
     character, intent(in) :: from*(*)
     character, intent(out) :: to*(*)
         
@@ -1098,8 +1027,6 @@
     !     purpose: finds first avalable i/o unit starting at unit number io
     !     arguments: io - beginning unit number for search
 
-    implicit none
-    
     integer, intent(in) :: io
     
     integer, parameter :: mxio=32767
@@ -1127,9 +1054,6 @@
     !     purpose: opens a file using the extension to distinguish previous open files
     !     arguments: filname - base filename for file to be opened
     !                iounit - desired unit number for file
-
-    implicit none
-
     
     integer, intent(in) :: iounit
     character, intent(in) :: filname*(*)
@@ -1167,8 +1091,6 @@
     !                info - on entry, info specifies the position of the invalid parameter in the
     !                       parameter-list of the calling routine.
 
-    implicit none
-    
     integer, intent(in) :: info
     character(6), intent(in) :: srname
 
@@ -1189,8 +1111,6 @@
     !     arguments: ca - first character
     !                cb - second character
 
-    implicit none
-    
     character(1), intent(in) :: ca, cb
     
     integer, parameter :: ioff = 32
@@ -1204,17 +1124,7 @@
     return
 
    end function lsame
-   
-! ****************************** utilties module ******************************
 
-module utilities
-  use precision_parameters
-  implicit none
-   
-   public fmix, emix, get_igrid
-   
-   contains
-   
 ! ------------------ fmix ------------------------
 
 real(fb) function fmix (f,a,b)
@@ -1259,4 +1169,142 @@ integer function get_igrid (x,xgrid,n)
    return
 end function get_igrid   
 
-end module utilities
+end module utility_routines
+        
+module opening_fractions
+
+    !	The following functions implement the open/close function for vents.
+    !	This is done with a simple, linear interpolation
+    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,nr), qcvm(4,mxfan),
+    !         and qcvi(4,mxfan).
+
+    !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
+
+    !   The qcv{x} arrays are of the form
+    !		(1,...) Is start of time to change
+    !		(2,...) Is the initial fraction (set in HVENT, VVENT and MVENT)
+    !		(3,...) Is the time to complete the change, Time+Decay_time, and
+    !		(4,...) Is the final fraction
+
+    !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and hvfan
+
+    use precision_parameters
+    
+    implicit none
+    
+    private
+    
+    public qchfraction, qcvfraction, qcffraction, qcifraction
+    
+    contains
+
+    ! --------------------------- qchfraction -------------------------------------------
+
+    real(eb) function qchfraction (points, index, time)
+
+    !	This is the open/close function for buoyancy driven horizontal flow
+
+    integer, intent(in) :: index
+    real(eb), intent(in) :: points(4,*), time
+
+    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: deltat
+    data mintime/1.0e-6/
+
+    if (time<points(1,index)) then
+        qchfraction = points(2,index)
+    else if (time>points(3,index)) then
+        qchfraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index),mintime)
+        deltat = max(time - points(1,index),mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy/dt
+        qchfraction = points(2,index) + dydt*deltat
+    endif
+    return
+    end function qchfraction
+
+    ! --------------------------- qcvfraction -------------------------------------------
+
+    real(eb) function qcvfraction (points, index, time)
+
+    !	This is the open/close function for buoyancy driven vertical flow
+
+    integer, intent(in) :: index
+    real(eb), intent(in) :: points(4,*), time
+
+    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: deltat
+    data mintime/1.0e-6/
+
+    if (time<points(1,index)) then
+        qcvfraction = points(2,index)
+    else if (time>points(3,index)) then
+        qcvfraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index),mintime)
+        deltat = max(time - points(1,index),mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy/dt
+        qcvfraction = points(2,index) + dydt*deltat
+    endif
+    return
+    end function qcvfraction
+
+    ! --------------------------- qcffraction -------------------------------------------
+
+    real(eb) function qcffraction (points, index, time)
+
+    !	This is the open/close function for mechanical ventilation
+
+    integer, intent(in) :: index
+    real(eb), intent(in) :: points(4,*), time
+
+    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: deltat
+    data mintime/1.0e-6_eb/
+
+    if (time<points(1,index)) then
+        qcffraction = points(2,index)
+    else if (time>points(3,index)) then
+        qcffraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index), mintime)
+        deltat = max(time - points(1,index), mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy/dt
+        qcffraction = points(2,index) + dydt*deltat
+    endif
+    return
+    end function qcffraction
+
+    ! --------------------------- qcifraction -------------------------------------------
+
+    real(eb) function qcifraction (points, index, time)
+
+    !	This is the open/close function for filtering
+
+    integer, intent(in) :: index
+    real(eb), intent(in) :: points(4,*), time
+
+    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: deltat
+    data mintime/1.0e-6_eb/
+
+    if (time<points(1,index)) then
+        qcifraction = points(2,index)
+    else if (time>points(3,index)) then
+        qcifraction = points(4,index)
+    else
+        dt = max(points(3,index) - points(1,index),mintime)
+        deltat = max(time - points(1,index), mintime)
+        dy = points(4,index) - points(2,index)
+        dydt = dy/dt
+        qcifraction = points(2,index) + dydt*deltat
+    endif
+    return
+    end function qcifraction
+    
+    end module opening_fractions
+    

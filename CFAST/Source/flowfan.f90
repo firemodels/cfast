@@ -1,4 +1,16 @@
-
+module mflow_routines
+    
+    use precision_parameters
+    use opening_fractions, only : qcffraction, qcifraction
+    use utility_routines, only: d1mach
+    
+    implicit none
+    
+    private
+    
+    public mechanical_flow
+    
+    contains
 
 ! --------------------------- mechanical_flow -------------------------------------------
 
@@ -21,7 +33,7 @@
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
     real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
 
-    real(eb) :: filter, qcifraction
+    real(eb) :: filter
     integer :: i, ii, j, k, isys, nprod
     logical :: hvacflg
 
@@ -95,7 +107,7 @@
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: deltpmv(*)
     
-    real(eb) :: pav, xtemp, f, dp, hvfan
+    real(eb) :: pav, xtemp, f, dp
 
     integer :: ib, niter, iter, i, ii, j, k
     
@@ -256,7 +268,7 @@
     real(eb), intent(in) :: tsec, dp
     integer, intent(in) :: i,j,k
         
-    real(eb) :: hvfanl, openfraction, qcffraction, minimumopen, roh, d1mach, f
+    real(eb) :: hvfanl, openfraction, minimumopen, roh, f
     logical :: firstc = .true.
     save firstc, minimumopen
 
@@ -490,3 +502,5 @@
     end do
     return
     end subroutine hvtoex
+
+end module mflow_routines

@@ -1,13 +1,15 @@
 module conduction_routines
     use precision_parameters
+    
+    use convection_routines
+    
     use wallptrs
     use cenviro
     use cfast_main
     use opt
     use wnodes
-    use convection_routines
-
     use cparams, only: nnodes
+    
     implicit none
     
     private
@@ -27,13 +29,10 @@ module conduction_routines
     !               q'' + k dt/dx, which when zero is simply fourier's
     !              law of heat conduction.
     !     arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then 
-    !                we don't calculate delta or use flxtot
+    !                        we don't calculate delta or use flxtot
     !                dt time step interval from last valid solution point
     !                flxtot  total flux striking walls
     !                delta   the residual of q'' + k dt/dx
-    !     revision: $revision: 464 $
-    !     revision date: $date: 2012-06-29 15:41:23 -0400 (fri, 29 jun 2012) $
-
 
     integer, intent(in) :: update
     real(eb), intent(in) :: dt, flxtot(nr,nwal)

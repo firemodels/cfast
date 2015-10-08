@@ -1,4 +1,30 @@
-
+module fire_routines
+    
+    use precision_parameters
+    
+    use opening_fractions
+    use utility_routines
+    
+    use cenviro
+    use cfast_main
+    use cparams
+    use fireptrs
+    use fltarget
+    use flwptrs
+    use objects1
+    use objects2
+    use opt
+    use params
+    use smkview_data
+    use vents
+    
+    implicit none
+    
+    private
+    
+    public door_jet, fire, flame_height, get_gas_temp_velocity, integrate_mass, remap_fires, update_fire_objects, update_species
+    
+    contains
 ! --------------------------- fires -------------------------------------------
 
     subroutine fire (tsec,flwf)
@@ -25,17 +51,6 @@
     !                       (i,12 to 18) = heat of combustion, c/co2, co/co2, h/c, o/c, hcl, hcn yields for fire i
     !					    (i,19) characteristic length of the burning volume
     !                       (i,20) fire area
-
-    use precision_parameters
-    use fireptrs
-    use cenviro
-    use cfast_main
-    use flwptrs
-    use objects1
-    use objects2
-    use opt
-    use params
-    implicit none
     
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flwf(nr,ns+2,2)
@@ -159,13 +174,6 @@
     !                 xqfr (output): net radiation from fire (w)
     !                 xqlp (output): heat release in the lower plume (w)
     !                 xqup (output): heat release rate in the upper plume (w)
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use fireptrs
-    use interfaces
-    implicit none
 
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: xemp, xhr, xbr, xdr, hcombt, y_soot, y_co, y_trace, n_C ,n_H, n_O, n_N, n_Cl
@@ -358,9 +366,6 @@
     !                 species_rates (output): production rates of species based on calculated yields and constrained 
     !                                         pyrolysis rate (kg/s); fuel and oxygen are naturally negative
 
-    use precision_parameters
-    implicit none
-    
     integer, intent(in) :: source_room, activated_room, activated_sprinkler
     real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: source_o2, lower_o2_limit
@@ -453,11 +458,6 @@
     !                 yields of O2, HCl, and HCN are determined from this
     !                 y_soot, y_co, y_trace (output): species yields for soot, CO, and trace species; 
     !                 others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
-
-    use precision_parameters
-    use cfast_main
-    use objects2
-    implicit none
 
     integer, intent(in) :: objn, iroom
     real(eb), intent(in) :: time
@@ -555,9 +555,6 @@
     !     routine: fireplm
     !     purpose: physical interface between do_fire and the plume models
 
-    use precision_parameters
-    implicit none
-    
     real(eb), intent(in) :: qfire, qfire_c, z, xemp, xfx, xfy, object_area, t_inf
     real(eb), intent(out) :: xeme, xems
 
@@ -580,10 +577,6 @@
     !                xfy   distance from fire to wall in y direction (m)
     !     outputs:   ems   total mass transfer rate up to height z (kg/s)
     !                eme   net entrainment rate up to height z (kg/s)
-
-    use precision_parameters
-    use cparams, only: mx_hsep
-    implicit none
 
     real(eb), intent(in) :: q, q_c, z, t_inf, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
@@ -638,15 +631,10 @@
     !     Arguments:  time    current simulation time
     !                 deltt   current time step
 
-    use precision_parameters
-    use cfast_main
-    use params
-    implicit none  
-
     real(eb), intent(in) :: time, deltt
     
     integer ::i, j, irm, ii, isys
-    real(eb) :: filter, qcifraction
+    real(eb) :: filter
 
     do i = 1, numobjl
         objmaspy(i) = objmaspy(i) + femp(i)*deltt
@@ -700,14 +688,6 @@
     !     inputs:   nfire   total number of normal fires
     !     outputs:  flwdjf  mass and energy flows into layers due to fires.
     !                       standard source routine data structure.
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use flwptrs
-    use opt
-    use vents
-    implicit none
     
     logical, intent(out) :: djetflg
     real(eb), intent(out) :: flwdjf(nr,ns+2,2)
@@ -801,13 +781,6 @@
     !                 qpyrol (output): total heat released by door jet fire
     !                 xntms (output): net change in mass of species in door jet
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use interfaces
-
-    implicit none
-    
     integer, intent(in) :: ito
     real(eb), intent(in) :: tjet, xxnetfl, sas, hcombt
     logical, intent(out) :: djflowflg
@@ -851,9 +824,6 @@
     !
     !     Source: SFPE handbook, Section 2, Chapter 1
 
-    use precision_parameters
-    implicit none
-    
     real(eb), intent(in) :: qdot, area
     real(eb), intent(out) :: fheight
     
@@ -882,13 +852,6 @@
     !                z  z position of target in compartment
     !                tg (output)   calculated gas temperature
     !                vg (output)   calculated gas velocity
-
-    use precision_parameters
-    use fireptrs
-    use cfast_main
-    use cenviro
-    use objects2
-    implicit none
 
     integer, intent(in) :: iroom
     real(eb), intent(in) :: x, y, z
@@ -975,9 +938,6 @@
     !                 w: width of hallway is compartment is designated as a hallway, zero otherwisw
     !                 tcj (output): temperature at height zin and radius r (K)
     !                 vcj (output): velocity at height zin and radius r (m/s)
-
-    use precision_parameters
-    implicit none
 
     real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w
     real(eb), intent(out) :: tcj, vcj
@@ -1068,9 +1028,6 @@
     !                 tplume (output): plume temperature at height zin and radius r (K)
     !                 uplume (output): plume velocity at height zin and radius r (m/s)
 
-    use precision_parameters
-    implicit none
-    
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume, uplume
 
@@ -1143,12 +1100,6 @@
     !     purpose: calculate species concentrations (ppm), mass density (kg/m^3), opacity (1/m), 
     !              ct (g-min/m^3), heat flux to target on floor (w)
     !     arguments:  deltt  length of the latest time step (s)
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use params
-    implicit none
 
     real(eb), intent(in) :: deltt
     
@@ -1231,11 +1182,6 @@
     ! this routine is to combine fire objects into a single list
     ! there does not have to be a main fire nor any objects, so nfires may be zero
 
-    use precision_parameters
-    use cfast_main
-    use smkview
-    implicit none
-
     integer, intent(out) :: nfires
     
     real(eb) :: fheight
@@ -1257,39 +1203,6 @@
     return
     end
 
-! --------------------------- set_heat_of_combustion -------------------------------------------
-
-    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
-
-    !	Routine to implement the algorithm to set the heat of combustion for all fires
-
-    use precision_parameters
-    implicit none
-
-    integer, intent(in) :: maxint
-    real(eb), intent(in) :: qdot(maxint), hinitial
-    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
-    
-    integer :: i
-    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
-
-    do i = 1, maxint
-        if(i>1) then
-            if (mdot(i)*qdot(i)<=0.0_eb) then
-                hdot(i) = hinitial
-            else
-                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
-                mdot(i) = qdot(i)/hdot(i)
-            endif
-        else
-            hdot(1) = hinitial
-        endif
-    end do
-
-    return
-    
-    end subroutine set_heat_of_combustion
-
 ! --------------------------- update_fire_objects -------------------------------------------
 
     subroutine update_fire_objects(iflag, told, dt, ifobj, tobj)
@@ -1301,14 +1214,6 @@
     !                 dt      length of last time step
     !                 ifobj   object number that ignites (return)
     !                 tobj    time object ignites
-
-    use precision_parameters
-    use cparams
-    use cfast_main
-    use fltarget
-    use objects2
-    use opt
-    implicit none
     
     integer, intent(in) :: iflag
     integer, intent(out) :: ifobj
@@ -1388,9 +1293,6 @@
 
     subroutine check_object_ignition(told, dt, cond, trip, oldcond, iobj,ifobj, tobj, tmpob)
 
-    use precision_parameters
-    implicit none
-
     integer, intent(in) :: iobj
     real(eb), intent(in) :: told, dt, cond, trip, oldcond
     
@@ -1414,3 +1316,5 @@
     return
 
     end subroutine check_object_ignition
+
+end module fire_routines

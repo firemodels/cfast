@@ -1,4 +1,14 @@
-
+module numerics_routines
+    
+    use utility_routines
+    
+    implicit none
+    
+    private
+    
+    public ddassl, ddot, dnrm2, dgefa, dgesl, jac, setderv, snsqe, gjac, dscal
+    
+    contains
 ! --------------------------- ddassl -------------------------------------------
 
     subroutine ddassl(res,neq,t,y,yprime,tout,info,rtol,atol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
@@ -704,8 +714,8 @@
     integer :: info(15), iwork(*),ipar(*)
     character :: msg*80, mesg*128
     
-    real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, d1mach, tdist, ho, ypnorm, ddanrm, dsign, rh, abs, tstop, h, tnext, r
-    integer :: i, neq, mxord, lenpd, lenrw, jacdim, jacd, mband, msave, leniw, lrw, liw
+    real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, tdist, ho, ypnorm, dsign, rh, abs, tstop, h, tnext, r
+    integer :: i, neq, mxord, lenpd, lenrw, jacdim, mband, msave, leniw, lrw, liw
     integer :: idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
     !
     !     set pointers into iwork
@@ -1420,7 +1430,7 @@
     
     logical :: convgd
     integer :: iwm(*), ipar(*), maxit, mjac, idid, nef, ncf, nsf, i, jcalc, m, ires, ier, ntemp, nonneg, neq
-    real(8) :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, ddanrm, cj, h, uround,&
+    real(8) :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, cj, h, uround,&
        s, delnrm, oldnrm, rate, err, hmin, r, dmin1
     external res,jac
     !
@@ -1787,7 +1797,7 @@
     integer :: iwm(*), ipar(*), maxit, idid, ncf, nsf, nef, jstart,  kold, knew, jcalc, iphase, ns, kp1, kp2, km1, nsp1, i, j, &
        k, m, ntemp, ires, ier, nonneg, kdiff, j1, neq
     real(8) :: y(*), yprime(*), wt(*), phi(neq, *), delta(*), e(*), wm(*), psi(*), alpha(*), beta(*), gamma(*), sigma(*), &
-       rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, ddanrm, &
+       rpar(*), xrate, xold, x, hold, h, cjold, cj, s, delnrm, temp1, temp2, alphas, alpha0, cjlast, ck, pnorm, &
        uround, oldnrm, rate, enorm, erk, terk, est, terkm1, erkm1, erkm2, terkm2, err, erkp1, terkp1, hmin, hnew, r
     external res,jac
     !
@@ -2430,13 +2440,6 @@
     end do
     call setderv(-1)
     !
-    !*** code added by gpf and par to increment jacobian count
-    !    and print out jacobian
-    !
-    call incjac
-    call outjac(x,wm(npd),neq)
-    !
-    !
     !
     !     do dense-matrix lu decomposition on pd
 230 call dgefa(wm(npd),neq,neq,iwm(lipvt),ier)
@@ -3021,8 +3024,8 @@
     
     implicit none
     integer :: n, lr, i, j, jj, jp1, k, l
-    real(8) ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, d1mach, sum, temp, qnorm, &
-       enorm, delta, gnorm, sgnorm, alpha, bnorm
+    real(8) ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, sum, temp, qnorm, &
+       delta, gnorm, sgnorm, alpha, bnorm
 
     data one,zero /1.0d0,0.0d0/
     
@@ -3341,7 +3344,7 @@
     implicit none
     
     integer :: n, ldfjac, iflag, ml, mu, i, j, k, msum
-    real(8) :: x(n), fvec(n), fjac(ldfjac, n), wa1(n), wa2(n), zero, epsmch, d1mach, eps, epsfcn, temp, h
+    real(8) :: x(n), fvec(n), fjac(ldfjac, n), wa1(n), wa2(n), zero, epsmch, eps, epsfcn, temp, h
 
     data zero /0.0d0/
     !***first executable statement  fdjac1
@@ -3584,7 +3587,7 @@
     
     integer :: m,n,lda,lipvt,ipvt(lipvt),i,j,jp1,k,kmax,minmn
     logical pivot
-    real(8) ::  a(lda,n),sigma(n),acnorm(n),wa(n), one, zero, p05, epsmch, d1mach, enorm, temp, ajnorm, sum
+    real(8) ::  a(lda,n),sigma(n),acnorm(n),wa(n), one, zero, p05, epsmch, temp, ajnorm, sum
 
     data one,p05,zero /1.0d0,5.0d-2,0.0d0/
     !***first executable statement  qrfac
@@ -3840,7 +3843,7 @@
     implicit none
     integer :: m,n,ls, i,j,jj,l,nmj,nm1
     logical :: sing
-    real(8) :: s(ls),u(m),v(n),w(m), one, p5, p25, zero, giant, d1mach, cotan, sin, cos, tau, tan, temp
+    real(8) :: s(ls),u(m),v(n),w(m), one, p5, p25, zero, giant, cotan, sin, cos, tau, tan, temp
     
     data one,p5,p25,zero /1.0d0,5.0d-1,2.5d-1,0.0d0/
     !***first executable statement  r1updt
@@ -4390,8 +4393,7 @@
     implicit none
     integer :: iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev,i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2,iwa(1)
     real(8) :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, &
-       p001, p0001, zero, epsmch, d1mach, &
-        xtol, factor, fnorm, enorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
+       p001, p0001, zero, epsmch, xtol, factor, fnorm, epsfcn, xnorm, delta, sum, temp, pnorm, fnorm1, actred, prered, ratio
     external fcn
     logical :: jeval,sing
     data one,p1,p5,p001,p0001,zero /1.0d0,1.0d-1,5.0d-1,1.0d-3,1.0d-4,0.0d0/
@@ -5233,7 +5235,7 @@
     !     internal variables
     !
     real(8) :: t
-    integer :: idamax, j, k, kp1, l, nm1
+    integer :: j, k, kp1, l, nm1
     !
     !
     !     gaussian elimination with partial pivoting
@@ -5350,7 +5352,7 @@
     !
     !     internal variables
     !
-    real(8) :: ddot, t
+    real(8) :: t
     integer :: k, kb, l, nm1
     !
     nm1 = n - 1
@@ -5497,7 +5499,7 @@
     !     internal variables
     !
     real(8) :: t
-    integer :: i, idamax, i0, j, ju, jz, j0, j1, k, kp1, l, lm, m, mm, nm1
+    integer :: i, i0, j, ju, jz, j0, j1, k, kp1, l, lm, m, mm, nm1
     !
     !
     m = ml + mu + 1
@@ -5656,7 +5658,7 @@
     !
     !     internal variables
     !
-    real(8) :: ddot, t
+    real(8) :: t
     integer :: k, kb, l, la, lb, lm, m, nm1
     !
     m = mu + ml + 1
@@ -5843,31 +5845,4 @@
     return
     end
 
-! --------------------------- incjac -------------------------------------------
-
-    subroutine incjac
-    !
-    !--------------------------------- nist/bfrl ---------------------------------
-    !
-    !     routine:     injac
-    !
-    !     source file: jacs.sor
-    !
-    !     functional class:  
-    !
-    !     description:  used to increment the jacobian counter from within
-    !                   dassl.  this method avoids adding cfast common blocks 
-    !                   to dassl.
-    !
-    !
-    !     revision history:
-    !        created:  2/14/1993 by gpf
-    !
-    !---------------------------- all rights reserved ----------------------------
-
-    use opt
-    implicit none
-    !
-    numjac = numjac + 1
-    return
-    end
+end module numerics_routines

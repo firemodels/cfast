@@ -1,4 +1,16 @@
-
+module hflow_routines
+    
+    use precision_parameters
+    
+    use opening_fractions, only: qchfraction
+    use spreadsheet_routines, only: ssprintslab, spreadsheetfslabs
+    
+    private
+    
+    public horizontal_flow, getventinfo
+    
+    contains
+    
     ! --------------------------- horizontal_flow -------------------------------------------
 
     subroutine horizontal_flow(tsec,epsp,nprod,uflw)
@@ -33,7 +45,7 @@
     real(eb) :: denl(2), denu(2), tu(2), tl(2)
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
     real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
-    real(eb) :: factor2, qchfraction, height, width
+    real(eb) :: factor2, height, width
     integer :: islab, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
@@ -759,145 +771,9 @@
     return
     end subroutine delp
 
-    !	The following functions implement the open/close function for vents.
-    !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,nr), qcvm(4,mxfan),
-    !         and qcvi(4,mxfan).
-
-    !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
-
-    !   The qcv{x} arrays are of the form
-    !		(1,...) Is start of time to change
-    !		(2,...) Is the initial fraction (set in HVENT, VVENT and MVENT)
-    !		(3,...) Is the time to complete the change, Time+Decay_time, and
-    !		(4,...) Is the final fraction
-
-    !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and HVFAN
-
-
-    ! --------------------------- qchfraction -------------------------------------------
-
-    real(eb) function qchfraction (points, index, time)
-
-    !	This is the open/close function for buoyancy driven horizontal flow
-
-    use precision_parameters
-    implicit none
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime
-    real(eb) :: deltat
-    data mintime/1.0e-6/
-
-    if (time<points(1,index)) then
-        qchfraction = points(2,index)
-    else if (time>points(3,index)) then
-        qchfraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index),mintime)
-        deltat = max(time - points(1,index),mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qchfraction = points(2,index) + dydt*deltat
-    endif
-    return
-    end function qchfraction
-
-    ! --------------------------- qcvfraction -------------------------------------------
-
-    real(eb) function qcvfraction (points, index, time)
-
-    !	This is the open/close function for buoyancy driven vertical flow
-
-    use precision_parameters
-    implicit none
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime
-    real(eb) :: deltat
-    data mintime/1.0e-6/
-
-    if (time<points(1,index)) then
-        qcvfraction = points(2,index)
-    else if (time>points(3,index)) then
-        qcvfraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index),mintime)
-        deltat = max(time - points(1,index),mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qcvfraction = points(2,index) + dydt*deltat
-    endif
-    return
-    end function qcvfraction
-
-    ! --------------------------- qcffraction -------------------------------------------
-
-    real(eb) function qcffraction (points, index, time)
-
-    !	This is the open/close function for mechanical ventilation
-
-    use precision_parameters
-    implicit none
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime
-    real(eb) :: deltat
-    data mintime/1.0e-6_eb/
-
-    if (time<points(1,index)) then
-        qcffraction = points(2,index)
-    else if (time>points(3,index)) then
-        qcffraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index), mintime)
-        deltat = max(time - points(1,index), mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qcffraction = points(2,index) + dydt*deltat
-    endif
-    return
-    end function qcffraction
-
-    ! --------------------------- qcifraction -------------------------------------------
-
-    real(eb) function qcifraction (points, index, time)
-
-    !	This is the open/close function for filtering
-
-    use precision_parameters
-    implicit none
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime
-    real(eb) :: deltat
-    data mintime/1.0e-6_eb/
-
-    if (time<points(1,index)) then
-        qcifraction = points(2,index)
-    else if (time>points(3,index)) then
-        qcifraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index),mintime)
-        deltat = max(time - points(1,index), mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qcifraction = points(2,index) + dydt*deltat
-    endif
-    return
-    end function qcifraction
-
     ! --------------------------- getventinfo -------------------------------------------
 
-    subroutine getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
+    subroutine getventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
 
     !       This is a routine to get the shape data for horizontal flow vents
 
@@ -924,5 +800,7 @@
     vblue = 1.0_eb
 
     return
-    end
+    
+    end subroutine getventinfo
 
+end module hflow_routines

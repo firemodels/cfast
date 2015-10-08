@@ -1,4 +1,23 @@
-
+module initialization_routines
+    
+    use precision_parameters
+    
+    use numerics_routines, only: dnrm2, dscal
+    use opening_fractions, only : qchfraction
+    use output_routines, only : deleteoutputfiles
+    use solve_routines, only : update_data
+    use utility_routines
+    
+    implicit none
+    
+    private
+    
+    public get_thermal_property, inittarg, initamb, offset, hvinit, initialize_memory, initialize_fire_objects, &
+        initialize_species, initialize_walls
+    
+    contains
+    
+    
 ! --------------------------- get_thermal_property -------------------------------------------
 
     subroutine get_thermal_property (name, tp)
@@ -25,164 +44,6 @@
     stop
     
     end subroutine get_thermal_property
-
-! --------------------------- gres -------------------------------------------
-
-    subroutine gres(nnn,hvpsolv,deltamv,iflag)
-
-    !     routine: gres
-    !     purpose: calculates residuals for initial solution by snsqe
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: nnn
-    !                hvpsolv
-    !                deltamv
-    !                iflag
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell
-    use opt
-    use params
-    use solver_parameters
-    implicit none
-
-    integer, intent(in) :: nnn
-    real(eb), intent(in) :: hvpsolv(nnn)
-    integer, intent(out) :: iflag
-    real(eb), intent(out) :: deltamv(*)
-    
-    integer :: nalg, i, ires
-    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), T
-    
-    data pdzero /maxteq*0.0_eb/
-    
-    if(1.eq.2) iflag=-1 ! dummy statement to eliminate compiler warnings
-    nalg = nm1 + nhvpvar + nhvtvar
-    do i = 1, nalg
-        p2(i) = hvpsolv(i)
-    end do
-    do i = nalg + 1, nequals
-        p2(i) = pinit(i)
-    end do
-    if(iprtalg/=0)then
-        write(iofilo,*) 'room pressures'
-        do i = 1, nm1
-            write(iofilo,*) i,p2(i)
-        end do
-        if(nhvpvar>0) write (iofilo,*) 'hvac pressures'
-        do i = 1, nhvpvar
-            write(iofilo,*)i,p2(i+nofpmv)
-        end do
-        if(nhvtvar>0) write (iofilo,*) 'hvac temperatures'
-        do i = 1, nhvtvar
-            write(iofilo,*)i,p2(i+noftmv)
-        end do
-    endif
-    t = stime
-    ires = 0
-    call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
-    do i = 1, nalg
-        deltamv(i) = delta(i)
-    end do
-    do i = 1, nm1
-        if(.not.izcon(i)) deltamv(i) = 0.0_eb
-    end do
-    if(iprtalg/=0) then
-        write(iofilo,*)'room pressure residuals'
-        do i = 1, nm1
-            write(iofilo,*)i,delta(i)
-        end do
-        if(nhvpvar>0)write (iofilo,*) 'hvac pressure residuals'
-        do i = 1, nhvpvar
-            write(iofilo,*)i,delta(i+nofpmv)
-        end do
-        if(nhvtvar>0)write (iofilo,*) 'hvac temperature residuals'
-        do i = 1, nhvtvar
-            write(iofilo,*)i,delta(i+noftmv)
-        end do
-        write(iofilo,*)' '
-        read (*,*)
-    endif
-    return
-    end
-
-! --------------------------- gres2 -------------------------------------------
-
-    subroutine gres2(nnn,hvsolv,deltamv,iflag)
-
-    !     routine: gres2
-    !     purpose: calculates residuals for initial solution by snsqe
-    !              (HVAC pressure and temperature)
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     Arguments: NNN
-    !                HVSOLV
-    !                DELTAMV
-    !                IFLAG
-
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use opt
-    use params
-    use solver_parameters
-    implicit none
-
-    integer, intent(in) :: nnn
-    real(eb), intent(in) :: hvsolv(nnn)
-    integer, intent(out) :: iflag
-    real(eb), intent(out) :: deltamv(*)
-
-    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
-    integer :: i, ires
-    data pdzero /maxteq*0.0_eb/
-    
-    if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
-    do i = 1, nequals
-        p2(i) = pinit(i)
-    end do
-    do i = 1, nhvpvar
-        p2(i+nofpmv) = hvsolv(i)
-    end do
-    do i = 1, nhvtvar
-        p2(i+noftmv) = hvsolv(nhvpvar+i)
-    end do
-    if (iprtalg/=0) then
-        if(nhvpvar>0)write (iofilo,*) 'hvac pressures'
-        do i = 1, nhvpvar
-            write (iofilo,*) i, hvsolv(i)
-        end do
-        if(nhvtvar>0)write (iofilo,*) 'hvac temperatures'
-        do i = 1, nhvtvar
-            write (iofilo,*) i, hvsolv(nhvpvar+i)
-        end do
-    endif
-    t = stime
-    ires = 0
-    call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
-    do i = 1, nhvpvar
-        deltamv(i) = delta(i+nofpmv)
-    end do
-    do i = 1, nhvtvar
-        deltamv(i+nhvpvar) = delta(i+noftmv)
-    end do
-    if (iprtalg/=0) then
-        write (iofilo,*) ' '
-        if(nhvpvar>0)write (iofilo,*) 'hvac pressure residuals'
-        do i = 1, nhvpvar
-            write (iofilo,*) i, deltamv(i)
-        end do
-        if(nhvtvar>0)write (iofilo,*) 'hvac temperature residuals'
-        do i = 1, nhvtvar
-            write (iofilo,*) i, deltamv(i+nhvpvar)
-        end do
-        write(iofilo,*)' '
-        read(*,*)
-    endif
-    return
-    end
 
 ! --------------------------- hvinit -------------------------------------------
 
@@ -499,7 +360,7 @@
     integer, intent(in) :: iflag
     real(eb), intent(out) :: yinter(*)
     
-    real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale, dnrm2
+    real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale
     integer i, ii, iwall, iroom, itarg
     
     type(target_type), pointer :: targptr
@@ -641,6 +502,79 @@
 
     return
     end
+    
+! --------------------------- sortbrm -------------------------------------------
+
+    subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
+
+    !     routine: sortbrm
+    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to
+    !               sort fire and detector data structures by room number.
+    !     arguments: x       floating point info to be sorted
+    !                lx      leading dimension of x
+    !                ix      integer info to be sorted
+    !                lix     leading dimension of ix in calling routine
+    !                nrow    number of rows in x and ix
+    !                ncolx   number of columns in x
+    !                ncolix  number of columns in ix
+    !                isort   column in ix to sort on (usually contains room numbers)
+    !                ldp     leading dimension of ipoint
+    !                nroom   number of elements for which ipoint is defined, also the number of rooms
+    !                ipoint (output)  pointer array for sorted x and ix list.
+    !                                 (r,1) = number of items (fires or detectors so far) in room r
+    !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
+
+    use precision_parameters
+    use cparams, only : nr, mxfires
+    use dsize, only : mxdtect
+    implicit none
+
+    ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
+    integer, parameter :: lwork = nr + mxfires + mxdtect
+
+
+    integer, intent(in) :: lix, ncolix, ncolx
+    integer, intent(in) :: nrow, isort, nroom, lx, ldp
+    integer, intent(inout) :: ix(lix,ncolix)
+    integer, intent(out) :: ipoint(ldp,*)
+    real(eb), intent(inout) :: x(lx,ncolx)
+
+    integer :: i, j, iroom, iwork(lwork), iperm(lwork)
+    real(eb) :: work(lwork)
+
+    if(nrow>lwork)then
+        call xerror('Error: Internal error sorting detectors. Not enough work space in sortbrm',0,1,2)
+    endif
+
+    ! create a permutation vector using the isort'th column of ix
+    iperm(1:nrow) = (/(i,i=1,nrow)/)
+    call indexi(nrow,ix(1,isort),iperm)
+
+    ! reorder integer array using the permutation vector
+    do j = 1, ncolix
+        iwork(1:nrow) = ix(iperm(1:nrow),j)
+        ix(1:nrow,j) = iwork(1:nrow)
+    end do
+
+    ! reorder the floating point arrays using the permutation vector
+    do j = 1, ncolx
+        work(1:nrow) = x(iperm(1:nrow),j)
+        x(1:nrow,j) = work(1:nrow)
+    end do
+
+    ! construct the pointer array
+    ipoint(1:nroom,1:2) = 0
+    do i = 1, nrow
+        iroom = ix(i,isort)
+        ipoint(iroom,1) = ipoint(iroom,1) + 1
+        if (ipoint(iroom,2)==0) ipoint(iroom,2) = i
+    end do
+    do i = 1, nroom
+        if (ipoint(i,2)==0) ipoint(i,2) = 1
+    end do
+    return
+    
+    end subroutine sortbrm
 
 ! --------------------------- initialize_memory -------------------------------------------
 
@@ -883,90 +817,6 @@
 
     return
     end
-
-! --------------------------- read_solver_ini -------------------------------------------
-
-    subroutine read_solver_ini
-
-    !     routine: read_solver_ini
-    !     purpose: this routine initializes the solver variables from solver.ini if it exists
-    !     arguments: none
-
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use iofiles
-    use opt
-    use params
-    use solver_parameters
-    use wnodes
-    implicit none
-
-    real(eb) :: fract1, fract2, fract3, fsum
-    integer :: nopt, i, j, ibeg, iend
-    logical existed
-
-    ductcv = 0.0_eb
-
-    inquire (file=solverini,exist=existed)
-    if (.not.existed) return
-    close (iofili)
-    write (logerr, '(2a)') '***** modify dassl tolerances with ', solverini
-    open (unit=iofili,file=solverini)
-
-    ! read in solver error tolerances
-    read (iofili,*)
-    read (iofili,*) aptol, rptol, atol, rtol
-    read (iofili,*)
-    read (iofili,*) awtol, rwtol, algtol
-    read (iofili,*)
-    read (iofili,*) ahvptol, rhvptol, ahvttol, rhvttol
-
-    ! read in physical sub-model option list
-    read (iofili,*)
-    read (iofili,*) nopt
-    nopt = max(0, min(mxopt, nopt))
-    do i = 1, (nopt-1)/5 + 1
-        ibeg = 1 + (i-1)*5
-        iend = min(ibeg+4,nopt)
-        read (iofili,*)
-        read (iofili,*) (option(j),j = ibeg,iend)
-    end do
-    ! since the solver.ini file is on, turn on debug help
-    option(fkeyeval) = 1
-
-    ! set debug print
-    if (option(fdebug)==2) then
-        option(fdebug) = off
-    else if (option(fdebug)>=3) then
-        option(fdebug) = on
-    endif
-
-    ! read in wall info
-    read (iofili,*)
-    read (iofili,*) nwpts, fract1, fract2, fract3
-    read (iofili,*)
-    read (iofili,*) iwbound
-    fsum = abs(fract1) + abs(fract2) + abs(fract3)
-    wsplit(1) = abs(fract1)/fsum
-    wsplit(2) = abs(fract2)/fsum
-    wsplit(3) = abs(fract3)/fsum
-
-    ! read in maximum desired solve step size, if negative then then solve will decide
-    read (iofili,*)
-    read (iofili,*) stpmax, dasslfts
-
-    ! read in hvac convection coefficient
-    read(iofili,*)
-    read(iofili,*) ductcv
-
-    ! read in jacobian and snsqe print flags
-    read(iofili,*)
-    read(iofili,*) jacchk, cutjac, iprtalg
-    close (iofili)
-
-    return
-    end subroutine read_solver_ini
 
 ! --------------------------- initspecc -------------------------------------------
 
@@ -1449,90 +1299,6 @@
     return
     end subroutine offset
 
-! --------------------------- room_connections -------------------------------------------
-
-    subroutine room_connections (tsec)
-
-    ! routine: room_connections
-    ! purpose: this routine determines whether flow from each room can reach the outside (perhaps through intermediate rooms) 
-    !           via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an 
-    !           initial pressure solution.
-    ! arguments: tsec: current simulation time 
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use vents
-    implicit none
-
-    real(eb), intent(in) :: tsec
-    
-    real(eb) :: factor2, qchfraction, height, width, avent
-    integer roomc(nr,nr), tempmat(nr,nr), i, iroom1, iroom2, ik, im, ix, matiter
-    integer, parameter :: toprm = 1, botrm = 2
-    
-    type(vent_type), pointer :: ventptr
-
-    ! initially assume that no rooms are connected
-    roomc(1:n,1:n) = 0
-    do i = 1, n
-        roomc(i,i) = 1
-    end do
-
-    ! check horizontal vent flow
-    do i = 1, n_hvents
-        ventptr=>hventinfo(i)
-        
-        iroom1 = ventptr%from
-        iroom2 = ventptr%to
-        ik = ventptr%counter
-        im = min(iroom1,iroom2)
-        ix = max(iroom1,iroom2)
-        factor2 = qchfraction(qcvh,ijk(im,ix,ik),tsec)
-        height = ventptr%soffit - ventptr%sill
-        width = ventptr%width
-        avent = factor2*height*width
-        if(avent/=0.0_eb)then
-            roomc(iroom1,iroom2) = 1
-            roomc(iroom2,iroom1) = 1
-        endif
-    end do
-
-    ! check vertical vent flow
-    do i = 1, n_vvents
-        iroom1 = ivvent(i,toprm)
-        iroom2 = ivvent(i,botrm)
-        if(vvarea(iroom1,iroom2)/=0.0_eb)then
-            roomc(iroom1,iroom2) = 1
-            roomc(iroom2,iroom1) = 1
-        endif
-    end do
-
-    ! construct roomc**matiter where matiter > n
-    ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection 
-    !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.  
-    !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.  
-    !        since there are only n rooms, roomc**n tells us whether any given room is connected to any other room in n steps.  
-    !        the entries roomc**n(i,n) then indicates whether a room is connected to the outside (perhaps through several other 
-    !        intermediate rooms).
-    matiter = 1
-    do i = 1, n
-        if(n<=matiter) exit
-        call mat2mult(roomc,tempmat,nr,n)
-        matiter = matiter*2
-    end do
-
-    do i = 1, nm1
-        if(roomc(i,n)/=0)then
-            izcon(i) = .true.
-        else
-            izcon(i) = .false.
-        endif
-    end do
-
-    return
-    end subroutine room_connections
-
 ! --------------------------- wset -------------------------------------------
 
     subroutine wset(numnode,nslab,tstop,walldx,wsplit,wk,wspec,wrho,wthick,wlen,wtemp,tamb,text)
@@ -1687,3 +1453,5 @@
     end do
     return
     end
+
+end module initialization_routines

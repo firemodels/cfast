@@ -1,4 +1,19 @@
-
+module input_routines
+    
+    use precision_parameters
+    
+    use fire_routines, only: flame_height
+    use initialization_routines, only : inittarg, initamb, offset, hvinit
+    use numerics_routines, only : dnrm2
+    use output_routines, only: openoutputfiles, deleteoutputfiles
+    use utility_routines
+    
+    private
+    
+    public read_input_file, open_files, read_solver_ini
+    
+    contains
+    
 ! --------------------------- read_input_file -------------------------------------------
 
     subroutine read_input_file ()
@@ -463,10 +478,10 @@
     
     integer, intent(in) :: inumr, inumc
     
-    integer :: obpnt, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir, countargs
+    integer :: obpnt, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
     integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
-    real(eb) :: frac, tmpcond, dnrm2
+    real(eb) :: frac, tmpcond
     character :: label*5, tcname*64, eqtype*3, venttype,orientypefrom*1, orientypeto*1
     character(128) :: lcarray(ncol)
     type(room_type), pointer :: roomptr
@@ -1749,7 +1764,7 @@
     
     character(128) :: lcarray(ncol)
     character(5) :: label
-    integer :: logerr = 3, midpoint = 1, base = 2, ir, i, ii, nret, countargs
+    integer :: logerr = 3, midpoint = 1, base = 2, ir, i, ii, nret
     real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, area, flamelength
     type(room_type), pointer :: roomptr
 
@@ -1885,6 +1900,40 @@
 5000 format ('***Error: The key word ',a5,' is not part of a fire definition. Fire keyword are likely out of order')
 
     end subroutine inputembeddedfire
+    
+! --------------------------- set_heat_of_combustion -------------------------------------------
+
+    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
+
+    !	Routine to implement the algorithm to set the heat of combustion for all fires
+
+    use precision_parameters
+    implicit none
+
+    integer, intent(in) :: maxint
+    real(eb), intent(in) :: qdot(maxint), hinitial
+    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
+    
+    integer :: i
+    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
+
+    do i = 1, maxint
+        if(i>1) then
+            if (mdot(i)*qdot(i)<=0.0_eb) then
+                hdot(i) = hinitial
+            else
+                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
+                mdot(i) = qdot(i)/hdot(i)
+            endif
+        else
+            hdot(1) = hinitial
+        endif
+    end do
+
+    return
+    
+    end subroutine set_heat_of_combustion
+
 
 ! --------------------------- open_files -------------------------------------------
 
@@ -1967,6 +2016,90 @@
     
 100 format (a,i0,a)    
     end subroutine open_files
+
+! --------------------------- read_solver_ini -------------------------------------------
+
+    subroutine read_solver_ini
+
+    !     routine: read_solver_ini
+    !     purpose: this routine initializes the solver variables from solver.ini if it exists
+    !     arguments: none
+
+    use precision_parameters
+    use cfast_main
+    use cshell
+    use iofiles
+    use opt
+    use params
+    use solver_parameters
+    use wnodes
+    implicit none
+
+    real(eb) :: fract1, fract2, fract3, fsum
+    integer :: nopt, i, j, ibeg, iend
+    logical existed
+
+    ductcv = 0.0_eb
+
+    inquire (file=solverini,exist=existed)
+    if (.not.existed) return
+    close (iofili)
+    write (logerr, '(2a)') '***** modify dassl tolerances with ', solverini
+    open (unit=iofili,file=solverini)
+
+    ! read in solver error tolerances
+    read (iofili,*)
+    read (iofili,*) aptol, rptol, atol, rtol
+    read (iofili,*)
+    read (iofili,*) awtol, rwtol, algtol
+    read (iofili,*)
+    read (iofili,*) ahvptol, rhvptol, ahvttol, rhvttol
+
+    ! read in physical sub-model option list
+    read (iofili,*)
+    read (iofili,*) nopt
+    nopt = max(0, min(mxopt, nopt))
+    do i = 1, (nopt-1)/5 + 1
+        ibeg = 1 + (i-1)*5
+        iend = min(ibeg+4,nopt)
+        read (iofili,*)
+        read (iofili,*) (option(j),j = ibeg,iend)
+    end do
+    ! since the solver.ini file is on, turn on debug help
+    option(fkeyeval) = 1
+
+    ! set debug print
+    if (option(fdebug)==2) then
+        option(fdebug) = off
+    else if (option(fdebug)>=3) then
+        option(fdebug) = on
+    endif
+
+    ! read in wall info
+    read (iofili,*)
+    read (iofili,*) nwpts, fract1, fract2, fract3
+    read (iofili,*)
+    read (iofili,*) iwbound
+    fsum = abs(fract1) + abs(fract2) + abs(fract3)
+    wsplit(1) = abs(fract1)/fsum
+    wsplit(2) = abs(fract2)/fsum
+    wsplit(3) = abs(fract3)/fsum
+
+    ! read in maximum desired solve step size, if negative then then solve will decide
+    read (iofili,*)
+    read (iofili,*) stpmax, dasslfts
+
+    ! read in hvac convection coefficient
+    read(iofili,*)
+    read(iofili,*) ductcv
+
+    ! read in jacobian and snsqe print flags
+    read(iofili,*)
+    read(iofili,*) jacchk, cutjac, iprtalg
+    close (iofili)
+
+    return
+    end subroutine read_solver_ini
 
 ! --------------------------- positionobject -------------------------------------------
 
@@ -2115,7 +2248,7 @@
    use iofiles
    use cenviro
    use cfast_main
-   use utilities
+   use utility_routines
    implicit none
 
    integer :: nrooms
@@ -2329,7 +2462,7 @@
 
    subroutine set_grid(xgrid,n,xmin,xsplit,xmax,nsplit)
    use precision_parameters
-   use utilities
+   use utility_routines
    implicit none
    
    integer, intent(in) :: n, nsplit
@@ -2353,3 +2486,5 @@
    end do
    
    end subroutine set_grid
+
+end module input_routines

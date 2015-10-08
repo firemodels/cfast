@@ -1532,7 +1532,7 @@ module solve_routines
         zzcspec(n,lower,8) = relhum*xh2o
 
         zzrho(n,upper:lower) = zzpabs(n)/rgas/zztemp(n,upper:lower)
-        zzmass(n,upper:lower) = zzrho(n,layer)*zzvol(n,upper:lower)
+        zzmass(n,upper:lower) = zzrho(n,upper:lower)*zzvol(n,upper:lower)
 
         ! define horizontal vent data structures
         frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)

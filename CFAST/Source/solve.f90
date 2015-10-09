@@ -1,15 +1,15 @@
 module solve_routines
 
     use precision_parameters
-    
+
+    use conduction_routines
+    use convection_routines    
     use fire_routines
     use isosurface
-    use conduction_routines
-    use convection_routines
     use hflow_routines
     use mflow_routines
-    use opening_fractions, only : qchfraction
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
+    use opening_fractions, only : qchfraction
     use output_routines
     use radiation_routines
     use smokeview_routines
@@ -561,17 +561,16 @@ module solve_routines
         call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1,  &
              n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, 0.0_eb, 1)
         icode = 0
-        write (logerr, 5004)
+        write (logerr, '(a)') 'Initialize only'
         return
     endif
-5004 format ('Initialize only')
 
     ! main solve loop
     numjac = 0
     numstep = 0
     numresd = 0
 
-80  continue
+10  continue
 
     ! DASSL equation with most error
     ieqmax = 0
@@ -585,7 +584,7 @@ module solve_routines
     if (exists) then
        stopunit=funit(14)
        open(unit=stopunit,file=stopfile)
-       read(stopunit,*,iostat=ios)stopiter
+       read(stopunit,*,iostat=ios) stopiter
        if(ios.ne.0) stopiter=0
        close(unit=stopunit)
        icode = 1
@@ -593,10 +592,9 @@ module solve_routines
     ! If the stop file exists or the esc key has been pressed, then quit
     if (icode==1.and.stopiter.eq.0) then
         call deleteoutputfiles (stopfile)
-        write (logerr, 5000) t, dt
+        write (logerr,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
         return
     endif
-5000 format (/,'Stopped by request at T = ',1PG11.3,' DT = ',G11.3)
 
     ! Check the .query file. If it does not exist, do nothing. If if DOES exist, then
     ! rewind/write the status file and delete the query file (in that order).
@@ -604,7 +602,7 @@ module solve_routines
     inquire (file=queryfile, exist = exists)
     if (exists) then
         call output_status (T, dT)
-        call deleteoutputfiles(queryfile)
+        call deleteoutputfiles (queryfile)
     endif
     
     !Check to see if diagnostic files .resid and .jac exist. If they do exist
@@ -638,8 +636,8 @@ module solve_routines
     ! now do normal output (printout, spreadsheets, ...)
     if (idid>0) then
 
+        ! printed output
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
-
             itmstp = tprint
             call output_results (t,1)
             call output_status (t, dt)
@@ -650,11 +648,9 @@ module solve_routines
             prttime = 0.0_eb
         endif
 
+        ! smokeview output
         if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
             itmstp = tsmv
-
-            ! this ought to go earlier and drop the logical test. however, not all of the information 
-            ! is available until this point
             call remap_fires (nfires)
             if (firstpassforsmokeview) then
                 firstpassforsmokeview = .false.            
@@ -668,12 +664,12 @@ module solve_routines
             call output_smokeview_spreadsheet(t)
             tsmv = tsmv + dplot
             call output_status (t, dt)
-            
             call output_slicedata(t,first_time)
             call output_isodata(t,first_time)
             first_time = 0
         endif
 
+        ! spreadsheet output
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
             call output_spreadsheet(t)
             itmstp = tspread
@@ -681,7 +677,7 @@ module solve_routines
             call output_status (t, dt)
         endif
 
-        ! diagnostics
+        ! diagnostic output
         if (t+0.0001_eb>tpaws) then
             itmstp = tpaws
             call output_results (t,1)
@@ -731,11 +727,9 @@ module solve_routines
         tovtime = tovtime + ostptime
 
         ! make sure dassl is happy
-
         if (idid<0) then
             call find_error_component (ieqmax)
-            write (logerr,101) idid
-101         format('***Error, dassl - idid = ', i0)
+            write (logerr,'(a,i0)') '***Error, dassl - idid = ', idid
             call cfastexit ('CFAST', idid)
             stop
         endif
@@ -746,8 +740,8 @@ module solve_routines
                 izdtnum = izdtnum + 1
                 if(izdtnum>izdtmax)then
                     ! model has hung (izdtmax consective time step sizes were below zzdtcrit)
-                    write(logerr,103) izdtmax, zzdtcrit, t
-103                 format (i3,'***Error: Consecutive time steps with size below ',e11.4,' at t = ',e11.4)
+                    write(logerr,'(i0,a,e11.4,a,e11.4)') &
+                        '***Error: Consecutive time steps with size below ', izdtmax, zzdtcrit, ' at t = ', t
                     call cfastexit ('CFAST',1)
                     stop
                 endif
@@ -788,9 +782,8 @@ module solve_routines
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
             call update_fire_objects (set_detector_state,told,dt,ifobj,tobj)
-            write(iofilo,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb) ! this prevents printing out a negative activation time
-            write(logerr,5003) ifobj,trim(objnin(ifobj)),max(tobj,0.0_eb)
-5003        format(/,' Object #',i3,' (',a,') ignited at ', f10.3,' seconds')
+            write(iofilo,'(a,i0,3a,f10.3,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ',max(tobj,0.0_eb),' seconds'
+            write(logerr,'(a,i0,3a,f10.3,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ',max(tobj,0.0_eb),' seconds'
             ! check to see if we are backing up objects igniting
             if (option(fbtobj)==on) then
                 idsave = ifobj
@@ -825,8 +818,8 @@ module solve_routines
                 ! make sure dassl is happy (again)
                 if (idid<0) then
                     call find_error_component (ipar(3))
-                    write (logerr,101) idid
-                    write(logerr,'(a13,f10.5,1x,a8,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
+                    write (logerr,'(a,i0)') '***Error, dassl - idid = ', idid
+                    write(logerr,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     call cfastexit ('CFAST', idid)
                     stop
                 endif
@@ -870,12 +863,13 @@ module solve_routines
         numstep = numstep + 1
         total_steps = total_steps + 1
         if (stopiter>=0.and.total_steps>stopiter) then
-           call deleteoutputfiles (stopfile)
-           write (logerr, 5000) t, dt
-           call cfastexit ('CFAST', 0)
+            call deleteoutputfiles (stopfile)
+            write (logerr,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
+            call cfastexit ('CFAST', 0)
         endif
-        go to 80
+        go to 10
     endif
+    
     return
 
     end
@@ -914,6 +908,7 @@ module solve_routines
     pold(1:nequals) = p(1:nequals)
 
     return
+    
     end subroutine update_solution
 
 ! --------------------------- keyboard_interaction -------------------------------------------
@@ -1008,23 +1003,20 @@ module solve_routines
         write (iofilo,*)
     endif
     return
-    end
+    
+    end function output_interactive_help
 
 ! --------------------------- set_info_flags -------------------------------------------
 
-    subroutine set_info_flags(info,rwork)
+    subroutine set_info_flags (info,rwork)
 
     !     routine: set_info_flags
     !     purpose: update solution flags for dassl solver
 
     integer, intent(out) :: info(*)
     real(eb), intent(out) :: rwork(*)
-    
-    integer :: i
 
-    do i = 1, 11
-        info(i) = 0
-    end do
+    info(1:11) = 0
     info(3) = 1
     info(2) = 1
     if (stpmax<=0.0_eb) then
@@ -1044,7 +1036,8 @@ module solve_routines
     info(5) = 0
     info(11) = 1
     return
-    end
+    
+    end subroutine set_info_flags
 
 ! --------------------------- calculate_residuals -------------------------------------------
 
@@ -1386,12 +1379,11 @@ module solve_routines
         end do
     endif
 
-    if (ipar(2)==some) then
-        nprod = nprodsv
-    endif
+    if (ipar(2)==some) nprod = nprodsv
 
     return
-    end
+    
+    end subroutine calculate_residuals
 
 ! --------------------------- update_data -------------------------------------------
 
@@ -1950,7 +1942,8 @@ module solve_routines
         end do
     endif
     return
-    end
+    
+    end subroutine update_data
 
 ! --------------------------- synchronize_species_mass -------------------------------------------
 
@@ -2010,6 +2003,7 @@ module solve_routines
     end do
 
     return
-    end
+    
+    end subroutine synchronize_species_mass
 
 end module solve_routines

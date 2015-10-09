@@ -29,8 +29,9 @@
     
     use precision_parameters
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
-    use input_routines
-    use solve_routines
+    use input_routines, only : open_files, read_solver_ini, read_input_file
+    use output_routines, only: output_version, output_initial_conditions
+    use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
     
     use cfast_main
@@ -97,15 +98,13 @@
     call solve_simulation (tstop)
     call cptime(tend)
 
-    write (logerr,5003) tend - tbeg
-
-    !     errors
-
-    write (logerr,5004) total_steps
+    write (logerr,5000) tend - tbeg
+    write (logerr,5010) total_steps
     call cfastexit ('CFAST', 0)
 
-5003 format ('Total execution time = ',1pg10.3,' seconds')
-5004 format ('Total time steps = ',i10)     
+5000 format ('Total execution time = ',1pg10.3,' seconds')
+5010 format ('Total time steps = ',i10)  
+     
     end program cfast
     
 ! --------------------------- cfastexit -------------------------------------------
@@ -127,7 +126,7 @@
     if (errorcode==0) then
         write(logerr, '(''Normal exit from '',a)') trim(name)
     else
-        write(logerr,'(''***Error exit from '',a,'' code = '',i5)') trim(name), errorcode
+        write(logerr,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
     endif
     
     close (unit=4, status='delete')

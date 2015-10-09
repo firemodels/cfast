@@ -13,7 +13,7 @@ module utility_routines
   
     implicit none
    
-   public fmix, emix, get_igrid, doesthefileexist, funit, length
+   public fmix, emix, get_igrid, doesthefileexist, funit
    
    contains
    
@@ -683,19 +683,6 @@ module utility_routines
     ilast = imid
     return
     end subroutine interp
-
-! --------------------------- length -------------------------------------------
-
-    integer function length(string)
-    character, intent(in) :: string*(*)
-    
-    if (len(string)/=0) then
-        length = len_trim(string)
-    else
-        length = 0
-    endif
-    return
-    end function length
 
 ! --------------------------- cmdflag -------------------------------------------
 

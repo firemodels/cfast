@@ -255,8 +255,8 @@ module output_routines
                     ic = ic + 11
                 endif
             end do
-            write (iofilo,5020) ciout(1:length(ciout))
-            write (iofilo,5020) cjout(1:length(cjout))
+            write (iofilo,5020) ciout(1:len_trim(ciout))
+            write (iofilo,5020) cjout(1:len_trim(cjout))
             write (iofilo,5030) ('-',i = 1,ic)
             write (ciout,5010)
             do icomp = 1, nm1
@@ -269,7 +269,7 @@ module output_routines
                         ic = ic + 11
                     end do
                 endif
-                write (iofilo,5020) ciout(1:length(ciout))
+                write (iofilo,5020) ciout(1:len_trim(ciout))
             end do
         end do
     endif
@@ -943,14 +943,14 @@ module output_routines
                 j = objpnt(io)
                 nnv = objlfm(j)
                 roomptr => roominfo(objrm(j))
-                write (iofilo,5020) objnin(j)(1:length(objnin(j))), j, fire_geometry(obj_fpos(j))
+                write (iofilo,5020) objnin(j)(1:len_trim(objnin(j))), j, fire_geometry(obj_fpos(j))
                 write (iofilo,5030) roomptr%name, ftype(objtyp(j)), objpos(1,j), objpos(2,j), &
                    objpos(3,j), relhum*100., lower_o2_limit*100.,radconsplit(j)
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
                 write (cbuf,5040)
                 write (cbuf(51:132),5050)
                 is = 113
-                write (iofilo,'(3x,a)') cbuf(1:length(cbuf))
+                write (iofilo,'(3x,a)') cbuf(1:len_trim(cbuf))
                 write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
                 write (iofilo,5010) ('-',i = 1,is-1)
                 do i = 1, nnv
@@ -958,7 +958,7 @@ module output_routines
                     y_HCN = obj_n(j)*0.027028_eb/objgmw(j)
                     y_HCl = obj_cl(j)*0.036458_eb/objgmw(j)
                     write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, y_HCl,omprodr(i,10,j),omprodr(i,11,j)
-                    write (iofilo,'(a)') cbuf(1:length(cbuf))
+                    write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
                 end do
             endif
         end do

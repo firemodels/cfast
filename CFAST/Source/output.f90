@@ -57,6 +57,7 @@ module output_routines
     write(iunit,'(A,A)')                   ' Revision         : ',TRIM(revision)
     write(iunit,'(A,A)')                   ' Revision Date    : ',TRIM(revision_date)
     write(iunit,'(A,A/)')                  ' Compilation Date : ',TRIM(compile_date)
+    return
     
     end subroutine output_version
 
@@ -77,6 +78,7 @@ module output_routines
         iminorrev = mod(version,10)
     endif
     return
+    
     end subroutine splitversion
 
 ! --------------------------- output_results -------------------------------------------
@@ -119,6 +121,7 @@ module output_routines
         write (iofilo,5000) time
         call rsltcmp (iofilo)
     endif
+    return
 
 5000 format (//,' Time = ',f8.1,' seconds.')
     end subroutine output_results
@@ -214,7 +217,8 @@ module output_routines
     end do
     if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
-    5000 format (//,'FIRES',//,&
+    
+5000 format (//,'FIRES',//,&
          'Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      ', &
          'Convec.   Radiat.    Pyrolysate  Trace',/, &
          '                         Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
@@ -274,6 +278,7 @@ module output_routines
         end do
     endif
     return
+    
 5000 format (a10)
 5010 format (' ')
 5020 format (a)
@@ -301,9 +306,7 @@ module output_routines
 
     !     horizontal flow natural vents    
     do i = 1, n_hvents
-
         ventptr=>hventinfo(i)
-
         ifrom = ventptr%from
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%name
@@ -312,15 +315,13 @@ module output_routines
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==n) cito = 'Outside'
-        
         call flwout(outbuf,ventptr%mflow(1,1,1),ventptr%mflow(1,1,2),ventptr%mflow(1,2,1),ventptr%mflow(1,2,2),&
            ventptr%mflow(2,1,1),ventptr%mflow(2,1,2),ventptr%mflow(2,2,1),ventptr%mflow(2,2,2))
-        write (iofilo,5020) 'H', i, cifrom, cito, outbuf
+        write (iofilo,5010) 'H', i, cifrom, cito, outbuf
     end do
 
     !     vertical flow natural vents
     do i = 1, n_vvents
-
         ifrom = ivvent(i,botrm)
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%name
@@ -329,7 +330,6 @@ module output_routines
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==n) cito = 'Outside'
-        
         flow = 0.0_eb
         if (vmflo(ifrom,ito,upper)>=0.0_eb) flow(5) = vmflo(ifrom,ito,upper)
         if (vmflo(ifrom,ito,upper)<0.0_eb) flow(6) = -vmflo(ifrom,ito,upper)
@@ -340,10 +340,8 @@ module output_routines
         if (vmflo(ito,ifrom,lower)>=0.0_eb) flow(3) = vmflo(ito,ifrom,lower)
         if (vmflo(ito,ifrom,lower)<0.0_eb) flow(4) = -vmflo(ito,ifrom,lower)
         
-        
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
-        write (iofilo,5020) 'V', i, cifrom, cito, outbuf
-
+        write (iofilo,5010) 'V', i, cifrom, cito, outbuf
     end do
 
     !     mechanical vents
@@ -372,18 +370,20 @@ module output_routines
             if (hveflo(lower,i+1)<0.0_eb) flow(8) = -hveflo(lower,i+1)
             
             call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))            
-            write (iofilo,5020) 'M', i, cifrom, cito, outbuf
+            write (iofilo,5010) 'M', i, cifrom, cito, outbuf
         end do
     endif
+    return
 
-    5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
+5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
     '                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
     '                                      Upper Layer               Lower Layer               Upper Layer',&
     '               Lower Layer',/, &
     'Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
     '       Outflow      Inflow       Outflow',/,134('-'))
 
-5020 format (a1,i3,3x,a12,3x,a12,1x,a)
+5010 format (a1,i3,3x,a12,3x,a12,1x,a)
+     
     end subroutine rsltflw
 
 ! --------------------------- rsltflwt -------------------------------------------
@@ -476,7 +476,7 @@ module output_routines
         end do
         xqf = xqf + fqdj(ir)
         if (roomptr%shaft) then
-            write (iounit,5031) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, &
+            write (iounit,5040) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, &
                zzrelp(ir) - interior_rel_pressure(ir)
         else
             write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, &
@@ -492,7 +492,7 @@ module output_routines
     '               (C)     (C)     (m)     (kg/s)    (W)       (Pa)',/,' ',68('-'))
 5020 format ('  Outside',39x,1pg10.3)
 5030 format (i5,7x,2f8.1,2x,1pg9.2,3(1pg10.3))
-5031 format (i5,7x,f8.1,8(' '),2x,8(' '),3(1pg10.3))
+5040 format (i5,7x,f8.1,8(' '),2x,8(' '),3(1pg10.3))
     end subroutine rsltcmp
 
 ! --------------------------- rslttar -------------------------------------------
@@ -555,10 +555,10 @@ module output_routines
                 if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
                 if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
-                    write(iofilo,5030) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                    write(iofilo,5020) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
                         tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
                 else
-                    write(iofilo,5030) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                    write(iofilo,5020) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
                 endif
             endif
         end do
@@ -573,7 +573,7 @@ module output_routines
     '               (C)       (C)       (C)       (C)                    (C)       ', &
          '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,158('-'))
 5010 format (a14,4(1pg10.3))
-5030 format (54x,a8,4x,3(1pg10.3),1x,5(1pg10.3,3x))
+5020 format (54x,a8,4x,3(1pg10.3),1x,5(1pg10.3,3x))
     end subroutine rslttar
 
 ! --------------------------- rsltsprink -------------------------------------------
@@ -833,7 +833,7 @@ module output_routines
 5060 formaT (//,'There are no mechanical flow connections')
 5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
 5110 format (10x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
-     5120 format (//,'FANS',//,'System    From           From      To             To        ', &
+5120 format (//,'FANS',//,'System    From           From      To             To        ', &
           'Area      Fan         Minimum       Maximum    Flowrate',/, &
           '                         Elev.                    Elev.               Number',/, &
           '                         (m)                      (m)       ', &

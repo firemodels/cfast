@@ -274,7 +274,7 @@ The model for mechanical ventilation is based on the theory of networks and is b
 CFAST does not include provisions for reverse flow through a fan, or a fan curve. Rather, you may specify a pressure above which the flow linearly decreases to zero.
 \begin{description}
 \item[Flow Rate] (default units: m$^3$/s): Constant flow rate of the fan.
-\item[Begin Drop Off Pressure] (default units: Pa, default value: 200 Pa): Above this pressure, the flow begins a linear drop-off to zero.
+\item[Begin Drop Off Pressure] (default units: Pa, default value: 200 Pa): Above this pressure, the flow begins a drop-off to zero. A hyperbolic tangent function is used to ensure a smooth transition from full flow at the ``Begin Drop Off Pressure'' to zero flow at the ``Zero Flow Pressure''.
 \item[Zero Flow Pressure] (default units: Pa, default value: 300 Pa): The pressure above which the flow is zero.
 \item[Initial Opening Fraction] Value from 0 to 1 denoting the initial opening area.
 \item[Change Opening Fraction At Time] (default units: s): Time during the simulation at which to change the opening fraction.

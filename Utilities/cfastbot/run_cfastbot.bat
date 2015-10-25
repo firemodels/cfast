@@ -18,11 +18,11 @@ if x%CFASTGIT% == x goto skip_cfastgit
   )
 :skip_cfastgit
 
-if exist .cfast_git (
+if NOT exist .cfast_git goto skip_if1
   set cfastrepo=%RUNDIR%\..\..
   call :normalise %cfastrepo%
   set cfastrepo=%temparg%
-)
+:skip_if1
 
 set fdsrepo=none
 if exist %userprofile%\FDS-SMVgitclean (

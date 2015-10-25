@@ -1,4 +1,6 @@
 @echo off
+:: cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %emailto%
+
 set arg1=%1
 set cfastroot=%~f1
 set cfastbasename=%~n1
@@ -8,8 +10,8 @@ set FDSroot=%2
 set fdsbasename=%2
 
 set usematlab=%3
-set update=%4
-set skipdebug=%5
+set clean=%4
+set update=%5
 set emailto=%6
 
 :: -------------------------------------------------------------
@@ -238,14 +240,12 @@ if %nothaveVerification% == 1 (
 
 ::*** revert cfast repository
 
-if %update% == 0 goto skip_update0
-if "%cfastbasename%" NEQ "cfastgitclean" goto skip_if1
+if %clean% == 0 goto skip_update0
    echo             reverting %cfastbasename% repository
    cd %cfastroot%
    git clean -dxf 1> Nul 2>&1
    git add . 1> Nul 2>&1
    git reset --hard HEAD 1> Nul 2>&1
-:skip_if1
 :skip_update0
 
 ::*** update cfast repository
@@ -274,15 +274,13 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 ::*** revert FDS repository
 
 if %havefds% == 0 goto skip_fdsrepo
-  if not %FDSbasename% == FDS-SMVgitclean goto skip_if2
-     if %update% == 0 goto skip_update2
+     if %clean% == 0 goto skip_update2
      echo             reverting %FDSbasename% repository
      cd %FDSroot%
      git clean -dxf 1> Nul 2>&1
      git add . 1> Nul 2>&1
      git reset --hard HEAD 1> Nul 2>&1
      :skip_update2
-  :skip_if2
 
 ::*** update FDS repository
 
@@ -300,7 +298,6 @@ if %havefds% == 0 goto skip_fdsrepo
 
 echo Stage 1 - Building CFAST and VandV_Calcs
 
-if %skipdebug% == 1 goto skip_debug
 echo             debug cfast
 
 cd %cfastroot%\CFAST\intel_win_64_db
@@ -311,7 +308,6 @@ make VPATH="../Source:../Include" SHELL="%ComSpec%" INCLUDE="../Include" -f ..\m
 call :does_file_exist cfast7_win_64_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
 
 call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
-:skip_debug
 
 echo             release cfast
 
@@ -380,7 +376,6 @@ call :GET_DURATION PRELIM %PRELIM_beg%
 call :GET_TIME RUNVV_beg
 
 echo Stage 3 - Running validation cases
-if %skipdebug% == 1 goto skip_rundebug
 echo             debug
 
 cd %cfastroot%\Validation\scripts
@@ -391,12 +386,11 @@ call :find_runcases_warnings "***Warning" %cfastroot%\Validation   "Stage 3a-Val
 call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Validation   "Stage 3a-Validation"
 call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastroot%\Verification "Stage 3a-Verification"
 
-if "%cfastbasename%" == "cfastgitclean" (
+if %clean% == 1 (
    echo             removing debug output files
    cd %cfastroot%\Validation
    git clean -dxf 1> Nul 2>&1
 )
-:skip_rundebug
 
 echo             release
 

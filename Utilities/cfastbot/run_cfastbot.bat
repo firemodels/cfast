@@ -1,22 +1,28 @@
 @echo off
 :: usage: 
-::  run_cfastbot -cfastrepo name -fdsrepo name echo -email address -nomatlab
+::  run_cfastbot -cfastrepo name -fdsrepo name -email address -nomatlab -updateclean -update -clean 
 ::  (all command arguements are optional)
 
 set usematlab=1
-set update=1
+set update=0
+set clean=0
 set stopscript=0
-set skipdebug=0
+
+set RUNDIR=%CD%
 
 set cfastrepo=%userprofile%\cfastgitclean
-if exist .cfast_git (
-  set cfastrepo=..\..
-)
+
 if x%CFASTGIT% == x goto skip_cfastgit
   if EXIST %CFASTGIT% (
     set cfastrepo=%CFASTGIT%
   )
 :skip_cfastgit
+
+if exist .cfast_git (
+  cd ..\..
+  set cfastrepo=%CD%
+  cd %RUNDIR%
+)
 
 set fdsrepo=none
 if exist %userprofile%\FDS-SMVgitclean (
@@ -72,21 +78,21 @@ if exist %running% goto skip_running
 
 :: get latest cfastbot
 
-    if %update% == 0 goto no_update
-    echo getting latest cfastbot
-    cd %cfastrepo%
-    git fetch origin
-    git pull 1> Nul 2>&1
-    if not %cfastbotdir% == %curdir% (
-      copy %cfastbotdir%\cfastbot_win.bat %curdir%
-    )
-    cd %curdir%
-    :no_update
+if %update% == 0 goto no_update
+  echo getting latest cfastbot
+  cd %cfastrepo%
+  git fetch origin
+  git pull 1> Nul 2>&1
+  if not %cfastbotdir% == %curdir% (
+    copy %cfastbotdir%\cfastbot_win.bat %curdir%
+  )
+  cd %curdir%
+:no_update
 
 :: run cfastbot
 
   echo 1 > %running%
-  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %update% %skipdebug% %emailto%
+  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %emailto%
   erase %running%
   goto end_running
 :skip_running
@@ -120,17 +126,22 @@ goto eof
    set valid=1
    shift
  )
- if /I "%1" EQU "-skipdebug" (
-   set skipdebug=1
-   set valid=1
- )
  if /I "%1" EQU "-nomatlab" (
    set valid=1
    set usematlab=0
  )
- if /I "%1" EQU "-noupdate" (
+ if /I "%1" EQU "-updateclean" (
    set valid=1
-   set update=0
+   set clean=1
+   set update=1
+ )
+ if /I "%1" EQU "-update" (
+   set valid=1
+   set update=1
+ )
+ if /I "%1" EQU "-clean" (
+   set valid=1
+   set clean=1
  )
  shift
  if %valid% == 0 (
@@ -157,9 +168,10 @@ echo -email address  - override "to" email addresses specified in repo
 if "%emailto%" NEQ "" (
 echo       (default: %emailto%^)
 )
-echo -noupdate       - do not update repository
+echo -updateclean    - update and clean repository
+echo -clean          - clean repository
+echo -update         - update repository
 echo -nomatlab       - do not use matlab
-echo -skipdebug      - skip debug stage
 exit /b
 
 :normalise

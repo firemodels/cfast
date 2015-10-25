@@ -130,7 +130,7 @@ goto eof
    set valid=1
    set usematlab=0
  )
- if /I "%1" EQU "-updateclean" (
+ if /I "%1" EQU "-bot" (
    set valid=1
    set clean=1
    set update=1
@@ -168,7 +168,7 @@ echo -email address  - override "to" email addresses specified in repo
 if "%emailto%" NEQ "" (
 echo       (default: %emailto%^)
 )
-echo -updateclean    - update and clean repository
+echo -bot            - update and clean repository
 echo -clean          - clean repository
 echo -update         - update repository
 echo -nomatlab       - do not use matlab

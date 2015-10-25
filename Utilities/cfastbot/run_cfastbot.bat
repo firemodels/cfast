@@ -19,9 +19,9 @@ if x%CFASTGIT% == x goto skip_cfastgit
 :skip_cfastgit
 
 if exist .cfast_git (
-  cd ..\..
-  set cfastrepo=%CD%
-  cd %RUNDIR%
+  set cfastrepo=%RUNDIR%\..\..
+  call :normalise %cfastrepo%
+  set cfastrepo=%temparg%
 )
 
 set fdsrepo=none

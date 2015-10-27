@@ -12,8 +12,7 @@ set fdsbasename=%2
 set usematlab=%3
 set clean=%4
 set update=%5
-set noc=%6
-set emailto=%7
+set emailto=%6
 
 :: -------------------------------------------------------------
 ::                         set repository names
@@ -140,7 +139,6 @@ icl 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
 set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
 
-if %noc% == 1 set nothaveICC=1
 if %nothaveICC% == 0 (
   echo             found C
 )

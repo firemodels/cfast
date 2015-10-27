@@ -7,7 +7,6 @@ set usematlab=1
 set update=0
 set clean=0
 set stopscript=0
-set noc=0
 
 set RUNDIR=%CD%
 
@@ -93,7 +92,7 @@ if %update% == 0 goto no_update
 :: run cfastbot
 
   echo 1 > %running%
-  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %noc% %emailto%
+  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %emailto%
   erase %running%
   goto end_running
 :skip_running
@@ -144,10 +143,6 @@ goto eof
    set valid=1
    set clean=1
  )
- if /I "%1" EQU "-noc" (
-   set valid=1
-   set noc=1
- )
  shift
  if %valid% == 0 (
    echo.
@@ -177,7 +172,6 @@ echo -bot            - update and clean repository
 echo -clean          - clean repository
 echo -update         - update repository
 echo -nomatlab       - do not use matlab
-echo -noc            - don't use C compiler
 exit /b
 
 :normalise

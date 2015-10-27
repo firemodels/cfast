@@ -24,5 +24,5 @@ if %fdsinstalled% == 1 goto skip1
 
 echo. 
 echo *** Removing cfast from the Start menu.
-rmdir /q /s "%ALLUSERSPROFILE%\Start Menu\Programs\cfast"
+rmdir /q /s "%ALLUSERSPROFILE%\Start Menu\Programs\CFAST7"
 

@@ -28,14 +28,14 @@ if NOT exist %cfastroot% (
 
 :: check for FDS repo (if specified)
 
-set havefds=1
+set havefdsrepo=1
 if %arg2% == none (
-  set havefds=0
+  set havefdsrepo=0
 ) else (
   set FDSroot=%~f2
   set fdsbasename=%~n2
   if not exist %FDSroot% (
-    set havefds=0
+    set havefdsrepo=0
     echo ***warning: the repo %FDSroot% does not exist  
   )
 )
@@ -142,18 +142,18 @@ set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
 if %nothaveICC% == 0 (
   echo             found C
 )
-if %nothaveICC% == 1 (
+if %havefdsrepo% == 0 goto skip1
+if %nothaveICC% == 0 goto skip1
   call :is_file_installed smokeview|| exit /b 1
   echo             found smokeview
   set smokeview=smokeview.exe
-)
-if %havefds% == 0 (
-  if %nothaveICC% == 0 (
-    call :is_file_installed smokeview|| exit /b 1
-    echo             found smokeview
-    set smokeview=smokeview.exe
-  )
-)
+:skip1
+
+if %havefdsrepo% == 1 goto skip2
+  call :is_file_installed smokeview|| exit /b 1
+  echo             found smokeview
+  set smokeview=smokeview.exe
+:skip2
 
 ::*** looking for email
 
@@ -273,7 +273,7 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 ::*** revert FDS repository
 
-if %havefds% == 0 goto skip_fdsrepo
+if %havefdsrepo% == 0 goto skip_fdsrepo
      if %clean% == 0 goto skip_update2
      echo             reverting %FDSbasename% repository
      cd %FDSroot%
@@ -285,10 +285,10 @@ if %havefds% == 0 goto skip_fdsrepo
 ::*** update FDS repository
 
   if %update% == 0 goto skip_update3
-  echo             updating %FDSbasename% repository
-  cd %FDSroot%
-  git fetch origin
-  git pull  1> %OUTDIR%\stage0.txt 2>&1
+    echo             updating %FDSbasename% repository
+    cd %FDSroot%
+    git fetch origin
+    git pull  1> %OUTDIR%\stage0.txt 2>&1
   :skip_update3
 :skip_fdsrepo
 
@@ -332,11 +332,11 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1c.txt "Stage 1c"
 :: -------------------------------------------------------------
 
 if %nothaveICC% == 1 (
-  echo Stage 2 - Building Smokeview - skipping - C/C++ not available
+  echo Stage 2 - Skipping Smokeview build - C/C++ not available
   goto skip_stage2
 )
-if %havefds% == 0 (
-  echo Stage 2 - Building Smokeview - skipping - source not available
+if %havefdsrepo% == 0 (
+  echo Stage 2 - Skipping Smokeview build - source not available
   goto skip_stage2
 )
 

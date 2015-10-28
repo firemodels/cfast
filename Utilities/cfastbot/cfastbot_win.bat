@@ -251,11 +251,10 @@ if %clean% == 0 goto skip_update0
 ::*** update cfast repository
 
 if %update% == 0 goto skip_update1
-echo             updating %cfastbasename% repository
-
-cd %cfastroot%
-git fetch origin
-git pull  1> %OUTDIR%\stage0.txt 2>&1
+  echo             updating %cfastbasename% repository
+  cd %cfastroot%
+  git fetch origin
+  git pull  1> %OUTDIR%\stage0.txt 2>&1
 :skip_update1
 
 cd %cfastroot%

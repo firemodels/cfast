@@ -18,10 +18,19 @@ echo.
 echo *** Removing previous CFAST entries from the system and user path.
 call "%CFASTBINDIR%\set_path.exe" -s -m -b -r "cfast6" >Nul
 call "%CFASTBINDIR%\set_path.exe" -s -m -b -r "cfast7" >Nul
-call "%CFASTBINDIR%\set_path.exe" -s -m -b -r "firemodels\FDS6" >Nul
+
+echo.
+echo *** Removing previous smokeview entries from the system and user path.
+call "%CD%\set_path.exe" -s -m -b -r "nist\fds" >Nul
+call "%CD%\set_path.exe" -u -m -b -r "FDS\FDS5" >Nul
+call "%CD%\set_path.exe" -s -m -b -r "FDS\FDS5" >Nul
+call "%CD%\set_path.exe" -u -m -b -r "FDS\FDS6" >Nul
+call "%CD%\set_path.exe" -s -m -b -r "FDS\FDS6" >Nul
 call "%CFASTBINDIR%\set_path.exe" -s -m -b -r "firemodels\SMV6" >Nul
 
 
+echo.
+echo *** Add cfast and smokeview to the system path.
 call "%CFASTBINDIR%\set_path.exe" -s -m -f "%CFASTBINDIR%" >Nul
 call "%CFASTBINDIR%\set_path.exe" -s -m -f "%SMVBINDIR%" >Nul
 

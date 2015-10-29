@@ -36,7 +36,7 @@ addpath 'scripts'
 
 Dataplot_Inputs_File = [pwd,'/CFAST_NRC_1824_Version2_validation_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Validation/'];
-Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/FIGURES/'];
+Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];
 Output_File = [pwd, '/CFAST_validation_scatterplot_output.csv'];
 Stats_Output = 'Validation';

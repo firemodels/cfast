@@ -118,16 +118,8 @@ intel_linux_32_db : obj = cfast7_linux_32_db
 intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
-# gnu osx
-gnu_osx : FFLAGS = -O2 $(GITINFOGNU)
-gnu_osx : FCOMPL = gfortran
-gnu_osx : LFLAGS = 
-gnu_osx : obj = cfast7_gnu_osx
-gnu_osx : $(objfgnu)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
-
 # gnu linux
-gnu_linux : FFLAGS = -O2 $(GITINFO)
+gnu_linux : FFLAGS = -O2 $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
 gnu_linux : LFLAGS = 
 gnu_linux : obj = cfast7_gnu_linux
@@ -151,6 +143,14 @@ intel_linux_64_db : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
 
 # ------------- OSX -------------------
+
+# gnu osx
+gnu_osx : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none $(GITINFOGNU)
+gnu_osx : FCOMPL = gfortran
+gnu_osx : LFLAGS = 
+gnu_osx : obj = cfast7_gnu_osx
+gnu_osx : $(objfgnu)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 32 bit
 intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel -vec_report:0 $(GITINFO)

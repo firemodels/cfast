@@ -27,7 +27,7 @@
     dir=""
     name=""
     ext=""
-    len = length(trim(path))
+    len = len_trim(trim(path))
     splitpathqq=len
     if(len.eq.0)return
     ! look for first non-blank character

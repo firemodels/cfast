@@ -1334,7 +1334,7 @@ module numerics_routines
 20  continue
     return
     !-----------end of subroutine ddawts------------------------------------
-    end
+    end subroutine ddawts
 
 ! --------------------------- ddanrm -------------------------------------------
 
@@ -4765,7 +4765,7 @@ module numerics_routines
 30      continue
     end do
     return
-    end 
+    end function idamax
 
 ! --------------------------- dasum -------------------------------------------
 
@@ -4836,7 +4836,7 @@ module numerics_routines
         dasum = dasum + abs(dx(i)) + abs(dx(i+1)) + abs(dx(i+2)) + abs(dx(i+3)) + abs(dx(i+4)) + abs(dx(i+5))
     end do
     return
-    end
+    end function dasum
 
 ! --------------------------- daxpy -------------------------------------------
 
@@ -4937,7 +4937,7 @@ module numerics_routines
         dy(i) = da*dx(i) + dy(i)
     end do
     return
-    end 
+    end subroutine daxpy
 
 ! --------------------------- ddot -------------------------------------------
 
@@ -5037,77 +5037,77 @@ module numerics_routines
         ddot = ddot + dx(i)*dy(i)
     end do
     return
-    end 
+    end function ddot
 
 ! --------------------------- dnrm2 -------------------------------------------
 
-      REAL(8) FUNCTION DNRM2(N,X,INCX)
-!     .. Scalar Arguments ..
-      INTEGER INCX,N
+      real(8) function dnrm2(n,x,incx)
+!     .. scalar arguments ..
+      integer incx,n
 !     ..
-!     .. Array Arguments ..
-      REAL(8) X(*)
+!     .. array arguments ..
+      real(8) x(*)
 !     ..
 !
-!  Purpose
+!  purpose
 !  =======
 !
-!  DNRM2 returns the euclidean norm of a vector via the function
+!  dnrm2 returns the euclidean norm of a vector via the function
 !  name, so that
 !
-!     DNRM2 := sqrt( x'*x )
+!     dnrm2 := sqrt( x'*x )
 !
-!  Further Details
+!  further details
 !  ===============
 !
-!  -- This version written on 25-October-1982.
-!     Modified on 14-October-1993 to inline the call to DLASSQ.
-!     Sven Hammarling, Nag Ltd.
+!  -- this version written on 25-october-1982.
+!     modified on 14-october-1993 to inline the call to dlassq.
+!     sven hammarling, nag ltd.
 !
 !  =====================================================================
 !
-!     .. Parameters ..
-      REAL(8) ONE,ZERO
-      PARAMETER (ONE=1.0D+0,ZERO=0.0D+0)
+!     .. parameters ..
+      real(8) one,zero
+      parameter (one=1.0d+0,zero=0.0d+0)
 !     ..
-!     .. Local Scalars ..
-      REAL(8) ABSXI,NORM,SCALE,SSQ
-      INTEGER IX
+!     .. local scalars ..
+      real(8) absxi,norm,scale,ssq
+      integer ix
 !     ..
-!     .. Intrinsic Functions ..
-      INTRINSIC ABS,SQRT
+!     .. intrinsic functions ..
+      intrinsic abs,sqrt
 !     ..
-      IF (N.LT.1 .OR. INCX.LT.1) THEN
-          NORM = ZERO
-      ELSE IF (N.EQ.1) THEN
-          NORM = ABS(X(1))
-      ELSE
-          SCALE = ZERO
-          SSQ = ONE
-!        The following loop is equivalent to this call to the LAPACK
+      if (n.lt.1 .or. incx.lt.1) then
+          norm = zero
+      else if (n.eq.1) then
+          norm = abs(x(1))
+      else
+          scale = zero
+          ssq = one
+!        the following loop is equivalent to this call to the lapack
 !        auxiliary routine:
-!        CALL DLASSQ( N, X, INCX, SCALE, SSQ )
+!        call dlassq( n, x, incx, scale, ssq )
 !
-          DO 10 IX = 1,1 + (N-1)*INCX,INCX
-              IF (X(IX).NE.ZERO) THEN
-                  ABSXI = ABS(X(IX))
-                  IF (SCALE.LT.ABSXI) THEN
-                      SSQ = ONE + SSQ* (SCALE/ABSXI)**2
-                      SCALE = ABSXI
-                  ELSE
-                      SSQ = SSQ + (ABSXI/SCALE)**2
-                  END IF
-              END IF
-   10     CONTINUE
-          NORM = SCALE*SQRT(SSQ)
-      END IF
+          do 10 ix = 1,1 + (n-1)*incx,incx
+              if (x(ix).ne.zero) then
+                  absxi = abs(x(ix))
+                  if (scale.lt.absxi) then
+                      ssq = one + ssq* (scale/absxi)**2
+                      scale = absxi
+                  else
+                      ssq = ssq + (absxi/scale)**2
+                  end if
+              end if
+   10     continue
+          norm = scale*sqrt(ssq)
+      end if
 !
-      DNRM2 = NORM
-      RETURN
+      dnrm2 = norm
+      return
 !
-!     End of DNRM2.
+!     end of dnrm2.
 !
-      END
+      end function dnrm2
 ! --------------------------- dscal -------------------------------------------
 
     subroutine dscal(n,da,dx,incx)
@@ -5181,7 +5181,7 @@ module numerics_routines
         dx(i + 4) = da*dx(i + 4)
     end do
     return
-    end 
+    end subroutine dscal
 
 ! --------------------------- dgefa -------------------------------------------
 
@@ -5288,7 +5288,7 @@ module numerics_routines
     ipvt(n) = n
     if (a(n,n)==0.0d0) info = n
     return
-    end
+    end subroutine dgefa
 
 ! --------------------------- dgesl -------------------------------------------
 
@@ -5409,7 +5409,7 @@ module numerics_routines
         endif
     endif
     return
-    end
+    end subroutine dgesl
 
 ! --------------------------- dgbfa -------------------------------------------
 
@@ -5587,7 +5587,7 @@ module numerics_routines
     ipvt(n) = n
     if (abd(m,n)==0.0d0) info = n
     return
-    end
+    end subroutine dgbfa
 
 ! --------------------------- dgbsl -------------------------------------------
 
@@ -5728,7 +5728,7 @@ module numerics_routines
         endif
     endif
     return
-    end
+    end subroutine dgbsl
 
 ! --------------------------- gjac -------------------------------------------
 
@@ -5756,7 +5756,7 @@ module numerics_routines
     !     dummy routine to keep the linker happy
 
     stop 'internal error in dassl - gjac not instantiated'
-    end
+    end subroutine gjac
 
 ! --------------------------- jac -------------------------------------------
 
@@ -5785,7 +5785,7 @@ module numerics_routines
     !     dummy routine to keep the linker happy
 
     stop 'internal error in dassl - jac not instantiated'
-    end
+    end subroutine jac
 
 ! --------------------------- jacd -------------------------------------------
 
@@ -5845,6 +5845,6 @@ module numerics_routines
     !
     if(j>-10) jaccol = j
     return
-    end
+    end subroutine setderv
 
 end module numerics_routines

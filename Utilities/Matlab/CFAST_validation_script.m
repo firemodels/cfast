@@ -40,7 +40,7 @@ Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots
 Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/validation_histograms.tex'];
 
 % Override the plot style options with NRC 1824 plot options
-NRC_Options = true;
+NRC_Options = false;
 Append_To_Scatterplot_Title = ' (CFAST)';
 
 [saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);

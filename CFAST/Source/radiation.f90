@@ -865,22 +865,22 @@ module radiation_routines
 
     ! physical constants [mw in kg/mol; rg in m^3-atm/mol-kelvin]
     
-    real(eb) :: mwco2 = 44.0088e-3_eb, mwh2o = 18.0153e-3_eb, rg = 82.0562e-6_eb, k = 1195.5_eb, rhos = 1800.0_eb
+    real(eb), parameter :: mwco2 = 44.0088e-3_eb, mwh2o = 18.0153e-3_eb, rg = 82.0562e-6_eb, k = 1195.5_eb, rhos = 1800.0_eb
 
     ! log(t) data for co2 [t in k]
     
-    real(eb), dimension(co2xsize) :: tco2 = (/2.3010_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, &
+    real(eb), parameter, dimension(co2xsize) :: tco2 = (/2.3010_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, &
         2.8451_eb, 2.9031_eb, 2.9542_eb, 3.0000_eb, 3.3010_eb, 3.4771_eb /)
 
     ! log(pl) data for co2 [pl in atm-m]
     
-    real(eb), dimension(co2ysize) :: plco2 = (/-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, &
+    real(eb), parameter, dimension(co2ysize) :: plco2 = (/-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, &
         -1.3979_eb, -1.0000_eb, -0.6990_eb, -0.3979_eb,  0.0000_eb,  0.3010_eb,  0.6021_eb /)
 
     ! log(emiss) data for co2 [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
     
-    real(eb), dimension(co2xsize,co2ysize) :: eco2 = &
-      (/-1.8508_eb, -1.8416_eb, -1.8508_eb, -1.7799_eb, -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6990_eb, -1.7399_eb, &
+    real(eb), parameter, dimension(co2xsize,co2ysize) :: eco2 = reshape( &
+        [-1.8508_eb, -1.8416_eb, -1.8508_eb, -1.7799_eb, -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6990_eb, -1.7399_eb, &
         -2.3706_eb, -2.8996_eb, &
         -1.6990_eb, -1.6799_eb, -1.6904_eb, -1.6308_eb, -1.5498_eb, -1.5302_eb, -1.5302_eb, -1.5498_eb, -1.5800_eb, &
         -2.1002_eb, -2.6108_eb, &
@@ -903,22 +903,22 @@ module radiation_routines
         -0.8297_eb, -0.7496_eb, -0.7645_eb, -0.7472_eb, -0.7055_eb, -0.6696_eb, -0.6421_eb, -0.6326_eb, -0.6402_eb, &
         -0.8097_eb, -1.0301_eb, &
         -0.8013_eb, -0.7144_eb, -0.7144_eb, -0.6840_eb, -0.6478_eb, -0.6108_eb, -0.5884_eb, -0.5817_eb, -0.5817_eb, &
-        -0.7352_eb, -0.9431_eb  /)
+        -0.7352_eb, -0.9431_eb], [co2xsize,co2ysize])
 
     !log(t) data for h2o [t in k]
     
-    real(eb), dimension(h2oxsize) :: th2o = (/2.3201_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, &
+    real(eb), parameter, dimension(h2oxsize) :: th2o = (/2.3201_eb, 2.4771_eb, 2.6021_eb, 2.6990_eb, 2.7782_eb, 2.8451_eb, &
         2.9031_eb, 2.9542_eb, 3.0000_eb, 3.3010_eb, 3.4771_eb /)
 
     ! log(pl) data for h2o [pl in atm-m]
     
-    real(eb), dimension(h2oysize) :: plh2o = (/-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, &
+    real(eb), parameter, dimension(h2oysize) :: plh2o = (/-3.0000_eb, -2.6990_eb, -2.3979_eb, -2.0000_eb, -1.6990_eb, -1.3979_eb, &
         -1.0000_eb, -0.6990_eb, -0.3979_eb, 0.0000_eb,  0.3010_eb,  0.6021_eb /)
 
     ! log(emiss) data for h2o [stored in e(t,pl) format (ascending order by temperature, then by pressure-length)]
     
-    real(eb), dimension(h2oxsize,h2oysize) :: eh2o = &
-      (/-1.1500_eb, -1.5200_eb, -1.7496_eb, -1.8996_eb, -2.0000_eb, -2.1002_eb, -2.1898_eb, -2.2798_eb, -2.3706_eb, &
+    real(eb), parameter, dimension(h2oxsize,h2oysize) :: eh2o = reshape( &
+        [-1.1500_eb, -1.5200_eb, -1.7496_eb, -1.8996_eb, -2.0000_eb, -2.1002_eb, -2.1898_eb, -2.2798_eb, -2.3706_eb, &
         -3.0555_eb, -3.4437_eb, &
         -1.0200_eb, -1.3298_eb, -1.5302_eb, -1.6596_eb, -1.7595_eb, -1.8416_eb, -1.9208_eb, -2.0000_eb, -2.0799_eb, &
         -2.7496_eb, -3.1871_eb, &
@@ -941,7 +941,7 @@ module radiation_routines
         -0.2958_eb, -0.3686_eb, -0.3686_eb, -0.3645_eb, -0.3645_eb, -0.3686_eb, -0.3706_eb, -0.3757_eb, -0.3757_eb, &
         -0.4510_eb, -0.5952_eb, &
         -0.2620_eb, -0.3307_eb, -0.3233_eb, -0.3045_eb, -0.3010_eb, -0.3045_eb, -0.3045_eb, -0.3054_eb, -0.3080_eb, &
-        -0.3605_eb, -0.5086_eb  /)
+        -0.3605_eb, -0.5086_eb], [h2oxsize,h2oysize] )
 
     ! calculate layer-specific factors
     

@@ -26,19 +26,15 @@ echo Updating the repo:%svn_root%
 git remote update
 git merge origin/master
 
-echo linux and osx repo updates not implemented
-pause
-exit
-
 set scriptdir=%linux_svn_root%/CFAST/scripts/
 set linux_cfastdir=%linux_svn_root%
 
 echo.
 echo Updating the Linux repository, %linux_svn_root%, on %linux_hostname% to the latest revision
-plink %svn_logon% %scriptdir%/UPDATE_latest_fds_onhost.csh  %linux_svn_root% %linux_hostname%
+plink %svn_logon% %scriptdir%/UPDATE_latest_cfast_onhost.csh  %linux_svn_root% %linux_hostname%
 
 echo.
 echo Updating the OSX repository, %linux_svn_root%, on %osx_hostname% to the latest revision
-plink %svn_logon% %scriptdir%/UPDATE_latest_fds_onhost.csh  %linux_svn_root% %osx_hostname%
+plink %svn_logon% %scriptdir%/UPDATE_latest_cfast_onhost.csh  %linux_svn_root% %osx_hostname%
 
 pause

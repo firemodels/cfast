@@ -18,7 +18,7 @@ goto:eof
 
 call %envfile%
 
-%svn_drive%
+%git_drive%
 
 echo call script that creates cfast bundle
 

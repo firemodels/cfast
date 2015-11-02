@@ -22,9 +22,9 @@ echo Using the environment variables:
 echo.
 echo Using GIT revision %smv_revision% to build a 64 bit Windows Smokeview
 
-%svn_drive%
+%git_drive%
 
-cd %svn_root%\CFAST\\intel_win_64
+cd %git_root%\CFAST\\intel_win_64
 erase *.obj *.mod
 call make_cfast
 

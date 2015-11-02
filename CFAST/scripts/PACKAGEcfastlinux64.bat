@@ -18,22 +18,22 @@ goto:eof
 
 call %envfile%
 
-%svn_drive%
+%git_drive%
 
-cd "%svn_root%\..\Google Drive\SMV_Test_Versions
+cd "%git_root%\..\Google Drive\SMV_Test_Versions
 set gupload=%CD%
 
-cd %svn_root%\smv\scripts
+cd %git_root%\smv\scripts
 set version=%smv_version%
 
 set scriptdir=FDS-SMV/SMV/scripts
 set bundledir=FDS-SMV/SMV/for_bundle/uploads
 
 echo making 64 bit Linux distribution archive
-plink %svn_logon% %scriptdir%/MAKEdistgen.csh %version% linux 64 %linux_hostname% %fds_edition%
+plink %git_logon% %scriptdir%/MAKEdistgen.csh %version% linux 64 %linux_hostname% %fds_edition%
 
 echo downloading Linux Smokeview files
-pscp %svn_logon%:%bundledir%/smv_%version%_linux64.sh ..\for_bundle\uploads\.
+pscp %git_logon%:%bundledir%/smv_%version%_linux64.sh ..\for_bundle\uploads\.
 
 echo copying ..\for_bundle\uploads\smv_%version%_linux64.sh to %gupload%
 copy ..\for_bundle\uploads\smv_%version%_linux64.sh "%gupload%"

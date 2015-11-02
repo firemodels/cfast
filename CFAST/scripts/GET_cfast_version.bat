@@ -18,9 +18,9 @@ goto:eof
 
 call %envfile%
 
-%svn_drive%
-echo cd %svn_root%\CFAST\intel_win_64
-cd %svn_root%\CFAST\intel_win_64
+%git_drive%
+echo cd %git_root%\CFAST\intel_win_64
+cd %git_root%\CFAST\intel_win_64
 
 cfast7_win_64
 

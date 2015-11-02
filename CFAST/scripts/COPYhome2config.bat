@@ -16,9 +16,9 @@ goto:eof
 
 call %envfile%
 echo.
-echo copy %userprofile%\cfast_env.bat to %svn_root%\CFAST\scripts\cfast_env.bat
+echo copy %userprofile%\cfast_env.bat to %git_root%\CFAST\scripts\cfast_env.bat
 pause
-copy %userprofile%\cfast_env.bat %svn_root%\CFAST\scripts\cfast_env.bat
+copy %userprofile%\cfast_env.bat %git_root%\CFAST\scripts\cfast_env.bat
 echo.
 echo copy complete
 pause

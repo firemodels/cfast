@@ -19,10 +19,10 @@ Rem location of batch files used to set up Intel compilation environment
 call %envfile%
 
 echo.
-echo Updating the Windows repository, %svn_root%, to the latest revision
-%svn_drive%
-cd %svn_root%
-echo Updating the repo:%svn_root%
+echo Updating the Windows repository, %git_root%, to the latest revision
+%git_drive%
+cd %git_root%
+echo Updating the repo:%git_root%
 git remote update
 git merge origin/master
 

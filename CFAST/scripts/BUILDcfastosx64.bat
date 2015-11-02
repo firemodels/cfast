@@ -19,10 +19,10 @@ goto:eof
 
 call %envfile%
 
-%svn_drive%
-set scriptdir=%linux_svn_root%/CFAST/scripts
+%git_drive%
+set scriptdir=%linux_git_root%/CFAST/scripts
 
-plink %svn_logon% %scriptdir%/ssh_command.csh %osx_hostname% %scriptdir% MAKEcfastosx64.sh
+plink %git_logon% %scriptdir%/ssh_command.csh %osx_hostname% %scriptdir% MAKEcfastosx64.sh
 
 echo.
 echo compilation complete

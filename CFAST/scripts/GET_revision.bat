@@ -18,7 +18,7 @@ goto:eof
 
 call %envfile%
 
-%svn_drive%
-cd %svn_root%
+%git_drive%
+cd %git_root%
 git describe --long --dirty
 pause

@@ -18,9 +18,9 @@ goto:eof
 
 call %envfile%
 
-%svn_drive%
+%git_drive%
 echo cd to bundle location
-::cd %svn_root%\CFAST\uploads
+::cd %git_root%\CFAST\uploads
 
 Rem ----------------------------------------------------------
 Rem should not need to edit any lines below

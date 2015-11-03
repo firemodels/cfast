@@ -203,7 +203,7 @@ HEIGH,0,0,0,0,0,0,0,0,0,0,0
 CHEMI, FORMULA_C, FORMULA_H, FORMULA_O, FORMULA_N, FORMULA_Cl,  RADIATIVE_FRACTION, HEAT_OF_COMBUSTION
 \end{lstlisting}
 
-The CHEMI input defines the chemical formula of the burning material (FORMULA\_C, \_H, \_O, \_N, and \_Cl), its heat of combustion, and fraction of its head given off by radiation. 
+The CHEMI input defines the chemical formula of the burning material (FORMULA\_C, \_H, \_O, \_N, and \_Cl), its heat of combustion, and fraction of its head given off by radiation.
 
 \subsection{TIME}
 
@@ -526,7 +526,7 @@ VVENT,1,2,4.0,2,0.9
 
 
 
-\section{Running CFAST from a Command Prompt}
+\chapter{Running CFAST from a Command Prompt}
 
 The model CFAST can also be run from a Windows command prompt.  CFAST can be run from any folder, and refer to a data file in any other folder. The fires and thermophysical properties have to be in either the data folder, or the executable folder. The data folder is checked first and then the executable folder.
 
@@ -537,12 +537,8 @@ The model CFAST can also be run from a Windows command prompt.  CFAST can be run
 The project name will have extensions appended as needed (see below). For example, to run a test case when the CFAST executable is located in c:$\backslash$nist$\backslash$cfast6 and the input data file is located in c:$\backslash$data, the following command could be used:
 
 \begin{lstlisting}
-c:\nist\cfast6\cfast c:\data\testfire0   <<< note there is no extension.
+c:\nist\cfast6\cfast c:\data\testfire0   <<< note that the extension is optional.
 \end{lstlisting}
-
-If the command is entered as $\backslash$bin$\backslash$cfast$\backslash$bin$\backslash$data$\backslash$testfire0.in, then CFAST will try to open testfire0.in.in
-
-The database files for thermal properties and fire objects may be located either in the folder with the input data file or in the folder with the CFAST executable. The model checks first in the data file folder and then in the CFAST executable folder.  If the files do not exist in either location, the simulation is not run. By default, names for these files are thermal.csv for the thermal properties file and *.o for the fire object files.
 
 Command line options
 

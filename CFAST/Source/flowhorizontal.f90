@@ -526,7 +526,7 @@ module hflow_routines
         endif
     endif
     return
-    end
+    end subroutine
 
     ! --------------------------- getvars -------------------------------------------
 

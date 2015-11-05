@@ -651,7 +651,7 @@ module radiation_routines
         end do
     end do
     return
-    end
+    end subroutine
 
 ! --------------------------- rdrtran -------------------------------------------
 
@@ -760,7 +760,7 @@ module radiation_routines
         end do
     end do
     return
-    end
+    end subroutine
 
 ! --------------------------- solid_angle_triangle -------------------------------------------
 

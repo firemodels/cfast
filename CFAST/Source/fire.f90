@@ -139,7 +139,7 @@ module fire_routines
     end do
 
     return
-    end
+    end subroutine
 
 ! --------------------------- do_fire -------------------------------------------
 
@@ -1201,7 +1201,7 @@ module fire_routines
         flocal(nfires) = froom(i)
     end do
     return
-    end
+    end subroutine
 
 ! --------------------------- update_fire_objects -------------------------------------------
 
@@ -1287,7 +1287,7 @@ module fire_routines
     endif
 
     return
-    end
+    end subroutine
 
 ! --------------------------- check_object_ignition -------------------------------------------
 

@@ -244,7 +244,7 @@ module mflow_routines
         end do
     end do
     return
-    end
+    end subroutine
 
 ! --------------------------- hvfan -------------------------------------------
 

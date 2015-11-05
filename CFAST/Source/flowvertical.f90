@@ -374,7 +374,7 @@ module vflow_routines
         end if
     end do
     return
-    end
+    end subroutine
 
 ! --------------------------- getvventinfo -------------------------------------------
 
@@ -404,7 +404,7 @@ module vflow_routines
     endif
 
     return
-    end
+    end subroutine
 
 
 end module vflow_routines

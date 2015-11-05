@@ -487,8 +487,8 @@ module initialization_routines
         targptr%tgas = interior_temperature
 
         ! scale normal vectors to have length 1
-        scale = 1.0_eb/dnrm2(3,targptr%normal(1),1)
-        call dscal(3,scale,targptr%normal(1),1)
+        scale = 1.0_eb/dnrm2(3,targptr%normal,1)
+        call dscal(3,scale,targptr%normal,1)
     end do
 
     ! initialize solver oxygen values if required.   (must be initialized

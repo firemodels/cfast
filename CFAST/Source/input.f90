@@ -667,7 +667,7 @@ module input_routines
                 ! equation type, PDE or CYL.  ODE is outdated and changed to PDE if it's in an input file.
                 eqtype = ' '
                 eqtype = lcarray(10)
-                call upperall(eqtype,eqtype)
+                call upperall(eqtype)
                 if(eqtype/=' ')then
                     if (eqtype(1:3)=='ODE') then
                         targptr%equaton_type = pde

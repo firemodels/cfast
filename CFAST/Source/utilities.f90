@@ -979,30 +979,25 @@ module utility_routines
 
 ! --------------------------- upperall -------------------------------------------
 
-    subroutine upperall(from,to)
+    subroutine upperall(string)
 
     !     routine: upperall
     !     purpose: convert a string to upper case
-    !     arguments: from - string to be converted
-    !                to (output) - converted string
+    !     arguments: string - string to be converted
 
-    character, intent(in) :: from*(*)
-    character, intent(out) :: to*(*)
+    character, intent(inout) :: string*(*)
         
-    integer nfrom, nto, nnodes, i
+    integer n, i
     character :: c
 
-    nfrom = len_trim(from)
-    nto = len(to)
-    nnodes = min(nfrom,nto)
-    do i = 1, nnodes
-        c = from(i:i)
+    n = len_trim(string)
+    do i = 1, n
+        c = string(i:i)
         if(c>='a'.and.c<='z')then
             c = char(ichar(c) + ichar('A')-ichar('a'))
         endif
-        to(i:i) = c
+        string(i:i) = c
     end do
-    if(nto>nnodes)to(nnodes+1:nto)=' '
     return
     end subroutine upperall
 

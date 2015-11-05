@@ -165,7 +165,7 @@ contains
             cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),mx_hsep)
             if(s/=0.0_eb)then
-                cosang = -ddot(3,svect,1,targptr%normal(1),1)/s
+                cosang = -ddot(3,svect,1,targptr%normal,1)/s
             endif
             ztarg = targptr%center(3)
             zlay = zzhlay(iroom,lower)
@@ -434,7 +434,7 @@ contains
     
     do ivert = 1, 12
        rel_room_vert(1:3) = room_verts(1:3,ivert) - targptr%center(1:3)
-       vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal(1),1)
+       vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal,1)
     end do
     
     target_factors_front(1:10)=0.0_eb
@@ -571,7 +571,7 @@ contains
     awall_sum(back) = 0.0_eb
     do iwall = 1, 10
        svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
-       if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
+       if(ddot(3,svect,1,targptr%normal,1)<=0.0_eb)then
           awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
        else
           awall_sum(back) = awall_sum(back) + zzwarea2(iroom,iwall)
@@ -583,7 +583,7 @@ contains
     target_factors_back(1:10)=0.0_eb
     do iwall = 1, 10
        svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
-       if(ddot(3,svect,1,targptr%normal(1),1)<=0.0_eb)then
+       if(ddot(3,svect,1,targptr%normal,1)<=0.0_eb)then
           target_factors_front(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
        else
           target_factors_back(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)

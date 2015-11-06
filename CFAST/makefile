@@ -70,7 +70,7 @@ setup_win:
 # ------------- Windows -------------------
 
 # gnu windows
-gnu_win : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_win : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win : FCOMPL = gfortran
 gnu_win : LFLAGS = 
 gnu_win : obj = cfast7_gnu_win
@@ -78,7 +78,7 @@ gnu_win : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu windows debug
-gnu_win_db : FFLAGS = -O0 -Og -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_win_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win_db : FCOMPL = gfortran
 gnu_win_db : LFLAGS = 
 gnu_win_db : obj = cfast7_gnu_win_db
@@ -127,7 +127,7 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # gnu linux
-gnu_linux : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
 gnu_linux : LFLAGS = 
 gnu_linux : obj = cfast7_gnu_linux
@@ -135,7 +135,7 @@ gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu linux debug
-gnu_linux_db : FFLAGS = -O0 -Og -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux_db : FCOMPL = gfortran
 gnu_linux_db : LFLAGS = 
 gnu_linux_db : obj = cfast7_gnu_linux_db
@@ -161,7 +161,7 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # gnu osx
-gnu_osx : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_osx : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
 gnu_osx : FCOMPL = gfortran
 gnu_osx : LFLAGS = 
 gnu_osx : obj = cfast7_gnu_osx
@@ -169,7 +169,7 @@ gnu_osx : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu osx_db
-gnu_osx_db : FFLAGS = -O0 -Og -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_osx_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_osx_db : FCOMPL = gfortran
 gnu_osx_db : LFLAGS = 
 gnu_osx_db : obj = cfast7_gnu_osx_db

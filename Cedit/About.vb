@@ -72,6 +72,7 @@ Public Class About
         Me.TextBox1.Multiline = True
         Me.TextBox1.Name = "TextBox1"
         Me.TextBox1.ReadOnly = True
+        Me.TextBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.TextBox1.Size = New System.Drawing.Size(504, 152)
         Me.TextBox1.TabIndex = 0
         Me.TextBox1.TabStop = False
@@ -94,7 +95,7 @@ Public Class About
         Me.AboutVersion.Name = "AboutVersion"
         Me.AboutVersion.Size = New System.Drawing.Size(31, 13)
         Me.AboutVersion.TabIndex = 2
-        Me.AboutVersion.Text = "7.0.0"
+        Me.AboutVersion.Text = "7.0.1"
         Me.AboutVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'Label2
@@ -249,7 +250,8 @@ Public Class About
         Dim CompileDate As String = "$CompileDate: unknown $"
         Dim sLen As Integer
         sLen = Len(Application.ProductVersion)
-        aVersion = Application.ProductVersion.Substring(0, sLen - 1)
+        aVersion = Application.ProductVersion.Substring(0, sLen - 2)
+        Me.AboutVersion.Text = aVersion
         sLen = Len(Revision)
         aRev = Revision.Substring(11, sLen - 13)
         Me.AboutRevision.Text = aRev
@@ -263,9 +265,5 @@ Public Class About
 
     Private Sub LinkLabel1_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
         Process.Start(LinkLabel1.Text)
-    End Sub
-
-    Private Sub Label5_Click(sender As Object, e As EventArgs)
-
     End Sub
 End Class

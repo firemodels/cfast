@@ -588,7 +588,7 @@ module radiation_routines
 
 ! --------------------------- rdftran -------------------------------------------
 
-    subroutine rdftran(mxfire,nzone,nup,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
+    subroutine rdftran (mxfire,nzone,nup,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
 
     !     routine: rdftran
     !     purpose: 
@@ -651,11 +651,11 @@ module radiation_routines
         end do
     end do
     return
-    end subroutine
+    end subroutine rdftran
 
 ! --------------------------- rdrtran -------------------------------------------
 
-    subroutine rdrtran(nzone,nup,absorb,beam,hlay,zz,tauu,taul,black)
+    subroutine rdrtran (nzone,nup,absorb,beam,hlay,zz,tauu,taul,black)
 
     !     routine: rdftran
     !     purpose: 
@@ -760,7 +760,7 @@ module radiation_routines
         end do
     end do
     return
-    end subroutine
+    end subroutine rdrtran
 
 ! --------------------------- solid_angle_triangle -------------------------------------------
 

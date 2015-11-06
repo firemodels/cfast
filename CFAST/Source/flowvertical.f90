@@ -214,7 +214,7 @@ module vflow_routines
 
 ! --------------------------- ventcf -------------------------------------------
 
-    subroutine ventcf(itop, ibot, avent, nshape, epsp, xmvent, tmvent, ilay, froude)
+    subroutine ventcf (itop, ibot, avent, nshape, epsp, xmvent, tmvent, ilay, froude)
 
     !     routine: ventcf
     !     purpose: this routine calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining 
@@ -374,11 +374,11 @@ module vflow_routines
         end if
     end do
     return
-    end subroutine
+    end subroutine ventcf
 
 ! --------------------------- getvventinfo -------------------------------------------
 
-    subroutine getvventinfo(iinvvent,itop,ibot,harea,hshape,hface)
+    subroutine getvventinfo (iinvvent,itop,ibot,harea,hshape,hface)
 
     !       this is a routine to get the shape data for vertical flow (horizontal) vents
 
@@ -404,7 +404,7 @@ module vflow_routines
     endif
 
     return
-    end subroutine
+    end subroutine getvventinfo
 
 
 end module vflow_routines

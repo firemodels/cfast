@@ -139,7 +139,7 @@ module fire_routines
     end do
 
     return
-    end subroutine
+    end subroutine fire
 
 ! --------------------------- do_fire -------------------------------------------
 
@@ -1201,11 +1201,11 @@ module fire_routines
         flocal(nfires) = froom(i)
     end do
     return
-    end subroutine
+    end subroutine remap_fires
 
 ! --------------------------- update_fire_objects -------------------------------------------
 
-    subroutine update_fire_objects(iflag, told, dt, ifobj, tobj)
+    subroutine update_fire_objects (iflag, told, dt, ifobj, tobj)
 
     !     routine: update_fire_objects
     !     purpose: check for and set object fire ignition
@@ -1287,7 +1287,7 @@ module fire_routines
     endif
 
     return
-    end subroutine
+    end subroutine update_fire_objects
 
 ! --------------------------- check_object_ignition -------------------------------------------
 

@@ -682,17 +682,19 @@ module utility_routines
     yint = y(imid) + dydx*(t-x(imid))
     ilast = imid
     return
+    
     end subroutine interp
 
 ! --------------------------- cmdflag -------------------------------------------
 
-   integer function cmdflag(ic,iopt)
+   integer function cmdflag (ic,iopt)
 
       character(1), intent(in) :: ic
       integer, intent(in) :: iopt(26)
       
       cmdflag = iopt(ichar(ic)-ichar('A')+1)
-   end function
+      
+   end function cmdflag
 
 ! --------------------------- read_command_options -------------------------------------------
 

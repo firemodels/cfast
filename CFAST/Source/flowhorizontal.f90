@@ -486,7 +486,7 @@ module hflow_routines
 
     ! --------------------------- getelev -------------------------------------------
 
-    subroutine getelev(yvbot,yvtop,zlay,yelev,nelev)
+    subroutine getelev (yvbot,yvtop,zlay,yelev,nelev)
     use precision_parameters
     implicit none
 
@@ -526,7 +526,7 @@ module hflow_routines
         endif
     endif
     return
-    end subroutine
+    end subroutine getelev
 
     ! --------------------------- getvars -------------------------------------------
 

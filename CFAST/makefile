@@ -70,7 +70,7 @@ setup_win:
 # ------------- Windows -------------------
 
 # gnu windows
-gnu_win : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_win : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win : FCOMPL = gfortran
 gnu_win : LFLAGS = 
 gnu_win : obj = cfast7_gnu_win
@@ -127,7 +127,7 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # gnu linux
-gnu_linux : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_linux : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
 gnu_linux : LFLAGS = 
 gnu_linux : obj = cfast7_gnu_linux
@@ -161,7 +161,7 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # gnu osx
-gnu_osx : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_osx : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_osx : FCOMPL = gfortran
 gnu_osx : LFLAGS = 
 gnu_osx : obj = cfast7_gnu_osx

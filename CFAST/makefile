@@ -153,7 +153,7 @@ gnu_osx : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu osx_db
-gnu_osx_db : FFLAGS = -ffpe-trap=invalid,zero,overflow -ffpe-summary=none $(GITINFOGNU)
+gnu_osx_db : FFLAGS = -O0 -Og -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_osx_db : FCOMPL = gfortran
 gnu_osx_db : LFLAGS = 
 gnu_osx_db : obj = cfast7_gnu_osx_db

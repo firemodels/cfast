@@ -145,7 +145,7 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # gnu osx
-gnu_osx : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none $(GITINFOGNU)
+gnu_osx : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
 gnu_osx : FCOMPL = gfortran
 gnu_osx : LFLAGS = 
 gnu_osx : obj = cfast7_gnu_osx

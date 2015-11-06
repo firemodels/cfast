@@ -70,11 +70,19 @@ setup_win:
 # ------------- Windows -------------------
 
 # gnu windows
-gnu_win_64 : FFLAGS = -O2 $(GITINFO)
-gnu_win_64 : FCOMPL = gfortran
-gnu_win_64 : LFLAGS = 
-gnu_win_64 : obj = cfast7_win_64
-gnu_win_64 : $(objfgnu)
+gnu_win : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_win : FCOMPL = gfortran
+gnu_win : LFLAGS = 
+gnu_win : obj = cfast7_gnu_win
+gnu_win : $(objfgnu)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+
+# gnu windows debug
+gnu_win_db : FFLAGS = -O0 -Og -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_win_db : FCOMPL = gfortran
+gnu_win_db : LFLAGS = 
+gnu_win_db : obj = cfast7_gnu_win_db
+gnu_win_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 32 bit
@@ -119,11 +127,19 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # gnu linux
-gnu_linux : FFLAGS = -O2 $(GITINFOGNU)
+gnu_linux : FFLAGS = -O2 -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
 gnu_linux : LFLAGS = 
 gnu_linux : obj = cfast7_gnu_linux
 gnu_linux : $(objfgnu)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+
+# gnu linux debug
+gnu_linux_db : FFLAGS = -O0 -Og -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux_db : FCOMPL = gfortran
+gnu_linux_db : LFLAGS = 
+gnu_linux_db : obj = cfast7_gnu_linux_db
+gnu_linux_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit

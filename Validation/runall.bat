@@ -25,7 +25,7 @@ if %1==VTT goto VTT
 if %1==WTC goto WTC
 :Help
 echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
-echo        NBS, NBS_1Room, NIST_NRC, PRISME, Steckler_Compartment, UL_NFPRF, 
+echo        NBS, NBS_1Room, NIST_NRC, PLAZA, PRISME, Steckler_Compartment, UL_NFPRF, 
 echo        UL_NIST_Vents, Vettori_Flat, VTT, or WTC
 goto end
 :ALL
@@ -247,7 +247,7 @@ if %1==NBS_1Room goto end
 echo NBS Plaza Hotel test 7
 cd Multi
 call ..\cleancfast.bat
-rem ..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
+..\scripts\background -u 98 ..\..\bin\cfast.exe Multi /V
 cd ..\
 if %1==PLAZA goto end
 

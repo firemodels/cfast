@@ -147,7 +147,7 @@ $RUNCFAST -d LLNL_Enclosure LLNL_62.in
 $RUNCFAST -d LLNL_Enclosure LLNL_63.in
 $RUNCFAST -d LLNL_Enclosure LLNL_64.in
 
-# $RUNCFAST -d Multi Multi
+$RUNCFAST -d Multi Multi
 
 $RUNCFAST -d NBS MV100A.in
 $RUNCFAST -d NBS MV100O.in

@@ -236,7 +236,7 @@ module solve_routines
     
 ! --------------------------- gres -------------------------------------------
 
-    subroutine gres(nnn,hvpsolv,deltamv,iflag)
+    subroutine gres (nnn,hvpsolv,deltamv,iflag)
 
     !     routine: gres
     !     purpose: calculates residuals for initial solution by snsqe
@@ -314,11 +314,11 @@ module solve_routines
         read (*,*)
     endif
     return
-    end
+    end subroutine gres
 
 ! --------------------------- gres2 -------------------------------------------
 
-    subroutine gres2(nnn,hvsolv,deltamv,iflag)
+    subroutine gres2 (nnn,hvsolv,deltamv,iflag)
 
     !     routine: gres2
     !     purpose: calculates residuals for initial solution by snsqe
@@ -390,7 +390,7 @@ module solve_routines
         read(*,*)
     endif
     return
-    end
+    end subroutine gres2
 
 ! --------------------------- solve_simulation -------------------------------------------
 
@@ -872,7 +872,7 @@ module solve_routines
     
     return
 
-    end
+    end subroutine solve_simulation
 
 ! --------------------------- update_solution -------------------------------------------
 

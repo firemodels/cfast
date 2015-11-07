@@ -234,7 +234,7 @@ module initialization_routines
     ! now that everything is ok, we can turn on ventilation
     mvcalc = .true.
     return
-    end
+    end subroutine hvinit
 
 ! --------------------------- hvmap -------------------------------------------
 
@@ -336,11 +336,11 @@ module initialization_routines
         end do
     end do
     return
-    end
+    end subroutine hvmap
 
 ! --------------------------- initamb -------------------------------------------
 
-    subroutine initamb(yinter,iflag)
+    subroutine initamb (yinter,iflag)
 
     !     purpose: this routine computes initializations for varialbes
     !     related to ambient conditions.  when iflag=1 the array
@@ -501,7 +501,7 @@ module initialization_routines
     endif
 
     return
-    end
+    end subroutine initamb
     
 ! --------------------------- sortbrm -------------------------------------------
 
@@ -776,7 +776,7 @@ module initialization_routines
     targetinfo(1:mxtarg)%material = 'DEFAULT'
 
     return
-    end
+    end subroutine initialize_memory
 
 ! --------------------------- initialize_fire_objects -------------------------------------------
 
@@ -816,7 +816,7 @@ module initialization_routines
     tradio = 0.0_eb
 
     return
-    end
+    end subroutine initialize_fire_objects
 
 ! --------------------------- initspecc -------------------------------------------
 
@@ -1017,7 +1017,7 @@ module initialization_routines
     end do
 
     return
-    end
+    end subroutine inittarg
 
 ! --------------------------- initialize_walls  -------------------------------------------
 
@@ -1172,7 +1172,7 @@ module initialization_routines
     end do
 
     return
-    end
+    end subroutine initialize_walls
 
 ! --------------------------- offset -------------------------------------------
 
@@ -1301,7 +1301,7 @@ module initialization_routines
 
 ! --------------------------- wset -------------------------------------------
 
-    subroutine wset(numnode,nslab,tstop,walldx,wsplit,wk,wspec,wrho,wthick,wlen,wtemp,tamb,text)
+    subroutine wset (numnode,nslab,tstop,walldx,wsplit,wk,wspec,wrho,wthick,wlen,wtemp,tamb,text)
 
     ! routine: wset
     ! purpose: initializes temperature profiles, breakpoints used in wall conduction calculations.
@@ -1452,6 +1452,6 @@ module initialization_routines
         wtemp(i) = tamb + (xwall(i)-xwall(2))*dtdw
     end do
     return
-    end
+    end subroutine wset
 
 end module initialization_routines

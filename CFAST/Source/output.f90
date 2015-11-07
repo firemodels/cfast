@@ -48,15 +48,11 @@ module output_routines
 
     call splitversion(version,imajor,iminor,iminorrev)
     
-    write(iunit,'(/A/)')             ' CFAST'
-    if(iminorrev>=10)then
-       write(iunit,'(a,i1,".",i2,".",i1)') ' Version          : CFAST ',imajor, iminor, iminorrev
-    else
-       write(iunit,'(a,i1,".",i1,".",i1)') ' Version          : CFAST ',imajor, iminor, iminorrev
-    endif
-    write(iunit,'(A,A)')                   ' Revision         : ',TRIM(revision)
-    write(iunit,'(A,A)')                   ' Revision Date    : ',TRIM(revision_date)
-    write(iunit,'(A,A/)')                  ' Compilation Date : ',TRIM(compile_date)
+    write(iunit,'(/A/)')                    ' CFAST'
+    write(iunit,'(a,i0,".",i0,".",i0)')     ' Version          : CFAST ',imajor, iminor, iminorrev
+    write(iunit,'(A,A)')                    ' Revision         : ',TRIM(revision)
+    write(iunit,'(A,A)')                    ' Revision Date    : ',TRIM(revision_date)
+    write(iunit,'(A,A/)')                   ' Compilation Date : ',TRIM(compile_date)
     return
     
     end subroutine output_version

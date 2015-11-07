@@ -44,7 +44,7 @@
 
     real(eb) :: xdelt, tstop, tbeg, tend
 
-    version = 7010        ! Current CFAST version number
+    version = 7001        ! Current CFAST version number
 
     if(command_argument_count().eq.0)then
         call output_version(0)

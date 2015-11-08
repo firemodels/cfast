@@ -301,7 +301,7 @@ echo             debug cfast
 
 cd %cfastroot%\CFAST\intel_win_64_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
-make VPATH="../Source:../Include" SHELL="%ComSpec%" INCLUDE="../Include" -f ..\makefile intel_win_64_db 1>> %OUTDIR%\stage1a.txt 2>&1
+call make_cfast bot 1>> %OUTDIR%\stage1a.txt 2>&1
 
 
 call :does_file_exist cfast7_win_64_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
@@ -312,7 +312,7 @@ echo             release cfast
 
 cd %cfastroot%\CFAST\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
-make VPATH="../Source:../Include" SHELL="%ComSpec%" INCLUDE="../Include"  -f ..\makefile intel_win_64 1>> %OUTDIR%\stage1b.txt 2>&1
+call make_cfast bot 1>> %OUTDIR%\stage1b.txt 2>&1
 
 call :does_file_exist cfast7_win_64.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
@@ -321,7 +321,7 @@ echo             release VandV_Calcs
 
 cd %cfastroot%\VandV_Calcs\intel_win_64
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1c.txt 2>&1
-make VPATH=".." -f ..\makefile intel_win_64 1>> %OUTDIR%\stage1c.txt 2>&1
+call make_vv bot 1>> %OUTDIR%\stage1c.txt 2>&1
 
 call :does_file_exist VandV_Calcs_win_64.exe %OUTDIR%\stage1c.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1c.txt "Stage 1c"
@@ -344,13 +344,13 @@ echo Stage 2 - Building Smokeview
 echo             libs
 
 cd %FDSroot%\SMV\Build\LIBS\lib_win_intel_64
-call makelibs2 1>> %OUTDIR%\stage2a.txt 2>&1
+call makelibs bot 1>> %OUTDIR%\stage2a.txt 2>&1
 
 echo             debug
 
 cd %FDSroot%\SMV\Build\intel_win_64
 erase *.obj *.mod *.exe smokeview_win_64_db.exe 1> %OUTDIR%\stage2a.txt 2>&1
-make -f ..\Makefile intel_win_64_db 1>> %OUTDIR%\stage2a.txt 2>&1
+call make_smv_db bot 1>> %OUTDIR%\stage2a.txt 2>&1
 
 call :does_file_exist smokeview_win_64_db.exe %OUTDIR%\stage2a.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2a.txt "Stage 2a"
@@ -359,7 +359,7 @@ echo             release
 
 cd %FDSroot%\SMV\Build\intel_win_64
 erase *.obj *.mod smokeview_win_64.exe 1> %OUTDIR%\stage2b.txt 2>&1
-make -f ..\Makefile intel_win_64 1>> %OUTDIR%\stage2b.txt 2>&1
+call make_smv bot 1>> %OUTDIR%\stage2b.txt 2>&1
 set smokeview=%FDSroot%\SMV\Build\intel_win_64\smokeview_win_64.exe
 
 call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| exit /b 1

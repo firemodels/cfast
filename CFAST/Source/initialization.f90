@@ -481,9 +481,7 @@ module initialization_routines
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        do i=idx_tempf_trg,idx_tempb_trg
-            targptr%temperature(i) = interior_temperature
-        end do
+        targptr%temperature(idx_tempf_trg:idx_tempb_trg) = interior_temperature
         targptr%tgas = interior_temperature
 
         ! scale normal vectors to have length 1

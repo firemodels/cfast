@@ -46,8 +46,8 @@ contains
     logical :: first = .true.
     real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
-    real(eb) :: flux(2), dflux(2), ttarg(2), t_inf, t_max = 900._eb
-    integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom
+    real(eb) :: flux(2), dflux(2), ttarg(2)
+    integer :: itarg, nmnode(2), iieq, iwbound, nslab, iroom
     
     type(target_type), pointer :: targptr
     
@@ -67,11 +67,6 @@ contains
         
         ! calculate net flux striking each side of target
         iroom = targptr%room
-        if (targptr%center(3)>zzhlay(iroom,lower)) then
-            t_inf = zztemp(iroom,upper)
-        else
-            t_inf = zztemp(iroom,lower)
-        end if
         ttarg(1) = targptr%temperature(idx_tempf_trg)
         ttarg(2) = targptr%temperature(idx_tempb_trg)
         call target_flux(1,itarg,ttarg,flux,dflux)
@@ -103,11 +98,6 @@ contains
             call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
                 dt,wk(1),wrho(1),wspec(1),xl,tgrad)
         endif
-        
-        ! limit target temperature to flame temperature
-        do i = idx_tempf_trg,idx_tempb_trg
-            targptr%temperature(i) = min(targptr%temperature(i),t_inf+t_max)
-        end do
     end do
     return
     end subroutine target

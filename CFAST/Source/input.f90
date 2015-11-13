@@ -1899,7 +1899,7 @@ module input_routines
 5002 format ('***Error: Invalid fire area. All input values must be greater than zero')
 5106 format ('***Error: Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3F7.3,'; Maximum HRR per m^3 = ',1pg10.3,' exceeds nominal limits')
-5108 format ('Typically, this is caused by too small fire area inputs. Check HRR and fire area inputs'
+5108 format ('Typically, this is caused by too small fire area inputs. Check HRR and fire area inputs')
 5000 format ('***Error: The key word ',a5,' is not part of a fire definition. Fire keyword are likely out of order')
 
     end subroutine inputembeddedfire

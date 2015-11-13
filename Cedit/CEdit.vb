@@ -6232,9 +6232,9 @@ Public Class CeditMain
         Process.Start("http://cfast.nist.gov")
     End Sub
     Private Sub MenuViewOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuViewOutput.Click, MenuViewInput.Click, MenuViewLog.Click
-        If sender Is MenuViewOutput Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".out"
-        If sender Is MenuViewInput Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".in"
-        If sender Is MenuViewLog Then ViewFile.FileName = System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + ".log"
+        If sender Is MenuViewOutput Then ViewFile.FileName = myEnvironment.InputFileName + ".out"
+        If sender Is MenuViewInput Then ViewFile.FileName = myEnvironment.InputFileName + ".in"
+        If sender Is MenuViewLog Then ViewFile.FileName = myEnvironment.InputFileName + ".log"
         If System.IO.File.Exists(ViewFile.FileName) Then
             MenuView.Enabled = False
             ViewFile.ShowDialog()
@@ -6367,7 +6367,7 @@ Public Class CeditMain
             Dim RunSimulation As New RunModel
             CFASTSimulationTime = myEnvironment.SimulationTime
             CFastInputFile = myEnvironment.InputFileName
-            RunSimulation.Text = "Run Model (" + System.IO.Path.GetFileName(CFastInputFile) + ")"
+            RunSimulation.Text = "Run Model (" + CFastInputFile + ")"
             RunSimulation.ShowDialog()
 
             UpdateGUI.Menu()
@@ -6380,9 +6380,9 @@ Public Class CeditMain
         Try
             found = myEnvironment.InputFileName.IndexOf(" ", 0)
             If found <= 0 Then
-                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + " /I"
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + myEnvironment.InputFileName + " /I"
             Else
-                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """" + " /I"
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + myEnvironment.InputFileName + """" + " /I"
             End If
             If OutputShowCFAST.Checked Then
                 ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True, 5000)
@@ -6399,9 +6399,9 @@ Public Class CeditMain
         Try
             found = myEnvironment.InputFileName.IndexOf(" ", 0)
             If found <= 0 Then
-                CommandString = """" + Application.StartupPath + "\..\SMV6\smokeview.exe"" " + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName)
+                CommandString = """" + Application.StartupPath + "\..\SMV6\smokeview.exe"" " + myEnvironment.InputFileName
             Else
-                CommandString = """" + Application.StartupPath + "\..\SMV6\smokeview.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(myEnvironment.InputFileName) + """"
+                CommandString = """" + Application.StartupPath + "\..\SMV6\smokeview.exe"" " + """" + myEnvironment.InputFileName + """"
             End If
             ProcessID = Shell(CommandString, AppWinStyle.NormalFocus, True)
         Catch ex As Exception

@@ -259,9 +259,9 @@ Public Class RunModel
         ' Start the model run and then just look for the status file every so often
         found = CFastInputFile.IndexOf(" ", 0)
         If found <= 0 Then
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile)
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + CFastInputFile + ".in"
         Else
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + """"
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + CFastInputFile + ".in" + """"
         End If
         RunOptions.Text = "RunOptions: "
         If TotalMassCFASTOutput Then
@@ -330,7 +330,7 @@ Public Class RunModel
                 End If
             End If
         End If
-        FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".status"
+        FileName = CFastInputFile + ".status"
         StatusFileExists = System.IO.File.Exists(FileName)
         If StatusFileExists Then
             Dim ln As String
@@ -376,7 +376,7 @@ Public Class RunModel
     End Sub
 
     Private Sub RunStop_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunStop.Click
-        FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".stop"
+        FileName = CFastInputFile + ".stop"
         FileOpen(IO, FileName, OpenMode.Output)
         FileClose(IO)
         Me.RunOK.Enabled = True
@@ -395,7 +395,7 @@ Public Class RunModel
 
     Private Sub RunUpdate_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunUpdate.Click
         RunTimer.Enabled = False
-        FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile)
+        FileName = CFastInputFile
         If DebugOutput Then
             If Me.DebugOn Then
                 Me.DebugOn = False
@@ -421,7 +421,7 @@ Public Class RunModel
     Private Sub Jacobian_Click(sender As System.Object, e As System.EventArgs) Handles RunJac.Click
         RunTimer.Enabled = False
         If DebugOutput Then
-            FileName = System.IO.Path.GetFileNameWithoutExtension(CFastInputFile) + ".jacobian"
+            FileName = CFastInputFile + ".jacobian"
             If Me.JacobianOn Then
                 Me.JacobianOn = False
                 Me.RunJac.Text = "Jacobian is Off"

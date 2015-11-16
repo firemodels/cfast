@@ -226,7 +226,7 @@ module utility_routines
     integer :: ic, ia, i 
     character :: cmdlin*127, optsep
 
-    optsep = '/'
+    optsep = '-'
 
     do ic = 1, max0(nargs,26)
         if (ic<=nargs) then

@@ -265,16 +265,16 @@ Public Class RunModel
         End If
         RunOptions.Text = "RunOptions: "
         If TotalMassCFASTOutput Then
-            CommandString += " /T"
+            CommandString += " -T"
             RunOptions.Text += "Total Mass Output"
         End If
         If NetHeatFluxCFASTOutput Then
-            CommandString += " /N"
+            CommandString += " -N"
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
             RunOptions.Text += "Net Heat Flux Output"
         End If
         If ValidationOutput Then
-            CommandString += " /V"
+            CommandString += " -V"
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "
             RunOptions.Text += "Validation Output"
         End If

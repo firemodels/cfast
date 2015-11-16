@@ -6380,9 +6380,9 @@ Public Class CeditMain
         Try
             found = myEnvironment.InputFileName.IndexOf(" ", 0)
             If found <= 0 Then
-                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + myEnvironment.InputFileName + " /I"
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + myEnvironment.InputFileName + " -I"
             Else
-                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + myEnvironment.InputFileName + """" + " /I"
+                CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + myEnvironment.InputFileName + """" + " -I"
             End If
             If OutputShowCFAST.Checked Then
                 ProcessID = Shell(CommandString, AppWinStyle.NormalNoFocus, True, 5000)

@@ -282,13 +282,11 @@ $\boldsymbol{y} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compar
                &  $T_{U_1}, T_{U_2}, ..., T_{U_{n-1}}, T_{U_n}$ & (upper layer temperatures for each compartment)  \\
                &  $V_{U_1}, V_{U_2}, ..., V_{U_{n-1}}, V_{U_n}$ & (upper layer volumes for each compartment)  \\
                &  $T_{L_1}, T_{L_2}, ..., T_{L_{n-1}}, T_{L_n}$ & (lower layer temperatures for each compartment)  \\
-               &  $T_{W_1}, T_{W_2}, ..., T_{W_{k-1}}, T_{W_k}$ & (temperatures on each surface of each compartment) \\
-               &  $P_{MV_1}, P_{MV_2}, ..., P_{MV_{m-1}}, P_{MV_m}$, & (pressures at each interior node of the mechanical ventilation system)  \\
-               &  $T_{MV_1}, T_{MV_2}, ..., T_{MV_{m-1}}, T_{MV_m} )$ & (temperatures at each segment of the mechanical ventilation system) \\
+               &  $T_{W_1}, T_{W_2}, ..., T_{W_{k-1}}, T_{W_k} )$ & (temperatures on each surface of each compartment) \\
 \end{tabular}
 \end{center}
 
-In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\boldsymbol{y'}$ is zero. For more complex cases, an initial $y$ and $y'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $y$ and $y'$ at $t+\Delta t$, CFAST calculates an actual $y'$ from the estimated values of $y$ and returns the difference between the estimated $y'$ and calculated $y'$ to DASSL. DASSL uses backward differentiation formulas of orders one through five to solve for $y$ and $y'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
+In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\boldsymbol{y'}$ is zero. For more complex cases, an initial $y$ and $y'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $y$ and $y'$ at $t+\Delta t$, CFAST calculates an actual $y'$ from the estimated values of $y$ and returns the difference between the estimated $y'$ and calculated $y'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $y$ and $y'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
 
 \section{Species Transport}
 

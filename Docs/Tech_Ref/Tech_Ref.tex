@@ -273,7 +273,7 @@ As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) 
 
 \section{Solution of the Equations}
 
-The differential equation set, Eqs. \ref{eq1} - \ref{eq4} and algebraic equation set (for compartment surface temperatures) are solved as a set of simultaneous differential / algebraic equations of the form $F\brackets{t,y,y'}=0$ by the DAE solver, DASSL \cite{DASSL}, where $F\brackets{t,y,y'}$ is the functional relationship between $t$ (the current time in the simulation), $y$ (the vector of solution variables at time $t$), and $y'$ (the vector of first derivatives of the solution variables at time $t$). The vector of solution variables, $y$, solved by DASSL is
+The differential equation set, Eqs. \ref{eq1} - \ref{eq4} and algebraic equation set (for compartment surface temperatures) are solved as a set of simultaneous differential / algebraic equations of the form $F\brackets{t,y,y'}=0$ by the DAE solver, DASSL \cite{DASSL:1982,DASSL:1989}, where $F\brackets{t,y,y'}$ is the functional relationship between $t$ (the current time in the simulation), $y$ (the vector of solution variables at time $t$), and $y'$ (the vector of first derivatives of the solution variables at time $t$). The vector of solution variables, $y$, solved by DASSL is
 
 
 \begin{center}
@@ -288,7 +288,7 @@ $\boldsymbol{y} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compar
 \end{tabular}
 \end{center}
 
-In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\boldsymbol{y'}$ is zero. For more complex cases, an initial $y$ and $y'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $y$ and $y'$ at $t+\Delta t$, CFAST calculates an actual $y'$ from the estimated values of $y$ and returns the difference between the estimated $y'$ and calculated $y'$ to DASSL. DASSL uses backward differentiation formulas of orders one through five to solve for $y$ and $y'$ to within tolerances specified by CFAST \cite{DASSL}.
+In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\boldsymbol{y'}$ is zero. For more complex cases, an initial $y$ and $y'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $y$ and $y'$ at $t+\Delta t$, CFAST calculates an actual $y'$ from the estimated values of $y$ and returns the difference between the estimated $y'$ and calculated $y'$ to DASSL. DASSL uses backward differentiation formulas of orders one through five to solve for $y$ and $y'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
 
 \section{Species Transport}
 

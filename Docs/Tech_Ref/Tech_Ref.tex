@@ -273,7 +273,7 @@ As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) 
 
 \section{Solution of the Equations}
 
-The differential equation set, Eqs. \ref{eq1} - \ref{eq4} and algebraic equation set (for the mechanical ventilation system and gas species) are solved as a set of simultaneous differential / algebraic equations of the form $g\brackets{t,y,y'}=0$ by the DAE solver, DASSL \cite{DASSL}, where $g\brackets{t,y,y'}$ is the functional relationship between $t$ (the current time in the simulation), $y$ (the vector of solution variables at time $t$), and $y'$ (the vector of first derivatives of the solution variables at time $t$). The vector of solution variables, $y$, solved by DASSL is
+The differential equation set, Eqs. \ref{eq1} - \ref{eq4} and algebraic equation set (for compartment surface temperatures) are solved as a set of simultaneous differential / algebraic equations of the form $F\brackets{t,y,y'}=0$ by the DAE solver, DASSL \cite{DASSL}, where $F\brackets{t,y,y'}$ is the functional relationship between $t$ (the current time in the simulation), $y$ (the vector of solution variables at time $t$), and $y'$ (the vector of first derivatives of the solution variables at time $t$). The vector of solution variables, $y$, solved by DASSL is
 
 
 \begin{center}
@@ -282,9 +282,9 @@ $\boldsymbol{y} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compar
                &  $T_{U_1}, T_{U_2}, ..., T_{U_{n-1}}, T_{U_n}$ & (upper layer temperatures for each compartment)  \\
                &  $V_{U_1}, V_{U_2}, ..., V_{U_{n-1}}, V_{U_n}$ & (upper layer volumes for each compartment)  \\
                &  $T_{L_1}, T_{L_2}, ..., T_{L_{n-1}}, T_{L_n}$ & (lower layer temperatures for each compartment)  \\
-               &  $T_{W_1}, T_{W_2}, ..., T_{W_{k-1}}, T_{W_k} )$ & (temperatures on each surface of each compartment) \\
-               &  $P_{MV_1}, P_{MV_2}, ..., P_{MV_{m-1}}, P_{MV_m}$, & (pressures at each node of the mechanical ventilation system)  \\
-               &  $T_{MV_1}, T_{MV_2}, ..., T_{MV_{m-1}}, T_{MV_m}$ & (temperatures at each node of the mechanical ventilation system) \\
+               &  $T_{W_1}, T_{W_2}, ..., T_{W_{k-1}}, T_{W_k}$ & (temperatures on each surface of each compartment) \\
+               &  $P_{MV_1}, P_{MV_2}, ..., P_{MV_{m-1}}, P_{MV_m}$, & (pressures at each interior node of the mechanical ventilation system)  \\
+               &  $T_{MV_1}, T_{MV_2}, ..., T_{MV_{m-1}}, T_{MV_m} )$ & (temperatures at each segment of the mechanical ventilation system) \\
 \end{tabular}
 \end{center}
 

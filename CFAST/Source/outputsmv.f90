@@ -2,8 +2,9 @@
 
     use precision_parameters
     use fire_routines, only: get_gas_temp_velocity
-    use hflow_routines, only : getventinfo
+    use hflow_routines, only : gethventinfo
     use vflow_routines, only : getvventinfo
+    use mflow_routines, only : getmventinfo
     use spreadsheet_header_routines, only: ssheaderssmv
     use utility_routines
     
@@ -63,11 +64,12 @@
 
     real(eb) :: vwidth, vbottom, vtop, voffset, vred, vgreen, vblue
     real(eb) :: harea, targetvector(6)
+    real(eb) :: xyz(6)
     integer ::i, hface, ibot, itop, hshape
     character(128) :: dir
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
     integer(4) :: length, splitpathqq
-    integer :: ifrom, ito, iface
+    integer :: ifrom, ito, iface, iroom
 
     integer ibar, jbar, kbar
     integer :: j
@@ -98,6 +100,7 @@
     write(13,"(a)") "AMBIENT"
     write(13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
+    ! Compartment geometry
     do i = 1, nrooms
         rm=>roominfo(i)
 
@@ -141,6 +144,7 @@
         endif
     end do
 
+    ! slice files
     do i = 1, nsliceinfo
         sf=>sliceinfo(i)
 
@@ -161,26 +165,41 @@
         write(13,"(1x,a)")trim(isoptr%colorbar_label)
         write(13,"(1x,a)")trim(isoptr%unit_label)
     end do
-
-    do i = 1, n_hvents
-        write(13,"(a)")"VENTGEOM"
-        call getventinfo(i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
-        write(13,20) ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
-        !write(13,20) vfrom(i),vto(i),vface(i),vwidth(i),voffset(i),vrelbot(i),vreltop(i),1.0,0.0,1.0
-20      format(1x,i3,1x,i3,1x,i3,1x,6(e11.4,1x),e11.4)
-    end do
+    
+    ! fires
     do i = 1, nfires
         write(13,"(a)")"FIRE"
         write(13,30) froom_number(i),fx0(i),fy0(i),fz0(i)
 30      format(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)
     end do
 
+    ! horizontal vents
+    do i = 1, n_hvents
+        write(13,"(a)")"VENTGEOM"
+        call gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
+        write(13,20) ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
+        !write(13,20) vfrom(i),vto(i),vface(i),vwidth(i),voffset(i),vrelbot(i),vreltop(i),1.0,0.0,1.0
+20      format(1x,i3,1x,i3,1x,i3,1x,6(e11.4,1x),e11.4)
+    end do
+
+    ! vertical vents
     do i = 1, n_vvents
         write(13,"(a)") "VFLOWGEOM"
-        call getvventinfo(i,itop,ibot,harea,hshape,hface)
+        call getvventinfo (i,itop,ibot,harea,hshape,hface)
         write(13,35) itop,ibot,hface,harea,hshape
 35      format(1x,3i3,1x,e11.4,1x,i3)
     end do
+
+    ! mechanical vents
+    if (nnode/=0.and.next/=0) then
+        do i = 1, next
+            if (hvnode(1,i)<=nm1) then
+                call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
+                write (13,'(a)') "HVACGEOM"
+                write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6), vred, vgreen, vblue
+            end if
+        end do
+    end if
 
     ! detection devices (smoke detectors, heat detectors, sprinklers).
     !these must be first since activation assumes device number is detector number
@@ -212,7 +231,7 @@
     write(13,40) nscount, stime
 40  format(1x,i6,1x,f11.0)
 
-    ! Zone model devices
+    ! zone model devices
     call ssheaderssmv(.false.)
 
     return

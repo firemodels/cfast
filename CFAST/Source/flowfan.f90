@@ -8,7 +8,7 @@ module mflow_routines
     
     private
     
-    public mechanical_flow
+    public mechanical_flow, getmventinfo
     
     contains
 
@@ -502,5 +502,49 @@ module mflow_routines
     end do
     return
     end subroutine hvtoex
+    
+    subroutine getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
+    
+    !       This is a routine to get the shape data for mechanical flow vent external connections
+
+    use precision_parameters
+    use cfast_main
+    implicit none
+
+    integer, intent(in) :: i
+    integer, intent(out) :: iroom
+    real(eb), intent(out) :: xyz(6),vred,vgreen,vblue
+    
+    real(eb) :: vheight, varea
+    type(room_type), pointer :: roomptr
+    
+    iroom = hvnode(1,i)
+    roomptr => roominfo(iroom)
+    
+    vheight = hvelxt(i)
+    varea = arext(i)
+    if (hvorien(i)==1) then
+        xyz(1) = 0.0_eb
+        xyz(2) = 0.0_eb
+        xyz(3) = roomptr%depth/2 - sqrt(varea)
+        xyz(4) = roomptr%depth/2 + sqrt(varea)
+        xyz(5) = vheight - sqrt(varea)
+        xyz(6) = vheight + sqrt(varea)
+    else
+        xyz(1) = roomptr%depth/2 - sqrt(varea)
+        xyz(2) = roomptr%depth/2 + sqrt(varea)
+        xyz(3) = roomptr%width/2 - sqrt(varea)
+        xyz(4) = roomptr%width/2 + sqrt(varea)
+        xyz(5) = vheight
+        xyz(6) = vheight
+    end if
+    
+    vred = 1.0_eb
+    vgreen = 1.0_eb
+    vblue = 1.0_eb
+    
+    return
+    
+    end subroutine getmventinfo
 
 end module mflow_routines

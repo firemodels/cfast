@@ -7,7 +7,7 @@ module hflow_routines
     
     private
     
-    public horizontal_flow, getventinfo
+    public horizontal_flow, gethventinfo
     
     contains
     
@@ -773,7 +773,7 @@ module hflow_routines
 
     ! --------------------------- getventinfo -------------------------------------------
 
-    subroutine getventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
+    subroutine gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
 
     !       This is a routine to get the shape data for horizontal flow vents
 
@@ -801,6 +801,6 @@ module hflow_routines
 
     return
     
-    end subroutine getventinfo
+    end subroutine gethventinfo
 
 end module hflow_routines

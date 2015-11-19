@@ -95,6 +95,8 @@ module cfast_types
         ! These define a ceiling/floor vent
         real(eb) :: area
         real(eb) :: top, bottom
+        integer :: shape
+        real(eb) :: area
         
         ! These are common to all vent types
         integer :: counter

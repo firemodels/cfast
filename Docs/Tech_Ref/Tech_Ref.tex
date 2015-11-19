@@ -267,18 +267,17 @@ A system of ordinary differential equations for the compartment pressure, upper 
 \end{eqnarray}
 Equation~(\ref{eq1}) is derived by summing Eq.~(\ref{eq:first_law}) for the upper and lower layer, applying the equation of state~(\ref{EoS}), and noting that the time derivative of the total room volume is zero. Equation~(\ref{eq2}) is derived by rearranging Eq.~(\ref{eq:first_law}) applied to the upper layer and applying the equation of state to replace the internal energy term. Equations~(\ref{eq3}) and (\ref{eq4}) are derived from Eq.~(\ref{eq:first_law}) applied to each layer, along with substitutions of the equation of state and mass conservation equation.
 
-The mass ($\dmau$ and $\dmal$) and enthalpy ($\dhu$ and $\dhl$) terms are simply the net sum of all mass and enthalpy flowing into a layer (through vents, from fires, or from between layers via a plume).
-
-As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) through (\ref{eq4}) are stiff, meaning that the pressure adjusts to changing conditions far more quickly than the other variables. Runge-Kutta methods or predictor-corrector methods such as Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case). Methods that calculate the Jacobian (or at least approximate it) have a much larger stability region for stiff problems and are thus more successful at their solution (see, for example, \cite{Numerical_Recipes}).
+The mass ($\dmau$ and $\dmal$) and enthalpy ($\dhu$ and $\dhl$) terms are simply the net sum of all mass and enthalpy flowing into a layer (through vents, from fires, between layers via a plume, or by radiation and convection from compartment surfaces).
 
 \section{Solution of the Equations}
 
-The differential equation set, Eqs. \ref{eq1} - \ref{eq4} and algebraic equation set (for compartment surface temperatures) are solved as a set of simultaneous differential / algebraic equations of the form $F\brackets{t,y,y'}=0$ by the DAE solver, DASSL \cite{DASSL:1982,DASSL:1989}, where $F\brackets{t,y,y'}$ is the functional relationship between $t$ (the current time in the simulation), $y$ (the vector of solution variables at time $t$), and $y'$ (the vector of first derivatives of the solution variables at time $t$). The vector of solution variables, $y$, solved by DASSL is
+As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) through (\ref{eq4}) are stiff since the pressure adjusts to changing conditions far more quickly than the other variables. Runge-Kutta methods or predictor-corrector methods such as Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case). Methods that calculate the Jacobian (or at least approximate it) have a much larger stability region for stiff problems and are thus more successful at their solution (see, for example, \cite{Numerical_Recipes}).
 
+The differential equation set, Eqs. \ref{eq1} - \ref{eq4} and algebraic equation set (for compartment surface temperatures, Eq. \ref{eq:net_fluxes}) are solved as a set of simultaneous differential / algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$ by the DAE solver, DASSL \cite{DASSL:1982,DASSL:1989}, where $F\brackets{t,\vec{y},\vec{y}'}$ is the functional relationship between $t$ (the current time in the simulation), $\vec{y}$ (the vector of solution variables at time $t$), and $\vec{y}'$ (the vector of first derivatives of the solution variables at time $t$). The vector of solution variables, $\vec{y}$, solved by DASSL is
 
 \begin{center}
 \begin{tabular}{r l l}
-$\boldsymbol{y} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compartment)  \\
+$\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compartment)  \\
                &  $T_{U_1}, T_{U_2}, ..., T_{U_{n-1}}, T_{U_n}$ & (upper layer temperatures for each compartment)  \\
                &  $V_{U_1}, V_{U_2}, ..., V_{U_{n-1}}, V_{U_n}$ & (upper layer volumes for each compartment)  \\
                &  $T_{L_1}, T_{L_2}, ..., T_{L_{n-1}}, T_{L_n}$ & (lower layer temperatures for each compartment)  \\
@@ -286,7 +285,7 @@ $\boldsymbol{y} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compar
 \end{tabular}
 \end{center}
 
-In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\boldsymbol{y'}$ is zero. For more complex cases, an initial $y$ and $y'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $y$ and $y'$ at $t+\Delta t$, CFAST calculates an actual $y'$ from the estimated values of $y$ and returns the difference between the estimated $y'$ and calculated $y'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $y$ and $y'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
+In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\vec{y}'$ is zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$, CFAST calculates an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
 
 \section{Species Transport}
 
@@ -816,7 +815,7 @@ Here, $\Tu$ is the average temperature of the upper layer and $\Ts$ is the ceili
 
 The heat conduction equation is solved in the direction normal to solid target or wall surfaces using non-uniformly spaced nodes and a second-order accurate central difference scheme for the spatial derivatives and a semi-implicit time marching scheme. At each time step, the internal solid temperatures are updated in time until the net convective and radiative heat flux striking the wall equals with the heat flux into the solid~\cite{Moss:1992}:
 \be
-   \dq'' \equiv \dqr'' + \dqc'' = -k \, \frac{dT}{dx} \Big|_{x=0}
+   \dq'' \equiv \dqr'' + \dqc'' = -k \, \frac{dT}{dx} \Big|_{x=0} \label{eq:net_fluxes}
 \ee
 where $k$ is the thermal conductivity of the solid.  This solution strategy requires a differential algebraic equation (DAE) solver that can simultaneously solve both differential and algebraic equations.  With this method, only one or two extra equations are required per wall segment (two if both the interior and exterior wall segment surface temperatures are computed).  This solution strategy is more efficient than the method of lines since fewer equations need to be solved. Conduction is then coupled to the gas phase energy exchange.
 

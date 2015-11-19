@@ -132,7 +132,7 @@ module initialization_routines
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         if (ncnode(j)>1) then
-            write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
+            write (logerr,*) '***Error: HVINIT - exterior node has too many or too few connections'
             stop
         endif
         roomptr => roominfo(i)

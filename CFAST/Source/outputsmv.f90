@@ -105,9 +105,8 @@
         rm=>roominfo(i)
 
         write(13,"(a,1x)")"ROOM"
-        write(13,10) rm%width, rm%depth, rm%height
-        write(13,10) rm%x0, rm%y0, rm%z0
-10      format(1x,e11.4,1x,e11.4,1x,e11.4)
+        write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") rm%width, rm%depth, rm%height
+        write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") rm%x0, rm%y0, rm%z0
 
         if(nsliceinfo.gt.0)then
             ibar = rm%ibar
@@ -169,25 +168,21 @@
     ! fires
     do i = 1, nfires
         write(13,"(a)")"FIRE"
-        write(13,30) froom_number(i),fx0(i),fy0(i),fz0(i)
-30      format(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)
+        write(13,"(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)") froom_number(i),fx0(i),fy0(i),fz0(i)
     end do
 
     ! horizontal vents
     do i = 1, n_hvents
         write(13,"(a)")"VENTGEOM"
         call gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
-        write(13,20) ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
-        !write(13,20) vfrom(i),vto(i),vface(i),vwidth(i),voffset(i),vrelbot(i),vreltop(i),1.0,0.0,1.0
-20      format(1x,i3,1x,i3,1x,i3,1x,6(e11.4,1x),e11.4)
+        write(13,"(1x,3(i3,1x),6(e11.4,1x),e11.4)") ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
     end do
 
     ! vertical vents
     do i = 1, n_vvents
         write(13,"(a)") "VFLOWGEOM"
         call getvventinfo (i,itop,ibot,harea,hshape,hface)
-        write(13,35) itop,ibot,hface,harea,hshape
-35      format(1x,3i3,1x,e11.4,1x,i3)
+        write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape
     end do
 
     ! mechanical vents
@@ -195,7 +190,7 @@
         do i = 1, next
             if (hvnode(1,i)<=nm1) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
-                write (13,'(a)') "HVACGEOM"
+                write (13,'(a)') "MFLOWGEOM"
                 write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6), vred, vgreen, vblue
             end if
         end do
@@ -214,7 +209,7 @@
                 write (13,"(a)") "HEAT_DETECTOR"
             end if
             call getabsdetector(i,targetvector)
-            write(13,36) targetvector,0,0
+            write(13,"(1x,6f10.2,2i6)") targetvector,0,0
         end do
     end if
 
@@ -223,13 +218,11 @@
         write(13,"(a)") "DEVICE"
         write(13,"(a)") "TARGET"
         call getabstarget(i,targetvector)
-        write(13,36) targetvector,0,0
-36      format(1x,6f10.2,2i6)
+        write(13,"(1x,6f10.2,2i6)") targetvector,0,0
     end do
 
     write(13,"(a)") "TIME"
-    write(13,40) nscount, stime
-40  format(1x,i6,1x,f11.0)
+    write(13,"(1x,i6,1x,f11.0)") nscount, stime
 
     ! zone model devices
     call ssheaderssmv(.false.)

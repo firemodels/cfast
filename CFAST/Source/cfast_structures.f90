@@ -97,6 +97,8 @@ module cfast_types
         real(eb) :: top, bottom
         integer :: shape
         
+        ! These define a mechanical vent
+        
         ! These are common to all vent types
         integer :: counter
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)

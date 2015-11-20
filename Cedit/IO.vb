@@ -174,14 +174,14 @@ Module IO
                             csv.Num(i, hventNum.width), csv.Num(i, hventNum.soffit), csv.Num(i, hventNum.sill))
                         If csv.Num(i, 0) = 12 Then
                             ' This is the old format that had wind input (after sill) and second compartment offset (after hall1). This shifts the actually used inputs
-                            hvent.Offset = csv.Num(i, hventNum.hall1 + 1)
                             hvent.Face = csv.str(i, hventNum.face + 2)
+                            hvent.Offset = csv.Num(i, hventNum.hall1 + 1)
                             hvent.InitialOpening = csv.Num(i, hventNum.initialfraction + 2)
                             hvent.FinalOpening = csv.Num(i, hventNum.initialfraction + 2)
                         Else
                             ' This is the new format input without the wind or second offset
-                            hvent.Offset = csv.Num(i, hventNum.hall1)
                             hvent.Face = csv.str(i, hventNum.face)
+                            hvent.Offset = csv.Num(i, hventNum.hall1)
                             hvent.InitialOpening = csv.Num(i, hventNum.initialfraction)
                             hvent.FinalOpening = csv.Num(i, hventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
                         End If

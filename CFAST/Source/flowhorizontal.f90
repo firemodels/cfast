@@ -78,6 +78,7 @@ module hflow_routines
         ventptr%temp_slab(1:mxfslab) = 0.0_eb
         ventptr%flow_slab(1:mxfslab) = 0.0_eb
         ventptr%ybot_slab(1:mxfslab) = 0.0_eb
+        ventptr%ytop_slab(1:mxfslab) = 0.0_eb
 
         ! setup data structures for from and to room
         call getvars(iroom1,iroom2,nprod,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)

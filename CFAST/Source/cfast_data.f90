@@ -457,7 +457,7 @@ end module fires
 module vents
 
     use precision_parameters
-    use cparams, only: nr, mxhvent, mxvvent
+    use cparams, only: nr, mxhvent, mxvvent, mxext
     use cfast_types, only: vent_type
     implicit none
     save
@@ -470,6 +470,7 @@ module vents
     
     type (vent_type), dimension(mxhvent), target :: hventinfo
     type (vent_type), dimension(mxvvent), target :: vventinfo
+    type (vent_type), dimension(mxext), target :: mventinfo
     
 end module vents
 

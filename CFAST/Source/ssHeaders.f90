@@ -479,17 +479,19 @@ module spreadsheet_header_routines
 
     logical, intent(in) :: lmode
 
-    integer, parameter :: maxhead = 1+8*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxhvsys
-    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(25), LabelUnits(25)
+    integer, parameter :: maxhead = 1+8*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
+    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
     integer position, i, j
     type(room_type), pointer :: roomptr
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
         'HVENT_','HSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_', &
-        'VVENT_','VSLAB_','VSLABT_','VSLABF_','VSLABYB_','VSLABYT_'  /
+        'VVENT_','VSLAB_','VSLABT_','VSLABF_','VSLABYB_','VSLABYT_', &
+        'MVENT_','MSLAB_','MSLABT_','MSLABF_','MSLABYB_','MSLABYT_'  /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', 'kg/m^3', 'kg/m^3', '1/m', '1/m', &
         'kW', 'm', 'm', 'm^2', &
+        'm^2', ' ', 'C', 'kg/s', 'm', 'm', &
         'm^2', ' ', 'C', 'kg/s', 'm', 'm', &
         'm^2', ' ', 'C', 'kg/s', 'm', 'm' /
 
@@ -588,6 +590,41 @@ module spreadsheet_header_routines
             call smvDeviceTag(headertext(2,position))
         end do
     end do
+
+    ! Mechanical vent variables
+    do j = 1, next
+        if (hvnode(1,j)<=nm1) then
+            position = position + 1
+            call toIntString(j,cVent)
+            headertext(1,position) = LabelUnits(26)
+            headertext(2,position) = trim(LabelsShort(26))//trim(cVent)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(27) ! number of slabs
+            headertext(2,position) = trim(LabelsShort(27))//trim(cVent)
+            call smvDeviceTag(headertext(2,position))
+            do i = 1,2
+                call toIntString(i,cSlab)
+                position = position + 1
+                headertext(1,position) = LabelUnits(28) ! slab temperature
+                headertext(2,position) = trim(LabelsShort(28))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+                position = position + 1
+                headertext(1,position) = LabelUnits(29) ! slab flow
+                headertext(2,position) = trim(LabelsShort(29))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+                position = position + 1
+                headertext(1,position) = LabelUnits(30) ! slab bottom
+                headertext(2,position) = trim(LabelsShort(30))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+                position = position + 1
+                headertext(1,position) = LabelUnits(31) ! slab top
+                headertext(2,position) = trim(LabelsShort(31))//trim(cVent)//'_'//trim(cSlab)
+                call smvDeviceTag(headertext(2,position))
+            end do
+        end if
+    end do
+
 
     ! write out header if called from outputspreadsheet 
     ! (this is only one once, but smokeview device tags are done each time)

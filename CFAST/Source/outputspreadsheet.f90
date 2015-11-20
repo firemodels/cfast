@@ -518,7 +518,7 @@ module spreadsheet_routines
         end do
     end do
 
-    ! veritcal vents
+    ! vertical vents
     do i = 1, n_vvents
         ventptr => vventinfo(i)
         avent = ventptr%area
@@ -533,9 +533,26 @@ module spreadsheet_routines
             call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
         end do
     end do
-    
-    !mechanical vents
 
+    !mechanical vents
+    if (nnode/=0.and.next/=0) then
+        do i = 1, next
+            if (hvnode(1,i)<=nm1) then
+                ventptr => mventinfo(i)
+                avent = arext(i)
+                call SSaddtolist (position,avent,outarray)
+                ! flow slabs for the vent
+                slabs = ventptr%n_slabs
+                call SSaddtolist (position,slabs,outarray)
+                do j = 1, 2
+                    call ssaddtolist(position,ventptr%temp_slab(j),outarray)
+                    call ssaddtolist(position,ventptr%flow_slab(j),outarray)
+                    call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
+                    call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
+                end do
+            end if
+        end do
+    end if
     call ssprintresults (15, position, outarray)
 
     return

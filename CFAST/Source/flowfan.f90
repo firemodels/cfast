@@ -28,6 +28,7 @@ module mflow_routines
     use flwptrs
     use opt
     use params
+    use vents, only : mventinfo
     implicit none
     
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
@@ -36,6 +37,8 @@ module mflow_routines
     real(eb) :: filter
     integer :: i, ii, j, k, isys, nprod
     logical :: hvacflg
+    
+    type(vent_type), pointer :: ventptr
 
     ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.  
     ! chv should eventually be defined elsewhere.
@@ -57,8 +60,19 @@ module mflow_routines
     call hvmflo (tsec, deltpmv)
     call hvsflo (tprime,delttmv)
     call hvtoex (prprime,nprod)
-    
+
     do ii = 1, next
+
+        ! flow information for smokeview
+        ventptr => mventinfo(ii)
+        do j = upper, lower
+            ventptr%temp_slab(j) = hvextt(ii,j)
+            ventptr%flow_slab(j) = hveflo(j,ii)
+            ventptr%ybot_slab(j) = max(0.0_eb,(hvelxt(ii) - sqrt(arext(ii)))/2.0_eb)
+            ventptr%ytop_slab(j) = min(arext(ii),(hvelxt(ii) + sqrt(arext(ii)))/2.0_eb)
+        end do
+        ventptr%n_slabs = 2
+
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         isys = izhvsys(j)
@@ -73,7 +87,7 @@ module mflow_routines
                 flwmv(i,2+k,upper) = flwmv(i,2+k,upper) + hvexcn(ii,k,upper)*hveflo(upper,ii)
             endif
         end do
-        !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that 
+        !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
         filtered(i,13,upper) = filtered(i,13,upper) + max(0.0_eb,filter*hvexcn(ii,11,upper)*hveflo(upper,ii))

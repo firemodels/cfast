@@ -62,7 +62,6 @@ module vflow_routines
         call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, xmvent, tmvent, ilay, froude)
         
         ventptr%n_slabs = 2
-
         do iflow = 1, 2
             
             ! flow information for smokeview

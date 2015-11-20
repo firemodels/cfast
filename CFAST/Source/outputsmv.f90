@@ -175,14 +175,14 @@
     do i = 1, n_hvents
         write(13,"(a)")"VENTGEOM"
         call gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
-        write(13,"(1x,3(i3,1x),6(e11.4,1x),e11.4)") ifrom, ito, iface, vwidth, voffset, vbottom, vtop, vred, vgreen, vblue
+        write(13,"(1x,3(i3,1x),6(e11.4,1x),e11.4)") ifrom, ito, iface, vwidth, voffset, vbottom, vtop!, vred, vgreen, vblue
     end do
 
     ! vertical vents
     do i = 1, n_vvents
         write(13,"(a)") "VFLOWGEOM"
         call getvventinfo (i,itop,ibot,harea,hshape,hface)
-        write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape
+        write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape!, vred, vgreen, vblue
     end do
 
     ! mechanical vents
@@ -191,7 +191,7 @@
             if (hvnode(1,i)<=nm1) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
                 write (13,'(a)') "MFLOWGEOM"
-                write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6), vred, vgreen, vblue
+                write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
             end if
         end do
     end if

@@ -65,8 +65,8 @@ module mflow_routines
         if(i<1.or.i>nm1) cycle
         flwmv(i,m,upper) = flwmv(i,m,upper) + hveflo(upper,ii)
         flwmv(i,m,lower) = flwmv(i,m,lower) + hveflo(lower,ii)
-        flwmv(i,q,upper) = flwmv(i,q,upper) + cp*hvextt(ii,upper)*hveflo(upper,ii)
-        flwmv(i,q,lower) = flwmv(i,q,lower) + cp*hvextt(ii,lower)*hveflo(lower,ii)
+        flwmv(i,q,upper) = flwmv(i,q,upper) + hveflo(upper,ii)*cp*hvextt(ii,upper)
+        flwmv(i,q,lower) = flwmv(i,q,lower) + hveflo(lower,ii)*cp*hvextt(ii,lower)
         do k = 1, ns
             if (activs(k)) then
                 flwmv(i,2+k,lower) = flwmv(i,2+k,lower) + hvexcn(ii,k,lower)*hveflo(lower,ii)
@@ -83,8 +83,8 @@ module mflow_routines
         !   remove filtered smoke mass and energy from the total mass and eneergy added to the system (likely a small effect)
         filtered(i,m,upper) = filtered(i,m,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
         filtered(i,m,lower) = filtered(i,m,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
-        filtered(i,q,upper) = filtered(i,q,upper) + max(0.0_eb,cp*hvextt(ii,upper)*filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
-        filtered(i,q,lower) = filtered(i,q,lower) + max(0.0_eb,cp*hvextt(ii,lower)*filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
+        filtered(i,q,upper) = filtered(i,q,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii)*cp*hvextt(ii,upper))
+        filtered(i,q,lower) = filtered(i,q,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii)*cp*hvextt(ii,lower))
     end do
 
     return

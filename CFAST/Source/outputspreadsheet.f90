@@ -492,7 +492,7 @@ module spreadsheet_routines
         end do
     endif
 
-    ! vents
+    ! horizontal vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
         
@@ -518,6 +518,7 @@ module spreadsheet_routines
         end do
     end do
 
+    ! veritcal vents
     do i = 1, n_vvents
         ventptr => vventinfo(i)
         avent = ventptr%area
@@ -532,6 +533,8 @@ module spreadsheet_routines
             call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
         end do
     end do
+    
+    !mechanical vents
 
     call ssprintresults (15, position, outarray)
 

@@ -486,7 +486,7 @@ compile_smv_utilities()
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # background:
-   cd $FDS_GITROOT/Utilities/background/intel_linux_32
+   cd $FDS_GITROOT/Utilities/background/intel_linux_64
    echo 'Compiling background:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_background.sh >> $OUTPUT_DIR/stage6a 2>&1
 }
@@ -497,7 +497,7 @@ check_smv_utilities()
    cd $FDS_GITTOOT
    if [ -e "$FDS_GITROOT/Utilities/smokezip/intel_linux_64/smokezip_linux_64" ]  && \
       [ -e "$FDS_GITROOT/Utilities/smokediff/intel_linux_64/smokediff_linux_64" ]  && \
-      [ -e "$FDS_GITROOT/Utilities/background/intel_linux_32/background" ]
+      [ -e "$FDS_GITROOT/Utilities/background/intel_linux_64/background" ]
    then
       stage6a_success=true
    else

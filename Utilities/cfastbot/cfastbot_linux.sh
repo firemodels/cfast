@@ -18,10 +18,7 @@ ERROR_LOG=$OUTPUT_DIR/errors
 TIME_LOG=$OUTPUT_DIR/timings
 WARNING_LOG=$OUTPUT_DIR/warnings
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
-
 GIT_STATUSDIR=~/.cfastbot
-MKDIR $GIT_STATUSDIR
-
 
 # define repo names (default)
 fdsrepo=~/FDS-SMVgitclean

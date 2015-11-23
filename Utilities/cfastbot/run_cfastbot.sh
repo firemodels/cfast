@@ -117,6 +117,7 @@ touch $running
 QUEUE="-q $QUEUE"
 cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
+cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
   ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $EMAIL "$@"
 else

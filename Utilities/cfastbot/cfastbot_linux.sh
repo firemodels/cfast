@@ -180,11 +180,10 @@ clean_git_repo()
       git clean -dxf > /dev/null
       git add . > /dev/null
       git reset --hard HEAD > /dev/null
-   # If not, create FDS repository and checkout
    else
-      echo "Downloading FDS repository:" >> $OUTPUT_DIR/stage1 2>&1
-      cd $CFASTBOT_HOME_DIR
-      git clone git@github.com:firemodels/fds-smv.git $FDS_GITBASE >> $OUTPUT_DIR/stage1 2>&1
+      echo "The FDS repo $FDS_GITROOT does not exist"
+      echo "Aborting cfastbot"
+      exit
    fi
    
    # Check to see if CFAST repository exists
@@ -195,11 +194,10 @@ clean_git_repo()
       git clean -dxf > /dev/null
       git add . > /dev/null
       git reset --hard HEAD > /dev/null
-   # If not, create CFAST repository and checkout
    else
-      echo "Downloading CFAST repository:" >> $OUTPUT_DIR/stage1 2>&1
-      cd $CFASTBOT_HOME_DIR
-      git clone git@github.com:firemodels/cfast.git $CFAST_GITBASE >> $OUTPUT_DIR/stage1 2>&1
+      echo "The cfast repo $CFAST_GITROOT does not exist"
+      echo "Aborting cfastbot"
+      exit
    fi
 }
 

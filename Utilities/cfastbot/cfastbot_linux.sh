@@ -11,45 +11,80 @@
 
 mailTo="gforney@gmail.com, rpeacoc@nist.gov"
 
+CFASTBOT_RUNDIR="`pwd`"
+
+OUTPUT_DIR=$CFASTBOT_RUNDIR/output
+ERROR_LOG=$OUTPUT_DIR/errors
+TIME_LOG=$OUTPUT_DIR/timings
+WARNING_LOG=$OUTPUT_DIR/warnings
+VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
+
+GIT_STATUSDIR=~/.cfastbot
+MKDIR $GIT_STATUSDIR
+
+
+# define repo names (default)
+fdsrepo=~/FDS-SMVgitclean
+cfastrepo=~/cfastgitclean
+
+
 CFASTBOT_QUEUE=smokebot
 RUNAUTO=
+UPDATEREPO=
+CLEANREPO=0
+EMAIL=
+
 reponame=~/cfastgitclean
-while getopts 'a' OPTION
+while getopts 'acC:F:hm:q:u' OPTION
 do
 case $OPTION in
    a)
      RUNAUTO="y"
      ;;
+  c)
+   CLEANREPO=1
+   ;;
+  C)
+   cfastrepo="$OPTARG"
+   ;;
+  F)
+   fdsrepo="$OPTARG"
+   ;;
+  h)
+   usage;
+   ;;
+  m)
+   EMAIL="$OPTARG"
+   ;;
+  q)
+   QUEUE="$OPTARG"
+   ;;
+  u)
+   UPDATEREPO=1
+   ;;
 esac
 done
 shift $(($OPTIND-1))
 
+platform="linux"
+if [ "`uname`" == "Darwin" ] ; then
+  platform="osx"
+fi
+export platform
+
+# Set unlimited stack size
+if [ "$platform" == "linux" ] ; then
+  ulimit -s unlimited
+fi
+
 cd
-CFASTBOT_HOME_DIR="`pwd`"
-CFASTBOT_DIR="$CFASTBOT_HOME_DIR/cfastbot"
-
-FDS_GITBASE=FDS-SMVgitclean
-export FDS_GITROOT="$CFASTBOT_HOME_DIR/$FDS_GITBASE"
-
-CFAST_GITBASE=cfastgitclean
-CFAST_GITROOT="$CFASTBOT_HOME_DIR/$CFAST_GITBASE"
-
-OUTPUT_DIR=$CFASTBOT_DIR/output
-ERROR_LOG=$OUTPUT_DIR/errors
-TIME_LOG=$OUTPUT_DIR/timings
-WARNING_LOG=$OUTPUT_DIR/warnings
-VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
-git_LOG=$CFASTBOT_HOME_DIR/git_LOG
-RUNNING=$CFASTBOT_DIR/running
-export TEXINPUTS=".:../LaTeX_Style_Files:"
 
 THIS_CFAST_FAILED=0
-CFAST_STATUS_FILE=$git_LOG/cfast_status
+CFAST_STATUS_FILE=$GIT_STATUSDIR/cfast_status
 LAST_CFAST_FAILED=0
 if [ -e $CFAST_STATUS_FILE ] ; then
    LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
 fi
-touch $RUNNING
 
 export JOBPREFIX=CB_
 
@@ -71,22 +106,22 @@ TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 
 run_auto()
 {
-   SMV_SOURCE=$FDS_GITROOT/SMV/source
-   git_SMVFILE=$git_LOG/smokeview_source_revision
-   git_SMVLOG=$git_LOG/smokeview_source_log
+   SMV_SOURCE=$fdsrepo/SMV/source
+   git_SMVFILE=$GIT_STATUSDIR/smokeview_source_revision
+   git_SMVLOG=$GIT_STATUSDIR/smokeview_source_log
 
-   CFAST_SOURCE=$CFAST_GITROOT/CFAST/Source
-   git_CFASTSOURCEFILE=$git_LOG/cfast_source_revision
-   git_CFASTSOURCELOG=$git_LOG/cfast_source_log
+   CFAST_SOURCE=$cfastrepo/CFAST/Source
+   git_CFASTSOURCEFILE=$GIT_STATUSDIR/cfast_source_revision
+   git_CFASTSOURCELOG=$GIT_STATUSDIR/cfast_source_log
   
-   CFAST_DOCS=$CFAST_GITROOT/Docs
-   git_CFASTDOCSFILE=$git_LOG/cfast_docs_revision
-   git_CFASTDOCSLOG=$git_LOG/cfast_docs_log
+   CFAST_DOCS=$cfastrepo/Docs
+   git_CFASTDOCSFILE=$GIT_STATUSDIR/cfast_docs_revision
+   git_CFASTDOCSLOG=$GIT_STATUSDIR/cfast_docs_log
 
    SMOKEBOTDIR=~/CFASTBOT/
    SMOKEBOTEXE=./run_cfastbot.sh
 
-   MESSAGE_FILE=$git_LOG/message
+   MESSAGE_FILE=$GIT_STATUSDIR/message
 
    cd $CFAST_SOURCE
    git pull &> /dev/null
@@ -146,16 +181,17 @@ check_time_limit()
 
 set_files_world_readable()
 {
-   cd $FDS_GITROOT
+   cd $fdsrepo
    chmod -R go+r *
-   cd $CFAST_GITROOT
+   cd $cfastrepo
    chmod -R go+r *
 }
 
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
-   cd $CFASTBOT_DIR
+   cd $CFASTBOT_RUNDIR
+   MKDIR $GIT_STATUSDIR >& /dev/null
    MKDIR $OUTPUT_DIR &> /dev/null
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
@@ -173,29 +209,31 @@ clean_cfastbot_history()
 clean_git_repo()
 {
    # Check to see if FDS repository exists
-   if [ -e "$FDS_GITROOT" ]
-   then
-      # Revert and clean up temporary unversioned and modified versioned repository files
-      cd $FDS_GITROOT
-      git clean -dxf > /dev/null
-      git add . > /dev/null
-      git reset --hard HEAD > /dev/null
+   if [ -e "$fdsrepo" ]; then
+      if [ "$CLEANREPO" == "1" ]; then
+        echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1 2>&1
+        cd $fdsrepo
+        git clean -dxf > /dev/null
+        git add . > /dev/null
+        git reset --hard HEAD > /dev/null
+      fi
    else
-      echo "The FDS repo $FDS_GITROOT does not exist"
+      echo "The FDS repo $fdsrepo does not exist"
       echo "Aborting cfastbot"
       exit
    fi
    
    # Check to see if CFAST repository exists
-   if [ -e "$CFAST_GITROOT" ]
-   then
-      # Revert and clean up temporary unversioned and modified versioned repository files
-      cd $CFAST_GITROOT
-      git clean -dxf > /dev/null
-      git add . > /dev/null
-      git reset --hard HEAD > /dev/null
+   if [ -e "$cfastrepo" ]; then
+      if [ "$CLEANREPO" == "1" ]; then
+        echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1 2>&1
+        cd $cfastrepo
+        git clean -dxf > /dev/null
+        git add . > /dev/null
+        git reset --hard HEAD > /dev/null
+      fi
    else
-      echo "The cfast repo $CFAST_GITROOT does not exist"
+      echo "The cfast repo $cfastrepo does not exist"
       echo "Aborting cfastbot"
       exit
    fi
@@ -203,14 +241,20 @@ clean_git_repo()
 
 do_git_checkout()
 {
-   cd $FDS_GITROOT
-   echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
-   git pull >> $OUTPUT_DIR/stage1 2>&1
+   if [ "$UPDATEREPO" == "1" ]; then
+     cd $fdsrepo
+     echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
+     git remote update
+     git checkout development
+     git pull >> $OUTPUT_DIR/stage1 2>&1
 
-   cd $CFAST_GITROOT
-   echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1 2>&1
-   git pull >> $OUTPUT_DIR/stage1 2>&1
-   git_REVISION=`tail -n 1 $OUTPUT_DIR/stage1 | sed "s/[^0-9]//g"`
+     cd $cfastrepo
+     echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1 2>&1
+     git remote update
+     git checkout master
+     git pull >> $OUTPUT_DIR/stage1 2>&1
+     git_REVISION=`tail -n 1 $OUTPUT_DIR/stage1 | sed "s/[^0-9]//g"`
+   fi
 }
 
 check_git_checkout()
@@ -226,7 +270,7 @@ check_git_checkout()
 compile_cfast_db()
 {
    # Build debug CFAST
-   cd $CFAST_GITROOT/CFAST/intel_linux_64_db
+   cd $cfastrepo/CFAST/intel_linux_64_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2
  }
@@ -234,7 +278,7 @@ compile_cfast_db()
 check_compile_cfast_db()
 {
    # Check for errors in CFAST debug compilation
-   cd $CFAST_GITROOT/CFAST/intel_linux_64_db
+   cd $cfastrepo/CFAST/intel_linux_64_db
    if [ -e "cfast7_linux_64_db" ]
    then
       stage2_success=true
@@ -286,7 +330,7 @@ wait_vv_cases_debug_end()
 
 run_vv_cases_debug()
 {
-   cd $CFAST_GITROOT/Validation/scripts
+   cd $cfastrepo/Validation/scripts
 
    #  =======================
    #  = Run all cfast cases =
@@ -304,7 +348,7 @@ run_vv_cases_debug()
 check_vv_cases_debug()
 {
    # Scan and report any errors in CFAST Verification cases
-   cd $CFAST_GITROOT/Verification
+   cd $cfastrepo/Verification
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage3` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
@@ -325,7 +369,7 @@ check_vv_cases_debug()
    fi
 
    # Scan and report any errors in CFAST Validation cases
-   cd $CFAST_GITROOT/Validation
+   cd $cfastrepo/Validation
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage3` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
@@ -360,7 +404,7 @@ check_vv_cases_debug()
 compile_cfast()
 { 
    # Build release CFAST
-   cd $CFAST_GITROOT/CFAST/intel_linux_64
+   cd $cfastrepo/CFAST/intel_linux_64
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage4
 }
@@ -368,7 +412,7 @@ compile_cfast()
 check_compile_cfast()
 {
    # Check for errors in CFAST release compilation
-   cd $CFAST_GITROOT/CFAST/intel_linux_64
+   cd $cfastrepo/CFAST/intel_linux_64
    if [[ -e "cfast7_linux_64" ]]
    then
       stage4_success=true
@@ -409,7 +453,7 @@ wait_vv_cases_release_end()
 run_vv_cases_release()
 {
    # Start running all CFAST V&V cases
-   cd $CFAST_GITROOT/Validation/scripts
+   cd $cfastrepo/Validation/scripts
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
    ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
 
@@ -420,7 +464,7 @@ run_vv_cases_release()
 check_vv_cases_release()
 {
    # Scan and report any errors in CFAST Verificaion cases
-   cd $CFAST_GITROOT/Verification
+   cd $cfastrepo/Verification
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
@@ -441,7 +485,7 @@ check_vv_cases_release()
    fi
 
    # Scan and report any errors in CFAST Validation cases
-   cd $CFAST_GITROOT/Validation
+   cd $cfastrepo/Validation
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
       [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
@@ -469,24 +513,24 @@ check_vv_cases_release()
 compile_smv_utilities()
 {  
    # smokeview libraries
-   cd $FDS_GITROOT/SMV/Build/LIBS/lib_linux_intel_64
+   cd $fdsrepo/SMV/Build/LIBS/lib_linux_intel_64
    echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage6a 2>&1
    ./makelibs.sh >> $OUTPUT_DIR/stage6a 2>&1
 
    # smokezip:
-   cd $FDS_GITROOT/Utilities/smokezip/intel_linux_64
+   cd $fdsrepo/Utilities/smokezip/intel_linux_64
    echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_zip.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # smokediff:
-   cd $FDS_GITROOT/Utilities/smokediff/intel_linux_64
+   cd $fdsrepo/Utilities/smokediff/intel_linux_64
    echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_diff.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # background:
-   cd $FDS_GITROOT/Utilities/background/intel_linux_64
+   cd $fdsrepo/Utilities/background/intel_linux_64
    echo 'Compiling background:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_background.sh >> $OUTPUT_DIR/stage6a 2>&1
 }
@@ -495,9 +539,9 @@ check_smv_utilities()
 {
    # Check for errors in SMV utilities compilation
    cd $FDS_GITTOOT
-   if [ -e "$FDS_GITROOT/Utilities/smokezip/intel_linux_64/smokezip_linux_64" ]  && \
-      [ -e "$FDS_GITROOT/Utilities/smokediff/intel_linux_64/smokediff_linux_64" ]  && \
-      [ -e "$FDS_GITROOT/Utilities/background/intel_linux_64/background" ]
+   if [ -e "$fdsrepo/Utilities/smokezip/intel_linux_64/smokezip_linux_64" ]  && \
+      [ -e "$fdsrepo/Utilities/smokediff/intel_linux_64/smokediff_linux_64" ]  && \
+      [ -e "$fdsrepo/Utilities/background/intel_linux_64/background" ]
    then
       stage6a_success=true
    else
@@ -514,14 +558,14 @@ check_smv_utilities()
 compile_smv_db()
 {
    # Clean and compile SMV DB
-   cd $FDS_GITROOT/SMV/Build/intel_linux_64
+   cd $fdsrepo/SMV/Build/intel_linux_64
    ./make_smv_db.sh &> $OUTPUT_DIR/stage6b
 }
 
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
-   cd $FDS_GITROOT/SMV/Build/intel_linux_64
+   cd $fdsrepo/SMV/Build/intel_linux_64
    if [ -e "smokeview_linux_64_db" ]
    then
       stage6b_success=true
@@ -551,14 +595,14 @@ check_compile_smv_db()
 # make_cfast_pictures_db()
 # {
 #    # Run Make SMV Pictures script (debug mode)
-#    cd $CFAST_GITROOT/Verification/scripts
+#    cd $cfastrepo/Verification/scripts
 #    ./Make_SMV_Pictures.sh -d 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
 # }
 
 # check_cfast_pictures_db()
 # {
 #    # Scan and report any errors in make SMV pictures process
-#    cd $CFASTBOT_DIR
+#    cd $CFASTBOT_RUNDIR
 #    if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6c` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6c` == "" ]]
 #    then
 #       stage6c_success=true
@@ -577,14 +621,14 @@ check_compile_smv_db()
 compile_smv()
 {
    # Clean and compile SMV
-   cd $FDS_GITROOT/SMV/Build/intel_linux_64
+   cd $fdsrepo/SMV/Build/intel_linux_64
    ./make_smv.sh &> $OUTPUT_DIR/stage6d
 }
 
 check_compile_smv()
 {
    # Check for errors in SMV release compilation
-   cd $FDS_GITROOT/SMV/Build/intel_linux_64
+   cd $fdsrepo/SMV/Build/intel_linux_64
    if [ -e "smokeview_linux_64" ]
    then
       stage6d_success=true
@@ -614,14 +658,14 @@ check_compile_smv()
 # make_cfast_pictures()
 # {
 #    # Run Make SMV Pictures script (release mode)
-#    cd $CFAST_GITROOT/Validatio/scripts
+#    cd $cfastrepo/Validatio/scripts
 #    ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6e
 # }
 
 # check_cfast_pictures()
 # {
 #    # Scan and report any errors in make SMV pictures process
-#    cd $CFASTBOT_DIR
+#    cd $CFASTBOT_RUNDIR
 #    if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6e` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6e` == "" ]]
 #    then
 #       stage6e_success=true
@@ -642,7 +686,7 @@ check_compile_smv()
 run_matlab_license_test()
 {
    # Run simple test to see if Matlab license is available
-   cd $CFAST_GITROOT/Utilities/Matlab
+   cd $cfastrepo/Utilities/Matlab
    matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7_matlab_license
 }
 
@@ -675,7 +719,7 @@ check_matlab_license_server()
 run_matlab_verification()
 {
    # Run Matlab plotting script
-   cd $CFAST_GITROOT/Utilities/Matlab
+   cd $cfastrepo/Utilities/Matlab
 
    matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_verification
 }
@@ -683,7 +727,7 @@ run_matlab_verification()
 check_matlab_verification()
 {
    # Scan and report any errors in Matlab scripts
-   cd $CFASTBOT_DIR
+   cd $CFASTBOT_RUNDIR
 
    if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7a_verification` == "" ]]
    then
@@ -704,14 +748,14 @@ check_matlab_verification()
 run_matlab_validation()
 {
    # Run Matlab plotting script
-   cd $CFAST_GITROOT/Utilities/Matlab
+   cd $cfastrepo/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation
 }
 
 check_matlab_validation()
 {
    # Scan and report any errors in Matlab scripts
-   cd $CFASTBOT_DIR
+   cd $CFASTBOT_RUNDIR
    if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7c_validation` == "" ]]
    then
       stage7b_success=true
@@ -726,12 +770,12 @@ check_matlab_validation()
 
 check_validation_stats()
 {
-   cd $CFAST_GITROOT/Utilities/Matlab
+   cd $cfastrepo/Utilities/Matlab
 
    STATS_FILE_BASENAME=CFAST_validation_scatterplot_output
 
-   BASELINE_STATS_FILE=$CFAST_GITROOT/Utilities/Matlab/${STATS_FILE_BASENAME}_baseline.csv
-   CURRENT_STATS_FILE=$CFAST_GITROOT/Utilities/Matlab/${STATS_FILE_BASENAME}.csv
+   BASELINE_STATS_FILE=$cfastrepo/Utilities/Matlab/${STATS_FILE_BASENAME}_baseline.csv
+   CURRENT_STATS_FILE=$cfastrepo/Utilities/Matlab/${STATS_FILE_BASENAME}.csv
 
    if [ -e ${CURRENT_STATS_FILE} ]
    then
@@ -760,11 +804,11 @@ check_validation_stats()
 
 archive_validation_stats()
 {
-   cd $CFAST_GITROOT/Utilities/Matlab
+   cd $cfastrepo/Utilities/Matlab
 
    if [ -e ${CURRENT_STATS_FILE} ] ; then
       # Copy to CFASTbot history
-      cp ${CURRENT_STATS_FILE} "$CFASTBOT_DIR/history/${STATS_FILE_BASENAME}_${git_REVISION}.csv"
+      cp ${CURRENT_STATS_FILE} "$CFASTBOT_RUNDIR/history/${STATS_FILE_BASENAME}_${git_REVISION}.csv"
 
       # Copy to web results
       cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${git_REVISION}.csv
@@ -778,7 +822,7 @@ archive_validation_stats()
 check_guide()
 {
    # Scan and report any errors or warnings in build process for guides
-   cd $CFASTBOT_DIR
+   cd $CFASTBOT_RUNDIR
    if [[ `grep -I "successfully" $1` == "" ]]
    then
       # There were errors/warnings in the guide build process
@@ -796,21 +840,21 @@ check_guide()
 make_cfast_tech_guide()
 {
    # Build CFAST tech Guide
-   cd $CFAST_GITROOT/Docs/Tech_Ref
+   cd $cfastrepo/Docs/Tech_Ref
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_tech_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $CFAST_GITROOT/Docs/Tech_Ref/Tech_Ref.pdf 'CFAST Technical Reference Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $cfastrepo/Docs/Tech_Ref/Tech_Ref.pdf 'CFAST Technical Reference Guide'
 }
 
 make_cfast_vv_guide()
 {
    # Build CFAST tech Guide
-   cd $CFAST_GITROOT/Docs/Validation_Guide
+   cd $cfastrepo/Docs/Validation_Guide
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $CFAST_GITROOT/Docs/Validation_Guide/Validation_Guide.pdf 'CFAST Verification and Validation Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $cfastrepo/Docs/Validation_Guide/Validation_Guide.pdf 'CFAST Verification and Validation Guide'
 }
 
 #  =====================================================
@@ -819,33 +863,33 @@ make_cfast_vv_guide()
 
 save_build_status()
 {
-   cd $CFASTBOT_DIR
+   cd $CFASTBOT_RUNDIR
    # Save status outcome of build to a text file
    if [[ -e $WARNING_LOG && -e $ERROR_LOG ]]
    then
      cat "" >> $ERROR_LOG
      cat $WARNING_LOG >> $ERROR_LOG
-     echo "Build failure and warnings for Revision ${git_REVISION}." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
-     cat $ERROR_LOG > "$CFASTBOT_DIR/history/${git_REVISION}_errors.txt"
+     echo "Build failure and warnings for Revision ${git_REVISION}." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
+     cat $ERROR_LOG > "$CFASTBOT_RUNDIR/history/${git_REVISION}_errors.txt"
      touch $OUTPUT_DIR/status_errors_and_warnings
 
    # Check for errors only
    elif [ -e $ERROR_LOG ]
    then
-      echo "Build failure for Revision ${git_REVISION}." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
-      cat $ERROR_LOG > "$CFASTBOT_DIR/history/${git_REVISION}_errors.txt"
+      echo "Build failure for Revision ${git_REVISION}." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
+      cat $ERROR_LOG > "$CFASTBOT_RUNDIR/history/${git_REVISION}_errors.txt"
       touch $OUTPUT_DIR/status_errors
 
    # Check for warnings only
    elif [ -e $WARNING_LOG ]
    then
-      echo "Revision ${git_REVISION} has warnings." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
-      cat $WARNING_LOG > "$CFASTBOT_DIR/history/${git_REVISION}_warnings.txt"
+      echo "Revision ${git_REVISION} has warnings." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
+      cat $WARNING_LOG > "$CFASTBOT_RUNDIR/history/${git_REVISION}_warnings.txt"
       touch $OUTPUT_DIR/status_warnings
 
    # No errors or warnings
    else
-      echo "Build success! Revision ${git_REVISION} passed all build tests." > "$CFASTBOT_DIR/history/${git_REVISION}.txt"
+      echo "Build success! Revision ${git_REVISION} passed all build tests." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
       touch $OUTPUT_DIR/status_success
    fi
 }
@@ -869,7 +913,7 @@ email_build_status()
    if [[ $THIS_REVISION != $LAST_CFASTSOUCEgit ]] ; then
      cat $git_CFASTSOURCELOG >> $TIME_LOG
    fi
-   cd $CFASTBOT_DIR
+   cd $CFASTBOT_RUNDIR
    # Check for warnings and errors
    if [[ -e $WARNING_LOG && -e $ERROR_LOG ]]
    then
@@ -989,4 +1033,3 @@ make_cfast_vv_guide
 set_files_world_readable
 save_build_status
 email_build_status
-rm -f $RUNNING

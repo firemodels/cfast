@@ -481,7 +481,7 @@ module spreadsheet_header_routines
 
     integer, parameter :: maxhead = 1+8*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
-    integer position, i, j
+    integer position, i, j, iv
     type(room_type), pointer :: roomptr
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
@@ -592,10 +592,12 @@ module spreadsheet_header_routines
     end do
 
     ! Mechanical vent variables
+    iv = 0
     do j = 1, next
         if (hvnode(1,j)<=nm1) then
+            iv = iv + 1
             position = position + 1
-            call toIntString(j,cVent)
+            call toIntString(iv,cVent)
             headertext(1,position) = LabelUnits(26)
             headertext(2,position) = trim(LabelsShort(26))//trim(cVent)
             call smvDeviceTag(headertext(2,position))

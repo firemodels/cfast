@@ -394,7 +394,13 @@ check_vv_cases_debug()
    #  =====================
 
    # Remove all unversioned case files from V&V directories (recursively)
-   git clean -dxf &> /dev/null
+   if [ "$CLEANREPO" == "1" ]; then
+     cd $cfastrepo/Verification
+     git clean -dxf
+
+     cd $cfastrepo/Validation
+     git clean -dxf
+   fi
 }
 
 #  ===================================

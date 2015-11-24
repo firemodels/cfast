@@ -394,7 +394,7 @@ check_vv_cases_debug()
    #  =====================
 
    # Remove all unversioned case files from V&V directories (recursively)
-   git clean -dxf
+   git clean -dxf &> /dev/null
 }
 
 #  ===================================

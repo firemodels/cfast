@@ -144,7 +144,7 @@ run_auto()
    cat $git_CFASTSOURCELOG >> $MESSAGE_FILE
 
    echo -e "CFASTbot run initiated." >> $MESSAGE_FILE
-   cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo > /dev/null
+   cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo &> /dev/null
 }
 
 MKDIR ()
@@ -169,7 +169,7 @@ check_time_limit()
 
       if [ $ELAPSED_TIME -gt $TIME_LIMIT ]
       then
-         echo -e "CFASTbot has been running for more than 3 hours in Stage ${TIME_LIMIT_STAGE}. \n\nPlease ensure that there are no problems. \n\nThis is a notification only and does not terminate CFASTbot." | mail -s "CFASTbot Notice: CFASTbot has been running for more than 3 hours." $mailTo > /dev/null
+         echo -e "CFASTbot has been running for more than 3 hours in Stage ${TIME_LIMIT_STAGE}. \n\nPlease ensure that there are no problems. \n\nThis is a notification only and does not terminate CFASTbot." | mail -s "CFASTbot Notice: CFASTbot has been running for more than 3 hours." $mailTo &> /dev/null
          TIME_LIMIT_EMAIL_NOTIFICATION="sent"
       fi
    fi
@@ -213,9 +213,9 @@ clean_git_repo()
       if [ "$CLEANREPO" == "1" ]; then
         echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1 2>&1
         cd $fdsrepo
-        git clean -dxf > /dev/null
-        git add . > /dev/null
-        git reset --hard HEAD > /dev/null
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
       fi
    else
       echo "The FDS repo $fdsrepo does not exist"
@@ -228,9 +228,9 @@ clean_git_repo()
       if [ "$CLEANREPO" == "1" ]; then
         echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1 2>&1
         cd $cfastrepo
-        git clean -dxf > /dev/null
-        git add . > /dev/null
-        git reset --hard HEAD > /dev/null
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
       fi
    else
       echo "The cfast repo $cfastrepo does not exist"
@@ -893,32 +893,32 @@ email_build_status()
      cat $TIME_LOG >> $ERROR_LOG
      cat $TIME_LOG >> $WARNING_LOG
      # Send email with failure message and warnings, body of email contains appropriate log file
-     mail -s "CFASTbot build failure and warnings on ${hostname}. Revision ${git_REVISION}." $mailTo < $ERROR_LOG > /dev/null
+     mail -s "CFASTbot build failure and warnings on ${hostname}. Revision ${git_REVISION}." $mailTo < $ERROR_LOG &> /dev/null
 
    # Check for errors only
    elif [ -e $ERROR_LOG ]
    then
      cat $TIME_LOG >> $ERROR_LOG
       # Send email with failure message, body of email contains error log file
-      mail -s "CFASTbot build failure on ${hostname}. Revision ${git_REVISION}." $mailTo < $ERROR_LOG > /dev/null
+      mail -s "CFASTbot build failure on ${hostname}. Revision ${git_REVISION}." $mailTo < $ERROR_LOG &> /dev/null
 
    # Check for warnings only
    elif [ -e $WARNING_LOG ]
    then
      cat $TIME_LOG >> $WARNING_LOG
       # Send email with success message, include warnings
-      mail -s "CFASTbot build success with warnings on ${hostname}. Revision ${git_REVISION}." $mailTo < $WARNING_LOG > /dev/null
+      mail -s "CFASTbot build success with warnings on ${hostname}. Revision ${git_REVISION}." $mailTo < $WARNING_LOG &> /dev/null
 
    # No errors or warnings
    else
       # Send empty email with success message
-      mail -s "CFASTbot build success on ${hostname}! Revision ${git_REVISION}." $mailTo < $TIME_LOG > /dev/null
+      mail -s "CFASTbot build success on ${hostname}! Revision ${git_REVISION}." $mailTo < $TIME_LOG &> /dev/null
    fi
 
    # Send email notification if validation statistics have changed.
    if [ -e $VALIDATION_STATS_LOG ]
    then
-      mail -s "CFASTbot notice. Validation statistics have changed for Revision ${git_REVISION}." $mailTo < $VALIDATION_STATS_LOG > /dev/null      
+      mail -s "CFASTbot notice. Validation statistics have changed for Revision ${git_REVISION}." $mailTo < $VALIDATION_STATS_LOG &> /dev/null      
    fi
 }
 

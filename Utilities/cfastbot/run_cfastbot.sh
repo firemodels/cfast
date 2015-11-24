@@ -1,6 +1,9 @@
 #!/bin/bash
 
-running=cfastbot_running
+if [ ! -d ~/.cfastgit ] ; then
+  mkdir ~/.cfastgit
+fi
+running=~/.cfastgit/cfastbot_running
 
 CURDIR=`pwd`
 QUEUE=smokebot
@@ -94,6 +97,7 @@ if [ -e $running ] ; then
     exit
   fi
 fi
+touch $running
 if [[ "$EMAIL" != "" ]]; then
   EMAIL="-m $EMAIL"
 fi
@@ -115,10 +119,7 @@ fi
 if [[ "$CLEANREPO" == "1" ]]; then
   CLEAN=-c
 fi
-touch $running
 
-
-touch $running
 QUEUE="-q $QUEUE"
 cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"

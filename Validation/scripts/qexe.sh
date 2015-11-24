@@ -80,13 +80,19 @@ if [ -e $errlog ]; then
   echo "Removing log file: $errlog"
   rm $errlog
 fi
+if [ "$STOPFDSMAXITER" != "" ]; then
+  echo "creating delayed stop file: $infile"
+  echo $STOPFDSMAXITER > $stopfile
+fi
 if [ $STOPFDS ]; then
  echo "stopping case: $in"
  touch $stopfile
  exit
 fi
-if [ -e $stopfile ]; then
- rm $stopfile
+if [ "$STOPFDSMAXITER" == "" ]; then
+  if [ -e $stopfile ]; then
+    rm $stopfile
+  fi
 fi
 
 

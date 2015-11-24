@@ -29,7 +29,6 @@ CFASTBOT_QUEUE=smokebot
 RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0
-EMAIL=
 
 reponame=~/cfastgitclean
 while getopts 'acC:F:hm:q:u' OPTION
@@ -51,7 +50,7 @@ case $OPTION in
    usage;
    ;;
   m)
-   EMAIL="$OPTARG"
+   mailTo="$OPTARG"
    ;;
   q)
    QUEUE="$OPTARG"
@@ -335,7 +334,7 @@ run_vv_cases_debug()
 
    # Submit CFAST V&V cases
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh -m 2 -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
    wait_vv_cases_debug_start
 
    # Wait for V&V cases to end

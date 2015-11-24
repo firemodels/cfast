@@ -9,6 +9,8 @@ echo "Runs CFAST verification/validateion suite"
 echo ""
 echo "Options"
 echo "-d - use debug version of FDS"
+echo "-m max_iterations - stop cfast runs after a specifed number of iterations (delayed stop)"
+echo "     example: an option of 10 would cause cfast to stop after 10 iterations"
 echo "-h - display this message"
 echo "-p size - platform size"
 echo "     default: 64"
@@ -28,7 +30,7 @@ CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
 
-while getopts 'dhp:q:s' OPTION
+while getopts 'dhm:p:q:s' OPTION
 do
 case $OPTION in
   d)
@@ -38,6 +40,9 @@ case $OPTION in
   usage;
   exit
   ;;
+  m)
+   export STOPFDSMAXITER="$OPTARG"
+   ;;
   p)
    size="$OPTARG"
    ;;

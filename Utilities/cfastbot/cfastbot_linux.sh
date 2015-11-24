@@ -29,7 +29,6 @@ CFASTBOT_QUEUE=smokebot
 RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0
-EMAIL=
 
 reponame=~/cfastgitclean
 while getopts 'acC:F:hm:q:u' OPTION
@@ -51,7 +50,7 @@ case $OPTION in
    usage;
    ;;
   m)
-   EMAIL="$OPTARG"
+   mailTo="$OPTARG"
    ;;
   q)
    QUEUE="$OPTARG"

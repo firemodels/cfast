@@ -29,9 +29,10 @@ CFASTBOT_QUEUE=smokebot
 RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0
+SKIP=
 
 reponame=~/cfastgitclean
-while getopts 'acC:F:hm:q:u' OPTION
+while getopts 'acC:F:hm:q:su' OPTION
 do
 case $OPTION in
    a)
@@ -54,6 +55,9 @@ case $OPTION in
    ;;
   q)
    QUEUE="$OPTARG"
+   ;;
+  s)
+   SKIP=1
    ;;
   u)
    UPDATEREPO=1
@@ -584,32 +588,6 @@ check_compile_smv_db()
    fi
 }
 
-#  =============================================
-#  = Stage 6c - Make SMV pictures (debug mode) =
-#  =============================================
-
-# make_cfast_pictures_db()
-# {
-#    # Run Make SMV Pictures script (debug mode)
-#    cd $cfastrepo/Verification/scripts
-#    ./Make_SMV_Pictures.sh -d 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
-# }
-
-# check_cfast_pictures_db()
-# {
-#    # Scan and report any errors in make SMV pictures process
-#    cd $CFASTBOT_RUNDIR
-#    if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6c` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6c` == "" ]]
-#    then
-#       stage6c_success=true
-#    else
-#       cp $OUTPUT_DIR/stage6c $OUTPUT_DIR/stage6c_errors
-#       echo "Errors from Stage 6c - Make SMV pictures (debug mode):" >> $ERROR_LOG
-#       cat $OUTPUT_DIR/stage6c_errors >> $ERROR_LOG
-#       echo "" >> $ERROR_LOG
-#    fi
-# }
-
 #  ==================================
 #  = Stage 6d - Compile SMV release =
 #  ==================================
@@ -648,30 +626,29 @@ check_compile_smv()
 }
 
 #  ===============================================
-#  = Stage 6e - Make SMV pictures (release mode) =
+#  = Stage 6e - Make cfast pictures (release mode) =
 #  ===============================================
 
-# make_cfast_pictures()
-# {
-#    # Run Make SMV Pictures script (release mode)
-#    cd $cfastrepo/Validatio/scripts
-#    ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6e
-# }
+make_cfast_pictures()
+{
+   cd $cfastrepo/Validatio/scripts
+   ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6e
+}
 
-# check_cfast_pictures()
-# {
-#    # Scan and report any errors in make SMV pictures process
-#    cd $CFASTBOT_RUNDIR
-#    if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6e` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6e` == "" ]]
-#    then
-#       stage6e_success=true
-#    else
-#       cp $OUTPUT_DIR/stage6e  $OUTPUT_DIR/stage6e_errors
-#       echo "Errors from Stage 6e - Make CFAST pictures (release mode):" >> $ERROR_LOG
-#       cat $OUTPUT_DIR/stage6e >> $ERROR_LOG
-#       echo "" >> $ERROR_LOG
-#    fi
-# }
+check_cfast_pictures()
+{
+   # Scan and report any errors in make SMV pictures process
+   cd $CFASTBOT_RUNDIR
+   if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6e` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6e` == "" ]]
+   then
+      stage6e_success=true
+   else
+      cp $OUTPUT_DIR/stage6e  $OUTPUT_DIR/stage6e_errors
+      echo "Errors from Stage 6e - Make CFAST pictures (release mode):" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage6e >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+   fi
+}
 
 #  ====================
 #  = Stage 7 - Matlab =
@@ -994,36 +971,36 @@ fi
 compile_smv_db
 check_compile_smv_db
 
-### Stage 6c ###
-# if [[ $stage4a_success && $stage6b_success ]] ; then
-#    make_cfast_pictures_db
-#    check_cfast_pictures_db
-# fi
-
 ### Stage 6d ###
 compile_smv
 check_compile_smv
 
 ### Stage 6e ###
-# if [[ $stage4a_success && $stage6d_success ]] ; then
-#    make_cfast_pictures
-#    check_cfast_pictures
-# fi
+if [[ $stage4_success && $stage6d_success ]] ; then
+   make_cfast_pictures
+   check_cfast_pictures
+fi
 
 ### Stage 7a ###
-check_matlab_license_server
-run_matlab_verification
-check_matlab_verification
+if [[ "$SKIP" == "" ]]; then
+  check_matlab_license_server
+  run_matlab_verification
+  check_matlab_verification
+fi
 
 ### Stage 7c ###
-run_matlab_validation
-check_matlab_validation
-check_validation_stats
-archive_validation_stats
+if [[ "$SKIP" == "" ]]; then
+  run_matlab_validation
+  check_matlab_validation
+  check_validation_stats
+  archive_validation_stats
+fi
 
 ### Stage 8 ###
-make_cfast_tech_guide
-make_cfast_vv_guide
+if [[ "$SKIP" == "" ]]; then
+  make_cfast_tech_guide
+  make_cfast_vv_guide
+fi
 
 ### Report results ###
 set_files_world_readable

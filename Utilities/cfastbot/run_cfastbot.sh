@@ -24,11 +24,12 @@ echo "-a - run automatically if cfast repo has changed"
 echo "-c - clean cfast and FDS-SMV repos"
 echo "-f - force cfastbot run"
 echo "-h - display this message"
-echo "-m email_address "
-echo "-q - queue_name - run cases using the queue queue_name"
+echo "-m email -  email_address "
+echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: $QUEUE"
-echo "-C - cfast repository location [default: $cfastrepo]"
-echo "-F - FDS repository location [default: $fdsrepo]"
+echo "-C cfastrepo - cfast repository location [default: $cfastrepo]"
+echo "-F fdsrepo - FDS repository location [default: $fdsrepo]"
+echo "-s - skip matlab and guide generating stages"
 echo "-u - update cfast and FDS-SMV repos"
 echo "-v - show options used to run cfastbot"
 exit
@@ -43,8 +44,9 @@ CLEANREPO=0
 RUNCFASTBOT=1
 EMAIL=
 FORCE=
+SKIP=
 
-while getopts 'acC:fF:hm:q:uv' OPTION
+while getopts 'acC:fF:hm:q:suv' OPTION
 do
 case $OPTION  in
   a)
@@ -70,6 +72,9 @@ case $OPTION  in
    ;;
   q)
    QUEUE="$OPTARG"
+   ;;
+  q)
+   SKIP="-s"
    ;;
   u)
    UPDATEREPO=1
@@ -119,8 +124,8 @@ cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
 cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
-  ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $EMAIL "$@"
+  ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $EMAIL "$@"
 else
-  echo ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $EMAIL "$@"
+  echo ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $EMAIL "$@"
 fi
 rm $running

@@ -21,8 +21,8 @@ VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 GIT_STATUSDIR=~/.cfastbot
 
 # define repo names (default)
-fdsrepo=~/FDS-SMVgitclean
-cfastrepo=~/cfastgitclean
+export fdsrepo=~/FDS-SMVgitclean
+export cfastrepo=~/cfastgitclean
 
 
 CFASTBOT_QUEUE=smokebot
@@ -637,7 +637,7 @@ check_compile_smv()
 
 make_cfast_pictures()
 {
-   cd $cfastrepo/Validatio/scripts
+   cd $cfastrepo/Validation/scripts
    ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6e
 }
 

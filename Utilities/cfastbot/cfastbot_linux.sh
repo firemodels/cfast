@@ -197,7 +197,7 @@ set_files_world_readable()
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
-   echo cleaning previous cfastbot results
+   echo Cleaning previous cfastbot results
    cd $CFASTBOT_RUNDIR
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
@@ -235,7 +235,19 @@ clean_git_repo()
       if [ "$CLEANREPO" == "1" ]; then
         echo Cleaning cfast repo
         echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1 2>&1
-        cd $cfastrepo
+        cd $cfastrepo/CFAST
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
+        cd $cfastrepo/Verification
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
+        cd $cfastrepo/Validation
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
+        cd $cfastrepo/Docs
         git clean -dxf &> /dev/null
         git add . &> /dev/null
         git reset --hard HEAD &> /dev/null
@@ -254,14 +266,14 @@ do_git_checkout()
      echo Checking out latest FDS-SMV revision
      echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
      git remote update
-     git checkout development
+     git checkout development &> /dev/null
      git pull >> $OUTPUT_DIR/stage1 2>&1
 
      cd $cfastrepo
      echo Checking out latest CFAST revision
      echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1 2>&1
      git remote update
-     git checkout master
+     git checkout master &> /dev/null
      git pull >> $OUTPUT_DIR/stage1 2>&1
      git_REVISION=`tail -n 1 $OUTPUT_DIR/stage1 | sed "s/[^0-9]//g"`
    fi
@@ -532,7 +544,7 @@ check_vv_cases_release()
 
 compile_smv_utilities()
 {  
-   echo 'Building Smokeview utilities/libraries' >> $OUTPUT_DIR/stage6a 2>&1
+   echo 'Building Smokeview utilities/libraries' 
    # smokeview libraries
    cd $fdsrepo/SMV/Build/LIBS/lib_linux_intel_64
    echo '   libraries'

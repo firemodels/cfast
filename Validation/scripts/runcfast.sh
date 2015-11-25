@@ -26,5 +26,5 @@ fi
 cd $fulldir
 echo -----------------------------
 echo running $infile in $fulldir
-$CFAST $infile /V
+$CFAST $infile -V
 echo -----------------------------

@@ -5,6 +5,17 @@
 # It runs the CFAST verification/validation suite on the latest
 # revision of the repository.
 
+MKDIR ()
+{
+  DIR=$1
+  if [ ! -d $DIR ]
+  then
+    echo Creating directory $DIR
+    mkdir $DIR
+  fi
+}
+
+
 #  ===================
 #  = Input variables =
 #  ===================
@@ -18,7 +29,10 @@ ERROR_LOG=$OUTPUT_DIR/errors
 TIME_LOG=$OUTPUT_DIR/timings
 WARNING_LOG=$OUTPUT_DIR/warnings
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
-GIT_STATUSDIR=~/.cfastbot
+GITSTATUS_DIR=~/.cfastbot
+
+MKDIR $OUTPUT_DIR
+MKDIR $GITSTATUS_DIR
 
 # define repo names (default)
 export fdsrepo=~/FDS-SMVgitclean
@@ -80,7 +94,7 @@ fi
 cd
 
 THIS_CFAST_FAILED=0
-CFAST_STATUS_FILE=$GIT_STATUSDIR/cfast_status
+CFAST_STATUS_FILE=$GITSTATUS_DIR/cfast_status
 LAST_CFAST_FAILED=0
 if [ -e $CFAST_STATUS_FILE ] ; then
    LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
@@ -107,21 +121,21 @@ TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 run_auto()
 {
    SMV_SOURCE=$fdsrepo/SMV/source
-   git_SMVFILE=$GIT_STATUSDIR/smokeview_source_revision
-   git_SMVLOG=$GIT_STATUSDIR/smokeview_source_log
+   git_SMVFILE=$GITSTATUS_DIR/smokeview_source_revision
+   git_SMVLOG=$GITSTATUS_DIR/smokeview_source_log
 
    CFAST_SOURCE=$cfastrepo/CFAST/Source
-   git_CFASTSOURCEFILE=$GIT_STATUSDIR/cfast_source_revision
-   git_CFASTSOURCELOG=$GIT_STATUSDIR/cfast_source_log
+   git_CFASTSOURCEFILE=$GITSTATUS_DIR/cfast_source_revision
+   git_CFASTSOURCELOG=$GITSTATUS_DIR/cfast_source_log
   
    CFAST_DOCS=$cfastrepo/Docs
-   git_CFASTDOCSFILE=$GIT_STATUSDIR/cfast_docs_revision
-   git_CFASTDOCSLOG=$GIT_STATUSDIR/cfast_docs_log
+   git_CFASTDOCSFILE=$GITSTATUS_DIR/cfast_docs_revision
+   git_CFASTDOCSLOG=$GITSTATUS_DIR/cfast_docs_log
 
    SMOKEBOTDIR=~/CFASTBOT/
    SMOKEBOTEXE=./run_cfastbot.sh
 
-   MESSAGE_FILE=$GIT_STATUSDIR/message
+   MESSAGE_FILE=$GITSTATUS_DIR/message
 
    cd $CFAST_SOURCE
    git pull &> /dev/null
@@ -145,16 +159,6 @@ run_auto()
 
    echo -e "CFASTbot run initiated." >> $MESSAGE_FILE
    cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo &> /dev/null
-}
-
-MKDIR ()
-{
-  DIR=$1
-  if [ ! -d $DIR ]
-  then
-    echo Creating directory $DIR
-    mkdir $DIR
-  fi
 }
 
 check_time_limit()
@@ -192,8 +196,6 @@ clean_cfastbot_history()
    # Clean cfastbot metafiles
    echo cleaning previous cfastbot results
    cd $CFASTBOT_RUNDIR
-   MKDIR $GIT_STATUSDIR >& /dev/null
-   MKDIR $OUTPUT_DIR &> /dev/null
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
 

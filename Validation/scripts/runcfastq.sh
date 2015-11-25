@@ -30,5 +30,5 @@ fi
 
 echo --------------------------------------------
 echo running $infile in $fulldir using the $queue queue
-$QEXE -q $queue $dir $CFAST $infile /V
+$QEXE -q $queue $dir $CFAST $infile /-V
 echo --------------------------------------------

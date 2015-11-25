@@ -31,6 +31,7 @@ WARNING_LOG=$OUTPUT_DIR/warnings
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 GITSTATUS_DIR=~/.cfastbot
 
+echo cfastbot run directory: $CFASTBOT_RUNDIR
 MKDIR $OUTPUT_DIR
 MKDIR $GITSTATUS_DIR
 
@@ -79,6 +80,8 @@ case $OPTION in
 esac
 done
 shift $(($OPTIND-1))
+echo cfastbot repo: $cfastrepo
+echo FDS-SMV repo: $fdsrepo
 
 platform="linux"
 if [ "`uname`" == "Darwin" ] ; then

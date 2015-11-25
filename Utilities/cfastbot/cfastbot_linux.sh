@@ -5,6 +5,17 @@
 # It runs the CFAST verification/validation suite on the latest
 # revision of the repository.
 
+MKDIR ()
+{
+  DIR=$1
+  if [ ! -d $DIR ]
+  then
+    echo Creating directory $DIR
+    mkdir $DIR
+  fi
+}
+
+
 #  ===================
 #  = Input variables =
 #  ===================
@@ -18,7 +29,11 @@ ERROR_LOG=$OUTPUT_DIR/errors
 TIME_LOG=$OUTPUT_DIR/timings
 WARNING_LOG=$OUTPUT_DIR/warnings
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
-GIT_STATUSDIR=~/.cfastbot
+GITSTATUS_DIR=~/.cfastbot
+
+echo cfastbot run directory: $CFASTBOT_RUNDIR
+MKDIR $OUTPUT_DIR
+MKDIR $GITSTATUS_DIR
 
 # define repo names (default)
 export fdsrepo=~/FDS-SMVgitclean
@@ -65,6 +80,8 @@ case $OPTION in
 esac
 done
 shift $(($OPTIND-1))
+echo cfastbot repo: $cfastrepo
+echo FDS-SMV repo: $fdsrepo
 
 platform="linux"
 if [ "`uname`" == "Darwin" ] ; then
@@ -80,7 +97,7 @@ fi
 cd
 
 THIS_CFAST_FAILED=0
-CFAST_STATUS_FILE=$GIT_STATUSDIR/cfast_status
+CFAST_STATUS_FILE=$GITSTATUS_DIR/cfast_status
 LAST_CFAST_FAILED=0
 if [ -e $CFAST_STATUS_FILE ] ; then
    LAST_CFAST_FAILED=`cat $CFAST_STATUS_FILE`
@@ -107,21 +124,21 @@ TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 run_auto()
 {
    SMV_SOURCE=$fdsrepo/SMV/source
-   git_SMVFILE=$GIT_STATUSDIR/smokeview_source_revision
-   git_SMVLOG=$GIT_STATUSDIR/smokeview_source_log
+   git_SMVFILE=$GITSTATUS_DIR/smokeview_source_revision
+   git_SMVLOG=$GITSTATUS_DIR/smokeview_source_log
 
    CFAST_SOURCE=$cfastrepo/CFAST/Source
-   git_CFASTSOURCEFILE=$GIT_STATUSDIR/cfast_source_revision
-   git_CFASTSOURCELOG=$GIT_STATUSDIR/cfast_source_log
+   git_CFASTSOURCEFILE=$GITSTATUS_DIR/cfast_source_revision
+   git_CFASTSOURCELOG=$GITSTATUS_DIR/cfast_source_log
   
    CFAST_DOCS=$cfastrepo/Docs
-   git_CFASTDOCSFILE=$GIT_STATUSDIR/cfast_docs_revision
-   git_CFASTDOCSLOG=$GIT_STATUSDIR/cfast_docs_log
+   git_CFASTDOCSFILE=$GITSTATUS_DIR/cfast_docs_revision
+   git_CFASTDOCSLOG=$GITSTATUS_DIR/cfast_docs_log
 
    SMOKEBOTDIR=~/CFASTBOT/
    SMOKEBOTEXE=./run_cfastbot.sh
 
-   MESSAGE_FILE=$GIT_STATUSDIR/message
+   MESSAGE_FILE=$GITSTATUS_DIR/message
 
    cd $CFAST_SOURCE
    git pull &> /dev/null
@@ -145,16 +162,6 @@ run_auto()
 
    echo -e "CFASTbot run initiated." >> $MESSAGE_FILE
    cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo &> /dev/null
-}
-
-MKDIR ()
-{
-  DIR=$1
-  if [ ! -d $DIR ]
-  then
-    echo Creating directory $DIR
-    mkdir $DIR
-  fi
 }
 
 check_time_limit()
@@ -190,9 +197,8 @@ set_files_world_readable()
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
+   echo Cleaning previous cfastbot results
    cd $CFASTBOT_RUNDIR
-   MKDIR $GIT_STATUSDIR >& /dev/null
-   MKDIR $OUTPUT_DIR &> /dev/null
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
 
@@ -211,6 +217,7 @@ clean_git_repo()
    # Check to see if FDS repository exists
    if [ -e "$fdsrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
+        echo Cleaning FDS-SMV repo
         echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1 2>&1
         cd $fdsrepo
         git clean -dxf &> /dev/null
@@ -226,8 +233,21 @@ clean_git_repo()
    # Check to see if CFAST repository exists
    if [ -e "$cfastrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
+        echo Cleaning cfast repo
         echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1 2>&1
-        cd $cfastrepo
+        cd $cfastrepo/CFAST
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
+        cd $cfastrepo/Verification
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
+        cd $cfastrepo/Validation
+        git clean -dxf &> /dev/null
+        git add . &> /dev/null
+        git reset --hard HEAD &> /dev/null
+        cd $cfastrepo/Docs
         git clean -dxf &> /dev/null
         git add . &> /dev/null
         git reset --hard HEAD &> /dev/null
@@ -243,15 +263,17 @@ do_git_checkout()
 {
    if [ "$UPDATEREPO" == "1" ]; then
      cd $fdsrepo
+     echo Checking out latest FDS-SMV revision
      echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
-     git remote update
-     git checkout development
+     git remote update &> /dev/null
+     git checkout development &> /dev/null
      git pull >> $OUTPUT_DIR/stage1 2>&1
 
      cd $cfastrepo
+     echo Checking out latest CFAST revision
      echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1 2>&1
-     git remote update
-     git checkout master
+     git remote update &> /dev/null
+     git checkout master &> /dev/null
      git pull >> $OUTPUT_DIR/stage1 2>&1
      git_REVISION=`tail -n 1 $OUTPUT_DIR/stage1 | sed "s/[^0-9]//g"`
    fi
@@ -270,6 +292,7 @@ check_git_checkout()
 compile_cfast_db()
 {
    # Build debug CFAST
+   echo Building debug cfast
    cd $cfastrepo/CFAST/intel_linux_64_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2
@@ -337,6 +360,7 @@ run_vv_cases_debug()
    #  =======================
 
    # Submit CFAST V&V cases
+   echo 'Running CFAST V&V cases -  debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
    ./Run_CFAST_Cases.sh -m 2 -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
    wait_vv_cases_debug_start
@@ -396,10 +420,10 @@ check_vv_cases_debug()
    # Remove all unversioned case files from V&V directories (recursively)
    if [ "$CLEANREPO" == "1" ]; then
      cd $cfastrepo/Verification
-     git clean -dxf
+     git clean -dxf &> /dev/null
 
      cd $cfastrepo/Validation
-     git clean -dxf
+     git clean -dxf &> /dev/null
    fi
 }
 
@@ -410,6 +434,7 @@ check_vv_cases_debug()
 compile_cfast()
 { 
    # Build release CFAST
+   echo Building release cfast
    cd $cfastrepo/CFAST/intel_linux_64
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage4
@@ -460,6 +485,7 @@ run_vv_cases_release()
 {
    # Start running all CFAST V&V cases
    cd $cfastrepo/Validation/scripts
+   echo 'Running CFAST V&V cases - release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
    ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
 
@@ -518,25 +544,30 @@ check_vv_cases_release()
 
 compile_smv_utilities()
 {  
+   echo 'Building Smokeview utilities/libraries' 
    # smokeview libraries
    cd $fdsrepo/SMV/Build/LIBS/lib_linux_intel_64
+   echo '   libraries'
    echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage6a 2>&1
    ./makelibs.sh >> $OUTPUT_DIR/stage6a 2>&1
 
    # smokezip:
    cd $fdsrepo/Utilities/smokezip/intel_linux_64
+   echo '   smokezip'
    echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_zip.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # smokediff:
    cd $fdsrepo/Utilities/smokediff/intel_linux_64
+   echo '   smokediff'
    echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_diff.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # background:
    cd $fdsrepo/Utilities/background/intel_linux_64
+   echo '   background'
    echo 'Compiling background:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_background.sh >> $OUTPUT_DIR/stage6a 2>&1
 }
@@ -564,6 +595,7 @@ check_smv_utilities()
 compile_smv_db()
 {
    # Clean and compile SMV DB
+   echo "Building debug smokeview"
    cd $fdsrepo/SMV/Build/intel_linux_64
    ./make_smv_db.sh &> $OUTPUT_DIR/stage6b
 }
@@ -601,6 +633,7 @@ check_compile_smv_db()
 compile_smv()
 {
    # Clean and compile SMV
+   echo "Building release smokeview"
    cd $fdsrepo/SMV/Build/intel_linux_64
    ./make_smv.sh &> $OUTPUT_DIR/stage6d
 }
@@ -637,6 +670,7 @@ check_compile_smv()
 
 make_cfast_pictures()
 {
+   echo "Generating smokeview images"
    cd $cfastrepo/Validation/scripts
    ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6e
 }
@@ -664,6 +698,7 @@ check_cfast_pictures()
 
 run_matlab_license_test()
 {
+   echo "Running matlab license test"
    # Run simple test to see if Matlab license is available
    cd $cfastrepo/Utilities/Matlab
    matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7_matlab_license
@@ -697,6 +732,7 @@ check_matlab_license_server()
 
 run_matlab_verification()
 {
+   echo "Running matlab verification scripts"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
 
@@ -726,6 +762,7 @@ check_matlab_verification()
 
 run_matlab_validation()
 {
+   echo "Running matlab validation scripts"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation
@@ -819,6 +856,7 @@ check_guide()
 make_cfast_tech_guide()
 {
    # Build CFAST tech Guide
+   echo Building CFAST tech guide
    cd $cfastrepo/Docs/Tech_Ref
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_tech_guide
 
@@ -829,6 +867,7 @@ make_cfast_tech_guide()
 make_cfast_vv_guide()
 {
    # Build CFAST tech Guide
+   echo Building CFAST VV guide
    cd $cfastrepo/Docs/Validation_Guide
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_vv_guide
 
@@ -1012,3 +1051,4 @@ fi
 set_files_world_readable
 save_build_status
 email_build_status
+echo cfastbot complete

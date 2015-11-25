@@ -25,6 +25,7 @@ mailTo="gforney@gmail.com, rpeacoc@nist.gov"
 CFASTBOT_RUNDIR="`pwd`"
 
 OUTPUT_DIR=$CFASTBOT_RUNDIR/output
+HISTORY_DIR=$CFASTBOT_RUNDIR/history
 ERROR_LOG=$OUTPUT_DIR/errors
 TIME_LOG=$OUTPUT_DIR/timings
 WARNING_LOG=$OUTPUT_DIR/warnings
@@ -33,6 +34,7 @@ GITSTATUS_DIR=~/.cfastbot
 
 echo cfastbot run directory: $CFASTBOT_RUNDIR
 MKDIR $OUTPUT_DIR
+MKDIR $HISTORY_DIR
 MKDIR $GITSTATUS_DIR
 
 # define repo names (default)
@@ -275,7 +277,7 @@ do_git_checkout()
      git remote update &> /dev/null
      git checkout master &> /dev/null
      git pull >> $OUTPUT_DIR/stage1 2>&1
-     git_REVISION=`tail -n 1 $OUTPUT_DIR/stage1 | sed "s/[^0-9]//g"`
+     GIT_REVISION=`git describe --long --dirty`
    fi
 }
 
@@ -803,7 +805,7 @@ check_validation_stats()
          echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $VALIDATION_STATS_LOG
          echo "-------------------------------" >> $VALIDATION_STATS_LOG
          echo "Validation statistics are different from baseline statistics." >> $VALIDATION_STATS_LOG
-         echo "Baseline validation statistics vs. Revision ${git_REVISION}:" >> $VALIDATION_STATS_LOG
+         echo "Baseline validation statistics vs. Revision ${GIT_REVISION}:" >> $VALIDATION_STATS_LOG
          echo "-------------------------------" >> $VALIDATION_STATS_LOG
          head -n 1 ${BASELINE_STATS_FILE} >> $VALIDATION_STATS_LOG
          echo "" >> $VALIDATION_STATS_LOG
@@ -824,10 +826,10 @@ archive_validation_stats()
 
    if [ -e ${CURRENT_STATS_FILE} ] ; then
       # Copy to CFASTbot history
-      cp ${CURRENT_STATS_FILE} "$CFASTBOT_RUNDIR/history/${STATS_FILE_BASENAME}_${git_REVISION}.csv"
+      cp ${CURRENT_STATS_FILE} "$HISTORY_DIR/${STATS_FILE_BASENAME}_${GIT_REVISION}.csv"
 
       # Copy to web results
-      cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${git_REVISION}.csv
+      cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${GIT_REVISION}.csv
    fi
 }
 
@@ -887,27 +889,27 @@ save_build_status()
    then
      cat "" >> $ERROR_LOG
      cat $WARNING_LOG >> $ERROR_LOG
-     echo "Build failure and warnings for Revision ${git_REVISION}." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
-     cat $ERROR_LOG > "$CFASTBOT_RUNDIR/history/${git_REVISION}_errors.txt"
+     echo "Build failure and warnings for Revision ${GIT_REVISION}." > "$HISTORY_DIR/${GIT_REVISION}.txt"
+     cat $ERROR_LOG > "$HISTORY_DIR/${GIT_REVISION}_errors.txt"
      touch $OUTPUT_DIR/status_errors_and_warnings
 
    # Check for errors only
    elif [ -e $ERROR_LOG ]
    then
-      echo "Build failure for Revision ${git_REVISION}." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
-      cat $ERROR_LOG > "$CFASTBOT_RUNDIR/history/${git_REVISION}_errors.txt"
+      echo "Build failure for Revision ${GIT_REVISION}." > "$HISTORY_DIR/${GIT_REVISION}.txt"
+      cat $ERROR_LOG > "$HISTORY_DIR/${GIT_REVISION}_errors.txt"
       touch $OUTPUT_DIR/status_errors
 
    # Check for warnings only
    elif [ -e $WARNING_LOG ]
    then
-      echo "Revision ${git_REVISION} has warnings." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
-      cat $WARNING_LOG > "$CFASTBOT_RUNDIR/history/${git_REVISION}_warnings.txt"
+      echo "Revision ${GIT_REVISION} has warnings." > "$HISTORY_DIR/${GIT_REVISION}.txt"
+      cat $WARNING_LOG > "$HISTORY_DIR/${GIT_REVISION}_warnings.txt"
       touch $OUTPUT_DIR/status_warnings
 
    # No errors or warnings
    else
-      echo "Build success! Revision ${git_REVISION} passed all build tests." > "$CFASTBOT_RUNDIR/history/${git_REVISION}.txt"
+      echo "Build success! Revision ${GIT_REVISION} passed all build tests." > "$HISTORY_DIR/${GIT_REVISION}.txt"
       touch $OUTPUT_DIR/status_success
    fi
 }
@@ -919,7 +921,7 @@ email_build_status()
    if [[ $SKIP_git_UPDATE_AND_PROPFIX ]] ; then
       echo "CFASTbot was invoked with the -s option (SKIP_git_UPDATE_AND_PROPFIX)." >> $TIME_LOG
       echo "Skipping git revert, update, and property fix operations." >> $TIME_LOG
-      echo "The current git revision is ${git_REVISION}" >> $TIME_LOG
+      echo "The current git revision is ${GIT_REVISION}" >> $TIME_LOG
    fi
    echo "-------------------------------" >> $TIME_LOG
    echo "Host: $hostname " >> $TIME_LOG
@@ -938,32 +940,32 @@ email_build_status()
      cat $TIME_LOG >> $ERROR_LOG
      cat $TIME_LOG >> $WARNING_LOG
      # Send email with failure message and warnings, body of email contains appropriate log file
-     mail -s "CFASTbot build failure and warnings on ${hostname}. Revision ${git_REVISION}." $mailTo < $ERROR_LOG &> /dev/null
+     mail -s "CFASTbot build failure and warnings on ${hostname}. Revision ${GIT_REVISION}." $mailTo < $ERROR_LOG &> /dev/null
 
    # Check for errors only
    elif [ -e $ERROR_LOG ]
    then
      cat $TIME_LOG >> $ERROR_LOG
       # Send email with failure message, body of email contains error log file
-      mail -s "CFASTbot build failure on ${hostname}. Revision ${git_REVISION}." $mailTo < $ERROR_LOG &> /dev/null
+      mail -s "CFASTbot build failure on ${hostname}. Revision ${GIT_REVISION}." $mailTo < $ERROR_LOG &> /dev/null
 
    # Check for warnings only
    elif [ -e $WARNING_LOG ]
    then
      cat $TIME_LOG >> $WARNING_LOG
       # Send email with success message, include warnings
-      mail -s "CFASTbot build success with warnings on ${hostname}. Revision ${git_REVISION}." $mailTo < $WARNING_LOG &> /dev/null
+      mail -s "CFASTbot build success with warnings on ${hostname}. Revision ${GIT_REVISION}." $mailTo < $WARNING_LOG &> /dev/null
 
    # No errors or warnings
    else
       # Send empty email with success message
-      mail -s "CFASTbot build success on ${hostname}! Revision ${git_REVISION}." $mailTo < $TIME_LOG &> /dev/null
+      mail -s "CFASTbot build success on ${hostname}! Revision ${GIT_REVISION}." $mailTo < $TIME_LOG &> /dev/null
    fi
 
    # Send email notification if validation statistics have changed.
    if [ -e $VALIDATION_STATS_LOG ]
    then
-      mail -s "CFASTbot notice. Validation statistics have changed for Revision ${git_REVISION}." $mailTo < $VALIDATION_STATS_LOG &> /dev/null      
+      mail -s "CFASTbot notice. Validation statistics have changed for Revision ${GIT_REVISION}." $mailTo < $VALIDATION_STATS_LOG &> /dev/null      
    fi
 }
 

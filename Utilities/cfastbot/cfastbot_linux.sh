@@ -265,14 +265,14 @@ do_git_checkout()
      cd $fdsrepo
      echo Checking out latest FDS-SMV revision
      echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
-     git remote update
+     git remote update &> /dev/null
      git checkout development &> /dev/null
      git pull >> $OUTPUT_DIR/stage1 2>&1
 
      cd $cfastrepo
      echo Checking out latest CFAST revision
      echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1 2>&1
-     git remote update
+     git remote update &> /dev/null
      git checkout master &> /dev/null
      git pull >> $OUTPUT_DIR/stage1 2>&1
      git_REVISION=`tail -n 1 $OUTPUT_DIR/stage1 | sed "s/[^0-9]//g"`

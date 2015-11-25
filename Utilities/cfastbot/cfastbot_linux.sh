@@ -439,7 +439,7 @@ compile_cfast()
    echo Building release cfast
    cd $cfastrepo/CFAST/intel_linux_64
    make -f ../makefile clean &> /dev/null
-   ./make_cfast.sh &> $OUTPUT_DIR/stage4
+   ./make_cfast.sh &> $OUTPUT_DIR/stage4a
 }
 
 check_compile_cfast()
@@ -448,21 +448,54 @@ check_compile_cfast()
    cd $cfastrepo/CFAST/intel_linux_64
    if [[ -e "cfast7_linux_64" ]]
    then
-      stage4_success=true
+      stage4a_success=true
    else
       echo "Errors from Stage 4 - Compile CFAST:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage4 >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage4a >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4a` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4 >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4a >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
+   fi
+}
+
+compile_vvcalc()
+{ 
+   # Build release vvcalc
+   echo Building release VandV_Calcs
+   cd $cfastrepo/VandV_Calcs/intel_linux_64
+   make -f ../makefile clean &> /dev/null
+   ./make_vv.sh &> $OUTPUT_DIR/stage4b
+}
+
+check_compile_vvcalc()
+{
+   cd $cfastrepo/VandV_Calcs/intel_linux_64
+   if [[ -e "VandV_Calcs_linux_64" ]]
+   then
+      stage4b_success=true
+   else
+      echo "Errors from Stage 4b - Compile VandV_Calcs:" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage4b >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+   fi
+
+   # Check for compiler warnings/remarks
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4b` == "" ]]
+   then
+      # Continue along
+      :
+   else
+      echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4b >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -734,7 +767,8 @@ check_matlab_license_server()
 
 run_matlab_verification()
 {
-   echo "Running matlab verification scripts"
+   echo "Verification"
+   echo "   making plots"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
 
@@ -764,7 +798,16 @@ check_matlab_verification()
 
 run_matlab_validation()
 {
-   echo "Running matlab validation scripts"
+   
+   echo "Validation"
+   echo "   VandV_Calcs"
+   cd $cfastrepo/Validation
+   ../VandV_Calcs/intel_linux_64/VandV_Calcs_linux_64 CFAST_Pressure_Correction_Inputs.csv &> /dev/null
+   cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
+   cp profiles.csv Steckler_Compartment/.
+   cp flux_profiles.csv Fleury_Heat_flux/.
+   
+   echo "   Makeing plots"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation
@@ -1003,13 +1046,15 @@ fi
 ### Stage 4 ###
 compile_cfast
 check_compile_cfast
+compile_vvcalc
+check_compile_vvcalc
 
 ### Stage 6a ###
 compile_smv_utilities
 check_smv_utilities
 
 ### Stage 5 ###
-if [[ $stage4_success ]] ; then
+if [[ $stage4a_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
@@ -1023,7 +1068,7 @@ compile_smv
 check_compile_smv
 
 ### Stage 6e ###
-if [[ $stage4_success && $stage6d_success ]] ; then
+if [[ $stage4a_success && $stage6d_success ]] ; then
    make_cfast_pictures
    check_cfast_pictures
 fi

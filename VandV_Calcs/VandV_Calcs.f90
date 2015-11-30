@@ -94,6 +94,7 @@
     if (switch_id=='d') then
         ! read in the model data   
         d2_filename = trim(base_folder) // list_carray(ir,d2_filename_column)
+        write (*,*) 'Opening data file: ', trim(d2_filename)
         if (old_filename/=d2_filename) then
             open (unit=8,file=d2_filename,form='formatted',action='read',iostat=io_error)
             if (io_error==0) then

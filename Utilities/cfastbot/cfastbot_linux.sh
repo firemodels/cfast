@@ -221,7 +221,7 @@ clean_cfastbot_history()
 #  =========================
 
 #  ============================
-#  = Stage 1 - git operations =
+#  = Stage 1b - git operations =
 #  ============================
 
 clean_git_repo()
@@ -230,7 +230,7 @@ clean_git_repo()
    if [ -e "$fdsrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
         echo Cleaning FDS-SMV repo
-        echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1 2>&1
+        echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1a 2>&1
         cd $fdsrepo
         git clean -dxf &> /dev/null
         git add . &> /dev/null
@@ -246,7 +246,7 @@ clean_git_repo()
    if [ -e "$cfastrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
         echo Cleaning cfast repo
-        echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1 2>&1
+        echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1a 2>&1
         cd $cfastrepo/CFAST
         git clean -dxf &> /dev/null
         git add . &> /dev/null
@@ -276,17 +276,17 @@ do_git_checkout()
    if [ "$UPDATEREPO" == "1" ]; then
      cd $fdsrepo
      echo Checking out latest FDS-SMV revision
-     echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
+     echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1a 2>&1
      git remote update &> /dev/null
      git checkout development &> /dev/null
-     git pull >> $OUTPUT_DIR/stage1 2>&1
+     git pull >> $OUTPUT_DIR/stage1a 2>&1
 
      cd $cfastrepo
      echo Checking out latest CFAST revision
-     echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1 2>&1
+     echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1a 2>&1
      git remote update &> /dev/null
      git checkout master &> /dev/null
-     git pull >> $OUTPUT_DIR/stage1 2>&1
+     git pull >> $OUTPUT_DIR/stage1a 2>&1
      GIT_REVISION=`git describe --long --dirty`
    fi
 }
@@ -294,7 +294,7 @@ do_git_checkout()
 check_git_checkout()
 {
    # Check for git errors
-   stage1_success=true
+   stage1a_success=true
 }
 
 #  =================================
@@ -601,7 +601,7 @@ check_vv_cases_release()
 }
 
 #  ====================================
-#  = Stage 6a - Compile SMV utilities =
+#  = Stage 1b - Compile SMV utilities =
 #  ====================================
 
 compile_smv_utilities()
@@ -610,28 +610,28 @@ compile_smv_utilities()
    # smokeview libraries
    cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
    echo '   libraries'
-   echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage6a 2>&1
-   ./makelibs.sh >> $OUTPUT_DIR/stage6a 2>&1
+   echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
+   ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
 
    # smokezip:
    cd $fdsrepo/Utilities/smokezip/intel_${platform}_64
    echo '   smokezip'
-   echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage6a 2>&1
-   ./make_zip.sh >> $OUTPUT_DIR/stage6a 2>&1
-   echo "" >> $OUTPUT_DIR/stage6a 2>&1
+   echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage1b 2>&1
+   ./make_zip.sh >> $OUTPUT_DIR/stage1b 2>&1
+   echo "" >> $OUTPUT_DIR/stage1b 2>&1
    
    # smokediff:
    cd $fdsrepo/Utilities/smokediff/intel_${platform}_64
    echo '   smokediff'
-   echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage6a 2>&1
-   ./make_diff.sh >> $OUTPUT_DIR/stage6a 2>&1
-   echo "" >> $OUTPUT_DIR/stage6a 2>&1
+   echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage1b 2>&1
+   ./make_diff.sh >> $OUTPUT_DIR/stage1b 2>&1
+   echo "" >> $OUTPUT_DIR/stage1b 2>&1
    
    # background:
    cd $fdsrepo/Utilities/background/intel_${platform}_64
    echo '   background'
-   echo 'Compiling background:' >> $OUTPUT_DIR/stage6a 2>&1
-   ./make_background.sh >> $OUTPUT_DIR/stage6a 2>&1
+   echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
+   ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
 }
 
 check_smv_utilities()
@@ -642,16 +642,16 @@ check_smv_utilities()
       [ -e "$fdsrepo/Utilities/smokediff/intel_${platform}_64/smokediff_${platform}_64" ]  && \
       [ -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]
    then
-      stage6a_success=true
+      stage1b_success=true
    else
       echo "Errors from Stage 6a - Compile SMV utilities:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 }
 
 #  =============================
-#  = Stage 6b - Compile SMV DB =
+#  = Stage 6a - Compile SMV DB =
 #  =============================
 
 compile_smv_db()
@@ -659,7 +659,7 @@ compile_smv_db()
    # Clean and compile SMV DB
    echo "Building debug smokeview"
    cd $fdsrepo/SMV/Build/intel_${platform}_64
-   ./make_smv_db.sh &> $OUTPUT_DIR/stage6b
+   ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
 }
 
 check_compile_smv_db()
@@ -668,9 +668,47 @@ check_compile_smv_db()
    cd $fdsrepo/SMV/Build/intel_${platform}_64
    if [ -e "smokeview_${platform}_64_db" ]
    then
-      stage6b_success=true
+      stage6a_success=true
    else
       echo "Errors from Stage 6b - Compile SMV DB:" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+   fi
+
+   # Check for compiler warnings/remarks
+   # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+   then
+      # Continue along
+      :
+   else
+      echo "Stage 6b warnings:" >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
+   fi
+}
+
+#  ==================================
+#  = Stage 6b - Compile SMV release =
+#  ==================================
+
+compile_smv()
+{
+   # Clean and compile SMV
+   echo "Building release smokeview"
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
+   ./make_smv.sh &> $OUTPUT_DIR/stage6b
+}
+
+check_compile_smv()
+{
+   # Check for errors in SMV release compilation
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
+   if [ -e "smokeview_${platform}_64" ]
+   then
+      stage6b_success=true
+   else
+      echo "Errors from Stage 6d - Compile SMV release:" >> $ERROR_LOG
       cat $OUTPUT_DIR/stage6b >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
@@ -682,72 +720,34 @@ check_compile_smv_db()
       # Continue along
       :
    else
-      echo "Stage 6b warnings:" >> $WARNING_LOG
+      echo "Stage 6d warnings:" >> $WARNING_LOG
       grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
 
-#  ==================================
-#  = Stage 6d - Compile SMV release =
-#  ==================================
-
-compile_smv()
-{
-   # Clean and compile SMV
-   echo "Building release smokeview"
-   cd $fdsrepo/SMV/Build/intel_${platform}_64
-   ./make_smv.sh &> $OUTPUT_DIR/stage6d
-}
-
-check_compile_smv()
-{
-   # Check for errors in SMV release compilation
-   cd $fdsrepo/SMV/Build/intel_${platform}_64
-   if [ -e "smokeview_${platform}_64" ]
-   then
-      stage6d_success=true
-   else
-      echo "Errors from Stage 6d - Compile SMV release:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage6d >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
-   fi
-
-   # Check for compiler warnings/remarks
-   # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
-   then
-      # Continue along
-      :
-   else
-      echo "Stage 6d warnings:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
-      echo "" >> $WARNING_LOG
-   fi
-}
-
 #  ===============================================
-#  = Stage 6e - Make cfast pictures (release mode) =
+#  = Stage 6c - Make cfast pictures (release mode) =
 #  ===============================================
 
 make_cfast_pictures()
 {
    echo "Generating smokeview images"
    cd $cfastrepo/Validation/scripts
-   ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6e
+   ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
 }
 
 check_cfast_pictures()
 {
    # Scan and report any errors in make SMV pictures process
    cd $CFASTBOT_RUNDIR
-   if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6e` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6e` == "" ]]
+   if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6c` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6c` == "" ]]
    then
-      stage6e_success=true
+      stage6c_success=true
    else
-      cp $OUTPUT_DIR/stage6e  $OUTPUT_DIR/stage6e_errors
+      cp $OUTPUT_DIR/stage6c  $OUTPUT_DIR/stage6c_errors
       echo "Errors from Stage 6e - Make CFAST pictures (release mode):" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage6e >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage6c >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 }
@@ -1057,10 +1057,14 @@ start_time=`date`
 ### Clean up on start ###
 clean_cfastbot_history
 
-### Stage 1 ###
+### Stage 1a ###
 clean_git_repo
 do_git_checkout
 check_git_checkout
+
+### Stage 1b ###
+compile_smv_utilities
+check_smv_utilities
 
 ### Stage 2 ###
 compile_cfast_db
@@ -1078,26 +1082,22 @@ check_compile_cfast
 compile_vvcalc
 check_compile_vvcalc
 
-### Stage 6a ###
-compile_smv_utilities
-check_smv_utilities
-
 ### Stage 5 ###
 if [[ $stage4a_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
 
-### Stage 6b ###
+### Stage 6a ###
 compile_smv_db
 check_compile_smv_db
 
-### Stage 6d ###
+### Stage 6b ###
 compile_smv
 check_compile_smv
 
-### Stage 6e ###
-if [[ $stage4a_success && $stage6d_success ]] ; then
+### Stage 6c ###
+if [[ $stage4a_success && $stage6b_success ]] ; then
    make_cfast_pictures
    check_cfast_pictures
 fi

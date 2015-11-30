@@ -59,6 +59,7 @@
         stop 'No data file specified'
     end if
     comparelist_file = trim(base_folder) // trim(adjustl(filename))
+    write (*,*) 'Opening file: ',trim(comparelist_file)
     open (unit=8,file=comparelist_file,form='formatted', action='read', iostat=io_error)
     call readcsv (8,list_rarray,list_carray,list_nrow,list_ncol,1,list_numr,list_numc)
     ! write (*,*) 'List read, rows and columns=',list_numr,list_numc

@@ -90,7 +90,7 @@ echo "cfastbot status:"
 
 QSTAT="qstat -a"
 if [ "$CFASTBOT_QUEUE" == "none" ]; then
-  QSTAT='ps -el"
+  QSTAT="ps -el"
 fi
 
 platform="linux"

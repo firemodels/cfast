@@ -305,7 +305,7 @@ compile_cfast_db()
 {
    # Build debug CFAST
    echo Building debug cfast
-   cd $cfastrepo/CFAST/intel_$platform_64_db
+   cd $cfastrepo/CFAST/intel_${platform}_64_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2
  }
@@ -313,8 +313,8 @@ compile_cfast_db()
 check_compile_cfast_db()
 {
    # Check for errors in CFAST debug compilation
-   cd $cfastrepo/CFAST/intel_$platform_64_db
-   if [ -e "cfast7_$platform_64_db" ]
+   cd $cfastrepo/CFAST/intel_${platform}_64_db
+   if [ -e "cfast7_${platform}_64_db" ]
    then
       stage2_success=true
    else
@@ -449,7 +449,7 @@ compile_cfast()
 { 
    # Build release CFAST
    echo Building release cfast
-   cd $cfastrepo/CFAST/intel_$platform_64
+   cd $cfastrepo/CFAST/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage4a
 }
@@ -457,8 +457,8 @@ compile_cfast()
 check_compile_cfast()
 {
    # Check for errors in CFAST release compilation
-   cd $cfastrepo/CFAST/intel_$platform_64
-   if [[ -e "cfast7_$platform_64" ]]
+   cd $cfastrepo/CFAST/intel_${platform}_64
+   if [[ -e "cfast7_${platform}_64" ]]
    then
       stage4a_success=true
    else
@@ -483,15 +483,15 @@ compile_vvcalc()
 { 
    # Build release vvcalc
    echo Building release VandV_Calcs
-   cd $cfastrepo/VandV_Calcs/intel_$platform_64
+   cd $cfastrepo/VandV_Calcs/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_vv.sh &> $OUTPUT_DIR/stage4b
 }
 
 check_compile_vvcalc()
 {
-   cd $cfastrepo/VandV_Calcs/intel_$platform_64
-   if [[ -e "VandV_Calcs_$platform_64" ]]
+   cd $cfastrepo/VandV_Calcs/intel_${platform}_64
+   if [[ -e "VandV_Calcs_${platform}_64" ]]
    then
       stage4b_success=true
    else
@@ -608,27 +608,27 @@ compile_smv_utilities()
 {  
    echo 'Building Smokeview utilities/libraries' 
    # smokeview libraries
-   cd $fdsrepo/SMV/Build/LIBS/lib_$platform_intel_64
+   cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
    echo '   libraries'
    echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage6a 2>&1
    ./makelibs.sh >> $OUTPUT_DIR/stage6a 2>&1
 
    # smokezip:
-   cd $fdsrepo/Utilities/smokezip/intel_$platform_64
+   cd $fdsrepo/Utilities/smokezip/intel_${platform}_64
    echo '   smokezip'
    echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_zip.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # smokediff:
-   cd $fdsrepo/Utilities/smokediff/intel_$platform_64
+   cd $fdsrepo/Utilities/smokediff/intel_${platform}_64
    echo '   smokediff'
    echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_diff.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # background:
-   cd $fdsrepo/Utilities/background/intel_$platform_64
+   cd $fdsrepo/Utilities/background/intel_${platform}_64
    echo '   background'
    echo 'Compiling background:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_background.sh >> $OUTPUT_DIR/stage6a 2>&1
@@ -638,9 +638,9 @@ check_smv_utilities()
 {
    # Check for errors in SMV utilities compilation
    cd $FDS_GITTOOT
-   if [ -e "$fdsrepo/Utilities/smokezip/intel_$platform_64/smokezip_$platform_64" ]  && \
-      [ -e "$fdsrepo/Utilities/smokediff/intel_$platform_64/smokediff_$platform_64" ]  && \
-      [ -e "$fdsrepo/Utilities/background/intel_$platform_64/background" ]
+   if [ -e "$fdsrepo/Utilities/smokezip/intel_${platform}_64/smokezip_${platform}_64" ]  && \
+      [ -e "$fdsrepo/Utilities/smokediff/intel_${platform}_64/smokediff_${platform}_64" ]  && \
+      [ -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]
    then
       stage6a_success=true
    else
@@ -658,15 +658,15 @@ compile_smv_db()
 {
    # Clean and compile SMV DB
    echo "Building debug smokeview"
-   cd $fdsrepo/SMV/Build/intel_$platform_64
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv_db.sh &> $OUTPUT_DIR/stage6b
 }
 
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
-   cd $fdsrepo/SMV/Build/intel_$platform_64
-   if [ -e "smokeview_$platform_64_db" ]
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
+   if [ -e "smokeview_${platform}_64_db" ]
    then
       stage6b_success=true
    else
@@ -696,15 +696,15 @@ compile_smv()
 {
    # Clean and compile SMV
    echo "Building release smokeview"
-   cd $fdsrepo/SMV/Build/intel_$platform_64
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv.sh &> $OUTPUT_DIR/stage6d
 }
 
 check_compile_smv()
 {
    # Check for errors in SMV release compilation
-   cd $fdsrepo/SMV/Build/intel_$platform_64
-   if [ -e "smokeview_$platform_64" ]
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
+   if [ -e "smokeview_${platform}_64" ]
    then
       stage6d_success=true
    else
@@ -829,7 +829,7 @@ run_matlab_validation()
    echo "Validation"
    echo "   VandV_Calcs"
    cd $cfastrepo/Validation
-   ../VandV_Calcs/intel_$platform_64/VandV_Calcs_$platform_64 CFAST_Pressure_Correction_Inputs.csv &> /dev/null
+   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Pressure_Correction_Inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
    cp profiles.csv Steckler_Compartment/.
    cp flux_profiles.csv Fleury_Heat_flux/.

@@ -72,7 +72,7 @@ case $OPTION in
    mailTo="$OPTARG"
    ;;
   q)
-   QUEUE="$OPTARG"
+   CFASTBOT_QUEUE="$OPTARG"
    ;;
   s)
    SKIP=1
@@ -88,9 +88,16 @@ echo "   FDS-SMV repo: $fdsrepo"
 echo ""
 echo "cfastbot status:"
 
+QSTAT="qstat -a"
+if [ "$CFASTBOT_QUEUE" == "none" ]; then
+  QSTAT='ps -el"
+fi
+
 platform="linux"
+WHOAMI=`whoami`
 if [ "`uname`" == "Darwin" ] ; then
   platform="osx"
+  WHOAMI=`id -u`
 fi
 export platform
 
@@ -335,8 +342,8 @@ check_compile_cfast_db()
 wait_vv_cases_debug_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `qstat -a | grep $(whoami) | grep Q` != '' ]]; do
-      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `$QSTAT | grep $(WHOAMI) | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -347,8 +354,8 @@ wait_vv_cases_debug_start()
 wait_vv_cases_debug_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `qstat -a | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | wc -l`
+   while [[ `$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -368,7 +375,9 @@ run_vv_cases_debug()
    echo 'Running CFAST V&V cases -  debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
    ./Run_CFAST_Cases.sh -m 2 -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
-   wait_vv_cases_debug_start
+   if [ "$CFASTBOT_QUEUE" != "none" ]; then
+     wait_vv_cases_debug_start
+   fi
 
    # Wait for V&V cases to end
    wait_vv_cases_debug_end
@@ -507,11 +516,23 @@ check_compile_vvcalc()
 #  = Stage 5 - Run V&V cases (release mode) =
 #  ==========================================
 
+wait_vv_cases_release_start()
+{
+   # Scans qstat and waits for V&V cases to start
+   while [[ `$QSTAT | grep $(WHOAMI) | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | grep Q | wc -l`
+      echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage5
+      TIME_LIMIT_STAGE="5"
+      check_time_limit
+      sleep 30
+   done
+}
+
 wait_vv_cases_release_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `qstat -a | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | wc -l`
+   while [[ `$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit
@@ -526,6 +547,9 @@ run_vv_cases_release()
    echo 'Running CFAST V&V cases - release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
    ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   if [ "$CFASTBOT_QUEUE" != "none" ]; then
+     wait_vv_cases_release_start
+   fi
 
    # Wait for all V&V cases to end
    wait_vv_cases_release_end

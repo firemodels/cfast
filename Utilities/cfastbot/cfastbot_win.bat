@@ -184,6 +184,11 @@ echo             found cut
 call :is_file_installed sed|| exit /b 1
 echo             found sed
 
+::*** looking for head
+
+call :is_file_installed head|| exit /b 1
+echo             found head
+
 if %usematlab% == 0 goto skip_matlab
 
 ::*** looking for matlab

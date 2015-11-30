@@ -836,7 +836,7 @@ run_matlab_validation()
    ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
    cp flux_profiles.csv Fleury_Heat_Flux/.
    
-   echo "   Makeing plots"
+   echo "   Making plots"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
    matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation

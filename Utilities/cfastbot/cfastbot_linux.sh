@@ -831,8 +831,10 @@ run_matlab_validation()
    cd $cfastrepo/Validation
    ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Pressure_Correction_Inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
+   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Temperature_Profile_inputs.csv &> /dev/null
    cp profiles.csv Steckler_Compartment/.
-   cp flux_profiles.csv Fleury_Heat_flux/.
+   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
+   cp flux_profiles.csv Fleury_Heat_Flux/.
    
    echo "   Makeing plots"
    # Run Matlab plotting script

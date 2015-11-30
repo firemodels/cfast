@@ -32,7 +32,8 @@ WARNING_LOG=$OUTPUT_DIR/warnings
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 GITSTATUS_DIR=~/.cfastbot
 
-echo cfastbot run directory: $CFASTBOT_RUNDIR
+echo "Dirctories:"
+echo "   run directory: $CFASTBOT_RUNDIR"
 MKDIR $OUTPUT_DIR
 MKDIR $HISTORY_DIR
 MKDIR $GITSTATUS_DIR
@@ -71,7 +72,7 @@ case $OPTION in
    mailTo="$OPTARG"
    ;;
   q)
-   QUEUE="$OPTARG"
+   CFASTBOT_QUEUE="$OPTARG"
    ;;
   s)
    SKIP=1
@@ -82,12 +83,21 @@ case $OPTION in
 esac
 done
 shift $(($OPTIND-1))
-echo cfastbot repo: $cfastrepo
-echo FDS-SMV repo: $fdsrepo
+echo "   cfast repo: $cfastrepo"
+echo "   FDS-SMV repo: $fdsrepo"
+echo ""
+echo "cfastbot status:"
+
+QSTAT="qstat -a"
+if [ "$CFASTBOT_QUEUE" == "none" ]; then
+  QSTAT="ps -el"
+fi
 
 platform="linux"
+WHOAMI=`whoami`
 if [ "`uname`" == "Darwin" ] ; then
   platform="osx"
+  WHOAMI=`id -u`
 fi
 export platform
 
@@ -295,7 +305,7 @@ compile_cfast_db()
 {
    # Build debug CFAST
    echo Building debug cfast
-   cd $cfastrepo/CFAST/intel_linux_64_db
+   cd $cfastrepo/CFAST/intel_${platform}_64_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2
  }
@@ -303,8 +313,8 @@ compile_cfast_db()
 check_compile_cfast_db()
 {
    # Check for errors in CFAST debug compilation
-   cd $cfastrepo/CFAST/intel_linux_64_db
-   if [ -e "cfast7_linux_64_db" ]
+   cd $cfastrepo/CFAST/intel_${platform}_64_db
+   if [ -e "cfast7_${platform}_64_db" ]
    then
       stage2_success=true
    else
@@ -332,8 +342,8 @@ check_compile_cfast_db()
 wait_vv_cases_debug_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `qstat -a | grep $(whoami) | grep Q` != '' ]]; do
-      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `$QSTAT | grep $(WHOAMI) | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -344,8 +354,8 @@ wait_vv_cases_debug_start()
 wait_vv_cases_debug_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `qstat -a | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | wc -l`
+   while [[ `$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -365,7 +375,9 @@ run_vv_cases_debug()
    echo 'Running CFAST V&V cases -  debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
    ./Run_CFAST_Cases.sh -m 2 -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
-   wait_vv_cases_debug_start
+   if [ "$CFASTBOT_QUEUE" != "none" ]; then
+     wait_vv_cases_debug_start
+   fi
 
    # Wait for V&V cases to end
    wait_vv_cases_debug_end
@@ -437,7 +449,7 @@ compile_cfast()
 { 
    # Build release CFAST
    echo Building release cfast
-   cd $cfastrepo/CFAST/intel_linux_64
+   cd $cfastrepo/CFAST/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage4a
 }
@@ -445,8 +457,8 @@ compile_cfast()
 check_compile_cfast()
 {
    # Check for errors in CFAST release compilation
-   cd $cfastrepo/CFAST/intel_linux_64
-   if [[ -e "cfast7_linux_64" ]]
+   cd $cfastrepo/CFAST/intel_${platform}_64
+   if [[ -e "cfast7_${platform}_64" ]]
    then
       stage4a_success=true
    else
@@ -471,15 +483,15 @@ compile_vvcalc()
 { 
    # Build release vvcalc
    echo Building release VandV_Calcs
-   cd $cfastrepo/VandV_Calcs/intel_linux_64
+   cd $cfastrepo/VandV_Calcs/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_vv.sh &> $OUTPUT_DIR/stage4b
 }
 
 check_compile_vvcalc()
 {
-   cd $cfastrepo/VandV_Calcs/intel_linux_64
-   if [[ -e "VandV_Calcs_linux_64" ]]
+   cd $cfastrepo/VandV_Calcs/intel_${platform}_64
+   if [[ -e "VandV_Calcs_${platform}_64" ]]
    then
       stage4b_success=true
    else
@@ -504,11 +516,23 @@ check_compile_vvcalc()
 #  = Stage 5 - Run V&V cases (release mode) =
 #  ==========================================
 
+wait_vv_cases_release_start()
+{
+   # Scans qstat and waits for V&V cases to start
+   while [[ `$QSTAT | grep $(WHOAMI) | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | grep Q | wc -l`
+      echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage5
+      TIME_LIMIT_STAGE="5"
+      check_time_limit
+      sleep 30
+   done
+}
+
 wait_vv_cases_release_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `qstat -a | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep $JOBPREFIX | wc -l`
+   while [[ `$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(WHOAMI) | grep $JOBPREFIX | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit
@@ -523,6 +547,9 @@ run_vv_cases_release()
    echo 'Running CFAST V&V cases - release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
    ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   if [ "$CFASTBOT_QUEUE" != "none" ]; then
+     wait_vv_cases_release_start
+   fi
 
    # Wait for all V&V cases to end
    wait_vv_cases_release_end
@@ -581,27 +608,27 @@ compile_smv_utilities()
 {  
    echo 'Building Smokeview utilities/libraries' 
    # smokeview libraries
-   cd $fdsrepo/SMV/Build/LIBS/lib_linux_intel_64
+   cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
    echo '   libraries'
    echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage6a 2>&1
    ./makelibs.sh >> $OUTPUT_DIR/stage6a 2>&1
 
    # smokezip:
-   cd $fdsrepo/Utilities/smokezip/intel_linux_64
+   cd $fdsrepo/Utilities/smokezip/intel_${platform}_64
    echo '   smokezip'
    echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_zip.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # smokediff:
-   cd $fdsrepo/Utilities/smokediff/intel_linux_64
+   cd $fdsrepo/Utilities/smokediff/intel_${platform}_64
    echo '   smokediff'
    echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_diff.sh >> $OUTPUT_DIR/stage6a 2>&1
    echo "" >> $OUTPUT_DIR/stage6a 2>&1
    
    # background:
-   cd $fdsrepo/Utilities/background/intel_linux_64
+   cd $fdsrepo/Utilities/background/intel_${platform}_64
    echo '   background'
    echo 'Compiling background:' >> $OUTPUT_DIR/stage6a 2>&1
    ./make_background.sh >> $OUTPUT_DIR/stage6a 2>&1
@@ -611,9 +638,9 @@ check_smv_utilities()
 {
    # Check for errors in SMV utilities compilation
    cd $FDS_GITTOOT
-   if [ -e "$fdsrepo/Utilities/smokezip/intel_linux_64/smokezip_linux_64" ]  && \
-      [ -e "$fdsrepo/Utilities/smokediff/intel_linux_64/smokediff_linux_64" ]  && \
-      [ -e "$fdsrepo/Utilities/background/intel_linux_64/background" ]
+   if [ -e "$fdsrepo/Utilities/smokezip/intel_${platform}_64/smokezip_${platform}_64" ]  && \
+      [ -e "$fdsrepo/Utilities/smokediff/intel_${platform}_64/smokediff_${platform}_64" ]  && \
+      [ -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]
    then
       stage6a_success=true
    else
@@ -631,15 +658,15 @@ compile_smv_db()
 {
    # Clean and compile SMV DB
    echo "Building debug smokeview"
-   cd $fdsrepo/SMV/Build/intel_linux_64
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv_db.sh &> $OUTPUT_DIR/stage6b
 }
 
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
-   cd $fdsrepo/SMV/Build/intel_linux_64
-   if [ -e "smokeview_linux_64_db" ]
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
+   if [ -e "smokeview_${platform}_64_db" ]
    then
       stage6b_success=true
    else
@@ -669,15 +696,15 @@ compile_smv()
 {
    # Clean and compile SMV
    echo "Building release smokeview"
-   cd $fdsrepo/SMV/Build/intel_linux_64
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv.sh &> $OUTPUT_DIR/stage6d
 }
 
 check_compile_smv()
 {
    # Check for errors in SMV release compilation
-   cd $fdsrepo/SMV/Build/intel_linux_64
-   if [ -e "smokeview_linux_64" ]
+   cd $fdsrepo/SMV/Build/intel_${platform}_64
+   if [ -e "smokeview_${platform}_64" ]
    then
       stage6d_success=true
    else
@@ -802,7 +829,7 @@ run_matlab_validation()
    echo "Validation"
    echo "   VandV_Calcs"
    cd $cfastrepo/Validation
-   ../VandV_Calcs/intel_linux_64/VandV_Calcs_linux_64 CFAST_Pressure_Correction_Inputs.csv &> /dev/null
+   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Pressure_Correction_Inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
    cp profiles.csv Steckler_Compartment/.
    cp flux_profiles.csv Fleury_Heat_flux/.

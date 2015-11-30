@@ -189,6 +189,11 @@ echo             found sed
 call :is_file_installed head|| exit /b 1
 echo             found head
 
+::*** looking for gawk
+
+call :is_file_installed gawk|| exit /b 1
+echo             found gawk
+
 if %usematlab% == 0 goto skip_matlab
 
 ::*** looking for matlab

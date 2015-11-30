@@ -52,13 +52,11 @@
     integer ::  ntest_flux_profile, numrows_flux_profile(ntests), max_numrows_flux_profile, irrcount
 
     ! Body of ModelVandV
-    base_folder=''
-    !base_folder = '..\..\cfast\Validation\'
     call getarg (1,filename,istat)
     if (istat.le.0) then
         stop 'No data file specified'
     end if
-    comparelist_file = trim(base_folder) // trim(adjustl(filename))
+    comparelist_file = trim(adjustl(filename))
     write (*,*) 'Opening file: ',trim(comparelist_file)
     open (unit=8,file=trim(comparelist_file),form='formatted', action='read', iostat=io_error)
     call readcsv (8,list_rarray,list_carray,list_nrow,list_ncol,1,list_numr,list_numc)

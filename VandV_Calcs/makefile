@@ -72,6 +72,14 @@ intel_win_64_db : setup_win $(objwin)
 
 # ------------- Linux -------------------
 
+# gnu linux
+gnu_linux : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux : FCOMPL = gfortran
+gnu_linux : LFLAGS = 
+gnu_linux : obj = VandV_Calcs_gnu_linux
+gnu_linux : $(objfgnu)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
+
 # 32 bit
 intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static -vec_report0 -I $(INCLUDE)
 intel_linux_32 : FCOMPL = ifort
@@ -86,7 +94,7 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -fpp -m64 -O3 -gen-interfaces -warn interfaces -traceback -static 
+intel_linux_64 : FFLAGS = -fpp -m64 -O3 -gen-interfaces -warn interfaces -traceback -static -vec_report0 -I $(INCLUDE)
 intel_linux_64 : FCOMPL = ifort
 intel_linux_64 : obj = VandV_Calcs_linux_64
 intel_linux_64 : $(objf)

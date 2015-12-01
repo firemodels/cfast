@@ -829,7 +829,7 @@ run_matlab_validation()
    echo "Validation"
    echo "   VandV_Calcs"
    cd $cfastrepo/Validation
-   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Pressure_Correction_Inputs.csv &> /dev/null
+   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Pressure_Correction_inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
    ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Temperature_Profile_inputs.csv &> /dev/null
    cp profiles.csv Steckler_Compartment/.

@@ -355,7 +355,7 @@ if [ "$queue" == "none" ]; then
       exit
     fi
   fi
-  QSUB="$BACKGROUND -u 75 -d 10 "
+  QSUB="$BACKGROUND -u 75 -d 1 "
 fi
 
 if [ "$RESOURCE_MANAGER" == "SLURM" ] ; then

@@ -82,7 +82,6 @@ gnu_linux : $(objfgnu)
 
 # 32 bit
 intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static
->>>>>>> cfast/master
 intel_linux_32 : FCOMPL = ifort
 intel_linux_32 : obj = VandV_Calcs_linux_32
 intel_linux_32 : $(objf)

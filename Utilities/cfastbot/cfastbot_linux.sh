@@ -282,8 +282,8 @@ do_git_checkout()
      git pull >> $OUTPUT_DIR/stage1a 2>&1
 
      cd $cfastrepo
-     echo Checking out latest CFAST revision
-     echo "Checking out latest CFAST revision." >> $OUTPUT_DIR/stage1a 2>&1
+     echo Checking out latest cfast revision
+     echo "Checking out latest cfast revision." >> $OUTPUT_DIR/stage1a 2>&1
      git remote update &> /dev/null
      git checkout master &> /dev/null
      git pull >> $OUTPUT_DIR/stage1a 2>&1

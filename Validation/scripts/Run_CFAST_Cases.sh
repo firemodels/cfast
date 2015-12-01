@@ -8,7 +8,7 @@ echo "Run_CFAST_Cases.sh [-d -h -q queue_name -s ]"
 echo "Runs CFAST verification/validateion suite"
 echo ""
 echo "Options"
-echo "-d - use debug version of FDS"
+echo "-d - use debug version of cfast"
 echo "-m max_iterations - stop cfast runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause cfast to stop after 10 iterations"
 echo "-h - display this message"
@@ -17,7 +17,6 @@ echo "     default: 64"
 echo "     other options: 32"
 echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: batch"
-echo "     other options: fire60s, fire70s, vis"
 echo "-s - stop CFAST runs"
 exit
 }
@@ -66,12 +65,11 @@ fi
 PLATFORM=$PLATFORM$DEBUG
 
 export CFAST="$SVNROOT/CFAST/intel_$PLATFORM/cfast7_$PLATFORM"
-export QEXE="$SVNROOT/Validation/scripts/qexe.sh"
 
 if [ "$queue" != "" ]; then
    queue="-q $queue"
 fi
-export RUNCFAST="$SVNROOT/Validation/scripts/runcfastq.sh $queue"
+export RUNCFAST="$SVNROOT/Validation/scripts/qexe.sh -e $CFAST $queue "
 
 export BASEDIR=`pwd`
 

@@ -1,8 +1,8 @@
 #!/bin/bash
-platform=intel64
 dir=`pwd`
 target=${dir##*/}
-source $IFORT_COMPILER/bin/compilervars.sh $platform
+source $IFORT_COMPILER/bin/compilervars.sh intel64
 
 echo Building $target
-make VPATH="../Source:../Include" INCLUDE="../Include" -f ../makefile $target
+rm -f *.o
+make VPATH="../Source" -f ../makefile $target

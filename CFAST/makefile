@@ -196,12 +196,11 @@ intel_osx_64 : obj = cfast7_osx_64
 intel_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
-intel_osx_64_db : FFLAGS = -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fltconsistency -fp-stack-check -FR -WB $(GITINFO)
+intel_osx_64_db : FFLAGS = -fpp -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fltconsistency -fp-stack-check -FR -WB $(GITINFO)
 intel_osx_64_db : FCOMPL = ifort
 intel_osx_64_db : obj = cfast7_osx_64_db
-intel_osx_64_db : setup $(obj)
+intel_osx_64_db : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
-
 #*** End Compiler Specific Rules ***
 
 # *** Object Dependencies ***

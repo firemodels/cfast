@@ -81,7 +81,7 @@ gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # 32 bit
-intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static -vec_report0 -I $(INCLUDE)
+intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static -vec_report0
 intel_linux_32 : FCOMPL = ifort
 intel_linux_32 : obj = VandV_Calcs_linux_32
 intel_linux_32 : $(objf)
@@ -109,7 +109,7 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # 32 bit
-intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel -vec_report0 -I $(INCLUDE)
+intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel -vec_report0
 intel_osx_32 : FCOMPL = ifort
 intel_osx_32 : obj = VandV_Calcs_osx_32
 intel_osx_32 : $(objf)

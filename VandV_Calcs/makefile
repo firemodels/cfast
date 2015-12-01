@@ -94,7 +94,7 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -fpp -m64 -O3 -gen-interfaces -warn interfaces -traceback -static -vec_report0 -I $(INCLUDE)
+intel_linux_64 : FFLAGS = -fpp -m64 -O3 -gen-interfaces -warn interfaces -traceback -static -vec_report0
 intel_linux_64 : FCOMPL = ifort
 intel_linux_64 : obj = VandV_Calcs_linux_64
 intel_linux_64 : $(objf)

@@ -43,6 +43,7 @@ then
   echo " -t   - used for timing studies, run a job alone on a node"
   echo " -w time - walltime, where time is hh:mm for PBS and dd-hh:mm:ss for SLURM. [default: $walltime]"
   echo " -v   - list script used to run case to standard output"
+  echo " -V   - pass -V option to command begin run"
   echo "input_file - input file"
   echo ""
   exit
@@ -87,10 +88,11 @@ erroptionfile=
 RUN_SINGLE=1
 RUN_MULTI=1
 nosocket=
+VOPT=
 
 # read in parameters from command line
 
-while getopts 'bB:cd:Ee:f:j:l:Mm:Nn:o:p:q:rsStw:v' OPTION
+while getopts 'bB:cd:Ee:f:j:l:Mm:Nn:o:p:q:rsStw:vV' OPTION
 do
 case $OPTION  in
   b)
@@ -161,6 +163,9 @@ case $OPTION  in
    ;;
   v)
    showinput=1
+   ;;
+  V)
+   VOPT=-V
    ;;
 esac
 done
@@ -413,7 +418,7 @@ cd $fulldir
 echo Start time: \`date\`
 echo Running $infile on \`hostname\`
 echo Directory: \`pwd\`
-$MPIRUN $exe $in $errfileoption
+$MPIRUN $exe $in $errfileoption $VOPT
 EOF
 
 # if requested, output script file to screen

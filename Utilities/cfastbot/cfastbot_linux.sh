@@ -342,8 +342,8 @@ check_compile_cfast_db()
 wait_vv_cases_debug_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `$QSTAT | grep $WHOAMI | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -354,8 +354,8 @@ wait_vv_cases_debug_start()
 wait_vv_cases_debug_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `$QSTAT | grep $WHOAMI | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep $JOBPREFIX | wc -l`
+   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -519,8 +519,8 @@ check_compile_vvcalc()
 wait_vv_cases_release_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `$QSTAT | grep $WHOAMI | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit
@@ -531,8 +531,8 @@ wait_vv_cases_release_start()
 wait_vv_cases_release_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `$QSTAT | grep $WHOAMI | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep $JOBPREFIX | wc -l`
+   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit

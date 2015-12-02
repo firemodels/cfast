@@ -171,16 +171,26 @@
         write(13,"(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)") froom_number(i),fx0(i),fy0(i),fz0(i)
     end do
 
-    ! horizontal vents
+    ! horizontal vents (Older format using VENTGEOM is to maintain compatibility with older release version of smokeview for now)
     do i = 1, n_hvents
-        write(13,"(a)")"VENTGEOM"
+        write(13,"(a)") "VENTGEOM"
+        call gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
+        write(13,"(1x,3(i3,1x),6(e11.4,1x),e11.4)") ifrom, ito, iface, vwidth, voffset, vbottom, vtop!, vred, vgreen, vblue
+    end do
+    do i = 1, n_hvents
+        write(13,"(a)") "HVENTGEOM"
         call gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
         write(13,"(1x,3(i3,1x),6(e11.4,1x),e11.4)") ifrom, ito, iface, vwidth, voffset, vbottom, vtop!, vred, vgreen, vblue
     end do
 
-    ! vertical vents
+    ! vertical vents (Older format using VFLOWGEOM is to maintain compatibility with older release version of smokeview for now)
     do i = 1, n_vvents
         write(13,"(a)") "VFLOWGEOM"
+        call getvventinfo (i,itop,ibot,harea,hshape,hface)
+        write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape!, vred, vgreen, vblue
+    end do
+    do i = 1, n_vvents
+        write(13,"(a)") "VVENTGEOM"
         call getvventinfo (i,itop,ibot,harea,hshape,hface)
         write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape!, vred, vgreen, vblue
     end do
@@ -190,7 +200,7 @@
         do i = 1, next
             if (hvnode(1,i)<=nm1) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
-                write (13,'(a)') "MFLOWGEOM"
+                write (13,'(a)') "MVENTGEOM"
                 write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
             end if
         end do

@@ -25,11 +25,12 @@ STOPFDS=
 queue=
 size=64
 DEBUG=
+JOBPREFIX=
 CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
 
-while getopts 'dhm:p:q:s' OPTION
+while getopts 'dhj:m:p:q:s' OPTION
 do
 case $OPTION in
   d)
@@ -38,6 +39,9 @@ case $OPTION in
   h)
   usage;
   exit
+  ;;
+  j)
+  JOBPREFIX="-j $OPTARG"
   ;;
   m)
    export STOPFDSMAXITER="$OPTARG"
@@ -69,7 +73,7 @@ export CFAST="$SVNROOT/CFAST/intel_$PLATFORM/cfast7_$PLATFORM"
 if [ "$queue" != "" ]; then
    queue="-q $queue"
 fi
-export RUNCFAST="$SVNROOT/Validation/scripts/qexe.sh $queue -V -e $CFAST "
+export RUNCFAST="$SVNROOT/Validation/scripts/qexe.sh $queue $JOBPREFIX -V -e $CFAST "
 
 export BASEDIR=`pwd`
 

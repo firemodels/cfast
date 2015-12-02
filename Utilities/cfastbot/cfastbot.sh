@@ -341,8 +341,8 @@ check_compile_cfast_db()
 wait_vv_cases_debug_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `qstat -a | grep $(whoami) | grep -v grep | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -384,7 +384,7 @@ run_vv_cases_debug()
    # Submit CFAST V&V cases
    echo 'Running CFAST V&V cases -  debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh -m 2 -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh -m 2 -d -j $JOBPREFIX -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
    if [ "$CFASTBOT_QUEUE" != "none" ]; then
      wait_vv_cases_debug_start
    fi
@@ -529,8 +529,8 @@ check_compile_vvcalc()
 wait_vv_cases_release_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `$QSTAT | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
+      JOBS_REMAINING=`$QSTAT | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit
@@ -567,7 +567,7 @@ run_vv_cases_release()
    cd $cfastrepo/Validation/scripts
    echo 'Running CFAST V&V cases - release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   ./Run_CFAST_Cases.sh -j $JOBPREFIX -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
    if [ "$CFASTBOT_QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi

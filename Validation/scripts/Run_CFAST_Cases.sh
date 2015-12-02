@@ -69,7 +69,7 @@ export CFAST="$SVNROOT/CFAST/intel_$PLATFORM/cfast7_$PLATFORM"
 if [ "$queue" != "" ]; then
    queue="-q $queue"
 fi
-export RUNCFAST="$SVNROOT/Validation/scripts/qexe.sh $queue -e $CFAST "
+export RUNCFAST="$SVNROOT/Validation/scripts/qexe.sh $queue -V -e $CFAST "
 
 export BASEDIR=`pwd`
 

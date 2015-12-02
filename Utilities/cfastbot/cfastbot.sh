@@ -37,7 +37,6 @@ echo "Directories:"
 echo "   run: $CFASTBOT_RUNDIR"
 MKDIR $OUTPUT_DIR
 MKDIR $HISTORY_DIR
-MKDIR $NEWGUIDE_DIR
 MKDIR $GITSTATUS_DIR
 
 # define repo names (default)
@@ -102,6 +101,10 @@ export platform
 # Set unlimited stack size
 if [ "$platform" == "linux" ] ; then
   ulimit -s unlimited
+fi
+
+if [ "$UPLOAD" == "1" ]; then
+  MKDIR $NEWGUIDE_DIR
 fi
 
 cd
@@ -399,15 +402,15 @@ check_vv_cases_debug()
    cd $cfastrepo/Verification
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage3` == "" ]] && \
-      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
-      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
       grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage3 >> $OUTPUT_DIR/stage3_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
       grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
@@ -420,15 +423,15 @@ check_vv_cases_debug()
    cd $cfastrepo/Validation
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage3` == "" ]] && \
-      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
-      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
       grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage3 >> $OUTPUT_DIR/stage3_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
+      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
       grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage3_errors
       
       echo "Errors from Stage 3 - Run V&V cases (debug mode):" >> $ERROR_LOG
@@ -582,15 +585,15 @@ check_vv_cases_release()
    cd $cfastrepo/Verification
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
-      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
-      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
       grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage5 >> $OUTPUT_DIR/stage5_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
       grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
@@ -603,15 +606,15 @@ check_vv_cases_release()
    cd $cfastrepo/Validation
 
    if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
-      [[ `grep "***Error" -riI --include *.log --include *.err *` == "" ]] && \
-      [[ `grep "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Error" -riI --include *.log --include *.err *` == "" ]] && \
+      [[ `grep -F "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
       grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage5 >> $OUTPUT_DIR/stage5_errors
-      grep "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
-      grep "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
       grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
       
       echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
@@ -762,7 +765,7 @@ check_cfast_pictures()
 {
    # Scan and report any errors in make SMV pictures process
    cd $CFASTBOT_RUNDIR
-   if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6c` == "" && `grep "*** Error" -I $OUTPUT_DIR/stage6c` == "" ]]
+   if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6c` == "" && `grep -F "*** Error" -I $OUTPUT_DIR/stage6c` == "" ]]
    then
       stage6c_success=true
    else

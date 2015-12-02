@@ -43,7 +43,7 @@ export fdsrepo=~/FDS-SMVgitclean
 export cfastrepo=~/cfastgitclean
 
 
-CFASTBOT_QUEUE=smokebot
+QUEUE=cfastbot
 RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0
@@ -73,7 +73,7 @@ case $OPTION in
    mailTo="$OPTARG"
    ;;
   q)
-   CFASTBOT_QUEUE="$OPTARG"
+   QUEUE="$OPTARG"
    ;;
   s)
    SKIP=1
@@ -382,8 +382,8 @@ run_vv_cases_debug()
    # Submit CFAST V&V cases
    echo 'Running CFAST V&V cases -  debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh -m 2 -d -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage3 2>&1
-   if [ "$CFASTBOT_QUEUE" != "none" ]; then
+   ./Run_CFAST_Cases.sh -m 2 -d -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_debug_start
    fi
 
@@ -565,8 +565,8 @@ run_vv_cases_release()
    cd $cfastrepo/Validation/scripts
    echo 'Running CFAST V&V cases - release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh -q $CFASTBOT_QUEUE >> $OUTPUT_DIR/stage5 2>&1
-   if [ "$CFASTBOT_QUEUE" != "none" ]; then
+   ./Run_CFAST_Cases.sh -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi
 

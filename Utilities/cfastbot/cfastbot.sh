@@ -37,7 +37,6 @@ echo "Directories:"
 echo "   run: $CFASTBOT_RUNDIR"
 MKDIR $OUTPUT_DIR
 MKDIR $HISTORY_DIR
-MKDIR $NEWGUIDE_DIR
 MKDIR $GITSTATUS_DIR
 
 # define repo names (default)
@@ -102,6 +101,10 @@ export platform
 # Set unlimited stack size
 if [ "$platform" == "linux" ] ; then
   ulimit -s unlimited
+fi
+
+if [ "$UPLOAD" == "1" ]; then
+  MKDIR $NEWGUIDE_DIR
 fi
 
 cd

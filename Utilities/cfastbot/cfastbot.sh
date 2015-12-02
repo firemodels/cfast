@@ -342,7 +342,7 @@ wait_vv_cases_debug_start()
 {
    # Scans qstat and waits for V&V cases to start
    while [[ `qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
+      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -529,8 +529,8 @@ check_compile_vvcalc()
 wait_vv_cases_release_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `$QSTAT | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
+      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit

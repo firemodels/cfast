@@ -39,7 +39,7 @@ exit
 }
 
 
-botscript=cfastbot_linux.sh
+botscript=cfastbot.sh
 
 RUNAUTO=
 UPDATEREPO=

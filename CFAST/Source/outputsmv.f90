@@ -173,29 +173,29 @@
 
     ! horizontal vents (Older format using VENTGEOM is to maintain compatibility with older release version of smokeview for now)
     do i = 1, n_hvents
-        write(13,"(a)") "VENTGEOM"
+        write(13,"(a)") "HVENTGEOM"
         call gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
         write(13,"(1x,3(i3,1x),6(e11.4,1x),e11.4)") ifrom, ito, iface, vwidth, voffset, vbottom, vtop!, vred, vgreen, vblue
     end do
     do i = 1, n_hvents
-        write(13,"(a)") "HVENTGEOM"
+        write(13,"(a)") "VENTGEOM"
         call gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
         write(13,"(1x,3(i3,1x),6(e11.4,1x),e11.4)") ifrom, ito, iface, vwidth, voffset, vbottom, vtop!, vred, vgreen, vblue
     end do
 
     ! vertical vents (Older format using VFLOWGEOM is to maintain compatibility with older release version of smokeview for now)
     do i = 1, n_vvents
-        write(13,"(a)") "VFLOWGEOM"
-        call getvventinfo (i,itop,ibot,harea,hshape,hface)
-        write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape!, vred, vgreen, vblue
-    end do
-    do i = 1, n_vvents
         write(13,"(a)") "VVENTGEOM"
         call getvventinfo (i,itop,ibot,harea,hshape,hface)
         write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape!, vred, vgreen, vblue
     end do
+    do i = 1, n_vvents
+        write(13,"(a)") "VFLOWGEOM"
+        call getvventinfo (i,itop,ibot,harea,hshape,hface)
+        write(13,"(1x,3i3,1x,e11.4,1x,i3)") itop,ibot,hface,harea,hshape!, vred, vgreen, vblue
+    end do
 
-    ! mechanical vents
+    ! mechanical vents (These don't need an older format since they didn't exist before)
     if (nnode/=0.and.next/=0) then
         do i = 1, next
             if (hvnode(1,i)<=nm1) then

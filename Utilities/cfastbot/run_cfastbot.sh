@@ -34,6 +34,7 @@ echo "-C cfastrepo - cfast repository location [default: $cfastrepo]"
 echo "-F fdsrepo - FDS repository location [default: $fdsrepo]"
 echo "-s - skip matlab and guide generating stages"
 echo "-u - update cfast and FDS-SMV repos"
+echo "-U - upload guide (only by user: cfastbot)"
 echo "-v - show options used to run cfastbot"
 exit
 }
@@ -48,8 +49,9 @@ RUNCFASTBOT=1
 EMAIL=
 FORCE=
 SKIP=
+UPLOAD=
 
-while getopts 'acC:fF:hm:q:suv' OPTION
+while getopts 'acC:fF:hm:q:suUv' OPTION
 do
 case $OPTION  in
   a)
@@ -81,6 +83,9 @@ case $OPTION  in
    ;;
   u)
    UPDATEREPO=1
+   ;;
+  U)
+   UPLOAD=-U
    ;;
   v)
    RUNCFASTBOT=0
@@ -125,8 +130,8 @@ cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
 cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
-  ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $EMAIL "$@"
+  ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 else
-  echo ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $EMAIL "$@"
+  echo ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 fi
 rm $running

@@ -48,9 +48,10 @@ RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0
 SKIP=
+UPLOAD=
 
 reponame=~/cfastgitclean
-while getopts 'acC:F:hm:q:su' OPTION
+while getopts 'acC:F:hm:q:suU' OPTION
 do
 case $OPTION in
    a)
@@ -80,6 +81,9 @@ case $OPTION in
   u)
    UPDATEREPO=1
    ;;
+  U)
+   UPLOAD=1
+   ;;
 esac
 done
 shift $(($OPTIND-1))
@@ -88,16 +92,9 @@ echo "   FDS-SMV repo: $fdsrepo"
 echo ""
 echo "cfastbot status:"
 
-QSTAT="qstat -a"
-if [ "$CFASTBOT_QUEUE" == "none" ]; then
-  QSTAT="ps -el"
-fi
-
 platform="linux"
-WHOAMI=`whoami`
 if [ "`uname`" == "Darwin" ] ; then
   platform="osx"
-  WHOAMI=`id -u`
 fi
 export platform
 
@@ -342,7 +339,7 @@ check_compile_cfast_db()
 wait_vv_cases_debug_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep Q` != '' ]]; do
+   while [[ `qstat -a | grep $(whoami) | grep -v grep | grep Q` != '' ]]; do
       JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
@@ -354,13 +351,24 @@ wait_vv_cases_debug_start()
 wait_vv_cases_debug_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | wc -l`
-      echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage3
-      TIME_LIMIT_STAGE="3"
-      check_time_limit
-      sleep 30
-   done
+   if [[ "$QUEUE" == "none" ]]
+   then
+     while [[ `ps -u $USER -f | fgrep .fds | grep -v grep` != '' ]]; do
+        JOBS_REMAINING=`ps -u $USER -f | fgrep .fds | grep -v grep | wc -l`
+        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage3a
+        TIME_LIMIT_STAGE="3"
+        check_time_limit
+        sleep 30
+     done
+   else
+     while [[ `qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
+        JOBS_REMAINING=`qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX | wc -l`
+        echo "Waiting for ${JOBS_REMAINING} ${1} cases to complete." >> $OUTPUT_DIR/stage3
+        TIME_LIMIT_STAGE="3"
+        check_time_limit
+        sleep 30
+     done
+   fi
 }
 
 run_vv_cases_debug()
@@ -531,13 +539,24 @@ wait_vv_cases_release_start()
 wait_vv_cases_release_end()
 {
    # Scans qstat and waits for V&V cases to end
-   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | wc -l`
-      echo "Waiting for ${JOBS_REMAINING} V&V cases to complete." >> $OUTPUT_DIR/stage5
-      TIME_LIMIT_STAGE="5"
-      check_time_limit
-      sleep 60
-   done
+   if [[ "$QUEUE" == "none" ]]
+   then
+     while [[ `ps -u $USER -f | fgrep .fds | grep -v grep` != '' ]]; do
+        JOBS_REMAINING=`ps -u $USER -f | fgrep .in | grep -v grep | wc -l`
+        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage5
+        TIME_LIMIT_STAGE="5"
+        check_time_limit
+        sleep 30
+     done
+   else
+     while [[ `qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
+        JOBS_REMAINING=`qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX | wc -l`
+        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage5
+        TIME_LIMIT_STAGE="5"
+        check_time_limit
+        sleep 30
+     done
+   fi
 }
 
 run_vv_cases_release()
@@ -923,7 +942,9 @@ check_guide()
    else
       # Guide built successfully; there were no errors/warnings
       # Copy guide to CFASTbot's local website
-      cp $2 /var/www/html/cfastbot/manuals/
+      if [ "$UPLOAD" == "1" ]; then
+         cp $2 /var/www/html/cfastbot/manuals/
+      fi
    fi
 }
 

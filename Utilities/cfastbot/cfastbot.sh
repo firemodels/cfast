@@ -29,6 +29,7 @@ HISTORY_DIR=$CFASTBOT_RUNDIR/history
 ERROR_LOG=$OUTPUT_DIR/errors
 TIME_LOG=$OUTPUT_DIR/timings
 WARNING_LOG=$OUTPUT_DIR/warnings
+NEWGUIDE_DIR=$OUTPUT_DIR/NEW_GUIDES
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 GITSTATUS_DIR=~/.cfastbot
 
@@ -36,6 +37,7 @@ echo "Directories:"
 echo "   run: $CFASTBOT_RUNDIR"
 MKDIR $OUTPUT_DIR
 MKDIR $HISTORY_DIR
+MKDIR $NEWGUIDE_DIR
 MKDIR $GITSTATUS_DIR
 
 # define repo names (default)
@@ -50,7 +52,6 @@ CLEANREPO=0
 SKIP=
 UPLOAD=
 
-reponame=~/cfastgitclean
 while getopts 'acC:F:hm:q:suU' OPTION
 do
 case $OPTION in
@@ -113,6 +114,7 @@ if [ -e $CFAST_STATUS_FILE ] ; then
 fi
 
 export JOBPREFIX=CB_
+UploadGuides=$cfastrepo/Utilities/cfastbot/cfast_guides2GD.sh
 
 #  ==============================================
 #  = CFASTbot timing and notification mechanism =
@@ -339,8 +341,8 @@ check_compile_cfast_db()
 wait_vv_cases_debug_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `qstat -a | grep $(whoami) | grep -v grep | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
+      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage3
       TIME_LIMIT_STAGE="3"
       check_time_limit
@@ -382,7 +384,7 @@ run_vv_cases_debug()
    # Submit CFAST V&V cases
    echo 'Running CFAST V&V cases -  debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh -m 2 -d -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_debug_start
    fi
@@ -527,8 +529,8 @@ check_compile_vvcalc()
 wait_vv_cases_release_start()
 {
    # Scans qstat and waits for V&V cases to start
-   while [[ `$QSTAT | grep $WHOAMI | grep -v grep | grep Q` != '' ]]; do
-      JOBS_REMAINING=`$QSTAT | grep $WHOAMI | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
+   while [[ `qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
+      JOBS_REMAINING=`qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
       echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage5
       TIME_LIMIT_STAGE="5"
       check_time_limit
@@ -565,7 +567,7 @@ run_vv_cases_release()
    cd $cfastrepo/Validation/scripts
    echo 'Running CFAST V&V cases - release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   ./Run_CFAST_Cases.sh -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi
@@ -936,14 +938,14 @@ check_guide()
    then
       # There were errors/warnings in the guide build process
       echo "Warnings from Stage 8 - Build CFAST Guides:" >> $WARNING_LOG
-      echo $3 >> $WARNING_LOG # Name of guide
+      echo $4 >> $WARNING_LOG # Name of guide
       cat $1 >> $WARNING_LOG # Contents of log file
       echo "" >> $WARNING_LOG
    else
       # Guide built successfully; there were no errors/warnings
       # Copy guide to CFASTbot's local website
       if [ "$UPLOAD" == "1" ]; then
-         cp $2 /var/www/html/cfastbot/manuals/
+         cp $2/$3 /var/www/html/cfastbot/manuals/$2/CFAST_$3
       fi
    fi
 }
@@ -956,7 +958,7 @@ make_cfast_tech_guide()
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_tech_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $cfastrepo/Docs/Tech_Ref/Tech_Ref.pdf 'CFAST Technical Reference Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $cfastrepo/Docs/Tech_Ref Tech_Ref.pdf 'CFAST Technical Reference Guide'
 }
 
 make_cfast_vv_guide()
@@ -967,7 +969,7 @@ make_cfast_vv_guide()
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $cfastrepo/Docs/Validation_Guide/Validation_Guide.pdf 'CFAST Verification and Validation Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $cfastrepo/Docs/Validation_Guide Validation_Guide.pdf 'CFAST Verification and Validation Guide'
 }
 
 #  =====================================================
@@ -1020,9 +1022,12 @@ email_build_status()
    echo "Host: $hostname " >> $TIME_LOG
    echo "Start Time: $start_time " >> $TIME_LOG
    echo "Stop Time: $stop_time " >> $TIME_LOG
-   echo "-------------------------------" >> $TIME_LOG
-   echo "Nightly Manuals (public): https://drive.google.com/folderview?id=0B_wB1pJL2bFQSkhyNDJ0bEw0cVE#list" >> $TIME_LOG
-   echo "-------------------------------" >> $TIME_LOG
+   if [[ "$UPLOAD" == "1" ]]; then
+      echo "-------------------------------" >> $TIME_LOG
+      echo "Manuals (private): http://blaze.nist.gov/cfastbot/manuals" >> $TIME_LOG
+      echo "Manuals  (public): https://goo.gl/jR6uSj" >> $TIME_LOG
+      echo "-------------------------------" >> $TIME_LOG
+   fi
    if [[ $THIS_REVISION != $LAST_CFASTSOUCEgit ]] ; then
      cat $git_CFASTSOURCELOG >> $TIME_LOG
    fi
@@ -1060,6 +1065,12 @@ email_build_status()
    then
       mail -s "CFASTbot notice. Validation statistics have changed for Revision ${GIT_REVISION}." $mailTo < $VALIDATION_STATS_LOG &> /dev/null      
    fi
+   if [[ "$UPLOADGUIDES" == "1" ]]; then
+     if [ -e $UploadGuides ]; then
+        $UploadGuides $NEWGUIDE_DIR > /dev/null
+     fi
+   fi
+
 }
 
 # if -a option is invoked, only proceed running CFASTbot if the smokeview or CFAST source has changed

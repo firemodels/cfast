@@ -254,7 +254,6 @@ module spreadsheet_routines
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
     use precision_parameters
-    use targptrs
     use cenviro, only: zzwtemp, zzhlay, zztemp
     use cfast_main
     use cshell

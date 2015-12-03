@@ -17,7 +17,6 @@ module output_routines
     use opt
     use params
     use solver_parameters
-    use targptrs
     use thermp
     use vents
     use wallptrs

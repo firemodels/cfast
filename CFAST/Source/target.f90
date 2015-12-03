@@ -17,7 +17,6 @@ module target_routines
     use cparams
     use dsize
     use fireptrs
-    use targptrs
     use objects2
     use wnodes
     use opt
@@ -212,7 +211,9 @@ contains
             endif
 
         end do
-
+        if (stime>10.0_eb .and. itarg>=153) then
+            continue
+        end if
         ! compute radiative flux from walls and gas
         qwtsum(front) = 0.0_eb
         qgassum(front) = 0.0_eb

@@ -44,7 +44,7 @@ export fdsrepo=~/FDS-SMVgitclean
 export cfastrepo=~/cfastgitclean
 
 
-QUEUE=cfastbot
+QUEUE=smokebot
 RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0

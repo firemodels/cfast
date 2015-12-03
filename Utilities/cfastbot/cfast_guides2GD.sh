@@ -6,12 +6,12 @@ GDRIVE=~/bin/gdrive
 CURDIR=`pwd`
 # directory containing guides on google drive : CFAST Newest Manuals
 MANUAL_PARENT_ID=0B-W-dkXwdHWNTWtIWnVtUm95V3M
-FIGURE_PARENT_ID=0B-W-dkXwdHWNNEl6S2hUR1Y0LXM
+FIGURES_PARENT_ID=0B-W-dkXwdHWNNEl6S2hUR1Y0LXM
 
 UPLOADGUIDE ()
 {
   FILE=$1
-  FILEnew=${FILE}_new.pdf
+  FILEnew=CFAST_${FILE}_new.pdf
   cp $FILE.pdf $FILEnew
   $GDRIVE list  | grep $FILEnew | awk '{ system("~/bin/gdrive delete -i " $1)} '
   $GDRIVE upload -p $MANUAL_PARENT_ID -f $FILEnew
@@ -34,8 +34,8 @@ UPLOADFIGURES ()
 
 if [ -e $GDRIVE ] ; then
   cd $FROMDIR
-  UPLOADGUIDE CFAST_Tech_Ref
-  UPLOADGUIDE CFAST_Validation_Guide
+  UPLOADGUIDE Tech_Ref
+  UPLOADGUIDE Validation_Guide
   UPLOADFIGURES Validation_Guide CFAST_VALG
   cd $CURDIR
 fi

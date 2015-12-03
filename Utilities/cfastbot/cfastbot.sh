@@ -306,10 +306,11 @@ check_git_checkout()
 compile_cfast_db()
 {
    # Build debug CFAST
-   echo Building debug cfast
+   echo Building cfast
+   echo "   debug"
    cd $cfastrepo/CFAST/intel_${platform}_64_db
    make -f ../makefile clean &> /dev/null
-   ./make_cfast.sh &> $OUTPUT_DIR/stage2
+   ./make_cfast.sh &> $OUTPUT_DIR/stage2a
  }
 
 check_compile_cfast_db()
@@ -318,21 +319,21 @@ check_compile_cfast_db()
    cd $cfastrepo/CFAST/intel_${platform}_64_db
    if [ -e "cfast7_${platform}_64_db" ]
    then
-      stage2_success=true
+      stage2a_success=true
    else
       echo "Errors from Stage 2 - Compile CFAST debug:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage2 >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage2a >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2a` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 2 - Compile CFAST debug:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2 >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2a >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -461,10 +462,10 @@ check_vv_cases_debug()
 compile_cfast()
 { 
    # Build release CFAST
-   echo Building release cfast
+   echo "   release"
    cd $cfastrepo/CFAST/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
-   ./make_cfast.sh &> $OUTPUT_DIR/stage4a
+   ./make_cfast.sh &> $OUTPUT_DIR/stage2b
 }
 
 check_compile_cfast()
@@ -473,21 +474,21 @@ check_compile_cfast()
    cd $cfastrepo/CFAST/intel_${platform}_64
    if [[ -e "cfast7_${platform}_64" ]]
    then
-      stage4a_success=true
+      stage2b_success=true
    else
       echo "Errors from Stage 4 - Compile CFAST:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage4a >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage2b >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4a` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2b` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4a >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2b >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -498,7 +499,7 @@ compile_vvcalc()
    echo Building release VandV_Calcs
    cd $cfastrepo/VandV_Calcs/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
-   ./make_vv.sh &> $OUTPUT_DIR/stage4b
+   ./make_vv.sh &> $OUTPUT_DIR/stage2c
 }
 
 check_compile_vvcalc()
@@ -506,21 +507,21 @@ check_compile_vvcalc()
    cd $cfastrepo/VandV_Calcs/intel_${platform}_64
    if [[ -e "VandV_Calcs_${platform}_64" ]]
    then
-      stage4b_success=true
+      stage2c_success=true
    else
       echo "Errors from Stage 4b - Compile VandV_Calcs:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage4b >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage2c >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4b` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2c` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage4b >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2c >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -681,7 +682,8 @@ check_smv_utilities()
 compile_smv_db()
 {
    # Clean and compile SMV DB
-   echo "Building debug smokeview"
+   echo "Building smokeview"
+   echo "   debug"
    cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
 }
@@ -719,7 +721,7 @@ check_compile_smv_db()
 compile_smv()
 {
    # Clean and compile SMV
-   echo "Building release smokeview"
+   echo "   release"
    cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv.sh &> $OUTPUT_DIR/stage6b
 }
@@ -1106,21 +1108,19 @@ check_smv_utilities
 ### Stage 2 ###
 compile_cfast_db
 check_compile_cfast_db
-
-### Stage 3 ###
-if [[ $stage2_success ]] ; then
-   run_vv_cases_debug
-   check_vv_cases_debug
-fi
-
-### Stage 4 ###
 compile_cfast
 check_compile_cfast
 compile_vvcalc
 check_compile_vvcalc
 
+### Stage 3 ###
+if [[ $stage2a_success ]] ; then
+   run_vv_cases_debug
+   check_vv_cases_debug
+fi
+
 ### Stage 5 ###
-if [[ $stage4a_success ]] ; then
+if [[ $stage2b_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
@@ -1134,7 +1134,7 @@ compile_smv
 check_compile_smv
 
 ### Stage 6c ###
-if [[ $stage4a_success && $stage6b_success ]] ; then
+if [[ $stage2b_success && $stage6b_success ]] ; then
    make_cfast_pictures
    check_cfast_pictures
 fi

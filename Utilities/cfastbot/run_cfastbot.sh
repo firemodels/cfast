@@ -6,7 +6,7 @@ fi
 running=~/.cfastgit/cfastbot_running
 
 CURDIR=`pwd`
-QUEUE=cfastbot
+QUEUE=smokebot
 cfastrepo=~/cfastgitclean
 if [ -e .cfast_git ]; then
   cd ../..

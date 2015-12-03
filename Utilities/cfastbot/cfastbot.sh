@@ -787,13 +787,13 @@ run_matlab_license_test()
    echo "Running matlab license test"
    # Run simple test to see if Matlab license is available
    cd $cfastrepo/Utilities/Matlab
-   matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7_matlab_license
+   matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_matlab_license
 }
 
 scan_matlab_license_test()
 {
    # Check for failed license
-   if [[ `grep "License checkout failed" $OUTPUT_DIR/stage7_matlab_license` == "" ]]
+   if [[ `grep "License checkout failed" $OUTPUT_DIR/stage7a_matlab_license` == "" ]]
    then
       # Continue along
       :
@@ -823,7 +823,7 @@ run_matlab_verification()
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
 
-   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_verification
+   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7b_verification
 }
 
 check_matlab_verification()
@@ -831,14 +831,14 @@ check_matlab_verification()
    # Scan and report any errors in Matlab scripts
    cd $CFASTBOT_RUNDIR
 
-   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7a_verification` == "" ]]
+   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7b_verification` == "" ]]
    then
       stage7a_success=true
    else
-      grep -A 50 "Error" $OUTPUT_DIR/stage7a_verification >> $OUTPUT_DIR/stage7a_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage7b_verification >> $OUTPUT_DIR/stage7b_warnings
 
       echo "Warnings from Stage 7a - Matlab plotting (verification):" >> $WARNING_LOG
-      cat $OUTPUT_DIR/stage7a_warnings >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage7b_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }

@@ -950,7 +950,7 @@ check_guide()
       # Guide built successfully; there were no errors/warnings
       # Copy guide to CFASTbot's local website
       if [ "$UPLOAD" == "1" ]; then
-         cp $2/$3 /var/www/html/cfastbot/manuals/$2/CFAST_$3
+         cp $2/$3 /var/www/html/cfastbot/manuals/CFAST_$3
       fi
    fi
 }

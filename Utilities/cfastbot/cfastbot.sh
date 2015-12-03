@@ -1074,7 +1074,7 @@ email_build_status()
    fi
    if [[ "$UPLOADGUIDES" == "1" ]]; then
      if [ -e $UploadGuides ]; then
-        $UploadGuides $NEWGUIDE_DIR > /dev/null
+        $UploadGuides $NEWGUIDE_DIR $cfastrepo/Docs > /dev/null
      fi
    fi
 

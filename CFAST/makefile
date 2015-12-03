@@ -114,7 +114,7 @@ intel_win_64_db : setup_win $(objwin)
 # ------------- Linux -------------------
 
 # 32 bit
-intel_linux_32 : FFLAGS = -fpp -m32 -O3 -save -zero -static $(GITINFO)
+intel_linux_32 : FFLAGS = -fpp -m32 -O2 -save -zero -static $(GITINFO)
 intel_linux_32 : FCOMPL = ifort
 intel_linux_32 : obj = cfast7_linux_32
 intel_linux_32 : $(objf)
@@ -143,7 +143,7 @@ gnu_linux_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -m64 -O3 -save -zero -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
+intel_linux_64 : FFLAGS = -m64 -O2 -save -zero -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
 intel_linux_64 : LFLAGS = -static-intel
 intel_linux_64 : FCOMPL = ifort
 intel_linux_64 : obj = cfast7_linux_64
@@ -177,7 +177,7 @@ gnu_osx_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 32 bit
-intel_osx_32 : FFLAGS = -fpp -O3 -save -zero  -m32 -heap-arrays -static-intel $(GITINFO)
+intel_osx_32 : FFLAGS = -fpp -O2 -save -zero  -m32 -heap-arrays -static-intel $(GITINFO)
 intel_osx_32 : FCOMPL = ifort
 intel_osx_32 : obj = cfast7_osx_32
 intel_osx_32 : $(objf)
@@ -190,7 +190,7 @@ intel_osx_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
 
 # 64 bit
-intel_osx_64 : FFLAGS = -fpp -O3 -save -zero -m64 -heap-arrays -static-intel $(GITINFO)
+intel_osx_64 : FFLAGS = -fpp -O2 -save -zero -m64 -heap-arrays -static-intel $(GITINFO)
 intel_osx_64 : FCOMPL = ifort
 intel_osx_64 : obj = cfast7_osx_64
 intel_osx_64 : $(objf)

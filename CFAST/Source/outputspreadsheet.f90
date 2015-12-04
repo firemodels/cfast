@@ -260,7 +260,7 @@ module spreadsheet_routines
     use fltarget
     implicit none
 
-    integer, parameter :: maxoutput=4*nr+9*mxtarg
+    integer, parameter :: maxoutput=4*nr+26*mxtarg+4*mxdtect
     real(eb), intent(in) :: time
     
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact

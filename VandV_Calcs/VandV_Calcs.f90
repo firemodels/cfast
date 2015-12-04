@@ -23,9 +23,10 @@
         d2_data_col_name_column, d2_data_column_count_column, d2_constants_count_column, d2_constants_column, d2_text_column
 
     character :: d2_filename*128, d2_ind_col_name*128, d2_data_col_names(list_ncol)*128, d2_data_col_name*128
-    integer :: d2_calculation_type, d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_column_count, d2x_len, d2y_len, d2ys_len(list_ncol), &
-        d2_constants_count
-    real :: list_rarray(list_nrow, list_ncol), model_rarray(nrow,ncol), d2x(nrow), d2y(nrow), d2ys(nrow,list_ncol), d2_constants(list_ncol)
+    integer :: d2_calculation_type, d2_col_name_row, d2_data_row, d2_ind_data_col, d2_data_data_col(list_ncol), d2_column_count, &
+    d2x_len, d2y_len, d2ys_len(list_ncol), d2_constants_count
+    real :: list_rarray(list_nrow, list_ncol), model_rarray(nrow,ncol), d2x(nrow), d2y(nrow), d2ys(nrow,list_ncol), &
+    d2_constants(list_ncol)
 
     character(30) :: print_array(32000)
     integer :: position
@@ -53,8 +54,8 @@
 
     ! Body of ModelVandV
     base_folder = './'
-    call getarg (1,filename,istat)
-    if (istat.le.0) then
+    call getarg (1,filename)
+    if (len_trim(filename).le.0) then
         stop 'No data file specified'
     end if
     comparelist_file = trim(base_folder) // trim(adjustl(filename))
@@ -185,7 +186,8 @@
                     temperature_profile_data(ntest_temperature_profile,1) = d2ys(d2ys_len(1),1)
                     temperature_profile_data(ntest_temperature_profile,2) = d2ys(d2ys_len(2),2)
                     temperature_profile_data(ntest_temperature_profile,3) = d2ys(d2ys_len(3),3)
-                    temperature_profile_name(ntest_temperature_profile) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-6)) ! This works for a 3 digit filename numbering (as the Steckler Compartment tests are done)
+                    temperature_profile_name(ntest_temperature_profile) = 'Test_' // &
+                        trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-6)) ! This works for a 3 digit filename numbering (as the Steckler Compartment tests are done)
                 else
                     write (*,*) 'Data error, x and y lengths are not equal', d2x_len, d2y_len
                     stop
@@ -232,9 +234,11 @@
                         pressure_correction_data(ntest_pressure_correction,irr,2) = delta_py
                     end do  
                     if (index(d2_filename,'p_n.csv')/=0) then
-                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-7)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // &
+                            trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-7)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
                     else
-                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // &
+                            trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
                     end if
                 end if
                 
@@ -294,11 +298,14 @@
     if (ntest_temperature_profile>=1) then
         open (unit=10,file='profiles.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
-            write (10,'(2000(a,'',''))') ('HGT_'//trim(temperature_profile_name(ic)),'TEMP_'//trim(temperature_profile_name(ic)), ic=1,ntest_temperature_profile)
+            write (10,'(2000(a,'',''))') ('HGT_'//trim(temperature_profile_name(ic)),'TEMP_'//&
+                trim(temperature_profile_name(ic)), ic=1,ntest_temperature_profile)
             write (10,'(2000(a,'',''))') ('m','C', ic=1,ntest_temperature_profile)
             write (10,'(1000(a,'','',e12.5'',''))') ('0.0',temperature_profile_data(ic,2), ic=1,ntest_temperature_profile)
-            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,2), ic=1,ntest_temperature_profile)
-            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,1), ic=1,ntest_temperature_profile)
+            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,2), &
+                ic=1,ntest_temperature_profile)
+            write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,1), &
+                ic=1,ntest_temperature_profile)
             write (10,'(1000(a,'','',e12.5'',''))') ('100.0',temperature_profile_data(ic,1), ic=1,ntest_temperature_profile) ! Note we're assuming ceiling height is less than 100 m
             close (unit=10)
         end if
@@ -308,7 +315,8 @@
     if (ntest_pressure_correction>=1) then
         open (unit=10,file='pressures.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
-            write (10,'(2000(a,'',''))') ('TIME_'//trim(pressure_correction_name(ic)),'PRS_'//trim(pressure_correction_name(ic)), ic=1,ntest_pressure_correction)
+            write (10,'(2000(a,'',''))') ('TIME_'//trim(pressure_correction_name(ic)),'PRS_'//&
+                trim(pressure_correction_name(ic)), ic=1,ntest_pressure_correction)
             write (10,'(2000(a,'',''))') ('s','Pa', ic=1,ntest_pressure_correction)
             do irr = 1, max_numrows_pressure_correction
                 position = 0
@@ -331,7 +339,8 @@
     if (ntest_flux_profile>=1) then
         open (unit=10,file='flux_profiles.csv',form='formatted', action='write', iostat=io_error)
         if (io_error==0) then
-            write (10,'(2000(a,'',''))') ('DIST_'//trim(flux_profile_name(ic)),'FLUX_'//trim(flux_profile_name(ic)), ic=1,ntest_flux_profile)
+            write (10,'(2000(a,'',''))') ('DIST_'//trim(flux_profile_name(ic)),'FLUX_'//&
+                trim(flux_profile_name(ic)), ic=1,ntest_flux_profile)
             write (10,'(2000(a,'',''))') ('m','KW/m^2', ic=1,ntest_flux_profile)
             do irr = 1, max_numrows_flux_profile
                 position = 0

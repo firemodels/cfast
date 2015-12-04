@@ -47,7 +47,8 @@
     
     end subroutine copy_vector
 
-    subroutine load_vector (rarray, carray, array_row_dimension, array_row_actual, array_column, array_start_row, vector, vector_length)
+    subroutine load_vector (rarray, carray, array_row_dimension, array_row_actual, array_column, array_start_row, &
+        vector, vector_length)
     implicit none
 
     integer :: array_row_dimension, array_row_actual, array_column, array_start_row, vector_length, ir, ic

@@ -54,7 +54,7 @@ UPLOAD=
 if [[ "$IFORT_COMPILER" != "" ]] ; then
   source $IFORT_COMPILER/bin/compilervars.sh intel64
 fi
-notfound=`icc -help 2>&1 | tail -1 | grep "not found" | wc -l`
+notfound=`iccx -help 2>&1 | tail -1 | grep "not found" | wc -l`
 if [ "$notfound" == "1" ] ; then
   export haveCC="0"
   USEINSTALL="-i"
@@ -226,7 +226,7 @@ set_files_world_readable()
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
-   echo Cleaning previous cfastbot results
+   echo Removing previous cfastbot results from $OUTPUT_DIR
    cd $CFASTBOT_RUNDIR
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
@@ -674,8 +674,8 @@ compile_smv_utilities()
    echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
    ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
    else
-   echo "Warning: smokeview and utilities not built - C compiler not available" >> $OUTPUT_DIR/stage1b 2>&1
-
+   echo "Smokeview utilities/libraries not built - C compiler not available"
+   echo "Smokeview utilities/libraries not built - C compiler not available" >> $OUTPUT_DIR/stage1b 2>&1
    fi
 }
 
@@ -686,6 +686,8 @@ is_file_installed()
   if [ "$notfound" == "1" ] ; then
     stage1b_success="0"
     echo "***error: $program not installed" >> $OUTPUT_DIR/stage1b
+  else
+    echo "Installed version of $program available"
   fi
 }
 
@@ -709,13 +711,11 @@ check_smv_utilities()
    else
      stage1b_success="1"
      is_file_installed smokeview
-     is_file_installed smokezip
-     is_file_installed smokediff
-     is_file_installed wind2fds
      is_file_installed background
      if [ "$stage1b_success" == "0" ] ; then
-        echo "Errors from Stage 1b - Smokeview and utilities:" >> $ERROR_LOG
+        echo "Errors from Stage 1b - Smokeview and/or background not installed:" >> $ERROR_LOG
         stage1b_success="1"
+        stage6b_success=true
         cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
         echo "" >> $ERROR_LOG
      fi
@@ -729,15 +729,20 @@ check_smv_utilities()
 compile_smv_db()
 {
    # Clean and compile SMV DB
+   if [ "$haveCC" == "1" ]; then
    echo "Building smokeview"
    echo "   debug"
    cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
+   else
+   echo Using installed smokeview
+   fi
 }
 
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
+   if [ "$haveCC" == "1" ]; then
    cd $fdsrepo/SMV/Build/intel_${platform}_64
    if [ -e "smokeview_${platform}_64_db" ]
    then
@@ -759,6 +764,7 @@ check_compile_smv_db()
       grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
+   fi
 }
 
 #  ==================================
@@ -768,14 +774,17 @@ check_compile_smv_db()
 compile_smv()
 {
    # Clean and compile SMV
+   if [ "$haveCC" == "1" ]; then
    echo "   release"
    cd $fdsrepo/SMV/Build/intel_${platform}_64
    ./make_smv.sh &> $OUTPUT_DIR/stage6b
+   fi
 }
 
 check_compile_smv()
 {
    # Check for errors in SMV release compilation
+   if [ "$haveCC" == "1" ]; then
    cd $fdsrepo/SMV/Build/intel_${platform}_64
    if [ -e "smokeview_${platform}_64" ]
    then
@@ -796,6 +805,7 @@ check_compile_smv()
       echo "Stage 6d warnings:" >> $WARNING_LOG
       grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
       echo "" >> $WARNING_LOG
+   fi
    fi
 }
 

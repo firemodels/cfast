@@ -58,8 +58,9 @@ EMAIL=
 FORCE=
 SKIP=
 UPLOAD=
+USEINSTALL=
 
-while getopts 'acC:fF:hm:q:suUv' OPTION
+while getopts 'acC:fF:him:q:suUv' OPTION
 do
 case $OPTION  in
   a)
@@ -79,6 +80,9 @@ case $OPTION  in
    ;;
   h)
    usage;
+   ;;
+  i)
+   USEINSTALL="-i"
    ;;
   m)
    EMAIL="$OPTARG"
@@ -138,8 +142,8 @@ cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
 cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
-  ./$botscript $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 else
-  echo ./$botscript $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  echo ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 fi
 rm $running

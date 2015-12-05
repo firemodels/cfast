@@ -10,6 +10,7 @@ echo ""
 echo "Options"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
+echo "-i - use installed version of smokeview"
 echo "-p path - specify path of the smokeview executable"
 echo "-r - use release version of smokeview"
 echo "-S host - make pictures on host"
@@ -28,6 +29,7 @@ else
   PLATFORM=linux
 fi
 
+use_installed=
 SIZE=_64
 DEBUG=
 TEST=
@@ -35,7 +37,7 @@ SMV_PATH=""
 START_X=yes
 SSH=
 
-while getopts 'dhp:rS:tX' OPTION
+while getopts 'dhip:rS:tX' OPTION
 do
 case $OPTION  in
   d)
@@ -43,6 +45,9 @@ case $OPTION  in
    ;;
   h)
    usage;
+   ;;
+  i)
+   use_installed="1"
    ;;
   p)
    SMV_PATH="$OPTARG"
@@ -67,7 +72,12 @@ export SVNROOT=$fdsrepo
 if [ "$SMV_PATH" == "" ]; then
   SMV_PATH=$SVNROOT/SMV/Build/intel_$PLATFORM$SIZE
 fi
-export SMV=$SMV_PATH/smokeview_$PLATFORM$TEST$SIZE$DEBUG
+if [ "$use_installed" == "1" ] ; then
+  export SMV=smokeview
+else
+  export SMV=$SMV_PATH/smokeview_$PLATFORM$TEST$SIZE$DEBUG
+fi
+
 export RUNSMV=$SVNROOT/Utilities/Scripts/runsmv.sh
 export SMVBINDIR="-bindir $SVNROOT/SMV/for_bundle/"
 export BASEDIR=`pwd`/..

@@ -1,5 +1,4 @@
 #/bin/bash -f
-echo in Run_Cfast_cases.sh
 # This script runs the FDS Verification Cases on a linux machine with
 # a batch queuing system
 
@@ -18,6 +17,7 @@ echo "     other options: 32"
 echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: batch"
 echo "-s - stop CFAST runs"
+echo "-u - use installed versions of utilities background and wind2fds"
 exit
 }
 
@@ -26,11 +26,12 @@ queue=
 size=64
 DEBUG=
 JOBPREFIX=
+use_installed=
 CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
 
-while getopts 'dhj:m:p:q:s' OPTION
+while getopts 'dhj:m:p:q:su' OPTION
 do
 case $OPTION in
   d)
@@ -55,9 +56,18 @@ case $OPTION in
   s)
    export STOPFDS=1
    ;;
+  u)
+   use_installed="1"
+   ;;
 esac
 #shift
 done
+
+if [ "$use_installed" == "1" ] ; then
+  export BACKGROUND=background
+else
+  export BACKGROUND=$SVNROOT/Utilities/background/intel_$PLATFORM2/background
+fi
 
 underscore="_"
 OS=`uname`

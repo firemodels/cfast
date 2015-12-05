@@ -51,6 +51,21 @@ CLEANREPO=0
 SKIP=
 UPLOAD=
 
+if [[ "$IFORT_COMPILER" != "" ]] ; then
+  source $IFORT_COMPILER/bin/compilervars.sh intel64
+fi
+notfound=`icc -help 2>&1 | tail -1 | grep "not found" | wc -l`
+if [ "$notfound" == "1" ] ; then
+  export haveCC="0"
+  USEINSTALL="-i"
+  USEINSTALL2="-u"
+else
+  export haveCC="1"
+  USEINSTALL=
+  USEINSTALL2=
+fi
+
+
 while getopts 'acC:F:hm:q:suU' OPTION
 do
 case $OPTION in
@@ -388,7 +403,7 @@ run_vv_cases_debug()
    # Submit CFAST V&V cases
    echo 'Running CFAST V&V cases -  debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_debug_start
    fi
@@ -571,7 +586,7 @@ run_vv_cases_release()
    cd $cfastrepo/Validation/scripts
    echo 'Running CFAST V&V cases - release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   ./Run_CFAST_Cases.sh $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi
@@ -631,6 +646,7 @@ check_vv_cases_release()
 
 compile_smv_utilities()
 {  
+   if [ "$haveCC" == "1" ]; then
    echo 'Building Smokeview utilities/libraries' 
    # smokeview libraries
    cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
@@ -657,21 +673,52 @@ compile_smv_utilities()
    echo '   background'
    echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
    ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
+   else
+   echo "Warning: smokeview and utilities not built - C compiler not available" >> $OUTPUT_DIR/stage1b 2>&1
+
+   fi
+}
+
+is_file_installed()
+{
+  program=$1
+  notfound=`$program -help | tail -1 | grep "not found" | wc -l`
+  if [ "$notfound" == "1" ] ; then
+    stage1b_success="0"
+    echo "***error: $program not installed" >> $OUTPUT_DIR/stage1b
+  fi
 }
 
 check_smv_utilities()
 {
-   # Check for errors in SMV utilities compilation
-   cd $FDS_GITTOOT
-   if [ -e "$fdsrepo/Utilities/smokezip/intel_${platform}_64/smokezip_${platform}_64" ]  && \
-      [ -e "$fdsrepo/Utilities/smokediff/intel_${platform}_64/smokediff_${platform}_64" ]  && \
-      [ -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]
-   then
-      stage1b_success=true
+   if [ "$haveCC" == "1" ] ; then
+     # Check for errors in SMV utilities compilation
+     cd $fdsrepo
+     if [ -e "$fdsrepo/Utilities/smokezip/intel_${platform}_64/smokezip_${platform}_64" ]  && \
+        [ -e "$fdsrepo/Utilities/smokediff/intel_${platform}_64/smokediff_${platform}_64" ]  && \
+        [ -e "$fdsrepo/Utilities/wind2fds/intel_${platform}_64/wind2fds_${platform}_64" ]  && \
+        [ -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]
+     then
+        stage1b_success="1"
+     else
+        stage1b_success="0"
+        echo "Errors from Stage 5pre - Compile SMV utilities:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
    else
-      echo "Errors from Stage 6a - Compile SMV utilities:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
+     stage1b_success="1"
+     is_file_installed smokeview
+     is_file_installed smokezip
+     is_file_installed smokediff
+     is_file_installed wind2fds
+     is_file_installed background
+     if [ "$stage1b_success" == "0" ] ; then
+        echo "Errors from Stage 1b - Smokeview and utilities:" >> $ERROR_LOG
+        stage1b_success="1"
+        cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
    fi
 }
 
@@ -760,7 +807,7 @@ make_cfast_pictures()
 {
    echo "Generating smokeview images"
    cd $cfastrepo/Validation/scripts
-   ./Make_CFAST_Pictures.sh 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
+   ./Make_CFAST_Pictures.sh $USEINSTALL 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
 }
 
 check_cfast_pictures()

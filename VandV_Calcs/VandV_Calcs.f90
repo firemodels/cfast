@@ -54,7 +54,7 @@
 
     ! Body of ModelVandV
     base_folder = './'
-    call getarg (1,filename)
+    call get_command_argument (1,filename)
     if (len_trim(filename).le.0) then
         stop 'No data file specified'
     end if
@@ -186,8 +186,9 @@
                     temperature_profile_data(ntest_temperature_profile,1) = d2ys(d2ys_len(1),1)
                     temperature_profile_data(ntest_temperature_profile,2) = d2ys(d2ys_len(2),2)
                     temperature_profile_data(ntest_temperature_profile,3) = d2ys(d2ys_len(3),3)
+                    ! This works for a 3 digit filename numbering (as the Steckler Compartment tests are done)
                     temperature_profile_name(ntest_temperature_profile) = 'Test_' // &
-                        trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-6)) ! This works for a 3 digit filename numbering (as the Steckler Compartment tests are done)
+                        trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-6)) 
                 else
                     write (*,*) 'Data error, x and y lengths are not equal', d2x_len, d2y_len
                     stop
@@ -200,7 +201,8 @@
                     numrows_pressure_correction(ntest_pressure_correction) = d2x_len
                     max_numrows_pressure_correction=max(max_numrows_pressure_correction,d2x_len)
                     g = 9.8
-                    rhoinf = 352.8/(d2ys(1,2)+273.15) ! gas density assuming surrounding ambient is initial temperature of lower layer
+                    ! gas density assuming surrounding ambient is initial temperature of lower layer
+                    rhoinf = 352.8/(d2ys(1,2)+273.15) 
                     do irr = 1, d2x_len
                         pressure_correction_data(ntest_pressure_correction,irr,1) = d2x(irr)
                         tu1 = d2ys(irr,1)+273.15    ! upper layer temperature
@@ -234,11 +236,13 @@
                         pressure_correction_data(ntest_pressure_correction,irr,2) = delta_py
                     end do  
                     if (index(d2_filename,'p_n.csv')/=0) then
+                        ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
                         pressure_correction_name(ntest_pressure_correction) = 'Test_' // &
-                            trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-7)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                            trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-7)) 
                     else
+                        ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
                         pressure_correction_name(ntest_pressure_correction) = 'Test_' // &
-                            trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
+                            trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) 
                     end if
                 end if
                 
@@ -306,7 +310,8 @@
                 ic=1,ntest_temperature_profile)
             write (10,'(100(e12.5,'','',e12.5,'',''))') (temperature_profile_data(ic,3),temperature_profile_data(ic,1), &
                 ic=1,ntest_temperature_profile)
-            write (10,'(1000(a,'','',e12.5'',''))') ('100.0',temperature_profile_data(ic,1), ic=1,ntest_temperature_profile) ! Note we're assuming ceiling height is less than 100 m
+            ! Note we're assuming ceiling height is less than 100 m
+            write (10,'(1000(a,'','',e12.5'',''))') ('100.0',temperature_profile_data(ic,1), ic=1,ntest_temperature_profile) 
             close (unit=10)
         end if
     end if

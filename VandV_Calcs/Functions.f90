@@ -19,8 +19,8 @@
 
     implicit none
 
-    character :: carray(num_rows,num_columns)*(*), desired_id*(*)
     integer num_rows, num_columns, search_row, i
+    character :: carray(num_rows,num_columns)*(*), desired_id*(*)
 
     do i = 1, num_columns
         if (adjustl(carray(search_row,i))==adjustl(desired_id)) then
@@ -163,11 +163,16 @@
         array(ic) = cvalu
     end select
     return
+    
+    end subroutine SSaddtolist
 
-    entry SSprintresults (iounit,ic,array)
+    subroutine SSprintresults (iounit,ic,array)
+    character(30) :: array(*)
+    integer :: ic, iounit
+
 
     write (iounit,"(1024(a,','))" ) (trim(array(i)),i=1,ic)
     return
 
-    end subroutine SSaddtolist
+    end subroutine SSprintresults
 

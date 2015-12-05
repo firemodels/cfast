@@ -14,9 +14,9 @@
 
     implicit none 
     
-    real x(numr,numc)
     integer :: maxr, maxc, i, j, nstart, iunit, nr, nc, ic, icomma, ios, numr, numc
     character in*150000,token*100, c(numr,numc)*(*)
+    real x(numr,numc)
     
     maxr = 0
     maxc = 0

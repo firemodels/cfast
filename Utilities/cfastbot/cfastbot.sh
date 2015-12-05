@@ -50,22 +50,15 @@ UPDATEREPO=
 CLEANREPO=0
 SKIP=
 UPLOAD=
+USEINSTALL=
+USEINSTALL2=
+CCnotfound=
 
 if [[ "$IFORT_COMPILER" != "" ]] ; then
   source $IFORT_COMPILER/bin/compilervars.sh intel64
 fi
-notfound=`icc -help 2>&1 | tail -1 | grep "not found" | wc -l`
-if [ "$notfound" == "1" ] ; then
-  export haveCC="0"
-  USEINSTALL="-i"
-  USEINSTALL2="-u"
-else
-  export haveCC="1"
-  USEINSTALL=
-  USEINSTALL2=
-fi
 
-while getopts 'acC:F:hm:q:suU' OPTION
+while getopts 'acC:F:him:q:suU' OPTION
 do
 case $OPTION in
    a)
@@ -82,6 +75,10 @@ case $OPTION in
    ;;
   h)
    usage;
+   ;;
+  i)
+   USEINSTALL="-i"
+   USEINSTALL2="-u"
    ;;
   m)
    mailTo="$OPTARG"
@@ -101,6 +98,18 @@ case $OPTION in
 esac
 done
 shift $(($OPTIND-1))
+
+if [ "$USEINSTALL" == ""]; then
+  CCnotfound=`icc -help 2>&1 | tail -1 | grep "not found" | wc -l`
+fi
+if [ "$CCnotfound" == "1" ] || [ "$USEINSTALL" != ""]; then
+  USEINSTALL="-i"
+  USEINSTALL2="-u"
+else
+  USEINSTALL=
+  USEINSTALL2=
+fi
+
 echo "   cfast repo: $cfastrepo"
 echo "   FDS-SMV repo: $fdsrepo"
 echo ""
@@ -645,76 +654,68 @@ check_vv_cases_release()
 
 compile_smv_utilities()
 {  
-   if [ "$haveCC" == "1" ]; then
-   echo 'Building Smokeview utilities/libraries' 
+   if [ "$USEINSTALL" == "" ]; then
    # smokeview libraries
-   cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
-   echo '   libraries'
-   echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
-   ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
+     cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
+     echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
+     echo 'Building libraries for smokeview'
+     ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
 
-   # smokezip:
-   cd $fdsrepo/Utilities/smokezip/intel_${platform}_64
-   echo '   smokezip'
-   echo 'Compiling smokezip:' >> $OUTPUT_DIR/stage1b 2>&1
-   ./make_zip.sh >> $OUTPUT_DIR/stage1b 2>&1
-   echo "" >> $OUTPUT_DIR/stage1b 2>&1
-   
-   # smokediff:
-   cd $fdsrepo/Utilities/smokediff/intel_${platform}_64
-   echo '   smokediff'
-   echo 'Compiling smokediff:' >> $OUTPUT_DIR/stage1b 2>&1
-   ./make_diff.sh >> $OUTPUT_DIR/stage1b 2>&1
-   echo "" >> $OUTPUT_DIR/stage1b 2>&1
-   
-   # background:
-   cd $fdsrepo/Utilities/background/intel_${platform}_64
-   echo '   background'
-   echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
-   ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
+   # background
+     if [ "$QUEUE" == "none" ]; then
+       cd $fdsrepo/Utilities/background/intel_${platform}_64
+       echo 'Building background'
+       echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
+       ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
+     fi
    else
-   echo "Smokeview utilities/libraries not built - C compiler not available"
-   echo "Smokeview utilities/libraries not built - C compiler not available" >> $OUTPUT_DIR/stage1b 2>&1
+     if [ "$CCnotfound" == "1" ]; then
+       echo "Smokeview libraries not built - C compiler not available"
+       echo "Smokeview libraries not built - C compiler not available" >> $OUTPUT_DIR/stage1b 2>&1
+     else
+       echo "Using installed smokeview, libraries not built"
+       echo "Smokeview libraries not built" >> $OUTPUT_DIR/stage1b 2>&1
+     fi
    fi
 }
 
 is_file_installed()
 {
   program=$1
-  notfound=`$program -help | tail -1 | grep "not found" | wc -l`
-  if [ "$notfound" == "1" ] ; then
+  prognotfound=`$program -help | tail -1 | grep "not found" | wc -l`
+  if [ "$prognotfound" == "1" ] ; then
     stage1b_success="0"
-    echo "***error: $program not installed" >> $OUTPUT_DIR/stage1b
+    echo "***error: the $program is not installed" >> $OUTPUT_DIR/stage1b
   else
-    echo "Installed version of $program available"
+    echo "The program $program is available"
   fi
 }
 
 check_smv_utilities()
 {
-   if [ "$haveCC" == "1" ] ; then
+   if [ "$USEINSTALL" == "" ] ; then
      # Check for errors in SMV utilities compilation
      cd $fdsrepo
-     if [ -e "$fdsrepo/Utilities/smokezip/intel_${platform}_64/smokezip_${platform}_64" ]  && \
-        [ -e "$fdsrepo/Utilities/smokediff/intel_${platform}_64/smokediff_${platform}_64" ]  && \
-        [ -e "$fdsrepo/Utilities/wind2fds/intel_${platform}_64/wind2fds_${platform}_64" ]  && \
-        [ -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]
-     then
-        stage1b_success="1"
-     else
-        stage1b_success="0"
-        echo "Errors from Stage 5pre - Compile SMV utilities:" >> $ERROR_LOG
+     stage1b_success="1"
+     if [ "$QUEUE" == "none" ]; then
+       if [ ! -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]; then
+         stage1b_success="0"
+       fi
+     fi
+     if [ "$stage1b_success" == "0" ]; then
+        echo "error building background"
+        echo "Errors from Stage 1b - building background:" >> $ERROR_LOG
         cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
         echo "" >> $ERROR_LOG
      fi
    else
      stage1b_success="1"
-     is_file_installed smokeview
-     is_file_installed background
+     if [ "$QUEUE" == "none" ]; then
+       is_file_installed background
+     fi
      if [ "$stage1b_success" == "0" ] ; then
-        echo "Errors from Stage 1b - Smokeview and/or background not installed:" >> $ERROR_LOG
-        stage1b_success="1"
-        stage6b_success=true
+        echo "background not installed"
+        echo "Errors from Stage 1b - background not installed:" >> $ERROR_LOG
         cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
         echo "" >> $ERROR_LOG
      fi
@@ -728,41 +729,41 @@ check_smv_utilities()
 compile_smv_db()
 {
    # Clean and compile SMV DB
-   if [ "$haveCC" == "1" ]; then
-   echo "Building smokeview"
-   echo "   debug"
-   cd $fdsrepo/SMV/Build/intel_${platform}_64
-   ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
+   if [ "$USEINSTALL" == "" ]; then
+     echo "Building smokeview"
+     echo "   debug"
+     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
    else
-   echo Using installed smokeview
+     echo Using installed smokeview
    fi
 }
 
 check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
-   if [ "$haveCC" == "1" ]; then
-   cd $fdsrepo/SMV/Build/intel_${platform}_64
-   if [ -e "smokeview_${platform}_64_db" ]
-   then
-      stage6a_success=true
-   else
-      echo "Errors from Stage 6b - Compile SMV DB:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
-   fi
+   if [ "$USEINSTALL" == "" ]; then
+     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     if [ -e "smokeview_${platform}_64_db" ]
+     then
+        stage6a_success=true
+     else
+        echo "Errors from Stage 6b - Compile SMV DB:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
 
    # Check for compiler warnings/remarks
    # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
-   then
-      # Continue along
-      :
-   else
-      echo "Stage 6b warnings:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
-      echo "" >> $WARNING_LOG
-   fi
+     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+     then
+        # Continue along
+        :
+     else
+        echo "Stage 6b warnings:" >> $WARNING_LOG
+        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+        echo "" >> $WARNING_LOG
+     fi
    fi
 }
 
@@ -773,38 +774,40 @@ check_compile_smv_db()
 compile_smv()
 {
    # Clean and compile SMV
-   if [ "$haveCC" == "1" ]; then
-   echo "   release"
-   cd $fdsrepo/SMV/Build/intel_${platform}_64
-   ./make_smv.sh &> $OUTPUT_DIR/stage6b
+   if [ "$USEINSTALL" == "" ]; then
+     echo "   release"
+     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     ./make_smv.sh &> $OUTPUT_DIR/stage6b
    fi
 }
 
 check_compile_smv()
 {
    # Check for errors in SMV release compilation
-   if [ "$haveCC" == "1" ]; then
-   cd $fdsrepo/SMV/Build/intel_${platform}_64
-   if [ -e "smokeview_${platform}_64" ]
-   then
-      stage6b_success=true
-   else
-      echo "Errors from Stage 6d - Compile SMV release:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage6b >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
-   fi
+   if [ "$USEINSTALL" == "" ]; then
+     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     if [ -e "smokeview_${platform}_64" ]
+     then
+        stage6b_success=true
+     else
+        echo "Errors from Stage 6d - Compile SMV release:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage6b >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
 
    # Check for compiler warnings/remarks
    # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
-   then
-      # Continue along
-      :
+     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+     then
+        # Continue along
+        :
+     else
+        echo "Stage 6d warnings:" >> $WARNING_LOG
+        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+        echo "" >> $WARNING_LOG
+     fi
    else
-      echo "Stage 6d warnings:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
-      echo "" >> $WARNING_LOG
-   fi
+     is_file_installed smokeview
    fi
 }
 

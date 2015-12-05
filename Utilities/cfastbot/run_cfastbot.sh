@@ -123,7 +123,7 @@ if [[ "$UPDATEREPO" == "1" ]]; then
      git merge origin/master
      cd Utilities/cfastbot
      CFASTBOTDIR=`pwd`
-     if [[ "$CURDIR" != "$FIREBOTDIR" ]]; then
+     if [[ "$CURDIR" != "$CFASTBOTDIR" ]]; then
        cp $botscript $CURDIR/.
      fi
      cd $CURDIR

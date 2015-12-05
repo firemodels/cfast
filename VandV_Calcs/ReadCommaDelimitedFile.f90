@@ -9,14 +9,18 @@
     ! numr   = # of rows of array x
     ! numc   = # of columns of array x
     ! nstart = starting row of spreadsheet to read
-    ! nr     = actual number of rows read
-    ! nc     = actual number of columns read
+    ! maxr   = actual number of rows read
+    ! maxc   = actual number of columns read
 
     implicit none 
+       
+    integer, intent(in) :: numr, numc, nstart, iunit
+    integer, intent(out) :: maxr, maxc
+    character, intent(out) :: c(numr,numc)*(*)
+    real, intent(out) :: x(numr,numc)
     
-    real x(numr,numc)
-    integer :: maxr, maxc, i, j, nstart, iunit, nr, nc, ic, icomma, ios, numr, numc
-    character in*50000,token*100, c(numr,numc)*(*)
+    integer :: i, j, nr, nc, ic, icomma, ios
+    character in*150000,token*100
     
     maxr = 0
     maxc = 0

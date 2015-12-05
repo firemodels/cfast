@@ -138,8 +138,8 @@ cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
 cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
-  ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  ./$botscript $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 else
-  echo ./$botscript $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  echo ./$botscript $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 fi
 rm $running

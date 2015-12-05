@@ -6,7 +6,15 @@ fi
 running=~/.cfastgit/cfastbot_running
 
 CURDIR=`pwd`
+
+# checking to see if a queing system is available
 QUEUE=smokebot
+notfound=`qstat -a 2>&1 | tail -1 | grep "not found" | wc -l`
+if [ "$notfound" == "1" ] ; then
+  QUEUE=none
+fi
+
+
 cfastrepo=~/cfastgitclean
 if [ -e .cfast_git ]; then
   cd ../..

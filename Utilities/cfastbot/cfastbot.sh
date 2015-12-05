@@ -65,7 +65,6 @@ else
   USEINSTALL2=
 fi
 
-
 while getopts 'acC:F:hm:q:suU' OPTION
 do
 case $OPTION in

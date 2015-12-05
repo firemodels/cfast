@@ -985,6 +985,7 @@ archive_validation_stats()
       # Copy to web results
       if [ "$UPLOAD" == "1" ]; then
         cp ${CURRENT_STATS_FILE} /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${GIT_REVISION}.csv
+        chmod +w /var/www/html/cfastbot/manuals/Validation_Statistics/${STATS_FILE_BASENAME}_${GIT_REVISION}.csv
       fi
    fi
 }
@@ -1009,6 +1010,7 @@ check_guide()
       # Copy guide to CFASTbot's local website
       if [ "$UPLOAD" == "1" ]; then
          cp $2/$3 /var/www/html/cfastbot/manuals/CFAST_$3
+         chmod +w /var/www/html/cfastbot/manuals/CFAST_$3
       fi
    fi
 }

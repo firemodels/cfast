@@ -10,7 +10,7 @@ CURDIR=`pwd`
 # checking to see if a queing system is available
 QUEUE=smokebot
 notfound=`qstat -a 2>&1 | tail -1 | grep "not found" | wc -l`
-if [ "$notfound" == "1" ] ; then
+if [ $notfound -eq 1 ] ; then
   QUEUE=none
 fi
 
@@ -108,7 +108,7 @@ done
 shift $(($OPTIND-1))
 
 if [ -e $running ] ; then
-  if [ "$FORCE" == ""] ; then
+  if [ "$FORCE" == "" ]; then
     echo cfastbot is already running.
     echo Erase the file $running if this is not the case
     echo or rerun using the -f option.

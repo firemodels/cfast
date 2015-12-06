@@ -99,15 +99,16 @@ esac
 done
 shift $(($OPTIND-1))
 
-if [ "$USEINSTALL" == ""]; then
+if [ "$USEINSTALL" == "" ]; then
   CCnotfound=`icc -help 2>&1 | tail -1 | grep "not found" | wc -l`
 fi
-if [ "$CCnotfound" == "1" ] || [ "$USEINSTALL" != ""]; then
-  USEINSTALL="-i"
-  USEINSTALL2="-u"
-else
+
+if [[ $CCnotfound -eq 1 ]] && [[ "$USEINSTALL" == "" ]]; then
   USEINSTALL=
   USEINSTALL2=
+else
+  USEINSTALL="-i"
+  USEINSTALL2="-u"
 fi
 
 echo "   cfast repo: $cfastrepo"

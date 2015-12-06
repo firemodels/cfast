@@ -141,7 +141,7 @@ if [ -e $CFAST_STATUS_FILE ] ; then
 fi
 
 export JOBPREFIX=CB_
-UploadGuides=$cfastrepo/Utilities/cfastbot/cfast_guides2GD.sh
+UploadGuides=$cfastrepo/Utilities/cfastbot/upload_guides.sh
 
 #  ==============================================
 #  = CFASTbot timing and notification mechanism =

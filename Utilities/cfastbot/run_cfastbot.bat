@@ -84,7 +84,7 @@ if %update% == 0 goto no_update
   git fetch origin
   git pull 1> Nul 2>&1
   if not %cfastbotdir% == %curdir% (
-    copy %cfastbotdir%\cfastbot_win.bat %curdir%
+    copy %cfastbotdir%\cfastbot.bat %curdir%
   )
   cd %curdir%
 :no_update
@@ -92,7 +92,7 @@ if %update% == 0 goto no_update
 :: run cfastbot
 
   echo 1 > %running%
-  call cfastbot_win.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %emailto%
+  call cfastbot.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %emailto%
   erase %running%
   goto end_running
 :skip_running

@@ -14,7 +14,6 @@ if [ $notfound -eq 1 ] ; then
   QUEUE=none
 fi
 
-
 cfastrepo=~/cfastgitclean
 if [ -e .cfast_git ]; then
   cd ../..

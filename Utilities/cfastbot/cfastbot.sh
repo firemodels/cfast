@@ -49,6 +49,7 @@ RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0
 SKIP=
+MATLABEXE=
 UPLOAD=
 USEINSTALL=
 USEINSTALL2=
@@ -58,7 +59,7 @@ if [[ "$IFORT_COMPILER" != "" ]] ; then
   source $IFORT_COMPILER/bin/compilervars.sh intel64
 fi
 
-while getopts 'acC:F:him:q:suU' OPTION
+while getopts 'acC:F:him:Mq:suU' OPTION
 do
 case $OPTION in
    a)
@@ -82,6 +83,9 @@ case $OPTION in
    ;;
   m)
    mailTo="$OPTARG"
+   ;;
+  M)
+   MATLABEXE=1
    ;;
   q)
    QUEUE="$OPTARG"
@@ -125,6 +129,10 @@ export platform
 # Set unlimited stack size
 if [ "$platform" == "linux" ] ; then
   ulimit -s unlimited
+fi
+
+if [ "$SKIP" == "1" ]; then
+   MATLABEXE=
 fi
 
 if [ "$UPLOAD" == "1" ]; then
@@ -1206,17 +1214,21 @@ fi
 
 ### Stage 7a ###
 if [[ "$SKIP" == "" ]]; then
-  check_matlab_license_server
-  run_matlab_verification
-  check_matlab_verification
+  if [ "$MATLABEXE" == "" ]; then
+    check_matlab_license_server
+    run_matlab_verification
+    check_matlab_verification
+  fi
 fi
 
 ### Stage 7c ###
 if [[ "$SKIP" == "" ]]; then
-  run_matlab_validation
-  check_matlab_validation
-  check_validation_stats
-  archive_validation_stats
+  if [ "$MATLABEXE" == "" ]; then
+    run_matlab_validation
+    check_matlab_validation
+    check_validation_stats
+    archive_validation_stats
+  fi
 fi
 
 ### Stage 8 ###

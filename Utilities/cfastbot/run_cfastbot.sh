@@ -91,7 +91,7 @@ case $OPTION  in
   q)
    QUEUE="$OPTARG"
    ;;
-  q)
+  s)
    SKIP="-s"
    ;;
   u)

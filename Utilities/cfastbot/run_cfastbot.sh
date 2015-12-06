@@ -10,7 +10,7 @@ CURDIR=`pwd`
 # checking to see if a queing system is available
 QUEUE=smokebot
 notfound=`qstat -a 2>&1 | tail -1 | grep "not found" | wc -l`
-if [ "$notfound" == "1" ] ; then
+if [ $notfound -eq 1 ] ; then
   QUEUE=none
 fi
 
@@ -35,6 +35,7 @@ echo "-a - run automatically if cfast repo has changed"
 echo "-c - clean cfast and FDS-SMV repos"
 echo "-f - force cfastbot run"
 echo "-h - display this message"
+echo "-i - use installed smokeview and background (if using the 'none' queue)"
 echo "-m email -  email_address "
 echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: $QUEUE"
@@ -58,8 +59,9 @@ EMAIL=
 FORCE=
 SKIP=
 UPLOAD=
+USEINSTALL=
 
-while getopts 'acC:fF:hm:q:suUv' OPTION
+while getopts 'acC:fF:him:q:suUv' OPTION
 do
 case $OPTION  in
   a)
@@ -79,6 +81,9 @@ case $OPTION  in
    ;;
   h)
    usage;
+   ;;
+  i)
+   USEINSTALL="-i"
    ;;
   m)
    EMAIL="$OPTARG"
@@ -103,7 +108,7 @@ done
 shift $(($OPTIND-1))
 
 if [ -e $running ] ; then
-  if [ "$FORCE" == ""] ; then
+  if [ "$FORCE" == "" ]; then
     echo cfastbot is already running.
     echo Erase the file $running if this is not the case
     echo or rerun using the -f option.
@@ -138,8 +143,8 @@ cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
 cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
-  ./$botscript $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 else
-  echo ./$botscript $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  echo ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
 fi
 rm $running

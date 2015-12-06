@@ -6,10 +6,11 @@ export TEXINPUTS=".:../LaTeX_Style_Files:"
 clean_build=1
 
 doc=Validation_Guide
+docpdf=${doc}.pdf
+rm -f $docpdf
 # Build guide
 gitrevision=`git describe --long --dirty`
 echo "\\newcommand{\\gitrevision}{$gitrevision}" > ../Bibliography/gitrevision.tex
-
 pdflatex -interaction nonstopmode $doc &> $doc.err
 bibtex $doc &> $doc.err
 pdflatex -interaction nonstopmode $doc &> $doc.err
@@ -37,11 +38,13 @@ if [[ `grep -E "undefined|multiply defined|multiply-defined" -I $doc.err` == "" 
       clean_build=0
 fi
 
-if [[ $clean_build == 0 ]]
-   then
-      :
+if [ ! -e $docpdf ]; then
+  clean_build=0
+fi
+if [[ $clean_build == 0 ]]; then
+      echo "$doc build failed"
    else
-      echo "$doc built successfully!"
+      echo "$doc build succeeded"
 fi    
 
 rm -f ../Bibliography/gitrevision.tex

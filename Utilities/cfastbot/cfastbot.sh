@@ -1002,20 +1002,23 @@ check_guide()
 {
    # Scan and report any errors or warnings in build process for guides
    cd $CFASTBOT_RUNDIR
-   if [[ `grep -I "successfully" $1` == "" ]]
-   then
-      # There were errors/warnings in the guide build process
-      echo "Warnings from Stage 8 - Build CFAST Guides:" >> $WARNING_LOG
-      echo $4 >> $WARNING_LOG # Name of guide
-      cat $1 >> $WARNING_LOG # Contents of log file
-      echo "" >> $WARNING_LOG
-   else
+   if [[ `grep -I "successfully" $1` != "" ]] && [[ -e $2/$3 ]]; then
       # Guide built successfully; there were no errors/warnings
       # Copy guide to CFASTbot's local website
       if [ "$UPLOAD" == "1" ]; then
          cp $2/$3 /var/www/html/cfastbot/manuals/CFAST_$3
          chmod +w /var/www/html/cfastbot/manuals/CFAST_$3
       fi
+   else
+      # There were errors/warnings in the guide build process
+      echo "Warnings from Stage 8 - Build CFAST Guides:" >> $WARNING_LOG
+      echo $4 >> $WARNING_LOG # Name of guide
+      if [ ! -e $2/$3 ]; then
+         echo The guide $4 failed to be built >> $WARNING_LOG
+         echo "" >> $WARNING_LOG
+      fi 
+      cat $1 >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
    fi
 }
 

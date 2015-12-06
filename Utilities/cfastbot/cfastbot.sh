@@ -1013,7 +1013,7 @@ check_guide()
       # There were errors/warnings in the guide build process
       echo "Warnings from Stage 8 - Build CFAST Guides:" >> $WARNING_LOG
       echo $4 >> $WARNING_LOG # Name of guide
-      if [ ! -e $3/$4 ]; then
+      if [ ! -e $2/$3 ]; then
          echo The guide $4 failed to be built >> $WARNING_LOG
          echo "" >> $WARNING_LOG
       fi 

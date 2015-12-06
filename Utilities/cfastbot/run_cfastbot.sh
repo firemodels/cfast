@@ -14,7 +14,6 @@ if [ $notfound -eq 1 ] ; then
   QUEUE=none
 fi
 
-
 cfastrepo=~/cfastgitclean
 if [ -e .cfast_git ]; then
   cd ../..
@@ -48,16 +47,17 @@ echo "-v - show options used to run cfastbot"
 exit
 }
 
-
-botscript=cfastbot.sh
-
 RUNAUTO=
 UPDATEREPO=
 CLEANREPO=0
 RUNCFASTBOT=1
 EMAIL=
 FORCE=
+
+MATLABEXE=
 SKIP=
+havematlab=`which matlab 2> /dev/null | wc -l`
+
 UPLOAD=
 USEINSTALL=
 
@@ -87,6 +87,9 @@ case $OPTION  in
    ;;
   m)
    EMAIL="$OPTARG"
+   ;;
+  M)
+   MATLABEXE="-M"
    ;;
   q)
    QUEUE="$OPTARG"
@@ -129,7 +132,7 @@ if [[ "$UPDATEREPO" == "1" ]]; then
      cd Utilities/cfastbot
      CFASTBOTDIR=`pwd`
      if [[ "$CURDIR" != "$CFASTBOTDIR" ]]; then
-       cp $botscript $CURDIR/.
+       cp cfastbot.sh $CURDIR/.
      fi
      cd $CURDIR
   fi
@@ -138,13 +141,20 @@ if [[ "$CLEANREPO" == "1" ]]; then
   CLEAN=-c
 fi
 
+if [ $matlab -eq 0 ]; then
+   MATLABEXE=-M
+fi
+if [ "$SKIP" != "" ]; then
+   MATLAB=
+fi
+
 QUEUE="-q $QUEUE"
 cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
 cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
-  ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  ./cfastbot.sh $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $MATLABEXE $UPLOAD $EMAIL "$@"
 else
-  echo ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $UPLOAD $EMAIL "$@"
+  echo ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $MATLABEXE $UPLOAD $EMAIL "$@"
 fi
 rm $running

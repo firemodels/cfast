@@ -57,8 +57,6 @@ FORCE=
 MATLABEXE=
 SKIP=
 havematlab=`which matlab 2> /dev/null | wc -l`
-echo havematlab=$havematlab
-exit
 
 UPLOAD=
 USEINSTALL=

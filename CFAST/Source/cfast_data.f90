@@ -194,7 +194,7 @@ module fltarget
 
     real(eb), dimension(2) :: qtcflux, qtfflux, qtwflux, qtgflux    ! temporary variables for target flux calculation
     
-    type (target_type), dimension(mxtarg), target :: targetinfo     ! stractured target data
+    type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
     
 end module fltarget
 

@@ -17,9 +17,7 @@ Title Running Verification Cases
 cd ..\Verification
 call runall.bat ALL
 echo Running matlab plotting analysis
-cd ..\Utilities\matlab\scripts
-SpeciesMassTestCases
-cd ..\
+cd ..\Utilities\matlab
 Title Running Matlab Plotting Analysis
 Validation
 Verification

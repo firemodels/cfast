@@ -466,23 +466,16 @@ if %usematlab% == 0 goto matlab_else1
 
 ::*** generating Verification plots
 
-  echo             Verification
-if %usematlab% == 1 goto matlab_end2
-  echo               SpeciesMassTestCases
-  cd %cfastroot%\Utilities\Matlab\scripts
-  SpeciesMassTestCases
-  call :WAIT_RUN SpeciesMassTestCases
-:matlab_end2
-
+echo             Verification
 echo               Making plots
 cd %cfastroot%\Utilities\Matlab
-if %usematlab% == 0 goto matlab_else3
+if %usematlab% == 0 goto matlab_else2
   matlab -logfile %matlabverlog% -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_verification_script.m'); catch; end; quit
-  goto matlab_end3
-:matlab_else3
+  goto matlab_end2
+:matlab_else2
   Verification
   call :WAIT_RUN Verification
-:matlab_end3
+:matlab_end2
 
 :skip_stage5
 

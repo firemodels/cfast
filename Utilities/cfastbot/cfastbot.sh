@@ -107,7 +107,7 @@ if [ "$USEINSTALL" == "" ]; then
   CCnotfound=`icc -help 2>&1 | tail -1 | grep "not found" | wc -l`
 fi
 
-if [[ $CCnotfound -eq 1 ]] && [[ "$USEINSTALL" == "" ]]; then
+if [[ $CCnotfound -eq 0 ]] && [[ "$USEINSTALL" == "" ]]; then
   USEINSTALL=
   USEINSTALL2=
 else
@@ -698,7 +698,7 @@ compile_smv_utilities()
        ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
      fi
    else
-     if [ "$CCnotfound" == "1" ]; then
+     if [ $CCnotfound -eq 1 ]; then
        echo "Smokeview libraries not built - C compiler not available"
        echo "Smokeview libraries not built - C compiler not available" >> $OUTPUT_DIR/stage1b 2>&1
      else

@@ -757,8 +757,8 @@ compile_smv_db()
 {
    # Clean and compile SMV DB
    if [ "$USEINSTALL" == "" ]; then
-     echo "Building smokeview"
-     echo "   debug"
+     echo "   smokeview"
+     echo "      debug"
      cd $fdsrepo/SMV/Build/intel_${platform}_64
      ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
    else
@@ -802,7 +802,7 @@ compile_smv()
 {
    # Clean and compile SMV
    if [ "$USEINSTALL" == "" ]; then
-     echo "   release"
+     echo "      release"
      cd $fdsrepo/SMV/Build/intel_${platform}_64
      ./make_smv.sh &> $OUTPUT_DIR/stage6b
    fi
@@ -1203,6 +1203,9 @@ compile_cfast
 check_compile_cfast
 compile_vvcalc
 check_compile_vvcalc
+### Stage 6a ###
+compile_smv_db
+check_compile_smv_db
 
 ### Stage 3 ###
 if [[ $stage2a_success ]] ; then
@@ -1215,10 +1218,6 @@ if [[ $stage2b_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
-
-### Stage 6a ###
-compile_smv_db
-check_compile_smv_db
 
 ### Stage 6b ###
 compile_smv

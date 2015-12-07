@@ -24,6 +24,8 @@ mailTo="gforney@gmail.com, rpeacoc@nist.gov"
 
 CFASTBOT_RUNDIR="`pwd`"
 
+compiler=intel
+
 OUTPUT_DIR=$CFASTBOT_RUNDIR/output
 HISTORY_DIR=$CFASTBOT_RUNDIR/history
 ERROR_LOG=$OUTPUT_DIR/errors
@@ -356,7 +358,7 @@ compile_cfast_db()
    # Build debug CFAST
    echo "   cfast"
    echo "      debug"
-   cd $cfastrepo/CFAST/intel_${platform}_64_db
+   cd $cfastrepo/CFAST/${compiler}_${platform}_64_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2a
  }
@@ -364,7 +366,7 @@ compile_cfast_db()
 check_compile_cfast_db()
 {
    # Check for errors in CFAST debug compilation
-   cd $cfastrepo/CFAST/intel_${platform}_64_db
+   cd $cfastrepo/CFAST/${compiler}_${platform}_64_db
    if [ -e "cfast7_${platform}_64_db" ]
    then
       stage2a_success=true
@@ -512,7 +514,7 @@ compile_cfast()
 { 
    # Build release CFAST
    echo "      release"
-   cd $cfastrepo/CFAST/intel_${platform}_64
+   cd $cfastrepo/CFAST/${compiler}_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2b
 }
@@ -520,7 +522,7 @@ compile_cfast()
 check_compile_cfast()
 {
    # Check for errors in CFAST release compilation
-   cd $cfastrepo/CFAST/intel_${platform}_64
+   cd $cfastrepo/CFAST/${compiler}_${platform}_64
    if [[ -e "cfast7_${platform}_64" ]]
    then
       stage2b_success=true
@@ -546,14 +548,14 @@ compile_vvcalc()
 { 
    # Build release vvcalc
    echo "   VandV_Calcs - release" 
-   cd $cfastrepo/VandV_Calcs/intel_${platform}_64
+   cd $cfastrepo/VandV_Calcs/${compiler}_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_vv.sh &> $OUTPUT_DIR/stage2c
 }
 
 check_compile_vvcalc()
 {
-   cd $cfastrepo/VandV_Calcs/intel_${platform}_64
+   cd $cfastrepo/VandV_Calcs/${compiler}_${platform}_64
    if [[ -e "VandV_Calcs_${platform}_64" ]]
    then
       stage2c_success=true
@@ -683,14 +685,14 @@ compile_smv_utilities()
    echo "Building:"
    if [ "$USEINSTALL" == "" ]; then
    # smokeview libraries
-     cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
+     cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_${compiler}_64
      echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
      echo '   libraries for smokeview'
      ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
 
    # background
      if [ "$QUEUE" == "none" ]; then
-       cd $fdsrepo/Utilities/background/intel_${platform}_64
+       cd $fdsrepo/Utilities/background/${compiler}_${platform}_64
        echo '   background'
        echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
        ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
@@ -720,7 +722,7 @@ check_smv_utilities()
      cd $fdsrepo
      stage1b_success="1"
      if [ "$QUEUE" == "none" ]; then
-       if [ ! -e "$fdsrepo/Utilities/background/intel_${platform}_64/background" ]; then
+       if [ ! -e "$fdsrepo/Utilities/background/${compiler}_${platform}_64/background" ]; then
          stage1b_success="0"
        fi
      fi
@@ -754,7 +756,7 @@ compile_smv_db()
    if [ "$USEINSTALL" == "" ]; then
      echo "   smokeview"
      echo "      debug"
-     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     cd $fdsrepo/SMV/Build/${compiler}_${platform}_64
      ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
    else
      echo Using installed smokeview
@@ -765,7 +767,7 @@ check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
    if [ "$USEINSTALL" == "" ]; then
-     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     cd $fdsrepo/SMV/Build/${compiler}_${platform}_64
      if [ -e "smokeview_${platform}_64_db" ]
      then
         stage6a_success=true
@@ -798,7 +800,7 @@ compile_smv()
    # Clean and compile SMV
    if [ "$USEINSTALL" == "" ]; then
      echo "      release"
-     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     cd $fdsrepo/SMV/Build/${compiler}_${platform}_64
      ./make_smv.sh &> $OUTPUT_DIR/stage6b
    fi
 }
@@ -807,7 +809,7 @@ check_compile_smv()
 {
    # Check for errors in SMV release compilation
    if [ "$USEINSTALL" == "" ]; then
-     cd $fdsrepo/SMV/Build/intel_${platform}_64
+     cd $fdsrepo/SMV/Build/${compiler}_${platform}_64
      if [ -e "smokeview_${platform}_64" ]
      then
         stage6b_success=true
@@ -936,11 +938,11 @@ run_matlab_validation()
    echo "Validation"
    echo "   VandV_Calcs"
    cd $cfastrepo/Validation
-   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Pressure_Correction_inputs.csv &> /dev/null
+   ../VandV_Calcs/${compiler}_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Pressure_Correction_inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
-   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Temperature_Profile_inputs.csv &> /dev/null
+   ../VandV_Calcs/${compiler}_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Temperature_Profile_inputs.csv &> /dev/null
    cp profiles.csv Steckler_Compartment/.
-   ../VandV_Calcs/intel_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
+   ../VandV_Calcs/${compiler}_${platform}_64/VandV_Calcs_${platform}_64 CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
    cp flux_profiles.csv Fleury_Heat_Flux/.
    
    echo "   Making plots"

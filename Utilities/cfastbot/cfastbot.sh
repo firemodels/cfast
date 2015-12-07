@@ -33,8 +33,9 @@ NEWGUIDE_DIR=$OUTPUT_DIR/NEW_GUIDES
 VALIDATION_STATS_LOG=$OUTPUT_DIR/statistics
 GITSTATUS_DIR=~/.cfastbot
 
-echo "Directories:"
-echo "   run: $CFASTBOT_RUNDIR"
+echo ""
+echo "Preliminaries:"
+echo "   running in : $CFASTBOT_RUNDIR"
 MKDIR $OUTPUT_DIR
 MKDIR $HISTORY_DIR
 MKDIR $GITSTATUS_DIR
@@ -126,8 +127,7 @@ if [ "`uname`" == "Darwin" ] ; then
 fi
 export platform
 
-echo ""
-echo "platform: $platform2"
+echo "   platform: $platform2"
 
 # Set unlimited stack size
 if [ "$platform" == "linux" ] ; then
@@ -136,13 +136,12 @@ fi
 
 if [ "$SKIP" == "1" ]; then
    MATLABEXE=
-   echo "matlab: skipping matlab stages"
+   echo "   skipping matlab and document building stages"
 else
    if [ "$MATLABEXE" != "" ]; then
-     echo "matlab: running matlab stages using"
-     echo "        script generated executables"
+     echo "   using matlab script generated exe's"
    else
-     echo "matlab: running matlab stages"
+     echo "   using matlab"
    fi
 fi
 
@@ -151,7 +150,7 @@ if [ "$UPLOAD" == "1" ]; then
 fi
 
 echo ""
-echo "cfastbot status:"
+echo "Status:"
 echo ""
 
 cd

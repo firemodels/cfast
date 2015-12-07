@@ -141,7 +141,7 @@ if [[ "$CLEANREPO" == "1" ]]; then
   CLEAN=-c
 fi
 
-if [ $matlab -eq 0 ]; then
+if [ $havematlab -eq 0 ]; then
    MATLABEXE=-M
 fi
 if [ "$SKIP" != "" ]; then

@@ -63,17 +63,6 @@ esac
 #shift
 done
 
-if [ "$use_installed" == "1" ] ; then
-  BACKGROUND=background
-else
-  curdirbackground=`pwd`
-  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM2
-  cd $BACKGROUND
-  BACKGROUND=`pwd`/background
-  cd $curdirbackground
-fi
-export BACKGROUND
-
 underscore="_"
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
@@ -82,6 +71,17 @@ else
   PLATFORM=linux$underscore$size
 fi
 PLATFORM=$PLATFORM$DEBUG
+
+if [ "$use_installed" == "1" ] ; then
+  BACKGROUND=background
+else
+  curdirbackground=`pwd`
+  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM
+  cd $BACKGROUND
+  BACKGROUND=`pwd`/background
+  cd $curdirbackground
+fi
+export BACKGROUND
 
 export CFAST="$SVNROOT/CFAST/intel_$PLATFORM/cfast7_$PLATFORM"
 

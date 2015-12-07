@@ -1029,8 +1029,8 @@ check_guide()
 {
    # Scan and report any errors or warnings in build process for guides
    cd $CFASTBOT_RUNDIR
-   if [[ `grep -I "successfully" $1` != "" ]] && [[ -e $2/$3 ]]; then
-      # Guide built successfully; there were no errors/warnings
+   if [[ `grep -I "succeeded" $1` != "" ]] && [[ -e $2/$3 ]]; then
+      # Guide built succeeded; there were no errors/warnings
       # Copy guide to CFASTbot's local website
       if [ "$UPLOAD" == "1" ]; then
          cp $2/$3 /var/www/html/cfastbot/manuals/CFAST_$3

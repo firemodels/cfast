@@ -257,8 +257,8 @@ set_files_world_readable()
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
-   echo "Removing previous cfastbot results from:"
-   echo "   $OUTPUT_DIR"
+   echo "Cleaning:"
+   echo "   cfastbot results directory"
    cd $CFASTBOT_RUNDIR
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
@@ -278,7 +278,6 @@ clean_git_repo()
    # Check to see if FDS repository exists
    if [ -e "$fdsrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
-        echo "Cleaning:"
         echo "   FDS-SMV repo"
         echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1a 2>&1
         cd $fdsrepo

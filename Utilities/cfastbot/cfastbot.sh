@@ -127,7 +127,7 @@ fi
 export platform
 
 echo ""
-echo "platform: ",$platform2
+echo "platform: $platform2"
 
 # Set unlimited stack size
 if [ "$platform" == "linux" ] ; then
@@ -152,6 +152,7 @@ fi
 
 echo ""
 echo "cfastbot status:"
+echo ""
 
 cd
 
@@ -257,7 +258,8 @@ set_files_world_readable()
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
-   echo Removing previous cfastbot results from $OUTPUT_DIR
+   echo "Removing previous cfastbot results from:"
+   echo "   $OUTPUT_DIR"
    cd $CFASTBOT_RUNDIR
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
@@ -277,7 +279,8 @@ clean_git_repo()
    # Check to see if FDS repository exists
    if [ -e "$fdsrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
-        echo Cleaning FDS-SMV repo
+        echo "Cleaning:"
+        echo "   FDS-SMV repo"
         echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1a 2>&1
         cd $fdsrepo
         git clean -dxf &> /dev/null
@@ -293,7 +296,7 @@ clean_git_repo()
    # Check to see if CFAST repository exists
    if [ -e "$cfastrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
-        echo Cleaning cfast repo
+        echo "   cfast repo"
         echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1a 2>&1
         cd $cfastrepo/CFAST
         git clean -dxf &> /dev/null
@@ -323,14 +326,15 @@ do_git_checkout()
 {
    if [ "$UPDATEREPO" == "1" ]; then
      cd $fdsrepo
-     echo Checking out latest FDS-SMV revision
+     echo Checking out:
+     echo "   latest FDS-SMV revision"
      echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1a 2>&1
      git remote update &> /dev/null
      git checkout development &> /dev/null
      git pull >> $OUTPUT_DIR/stage1a 2>&1
 
      cd $cfastrepo
-     echo Checking out latest cfast revision
+     echo "   latest cfast revision"
      echo "Checking out latest cfast revision." >> $OUTPUT_DIR/stage1a 2>&1
      git remote update &> /dev/null
      git checkout master &> /dev/null
@@ -352,8 +356,9 @@ check_git_checkout()
 compile_cfast_db()
 {
    # Build debug CFAST
-   echo Building cfast
-   echo "   debug"
+   echo Building:
+   echo "   cfast"
+   echo "      debug"
    cd $cfastrepo/CFAST/intel_${platform}_64_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2a
@@ -432,7 +437,8 @@ run_vv_cases_debug()
    #  =======================
 
    # Submit CFAST V&V cases
-   echo 'Running CFAST V&V cases -  debug'
+   echo 'Running CFAST V&V cases:'
+   echo '   debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
    ./Run_CFAST_Cases.sh $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
    if [ "$QUEUE" != "none" ]; then
@@ -508,7 +514,7 @@ check_vv_cases_debug()
 compile_cfast()
 { 
    # Build release CFAST
-   echo "   release"
+   echo "      release"
    cd $cfastrepo/CFAST/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2b
@@ -542,7 +548,7 @@ check_compile_cfast()
 compile_vvcalc()
 { 
    # Build release vvcalc
-   echo Building release VandV_Calcs
+   echo "   VandV_Calcs - release" 
    cd $cfastrepo/VandV_Calcs/intel_${platform}_64
    make -f ../makefile clean &> /dev/null
    ./make_vv.sh &> $OUTPUT_DIR/stage2c
@@ -615,7 +621,7 @@ run_vv_cases_release()
 {
    # Start running all CFAST V&V cases
    cd $cfastrepo/Validation/scripts
-   echo 'Running CFAST V&V cases - release'
+   echo '   release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
    ./Run_CFAST_Cases.sh $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
    if [ "$QUEUE" != "none" ]; then

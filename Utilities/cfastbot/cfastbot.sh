@@ -355,7 +355,6 @@ check_git_checkout()
 compile_cfast_db()
 {
    # Build debug CFAST
-   echo Building:
    echo "   cfast"
    echo "      debug"
    cd $cfastrepo/CFAST/intel_${platform}_64_db
@@ -681,18 +680,19 @@ check_vv_cases_release()
 #  ====================================
 
 compile_smv_utilities()
-{  
+{
+   echo "Building:"
    if [ "$USEINSTALL" == "" ]; then
    # smokeview libraries
      cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_intel_64
      echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
-     echo 'Building libraries for smokeview'
+     echo '   libraries for smokeview'
      ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
 
    # background
      if [ "$QUEUE" == "none" ]; then
        cd $fdsrepo/Utilities/background/intel_${platform}_64
-       echo 'Building background'
+       echo '   background'
        echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
        ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
      fi

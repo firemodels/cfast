@@ -117,14 +117,17 @@ fi
 
 echo "   cfast repo: $cfastrepo"
 echo "   FDS-SMV repo: $fdsrepo"
-echo ""
-echo "cfastbot status:"
 
 platform="linux"
+platform2="Linux"
 if [ "`uname`" == "Darwin" ] ; then
   platform="osx"
+  platform2="OSX"
 fi
 export platform
+
+echo ""
+echo "platform: ",$platform2
 
 # Set unlimited stack size
 if [ "$platform" == "linux" ] ; then
@@ -133,11 +136,22 @@ fi
 
 if [ "$SKIP" == "1" ]; then
    MATLABEXE=
+   echo "matlab: skipping matlab stages"
+else
+   if [ "$MATLABEXE" != "" ]; then
+     echo "matlab: running matlab stages using"
+     echo "        script generated executables"
+   else
+     echo "matlab: running matlab stages"
+   fi
 fi
 
 if [ "$UPLOAD" == "1" ]; then
   MKDIR $NEWGUIDE_DIR
 fi
+
+echo ""
+echo "cfastbot status:"
 
 cd
 

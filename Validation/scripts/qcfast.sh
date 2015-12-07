@@ -190,7 +190,7 @@ cat << EOF >> $scriptfile
 #PBS -N $JOBPREFIX$TITLE
 #PBS -e $outerr
 #PBS -o $outlog
-#PBS -l nodes=$nodes:ppn=$ppn
+#PBS -l nodes=1:ppn=1
 EOF
 fi
 

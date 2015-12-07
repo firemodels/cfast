@@ -437,7 +437,7 @@ run_vv_cases_debug()
    echo 'Running CFAST V&V cases:'
    echo '   debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh -F $fdsrepo $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_debug_start
    fi
@@ -620,7 +620,7 @@ run_vv_cases_release()
    cd $cfastrepo/Validation/scripts
    echo '   release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   ./Run_CFAST_Cases.sh -F $fdsrepo $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi

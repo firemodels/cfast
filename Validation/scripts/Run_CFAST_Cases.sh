@@ -30,8 +30,9 @@ use_installed=
 CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
+fdsrepo=
 
-while getopts 'dhj:m:p:q:su' OPTION
+while getopts 'dF:hj:m:p:q:su' OPTION
 do
 case $OPTION in
   d)
@@ -40,6 +41,9 @@ case $OPTION in
   h)
   usage;
   exit
+  ;;
+  F)
+  fdsrepo="$OPTARG"
   ;;
   j)
   JOBPREFIX="-j $OPTARG"
@@ -70,16 +74,13 @@ if [ "$OS" == "Darwin" ]; then
 else
   PLATFORM=linux$underscore$size
 fi
+PLATFORM2=$PLATFORM
 PLATFORM=$PLATFORM$DEBUG
 
 if [ "$use_installed" == "1" ] ; then
   BACKGROUND=background
 else
-  curdirbackground=`pwd`
-  BACKGROUND=$fdsrepo/Utilities/background/intel_{$PLATFORM}
-  cd $BACKGROUND
-  BACKGROUND=`pwd`/background
-  cd $curdirbackground
+  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM2/background
 fi
 export BACKGROUND
 

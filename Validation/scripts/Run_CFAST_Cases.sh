@@ -64,10 +64,15 @@ esac
 done
 
 if [ "$use_installed" == "1" ] ; then
-  export BACKGROUND=background
+  BACKGROUND=background
 else
-  export BACKGROUND=$SVNROOT/Utilities/background/intel_$PLATFORM2/background
+  curdirbackground=`pwd`
+  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM2
+  cd $BACKGROUND
+  BACKGROUND=`pwd`/background
+  cd $curdirbackground
 fi
+export BACKGROUND
 
 underscore="_"
 OS=`uname`

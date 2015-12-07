@@ -1,3 +1,5 @@
+function [] = SpeciesMassTestCases(data_dir,plot_dir)
+
 %This script will calculate the experimental and theoretical yields of H2O
 %and CO2 for several test cases. The program functions by reading in
 %values from the specific .csv files. The program finds values of
@@ -5,12 +7,7 @@
 %the corresponding mole fractions of O2, CO2 and H2O in the upper layer,
 %which are then used to calculate the experimental masses of CO2 and H2O produced.
 
-close all
-clear all
 format long
-
-data_dir = '../../../Verification/Mass_Balance/';
-plot_dir = '../../../Docs/Validation_Guide/FIGURES/Verification/';
 
 numC = 1;
 numH = 4;

@@ -409,8 +409,8 @@ wait_vv_cases_debug_end()
    # Scans qstat and waits for V&V cases to end
    if [[ "$QUEUE" == "none" ]]
    then
-     while [[ `ps -u $USER -f | fgrep .in | grep -v grep` != '' ]]; do
-        JOBS_REMAINING=`ps -u $USER -f | fgrep .in | grep -v grep | wc -l`
+     while [[ `ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep` != '' ]]; do
+        JOBS_REMAINING=`ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep | wc -l`
         echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage3a
         TIME_LIMIT_STAGE="3"
         check_time_limit
@@ -598,8 +598,8 @@ wait_vv_cases_release_end()
    # Scans qstat and waits for V&V cases to end
    if [[ "$QUEUE" == "none" ]]
    then
-     while [[ `ps -u $USER -f | fgrep .in | grep -v grep` != '' ]]; do
-        JOBS_REMAINING=`ps -u $USER -f | fgrep .in | grep -v grep | wc -l`
+     while [[ `ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep` != '' ]]; do
+        JOBS_REMAINING=`ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep | wc -l`
         echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage5
         TIME_LIMIT_STAGE="5"
         check_time_limit
@@ -698,13 +698,8 @@ compile_smv_utilities()
        ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
      fi
    else
-     if [ $CCnotfound -eq 1 ]; then
-       echo "Smokeview libraries not built - C compiler not available"
-       echo "Smokeview libraries not built - C compiler not available" >> $OUTPUT_DIR/stage1b 2>&1
-     else
-       echo "Using installed smokeview, libraries not built"
-       echo "Smokeview libraries not built" >> $OUTPUT_DIR/stage1b 2>&1
-     fi
+    echo "Using installed smokeview, libraries not built"
+    echo "Using installed smokeview, libraries not built" >> $OUTPUT_DIR/stage1b 2>&1
    fi
 }
 

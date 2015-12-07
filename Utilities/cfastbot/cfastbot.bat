@@ -425,7 +425,7 @@ cd %cfastroot%\Validation\scripts
 set SH2BAT=%cfastroot%\Validation\scripts\sh2bat.exe
 
 %SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage4.txt 2>&1
-set RUNCFAST=call %cfastroot%\Validation\scripts\runsmv.bat
+set RUNSMV=call %cfastroot%\Validation\scripts\runsmv.bat
 
 cd %cfastroot%\Validation
 set BASEDIR=%CD%

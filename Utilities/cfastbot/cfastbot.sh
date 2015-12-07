@@ -407,8 +407,8 @@ wait_vv_cases_debug_end()
    # Scans qstat and waits for V&V cases to end
    if [[ "$QUEUE" == "none" ]]
    then
-     while [[ `ps -u $USER -f | fgrep .in | grep -v grep` != '' ]]; do
-        JOBS_REMAINING=`ps -u $USER -f | fgrep .in | grep -v grep | wc -l`
+     while [[ `ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep` != '' ]]; do
+        JOBS_REMAINING=`ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep | wc -l`
         echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage3a
         TIME_LIMIT_STAGE="3"
         check_time_limit

@@ -1,4 +1,4 @@
-#/bin/bash -f
+#/bin/bash
 # This script runs the FDS Verification Cases on a linux machine with
 # a batch queuing system
 
@@ -30,8 +30,9 @@ use_installed=
 CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
+fdsrepo=
 
-while getopts 'dhj:m:p:q:su' OPTION
+while getopts 'dF:hj:m:p:q:su' OPTION
 do
 case $OPTION in
   d)
@@ -40,6 +41,9 @@ case $OPTION in
   h)
   usage;
   exit
+  ;;
+  F)
+  fdsrepo="$OPTARG"
   ;;
   j)
   JOBPREFIX="-j $OPTARG"
@@ -63,17 +67,6 @@ esac
 #shift
 done
 
-if [ "$use_installed" == "1" ] ; then
-  BACKGROUND=background
-else
-  curdirbackground=`pwd`
-  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM2
-  cd $BACKGROUND
-  BACKGROUND=`pwd`/background
-  cd $curdirbackground
-fi
-export BACKGROUND
-
 underscore="_"
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
@@ -81,7 +74,15 @@ if [ "$OS" == "Darwin" ]; then
 else
   PLATFORM=linux$underscore$size
 fi
+PLATFORM2=$PLATFORM
 PLATFORM=$PLATFORM$DEBUG
+
+if [ "$use_installed" == "1" ] ; then
+  BACKGROUND=background
+else
+  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM2/background
+fi
+export BACKGROUND
 
 export CFAST="$SVNROOT/CFAST/intel_$PLATFORM/cfast7_$PLATFORM"
 

@@ -257,8 +257,8 @@ set_files_world_readable()
 clean_cfastbot_history()
 {
    # Clean cfastbot metafiles
-   echo "Removing previous cfastbot results from:"
-   echo "   $OUTPUT_DIR"
+   echo "Cleaning:"
+   echo "   cfastbot results directory"
    cd $CFASTBOT_RUNDIR
    rm -rf $OUTPUT_DIR/* &> /dev/null
 }
@@ -278,7 +278,6 @@ clean_git_repo()
    # Check to see if FDS repository exists
    if [ -e "$fdsrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
-        echo "Cleaning:"
         echo "   FDS-SMV repo"
         echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1a 2>&1
         cd $fdsrepo
@@ -438,7 +437,7 @@ run_vv_cases_debug()
    echo 'Running CFAST V&V cases:'
    echo '   debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh -F $fdsrepo $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_debug_start
    fi
@@ -621,7 +620,7 @@ run_vv_cases_release()
    cd $cfastrepo/Validation/scripts
    echo '   release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   ./Run_CFAST_Cases.sh -F $fdsrepo $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi
@@ -758,8 +757,8 @@ compile_smv_db()
 {
    # Clean and compile SMV DB
    if [ "$USEINSTALL" == "" ]; then
-     echo "Building smokeview"
-     echo "   debug"
+     echo "   smokeview"
+     echo "      debug"
      cd $fdsrepo/SMV/Build/intel_${platform}_64
      ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
    else
@@ -803,7 +802,7 @@ compile_smv()
 {
    # Clean and compile SMV
    if [ "$USEINSTALL" == "" ]; then
-     echo "   release"
+     echo "      release"
      cd $fdsrepo/SMV/Build/intel_${platform}_64
      ./make_smv.sh &> $OUTPUT_DIR/stage6b
    fi
@@ -1204,6 +1203,9 @@ compile_cfast
 check_compile_cfast
 compile_vvcalc
 check_compile_vvcalc
+### Stage 6a ###
+compile_smv_db
+check_compile_smv_db
 
 ### Stage 3 ###
 if [[ $stage2a_success ]] ; then
@@ -1216,10 +1218,6 @@ if [[ $stage2b_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
-
-### Stage 6a ###
-compile_smv_db
-check_compile_smv_db
 
 ### Stage 6b ###
 compile_smv

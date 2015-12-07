@@ -1,4 +1,4 @@
-#/bin/bash -f
+#/bin/bash
 # This script runs the FDS Verification Cases on a linux machine with
 # a batch queuing system
 
@@ -76,7 +76,7 @@ if [ "$use_installed" == "1" ] ; then
   BACKGROUND=background
 else
   curdirbackground=`pwd`
-  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM
+  BACKGROUND=$fdsrepo/Utilities/background/intel_{$PLATFORM}
   cd $BACKGROUND
   BACKGROUND=`pwd`/background
   cd $curdirbackground

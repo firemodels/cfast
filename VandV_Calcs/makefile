@@ -48,7 +48,7 @@ setup_win:
 gnu_win : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win : FCOMPL = gfortran
 gnu_win : LFLAGS = 
-gnu_win : obj = VandV_Calcs_gnu_win
+gnu_win : obj = VandV_Calcs_win_64
 gnu_win : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
@@ -56,7 +56,7 @@ gnu_win : $(objf)
 gnu_win_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win_db : FCOMPL = gfortran
 gnu_win_db : LFLAGS = 
-gnu_win_db : obj = VandV_Calcs_gnu_win_db
+gnu_win_db : obj = VandV_Calcs_win_64_db
 gnu_win_db : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
@@ -105,7 +105,7 @@ intel_linux_32_db : setup $(obj)
 gnu_linux_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux_64 : FCOMPL = gfortran
 gnu_linux_64 : LFLAGS = 
-gnu_linux_64 : obj = VandV_Calcs_gnu_linux
+gnu_linux_64 : obj = VandV_Calcs_linux_64
 gnu_linux_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
@@ -113,7 +113,7 @@ gnu_linux_64 : $(objf)
 gnu_linux_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux_db : FCOMPL = gfortran
 gnu_linux_db : LFLAGS = 
-gnu_linux_db : obj = VandV_Calcs_gnu_linux_db
+gnu_linux_db : obj = VandV_Calcs_linux_64_db
 gnu_linux_db : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
@@ -121,7 +121,7 @@ gnu_linux_db : $(objf)
 gnu_osx_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_osx_64 : FCOMPL = gfortran
 gnu_osx_64 : LFLAGS = 
-gnu_osx_64 : obj = VandV_Calcs_gnu_osx
+gnu_osx_64 : obj = VandV_Calcs_osx_64
 gnu_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
@@ -147,7 +147,7 @@ intel_linux_64_db : $(objf)
 gnu_osx : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
 gnu_osx : FCOMPL = gfortran
 gnu_osx : LFLAGS = 
-gnu_osx : obj = VandV_Calcs_gnu_osx
+gnu_osx : obj = VandV_Calcs_osx_64
 gnu_osx : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
@@ -155,7 +155,7 @@ gnu_osx : $(objf)
 gnu_osx_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_osx_db : FCOMPL = gfortran
 gnu_osx_db : LFLAGS = 
-gnu_osx_db : obj = VandV_Calcs_gnu_osx_db
+gnu_osx_db : obj = VandV_Calcs_osx_64_db
 gnu_osx_db : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 

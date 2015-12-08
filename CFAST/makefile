@@ -73,7 +73,7 @@ setup_win:
 gnu_win : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win : FCOMPL = gfortran
 gnu_win : LFLAGS = 
-gnu_win : obj = cfast7_gnu_win
+gnu_win : obj = cfast7_win_64
 gnu_win : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
@@ -81,7 +81,7 @@ gnu_win : $(objfgnu)
 gnu_win_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_win_db : FCOMPL = gfortran
 gnu_win_db : LFLAGS = 
-gnu_win_db : obj = cfast7_gnu_win_db
+gnu_win_db : obj = cfast7_win_64_db
 gnu_win_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
@@ -130,7 +130,7 @@ intel_linux_32_db : setup $(obj)
 gnu_linux : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux : FCOMPL = gfortran
 gnu_linux : LFLAGS = 
-gnu_linux : obj = cfast7_gnu_linux
+gnu_linux : obj = cfast7_linux_64
 gnu_linux : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
@@ -138,7 +138,7 @@ gnu_linux : $(objfgnu)
 gnu_linux_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux_db : FCOMPL = gfortran
 gnu_linux_db : LFLAGS = 
-gnu_linux_db : obj = cfast7_gnu_linux_db
+gnu_linux_db : obj = cfast7_linux_64_db
 gnu_linux_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 

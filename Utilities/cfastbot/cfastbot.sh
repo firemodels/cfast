@@ -140,12 +140,12 @@ fi
 
 if [ "$SKIP" == "1" ]; then
    MATLABEXE=
-   echo "   skipping matlab and document building stages"
+   echo "   matlab: skipping matlab and document building stages"
 else
    if [ "$MATLABEXE" != "" ]; then
-     echo "   using matlab script generated exe's"
+     echo "   matlab: using matlab script generated exe's"
    else
-     echo "   using matlab"
+     echo "   matlab: using matlab"
    fi
 fi
 

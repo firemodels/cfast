@@ -35,6 +35,7 @@ echo "-c - clean cfast and FDS-SMV repos"
 echo "-f - force cfastbot run"
 echo "-h - display this message"
 echo "-i - use installed smokeview and background (if using the 'none' queue)"
+echo "-I - compiler [ default: $compiler]"
 echo "-m email -  email_address "
 echo "-q queue_name - run cases using the queue queue_name"
 echo "     default: $QUEUE"
@@ -53,6 +54,7 @@ CLEANREPO=0
 RUNCFASTBOT=1
 EMAIL=
 FORCE=
+compiler=intel
 
 MATLABEXE=
 SKIP=
@@ -61,7 +63,7 @@ havematlab=`which matlab 2> /dev/null | wc -l`
 UPLOAD=
 USEINSTALL=
 
-while getopts 'acC:fF:him:q:suUv' OPTION
+while getopts 'acC:fF:hiI:m:q:suUv' OPTION
 do
 case $OPTION  in
   a)
@@ -84,6 +86,9 @@ case $OPTION  in
    ;;
   i)
    USEINSTALL="-i"
+   ;;
+  I)
+   compiler="$OPTARG"
    ;;
   m)
    EMAIL="$OPTARG"
@@ -113,8 +118,8 @@ shift $(($OPTIND-1))
 if [ -e $running ] ; then
   if [ "$FORCE" == "" ]; then
     echo cfastbot is already running.
-    echo Erase the file $running if this is not the case
-    echo or rerun using the -f option.
+    echo Erase the file $running.  If this is
+    echo not the case rerun using the -f option.
     exit
   fi
 fi
@@ -149,12 +154,13 @@ if [ "$SKIP" != "" ]; then
 fi
 
 QUEUE="-q $QUEUE"
+compiler="-I $compiler"
 cfastrepo="-C $cfastrepo"
 fdsrepo="-F $fdsrepo"
 cd $CURDIR
 if [ "$RUNCFASTBOT" == "1" ] ; then
-  ./cfastbot.sh $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $MATLABEXE $UPLOAD $EMAIL "$@"
+  ./cfastbot.sh $USEINSTALL $RUNAUTO $compiler $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $MATLABEXE $UPLOAD $EMAIL "$@"
 else
-  echo ./$botscript $USEINSTALL $RUNAUTO $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $MATLABEXE $UPLOAD $EMAIL "$@"
+  echo ./$botscript $USEINSTALL $RUNAUTO $compiler $UPDATEREPO $CLEAN $QUEUE $fdsrepo $cfastrepo $SKIP $MATLABEXE $UPLOAD $EMAIL "$@"
 fi
 rm $running

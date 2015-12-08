@@ -1,4 +1,4 @@
-#!/bin/bash -f
+#!/bin/bash
 dir=$1
 dir2=$2
 infile=$3

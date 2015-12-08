@@ -1,4 +1,4 @@
-#!/bin/bash -f
+#!/bin/bash
 
 queue=batch
 while getopts 'q:' OPTION

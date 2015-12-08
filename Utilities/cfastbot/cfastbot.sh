@@ -24,8 +24,6 @@ mailTo="gforney@gmail.com, rpeacoc@nist.gov"
 
 CFASTBOT_RUNDIR="`pwd`"
 
-compiler=intel
-
 OUTPUT_DIR=$CFASTBOT_RUNDIR/output
 HISTORY_DIR=$CFASTBOT_RUNDIR/history
 ERROR_LOG=$OUTPUT_DIR/errors
@@ -46,7 +44,7 @@ MKDIR $GITSTATUS_DIR
 export fdsrepo=~/FDS-SMVgitclean
 export cfastrepo=~/cfastgitclean
 
-
+COMPILER=intel
 QUEUE=smokebot
 RUNAUTO=
 UPDATEREPO=
@@ -62,7 +60,7 @@ if [[ "$IFORT_COMPILER" != "" ]] ; then
   source $IFORT_COMPILER/bin/compilervars.sh intel64
 fi
 
-while getopts 'acC:F:him:Mq:suU' OPTION
+while getopts 'acC:F:hiI:m:Mq:suU' OPTION
 do
 case $OPTION in
    a)
@@ -83,6 +81,9 @@ case $OPTION in
   i)
    USEINSTALL="-i"
    USEINSTALL2="-u"
+   ;;
+  I)
+   compiler="$OPTARG"
    ;;
   m)
    mailTo="$OPTARG"
@@ -130,6 +131,7 @@ fi
 export platform
 
 echo "   platform: $platform2"
+echo "   compiler: $compiler"
 
 # Set unlimited stack size
 if [ "$platform" == "linux" ] ; then
@@ -439,7 +441,7 @@ run_vv_cases_debug()
    echo 'Running CFAST V&V cases:'
    echo '   debug'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage3 2>&1
-   ./Run_CFAST_Cases.sh -F $fdsrepo $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
+   ./Run_CFAST_Cases.sh -I $compiler -F $fdsrepo $USEINSTALL2 -m 2 -d -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage3 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_debug_start
    fi
@@ -622,7 +624,7 @@ run_vv_cases_release()
    cd $cfastrepo/Validation/scripts
    echo '   release'
    echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh -F $fdsrepo $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   ./Run_CFAST_Cases.sh -I $compiler -F $fdsrepo $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi
@@ -814,6 +816,7 @@ check_compile_smv()
      then
         stage6b_success=true
      else
+        echo smokeview not found
         echo "Errors from Stage 6d - Compile SMV release:" >> $ERROR_LOG
         cat $OUTPUT_DIR/stage6b >> $ERROR_LOG
         echo "" >> $ERROR_LOG
@@ -843,7 +846,7 @@ make_cfast_pictures()
 {
    echo "Generating smokeview images"
    cd $cfastrepo/Validation/scripts
-   ./Make_CFAST_Pictures.sh $USEINSTALL 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
+   ./Make_CFAST_Pictures.sh -I $COMPILER $USEINSTALL 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
 }
 
 check_cfast_pictures()
@@ -1200,9 +1203,14 @@ compile_cfast
 check_compile_cfast
 compile_vvcalc
 check_compile_vvcalc
+
 ### Stage 6a ###
 compile_smv_db
 check_compile_smv_db
+
+### Stage 6b ###
+compile_smv
+check_compile_smv
 
 ### Stage 3 ###
 if [[ $stage2a_success ]] ; then
@@ -1215,10 +1223,6 @@ if [[ $stage2b_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
-
-### Stage 6b ###
-compile_smv
-check_compile_smv
 
 ### Stage 6c ###
 if [[ $stage2b_success && $stage6b_success ]] ; then

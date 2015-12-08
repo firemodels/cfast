@@ -11,6 +11,7 @@ echo "-d - use debug version of cfast"
 echo "-m max_iterations - stop cfast runs after a specifed number of iterations (delayed stop)"
 echo "     example: an option of 10 would cause cfast to stop after 10 iterations"
 echo "-h - display this message"
+echo "-I - compiler (intel or gnu)"
 echo "-p size - platform size"
 echo "     default: 64"
 echo "     other options: 32"
@@ -20,7 +21,6 @@ echo "-s - stop CFAST runs"
 echo "-u - use installed versions of utilities background and wind2fds"
 exit
 }
-
 STOPFDS=
 queue=
 size=64
@@ -31,8 +31,9 @@ CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
 fdsrepo=
+compiler=intel
 
-while getopts 'dF:hj:m:p:q:su' OPTION
+while getopts 'dF:hI:j:m:p:q:su' OPTION
 do
 case $OPTION in
   d)
@@ -44,6 +45,9 @@ case $OPTION in
   ;;
   F)
   fdsrepo="$OPTARG"
+  ;;
+  I)
+  compiler="$OPTARG"
   ;;
   j)
   JOBPREFIX="-j $OPTARG"
@@ -80,11 +84,11 @@ PLATFORM=$PLATFORM$DEBUG
 if [ "$use_installed" == "1" ] ; then
   BACKGROUND=background
 else
-  BACKGROUND=$fdsrepo/Utilities/background/intel_$PLATFORM2/background
+  BACKGROUND=$fdsrepo/Utilities/background/$compiler$underscore$PLATFORM2/background
 fi
 export BACKGROUND
 
-export CFAST="$SVNROOT/CFAST/intel_$PLATFORM/cfast7_$PLATFORM"
+export CFAST="$SVNROOT/CFAST/$compiler$underscore$PLATFORM/cfast7_$PLATFORM"
 
 if [ "$queue" != "" ]; then
    queue="-q $queue"

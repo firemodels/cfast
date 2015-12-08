@@ -10,6 +10,7 @@ echo ""
 echo "Options"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
+echo "-I - compiler (intel or gnu)"
 echo "-i - use installed version of smokeview"
 echo "-p path - specify path of the smokeview executable"
 echo "-r - use release version of smokeview"
@@ -36,8 +37,9 @@ TEST=
 SMV_PATH=""
 START_X=yes
 SSH=
+COMPILER=intel
 
-while getopts 'dhip:rS:tX' OPTION
+while getopts 'dhiI:p:rS:tX' OPTION
 do
 case $OPTION  in
   d)
@@ -48,6 +50,9 @@ case $OPTION  in
    ;;
   i)
    use_installed="1"
+   ;;
+  I)
+   COMPILER="$OPTARG"
    ;;
   p)
    SMV_PATH="$OPTARG"
@@ -70,7 +75,7 @@ shift $(($OPTIND-1))
 
 export SVNROOT=$fdsrepo
 if [ "$SMV_PATH" == "" ]; then
-  SMV_PATH=$SVNROOT/SMV/Build/intel_$PLATFORM$SIZE
+  SMV_PATH=$SVNROOT/SMV/Build/$COMPILER_$PLATFORM$SIZE
 fi
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview

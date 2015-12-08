@@ -102,11 +102,11 @@ intel_linux_32_db : setup $(obj)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # gnu linux
-gnu_linux : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_linux : FCOMPL = gfortran
-gnu_linux : LFLAGS = 
-gnu_linux : obj = VandV_Calcs_gnu_linux
-gnu_linux : $(objf)
+gnu_linux_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux_64 : FCOMPL = gfortran
+gnu_linux_64 : LFLAGS = 
+gnu_linux_64 : obj = VandV_Calcs_gnu_linux
+gnu_linux_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # gnu linux debug
@@ -115,6 +115,14 @@ gnu_linux_db : FCOMPL = gfortran
 gnu_linux_db : LFLAGS = 
 gnu_linux_db : obj = VandV_Calcs_gnu_linux_db
 gnu_linux_db : $(objf)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
+
+# gnu osx
+gnu_osx_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_osx_64 : FCOMPL = gfortran
+gnu_osx_64 : LFLAGS = 
+gnu_osx_64 : obj = VandV_Calcs_gnu_osx
+gnu_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
 # 64 bit

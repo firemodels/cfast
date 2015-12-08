@@ -161,19 +161,19 @@ intel_linux_64_db : $(objf)
 # ------------- OSX -------------------
 
 # gnu osx
-gnu_osx : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
-gnu_osx : FCOMPL = gfortran
-gnu_osx : LFLAGS = 
-gnu_osx : obj = cfast7_gnu_osx
-gnu_osx : $(objfgnu)
+gnu_osx_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -ffpe-summary=none -fbacktrace $(GITINFOGNU)
+gnu_osx_64: FCOMPL = gfortran
+gnu_osx_64 : LFLAGS = 
+gnu_osx_64 : obj = cfast7_osx_64
+gnu_osx_64 : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu osx_db
-gnu_osx_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_osx_db : FCOMPL = gfortran
-gnu_osx_db : LFLAGS = 
-gnu_osx_db : obj = cfast7_gnu_osx_db
-gnu_osx_db : $(objfgnu)
+gnu_osx_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_osx_64_db : FCOMPL = gfortran
+gnu_osx_64_db : LFLAGS = 
+gnu_osx_64_db : obj = cfast7_osx_64_db
+gnu_osx_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 32 bit

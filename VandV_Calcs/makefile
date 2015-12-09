@@ -39,22 +39,6 @@ setup_win:
 
 # ------------- Windows -------------------
 
-# gnu windows
-gnu_win_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_win_64 : FCOMPL = gfortran
-gnu_win_64 : LFLAGS = 
-gnu_win_64 : obj = VandV_Calcs_win_64
-gnu_win_64 : $(objf)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
-
-# gnu windows debug
-gnu_win_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_win_64_db : FCOMPL = gfortran
-gnu_win_64_db : LFLAGS = 
-gnu_win__64db : obj = VandV_Calcs_win_64_db
-gnu_win__64db : $(objf)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
-
 # 64 bit
 intel_win_64 : FFLAGS = /O2 /Qsave /Qinit:zero /fp:strict /fp:except /traceback /stand:f08  $(GITINFO)
 intel_win_64 : FCOMPL = ifort
@@ -62,13 +46,7 @@ intel_win_64 : obj = VandV_Calcs_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = /Qsave /Qinit:zero /debug:full /Z7 /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:strict /fp:except /traceback /check:all /stand:f08 $(GITINFO)
-intel_win_64_db : FCOMPL = ifort
-intel_win_64_db : obj = VandV_Calcs_win_64_db
-intel_win_64_db : setup_win $(objwin)
-	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin)  	
-
-# ------------- Linux -------------------
+# ------------- LINUX ------------------
 
 # gnu linux
 gnu_linux_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
@@ -78,35 +56,12 @@ gnu_linux_64 : obj = VandV_Calcs_linux_64
 gnu_linux_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
-# gnu linux debug
-gnu_linux_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_linux_64_db : FCOMPL = gfortran
-gnu_linux_64_db : LFLAGS = 
-gnu_linux_64_db : obj = VandV_Calcs_linux_64_db
-gnu_linux_64_db : $(objf)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
-
-# gnu osx
-gnu_osx_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_osx_64 : FCOMPL = gfortran
-gnu_osx_64 : LFLAGS = 
-gnu_osx_64 : obj = VandV_Calcs_osx_64
-gnu_osx_64 : $(objf)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
-
 # 64 bit
 intel_linux_64 : FFLAGS = -m64 -O2 -save -zero -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
 intel_linux_64 : LFLAGS = -static-intel
 intel_linux_64 : FCOMPL = ifort
 intel_linux_64 : obj = VandV_Calcs_linux_64
 intel_linux_64 : $(objf)
-	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
-
-intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -save -zero -static -WB -traceback -g -fpe0 -fp-model strict -stand:f08 $(GITINFO)
-intel_linux_64_db : LFLAGS = -static-intel
-intel_linux_64_db : FCOMPL = ifort
-intel_linux_64_db : obj = VandV_Calcs_linux_64_db
-intel_linux_64_db : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
 
 # ------------- OSX -------------------
@@ -119,27 +74,12 @@ gnu_osx_64 : obj = VandV_Calcs_osx_64
 gnu_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
 
-# gnu osx_db
-gnu_osx_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_osx_64_db : FCOMPL = gfortran
-gnu_osx_64_db : LFLAGS = 
-gnu_osx_64_db : obj = VandV_Calcs_osx_64_db
-gnu_osx_64_db : $(objf)
-	$(FCOMPL) $(FFLAGS) -o $(obj) $(objf)
-
 # 64 bit
 intel_osx_64 : FFLAGS = -fpp -O2 -save -zero -m64 -heap-arrays -static-intel -fp-model strict $(GITINFO)
 intel_osx_64 : FCOMPL = ifort
 intel_osx_64 : obj = VandV_Calcs_osx_64
 intel_osx_64 : $(objf)
 	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
-
-intel_osx_64_db : FFLAGS = -fpp -check -warn unused -O0 -save -zero -m64 -g -traceback -save-temps -fpe:0 -fp-model strict -fp-stack-check -FR -WB $(GITINFO)
-intel_osx_64_db : FCOMPL = ifort
-intel_osx_64_db : obj = VandV_Calcs_osx_64_db
-intel_osx_64_db : $(objf)
-	$(FCOMPL) $(FFLAGS) -mmacosx-version-min=10.4 -o $(obj) $(objf)
-#*** End Compiler Specific Rules ***
 
 #*** Clean Target to remove Object and Module files ***
 

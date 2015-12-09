@@ -70,19 +70,19 @@ setup_win:
 # ------------- Windows -------------------
 
 # gnu windows
-gnu_win : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_win : FCOMPL = gfortran
-gnu_win : LFLAGS = 
-gnu_win : obj = cfast7_win_64
-gnu_win : $(objfgnu)
+gnu_win_64 : FFLAGS = -O2 -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_win_64 : FCOMPL = gfortran
+gnu_win_64 : LFLAGS = 
+gnu_win_64 : obj = cfast7_win_64
+gnu_win_64 : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # gnu windows debug
-gnu_win_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
-gnu_win_db : FCOMPL = gfortran
-gnu_win_db : LFLAGS = 
-gnu_win_db : obj = cfast7_win_64_db
-gnu_win_db : $(objfgnu)
+gnu_win_64_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_win_64_db : FCOMPL = gfortran
+gnu_win_64_db : LFLAGS = 
+gnu_win_64_db : obj = cfast7_win_64_db
+gnu_win_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit

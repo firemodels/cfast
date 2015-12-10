@@ -14,6 +14,8 @@ set clean=%4
 set update=%5
 set emailto=%6
 
+set size=_64
+
 :: -------------------------------------------------------------
 ::                         set repository names
 :: -------------------------------------------------------------
@@ -75,8 +77,8 @@ set nothaveValidation=0
 set haveerrors=0
 set havewarnings=0
 
-set gettimeexe=%cfastroot%\Utilities\get_time\intel_win_64\get_time.exe
-set runbatchexe=%cfastroot%\Utilities\runbatch\intel_win_64\runbatch.exe
+set gettimeexe=%cfastroot%\Utilities\get_time\intel_win%size%\get_time.exe
+set runbatchexe=%cfastroot%\Utilities\runbatch\intel_win%size%\runbatch.exe
 
 date /t > %OUTDIR%\starttime.txt
 set /p startdate=<%OUTDIR%\starttime.txt
@@ -309,31 +311,31 @@ echo Stage 1 - Building CFAST and VandV_Calcs
 
 echo             debug cfast
 
-cd %cfastroot%\CFAST\intel_win_64_db
+cd %cfastroot%\CFAST\intel_win%size%_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
 call make_cfast bot 1>> %OUTDIR%\stage1a.txt 2>&1
 
 
-call :does_file_exist cfast7_win_64_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
+call :does_file_exist cfast7_win%size%_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
 
 call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
 
 echo             release cfast
 
-cd %cfastroot%\CFAST\intel_win_64
+cd %cfastroot%\CFAST\intel_win%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
 call make_cfast bot 1>> %OUTDIR%\stage1b.txt 2>&1
 
-call :does_file_exist cfast7_win_64.exe %OUTDIR%\stage1b.txt|| exit /b 1
+call :does_file_exist cfast7_win%size%.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
 echo             release VandV_Calcs
 
-cd %cfastroot%\VandV_Calcs\intel_win_64
+cd %cfastroot%\VandV_Calcs\intel_win%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1c.txt 2>&1
 call make_vv bot 1>> %OUTDIR%\stage1c.txt 2>&1
 
-call :does_file_exist VandV_Calcs_win_64.exe %OUTDIR%\stage1c.txt|| exit /b 1
+call :does_file_exist VandV_Calcs_win%size%.exe %OUTDIR%\stage1c.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1c.txt "Stage 1c"
 
 :: -------------------------------------------------------------
@@ -353,26 +355,26 @@ echo Stage 2 - Building Smokeview
 
 echo             libs
 
-cd %FDSroot%\SMV\Build\LIBS\lib_win_intel_64
+cd %FDSroot%\SMV\Build\LIBS\lib_win_intel%size%
 call makelibs bot 1>> %OUTDIR%\stage2a.txt 2>&1
 
 echo             debug
 
-cd %FDSroot%\SMV\Build\intel_win_64
-erase *.obj *.mod *.exe smokeview_win_64_db.exe 1> %OUTDIR%\stage2a.txt 2>&1
+cd %FDSroot%\SMV\Build\intel_win%size%
+erase *.obj *.mod *.exe smokeview_win%size%_db.exe 1> %OUTDIR%\stage2a.txt 2>&1
 call make_smv_db -r bot 1>> %OUTDIR%\stage2a.txt 2>&1
 
-call :does_file_exist smokeview_win_64_db.exe %OUTDIR%\stage2a.txt|| exit /b 1
+call :does_file_exist smokeview_win%size%_db.exe %OUTDIR%\stage2a.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2a.txt "Stage 2a"
 
 echo             release
 
-cd %FDSroot%\SMV\Build\intel_win_64
-erase *.obj *.mod smokeview_win_64.exe 1> %OUTDIR%\stage2b.txt 2>&1
+cd %FDSroot%\SMV\Build\intel_win%size%
+erase *.obj *.mod smokeview_win%size%.exe 1> %OUTDIR%\stage2b.txt 2>&1
 call make_smv -r bot 1>> %OUTDIR%\stage2b.txt 2>&1
-set smokeview=%FDSroot%\SMV\Build\intel_win_64\smokeview_win_64.exe
+set smokeview=%FDSroot%\SMV\Build\intel_win%size%\smokeview_win%size%.exe
 
-call :does_file_exist smokeview_win_64.exe %OUTDIR%\stage2b.txt|| exit /b 1
+call :does_file_exist smokeview_win%size%.exe %OUTDIR%\stage2b.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 :skip_stage2
 
@@ -444,11 +446,11 @@ echo Stage 5 - Making matlab plots
 echo             Validation
 echo               VandV_Calcs
 cd %cfastroot%\Validation
-..\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe CFAST_Pressure_Correction_Inputs.csv 1> Nul 2>&1
+..\VandV_Calcs\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Pressure_Correction_Inputs.csv 1> Nul 2>&1
 copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y 1> Nul 2>&1
-..\VandV_Calcs\\intel_win_64\VandV_Calcs_win_64.exe CFAST_Temperature_Profile_inputs.csv 1> Nul 2>&1
+..\VandV_Calcs\\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Temperature_Profile_inputs.csv 1> Nul 2>&1
 copy profiles.csv Steckler_Compartment /Y 1> Nul 2>&1
-..\VandV_Calcs\\intel_win_64\VandV_Calcs_win_64.exe CFAST_Heat_Flux_Profile_inputs.csv 1> Nul 2>&1
+..\VandV_Calcs\\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Heat_Flux_Profile_inputs.csv 1> Nul 2>&1
 copy flux_profiles.csv Fleury_Heat_Flux /Y 1> Nul 2>&1
 
 

@@ -8,6 +8,8 @@ set DEBUG=_db
 set DEBUG=
 )
 
+set size=_64
+
 set SCRIPT_DIR=%CD%
 
 cd %CD%\..
@@ -19,7 +21,7 @@ set SVNROOT=%CD%
 set SH2BAT=%SCRIPT_DIR%\sh2bat.exe
 set BACKGROUNDEXE=%SCRIPT_DIR%\\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 0.1
-set CFASTEXE=%SVNROOT%\CFAST\intel_win_64%DEBUG%\cfast7_win_64%DEBUG%
+set CFASTEXE=%SVNROOT%\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
 set CFAST=%bg% %CFASTEXE%
 
 set RUNCFAST_R=call %SCRIPT_DIR%\runcfast.bat

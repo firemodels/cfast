@@ -95,7 +95,7 @@ Public Class About
         Me.AboutVersion.Name = "AboutVersion"
         Me.AboutVersion.Size = New System.Drawing.Size(31, 13)
         Me.AboutVersion.TabIndex = 2
-        Me.AboutVersion.Text = "7.0.1"
+        Me.AboutVersion.Text = "7.1.0"
         Me.AboutVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'Label2

@@ -540,15 +540,15 @@ module mflow_routines
     if (hvorien(i)==1) then
         xyz(1) = 0.0_eb
         xyz(2) = 0.0_eb
-        xyz(3) = roomptr%depth/2 - sqrt(varea)
-        xyz(4) = roomptr%depth/2 + sqrt(varea)
-        xyz(5) = vheight - sqrt(varea)
-        xyz(6) = vheight + sqrt(varea)
+        xyz(3) = roomptr%depth/2 - sqrt(varea)/2
+        xyz(4) = roomptr%depth/2 + sqrt(varea)/2
+        xyz(5) = vheight - sqrt(varea)/2
+        xyz(6) = vheight + sqrt(varea)/2
     else
-        xyz(1) = roomptr%depth/2 - sqrt(varea)
-        xyz(2) = roomptr%depth/2 + sqrt(varea)
-        xyz(3) = roomptr%width/2 - sqrt(varea)
-        xyz(4) = roomptr%width/2 + sqrt(varea)
+        xyz(1) = roomptr%depth/2 - sqrt(varea)/2
+        xyz(2) = roomptr%depth/2 + sqrt(varea)/2
+        xyz(3) = roomptr%width/2 - sqrt(varea)/2
+        xyz(4) = roomptr%width/2 + sqrt(varea)/2
         xyz(5) = vheight
         xyz(6) = vheight
     end if

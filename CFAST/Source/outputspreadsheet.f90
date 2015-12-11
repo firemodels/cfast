@@ -533,7 +533,7 @@ module spreadsheet_routines
         end do
     end do
 
-    !mechanical vents
+    !mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
     if (nnode/=0.and.next/=0) then
         do i = 1, next
             if (hvnode(1,i)<=nm1) then
@@ -545,7 +545,7 @@ module spreadsheet_routines
                 call SSaddtolist (position,slabs,outarray)
                 do j = 1, 2
                     call ssaddtolist(position,ventptr%temp_slab(j),outarray)
-                    call ssaddtolist(position,ventptr%flow_slab(j),outarray)
+                    call ssaddtolist(position,-ventptr%flow_slab(j),outarray)
                     call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
                     call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
                 end do

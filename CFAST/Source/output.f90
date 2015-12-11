@@ -1476,12 +1476,19 @@ module output_routines
     subroutine deleteoutputfiles (outputfile)
 
     character(*), intent(in) :: outputfile
-    integer fileunit,stat
+    integer fileunit,ios
 
     if (doesthefileexist(outputfile)) then
         fileunit=funit(14)
-        open(unit=fileunit, iostat=stat, file=outputfile, status='old')
-        if (stat.eq.0) close(fileunit, status='delete')
+        open(unit=fileunit, iostat=ios, file=outputfile, status='old')
+        if (ios==0) then
+            close(fileunit, status='delete', iostat=ios)
+            if (ios/=0) then
+                write (logerr,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
+                    '. File may be in use by another application.'
+                stop
+            end if
+        end if
     endif
 
     return

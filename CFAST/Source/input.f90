@@ -1992,6 +1992,13 @@ module input_routines
 
     open (unit=1, file=inputfile, action='read', status='old', iostat=ios)
 
+    call deleteoutputfiles (errorlogging)
+    open (unit=3, file=errorlogging, action='write', iostat=ios, status='new')
+    if (ios/=0) then
+        write (*,'(a,i0,a)') 'Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
+        stop
+    end if
+    
     call deleteoutputfiles (outputfile)
     call deleteoutputfiles (smvhead)
     call deleteoutputfiles (smvdata)
@@ -2000,24 +2007,15 @@ module input_routines
     call deleteoutputfiles (ssnormal)
     call deleteoutputfiles (ssspecies)
     call deleteoutputfiles (sswall)
-    call deleteoutputfiles (errorlogging)
     call deleteoutputfiles (historyfile)
     call deleteoutputfiles (statusfile)
     call deleteoutputfiles (queryfile)
     call deleteoutputfiles (kernelisrunning)
 
     ! since we have reached this point, the output files are available and stop has been turned off.
-    ! open the log file and return the correct project name
-    open (unit=3, file=errorlogging, action='write', iostat=ios, status='new')
-    if (ios/=0) then
-        write (*,100) 'Error opening log file, returned status = ', ios, '. Log file may be in use interfaces another application.'
-        stop
-    end if
-
     project = testproj (1:ld)
     return
-    
-100 format (a,i0,a)    
+
     end subroutine open_files
 
 ! --------------------------- read_solver_ini -------------------------------------------

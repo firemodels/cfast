@@ -34,7 +34,7 @@ module mflow_routines
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
     real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
 
-    real(eb) :: filter
+    real(eb) :: filter, vheight
     integer :: i, ii, j, k, isys, nprod
     logical :: hvacflg
     
@@ -65,15 +65,16 @@ module mflow_routines
 
         ! flow information for smokeview
         ventptr => mventinfo(ii)
+        vheight = hvelxt(ii)
         do j = upper, lower
             ventptr%temp_slab(j) = hvextt(ii,j)
             ventptr%flow_slab(j) = hveflo(j,ii)
             if (j == upper) then
-                ventptr%ybot_slab(j) = sqrt(arext(ii))/2
-                ventptr%ytop_slab(j) = sqrt(arext(ii))
+                ventptr%ybot_slab(j) = vheight
+                ventptr%ytop_slab(j) = vheight + sqrt(arext(ii))/2
             else
-                ventptr%ybot_slab(j) = 0.0_eb
-                ventptr%ytop_slab(j) = sqrt(arext(ii))/2
+                ventptr%ybot_slab(j) = vheight - sqrt(arext(ii))/2
+                ventptr%ytop_slab(j) = vheight
             end if
         end do
         ventptr%n_slabs = 2

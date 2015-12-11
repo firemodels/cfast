@@ -500,7 +500,7 @@ module spreadsheet_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        factor2 = qchfraction (qcvh, ijk(im,ix,ik),time)
+        factor2 = qchfraction (qcvh,ijk(im,ix,ik),time)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = factor2*height*width

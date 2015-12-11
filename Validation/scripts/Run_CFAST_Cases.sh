@@ -23,7 +23,7 @@ exit
 }
 STOPFDS=
 queue=
-size=64
+size=_64
 DEBUG=
 JOBPREFIX=
 use_installed=
@@ -74,9 +74,9 @@ done
 underscore="_"
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx$underscore$size
+  PLATFORM=osx$size
 else
-  PLATFORM=linux$underscore$size
+  PLATFORM=linux$size
 fi
 PLATFORM2=$PLATFORM
 PLATFORM=$PLATFORM$DEBUG

@@ -661,7 +661,7 @@ module solve_routines
                 call output_smokeview_header (version,nm1,nfires)
             endif
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
-            call output_smokeview_spreadsheet(t)
+            call output_spreadsheet_smokeview(t)
             tsmv = tsmv + dplot
             call output_status (t, dt)
             call output_slicedata(t,first_time)

@@ -7,7 +7,7 @@ module spreadsheet_routines
     
     private
     
-    public output_spreadsheet, output_smokeview_spreadsheet, output_spreadsheet_residuals, spreadsheetfslabs, ssprintslab
+    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_residuals, spreadsheetfslabs, ssprintslab
     
     contains
     
@@ -429,9 +429,9 @@ module spreadsheet_routines
 
     end subroutine output_spreadsheet_species
 
-! --------------------------- output_smokeview_spreadsheet -------------------------------------------
+! --------------------------- output_spreadsheet_smokeview -------------------------------------------
 
-    subroutine output_smokeview_spreadsheet (time)
+    subroutine output_spreadsheet_smokeview (time)
 
     ! This routine writes to the {project}_zone.csv file, the smokeview information
 
@@ -555,7 +555,7 @@ module spreadsheet_routines
     call ssprintresults (15, position, outarray)
 
     return
-    end subroutine output_smokeview_spreadsheet
+    end subroutine output_spreadsheet_smokeview
 
 ! --------------------------- output_spreadsheet_residuals -------------------------------------------
 

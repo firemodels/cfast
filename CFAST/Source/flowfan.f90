@@ -68,8 +68,13 @@ module mflow_routines
         do j = upper, lower
             ventptr%temp_slab(j) = hvextt(ii,j)
             ventptr%flow_slab(j) = hveflo(j,ii)
-            ventptr%ybot_slab(j) = max(0.0_eb,(hvelxt(ii) - sqrt(arext(ii)))/2.0_eb)
-            ventptr%ytop_slab(j) = min(arext(ii),(hvelxt(ii) + sqrt(arext(ii)))/2.0_eb)
+            if (j == upper) then
+                ventptr%ybot_slab(j) = sqrt(arext(ii))/2
+                ventptr%ytop_slab(j) = sqrt(arext(ii))
+            else
+                ventptr%ybot_slab(j) = 0.0_eb
+                ventptr%ytop_slab(j) = sqrt(arext(ii))/2
+            end if
         end do
         ventptr%n_slabs = 2
 

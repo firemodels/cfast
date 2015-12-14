@@ -34,11 +34,12 @@ module mflow_routines
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
     real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
 
-    real(eb) :: filter, vheight
-    integer :: i, ii, j, k, isys, nprod
+    real(eb) :: filter, vheight, layer_height
+    integer :: i, ii, j, k, isys, nprod, iroom
     logical :: hvacflg
     
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomptr
 
     ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.  
     ! chv should eventually be defined elsewhere.
@@ -66,15 +67,28 @@ module mflow_routines
         ! flow information for smokeview
         ventptr => mventinfo(ii)
         vheight = hvelxt(ii)
+        iroom = hvnode(1,ii)
+        roomptr => roominfo(iroom)
+        layer_height = max(min(zzhlay(iroom,lower) + roomptr%z0, vheight + sqrt(arext(ii))/2), vheight - sqrt(arext(ii))/2)
         do j = upper, lower
             ventptr%temp_slab(j) = hvextt(ii,j)
             ventptr%flow_slab(j) = hveflo(j,ii)
             if (j == upper) then
-                ventptr%ybot_slab(j) = vheight
-                ventptr%ytop_slab(j) = vheight + sqrt(arext(ii))/2
+                if (hvorien(ii)==1) then
+                    ventptr%ybot_slab(j) = layer_height
+                    ventptr%ytop_slab(j) = vheight + sqrt(arext(ii))/2
+                else
+                    ventptr%ybot_slab(j) = vheight
+                    ventptr%ytop_slab(j) = vheight + sqrt(arext(ii))/2
+                end if
             else
-                ventptr%ybot_slab(j) = vheight - sqrt(arext(ii))/2
-                ventptr%ytop_slab(j) = vheight
+                if (hvorien(ii)==1) then
+                    ventptr%ybot_slab(j) = vheight - sqrt(arext(ii))/2
+                    ventptr%ytop_slab(j) = layer_height
+                else
+                    ventptr%ybot_slab(j) = vheight - sqrt(arext(ii))/2
+                    ventptr%ytop_slab(j) = vheight
+                end if
             end if
         end do
         ventptr%n_slabs = 2

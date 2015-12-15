@@ -462,8 +462,8 @@ if %usematlab% == 0 goto matlab_else1
   matlab -logfile %matlabvallog% -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_validation_script.m'); catch; end; quit
   goto matlab_end1
 :matlab_else1
-  Validation
-  call :WAIT_RUN Validation
+  Validation_Script
+  call :WAIT_RUN Validation_Script
 :matlab_end1
 
 ::*** generating Verification plots
@@ -475,8 +475,8 @@ if %usematlab% == 0 goto matlab_else2
   matlab -logfile %matlabverlog% -automation -wait -noFigureWindows -r "try; run('%cfastroot%\Utilities\Matlab\CFAST_verification_script.m'); catch; end; quit
   goto matlab_end2
 :matlab_else2
-  Verification
-  call :WAIT_RUN Verification
+  Verification_Script
+  call :WAIT_RUN Verification_Script
 :matlab_end2
 
 :skip_stage5

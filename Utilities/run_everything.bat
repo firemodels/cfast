@@ -19,8 +19,8 @@ call runall.bat ALL
 echo Running matlab plotting analysis
 cd ..\Utilities\matlab
 Title Running Matlab Plotting Analysis
-Validation
-Verification
+Validation_Script
+Verification_Script
 echo Creating Documentation
 Title Creating Documentation
 cd ..\

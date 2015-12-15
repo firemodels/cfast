@@ -913,7 +913,7 @@ run_matlab_verification()
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
 
-   matlab -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7b_verification
+   matlab -logfile vermat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7b_verification
 }
 
 check_matlab_verification()
@@ -953,7 +953,7 @@ run_matlab_validation()
    echo "   Making plots"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
-   matlab -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation
+   matlab -logfile valmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation
 }
 
 check_matlab_validation()

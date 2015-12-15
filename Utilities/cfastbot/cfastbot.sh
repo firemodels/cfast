@@ -877,7 +877,7 @@ run_matlab_license_test()
    echo "Running matlab license test"
    # Run simple test to see if Matlab license is available
    cd $cfastrepo/Utilities/Matlab
-   matlab -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_matlab_license
+   matlab -logfile licmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_matlab_license
 }
 
 scan_matlab_license_test()

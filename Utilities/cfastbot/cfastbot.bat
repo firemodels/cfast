@@ -214,7 +214,7 @@ if %usematlab% == 0 goto skip_matlab
 if %usematlab% == 1 goto skip_matlabexe
 ::*** looking for Validation
 
-  where Validation 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+  where Validation_Script 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
   set /p nothaveValidation=<%OUTDIR%\stage_count0a.txt
   if %nothaveValidation% == 0 (
     echo             found Validation plot generator 
@@ -225,7 +225,7 @@ if %usematlab% == 1 goto skip_matlabexe
 
 ::*** looking for Verification
 
-  where Verification 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
+  where Verification_Script 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
   set /p nothaveVerification=<%OUTDIR%\stage_count0a.txt
   if %nothaveVerification% == 0 (
     echo             found Verification plot generator 
@@ -235,17 +235,6 @@ if %usematlab% == 1 goto skip_matlabexe
     set nothaveValidation=1
   )
 
-::*** looking for SpeciesMassTestCases
-
-  where SpeciesMassTestCases 2>&1 | find /i /c "Could not find" > %OUTDIR%\stage_count0a.txt
-  set /p nothaveVerification=<%OUTDIR%\stage_count0a.txt
-  if %nothaveVerification% == 0 (
-    echo             found SpeciesMassTestCases plot generator 
-  )
-  if %nothaveVerification% == 1 (
-    echo             SpeciesMassTestCases plot generator not found - Validation guide will not be built
-    set nothaveValidation=1
-  )
 :skip_matlabexe
 
 :: --------------------setting up repositories ------------------------------

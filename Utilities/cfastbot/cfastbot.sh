@@ -1052,8 +1052,8 @@ check_guide()
 
 make_cfast_tech_guide()
 {
-   # Build CFAST tech Guide
-   echo Building CFAST tech guide
+   # Build CFAST Tech Guide
+   echo Building CFAST Tech guide
    cd $cfastrepo/Docs/Tech_Ref
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_tech_guide
 
@@ -1061,15 +1061,37 @@ make_cfast_tech_guide()
    check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $cfastrepo/Docs/Tech_Ref Tech_Ref.pdf 'CFAST Technical Reference Guide'
 }
 
+make_cfast_user_guide()
+{
+   # Build CFAST User Guide
+   echo Building CFAST User guide
+   cd $cfastrepo/Docs/Users_Guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_user_guide
+
+   # Check guide for completion and copy to website if successful
+   check_guide $OUTPUT_DIR/stage8_cfast_user_guide $cfastrepo/Docs/Users_Guide Users_Guide.pdf 'CFAST Users Guide'
+}
+
 make_cfast_vv_guide()
 {
-   # Build CFAST tech Guide
+   # Build CFAST Tech Guide
    echo Building CFAST VV guide
    cd $cfastrepo/Docs/Validation_Guide
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
    check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $cfastrepo/Docs/Validation_Guide Validation_Guide.pdf 'CFAST Verification and Validation Guide'
+}
+
+make_cfast_config_guide()
+{
+   # Build CFAST Configuration Guide
+   echo Building CFAST Configuration guide
+   cd $cfastrepo/Docs/Configuration_Guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_config_guide
+
+   # Check guide for completion and copy to website if successful
+   check_guide $OUTPUT_DIR/stage8_cfast_config_guide $cfastrepo/Docs/Configuration_Guide Configuration_Guide.pdf 'CFAST Configuration Guide'
 }
 
 #  =====================================================
@@ -1254,7 +1276,9 @@ fi
 ### Stage 8 ###
 if [[ "$SKIP" == "" ]]; then
   make_cfast_tech_guide
+  make_cfast_user_guide
   make_cfast_vv_guide
+  make_cfast_config_guide
 fi
 
 ### Report results ###

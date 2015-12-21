@@ -10,6 +10,8 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents DetectorActivationObscuration As System.Windows.Forms.TextBox
+    Friend WithEvents Label17 As System.Windows.Forms.Label
 
 #Region " Windows Form Designer generated code "
 
@@ -295,7 +297,7 @@ Public Class CeditMain
     Friend WithEvents FireDup As System.Windows.Forms.Button
     Friend WithEvents DetectorSprayDensity As System.Windows.Forms.TextBox
     Friend WithEvents DetectorRTI As System.Windows.Forms.TextBox
-    Friend WithEvents DetectorActivation As System.Windows.Forms.TextBox
+    Friend WithEvents DetectorActivationTemperature As System.Windows.Forms.TextBox
     Friend WithEvents DetectorType As System.Windows.Forms.ComboBox
     Friend WithEvents DetectorComp As System.Windows.Forms.ComboBox
     Friend WithEvents DetectorZPosition As System.Windows.Forms.TextBox
@@ -685,7 +687,7 @@ Public Class CeditMain
         Me.Label81 = New System.Windows.Forms.Label()
         Me.DetectorRTI = New System.Windows.Forms.TextBox()
         Me.Label83 = New System.Windows.Forms.Label()
-        Me.DetectorActivation = New System.Windows.Forms.TextBox()
+        Me.DetectorActivationTemperature = New System.Windows.Forms.TextBox()
         Me.Label92 = New System.Windows.Forms.Label()
         Me.DetectorType = New System.Windows.Forms.ComboBox()
         Me.Label91 = New System.Windows.Forms.Label()
@@ -823,6 +825,8 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.DetectorActivationObscuration = New System.Windows.Forms.TextBox()
+        Me.Label17 = New System.Windows.Forms.Label()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -3259,11 +3263,13 @@ Public Class CeditMain
         '
         'GroupDetectors
         '
+        Me.GroupDetectors.Controls.Add(Me.DetectorActivationObscuration)
+        Me.GroupDetectors.Controls.Add(Me.Label17)
         Me.GroupDetectors.Controls.Add(Me.DetectorSprayDensity)
         Me.GroupDetectors.Controls.Add(Me.Label81)
         Me.GroupDetectors.Controls.Add(Me.DetectorRTI)
         Me.GroupDetectors.Controls.Add(Me.Label83)
-        Me.GroupDetectors.Controls.Add(Me.DetectorActivation)
+        Me.GroupDetectors.Controls.Add(Me.DetectorActivationTemperature)
         Me.GroupDetectors.Controls.Add(Me.Label92)
         Me.GroupDetectors.Controls.Add(Me.DetectorType)
         Me.GroupDetectors.Controls.Add(Me.Label91)
@@ -3279,7 +3285,7 @@ Public Class CeditMain
         '
         'DetectorSprayDensity
         '
-        Me.DetectorSprayDensity.Location = New System.Drawing.Point(593, 136)
+        Me.DetectorSprayDensity.Location = New System.Drawing.Point(594, 168)
         Me.DetectorSprayDensity.Name = "DetectorSprayDensity"
         Me.DetectorSprayDensity.Size = New System.Drawing.Size(96, 20)
         Me.DetectorSprayDensity.TabIndex = 914
@@ -3288,7 +3294,7 @@ Public Class CeditMain
         'Label81
         '
         Me.Label81.AutoSize = True
-        Me.Label81.Location = New System.Drawing.Point(505, 136)
+        Me.Label81.Location = New System.Drawing.Point(506, 168)
         Me.Label81.Name = "Label81"
         Me.Label81.Size = New System.Drawing.Size(75, 13)
         Me.Label81.TabIndex = 48
@@ -3297,7 +3303,7 @@ Public Class CeditMain
         '
         'DetectorRTI
         '
-        Me.DetectorRTI.Location = New System.Drawing.Point(593, 104)
+        Me.DetectorRTI.Location = New System.Drawing.Point(594, 136)
         Me.DetectorRTI.Name = "DetectorRTI"
         Me.DetectorRTI.Size = New System.Drawing.Size(96, 20)
         Me.DetectorRTI.TabIndex = 913
@@ -3306,25 +3312,25 @@ Public Class CeditMain
         'Label83
         '
         Me.Label83.AutoSize = True
-        Me.Label83.Location = New System.Drawing.Point(553, 104)
+        Me.Label83.Location = New System.Drawing.Point(554, 136)
         Me.Label83.Name = "Label83"
         Me.Label83.Size = New System.Drawing.Size(28, 13)
         Me.Label83.TabIndex = 46
         Me.Label83.Text = "RTI:"
         Me.Label83.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'DetectorActivation
+        'DetectorActivationTemperature
         '
-        Me.DetectorActivation.Location = New System.Drawing.Point(697, 24)
-        Me.DetectorActivation.Name = "DetectorActivation"
-        Me.DetectorActivation.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorActivation.TabIndex = 909
-        Me.DetectorActivation.Text = "30"
+        Me.DetectorActivationTemperature.Location = New System.Drawing.Point(697, 24)
+        Me.DetectorActivationTemperature.Name = "DetectorActivationTemperature"
+        Me.DetectorActivationTemperature.Size = New System.Drawing.Size(96, 20)
+        Me.DetectorActivationTemperature.TabIndex = 909
+        Me.DetectorActivationTemperature.Text = "30"
         '
         'Label92
         '
         Me.Label92.AutoSize = True
-        Me.Label92.Location = New System.Drawing.Point(569, 24)
+        Me.Label92.Location = New System.Drawing.Point(569, 28)
         Me.Label92.Name = "Label92"
         Me.Label92.Size = New System.Drawing.Size(120, 13)
         Me.Label92.TabIndex = 44
@@ -3344,7 +3350,7 @@ Public Class CeditMain
         'Label91
         '
         Me.Label91.AutoSize = True
-        Me.Label91.Location = New System.Drawing.Point(25, 24)
+        Me.Label91.Location = New System.Drawing.Point(25, 28)
         Me.Label91.Name = "Label91"
         Me.Label91.Size = New System.Drawing.Size(34, 13)
         Me.Label91.TabIndex = 42
@@ -3363,7 +3369,7 @@ Public Class CeditMain
         'Label87
         '
         Me.Label87.AutoSize = True
-        Me.Label87.Location = New System.Drawing.Point(233, 24)
+        Me.Label87.Location = New System.Drawing.Point(233, 28)
         Me.Label87.Name = "Label87"
         Me.Label87.Size = New System.Drawing.Size(72, 13)
         Me.Label87.TabIndex = 34
@@ -4663,6 +4669,24 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
         '
+        'DetectorActivationObscuration
+        '
+        Me.DetectorActivationObscuration.Location = New System.Drawing.Point(697, 52)
+        Me.DetectorActivationObscuration.Name = "DetectorActivationObscuration"
+        Me.DetectorActivationObscuration.Size = New System.Drawing.Size(96, 20)
+        Me.DetectorActivationObscuration.TabIndex = 916
+        Me.DetectorActivationObscuration.Text = "80 %/ft"
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(572, 56)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(117, 13)
+        Me.Label17.TabIndex = 915
+        Me.Label17.Text = "Activation Obscuration:"
+        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -5826,7 +5850,7 @@ Public Class CeditMain
             UpdateGUI.Detectors(CurrentDetector)
         End If
     End Sub
-    Private Sub Detector_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorComp.SelectedIndexChanged, DetectorType.SelectedIndexChanged, DetectorActivation.Leave, DetectorXPosition.Leave, DetectorYPosition.Leave, DetectorZPosition.Leave, DetectorSprayDensity.Leave, DetectorRTI.Leave
+    Private Sub Detector_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorComp.SelectedIndexChanged, DetectorType.SelectedIndexChanged, DetectorActivationTemperature.Leave, DetectorXPosition.Leave, DetectorYPosition.Leave, DetectorZPosition.Leave, DetectorSprayDensity.Leave, DetectorRTI.Leave
         Dim aDetector As New Target
         If CurrentDetector >= 0 And myDetectors.Count > 0 Then
             aDetector = myDetectors(CurrentDetector)
@@ -5837,7 +5861,7 @@ Public Class CeditMain
                 If Val(Me.DetectorYPosition.Text) = -1 Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)
                 If Val(Me.DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)
             End If
-            If sender Is Me.DetectorActivation Then aDetector.ActivationTemperature = Val(Me.DetectorActivation.Text)
+            If sender Is Me.DetectorActivationTemperature Then aDetector.ActivationTemperature = Val(Me.DetectorActivationTemperature.Text)
             If sender Is Me.DetectorXPosition Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)
             If sender Is Me.DetectorYPosition Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)
             If sender Is Me.DetectorZPosition Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)

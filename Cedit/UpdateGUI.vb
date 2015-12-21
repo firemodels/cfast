@@ -629,7 +629,7 @@ Public Class UpdateGUI
             ElseIf aDetector.Compartment >= 0 And aDetector.Compartment <= myCompartments.Count - 1 Then
                 MainWin.DetectorComp.SelectedIndex = aDetector.Compartment
             End If
-            MainWin.DetectorActivation.Text = aDetector.ActivationTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
+            MainWin.DetectorActivationTemperature.Text = aDetector.ActivationTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
             MainWin.DetectorXPosition.Text = aDetector.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.DetectorYPosition.Text = aDetector.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.DetectorZPosition.Text = aDetector.ZPosition.ToString + myUnits.Convert(UnitsNum.Length).Units

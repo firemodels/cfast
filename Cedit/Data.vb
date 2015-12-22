@@ -244,6 +244,7 @@ Friend Module Data
         type = 2
         compartment
         activationTemp
+        activationObscuration = 4
         xPosition
         yPosition
         zPosition

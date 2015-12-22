@@ -4,7 +4,7 @@ Public Class Target
     Friend Const TypeDetector As Integer = 1
     Friend Const SmokeDetectorActivationTemperature As Single = 30.0    ' Smoke detector simulated as a heat detector with 10 °C rise trigger with RTI = 5
     Friend Const SmokeDetectorRTI As Single = 5.0
-    Friend Const HeatDetectorActiviationTemperature As Single = 57.22   ' Default heat detector is a 135 °F detector with 10 ft spacing from NRC NUREG 1085, table 12-2
+    Friend Const HeatDetectorActiviationTemperature As Single = 57.22   ' Default heat detector is a 135 °F detector with 10 ft spacing from NRC NUREG 1805, table 12-2
     Friend Const HeatDetectorRTI As Single = 404.0
     Friend Const SprinklerActivationTemperature As Single = 73.89       ' Default sprinkler is standard response link, ordinary sprinkler, RTI = 130 and 165 °F
     Friend Const SprinklerRTI As Single = 130
@@ -13,10 +13,12 @@ Public Class Target
     Friend Const Steady As Integer = 2
     Friend Const ThermallyThick As Integer = 0
     Friend Const Cylindrical As Integer = 1
-    Friend Const TypeHeatDetector As Integer = 1                    ' Type 0 is a normal target (type from above), 1 is a heat detector, 2 is a smoke detector and 3 is a sprinkler
-    Friend Const TypeSmokeDetector As Integer = 0
+    Friend Const TypeSmokeDetector As Integer = 0                       ' Type 0 is a smoke detector, 1 is a heat detector, 2 is a sprinkler
+    Friend Const TypeHeatDetector As Integer = 1
     Friend Const TypeSprinkler As Integer = 2
     Friend Const MaximumTargets As Integer = 100
+    Friend Const ActivationbyTemperature As Integer = 0
+    Friend Const ActivationbyObscuration As Integer = 1
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aType As Integer                    ' 0 for target and 1 for detector
@@ -32,7 +34,9 @@ Public Class Target
     Private aMaterial As String                 ' Target material from material database
     Private aSolutionType As Integer            ' 0 for thermally thick plate which is the PDE option or 1 for cylindrical coordinates.  ODE is no loger supported
     Private aDetectorType As Integer            ' 0 for heat detector, 1 for smoke detector, 2 for sprinkler 
+    Private aActivationType As Integer          ' Used to maintain compatibility with older smoke dtector inputs. 0 for temperature, 1 for obscuration. 
     Private aActivationTemperature As Single    ' Activation temperature for all detector types.  Default depends on type
+    Private aActivationObscuration As Single    ' Activation obscuration for smoke detectors
     Private aRTI As Single                      ' Detector RTI value
     Private aSprayDensity As Single             ' Sprinkler spray density
     Private aChanged As Boolean = False         ' True once compartment information has changed
@@ -53,6 +57,7 @@ Public Class Target
         aSolutionType = 0
         aDetectorType = 1
         aActivationTemperature = 10.0 + 273.15
+        aActivationType = ActivationbyTemperature
         aRTI = 100
         aSprayDensity = 0.00007
     End Sub
@@ -240,6 +245,30 @@ Public Class Target
             End If
         End Set
     End Property
+    Public Property ActivationObscuration() As Single
+        Get
+            If aActivationObscuration <> 0 Then
+                Return 1 / myUnits.Convert(UnitsNum.Length).FromSI(1 / aActivationObscuration)
+            Else
+                Return 0
+            End If
+        End Get
+        Set(ByVal Value As Single)
+            If Value <> 0 Then
+                If 1 / myUnits.Convert(UnitsNum.Length).ToSI(1 / Value) <> aActivationObscuration Then
+                    aActivationObscuration = 1 / myUnits.Convert(UnitsNum.Length).ToSI(1 / Value)
+                    aActivationType = ActivationbyObscuration
+                    aChanged = True
+                End If
+            Else
+                If aActivationObscuration <> 0 Then
+                    aActivationObscuration = 0
+                    aActivationType = ActivationbyObscuration
+                    aChanged = True
+                End If
+            End If
+        End Set
+    End Property
     Public Property ActivationTemperature() As Single
         Get
             Return myUnits.Convert(UnitsNum.Temperature).FromSI(aActivationTemperature)
@@ -247,6 +276,7 @@ Public Class Target
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Temperature).ToSI(Value) <> aActivationTemperature Then
                 aActivationTemperature = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
+                aActivationType = ActivationbyTemperature
                 aChanged = True
             End If
         End Set

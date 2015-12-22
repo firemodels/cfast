@@ -98,20 +98,37 @@ Module IO
                     Case "DETECT"
                         Dim aDetect As New Target
                         aDetect.Type = Target.TypeDetector
-                        If csv.Num(i, detectNum.type) = 1 Then
-                            aDetect.DetectorType = Target.TypeSmokeDetector
-                        ElseIf csv.Num(i, detectNum.suppression) = 1 Then
-                            aDetect.DetectorType = Target.TypeSprinkler
-                        Else
-                            aDetect.DetectorType = Target.TypeHeatDetector
-                        End If
                         aDetect.Compartment = csv.Num(i, detectNum.compartment) - 1
-                        aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
                         aDetect.XPosition = csv.Num(i, detectNum.xPosition)
                         aDetect.YPosition = csv.Num(i, detectNum.yPosition)
                         aDetect.ZPosition = csv.Num(i, detectNum.zPosition)
-                        aDetect.RTI = csv.Num(i, detectNum.RTI)
-                        aDetect.SprayDensity = csv.Num(i, detectNum.sprayDensity)
+                        If csv.Num(i, detectNum.type) = 1 Then
+                            aDetect.DetectorType = Target.TypeSmokeDetector
+                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
+                        ElseIf csv.Num(i, detectNum.type) = 2 Then
+                            If csv.Num(i, detectNum.suppression) = 1 Then
+                                aDetect.DetectorType = Target.TypeSprinkler
+                                aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
+                                aDetect.RTI = csv.Num(i, detectNum.RTI)
+                                aDetect.SprayDensity = csv.Num(i, detectNum.sprayDensity)
+                            Else
+                                aDetect.DetectorType = Target.TypeHeatDetector
+                                aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
+                                aDetect.RTI = csv.Num(i, detectNum.RTI)
+                            End If
+                        ElseIf csv.str(i, detectNum.type) = "SMOKE" Then
+                            aDetect.DetectorType = Target.TypeSmokeDetector
+                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationObscuration)
+                        ElseIf csv.str(i, detectNum.type) = "HEAT" Then
+                            aDetect.DetectorType = Target.TypeHeatDetector
+                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
+                            aDetect.RTI = csv.Num(i, detectNum.RTI)
+                        ElseIf csv.str(i, detectNum.type) = "SPRINKLER" Then
+                            aDetect.DetectorType = Target.TypeSprinkler
+                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
+                            aDetect.RTI = csv.Num(i, detectNum.RTI)
+                            aDetect.SprayDensity = csv.Num(i, detectNum.sprayDensity)
+                        End If
                         aDetect.Changed = False
                         myDetectors.Add(aDetect)
                     Case "DJIGN"

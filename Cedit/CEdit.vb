@@ -683,6 +683,8 @@ Public Class CeditMain
         Me.TabDetection = New System.Windows.Forms.TabPage()
         Me.DetectorSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupDetectors = New System.Windows.Forms.GroupBox()
+        Me.DetectorActivationObscuration = New System.Windows.Forms.TextBox()
+        Me.Label17 = New System.Windows.Forms.Label()
         Me.DetectorSprayDensity = New System.Windows.Forms.TextBox()
         Me.Label81 = New System.Windows.Forms.Label()
         Me.DetectorRTI = New System.Windows.Forms.TextBox()
@@ -825,8 +827,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.DetectorActivationObscuration = New System.Windows.Forms.TextBox()
-        Me.Label17 = New System.Windows.Forms.Label()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -3283,6 +3283,24 @@ Public Class CeditMain
         Me.GroupDetectors.TabStop = False
         Me.GroupDetectors.Text = "Smoke Alarm 1"
         '
+        'DetectorActivationObscuration
+        '
+        Me.DetectorActivationObscuration.Location = New System.Drawing.Point(697, 52)
+        Me.DetectorActivationObscuration.Name = "DetectorActivationObscuration"
+        Me.DetectorActivationObscuration.Size = New System.Drawing.Size(96, 20)
+        Me.DetectorActivationObscuration.TabIndex = 916
+        Me.DetectorActivationObscuration.Text = "80 %/ft"
+        '
+        'Label17
+        '
+        Me.Label17.AutoSize = True
+        Me.Label17.Location = New System.Drawing.Point(572, 56)
+        Me.Label17.Name = "Label17"
+        Me.Label17.Size = New System.Drawing.Size(117, 13)
+        Me.Label17.TabIndex = 915
+        Me.Label17.Text = "Activation Obscuration:"
+        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'DetectorSprayDensity
         '
         Me.DetectorSprayDensity.Location = New System.Drawing.Point(594, 168)
@@ -4668,24 +4686,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
-        '
-        'DetectorActivationObscuration
-        '
-        Me.DetectorActivationObscuration.Location = New System.Drawing.Point(697, 52)
-        Me.DetectorActivationObscuration.Name = "DetectorActivationObscuration"
-        Me.DetectorActivationObscuration.Size = New System.Drawing.Size(96, 20)
-        Me.DetectorActivationObscuration.TabIndex = 916
-        Me.DetectorActivationObscuration.Text = "80 %/ft"
-        '
-        'Label17
-        '
-        Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(572, 56)
-        Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(117, 13)
-        Me.Label17.TabIndex = 915
-        Me.Label17.Text = "Activation Obscuration:"
-        Me.Label17.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'CeditMain
         '

@@ -20,7 +20,7 @@ Module IO
                     Case "FIRE"
                         NewFileFormat = True
                     Case "CHEMI"
-                        If csv.Num(i, 0) > 3 Then NewFileFormat = True
+                        If csv.num(i, 0) > 3 Then NewFileFormat = True
                 End Select
             End If
             i += 1
@@ -37,12 +37,12 @@ Module IO
                     Dim compa As New Compartment
                     myCompartments.Add(compa)
                     compa.Name = csv.str(i, compaNum.Name)
-                    compa.SetSize(csv.Num(i, compaNum.Width), csv.Num(i, compaNum.Depth), csv.Num(i, compaNum.Height))
-                    compa.SetPosition(csv.Num(i, compaNum.AbsXPos), csv.Num(i, compaNum.AbsYPos), _
-                            csv.Num(i, compaNum.FlrHeight))
+                    compa.SetSize(csv.num(i, compaNum.Width), csv.num(i, compaNum.Depth), csv.num(i, compaNum.Height))
+                    compa.SetPosition(csv.num(i, compaNum.AbsXPos), csv.num(i, compaNum.AbsYPos), _
+                            csv.num(i, compaNum.FlrHeight))
                     compa.SetMaterial(csv.str(i, compaNum.CeilingMat), csv.str(i, compaNum.WallMat), _
                             csv.str(i, compaNum.FloorMat))
-                    If csv.Num(i, 0) > compaNum.WallMat Then compa.SetGrid(csv.Num(i, compaNum.xGrid), csv.Num(i, compaNum.yGrid), csv.Num(i, compaNum.zGrid))
+                    If csv.num(i, 0) > compaNum.WallMat Then compa.SetGrid(csv.num(i, compaNum.xGrid), csv.num(i, compaNum.yGrid), csv.num(i, compaNum.zGrid))
                     compa.Changed = False
                 End If
             End If
@@ -56,9 +56,9 @@ Module IO
                 If csv.str(i, CFASTlnNum.keyWord) = "TARGET" Then
                     Dim aDetect As New Target
                     aDetect.Type = 0
-                    aDetect.SetPosition(csv.Num(i, targetNum.xPosition), csv.Num(i, targetNum.yPosition), _
-                        csv.Num(i, targetNum.zPosition), csv.Num(i, targetNum.xNormal), csv.Num(i, targetNum.yNormal), _
-                        csv.Num(i, targetNum.zNormal))
+                    aDetect.SetPosition(csv.num(i, targetNum.xPosition), csv.num(i, targetNum.yPosition), _
+                        csv.num(i, targetNum.zPosition), csv.num(i, targetNum.xNormal), csv.num(i, targetNum.yNormal), _
+                        csv.num(i, targetNum.zNormal))
                     Dim type As Integer
                     If csv.str(i, targetNum.equationType) = "CYL" Then
                         type = 1
@@ -68,9 +68,9 @@ Module IO
                     Else ' PDE
                         type = 0
                     End If
-                    aDetect.SetTarget(csv.Num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), type)
+                    aDetect.SetTarget(csv.num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), type)
                     If (csv.str(i, targetNum.internalLocation) <> "") Then
-                        aDetect.InternalLocation = csv.Num(i, targetNum.internalLocation)
+                        aDetect.InternalLocation = csv.num(i, targetNum.internalLocation)
                     Else
                         aDetect.InternalLocation = 0.5
                     End If
@@ -98,48 +98,48 @@ Module IO
                     Case "DETECT"
                         Dim aDetect As New Target
                         aDetect.Type = Target.TypeDetector
-                        aDetect.Compartment = csv.Num(i, detectNum.compartment) - 1
-                        aDetect.XPosition = csv.Num(i, detectNum.xPosition)
-                        aDetect.YPosition = csv.Num(i, detectNum.yPosition)
-                        aDetect.ZPosition = csv.Num(i, detectNum.zPosition)
-                        If csv.Num(i, detectNum.type) = 1 Then
+                        aDetect.Compartment = csv.num(i, detectNum.compartment) - 1
+                        aDetect.XPosition = csv.num(i, detectNum.xPosition)
+                        aDetect.YPosition = csv.num(i, detectNum.yPosition)
+                        aDetect.ZPosition = csv.num(i, detectNum.zPosition)
+                        If csv.num(i, detectNum.type) = 1 Then
                             aDetect.DetectorType = Target.TypeSmokeDetector
-                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
-                        ElseIf csv.Num(i, detectNum.type) = 2 Then
-                            If csv.Num(i, detectNum.suppression) = 1 Then
+                            aDetect.ActivationTemperature = csv.num(i, detectNum.activationTemp)
+                        ElseIf csv.num(i, detectNum.type) = 2 Then
+                            If csv.num(i, detectNum.suppression) = 1 Then
                                 aDetect.DetectorType = Target.TypeSprinkler
-                                aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
-                                aDetect.RTI = csv.Num(i, detectNum.RTI)
-                                aDetect.SprayDensity = csv.Num(i, detectNum.sprayDensity)
+                                aDetect.ActivationTemperature = csv.num(i, detectNum.activationTemp)
+                                aDetect.RTI = csv.num(i, detectNum.RTI)
+                                aDetect.SprayDensity = csv.num(i, detectNum.sprayDensity)
                             Else
                                 aDetect.DetectorType = Target.TypeHeatDetector
-                                aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
-                                aDetect.RTI = csv.Num(i, detectNum.RTI)
+                                aDetect.ActivationTemperature = csv.num(i, detectNum.activationTemp)
+                                aDetect.RTI = csv.num(i, detectNum.RTI)
                             End If
                         ElseIf csv.str(i, detectNum.type) = "SMOKE" Then
                             aDetect.DetectorType = Target.TypeSmokeDetector
-                            aDetect.ActivationObscuration = csv.Num(i, detectNum.activationObscuration)
+                            aDetect.ActivationObscuration = csv.num(i, detectNum.activationObscuration)
                         ElseIf csv.str(i, detectNum.type) = "HEAT" Then
                             aDetect.DetectorType = Target.TypeHeatDetector
-                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
-                            aDetect.RTI = csv.Num(i, detectNum.RTI)
+                            aDetect.ActivationTemperature = csv.num(i, detectNum.activationTemp)
+                            aDetect.RTI = csv.num(i, detectNum.RTI)
                         ElseIf csv.str(i, detectNum.type) = "SPRINKLER" Then
                             aDetect.DetectorType = Target.TypeSprinkler
-                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
-                            aDetect.RTI = csv.Num(i, detectNum.RTI)
-                            aDetect.SprayDensity = csv.Num(i, detectNum.sprayDensity)
+                            aDetect.ActivationTemperature = csv.num(i, detectNum.activationTemp)
+                            aDetect.RTI = csv.num(i, detectNum.RTI)
+                            aDetect.SprayDensity = csv.num(i, detectNum.sprayDensity)
                         End If
                         aDetect.Changed = False
                         myDetectors.Add(aDetect)
                     Case "DJIGN"
-                        myEnvironment.IgnitionTemp = csv.Num(i, djignNum.igntemp)
+                        myEnvironment.IgnitionTemp = csv.num(i, djignNum.igntemp)
                     Case "DTCHECK"              'ignored for now
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword DTCHECK not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
                     Case "EAMB"
-                        myEnvironment.ExtAmbTemperature = csv.Num(i, ambNum.ambTemp)
-                        myEnvironment.ExtAmbPressure = csv.Num(i, ambNum.ambPress)
-                        myEnvironment.ExtAmbElevation = csv.Num(i, ambNum.refHeight)
+                        myEnvironment.ExtAmbTemperature = csv.num(i, ambNum.ambTemp)
+                        myEnvironment.ExtAmbPressure = csv.num(i, ambNum.ambPress)
+                        myEnvironment.ExtAmbElevation = csv.num(i, ambNum.refHeight)
                         myEnvironment.Changed = False
                     Case "EVENT"
                     Case "FIRE"
@@ -149,32 +149,32 @@ Module IO
                         myFires.Add(aFire)
                         i += 8
                     Case "GLOBA"
-                        If csv.Num(i, 0) <= 3 Then
+                        If csv.num(i, 0) <= 3 Then
                             ' only process sshort form here ... sets global parameters
-                            myEnvironment.LowerOxygenLimit = csv.Num(i, chemieNum.limo2)
-                            myEnvironment.IgnitionTemp = csv.Num(i, chemieNum.igntemp)
+                            myEnvironment.LowerOxygenLimit = csv.num(i, chemieNum.limo2)
+                            myEnvironment.IgnitionTemp = csv.num(i, chemieNum.igntemp)
                             myEnvironment.Changed = False
                         End If
                     Case "HALL"
-                        If csv.Num(i, hallNum.compartment) <= myCompartments.Count Then
-                            j = csv.Num(i, hallNum.compartment) - 1
+                        If csv.num(i, hallNum.compartment) <= myCompartments.Count Then
+                            j = csv.num(i, hallNum.compartment) - 1
                             If myCompartments(j).Shaft Then
                                 myErrors.Add("Keyword HALL compartment  " + csv.str(i, hallNum.compartment) + " is already declared an one zone compartment and will be changed to a hall ", ErrorMessages.TypeError)
                             End If
-                            If csv.Num(i, 0) > 2 Then myErrors.Add("Keyword HALL is an outdated format " + csv.strrow(i) + " hallway flow inputs will be ignored", ErrorMessages.TypeWarning)
+                            If csv.num(i, 0) > 2 Then myErrors.Add("Keyword HALL is an outdated format " + csv.strrow(i) + " hallway flow inputs will be ignored", ErrorMessages.TypeWarning)
                             myCompartments(j).Hall = True
                             myCompartments(j).Changed = False
                         End If
                     Case "HHEAT"
-                        If csv.Num(i, hheatNum.num) = 1 Then
+                        If csv.num(i, hheatNum.num) = 1 Then
                             Dim aHeat As New Vent
-                            If csv.Num(i, hheatNum.secondCompartment) > myCompartments.Count Then _
-                                csv.Num(i, hheatNum.secondCompartment) = 0
-                            aHeat.SetVent(csv.Num(i, hheatNum.firstCompartment) - 1, csv.Num(i, hheatNum.secondCompartment) - 1, _
-                            csv.Num(i, hheatNum.fraction))
+                            If csv.num(i, hheatNum.secondCompartment) > myCompartments.Count Then _
+                                csv.num(i, hheatNum.secondCompartment) = 0
+                            aHeat.SetVent(csv.num(i, hheatNum.firstCompartment) - 1, csv.num(i, hheatNum.secondCompartment) - 1, _
+                            csv.num(i, hheatNum.fraction))
                             aHeat.Changed = False
                             myHHeats.Add(aHeat)
-                        ElseIf csv.Num(i, hheatNum.num) = 0 Then
+                        ElseIf csv.num(i, hheatNum.num) = 0 Then
                             dataFileComments.Add("!" + csv.strrow(i))
                             myErrors.Add("Keyword HHEAT with single compartment specification not supported line" + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
                         Else
@@ -183,24 +183,24 @@ Module IO
                         End If
                     Case "HVENT"
                         Dim hvent As New Vent
-                        If csv.Num(i, hventNum.firstcomp) > myCompartments.Count Then _
-                            csv.Num(i, hventNum.firstcomp) = 0
-                        If csv.Num(i, hventNum.secondcomp) > myCompartments.Count Then _
-                            csv.Num(i, hventNum.secondcomp) = 0
-                        hvent.SetVent(csv.Num(i, hventNum.firstcomp) - 1, csv.Num(i, hventNum.secondcomp) - 1, _
-                            csv.Num(i, hventNum.width), csv.Num(i, hventNum.soffit), csv.Num(i, hventNum.sill))
-                        If csv.Num(i, 0) = 12 Then
+                        If csv.num(i, hventNum.firstcomp) > myCompartments.Count Then _
+                            csv.num(i, hventNum.firstcomp) = 0
+                        If csv.num(i, hventNum.secondcomp) > myCompartments.Count Then _
+                            csv.num(i, hventNum.secondcomp) = 0
+                        hvent.SetVent(csv.num(i, hventNum.firstcomp) - 1, csv.num(i, hventNum.secondcomp) - 1, _
+                            csv.num(i, hventNum.width), csv.num(i, hventNum.soffit), csv.num(i, hventNum.sill))
+                        If csv.num(i, 0) = 12 Then
                             ' This is the old format that had wind input (after sill) and second compartment offset (after hall1). This shifts the actually used inputs
                             hvent.Face = csv.str(i, hventNum.face + 2)
-                            hvent.Offset = csv.Num(i, hventNum.hall1 + 1)
-                            hvent.InitialOpening = csv.Num(i, hventNum.initialfraction + 2)
-                            hvent.FinalOpening = csv.Num(i, hventNum.initialfraction + 2)
+                            hvent.Offset = csv.num(i, hventNum.hall1 + 1)
+                            hvent.InitialOpening = csv.num(i, hventNum.initialfraction + 2)
+                            hvent.FinalOpening = csv.num(i, hventNum.initialfraction + 2)
                         Else
                             ' This is the new format input without the wind or second offset
                             hvent.Face = csv.str(i, hventNum.face)
-                            hvent.Offset = csv.Num(i, hventNum.hall1)
-                            hvent.InitialOpening = csv.Num(i, hventNum.initialfraction)
-                            hvent.FinalOpening = csv.Num(i, hventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
+                            hvent.Offset = csv.num(i, hventNum.hall1)
+                            hvent.InitialOpening = csv.num(i, hventNum.initialfraction)
+                            hvent.FinalOpening = csv.num(i, hventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
                         End If
                         hvent.Changed = False
                         myHVents.Add(hvent)
@@ -210,9 +210,9 @@ Module IO
                     Case "ISOF"
                         Dim aVisual As New Visual
                         aVisual.Type = Visual.IsoSurface
-                        aVisual.Value = csv.Num(i, visualNum.isoValue)
-                        If csv.Num(i, 0) >= visualNum.isoCompartment Then
-                            aVisual.Compartment = csv.Num(i, visualNum.isoCompartment) - 1
+                        aVisual.Value = csv.num(i, visualNum.isoValue)
+                        If csv.num(i, 0) >= visualNum.isoCompartment Then
+                            aVisual.Compartment = csv.num(i, visualNum.isoCompartment) - 1
                         Else
                             aVisual.Compartment = -1
                         End If
@@ -225,13 +225,13 @@ Module IO
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword LFBT not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
                     Case "LIMO2"
-                        myEnvironment.LowerOxygenLimit = csv.Num(i, 2)
+                        myEnvironment.LowerOxygenLimit = csv.num(i, 2)
                         myEnvironment.Changed = False
                         'Case "MAINF"
                         'Dim aFire As New Fire
                         'aFire.Name = "mainfire"
-                        'aFire.SetPosition(csv.Num(i, fireNum.compartment) - 1, csv.Num(i, fireNum.xPosition), csv.Num(i, fireNum.yPosition), csv.Num(i, fireNum.zposition))
-                        'aFire.PlumeType = csv.Num(i, fireNum.plumeType) - 1
+                        'aFire.SetPosition(csv.num(i, fireNum.compartment) - 1, csv.num(i, fireNum.xPosition), csv.num(i, fireNum.yPosition), csv.num(i, fireNum.zposition))
+                        'aFire.PlumeType = csv.num(i, fireNum.plumeType) - 1
                         'aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
                         'aFire.Changed = False
                         'myFires.Add(aFire)
@@ -243,17 +243,17 @@ Module IO
                         myErrors.Add("Keyword MVDCT not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
                     Case "MVENT"
                         Dim mvent As New Vent
-                        If csv.Num(i, mventNum.fromCompartment) > myCompartments.Count Then _
-                            csv.Num(i, mventNum.fromCompartment) = 0
-                        If csv.Num(i, mventNum.toCompartment) > myCompartments.Count Then _
-                            csv.Num(i, mventNum.toCompartment) = 0
-                        mvent.SetVent(csv.Num(i, mventNum.fromCompartment) - 1, csv.Num(i, mventNum.fromArea), _
-                            csv.Num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien), _
-                            csv.Num(i, mventNum.toCompartment) - 1, csv.Num(i, mventNum.toArea), _
-                            csv.Num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), csv.Num(i, mventNum.flow), _
-                            csv.Num(i, mventNum.beginFlowDrop), csv.Num(i, mventNum.flowZero))
-                        mvent.InitialOpening = csv.Num(i, mventNum.initialfraction)
-                        mvent.FinalOpening = csv.Num(i, mventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
+                        If csv.num(i, mventNum.fromCompartment) > myCompartments.Count Then _
+                            csv.num(i, mventNum.fromCompartment) = 0
+                        If csv.num(i, mventNum.toCompartment) > myCompartments.Count Then _
+                            csv.num(i, mventNum.toCompartment) = 0
+                        mvent.SetVent(csv.num(i, mventNum.fromCompartment) - 1, csv.num(i, mventNum.fromArea), _
+                            csv.num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien), _
+                            csv.num(i, mventNum.toCompartment) - 1, csv.num(i, mventNum.toArea), _
+                            csv.num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), csv.num(i, mventNum.flow), _
+                            csv.num(i, mventNum.beginFlowDrop), csv.num(i, mventNum.flowZero))
+                        mvent.InitialOpening = csv.num(i, mventNum.initialfraction)
+                        mvent.FinalOpening = csv.num(i, mventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
                         mvent.Changed = False
                         myMVents.Add(mvent)
                     Case "OBJECT"
@@ -271,11 +271,11 @@ Module IO
                         If myFires.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
                             Dim aFire As New Fire
                             aFire.Name = csv.str(i, objfireNum.name)
-                            aFire.SetPosition(csv.Num(i, objfireNum.compartment) - 1, csv.Num(i, objfireNum.xPosition), _
-                                csv.Num(i, objfireNum.yPosition), csv.Num(i, objfireNum.zposition))
-                            aFire.PlumeType = csv.Num(i, objfireNum.plumeType) - 1
-                            aFire.IgnitionType = csv.Num(i, objfireNum.ignType) - 1
-                            aFire.IgnitionValue = csv.Num(i, objfireNum.ignCriterion)
+                            aFire.SetPosition(csv.num(i, objfireNum.compartment) - 1, csv.num(i, objfireNum.xPosition), _
+                                csv.num(i, objfireNum.yPosition), csv.num(i, objfireNum.zposition))
+                            aFire.PlumeType = csv.num(i, objfireNum.plumeType) - 1
+                            aFire.IgnitionType = csv.num(i, objfireNum.ignType) - 1
+                            aFire.IgnitionValue = csv.num(i, objfireNum.ignCriterion)
                             aFire.Changed = False
                             myFires.Add(aFire)
                         Else
@@ -285,29 +285,29 @@ Module IO
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword OBJFL not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
                     Case "ONEZ"
-                        If csv.Num(i, 2) <= myCompartments.Count Then
-                            If myCompartments(csv.Num(i, 2) - 1).Hall Then
+                        If csv.num(i, 2) <= myCompartments.Count Then
+                            If myCompartments(csv.num(i, 2) - 1).Hall Then
                                 myErrors.Add("Keyword ONEZ room  " + csv.str(i, 2) + " is already declared a hall and will be changed to a one zone compartment ", ErrorMessages.TypeError)
                             End If
-                            myCompartments(csv.Num(i, 2) - 1).Shaft = True
-                            myCompartments(csv.Num(i, 2) - 1).Changed = False
+                            myCompartments(csv.num(i, 2) - 1).Shaft = True
+                            myCompartments(csv.num(i, 2) - 1).Changed = False
                         End If
                     Case "ROOMA"
-                        If csv.Num(i, 2) <= myCompartments.Count Then
-                            Dim aComp As Compartment = myCompartments(csv.Num(i, 2) - 1)
-                            Dim area(csv.Num(i, 3)) As Single
-                            For j = 1 To csv.Num(i, 3)
-                                area(j) = csv.Num(i, j + 3)
+                        If csv.num(i, 2) <= myCompartments.Count Then
+                            Dim aComp As Compartment = myCompartments(csv.num(i, 2) - 1)
+                            Dim area(csv.num(i, 3)) As Single
+                            For j = 1 To csv.num(i, 3)
+                                area(j) = csv.num(i, j + 3)
                             Next
                             aComp.SetVariableAreaPoints(area)
                             aComp.Changed = False
                         End If
                     Case "ROOMH"
-                        If csv.Num(i, 2) <= myCompartments.Count Then
-                            Dim aComp As Compartment = myCompartments(csv.Num(i, 2) - 1)
-                            Dim height(csv.Num(i, 3)) As Single
-                            For j = 1 To csv.Num(i, 3)
-                                height(j) = csv.Num(i, j + 3)
+                        If csv.num(i, 2) <= myCompartments.Count Then
+                            Dim aComp As Compartment = myCompartments(csv.num(i, 2) - 1)
+                            Dim height(csv.num(i, 3)) As Single
+                            For j = 1 To csv.num(i, 3)
+                                height(j) = csv.num(i, j + 3)
                             Next
                             aComp.SetVariableAreasHeight(height)
                             aComp.Changed = False
@@ -322,16 +322,16 @@ Module IO
                             If csv.str(i, visualNum.slice2DAxis) = "X" Then aVisual.Axis = 0
                             If csv.str(i, visualNum.slice2DAxis) = "Y" Then aVisual.Axis = 1
                             If csv.str(i, visualNum.slice2DAxis) = "Z" Then aVisual.Axis = 2
-                            aVisual.Value = csv.Num(i, visualNum.slice2DPosition)
-                            If csv.Num(i, 0) >= visualNum.slice2DCompartment Then
-                                aVisual.Compartment = csv.Num(i, visualNum.slice2DCompartment) - 1
+                            aVisual.Value = csv.num(i, visualNum.slice2DPosition)
+                            If csv.num(i, 0) >= visualNum.slice2DCompartment Then
+                                aVisual.Compartment = csv.num(i, visualNum.slice2DCompartment) - 1
                             Else
                                 aVisual.Compartment = -1
                             End If
                         Else
                             aVisual.Type = Visual.ThreeD
-                            If csv.Num(i, 0) >= visualNum.slice3DCompartment Then
-                                aVisual.Compartment = csv.Num(i, visualNum.slice3DCompartment) - 1
+                            If csv.num(i, 0) >= visualNum.slice3DCompartment Then
+                                aVisual.Compartment = csv.num(i, visualNum.slice3DCompartment) - 1
                             Else
                                 aVisual.Compartment = -1
                             End If
@@ -339,34 +339,34 @@ Module IO
                         aVisual.Changed = False
                         myVisuals.Add(aVisual)
                     Case "STPMAX"
-                        myEnvironment.MaximumTimeStep = csv.Num(i, 2)
+                        myEnvironment.MaximumTimeStep = csv.num(i, 2)
                         myEnvironment.Changed = False
                     Case "TAMB"
-                        myEnvironment.IntAmbTemperature = csv.Num(i, ambNum.ambTemp)
-                        myEnvironment.IntAmbPressure = csv.Num(i, ambNum.ambPress)
-                        myEnvironment.IntAmbElevation = csv.Num(i, ambNum.refHeight)
-                        myEnvironment.IntAmbRH = csv.Num(i, ambNum.relHumidity)
+                        myEnvironment.IntAmbTemperature = csv.num(i, ambNum.ambTemp)
+                        myEnvironment.IntAmbPressure = csv.num(i, ambNum.ambPress)
+                        myEnvironment.IntAmbElevation = csv.num(i, ambNum.refHeight)
+                        myEnvironment.IntAmbRH = csv.num(i, ambNum.relHumidity)
                         myEnvironment.Changed = False
                     Case "THRMF"
                         myThermalProperties.Clear()
                         ReadThermalProperties(".\" + csv.str(i, 2).Trim + ".csv", myThermalProperties)
                     Case "TIMES"
-                        myEnvironment.SimulationTime = csv.Num(i, timesNum.simTime)
-                        myEnvironment.OutputInterval = Math.Abs(csv.Num(i, timesNum.printInterval))
-                        If csv.Num(i, 0) = 5 Then
-                            myEnvironment.SmokeviewInterval = csv.Num(i, timesNum.smokeviewInterval)
-                            myEnvironment.SpreadsheetInterval = csv.Num(i, timesNum.spreadsheetInterval)
+                        myEnvironment.SimulationTime = csv.num(i, timesNum.simTime)
+                        myEnvironment.OutputInterval = Math.Abs(csv.num(i, timesNum.printInterval))
+                        If csv.num(i, 0) = 5 Then
+                            myEnvironment.SmokeviewInterval = csv.num(i, timesNum.smokeviewInterval)
+                            myEnvironment.SpreadsheetInterval = csv.num(i, timesNum.spreadsheetInterval)
                         Else
                             ' This is the old format input file that has a history file entry
-                            myEnvironment.SmokeviewInterval = csv.Num(i, timesNum.smokeviewInterval + 1)
-                            myEnvironment.SpreadsheetInterval = csv.Num(i, timesNum.spreadsheetInterval + 1)
+                            myEnvironment.SmokeviewInterval = csv.num(i, timesNum.smokeviewInterval + 1)
+                            myEnvironment.SpreadsheetInterval = csv.num(i, timesNum.spreadsheetInterval + 1)
                         End If
                         myEnvironment.Changed = False
                     Case "VERSN"
                         Dim aTitle As String
                         aTitle = csv.str(i, CFASTlnNum.title)
-                        If csv.Num(i, 0) > CFASTlnNum.title Then
-                            For j = CFASTlnNum.title + 1 To csv.Num(i, 0)
+                        If csv.num(i, 0) > CFASTlnNum.title Then
+                            For j = CFASTlnNum.title + 1 To csv.num(i, 0)
                                 aTitle = aTitle + " " + csv.str(i, j)
                             Next
                         End If
@@ -374,29 +374,29 @@ Module IO
                         myEnvironment.Changed = False
                     Case "VHEAT"
                         Dim vheat As New Vent
-                        If csv.Num(i, vheatNum.firstcompartment) > myCompartments.Count Then _
-                            csv.Num(i, vheatNum.firstcompartment) = 0
-                        If csv.Num(i, vheatNum.secondcompartment) > myCompartments.Count Then _
-                            csv.Num(i, vheatNum.secondcompartment) = 0
-                        vheat.SetVent(csv.Num(i, vheatNum.firstcompartment) - 1, csv.Num(i, vheatNum.secondcompartment) - 1)
+                        If csv.num(i, vheatNum.firstcompartment) > myCompartments.Count Then _
+                            csv.num(i, vheatNum.firstcompartment) = 0
+                        If csv.num(i, vheatNum.secondcompartment) > myCompartments.Count Then _
+                            csv.num(i, vheatNum.secondcompartment) = 0
+                        vheat.SetVent(csv.num(i, vheatNum.firstcompartment) - 1, csv.num(i, vheatNum.secondcompartment) - 1)
                         vheat.Changed = False
                         myVHeats.Add(vheat)
                     Case "VVENT"
                         Dim vvent As New Vent
-                        If csv.Num(i, vventNum.firstcompartment) > myCompartments.Count Then _
-                            csv.Num(i, vventNum.firstcompartment) = 0
-                        If csv.Num(i, vventNum.secondcompartment) > myCompartments.Count Then _
-                            csv.Num(i, vventNum.secondcompartment) = 0
-                        vvent.SetVent(csv.Num(i, vventNum.firstcompartment) - 1, csv.Num(i, vventNum.secondcompartment) - 1, _
-                            csv.Num(i, vventNum.area), csv.Num(i, vventNum.shape))
-                        vvent.InitialOpening = csv.Num(i, vventNum.intialfraction)
-                        vvent.FinalOpening = csv.Num(i, vventNum.intialfraction) ' This is the default; it may be changed by an EVENT specification
+                        If csv.num(i, vventNum.firstcompartment) > myCompartments.Count Then _
+                            csv.num(i, vventNum.firstcompartment) = 0
+                        If csv.num(i, vventNum.secondcompartment) > myCompartments.Count Then _
+                            csv.num(i, vventNum.secondcompartment) = 0
+                        vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1, _
+                            csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
+                        vvent.InitialOpening = csv.num(i, vventNum.intialfraction)
+                        vvent.FinalOpening = csv.num(i, vventNum.intialfraction) ' This is the default; it may be changed by an EVENT specification
                         vvent.Changed = False
                         myVVents.Add(vvent)
                     Case "WIND"
-                        myEnvironment.ExtWindSpeed = csv.Num(i, windNum.velocity)
-                        myEnvironment.ExtScaleHeight = csv.Num(i, windNum.refHeight)
-                        myEnvironment.ExtPowerLawCoefficient = csv.Num(i, windNum.expLapseRate)
+                        myEnvironment.ExtWindSpeed = csv.num(i, windNum.velocity)
+                        myEnvironment.ExtScaleHeight = csv.num(i, windNum.refHeight)
+                        myEnvironment.ExtPowerLawCoefficient = csv.num(i, windNum.expLapseRate)
                         myEnvironment.Changed = False
                 End Select
             Else
@@ -416,56 +416,56 @@ Module IO
             If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
                 If csv.str(i, CFASTlnNum.keyWord).Trim = "EVENT" Then
                     If csv.str(i, eventNum.ventType).Trim = "H" Then
-                        If csv.Num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.Num(i, eventNum.firstCompartment) = 0
-                        If csv.Num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.Num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myHVents.GetIndex(csv.Num(i, eventNum.firstCompartment) - 1, _
-                            csv.Num(i, eventNum.secondCompartment) - 1, csv.Num(i, eventNum.ventNumber))
+                        If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
+                        If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
+                        Dim index As Integer = myHVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                            csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myHVents.Item(index)
-                            aVent.FinalOpeningTime = csv.Num(i, eventNum.time)
-                            aVent.FinalOpening = csv.Num(i, eventNum.finalFraction)
+                            aVent.FinalOpeningTime = csv.num(i, eventNum.time)
+                            aVent.FinalOpening = csv.num(i, eventNum.finalFraction)
                             aVent.Changed = False
                         Else
                             'error handling vent doesn't exist
                             myErrors.Add("Keyword EVENT Hvent " + csv.str(i, eventNum.ventNumber) + " between compartments " + csv.str(i, eventNum.firstCompartment) + " and " + csv.str(i, eventNum.secondCompartment) + " does not exist", ErrorMessages.TypeError)
                         End If
                     ElseIf csv.str(i, eventNum.ventType).Trim = "V" Then
-                        If csv.Num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.Num(i, eventNum.firstCompartment) = 0
-                        If csv.Num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.Num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myVVents.GetIndex(csv.Num(i, eventNum.firstCompartment) - 1, _
-                            csv.Num(i, eventNum.secondCompartment) - 1, csv.Num(i, eventNum.ventNumber))
+                        If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
+                        If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
+                        Dim index As Integer = myVVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                            csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myVVents.Item(index)
-                            aVent.FinalOpeningTime = csv.Num(i, eventNum.time)
-                            aVent.FinalOpening = csv.Num(i, eventNum.finalFraction)
+                            aVent.FinalOpeningTime = csv.num(i, eventNum.time)
+                            aVent.FinalOpening = csv.num(i, eventNum.finalFraction)
                             aVent.Changed = False
                         Else
                             'error handling vent doesn't exist
                             myErrors.Add("Keyword EVENT Vvent " + csv.str(i, eventNum.ventNumber) + " between compartments " + csv.str(i, eventNum.firstCompartment) + " and " + csv.str(i, eventNum.secondCompartment) + " does not exist", ErrorMessages.TypeError)
                         End If
                     ElseIf csv.str(i, eventNum.ventType).Trim = "M" Then
-                        If csv.Num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.Num(i, eventNum.firstCompartment) = 0
-                        If csv.Num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.Num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myMVents.GetIndex(csv.Num(i, eventNum.firstCompartment) - 1, _
-                            csv.Num(i, eventNum.secondCompartment) - 1, csv.Num(i, eventNum.ventNumber))
+                        If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
+                        If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
+                        Dim index As Integer = myMVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                            csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myMVents.Item(index)
-                            aVent.FinalOpeningTime = csv.Num(i, eventNum.time)
-                            aVent.FinalOpening = csv.Num(i, eventNum.finalFraction)
+                            aVent.FinalOpeningTime = csv.num(i, eventNum.time)
+                            aVent.FinalOpening = csv.num(i, eventNum.finalFraction)
                             aVent.Changed = False
                         Else
                             'error handling vent doesn't exist
                             myErrors.Add("Keyword EVENT Mvent " + csv.str(i, eventNum.ventNumber) + " between compartments " + csv.str(i, eventNum.firstCompartment) + " and " + csv.str(i, eventNum.secondCompartment) + " does not exist", ErrorMessages.TypeError)
                         End If
                     ElseIf csv.str(i, eventNum.ventType).Trim = "F" Then
-                        If csv.Num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.Num(i, eventNum.firstCompartment) = 0
-                        If csv.Num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.Num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myMVents.GetIndex(csv.Num(i, eventNum.firstCompartment) - 1, _
-                            csv.Num(i, eventNum.secondCompartment) - 1, csv.Num(i, eventNum.ventNumber))
+                        If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
+                        If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
+                        Dim index As Integer = myMVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                            csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myMVents.Item(index)
-                            aVent.FilterTime = csv.Num(i, eventNum.time)
-                            aVent.FilterEfficiency = csv.Num(i, eventNum.finalFraction) * 100.0
+                            aVent.FilterTime = csv.num(i, eventNum.time)
+                            aVent.FilterEfficiency = csv.num(i, eventNum.finalFraction) * 100.0
                             aVent.Changed = False
                         Else
                             'error handling vent doesn't exist
@@ -504,16 +504,16 @@ Module IO
                                 ' We already have a thermal property with this name.  If it's totally identical, then it's already been added.  If not, they are trying to add a second one with the same name.  We'll allow it but error checking with flag it as an issue.
                                 Dim aProperty As New ThermalProperty
                                 aProperty = SomeThermalProperties.Item(iProp)
-                                If aProperty.Name = csv.str(i, MaterialNum.longName) And aProperty.Conductivity = csv.Num(i, MaterialNum.Conductivity) And aProperty.SpecificHeat = csv.Num(i, MaterialNum.specificHeat) And aProperty.Density = csv.Num(i, MaterialNum.density) _
-                                    And aProperty.Thickness = csv.Num(i, MaterialNum.thickness) And aProperty.Emissivity = csv.Num(i, MaterialNum.emissivity) Then
+                                If aProperty.Name = csv.str(i, MaterialNum.longName) And aProperty.Conductivity = csv.num(i, MaterialNum.Conductivity) And aProperty.SpecificHeat = csv.num(i, MaterialNum.specificHeat) And aProperty.Density = csv.num(i, MaterialNum.density) _
+                                    And aProperty.Thickness = csv.num(i, MaterialNum.thickness) And aProperty.Emissivity = csv.num(i, MaterialNum.emissivity) Then
                                     Exit Select
                                 End If
                             End If
                         End If
                         SomeThermalProperties.Add(New ThermalProperty(csv.str(i, MaterialNum.shortName), _
-                            csv.str(i, MaterialNum.longName), csv.Num(i, MaterialNum.Conductivity), _
-                            csv.Num(i, MaterialNum.specificHeat), csv.Num(i, MaterialNum.density), csv.Num(i, MaterialNum.thickness), _
-                            csv.Num(i, MaterialNum.emissivity)))
+                            csv.str(i, MaterialNum.longName), csv.num(i, MaterialNum.Conductivity), _
+                            csv.num(i, MaterialNum.specificHeat), csv.num(i, MaterialNum.density), csv.num(i, MaterialNum.thickness), _
+                            csv.num(i, MaterialNum.emissivity)))
                         SomeThermalProperties.Item(SomeThermalProperties.Count - 1).SetHCl(hcl)
                         SomeThermalProperties.Item(SomeThermalProperties.Count - 1).Changed = False
                 End Select
@@ -578,7 +578,7 @@ Module IO
                         NewFileformat = True
                         NewFireFormat = True
                     Case "CHEMI"
-                        If csv.Num(i, 0) > 3 Then NewFileformat = True
+                        If csv.num(i, 0) > 3 Then NewFileformat = True
                 End Select
             End If
             i += 1
@@ -621,23 +621,23 @@ Module IO
                                 Dim aFireObject As New Fire()
                                 Dim aThermalProperty As New ThermalProperty()
                                 aFireObject.Name = csv.str(iFire, fireNum.name)
-                                aFireObject.ChemicalFormula(formula.C) = csv.Num(iChemie, chemieNum.C)
-                                aFireObject.ChemicalFormula(formula.H) = csv.Num(iChemie, chemieNum.H)
-                                aFireObject.ChemicalFormula(formula.O) = csv.Num(iChemie, chemieNum.O)
-                                aFireObject.ChemicalFormula(formula.N) = csv.Num(iChemie, chemieNum.N)
-                                aFireObject.ChemicalFormula(formula.Cl) = csv.Num(iChemie, chemieNum.Cl)
-                                aFireObject.HeatofCombustion = csv.Num(iChemie, chemieNum.HoC)
+                                aFireObject.ChemicalFormula(formula.C) = csv.num(iChemie, chemieNum.C)
+                                aFireObject.ChemicalFormula(formula.H) = csv.num(iChemie, chemieNum.H)
+                                aFireObject.ChemicalFormula(formula.O) = csv.num(iChemie, chemieNum.O)
+                                aFireObject.ChemicalFormula(formula.N) = csv.num(iChemie, chemieNum.N)
+                                aFireObject.ChemicalFormula(formula.Cl) = csv.num(iChemie, chemieNum.Cl)
+                                aFireObject.HeatofCombustion = csv.num(iChemie, chemieNum.HoC)
                                 index = myThermalProperties.GetIndex(csv.str(iChemie, chemieNum.Material))
 
-                                aFireObject.RadiativeFraction = csv.Num(iChemie, chemieNum.chiR)
+                                aFireObject.RadiativeFraction = csv.num(iChemie, chemieNum.chiR)
                                 aFireObject.Changed = False
                                 TempFires.Add(aFireObject)
 
-                                Dim firedata(12, CInt(csv.Num(iTime, 0) - 2)) As Single
+                                Dim firedata(12, CInt(csv.num(iTime, 0) - 2)) As Single
 
-                                For j = 0 To csv.Num(iTime, 0) - 2
+                                For j = 0 To csv.num(iTime, 0) - 2
                                     For k = 1 To NumFireCurves
-                                        firedata(FireCurveColumns(k), j) = csv.Num(iTime + k - 1, j + 2)
+                                        firedata(FireCurveColumns(k), j) = csv.num(iTime + k - 1, j + 2)
                                     Next
                                     firedata(Fire.FireMdot, j) = firedata(Fire.FireHRR, j) / aFireObject.HeatofCombustion
                                     firedata(Fire.FireHC, j) = aFireObject.ChemicalFormula(formula.H) * 1.00794 / (aFireObject.ChemicalFormula(formula.C) * 12.0107)
@@ -671,13 +671,13 @@ Module IO
                     End If
                 Next
                 ' Chemical compound is assumed to be methane for these old format files.
-                TempFires.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.Num(rowidx(11), 1), csv.Num(rowidx(6), 1)))
+                TempFires.Add(New Fire(csv.str(rowidx(0), 1), ChemicalCompound, csv.num(rowidx(11), 1), csv.num(rowidx(6), 1)))
                 ' Check for thermal property of the fire object and find it if necessary
 
-                Dim firedata(12, CInt(csv.Num(rowidx(1), 1) - 1)) As Single
-                For i = 0 To csv.Num(rowidx(1), 1) - 1
+                Dim firedata(12, CInt(csv.num(rowidx(1), 1) - 1)) As Single
+                For i = 0 To csv.num(rowidx(1), 1) - 1
                     For j = 0 To 12
-                        firedata(j, i) = csv.Num(rowidx(1 + i), firefile(j))
+                        firedata(j, i) = csv.num(rowidx(1 + i), firefile(j))
                     Next
                 Next
                 TempFires(TempFires.Count - 1).SetFireData(firedata)
@@ -722,43 +722,43 @@ Module IO
                         Dim aFireObject As New Fire()
                         Dim aThermalProperty As New ThermalProperty()
                         aFireObject.Name = csv.str(iFire, fireNum.name)
-                        aFireObject.ChemicalFormula(formula.C) = csv.Num(iChemie, chemieNum.C)
-                        aFireObject.ChemicalFormula(formula.H) = csv.Num(iChemie, chemieNum.H)
-                        aFireObject.ChemicalFormula(formula.O) = csv.Num(iChemie, chemieNum.O)
-                        aFireObject.ChemicalFormula(formula.N) = csv.Num(iChemie, chemieNum.N)
-                        aFireObject.ChemicalFormula(formula.Cl) = csv.Num(iChemie, chemieNum.Cl)
-                        aFireObject.HeatofCombustion = csv.Num(iChemie, chemieNum.HoC)
+                        aFireObject.ChemicalFormula(formula.C) = csv.num(iChemie, chemieNum.C)
+                        aFireObject.ChemicalFormula(formula.H) = csv.num(iChemie, chemieNum.H)
+                        aFireObject.ChemicalFormula(formula.O) = csv.num(iChemie, chemieNum.O)
+                        aFireObject.ChemicalFormula(formula.N) = csv.num(iChemie, chemieNum.N)
+                        aFireObject.ChemicalFormula(formula.Cl) = csv.num(iChemie, chemieNum.Cl)
+                        aFireObject.HeatofCombustion = csv.num(iChemie, chemieNum.HoC)
                         index = myThermalProperties.GetIndex(csv.str(iChemie, chemieNum.Material))
 
-                        aFireObject.RadiativeFraction = csv.Num(iChemie, chemieNum.chiR)
+                        aFireObject.RadiativeFraction = csv.num(iChemie, chemieNum.chiR)
                         aFireObject.Name = csv.str(iFire, fireNum.name)
-                        aFireObject.SetPosition(csv.Num(iFire, fireNum.compartment) - 1, csv.Num(iFire, fireNum.xPosition), _
-                            csv.Num(iFire, fireNum.yPosition), csv.Num(iFire, fireNum.zposition))
-                        aFireObject.PlumeType = csv.Num(iFire, fireNum.plumeType) - 1
+                        aFireObject.SetPosition(csv.num(iFire, fireNum.compartment) - 1, csv.num(iFire, fireNum.xPosition), _
+                            csv.num(iFire, fireNum.yPosition), csv.num(iFire, fireNum.zposition))
+                        aFireObject.PlumeType = csv.num(iFire, fireNum.plumeType) - 1
                         If csv.str(iFire, fireNum.ignType) = "TIME" Or csv.str(iFire, fireNum.ignType) = "TEMP" Or csv.str(iFire, fireNum.ignType) = "FLUX" Then
                             ' if it's the new format, ignition is just linked to an existing target
                             aFireObject.IgnitionType = InStr(IgnitionTypes, csv.str(iFire, fireNum.ignType), CompareMethod.Text) / 4
                             aFireObject.Target = csv.str(iFire, fireNum.ignTarget)
                         Else
                             ' if it's the old format, create a target just for the fire
-                            aFireObject.IgnitionType = csv.Num(iFire, fireNum.ignType) - 1
+                            aFireObject.IgnitionType = csv.num(iFire, fireNum.ignType) - 1
                             If aFireObject.IgnitionType <> Fire.FireIgnitionbyTime Then
                                 Dim aTarget As New Target
                                 aTarget.Type = Target.TypeTarget
                                 aTarget.Name = "Ign_" + aFireObject.Name
-                                aTarget.SetPosition(aFireObject.XPosition, aFireObject.YPosition, aFireObject.ZPosition, csv.Num(iFire, fireNum.xNormal), csv.Num(iFire, fireNum.yNormal), csv.Num(iFire, fireNum.zNormal))
+                                aTarget.SetPosition(aFireObject.XPosition, aFireObject.YPosition, aFireObject.ZPosition, csv.num(iFire, fireNum.xNormal), csv.num(iFire, fireNum.yNormal), csv.num(iFire, fireNum.zNormal))
                                 aTarget.SetTarget(aFireObject.Compartment, csv.str(iChemie, chemieNum.Material), Target.ThermallyThick)
                                 myTargets.Add(aTarget)
                                 aFireObject.Target = aTarget.Name
                             End If
                         End If
-                        aFireObject.IgnitionValue = csv.Num(iFire, fireNum.ignCriterion)
+                        aFireObject.IgnitionValue = csv.num(iFire, fireNum.ignCriterion)
 
-                        Dim firedata(12, CInt(csv.Num(iTime, 0) - 2)) As Single
+                        Dim firedata(12, CInt(csv.num(iTime, 0) - 2)) As Single
 
-                        For j = 0 To csv.Num(iTime, 0) - 2
+                        For j = 0 To csv.num(iTime, 0) - 2
                             For k = 1 To NumFireCurves
-                                firedata(FireCurveColumns(k), j) = csv.Num(iTime + k - 1, j + 2)
+                                firedata(FireCurveColumns(k), j) = csv.num(iTime + k - 1, j + 2)
                             Next
                             firedata(Fire.FireMdot, j) = firedata(Fire.FireHRR, j) / aFireObject.HeatofCombustion
                             firedata(Fire.FireHC, j) = aFireObject.ChemicalFormula(formula.H) * 1.00794 / (aFireObject.ChemicalFormula(formula.C) * 12.0107)
@@ -787,7 +787,7 @@ Module IO
 
         ' write header line
         csv.str(i, CFASTlnNum.keyWord) = "VERSN"
-        csv.Num(i, CFASTlnNum.version) = 7
+        csv.num(i, CFASTlnNum.version) = 7
         csv.str(i, CFASTlnNum.title) = myEnvironment.Title
         i += 1
         For j = 1 To dataFileHeader.Count
@@ -798,23 +798,23 @@ Module IO
         AddHeadertoOutput(csv, i, "Scenario Configuration Keywords")
         'Time line
         csv.str(i, CFASTlnNum.keyWord) = "TIMES"
-        csv.Num(i, timesNum.simTime) = myEnvironment.SimulationTime
-        csv.Num(i, timesNum.printInterval) = myEnvironment.OutputInterval
-        csv.Num(i, timesNum.smokeviewInterval) = myEnvironment.SmokeviewInterval
-        csv.Num(i, timesNum.spreadsheetInterval) = myEnvironment.SpreadsheetInterval
+        csv.num(i, timesNum.simTime) = myEnvironment.SimulationTime
+        csv.num(i, timesNum.printInterval) = myEnvironment.OutputInterval
+        csv.num(i, timesNum.smokeviewInterval) = myEnvironment.SmokeviewInterval
+        csv.num(i, timesNum.spreadsheetInterval) = myEnvironment.SpreadsheetInterval
         i += 1
         'Exterior ambient conditions
         csv.str(i, CFASTlnNum.keyWord) = "EAMB"
-        csv.Num(i, ambNum.ambTemp) = myEnvironment.ExtAmbTemperature
-        csv.Num(i, ambNum.ambPress) = myEnvironment.ExtAmbPressure
-        csv.Num(i, ambNum.refHeight) = myEnvironment.ExtAmbElevation
+        csv.num(i, ambNum.ambTemp) = myEnvironment.ExtAmbTemperature
+        csv.num(i, ambNum.ambPress) = myEnvironment.ExtAmbPressure
+        csv.num(i, ambNum.refHeight) = myEnvironment.ExtAmbElevation
         i += 1
         'Interior ambient conditions
         csv.str(i, CFASTlnNum.keyWord) = "TAMB"
-        csv.Num(i, ambNum.ambTemp) = myEnvironment.IntAmbTemperature
-        csv.Num(i, ambNum.ambPress) = myEnvironment.IntAmbPressure
-        csv.Num(i, ambNum.refHeight) = myEnvironment.IntAmbElevation
-        csv.Num(i, ambNum.relHumidity) = myEnvironment.IntAmbRH
+        csv.num(i, ambNum.ambTemp) = myEnvironment.IntAmbTemperature
+        csv.num(i, ambNum.ambPress) = myEnvironment.IntAmbPressure
+        csv.num(i, ambNum.refHeight) = myEnvironment.IntAmbElevation
+        csv.num(i, ambNum.relHumidity) = myEnvironment.IntAmbRH
         i += 1
         'adiabatic walls
         If myEnvironment.AdiabaticWalls = True Then
@@ -830,11 +830,11 @@ Module IO
             If myThermalProperties.NumberofConnections(aThermalProperty.ShortName) > 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "MATL"
                 csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
-                csv.Num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
-                csv.Num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
-                csv.Num(i, MaterialNum.density) = aThermalProperty.Density
-                csv.Num(i, MaterialNum.thickness) = aThermalProperty.Thickness
-                csv.Num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
+                csv.num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
+                csv.num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
+                csv.num(i, MaterialNum.density) = aThermalProperty.Density
+                csv.num(i, MaterialNum.thickness) = aThermalProperty.Thickness
+                csv.num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
                 csv.str(i, MaterialNum.longName) = aThermalProperty.Name
                 i += 1
             End If
@@ -848,15 +848,15 @@ Module IO
             aCompartment = myCompartments.Item(j)
             csv.str(i, CFASTlnNum.keyWord) = "COMPA"
             csv.str(i, compaNum.Name) = aCompartment.Name
-            aCompartment.GetSize(csv.Num(i, compaNum.Width), csv.Num(i, compaNum.Depth), csv.Num(i, compaNum.Height))
-            aCompartment.GetPosition(csv.Num(i, compaNum.AbsXPos), csv.Num(i, compaNum.AbsYPos), _
-                    csv.Num(i, compaNum.FlrHeight))
+            aCompartment.GetSize(csv.num(i, compaNum.Width), csv.num(i, compaNum.Depth), csv.num(i, compaNum.Height))
+            aCompartment.GetPosition(csv.num(i, compaNum.AbsXPos), csv.num(i, compaNum.AbsYPos), _
+                    csv.num(i, compaNum.FlrHeight))
             aCompartment.GetMaterial(csv.str(i, compaNum.CeilingMat), csv.str(i, compaNum.WallMat), _
                     csv.str(i, compaNum.FloorMat))
             If csv.str(i, compaNum.CeilingMat) = "Off" Then csv.str(i, compaNum.CeilingMat) = "OFF"
             If csv.str(i, compaNum.WallMat) = "Off" Then csv.str(i, compaNum.WallMat) = "OFF"
             If csv.str(i, compaNum.FloorMat) = "Off" Then csv.str(i, compaNum.FloorMat) = "OFF"
-            aCompartment.GetGrid(csv.Num(i, compaNum.xGrid), csv.Num(i, compaNum.yGrid), csv.Num(i, compaNum.zGrid))
+            aCompartment.GetGrid(csv.num(i, compaNum.xGrid), csv.num(i, compaNum.yGrid), csv.num(i, compaNum.zGrid))
             aCompartment.Changed = False
             i += 1
         Next
@@ -865,7 +865,7 @@ Module IO
             aCompartment = myCompartments.Item(j)
             If aCompartment.Hall Then
                 csv.str(i, CFASTlnNum.keyWord) = "HALL"
-                csv.Num(i, hallNum.compartment) = j + 1
+                csv.num(i, hallNum.compartment) = j + 1
                 i += 1
             End If
         Next
@@ -874,7 +874,7 @@ Module IO
             aCompartment = myCompartments.Item(j)
             If aCompartment.Shaft Then
                 csv.str(i, CFASTlnNum.keyWord) = "ONEZ"
-                csv.Num(i, hallNum.compartment) = j + 1
+                csv.num(i, hallNum.compartment) = j + 1
                 i += 1
             End If
         Next
@@ -885,18 +885,18 @@ Module IO
             aCompartment.GetVariableAreaPoints(x)
             If x.GetUpperBound(0) > 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "ROOMA"
-                csv.Num(i, 2) = j + 1
-                csv.Num(i, 3) = x.GetUpperBound(0)
+                csv.num(i, 2) = j + 1
+                csv.num(i, 3) = x.GetUpperBound(0)
                 For k = 1 To x.GetUpperBound(0)
-                    csv.Num(i, k + 3) = x(k)
+                    csv.num(i, k + 3) = x(k)
                 Next
                 i += 1
                 csv.str(i, CFASTlnNum.keyWord) = "ROOMH"
                 aCompartment.GetVariableAreasHeight(x)
-                csv.Num(i, 2) = j + 1
-                csv.Num(i, 3) = x.GetUpperBound(0)
+                csv.num(i, 2) = j + 1
+                csv.num(i, 3) = x.GetUpperBound(0)
                 For k = 1 To x.GetUpperBound(0)
-                    csv.Num(i, k + 3) = x(k)
+                    csv.num(i, k + 3) = x(k)
                 Next
                 i += 1
             End If
@@ -908,19 +908,19 @@ Module IO
         For j = 0 To myHVents.Count - 1
             csv.str(i, CFASTlnNum.keyWord) = "HVENT"
             aVent = myHVents.Item(j)
-            csv.Num(i, hventNum.firstcomp) = aVent.FirstCompartment + 1
-            csv.Num(i, hventNum.secondcomp) = aVent.SecondCompartment + 1
-            If csv.Num(i, hventNum.firstcomp) = 0 Then _
-                csv.Num(i, hventNum.firstcomp) = myCompartments.Count + 1
-            If csv.Num(i, hventNum.secondcomp) = 0 Then _
-                csv.Num(i, hventNum.secondcomp) = myCompartments.Count + 1
-            csv.Num(i, hventNum.width) = aVent.Width
-            csv.Num(i, hventNum.sill) = aVent.Sill
-            csv.Num(i, hventNum.soffit) = aVent.Soffit
-            csv.Num(i, hventNum.hall1) = aVent.Offset
+            csv.num(i, hventNum.firstcomp) = aVent.FirstCompartment + 1
+            csv.num(i, hventNum.secondcomp) = aVent.SecondCompartment + 1
+            If csv.num(i, hventNum.firstcomp) = 0 Then _
+                csv.num(i, hventNum.firstcomp) = myCompartments.Count + 1
+            If csv.num(i, hventNum.secondcomp) = 0 Then _
+                csv.num(i, hventNum.secondcomp) = myCompartments.Count + 1
+            csv.num(i, hventNum.width) = aVent.Width
+            csv.num(i, hventNum.sill) = aVent.Sill
+            csv.num(i, hventNum.soffit) = aVent.Soffit
+            csv.num(i, hventNum.hall1) = aVent.Offset
             csv.str(i, hventNum.face) = aVent.Face
-            csv.Num(i, hventNum.initialfraction) = aVent.InitialOpening
-            csv.Num(i, hventNum.vent) = myHVents.VentNumber(j)
+            csv.num(i, hventNum.initialfraction) = aVent.InitialOpening
+            csv.num(i, hventNum.vent) = myHVents.VentNumber(j)
             aVent.Changed = False
             i += 1
         Next
@@ -928,15 +928,15 @@ Module IO
         For j = 0 To myVVents.Count - 1
             aVent = myVVents.Item(j)
             csv.str(i, CFASTlnNum.keyWord) = "VVENT"
-            csv.Num(i, vventNum.firstcompartment) = aVent.FirstCompartment + 1
-            csv.Num(i, vventNum.secondcompartment) = aVent.SecondCompartment + 1
-            csv.Num(i, vventNum.area) = aVent.Area
-            csv.Num(i, vventNum.shape) = aVent.Shape
-            csv.Num(i, vventNum.intialfraction) = aVent.InitialOpening
-            If csv.Num(i, vventNum.firstcompartment) = 0 Then _
-                csv.Num(i, vventNum.firstcompartment) = myCompartments.Count + 1
-            If csv.Num(i, vventNum.secondcompartment) = 0 Then _
-                csv.Num(i, vventNum.secondcompartment) = myCompartments.Count + 1
+            csv.num(i, vventNum.firstcompartment) = aVent.FirstCompartment + 1
+            csv.num(i, vventNum.secondcompartment) = aVent.SecondCompartment + 1
+            csv.num(i, vventNum.area) = aVent.Area
+            csv.num(i, vventNum.shape) = aVent.Shape
+            csv.num(i, vventNum.intialfraction) = aVent.InitialOpening
+            If csv.num(i, vventNum.firstcompartment) = 0 Then _
+                csv.num(i, vventNum.firstcompartment) = myCompartments.Count + 1
+            If csv.num(i, vventNum.secondcompartment) = 0 Then _
+                csv.num(i, vventNum.secondcompartment) = myCompartments.Count + 1
             aVent.Changed = False
             i += 1
         Next
@@ -944,17 +944,17 @@ Module IO
         For j = 0 To myMVents.Count - 1
             csv.str(i, CFASTlnNum.keyWord) = "MVENT"
             aVent = myMVents.Item(j)
-            aVent.GetVent(csv.Num(i, mventNum.fromCompartment), csv.Num(i, mventNum.fromArea), _
-                csv.Num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien), csv.Num(i, mventNum.toCompartment), _
-                csv.Num(i, mventNum.toArea), csv.Num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), _
-                csv.Num(i, mventNum.flow), csv.Num(i, mventNum.beginFlowDrop), csv.Num(i, mventNum.flowZero))
-            csv.Num(i, mventNum.fromCompartment) += 1
-            If csv.Num(i, mventNum.fromCompartment) = 0 Then _
-                csv.Num(i, mventNum.fromCompartment) = myCompartments.Count + 1
-            csv.Num(i, mventNum.toCompartment) += 1
-            If csv.Num(i, mventNum.toCompartment) = 0 Then csv.Num(i, mventNum.toCompartment) = myCompartments.Count + 1
-            csv.Num(i, mventNum.IDNumber) = j + 1
-            csv.Num(i, mventNum.initialfraction) = aVent.InitialOpening
+            aVent.GetVent(csv.num(i, mventNum.fromCompartment), csv.num(i, mventNum.fromArea), _
+                csv.num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien), csv.num(i, mventNum.toCompartment), _
+                csv.num(i, mventNum.toArea), csv.num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), _
+                csv.num(i, mventNum.flow), csv.num(i, mventNum.beginFlowDrop), csv.num(i, mventNum.flowZero))
+            csv.num(i, mventNum.fromCompartment) += 1
+            If csv.num(i, mventNum.fromCompartment) = 0 Then _
+                csv.num(i, mventNum.fromCompartment) = myCompartments.Count + 1
+            csv.num(i, mventNum.toCompartment) += 1
+            If csv.num(i, mventNum.toCompartment) = 0 Then csv.num(i, mventNum.toCompartment) = myCompartments.Count + 1
+            csv.num(i, mventNum.IDNumber) = j + 1
+            csv.num(i, mventNum.initialfraction) = aVent.InitialOpening
             aVent.Changed = False
             i += 1
         Next
@@ -964,16 +964,16 @@ Module IO
             If aVent.FinalOpeningTime > 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"
                 csv.str(i, eventNum.ventType) = "H"
-                csv.Num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
-                If csv.Num(i, eventNum.firstCompartment) = 0 Then _
-                    csv.Num(i, eventNum.firstCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
-                If csv.Num(i, eventNum.secondCompartment) = 0 Then _
-                    csv.Num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.ventNumber) = myHVents.VentNumber(j)
-                csv.Num(i, eventNum.time) = aVent.FinalOpeningTime
-                csv.Num(i, eventNum.finalFraction) = aVent.FinalOpening
-                csv.Num(i, eventNum.decaytime) = 1.0
+                csv.num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
+                If csv.num(i, eventNum.firstCompartment) = 0 Then _
+                    csv.num(i, eventNum.firstCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
+                If csv.num(i, eventNum.secondCompartment) = 0 Then _
+                    csv.num(i, eventNum.secondCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.ventNumber) = myHVents.VentNumber(j)
+                csv.num(i, eventNum.time) = aVent.FinalOpeningTime
+                csv.num(i, eventNum.finalFraction) = aVent.FinalOpening
+                csv.num(i, eventNum.decaytime) = 1.0
                 i += 1
             End If
         Next
@@ -982,16 +982,16 @@ Module IO
             If aVent.FinalOpeningTime > 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"
                 csv.str(i, eventNum.ventType) = "V"
-                csv.Num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
-                If csv.Num(i, eventNum.firstCompartment) = 0 Then _
-                    csv.Num(i, eventNum.firstCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
-                If csv.Num(i, eventNum.secondCompartment) = 0 Then _
-                    csv.Num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.ventNumber) = myVVents.VentNumber(j)
-                csv.Num(i, eventNum.time) = aVent.FinalOpeningTime
-                csv.Num(i, eventNum.finalFraction) = aVent.FinalOpening
-                csv.Num(i, eventNum.decaytime) = 1.0
+                csv.num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
+                If csv.num(i, eventNum.firstCompartment) = 0 Then _
+                    csv.num(i, eventNum.firstCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
+                If csv.num(i, eventNum.secondCompartment) = 0 Then _
+                    csv.num(i, eventNum.secondCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.ventNumber) = myVVents.VentNumber(j)
+                csv.num(i, eventNum.time) = aVent.FinalOpeningTime
+                csv.num(i, eventNum.finalFraction) = aVent.FinalOpening
+                csv.num(i, eventNum.decaytime) = 1.0
                 i += 1
             End If
         Next
@@ -1001,32 +1001,32 @@ Module IO
             If aVent.FinalOpeningTime > 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"
                 csv.str(i, eventNum.ventType) = "M"
-                csv.Num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
-                If csv.Num(i, eventNum.firstCompartment) = 0 Then _
-                    csv.Num(i, eventNum.firstCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
-                If csv.Num(i, eventNum.secondCompartment) = 0 Then _
-                    csv.Num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.ventNumber) = j + 1
-                csv.Num(i, eventNum.time) = aVent.FinalOpeningTime
-                csv.Num(i, eventNum.finalFraction) = aVent.FinalOpening
-                csv.Num(i, eventNum.decaytime) = 1.0
+                csv.num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
+                If csv.num(i, eventNum.firstCompartment) = 0 Then _
+                    csv.num(i, eventNum.firstCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
+                If csv.num(i, eventNum.secondCompartment) = 0 Then _
+                    csv.num(i, eventNum.secondCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.ventNumber) = j + 1
+                csv.num(i, eventNum.time) = aVent.FinalOpeningTime
+                csv.num(i, eventNum.finalFraction) = aVent.FinalOpening
+                csv.num(i, eventNum.decaytime) = 1.0
                 i += 1
             End If
             ' Mechanical ventilation filtering fraction and time
             If aVent.FilterEfficiency <> 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"
                 csv.str(i, eventNum.ventType) = "F"
-                csv.Num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
-                If csv.Num(i, eventNum.firstCompartment) = 0 Then _
-                    csv.Num(i, eventNum.firstCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
-                If csv.Num(i, eventNum.secondCompartment) = 0 Then _
-                    csv.Num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.Num(i, eventNum.ventNumber) = j + 1
-                csv.Num(i, eventNum.time) = aVent.FilterTime
-                csv.Num(i, eventNum.filterEfficiency) = aVent.FilterEfficiency / 100.0
-                csv.Num(i, eventNum.decaytime) = 1.0
+                csv.num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
+                If csv.num(i, eventNum.firstCompartment) = 0 Then _
+                    csv.num(i, eventNum.firstCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
+                If csv.num(i, eventNum.secondCompartment) = 0 Then _
+                    csv.num(i, eventNum.secondCompartment) = myCompartments.Count + 1
+                csv.num(i, eventNum.ventNumber) = j + 1
+                csv.num(i, eventNum.time) = aVent.FilterTime
+                csv.num(i, eventNum.filterEfficiency) = aVent.FilterEfficiency / 100.0
+                csv.num(i, eventNum.decaytime) = 1.0
                 i += 1
             End If
         Next
@@ -1041,38 +1041,38 @@ Module IO
             i += 1
             ' FIRE keyword, geometry information
             csv.str(i, CFASTlnNum.keyWord) = "FIRE"
-            csv.Num(i, fireNum.compartment) = aFire.Compartment + 1
-            csv.Num(i, fireNum.xPosition) = aFire.XPosition
-            csv.Num(i, fireNum.yPosition) = aFire.YPosition
-            csv.Num(i, fireNum.zposition) = aFire.ZPosition
-            csv.Num(i, fireNum.plumeType) = aFire.PlumeType + 1
+            csv.num(i, fireNum.compartment) = aFire.Compartment + 1
+            csv.num(i, fireNum.xPosition) = aFire.XPosition
+            csv.num(i, fireNum.yPosition) = aFire.YPosition
+            csv.num(i, fireNum.zposition) = aFire.ZPosition
+            csv.num(i, fireNum.plumeType) = aFire.PlumeType + 1
             csv.str(i, fireNum.ignType) = IgnitionTypes.Substring(aFire.IgnitionType * 4, 4)
-            csv.Num(i, fireNum.ignCriterion) = aFire.IgnitionValue
+            csv.num(i, fireNum.ignCriterion) = aFire.IgnitionValue
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
-                csv.Num(i, fireNum.xNormal) = 0
+                csv.num(i, fireNum.xNormal) = 0
             Else
                 csv.str(i, fireNum.ignTarget) = aFire.Target
             End If
-            csv.Num(i, fireNum.yNormal) = 0
-            csv.Num(i, fireNum.zNormal) = 0
+            csv.num(i, fireNum.yNormal) = 0
+            csv.num(i, fireNum.zNormal) = 0
             csv.str(i, fireNum.name) = aFire.Name
             i += 1
             ' CHEMI keyword, chemistry information
             csv.str(i, CFASTlnNum.keyWord) = "CHEMI"
-            csv.Num(i, chemieNum.C) = aFire.ChemicalFormula(formula.C)
-            csv.Num(i, chemieNum.H) = aFire.ChemicalFormula(formula.H)
-            csv.Num(i, chemieNum.O) = aFire.ChemicalFormula(formula.O)
-            csv.Num(i, chemieNum.N) = aFire.ChemicalFormula(formula.N)
-            csv.Num(i, chemieNum.Cl) = aFire.ChemicalFormula(formula.Cl)
-            csv.Num(i, chemieNum.chiR) = aFire.RadiativeFraction
-            csv.Num(i, chemieNum.HoC) = aFire.HeatofCombustion
+            csv.num(i, chemieNum.C) = aFire.ChemicalFormula(formula.C)
+            csv.num(i, chemieNum.H) = aFire.ChemicalFormula(formula.H)
+            csv.num(i, chemieNum.O) = aFire.ChemicalFormula(formula.O)
+            csv.num(i, chemieNum.N) = aFire.ChemicalFormula(formula.N)
+            csv.num(i, chemieNum.Cl) = aFire.ChemicalFormula(formula.Cl)
+            csv.num(i, chemieNum.chiR) = aFire.RadiativeFraction
+            csv.num(i, chemieNum.HoC) = aFire.HeatofCombustion
             i += 1
             ' Fire time series keywords, TIME, HRR, SOOT, CO, TRACE
             aFire.GetFireData(firedata, numFireDataPoints)
             For k = 1 To NumFireCurves
                 csv.str(i, CFASTlnNum.keyWord) = Trim(FireCurveTypes.Substring(5 * (k - 1), 5))
                 For l = 0 To numFireDataPoints
-                    csv.Num(i, l + 2) = firedata(FireCurveColumns(k), l)
+                    csv.num(i, l + 2) = firedata(FireCurveColumns(k), l)
                 Next
                 i += 1
             Next
@@ -1086,25 +1086,25 @@ Module IO
         For j = 0 To myDetectors.Count - 1
             csv.str(i, CFASTlnNum.keyWord) = "DETECT"
             aDetect = myDetectors.Item(j)
-            csv.Num(i, detectNum.compartment) = aDetect.Compartment + 1
-            csv.Num(i, detectNum.xPosition) = aDetect.XPosition
-            csv.Num(i, detectNum.yPosition) = aDetect.YPosition
-            csv.Num(i, detectNum.zPosition) = aDetect.ZPosition
+            csv.num(i, detectNum.compartment) = aDetect.Compartment + 1
+            csv.num(i, detectNum.xPosition) = aDetect.XPosition
+            csv.num(i, detectNum.yPosition) = aDetect.YPosition
+            csv.num(i, detectNum.zPosition) = aDetect.ZPosition
             If aDetect.DetectorType = Target.TypeSmokeDetector Then
                 csv.str(i, detectNum.type) = "SMOKE"
-                csv.Num(i, detectNum.suppression) = 0
-                csv.Num(i, detectNum.activationObscuration) = aDetect.ActivationObscuration
+                csv.num(i, detectNum.suppression) = 0
+                csv.num(i, detectNum.activationObscuration) = aDetect.ActivationObscuration
             ElseIf aDetect.DetectorType = Target.TypeHeatDetector Then
                 csv.str(i, detectNum.type) = "HEAT"
-                csv.Num(i, detectNum.suppression) = 0
-                csv.Num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
-                csv.Num(i, detectNum.RTI) = aDetect.RTI
+                csv.num(i, detectNum.suppression) = 0
+                csv.num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
+                csv.num(i, detectNum.RTI) = aDetect.RTI
             Else
                 csv.str(i, detectNum.type) = "SPRINKLER"
-                csv.Num(i, detectNum.suppression) = 1
-                csv.Num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
-                csv.Num(i, detectNum.RTI) = aDetect.RTI
-                csv.Num(i, detectNum.sprayDensity) = aDetect.SprayDensity
+                csv.num(i, detectNum.suppression) = 1
+                csv.num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
+                csv.num(i, detectNum.RTI) = aDetect.RTI
+                csv.num(i, detectNum.sprayDensity) = aDetect.SprayDensity
             End If
             aDetect.Changed = False
             i += 1
@@ -1113,15 +1113,15 @@ Module IO
         For j = 0 To myTargets.Count - 1
             aDetect = myTargets.Item(j)
             csv.str(i, CFASTlnNum.keyWord) = "TARGET"
-            csv.Num(i, targetNum.compartment) = aDetect.Compartment + 1
-            csv.Num(i, targetNum.xPosition) = aDetect.XPosition
-            csv.Num(i, targetNum.yPosition) = aDetect.YPosition
-            csv.Num(i, targetNum.zPosition) = aDetect.ZPosition
-            csv.Num(i, targetNum.xNormal) = aDetect.XNormal
-            csv.Num(i, targetNum.yNormal) = aDetect.YNormal
-            csv.Num(i, targetNum.zNormal) = aDetect.ZNormal
+            csv.num(i, targetNum.compartment) = aDetect.Compartment + 1
+            csv.num(i, targetNum.xPosition) = aDetect.XPosition
+            csv.num(i, targetNum.yPosition) = aDetect.YPosition
+            csv.num(i, targetNum.zPosition) = aDetect.ZPosition
+            csv.num(i, targetNum.xNormal) = aDetect.XNormal
+            csv.num(i, targetNum.yNormal) = aDetect.YNormal
+            csv.num(i, targetNum.zNormal) = aDetect.ZNormal
             csv.str(i, targetNum.material) = aDetect.Material
-            csv.Num(i, targetNum.internalLocation) = aDetect.InternalLocation
+            csv.num(i, targetNum.internalLocation) = aDetect.InternalLocation
             If aDetect.SolutionType = 1 Then
                 csv.str(i, targetNum.equationType) = "CYL"
             Else
@@ -1139,26 +1139,26 @@ Module IO
         For j = 0 To myHHeats.Count - 1
             aVent = myHHeats.Item(j)
             csv.str(i, CFASTlnNum.keyWord) = "HHEAT"
-            csv.Num(i, hheatNum.firstCompartment) = aVent.FirstCompartment + 1
-            csv.Num(i, hheatNum.num) = 1
-            If csv.Num(i, hheatNum.secondCompartment) = -1 Then
-                csv.Num(i, hheatNum.secondCompartment) = myCompartments.Count + 1
+            csv.num(i, hheatNum.firstCompartment) = aVent.FirstCompartment + 1
+            csv.num(i, hheatNum.num) = 1
+            If csv.num(i, hheatNum.secondCompartment) = -1 Then
+                csv.num(i, hheatNum.secondCompartment) = myCompartments.Count + 1
             Else
-                csv.Num(i, hheatNum.secondCompartment) = aVent.SecondCompartment + 1
+                csv.num(i, hheatNum.secondCompartment) = aVent.SecondCompartment + 1
             End If
-            csv.Num(i, hheatNum.fraction) = aVent.InitialOpening
+            csv.num(i, hheatNum.fraction) = aVent.InitialOpening
             aVent.Changed = False
             i += 1
         Next
         For j = 0 To myVHeats.Count - 1
             aVent = myVHeats.Item(j)
             csv.str(i, CFASTlnNum.keyWord) = "VHEAT"
-            csv.Num(i, vheatNum.firstcompartment) = aVent.FirstCompartment + 1
-            csv.Num(i, vheatNum.secondcompartment) = aVent.SecondCompartment + 1
-            If csv.Num(i, vheatNum.firstcompartment) = 0 Then _
-                                            csv.Num(i, vheatNum.firstcompartment) = myCompartments.Count + 1
-            If csv.Num(i, vheatNum.secondcompartment) = 0 Then _
-                csv.Num(i, vheatNum.secondcompartment) = myCompartments.Count + 1
+            csv.num(i, vheatNum.firstcompartment) = aVent.FirstCompartment + 1
+            csv.num(i, vheatNum.secondcompartment) = aVent.SecondCompartment + 1
+            If csv.num(i, vheatNum.firstcompartment) = 0 Then _
+                                            csv.num(i, vheatNum.firstcompartment) = myCompartments.Count + 1
+            If csv.num(i, vheatNum.secondcompartment) = 0 Then _
+                csv.num(i, vheatNum.secondcompartment) = myCompartments.Count + 1
             aVent.Changed = False
             i += 1
         Next
@@ -1175,16 +1175,16 @@ Module IO
                         csv.str(i, CFASTlnNum.keyWord) = "SLCF"
                         csv.str(i, visualNum.sliceType) = "2-D"
                         csv.str(i, visualNum.slice2DAxis) = VisualAxisNames.Substring((aVisual.Axis) * 6, 1)
-                        csv.Num(i, visualNum.slice2DPosition) = aVisual.Value
-                        If aVisual.Compartment > -1 Then csv.Num(i, visualNum.slice2DCompartment) = aVisual.Compartment + 1
+                        csv.num(i, visualNum.slice2DPosition) = aVisual.Value
+                        If aVisual.Compartment > -1 Then csv.num(i, visualNum.slice2DCompartment) = aVisual.Compartment + 1
                     Case Visual.ThreeD
                         csv.str(i, CFASTlnNum.keyWord) = "SLCF"
                         csv.str(i, visualNum.sliceType) = "3-D"
-                        If aVisual.Compartment > -1 Then csv.Num(i, visualNum.slice3DCompartment) = aVisual.Compartment + 1
+                        If aVisual.Compartment > -1 Then csv.num(i, visualNum.slice3DCompartment) = aVisual.Compartment + 1
                     Case Visual.IsoSurface
                         csv.str(i, CFASTlnNum.keyWord) = "ISOF"
-                        csv.Num(i, visualNum.isoValue) = aVisual.Value
-                        If aVisual.Compartment > -1 Then csv.Num(i, visualNum.isoCompartment) = aVisual.Compartment + 1
+                        csv.num(i, visualNum.isoValue) = aVisual.Value
+                        If aVisual.Compartment > -1 Then csv.num(i, visualNum.isoCompartment) = aVisual.Compartment + 1
                 End Select
                 aVisual.Changed = False
                 i += 1
@@ -1197,7 +1197,7 @@ Module IO
         'stepmax
         If myEnvironment.MaximumTimeStep > 0 Then
             csv.str(i, CFASTlnNum.keyWord) = "STPMAX"
-            csv.Num(i, 2) = myEnvironment.MaximumTimeStep
+            csv.num(i, 2) = myEnvironment.MaximumTimeStep
             i += 1
         End If
         myEnvironment.Changed = False
@@ -1224,11 +1224,11 @@ Module IO
             aThermalProperty = myThermalProperties.Item(j)
             csv.str(i, CFASTlnNum.keyWord) = "MATL"
             csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
-            csv.Num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
-            csv.Num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
-            csv.Num(i, MaterialNum.density) = aThermalProperty.Density
-            csv.Num(i, MaterialNum.thickness) = aThermalProperty.Thickness
-            csv.Num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
+            csv.num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
+            csv.num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
+            csv.num(i, MaterialNum.density) = aThermalProperty.Density
+            csv.num(i, MaterialNum.thickness) = aThermalProperty.Thickness
+            csv.num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
             csv.str(i, MaterialNum.longName) = aThermalProperty.Name
             i += 1
         Next

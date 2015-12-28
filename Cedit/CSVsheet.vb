@@ -320,7 +320,7 @@ Public Class CSVsheet
     Private mxRow As Integer
     Private mxCol As Integer
 
-    Property Num(ByVal row As Integer, ByVal col As Integer) As Single
+    Property num(ByVal row As Integer, ByVal col As Integer) As Single
         Get
             If row > Me.mxRow Then
                 Return 0.0

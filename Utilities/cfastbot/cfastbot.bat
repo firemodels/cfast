@@ -241,27 +241,22 @@ if %usematlab% == 1 goto skip_matlabexe
 
 ::*** revert cfast repository
 
-echo clean=%clean%
 if %clean% == 0 goto skip_update0
    echo             cleaning %cfastbasename% repository
    cd %cfastroot%
-   git clean -dxf 1> Nul 2>&1
+   git clean -dxf -e cfastbot 1> Nul 2>&1
    git add . 1> Nul 2>&1
    git reset --hard HEAD 1> Nul 2>&1
 :skip_update0
-echo after clean
 
 ::*** update cfast repository
 
-echo update=%update%
-echo OUTDIR=%OUTDIR%
 if %update% == 0 goto skip_update1
   echo             updating %cfastbasename% repository
   cd %cfastroot%
   git fetch origin
   git pull  1> %OUTDIR%\stage0.txt 2>&1
 :skip_update1
-echo after update
 
 cd %cfastroot%
 git log --abbrev-commit . | head -1 | gawk "{print $2}" > %revisionfilestring%
@@ -282,7 +277,7 @@ if %havefdsrepo% == 0 goto skip_fdsrepo
   if %clean% == 0 goto skip_update2
     echo             reverting %FDSbasename% repository
     cd %FDSroot%
-    git clean -dxf 1> Nul 2>&1
+    git clean -dxf -e win32_local 1> Nul 2>&1
     git add . 1> Nul 2>&1
     git reset --hard HEAD 1> Nul 2>&1
   :skip_update2

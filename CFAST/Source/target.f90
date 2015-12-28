@@ -654,7 +654,7 @@ contains
     real(eb), intent(out) :: xdtect(mxdtect,*), tdtect
     
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
-       bnp1, denom, fact1, fact2, delta, tmp
+       bnp1, denom, fact1, fact2, delta, tmp, obs, obso
     integer :: i, iroom, idold, iqu
     character(133) :: messg
 
@@ -664,7 +664,6 @@ contains
     cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
-        tlinko = xdtect(i,dtemp)
 
         zdetect = xdtect(i,dzloc)
         if(zdetect>zzhlay(iroom,lower))then
@@ -677,12 +676,18 @@ contains
         tjeto = max(xdtect(i,dtjeto),tlay)
         vel = max(xdtect(i,dvel),cjetmin)
         velo = max(xdtect(i,dvelo),cjetmin)
+        obs = xdtect(i,dobs)
+        obso = xdtect(i,dobso)
 
         rti = xdtect(i,drti)
-        trig = xdtect(i,dtrig)
-        if(ixdtect(i,dtype)==smoked)then
-            tlink = tjet
+        
+        if(ixdtect(i,dtype)==smoked)then  
+            trig = log10(1._eb/(1.+eb-xdtect(i,dtrig)))
+            tlinko = obso
+            tlink = obs
         elseif(ixdtect(i,dtype)==heatd)then
+            trig = xdtect(i,dtrig)
+            tlinko = xdtect(i,dtemp)
             bn = sqrt(velo)/rti
             an = bn*tjeto
             bnp1 = sqrt(vel)/rti
@@ -691,10 +696,6 @@ contains
             fact1 = (1.0_eb - dstep*bn*.50_eb)/denom
             fact2 = dstep/denom
             tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
-        else
-
-            ! when soot is calculated then set tlink to soot concentration. set it to zero for now.
-            tlink = 0.0_eb
         endif
         if (imode>0) then
             xdtect(i,dtempo) = tlinko
@@ -743,6 +744,7 @@ contains
         endif
         xdtect(i,dtjeto) = tjet
         xdtect(i,dvelo) = vel
+        xdtect(i,dobso) = obs
     end do
     return
     end subroutine update_detectors
@@ -753,7 +755,7 @@ contains
 
     !     routine:     detector_temp_and_velocity
 
-    !     description:  calculates near-detector gas temperature and velocity
+    !     description:  calculates near-detector gas temperature, velocity, and smoke obscuration
 
     real(eb) :: xloc, yloc, zloc, tg, vg(4)
     integer :: id, iroom
@@ -768,8 +770,10 @@ contains
             ! if ceiling jet option is off, things default to appropriate layer temperature
             if(zloc>zzhlay(iroom,lower))then
                 xdtect(id,dtjet) = zztemp(iroom,upper)
+                xdtect(id,dobs) = toxict(iroom,upper,9)
             else
                 xdtect(id,dtjet) = zztemp(iroom,lower)
+                xdtect(id,dobs) = toxict(iroom,lower,9)
             endif
             xdtect(id,dvel) = 0.1_eb
         else
@@ -777,6 +781,11 @@ contains
             call get_gas_temp_velocity(iroom,xloc,yloc,zloc,tg,vg)
             xdtect(id,dtjet) = tg
             xdtect(id,dvel) = vg(4)
+            if(zloc>zzhlay(iroom,lower))then
+                xdtect(id,dobs) = toxict(iroom,upper,9)
+            else
+                xdtect(id,dobs) = toxict(iroom,lower,9)
+            endif
         end if
     end do
 

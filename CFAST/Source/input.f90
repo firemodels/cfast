@@ -1295,7 +1295,7 @@ module input_routines
                 stop
             endif
 
-            ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
+            ! DETECT Type Compartment Activation_Value Width Depth Height RTI Suppression Spray_Density
         case ('DETEC')
             if (countargs(lcarray)>=9) then
                 ndtect = ndtect + 1
@@ -1304,11 +1304,20 @@ module input_routines
                     stop
                 endif
 
-                i1 = lrarray(1)
-                i2 = lrarray(2)
-                ! force to heat detector if out of range
-                if (i1>3) i1 = heatd
+                if (lcarray(1)=='SMOKE') then
+                    i1 = smoked
+                else if (lcarray(1)=='HEAT') then
+                    i1 = heatd
+                else if (lcarray(1)=='SPRINKLER') then
+                    i1 = sprinkd
+                else
+                    i1 = lrarray(1)
+                    ! force to heat detector if out of range
+                    if (i1>3) i1 = heatd
+                end if
                 ixdtect(ndtect,dtype) = i1
+                
+                i2 = lrarray(2)
                 iroom = i2
                 ixdtect(ndtect,droom) = iroom
                 if(iroom<1.or.iroom>nr)then

@@ -88,12 +88,13 @@ module dsize
     implicit none
 
     integer, parameter :: mxdtect=100   ! maximum number of detectors
-    integer, parameter :: dtxcol=15     ! number of floating point columns in detector data structure
+    integer, parameter :: dtxcol=17     ! number of floating point columns in detector data structure
     integer, parameter :: dticol=5      ! number of integer columns in detector data structure
     
     ! detector types
     integer, parameter :: smoked = 1    ! smoke detector
     integer, parameter :: heatd = 2     ! heat detector
+    integer, parameter :: sprinkd = 3   ! sprinkler
 
     ! pointers into floating point detector data structure
     integer, parameter :: drti=1        ! RTI value for detector / sprinkler response
@@ -108,9 +109,11 @@ module dsize
     integer, parameter :: dtact=10
     integer, parameter :: dtjet=11
     integer, parameter :: dtjeto=12
-    integer, parameter :: dspray=13
-    integer, parameter :: drate=14
-    integer, parameter :: dthalf=15
+    integer, parameter :: dobs = 13
+    integer, parameter :: dobso = 14
+    integer, parameter :: dspray=15
+    integer, parameter :: drate=16
+    integer, parameter :: dthalf=17
 
     ! pointers into integer detector data structure
     integer, parameter :: droom=1

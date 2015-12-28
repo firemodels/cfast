@@ -244,7 +244,7 @@ if %usematlab% == 1 goto skip_matlabexe
 if %clean% == 0 goto skip_update0
    echo             cleaning %cfastbasename% repository
    cd %cfastroot%
-   git clean -dxf 1> Nul 2>&1
+   git clean -dxf -e cfastbot 1> Nul 2>&1
    git add . 1> Nul 2>&1
    git reset --hard HEAD 1> Nul 2>&1
 :skip_update0
@@ -277,7 +277,7 @@ if %havefdsrepo% == 0 goto skip_fdsrepo
   if %clean% == 0 goto skip_update2
     echo             reverting %FDSbasename% repository
     cd %FDSroot%
-    git clean -dxf 1> Nul 2>&1
+    git clean -dxf -e win32_local 1> Nul 2>&1
     git add . 1> Nul 2>&1
     git reset --hard HEAD 1> Nul 2>&1
   :skip_update2

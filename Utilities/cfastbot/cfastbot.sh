@@ -360,6 +360,7 @@ check_git_checkout()
 compile_cfast_db()
 {
    # Build debug CFAST
+   echo "Building:"
    echo "   cfast"
    echo "      debug"
    cd $cfastrepo/CFAST/${compiler}_${platform}${size}_db
@@ -686,12 +687,11 @@ check_vv_cases_release()
 
 compile_smv_utilities()
 {
-   echo "Building:"
    if [ "$USEINSTALL" == "" ]; then
    # smokeview libraries
      cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_${compiler}${size}
      echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
-     echo '   libraries for smokeview'
+     echo "   smokeview libraries"
      ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
 
    # background
@@ -702,8 +702,11 @@ compile_smv_utilities()
        ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
      fi
    else
-    echo "Using installed smokeview, libraries not built"
-    echo "Using installed smokeview, libraries not built" >> $OUTPUT_DIR/stage1b 2>&1
+     echo "   smokeview libraries - not built, using installed smokview"
+     if [ "$QUEUE" == "none" ]; then
+       echo "   background - not built, using installed smokeview"
+       echo "Using installed smokeview, libraries not built" >> $OUTPUT_DIR/stage1b 2>&1
+     fi
    fi
 }
 
@@ -714,8 +717,6 @@ is_file_installed()
   if [ "$prognotfound" == "1" ] ; then
     stage1b_success="0"
     echo "***error: the $program is not installed" >> $OUTPUT_DIR/stage1b
-  else
-    echo "The program $program is available"
   fi
 }
 
@@ -763,7 +764,8 @@ compile_smv_db()
      cd $fdsrepo/SMV/Build/${compiler}_${platform}${size}
      ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
    else
-     echo Using installed smokeview
+     echo "   smokeview"
+     echo "      debug - not built, using installed smokeview"
    fi
 }
 
@@ -776,7 +778,7 @@ check_compile_smv_db()
      then
         stage6a_success=true
      else
-        echo "Errors from Stage 6b - Compile SMV DB:" >> $ERROR_LOG
+        echo "Errors from Stage 6a - Compile SMV DB:" >> $ERROR_LOG
         cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
         echo "" >> $ERROR_LOG
      fi
@@ -806,6 +808,8 @@ compile_smv()
      echo "      release"
      cd $fdsrepo/SMV/Build/${compiler}_${platform}${size}
      ./make_smv.sh &> $OUTPUT_DIR/stage6b
+   else
+     echo "      release - not built, using installed smokeview"
    fi
 }
 
@@ -836,7 +840,13 @@ check_compile_smv()
         echo "" >> $WARNING_LOG
      fi
    else
-     is_file_installed smokeview
+     is_file_installed smokeview 
+     if [ "$stage1b_success" == "0" ] ; then
+        echo "smokeview not installed"
+        echo "Errors from Stage 1b - smokeview not installed:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
    fi
 }
 
@@ -1211,30 +1221,30 @@ start_time=`date`
 ### Clean up on start ###
 clean_cfastbot_history
 
-### Stage 1a ###
+### Stage 1 ###
 clean_git_repo
 do_git_checkout
 check_git_checkout
 
-### Stage 1b ###
-compile_smv_utilities
-check_smv_utilities
-
-### Stage 2 ###
+### Stage 2a ###
 compile_cfast_db
 check_compile_cfast_db
 compile_cfast
 check_compile_cfast
-compile_vvcalc
-check_compile_vvcalc
 
-### Stage 6a ###
+### Stage 2b ###
+compile_smv_utilities
+check_smv_utilities
+
+### Stage 2c ###
 compile_smv_db
 check_compile_smv_db
-
-### Stage 6b ###
 compile_smv
 check_compile_smv
+
+### Stage 2d ###
+compile_vvcalc
+check_compile_vvcalc
 
 ### Stage 3 ###
 if [[ $stage2a_success ]] ; then
@@ -1242,19 +1252,19 @@ if [[ $stage2a_success ]] ; then
    check_vv_cases_debug
 fi
 
-### Stage 5 ###
+### Stage 4 ###
 if [[ $stage2b_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
 
-### Stage 6c ###
+### Stage 5 ###
 if [[ $stage2b_success && $stage6b_success ]] ; then
    make_cfast_pictures
    check_cfast_pictures
 fi
 
-### Stage 7a ###
+### Stage 6a ###
 if [[ "$SKIP" == "" ]]; then
   if [ "$MATLABEXE" == "" ]; then
     check_matlab_license_server
@@ -1263,7 +1273,7 @@ if [[ "$SKIP" == "" ]]; then
   fi
 fi
 
-### Stage 7c ###
+### Stage 6b ###
 if [[ "$SKIP" == "" ]]; then
   if [ "$MATLABEXE" == "" ]; then
     run_matlab_validation
@@ -1273,7 +1283,7 @@ if [[ "$SKIP" == "" ]]; then
   fi
 fi
 
-### Stage 8 ###
+### Stage 7 ###
 if [[ "$SKIP" == "" ]]; then
   make_cfast_tech_guide
   make_cfast_user_guide

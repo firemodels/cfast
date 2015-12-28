@@ -818,786 +818,833 @@ module input_routines
     ! Then do everything else
     do ir = 2, inumr
 
-    label = carray(ir,1)
-    if (label==' ') cycle
-    lrarray = 0.0_eb
-    lcarray = ' '
-    do i = 2, inumc
-        lcarray(i-1) = carray(ir,i)
-        lrarray(i-1) = rarray(ir,i)
-    end do
+        label = carray(ir,1)
+        if (label==' ') cycle
+        lrarray = 0.0_eb
+        lcarray = ' '
+        do i = 2, inumc
+            lcarray(i-1) = carray(ir,i)
+            lrarray(i-1) = rarray(ir,i)
+        end do
 
-    !	Start the case statement for key words
+        !	Start the case statement for key words
 
-    select case (label)
+        select case (label)
 
-    ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
-    case ("TIMES")
-        if (countargs(lcarray)>=5) then
-            nsmax =  lrarray(1)
-            lprint = abs(lrarray(2))
-            lsmv = lrarray(4)
-            lcopyss =  lrarray(5)
-        else if (countargs(lcarray)>=4) then
-            nsmax =  lrarray(1)
-            lprint = lrarray(2)
-            lsmv = lrarray(3)
-            lcopyss =  lrarray(4)
-        else 
-            write (logerr,*) '***Error: Bad TIMES input. At least 4 arguments required.'
-            stop
-        endif
-
-    ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
-    case ("TAMB")
-        if (countargs(lcarray)>=4) then
-            interior_temperature = lrarray(1)
-            interior_abs_pressure = lrarray(2)
-            relhum = lrarray(4)*0.01_eb
-        elseif (countargs(lcarray)>=3) then
-            interior_temperature = lrarray(1)
-            interior_abs_pressure = lrarray(2)
-            relhum = lrarray(3)*0.01_eb
-        else
-            write (logerr,*) '***Error: Bad TAMB input. At least 3 arguments required.'
-            stop
-        endif
-        if (.not.exset) then
-            exterior_temperature = interior_temperature
-            exterior_abs_pressure = interior_abs_pressure
-            exterior_density = interior_density
-        endif
-
-    ! EAMB reference external ambient temperature (c), reference external ambient pressure
-    case ("EAMB")
-        if (countargs(lcarray)/=3) then
-            write (logerr,*) '***Error: Bad EAMB input. 3 arguments required.'
-            stop
-        endif
-        exterior_temperature = lrarray(1)
-        exterior_abs_pressure = lrarray(2)
-        exset = .true.
-
-    ! Rename the thermal data file
-    case ("THRMF")
-        if (countargs(lcarray)>=1) then
-            thrmfile = lcarray(1)
-        else
-            write (logerr,*) '***Error: Bad THRMF input. 1 argument required.'
-            stop
-        endif
-
-        ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
-        !		    bw = width, hh = soffit, hl = sill, 
-        !		    hhp = absolute height of the soffit,hlp = absolute height of the sill, 
-        !           floor_height = absolute height of the floor (not set here)
-        !		    compartment offset for the hall command (2 of these)
-        !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
-        !		    initial open fraction
-    case ('HVENT')
-        if (countargs(lcarray)<7) then
-            write (logerr,*) '***Error: Bad HVENT input. At least 7 arguments required.'
-            stop
-        else
-            i = lrarray(1)
-            j = lrarray(2)
-            k = lrarray(3)
-            imin = min(i,j)
-            jmax = max(i,j)
-            if (imin>nr-1.or.jmax>nr.or.imin==jmax) then
-                write (logerr,5070) i, j
-                stop
-            endif
-            if (k>mxccv) then
-                write (logerr,5080) i, j, k, ihvent_connections(i,j)
-                stop
-            endif
-            nventijk = nventijk + 1
-            if (nventijk>mxhvents) then
-                write(logerr,5081) i,j,k
-                stop
-            endif
-            ijk(i,j,k) = nventijk
-            ijk(j,i,k) = ijk(i,j,k)
-            iijk = ijk(i,j,k)
-            jik = iijk
-            koffst = 2**k
-            ihvent_connections(i,j) = ior(ihvent_connections(i,j),koffst)
-            bw(iijk) = lrarray(4)
-            hh(iijk) = lrarray(5)
-            hl(iijk) = lrarray(6)
-        endif
-        if (countargs(lcarray)>=11) then
-            ventoffset(iijk,1) = lrarray(8)
-            ventoffset(iijk,2) = lrarray(9)
-            vface(iijk) = lrarray(10)
-            initialopening = lrarray(11)
-        else if (countargs(lcarray)>=9) then
-            ventoffset(iijk,1) = lrarray(7)
-            ventoffset(iijk,2) = 0.0_eb
-            vface(iijk) = lrarray(8)
-            initialopening = lrarray(9)
-        else
-            write (logerr,*) '***Error: Bad HVENT input. At least 7 arguments required.'
-            stop
-        end if
-
-        qcvh(2,iijk) = initialopening
-        qcvh(4,iijk) = initialopening
-
-        roomptr => roominfo(i)
-        hhp(iijk) = hh(iijk) + roomptr%z0
-        hlp(iijk) = hl(iijk) + roomptr%z0
-
-        ! connections are bidirectional
-
-        ihvent_connections(j,i) = ihvent_connections(i,j)
-        roomptr => roominfo(j)
-        hh(jik) = min(roomptr%height,max(0.0_eb,hhp(jik)-roomptr%z0))
-        hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomptr%z0))
-
-        ! assure ourselves that the connections are symmetrical
-
-        hhp(jik) = hh(jik) + roomptr%z0
-        hlp(jik) = hl(jik) + roomptr%z0
-        roomptr => roominfo(i)
-        hh(iijk) = min(roomptr%height,max(0.0_eb,hhp(iijk)-roomptr%z0))
-        hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-roomptr%z0))
-        
-    ! DEADROOM dead_room_num connected_room_num
-    ! pressure in dead_room_num is not solved.  pressure for this room
-    ! is obtained from connected_room_num
-    case ('DEADR')  
-        i = lrarray(1)
-        j = lrarray(2)
-        if (i.ge.1.and.i.le.nr.and.j.le.1.and.j.le.nr.and.i.ne.j) then
-            roomptr => roominfo(i)
-           roomptr%deadroom = j
-        endif
-
-    ! EVENT keyword, the four possible formats are:
-    ! EVENT   H     First_Compartment   Second_Compartment	 Vent_Number    Time   Final_Fraction   decay_time
-    ! EVENT   V     First_Compartment   Second_Compartment	 Not_Used	    Time   Final_Fraction   decay_time
-    ! EVENT   M        Not_Used             Not_used            M_ID        Time   Final_Fraction   decay_time
-    ! EVENT   F        Not_Used             Not_used            M_ID        Time   Final_Fraction   decay_time   
-    case ('EVENT')
-        if (countargs(lcarray)>=7) then
-            !	        Sort by event type, h, v, m, or f
-            venttype = lcarray(1)
-            
-            if(lrarray(6)<0.0_eb.or.lrarray(6)>1.0_eb) then
-                write(3,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
+            ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
+        case ("TIMES")
+            if (countargs(lcarray)>=5) then
+                nsmax =  lrarray(1)
+                lprint = abs(lrarray(2))
+                lsmv = lrarray(4)
+                lcopyss =  lrarray(5)
+            else if (countargs(lcarray)>=4) then
+                nsmax =  lrarray(1)
+                lprint = lrarray(2)
+                lsmv = lrarray(3)
+                lcopyss =  lrarray(4)
+            else
+                write (logerr,*) '***Error: Bad TIMES input. At least 4 arguments required.'
                 stop
             endif
 
-            select case (venttype)
-            case ('H')
-                i = lrarray(2)
-                j = lrarray(3)
-                k = lrarray(4)
-                iijk = ijk(i,j,k)
-                qcvh(1,iijk) = lrarray(5)
-                qcvh(3,iijk) = lrarray(5) + lrarray(7)
-                qcvh(4,iijk) = lrarray(6)
-            case ('V')
-                ! Sort these out in update_data; we duplicate here so that read_input_file does not have to sort these as well
-                itop = lrarray(2)
-                ibot = lrarray(3)
-                qcvpp(1,itop,ibot) = lrarray(5)
-                qcvpp(3,itop,ibot) = lrarray(5) + lrarray(7)
-                qcvpp(4,itop,ibot) = lrarray(6)
-                qcvpp(1,ibot,itop) = lrarray(5)
-                qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
-                qcvpp(4,ibot,itop) = lrarray(6)
-            case ('M')
-                fannumber = lrarray(4)
-                qcvm(1,fannumber) = lrarray(5)
-                qcvm(3,fannumber) = lrarray(5) + lrarray(7)
-                qcvm(4,fannumber) = lrarray(6)
-            case ('F')
-                fannumber = lrarray(4)
-                if (fannumber>nfan) then
-                    write(logerr,5196) fannumber
+            ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
+        case ("TAMB")
+            if (countargs(lcarray)>=4) then
+                interior_temperature = lrarray(1)
+                interior_abs_pressure = lrarray(2)
+                relhum = lrarray(4)*0.01_eb
+            elseif (countargs(lcarray)>=3) then
+                interior_temperature = lrarray(1)
+                interior_abs_pressure = lrarray(2)
+                relhum = lrarray(3)*0.01_eb
+            else
+                write (logerr,*) '***Error: Bad TAMB input. At least 3 arguments required.'
+                stop
+            endif
+            if (.not.exset) then
+                exterior_temperature = interior_temperature
+                exterior_abs_pressure = interior_abs_pressure
+                exterior_density = interior_density
+            endif
+
+            ! EAMB reference external ambient temperature (c), reference external ambient pressure
+        case ("EAMB")
+            if (countargs(lcarray)/=3) then
+                write (logerr,*) '***Error: Bad EAMB input. 3 arguments required.'
+                stop
+            endif
+            exterior_temperature = lrarray(1)
+            exterior_abs_pressure = lrarray(2)
+            exset = .true.
+
+            ! Rename the thermal data file
+        case ("THRMF")
+            if (countargs(lcarray)>=1) then
+                thrmfile = lcarray(1)
+            else
+                write (logerr,*) '***Error: Bad THRMF input. 1 argument required.'
+                stop
+            endif
+
+            ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
+            !		    bw = width, hh = soffit, hl = sill,
+            !		    hhp = absolute height of the soffit,hlp = absolute height of the sill,
+            !           floor_height = absolute height of the floor (not set here)
+            !		    compartment offset for the hall command (2 of these)
+            !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
+            !		    initial open fraction
+        case ('HVENT')
+            if (countargs(lcarray)<7) then
+                write (logerr,*) '***Error: Bad HVENT input. At least 7 arguments required.'
+                stop
+            else
+                i = lrarray(1)
+                j = lrarray(2)
+                k = lrarray(3)
+                imin = min(i,j)
+                jmax = max(i,j)
+                if (imin>nr-1.or.jmax>nr.or.imin==jmax) then
+                    write (logerr,5070) i, j
                     stop
                 endif
-                nfilter = nfilter + 1
-                qcvf(1,fannumber) = lrarray(5)
-                qcvf(3,fannumber) = lrarray(5) + lrarray(7)
-                qcvf(4,fannumber) = lrarray(6)
-            case default
-                write (logerr,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
+                if (k>mxccv) then
+                    write (logerr,5080) i, j, k, ihvent_connections(i,j)
+                    stop
+                endif
+                nventijk = nventijk + 1
+                if (nventijk>mxhvents) then
+                    write(logerr,5081) i,j,k
+                    stop
+                endif
+                ijk(i,j,k) = nventijk
+                ijk(j,i,k) = ijk(i,j,k)
+                iijk = ijk(i,j,k)
+                jik = iijk
+                koffst = 2**k
+                ihvent_connections(i,j) = ior(ihvent_connections(i,j),koffst)
+                bw(iijk) = lrarray(4)
+                hh(iijk) = lrarray(5)
+                hl(iijk) = lrarray(6)
+            endif
+            if (countargs(lcarray)>=11) then
+                ventoffset(iijk,1) = lrarray(8)
+                ventoffset(iijk,2) = lrarray(9)
+                vface(iijk) = lrarray(10)
+                initialopening = lrarray(11)
+            else if (countargs(lcarray)>=9) then
+                ventoffset(iijk,1) = lrarray(7)
+                ventoffset(iijk,2) = 0.0_eb
+                vface(iijk) = lrarray(8)
+                initialopening = lrarray(9)
+            else
+                write (logerr,*) '***Error: Bad HVENT input. At least 7 arguments required.'
                 stop
-            end select
-        else
-            write (logerr,*) '***Error: Bad EVENT input. At least 7 arguments required.'
-            stop
-        endif
+            end if
 
-    ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
-    case ('RAMP')
-        if (countargs(lcarray)<9) then
-            write (logerr,*) '***Error: Bad RAMP input. At least 9 arguments required.'
-            stop
-        else if (lrarray(5)<=1) then
-            write (logerr,*) '***Error: Bad RAMP input. At least 1 time point must be specified.'
-            stop
-        else if (countargs(lcarray)/=5+2*lrarray(5)) then
-            write (logerr,*) '***Error: Bad RAMP input. Inputs must be in pairs.'
-            stop
-        end if
-        if (nramps<=mxramps) then
-            nramps = nramps + 1
-            rampptr=>rampinfo(nramps)
-            rampptr%type = lcarray(1)
-            rampptr%from_room = lrarray(2)
-            rampptr%to_room = lrarray(3)
-            rampptr%vent_number = lrarray(4)
-            rampptr%npoints = lrarray(5)
-            do iramp = 1,rampptr%npoints
-                rampptr%time(iramp) = lrarray(4+2*iramp)
-                rampptr%value(iramp) = lrarray(5+2*iramp)
-            end do
-        end if
+            qcvh(2,iijk) = initialopening
+            qcvh(4,iijk) = initialopening
 
-    ! VVENT - from_compartment to_compartment area shape initial_fraction
-    case ('VVENT')
-        if (countargs(lcarray)>=5) then        
+            roomptr => roominfo(i)
+            hhp(iijk) = hh(iijk) + roomptr%z0
+            hlp(iijk) = hl(iijk) + roomptr%z0
+
+            ! connections are bidirectional
+
+            ihvent_connections(j,i) = ihvent_connections(i,j)
+            roomptr => roominfo(j)
+            hh(jik) = min(roomptr%height,max(0.0_eb,hhp(jik)-roomptr%z0))
+            hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomptr%z0))
+
+            ! assure ourselves that the connections are symmetrical
+
+            hhp(jik) = hh(jik) + roomptr%z0
+            hlp(jik) = hl(jik) + roomptr%z0
+            roomptr => roominfo(i)
+            hh(iijk) = min(roomptr%height,max(0.0_eb,hhp(iijk)-roomptr%z0))
+            hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-roomptr%z0))
+
+            ! DEADROOM dead_room_num connected_room_num
+            ! pressure in dead_room_num is not solved.  pressure for this room
+            ! is obtained from connected_room_num
+        case ('DEADR')
             i = lrarray(1)
             j = lrarray(2)
-            ! check for outside of compartment space; self pointers are covered in read_input_file
-            if (i>nr.or.j>nr) then
-                write (logerr,5070) i, j
-                stop
+            if (i.ge.1.and.i.le.nr.and.j.le.1.and.j.le.nr.and.i.ne.j) then
+                roomptr => roominfo(i)
+                roomptr%deadroom = j
             endif
 
-            ! read_input_file will verify the orientation (i is on top of j)
-            ivvent_connections(i,j) = 1
-            vvarea(i,j) = lrarray(3)
-            ! check the shape parameter. the default (1) is a circle)
-            if (lrarray(4)<1.or.lrarray(4)>2) then
-                vshape(i,j) = 1
+            ! EVENT keyword, the four possible formats are:
+            ! EVENT   H     First_Compartment   Second_Compartment	 Vent_Number    Time   Final_Fraction   decay_time
+            ! EVENT   V     First_Compartment   Second_Compartment	 Not_Used	    Time   Final_Fraction   decay_time
+            ! EVENT   M        Not_Used             Not_used            M_ID        Time   Final_Fraction   decay_time
+            ! EVENT   F        Not_Used             Not_used            M_ID        Time   Final_Fraction   decay_time
+        case ('EVENT')
+            if (countargs(lcarray)>=7) then
+                !	        Sort by event type, h, v, m, or f
+                venttype = lcarray(1)
+
+                if(lrarray(6)<0.0_eb.or.lrarray(6)>1.0_eb) then
+                    write(3,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
+                    stop
+                endif
+
+                select case (venttype)
+                case ('H')
+                    i = lrarray(2)
+                    j = lrarray(3)
+                    k = lrarray(4)
+                    iijk = ijk(i,j,k)
+                    qcvh(1,iijk) = lrarray(5)
+                    qcvh(3,iijk) = lrarray(5) + lrarray(7)
+                    qcvh(4,iijk) = lrarray(6)
+                case ('V')
+                    ! Sort these out in update_data; we duplicate here so that read_input_file does not have to sort these as well
+                    itop = lrarray(2)
+                    ibot = lrarray(3)
+                    qcvpp(1,itop,ibot) = lrarray(5)
+                    qcvpp(3,itop,ibot) = lrarray(5) + lrarray(7)
+                    qcvpp(4,itop,ibot) = lrarray(6)
+                    qcvpp(1,ibot,itop) = lrarray(5)
+                    qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
+                    qcvpp(4,ibot,itop) = lrarray(6)
+                case ('M')
+                    fannumber = lrarray(4)
+                    qcvm(1,fannumber) = lrarray(5)
+                    qcvm(3,fannumber) = lrarray(5) + lrarray(7)
+                    qcvm(4,fannumber) = lrarray(6)
+                case ('F')
+                    fannumber = lrarray(4)
+                    if (fannumber>nfan) then
+                        write(logerr,5196) fannumber
+                        stop
+                    endif
+                    nfilter = nfilter + 1
+                    qcvf(1,fannumber) = lrarray(5)
+                    qcvf(3,fannumber) = lrarray(5) + lrarray(7)
+                    qcvf(4,fannumber) = lrarray(6)
+                    case default
+                    write (logerr,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
+                    stop
+                end select
             else
-                vshape(i,j) = lrarray(4)
+                write (logerr,*) '***Error: Bad EVENT input. At least 7 arguments required.'
+                stop
             endif
-            qcvpp(2,i,j) = lrarray(5)
-            qcvpp(2,j,i) = lrarray(5)
-            qcvpp(4,i,j) = lrarray(5)
-            qcvpp(4,j,i) = lrarray(5)
-        else
-            write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'
-            stop
-        endif
 
-    ! MVENT - simplified mechanical ventilation
+            ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
+        case ('RAMP')
+            if (countargs(lcarray)<9) then
+                write (logerr,*) '***Error: Bad RAMP input. At least 9 arguments required.'
+                stop
+            else if (lrarray(5)<=1) then
+                write (logerr,*) '***Error: Bad RAMP input. At least 1 time point must be specified.'
+                stop
+            else if (countargs(lcarray)/=5+2*lrarray(5)) then
+                write (logerr,*) '***Error: Bad RAMP input. Inputs must be in pairs.'
+                stop
+            end if
+            if (nramps<=mxramps) then
+                nramps = nramps + 1
+                rampptr=>rampinfo(nramps)
+                rampptr%type = lcarray(1)
+                rampptr%from_room = lrarray(2)
+                rampptr%to_room = lrarray(3)
+                rampptr%vent_number = lrarray(4)
+                rampptr%npoints = lrarray(5)
+                do iramp = 1,rampptr%npoints
+                    rampptr%time(iramp) = lrarray(4+2*iramp)
+                    rampptr%value(iramp) = lrarray(5+2*iramp)
+                end do
+            end if
 
-    ! (1) From_Compartment, (2) To_Compartment, (3) ID_Number
-    ! (4-6) From_Opening_Orientation From_Center_Height From_Opening_Area 
-    ! (7-9) To_Opening_Orientation To_Center_Height To_Opening_Area 
-    ! (10-12) Flow Flow_Begin_Dropoff_Pressure Zero_Flow_Pressure
-    ! (13) Initial fraction of the fan speed
-    case ('MVENT')
-        if (countargs(lcarray)/=13) then 
-            write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'
-            stop
-        endif
-        mid = lrarray(3)
-        iecfrom = lrarray(1)
-        iecto = lrarray(2)
-        if (iecfrom>n.or.iecto>n) then
-            write(logerr,5191) iecfrom, iecto
-            stop
-        endif
+            ! VVENT - from_compartment to_compartment area shape initial_fraction
+        case ('VVENT')
+            if (countargs(lcarray)>=5) then
+                i = lrarray(1)
+                j = lrarray(2)
+                ! check for outside of compartment space; self pointers are covered in read_input_file
+                if (i>nr.or.j>nr) then
+                    write (logerr,5070) i, j
+                    stop
+                endif
 
-        orientypefrom = lcarray(4)
-        heightfrom = lrarray(5)
-        areafrom = lrarray(6)
-        orientypeto = lcarray(7)
-        heightto = lrarray(8)
-        areato = lrarray(9)
-        minpres = lrarray(11)
-        maxpres = lrarray(12)
-
-        ! We start with two new nodes for the openings into the compartments for connections to the fan
-
-        ! first compartment/node opening
-        next = next + 1
-        nnode = nnode + 1
-        if (next>mxext.or.nnode>mxnode) then
-            write (logerr,5192) next,nnode
-            stop
-        endif
-        if (orientypefrom=='V') then
-            hvorien(next) = 1
-        else
-            hvorien(next) = 2
-        endif
-        hvnode(1,next) = iecfrom
-        hvnode(2,next) = nnode
-        hvelxt(next) = heightfrom
-        arext(next) = areafrom
-
-        ! second compartment/node opening
-        next = next + 1
-        nnode = nnode + 1
-        if (next>mxext.or.nnode>mxnode) then
-            write (logerr,5192) next,nnode
-            stop
-        endif
-        if (orientypeto=='V') then
-            hvorien(next) = 1
-        else
-            hvorien(next) = 2
-        endif
-        hvnode(1,next) = iecto
-        hvnode(2,next) = nnode
-        hvelxt(next) = heightto
-        arext(next) = areato
-
-        ! now connect nodes 1 and 2 with a fan
-
-        if (minpres>maxpres) then
-            write (logerr,5194) minpres,maxpres
-            stop
-        endif
-
-        nfan = nfan + 1
-        if (mid/=nfan) then
-            write(logerr,5193) mid,nfan
-            stop
-        endif
-
-        nbr = nbr + 1
-        if (nfan>mxfan.or.nbr>mxbranch) then
-            write (iofilo,5195) mxfan
-            stop
-        endif
-
-        nf(nbr) = nfan
-        nfc(nfan) = 1
-        na(nbr) = hvnode(2,next-1)
-        ne(nbr) = hvnode(2,next)
-        hvdvol(nbr) = 0.0_eb
-        hmin(nfan) = minpres
-        hmax(nfan) = maxpres
-        hvbco(nfan,1) = lrarray(10)
-
-        ! add a simple duct to connect the two nodes/fan - this is artificial since we do not 
-        ! worry about the species within the system
-        ndt = ndt + 1
-
-        ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
-        ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation 
-        ! for flow through the external nodes
-        duct_length(ndt) = 0.0_eb
-        eff_duct_diameter(ndt) = lrarray(6)
-        ibrd(ndt) = nbr
-
-        ! finally, we set the initial fraction opening
-        qcvm(2,mid) = lrarray(13)
-        qcvm(4,mid) = lrarray(13)
-
-        ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
-        ! This is the old format fire object specification
-    case ('OBJEC')
-
-        if (countargs(lcarray)/=11) then
-            write(logerr,5310)
-            stop
-        endif
-        if (numobjl>=mxfires) then
-            write(logerr,5300)
-            stop
-        endif
-        tcname = lcarray(1)
-        iroom = lrarray(2)
-        if (iroom<1.or.iroom>n-1) then
-            write(logerr,5320)iroom
-            stop
-        endif
-        obpnt = numobjl + 1
-        numobjl = obpnt
-        roomptr => roominfo(iroom)
-
-        ! Only constrained fires
-        objtyp(numobjl) = 2
-        if (objtyp(numobjl)>2) then
-            write(logerr,5321) objtyp(numobjl)
-            stop
-        endif
-
-        objpos(1,obpnt) = lrarray(3)
-        objpos(2,obpnt) = lrarray(4)
-        objpos(3,obpnt) = lrarray(5)
-        if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
-            write(logerr,5323) obpnt
-            stop
-        endif
-        obj_fpos(obpnt) = 1
-        if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
-            min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-        if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
-            min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
-
-        objign(obpnt) =   lrarray(7)
-        tmpcond =         lrarray(8)
-        objort(1,obpnt) = lrarray(9)
-        objort(2,obpnt) = lrarray(10)
-        objort(3,obpnt) = lrarray(11)
-        ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-        if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
-            write(logerr,5322)
-            stop
-        endif
-        objrm(obpnt) = iroom
-        objnin(obpnt) = tcname
-        objld(obpnt) = .true.
-        objon(obpnt) = .false.
-        ! This is redudant but needed to be compatible with the object database format
-        objpnt(obpnt) = obpnt
-
-        !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
-        !!!!! The critiria for temperature and flux are stored backupwards - this is historical
-        !!!!! See corresponding code in update_fire_objects
-        if (tmpcond>0.0_eb) then
-            if (objign(obpnt)==1) then
-                objcri(1,obpnt) = tmpcond
-                objcri(2,obpnt) = 1.0e30_eb
-                objcri(3,obpnt) = 1.0e30_eb
-            else if (objign(obpnt)==2) then
-                objcri(1,obpnt) = 1.0e30_eb
-                objcri(2,obpnt) = 1.0e30_eb
-                objcri(3,obpnt) = tmpcond
-            else if (objign(obpnt)==3) then
-                objcri(1,obpnt) = 1.0e30_eb
-                objcri(2,obpnt) = tmpcond
-                objcri(3,obpnt) = 1.0e30_eb
+                ! read_input_file will verify the orientation (i is on top of j)
+                ivvent_connections(i,j) = 1
+                vvarea(i,j) = lrarray(3)
+                ! check the shape parameter. the default (1) is a circle)
+                if (lrarray(4)<1.or.lrarray(4)>2) then
+                    vshape(i,j) = 1
+                else
+                    vshape(i,j) = lrarray(4)
+                endif
+                qcvpp(2,i,j) = lrarray(5)
+                qcvpp(2,j,i) = lrarray(5)
+                qcvpp(4,i,j) = lrarray(5)
+                qcvpp(4,j,i) = lrarray(5)
             else
-                write(logerr,5358) objign(obpnt)
+                write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 stop
             endif
-        else
-            objon(obpnt) = .true.
-        endif
-        if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
-            if (stpmax>0.0_eb) then
-                stpmax = min(stpmax,1.0_eb)
+
+            ! MVENT - simplified mechanical ventilation
+
+            ! (1) From_Compartment, (2) To_Compartment, (3) ID_Number
+            ! (4-6) From_Opening_Orientation From_Center_Height From_Opening_Area
+            ! (7-9) To_Opening_Orientation To_Center_Height To_Opening_Area
+            ! (10-12) Flow Flow_Begin_Dropoff_Pressure Zero_Flow_Pressure
+            ! (13) Initial fraction of the fan speed
+        case ('MVENT')
+            if (countargs(lcarray)/=13) then
+                write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'
+                stop
+            endif
+            mid = lrarray(3)
+            iecfrom = lrarray(1)
+            iecto = lrarray(2)
+            if (iecfrom>n.or.iecto>n) then
+                write(logerr,5191) iecfrom, iecto
+                stop
+            endif
+
+            orientypefrom = lcarray(4)
+            heightfrom = lrarray(5)
+            areafrom = lrarray(6)
+            orientypeto = lcarray(7)
+            heightto = lrarray(8)
+            areato = lrarray(9)
+            minpres = lrarray(11)
+            maxpres = lrarray(12)
+
+            ! We start with two new nodes for the openings into the compartments for connections to the fan
+
+            ! first compartment/node opening
+            next = next + 1
+            nnode = nnode + 1
+            if (next>mxext.or.nnode>mxnode) then
+                write (logerr,5192) next,nnode
+                stop
+            endif
+            if (orientypefrom=='V') then
+                hvorien(next) = 1
             else
-                stpmax = 1.0_eb
+                hvorien(next) = 2
             endif
-        endif
+            hvnode(1,next) = iecfrom
+            hvnode(2,next) = nnode
+            hvelxt(next) = heightfrom
+            arext(next) = areafrom
 
-    ! STPMAX # - set the maximum time step to #
-    case ('STPMA')
-        if (countargs(lcarray)>=1) then
-            stpmax = lrarray(1)
-        else
-            write (logerr,*) '***Error: Bad STPMA input. At least 1 argument required.'
-            stop
-        endif
+            ! second compartment/node opening
+            next = next + 1
+            nnode = nnode + 1
+            if (next>mxext.or.nnode>mxnode) then
+                write (logerr,5192) next,nnode
+                stop
+            endif
+            if (orientypeto=='V') then
+                hvorien(next) = 1
+            else
+                hvorien(next) = 2
+            endif
+            hvnode(1,next) = iecto
+            hvnode(2,next) = nnode
+            hvelxt(next) = heightto
+            arext(next) = areato
 
-    ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
-    case ('DETEC')
-        if (countargs(lcarray)>=9) then
-            ndtect = ndtect + 1
-            if (ndtect>mxdtect) then
-                write (logerr, 5338)
+            ! now connect nodes 1 and 2 with a fan
+
+            if (minpres>maxpres) then
+                write (logerr,5194) minpres,maxpres
                 stop
             endif
 
-            i1 = lrarray(1)
-            i2 = lrarray(2)
-            ! force to heat detector if out of range
-            if (i1>3) i1 = heatd
-            ixdtect(ndtect,dtype) = i1
-            iroom = i2
-            ixdtect(ndtect,droom) = iroom
-            if(iroom<1.or.iroom>nr)then
-                write (logerr,5342) i2
+            nfan = nfan + 1
+            if (mid/=nfan) then
+                write(logerr,5193) mid,nfan
                 stop
             endif
 
-            xdtect(ndtect,dtrig) = lrarray(3)
-            xdtect(ndtect,dxloc) = lrarray(4)
-            xdtect(ndtect,dyloc) = lrarray(5)
-            xdtect(ndtect,dzloc) = lrarray(6)
-            xdtect(ndtect,drti) =  lrarray(7)
-            ixdtect(ndtect,dquench) = lrarray(8)
-            xdtect(ndtect,dspray) = lrarray(9)*1000.0_eb
-            ! if spray density is zero, then turn off the sprinkler
-            if(xdtect(ndtect,dspray)==0.0_eb)then
-                ixdtect(ndtect,dquench) = 0
+            nbr = nbr + 1
+            if (nfan>mxfan.or.nbr>mxbranch) then
+                write (iofilo,5195) mxfan
+                stop
             endif
-            if(option(fbtdtect)==off.and.ixdtect(ndtect,dquench)>0)then
-                if (stpmax>0) then
+
+            nf(nbr) = nfan
+            nfc(nfan) = 1
+            na(nbr) = hvnode(2,next-1)
+            ne(nbr) = hvnode(2,next)
+            hvdvol(nbr) = 0.0_eb
+            hmin(nfan) = minpres
+            hmax(nfan) = maxpres
+            hvbco(nfan,1) = lrarray(10)
+
+            ! add a simple duct to connect the two nodes/fan - this is artificial since we do not
+            ! worry about the species within the system
+            ndt = ndt + 1
+
+            ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
+            ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation
+            ! for flow through the external nodes
+            duct_length(ndt) = 0.0_eb
+            eff_duct_diameter(ndt) = lrarray(6)
+            ibrd(ndt) = nbr
+
+            ! finally, we set the initial fraction opening
+            qcvm(2,mid) = lrarray(13)
+            qcvm(4,mid) = lrarray(13)
+
+            ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
+            ! This is the old format fire object specification
+        case ('OBJEC')
+
+            if (countargs(lcarray)/=11) then
+                write(logerr,5310)
+                stop
+            endif
+            if (numobjl>=mxfires) then
+                write(logerr,5300)
+                stop
+            endif
+            tcname = lcarray(1)
+            iroom = lrarray(2)
+            if (iroom<1.or.iroom>n-1) then
+                write(logerr,5320)iroom
+                stop
+            endif
+            obpnt = numobjl + 1
+            numobjl = obpnt
+            roomptr => roominfo(iroom)
+
+            ! Only constrained fires
+            objtyp(numobjl) = 2
+            if (objtyp(numobjl)>2) then
+                write(logerr,5321) objtyp(numobjl)
+                stop
+            endif
+
+            objpos(1,obpnt) = lrarray(3)
+            objpos(2,obpnt) = lrarray(4)
+            objpos(3,obpnt) = lrarray(5)
+            if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
+                write(logerr,5323) obpnt
+                stop
+            endif
+            obj_fpos(obpnt) = 1
+            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
+                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
+                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+
+            objign(obpnt) =   lrarray(7)
+            tmpcond =         lrarray(8)
+            objort(1,obpnt) = lrarray(9)
+            objort(2,obpnt) = lrarray(10)
+            objort(3,obpnt) = lrarray(11)
+            ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
+            if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
+                write(logerr,5322)
+                stop
+            endif
+            objrm(obpnt) = iroom
+            objnin(obpnt) = tcname
+            objld(obpnt) = .true.
+            objon(obpnt) = .false.
+            ! This is redudant but needed to be compatible with the object database format
+            objpnt(obpnt) = obpnt
+
+            !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
+            !!!!! The critiria for temperature and flux are stored backupwards - this is historical
+            !!!!! See corresponding code in update_fire_objects
+            if (tmpcond>0.0_eb) then
+                if (objign(obpnt)==1) then
+                    objcri(1,obpnt) = tmpcond
+                    objcri(2,obpnt) = 1.0e30_eb
+                    objcri(3,obpnt) = 1.0e30_eb
+                else if (objign(obpnt)==2) then
+                    objcri(1,obpnt) = 1.0e30_eb
+                    objcri(2,obpnt) = 1.0e30_eb
+                    objcri(3,obpnt) = tmpcond
+                else if (objign(obpnt)==3) then
+                    objcri(1,obpnt) = 1.0e30_eb
+                    objcri(2,obpnt) = tmpcond
+                    objcri(3,obpnt) = 1.0e30_eb
+                else
+                    write(logerr,5358) objign(obpnt)
+                    stop
+                endif
+            else
+                objon(obpnt) = .true.
+            endif
+            if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
+                if (stpmax>0.0_eb) then
                     stpmax = min(stpmax,1.0_eb)
                 else
                     stpmax = 1.0_eb
                 endif
             endif
-            roomptr => roominfo(ir)
-            if (roomptr%name==' ') then
-                write(logerr,5344) i2
-                stop
-            endif
 
-            if (debugging) then
-                write(*,5400) (xdtect(ndtect,i),i=1,dtxcol)
-                write(*,5401) (ixdtect(ndtect,i),i=1,dticol)
-                write(*,*)
-            endif
-
-            if(xdtect(ndtect,dxloc)>roomptr%width.or.xdtect(ndtect,dyloc)>roomptr%depth.or.xdtect(ndtect,dzloc)>roomptr%height) then
-                write(logerr,5339) ndtect,roomptr%name
-                stop
-            endif
-
-        else
-            write (logerr,*) '***Error: Bad DETEC input. At least 9 arguments required.'
-            stop
-        endif
-
-    !  VHEAT top_compartment bottom_compartment
-    case ('VHEAT')
-        if (countargs(lcarray)>=2) then
-            i1 = lrarray(1)
-            i2 = lrarray(2)
-            if (i1<1.or.i2<1.or.i1>n.or.i2>n) then
-                write(logerr,5345) i1, i2
-                stop
-            endif
-
-            nswal = nswal + 1
-            izswal(nswal,w_from_room) = i1
-            izswal(nswal,w_from_wall) = 2
-            izswal(nswal,w_to_room) = i2
-            izswal(nswal,w_to_wall) = 1
-        else
-            write (logerr,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
-            stop
-        endif
-
-    ! ONEZ compartment number - This turns the compartment into a single zone
-    case ('ONEZ')
-        if (countargs(lcarray)>=1) then
-            iroom = lrarray(1)
-            if(iroom<1.or.iroom>n)then
-                write(logerr, 5001) i1
-                stop
-            endif
-            roomptr => roominfo(iroom)
-            roomptr%shaft = .true.
-        else
-            write (logerr,*) '***Error: Bad ONEZ input. At least 1 compartment must be specified.'
-            stop
-        endif
-        
-    ! HALL Compartment Velocity Depth Decay_Distance
-    case ('HALL')
-        if (countargs(lcarray)>=1) then
-            iroom = lrarray(1)
-
-            ! check that specified room is valid
-            if(iroom<0.or.iroom>n)then
-                write(logerr,5346) iroom
-                stop
-            endif
-
-            roomptr => roominfo(iroom)
-            roomptr%hall = .true.
-            if (countargs(lcarray)>1) write (logerr,5406) iroom
-        else
-            write (logerr,*) '***Error: Bad HALL input. At least 1 compartment must be specified.'
-            stop
-        endif
-
-    ! ROOMA Compartment Number_of_Area_Values Area_Values
-    ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
-    case ('ROOMA')
-        if (countargs(lcarray)>=2) then
-            iroom = lrarray(1)
-
-            ! make sure the room number is valid
-            if(iroom<1.or.iroom>n)then
-                write(logerr,5347) iroom
-                stop
-            endif
-
-            ! make sure the number of points is valid
-            npts = lrarray(2)
-            if(npts>mxcross.or.npts<=0.or.npts/=countargs(lcarray)-2) then
-                write (logerr,5347) npts
-                stop
-            endif
-            if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
-            izrvol(iroom) = npts
-
-            ! make sure all data is positive
-            do  i = 1, npts
-                if(lrarray(i+2)<0.0_eb)then
-                    write(logerr,5348) lrarray(i+2)
-                    stop
-                endif
-            end do
-
-            ! put the data in its place
-            do i = 1, npts
-                zzrarea(i,iroom) = lrarray(i+2)
-            end do
-        else
-            write (logerr,*) '***Error: Bad ROOMA input. At least 2 arguments must be specified.'
-            stop
-        endif
-
-    ! ROOMH Compartment Number_of_Height_Values Height_Values
-    ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
-    case ('ROOMH')
-        if (countargs(lcarray)>=2) then
-            iroom = lrarray(1)
-
-            ! make sure the room number is valid
-            if(iroom<1.or.iroom>n)then
-                write(logerr,5349) iroom
-                stop
-            endif
-
-            ! make sure the number of points is valid
-            npts = lrarray(2)
-            if(npts>mxcross.or.npts<0.or.npts/=countargs(lcarray)-2)then
-                write(logerr,5350) npts
-                stop
-            endif
-            if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
-            izrvol(iroom) = npts
-
-            ! make sure all data is positive
-            do i = 1, npts
-                if(lrarray(i+2)<0.0_eb)then
-                    write(logerr,5348) lrarray(i+2)
-                    stop
-                endif
-            end do
-
-            ! put the data in its place
-            do i = 1, npts
-                zzrhgt(i,iroom) = lrarray(i+2)
-            end do
-
-        else
-            write (logerr,*) '***Error: Bad ROOMH input. At least 2 arguments must be specified.'
-            stop
-        endif
-
-    ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
-    case ('DTCHE')
-        if (countargs(lcarray)>=2) then
-            zzdtcrit = abs(lrarray(1))
-            izdtmax = abs(lrarray(2))
-            ! a negative turns off the check
-            if(lrarray(2)<=0)izdtflag = .false.
-
-        else
-            write (logerr,*) '***Error: Bad DTCHE input. At least 2 arguments must be specified.'
-            stop
-        endif
-
-    ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
-
-    ! There are two forms of the command
-    !   The first (single entry of the room number) - all connections based on horizontal flow
-    !   The second is the compartment number followed by N pairs of compartments to which the heat 
-    !   will flow and the fraction of the vertical surface of the compartment that loses heat
-    case ('HHEAT')
-        if (countargs(lcarray)>=1) then
-            nto = 0
-            ifrom = lrarray(1)
-
+            ! STPMAX # - set the maximum time step to #
+        case ('STPMA')
             if (countargs(lcarray)>=1) then
-                izheat(ifrom) = 1
-                cycle
+                stpmax = lrarray(1)
             else
-                nto = lrarray(2)
-                if(nto<1.or.nto>n)then
-                    write(logerr,5354) nto
-                    stop
-                endif
-                izheat(ifrom) = 2
-                izheat(ifrom) = 2
+                write (logerr,*) '***Error: Bad STPMA input. At least 1 argument required.'
+                stop
             endif
 
-            if (2*nto==(countargs(lcarray)-2)) then
-                do i = 1, nto
-                    i1 = 2*i+1
-                    i2 = 2*i+2
-                    ito = lrarray(i1)
-                    frac = lrarray(i2)
-                    if(ito<1.or.ito==ifrom.or.ito>n)then
-                        write(logerr, 5356) ifrom,ito
+            ! DETECT Type Compartment Activation_Temperature Width Depth Height RTI Suppression Spray_Density
+        case ('DETEC')
+            if (countargs(lcarray)>=9) then
+                ndtect = ndtect + 1
+                if (ndtect>mxdtect) then
+                    write (logerr, 5338)
+                    stop
+                endif
+
+                i1 = lrarray(1)
+                i2 = lrarray(2)
+                ! force to heat detector if out of range
+                if (i1>3) i1 = heatd
+                ixdtect(ndtect,dtype) = i1
+                iroom = i2
+                ixdtect(ndtect,droom) = iroom
+                if(iroom<1.or.iroom>nr)then
+                    write (logerr,5342) i2
+                    stop
+                endif
+
+                xdtect(ndtect,dtrig) = lrarray(3)
+                xdtect(ndtect,dxloc) = lrarray(4)
+                xdtect(ndtect,dyloc) = lrarray(5)
+                xdtect(ndtect,dzloc) = lrarray(6)
+                xdtect(ndtect,drti) =  lrarray(7)
+                ixdtect(ndtect,dquench) = lrarray(8)
+                xdtect(ndtect,dspray) = lrarray(9)*1000.0_eb
+                ! if spray density is zero, then turn off the sprinkler
+                if(xdtect(ndtect,dspray)==0.0_eb)then
+                    ixdtect(ndtect,dquench) = 0
+                endif
+                if(option(fbtdtect)==off.and.ixdtect(ndtect,dquench)>0)then
+                    if (stpmax>0) then
+                        stpmax = min(stpmax,1.0_eb)
+                    else
+                        stpmax = 1.0_eb
+                    endif
+                endif
+                roomptr => roominfo(ir)
+                if (roomptr%name==' ') then
+                    write(logerr,5344) i2
+                    stop
+                endif
+
+                if (debugging) then
+                    write(*,5400) (xdtect(ndtect,i),i=1,dtxcol)
+                    write(*,5401) (ixdtect(ndtect,i),i=1,dticol)
+                    write(*,*)
+                endif
+
+                if(xdtect(ndtect,dxloc)>roomptr%width.or. &
+                    xdtect(ndtect,dyloc)>roomptr%depth.or.xdtect(ndtect,dzloc)>roomptr%height) then
+                    write(logerr,5339) ndtect,roomptr%name
+                    stop
+                endif
+
+            else
+                write (logerr,*) '***Error: Bad DETEC input. At least 9 arguments required.'
+                stop
+            endif
+
+            !  VHEAT top_compartment bottom_compartment
+        case ('VHEAT')
+            if (countargs(lcarray)>=2) then
+                i1 = lrarray(1)
+                i2 = lrarray(2)
+                if (i1<1.or.i2<1.or.i1>n.or.i2>n) then
+                    write(logerr,5345) i1, i2
+                    stop
+                endif
+
+                nswal = nswal + 1
+                izswal(nswal,w_from_room) = i1
+                izswal(nswal,w_from_wall) = 2
+                izswal(nswal,w_to_room) = i2
+                izswal(nswal,w_to_wall) = 1
+            else
+                write (logerr,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
+                stop
+            endif
+
+            ! ONEZ compartment number - This turns the compartment into a single zone
+        case ('ONEZ')
+            if (countargs(lcarray)>=1) then
+                iroom = lrarray(1)
+                if(iroom<1.or.iroom>n)then
+                    write(logerr, 5001) i1
+                    stop
+                endif
+                roomptr => roominfo(iroom)
+                roomptr%shaft = .true.
+            else
+                write (logerr,*) '***Error: Bad ONEZ input. At least 1 compartment must be specified.'
+                stop
+            endif
+
+            ! HALL Compartment Velocity Depth Decay_Distance
+        case ('HALL')
+            if (countargs(lcarray)>=1) then
+                iroom = lrarray(1)
+
+                ! check that specified room is valid
+                if(iroom<0.or.iroom>n)then
+                    write(logerr,5346) iroom
+                    stop
+                endif
+
+                roomptr => roominfo(iroom)
+                roomptr%hall = .true.
+                if (countargs(lcarray)>1) write (logerr,5406) iroom
+            else
+                write (logerr,*) '***Error: Bad HALL input. At least 1 compartment must be specified.'
+                stop
+            endif
+
+            ! ROOMA Compartment Number_of_Area_Values Area_Values
+            ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
+        case ('ROOMA')
+            if (countargs(lcarray)>=2) then
+                iroom = lrarray(1)
+
+                ! make sure the room number is valid
+                if(iroom<1.or.iroom>n)then
+                    write(logerr,5347) iroom
+                    stop
+                endif
+
+                ! make sure the number of points is valid
+                npts = lrarray(2)
+                if(npts>mxcross.or.npts<=0.or.npts/=countargs(lcarray)-2) then
+                    write (logerr,5347) npts
+                    stop
+                endif
+                if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
+                izrvol(iroom) = npts
+
+                ! make sure all data is positive
+                do  i = 1, npts
+                    if(lrarray(i+2)<0.0_eb)then
+                        write(logerr,5348) lrarray(i+2)
                         stop
                     endif
-                    if(frac<0.0_eb.or.frac>1.0_eb)then
-                        write(logerr, 5357) ifrom,ito,frac
-                        stop
-                    endif
-                    zzhtfrac(ifrom,ito) = frac
+                end do
+
+                ! put the data in its place
+                do i = 1, npts
+                    zzrarea(i,iroom) = lrarray(i+2)
                 end do
             else
-                write(logerr,5355) ifrom, nto
+                write (logerr,*) '***Error: Bad ROOMA input. At least 2 arguments must be specified.'
                 stop
             endif
-        else
-            write (logerr,*) '***Error: Bad HHEAT input. At least 1 arguments must be specified.'
-            stop
-        endif
-        
-    ! FURN - no fire, heat walls according to a prescribed time temperature curve
-    case ('FURN')
-        nfurn=lrarray(1)+0.5
-        do i = 1, nfurn
-            furn_time(i)=lrarray(2*i)
-            furn_temp(i)=lrarray(2*i+1)
-        end do
-        
-    ! ADIAB - all surfaces are adiabatic so that dT/dx at the surface = 0
-    case ('ADIAB')
+
+            ! ROOMH Compartment Number_of_Height_Values Height_Values
+            ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
+        case ('ROOMH')
+            if (countargs(lcarray)>=2) then
+                iroom = lrarray(1)
+
+                ! make sure the room number is valid
+                if(iroom<1.or.iroom>n)then
+                    write(logerr,5349) iroom
+                    stop
+                endif
+
+                ! make sure the number of points is valid
+                npts = lrarray(2)
+                if(npts>mxcross.or.npts<0.or.npts/=countargs(lcarray)-2)then
+                    write(logerr,5350) npts
+                    stop
+                endif
+                if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
+                izrvol(iroom) = npts
+
+                ! make sure all data is positive
+                do i = 1, npts
+                    if(lrarray(i+2)<0.0_eb)then
+                        write(logerr,5348) lrarray(i+2)
+                        stop
+                    endif
+                end do
+
+                ! put the data in its place
+                do i = 1, npts
+                    zzrhgt(i,iroom) = lrarray(i+2)
+                end do
+
+            else
+                write (logerr,*) '***Error: Bad ROOMH input. At least 2 arguments must be specified.'
+                stop
+            endif
+
+            ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
+        case ('DTCHE')
+            if (countargs(lcarray)>=2) then
+                zzdtcrit = abs(lrarray(1))
+                izdtmax = abs(lrarray(2))
+                ! a negative turns off the check
+                if(lrarray(2)<=0)izdtflag = .false.
+
+            else
+                write (logerr,*) '***Error: Bad DTCHE input. At least 2 arguments must be specified.'
+                stop
+            endif
+
+            ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
+
+            ! There are two forms of the command
+            !   The first (single entry of the room number) - all connections based on horizontal flow
+            !   The second is the compartment number followed by N pairs of compartments to which the heat
+            !   will flow and the fraction of the vertical surface of the compartment that loses heat
+        case ('HHEAT')
+            if (countargs(lcarray)>=1) then
+                nto = 0
+                ifrom = lrarray(1)
+
+                if (countargs(lcarray)>=1) then
+                    izheat(ifrom) = 1
+                    cycle
+                else
+                    nto = lrarray(2)
+                    if(nto<1.or.nto>n)then
+                        write(logerr,5354) nto
+                        stop
+                    endif
+                    izheat(ifrom) = 2
+                    izheat(ifrom) = 2
+                endif
+
+                if (2*nto==(countargs(lcarray)-2)) then
+                    do i = 1, nto
+                        i1 = 2*i+1
+                        i2 = 2*i+2
+                        ito = lrarray(i1)
+                        frac = lrarray(i2)
+                        if(ito<1.or.ito==ifrom.or.ito>n)then
+                            write(logerr, 5356) ifrom,ito
+                            stop
+                        endif
+                        if(frac<0.0_eb.or.frac>1.0_eb)then
+                            write(logerr, 5357) ifrom,ito,frac
+                            stop
+                        endif
+                        zzhtfrac(ifrom,ito) = frac
+                    end do
+                else
+                    write(logerr,5355) ifrom, nto
+                    stop
+                endif
+            else
+                write (logerr,*) '***Error: Bad HHEAT input. At least 1 arguments must be specified.'
+                stop
+            endif
+
+            ! FURN - no fire, heat walls according to a prescribed time temperature curve
+        case ('FURN')
+            nfurn=lrarray(1)+0.5
+            do i = 1, nfurn
+                furn_time(i)=lrarray(2*i)
+                furn_temp(i)=lrarray(2*i+1)
+            end do
+
+            ! ADIAB - all surfaces are adiabatic so that dT/dx at the surface = 0
+        case ('ADIAB')
             adiabatic_wall = .true.
 
-    !  HEATF Special fire - heat source only; no mass
-    case ('HEATF')
-        if (countargs(lcarray)>=5) then
-            heatfr = lrarray(1)
-            if(heatfr<1.or.heatfr>n-1) then
+            !  HEATF Special fire - heat source only; no mass
+        case ('HEATF')
+            if (countargs(lcarray)>=5) then
+                heatfr = lrarray(1)
+                if(heatfr<1.or.heatfr>n-1) then
+                    stop
+                endif
+                heatfl = .true.
+                heatfp(1) = lrarray(2)
+                heatfp(2) = lrarray(3)
+                heatfp(3) = lrarray(4)
+            else
+                write (logerr,*) '***Error: Bad HEATF input. At least 5 arguments must be specified.'
                 stop
             endif
-            heatfl = .true.
-            heatfp(1) = lrarray(2)
-            heatfp(2) = lrarray(3)
-            heatfp(3) = lrarray(4)
-        else
-            write (logerr,*) '***Error: Bad HEATF input. At least 5 arguments must be specified.'
-            stop
-        endif
-        
-    ! SLCF 2-D and 3-D slice files
-    case ('SLCF')
-        if (countargs(lcarray)>=1) then
-            nvisualinfo = nvisualinfo + 1
-            sliceptr => visual_info(nvisualinfo)
-            if (lcarray(1)=='2-D') then
-                sliceptr%vtype = 1
-            else if (lcarray(1)=='3-D') then
-                sliceptr%vtype = 2
-            else
-                write (logerr, 5403) nvisualinfo
-                stop
-            end if
-            ! 2-D slice file
-            if (sliceptr%vtype==1) then
-                ! get position (required) and compartment (optional) first so we can check to make sure
-                ! desired position is within the compartment(s)
-                if (countargs(lcarray)>2) then
-                    sliceptr%position = lrarray(3)
-                    if (countargs(lcarray)>3) then
-                        sliceptr%roomnum = lrarray(4)
+
+            ! SLCF 2-D and 3-D slice files
+        case ('SLCF')
+            if (countargs(lcarray)>=1) then
+                nvisualinfo = nvisualinfo + 1
+                sliceptr => visual_info(nvisualinfo)
+                if (lcarray(1)=='2-D') then
+                    sliceptr%vtype = 1
+                else if (lcarray(1)=='3-D') then
+                    sliceptr%vtype = 2
+                else
+                    write (logerr, 5403) nvisualinfo
+                    stop
+                end if
+                ! 2-D slice file
+                if (sliceptr%vtype==1) then
+                    ! get position (required) and compartment (optional) first so we can check to make sure
+                    ! desired position is within the compartment(s)
+                    if (countargs(lcarray)>2) then
+                        sliceptr%position = lrarray(3)
+                        if (countargs(lcarray)>3) then
+                            sliceptr%roomnum = lrarray(4)
+                        else
+                            sliceptr%roomnum = 0
+                        end if
+                        if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
+                            write (logerr, 5403) nvisualinfo
+                            stop
+                        end if
+                        if (lcarray(2) =='X') then
+                            sliceptr%axis = 1
+                            if (sliceptr%roomnum>0) then
+                                roomptr => roominfo(sliceptr%roomnum)
+                                if (sliceptr%position>roomptr%width.or.sliceptr%position<0.0_eb) then
+                                    write (logerr, 5403) nvisualinfo
+                                    stop
+                                end if
+                            end if
+                        else if (lcarray(2) =='Y') then
+                            sliceptr%axis = 2
+                            if (sliceptr%roomnum>0) then
+                                roomptr => roominfo(sliceptr%roomnum)
+                                if (sliceptr%position>roomptr%depth.or.sliceptr%position<0.0_eb) then
+                                    write (logerr, 5403) nvisualinfo
+                                    stop
+                                end if
+                            end if
+                        else if (lcarray(2) =='Z') then
+                            sliceptr%axis = 3
+                            if (sliceptr%roomnum>0) then
+                                roomptr => roominfo(sliceptr%roomnum)
+                                if (sliceptr%position>roomptr%height.or.sliceptr%position<0.0_eb) then
+                                    write (logerr, 5403) nvisualinfo
+                                    stop
+                                end if
+                            end if
+                        else
+                            write (logerr, 5403) nvisualinfo
+                            stop
+                        end if
+                    else
+                        write (logerr, 5403) nvisualinfo
+                        stop
+                    end if
+                    ! 3-D slice
+                else if (sliceptr%vtype==2) then
+                    if (countargs(lcarray)>1) then
+                        sliceptr%roomnum = lrarray(2)
                     else
                         sliceptr%roomnum = 0
                     end if
@@ -1605,91 +1652,45 @@ module input_routines
                         write (logerr, 5403) nvisualinfo
                         stop
                     end if
-                    if (lcarray(2) =='X') then
-                        sliceptr%axis = 1
-                        if (sliceptr%roomnum>0) then
-                            roomptr => roominfo(sliceptr%roomnum)
-                            if (sliceptr%position>roomptr%width.or.sliceptr%position<0.0_eb) then
-                                write (logerr, 5403) nvisualinfo
-                                stop
-                            end if
-                        end if
-                    else if (lcarray(2) =='Y') then
-                        sliceptr%axis = 2
-                        if (sliceptr%roomnum>0) then
-                            roomptr => roominfo(sliceptr%roomnum)
-                            if (sliceptr%position>roomptr%depth.or.sliceptr%position<0.0_eb) then
-                                write (logerr, 5403) nvisualinfo
-                                stop
-                            end if
-                        end if
-                    else if (lcarray(2) =='Z') then
-                        sliceptr%axis = 3
-                        if (sliceptr%roomnum>0) then
-                            roomptr => roominfo(sliceptr%roomnum)
-                            if (sliceptr%position>roomptr%height.or.sliceptr%position<0.0_eb) then
-                                write (logerr, 5403) nvisualinfo
-                                stop
-                            end if
-                        end if
-                    else
-                        write (logerr, 5403) nvisualinfo
-                        stop
-                    end if
-                else
-                    write (logerr, 5403) nvisualinfo
-                    stop
                 end if
-                ! 3-D slice
-            else if (sliceptr%vtype==2) then
+            else
+                write (logerr,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
+                stop
+            end if
+
+            ! ISOF isosurface of specified temperature in one or all compartments
+        case ('ISOF')
+            if (countargs(lcarray)>=1) then
+                nvisualinfo = nvisualinfo + 1
+                sliceptr => visual_info(nvisualinfo)
+                sliceptr%vtype = 3
+                sliceptr%value = lrarray(1)
                 if (countargs(lcarray)>1) then
                     sliceptr%roomnum = lrarray(2)
                 else
                     sliceptr%roomnum = 0
                 end if
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
-                    write (logerr, 5403) nvisualinfo
+                    write (logerr, 5404) nvisualinfo
                     stop
                 end if
-            end if
-        else
-            write (logerr,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
-            stop
-        end if
-
-    ! ISOF isosurface of specified temperature in one or all compartments
-    case ('ISOF')
-        if (countargs(lcarray)>=1) then
-            nvisualinfo = nvisualinfo + 1
-            sliceptr => visual_info(nvisualinfo)
-            sliceptr%vtype = 3
-            sliceptr%value = lrarray(1)
-            if (countargs(lcarray)>1) then
-                sliceptr%roomnum = lrarray(2)
             else
-                sliceptr%roomnum = 0
-            end if
-            if (sliceptr%roomnum<0.or.sliceptr%roomnum>n-1) then
-                write (logerr, 5404) nvisualinfo
+                write (logerr,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
                 stop
             end if
-        else
-            write (logerr,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
+
+            ! Outdated keywords
+        case ('CJET','WIND','LIMO2','GLOBA','DJIGN')            ! Just ignore these inputs ... they shouldn't be fatal
+            write (logerr,5407) label
+        case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')   ! these are clearly outdated and should produce errors
+            write (logerr,5405) label
             stop
-        end if
+        case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT','HRR','TIME','CHEMI','FIRE') ! these are already handled above
 
-    ! Outdated keywords
-    case ('CJET','WIND','LIMO2','GLOBA','DJIGN')            ! Just ignore these inputs ... they shouldn't be fatal
-        write (logerr,5407) label
-    case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')   ! these are clearly outdated and should produce errors
-        write (logerr,5405) label
-        stop
-    case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT','HRR','TIME','CHEMI','FIRE') ! these are already handled above
-
-    case default
-        write(logerr, 5051) label
-        stop
-    end select
+            case default
+            write(logerr, 5051) label
+            stop
+        end select
     end do
 
 913 format('***',a,': BAD TARGE input. Invalid equation type:',A3,' Valid choices are: PDE or CYL')

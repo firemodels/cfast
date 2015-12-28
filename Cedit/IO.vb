@@ -1098,14 +1098,13 @@ Module IO
                 csv.str(i, detectNum.type) = "HEAT"
                 csv.num(i, detectNum.suppression) = 0
                 csv.num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
-                csv.num(i, detectNum.RTI) = aDetect.RTI
             Else
                 csv.str(i, detectNum.type) = "SPRINKLER"
                 csv.num(i, detectNum.suppression) = 1
                 csv.num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
-                csv.num(i, detectNum.RTI) = aDetect.RTI
-                csv.num(i, detectNum.sprayDensity) = aDetect.SprayDensity
             End If
+            csv.num(i, detectNum.RTI) = aDetect.RTI
+            csv.num(i, detectNum.sprayDensity) = aDetect.SprayDensity
             aDetect.Changed = False
             i += 1
         Next

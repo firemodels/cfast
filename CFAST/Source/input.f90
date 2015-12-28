@@ -1694,7 +1694,8 @@ module input_routines
         case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')   ! these are clearly outdated and should produce errors
             write (logerr,5405) label
             stop
-        case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT','HRR','TIME','CHEMI','FIRE') ! these are already handled above
+        case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT',&
+              'HRR','TIME','CHEMI','FIRE') ! these are already handled above
 
             case default
             write(logerr, 5051) label

@@ -776,7 +776,7 @@ check_compile_smv_db()
      then
         stage6a_success=true
      else
-        echo "Errors from Stage 6b - Compile SMV DB:" >> $ERROR_LOG
+        echo "Errors from Stage 6a - Compile SMV DB:" >> $ERROR_LOG
         cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
         echo "" >> $ERROR_LOG
      fi
@@ -1211,30 +1211,30 @@ start_time=`date`
 ### Clean up on start ###
 clean_cfastbot_history
 
-### Stage 1a ###
+### Stage 1 ###
 clean_git_repo
 do_git_checkout
 check_git_checkout
 
-### Stage 1b ###
-compile_smv_utilities
-check_smv_utilities
-
-### Stage 2 ###
+### Stage 2a ###
 compile_cfast_db
 check_compile_cfast_db
 compile_cfast
 check_compile_cfast
-compile_vvcalc
-check_compile_vvcalc
 
-### Stage 6a ###
+### Stage 2b ###
+compile_smv_utilities
+check_smv_utilities
+
+### Stage 2c ###
 compile_smv_db
 check_compile_smv_db
-
-### Stage 6b ###
 compile_smv
 check_compile_smv
+
+### Stage 2d ###
+compile_vvcalc
+check_compile_vvcalc
 
 ### Stage 3 ###
 if [[ $stage2a_success ]] ; then
@@ -1242,19 +1242,19 @@ if [[ $stage2a_success ]] ; then
    check_vv_cases_debug
 fi
 
-### Stage 5 ###
+### Stage 4 ###
 if [[ $stage2b_success ]] ; then
    run_vv_cases_release
    check_vv_cases_release
 fi
 
-### Stage 6c ###
+### Stage 5 ###
 if [[ $stage2b_success && $stage6b_success ]] ; then
    make_cfast_pictures
    check_cfast_pictures
 fi
 
-### Stage 7a ###
+### Stage 6a ###
 if [[ "$SKIP" == "" ]]; then
   if [ "$MATLABEXE" == "" ]; then
     check_matlab_license_server
@@ -1263,7 +1263,7 @@ if [[ "$SKIP" == "" ]]; then
   fi
 fi
 
-### Stage 7c ###
+### Stage 6b ###
 if [[ "$SKIP" == "" ]]; then
   if [ "$MATLABEXE" == "" ]; then
     run_matlab_validation
@@ -1273,7 +1273,7 @@ if [[ "$SKIP" == "" ]]; then
   fi
 fi
 
-### Stage 8 ###
+### Stage 7 ###
 if [[ "$SKIP" == "" ]]; then
   make_cfast_tech_guide
   make_cfast_user_guide

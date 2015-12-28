@@ -630,6 +630,14 @@ Public Class UpdateGUI
                 MainWin.DetectorComp.SelectedIndex = aDetector.Compartment
             End If
             MainWin.DetectorActivationTemperature.Text = aDetector.ActivationTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
+            MainWin.DetectorActivationObscuration.Text = aDetector.ActivationObscuration.ToString + " %/" + myUnits.Convert(UnitsNum.Length).Units
+            If aDetector.ActivationType = Target.ActivationbyTemperature Then
+                MainWin.DetectorActivationTemperature.Enabled = True
+                MainWin.DetectorActivationObscuration.Enabled = False
+            Else
+                MainWin.DetectorActivationTemperature.Enabled = False
+                MainWin.DetectorActivationObscuration.Enabled = True
+            End If
             MainWin.DetectorXPosition.Text = aDetector.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.DetectorYPosition.Text = aDetector.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.DetectorZPosition.Text = aDetector.ZPosition.ToString + myUnits.Convert(UnitsNum.Length).Units

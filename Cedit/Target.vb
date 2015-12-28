@@ -57,6 +57,7 @@ Public Class Target
         aSolutionType = 0
         aDetectorType = 1
         aActivationTemperature = 10.0 + 273.15
+        aActivationObscuration = 8.0 / 0.3048
         aActivationType = ActivationbyTemperature
         aRTI = 100
         aSprayDensity = 0.00007
@@ -241,9 +242,19 @@ Public Class Target
         Set(ByVal Value As Integer)
             If Value <> aDetectorType Then
                 aDetectorType = Value
+                If aDetectorType = TypeSmokeDetector Then
+                    aActivationType = ActivationbyObscuration
+                Else
+                    aActivationType = ActivationbyTemperature
+                End If
                 aChanged = True
             End If
         End Set
+    End Property
+    Public ReadOnly Property ActivationType() As Integer
+        Get
+            ActivationType = aActivationType
+        End Get
     End Property
     Public Property ActivationObscuration() As Single
         Get

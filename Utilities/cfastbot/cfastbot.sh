@@ -691,7 +691,7 @@ compile_smv_utilities()
    # smokeview libraries
      cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_${compiler}${size}
      echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
-     echo "   smokeview libraries - not built, using installed smokview"
+     echo "   smokeview libraries"
      ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
 
    # background
@@ -702,6 +702,7 @@ compile_smv_utilities()
        ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
      fi
    else
+     echo "   smokeview libraries - not built, using installed smokview"
      if [ "$QUEUE" == "none" ]; then
        echo "   background - not built, using installed smokeview"
        echo "Using installed smokeview, libraries not built" >> $OUTPUT_DIR/stage1b 2>&1

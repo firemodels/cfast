@@ -268,8 +268,10 @@ Public Class Target
             If Value <> 0 Then
                 If 1 / myUnits.Convert(UnitsNum.Length).ToSI(1 / Value) <> aActivationObscuration Then
                     aActivationObscuration = 1 / myUnits.Convert(UnitsNum.Length).ToSI(1 / Value)
-                    aActivationType = ActivationbyObscuration
                     aChanged = True
+                End If
+                If aActivationType <> aActivationObscuration Then
+                    aActivationType = ActivationbyObscuration
                 End If
             Else
                 If aActivationObscuration <> 0 Then
@@ -287,8 +289,10 @@ Public Class Target
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Temperature).ToSI(Value) <> aActivationTemperature Then
                 aActivationTemperature = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
-                aActivationType = ActivationbyTemperature
                 aChanged = True
+            End If
+            If aActivationType <> ActivationbyTemperature Then
+                aActivationType = ActivationbyTemperature
             End If
         End Set
     End Property

@@ -670,7 +670,11 @@ Public Class UpdateGUI
                     MainWin.DetectorSummary(i, 3) = aDetector.XPosition.ToString
                     MainWin.DetectorSummary(i, 4) = aDetector.YPosition.ToString
                     MainWin.DetectorSummary(i, 5) = aDetector.ZPosition.ToString
-                    MainWin.DetectorSummary(i, 6) = aDetector.ActivationTemperature.ToString
+                    If aDetector.ActivationType = Target.ActivationbyTemperature Then
+                        MainWin.DetectorSummary(i, 6) = aDetector.ActivationTemperature.ToString
+                    Else
+                        MainWin.DetectorSummary(i, 6) = aDetector.ActivationObscuration.ToString
+                    End If
                     MainWin.DetectorSummary(i, 7) = aDetector.RTI.ToString
                     MainWin.DetectorSummary(i, 8) = aDetector.SprayDensity.ToString
                 Next

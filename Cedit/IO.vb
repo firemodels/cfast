@@ -118,7 +118,7 @@ Module IO
                             End If
                         ElseIf csv.str(i, detectNum.type) = "SMOKE" Then
                             aDetect.DetectorType = Target.TypeSmokeDetector
-                            aDetect.ActivationTemperature = csv.Num(i, detectNum.activationObscuration)
+                            aDetect.ActivationObscuration = csv.Num(i, detectNum.activationObscuration)
                         ElseIf csv.str(i, detectNum.type) = "HEAT" Then
                             aDetect.DetectorType = Target.TypeHeatDetector
                             aDetect.ActivationTemperature = csv.Num(i, detectNum.activationTemp)
@@ -1086,23 +1086,26 @@ Module IO
         For j = 0 To myDetectors.Count - 1
             csv.str(i, CFASTlnNum.keyWord) = "DETECT"
             aDetect = myDetectors.Item(j)
-            If aDetect.DetectorType = Target.TypeSmokeDetector Then
-                csv.Num(i, detectNum.type) = 1
-                csv.Num(i, detectNum.suppression) = 0
-            ElseIf aDetect.DetectorType = Target.TypeHeatDetector Then
-                csv.Num(i, detectNum.type) = 2
-                csv.Num(i, detectNum.suppression) = 0
-            Else
-                csv.Num(i, detectNum.type) = 2
-                csv.Num(i, detectNum.suppression) = 1
-            End If
             csv.Num(i, detectNum.compartment) = aDetect.Compartment + 1
-            csv.Num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
             csv.Num(i, detectNum.xPosition) = aDetect.XPosition
             csv.Num(i, detectNum.yPosition) = aDetect.YPosition
             csv.Num(i, detectNum.zPosition) = aDetect.ZPosition
-            csv.Num(i, detectNum.RTI) = aDetect.RTI
-            csv.Num(i, detectNum.sprayDensity) = aDetect.SprayDensity
+            If aDetect.DetectorType = Target.TypeSmokeDetector Then
+                csv.str(i, detectNum.type) = "SMOKE"
+                csv.Num(i, detectNum.suppression) = 0
+                csv.Num(i, detectNum.activationObscuration) = aDetect.ActivationObscuration
+            ElseIf aDetect.DetectorType = Target.TypeHeatDetector Then
+                csv.str(i, detectNum.type) = "HEAT"
+                csv.Num(i, detectNum.suppression) = 0
+                csv.Num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
+                csv.Num(i, detectNum.RTI) = aDetect.RTI
+            Else
+                csv.str(i, detectNum.type) = "SPRINKLER"
+                csv.Num(i, detectNum.suppression) = 1
+                csv.Num(i, detectNum.activationTemp) = aDetect.ActivationTemperature
+                csv.Num(i, detectNum.RTI) = aDetect.RTI
+                csv.Num(i, detectNum.sprayDensity) = aDetect.SprayDensity
+            End If
             aDetect.Changed = False
             i += 1
         Next

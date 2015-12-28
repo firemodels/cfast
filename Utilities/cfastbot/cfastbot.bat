@@ -254,6 +254,7 @@ echo after clean
 ::*** update cfast repository
 
 echo update=%update%
+echo OUTDIR=%OUTDIR%
 if %update% == 0 goto skip_update1
   echo             updating %cfastbasename% repository
   cd %cfastroot%

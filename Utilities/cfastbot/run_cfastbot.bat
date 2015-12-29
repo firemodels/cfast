@@ -8,6 +8,7 @@ set update=0
 set clean=0
 set stopscript=0
 set installed=0
+set force=0
 
 set RUNDIR=%CD%
 
@@ -75,6 +76,7 @@ if %fdsrepo% == none goto skip_fdsrepo2
 
 set running=%curdir%\bot.running
 
+if %force% == 1 erase %running% 1> Nul 2>&1
 if exist %running% goto skip_running
 
 :: get latest cfastbot
@@ -97,8 +99,8 @@ if %update% == 0 goto no_update
   erase %running%
   goto end_running
 :skip_running
-  echo cfastbot is currently running.
-  echo If this is not the case, erase the file %running%
+  echo cfastbot is currently running. If this is not the case,
+  echo rerun run_cfastbot.bat using the -force option
 :end_running
 
 goto eof
@@ -126,6 +128,10 @@ goto eof
    set emailto=%2
    set valid=1
    shift
+ )
+ if /I "%1" EQU "-force" (
+   set force=1
+   set valid=1
  )
  if /I "%1" EQU "-nomatlab" (
    set valid=1
@@ -174,6 +180,7 @@ if "%emailto%" NEQ "" (
 echo       (default: %emailto%^)
 )
 echo -bot            - update and clean repository
+echo -force          - force cfastbot run
 echo -installed      - use installed smokeview
 echo -clean          - clean repository
 echo -update         - update repository

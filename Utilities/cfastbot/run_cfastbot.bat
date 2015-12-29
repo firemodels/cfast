@@ -7,6 +7,7 @@ set usematlab=1
 set update=0
 set clean=0
 set stopscript=0
+set installed=0
 
 set RUNDIR=%CD%
 
@@ -92,7 +93,7 @@ if %update% == 0 goto no_update
 :: run cfastbot
 
   echo 1 > %running%
-  call cfastbot.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %emailto%
+  call cfastbot.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %installed% %emailto%
   erase %running%
   goto end_running
 :skip_running
@@ -129,6 +130,10 @@ goto eof
  if /I "%1" EQU "-nomatlab" (
    set valid=1
    set usematlab=0
+ )
+ if /I "%1" EQU "-installed" (
+   set valid=1
+   set installed=1
  )
  if /I "%1" EQU "-bot" (
    set valid=1
@@ -169,6 +174,7 @@ if "%emailto%" NEQ "" (
 echo       (default: %emailto%^)
 )
 echo -bot            - update and clean repository
+echo -installed      - use installed smokeview
 echo -clean          - clean repository
 echo -update         - update repository
 echo -nomatlab       - do not use matlab

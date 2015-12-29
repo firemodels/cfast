@@ -100,7 +100,7 @@ if %update% == 0 goto no_update
   goto end_running
 :skip_running
   echo cfastbot is currently running. If this is not the case,
-  echo rerun run_cfastbot.bat using the -force option
+  echo run run_cfastbot.bat again using the -force option
 :end_running
 
 goto eof

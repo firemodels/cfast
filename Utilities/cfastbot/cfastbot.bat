@@ -12,7 +12,8 @@ set fdsbasename=%2
 set usematlab=%3
 set clean=%4
 set update=%5
-set emailto=%6
+set installed=%6
+set emailto=%7
 
 set size=_64
 
@@ -73,6 +74,7 @@ set revisionfilestring=%OUTDIR%\revision.txt
 set revisionfilenum=%OUTDIR%\revision_num.txt
 set stagestatus=%OUTDIR%\stage_status.log
 set nothaveValidation=0
+set nothaveICC=1
 
 set haveerrors=0
 set havewarnings=0
@@ -110,7 +112,7 @@ echo Stage 0 - Preliminaries
 ::*** check if various software is installed
 
 echo. > %errorlog%
-echo. > %warninglog%
+echo log > %warninglog%
 echo. > %stagestatus%
 
 ::*** looking for gettime
@@ -137,6 +139,7 @@ echo             found Fortran
 
 ::*** looking for C
 
+if %installed% == 1 goto skip_icc
 icl 1> %OUTDIR%\stage0a.txt 2>&1
 type %OUTDIR%\stage0a.txt | find /i /c "not recognized" > %OUTDIR%\stage_count0a.txt
 set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
@@ -144,6 +147,8 @@ set /p nothaveICC=<%OUTDIR%\stage_count0a.txt
 if %nothaveICC% == 0 (
   echo             found C
 )
+:skip_icc
+
 if %havefdsrepo% == 0 goto skip1
 if %nothaveICC% == 0 goto skip1
   call :is_file_installed smokeview|| exit /b 1
@@ -331,6 +336,10 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1c.txt "Stage 1c"
 ::                           stage 2 - build smokeview
 :: -------------------------------------------------------------
 
+if %installed% == 1 (
+  echo Stage 2 - Skipping Smokeview build
+  goto skip_stage2
+)
 if %nothaveICC% == 1 (
   echo Stage 2 - Skipping Smokeview build - C/C++ not available
   goto skip_stage2

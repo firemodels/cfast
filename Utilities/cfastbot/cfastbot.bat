@@ -112,7 +112,7 @@ echo Stage 0 - Preliminaries
 ::*** check if various software is installed
 
 echo. > %errorlog%
-echo. > %warninglog%
+echo log > %warninglog%
 echo. > %stagestatus%
 
 ::*** looking for gettime

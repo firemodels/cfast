@@ -10,6 +10,7 @@ TAMB,293.15,101325,0,50
 !!
 MATL,CONCRETE,1.8,1040,2280,0.102,0.94,"Concrete, Normal Weight (6 in)"
 MATL,GYPSUM,0.26,1090,650,0.016,0.9,Gypsum Board (5/8 in)
+MATL,TC,54,425,7850,0.001,0.95,Thermocouple (small steel target for plume temp)
 !!
 !!Compartment keywords
 !!
@@ -36,5 +37,5 @@ HEIGH,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4
 !!
 !!Target and detector keywords
 !!
-DETECT,2,1,283.15,0.9,2.15,2.1,100,0,7E-05
-DETECT,2,1,283.15,5.2,2.15,2.1,100,0,7E-05
+TARGET,1,0.9,2.15,2.1,0,0,-1,TC,EXPLICIT,PDE,0.5,Targ 1
+TARGET,1,5.2,2.15,2.1,0,0,-1,TC,EXPLICIT,PDE,0.5,Targ 2

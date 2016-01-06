@@ -13,7 +13,8 @@ set usematlab=%3
 set clean=%4
 set update=%5
 set installed=%6
-set emailto=%7
+set skip_cases=%7
+set emailto=%8
 
 set size=_64
 
@@ -376,6 +377,8 @@ call :does_file_exist smokeview_win%size%.exe %OUTDIR%\stage2b.txt|| exit /b 1
 call :find_smokeview_warnings "warning" %OUTDIR%\stage2b.txt "Stage 2b"
 :skip_stage2
 
+if %skip_cases% == 1 goto skip_cases
+
 call :GET_DURATION PRELIM %PRELIM_beg%
 
 :: -------------------------------------------------------------
@@ -417,6 +420,7 @@ call :GET_DURATION RUNVV %RUNVV_beg%
 ::                           stage 4 - make pictures
 :: -------------------------------------------------------------
 
+:skip_cases
 call :GET_TIME MAKEPICS_beg
 
 echo Stage 4 - Making smokeview images

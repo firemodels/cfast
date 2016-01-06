@@ -252,6 +252,7 @@ if %clean% == 0 goto skip_update0
    call :git_clean %cfastroot%\CFAST
    call :git_clean %cfastroot%\Verification
    call :git_clean %cfastroot%\Validation
+   call :git_clean %cfastroot%\VandV_Calcs
    call :git_clean %cfastroot%\Docs
 :skip_update0
 

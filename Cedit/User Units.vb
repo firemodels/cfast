@@ -300,9 +300,10 @@ Public Class User_Units
         Next
         myUnits.InitConversionFactors(Zero)
     End Sub
-    Private Sub Units_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnitsLength.SelectedIndexChanged, UnitsMass.SelectedIndexChanged, UnitsTime.SelectedIndexChanged, UnitsTemperature.SelectedIndexChanged, UnitsPressure.SelectedIndexChanged, UnitsEnergy.SelectedIndexChanged
+    Private Sub Units_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnitsLength.SelectedIndexChanged, UnitsMass.SelectedIndexChanged, _
+        UnitsTime.SelectedIndexChanged, UnitsTemperature.SelectedIndexChanged, UnitsPressure.SelectedIndexChanged, UnitsEnergy.SelectedIndexChanged, UnitsSmoke.SelectedIndexChanged
         Dim i As Integer
-        For i = 0 To 5
+        For i = 0 To BaseUnitsDimension
             CurrentUnits(i) = cArray(i).SelectedIndex
         Next
         myUnits.InitConversionFactors(CurrentUnits)
@@ -316,7 +317,7 @@ Public Class User_Units
     End Sub
     Private Sub UnitsOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnitsOK.Click
         Dim i As Integer
-        Dim UnitNames() As String = {"Length", "Mass", "Time", "Temperature", "Pressure", "Energy"}
+        Dim UnitNames() As String = {"Length", "Mass", "Time", "Temperature", "Pressure", "Energy", "Smoke"}
         For i = 0 To BaseUnitsDimension
             SaveSetting("CFAST", "Units", UnitNames(i), CurrentUnits(i))
         Next
@@ -324,7 +325,7 @@ Public Class User_Units
 End Class
 Public Class EngineeringUnits
     Public BaseUnits(6) As Conversions
-    Public Convert(17) As Conversion
+    Public Convert(18) As Conversion
     Public ConvertFireData(12) As Conversion
     Private aSI As Boolean = False, aSITemp As Boolean, SIStack As New Stack
     Private aValue As Single
@@ -349,7 +350,8 @@ Public Class EngineeringUnits
         Dim Zero() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
         Dim DefaultUnits() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
         ' These conversion factors are all from the given units to SI according to NIST SP 811
-        ' All the conversions are of the form y=(x+b)*m, though usually b is 0.0
+        ' All the conversions except smoke are of the form y=(x+b)*m, though usually b is 0.0
+        ' Smoke is a special case to properly convert % obscuration from %/m to/from %/m
 
         ' Length conversions
         Dim mLength() As Single = {1.0, 0.01, 0.001, 0.3048, 0.0254}
@@ -384,7 +386,7 @@ Public Class EngineeringUnits
         Dim aEnergyConversion As New Conversions(MEnergy, Zero, LEnergy)
         BaseUnits(BaseUnitsNum.Energy) = aEnergyConversion
         ' Smoke conversions (We treat this as a base unit to limit it to %/ft and %/m)
-        Dim MSmoke() As Single = {1.0, 0.3048}
+        Dim MSmoke() As Single = {1 / 0.3048, 0.3048}
         Dim LSmoke() As String = {"%/m", "%/ft"}
         Dim aSmokeConversion As New Conversions(MSmoke, Zero, LSmoke)
         BaseUnits(BaseUnitsNum.Smoke) = aSmokeConversion
@@ -395,14 +397,15 @@ Public Class EngineeringUnits
         Dim i As Integer
         Dim m As Single, b As Single, Label As String
 
-        Dim mLength As Single, mMass As Single, mTime As Single, mTemperature As Single, mPressure As Single, mEnergy As Single
-        Dim lLength As String, lMass As String, lTime As String, lTemperature As String, lPressure As String, lEnergy As String
+        Dim mLength As Single, mMass As Single, mTime As Single, mTemperature As Single, mPressure As Single, mEnergy As Single, mSmoke As Single
+        Dim lLength As String, lMass As String, lTime As String, lTemperature As String, lPressure As String, lEnergy As String, lSmoke As String
         mLength = BaseUnits(BaseUnitsNum.Length).m(DesiredUnits(BaseUnitsNum.Length))
         mMass = BaseUnits(BaseUnitsNum.Mass).m(DesiredUnits(BaseUnitsNum.Mass))
         mTime = BaseUnits(BaseUnitsNum.Time).m(DesiredUnits(BaseUnitsNum.Time))
         mTemperature = BaseUnits(BaseUnitsNum.Temperature).m(DesiredUnits(BaseUnitsNum.Temperature))
         mPressure = BaseUnits(BaseUnitsNum.Pressure).m(DesiredUnits(BaseUnitsNum.Pressure))
         mEnergy = BaseUnits(BaseUnitsNum.Energy).m(DesiredUnits(BaseUnitsNum.Energy))
+        mSmoke = BaseUnits(BaseUnitsNum.Smoke).m(DesiredUnits(BaseUnitsNum.Smoke))
 
         lLength = BaseUnits(BaseUnitsNum.Length).Units(DesiredUnits(BaseUnitsNum.Length))
         lMass = BaseUnits(BaseUnitsNum.Mass).Units(DesiredUnits(BaseUnitsNum.Mass))
@@ -410,6 +413,7 @@ Public Class EngineeringUnits
         lTemperature = BaseUnits(BaseUnitsNum.Temperature).Units(DesiredUnits(BaseUnitsNum.Temperature))
         lPressure = BaseUnits(BaseUnitsNum.Pressure).Units(DesiredUnits(BaseUnitsNum.Pressure))
         lEnergy = BaseUnits(BaseUnitsNum.Energy).Units(DesiredUnits(BaseUnitsNum.Energy))
+        lSmoke = BaseUnits(BaseUnitsNum.Smoke).Units(DesiredUnits(BaseUnitsNum.Smoke))
 
         ' Time conversions
         m = mTime
@@ -438,6 +442,14 @@ Public Class EngineeringUnits
         Label = lLength
         Dim aLengthConversion As New Conversion(m, b, Label)
         Convert(UnitsNum.Length) = aLengthConversion
+        ' % smoke obscuration conversion
+        m = mSmoke
+        b = 0.0
+        Label = lSmoke
+        Dim aSmokeConversion As New Conversion(m, b, Label, 1)
+        Convert(UnitsNum.Smoke) = aSmokeConversion
+
+        ' Derived unit conversions
         ' Area conversion
         m = mLength * mLength
         b = 0.0
@@ -543,7 +555,15 @@ Public Class Conversion
     Private aM As Single, aB As Single          ' Conversion constants to SI for current units
     Private aLabel As String                    ' Units label for current units
     Private aValue As Single
+    Private aType As Integer                    ' 0 for linear conversion, 1 for % obscuration conversion
     Friend Sub New(ByVal m As Single, ByVal b As Single, ByVal Label As String)
+        aType = 0
+        aM = m
+        aB = b
+        aLabel = Label
+    End Sub
+    Friend Sub New(ByVal m As Single, ByVal b As Single, ByVal Label As String, Type As Integer)
+        aType = Type
         aM = m
         aB = b
         aLabel = Label
@@ -554,7 +574,11 @@ Public Class Conversion
             If myUnits.SI Then
                 Return EngineeringUnits
             Else
-                Return (Val(EngineeringUnits) + aB) * aM
+                If aType = 0 Then
+                    Return (Val(EngineeringUnits) + aB) * aM
+                Else
+                    Return 100 * (1 - (1 - EngineeringUnits / 100) ^ aM)
+                End If
             End If
         End Get
     End Property
@@ -564,7 +588,11 @@ Public Class Conversion
             If myUnits.SI Then
                 Return SIUnits
             Else
-                Return Val(SIUnits) / aM - aB
+                If aType = 0 Then
+                    Return Val(SIUnits) / aM - aB
+                Else
+                    Return 100 * (1 - (1 - SIUnits / 100) ^ aM)
+                End If
             End If
         End Get
     End Property

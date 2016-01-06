@@ -5850,7 +5850,7 @@ Public Class CeditMain
             UpdateGUI.Detectors(CurrentDetector)
         End If
     End Sub
-    Private Sub Detector_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorComp.SelectedIndexChanged, DetectorType.SelectedIndexChanged, DetectorActivationTemperature.Leave, DetectorXPosition.Leave, DetectorYPosition.Leave, DetectorZPosition.Leave, DetectorSprayDensity.Leave, DetectorRTI.Leave
+    Private Sub Detector_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorComp.SelectedIndexChanged, DetectorType.SelectedIndexChanged, DetectorActivationTemperature.Leave, DetectorActivationObscuration.Leave, DetectorXPosition.Leave, DetectorYPosition.Leave, DetectorZPosition.Leave, DetectorSprayDensity.Leave, DetectorRTI.Leave
         Dim aDetector As New Target
         If CurrentDetector >= 0 And myDetectors.Count > 0 Then
             aDetector = myDetectors(CurrentDetector)
@@ -5862,6 +5862,9 @@ Public Class CeditMain
                 If Val(Me.DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)
             End If
             If sender Is Me.DetectorActivationTemperature Then aDetector.ActivationTemperature = Val(Me.DetectorActivationTemperature.Text)
+            If sender Is Me.DetectorActivationObscuration Then
+                aDetector.ActivationObscuration = Val(Me.DetectorActivationObscuration.Text)
+            End If
             If sender Is Me.DetectorXPosition Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)
             If sender Is Me.DetectorYPosition Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)
             If sender Is Me.DetectorZPosition Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)

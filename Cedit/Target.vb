@@ -259,15 +259,15 @@ Public Class Target
     Public Property ActivationObscuration() As Single
         Get
             If aActivationObscuration <> 0 Then
-                Return 1 / myUnits.Convert(UnitsNum.Length).FromSI(1 / aActivationObscuration)
+                Return myUnits.Convert(UnitsNum.Smoke).FromSI(aActivationObscuration)
             Else
                 Return 0
             End If
         End Get
         Set(ByVal Value As Single)
             If Value <> 0 Then
-                If 1 / myUnits.Convert(UnitsNum.Length).ToSI(1 / Value) <> aActivationObscuration Then
-                    aActivationObscuration = 1 / myUnits.Convert(UnitsNum.Length).ToSI(1 / Value)
+                If myUnits.Convert(UnitsNum.Smoke).ToSI(Value) <> aActivationObscuration Then
+                    aActivationObscuration = myUnits.Convert(UnitsNum.Smoke).ToSI(Value)
                     aChanged = True
                 End If
                 If aActivationType <> aActivationObscuration Then

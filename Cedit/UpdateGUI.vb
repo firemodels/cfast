@@ -72,6 +72,7 @@ Public Class UpdateGUI
             MainWin.StatusBar.Panels(1).Text = ""
         End If
     End Sub
+#Region "Tab Updates "
     Public Sub Environment()
         Me.General()
         MainWin.EnvTitle.Text = myEnvironment.Title
@@ -630,7 +631,7 @@ Public Class UpdateGUI
                 MainWin.DetectorComp.SelectedIndex = aDetector.Compartment
             End If
             MainWin.DetectorActivationTemperature.Text = aDetector.ActivationTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
-            MainWin.DetectorActivationObscuration.Text = aDetector.ActivationObscuration.ToString + " %/" + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.DetectorActivationObscuration.Text = aDetector.ActivationObscuration.ToString + myUnits.Convert(UnitsNum.Smoke).Units
             If aDetector.ActivationType = Target.ActivationbyTemperature Then
                 MainWin.DetectorActivationTemperature.Enabled = True
                 MainWin.DetectorActivationObscuration.Enabled = False
@@ -894,6 +895,8 @@ Public Class UpdateGUI
         MainWin.FirePlot.Title = aFire.Name + ": " + MainWin.FireDataSS(0, iSelectedColumn).ToString.Replace(Chr(10), " ")
         MainWin.FirePlot.Refresh()
     End Sub
+#End Region
+#Region "Support Routines"
     Public Sub ClearGrid(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid)
         ' Erase the contents of a grid, leaving only the header row
         For i = 2 To obj.Rows.Count
@@ -1017,4 +1020,5 @@ Public Class UpdateGUI
             Me.Environment()
         End If
     End Sub
+#End Region
 End Class

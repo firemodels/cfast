@@ -283,7 +283,8 @@ if %havefdsrepo% == 0 goto skip_fdsrepo
   if %clean% == 0 goto skip_update2
     echo             reverting %FDSbasename% repository
     call :git_clean %FDSroot%\Verification
-    call :git_clean %FDSroot%\SMV
+    call :git_clean %FDSroot%\SMV\source
+    call :git_clean %FDSroot%\SMV\Build
     call :git_clean %FDSroot%\FDS_Source
     call :git_clean %FDSroot%\FDS_Compilation
     call :git_clean %FDSroot%\Manuals

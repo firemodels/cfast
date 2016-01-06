@@ -249,10 +249,10 @@ if %usematlab% == 1 goto skip_matlabexe
 
 if %clean% == 0 goto skip_update0
    echo             cleaning %cfastbasename% repository
-   cd %cfastroot%
-   git clean -dxf -e cfastbot 1> Nul 2>&1
-   git add . 1> Nul 2>&1
-   git reset --hard HEAD 1> Nul 2>&1
+   call git_clean %cfastroot%\CFAST
+   call git_clean %cfastroot%\Verification
+   call git_clean %cfastroot%\Validation
+   call git_clean %cfastroot%\Docs
 :skip_update0
 
 ::*** update cfast repository
@@ -282,10 +282,11 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 if %havefdsrepo% == 0 goto skip_fdsrepo
   if %clean% == 0 goto skip_update2
     echo             reverting %FDSbasename% repository
-    cd %FDSroot%
-    git clean -dxf -e win32_local 1> Nul 2>&1
-    git add . 1> Nul 2>&1
-    git reset --hard HEAD 1> Nul 2>&1
+    call git_clean %FDSroot%\Verification
+    call git_clean %FDSroot%\SMV
+    call git_clean %FDSroot%\FDS_Source
+    call git_clean %FDSroot%\FDS_Compilation
+    call git_clean %FDSroot%\Manuals
   :skip_update2
 
 ::*** update FDS repository
@@ -400,8 +401,7 @@ call :find_runcases_errors "error|forrtl: severe|DASSL|floating invalid" %cfastr
 
 if %clean% == 1 (
    echo             removing debug output files
-   cd %cfastroot%\Validation
-   git clean -dxf 1> Nul 2>&1
+   call git_clean %cfastroot%\Validation
 )
 
 echo             release
@@ -735,6 +735,17 @@ if %nwarnings% GTR 0 (
   type %OUTDIR%\stage_warning.txt >> %warninglog%
   set havewarnings=1
 )
+exit /b
+
+:: -------------------------------------------------------------
+ :git_clean
+:: -------------------------------------------------------------
+
+set gitcleandir=%1
+cd %gitcleandir%
+git clean -dxf  1> Nul 2>&1
+git add . 1> Nul 2>&1
+git reset --hard HEAD 1> Nul 2>&1
 exit /b
 
 :: -------------------------------------------------------------

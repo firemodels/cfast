@@ -1,6 +1,9 @@
 Public Class User_Units
     Inherits System.Windows.Forms.Form
-    Private cArray(5) As ComboBox, CurrentUnits(5) As Integer, EnteringUnits(5) As Integer
+    Private BaseUnitsDimension As Integer = 6
+    Private cArray(BaseUnitsDimension) As ComboBox, CurrentUnits(BaseUnitsDimension) As Integer, EnteringUnits(BaseUnitsDimension) As Integer
+    Friend WithEvents Label2 As System.Windows.Forms.Label
+    Friend WithEvents UnitsSmoke As System.Windows.Forms.ComboBox
 
 #Region " Windows Form Designer generated code "
 
@@ -63,12 +66,14 @@ Public Class User_Units
         Me.UnitsCancel = New System.Windows.Forms.Button()
         Me.UnitsLength = New System.Windows.Forms.ComboBox()
         Me.Label4 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.UnitsSmoke = New System.Windows.Forms.ComboBox()
         Me.SuspendLayout()
         '
         'Time
         '
         Me.Time.AutoSize = True
-        Me.Time.Location = New System.Drawing.Point(103, 90)
+        Me.Time.Location = New System.Drawing.Point(128, 89)
         Me.Time.Name = "Time"
         Me.Time.Size = New System.Drawing.Size(33, 13)
         Me.Time.TabIndex = 0
@@ -77,14 +82,14 @@ Public Class User_Units
         '
         'UnitsTime
         '
-        Me.UnitsTime.Location = New System.Drawing.Point(143, 88)
+        Me.UnitsTime.Location = New System.Drawing.Point(171, 85)
         Me.UnitsTime.Name = "UnitsTime"
         Me.UnitsTime.Size = New System.Drawing.Size(96, 21)
         Me.UnitsTime.TabIndex = 2
         '
         'UnitsTemperature
         '
-        Me.UnitsTemperature.Location = New System.Drawing.Point(143, 120)
+        Me.UnitsTemperature.Location = New System.Drawing.Point(171, 117)
         Me.UnitsTemperature.Name = "UnitsTemperature"
         Me.UnitsTemperature.Size = New System.Drawing.Size(96, 21)
         Me.UnitsTemperature.TabIndex = 3
@@ -92,7 +97,7 @@ Public Class User_Units
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(63, 122)
+        Me.Label1.Location = New System.Drawing.Point(91, 121)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(70, 13)
         Me.Label1.TabIndex = 2
@@ -101,7 +106,7 @@ Public Class User_Units
         '
         'UnitsPressure
         '
-        Me.UnitsPressure.Location = New System.Drawing.Point(143, 152)
+        Me.UnitsPressure.Location = New System.Drawing.Point(171, 149)
         Me.UnitsPressure.Name = "UnitsPressure"
         Me.UnitsPressure.Size = New System.Drawing.Size(96, 21)
         Me.UnitsPressure.TabIndex = 4
@@ -109,7 +114,7 @@ Public Class User_Units
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(87, 154)
+        Me.Label9.Location = New System.Drawing.Point(110, 153)
         Me.Label9.Name = "Label9"
         Me.Label9.Size = New System.Drawing.Size(51, 13)
         Me.Label9.TabIndex = 18
@@ -118,7 +123,7 @@ Public Class User_Units
         '
         'UnitsEnergy
         '
-        Me.UnitsEnergy.Location = New System.Drawing.Point(143, 184)
+        Me.UnitsEnergy.Location = New System.Drawing.Point(171, 181)
         Me.UnitsEnergy.Name = "UnitsEnergy"
         Me.UnitsEnergy.Size = New System.Drawing.Size(96, 21)
         Me.UnitsEnergy.TabIndex = 6
@@ -126,7 +131,7 @@ Public Class User_Units
         'Label18
         '
         Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(8, 184)
+        Me.Label18.Location = New System.Drawing.Point(35, 185)
         Me.Label18.Name = "Label18"
         Me.Label18.Size = New System.Drawing.Size(126, 13)
         Me.Label18.TabIndex = 36
@@ -135,7 +140,7 @@ Public Class User_Units
         '
         'UnitsMass
         '
-        Me.UnitsMass.Location = New System.Drawing.Point(143, 56)
+        Me.UnitsMass.Location = New System.Drawing.Point(171, 53)
         Me.UnitsMass.Name = "UnitsMass"
         Me.UnitsMass.Size = New System.Drawing.Size(96, 21)
         Me.UnitsMass.TabIndex = 1
@@ -143,7 +148,7 @@ Public Class User_Units
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(103, 58)
+        Me.Label3.Location = New System.Drawing.Point(126, 57)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(35, 13)
         Me.Label3.TabIndex = 42
@@ -153,7 +158,7 @@ Public Class User_Units
         'UnitsOK
         '
         Me.UnitsOK.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.UnitsOK.Location = New System.Drawing.Point(16, 224)
+        Me.UnitsOK.Location = New System.Drawing.Point(18, 258)
         Me.UnitsOK.Name = "UnitsOK"
         Me.UnitsOK.Size = New System.Drawing.Size(75, 23)
         Me.UnitsOK.TabIndex = 7
@@ -161,7 +166,7 @@ Public Class User_Units
         '
         'UnitsDefault
         '
-        Me.UnitsDefault.Location = New System.Drawing.Point(208, 224)
+        Me.UnitsDefault.Location = New System.Drawing.Point(210, 258)
         Me.UnitsDefault.Name = "UnitsDefault"
         Me.UnitsDefault.Size = New System.Drawing.Size(75, 23)
         Me.UnitsDefault.TabIndex = 9
@@ -170,7 +175,7 @@ Public Class User_Units
         'UnitsCancel
         '
         Me.UnitsCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.UnitsCancel.Location = New System.Drawing.Point(112, 224)
+        Me.UnitsCancel.Location = New System.Drawing.Point(114, 258)
         Me.UnitsCancel.Name = "UnitsCancel"
         Me.UnitsCancel.Size = New System.Drawing.Size(75, 23)
         Me.UnitsCancel.TabIndex = 8
@@ -178,7 +183,7 @@ Public Class User_Units
         '
         'UnitsLength
         '
-        Me.UnitsLength.Location = New System.Drawing.Point(143, 24)
+        Me.UnitsLength.Location = New System.Drawing.Point(171, 21)
         Me.UnitsLength.Name = "UnitsLength"
         Me.UnitsLength.Size = New System.Drawing.Size(96, 21)
         Me.UnitsLength.TabIndex = 0
@@ -186,19 +191,38 @@ Public Class User_Units
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(95, 26)
+        Me.Label4.Location = New System.Drawing.Point(118, 25)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(43, 13)
         Me.Label4.TabIndex = 4
         Me.Label4.Text = "Length:"
         Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(58, 217)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(103, 13)
+        Me.Label2.TabIndex = 44
+        Me.Label2.Text = "Smoke Obscuration:"
+        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'UnitsSmoke
+        '
+        Me.UnitsSmoke.Location = New System.Drawing.Point(171, 213)
+        Me.UnitsSmoke.Name = "UnitsSmoke"
+        Me.UnitsSmoke.Size = New System.Drawing.Size(96, 21)
+        Me.UnitsSmoke.TabIndex = 43
+        '
         'User_Units
         '
         Me.AcceptButton = Me.UnitsOK
         Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
         Me.CancelButton = Me.UnitsCancel
-        Me.ClientSize = New System.Drawing.Size(302, 268)
+        Me.ClientSize = New System.Drawing.Size(302, 302)
+        Me.Controls.Add(Me.Label2)
+        Me.Controls.Add(Me.UnitsSmoke)
         Me.Controls.Add(Me.UnitsCancel)
         Me.Controls.Add(Me.UnitsDefault)
         Me.Controls.Add(Me.UnitsOK)
@@ -238,8 +262,9 @@ Public Class User_Units
         cArray(3) = Me.UnitsTemperature
         cArray(4) = Me.UnitsPressure
         cArray(5) = Me.UnitsEnergy
+        cArray(6) = Me.UnitsSmoke
         ' Fill the combo boxes with base unit labels
-        For i = 0 To 5
+        For i = 0 To BaseUnitsDimension
             myUnits.BaseUnits(i).GetAllUnits(Labels)
             For j = 0 To Labels.GetUpperBound(0)
                 aLabel = Labels(j)
@@ -252,23 +277,25 @@ Public Class User_Units
         RegistryUnits = GetAllSettings("CFAST", "Units")
         Try
             If RegistryUnits.GetUpperBound(0) = 5 Then
-                For i = 0 To 5
+                For i = 0 To BaseUnitsDimension
                     CurrentUnits(i) = Val(RegistryUnits(i, 1))
                     cArray(i).SelectedIndex = CurrentUnits(i)
                 Next
             End If
         Catch ex As Exception
-
         End Try
+
         myUnits.InitConversionFactors(CurrentUnits)
     End Sub
     Private Sub User_Units_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Dim i As Integer
-        EnteringUnits(i) = CurrentUnits(i)
+        For i = 1 To BaseUnitsDimension
+            EnteringUnits(i) = CurrentUnits(i)
+        Next
     End Sub
     Private Sub UnitsDefault_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnitsDefault.Click
         Dim i As Integer, Zero() As Integer = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
-        For i = 0 To 5
+        For i = 0 To BaseUnitsDimension
             cArray(i).SelectedIndex = 0
         Next
         myUnits.InitConversionFactors(Zero)
@@ -282,7 +309,7 @@ Public Class User_Units
     End Sub
     Private Sub UnitsCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnitsCancel.Click
         Dim i As Integer, Zero() As Integer = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
-        For i = 0 To 5
+        For i = 0 To BaseUnitsDimension
             cArray(i).SelectedIndex = EnteringUnits(i)
         Next
         myUnits.InitConversionFactors(Zero)
@@ -290,13 +317,13 @@ Public Class User_Units
     Private Sub UnitsOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles UnitsOK.Click
         Dim i As Integer
         Dim UnitNames() As String = {"Length", "Mass", "Time", "Temperature", "Pressure", "Energy"}
-        For i = 0 To 5
+        For i = 0 To BaseUnitsDimension
             SaveSetting("CFAST", "Units", UnitNames(i), CurrentUnits(i))
         Next
     End Sub
 End Class
 Public Class EngineeringUnits
-    Public BaseUnits(5) As Conversions
+    Public BaseUnits(6) As Conversions
     Public Convert(17) As Conversion
     Public ConvertFireData(12) As Conversion
     Private aSI As Boolean = False, aSITemp As Boolean, SIStack As New Stack
@@ -320,7 +347,7 @@ Public Class EngineeringUnits
     End Property
     Public Sub New()
         Dim Zero() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
-        Dim DefaultUnits() As Integer = {0, 0, 0, 0, 0, 0, 0}
+        Dim DefaultUnits() As Integer = {0, 0, 0, 0, 0, 0, 0, 0}
         ' These conversion factors are all from the given units to SI according to NIST SP 811
         ' All the conversions are of the form y=(x+b)*m, though usually b is 0.0
 
@@ -356,6 +383,12 @@ Public Class EngineeringUnits
         Dim LEnergy() As String = {"kJ", "J", "MJ", "BTU", "cal"}
         Dim aEnergyConversion As New Conversions(MEnergy, Zero, LEnergy)
         BaseUnits(BaseUnitsNum.Energy) = aEnergyConversion
+        ' Smoke conversions (We treat this as a base unit to limit it to %/ft and %/m)
+        Dim MSmoke() As Single = {1.0, 0.3048}
+        Dim LSmoke() As String = {"%/m", "%/ft"}
+        Dim aSmokeConversion As New Conversions(MSmoke, Zero, LSmoke)
+        BaseUnits(BaseUnitsNum.Smoke) = aSmokeConversion
+
         InitConversionFactors(DefaultUnits)
     End Sub
     Public Sub InitConversionFactors(ByVal DesiredUnits() As Integer)

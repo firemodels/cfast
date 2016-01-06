@@ -66,6 +66,7 @@ Friend Module Data
         Temperature
         Pressure
         Energy
+        Smoke
     End Enum
 
     Friend Enum UnitsNum    ' Provides an index into the array of units conversion by type of conversion
@@ -87,6 +88,7 @@ Friend Module Data
         HeatFlux
         Conductivity
         SpecificHeat
+        Smoke
         FireTime = 0
         FireMdot
         FireQdot

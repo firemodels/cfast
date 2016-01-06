@@ -9,6 +9,7 @@ set clean=0
 set stopscript=0
 set installed=0
 set force=0
+set skip_cases=0
 
 set RUNDIR=%CD%
 
@@ -95,7 +96,7 @@ if %update% == 0 goto no_update
 :: run cfastbot
 
   echo 1 > %running%
-  call cfastbot.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %installed% %emailto%
+  call cfastbot.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %installed% %skip_cases% %emailto%
   erase %running%
   goto end_running
 :skip_running
@@ -146,6 +147,10 @@ goto eof
    set clean=1
    set update=1
  )
+ if /I "%1" EQU "-skip_cases" (
+   set valid=1
+   set skip_cases=1
+ )
  if /I "%1" EQU "-update" (
    set valid=1
    set update=1
@@ -180,6 +185,7 @@ if "%emailto%" NEQ "" (
 echo       (default: %emailto%^)
 )
 echo -bot            - update and clean repository
+echo -skip_cases     - skip over stage that runs cases
 echo -force          - force cfastbot run
 echo -installed      - use installed smokeview
 echo -clean          - clean repository

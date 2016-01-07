@@ -457,6 +457,10 @@ Public Class Target
                         myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " activation temperature is less than 20 °C or greater than 200 °C.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
+                    If aActivationObscuration < 0 Or aActivationObscuration > 100 Then
+                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " activation obscuration is less than 0 % or greater than 100 %.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
                     If aRTI <= 0.0 Or aRTI >= 500.0 Then
                         myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " RTI is less than 0 or greater than 500 (m s)^1/2.", ErrorMessages.TypeWarning)
                         HasErrors += 1

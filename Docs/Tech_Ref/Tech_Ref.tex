@@ -269,11 +269,20 @@ Equation~(\ref{eq1}) is derived by summing Eq.~(\ref{eq:first_law}) for the uppe
 
 The mass ($\dmau$ and $\dmal$) and enthalpy ($\dhu$ and $\dhl$) terms are simply the net sum of all mass and enthalpy flowing into a layer (through vents, from fires, between layers via a plume, or by radiation and convection from compartment surfaces).
 
+An algebraic equation for wall surface temperature can be derived using Fourier's law
+\be
+   \dq'' = -k \, \frac{dT}{dx}  \label{eq:fourier}
+\ee
+
+\noindent so that the temperature gradient, $dT/dx$, within a wall surface is consistent with the heat flux, $\dq''$,
+striking that surface.  CFAST then uses the differential~/~algebraic solver DASSL to solve Eqs. (\ref{eq1}) through (\ref{eq:fourier}).
+
+
 \section{Solution of the Equations}
 
-As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) through (\ref{eq4}) are stiff since the pressure adjusts to changing conditions far more quickly than the other variables. Runge-Kutta methods or predictor-corrector methods such as Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case). Methods that calculate the Jacobian (or at least approximate it) have a much larger stability region for stiff problems and are thus more successful at their solution (see, for example, \cite{Numerical_Recipes}).
+As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) through (\ref{eq:fourier}) are stiff since pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since solution methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are thus more successful at their solution (see, for example, \cite{Numerical_Recipes}).
 
-The differential equation set, Eqs. \ref{eq1} - \ref{eq4} and algebraic equation set (for compartment surface temperatures, Eq. \ref{eq:net_fluxes}) are solved as a set of simultaneous differential / algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$ by the DAE solver, DASSL \cite{DASSL:1982,DASSL:1989}, where $F\brackets{t,\vec{y},\vec{y}'}$ is the functional relationship between $t$ (the current time in the simulation), $\vec{y}$ (the vector of solution variables at time $t$), and $\vec{y}'$ (the vector of first derivatives of the solution variables at time $t$). The vector of solution variables, $\vec{y}$, solved by DASSL is
+Equations (\ref{eq1})~-~(\ref{eq4}) are then solved as a set of simultaneous differential~/~algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$ using the stiff DAE (differential algebraic equation) solver, DASSL \cite{DASSL:1982,DASSL:1989}, where $F\brackets{t,\vec{y},\vec{y}'}$ is the functional relationship between $t$ (the current time in the simulation), $\vec{y}$ (the solution vector at time $t$), and $\vec{y}'$ (the solution vector derivative at time $t$). The solution vector, $\vec{y}$, solved by DASSL is
 
 \begin{center}
 \begin{tabular}{r l l}
@@ -285,7 +294,7 @@ $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each 
 \end{tabular}
 \end{center}
 
-In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\vec{y}'$ is zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$, CFAST calculates an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
+\noindent where $n$ is the number of compartments and $k$ is the total number of wall surfaces ( $4n$ if all wall surfaces are solved for each compartment ).  In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\vec{y}'$ is zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$, CFAST calculates an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
 
 \section{Species Transport}
 

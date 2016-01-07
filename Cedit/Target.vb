@@ -2,11 +2,12 @@ Public Class Target
 
     Friend Const TypeTarget As Integer = 0
     Friend Const TypeDetector As Integer = 1
-    Friend Const SmokeDetectorActivationTemperature As Single = 30.0    ' Smoke detector simulated as a heat detector with 10 °C rise trigger with RTI = 5
+    Friend Const SmokeDetectorActivationTemperature As Single = 30.0    ' Default Smoke detector simulated as a heat detector with 10 °C rise trigger with RTI = 5 or obscuration of 8 %/ft
     Friend Const SmokeDetectorRTI As Single = 5.0
-    Friend Const HeatDetectorActiviationTemperature As Single = 57.22   ' Default heat detector is a 135 °F detector with 10 ft spacing from NRC NUREG 1805, table 12-2
+    Friend Const SmokeDetectorActivationObscuration As Single = 100 * (1 - (1 - 8 / 100) ^ (1 / 0.3048))
+    Friend Const HeatDetectorActiviationTemperature As Single = 57.22 + 273.15   ' Default heat detector is a 135 °F detector with 10 ft spacing from NRC NUREG 1805, table 12-2
     Friend Const HeatDetectorRTI As Single = 404.0
-    Friend Const SprinklerActivationTemperature As Single = 73.89       ' Default sprinkler is standard response link, ordinary sprinkler, RTI = 130 and 165 °F
+    Friend Const SprinklerActivationTemperature As Single = 73.89 + 273.15       ' Default sprinkler is standard response link, ordinary sprinkler, RTI = 130 and 165 °F
     Friend Const SprinklerRTI As Single = 130
     Friend Const Implicit As Integer = 0
     Friend Const Explicit As Integer = 1
@@ -56,10 +57,10 @@ Public Class Target
         aMaterial = "Off"
         aSolutionType = 0
         aDetectorType = 1
-        aActivationTemperature = 10.0 + 273.15
-        aActivationObscuration = 8.0 / 0.3048
+        aActivationTemperature = HeatDetectorActiviationTemperature
+        aActivationObscuration = SmokeDetectorActivationObscuration
         aActivationType = ActivationbyTemperature
-        aRTI = 100
+        aRTI = HeatDetectorRTI
         aSprayDensity = 0.00007
     End Sub
     Public Property Name() As String
@@ -456,8 +457,8 @@ Public Class Target
                         myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " activation temperature is less than 20 °C or greater than 200 °C.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
-                    If aRTI <= 0.0 Or aRTI >= 400.0 Then
-                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " RTI is less than 0 or greater than 400 (m s)^1/2.", ErrorMessages.TypeWarning)
+                    If aRTI <= 0.0 Or aRTI >= 500.0 Then
+                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " RTI is less than 0 or greater than 500 (m s)^1/2.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aSprayDensity < 0.0 Or aSprayDensity > 0.003 Then

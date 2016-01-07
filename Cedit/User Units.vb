@@ -386,7 +386,7 @@ Public Class EngineeringUnits
         Dim aEnergyConversion As New Conversions(MEnergy, Zero, LEnergy)
         BaseUnits(BaseUnitsNum.Energy) = aEnergyConversion
         ' Smoke conversions (We treat this as a base unit to limit it to %/ft and %/m)
-        Dim MSmoke() As Single = {1 / 0.3048, 0.3048}
+        Dim MSmoke() As Single = {1, 0.3048}
         Dim LSmoke() As String = {"%/m", "%/ft"}
         Dim aSmokeConversion As New Conversions(MSmoke, Zero, LSmoke)
         BaseUnits(BaseUnitsNum.Smoke) = aSmokeConversion
@@ -577,7 +577,11 @@ Public Class Conversion
                 If aType = 0 Then
                     Return (Val(EngineeringUnits) + aB) * aM
                 Else
-                    Return 100 * (1 - (1 - EngineeringUnits / 100) ^ aM)
+                    If aM = 1 Then
+                        Return EngineeringUnits
+                    Else
+                        Return 100 * (1 - (1 - EngineeringUnits / 100) ^ (1 / aM))
+                    End If
                 End If
             End If
         End Get
@@ -591,7 +595,11 @@ Public Class Conversion
                 If aType = 0 Then
                     Return Val(SIUnits) / aM - aB
                 Else
-                    Return 100 * (1 - (1 - SIUnits / 100) ^ aM)
+                    If aM = 1 Then
+                        Return SIUnits
+                    Else
+                        Return 100 * (1 - (1 - SIUnits / 100) ^ aM)
+                    End If
                 End If
             End If
         End Get

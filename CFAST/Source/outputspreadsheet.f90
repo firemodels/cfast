@@ -525,7 +525,7 @@ module spreadsheet_routines
         ! flow slabs for the vent
         slabs = ventptr%n_slabs
         call SSaddtolist (position,slabs,outarray)
-        do j = 1, 2
+        do j = 2, 1, -1
             call ssaddtolist(position,ventptr%temp_slab(j),outarray)
             call ssaddtolist(position,ventptr%flow_slab(j),outarray)
             call ssaddtolist(position,ventptr%ybot_slab(j),outarray)

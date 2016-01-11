@@ -66,9 +66,9 @@ module mflow_routines
 
         ! flow information for smokeview
         ventptr => mventinfo(ii)
-        vheight = hvelxt(ii)
         iroom = hvnode(1,ii)
         roomptr => roominfo(iroom)
+        vheight = roomptr%z0 + hvelxt(ii)
         layer_height = max(min(zzhlay(iroom,lower) + roomptr%z0, vheight + sqrt(arext(ii))/2), vheight - sqrt(arext(ii))/2)
         do j = upper, lower
             ventptr%temp_slab(j) = hvextt(ii,j)

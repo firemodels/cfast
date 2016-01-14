@@ -148,12 +148,12 @@ module input_routines
         if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%height)) objpos(3,i) = 0.0_eb
     end do
 
-    ! make sure horizontal vent specifications are correct -  we have to do this
+    ! make sure ceiling/floor vent specifications are correct -  we have to do this
     ! here rather than right after keywordcases because floor_height and ceiling_height were just defined
     ! above
     do itop = 1, nm1
         if (ivvent_connections(itop,itop)/=0) then
-            write (logerr,*) '***Error: A room can not be connected to itself'
+            write (logerr,*) '***Error: A room can not be connected to itself with a vertical vent'
             stop
         endif
         do ibot = 1, itop - 1
@@ -166,7 +166,7 @@ module input_routines
                     if (ivvent_connections(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
                         if (ivvent_connections(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
                             if (ivvent_connections(ibot,itop)/=0) then
-                                write (logerr,*) '***Error: Vent ', ibot, itop, ' is being redefined'
+                                write (logerr,*) '***Error: Vertical vent ', ibot, itop, ' is being redefined'
                             endif
                             ivvent_connections(itop,ibot) = 0
                             ivvent_connections(ibot,itop) = 1
@@ -176,7 +176,7 @@ module input_routines
                         endif
                         if (ivvent_connections(ibot,itop)==1.and.abs(deps1)<mx_vsep) then
                             if (ivvent_connections(itop,ibot)/=0) then
-                                write (logerr,*) '***Error: Vent ', itop, ibot, ' is being redefined'
+                                write (logerr,*) '***Error: Vertical vent ', itop, ibot, ' is being redefined'
                             endif
                             ivvent_connections(itop,ibot) = 1
                             ivvent_connections(ibot,itop) = 0

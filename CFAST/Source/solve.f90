@@ -1411,7 +1411,7 @@ module solve_routines
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii
     integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
-    real(eb) :: wtemp, vminfrac 
+    real(eb) :: wtemp
     real(eb) :: xdelt, tstop, zzu, zzl
     real(eb) :: zlay, ztarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv
     real(eb) :: xt, xtemp, xh2o, ptemp, epscut
@@ -1427,7 +1427,6 @@ module solve_routines
         qfurnout=sigma*wtemp**4
     endif
 
-    vminfrac = 1.0e-4_eb
     if (iflag==constvar) then
         do iroom = 1, n
             roomptr => roominfo(iroom)

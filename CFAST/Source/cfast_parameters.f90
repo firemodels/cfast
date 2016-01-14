@@ -37,8 +37,8 @@ module cparams
     integer, parameter :: mxvvents=2*nr         ! maximum number of vertical flow vents
     integer, parameter :: mxvvent = mxvvents*2  ! maximum number of connections in vertical flow vents 
     
-    integer, parameter :: mxhvsys=200                ! maximum number of mechanical ventilation systems
-    integer, parameter :: mxfan = 100                ! maximum number of fans in a mechanical ventilation system
+    integer, parameter :: mxhvsys=200               ! maximum number of mechanical ventilation systems
+    integer, parameter :: mxfan = 100               ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 5               ! maximum order of fan curve (here, 5th order polynomial. at the moment, 
                                                     !   the gui limits to constant flow)
     integer, parameter :: mxcon = 3                 ! maximum number of connections to a node in a mechanical ventilation system
@@ -49,11 +49,15 @@ module cparams
     
     integer, parameter :: mxramps = 8*mxfire+mxhvent+mxvvents+mxhvsys ! maximum number of possible time-based ramps
     
-    real(eb), parameter :: mx_vsep=0.01_eb     ! maximum vertical distance between elements before they are considered 
-                                               ! separate elements (connected compartments for example)
-    real(eb), parameter :: mx_hsep = 1.0e-3_eb ! maximum horizontal distance below which fire is assumed to 
-                                               ! be on a surface for entrainmnt
-    real(eb), parameter :: xlrg = 1.0e+5_eb    ! sizes for outsize room
+    ! room related parameters
+    real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume
+    
+    real(eb), parameter :: mx_vsep=0.01_eb          ! maximum vertical distance between elements before they are considered 
+                                                    ! separate elements (connected compartments for example)
+    real(eb), parameter :: mx_hsep = 1.0e-3_eb      ! maximum horizontal distance below which fire is assumed to 
+                                                    ! be on a surface for entrainmnt
+    real(eb), parameter :: xlrg = 1.0e+5_eb         ! sizes for outsize room
+    real(eb), parameter :: deltatemp_min = 0.01_eb  ! minimum temperature difference for bouyancy to deposit all into a layer
     
     ! target parameters
     integer, parameter :: mxtarg = 10*nr                    ! maximum number of targets

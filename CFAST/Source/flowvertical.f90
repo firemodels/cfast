@@ -33,12 +33,13 @@ module vflow_routines
     real(eb), intent(out) :: flwvf(nr,ns+2,2)
     logical, intent(out) :: vflowflg
     
-    real(eb) :: xmvent(2), tmvent(2), epscut, xxmu, xxml, xxqu, xxql, xxtmp, xxtq, fl, fu
-    real(eb) :: fumu, fuml, fuqu, fuql, xxmixl, xxmixu, pmtoup, pmtolp
-    integer ::  ilay(2), i, itop, ibot, iflow, ifrm, ito, lsp, index
-    real(eb) :: area, vvfraction, froude(2), alpha
+    real(eb) :: vvent(2), xmvent(2), tmvent(2), epscut, frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
+    real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
+    integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index
+    real(eb) :: area, vvfraction, froude(2), alpha, zlayer, temp_upper, temp_lower
 
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomptr
     
     flwvf(1:n,1:ns+2,upper) = 0.0_eb
     flwvf(1:n,1:ns+2,lower) = 0.0_eb
@@ -49,7 +50,10 @@ module vflow_routines
     if (n_vvents==0) return
     vflowflg = .true.
     
-    epscut = 0.0001_eb
+    epscut = 0.0001_eb        
+        if (tsec>0.0) then
+            continue
+        end if
 
     do i = 1, n_vvents
         ventptr => vventinfo(i)
@@ -59,11 +63,7 @@ module vflow_routines
         area = vvfraction * vvarea(itop,ibot)
         ventptr%area = area
         !area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
-        call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, xmvent, tmvent, ilay, froude)
-        
-        if (tsec>10.) then
-            continue
-        end if
+        call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, vvent, xmvent, tmvent)
         
         ventptr%n_slabs = 2
         do iflow = 1, 2
@@ -80,80 +80,106 @@ module vflow_routines
             if (iflow==1) then
                 ifrm = ibot
                 ito = itop
+                ilay = upper
             else
                 ifrm = itop
                 ito = ibot
+                ilay = lower
             endif
+            zlayer = zzhlay(ifrm,ilay)
+            roomptr => roominfo(ifrm)
 
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nm1) then
+                if (tmvent(iflow)>interior_temperature) then
+                    froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
+                    if (zzvol(ifrm,ilay)>roomptr%volume-2.0_eb*roomptr%vmin) froude = 0.0_eb
+                else
+                    froude(iflow) = 0.0_eb
+                end if
                 alpha = exp(-(froude(iflow)/2)**2)
-                fu = min(alpha, 1.0_eb)
-                fl = max(1.0_eb-fu, 0.0_eb)
-                xxmu = fu*xmvent(iflow)
-                xxml = fl*xmvent(iflow)
-                xxqu = cp*xxmu*zztemp(ifrm,upper)
-                xxql = cp*xxml*zztemp(ifrm,lower)
-                xxtmp = fu*zztemp(ifrm,upper) + fl*zztemp(ifrm,lower)
-                xxtq = xxqu + xxql
+                if (iflow==1) then
+                    fu = min(alpha, 1.0_eb)
+                    fl = max(1.0_eb-fu, 0.0_eb)
+                else
+                    fl = min(alpha, 1.0_eb)
+                    fu = max(1.0_eb-fl, 0.0_eb)
+                end if
+                frommu = fu*xmvent(iflow)
+                fromml = fl*xmvent(iflow)
+                fromqu = cp*frommu*zztemp(ifrm,upper)
+                fromql = cp*fromml*zztemp(ifrm,lower)
+                from_temp = fu*zztemp(ifrm,upper) + fl*zztemp(ifrm,lower)
             else
-                xxmu = 0.0_eb
-                xxml = xmvent(iflow)
-                xxqu = 0.0_eb
-                xxql = cp*xxml*exterior_temperature
-                xxtmp = zztemp(ifrm,lower)
-                xxtq = xxqu + xxql
+                frommu = 0.0_eb
+                fromml = xmvent(iflow)
+                fromqu = 0.0_eb
+                fromql = cp*fromml*exterior_temperature
+                from_temp = zztemp(ifrm,lower)
             endif
-
-            ! determine mass and enthalpy fractions for the to room
-            fl = 0.0_eb
-            if (xxtmp<=zztemp(ito,lower)) fl = 1.0_eb
-            fu = 1.0_eb - fl
-            fumu = fu*xmvent(iflow)
-            fuml = fl*xmvent(iflow)
-            fuqu = fu*xxtq
-            fuql = fl*xxtq
-
-
-            ! deposit mass and enthalpy into "to" room varibles (not outside)
-            if (ito<=nm1) then
-                flwvf(ito,m,upper) = flwvf(ito,m,upper) + fumu
-                flwvf(ito,m,lower) = flwvf(ito,m,lower) + fuml
-                flwvf(ito,q,upper) = flwvf(ito,q,upper) + fuqu
-                flwvf(ito,q,lower) = flwvf(ito,q,lower) + fuql
-            endif
-            vmflo(ifrm,ito,upper) = fumu + vmflo(ifrm,ito,upper)
-            vmflo(ifrm,ito,lower) = fuml + vmflo(ifrm,ito,lower)
+            fromtq = fromqu + fromql
 
             ! extract mass and enthalpy from "from" room (not from outside)
             if (ifrm<=nm1) then
-                flwvf(ifrm,m,upper) = flwvf(ifrm,m,upper) - xxmu
-                flwvf(ifrm,m,lower) = flwvf(ifrm,m,lower) - xxml
-                flwvf(ifrm,q,upper) = flwvf(ifrm,q,upper) - xxqu
-                flwvf(ifrm,q,lower) = flwvf(ifrm,q,lower) - xxql
+                flwvf(ifrm,m,upper) = flwvf(ifrm,m,upper) - frommu
+                flwvf(ifrm,m,lower) = flwvf(ifrm,m,lower) - fromml
+                flwvf(ifrm,q,upper) = flwvf(ifrm,q,upper) - fromqu
+                flwvf(ifrm,q,lower) = flwvf(ifrm,q,lower) - fromql
             endif
-            vmflo(ito,ifrm,upper) = vmflo(ito,ifrm,upper) - xxmu
-            vmflo(ito,ifrm,lower) = vmflo(ito,ifrm,lower) - xxml
+            vmflo(ito,ifrm,upper) = vmflo(ito,ifrm,upper) - frommu
+            vmflo(ito,ifrm,lower) = vmflo(ito,ifrm,lower) - fromml
+            
+            ! determine mass and enthalpy fractions for the to room
+            temp_upper = zztemp(ito,upper)
+            temp_lower = zztemp(ito,lower)
+            !if (from_temp>=temp_upper+deltatemp_min) then
+            !    ! if it's relatively hot, it goes to the upper layer
+            !    fu = 1.0_eb
+            !elseif (from_temp<=temp_lower-deltatemp_min) then
+            !    ! if it's really cold, it goes to the lower layer
+            !    fu = 0.0_eb
+            !else
+            !    ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in
+            !    ! between then mix the flow
+            !    fu = (from_temp - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
+            !endif
+            fu = 0.0_eb
+            if (from_temp>temp_lower) fu = 1.0_eb
+            fl = 1.0_eb - fu
+            tomu = fu*xmvent(iflow)
+            toml = fl*xmvent(iflow)
+            toqu = fu*fromtq
+            toql = fl*fromtq
+
+            ! deposit mass and enthalpy into "to" room varibles (not outside)
+            if (ito<=nm1) then
+                flwvf(ito,m,upper) = flwvf(ito,m,upper) + tomu
+                flwvf(ito,m,lower) = flwvf(ito,m,lower) + toml
+                flwvf(ito,q,upper) = flwvf(ito,q,upper) + toqu
+                flwvf(ito,q,lower) = flwvf(ito,q,lower) + toql
+            endif
+            vmflo(ifrm,ito,upper) = vmflo(ifrm,ito,upper) + tomu
+            vmflo(ifrm,ito,lower) = vmflo(ifrm,ito,lower) + toml
 
             ! species transfer for vertical vents
             do lsp = 1, ns
                 if (activs(lsp)) then
                     index = pp+lsp-1
-                    xxmixl = zzcspec(ifrm,lower,lsp)*xxml
-                    xxmixu = zzcspec(ifrm,upper,lsp)*xxmu
-
-                    ! deposit mass and enthalphy into "to" room variables (not outside)
-                    if (ito<=nm1) then
-                        pmtoup = (xxmixu + xxmixl)*fu
-                        pmtolp = (xxmixu + xxmixl)*fl
-                        flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
-                        flwvf(ito,index,lower) = flwvf(ito,index,lower) + pmtolp
-                    endif
+                    speciesl = zzcspec(ifrm,lower,lsp)*fromml
+                    speciesu = zzcspec(ifrm,upper,lsp)*frommu
 
                     ! extract mass and enthalpy from "from" room (not from the outside)
                     if (ifrm<=nm1) then
-                        flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - xxmixu
-                        flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - xxmixl
+                        flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - speciesu
+                        flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - speciesl
+                    endif
+
+                    ! deposit mass and enthalphy into "to" room variables (not outside)
+                    if (ito<=nm1) then
+                        pmtoup = (speciesu + speciesl)*fu
+                        pmtolp = (speciesu + speciesl)*fl
+                        flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
+                        flwvf(ito,index,lower) = flwvf(ito,index,lower) + pmtolp
                     endif
                 endif
             end do
@@ -219,23 +245,23 @@ module vflow_routines
 
 ! --------------------------- ventcf -------------------------------------------
 
-    subroutine ventcf (itop, ibot, avent, nshape, epsp, xmvent, tmvent, ilay, froude)
+    subroutine ventcf (itop, ibot, avent, nshape, epsp, xmvent, vvent, tmvent)
 
     !     routine: ventcf
     !     purpose: this routine calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining 
     !     an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of 
     !     inside rooms and the uniform environment in outside spaces.
-    !     arguments: itop: top room number (physically with respect to the second compartment)
-    !                ibot: bottom room number
-    !                avent: area of the vent [m**2]                
-    !                nshape: number characterizing vent shape: 1 = circle, 2 = square
-    !                epsp: error tolerance for dpref [dimensionless]
-    !                xmvent(i)   i = 1, mass flow from room ibot to room itop
-    !                            i = 2, mass flow from room itop to room ibot
-    !                tmvent(i)   i = 1, temperature in layer next to vent in top room
-    !                            i = 2, temperature in layer next to vent in bottom room
-    !                ilay(i)     i = 1, layer index next to vent in top room
-    !                            i = 2, layer index next to vent in bottom room
+    !     arguments:itop: top room number (physically with respect to the second compartment)
+    !               ibot: bottom room number
+    !               avent: area of the vent [m**2]                
+    !               nshape: number characterizing vent shape: 1 = circle, 2 = square
+    !               epsp: error tolerance for dpref [dimensionless]
+    !               vvent(i)    i = 1, velocity of flow from room ibot to room itop
+    !                           i = 2, velocity of flow from toom itop to room ibot
+    !               xmvent(i)   i = 1, mass flow from room ibot to room itop
+    !                           i = 2, mass flow from room itop to room ibot
+    !               tmvent(i)   i = 1, temperature in layer next to vent in top room
+    !                           i = 2, temperature in layer next to vent in bottom room
 
     use precision_parameters
     use cenviro
@@ -244,12 +270,10 @@ module vflow_routines
 
     integer, intent(in) :: itop, ibot, nshape
     real(eb), intent(in) :: avent, epsp
-    real(eb), intent(out) :: xmvent(2), tmvent(2), froude(2)
+    real(eb), intent(out) :: vvent(2), xmvent(2), tmvent(2)
     
-    integer, intent(out) :: ilay(2)
-    
-    real(eb) :: den(2), relp(2), denvnt(2), dp(2), vst(2), vvent(2)
-    integer ::  iroom(2)
+    real(eb) :: den(2), relp(2), denvnt(2), dp(2), vst(2)
+    integer ::  iroom(2), ilay(2)
     
     integer, parameter :: l = 2, u = 1, q = 2, m = 1
 
@@ -372,11 +396,6 @@ module vflow_routines
             ! iroom(i) is an outside room so use exterior_temperature for temperature
             tmvent(i) = exterior_temperature
         endif
-        if (tmvent(i)-interior_temperature > 0.0_eb) then
-            froude(i) =vvent(i)/sqrt(grav_con*zzhlay(iroom(i),i)**5*(tmvent(i)-interior_temperature)/interior_temperature)
-        else
-            froude(i) = 0.0_eb
-        end if
     end do
     return
     end subroutine ventcf

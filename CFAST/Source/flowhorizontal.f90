@@ -619,6 +619,7 @@ module hflow_routines
     !                             or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
 
     use precision_parameters
+    use cparams, only: deltatemp_min
     use flwptrs
     implicit none
 
@@ -629,7 +630,7 @@ module hflow_routines
 
     integer :: iprod, n, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
-    real(eb), parameter :: deltatemp_min = 0.01_eb
+    
 
     ! initialize outputs
     mflows = 0.0_eb

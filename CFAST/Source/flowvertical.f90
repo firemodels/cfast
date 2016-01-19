@@ -93,11 +93,11 @@ module vflow_routines
             if (ifrm<=nm1) then
                 if (tmvent(iflow)>interior_temperature) then
                     froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
-                    if (zzvol(ifrm,ilay)>roomptr%volume-2.0_eb*roomptr%vmin) froude = 0.0_eb
                 else
                     froude(iflow) = 0.0_eb
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
+                if (zzvol(ifrm,ilay)<roomptr%volume-2.0_eb*roomptr%vmin) alpha = 0.0_eb
                 if (iflow==1) then
                     fu = min(alpha, 1.0_eb)
                     fl = max(1.0_eb-fu, 0.0_eb)
@@ -144,7 +144,7 @@ module vflow_routines
             !    fu = (from_temp - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
             !endif
             fu = 0.0_eb
-            if (from_temp>temp_lower) fu = 1.0_eb
+            if (from_temp>temp_lower+deltatemp_min) fu = 1.0_eb
             fl = 1.0_eb - fu
             tomu = fu*xmvent(iflow)
             toml = fl*xmvent(iflow)

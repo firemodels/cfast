@@ -86,12 +86,12 @@ module vflow_routines
                 ito = ibot
                 ilay = lower
             endif
-            zlayer = zzhlay(ifrm,ilay)
             roomptr => roominfo(ifrm)
 
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nm1) then
                 if (tmvent(iflow)>interior_temperature) then
+                    zlayer = zzhlay(ifrm,ilay)
                     froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
                 else
                     froude(iflow) = 0.0_eb

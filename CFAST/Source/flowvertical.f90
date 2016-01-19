@@ -97,12 +97,16 @@ module vflow_routines
                     froude(iflow) = 0.0_eb
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
-                if (zzvol(ifrm,ilay)<roomptr%volume-2.0_eb*roomptr%vmin) alpha = 0.0_eb
                 if (iflow==1) then
                     fu = min(alpha, 1.0_eb)
+                    ! the hyperbolic tangent allows for smooth transition of fraction to make sure we don't take from a non-exisitant layer
+                    if (zzvol(ifrm,upper)<2.0_eb*roomptr%vmin) fu = 0.0_eb
+                    if (zzvol(ifrm,lower)<2.0_eb*roomptr%vmin) fu = 1.0_eb
                     fl = max(1.0_eb-fu, 0.0_eb)
                 else
                     fl = min(alpha, 1.0_eb)
+                    if (zzvol(ifrm,upper)<2.0_eb*roomptr%vmin) fl = 1.0_eb
+                    if (zzvol(ifrm,lower)<2.0_eb*roomptr%vmin) fl = 0.0_eb
                     fu = max(1.0_eb-fl, 0.0_eb)
                 end if
                 frommu = fu*xmvent(iflow)

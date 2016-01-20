@@ -80,7 +80,7 @@ set nothaveICC=1
 set haveerrors=0
 set havewarnings=0
 
-set gettimeexe=%userprofile%\FIRE-LOCAL\repo_exes\get_time\get_time.exe
+set gettimeexe=%userprofile%\FIRE-LOCAL\repo_exes\get_time.exe
 set runbatchexe=%userprofile%\FIRE-LOCAL\repo_exes\runbatch.exe
 
 date /t > %OUTDIR%\starttime.txt

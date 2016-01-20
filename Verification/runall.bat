@@ -6,42 +6,42 @@ call cleanall.bat
 
 echo Running Energy Balance cases
 cd Energy_Balance
-..\scripts\background -u 98 ..\..\bin\cfast sealed_test -V
-..\scripts\background -u 98 ..\..\bin\cfast sealed_test_2_layers -V
+background -u 98 ..\..\bin\cfast sealed_test -V
+background -u 98 ..\..\bin\cfast sealed_test_2_layers -V
 cd ..
 
 echo Running Mass Balance cases
 cd Mass_Balance
-..\scripts\background -u 98 ..\..\bin\cfast species_mass_1 -V
-..\scripts\background -u 98 ..\..\bin\cfast species_mass_2 -V
-..\scripts\background -u 98 ..\..\bin\cfast species_mass_3 -V
-..\scripts\background -u 98 ..\..\bin\cfast species_mass_4 -V
+background -u 98 ..\..\bin\cfast species_mass_1 -V
+background -u 98 ..\..\bin\cfast species_mass_2 -V
+background -u 98 ..\..\bin\cfast species_mass_3 -V
+background -u 98 ..\..\bin\cfast species_mass_4 -V
 cd ..
 
 echo Running Thermal Equilibrium cases
 cd Thermal_Equilibrium
-..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib -V
-..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib_window -V
-..\scripts\background -u 98 ..\..\bin\cfast basic_tempequilib_window_elevation -V
+background -u 98 ..\..\bin\cfast basic_tempequilib -V
+background -u 98 ..\..\bin\cfast basic_tempequilib_window -V
+background -u 98 ..\..\bin\cfast basic_tempequilib_window_elevation -V
 cd ..
 
 echo Running Ventilation cases
 cd Ventilation
-..\scripts\background -u 98 ..\..\bin\cfast ventilation_1 -V
-..\scripts\background -u 98 ..\..\bin\cfast ventilation_2 -V
-..\scripts\background -u 98 ..\..\bin\cfast ventilation_3 -V
-..\scripts\background -u 98 ..\..\bin\cfast ventilation_4 -V
+background -u 98 ..\..\bin\cfast ventilation_1 -V
+background -u 98 ..\..\bin\cfast ventilation_2 -V
+background -u 98 ..\..\bin\cfast ventilation_3 -V
+background -u 98 ..\..\bin\cfast ventilation_4 -V
 cd ..
 
 echo Running Sprinkler cases
 cd Sprinkler
-..\scripts\background -u 98 ..\..\bin\cfast sprinkler_1 -V
+background -u 98 ..\..\bin\cfast sprinkler_1 -V
 cd ..
 
 echo Running Radiation cases
 cd Radiation
-..\scripts\background -u 98 ..\..\bin\cfast radiation_1 -V
-..\scripts\background -u 98 ..\..\bin\cfast radiation_2 -V
+background -u 98 ..\..\bin\cfast radiation_1 -V
+background -u 98 ..\..\bin\cfast radiation_2 -V
 cd ..
 
 echo Waiting for all CFAST runs to finish

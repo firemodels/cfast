@@ -18,8 +18,8 @@ set BASEDIR=%CD%
 cd %BASEDIR%\..
 set SVNROOT=%CD%
 
-set SH2BAT=%SCRIPT_DIR%\sh2bat.exe
-set BACKGROUNDEXE=%SCRIPT_DIR%\\background.exe
+set SH2BAT=%userprofile%\FIRE-LOCAL\repo_exes\sh2bat.exe
+set BACKGROUNDEXE=%userprofile%\FIRE-LOCAL\repo_exes\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 0.1
 set CFASTEXE=%SVNROOT%\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
 set CFAST=%bg% %CFASTEXE%

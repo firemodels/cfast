@@ -80,8 +80,8 @@ set nothaveICC=1
 set haveerrors=0
 set havewarnings=0
 
-set gettimeexe=%cfastroot%\Utilities\get_time\intel_win%size%\get_time.exe
-set runbatchexe=%cfastroot%\Utilities\runbatch\intel_win%size%\runbatch.exe
+set gettimeexe=%userprofile%\FIRE-LOCAL\repo_exes\get_time\intel_win%size%\get_time.exe
+set runbatchexe=%userprofile%\FIRE-LOCAL\repo_exes\runbatch.exe
 
 date /t > %OUTDIR%\starttime.txt
 set /p startdate=<%OUTDIR%\starttime.txt
@@ -428,7 +428,7 @@ call :GET_TIME MAKEPICS_beg
 echo Stage 4 - Making smokeview images
 
 cd %cfastroot%\Validation\scripts
-set SH2BAT=%cfastroot%\Validation\scripts\sh2bat.exe
+set SH2BAT=%userprofile%\FIRE-LOCAL\repo_exes\sh2bat.exe
 
 %SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat > %OUTDIR%\stage4.txt 2>&1
 set RUNSMV=call %cfastroot%\Validation\scripts\runsmv.bat

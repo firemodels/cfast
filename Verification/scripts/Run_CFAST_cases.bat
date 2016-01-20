@@ -15,7 +15,7 @@ echo Press any key to proceed, CTRL c to abort
 pause > Nul
 
 echo creating CFAST case list from CFAST_Cases.sh
-%SCRIPT_DIR%\sh2bat CFAST_Cases.sh CFAST_Cases.bat
+%userprofile%\FIRE-LOCAL\repo_exes\sh2bat CFAST_Cases.sh CFAST_Cases.bat
 
 cd %BASEDIR%
 

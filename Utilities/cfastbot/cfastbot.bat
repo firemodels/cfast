@@ -282,7 +282,7 @@ set timingslogfile=%TIMINGSDIR%\timings_%revisionnum%.txt
 
 if %havefdsrepo% == 0 goto skip_fdsrepo
   if %clean% == 0 goto skip_update2
-    echo             reverting %FDSbasename% repository
+    echo             cleaning %FDSbasename% repository
     call :git_clean %FDSroot%\Verification
     call :git_clean %FDSroot%\SMV\source
     call :git_clean %FDSroot%\SMV\Build

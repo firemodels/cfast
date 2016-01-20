@@ -13,9 +13,31 @@ module utility_routines
   
     implicit none
    
-   public fmix, emix, get_igrid, doesthefileexist, funit
+   public fmix, emix, get_igrid, doesthefileexist, funit, tanhsmooth
    
-   contains
+    contains
+    
+! --------------------------- tanhsmooth ---------------------------------------
+    
+    real(eb) function tanhsmooth (x, xmax, xmin, ymax, ymin)
+    
+    !     routine: tanhsmooth
+    !     purpose: calculate a smooth transition from 1 (at xmax) to zero (at xmin)
+    !     arguments: x    current value
+    !                xmax maximum value of independent variable. Return ymax above this value
+    !                xmin minimum value of independent variable. Return ymin below this value
+    !                ymax value returned at or above xmax
+    !                ymin value return at or below xmin
+    
+    real(eb), intent(in) :: x, xmax, xmin, ymax, ymin
+    real(eb) :: f
+    f = min(max(0.5_eb + tanh(8.0_eb/(xmax-xmin)*(x-xmin)-4.0_eb)/2.0_eb,0.0_eb),1.0_eb)
+    if (f<1.0d-6) f = 0.0_eb
+    tanhsmooth = f*(ymax-ymin)+ymin
+    
+    
+    return
+    end function tanhsmooth
    
 ! --------------------------- xerror -------------------------------------------
 

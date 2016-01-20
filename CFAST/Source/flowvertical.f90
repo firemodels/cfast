@@ -2,6 +2,7 @@ module vflow_routines
     
     use precision_parameters
     use opening_fractions, only: qcvfraction
+    use utility_routines, only: tanhsmooth
     
     implicit none
     
@@ -51,7 +52,7 @@ module vflow_routines
     vflowflg = .true.
     
     epscut = 0.0001_eb        
-        if (tsec>0.0) then
+        if (tsec>5.0d-3) then
             continue
         end if
 
@@ -97,16 +98,14 @@ module vflow_routines
                     froude(iflow) = 0.0_eb
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
-                if (iflow==1) then
-                    fu = min(alpha, 1.0_eb)
-                    ! the hyperbolic tangent allows for smooth transition of fraction to make sure we don't take from a non-exisitant layer
-                    if (zzvol(ifrm,upper)<2.0_eb*roomptr%vmin) fu = 0.0_eb
-                    if (zzvol(ifrm,lower)<2.0_eb*roomptr%vmin) fu = 1.0_eb
+                if (ilay==upper) then
+                    ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-exisitant layer
+                    fu = min(tanhsmooth(zzvol(ifrm,upper), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
+                    fu = min(tanhsmooth(zzvol(ifrm,lower), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, fu, 1.0_eb), 1.0_eb)
                     fl = max(1.0_eb-fu, 0.0_eb)
                 else
-                    fl = min(alpha, 1.0_eb)
-                    if (zzvol(ifrm,upper)<2.0_eb*roomptr%vmin) fl = 1.0_eb
-                    if (zzvol(ifrm,lower)<2.0_eb*roomptr%vmin) fl = 0.0_eb
+                    fl = min(tanhsmooth(zzvol(ifrm,lower), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
+                    fl = min(tanhsmooth(zzvol(ifrm,upper), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, fl, 1.0_eb), 1.0_eb)
                     fu = max(1.0_eb-fl, 0.0_eb)
                 end if
                 frommu = fu*xmvent(iflow)

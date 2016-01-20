@@ -10,5 +10,5 @@ set out=%infile%.err
 set stopfile=%infile%.stop
 
 cd %fulldir%
-echo %in% started using %CFAST%
+echo %in% started
 %CFAST% %in%  1> %out% 2>&1 -V

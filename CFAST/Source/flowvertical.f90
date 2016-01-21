@@ -297,7 +297,7 @@ module vflow_routines
     if (itop<=nm1) then
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con*roominfo(ibot)%z1*exterior_density
+        dp(1) = -grav_con*roominfo(ibot)%height*exterior_density
         relp(1) = exterior_rel_pressure(ibot)
     endif
 

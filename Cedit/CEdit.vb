@@ -1125,7 +1125,7 @@ Public Class CeditMain
         '
         'Label24
         '
-        Me.Label24.Location = New System.Drawing.Point(200, 16)
+        Me.Label24.Location = New System.Drawing.Point(200, 15)
         Me.Label24.Name = "Label24"
         Me.Label24.Size = New System.Drawing.Size(56, 23)
         Me.Label24.TabIndex = 108
@@ -1142,7 +1142,7 @@ Public Class CeditMain
         '
         'Label26
         '
-        Me.Label26.Location = New System.Drawing.Point(8, 48)
+        Me.Label26.Location = New System.Drawing.Point(8, 47)
         Me.Label26.Name = "Label26"
         Me.Label26.Size = New System.Drawing.Size(72, 23)
         Me.Label26.TabIndex = 109
@@ -1159,7 +1159,7 @@ Public Class CeditMain
         '
         'Label27
         '
-        Me.Label27.Location = New System.Drawing.Point(8, 16)
+        Me.Label27.Location = New System.Drawing.Point(8, 15)
         Me.Label27.Name = "Label27"
         Me.Label27.Size = New System.Drawing.Size(72, 23)
         Me.Label27.TabIndex = 110
@@ -1193,7 +1193,7 @@ Public Class CeditMain
         '
         'Label30
         '
-        Me.Label30.Location = New System.Drawing.Point(200, 48)
+        Me.Label30.Location = New System.Drawing.Point(200, 47)
         Me.Label30.Name = "Label30"
         Me.Label30.Size = New System.Drawing.Size(56, 23)
         Me.Label30.TabIndex = 117
@@ -1210,7 +1210,7 @@ Public Class CeditMain
         '
         'Label8
         '
-        Me.Label8.Location = New System.Drawing.Point(200, 16)
+        Me.Label8.Location = New System.Drawing.Point(200, 15)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(56, 23)
         Me.Label8.TabIndex = 112
@@ -1227,7 +1227,7 @@ Public Class CeditMain
         '
         'Label6
         '
-        Me.Label6.Location = New System.Drawing.Point(8, 48)
+        Me.Label6.Location = New System.Drawing.Point(8, 47)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(72, 23)
         Me.Label6.TabIndex = 114
@@ -1244,7 +1244,7 @@ Public Class CeditMain
         '
         'Label5
         '
-        Me.Label5.Location = New System.Drawing.Point(8, 16)
+        Me.Label5.Location = New System.Drawing.Point(8, 15)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(72, 23)
         Me.Label5.TabIndex = 115

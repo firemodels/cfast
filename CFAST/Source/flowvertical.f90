@@ -51,10 +51,7 @@ module vflow_routines
     if (n_vvents==0) return
     vflowflg = .true.
     
-    epscut = 0.0001_eb        
-        if (tsec>5.0d-3) then
-            continue
-        end if
+    epscut = 0.0001_eb
 
     do i = 1, n_vvents
         ventptr => vventinfo(i)

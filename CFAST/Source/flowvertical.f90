@@ -271,16 +271,17 @@ module vflow_routines
     integer :: i, deadtop, deadbot
 
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
-    dp(1) = 0.0_eb
-    dp(2) = 0.0_eb
+    ! dp at top of bottom room and bottom of top room
     if (ibot<=nm1) then
         dp(2) = -grav_con*(zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
         relp(2) = zzrelp(ibot)
     else
+        dp(2) = 0.0_eb
         relp(2) = exterior_rel_pressure(itop)
     endif
 
     if (itop<=nm1) then
+        dp(1) = 0.0_eb
         relp(1) = zzrelp(itop)
     else
         dp(1) = -grav_con*roominfo(ibot)%height*exterior_density

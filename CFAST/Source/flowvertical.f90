@@ -84,7 +84,6 @@ module vflow_routines
                 ito = ibot
                 ilay = lower
             endif
-            roomptr => roominfo(ifrm)
 
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nm1) then
@@ -95,6 +94,7 @@ module vflow_routines
                     froude(iflow) = 0.0_eb
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
+                roomptr => roominfo(ifrm)
                 if (ilay==upper) then
                     ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-exisitant layer
                     fu = min(tanhsmooth(zzvol(ifrm,upper), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
@@ -132,17 +132,6 @@ module vflow_routines
             ! determine mass and enthalpy fractions for the to room
             temp_upper = zztemp(ito,upper)
             temp_lower = zztemp(ito,lower)
-            !if (from_temp>=temp_upper+deltatemp_min) then
-            !    ! if it's relatively hot, it goes to the upper layer
-            !    fu = 1.0_eb
-            !elseif (from_temp<=temp_lower-deltatemp_min) then
-            !    ! if it's really cold, it goes to the lower layer
-            !    fu = 0.0_eb
-            !else
-            !    ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in
-            !    ! between then mix the flow
-            !    fu = (from_temp - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
-            !endif
             fu = 0.0_eb
             if (from_temp>temp_lower+deltatemp_min) fu = 1.0_eb
             fl = 1.0_eb - fu

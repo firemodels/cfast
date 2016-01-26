@@ -444,7 +444,7 @@ module spreadsheet_routines
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time
     
-    real(eb) :: outarray(maxhead), fheight, factor2, height, width, avent, slabs
+    real(eb) :: outarray(maxhead), fheight, factor2, height, width, avent, slabs, vflow
     logical :: firstc
     integer :: position
     integer :: i, j, iroom1, iroom2, ik, im, ix
@@ -526,8 +526,10 @@ module spreadsheet_routines
         slabs = ventptr%n_slabs
         call SSaddtolist (position,slabs,outarray)
         do j = 2, 1, -1
+            vflow = ventptr%flow_slab(j)
+            if (ventptr%top<=nm1.and.j==1) vflow = -vflow
             call ssaddtolist(position,ventptr%temp_slab(j),outarray)
-            call ssaddtolist(position,ventptr%flow_slab(j),outarray)
+            call ssaddtolist(position,vflow,outarray)
             call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
             call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
         end do

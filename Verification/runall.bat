@@ -31,6 +31,7 @@ background -u 98 ..\..\bin\cfast ventilation_1 -V
 background -u 98 ..\..\bin\cfast ventilation_2 -V
 background -u 98 ..\..\bin\cfast ventilation_3 -V
 background -u 98 ..\..\bin\cfast ventilation_4 -V
+background -u 98 ..\..\bin\cfast VVent_Tests -V
 cd ..
 
 echo Running Sprinkler cases

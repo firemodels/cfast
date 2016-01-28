@@ -71,7 +71,7 @@ module output_routines
         imajor = version/100
         iminor = mod(version,100)/10
         iminorrev = mod(version,10)
-    endif
+    end if
     return
     
     end subroutine splitversion
@@ -111,11 +111,11 @@ module output_routines
             call rsltflwt ()
         else
             call rsltflw ()
-        endif
+        end if
     else if (outputformat==1) then
         write (iofilo,5000) time
         call rsltcmp (iofilo)
-    endif
+    end if
     return
 
 5000 format (//,' Time = ',f8.1,' seconds.')
@@ -146,7 +146,7 @@ module output_routines
             write (iofilo,5070) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zztemp(icomp,lower)-kelvin_c_offset, &
             zzhlay(icomp,lower), zzvol(icomp,upper), izzvol, zzabsb(upper,icomp),zzabsb(lower,icomp), &
                zzrelp(icomp)-interior_rel_pressure(icomp)
-        endif
+        end if
     end do
     return
 
@@ -182,12 +182,12 @@ module output_routines
                     j = objpnt(i)
                     write (iofilo,5010) objnin(j)(1:len_trim(objnin(j))), fems(i), femp(i), fqf(i), &
                        fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
-                endif
+                end if
             else
                 write (iofilo,5020) i, fems(i), femp(i), fqf(i), fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
-            endif
+            end if
         end do
-    endif
+    end if
     write (iofilo,'(a)') ' '
     do icomp = 1, nm1
         roomptr => roominfo(icomp)
@@ -204,7 +204,7 @@ module output_routines
                 xqf = xqf + fqf(i)
                 xqupr = xqupr + fqupr(i)
                 xqlow = xqlow + fqlow(i)
-            endif
+            end if
         end do
         xqf = xqf + fqdj(icomp)
         if (xems+xemp+xqf+xqupr+xqlow+fqdj(icomp)/=0.0_eb) write (iofilo,5030) roomptr%name, &
@@ -231,8 +231,8 @@ module output_routines
 
     !     Description:  Output the layer and wall species at the current time
 
-    character(4), dimension(ns) :: stype = &
-        (/character(4) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/)
+    character(10), dimension(ns) :: stype = &
+        (/character(10) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/)
     character(10), dimension(ns) :: sunits = &
         (/character(10) :: '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/)
     character(5), dimension(2) :: lnames = (/character(5) :: 'UPPER', 'LOWER'/)
@@ -248,11 +248,11 @@ module output_routines
             cjout = ' '
             ic = 16
             do lsp = 1, ns
-                if (activs(lsp)) then
+                if (activs(lsp).and.lsp/=10) then
                     write (ciout(ic:ic+9),5000) stype(lsp)
                     write (cjout(ic:ic+9),5000) sunits(lsp)
                     ic = ic + 11
-                endif
+                end if
             end do
             write (iofilo,5020) ciout(1:len_trim(ciout))
             write (iofilo,5020) cjout(1:len_trim(cjout))
@@ -264,14 +264,16 @@ module output_routines
                 ic = 14
                 if (layer==upper.or..not.roomptr%shaft) then
                     do lsp = 1, ns
-                        write (ciout(ic:ic+9),5040) toxict(icomp,layer,lsp)
-                        ic = ic + 11
+                        if (activs(lsp).and.lsp/=10) then
+                            write (ciout(ic:ic+9),5040) toxict(icomp,layer,lsp)
+                            ic = ic + 11
+                        end if
                     end do
-                endif
+                end if
                 write (iofilo,5020) ciout(1:len_trim(ciout))
             end do
         end do
-    endif
+    end if
     return
     
 5000 format (a10)
@@ -367,7 +369,7 @@ module output_routines
             call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))            
             write (iofilo,5010) 'M', i, cifrom, cito, outbuf
         end do
-    endif
+    end if
     return
 
 5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
@@ -432,10 +434,10 @@ module output_routines
                         first = .false.
                     else
                         write (iofilo,5020) ' ', cjout, outbuf
-                    endif
-                endif
+                    end if
+                end if
             end do
-        endif
+        end if
     end do
 
 5000 format (//,'TOTAL MASS FLOW THROUGH VENTS (kg)',//, &
@@ -467,7 +469,7 @@ module output_routines
             if (ir==froom(i)) then
                 xemp = xemp + femp(i)
                 xqf = xqf + fqf(i)
-            endif
+            end if
         end do
         xqf = xqf + fqdj(ir)
         if (roomptr%shaft) then
@@ -476,7 +478,7 @@ module output_routines
         else
             write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, &
                zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - interior_rel_pressure(ir)
-        endif
+        end if
     end do
     write (iounit,5020) fqdj(n)
     return
@@ -543,7 +545,7 @@ module output_routines
                     wtotal = targptr%flux_surface(1)
                     gtotal = targptr%flux_gas(1)
                     ctotal = targptr%flux_convection(1)
-                endif
+                end if
                 if (total<=1.0e-10_eb) total = 0.0_eb
                 if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
                 if (wtotal<=1.0e-10_eb) wtotal = 0.0_eb
@@ -554,8 +556,8 @@ module output_routines
                         tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
                 else
                     write(iofilo,5020) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
-                endif
-            endif
+                end if
+            end if
         end do
 
     end do
@@ -578,45 +580,49 @@ module output_routines
     !     Description:  Output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
 
     integer :: i, iroom, itype
-    real(eb) :: cjetmin, zdetect, tlay, tjet, vel, tlink
+    real(eb) :: cjetmin, zdetect, tlay, tjet, vel, obs, tlink
 
-    character(5) :: ctype
     character(3) :: cact
+    type(room_type), pointer :: roomptr
 
     if(ndtect==0)return
     write(iofilo,5000)
     cjetmin = 0.10_eb
     do i = 1, ndtect
         iroom = ixdtect(i,droom)
+        roomptr => roominfo(iroom)
 
         zdetect = xdtect(i,dzloc)
         if(zdetect>zzhlay(iroom,lower))then
             tlay = zztemp(iroom,upper)
         else
             tlay = zztemp(iroom,lower)
-        endif
+        end if
 
         tjet = max(xdtect(i,dtjet),tlay)-kelvin_c_offset
         vel = max(xdtect(i,dvel),cjetmin)
+        obs = xdtect(i,dobs)
         tlink =  xdtect(i,dtemp)-kelvin_c_offset
 
-        itype = ixdtect(i,dtype)
-        if(itype==smoked)then
-            ctype = 'SMOKE'
-        elseif(itype==heatd)then
-            ctype = 'HEAT'
-        else
-            ctype = 'OTHER'
-        endif
         cact = 'NO'
         if(ixdtect(i,dact)==1) cact = 'YES'
-        write(iofilo,5010)i,iroom,ctype,tlink,cact,tjet,vel
+        
+        itype = ixdtect(i,dtype)
+        if(itype==smoked)then
+            write(iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
+        elseif(itype==heatd)then
+            write(iofilo,5020) i, roomptr%name, 'HEAT  ', tlink, tjet, cact
+        else
+            write(iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
+        end if
         
 5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/, &
-    '                              Sensor                           Smoke',//, &
-    'Number  Compartment   Type   Temp (C)   Activated       Temp (C)   Vel (M/S)',/, &
-    '----------------------------------------------------------------------------')
-5010    format(t2,i2,t10,i3,t24,a5,t31,1pe10.3,t42,a3,t58,1pe10.3,t69,1pe10.3)
+    '                                      Sensor         Smoke',//, &
+    'Number  Compartment        Type       Temp (C)       Temp (C)      Vel (m/s)     Obs (1/m)          Activated',/, &
+    '--------------------------------------------------------------------------------------------------------------')
+5010    format(i3,5x,a14,5x,a6,4x,15x,1pe10.3,4x,1pe10.3,4x,1pe10.3,10x,a3)
+5020    format(i3,5x,a14,5x,a6,4x,1pe10.3,5x,1pe10.3,38x,a3)
+5030    format(i3,5x,a14,5x,a6,4x,1pe10.3,5x,1pe10.3,4x,1pe10.3,24x,a3)
     end do
     return
     end subroutine rsltsprink
@@ -637,8 +643,9 @@ module output_routines
         call outvent
         call outthe
         call outtarg
+        call outdetectors
         call outfire
-    endif
+    end if
 
     return
 
@@ -729,11 +736,11 @@ module output_routines
                         iijk = ijk(i,j,k)
                         roomptr => roominfo(i)
                         write (iofilo,5020) roomptr%name, cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk)
-                    endif
+                    end if
                 end do
             end do
         end do
-    endif
+    end if
 
     !     vertical flow vents
     if (n_vvents==0) then
@@ -756,12 +763,12 @@ module output_routines
                     else
                         hrx = roomptr%z0
                         hrpx = roomptr%z0
-                    endif
+                    end if
                     write (iofilo,5050) ciout, cjout, csout, vvarea(i,j), hrx, hrpx
-                endif
+                end if
             end do
         end do
-    endif
+    end if
 
     !     mechanical vents
     if (nnode==0.and.next==0) then
@@ -785,8 +792,8 @@ module output_routines
                                 first = .false.
                             else
                                 write (iofilo,5110) ciout, hvelxt(iext), cjout, hvght(na(ibr)), arext(iext)
-                            endif
-                        endif
+                            end if
+                        end if
                         if (first) then
                             write (iofilo,5130) isys, 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), &
                             nf(ibr), hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j = 1,nfc(nf(ibr)))
@@ -794,7 +801,7 @@ module output_routines
                         else
                             write (iofilo,5140) 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), nf(ibr), &
                             hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j= 1,nfc(nf(ibr)))
-                        endif
+                        end if
                         call chkext(ne(ibr),irm,iext)
                         if (irm>=1.and.irm<=n) then
                             write (ciout,'(a4,i3)') 'Node', ne(ibr)
@@ -805,13 +812,13 @@ module output_routines
                                 first = .false.
                             else
                                 write (iofilo,5110) ciout, hvght(ne(ibr)), cjout, hvelxt(iext), arext(iext)
-                            endif
-                        endif
-                    endif
-                endif
+                            end if
+                        end if
+                    end if
+                end if
             end do
         end do
-    endif
+    end if
     return
 
 5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
@@ -857,7 +864,7 @@ module output_routines
             iext = i
             irm = hvnode(1,i)
             return
-        endif
+        end if
     end do
     irm = 0
     iext = 0
@@ -944,7 +951,7 @@ module output_routines
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
                 write (cbuf,5040)
                 write (cbuf(51:132),5050)
-                is = 113
+                is = 103
                 write (iofilo,'(3x,a)') cbuf(1:len_trim(cbuf))
                 write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
                 write (iofilo,5010) ('-',i = 1,is-1)
@@ -952,12 +959,12 @@ module output_routines
                     write (cbuf,5060) otime(i,j), omass(i,j), objhc(i,j), oqdot(i,j), ohigh(i,j)
                     y_HCN = obj_n(j)*0.027028_eb/objgmw(j)
                     y_HCl = obj_cl(j)*0.036458_eb/objgmw(j)
-                    write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, y_HCl,omprodr(i,10,j),omprodr(i,11,j)
+                    write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, y_HCl,omprodr(i,11,j)
                     write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
                 end do
-            endif
+            end if
         end do
-    endif
+    end if
     return
 5000 format ('  (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
 5010 format (255a1)
@@ -966,7 +973,7 @@ module output_routines
 5030 format (a14,1x,a13,3(f7.2),f7.1,6x,f7.2,5x,f7.2//)
 5031 format ('Chemical formula of the fuel',/,3x,'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/5(f7.3,3x),//)
 5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
-5050 format ('Soot      CO        HCN       HCl       CT        TS')
+5050 format ('Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
 5070 format (10(1PG10.2),2x,2g10.2)
     end subroutine outfire
@@ -995,6 +1002,46 @@ module output_routines
     end do
     return
     end subroutine outtarg
+
+! --------------------------- outdetectors -------------------------------------------
+
+    subroutine outdetectors
+
+    !      description:  output initial test case target specifications
+
+    integer :: idtect, iroom, itype
+    character :: outbuf*132
+    
+    type(room_type), pointer :: roomptr
+
+    if(ndtect/=0) write(iofilo,5000)
+    5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
+         ,'Target  Compartment        Type           Position (x, y, z)            Activation',/ &
+         ,'                                                                        Obscuration   Temperature   RTI           Spray Density',/ &
+         ,'                                         (m)      (m)      (m)          (%/m)         (C)           (m s)^1/2     (m/s)',/ &
+         ,127('-'))
+
+    do idtect = 1, ndtect
+        iroom = ixdtect(idtect,droom)
+        roomptr => roominfo(iroom)
+        itype = ixdtect(idtect,dtype)
+        if(itype==smoked)then
+            write(outbuf,5010) idtect, roomptr%name, 'SMOKE ', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
+                xdtect(idtect,dtrig)
+        elseif(itype==heatd)then
+            write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
+                xdtect(idtect,dtrig)-273.15
+        else
+            write(outbuf,5020) idtect, roomptr%name, 'SPRINK', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
+                xdtect(idtect,dtrig)-273.15, xdtect(idtect,drti), xdtect(idtect,dspray)
+        end if
+5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)
+5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),13x,2(5x,f10.2),5x,1pe10.2)
+
+        write (iofilo,'(a)') trim(outbuf)
+    end do
+    return
+    end subroutine outdetectors
 
 ! --------------------------- flwout -------------------------------------------
 
@@ -1036,7 +1083,7 @@ module output_routines
             write (outbuf(13*(i-1)+1:13*i),5040) flow(i)
         else
             write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
-        endif
+        end if
         if (flow(i)<=atol) outbuf(13*(i-1)+1:13*i) = ' '
         if (validate.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
     end do
@@ -1090,7 +1137,7 @@ module output_routines
             hder(itmp:(itmp+2)) = lbls(i)
         end do
         iounit = dbugsw(d_jac,d_prn,1)
-    endif
+    end if
     write(iounit,*)' '
     write(iounit,*)'jacobian',numjac + totjac,' time ',tsec
     write(iounit,*)' '
@@ -1103,13 +1150,13 @@ module output_routines
             if (i>ioffst(irdx)) then
                 irdx = irdx + 1
                 go to 101
-            endif
+            end if
             itcol = neqs + 8
             do 103 k = 1, itcol + 2
                 entry(k) = '--'
 103         continue
             write(iounit,*)(entry(k),k=1,itcol)
-        endif
+        end if
         entry(1) = lbls(irdx-1)(1:2)
         icdx = 1
         itcol = 1
@@ -1118,14 +1165,14 @@ module output_routines
             iitmp = log(abs(wmii))
         else
             iitmp = 11
-        endif
+        end if
         if (iitmp<verysm) then
             ddiag = ' .'
         else if (iitmp>verybg) then
             ddiag = ' û'
         else
             write(ddiag,'(i2)')iitmp
-        endif
+        end if
 
         do j = 1, neqs
             itcol = itcol + 1
@@ -1135,10 +1182,10 @@ module output_routines
                 if (j>ioffst(icdx)) then
                     icdx = icdx + 1
                     go to 102
-                endif
+                end if
                 entry(itcol) = ' |'
                 itcol = itcol + 1
-            endif
+            end if
             wmij = wm(i,j)
             if (wmij/=0.0_eb.and.wmii/=0.0_eb) then
                 tmp1 = abs(wmij/wmii)
@@ -1147,7 +1194,7 @@ module output_routines
                 tmp = 11
             else
                 tmp = -11
-            endif
+            end if
             itmp = int(tmp + 0.5_eb)
 
             if (wmij==0.0_eb) then
@@ -1158,7 +1205,7 @@ module output_routines
                 entry(itcol) = ' û'
             else
                 write(entry(itcol),'(i2)')itmp
-            endif
+            end if
         end do
         write(iounit,*)ddiag,':',(entry(k),k=1,itcol)
     end do
@@ -1197,7 +1244,7 @@ module output_routines
         else
             write(lbuf,'(a,i2)')' target number ',icomp
             call xerror(lbuf,0,1,0)
-        endif
+        end if
     else if (icomp<=nofprd) then
         itmp = icomp - nofwt
         irm = izwall(itmp,w_from_room)
@@ -1214,8 +1261,8 @@ module output_routines
         else if(iw==4) then
             write(lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
             call xerror(lbuf,0,1,0)
-        endif
-    endif
+        end if
+    end if
 
     return
     end subroutine find_error_component
@@ -1248,10 +1295,10 @@ module output_routines
                 if (i==icmv(na(i),j)) then
                     bmap(i) = j
                     exit
-                endif
+                end if
         end do
     end do
-    endif
+    end if
 
     if (ikey==1) then
         write (*,*) 'Pause at time = ', T,',  Press any key to continue'
@@ -1272,21 +1319,21 @@ module output_routines
             do iprod = 1, ns
                 if (activs(iprod)) then
                     write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
-                endif
+                end if
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
                 write (*,5040) zzwtemp(i,1,1)
-            endif
+            end if
             if (roomptr%surface_on(3)) then
                 write (*,5060) zzwtemp(i,3,1)
-            endif
+            end if
             if (roomptr%surface_on(4)) then
                 write (iofilo,5070) zzwtemp(i,4,1)
-            endif
+            end if
             if (roomptr%surface_on(2)) then
                 write (iofilo,5050) zzwtemp(i,2,1)
-            endif
+            end if
         end do
         write (*,*) ' '
         write (*,*) 'Hvac print by systems'
@@ -1300,7 +1347,7 @@ module output_routines
             do idt = 1, nbr
                 if (izhvbsys(idt)==isys) then
                     write (*,5080) na(idt), hvp(na(idt)), ne(idt),hvp(ne(idt)), hvflow(na(idt),bmap(idt)), tbr(idt)
-                endif
+                end if
             end do
         end do
         if (ndtect/=0)then
@@ -1313,11 +1360,11 @@ module output_routines
                     ccc='***'
                 else
                     ccc = '   '
-                endif
+                end if
                 write(*,102)i,xdtect(i,dtemp),xdtect(i,dtjet),xdtect(i,dvel),xdtect(i,dtact),ccc
 102             format(1x,i2,1x,4(e11.4,1x),a3)
             end do
-        endif
+        end if
         write (*,*) ' '
     else if (ikey==3) then
         write (*,5090) t, dt
@@ -1350,15 +1397,15 @@ module output_routines
             do iobj = 1, numobjl
                 write(*,6085)iobj,xfire(iobj,f_heatlp),xfire(iobj,f_heatup)
             end do
-        endif
+        end if
         if(ntarg>0)then
             write(*,6090)
             do itarg = 1, ntarg
                 targptr => targetinfo(itarg)
                 write(*,6095) itarg, targptr%temperature(idx_tempf_trg)
             end do
-        endif
-    endif
+        end if
+    end if
     return
 
 5000 format (' T = ',1pg12.4,' DT = ',1pg12.4)
@@ -1441,7 +1488,7 @@ module output_routines
         open (unit=13,file=smvhead,form='formatted',err=11,iostat=ios)
         open (unit=14,file=smvdata,form="unformatted",err=11,iostat=ios)
         open (unit=15, file=smvcsv,form='formatted')
-    endif
+    end if
 
     ! next the spread sheet files
     if (lcopyss>0) then
@@ -1449,7 +1496,7 @@ module output_routines
         open (unit=22, file=ssflow,form='formatted')
         open (unit=23, file=ssspecies,form='formatted')
         open (unit=24, file=sswall,form='formatted')
-    endif
+    end if
 
     ! and finally we create a file to indicate that the model is running.
 
@@ -1489,7 +1536,7 @@ module output_routines
                 stop
             end if
         end if
-    endif
+    end if
 
     return
     end subroutine deleteoutputfiles 

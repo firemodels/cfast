@@ -58,7 +58,7 @@ contains
         call target_nodes (tmp)
         tempin = 0.0_eb
         tempout = 0.0_eb
-    endif
+    end if
 
     ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
@@ -101,7 +101,7 @@ contains
             iwbound = 4
             call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
                 dt,wk(1),wrho(1),wspec(1),xl,tgrad)
-        endif
+        end if
         
         ! limit target temperature to flame temperature
         do i = idx_tempf_trg,idx_tempb_trg
@@ -175,7 +175,7 @@ contains
             s = max(dnrm2(3,svect,1),mx_hsep)
             if(s/=0.0_eb)then
                 cosang = -ddot(3,svect,1,targptr%normal,1)/s
-            endif
+            end if
             ztarg = targptr%center(3)
             zlay = zzhlay(iroom,lower)
 
@@ -193,12 +193,12 @@ contains
                 taul = exp(-absl*zl)
                 tauu = exp(-absu*zu)
                 qfire = xfire(ifire,f_qfr)
-            endif
+            end if
             if(s/=0.0_eb)then
                 qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
             else
                 qft = 0.0_eb
-            endif
+            end if
 
             ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution
             ! if the target is interior to the room
@@ -207,8 +207,8 @@ contains
             else
                 if(targptr%back==interior)then
                     qtfflux(2) = qtfflux(2) + qft
-                endif
-            endif
+                end if
+            end if
 
         end do
         if (stime>10.0_eb .and. itarg>=153) then
@@ -225,7 +225,7 @@ contains
                 qout=qfurnout
             else
                 qout = rdqout(map10(iwall),iroom)
-            endif
+            end if
             svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
             s = dnrm2(3,svect,1)
             zwall = roomptr%wall_center(3,iwall)
@@ -248,7 +248,7 @@ contains
                 qgas = tl**4*alphal*tauu + tu**4*alphau
             else
                 qgas = tu**4*alphau*taul + tl**4*alphal
-            endif
+            end if
             qgt = sigma*qgas
 
             qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
@@ -256,7 +256,7 @@ contains
             if(targptr%back==interior)then
               qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
               qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
-            endif
+            end if
         end do
         qtwflux(front) = qwtsum(front)
         qtgflux(front) = qgassum(front)
@@ -265,7 +265,7 @@ contains
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
         if(targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_temperature**4
-    endif
+    end if
 
     ! compute convective flux
     ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.  
@@ -279,7 +279,7 @@ contains
     else
         iw = 3
         iwb = 3
-    endif
+    end if
 
     xtarg = targptr%center(1)
     ytarg = targptr%center(2)
@@ -290,7 +290,7 @@ contains
         tgb = tg
     else
         tgb = interior_temperature
-    endif
+    end if
     dttarg = 1.0e-7_eb*ttarg(front)
     dttargb = 1.0e-7_eb*ttarg(back)
 
@@ -464,12 +464,12 @@ contains
           if(d1.gt.0)then  ! face vertex is above target plane
              nsolid_front_verts=nsolid_front_verts+1
              solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
-          endif
+          end if
           
           if(d1.lt.0)then  ! face vertex is below target plane
              nsolid_back_verts=nsolid_back_verts+1
              solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
-          endif
+          end if
           if(d1*d2.lt.0)then ! two successive face vertices are on opposite sides of target plane
                              ! interpolate to find vertex that lies on target plane
              !  d1   0    d2
@@ -486,7 +486,7 @@ contains
              v0(1:3) = (1.0_eb-factor)*v1 + factor*v2
              solid_angle_front_verts(1:3,nsolid_front_verts) = v0(1:3)
              solid_angle_back_verts(1:3,nsolid_back_verts) =   v0(1:3)
-          endif
+          end if
        end do
        if(nsolid_front_verts.ge.3)then
 
@@ -517,8 +517,8 @@ contains
                 call solid_angle_triangle(solid_angle,t1,t2,t3)
                 target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
              end do
-          endif
-       endif
+          end if
+       end if
        if(nsolid_back_verts.ge.3)then
 
           ! triangulate polygon, compute solid angle for each triangle and sum
@@ -548,8 +548,8 @@ contains
                 call solid_angle_triangle(solid_angle,t1,t2,t3)
                 target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
           end do
-          endif
-       endif
+          end if
+       end if
     end do
     sum_front = 0.0_eb
     sum_back = 0.0_eb
@@ -586,7 +586,7 @@ contains
           awall_sum(front) = awall_sum(front) + zzwarea2(iroom,iwall)
        else
           awall_sum(back) = awall_sum(back) + zzwarea2(iroom,iwall)
-       endif
+       end if
     end do
     if(awall_sum(front).eq.0.0_eb)awall_sum(front)=1.0_eb
     if(awall_sum(back).eq.0.0_eb)awall_sum(back)=1.0_eb
@@ -598,7 +598,7 @@ contains
           target_factors_front(iwall) = zzwarea2(iroom,iwall)/awall_sum(front)
        else
           target_factors_back(iwall) = zzwarea2(iroom,iwall)/awall_sum(back)
-       endif
+       end if
     end do
     end subroutine get_target_factors
     
@@ -618,14 +618,14 @@ contains
             yl = 1.0_eb
         else
             yl = (y-yo)/(yt-yo)
-        endif
+        end if
     else
         if(yt>=y)then
             yl = 0.0_eb
         else
             yl = (y-yt)/(yo-yt)
-        endif
-    endif
+        end if
+    end if
     yl = yl*s
     yu = s - yl
     return
@@ -670,7 +670,7 @@ contains
             tlay = zztemp(iroom,upper)
         else
             tlay = zztemp(iroom,lower)
-        endif
+        end if
 
         tjet = max(xdtect(i,dtjet),tlay)
         tjeto = max(xdtect(i,dtjeto),tlay)
@@ -682,10 +682,13 @@ contains
         rti = xdtect(i,drti)
         
         if(ixdtect(i,dtype)==smoked)then  
-            trig = log10(1._eb/(1.+eb-xdtect(i,dtrig)))
+            trig = log10(1._eb/(1._eb-xdtect(i,dtrig)/100._eb))
             tlinko = obso
-            tlink = obs
-        elseif(ixdtect(i,dtype)==heatd)then
+            tlink = obs        
+            if (tcur>350._eb) then
+                continue
+            end if
+        elseif(ixdtect(i,dtype)>=heatd)then
             trig = xdtect(i,dtrig)
             tlinko = xdtect(i,dtemp)
             bn = sqrt(velo)/rti
@@ -696,11 +699,11 @@ contains
             fact1 = (1.0_eb - dstep*bn*.50_eb)/denom
             fact2 = dstep/denom
             tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
-        endif
+        end if
         if (imode>0) then
             xdtect(i,dtempo) = tlinko
             xdtect(i,dtemp) = tlink
-        endif
+        end if
 
         ! determine if detector has activated in this time interval (and not earlier)
         if(tlinko<trig.and.trig<=tlink.and.ixdtect(i,dact)==0)then
@@ -731,17 +734,17 @@ contains
                         ! this can only happen if two detectors have activated in the same room in the same 
                         ! (possibly very short) time interval
                         iqu = i
-                    endif
-                endif
+                    end if
+                end if
 
                 ! if this detector has activated before all others in this room and the quenching flag was turned on 
                 !  then let the sprinkler quench the fire
                 if(iqu/=0.and.ixdtect(i,dquench)==1)then
                     iquench(iroom)=iqu
                     idset = iroom
-                endif
-            endif
-        endif
+                end if
+            end if
+        end if
         xdtect(i,dtjeto) = tjet
         xdtect(i,dvelo) = vel
         xdtect(i,dobso) = obs
@@ -757,7 +760,7 @@ contains
 
     !     description:  calculates near-detector gas temperature, velocity, and smoke obscuration
 
-    real(eb) :: xloc, yloc, zloc, tg, vg(4)
+    real(eb) :: xloc, yloc, zloc, tg, vg(4),obs
     integer :: id, iroom
 
     ! If ceiling jet option is turned off, conditions default to the appropriate layer temperature
@@ -774,7 +777,7 @@ contains
             else
                 xdtect(id,dtjet) = zztemp(iroom,lower)
                 xdtect(id,dobs) = toxict(iroom,lower,9)
-            endif
+            end if
             xdtect(id,dvel) = 0.1_eb
         else
             ! if ceiling jet option is on, temeperature is determined by plume and ceiling jet algorithms
@@ -785,8 +788,9 @@ contains
                 xdtect(id,dobs) = toxict(iroom,upper,9)
             else
                 xdtect(id,dobs) = toxict(iroom,lower,9)
-            endif
+            end if
         end if
+        obs = xdtect(id,dobs)
     end do
 
     return

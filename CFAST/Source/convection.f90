@@ -52,7 +52,7 @@
             ilay = upper
         else
             ilay = lower
-        endif
+        end if
         ! assume no fires in this room.  just use regular convection
         call convective_flux(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
         ! if there's a fire, we may need to modify the convection to account for the ceiling jet

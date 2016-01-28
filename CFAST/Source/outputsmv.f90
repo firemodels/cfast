@@ -140,7 +140,7 @@
             write(13,"(1x,i1)")0
             write(13,"(a,1x)")"VENT"
             write(13,"(1x,i1,1x,i1)")0,0
-        endif
+        end if
     end do
 
     ! slice files
@@ -349,7 +349,7 @@
             write(unit) (sf%ijk(ii),ii=1,6)
         else
             open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
-        endif
+        end if
         write(unit) real(time,fb)
         write(unit) (((tslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(tslicedata)
@@ -365,7 +365,7 @@
             write(unit) (sf%ijk(ii),ii=1,6)
         else
             open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
-        endif
+        end if
         write(unit) real(time,fb)
         write(unit) (((uslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(uslicedata)
@@ -381,7 +381,7 @@
             write(unit) (sf%ijk(ii),ii=1,6)
         else
             open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
-        endif
+        end if
         write(unit) real(time,fb)
         write(unit) (((vslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(vslicedata)
@@ -397,7 +397,7 @@
             write(unit) (sf%ijk(ii),ii=1,6)
         else
             open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
-        endif
+        end if
         write(unit) real(time,fb)
         write(unit) (((wslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(wslicedata)
@@ -413,7 +413,7 @@
             write(unit) (sf%ijk(ii),ii=1,6)
         else
             open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
-        endif
+        end if
         write(unit) real(time,fb)
         write(unit) (((sslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(sslicedata)
@@ -576,7 +576,7 @@ module isosurface
             unit=-unit
         else
             open(unit,FILE=isoptr%filename,form='unformatted',status='old',position='append')
-        endif
+        end if
         call iso_to_file(unit,timef,isodataf,levelsf, nlevels, rm%xpltf, ibar+1, rm%ypltf, jbar+1, rm%zpltf, kbar+1)
 
         deallocate(isodataf)
@@ -631,21 +631,21 @@ module isosurface
             DEALLOCATE(LEVEL_INDICES)
             DEALLOCATE(XYZVERTS) ! these variables were allocated in ISO_TO_GEOM
             DEALLOCATE(TRIANGLES)
-        ENDIF
+        end if
     END DO
     IF (NXYZVERTS_ALL>0.AND.NTRIANGLES_ALL>0) THEN
         CALL REMOVE_DUPLICATE_ISO_VERTS(XYZVERTS_ALL,NXYZVERTS_ALL,TRIANGLES_ALL,NTRIANGLES_ALL)
-    ENDIF
+    end if
     IF (LU_ISO<0) THEN
         LU_ISO  = ABS(LU_ISO)
         CALL ISO_HEADER_OUT(LU_ISO,LEVELS,NLEVELS)
-    ENDIF
+    end if
     CALL ISO_OUT(LU_ISO,T,XYZVERTS_ALL,NXYZVERTS_ALL,TRIANGLES_ALL,LEVEL_INDICES_ALL,NTRIANGLES_ALL)
     IF (NXYZVERTS_ALL>0.AND.NTRIANGLES>0) THEN
         DEALLOCATE(XYZVERTS_ALL)
         DEALLOCATE(LEVEL_INDICES_ALL)
         DEALLOCATE(TRIANGLES_ALL)
-    ENDIF
+    end if
 
     RETURN
     END SUBROUTINE ISO_TO_FILE
@@ -660,27 +660,27 @@ module isosurface
     IF (XI(1)<XJ(1)-DELTA) THEN
         COMPARE_VEC3 = -1
         RETURN
-    ENDIF
+    end if
     IF (XI(1)>XJ(1)+DELTA) THEN
         COMPARE_VEC3 = 1
         RETURN
-    ENDIF
+    end if
     IF (XI(2)<XJ(2)-DELTA) THEN
         COMPARE_VEC3 = -1
         RETURN
-    ENDIF
+    end if
     IF (XI(2)>XJ(2)+DELTA) THEN
         COMPARE_VEC3 = 1
         RETURN
-    ENDIF
+    end if
     IF (XI(3)<XJ(3)-DELTA) THEN
         COMPARE_VEC3 = -1
         RETURN
-    ENDIF
+    end if
     IF (XI(3)>XJ(3)+DELTA) THEN
         COMPARE_VEC3 = 1
         RETURN
-    ENDIF
+    end if
     COMPARE_VEC3 = 0
     RETURN
     END FUNCTION COMPARE_VEC3
@@ -701,7 +701,7 @@ module isosurface
         IF (COMPARE_VEC3(XYZ,XYZI)==0) THEN
             GET_MATCH=I
             RETURN
-        ENDIF
+        end if
     END DO
     GET_MATCH=0
     END FUNCTION GET_MATCH
@@ -735,7 +735,7 @@ module isosurface
         IF(IMATCH/=0)THEN
             MAPVERTS(IFROM)=IMATCH
             CYCLE
-        ENDIF
+        end if
         MAPVERTS(IFROM)=ITO
         VERTS(3*ITO-2:3*ITO)=VERTS(3*IFROM-2:3*IFROM)
         ITO = ITO + 1
@@ -822,7 +822,7 @@ module isosurface
                 IF (NXYZVERTS_LOCAL > 0.OR.NTRIS_LOCAL > 0) THEN
                     CALL UPDATEISOSURFACE(XYZVERTS_LOCAL, NXYZVERTS_LOCAL, TRIS_LOCAL, NTRIS_LOCAL, &
                         XYZVERTS, NXYZVERTS, NXYZVERTS_MAX, TRIANGLES, NTRIANGLES, NTRIANGLES_MAX)
-                ENDIF
+                end if
             END DO
         END DO
     END DO
@@ -868,11 +868,11 @@ module isosurface
     WRITE(LU_ISO) NVERTS,NTRIANGLES
     IF (NVERTS>0) THEN
         WRITE(LU_ISO) (VERTS(I),I=1,3*NVERTS)
-    ENDIF
+    end if
     IF (NTRIANGLES>0) THEN
         WRITE(LU_ISO) (1+TRIANGLES(I),I=1,3*NTRIANGLES)
         WRITE(LU_ISO) (SURFACES(I),I=1,NTRIANGLES)
-    ENDIF
+    end if
 
     RETURN
     END SUBROUTINE ISO_OUT
@@ -1187,7 +1187,7 @@ module isosurface
         IF (VALS(N)>LEVEL) THEN
             BIGGER=BIGGER+1
             CASENUM = CASENUM + PRODS(N);
-        ENDIF
+        end if
     END DO
 
     ! THERE ARE MORE NODES GREATER THAN THE ISO-SURFACE LEVEL THAN BELOW, SO
@@ -1199,9 +1199,9 @@ module isosurface
         DO N=0, 7
             IF (VALS(N)<LEVEL) THEN
                 CASENUM = CASENUM + PRODS(N)
-            ENDIF
+            end if
         END DO
-    ENDIF
+    end if
 
     ! STUFF MIN AND MAX GRID DATA INTO A MORE CONVENIENT FORM
     !  ASSUMING THE FOLLOWING GRID NUMBERING SCHEME
@@ -1229,20 +1229,20 @@ module isosurface
     IF (CASENUM<=0.OR.CASENUM>=255) THEN ! NO ISO-SURFACE
         NTRIS=0
         RETURN
-    ENDIF
+    end if
 
     CASE2(0:9) => CASES(CASENUM,0:9)
     TYPE2 = CASE2(8);
     IF (TYPE2==0) THEN
         NTRIS=0
         RETURN
-    ENDIF
+    end if
 
     IF (COMPCASE(TYPE2) == -1) THEN
         THISTYPE2=SIGN
     ELSE
         THISTYPE2=1
-    ENDIF
+    end if
 
     IF (THISTYPE2 /= -1) THEN
         !EDGES = &(EDGELIST[TYPE][1]);
@@ -1253,7 +1253,7 @@ module isosurface
         ELSE
             ! PATH = &(PATHCCWLIST[TYPE][1])  !  CONSTRUCT TRIANGLES COUNTER CLOCKWISE
             PATH(-1:11) => PATHCCWLIST(TYPE2,0:12)
-        ENDIF
+        end if
     ELSE
         !EDGES = &(EDGELIST2[TYPE][1]);
         EDGES(-1:11) => EDGELIST2(TYPE2,0:12)
@@ -1263,8 +1263,8 @@ module isosurface
         ELSE
             ! PATH = &(PATHCCWLIST2[TYPE][1]) !  CONSTRUCT TRIANGLES COUNTER CLOCKWISE
             PATH(-1:14) => PATHCCWLIST2(TYPE2,0:15)
-        ENDIF
-    ENDIF
+        end if
+    end if
     NPATH = PATH(-1);
     NEDGES = EDGES(-1);
 
@@ -1293,7 +1293,7 @@ module isosurface
     NTRIS = NPATH/3;
     IF (NPATH > 0) THEN
         TRIS(0:NPATH-1) = PATH(0:NPATH-1)
-    ENDIF
+    end if
     RETURN
     END SUBROUTINE GETISOBOX
 
@@ -1315,11 +1315,11 @@ module isosurface
     IF (1+NXYZVERTS_NEW > NXYZVERTS_MAX) THEN
         NXYZVERTS_MAX = 1+NXYZVERTS_NEW+1000
         CALL REALLOCATE_F('UPDATEISOSURFACES','XYZVERTS',XYZVERTS,3*NXYZVERTS,3*NXYZVERTS_MAX)
-    ENDIF
+    end if
     IF (1+NTRIANGLES_NEW > NTRIANGLES_MAX) THEN
         NTRIANGLES_MAX = 1+NTRIANGLES_NEW+1000
         CALL REALLOCATE_I('UPDATEISOSURFACES','TRIANGLES',TRIANGLES,3*NTRIANGLES,3*NTRIANGLES_MAX)
-    ENDIF
+    end if
     XYZVERTS(1+3*NXYZVERTS:3*NXYZVERTS_NEW) = XYZVERTS_BOX(0:3*NXYZVERTS_BOX-1)
     TRIANGLES(1+3*NTRIANGLES:3*NTRIANGLES_NEW) = NXYZVERTS+TRIS_BOX(0:3*NTRIS_BOX-1)
     NXYZVERTS = NXYZVERTS_NEW
@@ -1341,13 +1341,13 @@ module isosurface
         CALL ChkMemErr(ROUTINE,VAR//'_TEMP',MEMERR)
         VALS_TEMP(1:OLDSIZE) = VALS(1:OLDSIZE)
         DEALLOCATE(VALS)
-    ENDIF
+    end if
     ALLOCATE(VALS(NEWSIZE),STAT=MEMERR)
     CALL ChkMemErr(ROUTINE,VAR,MEMERR)
     IF (OLDSIZE > 0) THEN
         VALS(1:OLDSIZE)=VALS_TEMP(1:OLDSIZE)
         DEALLOCATE(VALS_TEMP)
-    ENDIF
+    end if
     RETURN
     END SUBROUTINE REALLOCATE_I
 
@@ -1365,13 +1365,13 @@ module isosurface
         CALL ChkMemErr(ROUTINE,VAR//'_TEMP',MEMERR)
         VALS_TEMP(1:OLDSIZE) = VALS(1:OLDSIZE)
         DEALLOCATE(VALS)
-    ENDIF
+    end if
     ALLOCATE(VALS(NEWSIZE),STAT=MEMERR)
     CALL ChkMemErr(ROUTINE,VAR,MEMERR)
     IF (OLDSIZE > 0) THEN
         VALS(1:OLDSIZE)=VALS_TEMP(1:OLDSIZE)
         DEALLOCATE(VALS_TEMP)
-    ENDIF
+    end if
     RETURN
     END SUBROUTINE REALLOCATE_F
 

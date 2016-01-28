@@ -44,7 +44,7 @@ module cylinder_routines
        factor = 2.0_eb*alpha*dt_iter/room_depth**2
     else
        niter = 0
-    endif
+    end if
 
     do iter=1,niter     
        do i = 1, nr
@@ -69,7 +69,7 @@ module cylinder_routines
           tnew(nr) = tempin
        else
           tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*room_depth/wk
-       endif
+       end if
 
        ! aim1(nr) = -1.0
        ! ai(nr) = 1.0_eb
@@ -135,11 +135,11 @@ module cylinder_routines
     if(r<=room_depth/2.0_eb)then
         tempx = wtemp(1)
         return
-    endif
+    end if
     if(r>=rad-room_depth/2.0_eb)then
         tempx = wtemp(nx)
         return
-    endif
+    end if
     rint = r/room_depth-0.5_eb
     left = int(rint)+1
     left=max(min(left,nx),1)

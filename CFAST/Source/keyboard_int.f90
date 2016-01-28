@@ -22,8 +22,8 @@
             it = 2
         else
             it = 1
-        endif
-    endif
+        end if
+    end if
 
     return
     end subroutine grabky

@@ -135,17 +135,17 @@ module hflow_routines
                 if (option(fentrain)==on) then
                     uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw3(1,1:nprod+2,l)
                     uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw3(1,1:nprod+2,u)
-                endif
-            endif
+                end if
+            end if
             if (iroom2>=1.and.iroom2<=nm1) then
                 uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw2(2,1:nprod+2,l)
                 uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw2(2,1:nprod+2,u)
                 if (option(fentrain)==on) then
                     uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw3(2,1:nprod+2,l)
                     uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw3(2,1:nprod+2,u)
-                endif
-            endif
-        endif
+                end if
+            end if
+        end if
 
     end do
 
@@ -212,7 +212,7 @@ module hflow_routines
                         ito = 1
                     else
                         cycle
-                    endif
+                    end if
 
                     ! determine temperature and product concentrations of entrained flow
                     if (yslab(n)<zlay(ito)) then
@@ -225,7 +225,7 @@ module hflow_routines
                         do iprod = 1, nprod
                             pmix(iprod) = conu(iprod,ito)
                         end do
-                    endif
+                    end if
 
                     ! compute the size of the entrained mass flow
                     if (yslab(n)>=zlay(ifrom)) then
@@ -236,7 +236,7 @@ module hflow_routines
                             call poreh_plume (tu(ifrom),tl(ito),xmslab(n),zd,width,uflw3(ito,m,u))
                             uflw3(ito,m,l) = -uflw3(ito,m,u)
                             vsas(ito) = uflw3(ito,m,u)
-                        endif
+                        end if
                     else
 
                         ! into lower
@@ -254,8 +254,8 @@ module hflow_routines
                             uflw3(ito,m,l) = uflw3(ito,m,l)*0.25_eb
                             vasa(ito) = uflw3(ito,m,l)
                             uflw3(ito,m,u) = -uflw3(ito,m,l)
-                        endif
-                    endif
+                        end if
+                    end if
 
                     ! compute enthalpy and product flow rates of entrained flow from the mass flow rate
                     uflw3(ito,q,l) = cp*uflw3(ito,m,l)*tmix
@@ -264,9 +264,9 @@ module hflow_routines
                         uflw3(ito,iprod,l) = uflw3(ito,m,l)*pmix(iprod-2)
                         uflw3(ito,iprod,u) = uflw3(ito,m,u)*pmix(iprod-2)
                     end do
-                endif
-            endif
-        endif
+                end if
+            end if
+        end if
     end do
     return
     end subroutine spill_plume
@@ -381,11 +381,11 @@ module hflow_routines
             ! fail safe in case interpolation calculation fails
             if (yn(nneut)<yelev(i).or.yn(nneut)>yelev(i+1)) then
                 yn(nneut) = (yelev(i)+yelev(i+1))/2.0_eb
-            endif
+            end if
             yvelev(nvelev) = yn(nneut)
             dpv1m2(nvelev) = 0.0_eb
             nvelev = nvelev + 1
-        endif
+        end if
     end do
     yvelev(nvelev) = yelev(nelev)
     dpv1m2(nvelev) = dp1m2(nelev)
@@ -408,7 +408,7 @@ module hflow_routines
         else
             dirs12(n) = 0
             jroom = 1
-        endif
+        end if
 
         ! determine whether temperature and density properties should come from upper or lower layer
         if (yslab(n)<=zlay(jroom)) then
@@ -423,7 +423,7 @@ module hflow_routines
             do iprod = 1, nprod
                 cslab(n,iprod) = conu(iprod,jroom)
             end do
-        endif
+        end if
 
         ! for nonzero-flow slabs determine xmslab(n) and yslab(n)
         xmslab(n) = 0.0_eb
@@ -452,7 +452,7 @@ module hflow_routines
                 pslab(n,iprod) = cslab(n,iprod)*xmslab(n)
                 sum = sum + pslab(n,iprod)
             end do
-        endif
+        end if
 
         ! construct cfast data structures ss, sa, as, aa
         ys = yslab(n)
@@ -461,26 +461,26 @@ module hflow_routines
                 vss(1) = xmslab(n)
             else
                 vss(2) = xmslab(n)
-            endif
+            end if
         else if (ys<min(zlay(1),zlay(2))) then
             if (dirs12(n)>0) then
                 vaa(1) = xmslab(n)
             else
                 vaa(2) = xmslab(n)
-            endif
+            end if
         else if (ys>zlay(1)) then
             if (dirs12(n)>0) then
                 vsa(1) = xmslab(n)
             else
                 vas(2) = xmslab(n)
-            endif
+            end if
         else if (ys>zlay(2)) then
             if (dirs12(n)>0) then
                 vas(1) = xmslab(n)
             else
                 vsa(2) = xmslab(n)
-            endif
-        endif
+            end if
+        end if
     end do
     return
     end subroutine vent
@@ -524,8 +524,8 @@ module hflow_routines
             yelev(2) = ymin
             yelev(3) = ymax
             yelev(4) = yvtop
-        endif
-    endif
+        end if
+    end if
     return
     end subroutine getelev
 
@@ -650,7 +650,7 @@ module hflow_routines
         else
             ! no flow in this slab so we can skip it
             cycle
-        endif
+        end if
 
         ! put slab flow into "to" flow according to slab temperature
         temp_slab = tslab(n)
@@ -667,7 +667,7 @@ module hflow_routines
             ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in
             ! between then mix the flow
             fupper = (temp_slab - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
-        endif
+        end if
 
         flower = 1.0_eb - fupper
         flow_fraction(l) = flower
@@ -691,7 +691,7 @@ module hflow_routines
             do iprod = 1, nprod
                 uflw2(ifrom,2+iprod,l) = uflw2(ifrom,2+iprod,l) - pslab(n,iprod)
             end do
-        endif
+        end if
 
         ! put flow into destination room
         do ilay = 1, 2
@@ -751,7 +751,7 @@ module hflow_routines
                 proom(iroom) = ygden(iroom) + gdenu(iroom)*(y(i) - zlay(iroom))
             else
                 proom(iroom) = 0.0_eb
-            endif
+            end if
         end do
 
         ! change in pressure is difference in pressures in two rooms
@@ -768,7 +768,7 @@ module hflow_routines
             dp(i) = zz*dpold
         else
             dp(i) = dpold
-        endif
+        end if
     end do
     return
     end subroutine delp

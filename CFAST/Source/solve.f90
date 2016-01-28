@@ -107,8 +107,8 @@ module solve_routines
             call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+nm1),deltamv(1+nm1),tol,nprint,info,work,lrw)
         else
             info = 1
-        endif
-    endif
+        end if
+    end if
 
     ! couldn't find a solution.  either try to recover or stop
     if (info/=1) then
@@ -116,9 +116,9 @@ module solve_routines
             option(fpsteady) = off
             call xerror('Trying non-steady initial guess' ,0,101,0)
             go to 1
-        endif
+        end if
         call xerror('Solver could not find an initial solution' ,0,102,2)
-    endif
+    end if
 
     ! if a room is not connected to any other room via a horizontal or
     ! vertical vent then do not use the snsqe pressure solution,
@@ -196,7 +196,7 @@ module solve_routines
         if(avent/=0.0_eb)then
             roomc(iroom1,iroom2) = 1
             roomc(iroom2,iroom1) = 1
-        endif
+        end if
     end do
 
     ! check vertical vent flow
@@ -206,7 +206,7 @@ module solve_routines
         if(vvarea(iroom1,iroom2)/=0.0_eb)then
             roomc(iroom1,iroom2) = 1
             roomc(iroom2,iroom1) = 1
-        endif
+        end if
     end do
 
     ! construct roomc**matiter where matiter > n
@@ -228,7 +228,7 @@ module solve_routines
             izcon(i) = .true.
         else
             izcon(i) = .false.
-        endif
+        end if
     end do
 
     return
@@ -287,7 +287,7 @@ module solve_routines
         do i = 1, nhvtvar
             write(iofilo,*)i,p2(i+noftmv)
         end do
-    endif
+    end if
     t = stime
     ires = 0
     call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
@@ -312,7 +312,7 @@ module solve_routines
         end do
         write(iofilo,*)' '
         read (*,*)
-    endif
+    end if
     return
     end subroutine gres
 
@@ -366,7 +366,7 @@ module solve_routines
         do i = 1, nhvtvar
             write (iofilo,*) i, hvsolv(nhvpvar+i)
         end do
-    endif
+    end if
     t = stime
     ires = 0
     call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
@@ -388,7 +388,7 @@ module solve_routines
         end do
         write(iofilo,*)' '
         read(*,*)
-    endif
+    end if
     return
     end subroutine gres2
 
@@ -476,21 +476,21 @@ module solve_routines
         tprint = tstop + 1.0_eb
     else
         iprint = .true.
-    endif
+    end if
 
     if (lsmv<=0) then
         ismv = .false.
         tsmv = tstop + 1.0_eb
     else
         ismv = .true.
-    endif
+    end if
 
     if (dspread<0.0001_eb.or.lcopyss<=0) then
         ispread = .false.
         tspread = tstop + 1.0_eb
     else
         ispread = .true.
-    endif
+    end if
 
     call set_info_flags (info, rwork)
 
@@ -510,7 +510,7 @@ module solve_routines
             vrtol(i+nofoxyu)=rtol
             vatol(i+nofoxyl)=atol
             vrtol(i+nofoxyl)=rtol
-        endif
+        end if
     end do
     do i = 1, nhvpvar
         vatol(i+nofpmv) = ahvptol
@@ -563,7 +563,7 @@ module solve_routines
         icode = 0
         write (logerr, '(a)') 'Initialize only'
         return
-    endif
+    end if
 
     ! main solve loop
     numjac = 0
@@ -588,13 +588,13 @@ module solve_routines
        if(ios.ne.0) stopiter=0
        close(unit=stopunit)
        icode = 1
-    endif
+    end if
     ! If the stop file exists or the esc key has been pressed, then quit
     if (icode==1.and.stopiter.eq.0) then
         call deleteoutputfiles (stopfile)
         write (logerr,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
         return
-    endif
+    end if
 
     ! Check the .query file. If it does not exist, do nothing. If if DOES exist, then
     ! rewind/write the status file and delete the query file (in that order).
@@ -603,7 +603,7 @@ module solve_routines
     if (exists) then
         call output_status (T, dT)
         call deleteoutputfiles (queryfile)
-    endif
+    end if
     
     !Check to see if diagnostic files .resid and .jac exist. If they do exist
     !set flags and open file, if needed, to print diagnositic information.
@@ -623,15 +623,15 @@ module solve_routines
                 jacfirst = .false.
                 iojac = funit(150)
                 open(unit=iojac,file=jaccsv)
-            endif 
+            end if 
             jacprn = .true.
         else
             jacprn = .false.
-        endif
+        end if
     else
         residprn = .false.
         jacprn = .false.
-    endif
+    end if
 
     ! now do normal output (printout, spreadsheets, ...)
     if (idid>0) then
@@ -646,7 +646,7 @@ module solve_routines
             numstep = 0
             numresd = 0
             prttime = 0.0_eb
-        endif
+        end if
 
         ! smokeview output
         if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
@@ -659,7 +659,7 @@ module solve_routines
                 call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, &
                     n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, itmstp)
                 call output_smokeview_header (version,nm1,nfires)
-            endif
+            end if
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
             call output_spreadsheet_smokeview(t)
             tsmv = tsmv + dplot
@@ -667,7 +667,7 @@ module solve_routines
             call output_slicedata(t,first_time)
             call output_isodata(t,first_time)
             first_time = 0
-        endif
+        end if
 
         ! spreadsheet output
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
@@ -675,7 +675,7 @@ module solve_routines
             itmstp = tspread
             tspread =tspread + dspread
             call output_status (t, dt)
-        endif
+        end if
 
         ! diagnostic output
         if (t+0.0001_eb>tpaws) then
@@ -684,7 +684,7 @@ module solve_routines
             call output_debug (1,t,dt,ieqmax)
             tpaws = tstop + 1.0_eb
             call output_status (t, dt)
-        endif
+        end if
 
         ! find the interval next discontinuity is in
         idisc = 0
@@ -692,7 +692,7 @@ module solve_routines
             if(t>=zzdisc(i-1).and.t<zzdisc(i))then
                 idisc = i
                 exit
-            endif
+            end if
         end do
         tout = min(tprint, tsmv, tspread, tpaws, tstop)
 
@@ -703,8 +703,8 @@ module solve_routines
             info(4) = 1
         else
             info(4) = 0
-        endif
-    endif
+        end if
+    end if
 
     if (t<tstop) then
         idset = 0
@@ -732,7 +732,7 @@ module solve_routines
             write (logerr,'(a,i0)') '***Error, dassl - idid = ', idid
             call cfastexit ('CFAST', idid)
             stop
-        endif
+        end if
 
         dt = t - told
         if(izdtflag)then
@@ -744,12 +744,12 @@ module solve_routines
                         '***Error: Consecutive time steps with size below ', izdtmax, zzdtcrit, ' at t = ', t
                     call cfastexit ('CFAST',1)
                     stop
-                endif
+                end if
             else
                 ! this time step is above the critical size so reset counter
                 izdtnum = 0
-            endif
-        endif
+            end if
+        end if
 
         ipar(2) = all
         call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
@@ -774,10 +774,10 @@ module solve_routines
                 td = tobj
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
                 idset = 0
-            endif
+            end if
         else
             call update_detectors (update_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
-        endif
+        end if
 
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
@@ -794,10 +794,10 @@ module solve_routines
                 objset(ifobj) = 0
                 call set_info_flags(info,rwork)
                 ifobj = 0
-            endif
+            end if
         else
             call update_fire_objects (update_detector_state,told,dt,ifobj,tobj)
-        endif
+        end if
 
         if (idsave/=0)then
 
@@ -822,7 +822,7 @@ module solve_routines
                     write(logerr,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     call cfastexit ('CFAST', idid)
                     stop
-                endif
+                end if
 
                 ! reset dassl flags to integrate forward from t=td and
                 ! call calculate_residuals to get product info at sprinkler activation time
@@ -845,11 +845,11 @@ module solve_routines
                     t,' Last time = ',told,' need to back step to ',td
                 call cfastexit ('CFAST', idid)
                 stop
-            endif
+            end if
             do  i = 1, mxfires
                 objset(i) = 0
             end do
-        endif
+        end if
 
         ! calculate the mass of objects that have been pyrolized
         ! at the moment we do only the total and the radiological species
@@ -866,9 +866,9 @@ module solve_routines
             call deleteoutputfiles (stopfile)
             write (logerr,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
             call cfastexit ('CFAST', 0)
-        endif
+        end if
         go to 10
-    endif
+    end if
     
     return
 
@@ -946,7 +946,7 @@ module solve_routines
                         write (*,*)
                     else
                         option(fdebug) = on
-                    endif
+                    end if
                 else if (ch==62) then
                     call output_debug(1,t,dt,ieqmax)
                 else if (ch==63) then
@@ -963,13 +963,13 @@ module solve_routines
                         write (*,*) 'dassl debug is now off'
                     else
                         option(fpdassl) = on
-                    endif
-                endif
+                    end if
+                end if
             else
                 write (*,5010) t, dt
-            endif
-        endif
-    endif
+            end if
+        end if
+    end if
 
     return
 5010 format (' time = ',1pg12.4,', dt = ',1pg12.4)
@@ -1001,7 +1001,7 @@ module solve_routines
         output_interactive_help = .false.
         write (iofilo,*) 'continuing'
         write (iofilo,*)
-    endif
+    end if
     return
     
     end function output_interactive_help
@@ -1024,13 +1024,13 @@ module solve_routines
     else
         info(7) = 1
         rwork(2) = stpmax
-    endif
+    end if
     if (dasslfts<0.0_eb) then
         info(8) = 0
     else
         info(8) = 1
         rwork(3) = dasslfts
-    endif
+    end if
 
     ! setting jacobian flag
     info(5) = 0
@@ -1145,7 +1145,7 @@ module solve_routines
             prnslab = .false.
         end if
         dbtime = tsec
-    endif
+    end if
 
     epsp = rpar(1)
 
@@ -1173,7 +1173,7 @@ module solve_routines
         do i = 1, nm1
             qf(i) = qf(i) + flwdjf(i,q,ll) + flwdjf(i,q,uu)
         end do
-    endif
+    end if
 
     ! sum flow for inside rooms
     do iroom = 1, nm1
@@ -1190,21 +1190,21 @@ module solve_routines
                 flwtot(iroom,iprod,ll) = flwtot(iroom,iprod,ll) + flwhvnt(iroom,ip,ll)
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwhvnt(iroom,ip,uu)
             end do
-        endif
+        end if
         if(hvacflg)then
             do iprod = 1, nprod + 2
                 ip = izpmap(iprod)
                 flwtot(iroom,iprod,ll) = flwtot(iroom,iprod,ll) + flwmv(iroom,ip,ll) - filtered(iroom,iprod,ll)
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwmv(iroom,ip,uu) - filtered(iroom,iprod,uu)
             end do
-        endif
+        end if
         if(djetflg)then
             do iprod = 1, nprod + 2
                 ip = izpmap(iprod)
                 flwtot(iroom,iprod,ll) = flwtot(iroom,iprod,ll) + flwdjf(iroom,ip,ll)
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwdjf(iroom,ip,uu)
             end do
-        endif
+        end if
         
         flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) + flwrad(iroom,ll)
         flwtot(iroom,q,uu) = flwtot(iroom,q,uu) + flwcv(iroom,uu) + flwrad(iroom,uu)
@@ -1219,7 +1219,7 @@ module solve_routines
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwtot(iroom,iprod,ll)
                 flwtot(iroom,iprod,ll) = 0.0_eb
             end do
-        endif
+        end if
 
         ! calculate temperature of flow going into the upper layer
         ! of each room
@@ -1230,23 +1230,23 @@ module solve_routines
                 zzftemp(iroom,upper) = xqu/(cp*xmu)
             else
                 zzftemp(iroom,upper) = interior_temperature
-            endif
-        endif
+            end if
+        end if
 
     end do
 
     if (update==all) then
         if (residprn) then
             call output_spreadsheet_residuals (tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
-        endif
-    endif
+        end if
+    end if
     ! sum flux for inside rooms
     do iroom = 1, nm1
         roomptr => roominfo(iroom)
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
                 flxtot(iroom,iwall) = flxcv(iroom,iwall) + flxrad(iroom,iwall)
-            endif
+            end if
         end do
     end do
 
@@ -1254,7 +1254,7 @@ module solve_routines
     if (ipar(2)==some) then
         nprodsv = nprod
         nprod = 0
-    endif
+    end if
 
     ! calculate rhs of ode's for each room
     do iroom = 1, nm1
@@ -1271,33 +1271,33 @@ module solve_routines
         if(option(foxygen)==on)then
             oxydu = flwtot(iroom,4,uu)
             oxydl = flwtot(iroom,4,ll)
-        endif
+        end if
 
         ! pressure equation
         if(roomptr%deadroom.eq.0)then
             pdot = (gamma-1.0_eb)*(ql + qu)/(aroom*hceil)
         else
             pdot = 0.0_eb
-        endif
+        end if
 
         ! upper layer temperature equation
         tlaydu = (qu-cp*tmu*zztemp(iroom,uu))/(cp*zzmass(iroom,uu))
         if (option(fode)==on) then
             tlaydu = tlaydu + pdot/(cp*zzrho(iroom,uu))
-        endif
+        end if
 
         ! upper layer volume equation
         vlayd = (gamma-1.0_eb)*qu/(gamma*pabs)
         if (option(fode)==on) then
             vlayd = vlayd - zzvol(iroom,uu)*pdot/(gamma*pabs)
-        endif
+        end if
         if(roomptr%shaft) vlayd = 0.0_eb
 
         ! lower layer temperature equation
         tlaydl = (ql-cp*tml*zztemp(iroom,ll))/(cp*zzmass(iroom,ll))
         if (option(fode)==on) then
             tlaydl = tlaydl + pdot/(cp*zzrho(iroom,ll))
-        endif
+        end if
 
         xprime(iroom) = pdot
         xprime(iroom+noftl) = tlaydl
@@ -1307,7 +1307,7 @@ module solve_routines
         if(option(foxygen)==on)then
             xprime(iroom+nofoxyu) = oxydu
             xprime(iroom+nofoxyl) = oxydl
-        endif
+        end if
     end do
 
     ! compute product of combustion terms
@@ -1332,17 +1332,17 @@ module solve_routines
                     xprime(iprodu) = produ
                 else
                     xprime(iprodu) = 0.0_eb
-                endif
+                end if
                 if (hinter>0.0_eb) then
                     xprime(iprodl) = prodl
                 else if (hinter<=0.0_eb.and.flwtot(iroom,m,ll)>0.0_eb) then
                     xprime(iprodl) = prodl
                 else
                     xprime(iprodl) = 0.0_eb
-                endif
+                end if
             end do
         end do
-    endif
+    end if
 
     ! residuals for pressure
     do i = nofp + 1, nofp + nm1
@@ -1360,7 +1360,7 @@ module solve_routines
             delta(i+nofoxyu) = xprime(i+nofoxyu) - xpsolve(i+nofoxyu)
             delta(i+nofoxyl) = xprime(i+nofoxyl) - xpsolve(i+nofoxyl)
         end do
-    endif
+    end if
 
     ! conduction residual
     call conduction (update,dt,flxtot,delta)
@@ -1377,7 +1377,7 @@ module solve_routines
         do i = nofhvpr+1, nofhvpr+nlspct*nhvsys
             delta(i) = xprime(i) - xpsolve(i)
         end do
-    endif
+    end if
 
     if (ipar(2)==some) nprod = nprodsv
 
@@ -1425,7 +1425,7 @@ module solve_routines
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
         wtemp = wtemp + kelvin_c_offset
         qfurnout=sigma*wtemp**4
-    endif
+    end if
 
     if (iflag==constvar) then
         do iroom = 1, n
@@ -1547,9 +1547,9 @@ module solve_routines
                             ventptr%counter=k
                             ! add face (vface) to the data structure
                             ventptr%face = vface(iijk)
-                        endif
+                        end if
                     end do
-                endif
+                end if
             end do
         end do
 
@@ -1569,7 +1569,7 @@ module solve_routines
                     ventptr => vventinfo(n_vvents)
                     ventptr%top = ivvent(n_vvents,1)
                     ventptr%bottom = ivvent(n_vvents,2)
-                endif
+                end if
             end do
         end do
 
@@ -1641,13 +1641,13 @@ module solve_routines
                         iwfar = 3 - iwall
                     else
                         iwfar = iwall
-                    endif
+                    end if
                     izwall(ii,w_to_wall) = iwfar
                     izwall(ii,w_boundary_condition) = iwbound
 
                 else
                     izwmap2(iwall,iroom) = 0
-                endif
+                end if
             end do
             izwmap(1,iroom) = icol - icnt + 1
             izwmap(2,iroom) = icnt
@@ -1708,7 +1708,7 @@ module solve_routines
             else
                 call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
                 zzhlay(iroom,upper) = roomptr%height - zzhlay(iroom,lower)
-            endif
+            end if
 
             zzrelp(iroom) = pdif(iroom)
             zzpabs(iroom) = pdif(iroom) + pofset
@@ -1718,7 +1718,7 @@ module solve_routines
             else
               zztemp(iroom,upper) = pdif(iroom+noftu)
               zztemp(iroom,lower) = pdif(iroom+noftl)
-            endif
+            end if
 
             ! there is a problem with how flow is being withdrawn from layers
             ! when the layers are small and the flow is large (for example with
@@ -1728,13 +1728,13 @@ module solve_routines
             ! situations.
             if(zztemp(iroom,upper)<0.0_eb)then
                 zztemp(iroom,upper)=zztemp(iroom,lower)
-            endif
+            end if
             if(zztemp(iroom,lower)<0.0_eb)then
                 zztemp(iroom,lower)=zztemp(iroom,upper)
-            endif
+            end if
             if(roomptr%shaft)then
                 zztemp(iroom,lower) = zztemp(iroom,upper)
-            endif
+            end if
 
             ! compute area of 10 wall segments
             xmax = roomptr%width
@@ -1776,7 +1776,7 @@ module solve_routines
                 ptemp = zzrelp(iroom)*(1.0_eb - exp(-abs(zzrelp(iroom)/epscut))) + pofset
             else
                 ptemp = zzpabs(iroom)
-            endif
+            end if
 
             do layer = upper, lower
                 zzrho(iroom,layer) = ptemp/rgas/zztemp(iroom,layer)
@@ -1801,7 +1801,7 @@ module solve_routines
                 targptr%layer = upper
             else
                 targptr%layer = lower
-            endif
+            end if
         end do
 
         ! define surface wall temperatures (interior=1,exterior=2)
@@ -1820,7 +1820,7 @@ module solve_routines
                        zzwtemp(iroom,iwall,1) = wtemp
                     else
                        zzwtemp(iroom,iwall,1) = pdif(iwalleq)
-                    endif
+                    end if
                     iwalleq2 = izwmap2(itow,itor)
                     iinode = numnode(1,iwall,iroom)
                     if(nfurn.gt.0)then
@@ -1830,8 +1830,8 @@ module solve_routines
                            zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
                        else
                            zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
-                       endif
-                    endif
+                       end if
+                    end if
                 else
 
                     ! if we're not solving for the wall temperature then set it
@@ -1842,13 +1842,13 @@ module solve_routines
                         ilay = upper
                     else
                         ilay = lower
-                    endif
+                    end if
                     if(nfurn.gt.0)then
                       zzwtemp(iroom,iwall,1) = wtemp
                     else
                       zzwtemp(iroom,iwall,1) = zztemp(iroom,ilay)
-                    endif
-                endif
+                    end if
+                end if
             end do
         end do
 
@@ -1862,17 +1862,17 @@ module solve_routines
                         ppgas = pold(isof) + dt*pdold(isof)
                     else
                         ppgas = pdif(isof)
-                    endif
+                    end if
                     zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
                     isof = isof + 1
                     if (iflag==odevarb) then
                         ppgas = pold(isof) + dt*pdold(isof)
                     else
                         ppgas = pdif(isof)
-                    endif
+                    end if
                     zzgspec(iroom,lower,lsp) = max(ppgas,0.0_eb)
                 end do
-            endif
+            end if
         end do
 
         ! define species mass fractions: normalize to total product mass 
@@ -1886,7 +1886,7 @@ module solve_routines
                 if (activs(lsp)) then
                     totu = totu + zzgspec(iroom,upper,lsp)
                     totl = totl + zzgspec(iroom,lower,lsp)
-                endif
+                end if
             end do
             rtotl = 1.0_eb
             rtotu = 1.0_eb
@@ -1898,8 +1898,8 @@ module solve_routines
                     zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp)*rtotl
                     if(roomptr%shaft)then
                         zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
-                    endif
-                endif
+                    end if
+                end if
             end do
 
             ! if oxygen is a dassl variable then use dassl solution array to define
@@ -1914,8 +1914,8 @@ module solve_routines
                 zzcspec(iroom,upper,2) = oxyu/zzmass(iroom,upper)
                 if(roomptr%shaft)then
                     zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
-                endif
-            endif
+                end if
+            end if
         end do
     end if
     
@@ -1933,13 +1933,13 @@ module solve_routines
                         pphv = max(0.0_eb,pold(isof)+dt*pdold(isof))
                     else
                         pphv = max(0.0_eb,pdif(isof))
-                    endif
+                    end if
                     zzhvpr(isys,lsp) = pphv
                     zzhvm(isys) = zzhvm(isys) + zzhvpr(isys,lsp)
                 end do
-            endif
+            end if
         end do
-    endif
+    end if
     return
     
     end subroutine update_data
@@ -1973,7 +1973,7 @@ module solve_routines
                 factor(iroom,lower) = factor(iroom,lower) + pdif(isof)
                 isof = isof + 1
             end do
-        endif
+        end if
     end do
 
     do iroom = 1, nm1
@@ -1981,12 +1981,12 @@ module solve_routines
             factor(iroom,upper) = zzmass(iroom,upper)/factor(iroom,upper)
         else
             factor(iroom,upper) = 1.0_eb
-        endif
+        end if
         if (factor(iroom,lower)>0.0_eb.and.zzmass(iroom,lower)>0.0_eb) then
             factor(iroom,lower) = zzmass(iroom,lower)/factor(iroom,lower)
         else
             factor(iroom,lower) = 1.0_eb
-        endif
+        end if
     end do
 
     isof = ibeg
@@ -1998,7 +1998,7 @@ module solve_routines
                 pdif(isof) = pdif(isof)*factor(iroom,lower)
                 isof = isof + 1
             end do
-        endif
+        end if
     end do
 
     return

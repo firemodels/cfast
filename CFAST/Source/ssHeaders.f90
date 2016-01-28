@@ -44,7 +44,7 @@ module spreadsheet_header_routines
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-    endif
+    end if
     position = 1
 
     ! Compartment variables
@@ -63,9 +63,9 @@ module spreadsheet_header_routines
                         headertext(1,position) = Labels(i+1)
                         headertext(2,position) = roomptr%name
                         headertext(3,position) = LabelUnits(i+1)
-                    endif
-                endif
-            endif
+                    end if
+                end if
+            end if
         end do
     end do
 
@@ -79,7 +79,7 @@ module spreadsheet_header_routines
                 headertext(1,position) = trim(LabelsShort(7)) // 'Out'
             else
                 headertext(1,position) = trim(LabelsShort(7)) // trim(cRoom)
-            endif
+            end if
             headertext(2,position) = LabelUnits(7)
             headertext(3,position) = ' '
         else
@@ -90,7 +90,7 @@ module spreadsheet_header_routines
                 headertext(2,position) = roomptr%name
             end if
             headertext(3,position) = LabelUnits(7)
-        endif
+        end if
     end do
 
     ! Fire variables.
@@ -106,7 +106,7 @@ module spreadsheet_header_routines
                 headertext(1,position) = Labels(i+7)
                 headertext(2,position) = objnin(j)
                 headertext(3,position) = LabelUnits(i+7)
-            endif
+            end if
         end do
     end do
 
@@ -152,7 +152,7 @@ module spreadsheet_header_routines
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-    endif
+    end if
     position = 1
 
     ! Species by compartment, then layer, then species type
@@ -174,10 +174,10 @@ module spreadsheet_header_routines
                             headertext(1,position) = Labels((j-1)*11+lsp+1)
                             headertext(2,position) = roomptr%name
                             headertext(3,position) = LabelUnits((j-1)*11+lsp+1)
-                        endif
-                    endif
+                        end if
+                    end if
                 end do
-            endif
+            end if
         end do
     end do
 
@@ -239,7 +239,7 @@ module spreadsheet_header_routines
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-    endif
+    end if
     position = 1
 
     ! Compartment surfaces temperatures
@@ -256,7 +256,7 @@ module spreadsheet_header_routines
                 headertext(1,position) = Labels(j+1)
                 headertext(2,position) = roomptr%name
                 headertext(3,position) = LabelUnits(j+1)
-            endif
+            end if
         end do
     end do
 
@@ -274,7 +274,7 @@ module spreadsheet_header_routines
                 headertext(1,position) = Labels(j+5)
                 headertext(2,position) = 'Target ' // trim(cDet)
                 headertext(3,position) = LabelUnits(j+5)
-            endif
+            end if
         end do
         ! back surface
         if (validate) then
@@ -301,7 +301,7 @@ module spreadsheet_header_routines
             cType = 'Heat'
         else
             cType = 'Other'
-        endif
+        end if
         do j = 1, 4
             position = position + 1
             if (validate) then
@@ -313,7 +313,7 @@ module spreadsheet_header_routines
                 write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
                 headertext(2,position) = cTemp
                 headertext(3,position) = LabelUnits(j+19)
-            endif
+            end if
         end do
     end do
 
@@ -353,7 +353,7 @@ module spreadsheet_header_routines
         headertext(1,1) = Labels(1)
         headertext(2,1) = ' '
         headertext(3,1) = LabelUnits(1)
-    endif
+    end if
     position = 1
 
     !	Do the output by compartments
@@ -389,7 +389,7 @@ module spreadsheet_header_routines
             write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cvent),trim(cito),'>',trim(cifrom)
             headertext(2,position) = ctemp
             headertext(3,position) = labelunits(2)
-        endif
+        end if
     end do
 
     ! Natural flow through horizontal vents (vertical flow)
@@ -423,7 +423,7 @@ module spreadsheet_header_routines
             write (ctemp,'(a,1x,3a)') 'Vent',trim(cito),'>',trim(cifrom)
             headertext(2,position) = cTemp
             headertext(3,position) = LabelUnits(3)
-        endif
+        end if
         
     end do
 
@@ -446,7 +446,7 @@ module spreadsheet_header_routines
                         end if
                     else
                         headertext(1,position) = trim(LabelsShort(ih+3)) // 'Fan_N' // trim(ciTo)
-                    endif
+                    end if
                     headertext(2,position) = LabelUnits(ih+3)
                     headertext(3,position) = ' '
                 else
@@ -455,12 +455,12 @@ module spreadsheet_header_routines
                         headertext(2,position) = 'Vent ' // trim(ciFrom) // '> Node ' // trim(ciTo)
                     else
                         headertext(2,position) = 'Fan at Node ' // trim(ciTo)
-                    endif
+                    end if
                     headertext(3,position) = LabelUnits(ih+3)
-                endif
+                end if
             end do
         end do
-    endif
+    end if
 
     ! write out header
     write(22,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
@@ -512,7 +512,7 @@ module spreadsheet_header_routines
                 headertext(2,position) = trim(LabelsShort(i+1)) //trim(cRoom)
                 call smvDeviceTag(headertext(2,position))
 
-            endif
+            end if
         end do
     end do
 
@@ -633,7 +633,7 @@ module spreadsheet_header_routines
     if(lMode) then
         write(15,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
         write(15,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    endif
+    end if
 
     end subroutine ssHeadersSMV
 
@@ -798,7 +798,7 @@ module spreadsheet_header_routines
         write (string,'(i6)') i
     else
         string = 'error'
-    endif
+    end if
     istring = trim(string)
     return
     end subroutine toIntString

@@ -135,7 +135,7 @@ module fire_routines
                 fopos (j,nobj) = objpos(j,iobj) + ohight
             end do
 
-        endif
+        end if
     end do
 
     return
@@ -251,7 +251,7 @@ module fire_routines
         else
             activated_time = 0
             activated_rate = 0.0
-        endif
+        end if
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
             lower_o2_limit, idset, iquench(iroom), activated_time, activated_rate, stime, qspray(ifire,lower), &
             xqpyrl, xntfl, xmass)
@@ -264,7 +264,7 @@ module fire_routines
             qheatl_c = xqpyrl
             ipass = ipass + 1
             cycle
-        endif
+        end if
         exit
     end do
     xqpyrl = xqpyrl/(1.0_eb-chirad)
@@ -286,7 +286,7 @@ module fire_routines
             xnet = xeme*stmass(lower,lsp)/xtemp
             xntms(upper,lsp) = xntms(upper,lsp) + xnet
             xntms(lower,lsp) = xntms(lower,lsp) - xnet
-        endif
+        end if
     end do
 
     ! add in the fuel. everything else is done by chemistry.
@@ -324,7 +324,7 @@ module fire_routines
         do i = 1, ns
             xntms(upper,i) = xmass(i) + xntms(upper,i)
         end do
-    endif
+    end if
 
     return
     end subroutine do_fire
@@ -403,8 +403,8 @@ module fire_routines
         if (activated_sprinkler/=0) then
             quenching_factor = exp(-(model_time-activated_time)/activated_rate)
             if (hrr_at_activation>0.0_eb) hrr_constrained = min(hrr_constrained,quenching_factor*hrr_at_activation)
-        endif
-    endif
+        end if
+    end if
 
     ! now do the chemistry balance with supplied inputs.  
     nu_soot = molar_mass/0.01201_eb*y_soot
@@ -483,7 +483,7 @@ module fire_routines
         y_co = 0.0_eb
         y_trace = 0.0_eb
         return
-    endif
+    end if
 
     lobjlfm = objlfm(objn)
     xxtime = time - objcri(1,objn)
@@ -514,8 +514,8 @@ module fire_routines
             ifact = 0
         else
             xxtime = xxtimef
-        endif
-    endif
+        end if
+    end if
 
     call interp(otime(1,objn),omass(1,objn),lobjlfm,xxtime,1,omasst)
     call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,oqdott)
@@ -536,14 +536,14 @@ module fire_routines
     if(id/=0.and.ifact==1)then
         omasst = omasst*tfact
         oqdott = oqdott*tfact
-    endif
+    end if
     
     tfilter_max=1.0_eb
     if(adiabatic_wall.and.time<tfilter_max)then
         factor = time/tfilter_max
         omasst = omasst*factor
         oqdott = oqdott*factor
-    endif
+    end if
 
     return
     end subroutine interpolate_pyrolysis
@@ -617,7 +617,7 @@ module fire_routines
     else
         ems = emp
         eme = 0.0_eb
-    endif
+    end if
 
     end subroutine heskestad_plume
 
@@ -663,7 +663,7 @@ module fire_routines
                 tracet(lower,ii)  = tracet(lower,ii) + hveflo(lower,ii)*hvexcn(ii,11,lower)*filter*deltt
                 traces(upper,ii)  = traces(upper,ii) + hveflo(upper,ii)*hvexcn(ii,11,upper)*(1.0_eb-filter)*deltt
                 traces(lower,ii)  = traces(lower,ii) + hveflo(lower,ii)*hvexcn(ii,11,lower)*(1.0_eb-filter)*deltt
-            endif 
+            end if 
         end do
     end do
 
@@ -714,8 +714,8 @@ module fire_routines
             if(vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb)then
                 djetflg = .true.
                 exit
-            endif
-        endif
+            end if
+        end if
 
         !is there a door jet fire into room iroom2
         iroom2 = ventptr%to
@@ -724,8 +724,8 @@ module fire_routines
             if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
                 djetflg = .true.
                 exit
-            endif
-        endif
+            end if
+        end if
     end do
 
     if(.not.djetflg)return
@@ -752,13 +752,13 @@ module fire_routines
                     do lsp = 1, ns
                         flwdjf(iroom1,lsp+2,upper) = flwdjf(iroom1,lsp+2,upper) + xntms1(upper,lsp)
                     end do
-                endif
+                end if
                 if(dj2flag)then
                     flwdjf(iroom2,q,upper) = flwdjf(iroom2,q,upper) + qpyrol2
                     do lsp = 1, ns
                         flwdjf(iroom2,lsp+2,upper) = flwdjf(iroom2,lsp+2,upper) + xntms2(upper,lsp)
                     end do
-                endif
+                end if
         end do
 
     do i = 1, n
@@ -808,7 +808,7 @@ module fire_routines
 
         xntms(upper,1:ns) = xmass(1:ns)
         xntms(lower,1:ns) = 0.0_eb
-    endif
+    end if
     return
     end subroutine door_jet_fire
 
@@ -833,7 +833,7 @@ module fire_routines
         d = pio4*0.2_eb**2
     else
         d = sqrt(4.0_eb*area/pi)
-    endif
+    end if
     fheight = -1.02_eb*d + 0.235_eb*(qdot/1.0e3_eb)**0.4_eb
     fheight = max (0.0_eb, fheight)
     return
@@ -868,7 +868,7 @@ module fire_routines
         tg = zztemp(iroom,upper)
     else
         tg = zztemp(iroom,lower)
-    endif
+    end if
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,nfire
@@ -1039,7 +1039,7 @@ module fire_routines
         tplume = tl
     else
         tplume = tu
-    endif
+    end if
     uplume = 0.0_eb
 
     ! for the algorithm to work, there has to be a fire, two layers, and a target point above the fire
@@ -1088,7 +1088,7 @@ module fire_routines
             sigma_u = 1.1_eb*sigma_deltat
             uplume = uplume*exp(-(r/sigma_u)**2)
         end if
-    endif
+    end if
     return
     end subroutine get_plume_tempandvelocity
 
@@ -1129,7 +1129,7 @@ module fire_routines
                 do k = upper, lower
                     ppmdv(k,i,lsp) = zzgspec(i,k,lsp)/v(k)
                 end do
-            endif
+            end if
         end do
 
         ! calculate the molar density in percent
@@ -1138,7 +1138,7 @@ module fire_routines
                 do k = upper, lower
                     toxict(i,k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
                 end do
-            endif
+            end if
         end do
 
         ! opacity is calculated from seder's work
@@ -1150,7 +1150,7 @@ module fire_routines
             do k = upper, lower
                 toxict(i,k,lsp) = ppmdv(k,i,lsp)*3778.0_eb
             end do
-        endif
+        end if
 
         ! ct is the integration of the total "junk" being transported
         lsp = 10
@@ -1158,7 +1158,7 @@ module fire_routines
             do k = upper, lower
                 toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp)*1000.0_eb*deltt/60.0_eb
             end do
-        endif
+        end if
 
         ! ts (trace species) is the filtered concentration - this is the total mass. 
         ! it is converted to fraction of the total generated by all fires.
@@ -1168,7 +1168,7 @@ module fire_routines
             do k = upper, lower
                 toxict(i,k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
             end do
-        endif
+        end if
 
     end do
 
@@ -1246,7 +1246,7 @@ module fire_routines
                 else
                     tmpob(1,iobj) = 0.0_eb
                     tmpob(2,iobj) = tnobj + dt
-                endif
+                end if
             else if (ignflg==2) then
                 targptr => targetinfo(itarg)
                 call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),objcri(3,iobj),obcond(igntemp,iobj),&
@@ -1258,8 +1258,8 @@ module fire_routines
             else
                 call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
                 stop
-            endif
-        endif
+            end if
+        end if
     end do
 
     if (iflag/=check_detector_state) then
@@ -1278,13 +1278,13 @@ module fire_routines
                             objset(iobj) = 1
                         else
                             objset(iobj) = 0
-                        endif
+                        end if
                         objcri(1,iobj) = tmpob(2,iobj)
-                    endif
-                endif
-            endif
+                    end if
+                end if
+            end if
         end do
-    endif
+    end if
 
     return
     end subroutine update_fire_objects
@@ -1311,7 +1311,7 @@ module fire_routines
     else
         tmpob(1) = 0.0_eb
         tmpob(2) = told + 2.0_eb*dt
-    endif
+    end if
 
     return
 

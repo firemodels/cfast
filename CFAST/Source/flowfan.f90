@@ -105,7 +105,7 @@ module mflow_routines
             if (activs(k)) then
                 flwmv(i,2+k,lower) = flwmv(i,2+k,lower) + hvexcn(ii,k,lower)*hveflo(lower,ii)
                 flwmv(i,2+k,upper) = flwmv(i,2+k,upper) + hvexcn(ii,k,upper)*hveflo(upper,ii)
-            endif
+            end if
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling
@@ -162,7 +162,7 @@ module mflow_routines
             if (ce(ib)/=0.0_eb) then
                 xtemp = 1.0_eb/sqrt(abs(ce(ib)))
                 ce (ib) = sign(xtemp, ce(ib))
-            endif
+            end if
         end do
 
         ! calculate hydrostatic pressure difference terms
@@ -194,8 +194,8 @@ module mflow_routines
                         ! flow is at fan exit
                         dp = -dp
                         hvflow(i,j) = hvfan(tsec,i,j,k,dp)
-                    endif
-                endif
+                    end if
+                end if
                 f = f + hvflow(i,j)
                 ii = izhvie(mvintnode(i,j))
                 if(ii/=0)hvflow(mvintnode(i,j),1) = -hvflow(i,j)
@@ -241,7 +241,7 @@ module mflow_routines
                 ib = icmv(i,j)
                 hvtemp = hvflow(i,j)
                 hvta = hvta + hvtemp*tbr(ib)
-            endif
+            end if
         end do
         if (flowin>0.0_eb) then
             hvta = hvta/flowin
@@ -253,9 +253,9 @@ module mflow_routines
                 if (hvnode(2,ii)==i) then
                     hvta = hvextt(ii,upper)
                     exit
-                endif
+                end if
             end do
-        endif
+        end if
 
         ! now calculate the resulting temperature and concentrations in the ducts and fans
         do j = 1, ncnode(i)
@@ -264,8 +264,8 @@ module mflow_routines
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*abs(hvflow(i,j))
                 if(option(fhvloss)==on)then
                     delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
-                endif
-            endif
+                end if
+            end if
             ii = izhvie(mvintnode(i,j))
             if(ii/=0.and.hvflow(i,j)>0.0_eb) then
                 ib = icmv(i,j)
@@ -273,8 +273,8 @@ module mflow_routines
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*hvflow(i,j)
                 if(option(fhvloss)==on)then
                     delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
-                endif
-            endif
+                end if
+            end if
         end do
     end do
     return
@@ -311,7 +311,7 @@ module mflow_routines
     if (firstc) then
         minimumopen = sqrt(d1mach(1))
         firstc = .false.
-    endif
+    end if
 
     ! the hyperbolic tangent allows for smooth transition from full flow to no flow within the fan cuttoff pressure range
     f = 0.5_eb - tanh(8.0_eb/(hmax(k)-hmin(k))*(dp-hmin(k))-4.0_eb)/2.0_eb
@@ -353,7 +353,7 @@ module mflow_routines
             xxlower = sqrt(arext(ii))
         else
             xxlower = sqrt(arext(ii))/10.0_eb
-        endif
+        end if
 
         ! then the bottom of the vent (above the floor)
         roomptr => roominfo(i)
@@ -382,7 +382,7 @@ module mflow_routines
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
             hvp(j) =  exterior_abs_pressure - exterior_density*grav_con*hvelxt(ii)
-        endif
+        end if
         do lsp = 1, ns
             if (activs(lsp)) then
                 if (i<n) then
@@ -392,8 +392,8 @@ module mflow_routines
                     xxrho = o2n2(lsp)*exterior_density
                     hvexcn(ii,lsp,upper) = xxrho
                     hvexcn(ii,lsp,lower) = xxrho
-                endif
-            endif
+                end if
+            end if
         end do
     end do
     do i = 1, nhvpvar
@@ -432,11 +432,11 @@ module mflow_routines
     nhvpr = nlspct*nhvsys
     if(nprod/=0)then
         prprime(1:nhvpr) = 0.0_eb
-    endif
+    end if
     if(ns>0)then
         hvmfsys(1:nhvsys) = 0.0_eb
         dhvprsys(1:nhvsys,1:ns) = 0.0_eb
-    endif
+    end if
 
     ! flow into the isys system
     do ii = 1, next
@@ -452,8 +452,8 @@ module mflow_routines
                     if (activs(k)) dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(upper,ii))*hvexcn(ii,k,upper) + &
                                                       abs(hveflo(lower,ii))*hvexcn(ii,k,lower)
                 end do
-            endif
-        endif
+            end if
+        end if
     end do
 
     ! flow out of the isys system
@@ -463,9 +463,9 @@ module mflow_routines
                 do isys = 1, nhvsys
                     if (zzhvm(isys)/=0.0_eb)then
                         dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
-                    endif
+                    end if
                 end do
-            endif
+            end if
         end do
 
         ! do a special case for the non-reacting gas(es)
@@ -474,9 +474,9 @@ module mflow_routines
             do isys = 1, nhvsys
                 if (zzhvm(isys)/=0.0_eb)then
                     dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
-                endif
+                end if
             end do
-        endif
+        end if
 
         ! pack the species change for dassl (actually calculate_residuals)
         isof = 0
@@ -488,9 +488,9 @@ module mflow_routines
                         prprime(isof) = dhvprsys(isys,k)
                     else
                         prprime(isof) = 0.0_eb
-                    endif
+                    end if
                 end do
-            endif
+            end if
         end do
         ! do a special case for the non-reacting gas(es)
         k = 11
@@ -501,10 +501,10 @@ module mflow_routines
                     prprime(isof) = dhvprsys(isys,k)
                 else
                     prprime(isof) = 0.0_eb
-                endif
+                end if
             end do
-        endif
-    endif           
+        end if
+    end if           
 
     ! define flows or temperature leaving system
     do ii = 1, next
@@ -529,10 +529,10 @@ module mflow_routines
                     else
                         hvexcn(ii,k,upper) = 0.0_eb
                         hvexcn(ii,k,lower) = 0.0_eb
-                    endif
-                endif
+                    end if
+                end if
             end do
-        endif
+        end if
     end do
     return
     end subroutine hvtoex

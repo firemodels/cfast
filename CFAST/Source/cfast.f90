@@ -49,7 +49,7 @@
     if(command_argument_count().eq.0)then
         call output_version(0)
         stop
-    endif
+    end if
 
     !     initialize the basic memory configuration
 
@@ -127,7 +127,7 @@
         write(logerr, '(''Normal exit from '',a)') trim(name)
     else
         write(logerr,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
-    endif
+    end if
     
     close (unit=4, status='delete')
     call deleteoutputfiles (stopfile)

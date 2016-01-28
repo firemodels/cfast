@@ -54,7 +54,7 @@ module spreadsheet_routines
     if (firstc) then
         call ssHeadersNormal
         firstc = .false.
-    endif
+    end if
 
     position = 0
     call ssaddtolist (position,time,outarray)
@@ -66,7 +66,7 @@ module spreadsheet_routines
         if (.not.roomptr%shaft) then
             call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call ssaddtolist (position,zzhlay(i,lower),outarray)
-        endif
+        end if
         call ssaddtolist (position,zzvol(i,upper),outarray)
         call ssaddtolist (position,zzrelp(i) - interior_rel_pressure(i) ,outarray)
     end do
@@ -89,7 +89,7 @@ module spreadsheet_routines
             call ssaddtolist (position,objmaspy(i),outarray)
             call ssaddtolist (position,radio(i),outarray)
         end do
-    endif
+    end if
 
     call ssprintresults (21, position, outarray)
 
@@ -178,7 +178,7 @@ module spreadsheet_routines
     if (firstc) then
         call ssheadersflow
         firstc = .false.
-    endif
+    end if
 
     position = 0
 
@@ -240,7 +240,7 @@ module spreadsheet_routines
             call SSaddtolist (position, flow(5), outarray)
             call SSaddtolist (position, flow(6), outarray)
         end do
-    endif
+    end if
 
     call ssprintresults(22, position, outarray)
     return
@@ -277,7 +277,7 @@ module spreadsheet_routines
     if (firstc) then
         call ssHeadersFlux
         firstc = .false.
-    endif
+    end if
 
     position = 0
 
@@ -305,7 +305,7 @@ module spreadsheet_routines
             tttemp = targptr%temperature(idx_tempf_trg)
             itctemp = (idx_tempf_trg+idx_tempb_trg)/2
             tctemp = targptr%temperature(itctemp)
-        endif
+        end if
             
         call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
@@ -349,7 +349,7 @@ module spreadsheet_routines
             tlay = zztemp(iroom,upper)
         else
             tlay = zztemp(iroom,lower)
-        endif
+        end if
         xact = ixdtect(i,dact)
         tjet = max(xdtect(i,dtjet),tlay)
         vel = max(xdtect(i,dvel),cjetmin)
@@ -398,7 +398,7 @@ module spreadsheet_routines
     if (firstc) then
         call ssHeadersSpecies
         firstc = .false.
-    endif
+    end if
 
     ! From now on, just the data, please
     position = 0
@@ -417,8 +417,8 @@ module spreadsheet_routines
                         call SSaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90
-                    endif
-                endif
+                    end if
+                end if
             end do
         end do
     end do
@@ -460,7 +460,7 @@ module spreadsheet_routines
     if (firstc) then
         call ssHeadersSMV(.true.)
         firstc = .false.
-    endif
+    end if
 
     position = 0
     call SSaddtolist (position,time,outarray)
@@ -472,7 +472,7 @@ module spreadsheet_routines
         if (.not.roomptr%shaft) then
             call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call SSaddtolist(position,zzhlay(i,lower),outarray)
-        endif
+        end if
         call SSaddtolist(position,zzrelp(i),outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)
         if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,lower),outarray)
@@ -489,7 +489,7 @@ module spreadsheet_routines
             call SSaddtolist (position,fopos(3,i),outarray)
             call SSaddtolist (position,farea(i),outarray)          
         end do
-    endif
+    end if
 
     ! horizontal vents
     do i = 1, n_hvents
@@ -603,7 +603,7 @@ module spreadsheet_routines
     if (firstc) then
         call ssHeadersResid
         firstc = .false.
-    endif
+    end if
 
     position = 0
     call SSaddtolist (position,time,outarray)

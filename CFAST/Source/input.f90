@@ -66,7 +66,7 @@ module input_routines
             write (*,5050) mod(ios,256)
         end if
         stop
-    endif
+    end if
 
     ! read in the entire input file as a spreadsheet array of numbers and/or character strings
     call readcsvformat (iofili, rarray, carray, nrow, ncol, 1, numr, numc, logerr)
@@ -82,14 +82,14 @@ module input_routines
         iversion = version/1000
     else
         iversion = version/100
-    endif
+    end if
     
     if (aversion==heading.and.ivers==iversion-1) then
         write (logerr,5004) ivers, iversion
     elseif (aversion/=heading.or.ivers/=iversion) then
         write (logerr,5002) aversion,heading,ivers,iversion
         stop
-    endif
+    end if
     title = carray(1,3)
 
     do i = 1, nr
@@ -105,11 +105,11 @@ module input_routines
     if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
         write(logerr,5022) exterior_temperature
         stop
-    endif
+    end if
     if (interior_temperature>373.15_eb.or.interior_temperature<223.15_eb) then
         write(logerr,5022) interior_temperature
         stop
-    endif
+    end if
     
     ! Compartment geometry related data 
     nm1 = n - 1
@@ -138,7 +138,7 @@ module input_routines
         if ((heatfp(1)<0.0_eb).or.(heatfp(1)>roomptr%width)) heatfp(1) = roomptr%width/2.0_eb
         if ((heatfp(2)<0.0_eb).or.(heatfp(2)>roomptr%depth)) heatfp(2) = roomptr%depth/2.0_eb
         if ((heatfp(3)<0.0_eb).or.(heatfp(3)>roomptr%height)) heatfp(3) = 0.0_eb
-    endif
+    end if
 
     ! check and/or set position of fire objects
     do i = 1, numobjl
@@ -155,7 +155,7 @@ module input_routines
         if (ivvent_connections(itop,itop)/=0) then
             write (logerr,*) '***Error: A room can not be connected to itself with a vertical vent'
             stop
-        endif
+        end if
         do ibot = 1, itop - 1
             if (ivvent_connections(itop,ibot)/=0.or.ivvent_connections(ibot,itop)/=0) then
 
@@ -167,28 +167,28 @@ module input_routines
                         if (ivvent_connections(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
                             if (ivvent_connections(ibot,itop)/=0) then
                                 write (logerr,*) '***Error: Vertical vent ', ibot, itop, ' is being redefined'
-                            endif
+                            end if
                             ivvent_connections(itop,ibot) = 0
                             ivvent_connections(ibot,itop) = 1
                             vvarea(ibot,itop) = vvarea(itop,ibot)
                             vshape(ibot,itop) = vshape(itop,ibot)
                             cycle
-                        endif
+                        end if
                         if (ivvent_connections(ibot,itop)==1.and.abs(deps1)<mx_vsep) then
                             if (ivvent_connections(itop,ibot)/=0) then
                                 write (logerr,*) '***Error: Vertical vent ', itop, ibot, ' is being redefined'
-                            endif
+                            end if
                             ivvent_connections(itop,ibot) = 1
                             ivvent_connections(ibot,itop) = 0
                             vvarea(itop,ibot) = vvarea(ibot,itop)
                             vshape(itop,ibot) = vshape(ibot,itop)
                             cycle
-                        endif
+                        end if
                         ivvent_connections(itop,ibot) = 0
                         ivvent_connections(ibot,itop) = 0
-                    endif
-                endif
-            endif
+                    end if
+                end if
+            end if
         end do
     end do
 
@@ -212,7 +212,7 @@ module input_routines
             write (logerr,201) iroom1, iroom2 
 201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
             stop
-        endif
+        end if
 
         ! if room is connected to the outside then ignore it
         if(iroom1==nm1+1.or.iroom2==nm1+1)then
@@ -225,8 +225,8 @@ module input_routines
                 izswal(ii,w_from_wall) = izswal(i,w_from_wall)
                 izswal(ii,w_to_room) = izswal(i,w_to_room)
                 izswal(ii,w_to_wall) = izswal(i,w_to_wall)
-            endif
-        endif
+            end if
+        end if
 
         ! floor of one room must be adjacent to ceiling of the other
         dwall1 = abs(roominfo(iroom1)%z0 - roominfo(iroom2)%z1)
@@ -238,12 +238,12 @@ module input_routines
             else
                 izswal(ii,w_from_wall) = 1
                 izswal(ii,w_to_wall) = 2
-            endif
+            end if
         else
             write (logerr,202) iroom1, iroom2 
 202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',i0,'-',i0,' are not connectetd')
             stop
-        endif
+        end if
 
         ! walls must be turned on, ie surface_on must be set
         ! for the ceiling in the lower room and the floor of the upper room
@@ -255,9 +255,9 @@ module input_routines
 204             format('***Error: Invalid CFCON specification. Wall ',i0,' of room ',i0,' is adiabatic')
             else
                 write(logerr,204)iwall2, iroom2
-            endif
+            end if
             stop
-        endif
+        end if
     end do
     nswal = nswall2
 
@@ -267,7 +267,7 @@ module input_routines
         if(roomptr%shaft)then
             write (logerr,'(a,i0,a,i0)') '***Error: Invalid SHAFT specification. Room',iroom,'must be less than or equal to ',nm1
             stop
-        endif
+        end if
     end do
 
     ! check variable cross-sectional area specs and convert to volume
@@ -283,7 +283,7 @@ module input_routines
                 ioff = 1
             else
                 ioff = 0
-            endif
+            end if
 
             ! copy data to temporary arrays
             do j = 1, npts
@@ -298,7 +298,7 @@ module input_routines
                 temphgt(npts+ioff+ioff2) = roomptr%height
             else
                 ioff2 = 0
-            endif
+            end if
 
             npts = npts + ioff + ioff2
             izrvol(i) = npts
@@ -334,7 +334,7 @@ module input_routines
             xx = roomptr%width/roomptr%depth
             roomptr%width = sqrt(roomptr%area*xx)
             roomptr%depth = sqrt(roomptr%area/xx)
-        endif
+        end if
     end do
 
     ! initialize variables that will change when ambient conditions change
@@ -350,14 +350,14 @@ module input_routines
             write (logerr,104) iroom 
 104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
             stop
-        endif
+        end if
         roomptr => roominfo(iroom)
         rti = xdtect(i,drti)
         if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
             write (logerr,101) rti 
 101         format('***Error: Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
             stop
-        endif
+        end if
         xloc = xdtect(i,dxloc)
         yloc = xdtect(i,dyloc)
         zloc = xdtect(i,dzloc)
@@ -365,13 +365,13 @@ module input_routines
             write(logerr,102) xloc,yloc,zloc
 102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
             stop
-        endif
+        end if
         idtype = ixdtect(i,dtype)
         if(idtype<1.or.idtype>3)then
             write(logerr,103) idtype
 103         format('***Error: Invalid DETECTOR specification - type= ',i2,' is not a valid')
             stop
-        endif
+        end if
     end do
 
     ! check room to room heat transfer 
@@ -388,7 +388,7 @@ module input_routines
         do i = 1, nm1
             izheat(i) = 1
         end do
-    endif
+    end if
 
     do i = 1, nm1
 
@@ -405,7 +405,7 @@ module input_routines
                 ! if the back wall is not active then don't consider its contribution
                 if(j<=nm1.and..not.roomptr%surface_on(3)) zzhtfrac(i,j) = 0.0_eb
             end do
-        endif
+        end if
 
         ! normalize zzhtfrac fraction matrix so that rows sum to one
         if(izheat(i)/=0)then
@@ -422,16 +422,16 @@ module input_routines
                 do j = 1, nm1+1
                     zzhtfrac(i,j) = zzhtfrac(i,j)/sum
                 end do
-            endif
+            end if
             jj = 0
             do j = 1, nm1
                 if(zzhtfrac(i,j)/=0.0_eb)then
                     izhtfrac(i,0) = izhtfrac(i,0) + 1
                     jj = jj + 1
                     izhtfrac(i,jj) = j
-                endif
+                end if
             end do
-        endif
+        end if
     end do
     
     ! set up any specified slice or iso files
@@ -518,7 +518,7 @@ module input_routines
                     write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
                         mxthrmp
                     stop
-                endif
+                end if
                 nlist(maxct) = lcarray(1)
                 lnslb(maxct) = 1
                 lfkw(1,maxct) = lrarray(2)
@@ -529,8 +529,8 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad MATL input. At least 7 arguments required.'
                 stop
-            endif
-        endif
+            end if
+        end if
     end do
     
     ! Then do compartments
@@ -553,7 +553,7 @@ module input_routines
                 if (ncomp>nr) then
                     write (logerr, 5062) ncomp
                     stop
-                endif
+                end if
 
                 roomptr => roominfo(ncomp)
                 ! Name
@@ -574,7 +574,7 @@ module input_routines
                     roomptr%matl(1) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
-                endif
+                end if
 
                 ! floor
                 tcname = lcarray(9)
@@ -583,7 +583,7 @@ module input_routines
                     roomptr%matl(2) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
-                endif
+                end if
 
                 ! walls
                 tcname = lcarray(10)
@@ -594,7 +594,7 @@ module input_routines
                     roomptr%matl(4) = tcname
                     ! keep track of the total number of thermal properties used
                     numthrm = numthrm + 1
-                endif
+                end if
 
                 ! If there are more than 10 arguments, it's the new format that includes grid spacing
                 if (countargs(lcarray)==13) then
@@ -608,8 +608,8 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad COMPA input. At least 10 arguments required.'
                 stop
-            endif
-        endif
+            end if
+        end if
     end do
     
     ! Then do targets
@@ -629,7 +629,7 @@ module input_routines
                 if(ntarg+1>mxtarg)then
                     write(logerr,5002)
                     stop
-                endif
+                end if
 
                 ! The target can exist, now for the compartment
                 ntarg = ntarg + 1
@@ -637,7 +637,7 @@ module input_routines
                 if(iroom<1.or.iroom>n)then
                     write(logerr,5003) iroom
                     stop
-                endif
+                end if
                 targptr => targetinfo(ntarg)
                 targptr%room = iroom
 
@@ -649,7 +649,7 @@ module input_routines
                     targptr%depth_loc = lrarray(11)
                 else
                     targptr%depth_loc = 0.5
-                endif
+                end if
 
                 ! target name
                 if (countargs(lcarray)>=12) then
@@ -679,12 +679,12 @@ module input_routines
                     else
                         write(logerr,913) 'Error',eqtype
                         stop
-                    endif
-                endif
+                    end if
+                end if
             else
                 write (logerr,*) '***Error: Bad TARGE input. At least 10 arguments required.'
                 stop
-            endif
+            end if
         end if
     end do
 
@@ -708,16 +708,16 @@ module input_routines
             if (countargs(lcarray)/=11) then
                 write (logerr,*) '***Error: Bad FIRE input. 11 arguments required.'
                 stop
-            endif
+            end if
             if (numobjl>=mxfires) then
                 write(logerr,5300)
                 stop
-            endif
+            end if
             iroom = lrarray(1)
             if (iroom<1.or.iroom>n-1) then
                 write(logerr,5320)iroom
                 stop
-            endif
+            end if
             obpnt = numobjl + 1
             numobjl = obpnt
             roomptr => roominfo(iroom)
@@ -727,7 +727,7 @@ module input_routines
             if (objtyp(numobjl)>2) then
                 write(logerr,5321) objtyp(numobjl)
                 stop
-            endif
+            end if
 
             objpos(1,obpnt) = lrarray(2)
             objpos(2,obpnt) = lrarray(3)
@@ -735,7 +735,7 @@ module input_routines
             if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
                 write(logerr,5323) obpnt
                 stop
-            endif
+            end if
             obj_fpos(obpnt) = 1
             if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
                 min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
@@ -771,7 +771,7 @@ module input_routines
                 if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
                     write(logerr,5322)
                     stop
-                endif
+                end if
             end if
             objrm(obpnt) = iroom
             objnin(obpnt) = lcarray(11)
@@ -798,21 +798,21 @@ module input_routines
                 else
                     write(logerr,5358) objign(obpnt)
                     stop
-                endif
+                end if
             else
                 objon(obpnt) = .true.
-            endif
+            end if
             if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
                 if (stpmax>0.0_eb) then
                     stpmax = min(stpmax,1.0_eb)
                 else
                     stpmax = 1.0_eb
-                endif
-            endif
+                end if
+            end if
 
             ! read and set the other stuff for this fire
             call inputembeddedfire (objnin(obpnt), ir, inumc, obpnt)
-        endif
+        end if
     end do
 
     ! Then do everything else
@@ -846,7 +846,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad TIMES input. At least 4 arguments required.'
                 stop
-            endif
+            end if
 
             ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
         case ("TAMB")
@@ -861,19 +861,19 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad TAMB input. At least 3 arguments required.'
                 stop
-            endif
+            end if
             if (.not.exset) then
                 exterior_temperature = interior_temperature
                 exterior_abs_pressure = interior_abs_pressure
                 exterior_density = interior_density
-            endif
+            end if
 
             ! EAMB reference external ambient temperature (c), reference external ambient pressure
         case ("EAMB")
             if (countargs(lcarray)/=3) then
                 write (logerr,*) '***Error: Bad EAMB input. 3 arguments required.'
                 stop
-            endif
+            end if
             exterior_temperature = lrarray(1)
             exterior_abs_pressure = lrarray(2)
             exset = .true.
@@ -885,7 +885,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad THRMF input. 1 argument required.'
                 stop
-            endif
+            end if
 
             ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
             !		    bw = width, hh = soffit, hl = sill,
@@ -907,16 +907,16 @@ module input_routines
                 if (imin>nr-1.or.jmax>nr.or.imin==jmax) then
                     write (logerr,5070) i, j
                     stop
-                endif
+                end if
                 if (k>mxccv) then
                     write (logerr,5080) i, j, k, ihvent_connections(i,j)
                     stop
-                endif
+                end if
                 nventijk = nventijk + 1
                 if (nventijk>mxhvents) then
                     write(logerr,5081) i,j,k
                     stop
-                endif
+                end if
                 ijk(i,j,k) = nventijk
                 ijk(j,i,k) = ijk(i,j,k)
                 iijk = ijk(i,j,k)
@@ -926,7 +926,7 @@ module input_routines
                 bw(iijk) = lrarray(4)
                 hh(iijk) = lrarray(5)
                 hl(iijk) = lrarray(6)
-            endif
+            end if
             if (countargs(lcarray)>=11) then
                 ventoffset(iijk,1) = lrarray(8)
                 ventoffset(iijk,2) = lrarray(9)
@@ -973,7 +973,7 @@ module input_routines
             if (i.ge.1.and.i.le.nr.and.j.le.1.and.j.le.nr.and.i.ne.j) then
                 roomptr => roominfo(i)
                 roomptr%deadroom = j
-            endif
+            end if
 
             ! EVENT keyword, the four possible formats are:
             ! EVENT   H     First_Compartment   Second_Compartment	 Vent_Number    Time   Final_Fraction   decay_time
@@ -988,7 +988,7 @@ module input_routines
                 if(lrarray(6)<0.0_eb.or.lrarray(6)>1.0_eb) then
                     write(3,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
                     stop
-                endif
+                end if
 
                 select case (venttype)
                 case ('H')
@@ -1019,7 +1019,7 @@ module input_routines
                     if (fannumber>nfan) then
                         write(logerr,5196) fannumber
                         stop
-                    endif
+                    end if
                     nfilter = nfilter + 1
                     qcvf(1,fannumber) = lrarray(5)
                     qcvf(3,fannumber) = lrarray(5) + lrarray(7)
@@ -1031,7 +1031,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad EVENT input. At least 7 arguments required.'
                 stop
-            endif
+            end if
 
             ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
         case ('RAMP')
@@ -1068,7 +1068,7 @@ module input_routines
                 if (i>nr.or.j>nr) then
                     write (logerr,5070) i, j
                     stop
-                endif
+                end if
 
                 ! read_input_file will verify the orientation (i is on top of j)
                 ivvent_connections(i,j) = 1
@@ -1078,7 +1078,7 @@ module input_routines
                     vshape(i,j) = 1
                 else
                     vshape(i,j) = lrarray(4)
-                endif
+                end if
                 qcvpp(2,i,j) = lrarray(5)
                 qcvpp(2,j,i) = lrarray(5)
                 qcvpp(4,i,j) = lrarray(5)
@@ -1086,7 +1086,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 stop
-            endif
+            end if
 
             ! MVENT - simplified mechanical ventilation
 
@@ -1099,14 +1099,14 @@ module input_routines
             if (countargs(lcarray)/=13) then
                 write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'
                 stop
-            endif
+            end if
             mid = lrarray(3)
             iecfrom = lrarray(1)
             iecto = lrarray(2)
             if (iecfrom>n.or.iecto>n) then
                 write(logerr,5191) iecfrom, iecto
                 stop
-            endif
+            end if
 
             orientypefrom = lcarray(4)
             heightfrom = lrarray(5)
@@ -1125,12 +1125,12 @@ module input_routines
             if (next>mxext.or.nnode>mxnode) then
                 write (logerr,5192) next,nnode
                 stop
-            endif
+            end if
             if (orientypefrom=='V') then
                 hvorien(next) = 1
             else
                 hvorien(next) = 2
-            endif
+            end if
             hvnode(1,next) = iecfrom
             hvnode(2,next) = nnode
             hvelxt(next) = heightfrom
@@ -1142,12 +1142,12 @@ module input_routines
             if (next>mxext.or.nnode>mxnode) then
                 write (logerr,5192) next,nnode
                 stop
-            endif
+            end if
             if (orientypeto=='V') then
                 hvorien(next) = 1
             else
                 hvorien(next) = 2
-            endif
+            end if
             hvnode(1,next) = iecto
             hvnode(2,next) = nnode
             hvelxt(next) = heightto
@@ -1158,19 +1158,19 @@ module input_routines
             if (minpres>maxpres) then
                 write (logerr,5194) minpres,maxpres
                 stop
-            endif
+            end if
 
             nfan = nfan + 1
             if (mid/=nfan) then
                 write(logerr,5193) mid,nfan
                 stop
-            endif
+            end if
 
             nbr = nbr + 1
             if (nfan>mxfan.or.nbr>mxbranch) then
                 write (iofilo,5195) mxfan
                 stop
-            endif
+            end if
 
             nf(nbr) = nfan
             nfc(nfan) = 1
@@ -1203,17 +1203,17 @@ module input_routines
             if (countargs(lcarray)/=11) then
                 write(logerr,5310)
                 stop
-            endif
+            end if
             if (numobjl>=mxfires) then
                 write(logerr,5300)
                 stop
-            endif
+            end if
             tcname = lcarray(1)
             iroom = lrarray(2)
             if (iroom<1.or.iroom>n-1) then
                 write(logerr,5320)iroom
                 stop
-            endif
+            end if
             obpnt = numobjl + 1
             numobjl = obpnt
             roomptr => roominfo(iroom)
@@ -1223,7 +1223,7 @@ module input_routines
             if (objtyp(numobjl)>2) then
                 write(logerr,5321) objtyp(numobjl)
                 stop
-            endif
+            end if
 
             objpos(1,obpnt) = lrarray(3)
             objpos(2,obpnt) = lrarray(4)
@@ -1231,7 +1231,7 @@ module input_routines
             if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
                 write(logerr,5323) obpnt
                 stop
-            endif
+            end if
             obj_fpos(obpnt) = 1
             if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
                 min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
@@ -1247,7 +1247,7 @@ module input_routines
             if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
                 write(logerr,5322)
                 stop
-            endif
+            end if
             objrm(obpnt) = iroom
             objnin(obpnt) = tcname
             objld(obpnt) = .true.
@@ -1274,17 +1274,17 @@ module input_routines
                 else
                     write(logerr,5358) objign(obpnt)
                     stop
-                endif
+                end if
             else
                 objon(obpnt) = .true.
-            endif
+            end if
             if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
                 if (stpmax>0.0_eb) then
                     stpmax = min(stpmax,1.0_eb)
                 else
                     stpmax = 1.0_eb
-                endif
-            endif
+                end if
+            end if
 
             ! STPMAX # - set the maximum time step to #
         case ('STPMA')
@@ -1293,7 +1293,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad STPMA input. At least 1 argument required.'
                 stop
-            endif
+            end if
 
             ! DETECT Type Compartment Activation_Value Width Depth Height RTI Suppression Spray_Density
         case ('DETEC')
@@ -1302,7 +1302,7 @@ module input_routines
                 if (ndtect>mxdtect) then
                     write (logerr, 5338)
                     stop
-                endif
+                end if
 
                 if (lcarray(1)=='SMOKE') then
                     i1 = smoked
@@ -1323,7 +1323,7 @@ module input_routines
                 if(iroom<1.or.iroom>nr)then
                     write (logerr,5342) i2
                     stop
-                endif
+                end if
 
                 xdtect(ndtect,dtrig) = lrarray(3)
                 xdtect(ndtect,dxloc) = lrarray(4)
@@ -1335,36 +1335,36 @@ module input_routines
                 ! if spray density is zero, then turn off the sprinkler
                 if(xdtect(ndtect,dspray)==0.0_eb)then
                     ixdtect(ndtect,dquench) = 0
-                endif
+                end if
                 if(option(fbtdtect)==off.and.ixdtect(ndtect,dquench)>0)then
                     if (stpmax>0) then
                         stpmax = min(stpmax,1.0_eb)
                     else
                         stpmax = 1.0_eb
-                    endif
-                endif
+                    end if
+                end if
                 roomptr => roominfo(ir)
                 if (roomptr%name==' ') then
                     write(logerr,5344) i2
                     stop
-                endif
+                end if
 
                 if (debugging) then
                     write(*,5400) (xdtect(ndtect,i),i=1,dtxcol)
                     write(*,5401) (ixdtect(ndtect,i),i=1,dticol)
                     write(*,*)
-                endif
+                end if
 
                 if(xdtect(ndtect,dxloc)>roomptr%width.or. &
                     xdtect(ndtect,dyloc)>roomptr%depth.or.xdtect(ndtect,dzloc)>roomptr%height) then
                     write(logerr,5339) ndtect,roomptr%name
                     stop
-                endif
+                end if
 
             else
                 write (logerr,*) '***Error: Bad DETEC input. At least 9 arguments required.'
                 stop
-            endif
+            end if
 
             !  VHEAT top_compartment bottom_compartment
         case ('VHEAT')
@@ -1374,7 +1374,7 @@ module input_routines
                 if (i1<1.or.i2<1.or.i1>n.or.i2>n) then
                     write(logerr,5345) i1, i2
                     stop
-                endif
+                end if
 
                 nswal = nswal + 1
                 izswal(nswal,w_from_room) = i1
@@ -1384,7 +1384,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
                 stop
-            endif
+            end if
 
             ! ONEZ compartment number - This turns the compartment into a single zone
         case ('ONEZ')
@@ -1393,13 +1393,13 @@ module input_routines
                 if(iroom<1.or.iroom>n)then
                     write(logerr, 5001) i1
                     stop
-                endif
+                end if
                 roomptr => roominfo(iroom)
                 roomptr%shaft = .true.
             else
                 write (logerr,*) '***Error: Bad ONEZ input. At least 1 compartment must be specified.'
                 stop
-            endif
+            end if
 
             ! HALL Compartment Velocity Depth Decay_Distance
         case ('HALL')
@@ -1410,7 +1410,7 @@ module input_routines
                 if(iroom<0.or.iroom>n)then
                     write(logerr,5346) iroom
                     stop
-                endif
+                end if
 
                 roomptr => roominfo(iroom)
                 roomptr%hall = .true.
@@ -1418,7 +1418,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad HALL input. At least 1 compartment must be specified.'
                 stop
-            endif
+            end if
 
             ! ROOMA Compartment Number_of_Area_Values Area_Values
             ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
@@ -1430,14 +1430,14 @@ module input_routines
                 if(iroom<1.or.iroom>n)then
                     write(logerr,5347) iroom
                     stop
-                endif
+                end if
 
                 ! make sure the number of points is valid
                 npts = lrarray(2)
                 if(npts>mxcross.or.npts<=0.or.npts/=countargs(lcarray)-2) then
                     write (logerr,5347) npts
                     stop
-                endif
+                end if
                 if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
                 izrvol(iroom) = npts
 
@@ -1446,7 +1446,7 @@ module input_routines
                     if(lrarray(i+2)<0.0_eb)then
                         write(logerr,5348) lrarray(i+2)
                         stop
-                    endif
+                    end if
                 end do
 
                 ! put the data in its place
@@ -1456,7 +1456,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad ROOMA input. At least 2 arguments must be specified.'
                 stop
-            endif
+            end if
 
             ! ROOMH Compartment Number_of_Height_Values Height_Values
             ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
@@ -1468,14 +1468,14 @@ module input_routines
                 if(iroom<1.or.iroom>n)then
                     write(logerr,5349) iroom
                     stop
-                endif
+                end if
 
                 ! make sure the number of points is valid
                 npts = lrarray(2)
                 if(npts>mxcross.or.npts<0.or.npts/=countargs(lcarray)-2)then
                     write(logerr,5350) npts
                     stop
-                endif
+                end if
                 if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
                 izrvol(iroom) = npts
 
@@ -1484,7 +1484,7 @@ module input_routines
                     if(lrarray(i+2)<0.0_eb)then
                         write(logerr,5348) lrarray(i+2)
                         stop
-                    endif
+                    end if
                 end do
 
                 ! put the data in its place
@@ -1495,7 +1495,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad ROOMH input. At least 2 arguments must be specified.'
                 stop
-            endif
+            end if
 
             ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
         case ('DTCHE')
@@ -1508,7 +1508,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad DTCHE input. At least 2 arguments must be specified.'
                 stop
-            endif
+            end if
 
             ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts N pairs of {Second_Compartment, Fraction}
 
@@ -1529,10 +1529,10 @@ module input_routines
                     if(nto<1.or.nto>n)then
                         write(logerr,5354) nto
                         stop
-                    endif
+                    end if
                     izheat(ifrom) = 2
                     izheat(ifrom) = 2
-                endif
+                end if
 
                 if (2*nto==(countargs(lcarray)-2)) then
                     do i = 1, nto
@@ -1543,21 +1543,21 @@ module input_routines
                         if(ito<1.or.ito==ifrom.or.ito>n)then
                             write(logerr, 5356) ifrom,ito
                             stop
-                        endif
+                        end if
                         if(frac<0.0_eb.or.frac>1.0_eb)then
                             write(logerr, 5357) ifrom,ito,frac
                             stop
-                        endif
+                        end if
                         zzhtfrac(ifrom,ito) = frac
                     end do
                 else
                     write(logerr,5355) ifrom, nto
                     stop
-                endif
+                end if
             else
                 write (logerr,*) '***Error: Bad HHEAT input. At least 1 arguments must be specified.'
                 stop
-            endif
+            end if
 
             ! FURN - no fire, heat walls according to a prescribed time temperature curve
         case ('FURN')
@@ -1577,7 +1577,7 @@ module input_routines
                 heatfr = lrarray(1)
                 if(heatfr<1.or.heatfr>n-1) then
                     stop
-                endif
+                end if
                 heatfl = .true.
                 heatfp(1) = lrarray(2)
                 heatfp(2) = lrarray(3)
@@ -1585,7 +1585,7 @@ module input_routines
             else
                 write (logerr,*) '***Error: Bad HEATF input. At least 5 arguments must be specified.'
                 stop
-            endif
+            end if
 
             ! SLCF 2-D and 3-D slice files
         case ('SLCF')
@@ -1810,12 +1810,12 @@ module input_routines
                 if (ohcomb<=0.0_eb) then
                     write(logerr,5001) ohcomb
                     stop
-                endif
+                end if
                 omatl(iobj) = lcarray(8)
             else
                 write (logerr,*) '***Error: At least 7 arguments required on CHEMI input'
                 stop
-            endif
+            end if
         case ('TIME')
             nret = countargs(lcarray)
             objlfm(iobj) = nret
@@ -1903,7 +1903,7 @@ module input_routines
     else if (hrrpm3>2.0e6_eb) then
         write (logerr,5107)trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
         write (logerr, 5108)
-    endif
+    end if
 
     return
 5001 format ('***Error: Invalid heat of combustion, must be greater than zero, ',1pg12.3)
@@ -1938,10 +1938,10 @@ module input_routines
             else
                 hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
                 mdot(i) = qdot(i)/hdot(i)
-            endif
+            end if
         else
             hdot(1) = hinitial
-        endif
+        end if
     end do
 
     return
@@ -2085,7 +2085,7 @@ module input_routines
         option(fdebug) = off
     else if (option(fdebug)>=3) then
         option(fdebug) = on
-    endif
+    end if
 
     ! read in wall info
     read (iofili,*)
@@ -2149,7 +2149,7 @@ module input_routines
         xyz(index,opoint) = minimumseparation
     else if (xyz(index,opoint)==pos_max) then
         xyz(index,opoint) = pos_max-minimumseparation
-    endif
+    end if
 
     return
 
@@ -2198,7 +2198,7 @@ module input_routines
         do  i=1,nstart-1
             read (iunit,'(A)') in
         end do 
-    endif
+    end if
 
     ! read the data
     nrcurrent = 0
@@ -2207,7 +2207,7 @@ module input_routines
     ! Skip comments
     if (in(1:1)=='!'.or.in(1:1)=='#') then
         go to 20
-    endif
+    end if
 
     nrcurrent = nrcurrent+1
     maxrow = max(maxrow,nrcurrent)
@@ -2216,7 +2216,7 @@ module input_routines
     if(maxrow>numr) then
         write (logerr,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
         stop
-    endif
+    end if
 
     nc=0
     ic=1
@@ -2226,7 +2226,7 @@ module input_routines
             token=' '
         else
             token=in(ic:icomma-1)
-        endif
+        end if
         ic = icomma+1
         nc = nc + 1
         in(1:ic-1)=' '
@@ -2237,9 +2237,9 @@ module input_routines
         else
             write (logerr,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
             stop
-        endif
+        end if
         go to 30
-    endif
+    end if
     nc = nc + 1
     maxcol=max(maxcol,nc)
     token = in(ic:ic+100)
@@ -2297,12 +2297,12 @@ module input_routines
            ntypes=nrooms
        else
            ntypes=1
-       endif
+       end if
        if(vptr%vtype.eq.1.or.vptr%vtype.eq.2)then
            nsliceinfo = nsliceinfo + ntypes
        else
            nisoinfo = nisoinfo + ntypes
-       endif
+       end if
    end do
    nsliceinfo = 5*nsliceinfo
    allocate(sliceinfo(nsliceinfo))
@@ -2355,7 +2355,7 @@ module input_routines
        else
            ibeg=ir
            iend=ir
-       endif
+       end if
        do iroom=ibeg,iend
            rm=>roominfo(iroom)
            xb(1) = rm%x0
@@ -2394,8 +2394,8 @@ module input_routines
                    ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
                    if(ijkslice(5)<0)skipslice=1
                    ijkslice(6) = ijkslice(5)
-               endif
-           endif
+               end if
+           end if
            do j = 1, 5
                sliceptr => sliceinfo(islice)
 
@@ -2421,7 +2421,7 @@ module input_routines
                    menu_label="Speed"
                    colorbar_label="Speed"
                    unit_label="m/s"
-               endif
+               end if
 
                sliceptr%filename = trim(slicefilename)
                sliceptr%roomnum = iroom
@@ -2448,7 +2448,7 @@ module input_routines
        else
            ibeg=ir
            iend=ir
-       endif
+       end if
        do iroom=ibeg,iend
            rm=>roominfo(iroom)
            isoptr => isoinfo(i_iso)

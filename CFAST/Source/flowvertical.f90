@@ -83,7 +83,7 @@ module vflow_routines
                 ifrm = itop
                 ito = ibot
                 ilay = lower
-            endif
+            end if
 
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nm1) then
@@ -116,7 +116,7 @@ module vflow_routines
                 fromqu = 0.0_eb
                 fromql = cp*fromml*exterior_temperature
                 from_temp = zztemp(ifrm,lower)
-            endif
+            end if
             fromtq = fromqu + fromql
 
             ! extract mass and enthalpy from "from" room (not from outside)
@@ -125,7 +125,7 @@ module vflow_routines
                 flwvf(ifrm,m,lower) = flwvf(ifrm,m,lower) - fromml
                 flwvf(ifrm,q,upper) = flwvf(ifrm,q,upper) - fromqu
                 flwvf(ifrm,q,lower) = flwvf(ifrm,q,lower) - fromql
-            endif
+            end if
             vmflo(ito,ifrm,upper) = vmflo(ito,ifrm,upper) - frommu
             vmflo(ito,ifrm,lower) = vmflo(ito,ifrm,lower) - fromml
             
@@ -146,7 +146,7 @@ module vflow_routines
                 flwvf(ito,m,lower) = flwvf(ito,m,lower) + toml
                 flwvf(ito,q,upper) = flwvf(ito,q,upper) + toqu
                 flwvf(ito,q,lower) = flwvf(ito,q,lower) + toql
-            endif
+            end if
             vmflo(ifrm,ito,upper) = vmflo(ifrm,ito,upper) + tomu
             vmflo(ifrm,ito,lower) = vmflo(ifrm,ito,lower) + toml
 
@@ -161,7 +161,7 @@ module vflow_routines
                     if (ifrm<=nm1) then
                         flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - speciesu
                         flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - speciesl
-                    endif
+                    end if
 
                     ! deposit mass and enthalphy into "to" room variables (not outside)
                     if (ito<=nm1) then
@@ -169,8 +169,8 @@ module vflow_routines
                         pmtolp = (speciesu + speciesl)*fl
                         flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
                         flwvf(ito,index,lower) = flwvf(ito,index,lower) + pmtolp
-                    endif
-                endif
+                    end if
+                end if
             end do
         end do
     end do
@@ -278,7 +278,7 @@ module vflow_routines
     else
         dp(2) = 0.0_eb
         relp(2) = exterior_rel_pressure(itop)
-    endif
+    end if
 
     if (itop<=nm1) then
         dp(1) = 0.0_eb
@@ -286,7 +286,7 @@ module vflow_routines
     else
         dp(1) = -grav_con*roominfo(ibot)%height*exterior_density
         relp(1) = exterior_rel_pressure(ibot)
-    endif
+    end if
 
     ! delp is pressure immediately below the vent less pressure immediately above the vent.
     delp = relp(2) + dp(2) - (relp(1)+dp(1))
@@ -302,31 +302,31 @@ module vflow_routines
         ilay(1) = u
     else
         ilay(1) = l
-    endif
+    end if
     if (zzvol(ibot,u)<=2.0_eb*roominfo(ibot)%vmin) then
         ilay(2) = l
     else
         ilay(2) = u
-    endif
+    end if
 
     ! delden is density immediately above the vent less density immediately below the vent
     if (itop<=nm1) then
         den(1) = zzrho(itop,ilay(1))
     else
         den(1) = exterior_density
-    endif
+    end if
     if (ibot<=nm1) then
         den(2) = zzrho(ibot,ilay(2))
     else
         den(2) = exterior_density
-    endif
+    end if
     delden = den(1) - den(2)
 
     if (delp>=0.0_eb) then
         rho = den(2)
     else
         rho = den(1)
-    endif
+    end if
     
     ! calculate factor to dampen very small flows to zero to keep dae solver happy
     epscut = epsp*max (1.0_eb, relp(1), relp(2))
@@ -347,7 +347,7 @@ module vflow_routines
     else
         vst(1) = 0.0_eb
         vst(2) = 0.0_eb
-    endif
+    end if
 
     ! calculate vex, the exchange volume rate of flow through the vent
     if (delden>0.0_eb.and.avent/=0.0_eb) then
@@ -359,14 +359,14 @@ module vflow_routines
         else
             cshape = 0.942_eb
             d = sqrt(avent)
-        endif
+        end if
         delpflood = cshape**2*grav_con*delden*d**5/(2.0_eb*avent**2)
         vex = max(0.1_eb*sqrt(2.0_eb*grav_con*delden*sqrt(avent**5)/(den(1)+den(2)))*(1.0_eb-abs(delp/delpflood)),0.0_eb)
     else
 
         ! stable configuration, set vex = 0
         vex = 0.0_eb
-    endif
+    end if
 
     ! calculate the density of gas flowing through the vent
     denvnt(1) = den(2)
@@ -385,7 +385,7 @@ module vflow_routines
         else
             ! iroom(i) is an outside room so use exterior_temperature for temperature
             tmvent(i) = exterior_temperature
-        endif
+        end if
     end do
     return
     end subroutine ventcf
@@ -415,7 +415,7 @@ module vflow_routines
         hface = 6
     else
         hface = 5
-    endif
+    end if
 
     return
     end subroutine getvventinfo

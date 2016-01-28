@@ -751,7 +751,7 @@ module numerics_routines
             if (info(5)/=0.and.info(5)/=1.and.info(5)/=2) go to 701
         else
             if(info(i)/=0.and.info(i)/=1) go to 701
-        endif
+        end if
     end do       
     !
     if(neq<=0)go to 702
@@ -780,7 +780,7 @@ module numerics_routines
         jacdim = jacd()
         lenpd = jacdim**2
         lenrw=40+(iwork(lmxord)+4)*neq+lenpd
-    endif
+    end if
     go to 60
 40  if(iwork(lml)<0.or.iwork(lml)>=neq)go to 717
     if(iwork(lmu)<0.or.iwork(lmu)>=neq)go to 718
@@ -1163,7 +1163,7 @@ module numerics_routines
        goto 685
     else
       ! code should never reach here
-    endif
+    end if
     
 
     !     the maximum number of steps was taken before reaching tout
@@ -1365,7 +1365,7 @@ module numerics_routines
         if(abs(v(i)/wt(i)) > vmax) then
             vmax = abs(v(i)/wt(i))
             ipar(3) = i
-        endif
+        end if
     end do
     if(vmax <= 0.0d0) go to 30
     sum = 0.0d0
@@ -2402,7 +2402,7 @@ module numerics_routines
        go to 600
     else
        ! should never get here
-    endif
+    end if
     
     !
     !
@@ -2567,7 +2567,7 @@ module numerics_routines
        go to 600
     else
        ! should never get here
-    endif
+    end if
     !
     !     dense matrix
 100 call dgesl(wm(npd),neq,neq,iwm(lipvt),delta,0)
@@ -4892,8 +4892,8 @@ module numerics_routines
           goto 20
        else
           goto 60
-       endif
-    endif
+       end if
+    end if
 5   continue
     !
     !        code for nonequal or nonpositive increments.
@@ -4995,8 +4995,8 @@ module numerics_routines
           goto 20
        else
           go to 60
-       endif
-    endif
+       end if
+    end if
 5   continue
     !
     !         code for unequal or nonpositive increments.
@@ -5263,7 +5263,7 @@ module numerics_routines
                     t = a(l,k)
                     a(l,k) = a(k,k)
                     a(k,k) = t
-                endif
+                end if
                 !
                 !           compute multipliers
                 !
@@ -5277,14 +5277,14 @@ module numerics_routines
                     if (l/=k) then
                         a(l,j) = a(k,j)
                         a(k,j) = t
-                    endif
+                    end if
                     call daxpy(n-k,t,a(k+1,k),1,a(k+1,j),1)
                 end do
             else
                 info = k
-            endif
+            end if
         end do
-    endif
+    end if
     ipvt(n) = n
     if (a(n,n)==0.0d0) info = n
     return
@@ -5370,10 +5370,10 @@ module numerics_routines
                 if (l/=k) then
                     b(l) = b(k)
                     b(k) = t
-                endif
+                end if
                 call daxpy(n-k,t,a(k+1,k),1,b(k+1),1)
             end do
-        endif
+        end if
         !
         !        now solve  u*x = y
         !
@@ -5404,10 +5404,10 @@ module numerics_routines
                     t = b(l)
                     b(l) = b(k)
                     b(k) = t
-                endif
+                end if
             end do
-        endif
-    endif
+        end if
+    end if
     return
     end subroutine dgesl
 
@@ -5518,7 +5518,7 @@ module numerics_routines
                 abd(i,jz) = 0.0d0
             end do
         end do
-    endif
+    end if
     jz = j1
     ju = 0
     !
@@ -5537,8 +5537,8 @@ module numerics_routines
                     do i = 1, ml
                         abd(i,jz) = 0.0d0
                     end do
-                endif
-            endif
+                end if
+            end if
             !
             !        find l = pivot index
             !
@@ -5556,7 +5556,7 @@ module numerics_routines
                     t = abd(l,k)
                     abd(l,k) = abd(m,k)
                     abd(m,k) = t
-                endif
+                end if
                 !
                 !           compute multipliers
                 !
@@ -5575,15 +5575,15 @@ module numerics_routines
                         if (l/=mm) then
                             abd(l,j) = abd(mm,j)
                             abd(mm,j) = t
-                        endif
+                        end if
                         call daxpy(lm,t,abd(m+1,k),1,abd(mm+1,j),1)
                     end do
-                endif
+                end if
             else
                 info = k
-            endif
+            end if
         end do
-    endif
+    end if
     ipvt(n) = n
     if (abd(m,n)==0.0d0) info = n
     return
@@ -5679,11 +5679,11 @@ module numerics_routines
                     if (l/=k) then
                         b(l) = b(k)
                         b(k) = t
-                    endif
+                    end if
                     call daxpy(lm,t,abd(m+1,k),1,b(k+1),1)
                 end do
-            endif
-        endif
+            end if
+        end if
         !
         !        now solve  u*x = y
         !
@@ -5722,11 +5722,11 @@ module numerics_routines
                         t = b(l)
                         b(l) = b(k)
                         b(k) = t
-                    endif
+                    end if
                 end do
-            endif
-        endif
-    endif
+            end if
+        end if
+    end if
     return
     end subroutine dgbsl
 

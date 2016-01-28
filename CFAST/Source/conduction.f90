@@ -95,7 +95,7 @@ module conduction_routines
                         elseif(iwall==4)then
                             yb = 0.0_eb
                             yt = zzhlay(iroom,lower)
-                        endif
+                        end if
                         dflor = roominfo(j)%z0 - roomptr%z0
                         yy = zzhlay(j,lower) + dflor
                         if(j/=nm1+1)then
@@ -108,18 +108,18 @@ module conduction_routines
                                     fu = (yt-yy)/(yt-yb)
                                 else
                                     fu = 0.0_eb
-                                endif
-                            endif
+                                end if
+                            end if
                             fluxu = fu*flxtot(j,3)
                             fluxl = (1.0_eb-fu)*flxtot(j,4)
                         else
                             fluxu = wfluxsave
                             fluxl = 0.0_eb
-                        endif
+                        end if
                         wfluxout = wfluxout + frac*(fluxu + fluxl)
                     end do
-                endif
-            endif
+                end if
+            end if
             call conductive_flux (update,twint,twext,dt,fkw(1,iwall,iroom),cw(1,iwall,iroom),rw(1,iwall,iroom), &
                 twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode(1,iwall,iroom),nslb(iwall,iroom),wfluxin,wfluxout,iwb,tgrad,tderv)
 
@@ -140,7 +140,7 @@ module conduction_routines
             iwall = izwall(iw,w_from_wall)
             delta(icond) = flxtot(iroom,iwall) + vtgrad(iw)*fkw(1,iwall,iroom)
         end do
-    endif
+    end if
 
     return
     end subroutine conduction
@@ -200,7 +200,7 @@ module conduction_routines
         b(1) = 0.0_eb
         c(1) = -1.0_eb
         tnew(1) = walldx(1)*wfluxin/wk(1)
-    endif
+    end if
 
     ! do interior points for each slab
     iend = 0
@@ -253,7 +253,7 @@ module conduction_routines
         b(nx) = -1.0_eb
         c(nx) = 0.0_eb
         tnew(nx) = walldx(nx-1)*wfluxout/wk(nslab)
-    endif
+    end if
 
     ! now perform an l-u factorization of this matrix (see atkinson p.455) note: matrix is 
     ! diagonally dominant so we don't have to pivot
@@ -287,7 +287,7 @@ module conduction_routines
     ! we don't keep solution unless update is 1 or 2
     if (update/=0) then
         wtemp(1:nx) = tnew(1:nx)
-    endif
+    end if
 
     ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that
     ! interpolates first three data points in the temperature profile.  we will use divided differences.

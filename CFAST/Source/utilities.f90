@@ -75,13 +75,13 @@ module utility_routines
        error_label = "***Error:"
     else
        error_label = "***Warning:"
-    endif
+    end if
 
     if(nmessg==0)then
         nmess = len_trim(messg)
     else
         nmess = nmessg
-    endif
+    end if
     nmess = max(1,nmess)
 
     if(level==-2)then
@@ -89,7 +89,7 @@ module utility_routines
        call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
     else
        call xerrwv(trim(error_label)//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
-    endif
+    end if
 
     return
     end subroutine xerror
@@ -127,7 +127,7 @@ module utility_routines
         if (ni==2) write (lunit,5020) nerr,i1, i2
         if (nnr==1) write (lunit,5030) nerr,r1
         if (nnr==2) write (lunit,5040) nerr,r1, r2
-    endif
+    end if
 
     ! abort the run if level = 2
     if (level/=2) return
@@ -254,7 +254,7 @@ module utility_routines
         if (ic<=nargs) then
             strs(ic) = ' '
             iarg(ic) = 0
-        endif
+        end if
         iopt(ic) = 0
     end do
 
@@ -268,11 +268,11 @@ module utility_routines
             call cmove(cmdlin,ic,126,ic+1,127,127,' ')
         else
             ic = ic + 1
-        endif
+        end if
         if (cmdlin(ic:127)/=' '.and.ic<=126) go to 20
         if (cmdlin(1:1)==' ') then
             call cmove(cmdlin,1,126,2,127,127,' ')
-        endif
+        end if
 
         ! put in commas where appropriate to delimit all fields
         ic = 2
@@ -282,15 +282,15 @@ module utility_routines
                 ic = ic + 1
             else
                 call cmove(cmdlin,ic,126,ic+1,127,127,' ')
-            endif
+            end if
         else if ((cmdlin(ic:ic)==optsep).and.cmdlin(ic-1:ic-1)/=',') then
             call cmove(cmdlin,ic+1,127,ic,126,ic,',')
             ic = ic + 2
         else
             ic = ic + 1
-        endif
+        end if
         if (cmdlin(ic:127)/=' '.and.ic<=126) go to 30
-    endif
+    end if
 
     ! parse command line into separate fields and process options
     ia = 0
@@ -302,7 +302,7 @@ module utility_routines
         if (ic>1) strs(ia) = cmdlin(1:ic-1)
         call cmove(cmdlin,1,127,ic+1,127,127,' ')
         go to 40
-    endif
+    end if
 
     ! assign the parsed fields to appropriate arguments and options
     nargs = 0
@@ -313,7 +313,7 @@ module utility_routines
                     iopt(ichar(strs(i)(2:2))-ichar('A')+1) = i
                 else if (strs(i)(2:2)>='a'.and.strs(i)(2:2)<='z') then
                     iopt(ichar(strs(i)(2:2))-ichar('a')+1) = i
-                endif
+                end if
                 cmdlin = strs(i)
                 call cmove(cmdlin,1,127,3,127,127,' ')
                 if (cmdlin(1:1)==':') call cmove(cmdlin,1,127,2,127,127,' ')
@@ -321,9 +321,9 @@ module utility_routines
             else
                 nargs = nargs + 1
                 iarg(nargs) = i
-            endif
+            end if
         end do
-    endif
+    end if
     return
     end subroutine cmdline
 
@@ -385,9 +385,9 @@ module utility_routines
                 lpoint = lpoint + 1
                 cmdlin(lpoint:lpoint+ic) = lbuf(first:last)
                 lpoint = lpoint + ic
-            endif
+            end if
         end do
-    endif
+    end if
     return
     end subroutine getcl
 
@@ -411,7 +411,7 @@ module utility_routines
         if (lcarray(i)==' ') then
             countargs = nret
             return
-        endif
+        end if
         nret = nret + 1
     end do
     countargs = ncol
@@ -451,7 +451,7 @@ module utility_routines
         doesthefileexist = .true.
     else
         doesthefileexist = .false.
-    endif
+    end if
 
     return
 
@@ -487,7 +487,7 @@ module utility_routines
     if (n<2) then
         write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
         stop
-    endif
+    end if
 
     ! get the calling program and arguments
 
@@ -518,8 +518,8 @@ module utility_routines
                 write (*,'(a,/,a)') 'Total file name length including path must be less than 256 characters.', &
                     'Individual filenames must be less than 64 characters.'
                 stop
-            endif
-        endif
+            end if
+        end if
     end do
 
     ! Now check that the project.in file exists - this is the data file
@@ -533,7 +533,7 @@ module utility_routines
         end if
     else
         buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
-    endif
+    end if
 
     lb = len_trim(buf)
 
@@ -548,7 +548,7 @@ module utility_routines
     else
         write (*,*) ' Input file does not exist: ', trim(buf)
         stop
-    endif
+    end if
     return
 
     end subroutine exehandle
@@ -660,7 +660,7 @@ module utility_routines
     if (n==1) then
         yint = y(1)
         return
-    endif
+    end if
     if (t<=x(1)) then
         if (icode==1) then
             yint = y(1)
@@ -668,8 +668,8 @@ module utility_routines
         else
             imid = 1
             go to 20
-        endif
-    endif
+        end if
+    end if
     if (t>=x(n)) then
         if (icode==1) then
             yint = y(n)
@@ -677,16 +677,16 @@ module utility_routines
         else
             imid = n - 1
             go to 20
-        endif
-    endif
+        end if
+    end if
     if (ilast+1<=n) then
         imid = ilast
         if (x(imid)<=t.and.t<=x(imid+1)) go to 20
-    endif
+    end if
     if (ilast+2<=n) then
         imid = ilast + 1
         if (x(imid)<=t.and.t<=x(imid+1)) go to 20
-    endif
+    end if
     ia = 1
     iz = n - 1
 10  continue
@@ -694,11 +694,11 @@ module utility_routines
     if (t<x(imid)) then
         iz = imid - 1
         go to 10
-    endif
+    end if
     if (t>=x(imid+1)) then
         ia = imid + 1
         go to 10
-    endif
+    end if
 20  continue
     dydx = (y(imid+1)-y(imid))/(x(imid+1)-x(imid))
     yint = y(imid) + dydx*(t-x(imid))
@@ -787,9 +787,9 @@ module utility_routines
             solveini = strs(cmdflag('S',iopt))
         else
             solveini = 'SOLVE.INI'
-        endif
+        end if
         call writeini(solveini)
-    endif
+    end if
 
     return
 
@@ -887,7 +887,7 @@ module utility_routines
             j = j - inc
             if(j<=inc) go to 4
             go to 3
-        endif
+        end if
 4       ra(j) = rra
     enddo
     if(inc>1) go to 2
@@ -1019,7 +1019,7 @@ module utility_routines
         c = string(i:i)
         if(c>='a'.and.c<='z')then
             c = char(ichar(c) + ichar('A')-ichar('a'))
-        endif
+        end if
         string(i:i) = c
     end do
     return
@@ -1045,7 +1045,7 @@ module utility_routines
     if (itmp>mxio) then
         funit = -1
         return
-    endif
+    end if
     inquire(unit=itmp,opened = opend)
     if (opend) go to 10
     funit = itmp
@@ -1126,7 +1126,7 @@ module utility_routines
 
     if ( .not.lsame ) then
         lsame = ichar(ca) - ioff == ichar(cb)
-    endif
+    end if
     return
 
    end function lsame
@@ -1165,13 +1165,13 @@ integer function get_igrid (x,xgrid,n)
       if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
          get_igrid=i
          return
-      endif
+      end if
    end do
    if(xgrid(n).eq.x)then
      get_igrid=n
    else
      get_igrid=-1
-   endif
+   end if
    return
 end function get_igrid   
 
@@ -1227,7 +1227,7 @@ module opening_fractions
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qchfraction = points(2,index) + dydt*deltat
-    endif
+    end if
     return
     end function qchfraction
 
@@ -1254,7 +1254,7 @@ module opening_fractions
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qcvfraction = points(2,index) + dydt*deltat
-    endif
+    end if
     return
     end function qcvfraction
 
@@ -1281,7 +1281,7 @@ module opening_fractions
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qcffraction = points(2,index) + dydt*deltat
-    endif
+    end if
     return
     end function qcffraction
 
@@ -1308,7 +1308,7 @@ module opening_fractions
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qcifraction = points(2,index) + dydt*deltat
-    endif
+    end if
     return
     end function qcifraction
     

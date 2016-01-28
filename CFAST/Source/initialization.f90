@@ -114,7 +114,7 @@ module initialization_routines
                 k = k + 1
                 icmv(i,k) = ib
                 mvintnode(i,k) = na(ib)
-            endif
+            end if
         end do
         ncnode(i) = k
     end do
@@ -124,7 +124,7 @@ module initialization_routines
         if (ncnode(i)<1.or.ncnode(i)>mxcon) then
             write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
             stop
-        endif
+        end if
     end do
 
     ! limit the range of hvelxt and set the absolute height of the interior node
@@ -134,7 +134,7 @@ module initialization_routines
         if (ncnode(j)>1) then
             write (logerr,*) '***Error: HVINIT - exterior node has too many or too few connections'
             stop
-        endif
+        end if
         roomptr => roominfo(i)
         hvelxt(ii) = min(roomptr%height,max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + roomptr%z0
@@ -169,7 +169,7 @@ module initialization_routines
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
             hvp(j) = exterior_abs_pressure - grav_con*exterior_density*hvelxt(ii)
-        endif
+        end if
         tbr(ib) = hvextt(ii,upper)
         s1 = s1 + hvp(j)
         s2 = s2 + tbr(ib)
@@ -181,7 +181,7 @@ module initialization_routines
             else
                 hvexcn(ii,lsp,upper) = o2n2(lsp)*exterior_density
                 hvexcn(ii,lsp,lower) = o2n2(lsp)*exterior_density
-            endif
+            end if
             hvconc(j,lsp) = hvexcn(ii,lsp,upper)
             c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
         end do
@@ -198,7 +198,7 @@ module initialization_routines
     do i = 1, nnode
         if (hvp(i)<0.0_eb) then
             hvp(i) = pav
-        endif
+        end if
     end do
     do i = 1, nbr
         if (tbr(i)<=0.0_eb) tbr(i) = tav
@@ -206,7 +206,7 @@ module initialization_routines
             do lsp = 1, ns
                 hvconc(i,lsp) = c3(lsp)
             end do
-        endif
+        end if
     end do
 
     ! calculate area, relative roughness, effective diameter and volume of ducts
@@ -270,7 +270,7 @@ module initialization_routines
         if (izhvmapi(i)/=0) then
             ii = ii + 1
             izhvmapi(ii) = izhvmapi(i)
-        endif
+        end if
     end do
 
     ! construct inverse of izhvmapi
@@ -302,7 +302,7 @@ module initialization_routines
         if (izhvsys(i)==0) then
             icurnod = i
             exit
-        endif
+        end if
     end do
     if (icurnod/=0) then
         icursys = icursys + 1
@@ -318,10 +318,10 @@ module initialization_routines
             if (izhvsys(nxtnode)==0) then
                 iptr = iptr + 1
                 istack(iptr) = nxtnode
-            endif
+            end if
         end do
         go to 120
-    endif
+    end if
     nhvsys = icursys
 
     ! we have to update nequals.  nequals was originally defined in 
@@ -408,9 +408,9 @@ module initialization_routines
                 p(i+nofvu) = roomptr%vmin
             else
                 p(i+nofvu) = min(roomptr%vmax,max(roomptr%vmin,yinter(i)*roomptr%area))
-            endif
+            end if
             yinter(i) = 0.0_eb
-        endif
+        end if
         if(roomptr%shaft) p(i+nofvu) = roomptr%vmax
         p(i+noftl) = interior_temperature
     end do
@@ -432,7 +432,7 @@ module initialization_routines
             if (roomptr%surface_on(iwall)) then
                 ii = ii + 1
                 p(ii) = interior_temperature
-            endif
+            end if
         end do
     end do
 
@@ -459,7 +459,7 @@ module initialization_routines
             tdspray = 0.0_eb
             tdrate = 1.0e10_eb
             ixdtect(i,dquench) = 0
-        endif
+        end if
 
         ! set initial ceiling jet and detector link temperatures to ambient
         xdtect(i,dspray) = tdspray
@@ -496,7 +496,7 @@ module initialization_routines
             p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,upper)
             p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,lower)
         end do
-    endif
+    end if
 
     return
     end subroutine initamb
@@ -542,7 +542,7 @@ module initialization_routines
 
     if(nrow>lwork)then
         call xerror('Error: Internal error sorting detectors. Not enough work space in sortbrm',0,1,2)
-    endif
+    end if
 
     ! create a permutation vector using the isort'th column of ix
     iperm(1:nrow) = (/(i,i=1,nrow)/)
@@ -877,7 +877,7 @@ module initialization_routines
                     p(isof) = mass(k,i,lsp) + minmas
                 end do
             end do
-        endif
+        end if
     end do
 
     ! hvinit define initial products for hvac systems (if any)
@@ -889,9 +889,9 @@ module initialization_routines
                     isof = isof + 1
                     p(isof) = o2n2(lsp)*hvtm(isys)
                 end do
-            endif
+            end if
         end do
-    endif
+    end if
 
     ! define product map array
     izpmap(1) = 1
@@ -901,7 +901,7 @@ module initialization_routines
         if (activs(iprod)) then
             ip = ip + 1
             izpmap(ip) = iprod + 2
-        endif
+        end if
     end do
 
     return
@@ -936,7 +936,7 @@ module initialization_routines
         if(iroom<1.or.iroom>nm1)then
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
-        endif
+        end if
         roomptr => roominfo(iroom)
         iwall = targptr%wall
         xloc = targptr%center(1)
@@ -957,7 +957,7 @@ module initialization_routines
             xxnorm = 0.0_eb
             yynorm = 0.0_eb
             zznorm = 0.0_eb
-        endif
+        end if
         if(iwall==1)then
             zznorm = -1.0_eb
             xx = xloc
@@ -988,7 +988,7 @@ module initialization_routines
             xx = xloc
             yy = ysize
             zz = 0.0_eb
-        endif
+        end if
         if(iwall/=0)then
             targptr%center(1) = xx
             targptr%center(2) = yy
@@ -1004,14 +1004,14 @@ module initialization_routines
                 targptr%material = roomptr%matl(iwall2)
             else
                 targptr%material = ' '
-            endif
-        endif
+            end if
+        end if
 
         ! center coordinates need to be within room
         if(xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize)then
             write(logerr,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             stop
-        endif
+        end if
     end do
 
     return
@@ -1073,8 +1073,8 @@ module initialization_routines
                         flw(k,i,j) = lflw(k,tp)
                     end do
                     epw(i,j) = lepw(tp)
-                endif
-            endif
+                end if
+            end if
         end do
     end do
 
@@ -1088,7 +1088,7 @@ module initialization_routines
             if (roomptr%surface_on(j)) then
                 call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),&
                    wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
-            endif
+            end if
         end do
     end do
 
@@ -1160,7 +1160,7 @@ module initialization_routines
         if (tcname==' ') then
             tcname = 'DEFAULT'
             targptr%material = tcname
-        endif
+        end if
         call get_thermal_property(tcname,tp)
         targptr%k = lfkw(1,tp)
         targptr%cp = lcw(1,tp)
@@ -1223,7 +1223,7 @@ module initialization_routines
     if (nnode>mxnode) then
         write (logerr,*) '***Error: offset - Too many nodes in hvac specification'
         stop
-    endif
+    end if
 
     ! set the number of compartments and offsets
     nm1 = n - 1
@@ -1235,23 +1235,23 @@ module initialization_routines
         do i = 1, ns
             if (allowed(i).and.activs(i)) then
                 nlspct = nlspct + 1
-            endif
+            end if
         end do
     else if (lfbt==2.or.lfbt==0) then
         do i = 1, ns
             if (allowed(i)) then
                 if (activs(i)) then
                     nlspct = nlspct + 1
-                endif
+                end if
             else if (i/=7) then
                 nlspct = nlspct + 1
-            endif
+            end if
         end do
         nlspct = nlspct + 1
     else
         write (logerr,'(a,i0)') 'Error: Invalid fire type specified: ', lfbt
         stop
-    endif
+    end if
 
     ! count the number of walls
     nwalls = 0
@@ -1260,7 +1260,7 @@ module initialization_routines
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
                 nwalls = nwalls + 1
-            endif
+            end if
             if (nwpts/=0) numnode(1,j,i) = nwpts
         end do
     end do
@@ -1271,7 +1271,7 @@ module initialization_routines
         noxygen = nm1
     else
         noxygen = 0
-    endif
+    end if
 
     ! now do all the equation offsets
     nhvpvar = nnode - next
@@ -1337,7 +1337,7 @@ module initialization_routines
         nsplit = (wsplit(1)+wsplit(2))*xxnx
     else
         nsplit = wsplit(1)*xxnx
-    endif
+    end if
 
     ! calculate total walldepth
     xpos(1) = 0.0_eb
@@ -1392,7 +1392,7 @@ module initialization_routines
         if (numpts(nslab)<1) then
             numpts(1) = numpts(1) + numpts(nslab) - 1
             numpts(nslab) = 1
-        endif
+        end if
 
         ! copy numpts data into numnode and keep a running total
         cumpts(1) = 1
@@ -1432,8 +1432,8 @@ module initialization_routines
                 xxi1 = iend - i
                 xwall(i) = xpos(nslab+1) - xxi1**2*(xpos(nslab+1) - xpos(nslab))/xxi3**2
             end do
-        endif
-    endif
+        end if
+    end if
 
     ! finally calculate distances between each point these distances are used by conductive_flux to setup 
     ! discretization tri-diagonal matrix

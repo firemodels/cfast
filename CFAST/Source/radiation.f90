@@ -93,8 +93,8 @@ module radiation_routines
             else
                 zzabsb(upper,i) = absorb(i, upper)
                 zzabsb(lower,i) = absorb(i, lower)
-            endif
-        endif
+            end if
+        end if
         call rad4(twall,tg,emis,zzabsb(1,i),i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
@@ -161,7 +161,7 @@ module radiation_routines
     if(iflag(iroom)==0)then
         f14(iroom) = rdparfig(xroom,yroom,zroom)
         iflag(iroom) = 1
-    endif
+    end if
     f14(iroom) = rdparfig(xroom,yroom,zroom)
 
     ! define areas
@@ -237,12 +237,12 @@ module radiation_routines
     ! define transmission factors for fires
     if(nfire/=0)then
         call rdftran(mxfire,4,2,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
-    endif
+    end if
 
     ! define solid angles for fires
     if(nfire/=0)then
         call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-    endif
+    end if
 
     !     note: we want to solve the linear system
     !         a*dq = b*e + c
@@ -286,7 +286,7 @@ module radiation_routines
         end do
     else
         call dgesl(a,4,4,ipvt,rhs,0)
-    endif
+    end if
 
     ! note: each row k of the a matrix, as defined by seigal and howell was divided by emis(k) (in order to insure
     !       that this new 'a' was diagonally dominant.  now we have to multiply the solution to the modified problem 
@@ -369,7 +369,7 @@ module radiation_routines
             else
                 factu = (1.0_eb - taufu(ifire,k))*taufl(ifire,k)
                 factl = 1.0_eb - taufl(ifire,k)
-            endif
+            end if
             qulay = qulay + factu*qfflux*area(k)
             qllay = qllay + factl*qfflux*area(k)
         end do
@@ -408,7 +408,7 @@ module radiation_routines
             else
                 factu = 0.0_eb
                 factl = 1.0_eb - taufl(ifire,k)
-            endif
+            end if
             qulay = qulay + factu*qfflux*area(k)
             qllay = qllay + factl*qfflux*area(k)
         end do
@@ -581,7 +581,7 @@ module radiation_routines
         else
             firang(2,i) = fourpi - solid_angle_layer - firang(1,i)
             firang(3,i) = solid_angle_layer - firang(4,i)
-        endif
+        end if
     end do
     return
    end  subroutine rdfang
@@ -614,7 +614,7 @@ module radiation_routines
                 else
                     taufu(i,j) = 0.0_eb
                     taufl(i,j) = 0.0_eb
-                endif
+                end if
             else
                 beamu = zz(j) - hlay
                 beaml = hlay - zfire(i)
@@ -624,8 +624,8 @@ module radiation_routines
                 else
                     taufu(i,j) = 0.0_eb
                     taufl(i,j) = 0.0_eb
-                endif
-            endif
+                end if
+            end if
         end do
         do j = nup + 1, nzone
             if(zfire(i)<=hlay)then
@@ -636,7 +636,7 @@ module radiation_routines
                 else
                     taufl(i,j) = 0.0_eb
                     taufu(i,j) = 0.0_eb
-                endif
+                end if
             else
                 beamu = zfire(i) - hlay
                 beaml = hlay - zz(j)
@@ -646,8 +646,8 @@ module radiation_routines
                 else
                     taufu(i,j) = 0.0_eb
                     taufl(i,j) = 0.0_eb
-                endif
-            endif
+                end if
+            end if
         end do
     end do
     return
@@ -680,14 +680,14 @@ module radiation_routines
                 tauu(i,j) = exp(-absorb(1)*beam(i,j))
             else
                 tauu(i,j) = 0.0_eb
-            endif
+            end if
             tauu(j,i) = tauu(i,j)
         end do
         if(.not.black)then
             tauu(i,i) = exp(-absorb(1)*beam(i,i))
         else
             tauu(i,i) = 0.0_eb
-        endif
+        end if
     end do
 
     ! upper to lower and lower to upper
@@ -699,7 +699,7 @@ module radiation_routines
                 tauu(i,j) = exp(-absorb(1)*beam(i,j)*fu)
             else
                 tauu(i,j) = 0.0_eb
-            endif
+            end if
             tauu(j,i) = tauu(i,j)
         end do
     end do
@@ -711,7 +711,7 @@ module radiation_routines
                 tauu(i,j) = 1.0_eb
             else
                 tauu(i,j) = 0.0_eb
-            endif
+            end if
         end do
     end do
 
@@ -724,14 +724,14 @@ module radiation_routines
                 taul(i,j) = exp(-absorb(2)*beam(i,j))
             else
                 taul(i,j) = 0.0_eb
-            endif
+            end if
             taul(j,i) = taul(i,j)
         end do
         if(.not.black)then
             taul(i,i) = exp(-absorb(2)*beam(i,i))
         else
             taul(i,i) = 0.0_eb
-        endif
+        end if
     end do
 
     ! upper to upper
@@ -742,7 +742,7 @@ module radiation_routines
                 taul(i,j) = 1.0_eb
             else
                 taul(i,j) = 0.0_eb
-            endif
+            end if
         end do
     end do
 
@@ -755,7 +755,7 @@ module radiation_routines
                 taul(i,j) = exp(-absorb(2)*beam(i,j)*fl)
             else
                 taul(i,j) = 0.0_eb
-            endif
+            end if
             taul(j,i) = taul(i,j)
         end do
     end do
@@ -963,7 +963,7 @@ module radiation_routines
         ag = ag + 0.50_eb*10.0_eb**aco2
     else
         aco2 = 0.0_eb
-    endif
+    end if
 
     ! calculate absorbance for h2o
     
@@ -977,7 +977,7 @@ module radiation_routines
         ag = ag + 10.0_eb**ah2o
     else
         ah2o = 0.0_eb
-    endif
+    end if
 
     ! calculate total absorbance
     
@@ -1043,12 +1043,12 @@ module radiation_routines
             if(xval < x(count))then
                 i = count - 1
                 go to 20
-            endif 
+            end if 
         end do
         ! then xval = x(xdim)
         i = xdim
 20      continue
-    endif
+    end if
 
     ! check the special case of yval < y(1)
     
@@ -1072,14 +1072,14 @@ module radiation_routines
             if(yval < y(count))then
                 j = count - 1
                 go to 40
-            endif
+            end if
         end do
 
         ! then yval = y(ydim)
         
         j = ydim
 40      continue
-    endif
+    end if
 
     ! interpolate a value for f(x,y)
     

@@ -1030,7 +1030,7 @@ module output_routines
                 xdtect(idtect,dtrig)
         elseif(itype==heatd)then
             write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
-                xdtect(idtect,dtrig)-273.15
+                xdtect(idtect,dtrig)-273.15, xdtect(idtect,drti)
         else
             write(outbuf,5020) idtect, roomptr%name, 'SPRINK', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
                 xdtect(idtect,dtrig)-273.15, xdtect(idtect,drti), xdtect(idtect,dspray)

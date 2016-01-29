@@ -654,7 +654,7 @@ contains
     real(eb), intent(out) :: xdtect(mxdtect,*), tdtect
     
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
-       bnp1, denom, fact1, fact2, delta, tmp, obs, obso
+       bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
     character(133) :: messg
 
@@ -676,17 +676,16 @@ contains
         tjeto = max(xdtect(i,dtjeto),tlay)
         vel = max(xdtect(i,dvel),cjetmin)
         velo = max(xdtect(i,dvelo),cjetmin)
-
-        rti = xdtect(i,drti)
         
-        if(ixdtect(i,dtype)==smoked)then  
+        if (ixdtect(i,dtype)==smoked) then  
             trig = log10(1._eb/(1._eb-xdtect(i,dtrig)/100._eb))
             tlinko = xdtect(i,dcond)
             tlink = xdtect(i,dobs)        
             if (tcur>350._eb) then
                 continue
             end if
-        elseif(ixdtect(i,dtype)>=heatd)then
+        elseif (ixdtect(i,dtype)>=heatd) then
+            rti = xdtect(i,drti)
             trig = xdtect(i,dtrig)
             tlinko = xdtect(i,dcond)
             bn = sqrt(velo)/rti

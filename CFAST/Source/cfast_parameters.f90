@@ -92,7 +92,7 @@ module dsize
     implicit none
 
     integer, parameter :: mxdtect=100   ! maximum number of detectors
-    integer, parameter :: dtxcol=17     ! number of floating point columns in detector data structure
+    integer, parameter :: dtxcol=16     ! number of floating point columns in detector data structure
     integer, parameter :: dticol=5      ! number of integer columns in detector data structure
     
     ! detector types
@@ -105,19 +105,18 @@ module dsize
     integer, parameter :: dxloc=2       ! X location of detector
     integer, parameter :: dyloc=3       ! Y location of detector
     integer, parameter :: dzloc=4       ! Z location of detector
-    integer, parameter :: dtrig=5
-    integer, parameter :: dtemp=6
-    integer, parameter :: dtempo=7
-    integer, parameter :: dvel=8
-    integer, parameter :: dvelo=9
-    integer, parameter :: dtact=10
-    integer, parameter :: dtjet=11
-    integer, parameter :: dtjeto=12
-    integer, parameter :: dobs = 13
-    integer, parameter :: dobso = 14
-    integer, parameter :: dspray=15
-    integer, parameter :: drate=16
-    integer, parameter :: dthalf=17
+    integer, parameter :: dtrig=5       ! activation value
+    integer, parameter :: dcond=6       ! current value of detector response (either obscuration or temperature)
+    integer, parameter :: dcondo=7      ! previous value of detector response (either obscuration or temperature)
+    integer, parameter :: dvel=8        ! current velocity near detector
+    integer, parameter :: dvelo=9       ! previous velocity near detector
+    integer, parameter :: dtact=10      ! 1 if activated; 0 otherwise
+    integer, parameter :: dtjet=11      ! current temperature near detector
+    integer, parameter :: dtjeto=12     ! previous temperature near detector
+    integer, parameter :: dobs = 13     ! obscuration near detector
+    integer, parameter :: dspray=14     ! spray density if sprinkler
+    integer, parameter :: drate=15
+    integer, parameter :: dthalf=16
 
     ! pointers into integer detector data structure
     integer, parameter :: droom=1

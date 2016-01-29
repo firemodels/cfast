@@ -353,7 +353,7 @@ module spreadsheet_routines
         xact = ixdtect(i,dact)
         tjet = max(xdtect(i,dtjet),tlay)
         vel = max(xdtect(i,dvel),cjetmin)
-        tlink =  xdtect(i,dtemp)
+        tlink =  xdtect(i,dcond)
         call SSaddtolist(position, tlink-kelvin_c_offset, outarray)
         call SSaddtolist(position, xact, outarray)
         call SSaddtolist(position, tjet-kelvin_c_offset, outarray)

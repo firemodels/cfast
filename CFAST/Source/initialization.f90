@@ -465,8 +465,8 @@ module initialization_routines
         xdtect(i,dspray) = tdspray
         xdtect(i,dthalf) = tdrate*log(2.0_eb)
         xdtect(i,drate) = tdrate
-        xdtect(i,dtemp) = interior_temperature
-        xdtect(i,dtempo) = interior_temperature
+        xdtect(i,dcond) = interior_temperature
+        xdtect(i,dcondo) = interior_temperature
         xdtect(i,dtjet) = interior_temperature
         xdtect(i,dtjeto) = interior_temperature
     end do

@@ -676,21 +676,19 @@ contains
         tjeto = max(xdtect(i,dtjeto),tlay)
         vel = max(xdtect(i,dvel),cjetmin)
         velo = max(xdtect(i,dvelo),cjetmin)
-        obs = xdtect(i,dobs)
-        obso = xdtect(i,dobso)
 
         rti = xdtect(i,drti)
         
         if(ixdtect(i,dtype)==smoked)then  
             trig = log10(1._eb/(1._eb-xdtect(i,dtrig)/100._eb))
-            tlinko = obso
-            tlink = obs        
+            tlinko = xdtect(i,dcond)
+            tlink = xdtect(i,dobs)        
             if (tcur>350._eb) then
                 continue
             end if
         elseif(ixdtect(i,dtype)>=heatd)then
             trig = xdtect(i,dtrig)
-            tlinko = xdtect(i,dtemp)
+            tlinko = xdtect(i,dcond)
             bn = sqrt(velo)/rti
             an = bn*tjeto
             bnp1 = sqrt(vel)/rti
@@ -701,8 +699,8 @@ contains
             tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
         end if
         if (imode>0) then
-            xdtect(i,dtempo) = tlinko
-            xdtect(i,dtemp) = tlink
+            xdtect(i,dcondo) = tlinko
+            xdtect(i,dcond) = tlink
         end if
 
         ! determine if detector has activated in this time interval (and not earlier)
@@ -747,7 +745,6 @@ contains
         end if
         xdtect(i,dtjeto) = tjet
         xdtect(i,dvelo) = vel
-        xdtect(i,dobso) = obs
     end do
     return
     end subroutine update_detectors

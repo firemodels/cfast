@@ -602,7 +602,7 @@ module output_routines
         tjet = max(xdtect(i,dtjet),tlay)-kelvin_c_offset
         vel = max(xdtect(i,dvel),cjetmin)
         obs = xdtect(i,dobs)
-        tlink =  xdtect(i,dtemp)-kelvin_c_offset
+        tlink =  xdtect(i,dcond)-kelvin_c_offset
 
         cact = 'NO'
         if(ixdtect(i,dact)==1) cact = 'YES'
@@ -1361,7 +1361,7 @@ module output_routines
                 else
                     ccc = '   '
                 end if
-                write(*,102)i,xdtect(i,dtemp),xdtect(i,dtjet),xdtect(i,dvel),xdtect(i,dtact),ccc
+                write(*,102)i,xdtect(i,dcond),xdtect(i,dtjet),xdtect(i,dvel),xdtect(i,dtact),ccc
 102             format(1x,i2,1x,4(e11.4,1x),a3)
             end do
         end if

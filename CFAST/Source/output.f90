@@ -1017,8 +1017,10 @@ module output_routines
     if(ndtect/=0) write(iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
          ,'Target  Compartment        Type           Position (x, y, z)            Activation',/ &
-         ,'                                                                        Obscuration   Temperature   RTI           Spray Density',/ &
-         ,'                                         (m)      (m)      (m)          (%/m)         (C)           (m s)^1/2     (m/s)',/ &
+         ,'                                                                        Obscuration ', &
+         'Temperature   RTI           Spray Density',/ &
+         ,'                                         (m)      (m)      (m)          (%/m)       ', &
+         '  (C)           (m s)^1/2     (m/s)',/ &
          ,127('-'))
 
     do idtect = 1, ndtect

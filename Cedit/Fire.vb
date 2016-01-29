@@ -17,8 +17,8 @@ Public Class Fire
     Friend Const FireHCl As Integer = 10
     Friend Const FireCt As Integer = 11
     Friend Const FireTS As Integer = 12
-    Friend Const MaximumFires As Integer = 100
-    Friend Const MaximumFireObjects As Integer = 100
+    Friend Const MaximumFires As Integer = 200
+    Friend Const MaximumFireObjects As Integer = 200
 
     Private Const MinTemperature As Single = 173.15
     Private Const MaxTemperature As Single = 873.15

@@ -557,7 +557,7 @@ module radiation_routines
        call getvrel(vrel4,v4ceil,vfire)
        call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
-       firang(i,1) = solid_angle1 + solid_angle2
+       firang(1,i) = solid_angle1 + solid_angle2
        
        call getvrel(vrel1,v1floor,vfire)
        call getvrel(vrel2,v2floor,vfire)

@@ -216,7 +216,7 @@ module  iofiles
 
 ! Work arrays for the csv input routines
 
-    integer, parameter :: nrow=2000, ncol=200
+    integer, parameter :: nrow=10000, ncol=100
     real(eb) :: rarray(nrow,ncol) 
     character(128) :: carray(nrow,ncol)
 

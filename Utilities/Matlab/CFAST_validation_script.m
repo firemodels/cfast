@@ -41,7 +41,7 @@ Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/
 
 % Override the plot style options with NRC 1824 plot options
 NRC_Options = false;
-Append_To_Scatterplot_Title = ' (CFAST)';
+Append_To_Scatterplot_Title = '';
 
 [saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);
 scatplot(saved_data, drange, ...

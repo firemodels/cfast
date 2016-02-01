@@ -54,14 +54,18 @@ Smoke detector, heat detector, and sprinkler activations are all treated similar
 where $T_L$ and $T_g$ are the link and gas temperatures, $v$ is the gas velocity, and $RTI$.
 
 Figure \ref{fig:Activation_Scatter} shows a comparison of predicted and measured values for activation times. Appendix B provides individual graphs of model and experimental values.
-\label{Smoke Detector Activation Time}
+\label{Activation Time (Temperature Surrogate)}
+\label{Activation Time (Smoke Obscuration)}
 \label{Sprinkler Activation Time}
 
-\begin{figure}{t}
-\begin{center}
-\includegraphics[width=4.0in]{SCRIPT_FIGURES/ScatterPlots/Sprinkler_Activation_Time}  \\
-\includegraphics[width=4.0in]{SCRIPT_FIGURES/ScatterPlots/Smoke_Alarm_Activation_Time}
-\end{center}
+
+
+\begin{figure}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/Smoke_Alarm_Activation_Time} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/Smoke_Alarm_Activation_Time_bySmoke} \\
+\multicolumn{2}{c}{\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/Sprinkler_Activation_Time}} \\
+\end{tabular*}
 \caption{Comparison of Measured and Predicted Activation Time.} \label{fig:Activation_Scatter}
 \end{figure}
 

@@ -150,9 +150,8 @@ module cshell
     save
 
     ! rundat is today's date
-    ! trace determines the type of output (print file) for mechanical ventilation - current or total
     logical :: nokbd=.false., initializeonly=.false.
-    logical :: debugging=.false., trace=.false., validate=.false., netheatflux=.false.
+    logical :: debugging=.false., validate=.false., netheatflux=.false.
     integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3
     integer, dimension(3) :: rundat
     character(128) :: thrmfile="thermal"

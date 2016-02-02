@@ -47,11 +47,11 @@ module output_routines
 
     call splitversion(version,imajor,iminor,iminorrev)
     
-    write(iunit,'(/A/)')                    ' CFAST'
-    write(iunit,'(a,i0,".",i0,".",i0)')     ' Version          : CFAST ',imajor, iminor, iminorrev
-    write(iunit,'(A,A)')                    ' Revision         : ',TRIM(revision)
-    write(iunit,'(A,A)')                    ' Revision Date    : ',TRIM(revision_date)
-    write(iunit,'(A,A/)')                   ' Compilation Date : ',TRIM(compile_date)
+    write(iunit,'(/A/)')                    'CFAST'
+    write(iunit,'(a,i0,".",i0,".",i0)')     'Version          : CFAST ',imajor, iminor, iminorrev
+    write(iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
+    write(iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
+    write(iunit,'(A,A/)')                   'Compilation Date : ',TRIM(compile_date)
     return
     
     end subroutine output_version
@@ -76,17 +76,42 @@ module output_routines
     
     end subroutine splitversion
 
+! --------------------------- output_initial_conditions -------------------------------------------
+
+    subroutine output_initial_conditions
+
+    !     Description:  Output initial test case description
+ 
+    call output_version (iofilo)
+    
+    write (iofilo,5000) trim(inputfile), trim(title)
+    if (outputformat>1) then
+        call output_initial_overview
+        call output_initial_ambient_conditions
+        call output_initial_compartments
+        call output_initial_vents
+        call output_initial_thermal_properties
+        call output_initial_fires
+        call output_initial_targets
+        call output_initial_detectors
+    end if
+
+    return
+
+5000 format ('Data file: ',a,/,'Title: ',a)
+    end subroutine output_initial_conditions
+
 ! --------------------------- output_results -------------------------------------------
 
     subroutine output_results(time,isw)
 
     !     Description:  Output the results of the simulation at the current time
-    !                RSLTLAY is the basic environment
-    !                RSLTFIR information on fires
-    !                RSLTTAR targets and walls - temperature, radiation and convective flux
-    !                RSLTSPRINK sprinkler and detector information
+    !                results_layers is the basic environment
+    !                results_fires information on fires
+    !                results_targets targets and walls - temperature, radiation and convective flux
+    !                results_detectors sprinkler and detector information
     !                RSLTHALL track the nose of the gravity wave
-    !                RSLTSP species
+    !                results_species species
 
     !     Arguments: TIME  Current time (s)
     !                ISW   1 if called from CFAST, 0 otherwise (only effects
@@ -95,35 +120,26 @@ module output_routines
 
     integer, intent(in) :: isw
     real(eb), intent(in) :: time
-    
-    if (time>100.) then
-        continue
-    end if
 
+    write (iofilo,5000) time
     if (outputformat>1) then
-        write (iofilo,5000) time
-        call rsltlay
-        call rsltfir(isw)
-        call rslttar(1)
-        call rsltsprink
-        call rsltsp
-        if(trace) then
-            call rsltflwt ()
-        else
-            call rsltflw ()
-        end if
+        call results_layers
+        call results_fires(isw)
+        call results_targets(1)
+        call results_detectors
+        call results_species
+        call results_vent_flows ()
     else if (outputformat==1) then
-        write (iofilo,5000) time
-        call rsltcmp (iofilo)
+        call results_compressed (iofilo)
     end if
     return
 
-5000 format (//,' Time = ',f8.1,' seconds.')
+5000 format (//,'Time = ',f8.1,' seconds.')
     end subroutine output_results
 
-! --------------------------- rsltlay -------------------------------------------
+! --------------------------- results_layers -------------------------------------------
 
-    subroutine rsltlay
+    subroutine results_layers
 
     !     Description:  Output the 2 layer environment at the current time
 
@@ -157,11 +173,11 @@ module output_routines
 5040 format (100('-'))
 5070 format (a13,3(1pg11.4),1x,1pg9.2,'(',i3,'%) ',1pg10.3,1x,1pg10.3,3x,1pg10.3)
 5071 format (a13,1pg11.4,11(' '),11(' '),1x,1pg9.2,7(' '),1pg10.3,1x,10(' '),3x,1pg10.3)
-    end subroutine rsltlay
+    end subroutine results_layers
 
-! --------------------------- rsltfir -------------------------------------------
+! --------------------------- results_fires -------------------------------------------
 
-    subroutine rsltfir (isw)
+    subroutine results_fires (isw)
 
     !     Description:  Output the fire environment at the current time
 
@@ -223,11 +239,11 @@ module output_routines
 5020 format (13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5030 format (a14,10x,3(1pg10.3),10x,3(1pg10.3))
 5040 format ('Outside',76x,1pg10.3)
-    end subroutine rsltfir
+    end subroutine results_fires
 
-! --------------------------- rsltsp -------------------------------------------
+! --------------------------- results_species -------------------------------------------
 
-    subroutine rsltsp
+    subroutine results_species
 
     !     Description:  Output the layer and wall species at the current time
 
@@ -283,15 +299,17 @@ module output_routines
 5040 format (1pg10.3)
 5050 format (//,a5,' LAYER SPECIES',/)
 5060 format (a13)
-    end subroutine rsltsp
+    end subroutine results_species
 
-! --------------------------- rsltflw -------------------------------------------
+! --------------------------- results_vent_flows -------------------------------------------
 
-    subroutine rsltflw ()
+    subroutine results_vent_flows ()
 
     !     Description:  Output the vent flow at the current time
 
-    integer :: i, ii, ifrom, ito, toprm = 1, botrm = 2
+    integer :: i, ii, iii, ifrom, ito, toprm = 1, botrm = 2, irm, inode
+    character :: ciout*14, cjout*12
+    logical first
     real(eb), dimension(8) :: flow
 
     character outbuf*132, cifrom*12, cito*12
@@ -301,7 +319,7 @@ module output_routines
     write (iofilo,5000)
     
 
-    !     horizontal flow natural vents    
+    ! horizontal flow natural vents    
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
         ifrom = ventptr%from
@@ -317,7 +335,7 @@ module output_routines
         write (iofilo,5010) 'H', i, cifrom, cito, outbuf
     end do
 
-    !     vertical flow natural vents
+    ! vertical flow natural vents
     do i = 1, n_vvents
         ifrom = ivvent(i,botrm)
         roomptr => roominfo(ifrom)
@@ -341,7 +359,7 @@ module output_routines
         write (iofilo,5010) 'V', i, cifrom, cito, outbuf
     end do
 
-    !     mechanical vents
+    ! mechanical vents
     if (nnode/=0.and.next/=0) then
         do i = 1, next-1, 2
             
@@ -370,33 +388,9 @@ module output_routines
             write (iofilo,5010) 'M', i, cifrom, cito, outbuf
         end do
     end if
-    return
-
-5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
-    '                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
-    '                                      Upper Layer               Lower Layer               Upper Layer',&
-    '               Lower Layer',/, &
-    'Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
-    '       Outflow      Inflow       Outflow',/,134('-'))
-
-5010 format (a1,i3,3x,a12,3x,a12,1x,a)
-     
-    end subroutine rsltflw
-
-! --------------------------- rsltflwt -------------------------------------------
-
-    subroutine rsltflwt ()
-
-    !     Description:  Output the vent flow at the current time
-
-    integer :: irm, i, ii, iii, inode
-    real(eb) :: flow(6)
-
-    character :: ciout*14, cjout*12, outbuf*132
-    logical first
-    type(room_type), pointer :: roomptr
     
-    write (iofilo,5000)
+    ! Total mass flowing through mechanical vents up to current time
+     write (iofilo,5030)
 
     do irm = 1, n
         roomptr => roominfo(irm)
@@ -405,22 +399,14 @@ module output_routines
         write (ciout,'(a14)') roomptr%name
         if (irm==n) ciout = 'Outside'
 
-        ! horizontal flow natural vents
-
-
-        ! vertical flow natural vents
-
-
-        ! mechanical vents
+       ! mechanical vents
         if (nnode/=0.and.next/=0) then
             do i = 1, next
                 ii = hvnode(1,i)
                 if (ii==irm) then
                     inode = hvnode(2,i)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
-                    do iii = 1, 4
-                        flow(iii) = 0.0_eb
-                    end do
+                    flow(1:4) = 0.0_eb
                     if (hveflot(upper,i)>=0.0_eb) flow(1) = hveflot(upper,i)
                     if (hveflot(upper,i)<0.0_eb) flow(2) = -hveflot(upper,i)
                     if (hveflot(lower,i)>=0.0_eb) flow(3) = hveflot(lower,i)
@@ -429,27 +415,35 @@ module output_routines
                     flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
                     call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
                     if (first) then
-                        if (i/=1) write (iofilo,5010)
-                        write (iofilo,5020) ciout, cjout, outbuf
+                        if (i/=1) write (iofilo,5040)
+                        write (iofilo,5050) ciout, cjout, outbuf
                         first = .false.
                     else
-                        write (iofilo,5020) ' ', cjout, outbuf
+                        write (iofilo,5050) ' ', cjout, outbuf
                     end if
                 end if
             end do
         end if
     end do
 
-5000 format (//,'TOTAL MASS FLOW THROUGH VENTS (kg)',//, &
+5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
+    '                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
+    '                                      Upper Layer               Lower Layer               Upper Layer',&
+    '               Lower Layer',/, &
+    'Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
+    '       Outflow      Inflow       Outflow',/,137('-'))
+5010 format (a1,i3,3x,a12,3x,a12,1x,a)
+5030 format (//,'TOTAL MASS FLOW THROUGH MECHANICAL VENTS (kg)',//, &
     'To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
     'Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/, 104('-'))
-5010 format (' ')
-5020 format (a14,1x,a12,1x,a)
-    end subroutine rsltflwt
+5040 format (' ')
+5050 format (a14,1x,a12,1x,a)
+     
+    end subroutine results_vent_flows
 
-! --------------------------- rsltcmp -------------------------------------------
+! --------------------------- results_compressed -------------------------------------------
 
-    subroutine rsltcmp (iounit)
+    subroutine results_compressed (iounit)
 
     !     Description:  Output a compressed output for 80 column screens
 
@@ -490,11 +484,11 @@ module output_routines
 5020 format ('  Outside',39x,1pg10.3)
 5030 format (i5,7x,2f8.1,2x,1pg9.2,3(1pg10.3))
 5040 format (i5,7x,f8.1,8(' '),2x,8(' '),3(1pg10.3))
-    end subroutine rsltcmp
+    end subroutine results_compressed
 
-! --------------------------- rslttar -------------------------------------------
+! --------------------------- results_targets -------------------------------------------
 
-    subroutine rslttar (itprt)
+    subroutine results_targets (itprt)
 
     !     description:  output the temperatures and fluxes on surfaces and targets at the current time
     !                itprt 1 if target printout specifically called for, 0 otherwise
@@ -571,11 +565,11 @@ module output_routines
          '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,158('-'))
 5010 format (a14,4(1pg10.3))
 5020 format (54x,a8,4x,3(1pg10.3),1x,5(1pg10.3,3x))
-    end subroutine rslttar
+    end subroutine results_targets
 
-! --------------------------- rsltsprink -------------------------------------------
+! --------------------------- results_detectors -------------------------------------------
 
-    subroutine rsltsprink
+    subroutine results_detectors
 
     !     Description:  Output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
 
@@ -625,36 +619,11 @@ module output_routines
 5030    format(i3,5x,a14,5x,a6,4x,1pe10.3,5x,1pe10.3,4x,1pe10.3,24x,a3)
     end do
     return
-    end subroutine rsltsprink
+    end subroutine results_detectors
 
-! --------------------------- output_initial_conditions -------------------------------------------
+! --------------------------- output_initial_overview -------------------------------------------
 
-    subroutine output_initial_conditions
-
-    !     Description:  Output initial test case description
- 
-    call output_version (iofilo)
-    
-    write (iofilo,5000) trim(inputfile), trim(title)
-    if (outputformat>1) then
-        call outover
-        call outamb
-        call outcomp
-        call outvent
-        call outthe
-        call outtarg
-        call outdetectors
-        call outfire
-    end if
-
-    return
-
-5000 format ('Data file is ',a,'    Title is ',a)
-    end subroutine output_initial_conditions
-
-! --------------------------- outover -------------------------------------------
-
-    subroutine outover
+    subroutine output_initial_overview
 
     !     description:  output initial test case overview
 
@@ -663,15 +632,15 @@ module output_routines
     write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
 
 5000 format (//,'OVERVIEW',/)
-5010 FORMAT (/,'Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,/,i4,12x,i4,10x,i4,17x,i4)
+5010 FORMAT (/,'Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,61('-'),/,i4,12x,i4,10x,i4,17x,i4)
 5020 format (/,'Simulation     Output         Smokeview      Spreadsheet',/, &
              'Time           Interval       Interval       Interval',/, & 
-             '(s)            (s)            (s)            (s)',/,i6,6x,3(i6,9x))
-    end subroutine outover
+             '   (s)            (s)            (s)            (s)',/,56('-'),/,i6,6x,3(i6,9x))
+    end subroutine output_initial_overview
 
-! --------------------------- outamb -------------------------------------------
+! --------------------------- output_initial_ambient_conditions -------------------------------------------
 
-    subroutine outamb
+    subroutine output_initial_ambient_conditions
 
     !     Description:  Output initial test case ambient conditions
 
@@ -683,13 +652,13 @@ module output_routines
     'Interior       Interior       Exterior       Exterior',/, &
     'Temperature    Pressure       Temperature    Pressure',/, &
     '  (C)            (Pa)           (C)            (Pa)', &
-    //,2(f7.0,8x,f9.0,6x))
+    /,53('-'),/,2(f7.0,8x,f9.0,6x))
      
-    end subroutine outamb
+    end subroutine output_initial_ambient_conditions
 
-! --------------------------- outcomp -------------------------------------------
+! --------------------------- output_initial_compartments -------------------------------------------
 
-    subroutine outcomp
+    subroutine output_initial_compartments
 
     !     Description:  Output initial test case geometry
     
@@ -705,13 +674,13 @@ module output_routines
 5000 format (//,'COMPARTMENTS',//, &
     'Compartment  Name                Width        Depth        Height       Floor        Ceiling   ',/, &
     '                                                                        Height       Height    ',/, & 
-    33x,5('(m)',10x),/,' ',96('-'))
+    33x,5('(m)',10x),/,96('-'))
 5010 format (i5,8x,a13,5(f12.2,1x))
-    end subroutine outcomp
+    end subroutine output_initial_compartments
 
-! --------------------------- outvent -------------------------------------------
+! --------------------------- output_initial_vents -------------------------------------------
 
-    subroutine outvent
+    subroutine output_initial_vents
 
     !     Description:  Output initial test case vent connections
 
@@ -731,7 +700,7 @@ module output_routines
                 do k = 1, 4
                     roomptr => roominfo(j)
                     write (cjout,'(a14)') roomptr%name
-                    if (j==n) cjout = ' Outside'
+                    if (j==n) cjout = 'Outside'
                     if (iand(1,ishft(ihvent_connections(i,j),-k))/=0) then
                         iijk = ijk(i,j,k)
                         roomptr => roominfo(i)
@@ -751,9 +720,9 @@ module output_routines
             do j = 1, n
                 if (ivvent_connections(i,j)/=0) then
                     write (ciout,'(i5,3x)') i
-                    if (i==n) ciout = ' Outside'
+                    if (i==n) ciout = 'Outside'
                     write (cjout,'(i5,3x)') j
-                    if (j==n) cjout = ' Outside'
+                    if (j==n) cjout = 'Outside'
                     csout = 'Round'
                     if (vshape(i,j)==2) csout = 'Square'
                     roomptr => roominfo(j)
@@ -828,9 +797,9 @@ module output_routines
     41X,5('(m)         '),/,100('-'))
 5020 format (a14,1X,A14,I3,5X,5(F9.2,3X))
 5030 format (//,'There are no vertical natural flow connections')
-     5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,' Top            Bottom         Shape',&
+     5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Shape',&
           '     Area      ','Relative  Absolute',/, &
-    'Compartment    Compartment                        Height    Height',/,40X,'(m^2)     ',2('(m)       '),/,70('-'))
+    'Compartment    Compartment                        Height    Height',/,40X,'(m^2)     ',2('(m)       '),/,72('-'))
 5050 format (a8,7x,a8,7x,a6,2x,3(f7.2,3x))
 5060 formaT (//,'There are no mechanical flow connections')
 5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
@@ -843,37 +812,11 @@ module output_routines
 5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
 5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
      
-    end  subroutine outvent
+    end  subroutine output_initial_vents
 
-! --------------------------- chkext -------------------------------------------
+! --------------------------- output_initial_thermal_properties -------------------------------------------
 
-    subroutine chkext (ind,irm,iext)
-
-    !     description:  check if an hvac node is a connection to an external room
-    !     arguments: ind   node number to check
-    !                irm   room number if node is an external connection
-    !                iext  external node number is node is an external connection
-
-    integer, intent(in) :: ind
-    integer, intent(out) :: irm, iext
-    
-    integer :: i
-
-    do i = 1, next
-        if (hvnode(2,i)==ind) then
-            iext = i
-            irm = hvnode(1,i)
-            return
-        end if
-    end do
-    irm = 0
-    iext = 0
-    return
-    end subroutine chkext
-
-! --------------------------- outthe -------------------------------------------
-
-    subroutine outthe
+    subroutine output_initial_thermal_properties
 
     !     description:  output initial test case thermal properties
 
@@ -911,21 +854,21 @@ module output_routines
     return
 
 5000 format (//,'Heat transfer for all surfaces is turned off')
-5010 format (//,'THERMAL PROPERTIES',//,'Compartment    Ceiling      Wall         Floor',/,70('-'))
+5010 format (//,'THERMAL PROPERTIES',//,'Compartment    Ceiling      Wall         Floor',/,47('-'))
 5020 format (a13,3(a10,3x))
-5030 format (//,'Name',4X,'Conductivity',1X,'Specific heat',5X,&
-          'Density',5X,'Thickness',3X,'Emissivity')
-5040 format (a8,5(1pg13.3),5e10.2)
-5050 format (8x,4(1pg13.3))
+5030 format (//,'Name',4X,'Conductivity',6X,'Specific Heat',5X,&
+          'Density',8X,'Thickness',5X,'Emissivity',/,83('-'))
+5040 format (a8,5(1pg13.3,3x),5e10.2)
+5050 format (8x,4(1pg13.3,3x))
 5060 format (' ')
 
-    end subroutine outthe
+    end subroutine output_initial_thermal_properties
 
-! --------------------------- outfire -------------------------------------------
+! --------------------------- output_initial_fires -------------------------------------------
 
-    subroutine outfire
+    subroutine output_initial_fires
 
-    !     routine: outfire
+    !     routine: output_initial_fires
     !     purpose: This routine outputs the fire specification for all the object fires
     !     Arguments: none
 
@@ -940,6 +883,7 @@ module output_routines
     type(room_type), pointer :: roomptr
 
     if (numobjl>0) then
+        write (iofilo,5080)
         do io = 1, mxfires
             if (objpnt(io)/=0) then
                 j = objpnt(io)
@@ -952,7 +896,7 @@ module output_routines
                 write (cbuf,5040)
                 write (cbuf(51:132),5050)
                 is = 103
-                write (iofilo,'(3x,a)') cbuf(1:len_trim(cbuf))
+                write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
                 write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
                 write (iofilo,5010) ('-',i = 1,is-1)
                 do i = 1, nnv
@@ -969,18 +913,19 @@ module output_routines
 5000 format ('  (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
 5010 format (255a1)
 5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
-          '   Position (x,y,z)     Relative    Lower O2    Radiative',/,52x,'Humidity    Limit       Fraction')
+          '   Position (x,y,z)     Relative    Lower O2    Radiative',/,52x,'Humidity    Limit       Fraction',/85('-'))
 5030 format (a14,1x,a13,3(f7.2),f7.1,6x,f7.2,5x,f7.2//)
-5031 format ('Chemical formula of the fuel',/,3x,'Carbon    Hydrogen  Oxygen    Nitrogen  Chlorine',/5(f7.3,3x),//)
+5031 format ('Chemical formula of the fuel',/,'Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine',/,50('-'),/,5(f7.3,3x),//)
 5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
 5050 format ('Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
 5070 format (10(1PG10.2),2x,2g10.2)
-    end subroutine outfire
+5080 format (/,'FIRES')
+    end subroutine output_initial_fires
 
-! --------------------------- outtarg -------------------------------------------
+! --------------------------- output_initial_targets -------------------------------------------
 
-    subroutine outtarg
+    subroutine output_initial_targets
 
     !      description:  output initial test case target specifications
 
@@ -1001,11 +946,11 @@ module output_routines
 5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
     end do
     return
-    end subroutine outtarg
+    end subroutine output_initial_targets
 
-! --------------------------- outdetectors -------------------------------------------
+! --------------------------- output_initial_detectors -------------------------------------------
 
-    subroutine outdetectors
+    subroutine output_initial_detectors
 
     !      description:  output initial test case target specifications
 
@@ -1017,11 +962,11 @@ module output_routines
     if(ndtect/=0) write(iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
          ,'Target  Compartment        Type           Position (x, y, z)            Activation',/ &
-         ,'                                                                        Obscuration ', &
+         ,'                                                                        Obscuration    ', &
          'Temperature   RTI           Spray Density',/ &
          ,'                                         (m)      (m)      (m)          (%/m)       ', &
          '  (C)           (m s)^1/2     (m/s)',/ &
-         ,127('-'))
+         ,128('-'))
 
     do idtect = 1, ndtect
         iroom = ixdtect(idtect,droom)
@@ -1043,8 +988,34 @@ module output_routines
         write (iofilo,'(a)') trim(outbuf)
     end do
     return
-    end subroutine outdetectors
+    end subroutine output_initial_detectors
 
+! --------------------------- chkext -------------------------------------------
+
+    subroutine chkext (ind,irm,iext)
+
+    !     description:  check if an hvac node is a connection to an external room
+    !     arguments: ind   node number to check
+    !                irm   room number if node is an external connection
+    !                iext  external node number is node is an external connection
+
+    integer, intent(in) :: ind
+    integer, intent(out) :: irm, iext
+    
+    integer :: i
+
+    do i = 1, next
+        if (hvnode(2,i)==ind) then
+            iext = i
+            irm = hvnode(1,i)
+            return
+        end if
+    end do
+    irm = 0
+    iext = 0
+    return
+    end subroutine chkext
+    
 ! --------------------------- flwout -------------------------------------------
 
     subroutine flwout (outbuf,flow1,flow2,flow3,flow4,flow5,flow6,flow7,flow8)
@@ -1099,120 +1070,6 @@ module output_routines
 5050 format (2x,e11.4)
     end subroutine flwout
 
-! --------------------------- outjac -------------------------------------------
-
-    subroutine outjac (tsec, wm, neqs)
-
-    !     description: prints out the magnitude of the jacobian matrix
-
-    real(eb), intent(in) :: wm(jacdim,*), tsec
-    integer, intent(in) :: neqs
-    
-    real(eb) :: wmii, wmij, tmp, tmp1
-    integer :: ioffst(8), itmp, itmp2, i, j, k, iounit, irdx, itcol, icdx, iitmp
-    logical :: firstc
-    character :: entry(maxeq)*2, lbls(8)*3, hder*256, ddiag*2
-
-    data firstc/.true./
-    data lbls/'p  ','pmv','tmv','tu ','vu ','tl ','wt ','prd'/
-    save ioffst, hder, iounit
-
-    !     normal processing of the debug output
-
-    if (dbugsw(d_jac,d_prn,1)<=0) return
-    if (firstc) then
-        firstc = .false.
-        ioffst(1) = nofp
-        ioffst(2) = nofpmv
-        ioffst(3) = noftmv
-        ioffst(4) = noftu
-        ioffst(5) = nofvu
-        ioffst(6) = noftl
-        ioffst(7) = nofwt
-        ioffst(8) = nofprd
-        hder = '  '
-        itmp2 = 0
-        do i = 1, 7
-            if (ioffst(i)-ioffst(i+1)==0) cycle
-            itmp2 = itmp2 + 1
-            itmp = ioffst(i)*2 + 7 + itmp2*2
-            hder(itmp:(itmp+2)) = lbls(i)
-        end do
-        iounit = dbugsw(d_jac,d_prn,1)
-    end if
-    write(iounit,*)' '
-    write(iounit,*)'jacobian',numjac + totjac,' time ',tsec
-    write(iounit,*)' '
-    write(iounit,'(a256)')hder
-    irdx = 1
-    do i = 1, neqs
-        if (i>ioffst(irdx))then
-            irdx = irdx + 1
-101         continue   
-            if (i>ioffst(irdx)) then
-                irdx = irdx + 1
-                go to 101
-            end if
-            itcol = neqs + 8
-            do 103 k = 1, itcol + 2
-                entry(k) = '--'
-103         continue
-            write(iounit,*)(entry(k),k=1,itcol)
-        end if
-        entry(1) = lbls(irdx-1)(1:2)
-        icdx = 1
-        itcol = 1
-        wmii = wm(i,i)
-        if(wmii/=0.0_eb)then
-            iitmp = log(abs(wmii))
-        else
-            iitmp = 11
-        end if
-        if (iitmp<verysm) then
-            ddiag = ' .'
-        else if (iitmp>verybg) then
-            ddiag = ' û'
-        else
-            write(ddiag,'(i2)')iitmp
-        end if
-
-        do j = 1, neqs
-            itcol = itcol + 1
-            if (j>ioffst(icdx)) then
-                icdx = icdx + 1
-102             continue   
-                if (j>ioffst(icdx)) then
-                    icdx = icdx + 1
-                    go to 102
-                end if
-                entry(itcol) = ' |'
-                itcol = itcol + 1
-            end if
-            wmij = wm(i,j)
-            if (wmij/=0.0_eb.and.wmii/=0.0_eb) then
-                tmp1 = abs(wmij/wmii)
-                tmp = log(tmp1)
-            else if (wmii==0.0_eb) then
-                tmp = 11
-            else
-                tmp = -11
-            end if
-            itmp = int(tmp + 0.5_eb)
-
-            if (wmij==0.0_eb) then
-                entry(itcol) = '  '
-            else if (itmp<verysm) then
-                entry(itcol) = ' .'
-            else if (itmp>verybg) then
-                entry(itcol) = ' û'
-            else
-                write(entry(itcol),'(i2)')itmp
-            end if
-        end do
-        write(iounit,*)ddiag,':',(entry(k),k=1,itcol)
-    end do
-    return
-    end subroutine outjac
 
 ! --------------------------- find_error_component -------------------------------------------
 
@@ -1443,7 +1300,7 @@ module output_routines
 
     rewind (12)
     write(12,5001) t, dt
-    call rsltcmp (12)
+    call results_compressed (12)
     return
 
 5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)

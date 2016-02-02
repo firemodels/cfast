@@ -276,7 +276,7 @@ Public Class User_Units
         Dim RegistryUnits(,) As String
         RegistryUnits = GetAllSettings("CFAST", "Units")
         Try
-            If RegistryUnits.GetUpperBound(0) = 5 Then
+            If RegistryUnits.GetUpperBound(0) = BaseUnitsDimension Then
                 For i = 0 To BaseUnitsDimension
                     CurrentUnits(i) = Val(RegistryUnits(i, 1))
                     cArray(i).SelectedIndex = CurrentUnits(i)

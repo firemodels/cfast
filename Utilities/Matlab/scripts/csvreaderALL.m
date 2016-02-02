@@ -13,7 +13,7 @@ gamma = 1.4;
 Cp = 1012;
 
 filenameN = strcat(filename,'_n.csv');
-Q = importdata(filenameN,',',2);
+Q = importdata(filenameN,',',4);
 F = strsplitter(Q.textdata{1,1},',');
 
 colTu = find(strncmpi(F,'ULT',3));
@@ -61,7 +61,7 @@ end
 end
 %Analyzing the S file and extracting the nexessary quantities
 filenameS = strcat(filename,'_s.csv');
-S = importdata(filenameS,',',2);
+S = importdata(filenameS,',',4);
 W = strsplitter(S.textdata{1,1},',');
 colO2u = find(strncmpi(W,'ULO2',4));
 colCO2u = find(strncmpi(W,'ULCO2',5));

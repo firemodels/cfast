@@ -307,7 +307,7 @@ module output_routines
 
     !     Description:  Output the vent flow at the current time
 
-    integer :: i, ii, iii, ifrom, ito, toprm = 1, botrm = 2, irm, inode
+    integer :: i, ii, ifrom, ito, toprm = 1, botrm = 2, irm, inode
     character :: ciout*14, cjout*12
     logical first
     real(eb), dimension(8) :: flow

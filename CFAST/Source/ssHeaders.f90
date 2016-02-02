@@ -24,7 +24,7 @@ module spreadsheet_header_routines
     ! This is the header information for the normal spreadsheet output
    
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
-    character(35) :: headertext(3,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
+    character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
     type(room_type), pointer :: roomptr
 
@@ -36,15 +36,12 @@ module spreadsheet_header_routines
     data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
 
     !  spreadsheet header.  Add time first
-    if (validate) then
-        headertext(1,1) = LabelsShort(1)
-        headertext(2,1) = LabelUnits(1)
-        headertext(3,1) = ' '
-    else
-        headertext(1,1) = Labels(1)
-        headertext(2,1) = ' '
-        headertext(3,1) = LabelUnits(1)
-    end if
+
+    headertext(1,1) = LabelsShort(1)
+    headertext(2,1) = Labels(1)
+    headertext(3,1) = ' '
+    headertext(4,1) = LabelUnits(1)
+
     position = 1
 
     ! Compartment variables
@@ -54,16 +51,11 @@ module spreadsheet_header_routines
             if (i/=2.or..not.roomptr%shaft) then
                 if (i/=3.or..not.roomptr%shaft) then
                     position = position + 1
-                    if (validate) then
-                        call toIntString(j,cRoom)
-                        headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
-                        headertext(2,position) = LabelUnits(i+1)
-                        headertext(3,position) = ' '
-                    else
-                        headertext(1,position) = Labels(i+1)
-                        headertext(2,position) = roomptr%name
-                        headertext(3,position) = LabelUnits(i+1)
-                    end if
+                    call toIntString(j,cRoom)
+                    headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
+                    headertext(2,position) = Labels(i+1)
+                    headertext(3,position) = roomptr%name
+                    headertext(4,position) = LabelUnits(i+1)
                 end if
             end if
         end do
@@ -73,47 +65,38 @@ module spreadsheet_header_routines
     do i = 1, n
         roomptr => roominfo(i)
         position = position + 1
-        if (validate) then
-            call toIntString(i,cRoom)
-            if (i==n) then
-                headertext(1,position) = trim(LabelsShort(7)) // 'Out'
-            else
-                headertext(1,position) = trim(LabelsShort(7)) // trim(cRoom)
-            end if
-            headertext(2,position) = LabelUnits(7)
-            headertext(3,position) = ' '
+        call toIntString(i,cRoom)
+        if (i==n) then
+            headertext(1,position) = trim(LabelsShort(7)) // 'Out'
         else
-            headertext(1,position) = Labels(7)
-            if (i==n) then
-                headertext(2,position) = 'Outside'
-            else
-                headertext(2,position) = roomptr%name
-            end if
-            headertext(3,position) = LabelUnits(7)
+            headertext(1,position) = trim(LabelsShort(7)) // trim(cRoom)
         end if
+        headertext(2,position) = Labels(7)
+        if (i==n) then
+            headertext(3,position) = 'Outside'
+        else
+            headertext(3,position) = roomptr%name
+        end if
+        headertext(4,position) = LabelUnits(7)
     end do
 
     ! Fire variables.
     do j = 1, numobjl
         do i = 1, 9
             position = position + 1
-            if (validate) then
-                call toIntString(j,cFire)
-                headertext(1,position) = trim(LabelsShort(i+7))//trim(cFire)
-                headertext(2,position) = LabelUnits(i+7)
-                headertext(3,1) = ' '
-            else
-                headertext(1,position) = Labels(i+7)
-                headertext(2,position) = objnin(j)
-                headertext(3,position) = LabelUnits(i+7)
-            end if
+            call toIntString(j,cFire)
+            headertext(1,position) = trim(LabelsShort(i+7))//trim(cFire)
+            headertext(2,position) = Labels(i+7)
+            headertext(3,position) = objnin(j)
+            headertext(4,position) = LabelUnits(i+7)
         end do
     end do
 
     ! write out header
     write(21,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
     write(21,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(21,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(21,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(21,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     end subroutine ssHeadersNormal
 
@@ -125,7 +108,7 @@ module spreadsheet_header_routines
 
     ! local variables     
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
-    character(35) :: headertext(3,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
+    character(35) :: headertext(4,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     logical tooutput(ns), molfrac(ns)
     data tooutput /9*.true.,.false.,.true./ 
     data molfrac /8*.true.,3*.false./
@@ -144,15 +127,10 @@ module spreadsheet_header_routines
        'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg' /
 
     !  spreadsheet header.  Add time first
-    if (validate) then
-        headertext(1,1) = LabelsShort(1)
-        headertext(2,1) = LabelUnits(1)
-        headertext(3,1) = ' '
-    else
-        headertext(1,1) = Labels(1)
-        headertext(2,1) = ' '
-        headertext(3,1) = LabelUnits(1)
-    end if
+    headertext(1,1) = LabelsShort(1)
+    headertext(2,1) = Labels(1)
+    headertext(3,1) = ' '
+    headertext(4,1) = LabelUnits(1)
     position = 1
 
     ! Species by compartment, then layer, then species type
@@ -163,18 +141,13 @@ module spreadsheet_header_routines
                 do lsp = 1, ns
                     if(tooutput(lsp)) then
                         position = position + 1
-                        if (validate) then
-                            call toIntString(i,cRoom)
-                            headertext(1,position) = trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
-                            headertext(2,position) = LabelUnits((j-1)*11+lsp+1)
-                            if (molfrac(lsp)) headertext(2,position) = 'mol frac'
-                            if (lsp==9) headertext(2,position) = 'mg/m^3'
-                            headertext(3,1) = ' '
-                        else
-                            headertext(1,position) = Labels((j-1)*11+lsp+1)
-                            headertext(2,position) = roomptr%name
-                            headertext(3,position) = LabelUnits((j-1)*11+lsp+1)
-                        end if
+                        call toIntString(i,cRoom)
+                        headertext(1,position) = trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
+                        headertext(2,position) = Labels((j-1)*11+lsp+1)
+                        headertext(3,position) = roomptr%name
+                        headertext(4,position) = LabelUnits((j-1)*11+lsp+1)
+                        if (molfrac(lsp)) headertext(4,position) = 'mol frac'
+                        if (lsp==9) headertext(4,position) = 'mg/m^3'
                     end if
                 end do
             end if
@@ -184,7 +157,8 @@ module spreadsheet_header_routines
     ! write out header
     write(23,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
     write(23,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(23,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(23,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(23,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     end subroutine ssHeadersSpecies
 
@@ -210,7 +184,7 @@ module spreadsheet_header_routines
     !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
     
     integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
-    character(35) :: headertext(3,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
+    character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
     integer position, i, j, itarg, itype
     type(room_type), pointer :: roomptr
 
@@ -231,15 +205,10 @@ module spreadsheet_header_routines
     data frontorback / '','B_'/
 
     !  spreadsheet header.  Add time first
-    if (validate) then
-        headertext(1,1) = LabelsShort(1)
-        headertext(2,1) = LabelUnits(1)
-        headertext(3,1) = ' '
-    else
-        headertext(1,1) = Labels(1)
-        headertext(2,1) = ' '
-        headertext(3,1) = LabelUnits(1)
-    end if
+    headertext(1,1) = LabelsShort(1)
+    headertext(2,1) = Labels(1)
+    headertext(3,1) = ' '
+    headertext(4,1) = LabelUnits(1)
     position = 1
 
     ! Compartment surfaces temperatures
@@ -247,16 +216,11 @@ module spreadsheet_header_routines
         roomptr => roominfo(i)
         do j = 1, 4
             position = position + 1
-            if (validate) then
-                call toIntString(i,cRoom)
-                headertext(1,position) = trim(LabelsShort(j+1))//trim(cRoom)
-                headertext(2,position) = LabelUnits(j+1)
-                headertext(3,position) = ' '
-            else
-                headertext(1,position) = Labels(j+1)
-                headertext(2,position) = roomptr%name
-                headertext(3,position) = LabelUnits(j+1)
-            end if
+            call toIntString(i,cRoom)
+            headertext(1,position) = trim(LabelsShort(j+1))//trim(cRoom)
+            headertext(2,position) = Labels(j+1)
+            headertext(3,position) = roomptr%name
+            headertext(4,position) = LabelUnits(j+1)
         end do
     end do
 
@@ -266,29 +230,24 @@ module spreadsheet_header_routines
         ! front surface
         do j = 1, 14
             position = position + 1
-            if (validate) then
-                headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
-                headertext(2,position) = LabelUnits(j+5)
-                headertext(3,position) = ' '
-            else
-                headertext(1,position) = Labels(j+5)
-                headertext(2,position) = 'Target ' // trim(cDet)
-                headertext(3,position) = LabelUnits(j+5)
-            end if
+            headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
+            headertext(2,position) = Labels(j+5)
+            headertext(3,position) = 'Target ' // trim(cDet)
+            headertext(4,position) = LabelUnits(j+5)
         end do
         ! back surface
-        if (validate) then
-                position = position + 1
-                headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(7)) // trim(cDet)
-                headertext(2,position) = LabelUnits(7)
-                headertext(3,position) = ' '
-            do j = 4, 14
-                position = position + 1
-                headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(j+5)) // trim(cDet)
-                headertext(2,position) = LabelUnits(j+5)
-                headertext(3,position) = ' '
-            end do
-        end if
+        !if (validate) then
+        !        position = position + 1
+        !        headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(7)) // trim(cDet)
+        !        headertext(2,position) = LabelUnits(7)
+        !        headertext(3,position) = ' '
+        !    do j = 4, 14
+        !        position = position + 1
+        !        headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(j+5)) // trim(cDet)
+        !        headertext(2,position) = LabelUnits(j+5)
+        !        headertext(3,position) = ' '
+        !    end do
+        !end if
     end do
 
     ! Detectors
@@ -304,23 +263,19 @@ module spreadsheet_header_routines
         end if
         do j = 1, 4
             position = position + 1
-            if (validate) then
-                headertext(1,position) = trim(LabelsShort(j+19))//trim(cDet)
-                headertext(2,position) = LabelUnits(j+19)
-                headertext(3,position) = ' '
-            else
-                headertext(1,position) = Labels(j+19)
-                write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
-                headertext(2,position) = cTemp
-                headertext(3,position) = LabelUnits(j+19)
-            end if
+            headertext(1,position) = trim(LabelsShort(j+19))//trim(cDet)
+            headertext(2,position) = Labels(j+19)
+            write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
+            headertext(3,position) = cTemp
+            headertext(4,position) = LabelUnits(j+19)
         end do
     end do
 
     ! write out header
     write(24,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
     write(24,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(24,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(24,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(24,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     return
     end subroutine ssHeadersFlux
@@ -333,7 +288,7 @@ module spreadsheet_header_routines
     !	The logic is identical to output_spreadsheet_flow so the output should be parallel
 
     integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
-    character(35) :: headertext(3,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
+    character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
     integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
 
@@ -345,15 +300,10 @@ module spreadsheet_header_routines
     data LabelUnits / 's', 3*'kg/s', 2*'kg' /
 
     !  spreadsheet header.  Add time first
-    if (validate) then
-        headertext(1,1) = LabelsShort(1)
-        headertext(2,1) = LabelUnits(1)
-        headertext(3,1) = ' '
-    else
-        headertext(1,1) = Labels(1)
-        headertext(2,1) = ' '
-        headertext(3,1) = LabelUnits(1)
-    end if
+    headertext(1,1) = LabelsShort(1)
+    headertext(2,1) = Labels(1)
+    headertext(3,1) = ' '
+    headertext(4,1) = LabelUnits(1)
     position = 1
 
     !	Do the output by compartments
@@ -369,27 +319,19 @@ module spreadsheet_header_routines
 
         position = position + 1
         call tointstring(ventptr%counter,cvent)
-        if (validate) then
-            write (ctemp,'(6a)') trim(labelsshort(2)),trim(cifrom),'>',trim(cito),'_#',trim(cvent)
-            headertext(1,position) = ctemp
-            headertext(2,position) = labelunits(2)
-            headertext(3,position) = ' '
-            position = position + 1
-            write (ctemp,'(6a)') trim(labelsshort(2)),trim(cito),'>',trim(cifrom),'_#',trim(cvent)
-            headertext(1,position) = ctemp
-            headertext(2,position) = labelunits(2)
-            headertext(3,position) = ' '
-        else
-            headertext(1,position) = labels(2)
-            write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cvent),trim(cifrom),'>',trim(cito)
-            headertext(2,position) = ctemp
-            headertext(3,position) = labelunits(2)
-            position = position + 1
-            headertext(1,position) = labels(2)
-            write (ctemp,'(a,1x,a,1x,3a)') 'Vent #',trim(cvent),trim(cito),'>',trim(cifrom)
-            headertext(2,position) = ctemp
-            headertext(3,position) = labelunits(2)
-        end if
+        write (ctemp,'(6a)') trim(labelsshort(2)),trim(cifrom),'_',trim(cito),'_',trim(cvent)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(2)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),'from ', trim(cifrom),' to ',trim(cito)
+        headertext(3,position) = ctemp
+        headertext(4,position) = labelunits(2)
+        position = position + 1
+        write (ctemp,'(6a)') trim(labelsshort(2)),trim(cito),'_',trim(cifrom),'_',trim(cvent)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(2)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),'from ',trim(cito),' to ',trim(cifrom)
+        headertext(3,position) = ctemp
+        headertext(4,position) = labelunits(2)
     end do
 
     ! Natural flow through horizontal vents (vertical flow)
@@ -402,29 +344,19 @@ module spreadsheet_header_routines
         call tointstring(ito,cito)
         if (ito==n) cito = 'Outside'
         position = position + 1
-        
-        if (validate) then
-            write (ctemp,'(5a)') trim(labelsshort(3)),trim(cifrom),'>',trim(cito)
-            headertext(1,position) = ctemp
-            headertext(2,position) = labelunits(3)
-            headertext(3,position) = ' '
-            position = position + 1
-            write (ctemp,'(5a)') trim(labelsshort(3)),trim(cito),'>',trim(cifrom)
-            headertext(1,position) = ctemp
-            headertext(2,position) = labelunits(3)
-            headertext(3,position) = ' '
-        else
-            headertext(1,position) = labels(3)
-            write (ctemp,'(a,1x,3a)') 'Vent',trim(cifrom),'>',trim(cito)
-            headertext(2,position) = ctemp
-            headertext(3,position) = labelunits(3)
-            position = position + 1
-            headertext(1,position) = labels(3)
-            write (ctemp,'(a,1x,3a)') 'Vent',trim(cito),'>',trim(cifrom)
-            headertext(2,position) = cTemp
-            headertext(3,position) = LabelUnits(3)
-        end if
-        
+        write (ctemp,'(5a)') trim(labelsshort(3)),trim(cifrom),'_',trim(cito)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(3)
+        write (ctemp,'(a,1x,3a)') 'Vent from',trim(cifrom),' to ',trim(cito)
+        headertext(3,position) = ctemp
+        headertext(4,position) = labelunits(3)
+        position = position + 1
+        write (ctemp,'(5a)') trim(labelsshort(3)),trim(cito),'_',trim(cifrom)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(3)
+        write (ctemp,'(a,1x,3a)') 'Vent from',trim(cito),' to ',trim(cifrom)
+        headertext(3,position) = cTemp
+        headertext(4,position) = LabelUnits(3)
     end do
 
     ! Mechanical ventilation
@@ -437,27 +369,22 @@ module spreadsheet_header_routines
             call toIntString(inode,ciTo)
             do ih = 1,3
                 position = position + 1
-                if (validate) then
-                    if (ih==1) then
-                        if (ciFrom=='Outside') then
-                            headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '>N' // trim(ciTo)
-                        else
-                            headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '>N' // trim(ciTo)
-                        end if
+                if (ih==1) then
+                    if (ciFrom=='Outside') then
+                        headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '_N' // trim(ciTo)
                     else
-                        headertext(1,position) = trim(LabelsShort(ih+3)) // 'Fan_N' // trim(ciTo)
+                        headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '_N' // trim(ciTo)
                     end if
-                    headertext(2,position) = LabelUnits(ih+3)
-                    headertext(3,position) = ' '
                 else
-                    headertext(1,position) = Labels(ih+3)
-                    if (ih==1) then
-                        headertext(2,position) = 'Vent ' // trim(ciFrom) // '> Node ' // trim(ciTo)
-                    else
-                        headertext(2,position) = 'Fan at Node ' // trim(ciTo)
-                    end if
-                    headertext(3,position) = LabelUnits(ih+3)
+                    headertext(1,position) = trim(LabelsShort(ih+3)) // 'Fan_N' // trim(ciTo)
                 end if
+                headertext(2,position) = Labels(ih+3)
+                if (ih==1) then
+                    headertext(3,position) = 'Vent from' // trim(ciFrom) // 'to Node ' // trim(ciTo)
+                else
+                    headertext(3,position) = 'Fan at Node ' // trim(ciTo)
+                end if
+                headertext(4,position) = LabelUnits(ih+3)
             end do
         end do
     end if
@@ -465,7 +392,8 @@ module spreadsheet_header_routines
     ! write out header
     write(22,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
     write(22,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    if (.not.validate) write(22,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(22,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(22,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     return
 

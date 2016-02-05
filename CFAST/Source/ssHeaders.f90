@@ -187,6 +187,7 @@ module spreadsheet_header_routines
     character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
     integer position, i, j, itarg, itype
     type(room_type), pointer :: roomptr
+    type(target_type), pointer :: targptr
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
         'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
@@ -227,12 +228,13 @@ module spreadsheet_header_routines
     ! Targets
     do itarg = 1, ntarg
         call toIntString(itarg,cDet)
+        targptr => targetinfo(itarg)
         ! front surface
         do j = 1, 14
             position = position + 1
             headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
             headertext(2,position) = Labels(j+5)
-            headertext(3,position) = 'Target ' // trim(cDet)
+            headertext(3,position) = targptr%name
             headertext(4,position) = LabelUnits(j+5)
         end do
         ! back surface

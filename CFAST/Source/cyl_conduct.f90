@@ -127,20 +127,20 @@ module cylinder_routines
     real(eb), intent(in), dimension(nx) :: wtemp
     real(eb), intent(out) :: tempx
 
-    real(eb) :: room_depth, r, rint, factor
+    real(eb) :: dr, r, rint, factor
     integer :: left, right
 
-    room_depth = rad/nx
+    dr = rad/nx
     r = rad-x
-    if(r<=room_depth/2.0_eb)then
+    if(r<=dr/2.0_eb)then
         tempx = wtemp(1)
         return
     end if
-    if(r>=rad-room_depth/2.0_eb)then
+    if(r>=rad-dr/2.0_eb)then
         tempx = wtemp(nx)
         return
     end if
-    rint = r/room_depth-0.5_eb
+    rint = r/dr-0.5_eb
     left = int(rint)+1
     left=max(min(left,nx),1)
     right = left + 1

@@ -1,13 +1,14 @@
 module spreadsheet_routines
     use precision_parameters
     use fire_routines, only : flame_height
+    use target_routines, only: target_nodes
     use opening_fractions, only : qchfraction
     use spreadsheet_header_routines
     use utility_routines
     
     private
     
-    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_residuals, spreadsheetfslabs, ssprintslab
+    public output_spreadsheet, output_spreadsheet_smokeview
     
     contains
     
@@ -96,29 +97,6 @@ module spreadsheet_routines
     return
     end subroutine output_spreadsheet_normal
 
-! --------------------------- SSaddtolist -------------------------------------------
-
-    subroutine ssaddtolist (ic, valu, array)
-
-    use precision_parameters
-    implicit none
-    
-    real(eb), intent(in) :: valu
-    real(eb), intent(out) :: array(*)
-    integer, intent(inout) :: ic
-
-    ic = ic + 1
-    ! We are imposing an arbitrary limit of 32000 columns
-    if (ic>32000) return
-    if (abs(valu)<=1.0e-100_eb) then
-        array(ic) = 0.0_eb
-    else
-        array(ic) = valu
-    end if
-    return
-    
-    end subroutine ssaddtolist
-
     subroutine ssprintresults (iounit,ic,array)
     
     use precision_parameters
@@ -138,21 +116,6 @@ module spreadsheet_routines
     return
     
     end subroutine ssprintresults
-    
-    subroutine ssprintresid (iounit,ic,array)
-    
-    use precision_parameters
-    implicit none
-    
-    real(eb), intent(in) :: array(*)
-    integer, intent(in) :: iounit, ic
-    
-    integer i
-  
-    write (iounit,"(16384(e20.13,','))" ) (array(i),i=1,ic)
-    return
-    
-    end subroutine ssprintresid
 
 ! --------------------------- output_spreadsheet_flow -------------------------------------------
 
@@ -264,8 +227,8 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
     
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
-    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
-    integer :: iwptr(4), position, i, iw, itarg, itctemp, iroom
+    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin,tmp(nnodes_trg), depth
+    integer :: iwptr(4), position, i, iw, itarg, iroom, inode
     
     type(target_type), pointer :: targptr
     
@@ -292,21 +255,23 @@ module spreadsheet_routines
             call SSaddtolist (position,zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,outarray)
         end do
     end do
+    
+    call target_nodes(tmp)
 
     ! now do targets if defined
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         tgtemp = targptr%tgas
-        if (targptr%equaton_type==cylpde) then
-            tttemp = targptr%temperature(idx_tempb_trg)
-            itctemp = idx_tempf_trg + targptr%depth_loc*(idx_tempb_trg-idx_tempf_trg)
-            tctemp = targptr%temperature(itctemp)
-        else
-            tttemp = targptr%temperature(idx_tempf_trg)
-            itctemp = (idx_tempf_trg+idx_tempb_trg)/2
-            tctemp = targptr%temperature(itctemp)
-        end if
-            
+        tttemp = targptr%temperature(idx_tempf_trg)
+        depth = 0.0
+        do inode = 2, nnodes_trg
+            if (depth>targptr%thickness*targptr%depth_loc) then
+                tctemp = (targptr%temperature(inode-1)+targptr%temperature(inode))/2
+                exit
+            end if
+            depth = depth + targptr%thickness*tmp(inode-1)
+        end do
+
         call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tctemp-kelvin_c_offset, outarray)
@@ -558,158 +523,5 @@ module spreadsheet_routines
 
     return
     end subroutine output_spreadsheet_smokeview
-
-! --------------------------- output_spreadsheet_residuals -------------------------------------------
-
-    subroutine output_spreadsheet_residuals (time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
-    
-    use precision_parameters
-    use debug
-    use cenviro
-    use cfast_main
-    use objects1
-    implicit none
-    
-
-    real(eb), intent(in) :: time
-    ! data structure for total flows and fluxes
-    real(eb), intent(in) :: flwtot(nr,mxfprd+2,2)
-
-    ! data structures for flow through vents
-    real(eb), intent(in) :: flwnvnt(nr,mxfprd+2,2)
-    real(eb), intent(in) :: flwhvnt(nr,ns+2,2)
-
-    ! data structures for fires
-    real(eb), intent(in) :: flwf(nr,ns+2,2)
-
-    ! data structures for convection and radiation
-    real(eb), intent(in) :: flwcv(nr,2)
-    real(eb), intent(in) :: flwrad(nr,2)
-
-    ! data structures for mechanical vents
-    real(eb), intent(in) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
-
-    ! data structures for door jet fires
-    real(eb), intent(in) :: flwdjf(nr,ns+2,2)
-    
-    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
-    real(eb) :: outarray(maxhead)
-    logical :: firstc
-    integer :: position, i, j, k
-    data firstc/.true./
-    save firstc
-    
-    ! headers
-    if (firstc) then
-        call ssHeadersResid
-        firstc = .false.
-    end if
-
-    position = 0
-    call SSaddtolist (position,time,outarray)
-
-    ! compartment information
-    do i = 1, nm1
-        call SSaddtolist (position,zzrelp(i),outarray)
-        call SSaddtolist (position,zzvol(i,upper),outarray)
-        call SSaddtolist(position,zztemp(i,upper),outarray)
-        call SSaddtolist(position,zztemp(i,lower),outarray)
-        do j = 1, 2
-            do k = 1, 2
-                call SSaddtolist (position,flwtot(i,k,j),outarray)
-                call SSaddtolist (position,flwnvnt(i,k,j),outarray)
-                call SSaddtolist (position,flwf(i,k,j),outarray)
-                call SSaddtolist (position,flwhvnt(i,k,j),outarray)
-                call SSaddtolist (position,flwmv(i,k,j),outarray)
-                call SSaddtolist (position,filtered(i,k,j),outarray)
-                call SSaddtolist (position,flwdjf(i,k,j),outarray)
-            end do
-            call SSaddtolist (position,flwcv(i,j),outarray)
-            call SSaddtolist (position,flwrad(i,j),outarray)
-        end do
-    end do
-    ! species mass flow    
-    do i = 1, nm1
-        do j = 1, 2
-            do k = 1, 9
-                !call SSaddtolist (position,flwtot(i,k,j),outarray)
-                !call SSaddtolist (position,flwnvnt(i,k,j),outarray)
-                call SSaddtolist (position,flwf(i,k+2,j),outarray)
-                !call SSaddtolist (position,flwhvnt(i,k,j),outarray)
-                !call SSaddtolist (position,flwmv(i,k,j),outarray)
-                !call SSaddtolist (position,filtered(i,k,j),outarray)
-                !call SSaddtolist (position,flwdjf(i,k,j),outarray)
-            end do
-            !call SSaddtolist (position,flwcv(i,j),outarray)
-            !call SSaddtolist (position,flwrad(i,j),outarray)
-        end do
-    end do
-
-    call ssprintresid (ioresid, position, outarray)
-
-    return
-    end subroutine output_spreadsheet_residuals
-
-! --------------------------- SpreadSheetFSlabs -------------------------------------------
-
-    subroutine spreadsheetfslabs (time, ir1, ir2, iv, nslab, qslab, outarray, position)
-    
-    use precision_parameters
-    use cparams
-    use debug
-    use vents
-    use vent_slab
-    implicit none
-    
-    real(eb), intent(in) :: time, qslab(mxfslab)
-    real(eb), intent(inout) :: outarray(*)
-    integer, intent(in) :: ir1, ir2, iv, nslab
-    integer, intent(inout) :: position
-    
-    real(eb) :: r1, r2, v, slab
-    
-    integer :: i
-    logical :: firstc=.true.
-    
-    if (firstc) then 
-        call SSHeadersFSlabs
-        firstc = .false.
-    end if
-    
-    if (nwline) then 
-        position = 0
-        call SSaddtolist(position, time, outarray)
-        nwline = .false.
-    end if
-    
-    r1 = ir1
-    r2 = ir2
-    v = iv
-    slab = nslab
-    call ssaddtolist(position, r1, outarray)
-    call ssaddtolist(position, r2, outarray)
-    call ssaddtolist(position, v, outarray)
-    call ssaddtolist(position, slab, outarray)
-    do i = 1, mxfslab
-        call SSaddtolist(position, dirs12(i)*qslab(i), outarray)
-    end do
-    return
-    
-    end subroutine spreadsheetfslabs
-    
-    subroutine ssprintslab (position, outarray)
-
-    use precision_parameters
-    use debug
-
-    real(eb), intent(in) :: outarray(*)
-    integer, intent(in) :: position
-
-    call ssprintresid (ioslab, position, outarray)
-    nwline = .true.
-
-    return
-
-    end subroutine ssprintslab
     
 end module spreadsheet_routines

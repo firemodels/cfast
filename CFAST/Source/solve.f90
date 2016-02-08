@@ -3,7 +3,8 @@ module solve_routines
     use precision_parameters
 
     use conduction_routines
-    use convection_routines    
+    use convection_routines 
+    use debug_routines, only: output_spreadsheet_residuals
     use fire_routines
     use isosurface
     use hflow_routines

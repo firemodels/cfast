@@ -2260,7 +2260,6 @@ module input_routines
    use iofiles
    use cenviro
    use cfast_main
-   use utility_routines
    implicit none
 
    integer :: nrooms

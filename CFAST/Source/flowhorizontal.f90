@@ -3,7 +3,7 @@ module hflow_routines
     use precision_parameters
     
     use opening_fractions, only: qchfraction
-    use spreadsheet_routines, only: ssprintslab, spreadsheetfslabs
+    use debug_routines, only: ssprintslab, spreadsheetfslabs
     
     private
     

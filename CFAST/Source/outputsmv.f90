@@ -17,7 +17,7 @@
 
     private
 
-    public output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata, smv_device_activated
+    public output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
 
     contains
 
@@ -229,25 +229,6 @@
 
     return
     end subroutine output_smokeview
-
-    ! --------------------------- smv_device_activated -------------------------------------------
-    subroutine smv_device_activated (idtect, tdtect, istate)
-
-    !
-    ! this routines records a device activation in the smv file
-    !
-    !   idtect: detector number that activated
-    !   tdtect: activation time
-    !   istate: activation state: 0 for not activated, 1 for activated
-
-    integer, intent(in) :: idtect, istate
-    real(eb), intent(in) :: tdtect
-
-    write (13, "(a)") "DEVICE_ACT"
-    write (13, "(i6,f10.2,i6)") idtect, tdtect, istate
-    return
-
-    end subroutine smv_device_activated
 
     ! --------------------------- output_smokeview_plot_data -------------------------------------------
 

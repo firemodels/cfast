@@ -8,7 +8,6 @@ module target_routines
     use fire_routines
     use numerics_routines, only : ddot, dnrm2
     use radiation_routines, only : absorb, solid_angle_triangle
-    use smokeview_routines, only: smv_device_activated
     use utility_routines
     
     use cenviro
@@ -714,7 +713,7 @@ contains
                 ! tell the world about the activation
                 if (ixdtect(i,dactreported)==0) then
                     ixdtect(i,dactreported) = 1
-                    call smv_device_activated (i, tdtect, 1)
+                    call device_activated (i, tdtect, 1)
                     write(messg,76) i, tdtect, ixdtect(i,droom)
 76                  format(' Sensor ',i3,' has activated at ',f6.1,' seconds in compartment ',i3)
                     call xerror(messg,0,1,-3)
@@ -792,5 +791,24 @@ contains
     return
     
     end subroutine detector_temp_and_velocity
+
+    ! --------------------------- smv_device_activated -------------------------------------------
+    subroutine device_activated (idtect, tdtect, istate)
+
+    !
+    ! this routines records a device activation in the smv file
+    !
+    !   idtect: detector number that activated
+    !   tdtect: activation time
+    !   istate: activation state: 0 for not activated, 1 for activated
+
+    integer, intent(in) :: idtect, istate
+    real(eb), intent(in) :: tdtect
+
+    write (13, "(a)") "DEVICE_ACT"
+    write (13, "(i6,f10.2,i6)") idtect, tdtect, istate
+    return
+
+    end subroutine device_activated
     
 end module target_routines    

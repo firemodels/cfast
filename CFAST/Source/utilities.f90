@@ -13,9 +13,60 @@ module utility_routines
   
     implicit none
    
-   public fmix, emix, get_igrid, doesthefileexist, funit, tanhsmooth
+   public fmix, emix, get_igrid, doesthefileexist, funit, tanhsmooth, ssaddtolist, tointstring
    
     contains
+    
+! --------------------------- SSaddtolist -------------------------------------------
+
+    subroutine ssaddtolist (ic, valu, array)
+
+    use precision_parameters
+    implicit none
+    
+    real(eb), intent(in) :: valu
+    real(eb), intent(out) :: array(*)
+    integer, intent(inout) :: ic
+
+    ic = ic + 1
+    ! We are imposing an arbitrary limit of 32000 columns
+    if (ic>32000) return
+    if (abs(valu)<=1.0e-100_eb) then
+        array(ic) = 0.0_eb
+    else
+        array(ic) = valu
+    end if
+    return
+    
+    end subroutine ssaddtolist
+    
+! --------------------------- toIntString -------------------------------------------
+
+    subroutine toIntString(i,istring)
+    
+    integer, intent(in) :: i
+    character(len=*), intent(out) :: istring
+    
+    character :: string*256
+    
+    if (i<10) then
+        write (string,'(i1)') i
+    else if (i<100) then
+        write (string,'(i2)') i
+    else if (i<1000) then
+        write (string,'(i3)') i
+    else if (i<10000) then
+        write (string,'(i4)') i
+    else if (i<100000) then
+        write (string,'(i5)') i
+    else if (i<1000000) then
+        write (string,'(i6)') i
+    else
+        string = 'error'
+    end if
+    istring = trim(string)
+    return
+    end subroutine toIntString
     
 ! --------------------------- tanhsmooth ---------------------------------------
     

@@ -496,7 +496,7 @@ module output_routines
     integer, intent(in) :: itprt
     
     integer :: i, iw, itarg, inode
-    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tg, tttemp, tctemp, tmp(nnodes_trg), depth
+    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tgtemp, tttemp, tctemp, tmp(nnodes_trg), depth
     
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -517,7 +517,7 @@ module output_routines
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
             if (targptr%room==i) then
-                tg = targptr%tgas
+                tgtemp = targptr%tgas
                 tttemp = targptr%temperature(idx_tempf_trg)
                 depth = 0.0
                 do inode = 2, nnodes_trg
@@ -546,10 +546,10 @@ module output_routines
                 if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
                 if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
-                    write(iofilo,5020) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                    write(iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
                         tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
                 else
-                    write(iofilo,5020) targptr%name, tg-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                    write(iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
                 end if
             end if
         end do

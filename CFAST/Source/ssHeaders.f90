@@ -8,12 +8,13 @@ module spreadsheet_header_routines
     use fltarget
     use objects1
     use vents
+    use utility_routines
     
     implicit none
     
     private
     
-    public ssheadersnormal, ssheadersspecies, ssheadersflow, ssheadersflux, ssheaderssmv, ssheadersresid, ssheadersfslabs
+    public ssheadersnormal, ssheadersspecies, ssheadersflow, ssheadersflux, ssheaderssmv, ssHeadersResid, ssHeadersFSlabs
     
     contains
     
@@ -577,7 +578,7 @@ module spreadsheet_header_routines
     write (13,'(4x,a)') trim(string)
     write (13,'(1x,3f6.1)') 0.,0.,0.
     return
-    end subroutine smvDeviceTag
+    end subroutine smvDeviceTag  
 
 ! --------------------------- ssHeadersResid -------------------------------------------
 
@@ -705,32 +706,5 @@ module spreadsheet_header_routines
     write(ioslab,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersFSlabs
-! --------------------------- toIntString -------------------------------------------
-
-    subroutine toIntString(i,istring)
-    
-    integer, intent(in) :: i
-    character(len=*), intent(out) :: istring
-    
-    character :: string*256
-    
-    if (i<10) then
-        write (string,'(i1)') i
-    else if (i<100) then
-        write (string,'(i2)') i
-    else if (i<1000) then
-        write (string,'(i3)') i
-    else if (i<10000) then
-        write (string,'(i4)') i
-    else if (i<100000) then
-        write (string,'(i5)') i
-    else if (i<1000000) then
-        write (string,'(i6)') i
-    else
-        string = 'error'
-    end if
-    istring = trim(string)
-    return
-    end subroutine toIntString
 
 end module spreadsheet_header_routines

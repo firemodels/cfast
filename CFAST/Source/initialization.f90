@@ -1166,6 +1166,7 @@ module initialization_routines
         targptr%cp = lcw(1,tp)
         targptr%rho = lrw(1,tp)
         targptr%thickness = lflw(1,tp)
+        targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))
         targptr%emissivity = lepw(tp)
     end do
 

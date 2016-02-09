@@ -72,10 +72,13 @@ module cfast_types
         integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input from input data file)
         integer :: back                 ! whether the back surface of the target is exposed to interior or exterior temperatures
         integer :: wall                 ! wall surface the target is located on. Normal wall numbering
-                                    
-        
-        real(eb),dimension(nnodes_trg) :: trgtemps  ! temperature profile in target ... front surface ... internal ... back surface
+
         real(eb) :: tgas                ! gas temperature near target
+        real(eb) :: tinternal           ! target temperature at depth_loc
+        real(eb) :: tfront              ! target front surface temperature (= ...%temperature(1) for plate, 
+                                        !                                   = ...%temperature(nnodes_trg) for cylinder)
+        real(eb) :: tback               ! target back surface temperature (= ...%temperature(nnodes_trg) for plate, 
+                                        !                                   = ...%temperature(1) for cylinder)
         
         ! these are the results of the target calculations that are used for printout and spreadsheet output
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target

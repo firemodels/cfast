@@ -758,7 +758,7 @@ module solve_routines
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
-        call detector_temp_and_velocity
+        call get_detector_temp_and_velocity
         call update_detectors (check_detector_state,told,dt,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
         call update_fire_objects (check_detector_state,told,dt,ifobj,tobj)
         td = min(tdtect,tobj)

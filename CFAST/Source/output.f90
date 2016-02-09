@@ -1,7 +1,7 @@
 module output_routines
     
     use fire_routines, only : flame_height
-    use target_routines, only: target_nodes
+    use target_routines, only: get_target_temperatures
     use utility_routines
     
     use cfast_main
@@ -495,8 +495,8 @@ module output_routines
 
     integer, intent(in) :: itprt
     
-    integer :: i, iw, itarg, inode
-    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tgtemp, tttemp, tctemp, tmp(nnodes_trg), depth
+    integer :: i, iw, itarg
+    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tgtemp, tttemp, tctemp
     
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -507,8 +507,8 @@ module output_routines
 
     if ((itprt==0.and.ntarg<=nm1).or.ntarg==0) return
     write (iofilo,5000)
-    
-    call target_nodes(tmp)
+
+    call get_target_temperatures
     
     do i=1,nm1
         roomptr => roominfo(i)
@@ -518,15 +518,8 @@ module output_routines
             targptr => targetinfo(itarg)
             if (targptr%room==i) then
                 tgtemp = targptr%tgas
-                tttemp = targptr%temperature(idx_tempf_trg)
-                depth = 0.0
-                do inode = 2, nnodes_trg
-                    if (depth>targptr%thickness*targptr%depth_loc) then
-                        tctemp = (targptr%temperature(inode-1)+targptr%temperature(inode))/2
-                        exit
-                    end if
-                    depth = depth + targptr%thickness*tmp(inode-1)
-                end do
+                tttemp = targptr%tfront
+                tctemp = targptr%tinternal
                 if (validate.or.netheatflux) then
                     total = targptr%flux_net_gauge(1)
                     ftotal = targptr%flux_fire(1)
@@ -558,7 +551,7 @@ module output_routines
     return
 5000 format (//,'SURFACES AND TARGETS',//, &
     'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       ', &
-    'Surface   Center   Flux To      Fire         Surface      Gas',/, &
+    'Surface   Interior Flux To      Fire         Surface      Gas',/, &
     '               Temp.     Temp.     Temp.     Temp.                  Temp.     ', &
     'Temp.     Temp.    Target       Rad.         Rad.         Rad.         Convect.',/, &
     '               (C)       (C)       (C)       (C)                    (C)       ', &
@@ -942,7 +935,7 @@ module output_routines
         targptr => targetinfo(itarg)
         roomptr => roominfo(targptr%room)
         write(iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), &
-            (targptr%normal(j),j=1,3), targptr%material
+            (targptr%normal(j),j=1,3), trim(targptr%material)
 5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
     end do
     return

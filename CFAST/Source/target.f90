@@ -25,7 +25,7 @@ module target_routines
     
 private
 
-public target, update_detectors, detector_temp_and_velocity, solid_angle_triangle, target_nodes
+public target, update_detectors, get_detector_temp_and_velocity, solid_angle_triangle, get_target_temperatures
 
 contains
 
@@ -42,19 +42,19 @@ contains
     real(eb), intent(in) :: dt
 
     logical :: first = .true.
-    real(eb) :: tmp(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
+    real(eb) :: x_node(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
     real(eb) :: flux(2), dflux(2), ttarg(2), t_inf, t_max = 900._eb
     integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom
     
     type(target_type), pointer :: targptr
     
-    save first,tmp
+    save first,x_node
 
-    ! initialize non-dimensional target node locations the first time target is called
+    ! initialize non-dimensional target node thicknesses the first time target is called
     if(first)then
         first = .false.
-        call target_nodes (tmp)
+        call target_nodes (x_node)
         tempin = 0.0_eb
         tempout = 0.0_eb
     end if
@@ -92,7 +92,7 @@ contains
         nslab = 1
         if(iieq==pde)then
             iwbound = 4
-            walldx(1:nnodes_trg-1) = xl*tmp(1:nnodes_trg-1)
+            walldx(1:nnodes_trg-1) = xl*x_node(1:nnodes_trg-1)
             call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
                 wfluxin,wfluxout,iwbound,tgrad,tderv)
         else if(iieq==cylpde)then
@@ -114,8 +114,8 @@ contains
 
     subroutine target_flux(iter,itarg,ttarg,flux,dflux)
 
-    !     routine: target
     !     purpose: routine to calculate flux (and later, temperature) of a target.
+    
     !     arguments: iter   iteration number
     !                itarg  targetnumber
     !                ttarg  front and back target input temperature
@@ -339,28 +339,33 @@ contains
     
 ! ---------------------------- target_nodes -----------------------------------
     
-    subroutine target_nodes (tmp)
+    subroutine target_nodes (x_node)
     
-        real(eb), intent(out) :: tmp(*)
+    !     purpose: calculate thickness of internal nodes in a plate target
+    !     arguments: x_node  array of node thicknesses from front to back
+    
+        real(eb), intent(out) :: x_node(nnodes_trg)
         
         integer :: i, nnn
         real(eb) :: sum
     
         nnn = nnodes_trg - 1
-        tmp(1) = 1.0_eb
-        tmp(nnn) = 1.0_eb
+        x_node(1) = 1.0_eb
+        x_node(nnn) = 1.0_eb
         do i = 2, nnn/2 
-            tmp(i) = tmp(i-1)*1.50_eb
-            tmp(nnn+1-i) = tmp(i)
+            x_node(i) = x_node(i-1)*1.50_eb
+            x_node(nnn+1-i) = x_node(i)
         end do
-        if(mod(nnn,2)==1)tmp(nnn/2+1)=tmp(nnn/2)*1.50_eb
+        if(mod(nnn,2)==1) x_node(nnn/2+1)=x_node(nnn/2)*1.50_eb
         sum = 0.0_eb
         do i = 1, nnn
-            sum = sum + tmp(i)
+            sum = sum + x_node(i)
         end do
         do i = 1, nnn
-            tmp(i) = tmp(i)/sum
+            x_node(i) = x_node(i)/sum
         end do
+        
+        return
         
     end subroutine target_nodes
 
@@ -603,7 +608,7 @@ contains
     
 ! --------------------------- getylyu -------------------------------------------
 
-    subroutine getylyu(yo,y,yt,s,yl,yu)
+    subroutine getylyu (yo,y,yt,s,yl,yu)
 
     !     routine: gettylyu
     !     purpose: compute portion of path in lower and upper layers
@@ -630,12 +635,88 @@ contains
     return
     end subroutine getylyu
     
+! --------------------------- get_target_temperature -------------------------------------------
+    
+    subroutine get_target_temperatures ()
+    
+    !   purpose: updates the internal temperature of each target at the depth(s) specified by the user
+    
+    integer itarg
+    real(eb) :: diam, dr, r, rint, factor, depth, tempx, x_node(nnodes_trg), targx, targdx(nnodes_trg)
+    integer :: nx, left, right, i
+    type(target_type), pointer :: targptr
+    
+    call target_nodes (x_node)
+
+    do itarg = 1, ntarg
+        targptr => targetinfo(itarg)
+
+        if (targptr%equaton_type == cylpde) then
+
+            ! cylindrical targets calculate as a function of radius from center
+            diam = targptr%thickness
+            r = min(diam,max(abs((diam/2) - targptr%depth_loc),0.0_eb))
+            nx = nnodes_trg
+            dr = (diam/2)/nx
+
+            if (r<=dr/2.0_eb) then
+                tempx = targptr%temperature(1)
+            else if (r>=(diam/2)-dr/2.0_eb) then
+                tempx = targptr%temperature(nx)
+            else
+                rint = r/dr-0.5_eb
+                left = int(rint)+1
+                left=max(min(left,nx),1)
+                right = left + 1
+                right=max(min(right,nx),1)
+                factor = (rint-int(rint))
+                tempx = factor*targptr%temperature(right) + (1.0_eb-factor)*targptr%temperature(left)
+            end if
+            
+            targptr%tfront = targptr%temperature(nx)
+            targptr%tinternal = tempx
+            targptr%tback = targptr%temperature(1)
+        else
+
+            ! flat targets calculate as a function of depth from the surface
+            nx = nnodes_trg
+            targdx(1:nx) = targptr%thickness*x_node(1:nx)
+            depth = min(targptr%thickness,max(targptr%depth_loc,0.0_eb))
+
+            if (depth<=x_node(1)/2) then
+                tempx = targptr%temperature(1)
+            else if (depth>=targptr%thickness-x_node(nx-1)/2) then
+                tempx = targptr%temperature(nx)
+            else
+                targx = 0.0_eb
+                do i = 1, nx-1
+                    if (depth>=targx.and.depth<=targx+targdx(i)) then
+                        left = i
+                        exit
+                    end if
+                    targx = targx + targdx(i)
+                end do
+                right = left + 1
+                factor = (depth-targx)/targdx(left)
+                tempx = factor*targptr%temperature(right) + (1.0_eb-factor)*targptr%temperature(left)
+            end if
+            targptr%tfront = targptr%temperature(1)
+            targptr%tinternal = tempx
+            targptr%tback = targptr%temperature(nx)
+
+        end if
+    end do
+
+    return
+    
+    end subroutine get_target_temperatures
+    
 ! --------------------------- update_detectors -------------------------------------------
 
-    subroutine update_detectors(imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+    subroutine update_detectors (imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
 
-    !     routine: gettylyu
-    !     purpose: this routine updates the temperature of each detector link.  it also determine whether the 
+    !     routine: update_detectors
+    !     purpose: updates the temperature of each detector link.  it also determine whether the 
     !              detector has activated in the time interval (tcur,tcur+dstep).  if this has occured then a 
     !              quenching algorithm will be invoked if the appropriate option has been set.
     !     arguments: tcur    current time
@@ -749,9 +830,9 @@ contains
       
     ! --------------------------- detector_temp_and_velocity -------------------------------------------
 
-    subroutine detector_temp_and_velocity
+    subroutine get_detector_temp_and_velocity
 
-    !     routine:     detector_temp_and_velocity
+    !     routine:     get_detector_temp_and_velocity
 
     !     description:  calculates near-detector gas temperature, velocity, and smoke obscuration
 
@@ -790,7 +871,7 @@ contains
 
     return
     
-    end subroutine detector_temp_and_velocity
+    end subroutine get_detector_temp_and_velocity
 
     ! --------------------------- smv_device_activated -------------------------------------------
     subroutine device_activated (idtect, tdtect, istate)

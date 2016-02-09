@@ -14,12 +14,12 @@ module cylinder_routines
 
     subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nr,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
-    !     arguments: wtemp    wall temperature profile
+    !     arguments: wtemp    cable temperature profile
     !                nr       number of nodes
-    !                wfluxin  flux striking interior wall
+    !                wfluxin  flux striking cable
     !                dt       time step interval from last valid solution point
-    !                wrho     wall density
-    !                diam     diameter of cable
+    !                wrho     cable density
+    !                diam     cable diameter
 
     integer, intent(in) :: nr, iwbound
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin
@@ -32,16 +32,16 @@ module cylinder_routines
     integer :: i, niter, iter
     real(eb), dimension(nr) :: aim1, ai, aip1, tnew
     real(eb), dimension(nr) :: cc, dd
-    real(eb) :: alpha, room_depth, factor, dt_iter
+    real(eb) :: alpha, dr, factor, dt_iter
     real(eb) :: ddif(2)
 
-    room_depth = (diam/2.0_eb)/nr
+    dr = (diam/2.0_eb)/nr
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
     if(dt_iter.gt.0.0_eb)then
        niter = dt/dt_iter + 0.5_eb
        dt_iter=dt/niter
-       factor = 2.0_eb*alpha*dt_iter/room_depth**2
+       factor = 2.0_eb*alpha*dt_iter/dr**2
     else
        niter = 0
     end if
@@ -68,7 +68,7 @@ module cylinder_routines
           dd(nr) = 0.0_eb
           tnew(nr) = tempin
        else
-          tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*room_depth/wk
+          tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*dr/wk
        end if
 
        ! aim1(nr) = -1.0
@@ -102,18 +102,18 @@ module cylinder_routines
 
        wtemp(1:nr) = tnew(1:nr)
     end do
-    ! estimate temperature gradient at wall surface by constructing a quadratic polynomial that
+    ! estimate temperature gradient at target surface by constructing a quadratic polynomial that
     ! interpolates first three data points in the temperature profile using divided differences.
 
     ! first divided difference
-    ddif(1) = (wtemp(nr-1)-wtemp(nr))/room_depth
-    ddif(2) = (wtemp(nr-2)-wtemp(nr-1))/room_depth
+    ddif(1) = (wtemp(nr-1)-wtemp(nr))/dr
+    ddif(2) = (wtemp(nr-2)-wtemp(nr-1))/dr
 
     ! second divided difference
-    ddif(2) = (ddif(2)-ddif(1))/(2.0_eb*room_depth)
+    ddif(2) = (ddif(2)-ddif(1))/(2.0_eb*dr)
 
-    tgrad(1) = (ddif(1)-ddif(2)*room_depth)
-    tgrad(2) = (wtemp(nr-1)-wtemp(nr))/room_depth
+    tgrad(1) = (ddif(1)-ddif(2)*dr)
+    tgrad(2) = (wtemp(nr-1)-wtemp(nr))/dr
     return
     
     end subroutine cylindrical_conductive_flux

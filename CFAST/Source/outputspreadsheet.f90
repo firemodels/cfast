@@ -1,7 +1,7 @@
 module spreadsheet_routines
     use precision_parameters
     use fire_routines, only : flame_height
-    use target_routines, only: target_nodes
+    use target_routines, only: get_target_temperatures
     use opening_fractions, only : qchfraction
     use spreadsheet_header_routines
     use utility_routines
@@ -227,8 +227,8 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
     
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
-    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin,tmp(nnodes_trg), depth
-    integer :: iwptr(4), position, i, iw, itarg, iroom, inode
+    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
+    integer :: iwptr(4), position, i, iw, itarg, iroom
     
     type(target_type), pointer :: targptr
     
@@ -256,21 +256,14 @@ module spreadsheet_routines
         end do
     end do
     
-    call target_nodes(tmp)
+    call get_target_temperatures
 
     ! now do targets if defined
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
         tgtemp = targptr%tgas
-        tttemp = targptr%temperature(idx_tempf_trg)
-        depth = 0.0
-        do inode = 2, nnodes_trg
-            if (depth>targptr%thickness*targptr%depth_loc) then
-                tctemp = (targptr%temperature(inode-1)+targptr%temperature(inode))/2
-                exit
-            end if
-            depth = depth + targptr%thickness*tmp(inode-1)
-        end do
+        tttemp = targptr%tfront
+        tctemp = targptr%tinternal
 
         call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)

@@ -3289,7 +3289,7 @@ Public Class CeditMain
         Me.DetectorActivationObscuration.Name = "DetectorActivationObscuration"
         Me.DetectorActivationObscuration.Size = New System.Drawing.Size(96, 20)
         Me.DetectorActivationObscuration.TabIndex = 916
-        Me.DetectorActivationObscuration.Text = "80 %/ft"
+        Me.DetectorActivationObscuration.Text = "8 %/ft"
         '
         'Label17
         '

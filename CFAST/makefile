@@ -31,13 +31,13 @@ GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 
 # Definition of the object variables
 
-objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o convection.o cyl_conduct.o keyboard_int.o \
+objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o cyl_conduct.o keyboard_int.o \
        srev.o utilities.o ssHeaders.o outputdebug.o conduction.o flowfan.o flowhorizontal.o flowvertical.o fire.o \
        numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o input.o cfast.o 
 
 objwin = $(objf:.o=.obj)
 
-objfgnu = prec.o cfast_parameters.o cfast_structures.o cfast_data.o cfast_interfaces.o convection.o cyl_conduct.o keyboard_gnu.o \
+objfgnu = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o cyl_conduct.o keyboard_gnu.o \
        srev.o utilities.o ssHeaders.o outputdebug.o conduction.o flowfan.o flowhorizontal.o flowvertical.o fire.o \
        numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o input.o cfast.o  
 

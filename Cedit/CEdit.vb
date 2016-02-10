@@ -5659,6 +5659,7 @@ Public Class CeditMain
             myTargets.Add(New Target)
             myTargets.Copy(CurrentTarget, myTargets.Count - 1)
             CurrentTarget = myTargets.Count - 1
+            myTargets(myTargets.Count - 1).Name = "Targ " + myTargets.Count.ToString
             UpdateGUI.Targets(CurrentTarget)
         Else
             MessageBox.Show("A maximum of " + myTargets.Maximum.ToString + " Targets are allowed. New Target not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)

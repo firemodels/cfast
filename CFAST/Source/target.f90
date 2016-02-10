@@ -795,8 +795,8 @@ contains
                 if (ixdtect(i,dactreported)==0) then
                     ixdtect(i,dactreported) = 1
                     call device_activated (i, tdtect, 1)
-                    write(messg,76) i, tdtect, ixdtect(i,droom)
-76                  format(' Sensor ',i3,' has activated at ',f6.1,' seconds in compartment ',i3)
+                    write(messg,76) i, int(tdtect+0.5_eb), ixdtect(i,droom)
+76                  format(' Sensor ',i3,' has activated at ',i0,' seconds in compartment ',i3)
                     call xerror(messg,0,1,-3)
                 end if
 

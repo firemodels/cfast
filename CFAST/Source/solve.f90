@@ -783,8 +783,10 @@ module solve_routines
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
             call update_fire_objects (set_detector_state,told,dt,ifobj,tobj)
-            write(iofilo,'(a,i0,3a,f10.3,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ',max(tobj,0.0_eb),' seconds'
-            write(logerr,'(a,i0,3a,f10.3,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ',max(tobj,0.0_eb),' seconds'
+            write(iofilo,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ', &
+                int(max(tobj+0.5_eb,0.0_eb)),' seconds'
+            write(logerr,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ', &
+                int(max(tobj+0.5_eb,0.0_eb)),' seconds'
             ! check to see if we are backing up objects igniting
             if (option(fbtobj)==on) then
                 idsave = ifobj

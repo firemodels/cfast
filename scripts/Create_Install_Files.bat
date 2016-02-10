@@ -62,7 +62,7 @@ echo.
 echo ***Copying CFAST example files
 echo.
 
-call :COPY  %bindir%\Data\standard.in %DISTDIR%\Examples\
+call :COPY  %bindir%\Data\Users_Guide_Example.in %DISTDIR%\Examples\
 
 echo.
 echo ***Copying CFAST documentation

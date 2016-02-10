@@ -403,7 +403,9 @@ A target is any object in the simulation that can heat up via radiative and conv
 \item[Material] What the target is made of. Any existing material in the list of thermal properties may be used here. There can be only one material per target.
 \item[Internal Temperature at] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
 \end{description}
-If the target is only needed to report the local gas temperature, which may include the plume or ceiling jet, then you may specify arbitrary properties and normal vector. The output spreadsheet file includes the local gas temperature in addition to the target temperature.
+
+\graybox{
+If the target is only needed to report the local gas temperature, which may include the plume or ceiling jet, then you may specify arbitrary properties and normal vector. The output spreadsheet file includes the local gas temperature in addition to the target temperature.}
 
 
 
@@ -426,6 +428,8 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 
 \item[Activation Temperature] (default units: \degc, default value: dependent on type): the temperature at or above which the detector link activates.
 
+\item[Activation Obscuration] (default units: \%/m, default value: 23.93 \%/m (8 \%/ft)): the obscuration at or above which the detector link activates.
+
 \item[Width (X)] Position (default units: m, default value: none): position of the object as a distance from the left wall of the compartment (X direction).
 
 \item[Depth (Y)] Position (default units: m, default value: none): position of the detector or sprinkler as a distance from the front wall of the compartment (Y direction).
@@ -438,7 +442,7 @@ Sprinklers and detectors are both considered detection devices by the CFAST mode
 \end{description}
 
 \graybox{
-Often, the activation of smoke alarms is simulated with a temperature-based criterion, typically in the range of 5~\degc to 10~\degc above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments \cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\degc corresponded to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\degc in NUREG-1805 \cite{NRCNUREG1805}. \\
+Care should be taken when specifying detectors to activate based on smoke obscuration since the only calculation included in CFAST is a simple two-zone calculation of soot concentration that does not include the impact of an initial ceiling layer as is done for temperature-based calculations. Often, the activation of smoke alarms is simulated with a temperature-based criterion (in CFAST as a heat alarm), typically in the range of 5~\degc to 10~\degc above ambient. Davis and Notarianni  studied the activation of heat and smoke alarms in small and large compartments \cite{Davis:1996}. They conclude that a temperature rise of approximately 5~\degc corresponded to activation of ionization alarms for a range of fire sources and ceiling heights. The Nuclear Regulatory Commission includes a default value of 10~\degc with an RTI value of 5 (m$\cdot$s)$^{1/2}$ in NUREG-1805 \cite{NRCNUREG1805}. \\
 
 Several cautions should be observed when using estimates of sprinkler suppression within the model: 1)~The first sprinkler activated controls the effect of the sprinkler on the heat release rate of the fire.  Subsequent sprinklers which may activate have no additional effect on the fire simulation. 2)~The fire suppression algorithm assumes the effect of the sprinkler is solely to reduce the heat release rate of the fire. Any effects of the sprinkler spray on gas temperatures or mixing within the compartment are ignored. 3)~The sprinkler always reduces the heat release rate of the fire. The ability of a fire to overwhelm an under-designed sprinkler is not modeled. 4) Since the dynamics of the sprinkler and direct effects of the spray on gas temperatures and velocities are not modeled, calculated times of activation of secondary sprinklers and / or detectors after the first sprinkler is activated should be not be modeled since the impact of the first sprinkler on the activation of additional sprinklers is not included in the CFAST model.
 }

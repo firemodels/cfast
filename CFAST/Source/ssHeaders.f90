@@ -239,18 +239,16 @@ module spreadsheet_header_routines
             headertext(4,position) = LabelUnits(j+5)
         end do
         ! back surface
-        !if (validate) then
-        !        position = position + 1
-        !        headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(7)) // trim(cDet)
-        !        headertext(2,position) = LabelUnits(7)
-        !        headertext(3,position) = ' '
-        !    do j = 4, 14
-        !        position = position + 1
-        !        headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(j+5)) // trim(cDet)
-        !        headertext(2,position) = LabelUnits(j+5)
-        !        headertext(3,position) = ' '
-        !    end do
-        !end if
+        if (validate) then
+            do j = 2, 14
+                if (j==3) cycle
+                position = position + 1
+                headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(j+5)) // trim(cDet)
+                headertext(2,position) = 'Back ' // Labels(j+5)
+                headertext(3,position) = targptr%name
+                headertext(4,position) = LabelUnits(j+5)
+            end do
+        end if
     end do
 
     ! Detectors

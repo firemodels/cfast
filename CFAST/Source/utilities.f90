@@ -21,9 +21,6 @@ module utility_routines
 ! --------------------------- SSaddtolist -------------------------------------------
 
     subroutine ssaddtolist (ic, valu, array)
-
-    use precision_parameters
-    implicit none
     
     real(eb), intent(in) :: valu
     real(eb), intent(out) :: array(*)
@@ -798,8 +795,6 @@ module utility_routines
     !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
     !     n to output just target fluxes relative to ambient (smoke still in od)
 
-    implicit none
-
     integer :: year, month, day, iarg(8), iopt(26), nargs, values(8)
     character :: strs(8)*60
     character(60) :: solveini
@@ -1184,47 +1179,51 @@ module utility_routines
 
 ! ------------------ fmix ------------------------
 
-real(fb) function fmix (f,a,b)
-  
-  real(fb), intent(in) :: f, a, b
+    real(fb) function fmix (f,a,b)
 
-  fmix = (1.0_fb-f)*a + f*b
-  return
-end function fmix
+    real(fb), intent(in) :: f, a, b
+
+    fmix = (1.0_fb-f)*a + f*b
+    
+    return
+    
+    end function fmix
 
 ! ------------------ emix ------------------------
 
-real(eb) function emix (f,a,b)
+    real(eb) function emix (f,a,b)
 
-  real(eb), intent(in) :: f, a, b
+    real(eb), intent(in) :: f, a, b
 
-  emix = (1.0_eb-f)*a + f*b
-  return
-end function emix
+    emix = (1.0_eb-f)*a + f*b
+  
+    return
+    
+    end function emix
 
 ! ------------------ get_igrid ------------------------
 
-integer function get_igrid (x,xgrid,n)
-   
-   integer, intent(in) :: n
-   real(eb), intent(in), dimension(0:n) :: xgrid
-   real(eb), intent(in) :: x
-      
-   integer :: i
-   
-   do i = 0, n-1
-      if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
-         get_igrid=i
-         return
-      end if
-   end do
-   if(xgrid(n).eq.x)then
-     get_igrid=n
-   else
-     get_igrid=-1
-   end if
-   return
-end function get_igrid   
+    integer function get_igrid (x,xgrid,n)
+
+    integer, intent(in) :: n
+    real(eb), intent(in), dimension(0:n) :: xgrid
+    real(eb), intent(in) :: x
+
+    integer :: i
+
+    do i = 0, n-1
+        if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
+            get_igrid=i
+            return
+        end if
+    end do
+    if(xgrid(n).eq.x)then
+        get_igrid=n
+    else
+        get_igrid=-1
+    end if
+    return
+    end function get_igrid
 
 end module utility_routines
         

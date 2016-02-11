@@ -8,6 +8,14 @@ module spreadsheet_routines
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
     
+    use precision_parameters
+    use cenviro
+    use cfast_main
+    use cshell
+    use fltarget
+    use objects1
+    use vents
+    
     implicit none
     
     private
@@ -36,13 +44,6 @@ module spreadsheet_routines
     subroutine output_spreadsheet_normal (time)
 
     ! This routine writes to the {project}_n.csv file, the compartment information and the fires
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use fltarget
-    use objects1
-    implicit none
 
     real(eb), intent(in) :: time
     
@@ -102,11 +103,7 @@ module spreadsheet_routines
     end subroutine output_spreadsheet_normal
 
     subroutine ssprintresults (iounit,ic,array)
-    
-    use precision_parameters
-    use cshell, only: validate
-    implicit none
-    
+
     real(eb), intent(in) :: array(*)
     integer, intent(in) :: iounit, ic
     
@@ -126,11 +123,6 @@ module spreadsheet_routines
     subroutine output_spreadsheet_flow (time)
 
     !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
-
-    use precision_parameters
-    use cfast_main
-    use vents
-    implicit none
 
     integer, parameter :: maxoutput = mxhvents*4
     
@@ -219,13 +211,6 @@ module spreadsheet_routines
     subroutine output_spreadsheet_flux (time)
 
     !     Output the temperatures and fluxes on surfaces and targets at the current time
-
-    use precision_parameters
-    use cenviro, only: zzwtemp, zzhlay, zztemp
-    use cfast_main
-    use cshell
-    use fltarget
-    implicit none
 
     integer, parameter :: maxoutput=4*nr+26*mxtarg+4*mxdtect
     real(eb), intent(in) :: time
@@ -333,12 +318,6 @@ module spreadsheet_routines
 
     !	Write out the species to the spread sheet file
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell
-    implicit none
-
     integer, parameter :: maxhead = 1+22*nr
     real(eb), intent(in) :: time
     
@@ -396,12 +375,6 @@ module spreadsheet_routines
     subroutine output_spreadsheet_smokeview (time)
 
     ! This routine writes to the {project}_zone.csv file, the smokeview information
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use vents
-    implicit none
 
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time

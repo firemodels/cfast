@@ -5,6 +5,14 @@ module radiation_routines
     use fire_routines, only: flame_height
     use numerics_routines, only : ddot, dnrm2, dgefa, dgesl
     
+    use precision_parameters
+    use cenviro
+    use cshell, only: logerr
+    use fireptrs
+    use cfast_main
+    use opt
+    use debug
+    
     implicit none
     
     private
@@ -25,14 +33,6 @@ module radiation_routines
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: flwrad      net enthalphy into each layer
     !                flxrad      net enthalphy flux into surface
-
-    use precision_parameters
-    use cenviro
-    use fireptrs
-    use cfast_main
-    use opt
-    use debug
-    implicit none
 
     real(eb), intent(out), dimension(nr,2) :: flwrad
     real(eb), intent(out), dimension(nr,nwal) :: flxrad
@@ -139,10 +139,6 @@ module radiation_routines
     !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the 
     !                               upper, lower layers respectively
     !                qout (output): qout(i) is the output flux from the i'th wall
-
-    use precision_parameters
-    use cshell, only: logerr
-    implicit none
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
     integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfire
@@ -322,9 +318,6 @@ module radiation_routines
     !     purpose: this routine calculates the 'c' vector in the net radiation equations of seigel and howell and the 
     !        heat absorbed by the lower and upper layer fires due to gas layer emission and fires..
 
-    use precision_parameters
-    implicit none
-
     integer, intent(in) :: mxfire, nzone, nfire, nup
     real(eb), intent(in) :: area(*), hlay, tlay(2), zfire(*), qfire(mxfire)
     real(eb), intent(in) :: figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(4,mxfire)
@@ -428,9 +421,6 @@ module radiation_routines
     !              qllay and qulay were previously defined to be the heat absorbed by the lower and
     !              upper layers due to gas emissions and fires.  this routine just adds onto these values.
 
-    use precision_parameters
-    implicit none
-
     integer, intent(in) :: nup, nzone
     real(eb), intent(in) :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*)
     
@@ -474,9 +464,6 @@ module radiation_routines
     !     routine: rdparfig
     !     purpose: This routine calculates the configuration factor between two paralell plates a distance z a part.  Each 
     !          plate has a dimension of x by y.  the units of x, y and z are un-important except that they must be consistent.
-
-    use precision_parameters
-    implicit none
     
     real(eb), intent(in) :: x, y, z
 
@@ -500,8 +487,6 @@ module radiation_routines
 ! --------------------------- getvrel -------------------------------------------
 
     subroutine getvrel(vrel,v1,vf)
-    use precision_parameters
-    implicit none
     
     real(eb), dimension(3), intent(in) :: v1, vf
     real(eb), dimension(3), intent(out) :: vrel
@@ -517,10 +502,6 @@ module radiation_routines
 
     !     routine: rdfang
     !     purpose: 
-
-    use precision_parameters
-    implicit none
-
 
     integer, intent(in) :: mxfire, nfire
     real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
@@ -595,9 +576,6 @@ module radiation_routines
     !     routine: rdftran
     !     purpose: 
 
-    use precision_parameters
-    implicit none
-
     real(eb), intent(in) :: absorb(*), zz(*), zfire(*)
     integer, intent(in) :: mxfire, nzone, nup, nfire
     logical, intent(in) :: black
@@ -661,9 +639,6 @@ module radiation_routines
 
     !     routine: rdftran
     !     purpose: 
-
-    use precision_parameters
-    implicit none
 
     integer, intent(in) ::  nup, nzone
     real(eb), intent(in) :: absorb(*), beam(nzone,nzone), zz(*), hlay
@@ -767,6 +742,7 @@ module radiation_routines
 ! --------------------------- solid_angle_triangle -------------------------------------------
 
     subroutine solid_angle_triangle(solid_angle,v1,v2,v3)
+    
     real(eb), intent(in), dimension(3) :: v1, v2, v3
     real(eb), intent(out) :: solid_angle
     
@@ -829,21 +805,11 @@ module radiation_routines
     !  vfs is the soot volume fraction, tg the
     !  gas temperature and k is a constant. for typical fuels, k ~ 1195.5.
 
-    !  version 1.0.3
-
-    use precision_parameters
-    use cenviro
-    use debug
-    
-    implicit none
-
     integer, intent(in) :: cmpt, layer
 
     ! declare parameters
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
-
     integer, parameter :: co2xsize=11, co2ysize=12, h2oxsize=11, h2oysize=12
-
     integer, parameter :: co2=3, h2o=8, soot=9
 
     !  declare internal variables
@@ -945,19 +911,16 @@ module radiation_routines
         -0.2620_eb, -0.3307_eb, -0.3233_eb, -0.3045_eb, -0.3010_eb, -0.3045_eb, -0.3045_eb, -0.3054_eb, -0.3080_eb, &
         -0.3605_eb, -0.5086_eb], [h2oxsize,h2oysize] )
 
-    ! calculate layer-specific factors
-    
+    ! layer-specific factors
     tg = zztemp(cmpt, layer)
     rtv = (rg*tg)/zzvol(cmpt, layer)
     l = zzbeam(layer,cmpt)
 
     ag = 0.0_eb
 
-    ! calculate absorbance for co2
-    
+    ! absorbance for co2
     ng = zzgspec(cmpt, layer, co2)/mwco2
     plg = ng*rtv*l
-    !if(plg>1.0e-3_eb)then
     if(plg>0.0_eb)then
         cplg = log10(plg)
         tglog = log10(tg)
@@ -967,11 +930,9 @@ module radiation_routines
         aco2 = 0.0_eb
     end if
 
-    ! calculate absorbance for h2o
-    
+    ! absorbance for h2o
     ng = zzgspec(cmpt, layer, h2o)/mwh2o
     plg = ng*rtv*l
-    !if(plg>1.0e-3_eb)then
     if(plg>0.0_eb)then
         cplg = log10(plg)
         tglog = log10(tg)
@@ -981,13 +942,12 @@ module radiation_routines
         ah2o = 0.0_eb
     end if
 
-    ! calculate total absorbance
-    
+    ! total absorbance
     vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
 
     return
-!1000 format ('error in ',a3,' absorbance: xerror = ',i2,'; yerror = ',i2)
+    
     end function absorb
 
 ! --------------------------- linterp -------------------------------------------
@@ -1005,9 +965,6 @@ module radiation_routines
     !  f(x,y) = z(i,j) + {[z(i+1,j) - z(i,j)]/[x(i+1) - x(i)]}*[x - x(i)] 
     !          + {[z(i,j+1) - z(i,j)]/[y(j+1) - y(i)]}*[y - y(j)]
     !     arguments: 
-
-    use precision_parameters
-    implicit none
 
     integer, intent(in) :: xdim, ydim
     real(eb), intent(in) :: x(xdim), y(ydim), z(xdim,ydim)

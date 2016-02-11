@@ -7,7 +7,6 @@ module fire_routines
     
     use cenviro
     use cfast_main
-    use cparams
     use fireptrs
     use fltarget
     use flwptrs

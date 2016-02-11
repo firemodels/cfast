@@ -13,12 +13,9 @@ module target_routines
     use cenviro
     use cfast_main
     use fltarget
-    use cparams
-    use dsize
     use fireptrs
-    use objects2
-    use wnodes
-    use opt
+    use wnodes, only: nfurn, qfurnout
+    use opt, only: fcjet, option, off
     
     implicit none
     
@@ -371,6 +368,7 @@ module target_routines
 ! --------------------------- get_target_factors -------------------------------------------
 
     subroutine get_target_factors2(iroom,itarg,target_factors_front,target_factors_back)
+    
     integer, intent(in) :: iroom, itarg
     real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
 
@@ -568,6 +566,7 @@ module target_routines
     ! --------------------------- get_target_factors -------------------------------------------
 
     subroutine get_target_factors(iroom,itarg,target_factors_front,target_factors_back)
+    
     integer, intent(in) :: iroom, itarg
     real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
 
@@ -873,6 +872,7 @@ module target_routines
     end subroutine get_detector_temp_and_velocity
 
     ! --------------------------- smv_device_activated -------------------------------------------
+    
     subroutine device_activated (idtect, tdtect, istate)
 
     !

@@ -2,11 +2,16 @@ module debug_routines
     
     use precision_parameters
     
-    use cparams
+    use spreadsheet_header_routines, only: ssheadersfslabs, ssheadersresid
+    use utility_routines, only: ssaddtolist
+    
+    use cenviro
     use cfast_types
     use cfast_main
-    use spreadsheet_header_routines
-    use utility_routines
+    use cparams
+    use debug
+    use vents
+    use vent_slab
     
     implicit none
     
@@ -19,13 +24,6 @@ module debug_routines
 ! --------------------------- SpreadSheetFSlabs -------------------------------------------
 
     subroutine spreadsheetfslabs (time, ir1, ir2, iv, nslab, qslab, outarray, position)
-    
-    use precision_parameters
-    use cparams
-    use debug
-    use vents
-    use vent_slab
-    implicit none
     
     real(eb), intent(in) :: time, qslab(mxfslab)
     real(eb), intent(inout) :: outarray(*)
@@ -67,9 +65,6 @@ module debug_routines
     
     subroutine ssprintslab (position, outarray)
 
-    use precision_parameters
-    use debug
-
     real(eb), intent(in) :: outarray(*)
     integer, intent(in) :: position
 
@@ -84,9 +79,6 @@ module debug_routines
     
     subroutine ssprintresid (iounit,ic,array)
     
-    use precision_parameters
-    implicit none
-    
     real(eb), intent(in) :: array(*)
     integer, intent(in) :: iounit, ic
     
@@ -100,13 +92,6 @@ module debug_routines
 ! --------------------------- output_spreadsheet_residuals -------------------------------------------
 
     subroutine output_spreadsheet_residuals (time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
-    
-    use debug
-    use cenviro
-    use cfast_main
-    use objects1
-    implicit none
-    
 
     real(eb), intent(in) :: time
     ! data structure for total flows and fluxes

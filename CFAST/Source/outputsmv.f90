@@ -8,10 +8,13 @@
     use mflow_routines, only : getmventinfo
     use spreadsheet_header_routines, only: ssheaderssmv
     use utility_routines, only: funit
-    
-    use iofiles
+
     use cenviro
     use cfast_main
+    use cfast_types
+    use dsize
+    use fltarget
+    use iofiles
     
     implicit none 
 
@@ -48,14 +51,6 @@
     !  nfires -     number of fires
     !  froom_number - room containing fire
     !  fx0,fy0,fz0 - location of fire base
-
-    use precision_parameters
-    use iofiles
-    use cfast_types
-    use cenviro
-    use cfast_main, only: ndtect, ixdtect, roominfo, sliceinfo, nsliceinfo, isoinfo, nisoinfo
-    use dsize
-    implicit none
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
     integer, intent(in) :: nrooms, nscount, n_hvents, nfires, n_vvents, ntarg
@@ -436,11 +431,6 @@
 
     !	This is the protocol between cfast and smokeview
 
-    use precision_parameters
-    use cfast_main
-    use fltarget
-    implicit none
-
     integer, intent(in) :: detectornumber
     real(eb), intent(out) :: positionvector(*)
     type(room_type), pointer :: roomptr
@@ -462,13 +452,6 @@
     subroutine getabstarget(itarg, positionvector)
 
     !	Routine to get the absolute position of a target in the computational space
-
-    !	This is the protocol between cfast and smokeview
-
-    use precision_parameters
-    use cfast_main
-    use fltarget
-    implicit none
 
     integer, intent(in) :: itarg
     real(eb), intent(out) :: positionvector(*)
@@ -1356,8 +1339,6 @@ module isosurface
     RETURN
     END SUBROUTINE REALLOCATE_F
 
-    END MODULE ISOSURFACE
-
     ! --------------------------- ChkMemErr -------------------------------------------
 
     subroutine chkmemerr(codesect,varname,izero)
@@ -1375,3 +1356,5 @@ module isosurface
     call cfastexit('CFAST',1)
 
     end subroutine chkmemerr
+
+    END MODULE ISOSURFACE

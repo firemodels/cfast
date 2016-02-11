@@ -21,7 +21,6 @@ module solve_routines
     
     use cenviro
     use cfast_main
-    use cfin
     use cshell
     use dervs
     use debug
@@ -166,12 +165,6 @@ module solve_routines
     !           initial pressure solution.
     ! arguments: tsec: current simulation time 
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use vents
-    implicit none
-
     real(eb), intent(in) :: tsec
     
     real(eb) :: factor2, height, width, avent
@@ -253,15 +246,6 @@ module solve_routines
     !                deltamv
     !                iflag
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell
-    use opt
-    use params
-    use solver_parameters
-    implicit none
-
     integer, intent(in) :: nnn
     real(eb), intent(in) :: hvpsolv(nnn)
     integer, intent(out) :: iflag
@@ -335,14 +319,6 @@ module solve_routines
     !                HVSOLV
     !                DELTAMV
     !                IFLAG
-
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use opt
-    use params
-    use solver_parameters
-    implicit none
 
     integer, intent(in) :: nnn
     real(eb), intent(in) :: hvsolv(nnn)

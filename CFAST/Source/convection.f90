@@ -3,7 +3,6 @@
     use precision_parameters
     use fireptrs
     use wallptrs
-    use cparams
     use cenviro
     use cfast_main
     use wnodes

@@ -127,21 +127,6 @@ module cfin
     
 end module cfin
 
-! --------------------------- cfio -------------------------------------------
-
-module cfio
-
-    use cfin    
-    implicit none
-    
-    ! input/output data for readin, ...
-      integer :: start, first, last, count, type, ix
-      logical :: valid
-      character(lbufln) :: inbuf
-      real :: xi
-
-end module cfio
-
 ! --------------------------- cshell -------------------------------------------
 
 module cshell
@@ -149,7 +134,6 @@ module cshell
     implicit none
     save
 
-    ! rundat is today's date
     logical :: nokbd=.false., initializeonly=.false.
     logical :: debugging=.false., validate=.false., netheatflux=.false.
     integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3

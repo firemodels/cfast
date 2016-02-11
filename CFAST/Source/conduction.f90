@@ -7,7 +7,6 @@ module conduction_routines
     use wallptrs
     use cenviro
     use cfast_main
-    use opt
     use wnodes
     use cparams, only: nnodes
     

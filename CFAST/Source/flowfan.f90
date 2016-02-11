@@ -5,6 +5,14 @@ module mflow_routines
     use opening_fractions, only : qcffraction, qcifraction
     use utility_routines, only: d1mach
     
+    use precision_parameters
+    use cfast_main
+    use cenviro
+    use flwptrs
+    use opt
+    use params
+    use vents, only : mventinfo
+    
     implicit none
     
     private
@@ -22,15 +30,6 @@ module mflow_routines
     !     it returns rates of mass and energy flows into the layers from all mechancial vents in the building.
     !     revision: $revision: 461 $
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use flwptrs
-    use opt
-    use params
-    use vents, only : mventinfo
-    implicit none
     
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
     real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
@@ -134,11 +133,6 @@ module mflow_routines
     !     arguments: tsec
     !                deltpmv
 
-    use precision_parameters
-    use cfast_main
-    use params
-    implicit none
-
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: deltpmv(*)
     
@@ -216,13 +210,6 @@ module mflow_routines
     !     routine: hvsflo
     !     purpose: species calculation for mechanical vents
 
-    use precision_parameters
-    use cfast_main
-    use cenviro
-    use opt
-    use params
-    implicit none
-
     real(eb), intent(in) :: tprime(*)
     real(eb), intent(out) :: delttmv(*)
     
@@ -296,10 +283,6 @@ module mflow_routines
     !                k      fan number
     !                dp     head pressure across the fan
 
-    use precision_parameters
-    use cfast_main
-    implicit none
-
     real(eb), intent(in) :: tsec, dp
     integer, intent(in) :: i,j,k
         
@@ -330,12 +313,6 @@ module mflow_routines
     !     routine: hvfrex
     !     purpose: update arrays and assign compartment pressures, temperatures and concentrations to flow 
     !              into the system from exterior nodes
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use params
-    implicit none
 
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*)
     
@@ -417,12 +394,6 @@ module mflow_routines
     !     arguments: tsec   current simulation time
     !                prprime
     !                nprod
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use params
-    implicit none
 
     real(eb), intent(out) :: prprime(*) 
     integer, intent(in) :: nprod
@@ -541,10 +512,6 @@ module mflow_routines
     subroutine getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
     
     !       This is a routine to get the shape data for mechanical flow vent external connections
-
-    use precision_parameters
-    use cfast_main
-    implicit none
 
     integer, intent(in) :: i
     integer, intent(out) :: iroom

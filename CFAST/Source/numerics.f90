@@ -1,6 +1,6 @@
 module numerics_routines
     
-    use utility_routines
+    use utility_routines, only: d1mach, xerror, xerrwv, xerrmod
     
     implicit none
     

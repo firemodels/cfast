@@ -1,11 +1,14 @@
 module debug_routines
     
     use precision_parameters
+    
     use cparams
     use cfast_types
     use cfast_main
     use spreadsheet_header_routines
     use utility_routines
+    
+    implicit none
     
     private
     

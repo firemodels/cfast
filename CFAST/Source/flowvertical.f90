@@ -1,6 +1,7 @@
 module vflow_routines
     
     use precision_parameters
+    
     use opening_fractions, only: qcvfraction
     use utility_routines, only: tanhsmooth
     
@@ -11,6 +12,7 @@ module vflow_routines
     public vertical_flow, getvventinfo
     
     contains
+    
 ! --------------------------- vertical_flow -------------------------------------------
 
     subroutine vertical_flow (tsec,flwvf,vflowflg)

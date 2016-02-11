@@ -1,19 +1,19 @@
     module smokeview_routines
 
     use precision_parameters
+    
     use fire_routines, only: get_gas_temp_velocity
     use hflow_routines, only : gethventinfo
     use vflow_routines, only : getvventinfo
     use mflow_routines, only : getmventinfo
     use spreadsheet_header_routines, only: ssheaderssmv
-    use utility_routines
+    use utility_routines, only: funit
     
     use iofiles
     use cenviro
     use cfast_main
     
-    implicit none
-    
+    implicit none 
 
     private
 

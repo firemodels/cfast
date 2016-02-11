@@ -2,22 +2,22 @@ module solve_routines
 
     use precision_parameters
 
-    use conduction_routines
-    use convection_routines 
+    use conduction_routines, only: conduction
+    use convection_routines, only: convection
     use debug_routines, only: output_spreadsheet_residuals
-    use fire_routines
-    use isosurface
-    use hflow_routines
-    use mflow_routines
+    use fire_routines, only: fire, door_jet, integrate_mass, update_species, remap_fires, update_fire_objects
+    use isosurface, only: output_isodata
+    use hflow_routines, only: horizontal_flow
+    use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
     use opening_fractions, only : qchfraction
-    use output_routines
-    use radiation_routines
-    use smokeview_routines
-    use spreadsheet_routines
-    use target_routines
-    use utility_routines
-    use vflow_routines
+    use output_routines, only: output_results, output_status, output_debug, deleteoutputfiles, find_error_component
+    use radiation_routines, only: radiation
+    use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
+    use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
+    use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
+    use utility_routines, only: mat2mult, sort_fire, interp, shellsort, cptime, xerror, funit
+    use vflow_routines, only: vertical_flow
     
     use cenviro
     use cfast_main
@@ -39,9 +39,14 @@ module solve_routines
     use wdervs
     use wnodes
     
+    implicit none
+    
+    private
+    
     public solve_simulation, calculate_residuals, output_interactive_help, update_data
     
     contains
+    
 ! --------------------------- initial_solution -------------------------------------------
 
     subroutine initial_solution(t,pdold,pdzero,rpar,ipar)

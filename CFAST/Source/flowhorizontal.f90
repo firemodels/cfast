@@ -5,6 +5,8 @@ module hflow_routines
     use opening_fractions, only: qchfraction
     use debug_routines, only: ssprintslab, spreadsheetfslabs
     
+    implicit none
+    
     private
     
     public horizontal_flow, gethventinfo

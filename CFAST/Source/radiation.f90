@@ -1,6 +1,7 @@
 module radiation_routines
     
     use precision_parameters
+    
     use fire_routines, only: flame_height
     use numerics_routines, only : ddot, dnrm2, dgefa, dgesl
     
@@ -11,6 +12,7 @@ module radiation_routines
     public radiation, absorb, solid_angle_triangle
     
     contains
+    
     ! --------------------------- radiation -------------------------------------------
 
     subroutine radiation(flwrad,flxrad)

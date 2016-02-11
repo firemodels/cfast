@@ -6,7 +6,9 @@ module input_routines
     use initialization_routines, only : inittarg, initamb, offset, hvinit
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
-    use utility_routines
+    use utility_routines, only: countargs, get_igrid, upperall, exehandle
+    
+    implicit none
     
     private
     

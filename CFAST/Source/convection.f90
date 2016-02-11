@@ -13,11 +13,11 @@
     
     private
 
-   public convection, convective_flux
+    public convection, convective_flux
 
-   contains
+    contains
    
-   subroutine convection (flwcv,flxcv)
+    subroutine convection (flwcv,flxcv)
 
     !     routine:    convection
     !     function:   interface between calculate_residuals and convective_flux.  loops over rooms

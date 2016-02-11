@@ -2,7 +2,7 @@ module output_routines
     
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
-    use utility_routines
+    use utility_routines, only: xerror, doesthefileexist, funit
     
     use cfast_main
     use cenviro

@@ -2,7 +2,7 @@ module fire_routines
     
     use precision_parameters
     
-    use opening_fractions
+    use opening_fractions, only: qcifraction
     use utility_routines
     
     use cenviro

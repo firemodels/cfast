@@ -1,10 +1,14 @@
 module spreadsheet_routines
+    
     use precision_parameters
+    
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : qchfraction
     use spreadsheet_header_routines
-    use utility_routines
+    use utility_routines, only: ssaddtolist
+    
+    implicit none
     
     private
     

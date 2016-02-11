@@ -12,8 +12,9 @@ module utility_routines
     use wnodes
   
     implicit none
-   
-   public fmix, emix, get_igrid, doesthefileexist, funit, tanhsmooth, ssaddtolist, tointstring
+    
+    ! unlike most other routines, this one does not have the private specifier since all routines here are intended to be
+    ! used by other routines
    
     contains
     

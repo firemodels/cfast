@@ -1,7 +1,8 @@
 module conduction_routines
+    
     use precision_parameters
     
-    use convection_routines
+    use convection_routines, only: convective_flux
     
     use wallptrs
     use cenviro

@@ -6,7 +6,7 @@ module initialization_routines
     use opening_fractions, only : qchfraction
     use output_routines, only : deleteoutputfiles
     use solve_routines, only : update_data
-    use utility_routines
+    use utility_routines, only: indexi, xerror
     
     implicit none
     

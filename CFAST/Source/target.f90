@@ -19,6 +19,8 @@ module target_routines
     
     implicit none
     
+    real(eb), dimension(2) :: qtcflux, qtfflux, qtwflux, qtgflux    ! temporary variables for target flux calculation
+    
     private
 
     public target, update_detectors, get_detector_temp_and_velocity, solid_angle_triangle, get_target_temperatures

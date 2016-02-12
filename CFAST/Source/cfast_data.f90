@@ -174,8 +174,6 @@ module fltarget
     integer, parameter :: cylpde = 2                                ! cylindrical targets (cylindrical coordinates)
     integer, parameter :: interior = 1
     integer, parameter :: exterior = 2
-
-    real(eb), dimension(2) :: qtcflux, qtfflux, qtwflux, qtgflux    ! temporary variables for target flux calculation
     
     type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
     

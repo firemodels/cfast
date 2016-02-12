@@ -163,8 +163,8 @@ end module dervs
 
 module fltarget
     use precision_parameters
-    use cparams, only: mxthrmplen, mxtarg
-    use  cfast_types, only: target_type
+    use cparams, only: mxthrmplen, mxtarg, mxdtect
+    use  cfast_types, only: target_type, detector_type
     implicit none
     save
     
@@ -176,6 +176,7 @@ module fltarget
     integer, parameter :: exterior = 2                              ! back surface of target is exposed to compartment exterior
     
     type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
+    type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
     
 end module fltarget
 

@@ -737,12 +737,15 @@ module target_routines
        bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
     character(133) :: messg
+    type(detector_type), pointer :: dtectptr
 
     idset = 0
     ifdtect = 0
     tdtect = tcur+2*dstep
     cjetmin = 0.10_eb
     do i = 1, ndtect
+        dtectptr => detectorinfo(i)
+        
         iroom = ixdtect(i,droom)
 
         zdetect = xdtect(i,dzloc)
@@ -765,7 +768,7 @@ module target_routines
                 continue
             end if
         elseif (ixdtect(i,dtype)>=heatd) then
-            rti = xdtect(i,drti)
+            rti = dtectptr%rti
             trig = xdtect(i,dtrig)
             tlinko = xdtect(i,dcond)
             bn = sqrt(velo)/rti

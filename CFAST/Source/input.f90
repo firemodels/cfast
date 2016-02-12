@@ -6,8 +6,24 @@ module input_routines
     use initialization_routines, only : inittarg, initamb, offset, hvinit
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
-    use utility_routines, only: countargs, get_igrid, upperall, exehandle
+    use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
     
+    use wallptrs
+    use cenviro
+    use cfast_main
+    use cparams, only: mx_hsep
+    use cshell
+    use debug
+    use fltarget
+    use iofiles
+    use objects1
+    use objects2
+    use opt
+    use params
+    use solver_parameters
+    use thermp
+    use wnodes
+
     implicit none
     
     private
@@ -22,14 +38,6 @@ module input_routines
 
     !	Read the input file and set up the data for processing
 
-    use precision_parameters
-    use wallptrs
-    use cenviro
-    use cfast_main
-    use cshell
-    use iofiles
-    use params
-    use thermp
     implicit none
     
     real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
@@ -38,6 +46,7 @@ module input_routines
     integer :: iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
     character :: aversion*5
     type(room_type), pointer :: roomptr
+    type(detector_type), pointer :: dtectptr
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
@@ -347,6 +356,7 @@ module input_routines
 
     ! check detectors
     do i = 1, ndtect
+        dtectptr => detectorinfo(i)
         iroom = ixdtect(i,droom)
         if(iroom<1.or.iroom>nm1)then
             write (logerr,104) iroom 
@@ -354,7 +364,7 @@ module input_routines
             stop
         end if
         roomptr => roominfo(iroom)
-        rti = xdtect(i,drti)
+        rti = dtectptr%rti
         if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
             write (logerr,101) rti 
 101         format('***Error: Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
@@ -460,22 +470,6 @@ module input_routines
     !     Arguments: inumr    number of rows in input file spreadsheet
     !                inumc    number of columns in input file spreadsheet
 
-    use precision_parameters
-    use wallptrs
-    use cenviro
-    use cfast_main
-    use cshell
-    use iofiles
-    use fltarget
-    use objects1
-    use objects2
-    use opt
-    use params
-    use solver_parameters
-    use thermp
-    use wnodes
-    implicit none
-
     integer, parameter :: maxin = 37
     
     integer, intent(in) :: inumr, inumc
@@ -488,6 +482,7 @@ module input_routines
     character(128) :: lcarray(ncol)
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
+    type(detector_type), pointer :: dtectptr
     type(ramp_type), pointer :: rampptr
     type(visual_type), pointer :: sliceptr
 
@@ -1301,11 +1296,13 @@ module input_routines
         case ('DETEC')
             if (countargs(lcarray)>=9) then
                 ndtect = ndtect + 1
+                
                 if (ndtect>mxdtect) then
                     write (logerr, 5338)
                     stop
                 end if
 
+                dtectptr => detectorinfo(ndtect)
                 if (lcarray(1)=='SMOKE') then
                     i1 = smoked
                 else if (lcarray(1)=='HEAT') then
@@ -1331,7 +1328,7 @@ module input_routines
                 xdtect(ndtect,dxloc) = lrarray(4)
                 xdtect(ndtect,dyloc) = lrarray(5)
                 xdtect(ndtect,dzloc) = lrarray(6)
-                xdtect(ndtect,drti) =  lrarray(7)
+                dtectptr%rti =  lrarray(7)
                 ixdtect(ndtect,dquench) = lrarray(8)
                 xdtect(ndtect,dspray) = lrarray(9)*1000.0_eb
                 ! if spray density is zero, then turn off the sprinkler
@@ -1765,13 +1762,6 @@ module input_routines
     !                inumc:   number of columns in the input file
     !                iobj:    pointer to the fire object that will contain all the data we read in here
 
-    use precision_parameters
-    use cfast_main
-    use cparams, only: mx_hsep
-    use iofiles
-    use objects2
-    implicit none
-
     integer, intent(in) :: inumc, iobj, lrowcount
     character(*), intent(in) :: objname
     
@@ -1923,9 +1913,6 @@ module input_routines
 
     !	Routine to implement the algorithm to set the heat of combustion for all fires
 
-    use precision_parameters
-    implicit none
-
     integer, intent(in) :: maxint
     real(eb), intent(in) :: qdot(maxint), hinitial
     real(eb), intent(out) :: mdot(maxint), hdot(maxint)
@@ -1962,10 +1949,6 @@ module input_routines
     ! 	         call the input routines
     !     arguments: errorcode: return error indication if non-zero
 
-    use iofiles
-    use debug
-    implicit none
-    
     integer :: lp, ld, ios
     character(256) :: testpath, testproj 
 
@@ -2038,16 +2021,6 @@ module input_routines
     !     routine: read_solver_ini
     !     purpose: this routine initializes the solver variables from solver.ini if it exists
     !     arguments: none
-
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use iofiles
-    use opt
-    use params
-    use solver_parameters
-    use wnodes
-    implicit none
 
     real(eb) :: fract1, fract2, fract3, fsum
     integer :: nopt, i, j, ibeg, iend
@@ -2129,10 +2102,6 @@ module input_routines
     !		         defaultposition: to set to zero (base)(2) or midpoint(1)
     !		         minimumseparation: the closest the object can be to a wall
 
-    use precision_parameters
-    use cshell, only: logerr
-    implicit none
-    
     integer, intent(in) :: index, defaultposition, opoint
     real(eb), intent(in) :: minimumseparation, pos_max
     real(eb), intent(inout) :: xyz(3,0:*)
@@ -2173,9 +2142,6 @@ module input_routines
     !                maxrow   = actual number of rows read
     !                maxcol   = actual number of columns read
     !                logerr   = logical unit number for writing error messages (if any)
-
-    use precision_parameters
-    implicit none
 
     integer, intent(in) :: iunit, numr, numc, nstart, logerr
 
@@ -2258,11 +2224,6 @@ module input_routines
 ! --------------------------- setup_slice_iso -------------------------------------------
 
    subroutine setup_slice_iso
-   use precision_parameters
-   use iofiles
-   use cenviro
-   use cfast_main
-   implicit none
 
    integer :: nrooms
 
@@ -2473,10 +2434,7 @@ module input_routines
 
    ! --------------------------- set_grid -------------------------------------------
 
-   subroutine set_grid(xgrid,n,xmin,xsplit,xmax,nsplit)
-   use precision_parameters
-   use utility_routines
-   implicit none
+   subroutine set_grid (xgrid,n,xmin,xsplit,xmax,nsplit)
    
    integer, intent(in) :: n, nsplit
    real(eb), dimension(n), intent(out) :: xgrid

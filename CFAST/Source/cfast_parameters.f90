@@ -68,13 +68,15 @@ module cparams
     integer, parameter :: mxr_trg = idx_tempb_trg           ! upper bound of real target array 
     integer, parameter :: mxi_trg = 7                       ! upper bound of integer target array
     
-    integer, parameter :: check_detector_state = 0      ! index to check state of detectors and targets
-    integer, parameter :: set_detector_state = 1        ! index to calculate full state of detectors and targets
-    integer, parameter :: update_detector_state = 2     ! index to update state of detectors and targets on 
-                                                        ! successful equation set solution
+    integer, parameter :: mxdtect=10*nr                     ! maximum number of detectors
     
-    integer, parameter :: upper = 1         ! index for upper layer
-    integer, parameter :: lower = 2         ! index for lower layer
+    integer, parameter :: check_detector_state = 0          ! index to check state of detectors and targets
+    integer, parameter :: set_detector_state = 1            ! index to calculate full state of detectors and targets
+    integer, parameter :: update_detector_state = 2         ! index to update state of detectors and targets on 
+                                                            ! successful equation set solution
+    
+    integer, parameter :: upper = 1                         ! index for upper layer
+    integer, parameter :: lower = 2                         ! index for lower layer
     
     ! parameters for equation solver
     ! nt = 4*nr(main equ) + 2*nr*ns(species) + mxhvsys*ns(hvac species)
@@ -91,7 +93,6 @@ module dsize
 
     implicit none
 
-    integer, parameter :: mxdtect=100   ! maximum number of detectors
     integer, parameter :: dtxcol=16     ! number of floating point columns in detector data structure
     integer, parameter :: dticol=5      ! number of integer columns in detector data structure
     
@@ -101,7 +102,6 @@ module dsize
     integer, parameter :: sprinkd = 3   ! sprinkler
 
     ! pointers into floating point detector data structure
-    integer, parameter :: drti=1        ! RTI value for detector / sprinkler response
     integer, parameter :: dxloc=2       ! X location of detector
     integer, parameter :: dyloc=3       ! Y location of detector
     integer, parameter :: dzloc=4       ! Z location of detector

@@ -951,6 +951,7 @@ module output_routines
     character :: outbuf*132
     
     type(room_type), pointer :: roomptr
+    type(detector_type), pointer :: dtectptr
 
     if(ndtect/=0) write(iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
@@ -964,16 +965,17 @@ module output_routines
     do idtect = 1, ndtect
         iroom = ixdtect(idtect,droom)
         roomptr => roominfo(iroom)
+        dtectptr => detectorinfo(idtect)
         itype = ixdtect(idtect,dtype)
         if(itype==smoked)then
             write(outbuf,5010) idtect, roomptr%name, 'SMOKE ', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
                 xdtect(idtect,dtrig)
         elseif(itype==heatd)then
             write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
-                xdtect(idtect,dtrig)-273.15, xdtect(idtect,drti)
+                xdtect(idtect,dtrig)-273.15, dtectptr%rti
         else
             write(outbuf,5020) idtect, roomptr%name, 'SPRINK', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
-                xdtect(idtect,dtrig)-273.15, xdtect(idtect,drti), xdtect(idtect,dspray)
+                xdtect(idtect,dtrig)-273.15, dtectptr%rti, xdtect(idtect,dspray)
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)
 5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),13x,2(5x,f10.2),5x,1pe10.2)

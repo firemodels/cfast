@@ -523,8 +523,8 @@ module initialization_routines
     !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
 
     use precision_parameters
-    use cparams, only : nr, mxfires
-    use dsize, only : mxdtect
+    use cparams, only : nr, mxfires, mxdtect
+ 
     implicit none
 
     ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
@@ -749,7 +749,8 @@ module initialization_routines
     fqdj(1:nr) = 0.0_eb
 
     ! detectors
-    xdtect(1:mxdtect,drti) = 50.0_eb
+    ndtect = 0
+    detectorinfo(1:mxdtect)%rti = 50.0_eb
     xdtect(1:mxdtect,dspray) = -300.0_eb
     xdtect(1:mxdtect,dxloc) = -1.0_eb
     xdtect(1:mxdtect,dyloc) = -1.0_eb
@@ -764,7 +765,6 @@ module initialization_routines
     ixdtect(1:mxdtect,dact) = 0
     ixdtect(1:mxdtect,dactreported) = 0
 
-    ndtect = 0
     iquench(1:nr) = 0
 
     ! targets

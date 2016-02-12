@@ -83,8 +83,31 @@ module cfast_types
         ! these are the results of the target calculations that are used for printout and spreadsheet output
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
+        
     end type target_type
     
+    ! detector / sprinkler structure
+    type detector_type
+        real(eb) :: center(3)           ! position of detector center (user input)
+        real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
+        real(eb) :: rti                 ! rti value for heat detector or sprinkler (user input)
+        real(eb) :: spray_density       ! sprinkler spray density (user input)
+        real(eb) :: quenching_time      ! characteristice quencing time (calculated)
+        real(eb) :: half_life           ! time for fire to diminish by a factor of two (calculated)
+        real(eb) :: temp_link           ! current link temperature (calculated)
+        real(eb) :: temp_link_o         ! link temperature from previous time step (calculated)
+        real(eb) :: temp_gas            ! current gas temperature near detector (calculated)
+        real(eb) :: temp_gas_o          ! gas temperature neat detector from previous time step (calculated)
+        real(eb) :: velocity            ! current gas velocity near detector (calculated)
+        real(eb) :: velocity_o          ! gas velocity near detector from previous time step (calculated)
+        real(eb) :: obscuration         ! smoke obscuration near detector (calculated)
+        
+        integer :: room                 ! compartment where the detector is located (user input from the input data file)
+        integer :: dtype                ! detector type; 1=smoke, 2=heat, 3=sprinkler
+        logical :: quench               ! true if type is sprinkler and spray is non-zero
+        logical :: activated            ! true if detector has activated
+        logical :: reported             ! true if detector activation has already been reported
+    end type detector_type
     
     ! vent data structure
     type vent_type

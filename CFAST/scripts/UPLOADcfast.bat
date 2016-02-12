@@ -1,6 +1,7 @@
 @echo off
+Title Building cfast for 64 bit Windows
 
-Rem  Windows batch file to package a release 64 bit windows smokeview
+Rem  Windows batch file to build a release Smokeview for Windows 64.
 
 Rem setup environment variables (defining where repository resides etc) 
 
@@ -17,10 +18,12 @@ goto:eof
 :endif_envexist
 
 call %envfile%
+echo Using the environment variables:
+echo.
+echo Using GIT revision %smv_revision% to build a 64 bit Windows Smokeview
 
 %git_drive%
 
-cd %git_root%\scripts
-call BUNDLE_cfast.bat
-
-pause
+cd %git_root%\CFAST\\uploads
+explorer .
+start chrome https://drive.google.com/drive/my-drive

@@ -20,6 +20,7 @@ call %envfile%
 
 %git_drive%
 
-echo call script that creates cfast bundle
+cd %git_root%\scripts
+call BUNDLE_cfast.bat
 
 pause

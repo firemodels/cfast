@@ -172,8 +172,8 @@ module fltarget
 
     integer, parameter :: pde = 1                                   ! plate targets (cartesian coordinates)
     integer, parameter :: cylpde = 2                                ! cylindrical targets (cylindrical coordinates)
-    integer, parameter :: interior = 1
-    integer, parameter :: exterior = 2
+    integer, parameter :: interior = 1                              ! back surface of target is exposed to compartment interior
+    integer, parameter :: exterior = 2                              ! back surface of target is exposed to compartment exterior
     
     type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
     

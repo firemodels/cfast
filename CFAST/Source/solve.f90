@@ -825,7 +825,7 @@ module solve_routines
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
             else
                 ! update_detectors said that a sprinkler has gone off but the time is wrong!!
-                write(logerr,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too loarge in DASSL, Time = ', &
+                write(logerr,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
                 call cfastexit ('CFAST', idid)
                 stop

@@ -1327,7 +1327,7 @@ module input_routines
                     stop
                 end if
 
-                xdtect(ndtect,dtrig) = lrarray(3)
+                dtectptr%trigger = lrarray(3)
                 dtectptr%center(1) = lrarray(4)
                 dtectptr%center(2) = lrarray(5)
                 dtectptr%center(3) = lrarray(6)

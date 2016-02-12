@@ -102,7 +102,6 @@ module dsize
     integer, parameter :: sprinkd = 3   ! sprinkler
 
     ! pointers into floating point detector data structure
-    integer, parameter :: dtrig=5       ! activation value
     integer, parameter :: dcond=6       ! current value of detector response (either obscuration or temperature)
     integer, parameter :: dcondo=7      ! previous value of detector response (either obscuration or temperature)
     integer, parameter :: dvel=8        ! current velocity near detector

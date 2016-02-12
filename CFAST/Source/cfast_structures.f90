@@ -67,20 +67,19 @@ module cfast_types
         real(eb) :: flux_net_back       ! net heat flux to back surface of target (calculated)
         real(eb), dimension(nnodes_trg) :: temperature  ! target temperatures from front to back
         
-        integer :: room                 ! compartment where the target is located (user input from the input data file)
-        integer :: layer                ! layer (within the compartment) where the target is located (calculated)
-        integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input from input data file)
+        integer :: room                 ! compartment where the target is located (user input)
+        integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input)
         integer :: back                 ! whether the back surface of the target is exposed to interior or exterior temperatures
         integer :: wall                 ! wall surface the target is located on. Normal wall numbering
 
+        ! these are the results of the target calculations that are used for printout and spreadsheet output
+        integer :: layer                ! layer (within the compartment) where the target is located (calculated)
         real(eb) :: tgas                ! gas temperature near target
         real(eb) :: tinternal           ! target temperature at depth_loc
-        real(eb) :: tfront              ! target front surface temperature (= ...%temperature(1) for plate, 
+        real(eb) :: tfront              ! target front surface temperature (= ...%temperature(1) for plate,                                         
                                         !                                   = ...%temperature(nnodes_trg) for cylinder)
-        real(eb) :: tback               ! target back surface temperature (= ...%temperature(nnodes_trg) for plate, 
+        real(eb) :: tback               ! target back surface temperature  (= ...%temperature(nnodes_trg) for plate, 
                                         !                                   = ...%temperature(1) for cylinder)
-        
-        ! these are the results of the target calculations that are used for printout and spreadsheet output
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
         
@@ -94,6 +93,12 @@ module cfast_types
         real(eb) :: spray_density       ! sprinkler spray density (user input)
         real(eb) :: quenching_time      ! characteristice quencing time (calculated)
         real(eb) :: half_life           ! time for fire to diminish by a factor of two (calculated)
+        
+        integer :: room                 ! compartment where the detector is located (user input)
+        integer :: dtype                ! detector type; 1=smoke, 2=heat, 3=sprinkler (user input)
+        logical :: quench               ! true if type is sprinkler and spray is non-zero (user input)
+        
+        ! these are the results of the dwtector calculations that are used for printout and spreadsheet output
         real(eb) :: temp_link           ! current link temperature (calculated)
         real(eb) :: temp_link_o         ! link temperature from previous time step (calculated)
         real(eb) :: temp_gas            ! current gas temperature near detector (calculated)
@@ -101,12 +106,8 @@ module cfast_types
         real(eb) :: velocity            ! current gas velocity near detector (calculated)
         real(eb) :: velocity_o          ! gas velocity near detector from previous time step (calculated)
         real(eb) :: obscuration         ! smoke obscuration near detector (calculated)
-        
-        integer :: room                 ! compartment where the detector is located (user input from the input data file)
-        integer :: dtype                ! detector type; 1=smoke, 2=heat, 3=sprinkler
-        logical :: quench               ! true if type is sprinkler and spray is non-zero
-        logical :: activated            ! true if detector has activated
-        logical :: reported             ! true if detector activation has already been reported
+        logical :: activated            ! true if detector has activated (calculated)
+        logical :: reported             ! true if detector activation has already been reported (calculated)
     end type detector_type
     
     ! vent data structure

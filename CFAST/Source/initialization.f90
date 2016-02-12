@@ -757,7 +757,7 @@ module initialization_routines
     detectorinfo(1:mxdtect)%center(1) = -1.0_eb
     detectorinfo(1:mxdtect)%center(2) = -1.0_eb
     detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb
-    xdtect(1:mxdtect,dtrig) = 330.3722_eb
+    detectorinfo(1:mxdtect)%trigger = 330.3722_eb
     xdtect(1:mxdtect,dvel) = 0.0_eb
     xdtect(1:mxdtect,dvelo) = 0.0_eb
     xdtect(1:mxdtect,dtact) = 99999.0_eb

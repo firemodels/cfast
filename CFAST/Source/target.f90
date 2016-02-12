@@ -761,7 +761,7 @@ module target_routines
         velo = max(xdtect(i,dvelo),cjetmin)
         
         if (ixdtect(i,dtype)==smoked) then  
-            trig = log10(1._eb/(1._eb-xdtect(i,dtrig)/100._eb))
+            trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = xdtect(i,dcond)
             tlink = xdtect(i,dobs)        
             if (tcur>350._eb) then
@@ -769,7 +769,7 @@ module target_routines
             end if
         elseif (ixdtect(i,dtype)>=heatd) then
             rti = dtectptr%rti
-            trig = xdtect(i,dtrig)
+            trig = dtectptr%trigger
             tlinko = xdtect(i,dcond)
             bn = sqrt(velo)/rti
             an = bn*tjeto

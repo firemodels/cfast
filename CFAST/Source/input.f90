@@ -364,20 +364,23 @@ module input_routines
             stop
         end if
         roomptr => roominfo(iroom)
+        
         rti = dtectptr%rti
         if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
             write (logerr,101) rti 
 101         format('***Error: Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
             stop
         end if
-        xloc = xdtect(i,dxloc)
-        yloc = xdtect(i,dyloc)
-        zloc = xdtect(i,dzloc)
+        
+        xloc = dtectptr%center(1)
+        yloc = dtectptr%center(2)
+        zloc = dtectptr%center(3)
         if(xloc<0.0_eb.or.xloc>roomptr%width.or.yloc<0.0_eb.or.yloc>roomptr%depth.or.zloc<0.0_eb.or.zloc>roomptr%height) then
             write(logerr,102) xloc,yloc,zloc
 102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
             stop
         end if
+        
         idtype = ixdtect(i,dtype)
         if(idtype<1.or.idtype>3)then
             write(logerr,103) idtype
@@ -1325,9 +1328,9 @@ module input_routines
                 end if
 
                 xdtect(ndtect,dtrig) = lrarray(3)
-                xdtect(ndtect,dxloc) = lrarray(4)
-                xdtect(ndtect,dyloc) = lrarray(5)
-                xdtect(ndtect,dzloc) = lrarray(6)
+                dtectptr%center(1) = lrarray(4)
+                dtectptr%center(2) = lrarray(5)
+                dtectptr%center(3) = lrarray(6)
                 dtectptr%rti =  lrarray(7)
                 ixdtect(ndtect,dquench) = lrarray(8)
                 xdtect(ndtect,dspray) = lrarray(9)*1000.0_eb
@@ -1354,8 +1357,8 @@ module input_routines
                     write(*,*)
                 end if
 
-                if(xdtect(ndtect,dxloc)>roomptr%width.or. &
-                    xdtect(ndtect,dyloc)>roomptr%depth.or.xdtect(ndtect,dzloc)>roomptr%height) then
+                if(dtectptr%center(1)>roomptr%width.or. &
+                    dtectptr%center(2)>roomptr%depth.or.dtectptr%center(3)>roomptr%height) then
                     write(logerr,5339) ndtect,roomptr%name
                     stop
                 end if

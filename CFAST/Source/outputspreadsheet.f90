@@ -220,6 +220,7 @@ module spreadsheet_routines
     integer :: iwptr(4), position, i, iw, itarg, iroom
     
     type(target_type), pointer :: targptr
+    type(detector_type), pointer ::dtectptr
     
     data iwptr /1, 3, 4, 2/
     logical :: firstc
@@ -290,8 +291,9 @@ module spreadsheet_routines
     ! detectors (including sprinklers)
     cjetmin = 0.10_eb
     do i = 1, ndtect
+        dtectptr => detectorinfo(i)
         iroom = ixdtect(i,droom)
-        zdetect = xdtect(i,dzloc)
+        zdetect = dtectptr%center(3)
         if(zdetect>zzhlay(iroom,lower))then
             tlay = zztemp(iroom,upper)
         else

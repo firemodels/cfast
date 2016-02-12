@@ -365,6 +365,7 @@ module initialization_routines
     
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
+    type(detector_type), pointer :: dtectptr
 
     ! simplify and make initial pressure calculations consistent.  inside pressures
     ! were calculated using rho*g*h .  but outside pressures were calculated using
@@ -438,11 +439,12 @@ module initialization_routines
 
     ! establish default values for detector data
     do i = 1, ndtect
+        dtectptr => detectorinfo(i)
         iroom=ixdtect(i,droom)
         roomptr => roominfo(iroom)
-        if(xdtect(i,dxloc)<0.0_eb) xdtect(i,dxloc)=roomptr%width*0.5_eb
-        if(xdtect(i,dyloc)<0.0_eb) xdtect(i,dyloc)=roomptr%depth*0.5_eb
-        if(xdtect(i,dzloc)<0.0_eb) xdtect(i,dzloc)=roomptr%height-mx_vsep
+        if (dtectptr%center(1)<0.0_eb) dtectptr%center(1) = roomptr%width*0.5_eb
+        if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%depth*0.5_eb
+        if (dtectptr%center(3)<0.0_eb) dtectptr%center(3) = roomptr%height-mx_vsep
         tdspray = xdtect(i,dspray)
 
         ! if tdspray>0 then interpret it as a spray density and convert
@@ -752,9 +754,9 @@ module initialization_routines
     ndtect = 0
     detectorinfo(1:mxdtect)%rti = 50.0_eb
     xdtect(1:mxdtect,dspray) = -300.0_eb
-    xdtect(1:mxdtect,dxloc) = -1.0_eb
-    xdtect(1:mxdtect,dyloc) = -1.0_eb
-    xdtect(1:mxdtect,dzloc) = -3.0_eb/39.37_eb
+    detectorinfo(1:mxdtect)%center(1) = -1.0_eb
+    detectorinfo(1:mxdtect)%center(2) = -1.0_eb
+    detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb
     xdtect(1:mxdtect,dtrig) = 330.3722_eb
     xdtect(1:mxdtect,dvel) = 0.0_eb
     xdtect(1:mxdtect,dvelo) = 0.0_eb

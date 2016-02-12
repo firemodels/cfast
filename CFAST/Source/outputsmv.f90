@@ -434,11 +434,13 @@
     integer, intent(in) :: detectornumber
     real(eb), intent(out) :: positionvector(*)
     type(room_type), pointer :: roomptr
+    type(detector_type), pointer :: dtectptr
 
+    dtectptr => detectorinfo(detectornumber)
     roomptr => roominfo(ixdtect(detectornumber,droom))
-    positionvector(1) = xdtect(detectornumber,dxloc) + roomptr%x0
-    positionvector(2) = xdtect(detectornumber,dyloc) + roomptr%y0
-    positionvector(3) = xdtect(detectornumber,dzloc) + roomptr%z0
+    positionvector(1) = dtectptr%center(1) + roomptr%x0
+    positionvector(2) = dtectptr%center(2) + roomptr%y0
+    positionvector(3) = dtectptr%center(3) + roomptr%z0
     positionvector(4) = 0.0_eb
     positionvector(5) = 0.0_eb
     positionvector(6) = -1.0_eb

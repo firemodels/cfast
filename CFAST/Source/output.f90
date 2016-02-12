@@ -571,15 +571,17 @@ module output_routines
 
     character(3) :: cact
     type(room_type), pointer :: roomptr
+    type(detector_type), pointer :: dtectptr
 
     if(ndtect==0)return
     write(iofilo,5000)
     cjetmin = 0.10_eb
     do i = 1, ndtect
+        dtectptr => detectorinfo(i)
         iroom = ixdtect(i,droom)
         roomptr => roominfo(iroom)
 
-        zdetect = xdtect(i,dzloc)
+        zdetect = dtectptr%center(3)
         if(zdetect>zzhlay(iroom,lower))then
             tlay = zztemp(iroom,upper)
         else
@@ -968,13 +970,11 @@ module output_routines
         dtectptr => detectorinfo(idtect)
         itype = ixdtect(idtect,dtype)
         if(itype==smoked)then
-            write(outbuf,5010) idtect, roomptr%name, 'SMOKE ', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
-                xdtect(idtect,dtrig)
+            write(outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), xdtect(idtect,dtrig)
         elseif(itype==heatd)then
-            write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
-                xdtect(idtect,dtrig)-273.15, dtectptr%rti
+            write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), xdtect(idtect,dtrig)-273.15, dtectptr%rti
         else
-            write(outbuf,5020) idtect, roomptr%name, 'SPRINK', xdtect(idtect,dxloc), xdtect(idtect,dyloc), xdtect(idtect,dzloc), &
+            write(outbuf,5020) idtect, roomptr%name, 'SPRINK', dtectptr%center(1:3), &
                 xdtect(idtect,dtrig)-273.15, dtectptr%rti, xdtect(idtect,dspray)
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)

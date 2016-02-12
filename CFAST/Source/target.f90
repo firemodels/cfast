@@ -748,7 +748,7 @@ module target_routines
         
         iroom = ixdtect(i,droom)
 
-        zdetect = xdtect(i,dzloc)
+        zdetect = dtectptr%center(3)
         if(zdetect>zzhlay(iroom,lower))then
             tlay = zztemp(iroom,upper)
         else
@@ -841,13 +841,15 @@ module target_routines
 
     real(eb) :: xloc, yloc, zloc, tg, vg(4),obs
     integer :: id, iroom
+    type(detector_type), pointer :: dtectptr
 
     ! If ceiling jet option is turned off, conditions default to the appropriate layer temperature
     do id = 1, ndtect
+        dtectptr => detectorinfo(id)
         iroom = ixdtect(id,droom)
-        xloc = xdtect(id,dxloc)
-        yloc = xdtect(id,dyloc)
-        zloc = xdtect(id,dzloc)
+        xloc = dtectptr%center(1)
+        yloc = dtectptr%center(2)
+        zloc = dtectptr%center(3)
         if (option(fcjet)==off) then
             ! if ceiling jet option is off, things default to appropriate layer temperature
             if(zloc>zzhlay(iroom,lower))then

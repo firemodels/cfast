@@ -106,6 +106,7 @@ module cfast_types
         real(eb) :: velocity            ! current gas velocity near detector (calculated)
         real(eb) :: velocity_o          ! gas velocity near detector from previous time step (calculated)
         real(eb) :: obscuration         ! smoke obscuration near detector (calculated)
+        real(eb) :: activation_time     ! time of detector activation (calculated)
         logical :: activated            ! true if detector has activated (calculated)
         logical :: reported             ! true if detector activation has already been reported (calculated)
     end type detector_type

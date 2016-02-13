@@ -469,8 +469,8 @@ module initialization_routines
         xdtect(i,drate) = tdrate
         dtectptr%value = interior_temperature
         dtectptr%value_o = interior_temperature
-        xdtect(i,dtjet) = interior_temperature
-        xdtect(i,dtjeto) = interior_temperature
+        dtectptr%temp_gas = interior_temperature
+        dtectptr%temp_gas_o = interior_temperature
     end do
 
     !call sortbrm (xdtect,mxdtect,ixdtect,mxdtect,ndtect,dtxcol,dticol,droom,nr,nm1,idtpnt)
@@ -760,7 +760,7 @@ module initialization_routines
     detectorinfo(1:mxdtect)%trigger = 330.3722_eb
     detectorinfo(1:mxdtect)%velocity = 0.0_eb
     detectorinfo(1:mxdtect)%velocity_o = 0.0_eb
-    xdtect(1:mxdtect,dtact) = 99999.0_eb
+    detectorinfo(1:mxdtect)%activation_time = 99999.0_eb
     ixdtect(1:mxdtect,dtype) = 2
     ixdtect(1:mxdtect,droom) = 1
     ixdtect(1:mxdtect,dquench) = 0

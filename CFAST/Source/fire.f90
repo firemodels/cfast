@@ -182,6 +182,7 @@ module fire_routines
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, activated_rate, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
+    type(detector_type), pointer :: dtectptr
 
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
@@ -245,7 +246,8 @@ module fire_routines
 
         source_o2 = zzcspec(iroom,lower,2)
         if (iquench(iroom)>0) then
-            activated_time = xdtect(iquench(iroom),dtact)
+            dtectptr => detectorinfo(iquench(iroom))
+            activated_time = dtectptr%activation_time
             activated_rate = xdtect(iquench(iroom),drate)
         else
             activated_time = 0
@@ -460,12 +462,11 @@ module fire_routines
 
     integer, intent(in) :: objn, iroom
     real(eb), intent(in) :: time
-    real(eb), intent(out) :: omasst, ohight, oqdott, objhct, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_co, y_trace
+    real(eb), intent(out) :: omasst, oareat, ohight, oqdott, objhct, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_co, y_trace
 
-    real(eb) :: oareat, xxtime, tdrate, xxtimef, qt, qtf, tfact
+    real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max
     integer :: lobjlfm, id, ifact
-
-    real(eb) :: factor, tfilter_max
+    type(detector_type), pointer :: dtectptr
 
     if (.not.objon(objn).or.objset(objn)>0) then
         omasst = 0.0_eb
@@ -499,8 +500,9 @@ module fire_routines
         ! and when sprinkler first activated.  make sure that specified
         ! heat release rate is the smaller of rate at current time
         ! and rate at sprinkler activation time*exp( ...) 
+        dtectptr => detectorinfo(id)
         tdrate = xdtect(id,drate)
-        xxtimef = xdtect(id,dtact) - objcri(1,objn)
+        xxtimef = dtectptr%activation_time - objcri(1,objn)
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,qt)
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,qtf)
         ifact = 1

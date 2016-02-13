@@ -713,7 +713,7 @@ module target_routines
     
 ! --------------------------- update_detectors -------------------------------------------
 
-    subroutine update_detectors (imode,tcur,dstep,ndtect,zzhlay,zztemp,xdtect,ixdtect,iquench,idset,ifdtect,tdtect)
+    subroutine update_detectors (imode,tcur,dstep,ndtect,zzhlay,zztemp,ixdtect,iquench,idset,ifdtect,tdtect)
 
     !     routine: update_detectors
     !     purpose: updates the temperature of each detector link.  it also determine whether the 
@@ -731,13 +731,13 @@ module target_routines
     real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
     
     integer, intent(out) :: idset, ifdtect, ixdtect(mxdtect,*), iquench(*)
-    real(eb), intent(out) :: xdtect(mxdtect,*), tdtect
+    real(eb), intent(out) :: tdtect
     
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
        bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
     character(133) :: messg
-    type(detector_type), pointer :: dtectptr
+    type(detector_type), pointer :: dtectptr, previous_activation
 
     idset = 0
     ifdtect = 0
@@ -755,15 +755,15 @@ module target_routines
             tlay = zztemp(iroom,lower)
         end if
 
-        tjet = max(xdtect(i,dtjet),tlay)
-        tjeto = max(xdtect(i,dtjeto),tlay)
+        tjet = max(dtectptr%temp_gas,tlay)
+        tjeto = max(dtectptr%temp_gas_o,tlay)
         vel = max(dtectptr%velocity,cjetmin)
         velo = max(dtectptr%velocity_o,cjetmin)
         
         if (ixdtect(i,dtype)==smoked) then  
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = dtectptr%value
-            tlink = xdtect(i,dobs)        
+            tlink = dtectptr%obscuration        
             if (tcur>350._eb) then
                 continue
             end if
@@ -792,7 +792,7 @@ module target_routines
             tdtect = min(tmp,tdtect)
             ifdtect = i
             if (imode>0) then
-                xdtect(i,dtact)= tcur+dstep*delta
+                dtectptr%activation_time = tcur + dstep*delta
                 ixdtect(i,dact) = 1
                 ! tell the world about the activation
                 if (ixdtect(i,dactreported)==0) then
@@ -809,7 +809,8 @@ module target_routines
                 if(idold==0)then
                     iqu = i
                 else
-                    if(xdtect(i,dtact)<xdtect(idold,dtact))then
+                    previous_activation => detectorinfo(idold)
+                    if(dtectptr%activation_time<previous_activation%activation_time)then
 
                         ! this can only happen if two detectors have activated in the same room in the same 
                         ! (possibly very short) time interval
@@ -825,7 +826,7 @@ module target_routines
                 end if
             end if
         end if
-        xdtect(i,dtjeto) = tjet
+        dtectptr%temp_gas_o = tjet
         dtectptr%velocity_o = vel
     end do
     return
@@ -839,7 +840,7 @@ module target_routines
 
     !     description:  calculates near-detector gas temperature, velocity, and smoke obscuration
 
-    real(eb) :: xloc, yloc, zloc, tg, vg(4),obs
+    real(eb) :: xloc, yloc, zloc, tg, vg(4)
     integer :: id, iroom
     type(detector_type), pointer :: dtectptr
 
@@ -853,25 +854,24 @@ module target_routines
         if (option(fcjet)==off) then
             ! if ceiling jet option is off, things default to appropriate layer temperature
             if(zloc>zzhlay(iroom,lower))then
-                xdtect(id,dtjet) = zztemp(iroom,upper)
-                xdtect(id,dobs) = toxict(iroom,upper,9)
+                dtectptr%temp_gas = zztemp(iroom,upper)
+                dtectptr%obscuration = toxict(iroom,upper,9)
             else
-                xdtect(id,dtjet) = zztemp(iroom,lower)
-                xdtect(id,dobs) = toxict(iroom,lower,9)
+                dtectptr%temp_gas = zztemp(iroom,lower)
+                dtectptr%obscuration = toxict(iroom,lower,9)
             end if
             dtectptr%velocity = 0.1_eb
         else
             ! if ceiling jet option is on, temeperature is determined by plume and ceiling jet algorithms
-            call get_gas_temp_velocity(iroom,xloc,yloc,zloc,tg,vg)
-            xdtect(id,dtjet) = tg
+            call get_gas_temp_velocity (iroom,xloc,yloc,zloc,tg,vg)
+            dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
             if(zloc>zzhlay(iroom,lower))then
-                xdtect(id,dobs) = toxict(iroom,upper,9)
+                dtectptr%obscuration = toxict(iroom,upper,9)
             else
-                xdtect(id,dobs) = toxict(iroom,lower,9)
+                dtectptr%obscuration = toxict(iroom,lower,9)
             end if
         end if
-        obs = xdtect(id,dobs)
     end do
 
     return

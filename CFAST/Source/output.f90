@@ -588,9 +588,9 @@ module output_routines
             tlay = zztemp(iroom,lower)
         end if
 
-        tjet = max(xdtect(i,dtjet),tlay)-kelvin_c_offset
+        tjet = max(dtectptr%temp_gas,tlay)-kelvin_c_offset
         vel = max(dtectptr%velocity,cjetmin)
-        obs = xdtect(i,dobs)
+        obs = dtectptr%obscuration
         tlink =  dtectptr%value-kelvin_c_offset
 
         cact = 'NO'
@@ -1217,7 +1217,7 @@ module output_routines
                 else
                     ccc = '   '
                 end if
-                write(*,102)i,dtectptr%value,xdtect(i,dtjet),dtectptr%velocity,xdtect(i,dtact),ccc
+                write(*,102)i,dtectptr%value,dtectptr%temp_gas,dtectptr%velocity,dtectptr%activation_time,ccc
 102             format(1x,i2,1x,4(e11.4,1x),a3)
             end do
         end if

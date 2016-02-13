@@ -300,7 +300,7 @@ module spreadsheet_routines
             tlay = zztemp(iroom,lower)
         end if
         xact = ixdtect(i,dact)
-        tjet = max(xdtect(i,dtjet),tlay)
+        tjet = max(dtectptr%temp_gas,tlay)
         vel = max(dtectptr%velocity,cjetmin)
         tlink =  dtectptr%value
         call SSaddtolist(position, tlink-kelvin_c_offset, outarray)

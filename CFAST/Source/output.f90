@@ -975,7 +975,7 @@ module output_routines
             write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-273.15, dtectptr%rti
         else
             write(outbuf,5020) idtect, roomptr%name, 'SPRINK', dtectptr%center(1:3), &
-                dtectptr%trigger-273.15, dtectptr%rti, xdtect(idtect,dspray)
+                dtectptr%trigger-273.15, dtectptr%rti, dtectptr%spray_density
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)
 5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),13x,2(5x,f10.2),5x,1pe10.2)

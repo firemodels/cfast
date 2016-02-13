@@ -1333,9 +1333,9 @@ module input_routines
                 dtectptr%center(3) = lrarray(6)
                 dtectptr%rti =  lrarray(7)
                 ixdtect(ndtect,dquench) = lrarray(8)
-                xdtect(ndtect,dspray) = lrarray(9)*1000.0_eb
+                dtectptr%spray_density = lrarray(9)*1000.0_eb
                 ! if spray density is zero, then turn off the sprinkler
-                if(xdtect(ndtect,dspray)==0.0_eb)then
+                if(dtectptr%spray_density==0.0_eb)then
                     ixdtect(ndtect,dquench) = 0
                 end if
                 if(option(fbtdtect)==off.and.ixdtect(ndtect,dquench)>0)then

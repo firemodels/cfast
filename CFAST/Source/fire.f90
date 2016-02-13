@@ -223,8 +223,20 @@ module fire_routines
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
     ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
-    if (lfbt==free) Stop 101
+    if (lfbt==free) then
+        write (logerr,'(a)') '***Error: Internal error, unsupported unconstrained fire.'
+        stop 101
+    end if
 
+    ! Check for sprinkler activation
+    if (iquench(iroom)>0) then
+        dtectptr => detectorinfo(iquench(iroom))
+        activated_time = dtectptr%activation_time
+        activated_rate = xdtect(iquench(iroom),drate)
+    else
+        activated_time = 0
+        activated_rate = 0.0
+    end if
 
     ! note that the combination of fire_plume and chemistry can be called twice
     ! in a single iteration to make sure that the plume entrainment is
@@ -245,14 +257,6 @@ module fire_routines
         xems = xemp + xeme
 
         source_o2 = zzcspec(iroom,lower,2)
-        if (iquench(iroom)>0) then
-            dtectptr => detectorinfo(iquench(iroom))
-            activated_time = dtectptr%activation_time
-            activated_rate = xdtect(iquench(iroom),drate)
-        else
-            activated_time = 0
-            activated_rate = 0.0
-        end if
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
             lower_o2_limit, idset, iquench(iroom), activated_time, activated_rate, stime, qspray(ifire,lower), &
             xqpyrl, xntfl, xmass)

@@ -445,13 +445,13 @@ module initialization_routines
         if (dtectptr%center(1)<0.0_eb) dtectptr%center(1) = roomptr%width*0.5_eb
         if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%depth*0.5_eb
         if (dtectptr%center(3)<0.0_eb) dtectptr%center(3) = roomptr%height-mx_vsep
-        tdspray = xdtect(i,dspray)
 
         ! if tdspray>0 then interpret it as a spray density and convert
         ! to a characteristic quenching time
         ! if tdspray < 0 then interpret abs(tdspray) as the time
         ! required to reduce the fire size by 50 per cent
         ! if tdspray = 0 then turn the sprinkler off
+        tdspray = dtectptr%spray_density
         if(tdspray>0.0_eb)then
             tdrate = 3.0_eb/tdspray**1.8_eb
         elseif(tdspray<0.0_eb)then
@@ -462,11 +462,11 @@ module initialization_routines
             tdrate = 1.0e10_eb
             ixdtect(i,dquench) = 0
         end if
-
-        ! set initial ceiling jet and detector link temperatures to ambient
-        xdtect(i,dspray) = tdspray
+        dtectptr%spray_density = tdspray
         xdtect(i,dthalf) = tdrate*log(2.0_eb)
         xdtect(i,drate) = tdrate
+
+        ! set initial ceiling jet and detector link temperatures to ambient
         dtectptr%value = interior_temperature
         dtectptr%value_o = interior_temperature
         dtectptr%temp_gas = interior_temperature
@@ -753,7 +753,7 @@ module initialization_routines
     ! detectors
     ndtect = 0
     detectorinfo(1:mxdtect)%rti = 50.0_eb
-    xdtect(1:mxdtect,dspray) = -300.0_eb
+    detectorinfo(1:mxdtect)%spray_density = -300.0_eb
     detectorinfo(1:mxdtect)%center(1) = -1.0_eb
     detectorinfo(1:mxdtect)%center(2) = -1.0_eb
     detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb

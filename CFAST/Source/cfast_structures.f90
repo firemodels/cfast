@@ -98,9 +98,9 @@ module cfast_types
         integer :: dtype                ! detector type; 1=smoke, 2=heat, 3=sprinkler (user input)
         logical :: quench               ! true if type is sprinkler and spray is non-zero (user input)
         
-        ! these are the results of the dwtector calculations that are used for printout and spreadsheet output
-        real(eb) :: temp_link           ! current link temperature (calculated)
-        real(eb) :: temp_link_o         ! link temperature from previous time step (calculated)
+        ! these are the results of the detector calculations that are used for printout and spreadsheet output
+        real(eb) :: value               ! current link temperature or detector obscuration (calculated)
+        real(eb) :: value_o             ! link temperature or detector obscuration from previous time step (calculated)
         real(eb) :: temp_gas            ! current gas temperature near detector (calculated)
         real(eb) :: temp_gas_o          ! gas temperature neat detector from previous time step (calculated)
         real(eb) :: velocity            ! current gas velocity near detector (calculated)

@@ -467,8 +467,8 @@ module initialization_routines
         xdtect(i,dspray) = tdspray
         xdtect(i,dthalf) = tdrate*log(2.0_eb)
         xdtect(i,drate) = tdrate
-        xdtect(i,dcond) = interior_temperature
-        xdtect(i,dcondo) = interior_temperature
+        dtectptr%value = interior_temperature
+        dtectptr%value_o = interior_temperature
         xdtect(i,dtjet) = interior_temperature
         xdtect(i,dtjeto) = interior_temperature
     end do
@@ -758,8 +758,8 @@ module initialization_routines
     detectorinfo(1:mxdtect)%center(2) = -1.0_eb
     detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb
     detectorinfo(1:mxdtect)%trigger = 330.3722_eb
-    xdtect(1:mxdtect,dvel) = 0.0_eb
-    xdtect(1:mxdtect,dvelo) = 0.0_eb
+    detectorinfo(1:mxdtect)%velocity = 0.0_eb
+    detectorinfo(1:mxdtect)%velocity_o = 0.0_eb
     xdtect(1:mxdtect,dtact) = 99999.0_eb
     ixdtect(1:mxdtect,dtype) = 2
     ixdtect(1:mxdtect,droom) = 1

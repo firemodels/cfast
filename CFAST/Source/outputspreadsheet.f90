@@ -301,8 +301,8 @@ module spreadsheet_routines
         end if
         xact = ixdtect(i,dact)
         tjet = max(xdtect(i,dtjet),tlay)
-        vel = max(xdtect(i,dvel),cjetmin)
-        tlink =  xdtect(i,dcond)
+        vel = max(dtectptr%velocity,cjetmin)
+        tlink =  dtectptr%value
         call SSaddtolist(position, tlink-kelvin_c_offset, outarray)
         call SSaddtolist(position, xact, outarray)
         call SSaddtolist(position, tjet-kelvin_c_offset, outarray)

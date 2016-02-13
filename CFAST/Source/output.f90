@@ -589,9 +589,9 @@ module output_routines
         end if
 
         tjet = max(xdtect(i,dtjet),tlay)-kelvin_c_offset
-        vel = max(xdtect(i,dvel),cjetmin)
+        vel = max(dtectptr%velocity,cjetmin)
         obs = xdtect(i,dobs)
-        tlink =  xdtect(i,dcond)-kelvin_c_offset
+        tlink =  dtectptr%value-kelvin_c_offset
 
         cact = 'NO'
         if(ixdtect(i,dact)==1) cact = 'YES'
@@ -1136,6 +1136,7 @@ module output_routines
     logical :: firstc = .true.
     
     type(room_type), pointer :: roomptr
+    type(detector_type), pointer :: dtectptr
     
     save bmap
     
@@ -1209,13 +1210,14 @@ module output_routines
             write(*,100)
 100         format('  N ',3X,'D temp',6X,'J temp',6X,' Act')
             do i = 1, ndtect
+                dtectptr => detectorinfo(i)
                 iroom = ixdtect(i,droom)
                 if (iquench(iroom)==i)then
                     ccc='***'
                 else
                     ccc = '   '
                 end if
-                write(*,102)i,xdtect(i,dcond),xdtect(i,dtjet),xdtect(i,dvel),xdtect(i,dtact),ccc
+                write(*,102)i,dtectptr%value,xdtect(i,dtjet),dtectptr%velocity,xdtect(i,dtact),ccc
 102             format(1x,i2,1x,4(e11.4,1x),a3)
             end do
         end if

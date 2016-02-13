@@ -757,12 +757,12 @@ module target_routines
 
         tjet = max(xdtect(i,dtjet),tlay)
         tjeto = max(xdtect(i,dtjeto),tlay)
-        vel = max(xdtect(i,dvel),cjetmin)
-        velo = max(xdtect(i,dvelo),cjetmin)
+        vel = max(dtectptr%velocity,cjetmin)
+        velo = max(dtectptr%velocity_o,cjetmin)
         
         if (ixdtect(i,dtype)==smoked) then  
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
-            tlinko = xdtect(i,dcond)
+            tlinko = dtectptr%value
             tlink = xdtect(i,dobs)        
             if (tcur>350._eb) then
                 continue
@@ -770,7 +770,7 @@ module target_routines
         elseif (ixdtect(i,dtype)>=heatd) then
             rti = dtectptr%rti
             trig = dtectptr%trigger
-            tlinko = xdtect(i,dcond)
+            tlinko = dtectptr%value
             bn = sqrt(velo)/rti
             an = bn*tjeto
             bnp1 = sqrt(vel)/rti
@@ -781,8 +781,8 @@ module target_routines
             tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
         end if
         if (imode>0) then
-            xdtect(i,dcondo) = tlinko
-            xdtect(i,dcond) = tlink
+            dtectptr%value_o = tlinko
+            dtectptr%value = tlink
         end if
 
         ! determine if detector has activated in this time interval (and not earlier)
@@ -826,7 +826,7 @@ module target_routines
             end if
         end if
         xdtect(i,dtjeto) = tjet
-        xdtect(i,dvelo) = vel
+        dtectptr%velocity_o = vel
     end do
     return
     end subroutine update_detectors
@@ -859,12 +859,12 @@ module target_routines
                 xdtect(id,dtjet) = zztemp(iroom,lower)
                 xdtect(id,dobs) = toxict(iroom,lower,9)
             end if
-            xdtect(id,dvel) = 0.1_eb
+            dtectptr%velocity = 0.1_eb
         else
             ! if ceiling jet option is on, temeperature is determined by plume and ceiling jet algorithms
             call get_gas_temp_velocity(iroom,xloc,yloc,zloc,tg,vg)
             xdtect(id,dtjet) = tg
-            xdtect(id,dvel) = vg(4)
+            dtectptr%velocity = vg(4)
             if(zloc>zzhlay(iroom,lower))then
                 xdtect(id,dobs) = toxict(iroom,upper,9)
             else

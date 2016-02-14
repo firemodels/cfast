@@ -1351,12 +1351,6 @@ module input_routines
                     stop
                 end if
 
-                if (debugging) then
-                    write(*,5400) (xdtect(ndtect,i),i=1,dtxcol)
-                    write(*,5401) (ixdtect(ndtect,i),i=1,dticol)
-                    write(*,*)
-                end if
-
                 if(dtectptr%center(1)>roomptr%width.or. &
                     dtectptr%center(2)>roomptr%depth.or.dtectptr%center(3)>roomptr%height) then
                     write(logerr,5339) ndtect,roomptr%name
@@ -1742,8 +1736,6 @@ module input_routines
 5356 format ('***Error: Bad HHEAT input. HHEAT specification error in compartment pairs: ',2i3)
 5357 format ('***Error: Bad HHEAT input. Error in fraction for HHEAT:',2i3,f6.3)
 5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
-5400 format ('xdtect = ',15f8.1)
-5401 format ('ixdtect = ',4i5)
 5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)  
 5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)    
 5405 format ('***Error: Invalid keyword in CFAST input file ',a) 

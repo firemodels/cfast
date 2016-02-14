@@ -721,8 +721,7 @@ module target_routines
     !              quenching algorithm will be invoked if the appropriate option has been set.
     !     arguments: tcur    current time
     !                dstep   time step size (to next time)
-    !                ndtect  number of detectors
-    !                xdtect  2-d array containing floating point detector data structures 
+    !                ndtect  number of detectors 
     !                ixdtect 2-d array containing integer detector data structures
     !                iquench if the j=iquench(i) is non-zero then the j'th sprinkler in the i'th room is quenching the fire
     !                idset   room where activated detector resides

@@ -102,9 +102,8 @@ module dsize
     integer, parameter :: sprinkd = 3   ! sprinkler
 
     ! pointers into floating point detector data structure
-    integer, parameter :: dspray=14     ! spray density if sprinkler
-    integer, parameter :: drate=15
-    integer, parameter :: dthalf=16
+    !integer, parameter :: drate=15
+    !integer, parameter :: dthalf=16
 
     ! pointers into integer detector data structure
     integer, parameter :: droom=1

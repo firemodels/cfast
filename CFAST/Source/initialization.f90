@@ -463,8 +463,8 @@ module initialization_routines
             ixdtect(i,dquench) = 0
         end if
         dtectptr%spray_density = tdspray
-        xdtect(i,dthalf) = tdrate*log(2.0_eb)
-        xdtect(i,drate) = tdrate
+        dtectptr%half_life = tdrate*log(2.0_eb)
+        dtectptr%tau = tdrate
 
         ! set initial ceiling jet and detector link temperatures to ambient
         dtectptr%value = interior_temperature
@@ -472,8 +472,6 @@ module initialization_routines
         dtectptr%temp_gas = interior_temperature
         dtectptr%temp_gas_o = interior_temperature
     end do
-
-    !call sortbrm (xdtect,mxdtect,ixdtect,mxdtect,ndtect,dtxcol,dticol,droom,nr,nm1,idtpnt)
 
     ! p's for pressure, volume and temperature are defined
     ! we can now copy these values to the environment variables

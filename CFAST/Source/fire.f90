@@ -180,7 +180,7 @@ module fire_routines
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc(2), xqfr, xqlp, xqup
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
-    real(eb) :: chirad, xqpyrl, source_o2, activated_time, activated_rate, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
+    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
     type(detector_type), pointer :: dtectptr
 
@@ -232,10 +232,10 @@ module fire_routines
     if (iquench(iroom)>0) then
         dtectptr => detectorinfo(iquench(iroom))
         activated_time = dtectptr%activation_time
-        activated_rate = xdtect(iquench(iroom),drate)
+        tau = dtectptr%tau
     else
         activated_time = 0
-        activated_rate = 0.0
+        tau = 0.0
     end if
 
     ! note that the combination of fire_plume and chemistry can be called twice
@@ -258,7 +258,7 @@ module fire_routines
 
         source_o2 = zzcspec(iroom,lower,2)
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
-            lower_o2_limit, idset, iquench(iroom), activated_time, activated_rate, stime, qspray(ifire,lower), &
+            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,lower), &
             xqpyrl, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
@@ -319,7 +319,7 @@ module fire_routines
 
         source_o2 = zzcspec(iroom,upper,2)
         call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, &
-            lower_o2_limit, idset, iquench(iroom), activated_time, activated_rate, stime, qspray(ifire,upper), &
+            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,upper), &
             xqpyrl, xntfl, xmass)
 
         xqfr = xqpyrl*chirad + xqfr
@@ -337,7 +337,7 @@ module fire_routines
 ! --------------------------- chemistry -------------------------------------------
 
     subroutine chemistry (pyrolysis_rate, molar_mass,entrainment_rate, source_room, h_c, y_soot, y_co,n_C, n_H, n_O, n_N, n_Cl, &
-       source_o2, lower_o2_limit, activated_room, activated_sprinkler, activated_time, activated_rate, model_time,& 
+       source_o2, lower_o2_limit, activated_room, activated_sprinkler, activated_time, tau, model_time,& 
        hrr_at_activation, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
     !     routine: chemistry
@@ -361,7 +361,7 @@ module fire_routines
     !                                 If equal to the source room, HRR is saved for future quenching
     !                 activated_sprinkler: sprinkler that has activated
     !                 activated_time: time of sprinkler activaiton (s)
-    !                 activated_rate: sprinkler suppression rate
+    !                 tau: sprinkler suppression rate
     !                 model_time: current simulation time (s)
 
     !                 hrr_at_activation (output): saved hrr in case of future activation (W)
@@ -374,7 +374,7 @@ module fire_routines
     integer, intent(in) :: source_room, activated_room, activated_sprinkler
     real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: source_o2, lower_o2_limit
-    real(eb), intent(in) :: activated_time, activated_rate, model_time
+    real(eb), intent(in) :: activated_time, tau, model_time
     real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
     real(eb), intent(inout) :: hrr_at_activation
 
@@ -406,7 +406,7 @@ module fire_routines
         ! however, the hrr might be reduced for other reasons, so the arithmetic min function is used.
         ! the value used is the value at activation. the quenching factor is then a reduction based on time since activation
         if (activated_sprinkler/=0) then
-            quenching_factor = exp(-(model_time-activated_time)/activated_rate)
+            quenching_factor = exp(-(model_time-activated_time)/tau)
             if (hrr_at_activation>0.0_eb) hrr_constrained = min(hrr_constrained,quenching_factor*hrr_at_activation)
         end if
     end if
@@ -505,7 +505,7 @@ module fire_routines
         ! heat release rate is the smaller of rate at current time
         ! and rate at sprinkler activation time*exp( ...) 
         dtectptr => detectorinfo(id)
-        tdrate = xdtect(id,drate)
+        tdrate = dtectptr%tau
         xxtimef = dtectptr%activation_time - objcri(1,objn)
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,qt)
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,qtf)

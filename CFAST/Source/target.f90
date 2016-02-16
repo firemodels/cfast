@@ -737,7 +737,7 @@ module target_routines
        bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
     character(133) :: messg
-    character(11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm','Sprinkler'/)
+    character(11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm ','Sprinkler  '/)
     type(detector_type), pointer :: dtectptr, previous_activation
 
     idset = 0

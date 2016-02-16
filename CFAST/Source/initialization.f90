@@ -761,7 +761,7 @@ module initialization_routines
     detectorinfo(1:mxdtect)%activation_time = 99999.0_eb
     detectorinfo(1:mxdtect)%dtype = 2
     detectorinfo(1:mxdtect)%room = 1
-    detectorinfo(1:mxdtect)%quench = 0
+    detectorinfo(1:mxdtect)%quench = .false.
     detectorinfo(1:mxdtect)%activated = .false.
     detectorinfo(1:mxdtect)%reported = .false.
 

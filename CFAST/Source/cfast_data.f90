@@ -51,14 +51,13 @@ module cfast_main
     use precision_parameters
     use cfast_types  
     use cparams
-    use dsize
     implicit none
     save
     
     integer :: hvorien(mxext), hvnode(2,mxext), mpsdat(3), ivvent_connections(nr,nr), na(mxbranch), nofsets(13), &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), ihvent_connections(nr,nr), &
         nslb(nwal,nr), nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
-        froom(0:mxfire), numobjl, ixdtect(mxdtect,dticol), iquench(nr), idtpnt(nr,2), &
+        froom(0:mxfire), numobjl, iquench(nr), idtpnt(nr,2), &
         ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
         nventijk,nfopt,vface(mxhvents), lcopyss,heatfr, nfilter, obj_fpos(0:mxfires)
     

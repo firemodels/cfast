@@ -14,6 +14,7 @@ module input_routines
     use cparams, only: mx_hsep
     use cshell
     use debug
+    use detectorptrs
     use fltarget
     use iofiles
     use objects1
@@ -43,7 +44,7 @@ module input_routines
     real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
-    integer :: iwall1, iwall2, idtype, npts, ioff, ioff2, nventij
+    integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij
     character :: aversion*5
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
@@ -357,7 +358,7 @@ module input_routines
     ! check detectors
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
-        iroom = ixdtect(i,droom)
+        iroom = dtectptr%room
         if(iroom<1.or.iroom>nm1)then
             write (logerr,104) iroom 
 104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
@@ -366,7 +367,8 @@ module input_routines
         roomptr => roominfo(iroom)
         
         rti = dtectptr%rti
-        if(rti<=0.0_eb.and.ixdtect(i,dtype)/=smoked)then
+        itype = dtectptr%dtype
+        if(rti<=0.0_eb.and.itype/=smoked)then
             write (logerr,101) rti 
 101         format('***Error: Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
             stop
@@ -381,9 +383,9 @@ module input_routines
             stop
         end if
         
-        idtype = ixdtect(i,dtype)
-        if(idtype<1.or.idtype>3)then
-            write(logerr,103) idtype
+        itype = dtectptr%dtype
+        if(itype<1.or.itype>3)then
+            write(logerr,103) itype
 103         format('***Error: Invalid DETECTOR specification - type= ',i2,' is not a valid')
             stop
         end if
@@ -1317,11 +1319,11 @@ module input_routines
                     ! force to heat detector if out of range
                     if (i1>3) i1 = heatd
                 end if
-                ixdtect(ndtect,dtype) = i1
+                dtectptr%dtype = i1
                 
                 i2 = lrarray(2)
                 iroom = i2
-                ixdtect(ndtect,droom) = iroom
+                dtectptr%room = iroom
                 if(iroom<1.or.iroom>nr)then
                     write (logerr,5342) i2
                     stop
@@ -1332,13 +1334,17 @@ module input_routines
                 dtectptr%center(2) = lrarray(5)
                 dtectptr%center(3) = lrarray(6)
                 dtectptr%rti =  lrarray(7)
-                ixdtect(ndtect,dquench) = lrarray(8)
+                if (lrarray(8)/=0) then
+                    dtectptr%quench = .true.
+                else
+                    dtectptr%quench = .false.
+                end if
                 dtectptr%spray_density = lrarray(9)*1000.0_eb
                 ! if spray density is zero, then turn off the sprinkler
                 if(dtectptr%spray_density==0.0_eb)then
-                    ixdtect(ndtect,dquench) = 0
+                    dtectptr%quench = .false.
                 end if
-                if(option(fbtdtect)==off.and.ixdtect(ndtect,dquench)>0)then
+                if(option(fbtdtect)==off.and.dtectptr%quench)then
                     if (stpmax>0) then
                         stpmax = min(stpmax,1.0_eb)
                     else

@@ -292,14 +292,18 @@ module spreadsheet_routines
     cjetmin = 0.10_eb
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
-        iroom = ixdtect(i,droom)
+        iroom = dtectptr%room
         zdetect = dtectptr%center(3)
         if(zdetect>zzhlay(iroom,lower))then
             tlay = zztemp(iroom,upper)
         else
             tlay = zztemp(iroom,lower)
         end if
-        xact = ixdtect(i,dact)
+        if (dtectptr%activated) then
+            xact = 1.0_eb
+        else
+            xact = 0.0_eb
+        end if
         tjet = max(dtectptr%temp_gas,tlay)
         vel = max(dtectptr%velocity,cjetmin)
         tlink =  dtectptr%value

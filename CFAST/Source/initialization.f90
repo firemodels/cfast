@@ -440,7 +440,7 @@ module initialization_routines
     ! establish default values for detector data
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
-        iroom=ixdtect(i,droom)
+        iroom=dtectptr%room
         roomptr => roominfo(iroom)
         if (dtectptr%center(1)<0.0_eb) dtectptr%center(1) = roomptr%width*0.5_eb
         if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%depth*0.5_eb
@@ -460,7 +460,7 @@ module initialization_routines
         else
             tdspray = 0.0_eb
             tdrate = 1.0e10_eb
-            ixdtect(i,dquench) = 0
+            dtectptr%quench = .false.
         end if
         dtectptr%spray_density = tdspray
         dtectptr%half_life = tdrate*log(2.0_eb)
@@ -759,11 +759,11 @@ module initialization_routines
     detectorinfo(1:mxdtect)%velocity = 0.0_eb
     detectorinfo(1:mxdtect)%velocity_o = 0.0_eb
     detectorinfo(1:mxdtect)%activation_time = 99999.0_eb
-    ixdtect(1:mxdtect,dtype) = 2
-    ixdtect(1:mxdtect,droom) = 1
-    ixdtect(1:mxdtect,dquench) = 0
-    ixdtect(1:mxdtect,dact) = 0
-    ixdtect(1:mxdtect,dactreported) = 0
+    detectorinfo(1:mxdtect)%dtype = 2
+    detectorinfo(1:mxdtect)%room = 1
+    detectorinfo(1:mxdtect)%quench = 0
+    detectorinfo(1:mxdtect)%activated = .false.
+    detectorinfo(1:mxdtect)%reported = .false.
 
     iquench(1:nr) = 0
 

@@ -87,32 +87,18 @@ module cparams
 
 end module cparams
 
-! --------------------------- dsize -------------------------------------------
+! --------------------------- detectorptrs -------------------------------------------
 
-module dsize
+module detectorptrs
 
     implicit none
 
-    integer, parameter :: dtxcol=16     ! number of floating point columns in detector data structure
-    integer, parameter :: dticol=5      ! number of integer columns in detector data structure
-    
     ! detector types
     integer, parameter :: smoked = 1    ! smoke detector
     integer, parameter :: heatd = 2     ! heat detector
     integer, parameter :: sprinkd = 3   ! sprinkler
 
-    ! pointers into floating point detector data structure
-    !integer, parameter :: drate=15
-    !integer, parameter :: dthalf=16
-
-    ! pointers into integer detector data structure
-    integer, parameter :: droom=1
-    integer, parameter :: dtype=2
-    integer, parameter :: dquench=3
-    integer, parameter :: dact=4
-    integer, parameter :: dactreported = 5
-
-end module dsize
+end module detectorptrs
 
 ! --------------------------- wallptrs -------------------------------------------
 

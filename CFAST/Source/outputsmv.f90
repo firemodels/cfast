@@ -12,7 +12,7 @@
     use cenviro
     use cfast_main
     use cfast_types
-    use dsize
+    use detectorptrs
     use fltarget
     use iofiles
     
@@ -69,6 +69,7 @@
     integer ibar, jbar, kbar
     integer :: j
     type(room_type), pointer :: rm
+    type(detector_type), pointer :: dtectptr
     type(slice_type), pointer :: sf
     type(iso_type), pointer :: isoptr
 
@@ -195,10 +196,11 @@
     !these must be first since activation assumes device number is detector number
     if (ndtect>0) then
         do i = 1, ndtect
+            dtectptr => detectorinfo(i)
             write (13,"(a)") "DEVICE"
-            if(ixdtect(i,dtype)==smoked)then
+            if(dtectptr%dtype==smoked)then
                 write (13,"(a)") "SMOKE_DETECTOR"
-            else if (ixdtect(i,dquench)/=0) then
+            else if (dtectptr%quench) then
                 write (13,"(a)") "SPRINKLER_PENDENT"
             else
                 write (13,"(a)") "HEAT_DETECTOR"
@@ -437,7 +439,7 @@
     type(detector_type), pointer :: dtectptr
 
     dtectptr => detectorinfo(detectornumber)
-    roomptr => roominfo(ixdtect(detectornumber,droom))
+    roomptr => roominfo(dtectptr%room)
     positionvector(1) = dtectptr%center(1) + roomptr%x0
     positionvector(2) = dtectptr%center(2) + roomptr%y0
     positionvector(3) = dtectptr%center(3) + roomptr%z0

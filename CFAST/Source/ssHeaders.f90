@@ -5,6 +5,7 @@ module spreadsheet_header_routines
     use cparams
     use cshell
     use debug
+    use detectorptrs
     use fltarget
     use objects1
     use vents
@@ -189,6 +190,7 @@ module spreadsheet_header_routines
     integer position, i, j, itarg, itype
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
+    type(detector_type), pointer :: dtectptr
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
         'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
@@ -253,8 +255,9 @@ module spreadsheet_header_routines
 
     ! Detectors
     do i = 1, ndtect
+        dtectptr => detectorinfo(i)
         call toIntString(i,cDet)
-        itype = ixdtect(i,dtype)
+        itype = dtectptr%dtype
         if (itype==smoked) then
             cType = 'Smoke'
         elseif (itype==heatd) then

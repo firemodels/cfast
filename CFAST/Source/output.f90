@@ -8,6 +8,7 @@ module output_routines
     use cenviro
     use cfin
     use cshell
+    use detectorptrs
     use fireptrs
     use flwptrs
     use fltarget
@@ -578,7 +579,7 @@ module output_routines
     cjetmin = 0.10_eb
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
-        iroom = ixdtect(i,droom)
+        iroom = dtectptr%room
         roomptr => roominfo(iroom)
 
         zdetect = dtectptr%center(3)
@@ -594,9 +595,9 @@ module output_routines
         tlink =  dtectptr%value-kelvin_c_offset
 
         cact = 'NO'
-        if(ixdtect(i,dact)==1) cact = 'YES'
+        if(dtectptr%activated) cact = 'YES'
         
-        itype = ixdtect(i,dtype)
+        itype = dtectptr%dtype
         if(itype==smoked)then
             write(iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
         elseif(itype==heatd)then
@@ -965,10 +966,10 @@ module output_routines
          ,128('-'))
 
     do idtect = 1, ndtect
-        iroom = ixdtect(idtect,droom)
-        roomptr => roominfo(iroom)
         dtectptr => detectorinfo(idtect)
-        itype = ixdtect(idtect,dtype)
+        iroom = dtectptr%room
+        roomptr => roominfo(iroom)
+        itype = dtectptr%dtype
         if(itype==smoked)then
             write(outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
         elseif(itype==heatd)then
@@ -1211,7 +1212,7 @@ module output_routines
 100         format('  N ',3X,'D temp',6X,'J temp',6X,' Act')
             do i = 1, ndtect
                 dtectptr => detectorinfo(i)
-                iroom = ixdtect(i,droom)
+                iroom = dtectptr%room
                 if (iquench(iroom)==i)then
                     ccc='***'
                 else

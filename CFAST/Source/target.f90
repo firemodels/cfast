@@ -12,6 +12,7 @@ module target_routines
     
     use cenviro
     use cfast_main
+    use detectorptrs
     use fltarget
     use fireptrs
     use wnodes, only: nfurn, qfurnout
@@ -713,7 +714,7 @@ module target_routines
     
 ! --------------------------- update_detectors -------------------------------------------
 
-    subroutine update_detectors (imode,tcur,dstep,ndtect,zzhlay,zztemp,ixdtect,iquench,idset,ifdtect,tdtect)
+    subroutine update_detectors (imode,tcur,dstep,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
 
     !     routine: update_detectors
     !     purpose: updates the temperature of each detector link.  it also determine whether the 
@@ -729,13 +730,14 @@ module target_routines
     integer, intent(in) :: imode, ndtect
     real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
     
-    integer, intent(out) :: idset, ifdtect, ixdtect(mxdtect,*), iquench(*)
+    integer, intent(out) :: idset, ifdtect, iquench(*)
     real(eb), intent(out) :: tdtect
     
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
        bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
     character(133) :: messg
+    character(11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm','Sprinkler'/)
     type(detector_type), pointer :: dtectptr, previous_activation
 
     idset = 0
@@ -745,7 +747,7 @@ module target_routines
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
         
-        iroom = ixdtect(i,droom)
+        iroom = dtectptr%room
 
         zdetect = dtectptr%center(3)
         if(zdetect>zzhlay(iroom,lower))then
@@ -759,14 +761,14 @@ module target_routines
         vel = max(dtectptr%velocity,cjetmin)
         velo = max(dtectptr%velocity_o,cjetmin)
         
-        if (ixdtect(i,dtype)==smoked) then  
+        if (dtectptr%dtype==smoked) then  
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = dtectptr%value
             tlink = dtectptr%obscuration        
             if (tcur>350._eb) then
                 continue
             end if
-        elseif (ixdtect(i,dtype)>=heatd) then
+        elseif (dtectptr%dtype>=heatd) then
             rti = dtectptr%rti
             trig = dtectptr%trigger
             tlinko = dtectptr%value
@@ -785,20 +787,20 @@ module target_routines
         end if
 
         ! determine if detector has activated in this time interval (and not earlier)
-        if(tlinko<trig.and.trig<=tlink.and.ixdtect(i,dact)==0)then
+        if(tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated)then
             delta = (trig-tlinko)/(tlink-tlinko)
             tmp = tcur+dstep*delta
             tdtect = min(tmp,tdtect)
             ifdtect = i
             if (imode>0) then
                 dtectptr%activation_time = tcur + dstep*delta
-                ixdtect(i,dact) = 1
+                dtectptr%activated = .true.
                 ! tell the world about the activation
-                if (ixdtect(i,dactreported)==0) then
-                    ixdtect(i,dactreported) = 1
+                if (.not.dtectptr%reported) then
+                    dtectptr%reported = .true.
                     call device_activated (i, tdtect, 1)
-                    write(messg,76) i, int(tdtect+0.5_eb), ixdtect(i,droom)
-76                  format(' Sensor ',i3,' has activated at ',i0,' seconds in compartment ',i3)
+                    write(messg,'(2a,i0,a,i0,a,i0)') trim(detector_names(dtectptr%dtype)),' (Sensor ',i, ') has activated at ', &
+                        int(tdtect+0.5_eb), ' s in compartment ',dtectptr%room
                     call xerror(messg,0,1,-3)
                 end if
 
@@ -819,7 +821,7 @@ module target_routines
 
                 ! if this detector has activated before all others in this room and the quenching flag was turned on 
                 !  then let the sprinkler quench the fire
-                if(iqu/=0.and.ixdtect(i,dquench)==1)then
+                if(iqu/=0.and.dtectptr%quench)then
                     iquench(iroom)=iqu
                     idset = iroom
                 end if
@@ -846,7 +848,7 @@ module target_routines
     ! If ceiling jet option is turned off, conditions default to the appropriate layer temperature
     do id = 1, ndtect
         dtectptr => detectorinfo(id)
-        iroom = ixdtect(id,droom)
+        iroom = dtectptr%room
         xloc = dtectptr%center(1)
         yloc = dtectptr%center(2)
         zloc = dtectptr%center(3)

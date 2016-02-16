@@ -740,14 +740,14 @@ module solve_routines
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
         call get_detector_temp_and_velocity
-        call update_detectors (check_detector_state,told,dt,ndtect,zzhlay,zztemp,ixdtect,iquench,idset,ifdtect,tdtect)
+        call update_detectors (check_detector_state,told,dt,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
         call update_fire_objects (check_detector_state,told,dt,ifobj,tobj)
         td = min(tdtect,tobj)
 
         ! a detector is the first one that went off
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
-            call update_detectors (set_detector_state,told,dt,ndtect,zzhlay,zztemp,ixdtect,iquench,idset,ifdtect,tdtect)
+            call update_detectors (set_detector_state,told,dt,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
                 idsave = idset
@@ -758,7 +758,7 @@ module solve_routines
                 idset = 0
             end if
         else
-            call update_detectors (update_detector_state,told,dt,ndtect,zzhlay,zztemp,ixdtect,iquench,idset,ifdtect,tdtect)
+            call update_detectors (update_detector_state,told,dt,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
         end if
 
         ! object ignition is the first thing to happen

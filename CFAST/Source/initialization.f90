@@ -722,7 +722,6 @@ module initialization_routines
         
     ! mechanical vents
     nnode = 0
-    nft = 0
     nfan = 0
     nfilter = 0
     nbr = 0

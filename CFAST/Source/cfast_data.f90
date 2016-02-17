@@ -54,17 +54,31 @@ module cfast_main
     implicit none
     save
     
-    integer :: hvorien(mxext), hvnode(2,mxext), mpsdat(3), ivvent_connections(nr,nr), na(mxbranch), nofsets(13), &
-        ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), ihvent_connections(nr,nr), &
-        nslb(nwal,nr), nf(mxbranch), vshape(nr,nr), objrm(0:mxfires), objign(mxfires), numnode(mxslb+1,4,nr), &
-        froom(0:mxfire), numobjl, iquench(nr), idtpnt(nr,2), &
-        ndtect, idset, ntarg, ifroom(mxfire), ifrpnt(nr,2), ibrd(mxduct), nfire, ijk(nr,nr,mxccv), &
-        nventijk,nfopt,vface(mxhvents), lcopyss,heatfr, nfilter, obj_fpos(0:mxfires)
+    integer :: ivers, mpsdat(3), nofsets(13), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, &
+         nm1, n, itmstp
     
-    integer :: nofp, nofpmv, noftmv, noftu, notvu, noftl, nofoxyl, nofoxyu, notwt, nofprd, &
-        nofhvpr, nequals, noffsm, nlspct, ivers, lfmax, lfbt, nopmx, nrflow, lprint, nsmax, lsmv, itmmax, idiag, &
-        nofvu, nofwt, nm1, n, n2, n3, n4, itmstp, ndt, next, nnode, nft, nfan, nbr
+    ! targets and detectors
+    integer :: ndtect, ntarg, idset
     
+    ! fire variables
+    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
+    
+    ! wall variables
+    integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr)
+    
+    ! vent variables
+    integer :: ivvent_connections(nr,nr), ihvent_connections(nr,nr), vshape(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
+
+    ! hvac variables
+    integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
+        ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
+        nf(mxbranch),  &
+        ibrd(mxduct), &
+        nfilter, ndt, next, nnode, nfan, nbr
+    
+    ! solver variables
+    integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
+        nofhvpr, nequals, noffsm
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)), (nofwt,nofsets(9)), &
         (nofprd,nofsets(10)), (nofhvpr,nofsets(11)), (nequals,nofsets(12)), (noffsm,nofsets(13))

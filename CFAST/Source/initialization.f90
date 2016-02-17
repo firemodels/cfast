@@ -836,8 +836,6 @@ module initialization_routines
 
 
     do i = 1, nm1
-        xm(1) = interior_density*zzvol(i,upper)
-        xm(2) = interior_density*zzvol(i,lower)
 
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -859,6 +857,7 @@ module initialization_routines
         end do
 
         do k = upper, lower
+            xm(k) = interior_density*zzvol(i,k)
             do lsp = 1, ns
                 toxict(i,k,lsp) = 0.0_eb
                 mass(k,i,lsp) = o2n2(lsp)*xm(k)

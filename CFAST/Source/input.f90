@@ -868,6 +868,7 @@ module input_routines
                 exterior_abs_pressure = interior_abs_pressure
                 exterior_density = interior_density
             end if
+            tgignt = interior_temperature + 200.0_eb
 
             ! EAMB reference external ambient temperature (c), reference external ambient pressure
         case ("EAMB")
@@ -1796,7 +1797,6 @@ module input_routines
                 obj_cl(iobj) = lrarray(5)
                 objgmw(iobj) = (12.01*obj_c(iobj) + 1.008*obj_h(iobj) + 16.0*obj_o(iobj) + &
                     14.01*obj_n(iobj) + 35.45*obj_cl(iobj))/1000.0
-                objvt(iobj) = te
                 radconsplit(iobj) = lrarray(6)
                 ohcomb = lrarray(7)
                 if (ohcomb<=0.0_eb) then

@@ -176,11 +176,11 @@ module initialization_routines
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<n) then
-                hvexcn(ii,lsp,upper) = o2n2(lsp)*interior_density
-                hvexcn(ii,lsp,lower) = o2n2(lsp)*interior_density
+                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*interior_density
+                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*interior_density
             else
-                hvexcn(ii,lsp,upper) = o2n2(lsp)*exterior_density
-                hvexcn(ii,lsp,lower) = o2n2(lsp)*exterior_density
+                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*exterior_density
+                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*exterior_density
             end if
             hvconc(j,lsp) = hvexcn(ii,lsp,upper)
             c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
@@ -232,7 +232,7 @@ module initialization_routines
     end do
 
     ! now that everything is ok, we can turn on ventilation
-    mvcalc = .true.
+    mvcalc_on = .true.
     return
     end subroutine hvinit
 
@@ -619,11 +619,9 @@ module initialization_routines
     cp = 1012.0_eb
     gamma = 1.40_eb
     rgas = (gamma-1.0_eb)/gamma*cp
-    minmas = 0.0_eb
     stime = 0.0_eb
     tref = 293.15_eb
     lower_o2_limit = 0.15_eb
-    hcomba = 50000000.0_eb
     pref = 101325.0_eb
     interior_abs_pressure = pref
     pofset = pref
@@ -637,10 +635,10 @@ module initialization_routines
     ! species
     allowed(1:ns) = .false.
     activs(1:ns) = .true.
-    o2n2(1:ns) = 0.0_eb
+    initial_mass_fraction(1:ns) = 0.0_eb
     ! normal air
-    o2n2(1) = 0.77_eb
-    o2n2(2) = 0.23_eb
+    initial_mass_fraction(1) = 0.77_eb
+    initial_mass_fraction(2) = 0.23_eb
     zzgspec(1:nr,upper:lower,1:ns) = 0.0_eb
     zzcspec(1:nr,upper:lower,1:ns) = 0.0_eb
 
@@ -726,7 +724,7 @@ module initialization_routines
     nfilter = 0
     nbr = 0
     next = 0
-    mvcalc = .false.
+    mvcalc_on = .false.
     hvght(1:mxnode) = 0.0_eb
     hveflot(upper:lower,1:mxext) = 0.0_eb
     tracet(upper:lower,1:mxext) = 0.0_eb
@@ -831,7 +829,7 @@ module initialization_routines
     use thermp
     implicit none
 
-    real(eb) :: xm(2), xt, xtemp, xh2o, toto2n2
+    real(eb) :: xt, xtemp, xh2o, totmass, initialmass(2,nr,ns)
     integer i, j, k, ip, iprod, isof, isys, lsp
 
 
@@ -840,27 +838,24 @@ module initialization_routines
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
         ! tables in the handbook of physics and chemistry.  we are being clever
-        ! here.  the final result in o2n2 should be the value used in stport for
+        ! here.  the final result in initial_mass_fraction should be the value used in stport for
         ! the outside ambient.
         xt = interior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        o2n2(8) = relhum*xh2o
+        initial_mass_fraction(8) = relhum*xh2o
 
         ! normalize the atmosphere
-        toto2n2 = 0.0_eb
+        totmass = 0.0_eb
         do j = 1, ns
-            toto2n2 = toto2n2 + o2n2(j)
+            totmass = totmass + initial_mass_fraction(j)
         end do
-        do j = 1, ns
-            o2n2(j) = o2n2(j)/toto2n2
-        end do
+        initial_mass_fraction(1:ns) = initial_mass_fraction(1:ns)/totmass
 
         do k = upper, lower
-            xm(k) = interior_density*zzvol(i,k)
             do lsp = 1, ns
                 toxict(i,k,lsp) = 0.0_eb
-                mass(k,i,lsp) = o2n2(lsp)*xm(k)
+                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_density*zzvol(i,k)
             end do
         end do
     end do
@@ -871,7 +866,7 @@ module initialization_routines
             do i = 1, nm1
                 do k = upper, lower
                     isof = isof + 1
-                    p(isof) = mass(k,i,lsp) + minmas
+                    p(isof) = initialmass(k,i,lsp)
                 end do
             end do
         end if
@@ -884,7 +879,7 @@ module initialization_routines
             if(activs(lsp))then
                 do isys = 1, nhvsys
                     isof = isof + 1
-                    p(isof) = o2n2(lsp)*hvtm(isys)
+                    p(isof) = initial_mass_fraction(lsp)*hvtm(isys)
                 end do
             end if
         end do

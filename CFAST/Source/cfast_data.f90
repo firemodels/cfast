@@ -55,19 +55,46 @@ module cfast_main
     save
     
     integer :: ivers, mpsdat(3), nofsets(13), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, &
-         nm1, n, itmstp
+         itmstp
+    real(eb) :: ppmdv(2,nr,ns), toxict(nr,2,ns)
+    
+    
+    real(eb) :: cp, deltat
+    real(eb) :: gamma
+    real(eb) :: interior_abs_pressure, pofset, pref
+    real(eb) :: relhum, rgas, stime, te
+    real(eb) :: tref
+    
+    logical activs(ns)
+    
+    character(128) :: title
+    
+    ! compartment variables
+    integer n, nm1
+    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr)
+    type(room_type), target :: roominfo(nr)
     
     ! targets and detectors
     integer :: ndtect, ntarg, idset
     
     ! fire variables
     integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
+    real(eb) :: lower_o2_limit, qf(nr), objmaspy(0:mxfire), heatup(nr), heatlp(nr), oplume(3,mxfires), qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), &
+        radconsplit(0:mxfire),heatfp(3), tradio, radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
+        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
+        farea(0:mxfire), tgignt
+    logical objon(0:mxfires), heatfl
     
     ! wall variables
     integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr)
+    real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
+        rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal)
+    logical :: adiabatic_wall
     
     ! vent variables
     integer :: ivvent_connections(nr,nr), ihvent_connections(nr,nr), vshape(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
+    real(eb) :: vvarea(nr,nr), hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), qcvh(4,mxhvents),qcvv(4,mxvvents), &
+        vmflo(nr,nr,2), hlp(mxhvents), qcvpp(4,nr,nr)
 
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
@@ -75,6 +102,12 @@ module cfast_main
         nf(mxbranch),  &
         ibrd(mxduct), &
         nfilter, ndt, next, nnode, nfan, nbr
+    real(eb) :: hveflo(2,mxext), hveflot(2,mxext), qcvm(4,mxfan), qcvf(4,mxfan), hvextt(mxext,2), &
+        arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
+        hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
+        qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
+        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext)
+    logical :: mvcalc_on
     
     ! solver variables
     integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
@@ -82,36 +115,8 @@ module cfast_main
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)), (nofwt,nofsets(9)), &
         (nofprd,nofsets(10)), (nofhvpr,nofsets(11)), (nequals,nofsets(12)), (noffsm,nofsets(13))
-
-    real(eb) :: mass(2,nr,ns), minmas, lower_o2_limit, qf(nr), p(maxteq), objmaspy(0:mxfire), tradio, &
-        heatup(nr), heatlp(nr),  vvarea(nr,nr), hveflo(2,mxext), hveflot(2,mxext), &
-        hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), oplume(3,mxfires),  &
-        qcvh(4,mxhvents),qcvv(4,mxvvents),qcvm(4,mxfan), &
-        vmflo(nr,nr,2), qspray(0:mxfire,2), &
-        radio(0:mxfire), xfire(mxfire,mxfirp), rdqout(4,nr),objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3),qcvf(4,mxfan)
-
-    real(eb) :: ppmdv(2,nr,ns), interior_rel_pressure(nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
-        rw(mxslb,nwal,nr), exterior_rel_pressure(nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal), fopos(3,0:mxfire), &
-        toxict(nr,2,ns), femr(0:mxfire), hlp(mxhvents), hvextt(mxext,2), &
-        arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
-        hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
-        qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
-        duct_length(mxduct),hvconc(mxbranch,ns),qcvpp(4,nr,nr), hvexcn(mxext,ns,2),objpos(3,0:mxfires),fpos(3),hcrf(mxpts), &
-        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
-        farea(0:mxfire)
-
-    real(eb) :: cp, deltat, tracet(2,mxext)
-    real(eb) :: gamma, hcomba, traces(2,mxext)
-    real(eb) :: interior_abs_pressure, pofset, pref
-    real(eb) :: relhum, rgas, stime, te
-    real(eb) :: tgignt
-    real(eb) :: tref
-
-    logical :: activs(ns), mvcalc, objon(0:mxfires), heatfl, adiabatic_wall
-
-    character(128) :: title
-
-    type(room_type), target :: roominfo(nr)
+    
+    real(eb) :: p(maxteq) 
    
     type(fire_type), target :: fireinfo(mxfire)
     
@@ -255,7 +260,7 @@ module fireobjects
     
     real(eb), dimension(mxfires) :: obj_c, obj_h, obj_o, obj_n, obj_cl
     real(eb), dimension(3,0:mxfires) :: objcri, objort
-    real(eb), dimension(0:mxfires) :: objmas, objgmw, objvt, objclen
+    real(eb), dimension(0:mxfires) :: objmas, objgmw, objclen
     real(eb), dimension(mxpts,0:mxfires) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
     real(eb), dimension(mxpts,ns,mxfires) :: omprodr
     real(eb), dimension(mxpts,mxfires) :: otime
@@ -362,7 +367,7 @@ module params
     logical :: allowed(ns), exset
     integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
 
-    real(eb) :: qfc(2,nr), o2n2(ns), &
+    real(eb) :: qfc(2,nr), initial_mass_fraction(ns), &
         volfru(nr), volfrl(nr), hvfrac(2,mxext), exterior_abs_pressure, &
         chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
 

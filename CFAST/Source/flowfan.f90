@@ -45,7 +45,7 @@ module mflow_routines
     ! chv should eventually be defined elsewhere.
 
     hvacflg = .false.
-    if (.not.mvcalc.or.option(fmvent)/=on.or.(nhvpvar==0.and.nhvtvar==0)) return
+    if (.not.mvcalc_on.or.option(fmvent)/=on.or.(nhvpvar==0.and.nhvtvar==0)) return
     hvacflg = .true.
 
     chv(1:nbr) = ductcv
@@ -367,7 +367,7 @@ module mflow_routines
                     hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
                     hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
                 else
-                    xxrho = o2n2(lsp)*exterior_density
+                    xxrho = initial_mass_fraction(lsp)*exterior_density
                     hvexcn(ii,lsp,upper) = xxrho
                     hvexcn(ii,lsp,lower) = xxrho
                 end if

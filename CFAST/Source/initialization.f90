@@ -785,8 +785,7 @@ module initialization_routines
     !     arguments: none
 
     use cfast_main
-    use objects1
-    use objects2
+    use fireobjects
     implicit none
 
     ! a specified fire in the center of the room

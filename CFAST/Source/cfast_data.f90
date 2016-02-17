@@ -152,7 +152,6 @@ module dervs
     implicit none
     save
 
-    logical :: produp
     real(eb), dimension(maxteq) :: pdold, pold
     real(eb) :: told, dt
 
@@ -175,6 +174,7 @@ module fltarget
     integer, parameter :: exterior = 2                              ! back surface of target is exposed to compartment exterior
     
     type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
+    
     type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
     
 end module fltarget
@@ -221,10 +221,11 @@ module  debug
 
 end module debug
 
-! --------------------------- objects1 -------------------------------------------
+! --------------------------- fireobjects -------------------------------------------
 
-module objects1
+module fireobjects
 
+    use precision_parameters
     use cparams
     implicit none
     save
@@ -233,17 +234,6 @@ module objects1
     character(64), dimension(0:mxfires) :: odbnam
     character(256), dimension(0:mxfires) :: objnin
     integer, dimension(0:mxfires) :: objpnt
-
-end module objects1
-
-! --------------------------- objects2 -------------------------------------------
-
-module objects2
-
-    use precision_parameters
-    use cparams
-    implicit none
-    save
 
     logical, dimension(0:mxfires) :: objdef
     character(60), dimension(0:mxfires) :: omatl
@@ -258,7 +248,7 @@ module objects2
     real(eb), dimension(2,0:mxfires) :: obcond
     real(eb) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
 
-end module objects2
+end module fireobjects
 
 ! --------------------------- opt -------------------------------------------
 

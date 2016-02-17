@@ -17,8 +17,7 @@ module input_routines
     use detectorptrs
     use fltarget
     use iofiles
-    use objects1
-    use objects2
+    use fireobjects
     use opt
     use params
     use solver_parameters

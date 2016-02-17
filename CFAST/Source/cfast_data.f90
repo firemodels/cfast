@@ -54,7 +54,7 @@ module cfast_main
     implicit none
     save
     
-    integer :: ivers, mpsdat(3), nofsets(13), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, &
+    integer :: ivers, mpsdat(3), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, &
          itmstp
     real(eb) :: ppmdv(2,nr,ns), toxict(nr,2,ns)
     
@@ -74,34 +74,31 @@ module cfast_main
     real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr)
     type(room_type), target :: roominfo(nr)
     
-    ! targets and detectors
-    integer :: ndtect, ntarg, idset
-    
     ! fire variables
-    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
-    real(eb) :: lower_o2_limit, qf(nr), objmaspy(0:mxfire), heatup(nr), heatlp(nr), oplume(3,mxfires), qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), &
-        radconsplit(0:mxfire),heatfp(3), tradio, radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
+    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), & 
+        ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
+    real(eb) :: lower_o2_limit, qf(nr), objmaspy(0:mxfire), heatup(nr), heatlp(nr), oplume(3,mxfires), &
+        qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
+        radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
         farea(0:mxfire), tgignt
     logical objon(0:mxfires), heatfl
     
     ! wall variables
     integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr)
-    real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), &
-        rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), epw(nwal,nr), twj(nnodes,nr,nwal)
+    real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), &
+        epw(nwal,nr), twj(nnodes,nr,nwal)
     logical :: adiabatic_wall
     
     ! vent variables
     integer :: ivvent_connections(nr,nr), ihvent_connections(nr,nr), vshape(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
-    real(eb) :: vvarea(nr,nr), hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), qcvh(4,mxhvents),qcvv(4,mxvvents), &
-        vmflo(nr,nr,2), hlp(mxhvents), qcvpp(4,nr,nr)
+    real(eb) :: vvarea(nr,nr), hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), & 
+    qcvh(4,mxhvents),qcvv(4,mxvvents), vmflo(nr,nr,2), hlp(mxhvents), qcvpp(4,nr,nr)
 
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
-        nf(mxbranch),  &
-        ibrd(mxduct), &
-        nfilter, ndt, next, nnode, nfan, nbr
+        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr
     real(eb) :: hveflo(2,mxext), hveflot(2,mxext), qcvm(4,mxfan), qcvf(4,mxfan), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
@@ -110,12 +107,11 @@ module cfast_main
     logical :: mvcalc_on
     
     ! solver variables
-    integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
+    integer :: nofsets(13), nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
         nofhvpr, nequals, noffsm
     equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)), (nofwt,nofsets(9)), &
         (nofprd,nofsets(10)), (nofhvpr,nofsets(11)), (nequals,nofsets(12)), (noffsm,nofsets(13))
-    
     real(eb) :: p(maxteq) 
    
     type(fire_type), target :: fireinfo(mxfire)
@@ -127,9 +123,10 @@ module cfast_main
     integer :: nvisualinfo = 0
 
     type(slice_type), allocatable, dimension(:), target :: sliceinfo  
-    integer :: nsliceinfo
+    integer :: nsliceinfo = 0
+    
     type(iso_type), allocatable, dimension(:), target :: isoinfo  
-    integer :: nisoinfo
+    integer :: nisoinfo = 0
 
      
 end module cfast_main
@@ -191,6 +188,11 @@ module fltarget
     integer, parameter :: cylpde = 2                                ! cylindrical targets (cylindrical coordinates)
     integer, parameter :: interior = 1                              ! back surface of target is exposed to compartment interior
     integer, parameter :: exterior = 2                              ! back surface of target is exposed to compartment exterior
+    
+    integer :: ndtect                                               ! number of detectors in the simulation
+    integer :: ntarg                                                ! number of detectors in the simulation
+    integer :: idset                                                ! compartment where detector just went off. more than one
+                                                                    ! sprinkler in a compartment is meaningless to CFAST
     
     type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
     

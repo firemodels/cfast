@@ -209,9 +209,7 @@ module target_routines
             end if
 
         end do
-        if (stime>10.0_eb .and. itarg>=153) then
-            continue
-        end if
+
         ! compute radiative flux from walls and gas
         qwtsum(front) = 0.0_eb
         qgassum(front) = 0.0_eb

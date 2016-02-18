@@ -250,8 +250,8 @@ module target_routines
             qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
             qgassum(front) = qgassum(front) + qgt*target_factors_front(iwall)
             if(targptr%back==interior)then
-              qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
-              qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
+                qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
+                qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
             end if
         end do
         qtwflux(front) = qwtsum(front)

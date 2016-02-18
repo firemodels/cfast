@@ -775,11 +775,16 @@ The effective path length, $L$, is calculated between the center-points of the e
 \label{section:target}
 
 Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is given by:
-\be
-   \dq_{\rm r}'' = \epsilon_{\rm t} \left(
-   \displaystyle\sum_{{\rm f}=1}^{n_{\rm fires}} \cos(\theta_{\rm f}) \tau_f \; \frac{\chi_{\rm r} \, \dQ_{\rm f}}{4 \pi R_{\rm f}^2}  + \displaystyle\sum_{w=1}^{10} \tau_w \, F_w \, \epsilon_w \, \qout{w}  +  \displaystyle\sum_{g=1}^2 \left(\tau_g \, F_g \, \sigma \, T_g^4 \right)  -\sigma T_{\rm t}^4  \right)  \label{target_rad}
+\be \label{target_rad}
+\begin{split}
+   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}=1}^{n_{\rm fires}} \cos(\theta_{\rm f}) \tau_u \tau_l \; \frac{\chi_{\rm r} \, \dQ_{\rm f}}{4 \pi R_{\rm f}^2} + 
+     \displaystyle\sum_{w=1}^{10} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
+    & \left. \displaystyle\sum_{w=1}^5 \sigma \, F_w \, \left(T_{\rm l}^4 \alpha_l \tau_u + T_{\rm u}^4 \alpha_u\right) + \displaystyle\sum_{w=5}^{10} \sigma \, F_w \, \left(T_{\rm u}^4 \alpha_u \tau_l + T_{\rm l}^4 \alpha_l\right) - 
+     \sigma T_{\rm t}^4 \right)
+\end{split}
 \ee
-where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm j}$ is the emissivity of the wall surface, $\theta_f$ is the angle formed by the line of sight segment (between the fire $f$ and the target) of length $R_f$ and the normal direction to the target surface, $F_w$ and $F_{\rm g}$ are view factors for the walls and gas layers, $\tau_f$, $\tau_w$, and $\tau_{\rm g}$ are the values of transmittance for the path between the target and the fires, walls, and gas layers, $T_{\rm t}$ is the temperature of the target.  The term $\qout{w}$, given by Eq.~(\ref{eq:qoutb}), is the outgoing radiative flux at the $j$'th wall surface.
+
+where $\epsilon_{\rm t}$ is the emissivity of the target, $\epsilon_{\rm w}$ is the emissivity of the wall surface, $\theta_{\rm f}$ is the angle formed by the line of sight segment (between the fire $\rm f$ and the target) of length $R_{\rm f}$ and the normal direction to the target surface, $F_{\rm w}$ is the view factor for the wall surface, $\tau_{\rm u}$ and $\tau_{\rm l}$ are the values of transmittance for the path between the target and the fires or walls in the upper and lower layers, $\alpha_{\rm u}$ and $\alpha_{\rm l}$ are $\left( 1-\tau_{\rm u} \right)$ and $\left( 1-\tau_{\rm l} \right)$, and $T_{\rm t}$ is the temperature of the target.  The term $\qout{\rm w}$, given by Eq.~(\ref{eq:qoutb}), is the outgoing radiative flux at the $\rm w$'th wall surface.
 
 
 

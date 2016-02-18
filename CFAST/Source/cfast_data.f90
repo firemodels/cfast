@@ -54,16 +54,12 @@ module cfast_main
     implicit none
     save
     
-    integer :: ivers, mpsdat(3), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, &
-         itmstp
-    real(eb) :: ppmdv(2,nr,ns), toxict(nr,2,ns)
+    integer :: ivers, mpsdat(3), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, itmstp
     
     
-    real(eb) :: cp, deltat
-    real(eb) :: gamma
-    real(eb) :: interior_abs_pressure, pofset, pref
-    real(eb) :: relhum, rgas, stime, te
-    real(eb) :: tref
+    real(eb) :: cp, gamma, rgas
+    real(eb) :: relhum, interior_abs_pressure, pofset, pref, te, tref
+    real(eb) :: stime, deltat
     
     logical activs(ns)
     
@@ -71,7 +67,7 @@ module cfast_main
     
     ! compartment variables
     integer n, nm1
-    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr)
+    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns)
     type(room_type), target :: roominfo(nr)
     
     ! fire variables
@@ -83,6 +79,7 @@ module cfast_main
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
         farea(0:mxfire), tgignt
     logical objon(0:mxfires), heatfl
+    type(fire_type), target :: fireinfo(mxfire)
     
     ! wall variables
     integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr)
@@ -90,21 +87,30 @@ module cfast_main
         epw(nwal,nr), twj(nnodes,nr,nwal)
     logical :: adiabatic_wall
     
-    ! vent variables
-    integer :: ivvent_connections(nr,nr), ihvent_connections(nr,nr), vshape(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
-    real(eb) :: vvarea(nr,nr), hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), & 
-    qcvh(4,mxhvents),qcvv(4,mxvvents), vmflo(nr,nr,2), hlp(mxhvents), qcvpp(4,nr,nr)
+    ! hvent variables
+    integer :: ihvent_connections(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
+    real(eb) :: hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), & 
+    hlp(mxhvents)
+    
+    ! vvent variables
+    integer :: ivvent_connections(nr,nr), vshape(nr,nr)
+    real(eb) :: vvarea(nr,nr), vmflo(nr,nr,2), qcvpp(4,nr,nr)
 
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
         nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr
-    real(eb) :: hveflo(2,mxext), hveflot(2,mxext), qcvm(4,mxfan), qcvf(4,mxfan), hvextt(mxext,2), &
+    real(eb) :: hveflo(2,mxext), hveflot(2,mxext), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
         duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext)
     logical :: mvcalc_on
+    
+    ! vent opening and closing variables
+    integer :: nramps = 0
+    real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
+    type(ramp_type), target :: rampinfo(mxramps)
     
     ! solver variables
     integer :: nofsets(13), nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
@@ -113,20 +119,16 @@ module cfast_main
         (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)), (nofwt,nofsets(9)), &
         (nofprd,nofsets(10)), (nofhvpr,nofsets(11)), (nequals,nofsets(12)), (noffsm,nofsets(13))
     real(eb) :: p(maxteq) 
-   
-    type(fire_type), target :: fireinfo(mxfire)
-    
-    integer :: nramps = 0
-    type(ramp_type), target :: rampinfo(mxramps)
-    
-    type(visual_type), dimension (mxslice), target :: visual_info
-    integer :: nvisualinfo = 0
 
-    type(slice_type), allocatable, dimension(:), target :: sliceinfo  
+    ! visualization variables
+    integer :: nvisualinfo = 0
+    type(visual_type), dimension (mxslice), target :: visual_info
+ 
     integer :: nsliceinfo = 0
-    
-    type(iso_type), allocatable, dimension(:), target :: isoinfo  
+    type(slice_type), allocatable, dimension(:), target :: sliceinfo 
+     
     integer :: nisoinfo = 0
+    type(iso_type), allocatable, dimension(:), target :: isoinfo 
 
      
 end module cfast_main

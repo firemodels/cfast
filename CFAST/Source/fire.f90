@@ -1131,7 +1131,7 @@ module fire_routines
         do lsp = 1, ns
             if (activs(lsp)) then
                 do k = upper, lower
-                    ppmdv(k,i,lsp) = zzgspec(i,k,lsp)/v(k)
+                    species_mass_density(i,k,lsp) = zzgspec(i,k,lsp)/v(k)
                 end do
             end if
         end do
@@ -1152,7 +1152,7 @@ module fire_routines
         lsp = 9
         if (activs(lsp)) then
             do k = upper, lower
-                toxict(i,k,lsp) = ppmdv(k,i,lsp)*3778.0_eb
+                toxict(i,k,lsp) = species_mass_density(i,k,lsp)*3778.0_eb
             end do
         end if
 
@@ -1160,7 +1160,7 @@ module fire_routines
         lsp = 10
         if (activs(lsp)) then
             do k = upper, lower
-                toxict(i,k,lsp) = toxict(i,k,lsp) + ppmdv(k,i,lsp)*1000.0_eb*deltt/60.0_eb
+                toxict(i,k,lsp) = toxict(i,k,lsp) + species_mass_density(i,k,lsp)*1000.0_eb*deltt/60.0_eb
             end do
         end if
 

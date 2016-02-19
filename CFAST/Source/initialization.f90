@@ -8,6 +8,19 @@ module initialization_routines
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror
     
+    use cenviro
+    use cfast_main
+    use cparams
+    use cshell
+    use fireobjects
+    use params
+    use opt
+    use target_data
+    use thermp
+    use vent_data
+    use wallptrs
+    use wnodes
+    
     implicit none
     
     private
@@ -26,8 +39,6 @@ module initialization_routines
     !     Purpose: check for and return index to a thermal property
     !     Revision: $Revision$
     !     Revision Date: $Date$
-
-    use thermp
 
     implicit none
     character, intent(in) :: name*(*)
@@ -59,13 +70,6 @@ module initialization_routines
     !     was inserted just after the calculation off, the flow to do this.  if
     !     the flow is allowed to be negative (flow reversal) then this statement
     !     must be removed.
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell, only: logerr
-    use params
-    implicit none
     
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
@@ -247,9 +251,6 @@ module initialization_routines
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: 
 
-    use cfast_main
-    use params
-    implicit none
 
     integer :: istack(100), i, ii, j, icursys, iptr, icurnod, nxtnode, isys, ib
 
@@ -348,14 +349,6 @@ module initialization_routines
     !     upper layer volumes are not computed.  if iflag is set to 1
     !     then yinter must be a floating point array of at least size nr
     !     (nr = number of rooms) in the calling routine.
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use target_data
-    use opt
-    use params
-    implicit none
 
     integer, intent(in) :: iflag
     real(eb), intent(out) :: yinter(*)
@@ -522,11 +515,6 @@ module initialization_routines
     !                                 (r,1) = number of items (fires or detectors so far) in room r
     !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
 
-    use precision_parameters
-    use cparams, only : nr, mxfires, mxdtect
- 
-    implicit none
-
     ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
     integer, parameter :: lwork = nr + mxfires + mxdtect
 
@@ -581,17 +569,6 @@ module initialization_routines
     !     routine: initialize_memory
     !     purpose: This routine initializes the main memory
     !     Arguments: none
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use cshell
-    use target_data
-    use params
-    use thermp
-    use vents
-    use wnodes, only : nfurn
-    implicit none
     
     integer i
     type(room_type), pointer :: roomptr
@@ -781,10 +758,6 @@ module initialization_routines
     !     purpose: this routine initializes the fire objects
     !     arguments: none
 
-    use cfast_main
-    use fireobjects
-    implicit none
-
     ! a specified fire in the center of the room
     lfbt = 2
     lfmax = 1
@@ -821,13 +794,6 @@ module initialization_routines
     !              species it originally occured in CFAST and INITFS.  It was moved
     !              to one subroutine to make maintenance easier
     !     Arguments: none
-
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use params
-    use thermp
-    implicit none
 
     real(eb) :: xt, xtemp, xh2o, totmass, initialmass(2,nr,ns)
     integer i, j, k, ip, iprod, isof, isys, lsp
@@ -905,13 +871,6 @@ module initialization_routines
 
     !     routine: inittarg
     !     purpose: Initialize target data structures
-
-    use precision_parameters
-    use cfast_main
-    use cshell
-    use target_data
-    use thermp
-    implicit none
        
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: itarg, iroom, iwall, iwall2
@@ -1025,15 +984,6 @@ module initialization_routines
     !        nslb = discretization of the wall slabs (number of nodes)
     !        matl contains the name of the thermal data subset in the tpp datafile 
     !        maxct is a count of the number of tpp data sets in the database
-
-    use precision_parameters
-    use wallptrs
-    use cenviro
-    use cfast_main
-    use target_data
-    use thermp
-    use wnodes
-    implicit none
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
@@ -1194,16 +1144,7 @@ module initialization_routines
     ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
 
     ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the 
-    ! beginning of the species (-1) and the end of the array which is presently used by dassl
-    
-    use cfast_main
-    use cshell, only: logerr
-    use target_data
-    use opt
-    use params
-    use wnodes
-    implicit none
-    
+    ! beginning of the species (-1) and the end of the array which is presently used by dassl   
     
     integer :: i, j, ib, noxygen
     type(room_type), pointer :: roomptr
@@ -1309,9 +1250,6 @@ module initialization_routines
     !            wtemp    wall temperature profile
     !            tamb     ambient temperature seen by interior wall
     !            text     ambient temperature seen by exterior wall
-
-    use precision_parameters
-    implicit none
 
     integer, intent(in) :: nslab
     integer, intent(inout) :: numnode(*) 

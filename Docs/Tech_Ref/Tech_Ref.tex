@@ -775,12 +775,18 @@ The effective path length, $L$, is calculated between the center-points of the e
 \label{section:target}
 
 Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is given by:
+%\begin{split}
+%   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}=1}^{n_{\rm fires}} \cos(\theta_{\rm f}) \tau_u \tau_l \; \frac{\chi_{\rm r} \, \dQ_{\rm f}}{4 \pi R_{\rm f}^2} + 
+%     \displaystyle\sum_{w=1}^{10} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
+%    & \left. \displaystyle\sum_{w=1}^5 \sigma \, F_w \, \left(T_{\rm l}^4 \alpha_l \tau_u + T_{\rm u}^4 \alpha_u\right) + \displaystyle\sum_{w=5}^{10} \sigma \, F_w \, \left(T_{\rm u}^4 \alpha_u \tau_l + T_{\rm l}^4 \alpha_l\right) - 
+%     \sigma T_{\rm t}^4 \right)
+%\end{split}
 \be \label{target_rad}
 \begin{split}
-   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}=1}^{n_{\rm fires}} \cos(\theta_{\rm f}) \tau_u \tau_l \; \frac{\chi_{\rm r} \, \dQ_{\rm f}}{4 \pi R_{\rm f}^2} + 
-     \displaystyle\sum_{w=1}^{10} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
-    & \left. \displaystyle\sum_{w=1}^5 \sigma \, F_w \, \left(T_{\rm l}^4 \alpha_l \tau_u + T_{\rm u}^4 \alpha_u\right) + \displaystyle\sum_{w=5}^{10} \sigma \, F_w \, \left(T_{\rm u}^4 \alpha_u \tau_l + T_{\rm l}^4 \alpha_l\right) - 
-     \sigma T_{\rm t}^4 \right)
+   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}}^{{\rm fires}} 
+   \frac{\cos(\theta_{\rm f})}{4 \pi R_{\rm f}^2} \tau_u \tau_l \; \chi_{\rm r} \, \dQ_{\rm f} +
+   \displaystyle\sum_{w}^{\rm walls} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
+    & \left. \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_u \alpha_l \sigma T_l^4  + \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_l \alpha_u\sigma T_u^4 - \sigma T_t^4 \right)
 \end{split}
 \ee
 

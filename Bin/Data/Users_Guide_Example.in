@@ -2,7 +2,7 @@ VERSN,7,Users Guide Example Case
 !!
 !!Scenario Configuration Keywords
 !!
-TIMES,3600,50,10,10
+TIMES,3600,50,50,50
 EAMB,293.15,101325,0
 TAMB,293.15,101325,0,50
 !!

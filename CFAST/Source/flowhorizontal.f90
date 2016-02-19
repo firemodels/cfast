@@ -32,7 +32,7 @@ module hflow_routines
     use cfast_main
     use flwptrs
     use opt
-    use vents
+    use vent_data
     use vent_slab
     use debug
     implicit none
@@ -553,7 +553,7 @@ module hflow_routines
     use precision_parameters
     use cenviro
     use cfast_main
-    use vents
+    use vent_data
     implicit none
 
     integer, intent(in) :: from_room, to_room, nprod
@@ -782,7 +782,7 @@ module hflow_routines
     !       This is a routine to get the shape data for horizontal flow vents
 
     use precision_parameters
-    use vents
+    use vent_data
     implicit none
 
     integer, intent(in) :: i

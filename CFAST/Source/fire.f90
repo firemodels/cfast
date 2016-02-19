@@ -14,7 +14,7 @@ module fire_routines
     use opt
     use params
     use smkview_data
-    use vents
+    use vent_data
     
     implicit none
     

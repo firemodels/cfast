@@ -10,7 +10,7 @@ module debug_routines
     use cfast_main
     use cparams
     use debug
-    use vents
+    use vent_data
     use vent_slab
     
     implicit none

@@ -18,7 +18,7 @@ module output_routines
     use params
     use solver_parameters
     use thermp
-    use vents
+    use vent_data
     use wallptrs
     use wdervs
     use wnodes

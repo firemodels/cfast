@@ -11,7 +11,7 @@ module mflow_routines
     use flwptrs
     use opt
     use params
-    use vents, only : mventinfo
+    use vent_data
     
     implicit none
     

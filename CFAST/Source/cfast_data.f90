@@ -87,26 +87,6 @@ module cfast_main
         epw(nwal,nr), twj(nnodes,nr,nwal)
     logical :: adiabatic_wall
     
-    ! hvent variables
-    integer :: ihvent_connections(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
-    real(eb) :: hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), & 
-    hlp(mxhvents)
-    
-    ! vvent variables
-    integer :: ivvent_connections(nr,nr), vshape(nr,nr)
-    real(eb) :: vvarea(nr,nr), vmflo(nr,nr,2), qcvpp(4,nr,nr)
-
-    ! hvac variables
-    integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
-        ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
-        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr
-    real(eb) :: hveflo(2,mxext), hveflot(2,mxext), hvextt(mxext,2), &
-        arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
-        hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
-        qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
-        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext)
-    logical :: mvcalc_on
-    
     ! vent opening and closing variables
     integer :: nramps = 0
     real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
@@ -446,15 +426,35 @@ module fires
 
 end module fires
 
-! --------------------------- vents -------------------------------------------
+! --------------------------- vent_data -------------------------------------------
 
-module vents
+module vent_data
 
     use precision_parameters
-    use cparams, only: nr, mxhvent, mxvvent, mxext
-    use cfast_types, only: vent_type
+    use cparams
+    use cfast_types
     implicit none
     save
+       
+    ! hvent variables
+    integer :: ihvent_connections(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
+    real(eb) :: hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), & 
+    hlp(mxhvents)
+    
+    ! vvent variables
+    integer :: ivvent_connections(nr,nr), vshape(nr,nr)
+    real(eb) :: vvarea(nr,nr), vmflo(nr,nr,2), qcvpp(4,nr,nr)
+    
+    ! hvac variables
+    integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
+        ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
+        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr
+    real(eb) :: hveflo(2,mxext), hveflot(2,mxext), hvextt(mxext,2), &
+        arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
+        hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
+        qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
+        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext)
+    logical :: mvcalc_on
     
     integer, dimension(mxhvent,2) :: ivvent
     integer :: n_hvents, n_vvents
@@ -466,7 +466,7 @@ module vents
     type (vent_type), dimension(mxvvent), target :: vventinfo
     type (vent_type), dimension(mxext), target :: mventinfo
     
-end module vents
+end module vent_data
 
 ! --------------------------- vent_slab -------------------------------------------
 

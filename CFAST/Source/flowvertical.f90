@@ -29,7 +29,7 @@ module vflow_routines
     use flwptrs
     use opt
     use params
-    use vents
+    use vent_data
     implicit none
 
     real(eb), intent(in) :: tsec
@@ -399,7 +399,7 @@ module vflow_routines
     !       this is a routine to get the shape data for vertical flow (horizontal) vents
 
     use cfast_main
-    use vents
+    use vent_data
     
     use precision_parameters
     implicit none

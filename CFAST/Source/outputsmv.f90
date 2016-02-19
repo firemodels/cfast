@@ -14,6 +14,7 @@
     use cfast_types
     use detectorptrs
     use target_data
+    use vent_data
     use iofiles
     
     implicit none 

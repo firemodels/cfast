@@ -22,6 +22,7 @@ module input_routines
     use params
     use solver_parameters
     use thermp
+    use vent_data
     use wnodes
 
     implicit none

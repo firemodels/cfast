@@ -175,9 +175,9 @@ module dervs
 
 end module dervs
 
-! --------------------------- fltarget -------------------------------------------
+! --------------------------- target_data -------------------------------------------
 
-module fltarget
+module target_data
     use precision_parameters
     use cparams, only: mxthrmplen, mxtarg, mxdtect
     use  cfast_types, only: target_type, detector_type
@@ -200,7 +200,7 @@ module fltarget
     
     type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
     
-end module fltarget
+end module target_data
 
 ! --------------------------- iofiles -------------------------------------------
 

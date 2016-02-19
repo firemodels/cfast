@@ -13,7 +13,7 @@ module target_routines
     use cenviro
     use cfast_main
     use detectorptrs
-    use fltarget
+    use target_data
     use fireptrs
     use wnodes, only: nfurn, qfurnout
     use opt, only: fcjet, option, off

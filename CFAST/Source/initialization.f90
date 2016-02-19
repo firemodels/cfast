@@ -352,7 +352,7 @@ module initialization_routines
     use precision_parameters
     use cenviro
     use cfast_main
-    use fltarget
+    use target_data
     use opt
     use params
     implicit none
@@ -586,7 +586,7 @@ module initialization_routines
     use cenviro
     use cfast_main
     use cshell
-    use fltarget
+    use target_data
     use params
     use thermp
     use vents
@@ -909,7 +909,7 @@ module initialization_routines
     use precision_parameters
     use cfast_main
     use cshell
-    use fltarget
+    use target_data
     use thermp
     implicit none
        
@@ -1030,7 +1030,7 @@ module initialization_routines
     use wallptrs
     use cenviro
     use cfast_main
-    use fltarget
+    use target_data
     use thermp
     use wnodes
     implicit none
@@ -1198,7 +1198,7 @@ module initialization_routines
     
     use cfast_main
     use cshell, only: logerr
-    use fltarget
+    use target_data
     use opt
     use params
     use wnodes

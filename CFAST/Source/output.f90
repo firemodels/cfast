@@ -11,7 +11,7 @@ module output_routines
     use detectorptrs
     use fireptrs
     use flwptrs
-    use fltarget
+    use target_data
     use iofiles
     use fireobjects
     use opt

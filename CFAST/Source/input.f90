@@ -15,7 +15,7 @@ module input_routines
     use cshell
     use debug
     use detectorptrs
-    use fltarget
+    use target_data
     use iofiles
     use fireobjects
     use opt

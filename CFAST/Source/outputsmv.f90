@@ -13,7 +13,7 @@
     use cfast_main
     use cfast_types
     use detectorptrs
-    use fltarget
+    use target_data
     use iofiles
     
     implicit none 

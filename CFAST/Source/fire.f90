@@ -8,7 +8,7 @@ module fire_routines
     use cenviro
     use cfast_main
     use fireptrs
-    use fltarget
+    use target_data
     use flwptrs
     use fireobjects
     use opt

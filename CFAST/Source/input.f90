@@ -1594,7 +1594,7 @@ module input_routines
         case ('SLCF')
             if (countargs(lcarray)>=1) then
                 nvisualinfo = nvisualinfo + 1
-                sliceptr => visual_info(nvisualinfo)
+                sliceptr => visualinfo(nvisualinfo)
                 if (lcarray(1)=='2-D') then
                     sliceptr%vtype = 1
                 else if (lcarray(1)=='3-D') then
@@ -1674,7 +1674,7 @@ module input_routines
         case ('ISOF')
             if (countargs(lcarray)>=1) then
                 nvisualinfo = nvisualinfo + 1
-                sliceptr => visual_info(nvisualinfo)
+                sliceptr => visualinfo(nvisualinfo)
                 sliceptr%vtype = 3
                 sliceptr%value = lrarray(1)
                 if (countargs(lcarray)>1) then
@@ -2255,7 +2255,7 @@ module input_routines
    ! count number of isosurfaces and slices
 
    do i = 1, nvisualinfo
-       vptr=>visual_info(i)
+       vptr=>visualinfo(i)
        if(vptr%roomnum.eq.0)then
            ntypes=nrooms
        else
@@ -2309,7 +2309,7 @@ module input_routines
    islice = 1
 
    do i = 1, nvisualinfo
-       vptr=>visual_info(i)
+       vptr=>visualinfo(i)
        if(vptr%vtype.eq.3)cycle
        ir = vptr%roomnum
        if(ir.eq.0)then
@@ -2402,7 +2402,7 @@ module input_routines
 
    i_iso = 1
    do i = 1, nvisualinfo
-       vptr=>visual_info(i)
+       vptr=>visualinfo(i)
        if(vptr%vtype.ne.3)cycle
        ir = vptr%roomnum
        if(ir.eq.0)then

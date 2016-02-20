@@ -83,7 +83,7 @@ module cfast_main
 
     ! visualization variables
     integer :: nvisualinfo = 0
-    type(visual_type), dimension (mxslice), target :: visual_info
+    type(visual_type), dimension (mxslice), target :: visualinfo
  
     integer :: nsliceinfo = 0
     type(slice_type), allocatable, dimension(:), target :: sliceinfo 

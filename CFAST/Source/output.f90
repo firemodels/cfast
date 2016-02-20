@@ -8,6 +8,7 @@ module output_routines
     use cenviro
     use cfin
     use cshell
+    use solver_data
     use detectorptrs
     use fireptrs
     use flwptrs

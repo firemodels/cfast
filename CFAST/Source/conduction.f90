@@ -6,6 +6,7 @@ module conduction_routines
     
     use wallptrs
     use cenviro
+    use solver_data, only: nofwt
     use cfast_main
     use wnodes
     use cparams, only: nnodes

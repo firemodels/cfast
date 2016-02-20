@@ -80,14 +80,6 @@ module cfast_main
     integer :: nramps = 0
     real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
     type(ramp_type), target :: rampinfo(mxramps)
-    
-    ! solver variables
-    integer :: nofsets(13), nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
-        nofhvpr, nequals, noffsm
-    equivalence (nofp,nofsets(1)), (nofpmv,nofsets(2)), (noftmv,nofsets(3)), (noftu,nofsets(4)), (nofvu,nofsets(5)), &
-        (noftl,nofsets(6)), (nofoxyl,nofsets(7)), (nofoxyu,nofsets(8)), (nofwt,nofsets(9)), &
-        (nofprd,nofsets(10)), (nofhvpr,nofsets(11)), (nequals,nofsets(12)), (noffsm,nofsets(13))
-    real(eb) :: p(maxteq) 
 
     ! visualization variables
     integer :: nvisualinfo = 0
@@ -130,19 +122,22 @@ module cshell
     
 end module cshell
 
-! --------------------------- dervs -------------------------------------------
+! --------------------------- solver_data -------------------------------------------
 
-module dervs
+module solver_data
 
     use precision_parameters
     use cparams    
     implicit none
     save
-
-    real(eb), dimension(maxteq) :: pdold, pold
+    
+    ! solver variables
+    integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
+        nofhvpr, nequals, noffsm
+    real(eb), dimension(maxteq) :: p, pold, pdold
     real(eb) :: told, dt
 
-end module dervs
+end module solver_data
 
 ! --------------------------- target_data -------------------------------------------
 

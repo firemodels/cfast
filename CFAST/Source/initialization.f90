@@ -12,6 +12,7 @@ module initialization_routines
     use cfast_main
     use cparams
     use cshell
+    use solver_data
     use fire_data
     use params
     use opt

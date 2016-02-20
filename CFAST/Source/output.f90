@@ -13,7 +13,7 @@ module output_routines
     use flwptrs
     use target_data
     use iofiles
-    use fireobjects
+    use fire_data
     use opt
     use params
     use solver_parameters

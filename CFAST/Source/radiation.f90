@@ -10,6 +10,7 @@ module radiation_routines
     use cshell, only: logerr
     use fireptrs
     use cfast_main
+    use fire_data, only: xfire, ifrpnt
     use opt
     use debug
     

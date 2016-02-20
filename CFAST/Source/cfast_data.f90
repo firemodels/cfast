@@ -70,24 +70,13 @@ module cfast_main
     real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns)
     type(room_type), target :: roominfo(nr)
     
-    ! fire variables
-    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), & 
-        ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
-    real(eb) :: lower_o2_limit, qf(nr), objmaspy(0:mxfire), heatup(nr), heatlp(nr), oplume(3,mxfires), &
-        qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
-        radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
-        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
-        farea(0:mxfire), tgignt
-    logical objon(0:mxfires), heatfl
-    type(fire_type), target :: fireinfo(mxfire)
-    
     ! wall variables
     integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr)
     real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), &
         epw(nwal,nr), twj(nnodes,nr,nwal)
     logical :: adiabatic_wall
     
-    ! vent opening and closing variables
+    ! ramping variables
     integer :: nramps = 0
     real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
     type(ramp_type), target :: rampinfo(mxramps)
@@ -224,14 +213,26 @@ module  debug
 
 end module debug
 
-! --------------------------- fireobjects -------------------------------------------
+! --------------------------- fire_data -------------------------------------------
 
-module fireobjects
+module fire_data
 
     use precision_parameters
+    use cfast_types  
     use cparams
     implicit none
     save
+    
+    ! fire variables
+    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), & 
+        ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
+    real(eb) :: lower_o2_limit, qf(nr), objmaspy(0:mxfire), heatup(nr), heatlp(nr), oplume(3,mxfires), &
+        qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
+        radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
+        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
+        farea(0:mxfire), tgignt
+    logical objon(0:mxfires), heatfl
+    type(fire_type), target :: fireinfo(mxfire)
 
     logical, dimension(0:mxfires) :: objld
     character(64), dimension(0:mxfires) :: odbnam
@@ -251,7 +252,7 @@ module fireobjects
     real(eb), dimension(2,0:mxfires) :: obcond
     real(eb) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
 
-end module fireobjects
+end module fire_data
 
 ! --------------------------- opt -------------------------------------------
 

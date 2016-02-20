@@ -14,6 +14,7 @@ module target_routines
     use cfast_main
     use detectorptrs
     use target_data
+    use fire_data, only: xfire, ifrpnt
     use fireptrs
     use wnodes, only: nfurn, qfurnout
     use opt, only: fcjet, option, off

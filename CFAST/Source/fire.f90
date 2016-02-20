@@ -10,7 +10,7 @@ module fire_routines
     use fireptrs
     use target_data
     use flwptrs
-    use fireobjects
+    use fire_data
     use opt
     use params
     use smkview_data

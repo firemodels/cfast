@@ -12,7 +12,7 @@ module initialization_routines
     use cfast_main
     use cparams
     use cshell
-    use fireobjects
+    use fire_data
     use params
     use opt
     use target_data

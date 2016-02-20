@@ -5,6 +5,7 @@
     use wallptrs
     use cenviro
     use cfast_main
+    use fire_data, only: xfire, ifrpnt
     use wnodes
     use opt
     

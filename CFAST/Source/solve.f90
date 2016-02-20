@@ -27,7 +27,7 @@ module solve_routines
     use flwptrs
     use target_data
     use iofiles
-    use fireobjects
+    use fire_data
     use opt
     use params
     use smkview_data

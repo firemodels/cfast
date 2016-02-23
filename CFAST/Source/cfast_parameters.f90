@@ -3,9 +3,11 @@
 
 module cparams
     use precision_parameters
+    
+    integer, parameter :: lbufln=1024           ! default line length for all inputs
 
     ! geometry parameters
-    integer, parameter :: nr = 101               ! maximum number of compartments
+    integer, parameter :: nr = 101              ! maximum number of compartments
     integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material
                                                 !                        (at the moment, the gui only support 1)
     integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)

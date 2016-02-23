@@ -94,17 +94,6 @@ module cfast_main
 
 end module cfast_main
 
-! --------------------------- cfin -------------------------------------------
-
-module cfin
-
-    implicit none
-
-    integer, parameter :: lbufln=1024
-    character(lbufln) :: lbuf, cbuf
-
-end module cfin
-
 ! --------------------------- cshell -------------------------------------------
 
 module cshell

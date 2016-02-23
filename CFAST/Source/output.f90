@@ -6,7 +6,6 @@ module output_routines
 
     use cfast_main
     use cenviro
-    use cfin
     use cshell
     use solver_data
     use detectorptrs
@@ -25,6 +24,8 @@ module output_routines
     use wnodes
 
     implicit none
+    
+    character(lbufln) :: lbuf, cbuf
 
     private
 
@@ -871,7 +872,6 @@ module output_routines
     integer :: io, i, j, nnv, is
     real(eb) :: y_hcn, y_hcl
 
-    character cbuf*255
     character(13), dimension(0:4) :: ftype = &
         (/character(13) :: 'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
     character(6), dimension(1:3) :: fire_geometry = (/character(6) :: 'Normal', 'Wall', 'Corner'/)

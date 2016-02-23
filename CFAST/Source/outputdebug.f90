@@ -1,10 +1,10 @@
 module debug_routines
-    
+
     use precision_parameters
-    
+
     use spreadsheet_header_routines, only: ssheadersfslabs, ssheadersresid
     use utility_routines, only: ssaddtolist
-    
+
     use cenviro
     use cfast_types
     use cfast_main
@@ -12,40 +12,40 @@ module debug_routines
     use debug
     use vent_data
     use vent_slab
-    
+
     implicit none
-    
+
     private
-    
-    public ssprintslab, output_spreadsheet_residuals, spreadsheetfslabs !, ssprintresid, 
-    
+
+    public ssprintslab, output_spreadsheet_residuals, spreadsheetfslabs !, ssprintresid,
+
     contains
 
 ! --------------------------- SpreadSheetFSlabs -------------------------------------------
 
     subroutine spreadsheetfslabs (time, ir1, ir2, iv, nslab, qslab, outarray, position)
-    
+
     real(eb), intent(in) :: time, qslab(mxfslab)
     real(eb), intent(inout) :: outarray(*)
     integer, intent(in) :: ir1, ir2, iv, nslab
     integer, intent(inout) :: position
-    
+
     real(eb) :: r1, r2, v, slab
-    
+
     integer :: i
     logical :: firstc=.true.
-    
-    if (firstc) then 
+
+    if (firstc) then
         call SSHeadersFSlabs
         firstc = .false.
     end if
-    
-    if (nwline) then 
+
+    if (nwline) then
         position = 0
         call SSaddtolist(position, time, outarray)
         nwline = .false.
     end if
-    
+
     r1 = ir1
     r2 = ir2
     v = iv
@@ -58,11 +58,11 @@ module debug_routines
         call SSaddtolist(position, dirs12(i)*qslab(i), outarray)
     end do
     return
-    
+
     end subroutine spreadsheetfslabs
 
 ! --------------------------- ssprintslab -------------------------------------------
-    
+
     subroutine ssprintslab (position, outarray)
 
     real(eb), intent(in) :: outarray(*)
@@ -76,17 +76,17 @@ module debug_routines
     end subroutine ssprintslab
 
 ! --------------------------- ssprintresid -------------------------------------------
-    
+
     subroutine ssprintresid (iounit,ic,array)
-    
+
     real(eb), intent(in) :: array(*)
     integer, intent(in) :: iounit, ic
-    
+
     integer i
-  
+
     write (iounit,"(16384(e20.13,','))" ) (array(i),i=1,ic)
     return
-    
+
     end subroutine ssprintresid
 
 ! --------------------------- output_spreadsheet_residuals -------------------------------------------
@@ -113,14 +113,14 @@ module debug_routines
 
     ! data structures for door jet fires
     real(eb), intent(in) :: flwdjf(nr,ns+2,2)
-    
+
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
     real(eb) :: outarray(maxhead)
     logical :: firstc
     integer :: position, i, j, k
     data firstc/.true./
     save firstc
-    
+
     ! headers
     if (firstc) then
         call ssHeadersResid
@@ -150,7 +150,7 @@ module debug_routines
             call SSaddtolist (position,flwrad(i,j),outarray)
         end do
     end do
-    ! species mass flow    
+    ! species mass flow
     do i = 1, nm1
         do j = 1, 2
             do k = 1, 9
@@ -170,6 +170,6 @@ module debug_routines
     call ssprintresid (ioresid, position, outarray)
 
     return
-    end subroutine output_spreadsheet_residuals 
-    
+    end subroutine output_spreadsheet_residuals
+
 end module debug_routines

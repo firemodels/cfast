@@ -18,7 +18,7 @@ module solve_routines
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
     use utility_routines, only: mat2mult, sort_fire, interp, shellsort, cptime, xerror, funit
     use vflow_routines, only: vertical_flow
-    
+
     use cenviro
     use cfast_main
     use cshell
@@ -36,15 +36,15 @@ module solve_routines
     use wallptrs
     use wdervs
     use wnodes
-    
+
     implicit none
-    
+
     private
-    
+
     public solve_simulation, calculate_residuals, output_interactive_help, update_data
-    
+
     contains
-    
+
 ! --------------------------- initial_solution -------------------------------------------
 
     subroutine initial_solution(t,pdold,pdzero,rpar,ipar)
@@ -57,7 +57,7 @@ module solve_routines
     !              is modeled then HVAC node pressures and hvac duct
     !              temperatures are also determined to force mass and energy
     !              conservation.
-    
+
     integer, intent(in) :: ipar(*)
     real(eb), intent(in) :: t,pdzero(*), rpar(*)
     real(eb), intent(out) :: pdold(*)
@@ -153,23 +153,23 @@ module solve_routines
     end do
     return
     end subroutine initial_solution
-    
+
 ! --------------------------- room_connections -------------------------------------------
 
     subroutine room_connections (tsec)
 
     ! routine: room_connections
-    ! purpose: this routine determines whether flow from each room can reach the outside (perhaps through intermediate rooms) 
-    !           via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an 
+    ! purpose: this routine determines whether flow from each room can reach the outside (perhaps through intermediate rooms)
+    !           via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an
     !           initial pressure solution.
-    ! arguments: tsec: current simulation time 
+    ! arguments: tsec: current simulation time
 
     real(eb), intent(in) :: tsec
-    
+
     real(eb) :: factor2, height, width, avent
     integer roomc(nr,nr), tempmat(nr,nr), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
-    
+
     type(vent_type), pointer :: ventptr
 
     ! initially assume that no rooms are connected
@@ -181,7 +181,7 @@ module solve_routines
     ! check horizontal vent flow
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
-        
+
         iroom1 = ventptr%from
         iroom2 = ventptr%to
         ik = ventptr%counter
@@ -208,11 +208,11 @@ module solve_routines
     end do
 
     ! construct roomc**matiter where matiter > n
-    ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection 
-    !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.  
-    !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.  
-    !        since there are only n rooms, roomc**n tells us whether any given room is connected to any other room in n steps.  
-    !        the entries roomc**n(i,n) then indicates whether a room is connected to the outside (perhaps through several other 
+    ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection
+    !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.
+    !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.
+    !        since there are only n rooms, roomc**n tells us whether any given room is connected to any other room in n steps.
+    !        the entries roomc**n(i,n) then indicates whether a room is connected to the outside (perhaps through several other
     !        intermediate rooms).
     matiter = 1
     do i = 1, n
@@ -231,7 +231,7 @@ module solve_routines
 
     return
     end subroutine room_connections
-    
+
 ! --------------------------- gres -------------------------------------------
 
     subroutine gres (nnn,hvpsolv,deltamv,iflag)
@@ -249,12 +249,12 @@ module solve_routines
     real(eb), intent(in) :: hvpsolv(nnn)
     integer, intent(out) :: iflag
     real(eb), intent(out) :: deltamv(*)
-    
+
     integer :: nalg, i, ires
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), T
-    
+
     data pdzero /maxteq*0.0_eb/
-    
+
     if(1.eq.2) iflag=-1 ! dummy statement to eliminate compiler warnings
     nalg = nm1 + nhvpvar + nhvtvar
     do i = 1, nalg
@@ -327,7 +327,7 @@ module solve_routines
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
     integer :: i, ires
     data pdzero /maxteq*0.0_eb/
-    
+
     if(1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
     do i = 1, nequals
         p2(i) = pinit(i)
@@ -412,7 +412,7 @@ module solve_routines
     !     which is the beginning of the species (-1) and the end of the array which
     !     is presently used by DASSL. The important point is that NODES is set to
     !     NOFPRD which is the equivalent to NOFWT+NWALLS
-    
+
     real(eb), intent(in) :: tstop
 
     integer, parameter :: maxord = 5
@@ -536,7 +536,7 @@ module solve_routines
 
     ! If we are running only an initialization test then we do not need to solve anything
     if (initializeonly) then
-        ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
+        ! normally, this only needs to be done while running. however, if we are doing an initialonly run
         ! then we need the output now
         call remap_fires (nfires)
         call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1,  &
@@ -585,7 +585,7 @@ module solve_routines
         call output_status (T, dT)
         call deleteoutputfiles (queryfile)
     end if
-    
+
     !Check to see if diagnostic files .resid and .jac exist. If they do exist
     !set flags and open file, if needed, to print diagnositic information.
     inquire (file=residfile, exist=exists)
@@ -604,7 +604,7 @@ module solve_routines
                 jacfirst = .false.
                 iojac = funit(150)
                 open(unit=iojac,file=jaccsv)
-            end if 
+            end if
             jacprn = .true.
         else
             jacprn = .false.
@@ -634,7 +634,7 @@ module solve_routines
             itmstp = tsmv
             call remap_fires (nfires)
             if (firstpassforsmokeview) then
-                firstpassforsmokeview = .false.            
+                firstpassforsmokeview = .false.
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
                 call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, &
@@ -852,7 +852,7 @@ module solve_routines
         end if
         go to 10
     end if
-    
+
     return
 
     end subroutine solve_simulation
@@ -866,12 +866,12 @@ module solve_routines
 
     integer, intent(in) :: nodes, nequals, nlspct
     real(eb), intent(in) :: t, told, pdnew(*)
-    
+
     real(eb), intent(inout) :: p(*), pdold(*)
     real(eb), intent(out) :: pold(*)
-    
+
     integer :: i
-    real(eb) :: dt 
+    real(eb) :: dt
 
     dt = t - told
 
@@ -884,14 +884,14 @@ module solve_routines
 
     ! advance target temperatures
     call target (1,dt)
-    
+
     ! make sure species mass adds up to total mass
     if (nlspct>0) call synchronize_species_mass (p,nodes+1)
 
     pold(1:nequals) = p(1:nequals)
 
     return
-    
+
     end subroutine update_solution
 
 ! --------------------------- keyboard_interaction -------------------------------------------
@@ -903,7 +903,7 @@ module solve_routines
 
     integer, intent(in) :: ieqmax
     real(eb), intent(in) :: t
-    
+
     integer, intent(out) :: icode
     real(eb), intent(out) :: tpaws
     real(eb), intent(inout) :: tout
@@ -986,7 +986,7 @@ module solve_routines
         write (iofilo,*)
     end if
     return
-    
+
     end function output_interactive_help
 
 ! --------------------------- set_info_flags -------------------------------------------
@@ -1019,7 +1019,7 @@ module solve_routines
     info(5) = 0
     info(11) = 1
     return
-    
+
     end subroutine set_info_flags
 
 ! --------------------------- calculate_residuals -------------------------------------------
@@ -1063,17 +1063,17 @@ module solve_routines
     !                        a partial/total flag for solution of the
     !                        species equations.
 
-    real(eb), intent(in) :: tsec, x(*), xpsolve(*), rpar(*) 
+    real(eb), intent(in) :: tsec, x(*), xpsolve(*), rpar(*)
     integer, intent(in) :: ipar(*)
 
     integer, intent(inout) :: ires
     real(eb), intent(out) :: delta(*)
-    
+
     integer, parameter :: all = 1, some = 0, uu = upper ,ll = lower
 
     ! data structures for dassl, the numerical solver
     real(eb) :: xprime(maxteq)
-    
+
     ! data structures for rooms
     type(room_type), pointer :: roomptr
 
@@ -1188,10 +1188,10 @@ module solve_routines
                 flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwdjf(iroom,ip,uu)
             end do
         end if
-        
+
         flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) + flwrad(iroom,ll)
         flwtot(iroom,q,uu) = flwtot(iroom,q,uu) + flwcv(iroom,uu) + flwrad(iroom,uu)
-        
+
 
         ! if this room is a shaft then solve for only one zone.
         ! this is done by combining flows from to both
@@ -1365,7 +1365,7 @@ module solve_routines
     if (ipar(2)==some) nprod = nprodsv
 
     return
-    
+
     end subroutine calculate_residuals
 
 ! --------------------------- update_data -------------------------------------------
@@ -1377,18 +1377,18 @@ module solve_routines
 
     !     arguments: pdif   solver vector
     !                iflag  action flag:
-    !     iflag = constvar ==> constant data (data that does not change 
+    !     iflag = constvar ==> constant data (data that does not change
     !                          with time)
-    !     iflag = odevara  ==> ode variables: pressure, temperature and upper 
+    !     iflag = odevara  ==> ode variables: pressure, temperature and upper
     !                          layer volume
-    !     iflag = odevarb  ==> species data and wall temperature profile.  
+    !     iflag = odevarb  ==> species data and wall temperature profile.
     !                          use pold and pdold to estimate species
     !     iflag = odevarc  ==> species data and wall temperature profile.
     !                          use pdif array for species
 
     integer, intent(in) :: iflag
     real(eb), intent(in) :: pdif(*)
-    
+
     integer frmask(mxccv)
 
     integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii
@@ -1399,7 +1399,7 @@ module solve_routines
     real(eb) :: zlay, ztarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv
     real(eb) :: xt, xtemp, xh2o, ptemp, epscut
     real(eb) :: xmax, xmid, ymax, ymid, zmax
-    
+
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
@@ -1418,11 +1418,11 @@ module solve_routines
         end do
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
-            
+
             roomptr%x1 = roomptr%x0 + roomptr%width
             roomptr%y1 = roomptr%y0 + roomptr%depth
             roomptr%z1 = roomptr%z0 + roomptr%height
-            
+
             ! define wall centers
             xmax = roomptr%width
             xmid = xmax/2.0_eb
@@ -1474,10 +1474,10 @@ module solve_routines
         end do
 
         roomptr=>roominfo(n)
-        
+
         roomptr%z0 = 0.0_eb
         roomptr%z1 = 100000.0_eb
-        
+
         zzvol(n,upper) = 0.0_eb
         zzvol(n,lower) = 100000.0_eb
         zzhlay(n,upper) = 0.0_eb
@@ -1494,7 +1494,7 @@ module solve_routines
         zzcspec(n,lower,1) = 0.770_eb
         zzcspec(n,upper,2) = 0.230_eb
         zzcspec(n,lower,2) = 0.230_eb
-        
+
         !  set the water content to relhum - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
         ! tables in the handbook of physics and chemistry. the final result should be the value used for
@@ -1522,7 +1522,7 @@ module solve_routines
                             ventptr%sill = hl(iijk)
                             ventptr%soffit = hh(iijk)
                             ventptr%width = bw(iijk)
-                            
+
                             ventptr%from_hall_offset = ventoffset(iijk,1)
                             ventptr%to_hall_offset = ventoffset(iijk,2)
                             ventptr%from=i
@@ -1548,7 +1548,7 @@ module solve_routines
                     qcvv(2,n_vvents) = qcvpp(2,i,j)
                     qcvv(3,n_vvents) = qcvpp(3,i,j)
                     qcvv(4,n_vvents) = qcvpp(4,i,j)
-                    
+
                     ventptr => vventinfo(n_vvents)
                     ventptr%top = ivvent(n_vvents,1)
                     ventptr%bottom = ivvent(n_vvents,2)
@@ -1636,7 +1636,7 @@ module solve_routines
             izwmap(2,iroom) = icnt
         end do
 
-        ! update izwall for ceiling/floors that are connected 
+        ! update izwall for ceiling/floors that are connected
         do i = 1, nswal
             ifromr = izswal(i,w_from_room)
             ifromw = izswal(i,w_from_wall)
@@ -1653,7 +1653,7 @@ module solve_routines
             izwall(ieqto,w_to_wall) = ifromw
             izwall(ieqto,w_boundary_condition) = 1
 
-        end do 
+        end do
 
         jacn1 = nofpmv - nofp
         jacn2 = nofwt - nofpmv
@@ -1670,7 +1670,7 @@ module solve_routines
     else if (iflag==odevara) then
         do iroom = 1, nm1
             roomptr=>roominfo(iroom)
-            
+
             zzvol(iroom,upper) = max(pdif(iroom+nofvu),roomptr%vmin)
             zzvol(iroom,upper) = min(zzvol(iroom,upper),roomptr%vmax)
             zzvol(iroom,lower) = max(roomptr%volume-zzvol(iroom,upper),roomptr%vmin)
@@ -1766,7 +1766,7 @@ module solve_routines
                 zzmass(iroom,layer) = zzrho(iroom,layer)*zzvol(iroom,layer)
             end do
         end do
-        
+
         do i = 1, nm1
             roomptr => roominfo(i)
             if(roomptr%deadroom.eq.0) cycle
@@ -1858,8 +1858,8 @@ module solve_routines
             end if
         end do
 
-        ! define species mass fractions: normalize to total product mass 
-        ! rather than total mass (this is equivalent to what was being done 
+        ! define species mass fractions: normalize to total product mass
+        ! rather than total mass (this is equivalent to what was being done
         ! in chemistry)
         do iroom = 1, nm1
             roomptr => roominfo(iroom)
@@ -1901,13 +1901,13 @@ module solve_routines
             end if
         end do
     end if
-    
+
     ! copy hvac product values for each hvac system
 
     if (nhvsys/=0.and.ns/=0) then
         isof = nofhvpr
         zzhvm(1:nhvsys) = 0.0_eb
-   
+
         do lsp = 1, ns
             if (activs(lsp)) then
                 do isys = 1, nhvsys
@@ -1924,7 +1924,7 @@ module solve_routines
         end do
     end if
     return
-    
+
     end subroutine update_data
 
 ! --------------------------- synchronize_species_mass -------------------------------------------
@@ -1940,7 +1940,7 @@ module solve_routines
 
     integer, intent(in) :: ibeg
     real(eb), intent(out) :: pdif(*)
-    
+
     real(eb) :: factor(nr,2)
     integer :: iroom, isof, iprod
 
@@ -1985,7 +1985,7 @@ module solve_routines
     end do
 
     return
-    
+
     end subroutine synchronize_species_mass
 
 end module solve_routines

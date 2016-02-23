@@ -1,13 +1,13 @@
 module initialization_routines
-    
+
     use precision_parameters
-    
+
     use numerics_routines, only: dnrm2, dscal
     use opening_fractions, only : qchfraction
     use output_routines, only : deleteoutputfiles
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror
-    
+
     use cenviro
     use cfast_main
     use cparams
@@ -21,17 +21,17 @@ module initialization_routines
     use vent_data
     use wallptrs
     use wnodes
-    
+
     implicit none
-    
+
     private
-    
+
     public get_thermal_property, inittarg, initamb, offset, hvinit, initialize_memory, initialize_fire_objects, &
         initialize_species, initialize_walls
-    
+
     contains
-    
-    
+
+
 ! --------------------------- get_thermal_property -------------------------------------------
 
     subroutine get_thermal_property (name, tp)
@@ -43,7 +43,7 @@ module initialization_routines
 
     implicit none
     character, intent(in) :: name*(*)
-    
+
     character(mxthrmplen) missingtpp
     integer tp, i
 
@@ -54,7 +54,7 @@ module initialization_routines
     missingtpp = name
     write(3,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     stop
-    
+
     end subroutine get_thermal_property
 
 ! --------------------------- hvinit -------------------------------------------
@@ -71,7 +71,7 @@ module initialization_routines
     !     was inserted just after the calculation off, the flow to do this.  if
     !     the flow is allowed to be negative (flow reversal) then this statement
     !     must be removed.
-    
+
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
     type(room_type), pointer :: roomptr
@@ -229,7 +229,7 @@ module initialization_routines
     ! define total mass for each hvac system
     do isys = 1, nhvsys
         hvtm(isys) = 0.0_eb
-    end do     
+    end do
     do ib = 1, nbr
         isys = izhvbsys(ib)
         rden = (pofset+pav)/(rgas*tbr(ib))
@@ -250,7 +250,7 @@ module initialization_routines
     !              a mapping from those to exterior ones
     !     revision: $revision: 352 $
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: 
+    !     arguments:
 
 
     integer :: istack(100), i, ii, j, icursys, iptr, icurnod, nxtnode, isys, ib
@@ -326,7 +326,7 @@ module initialization_routines
     end if
     nhvsys = icursys
 
-    ! we have to update nequals.  nequals was originally defined in 
+    ! we have to update nequals.  nequals was originally defined in
     ! offset but offset was called before nhvsys was defined.
     nequals = nofhvpr + nhvsys*nlspct
 
@@ -353,10 +353,10 @@ module initialization_routines
 
     integer, intent(in) :: iflag
     real(eb), intent(out) :: yinter(*)
-    
+
     real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale
     integer i, ii, iwall, iroom, itarg
-    
+
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
@@ -366,7 +366,7 @@ module initialization_routines
     ! atmosp.  fictional flows resulted making  snsqe work a log harder to get
     ! an initial solution.  the initial temperature values calculated by atmosp
     ! at the top of the empire state building (about 400 m above base) is only
-    ! about 0.2 k different that at the base.  
+    ! about 0.2 k different that at the base.
     do i = 1, nm1
         roomptr => roominfo(i)
         interior_rel_pressure(i) = -interior_density*grav_con*roomptr%z0
@@ -410,7 +410,7 @@ module initialization_routines
         p(i+noftl) = interior_temperature
     end do
 
-    ! define hvac pressures and temperatures.  these values are later refined by 
+    ! define hvac pressures and temperatures.  these values are later refined by
     ! snsqe so that each hvac node conserves mass and energy
     do i = 1, nhvpvar
         p(i+nofpmv) = 0.0_eb
@@ -420,7 +420,7 @@ module initialization_routines
     end do
 
     ! define interior surface wall temperatures
-    ii = nofwt 
+    ii = nofwt
     do i = 1, nm1
         roomptr => roominfo(i)
         do iwall = 1, nwal
@@ -494,7 +494,7 @@ module initialization_routines
 
     return
     end subroutine initamb
-    
+
 ! --------------------------- sortbrm -------------------------------------------
 
     subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
@@ -560,7 +560,7 @@ module initialization_routines
         if (ipoint(i,2)==0) ipoint(i,2) = 1
     end do
     return
-    
+
     end subroutine sortbrm
 
 ! --------------------------- initialize_memory -------------------------------------------
@@ -570,16 +570,16 @@ module initialization_routines
     !     routine: initialize_memory
     !     purpose: This routine initializes the main memory
     !     Arguments: none
-    
+
     integer i
     type(room_type), pointer :: roomptr
 
     ! simple control stuff
     exset = .false.
-    debugging = .false.  
+    debugging = .false.
     jaccol = -2
     neqoff = 10
-     
+
     ! DASSL forcing functions
     p(1:maxteq) = 0.0_eb
 
@@ -609,7 +609,7 @@ module initialization_routines
     exterior_temperature = interior_temperature
     exterior_abs_pressure = interior_abs_pressure
     relhum = 0.5_eb
-    
+
     ! species
     allowed(1:ns) = .false.
     activs(1:ns) = .true.
@@ -650,7 +650,7 @@ module initialization_routines
     n = 0
     ! room to room heat transfer
     nswal = 0
-    
+
     ! variable cross sectional area
     izrvol(1:nr) = 0
     zzrvol(1:mxcross,1:nr) = 0.0_eb
@@ -695,7 +695,7 @@ module initialization_routines
     qcvv(2,1:nr) = 1.0_eb
     qcvv(3,1:nr) = 0.0_eb
     qcvv(4,1:nr) = 1.0_eb
-        
+
     ! mechanical vents
     nnode = 0
     nfan = 0
@@ -706,8 +706,8 @@ module initialization_routines
     hvght(1:mxnode) = 0.0_eb
     hveflot(upper:lower,1:mxext) = 0.0_eb
     tracet(upper:lower,1:mxext) = 0.0_eb
-    ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since 
-    ! there is not "thing" associated with a filter, there is no (as of 11/21/2006) 
+    ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since
+    ! there is not "thing" associated with a filter, there is no (as of 11/21/2006)
     ! way to have an intial value other than 0 (no filtering).
     qcvf(1,1:mxfan) = 0.0_eb
     qcvf(2,1:mxfan) = 0.0_eb
@@ -718,7 +718,7 @@ module initialization_routines
     qcvm(3,1:mxfan) = 0.0_eb
     qcvm(4,1:mxfan) = 1.0_eb
 
-    ! set to -1 as a flag for nputp initialization - any value not set will be set to the 
+    ! set to -1 as a flag for nputp initialization - any value not set will be set to the
     ! default which is the center of the respective wall
     fpos(1:3) = -1.0_eb
     fqdj(1:nr) = 0.0_eb
@@ -764,7 +764,7 @@ module initialization_routines
     lfmax = 1
     heatfl = .false.
     heatfp(1:3) = -1.0_eb
-    
+
     ! turn off objects
     numobjl = 0
     objon(0:mxfires) = .false.
@@ -776,7 +776,7 @@ module initialization_routines
     objcri(1:3,0:mxfires) = 0.0
     objdef(0:mxfires) = .false.
     odbnam(0:mxfires) = ' '
-     
+
     ! trace species stuff
     objmaspy(0:mxfire) = 0.0_eb
     radio(0:mxfire) = 0.0_eb
@@ -791,7 +791,7 @@ module initialization_routines
     subroutine initialize_species
 
     !     routine: initialize_species
-    !     purpose: This routine initializes variables associated with 
+    !     purpose: This routine initializes variables associated with
     !              species it originally occured in CFAST and INITFS.  It was moved
     !              to one subroutine to make maintenance easier
     !     Arguments: none
@@ -872,11 +872,11 @@ module initialization_routines
 
     !     routine: inittarg
     !     purpose: Initialize target data structures
-       
+
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: itarg, iroom, iwall, iwall2
     integer :: map6(6) = (/1,3,3,3,3,2/)
-    
+
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
@@ -983,7 +983,7 @@ module initialization_routines
     !        flw = thickness of the wall (m)
     !        epw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
-    !        matl contains the name of the thermal data subset in the tpp datafile 
+    !        matl contains the name of the thermal data subset in the tpp datafile
     !        maxct is a count of the number of tpp data sets in the database
 
     real(eb), intent(in) :: tstop
@@ -992,7 +992,7 @@ module initialization_routines
 
     ! tp is the pointer into the data base for each material
     integer tp
-    
+
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
 
@@ -1081,14 +1081,14 @@ module initialization_routines
             twj(j,ifromr,ifromw) = interior_temperature
             twj(j,itor,itow) = interior_temperature
         end do
-        jj = nptst 
+        jj = nptst
         do j = nptsf+1,nptsf+nptst - 1
             jj = jj - 1
             twj(j,ifromr,ifromw) = interior_temperature
             walldx(j-1,ifromr,ifromw) = walldx(jj,itor,itow)
         end do
 
-        jj = nptsf 
+        jj = nptsf
         do j = nptst+1,nptst+nptsf - 1
             jj = jj - 1
             twj(j,itor,itow) = interior_temperature
@@ -1120,12 +1120,12 @@ module initialization_routines
 
     subroutine offset ()
 
-    ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.  
+    ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.
     !          thus, the actual pressure array goes from nofp+1 to nofp+nm1.  the total number of equations to be considered
-    !          is nequals, and is the last element in the last vector. each physical interface routine is responsible for 
+    !          is nequals, and is the last element in the last vector. each physical interface routine is responsible for
     !          the count of the number of elements in the vector for which it is resonsible.
 
-    ! this set of parameters is set by nputp and is kept in the environment module cenviro.  
+    ! this set of parameters is set by nputp and is kept in the environment module cenviro.
     ! to index a variable, the list is something like (for temperature in this case)
 
     ! noftu+1, noftu+nm1
@@ -1144,9 +1144,9 @@ module initialization_routines
 
     ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
 
-    ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the 
-    ! beginning of the species (-1) and the end of the array which is presently used by dassl   
-    
+    ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the
+    ! beginning of the species (-1) and the end of the array which is presently used by dassl
+
     integer :: i, j, ib, noxygen
     type(room_type), pointer :: roomptr
 
@@ -1163,7 +1163,7 @@ module initialization_routines
     ! set the number of compartments and offsets
     nm1 = n - 1
 
-    ! count the species 
+    ! count the species
     nlspct = 0
 
     if (lfbt==1) then
@@ -1199,7 +1199,7 @@ module initialization_routines
             if (nwpts/=0) numnode(1,j,i) = nwpts
         end do
     end do
-    
+
     ! set number of implicit oxygen variables
     if(lfbt==1)option(foxygen) = off
     if(option(foxygen)==on)then
@@ -1224,7 +1224,7 @@ module initialization_routines
     nofprd = nofwt + nwalls
     nofhvpr = nofprd + 2*nm1*nlspct
 
-    ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.  
+    ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.
     ! after nhvsys is defined the following statement can be used to define nequals
     ! nequals = nofhvpr + nhvsys*nlspct
     nequals = nofhvpr
@@ -1253,10 +1253,10 @@ module initialization_routines
     !            text     ambient temperature seen by exterior wall
 
     integer, intent(in) :: nslab
-    integer, intent(inout) :: numnode(*) 
+    integer, intent(inout) :: numnode(*)
     real(eb), intent(in) :: tstop, wsplit(*), wk(*), wspec(*), wrho(*), wthick(*), tamb, text
     real(eb), intent(out) :: wlen, walldx(*)
-    
+
     integer :: cumpts(10), numpts(10), i, ii, nx, nintx, nsplit, islab, isum, nint, ibeg, iend
     real(eb) :: wtemp(*), xwall(100), xpos(10), xxnx, errfc05, xkrhoc, alpha, xb, xxnsplit, w, xxim1, xxiim1
     real(eb) :: wmxb, xxnslabm2, xxnint, xxi1, xxi2, xxi3, xxnintx, dtdw
@@ -1288,21 +1288,21 @@ module initialization_routines
 
         ! set up wall node locations for 1 slab case, bunch points at interior and exterior boundary
         xxnsplit = nsplit
-        w = 1.0_eb/xxnsplit 
-        do i = 1, nsplit + 1 
+        w = 1.0_eb/xxnsplit
+        do i = 1, nsplit + 1
             xxim1 = i - 1
             xwall(i) = xb*(xxim1*w)**2
         end do
         w = 1.0_eb/(xxnx-(xxnsplit+1.0_eb))
         do i = nsplit +2, nx
-            ii = nx + 1 - i 
+            ii = nx + 1 - i
             xxiim1 = ii - 1
             xwall(i) = wlen - (wlen-xb)*(xxiim1*w)**2
         end do
         numnode(1+nslab) = nintx
     else
 
-        ! set up wall node locations for multi-slab case, bunch points at interior boundary of first slab, exterior 
+        ! set up wall node locations for multi-slab case, bunch points at interior boundary of first slab, exterior
         ! boundary of last slab and uniformly in middle slabs
 
         ! calculate number of points interior to each slab
@@ -1367,13 +1367,13 @@ module initialization_routines
         end if
     end if
 
-    ! finally calculate distances between each point these distances are used by conductive_flux to setup 
+    ! finally calculate distances between each point these distances are used by conductive_flux to setup
     ! discretization tri-diagonal matrix
     do i = 1, nx - 1
         walldx(i) = xwall(i+1) - xwall(i)
     end do
 
-    ! initialize temperature profile.  note, wtemp(1)=wtemp(2) and wtemp(nx)=wtemp(nx-1) so dassl will think that no heat 
+    ! initialize temperature profile.  note, wtemp(1)=wtemp(2) and wtemp(nx)=wtemp(nx-1) so dassl will think that no heat
     ! transfer needs to occur to the wall (since dt/dx=0 here)
     wtemp(1) = tamb
     wtemp(nx) = text

@@ -25,21 +25,21 @@
     !     holders be liable for any claim, damages or other liability,
     !     whether in an action of contract, tort or otherwise, arising
     !     from, out of or in connection with the software or the use or
-    !     other dealings in the software.   
-    
+    !     other dealings in the software.
+
     use precision_parameters
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
     use input_routines, only : open_files, read_solver_ini, read_input_file
     use output_routines, only: output_version, output_initial_conditions
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
-    
+
     use cfast_main
     use cshell
     use iofiles
     use thermp
     use opt, only: total_steps
-    
+
     implicit none
 
     real(eb) :: xdelt, tstop, tbeg, tend
@@ -55,7 +55,7 @@
 
     call initialize_memory
     call initialize_fire_objects
-    call read_command_options     
+    call read_command_options
     call open_files
 
     mpsdat(1) = rundat(1)
@@ -103,10 +103,10 @@
     call cfastexit ('CFAST', 0)
 
 5000 format ('Total execution time = ',1pg10.3,' seconds')
-5010 format ('Total time steps = ',i10)  
-     
+5010 format ('Total time steps = ',i10)
+
     end program cfast
-    
+
 ! --------------------------- cfastexit -------------------------------------------
 
     subroutine cfastexit (name, errorcode)
@@ -128,7 +128,7 @@
     else
         write(logerr,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
     end if
-    
+
     close (unit=4, status='delete')
     call deleteoutputfiles (stopfile)
 

@@ -1,13 +1,13 @@
 module spreadsheet_routines
-    
+
     use precision_parameters
-    
+
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : qchfraction
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
-    
+
     use precision_parameters
     use cenviro
     use cfast_main
@@ -15,17 +15,17 @@ module spreadsheet_routines
     use target_data
     use fire_data
     use vent_data
-    
+
     implicit none
-    
+
     private
-    
+
     public output_spreadsheet, output_spreadsheet_smokeview
-    
+
     contains
-    
-! --------------------------- output_spreadsheet -------------------------------------------    
-    
+
+! --------------------------- output_spreadsheet -------------------------------------------
+
     subroutine output_spreadsheet(time)
 
     real(eb), intent(in) :: time
@@ -38,7 +38,7 @@ module spreadsheet_routines
     return
 
     end subroutine output_spreadsheet
-    
+
 ! --------------------------- output_spreadsheet_normal -------------------------------------------
 
     subroutine output_spreadsheet_normal (time)
@@ -46,7 +46,7 @@ module spreadsheet_routines
     ! This routine writes to the {project}_n.csv file, the compartment information and the fires
 
     real(eb), intent(in) :: time
-    
+
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     real(eb) :: outarray(maxhead), fheight
     logical :: firstc
@@ -106,16 +106,16 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: array(*)
     integer, intent(in) :: iounit, ic
-    
+
     integer i
-    
+
     if (validate) then
         write (iounit,"(16384(e19.12,','))" ) (array(i),i=1,ic)
     else
         write (iounit,"(16384(e13.6,','))" ) (array(i),i=1,ic)
     end if
     return
-    
+
     end subroutine ssprintresults
 
 ! --------------------------- output_spreadsheet_flow -------------------------------------------
@@ -125,9 +125,9 @@ module spreadsheet_routines
     !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
 
     integer, parameter :: maxoutput = mxhvents*4
-    
+
     real(eb), intent(in) :: time
-    
+
     real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
     integer :: position, i, ifrom, ito, toprm = 1, botrm = 2
     type(vent_type), pointer :: ventptr
@@ -143,7 +143,7 @@ module spreadsheet_routines
 
     ! first the time
     call SSaddtolist (position,time,outarray)
-        
+
     ! next the horizontal flow through vertical vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
@@ -214,14 +214,14 @@ module spreadsheet_routines
 
     integer, parameter :: maxoutput=4*nr+26*mxtarg+4*mxdtect
     real(eb), intent(in) :: time
-    
+
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
     real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
     integer :: iwptr(4), position, i, iw, itarg, iroom
-    
+
     type(target_type), pointer :: targptr
     type(detector_type), pointer ::dtectptr
-    
+
     data iwptr /1, 3, 4, 2/
     logical :: firstc
     data firstc /.true./
@@ -245,7 +245,7 @@ module spreadsheet_routines
             call SSaddtolist (position,zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,outarray)
         end do
     end do
-    
+
     call get_target_temperatures
 
     ! now do targets if defined
@@ -326,13 +326,13 @@ module spreadsheet_routines
 
     integer, parameter :: maxhead = 1+22*nr
     real(eb), intent(in) :: time
-    
+
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
     logical :: tooutput(ns),  molfrac(ns), firstc
     type(room_type), pointer :: roomptr
-    
-    data tooutput /9*.true.,.false.,.true./ 
+
+    data tooutput /9*.true.,.false.,.true./
     data molfrac /8*.true.,3*.false./
     data firstc /.true./
 
@@ -384,13 +384,13 @@ module spreadsheet_routines
 
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     real(eb), intent(in) :: time
-    
+
     real(eb) :: outarray(maxhead), fheight, factor2, height, width, avent, slabs, vflow
     logical :: firstc
     integer :: position
     integer :: i, j, iroom1, iroom2, ik, im, ix
 
-    
+
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
@@ -428,14 +428,14 @@ module spreadsheet_routines
             call SSaddtolist (position,fqf(i)/1000.,outarray)
             call SSaddtolist (position,fheight,outarray)
             call SSaddtolist (position,fopos(3,i),outarray)
-            call SSaddtolist (position,farea(i),outarray)          
+            call SSaddtolist (position,farea(i),outarray)
         end do
     end if
 
     ! horizontal vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
-        
+
         iroom1 = ventptr%from
         iroom2 = ventptr%to
         ik = ventptr%counter
@@ -499,5 +499,5 @@ module spreadsheet_routines
 
     return
     end subroutine output_spreadsheet_smokeview
-    
+
 end module spreadsheet_routines

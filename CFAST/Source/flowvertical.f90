@@ -1,18 +1,18 @@
 module vflow_routines
-    
+
     use precision_parameters
-    
+
     use opening_fractions, only: qcvfraction
     use utility_routines, only: tanhsmooth
-    
+
     implicit none
-    
+
     private
-    
+
     public vertical_flow, getvventinfo
-    
+
     contains
-    
+
 ! --------------------------- vertical_flow -------------------------------------------
 
     subroutine vertical_flow (tsec,flwvf,vflowflg)
@@ -35,7 +35,7 @@ module vflow_routines
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flwvf(nr,ns+2,2)
     logical, intent(out) :: vflowflg
-    
+
     real(eb) :: vvent(2), xmvent(2), tmvent(2), epscut, frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
     integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index
@@ -43,7 +43,7 @@ module vflow_routines
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
-    
+
     flwvf(1:n,1:ns+2,upper) = 0.0_eb
     flwvf(1:n,1:ns+2,lower) = 0.0_eb
     vmflo(1:n,1:n,upper) = 0.0_eb
@@ -52,7 +52,7 @@ module vflow_routines
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
     vflowflg = .true.
-    
+
     epscut = 0.0001_eb
 
     do i = 1, n_vvents
@@ -64,7 +64,7 @@ module vflow_routines
         ventptr%area = area
         !area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
         call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, vvent, xmvent, tmvent)
-        
+
         ventptr%n_slabs = 2
         do iflow = 1, 2
             ! flow information for smokeview is relative to top room
@@ -73,7 +73,7 @@ module vflow_routines
             ventptr%ybot_slab(iflow) = max(0.0_eb,(vvarea(itop,ibot) - sqrt(area))/2.0_eb)
             ventptr%ytop_slab(iflow) = min(vvarea(itop,ibot),(vvarea(itop,ibot) + sqrt(area))/2.0_eb)
         end do
-        
+
         ! set up flow variables for DAE solver
         do iflow = 1, 2
             ! determine room where flow comes and goes
@@ -130,7 +130,7 @@ module vflow_routines
             end if
             vmflo(ito,ifrm,upper) = vmflo(ito,ifrm,upper) - frommu
             vmflo(ito,ifrm,lower) = vmflo(ito,ifrm,lower) - fromml
-            
+
             ! determine mass and enthalpy fractions for the to room
             temp_upper = zztemp(ito,upper)
             temp_lower = zztemp(ito,lower)
@@ -183,22 +183,22 @@ module vflow_routines
 ! --------------------------- getventfraction-------------------------------------
 
     subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
-    
+
     use precision_parameters
     use cenviro
     use cfast_main, only: qcvv, nramps, rampinfo
     implicit none
-    
+
     character, intent(in) :: venttype
     integer, intent(in) :: room1, room2, vent_number, vent_index
     real(eb), intent(in) :: time
     real(eb), intent(out) :: fraction
-    
+
     integer :: iramp, i
     real(eb), parameter :: mintime=1.0e-6_eb
     real(eb) :: dt, dtfull, dy, dydt
     type(ramp_type), pointer :: rampptr
-    
+
     fraction = 1.0_eb
 
     if (nramps>0) then
@@ -227,7 +227,7 @@ module vflow_routines
             end if
         end do
     end if
- 
+
     ! This is for backwards compatibility with the older EVENT format for single vent changes
     fraction = 1.0_eb
     if (venttype=='V') fraction = qcvfraction(qcvv, vent_index, time)
@@ -239,12 +239,12 @@ module vflow_routines
     subroutine ventcf (itop, ibot, avent, nshape, epsp, xmvent, vvent, tmvent)
 
     !     routine: ventcf
-    !     purpose: this routine calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining 
-    !     an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of 
+    !     purpose: this routine calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining
+    !     an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of
     !     inside rooms and the uniform environment in outside spaces.
     !     arguments:itop: top room number (physically with respect to the second compartment)
     !               ibot: bottom room number
-    !               avent: area of the vent [m**2]                
+    !               avent: area of the vent [m**2]
     !               nshape: number characterizing vent shape: 1 = circle, 2 = square
     !               epsp: error tolerance for dpref [dimensionless]
     !               vvent(i)    i = 1, velocity of flow from room ibot to room itop
@@ -262,10 +262,10 @@ module vflow_routines
     integer, intent(in) :: itop, ibot, nshape
     real(eb), intent(in) :: avent, epsp
     real(eb), intent(out) :: vvent(2), xmvent(2), tmvent(2)
-    
+
     real(eb) :: den(2), relp(2), denvnt(2), dp(2), vst(2)
     integer ::  iroom(2), ilay(2)
-    
+
     integer, parameter :: l = 2, u = 1, q = 2, m = 1
 
     real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
@@ -329,14 +329,14 @@ module vflow_routines
     else
         rho = den(1)
     end if
-    
+
     ! calculate factor to dampen very small flows to zero to keep dae solver happy
     epscut = epsp*max (1.0_eb, relp(1), relp(2))
     epscut = sqrt(epscut)
     srdelp = sqrt(abs(delp))
     fnoise = 1.0_eb
     if ((srdelp/epscut)<=130.0_eb) fnoise = 1.0_eb - exp(-srdelp/epscut)
-    
+
     ! calculate steady flow and its direction (delp > 0, delp < 0 and delp = 0)
     v = 0.68_eb*avent*sqrt(2.0_eb*abs(delp)/rho)*fnoise
 
@@ -382,7 +382,7 @@ module vflow_routines
         vvent(i) = vst(i) + vex
         xmvent(i) = denvnt(i)*vvent(i)
         if (iroom(i)<=nm1) then
-            ! iroom(i) is an inside room so use the environment variable zztemp for temperature 
+            ! iroom(i) is an inside room so use the environment variable zztemp for temperature
             tmvent(i) = zztemp(iroom(i),ilay(3-i))
         else
             ! iroom(i) is an outside room so use exterior_temperature for temperature
@@ -400,13 +400,13 @@ module vflow_routines
 
     use cfast_main
     use vent_data
-    
+
     use precision_parameters
     implicit none
 
     integer, intent(in) :: iinvvent
 
-    integer, intent(out) :: itop, ibot, hshape, hface 
+    integer, intent(out) :: itop, ibot, hshape, hface
     real(eb), intent(out) :: harea
 
     itop = ivvent(iinvvent,1)

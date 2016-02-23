@@ -4,7 +4,7 @@
     subroutine grabky (ich,it)
 
     implicit none
-    
+
     integer(2), intent(out) :: ich, it
 
     character(1) :: ch, getcharqq

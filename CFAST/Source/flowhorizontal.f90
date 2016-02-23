@@ -1,18 +1,18 @@
 module hflow_routines
-    
+
     use precision_parameters
-    
+
     use opening_fractions, only: qchfraction
     use debug_routines, only: ssprintslab, spreadsheetfslabs
-    
+
     implicit none
-    
+
     private
-    
+
     public horizontal_flow, gethventinfo
-    
+
     contains
-    
+
     ! --------------------------- horizontal_flow -------------------------------------------
 
     subroutine horizontal_flow(tsec,epsp,nprod,uflw)
@@ -60,7 +60,7 @@ module hflow_routines
 
     uflw(1:nm1,1:nprod+2,lower) = 0.0_eb
     uflw(1:nm1,1:nprod+2,upper) = 0.0_eb
-    
+
     if (option(fhflow)/=on) return
 
     do i = 1, n_hvents
@@ -632,7 +632,7 @@ module hflow_routines
 
     integer :: iprod, n, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
-    
+
 
     ! initialize outputs
     mflows = 0.0_eb
@@ -804,7 +804,7 @@ module hflow_routines
     vblue = 1.0_eb
 
     return
-    
+
     end subroutine gethventinfo
 
 end module hflow_routines

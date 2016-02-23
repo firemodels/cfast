@@ -1,5 +1,5 @@
 module spreadsheet_header_routines
-    
+
     use cenviro
     use cfast_main
     use cparams
@@ -10,21 +10,21 @@ module spreadsheet_header_routines
     use fire_data
     use vent_data
     use utility_routines
-    
+
     implicit none
-    
+
     private
-    
+
     public ssheadersnormal, ssheadersspecies, ssheadersflow, ssheadersflux, ssheaderssmv, ssHeadersResid, ssHeadersFSlabs
-    
+
     contains
-    
+
 ! --------------------------- ssHeadersNormal -------------------------------------------
 
     subroutine ssHeadersNormal
 
     ! This is the header information for the normal spreadsheet output
-   
+
     integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
     character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
@@ -108,11 +108,11 @@ module spreadsheet_header_routines
 
     ! This is the header information for the spreadsheet output
 
-    ! local variables     
+    ! local variables
     integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
     character(35) :: headertext(4,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     logical tooutput(ns), molfrac(ns)
-    data tooutput /9*.true.,.false.,.true./ 
+    data tooutput /9*.true.,.false.,.true./
     data molfrac /8*.true.,3*.false./
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
@@ -122,7 +122,7 @@ module spreadsheet_header_routines
        'C-T Product Upper Layer', 'Trace Species Upper Layer',&
     'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
        'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
-       'C-T Product Lower Layer', 'Trace Species Lower Layer' / 
+       'C-T Product Lower Layer', 'Trace Species Lower Layer' /
     data LabelsShort / 'Time', 'ULN2', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_',&
        'ULCT_', 'ULTS_', 'LLN2', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
     data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg', &
@@ -184,7 +184,7 @@ module spreadsheet_header_routines
 
     !.....  sensor number
     !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
-    
+
     integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
     character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
     integer position, i, j, itarg, itype
@@ -560,7 +560,7 @@ module spreadsheet_header_routines
     end do
 
 
-    ! write out header if called from outputspreadsheet 
+    ! write out header if called from outputspreadsheet
     ! (this is only one once, but smokeview device tags are done each time)
     if(lMode) then
         write(15,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
@@ -574,19 +574,19 @@ module spreadsheet_header_routines
     subroutine smvDeviceTag(string)
 
     character, intent(in) :: string*(*)
-    
+
     write (13,'(a)') 'DEVICE'
     write (13,'(4x,a)') trim(string)
     write (13,'(1x,3f6.1)') 0.,0.,0.
     return
-    end subroutine smvDeviceTag  
+    end subroutine smvDeviceTag
 
 ! --------------------------- ssHeadersResid -------------------------------------------
 
  subroutine ssHeadersResid
 
     ! This is the header information for the calculate_residuals spreadsheet output
-    
+
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
     character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2), Species(9)
     integer position, i, j, k, l, nprod
@@ -604,7 +604,7 @@ module spreadsheet_header_routines
     headertext(2,1) = ' '
     headertext(3,1) = LabelUnits(1)
     nprod = nlspct
- 
+
     position = 1
 
     ! Compartment variables
@@ -645,8 +645,8 @@ module spreadsheet_header_routines
             headertext(3,position) = LabelUnits(7)
         end do
     end do
-        
-    ! Species 
+
+    ! Species
     do j = 1, nm1
         roomptr => roominfo(j)
         do i = 1, 2
@@ -658,7 +658,7 @@ module spreadsheet_header_routines
             end do
         end do
     end do
-    
+
     ! write out header
     write(ioresid,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
     write(ioresid,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
@@ -671,7 +671,7 @@ module spreadsheet_header_routines
   subroutine ssHeadersFSlabs
 
     ! This is the header information for the normal spreadsheet output
-     
+
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
     integer :: position, i, j
@@ -683,9 +683,9 @@ module spreadsheet_header_routines
     headertext(1,1) = Labels(1)
     headertext(2,1) = ' '
     headertext(3,1) = LabelUnits(1)
- 
+
     position = 1
-    
+
     do i = 1, n_hvents
         do j = 1, 4
             position = position + 1
@@ -699,8 +699,8 @@ module spreadsheet_header_routines
             call toIntString(j,headertext(2,position))
             headertext(3,position) = trim(LabelUnits(2))
         end do
-    end do 
-    
+    end do
+
     ! write out header
     write(ioslab,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
     write(ioslab,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)

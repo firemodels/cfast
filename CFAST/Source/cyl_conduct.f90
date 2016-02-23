@@ -1,13 +1,13 @@
 module cylinder_routines
-    
+
     use precision_parameters
-    
+
     implicit none
-    
+
     private
-    
+
     public cylindrical_conductive_flux, get_cylinder_temperature
-    
+
     contains
 
 ! --------------------------- cylindrical_conductive_flux -------------------------------------------
@@ -46,7 +46,7 @@ module cylinder_routines
        niter = 0
     end if
 
-    do iter=1,niter     
+    do iter=1,niter
        do i = 1, nr
           cc(i)=factor*real(i-1,eb)/(2.0_eb*real(i,eb)-1.0_eb)
           dd(i)=factor*real(i,eb)/(2.0_eb*real(i,eb)-1.0_eb)
@@ -115,7 +115,7 @@ module cylinder_routines
     tgrad(1) = (ddif(1)-ddif(2)*dr)
     tgrad(2) = (wtemp(nr-1)-wtemp(nr))/dr
     return
-    
+
     end subroutine cylindrical_conductive_flux
 
 ! --------------------------- get_cylinder_temperature -------------------------------------------
@@ -149,5 +149,5 @@ module cylinder_routines
     tempx = factor*wtemp(right) + (1.0_eb-factor)*wtemp(left)
 
     end subroutine get_cylinder_temperature
-    
+
 end module cylinder_routines

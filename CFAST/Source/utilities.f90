@@ -2,7 +2,6 @@ module utility_routines
     
     use precision_parameters
  
-    use cfin 
     use cparams
     use cshell 
     use iofiles, only: ncol
@@ -12,6 +11,8 @@ module utility_routines
     use wnodes
   
     implicit none
+    
+    character(lbufln) :: lbuf
     
     ! unlike most other routines, this one does not have the private specifier since all routines here are intended to be
     ! used by other routines

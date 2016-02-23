@@ -141,7 +141,7 @@ module mflow_routines
     integer :: ib, niter, iter, i, ii, j, k
 
     ! calculate average temperatures and densities for each branch
-    pav = pofset
+    pav = pressure_offset
     rohb(1:nbr) = pav/(rgas*tbr(1:nbr))
     bflo(nbr) = 1.0_eb
 
@@ -401,7 +401,7 @@ module mflow_routines
     integer ii, j, k, ib, isys, isof, nhvpr
 
     ! sum product flows entering system
-    nhvpr = nlspct*nhvsys
+    nhvpr = n_species*nhvsys
     if(nprod/=0)then
         prprime(1:nhvpr) = 0.0_eb
     end if

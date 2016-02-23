@@ -434,11 +434,11 @@ module solve_routines
     call cptime(toff)
     ires = 0
     tpaws = tstop + 1.0_eb
-    tstart = itmstp - 1
+    tstart = i_time_step - 1
     told = tstart
     dt = tstop - tstart
-    dprint = abs(lprint)
-    dplot = abs(lsmv)
+    dprint = abs(print_out_interval)
+    dplot = abs(smv_out_interval)
     dspread = abs(ss_out_interval)
     rpar(1) = rptol
 
@@ -452,14 +452,14 @@ module solve_routines
     first_time = 1
 
     ! Output options
-    if (dprint<0.0001_eb.or.lprint==0) then
+    if (dprint<0.0001_eb.or.print_out_interval==0) then
         iprint = .false.
         tprint = tstop + 1.0_eb
     else
         iprint = .true.
     end if
 
-    if (lsmv<=0) then
+    if (smv_out_interval<=0) then
         ismv = .false.
         tsmv = tstop + 1.0_eb
     else
@@ -539,7 +539,7 @@ module solve_routines
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run 
         ! then we need the output now
         call remap_fires (nfires)
-        call output_smokeview(pref, exterior_abs_pressure, exterior_temperature, nm1,  &
+        call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_temperature, nm1,  &
              n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, '(a)') 'Initialize only'
@@ -619,7 +619,7 @@ module solve_routines
 
         ! printed output
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
-            itmstp = tprint
+            i_time_step = tprint
             call output_results (t,1)
             call output_status (t, dt)
             tprint = tprint + dprint
@@ -631,14 +631,14 @@ module solve_routines
 
         ! smokeview output
         if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
-            itmstp = tsmv
+            i_time_step = tsmv
             call remap_fires (nfires)
             if (firstpassforsmokeview) then
                 firstpassforsmokeview = .false.            
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
-                call output_smokeview (pref, exterior_abs_pressure, exterior_temperature, nm1, &
-                    n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, itmstp)
+                call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_temperature, nm1, &
+                    n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, i_time_step)
                 call output_smokeview_header (version,nm1,nfires)
             end if
             call output_smokeview_plot_data(t,nm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
@@ -653,14 +653,14 @@ module solve_routines
         ! spreadsheet output
         if (t+0.0001_eb>min(tspread,tstop).and.ispread) then
             call output_spreadsheet(t)
-            itmstp = tspread
+            i_time_step = tspread
             tspread =tspread + dspread
             call output_status (t, dt)
         end if
 
         ! diagnostic output
         if (t+0.0001_eb>tpaws) then
-            itmstp = tpaws
+            i_time_step = tpaws
             call output_results (t,1)
             call output_debug (1,t,dt,ieqmax)
             tpaws = tstop + 1.0_eb
@@ -734,7 +734,7 @@ module solve_routines
 
         ipar(2) = all
         call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
-        call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold)
+        call update_solution (nodes, nequals, n_species, t, told, p, pold, pdnew, pdold)
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
@@ -817,7 +817,7 @@ module solve_routines
                 ! to save fire release rates in room where detector has
                 ! activated.  (this happens because idset /= 0)
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                call update_solution (nodes, nequals, nlspct, t, told, p, pold, pdnew, pdold)
+                call update_solution (nodes, nequals, n_species, t, told, p, pold, pdnew, pdold)
                 call set_info_flags (info,rwork)
             else if (td==t) then
                 call set_info_flags (info,rwork)
@@ -859,12 +859,12 @@ module solve_routines
 
 ! --------------------------- update_solution -------------------------------------------
 
-    subroutine update_solution(nodes, nequals, nlspct,  t, told, p, pold, pdnew, pdold)
+    subroutine update_solution(nodes, nequals, n_species,  t, told, p, pold, pdnew, pdold)
 
     !     routine: update_solution
     !     purpose: update solution returned by dassl
 
-    integer, intent(in) :: nodes, nequals, nlspct
+    integer, intent(in) :: nodes, nequals, n_species
     real(eb), intent(in) :: t, told, pdnew(*)
     
     real(eb), intent(inout) :: p(*), pdold(*)
@@ -886,7 +886,7 @@ module solve_routines
     call target (1,dt)
     
     ! make sure species mass adds up to total mass
-    if (nlspct>0) call synchronize_species_mass (p,nodes+1)
+    if (n_species>0) call synchronize_species_mass (p,nodes+1)
 
     pold(1:nequals) = p(1:nequals)
 
@@ -1104,7 +1104,7 @@ module solve_routines
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
 
     ires = ires ! just to get rid of a warning message
-    nprod = nlspct
+    nprod = n_species
     dt = tsec - told
     numresd = numresd + 1
     stime = tsec
@@ -1357,7 +1357,7 @@ module solve_routines
         end do
 
         ! residual for hvac species
-        do i = nofhvpr+1, nofhvpr+nlspct*nhvsys
+        do i = nofhvpr+1, nofhvpr+n_species*nhvsys
             delta(i) = xprime(i) - xpsolve(i)
         end do
     end if
@@ -1483,7 +1483,7 @@ module solve_routines
         zzhlay(n,upper) = 0.0_eb
         zzhlay(n,lower) = 100000.0_eb
         zzrelp(n) = 0.0_eb
-        zzpabs(n) = pofset
+        zzpabs(n) = pressure_offset
         zztemp(n,upper) = exterior_temperature
         zztemp(n,lower) = exterior_temperature
         zzcspec(n,upper,3:ns) = 0.0_eb
@@ -1495,15 +1495,15 @@ module solve_routines
         zzcspec(n,upper,2) = 0.230_eb
         zzcspec(n,lower,2) = 0.230_eb
         
-        !  set the water content to relhum - the polynomial fit is to (t-273), and
+        !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
         ! tables in the handbook of physics and chemistry. the final result should be the value used for
         ! the outside ambient.
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        zzcspec(n,upper,8) = relhum*xh2o
-        zzcspec(n,lower,8) = relhum*xh2o
+        zzcspec(n,upper,8) = relative_humidity*xh2o
+        zzcspec(n,lower,8) = relative_humidity*xh2o
 
         zzrho(n,upper:lower) = zzpabs(n)/rgas/zztemp(n,upper:lower)
         zzmass(n,upper:lower) = zzrho(n,upper:lower)*zzvol(n,upper:lower)
@@ -1558,7 +1558,7 @@ module solve_routines
 
         ! define discontinuity array.  first we look at vent openings
 
-        xdelt = nsmax/deltat
+        xdelt = time_end/deltat
         itstop = xdelt + 1
         tstop = itstop - 1
 
@@ -1694,7 +1694,7 @@ module solve_routines
             end if
 
             zzrelp(iroom) = pdif(iroom)
-            zzpabs(iroom) = pdif(iroom) + pofset
+            zzpabs(iroom) = pdif(iroom) + pressure_offset
             if(nfurn>0)then
               zztemp(iroom,upper) = wtemp
               zztemp(iroom,lower) = wtemp
@@ -1756,7 +1756,7 @@ module solve_routines
             epscut = 1.0e-5_eb*max(1.0_eb,abs(zzrelp(iroom)))
             ! test for underflow
             if (abs(zzrelp(iroom)/epscut)<=130.0_eb) then
-                ptemp = zzrelp(iroom)*(1.0_eb - exp(-abs(zzrelp(iroom)/epscut))) + pofset
+                ptemp = zzrelp(iroom)*(1.0_eb - exp(-abs(zzrelp(iroom)/epscut))) + pressure_offset
             else
                 ptemp = zzpabs(iroom)
             end if

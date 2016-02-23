@@ -836,14 +836,14 @@ module input_routines
             ! TIMES total_simulation, print interval, smokeview interval, spreadsheet interval
         case ("TIMES")
             if (countargs(lcarray)>=5) then
-                nsmax =  lrarray(1)
-                lprint = abs(lrarray(2))
-                lsmv = lrarray(4)
+                time_end =  lrarray(1)
+                print_out_interval = abs(lrarray(2))
+                smv_out_interval = lrarray(4)
                 ss_out_interval =  lrarray(5)
             else if (countargs(lcarray)>=4) then
-                nsmax =  lrarray(1)
-                lprint = lrarray(2)
-                lsmv = lrarray(3)
+                time_end =  lrarray(1)
+                print_out_interval = abs(lrarray(2))
+                smv_out_interval = lrarray(3)
                 ss_out_interval =  lrarray(4)
             else
                 write (logerr,*) '***Error: Bad TIMES input. At least 4 arguments required.'
@@ -855,11 +855,11 @@ module input_routines
             if (countargs(lcarray)>=4) then
                 interior_temperature = lrarray(1)
                 interior_abs_pressure = lrarray(2)
-                relhum = lrarray(4)*0.01_eb
+                relative_humidity = lrarray(4)*0.01_eb
             elseif (countargs(lcarray)>=3) then
                 interior_temperature = lrarray(1)
                 interior_abs_pressure = lrarray(2)
-                relhum = lrarray(3)*0.01_eb
+                relative_humidity = lrarray(3)*0.01_eb
             else
                 write (logerr,*) '***Error: Bad TAMB input. At least 3 arguments required.'
                 stop

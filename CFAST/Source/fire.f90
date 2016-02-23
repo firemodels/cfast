@@ -707,9 +707,9 @@ module fire_routines
 
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
-        if(zztemp(iroom1,upper)>=tgignt)then
+        if (zztemp(iroom1,upper)>=tgignt) then
             flw1to2 = vss(1,i)+vsa(1,i)
-            if(vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb)then
+            if (vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb) then
                 djetflg = .true.
                 exit
             end if

@@ -1,7 +1,7 @@
 module precision_parameters
- 
+
 ! set important parameters having to do with variable precision and array allocations
- 
+
 implicit none
 
 ! precision of "four byte" and "eight byte" reals

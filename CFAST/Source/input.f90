@@ -1,13 +1,13 @@
 module input_routines
-    
+
     use precision_parameters
-    
+
     use fire_routines, only: flame_height
     use initialization_routines, only : inittarg, initamb, offset, hvinit
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
-    
+
     use wallptrs
     use cenviro
     use cfast_main
@@ -26,13 +26,13 @@ module input_routines
     use wnodes
 
     implicit none
-    
+
     private
-    
+
     public read_input_file, open_files, read_solver_ini
-    
+
     contains
-    
+
 ! --------------------------- read_input_file -------------------------------------------
 
     subroutine read_input_file ()
@@ -40,7 +40,7 @@ module input_routines
     !	Read the input file and set up the data for processing
 
     implicit none
-    
+
     real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
@@ -95,7 +95,7 @@ module input_routines
     else
         iversion = version/100
     end if
-    
+
     if (aversion==heading.and.ivers==iversion-1) then
         write (logerr,5004) ivers, iversion
     elseif (aversion/=heading.or.ivers/=iversion) then
@@ -122,8 +122,8 @@ module input_routines
         write(logerr,5022) interior_temperature
         stop
     end if
-    
-    ! Compartment geometry related data 
+
+    ! Compartment geometry related data
     nm1 = n - 1
     do i = 1, nm1
         roomptr => roominfo(i)
@@ -138,7 +138,7 @@ module input_routines
     interior_density = interior_abs_pressure/interior_temperature/rgas
     exterior_density = exterior_abs_pressure/exterior_temperature/rgas
 
-    ! initialize the targets. 
+    ! initialize the targets.
     call inittarg
 
     ! now calculate the offsets - the order is important
@@ -221,7 +221,7 @@ module input_routines
 
         ! room numbers must be between 1 and nm1
         if(iroom1<1.or.iroom2<1.or.iroom1>nm1+1.or.iroom2>nm1+1)then
-            write (logerr,201) iroom1, iroom2 
+            write (logerr,201) iroom1, iroom2
 201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
             stop
         end if
@@ -252,7 +252,7 @@ module input_routines
                 izswal(ii,w_to_wall) = 2
             end if
         else
-            write (logerr,202) iroom1, iroom2 
+            write (logerr,202) iroom1, iroom2
 202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',i0,'-',i0,' are not connectetd')
             stop
         end if
@@ -287,7 +287,7 @@ module input_routines
         npts = izrvol(i)
         if(npts/=0)then
             roomptr => roominfo(i)
-            
+
             ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
             if(zzrhgt(1,i)/=0.0_eb)then
                 temparea(1) = zzrarea(1,i)
@@ -333,7 +333,7 @@ module input_routines
                 end if
             end do
 
-            ! re-define volume, area, breadth and depth arrays 
+            ! re-define volume, area, breadth and depth arrays
             ! (room_volume, room_area, room_width and room_depth ) according to room area - height
             ! data read in.  room_height remains the same, room_volume is defined
             ! by integrating areas specified on the roomarea command,
@@ -360,20 +360,20 @@ module input_routines
         dtectptr => detectorinfo(i)
         iroom = dtectptr%room
         if(iroom<1.or.iroom>nm1)then
-            write (logerr,104) iroom 
+            write (logerr,104) iroom
 104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
             stop
         end if
         roomptr => roominfo(iroom)
-        
+
         rti = dtectptr%rti
         itype = dtectptr%dtype
         if(rti<=0.0_eb.and.itype/=smoked)then
-            write (logerr,101) rti 
+            write (logerr,101) rti
 101         format('***Error: Invalid DETECTOR specification. RTI = ',e11.4, ' is not a valid.')
             stop
         end if
-        
+
         xloc = dtectptr%center(1)
         yloc = dtectptr%center(2)
         zloc = dtectptr%center(3)
@@ -382,7 +382,7 @@ module input_routines
 102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
             stop
         end if
-        
+
         itype = dtectptr%dtype
         if(itype<1.or.itype>3)then
             write(logerr,103) itype
@@ -391,9 +391,9 @@ module input_routines
         end if
     end do
 
-    ! check room to room heat transfer 
+    ! check room to room heat transfer
 
-    ! The array IZHEAT may have one of three values, 0, 1, 2.  
+    ! The array IZHEAT may have one of three values, 0, 1, 2.
     ! 0 = no room to room heat transfer
     ! 1 = fractions are determined by what rooms are connected by vents
     ! For example, if room 1 is connected to rooms 2, 3, 4 and the outside
@@ -450,7 +450,7 @@ module input_routines
             end do
         end if
     end do
-    
+
     ! set up any specified slice or iso files
     call setup_slice_iso
 
@@ -458,7 +458,7 @@ module input_routines
     return
 
 5002 format ('***Error: Not a compatible version ',2a8,2x,2i10)
-5004 format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.') 
+5004 format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.')
 5022 format ('***Error: Initial temperature outside of allowable range (-50 to +100)',f5.2)
 
     ! read format list
@@ -476,9 +476,9 @@ module input_routines
     !                inumc    number of columns in input file spreadsheet
 
     integer, parameter :: maxin = 37
-    
+
     integer, intent(in) :: inumr, inumc
-    
+
     integer :: obpnt, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
     integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
@@ -534,7 +534,7 @@ module input_routines
             end if
         end if
     end do
-    
+
     ! Then do compartments
     do ir = 2, inumr
         label = carray(ir,1)
@@ -613,7 +613,7 @@ module input_routines
             end if
         end if
     end do
-    
+
     ! Then do targets
     do ir = 2, inumr
         label = carray(ir,1)
@@ -1302,7 +1302,7 @@ module input_routines
         case ('DETEC')
             if (countargs(lcarray)>=9) then
                 ndtect = ndtect + 1
-                
+
                 if (ndtect>mxdtect) then
                     write (logerr, 5338)
                     stop
@@ -1321,7 +1321,7 @@ module input_routines
                     if (i1>3) i1 = heatd
                 end if
                 dtectptr%dtype = i1
-                
+
                 i2 = lrarray(2)
                 iroom = i2
                 dtectptr%room = iroom
@@ -1743,11 +1743,11 @@ module input_routines
 5356 format ('***Error: Bad HHEAT input. HHEAT specification error in compartment pairs: ',2i3)
 5357 format ('***Error: Bad HHEAT input. Error in fraction for HHEAT:',2i3,f6.3)
 5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
-5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)  
-5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)    
-5405 format ('***Error: Invalid keyword in CFAST input file ',a) 
-5406 format ('***Error: Bad HALL input. Outdated HALL command for compartment ',i0,' Flow inputs are no longer used')  
-5407 format ('***Warning: Outdated keyword in CFAST input file ignored ',a) 
+5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)
+5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)
+5405 format ('***Error: Invalid keyword in CFAST input file ',a)
+5406 format ('***Error: Bad HALL input. Outdated HALL command for compartment ',i0,' Flow inputs are no longer used')
+5407 format ('***Warning: Outdated keyword in CFAST input file ignored ',a)
 
     end subroutine keywordcases
 
@@ -1766,7 +1766,7 @@ module input_routines
 
     integer, intent(in) :: inumc, iobj, lrowcount
     character(*), intent(in) :: objname
-    
+
     character(128) :: lcarray(ncol)
     character(5) :: label
     integer :: logerr = 3, midpoint = 1, base = 2, ir, i, ii, nret
@@ -1786,7 +1786,7 @@ module input_routines
 
         select case (label)
 
-            ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula, 
+            ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula,
            !  radiative fraction, heat of combustion, and material
         case ('CHEMI')
             if (countargs(lcarray)>=7) then
@@ -1835,13 +1835,13 @@ module input_routines
             do ii = 1, nret
                 omprodr(ii,7,iobj) = 0.0_eb
                 omprodr(ii,10,iobj) = 1.0_eb
-                omprodr(ii,11,iobj) = lrarray(ii)   
+                omprodr(ii,11,iobj) = lrarray(ii)
             end do
         case ('AREA')
             max_area = 0.0_eb
             do ii = 1, nret
-                ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the 
-                ! ignition point. It only occurs for objects which are on the floor and ignite after t=0 The assumed minimum fire 
+                ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the
+                ! ignition point. It only occurs for objects which are on the floor and ignite after t=0 The assumed minimum fire
                 ! diameter of 0.2 m below is the minimum valid fire diameter for Heskestad's plume correlation
                 ! (from SFPE Handbook chapter)
                 if (lrarray(ii)==0.0_eb) then
@@ -1858,8 +1858,8 @@ module input_routines
             objxyz(2,iobj) = objxyz(1,iobj)
             objxyz(3,iobj) = objxyz(1,iobj)
 
-            ! calculate a characteristic length of an object (we assume the diameter). 
-            ! This is used for point source radiation fire to target calculation as a minimum effective 
+            ! calculate a characteristic length of an object (we assume the diameter).
+            ! This is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances
             objclen(iobj) = sqrt(max_area/pio4)
         case ('HEIGH')
@@ -1907,7 +1907,7 @@ module input_routines
 5000 format ('***Error: The key word ',a5,' is not part of a fire definition. Fire keyword are likely out of order')
 
     end subroutine inputembeddedfire
-    
+
 ! --------------------------- set_heat_of_combustion -------------------------------------------
 
     subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
@@ -1917,7 +1917,7 @@ module input_routines
     integer, intent(in) :: maxint
     real(eb), intent(in) :: qdot(maxint), hinitial
     real(eb), intent(out) :: mdot(maxint), hdot(maxint)
-    
+
     integer :: i
     real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
 
@@ -1935,7 +1935,7 @@ module input_routines
     end do
 
     return
-    
+
     end subroutine set_heat_of_combustion
 
 
@@ -1951,7 +1951,7 @@ module input_routines
     !     arguments: errorcode: return error indication if non-zero
 
     integer :: lp, ld, ios
-    character(256) :: testpath, testproj 
+    character(256) :: testpath, testproj
 
     ! get the path and project names
     call exehandle (exepath, datapath, project)
@@ -1980,7 +1980,7 @@ module input_routines
     queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
     statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
     kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'
-    
+
     slabcsv = testpath(1:lp) // testproj(1:ld) // '_slab.csv'
 
     testpath = trim (exepath)
@@ -1995,7 +1995,7 @@ module input_routines
         write (*,'(a,i0,a)') 'Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
         stop
     end if
-    
+
     call deleteoutputfiles (outputfile)
     call deleteoutputfiles (smvhead)
     call deleteoutputfiles (smvdata)
@@ -2106,12 +2106,12 @@ module input_routines
     integer, intent(in) :: index, defaultposition, opoint
     real(eb), intent(in) :: minimumseparation, pos_max
     real(eb), intent(inout) :: xyz(3,0:*)
-    
+
     if ((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>pos_max)) then
         select case (defaultposition)
-        case (1) 
+        case (1)
             xyz(index,opoint) = pos_max/2.0_eb
-        case (2) 
+        case (2)
             xyz(index,opoint) = minimumseparation
         case default
             write (logerr,*) 'Fire objects positioned specified outside compartment bounds.'
@@ -2132,7 +2132,7 @@ module input_routines
     subroutine readcsvformat (iunit, x, c, numr, numc, nstart, maxrow, maxcol, logerr)
 
     !     routine: readcsvformat
-    !     purpose: reads a comma-delimited file as generated by Micorsoft Excel, assuming that all 
+    !     purpose: reads a comma-delimited file as generated by Micorsoft Excel, assuming that all
     !              the data is in the form of real numbers
     !     arguments: iunit  = logical unit, already open to .csv file
     !                x      = array of dimension (numr,numc) for values in spreadsheet
@@ -2166,7 +2166,7 @@ module input_routines
     if (nstart>1) then
         do  i=1,nstart-1
             read (iunit,'(A)') in
-        end do 
+        end do
     end if
 
     ! read the data
@@ -2436,7 +2436,7 @@ module input_routines
    ! --------------------------- set_grid -------------------------------------------
 
    subroutine set_grid (xgrid,n,xmin,xsplit,xmax,nsplit)
-   
+
    integer, intent(in) :: n, nsplit
    real(eb), dimension(n), intent(out) :: xgrid
    real(eb), intent(in) :: xmin, xsplit, xmax
@@ -2444,19 +2444,19 @@ module input_routines
    real(eb) :: factor
    integer :: i
 
-!   1            n-nsplit          n    
+!   1            n-nsplit          n
 !  xmin          xsplit          xmax
 
    do i = 1, n-nsplit
       factor = real(i-1,eb)/real(n-nsplit-1,eb)
       xgrid(i) = emix(factor,xmin,xsplit)
    end do
-   
+
    do i = n-nsplit+1, n
       factor = real(i-(n-nsplit),eb)/real(nsplit,eb)
       xgrid(i) = emix(factor,xsplit,xmax)
    end do
-   
+
    end subroutine set_grid
 
 end module input_routines

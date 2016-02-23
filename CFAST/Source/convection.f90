@@ -1,5 +1,5 @@
  module convection_routines
-    
+
     use precision_parameters
     use fireptrs
     use wallptrs
@@ -8,15 +8,15 @@
     use fire_data, only: xfire, ifrpnt
     use wnodes
     use opt
-    
+
     implicit none
-    
+
     private
 
     public convection, convective_flux
 
     contains
-   
+
     subroutine convection (flwcv,flxcv)
 
     !     routine:    convection
@@ -24,14 +24,14 @@
     !                 setting up varibles.  passes to convective_flux if ceiling jet for
     !                 a surface is off, otherwise sets flxcv to 0.0 and then
     !                 solves for flwcv
-    !     outputs:    flwcv       net enthalphy into each layer 
+    !     outputs:    flwcv       net enthalphy into each layer
     !                 flxcv       net heat flux onto surface
 
 
     real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
-    
+
     real(eb) :: qconv, qconv_avg
-    
+
     integer i, iwall, iw, nrmfire, ilay, ifire
     type(room_type), pointer :: roomptr
 
@@ -39,7 +39,7 @@
     flwcv(1:nm1,upper) = 0.0_eb
     flwcv(1:nm1,lower) = 0.0_eb
     flxcv(1:nm1,1:nwal) = 0.0_eb
-            
+
     if (option(fconvec)/=on) return
 
     ! calculate convection for all surfaces in all rooms
@@ -76,7 +76,7 @@
     subroutine convective_flux (iw,tg,tw,qdinl)
 
     !     routine: convective_flux
-    !     purpose: calculate convective heat transfer for a wall segment. 
+    !     purpose: calculate convective heat transfer for a wall segment.
     !     arguments:  iw     wall number, standand cfast numbering convention
     !                 tg     temperature of gas layer adjacent to wall surface
     !                 tw     wall surface temperature
@@ -85,18 +85,17 @@
     integer, intent(in) :: iw
     real(eb), intent(in) :: tg, tw
     real(eb), intent(out) :: qdinl
-    
+
     real(eb) :: h
-    
+
     if (iw<=2) then
         h = 1.52_eb*abs(tg - tw)**onethird
     else
         h = 1.31_eb*abs(tg - tw)**onethird
     end if
-    
+
     qdinl = h * (tg - tw)
     return
     end subroutine convective_flux
-    
+
  end module convection_routines
-    

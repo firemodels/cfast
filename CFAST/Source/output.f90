@@ -1,9 +1,9 @@
 module output_routines
-    
+
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use utility_routines, only: xerror, doesthefileexist, funit
-    
+
     use cfast_main
     use cenviro
     use cfin
@@ -23,47 +23,47 @@ module output_routines
     use wallptrs
     use wdervs
     use wnodes
-    
+
     implicit none
-    
+
     private
-    
+
     public output_version, output_initial_conditions, output_results, deleteoutputfiles, openoutputfiles, &
         output_status, output_debug, find_error_component
-    
+
     contains
-    
+
 ! --------------------------- output_version -------------------------------------------
 
     subroutine output_version (iunit)
 
-    !	a routine to put the header information in the output file. 
+    !	a routine to put the header information in the output file.
     !	we assume the file is open
-    
+
     integer, intent(in) :: iunit
     integer imajor, iminor, iminorrev
     character(256) :: revision, revision_date, compile_date
-    
+
     call get_info(revision, revision_date, compile_date)
 
     call splitversion(version,imajor,iminor,iminorrev)
-    
+
     write(iunit,'(/A/)')                    'CFAST'
     write(iunit,'(a,i0,".",i0,".",i0)')     'Version          : CFAST ',imajor, iminor, iminorrev
     write(iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
     write(iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
     write(iunit,'(A,A/)')                   'Compilation Date : ',TRIM(compile_date)
     return
-    
+
     end subroutine output_version
 
 ! --------------------------- splitversion -------------------------------------------
 
     subroutine splitversion (version,imajor,iminor,iminorrev)
-    
+
     integer, intent(in) :: version
     integer, intent(out) :: imajor,iminor,iminorrev
-    
+
     if (version>=1000) then
         imajor = version/1000
         iminor = mod(version,1000)/100
@@ -74,7 +74,7 @@ module output_routines
         iminorrev = mod(version,10)
     end if
     return
-    
+
     end subroutine splitversion
 
 ! --------------------------- output_initial_conditions -------------------------------------------
@@ -82,9 +82,9 @@ module output_routines
     subroutine output_initial_conditions
 
     !     Description:  Output initial test case description
- 
+
     call output_version (iofilo)
-    
+
     write (iofilo,5000) trim(inputfile), trim(title)
     if (outputformat>1) then
         call output_initial_overview
@@ -146,7 +146,7 @@ module output_routines
 
     integer :: icomp, izzvol
     type(room_type), pointer :: roomptr
-    
+
 
     write (iofilo,5000)
     write (iofilo,5010)
@@ -185,7 +185,7 @@ module output_routines
     !     Arguments: ISW    Print switch for object fire printout
 
     integer, intent(in) :: isw
-    
+
     integer i, j, icomp
     real(eb) :: fheight, xems, xemp, xqf, xqupr, xqlow
     type(room_type), pointer :: roomptr
@@ -208,7 +208,7 @@ module output_routines
     write (iofilo,'(a)') ' '
     do icomp = 1, nm1
         roomptr => roominfo(icomp)
-        
+
         xems = 0.0_eb
         xemp = 0.0_eb
         xqf = 0.0_eb
@@ -229,7 +229,7 @@ module output_routines
     end do
     if (fqdj(n)/=0.0_eb) write (iofilo,5040) fqdj(n)
     return
-    
+
 5000 format (//,'FIRES',//,&
          'Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      ', &
          'Convec.   Radiat.    Pyrolysate  Trace',/, &
@@ -292,7 +292,7 @@ module output_routines
         end do
     end if
     return
-    
+
 5000 format (a10)
 5010 format (' ')
 5020 format (a)
@@ -316,11 +316,11 @@ module output_routines
     character outbuf*132, cifrom*12, cito*12
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
-    
-    write (iofilo,5000)
-    
 
-    ! horizontal flow natural vents    
+    write (iofilo,5000)
+
+
+    ! horizontal flow natural vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
         ifrom = ventptr%from
@@ -350,12 +350,12 @@ module output_routines
         if (vmflo(ifrom,ito,upper)>=0.0_eb) flow(5) = vmflo(ifrom,ito,upper)
         if (vmflo(ifrom,ito,upper)<0.0_eb) flow(6) = -vmflo(ifrom,ito,upper)
         if (vmflo(ifrom,ito,lower)>=0.0_eb) flow(7) = vmflo(ifrom,ito,lower)
-        if (vmflo(ifrom,ito,lower)<0.0_eb) flow(8) = -vmflo(ifrom,ito,lower)        
+        if (vmflo(ifrom,ito,lower)<0.0_eb) flow(8) = -vmflo(ifrom,ito,lower)
         if (vmflo(ito,ifrom,upper)>=0.0_eb) flow(1) = vmflo(ito,ifrom,upper)
         if (vmflo(ito,ifrom,upper)<0.0_eb) flow(2) = -vmflo(ito,ifrom,upper)
         if (vmflo(ito,ifrom,lower)>=0.0_eb) flow(3) = vmflo(ito,ifrom,lower)
         if (vmflo(ito,ifrom,lower)<0.0_eb) flow(4) = -vmflo(ito,ifrom,lower)
-        
+
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
         write (iofilo,5010) 'V', i, cifrom, cito, outbuf
     end do
@@ -363,33 +363,33 @@ module output_routines
     ! mechanical vents
     if (nnode/=0.and.next/=0) then
         do i = 1, next-1, 2
-            
+
             ii = hvnode(1,i)
             roomptr => roominfo(ii)
             write (cifrom,'(a12)') roomptr%name
             if (ii==n) cifrom = 'Outside'
-            
+
             ii = hvnode(1,i+1)
             roomptr => roominfo(ii)
             write (cito,'(a12)') roomptr%name
             if (ii==n) cito = 'Outside'
-            
+
             flow = 0.0_eb
             if (hveflo(upper,i)>=0.0_eb) flow(1) = hveflo(upper,i)
             if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
             if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
             if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
-            
+
             if (hveflo(upper,i+1)>=0.0_eb) flow(5) = hveflo(upper,i+1)
             if (hveflo(upper,i+1)<0.0_eb) flow(6) = -hveflo(upper,i+1)
             if (hveflo(lower,i+1)>=0.0_eb) flow(7) = hveflo(lower,i+1)
             if (hveflo(lower,i+1)<0.0_eb) flow(8) = -hveflo(lower,i+1)
-            
-            call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))            
+
+            call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
             write (iofilo,5010) 'M', i, cifrom, cito, outbuf
         end do
     end if
-    
+
     ! Total mass flowing through mechanical vents up to current time
      write (iofilo,5030)
 
@@ -439,7 +439,7 @@ module output_routines
     'Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/, 104('-'))
 5040 format (' ')
 5050 format (a14,1x,a12,1x,a)
-     
+
     end subroutine results_vent_flows
 
 ! --------------------------- results_compressed -------------------------------------------
@@ -449,7 +449,7 @@ module output_routines
     !     Description:  Output a compressed output for 80 column screens
 
     integer, intent(in) :: iounit
-    
+
     integer :: i, ir
     real(eb) :: xemp, xqf
     type(room_type), pointer :: roomptr
@@ -495,22 +495,22 @@ module output_routines
     !                itprt 1 if target printout specifically called for, 0 otherwise
 
     integer, intent(in) :: itprt
-    
+
     integer :: i, iw, itarg
     real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tgtemp, tttemp, tctemp
-    
+
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
     integer :: iwptr(4)
-    
+
     data iwptr /1, 3, 4, 2/
 
     if ((itprt==0.and.ntarg<=nm1).or.ntarg==0) return
     write (iofilo,5000)
 
     call get_target_temperatures
-    
+
     do i=1,nm1
         roomptr => roominfo(i)
         write (iofilo,5010) roomptr%name, (zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
@@ -596,7 +596,7 @@ module output_routines
 
         cact = 'NO'
         if(dtectptr%activated) cact = 'YES'
-        
+
         itype = dtectptr%dtype
         if(itype==smoked)then
             write(iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
@@ -605,7 +605,7 @@ module output_routines
         else
             write(iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
         end if
-        
+
 5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/, &
     '                                      Sensor         Smoke',//, &
     'Number  Compartment        Type       Temp (C)       Temp (C)      Vel (m/s)     Obs (1/m)          Activated',/, &
@@ -623,14 +623,14 @@ module output_routines
 
     !     description:  output initial test case overview
 
-    write (iofilo,5000) 
+    write (iofilo,5000)
     write (iofilo,5010) nm1, n_hvents, n_vvents, next
     write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
 
 5000 format (//,'OVERVIEW',/)
 5010 FORMAT (/,'Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,61('-'),/,i4,12x,i4,10x,i4,17x,i4)
 5020 format (/,'Simulation     Output         Smokeview      Spreadsheet',/, &
-             'Time           Interval       Interval       Interval',/, & 
+             'Time           Interval       Interval       Interval',/, &
              '   (s)            (s)            (s)            (s)',/,56('-'),/,i6,6x,3(i6,9x))
     end subroutine output_initial_overview
 
@@ -649,7 +649,7 @@ module output_routines
     'Temperature    Pressure       Temperature    Pressure',/, &
     '  (C)            (Pa)           (C)            (Pa)', &
     /,53('-'),/,2(f7.0,8x,f9.0,6x))
-     
+
     end subroutine output_initial_ambient_conditions
 
 ! --------------------------- output_initial_compartments -------------------------------------------
@@ -657,7 +657,7 @@ module output_routines
     subroutine output_initial_compartments
 
     !     Description:  Output initial test case geometry
-    
+
     integer i
     type(room_type), pointer :: roomptr
 
@@ -669,7 +669,7 @@ module output_routines
     return
 5000 format (//,'COMPARTMENTS',//, &
     'Compartment  Name                Width        Depth        Height       Floor        Ceiling   ',/, &
-    '                                                                        Height       Height    ',/, & 
+    '                                                                        Height       Height    ',/, &
     33x,5('(m)',10x),/,96('-'))
 5010 format (i5,8x,a13,5(f12.2,1x))
     end subroutine output_initial_compartments
@@ -788,7 +788,7 @@ module output_routines
 
 5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
 5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
-    'From           To             Vent       Width       Sill        Soffit      Abs.        Abs.      ',/, & 
+    'From           To             Vent       Width       Sill        Soffit      Abs.        Abs.      ',/, &
     'Compartment    Compartment    Number                 Height      Height      Sill        Soffit',/, &
     41X,5('(m)         '),/,100('-'))
 5020 format (a14,1X,A14,I3,5X,5(F9.2,3X))
@@ -807,7 +807,7 @@ module output_routines
           '(m^2)                 (Pa)          (Pa)       (m^3/s)',/,115('-'))
 5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
 5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
-     
+
     end  subroutine output_initial_vents
 
 ! --------------------------- output_initial_thermal_properties -------------------------------------------
@@ -841,7 +841,7 @@ module output_routines
     !     print out the properties of the materials used
     write (iofilo,5030)
     do i = 1, maxct
-        write (iofilo,5040) nlist(i), lfkw(1,i), lcw(1,i), lrw(1,i), lflw(1,i), lepw(i) 
+        write (iofilo,5040) nlist(i), lfkw(1,i), lcw(1,i), lrw(1,i), lflw(1,i), lepw(i)
         do j = 2, lnslb(i)
             write (iofilo,5050) lfkw(j,i), lcw(j,i), lrw(j,i), lflw(j,i)
         end do
@@ -875,7 +875,7 @@ module output_routines
     character(13), dimension(0:4) :: ftype = &
         (/character(13) :: 'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
     character(6), dimension(1:3) :: fire_geometry = (/character(6) :: 'Normal', 'Wall', 'Corner'/)
-    
+
     type(room_type), pointer :: roomptr
 
     if (numobjl>0) then
@@ -926,7 +926,7 @@ module output_routines
     !      description:  output initial test case target specifications
 
     integer :: itarg, j
-    
+
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
@@ -952,7 +952,7 @@ module output_routines
 
     integer :: idtect, iroom, itype
     character :: outbuf*132
-    
+
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
@@ -997,7 +997,7 @@ module output_routines
 
     integer, intent(in) :: ind
     integer, intent(out) :: irm, iext
-    
+
     integer :: i
 
     do i = 1, next
@@ -1011,16 +1011,16 @@ module output_routines
     iext = 0
     return
     end subroutine chkext
-    
+
 ! --------------------------- flwout -------------------------------------------
 
     subroutine flwout (outbuf,flow1,flow2,flow3,flow4,flow5,flow6,flow7,flow8)
 
     !     description:  stuff the flow output after blanking appropriate zeros
-    
+
     real(eb), intent(in) :: flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8
     character, intent(out) :: outbuf*(*)
-    
+
     real :: flow(8),  x1000,x100,x10,x1,x01
 
     integer :: i
@@ -1072,7 +1072,7 @@ module output_routines
     subroutine find_error_component (icomp)
 
     integer, intent(in) :: icomp
-    
+
     integer :: itmp, irm, iw
 
     write(lbuf,*)'Solution component with the greatest error is'
@@ -1128,19 +1128,19 @@ module output_routines
 
     integer, intent(in) :: ikey, ieqmax
     real(eb), intent(in) :: t, dt
-    
+
     real(eb) :: xqf, dp
     integer :: bmap(mxbranch), i, j, iprod, il, isys, idt, iroom, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
        '   OD', '   CT', '   TS'/), ccc*3
     logical :: firstc = .true.
-    
+
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
-    
+
     save bmap
-    
+
     type(target_type), pointer :: targptr
 
     !     debug printing
@@ -1293,7 +1293,7 @@ module output_routines
     subroutine output_status (T, dT)
 
     !  Write the status information to the "statusfile"
- 
+
     real(eb), intent(in) :: T, dT
 
     rewind (12)
@@ -1329,7 +1329,7 @@ module output_routines
     !     24 spreadsheet output (walls and targets)
 
     !!!! Note that we assume that the default carriage control for formatted files is of type LIST (no fortran controls)
-   
+
     integer :: ios
 
     ! first the file for "printed" output
@@ -1396,6 +1396,6 @@ module output_routines
     end if
 
     return
-    end subroutine deleteoutputfiles 
+    end subroutine deleteoutputfiles
 
 end module output_routines

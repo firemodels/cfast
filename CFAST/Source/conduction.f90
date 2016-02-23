@@ -1,24 +1,24 @@
 module conduction_routines
-    
+
     use precision_parameters
-    
+
     use convection_routines, only: convective_flux
-    
+
     use wallptrs
     use cenviro
     use solver_data, only: nofwt
     use cfast_main
     use wnodes
     use cparams, only: nnodes
-    
+
     implicit none
-    
+
     private
-    
+
     public conduction, conductive_flux
-    
+
     contains
-   
+
 ! --------------------------- conduction -------------------------------------------
 
     subroutine conduction(update,dt,flxtot,delta)
@@ -26,10 +26,10 @@ module conduction_routines
     !     routine: conduction (main conduction routine)
     !     purpose: interface between calculate_residuals and the conduction calculation.
     !              for each active wall surface in each routine this
-    !              routine calculates the residual function 
+    !              routine calculates the residual function
     !               q'' + k dt/dx, which when zero is simply fourier's
     !              law of heat conduction.
-    !     arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then 
+    !     arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then
     !                        we don't calculate delta or use flxtot
     !                dt time step interval from last valid solution point
     !                flxtot  total flux striking walls
@@ -38,7 +38,7 @@ module conduction_routines
     integer, intent(in) :: update
     real(eb), intent(in) :: dt, flxtot(nr,nwal)
     real(eb), intent(out) :: delta(*)
-    
+
     real(eb) :: tgrad(2), vtgrad(4*nr)
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
@@ -133,7 +133,7 @@ module conduction_routines
         end if
     end do
 
-    ! dassl will try to force delta to be zero, so that fourier's law, q = -k dt/dx, is satisfied at the wall surface 
+    ! dassl will try to force delta to be zero, so that fourier's law, q = -k dt/dx, is satisfied at the wall surface
     if(update/=2)then
         do iw = 1, nwalls
             icond = nofwt + iw
@@ -152,7 +152,7 @@ module conduction_routines
        tgrad,tderv)
 
 
-    ! routine:  conductive_flux 
+    ! routine:  conductive_flux
     ! purpose: handles cfast conduction
     ! arguments: update   we don't keep solution unless update is 1 or 2
     !            tempin   temperature at interior wall
@@ -167,24 +167,24 @@ module conduction_routines
     !            nslab    number of slabs
     !            wfluxin  flux striking interior wall
     !            wfluxout flux striking exterior wall
-    !            iwbound  type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based 
+    !            iwbound  type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
     !                     on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
     !            tgrad    temperature gradient
-    !            tderv    partial of temperature gradient with respect to wall surface temperature.  
+    !            tderv    partial of temperature gradient with respect to wall surface temperature.
     !                     this number is used to calculate wall jacobian elements.
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*)
-    real(eb), intent(out) :: wtemp(*), tgrad(2) 
+    real(eb), intent(out) :: wtemp(*), tgrad(2)
     integer, intent(in) :: update, nslab, iwbound, numnode(*)
 
-    
+
     integer :: nx, i, ibeg, iend, islab, nintx, ibreak
     real(eb) :: a(nnodes), b(nnodes), c(nnodes), tnew(nnodes), tderiv(nnodes), ddif(3)
     real(eb) :: tempin, tempout, wfluxin, wfluxout, xkrhoc, s, dt, hi, him1, tderv
 
     nx = numnode(1)
 
-    ! construct right hand side (rhs) of tri-diagonal system for interior nodes.  rhs at boundary and slab break 
+    ! construct right hand side (rhs) of tri-diagonal system for interior nodes.  rhs at boundary and slab break
     ! points are defined farther down.
     tnew(2:nx-1) = wtemp(2:nx-1)
 
@@ -234,7 +234,7 @@ module conduction_routines
     ! setup last row, note: last row depends on form of boundary condition
     if (iwbound==1) then
 
-        ! constant temperature boundary condition (if we ever solve for both interior and exterior wall temperatures 
+        ! constant temperature boundary condition (if we ever solve for both interior and exterior wall temperatures
         ! then use change tnew(nx) = tamb to tnew(nx) = tempout)
         a(nx) = 1.0_eb
         b(nx) = 0.0_eb
@@ -256,7 +256,7 @@ module conduction_routines
         tnew(nx) = walldx(nx-1)*wfluxout/wk(nslab)
     end if
 
-    ! now perform an l-u factorization of this matrix (see atkinson p.455) note: matrix is 
+    ! now perform an l-u factorization of this matrix (see atkinson p.455) note: matrix is
     ! diagonally dominant so we don't have to pivot
 
     ! note we do the following in case a(1) is not 1
@@ -304,7 +304,7 @@ module conduction_routines
     tgrad(2) = (tnew(2)-tnew(1))/walldx(1)
     tderv = tderiv(2)
     return
-    
+
     end subroutine conductive_flux
-    
+
 end module conduction_routines

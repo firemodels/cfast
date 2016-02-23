@@ -1,7 +1,7 @@
     module smokeview_routines
 
     use precision_parameters
-    
+
     use fire_routines, only: get_gas_temp_velocity
     use hflow_routines, only : gethventinfo
     use vflow_routines, only : getvventinfo
@@ -16,8 +16,8 @@
     use target_data
     use vent_data
     use iofiles
-    
-    implicit none 
+
+    implicit none
 
     private
 
@@ -161,7 +161,7 @@
         write(13,"(1x,a)")trim(isoptr%colorbar_label)
         write(13,"(1x,a)")trim(isoptr%unit_label)
     end do
-    
+
     ! fires
     do i = 1, nfires
         write(13,"(a)")"FIRE"
@@ -425,7 +425,7 @@
     write(14) nfires
     return
     end subroutine output_smokeview_header
-       
+
     ! --------------------------- getabsdetector -------------------------------------------
 
     subroutine getabsdetector(detectornumber, positionvector)
@@ -451,7 +451,7 @@
     return
 
     end subroutine getabsdetector
-    
+
 ! --------------------------- getabstarget -------------------------------------------
 
     subroutine getabstarget(itarg, positionvector)
@@ -461,12 +461,12 @@
     integer, intent(in) :: itarg
     real(eb), intent(out) :: positionvector(*)
 
-    type(room_type), pointer :: roomptr    
+    type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
 
     targptr => targetinfo(itarg)
     roomptr => roominfo(targptr%room)
-    
+
     positionvector(1:3) = targptr%center(1:3)
     positionvector(4:6) = targptr%normal(1:3)
 
@@ -481,11 +481,11 @@
 end module smokeview_routines
 
 module isosurface
-    
+
     use precision_parameters
     use fire_routines, only: get_gas_temp_velocity
     use utility_routines, only : funit
-        
+
     use iofiles
     use cenviro
     use cfast_main

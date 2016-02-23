@@ -1,7 +1,7 @@
 module target_routines
 
     use precision_parameters
-    
+
     use conduction_routines, only: conductive_flux
     use convection_routines, only: convective_flux
     use cylinder_routines, only: cylindrical_conductive_flux
@@ -9,7 +9,7 @@ module target_routines
     use numerics_routines, only : ddot, dnrm2
     use radiation_routines, only : absorb, solid_angle_triangle
     use utility_routines, only: xerror
-    
+
     use cenviro
     use cfast_main
     use detectorptrs
@@ -18,11 +18,11 @@ module target_routines
     use fireptrs
     use wnodes, only: nfurn, qfurnout
     use opt, only: fcjet, option, off
-    
+
     implicit none
-    
+
     real(eb), dimension(2) :: qtcflux, qtfflux, qtwflux, qtgflux    ! temporary variables for target flux calculation
-    
+
     private
 
     public target, update_detectors, get_detector_temp_and_velocity, solid_angle_triangle, get_target_temperatures
@@ -46,9 +46,9 @@ module target_routines
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
     real(eb) :: flux(2), dflux(2), ttarg(2), t_inf, t_max = 900._eb
     integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom
-    
+
     type(target_type), pointer :: targptr
-    
+
     save first,x_node
 
     ! initialize non-dimensional target node thicknesses the first time target is called
@@ -62,7 +62,7 @@ module target_routines
     ! for each target calculate the residual and update target temperature (if update = 1)
     do itarg = 1, ntarg
         targptr => targetinfo(itarg)
-        
+
         ! calculate net flux striking each side of target
         iroom = targptr%room
         if (targptr%center(3)>zzhlay(iroom,lower)) then
@@ -78,7 +78,7 @@ module target_routines
         targptr%flux_back = qtwflux(2) + qtfflux(2) + qtcflux(2) + qtgflux(2)
         targptr%flux_net_front = flux(1)
         targptr%flux_net_back = flux(2)
-        
+
         ! do conduction into target
         wfluxin = targptr%flux_net_front
         wfluxout = targptr%flux_net_back
@@ -101,7 +101,7 @@ module target_routines
             call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
                 dt,wk(1),wrho(1),wspec(1),xl,tgrad)
         end if
-        
+
         ! limit target temperature to flame temperature
         do i = idx_tempf_trg,idx_tempb_trg
             targptr%temperature(i) = min(targptr%temperature(i),t_inf+t_max)
@@ -109,13 +109,13 @@ module target_routines
     end do
     return
     end subroutine target
-    
+
 ! --------------------------- target_flux -------------------------------------------
 
     subroutine target_flux(iter,itarg,ttarg,flux,dflux)
 
     !     purpose: routine to calculate flux (and later, temperature) of a target.
-    
+
     !     arguments: iter   iteration number
     !                itarg  targetnumber
     !                ttarg  front and back target input temperature
@@ -125,7 +125,7 @@ module target_routines
     integer, intent(in) :: iter, itarg
     real(eb), intent(in) :: ttarg(2)
     real(eb), intent(out) :: flux(2), dflux(2)
-    
+
     real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, zfire, fheight
     real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, qft, qout, zwall, tl, tu, alphal, alphau
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
@@ -133,7 +133,7 @@ module target_routines
     real(eb) :: target_factors_front(10), target_factors_back(10)
     integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
     integer, parameter :: front=1, back=2
-    
+
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
 
@@ -141,11 +141,11 @@ module target_routines
 
     absu = 0.50_eb
     absl = 0.01_eb
-    
+
     targptr => targetinfo(itarg)
     iroom = targptr%room
     roomptr => roominfo(iroom)
-    
+
     ! terms that do not depend upon the target temperature only need to be calculated once
     if(iter==1)then
 
@@ -265,7 +265,7 @@ module target_routines
     end if
 
     ! compute convective flux
-    ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.  
+    ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.
     zznorm = targptr%normal(3)
     if(zznorm<=1.0_eb.and.zznorm>=cos45)then
         iw = 2
@@ -301,7 +301,7 @@ module target_routines
 
     flux(front) = temis*(qtfflux(front) + qtwflux(front) + qtgflux(front)) + qtcflux(front) - temis*sigma*ttarg(front)**4
     dflux(front) = -4.0_eb*temis*sigma*ttarg(front)**3 + dqdtarg
-    
+
     ! convection for the back
     call convective_flux(iwb,tgb,ttarg(back),q1b)
     call convective_flux(iwb,tgb,ttarg(back)+dttargb,q2b)
@@ -334,23 +334,23 @@ module target_routines
 
     return
     end subroutine target_flux
-    
+
 ! ---------------------------- target_nodes -----------------------------------
-    
+
     subroutine target_nodes (x_node)
-    
+
     !     purpose: calculate thickness of internal nodes in a plate target
     !     arguments: x_node  array of node thicknesses from front to back
-    
+
         real(eb), intent(out) :: x_node(nnodes_trg)
-        
+
         integer :: i, nnn
         real(eb) :: sum
-    
+
         nnn = nnodes_trg - 1
         x_node(1) = 1.0_eb
         x_node(nnn) = 1.0_eb
-        do i = 2, nnn/2 
+        do i = 2, nnn/2
             x_node(i) = x_node(i-1)*1.50_eb
             x_node(nnn+1-i) = x_node(i)
         end do
@@ -362,15 +362,15 @@ module target_routines
         do i = 1, nnn
             x_node(i) = x_node(i)/sum
         end do
-        
+
         return
-        
+
     end subroutine target_nodes
 
 ! --------------------------- get_target_factors -------------------------------------------
 
     subroutine get_target_factors (iroom,itarg,target_factors_front,target_factors_back)
-    
+
     integer, intent(in) :: iroom, itarg
     real(eb), intent(out), dimension(10) :: target_factors_front, target_factors_back
 
@@ -383,33 +383,33 @@ module target_routines
     real(eb), pointer, dimension(:) :: v1, v2, v3
     real(eb) :: factor, d1, d2, d3, t1(3), t2(3), t3(3), v0(3)
     real(eb) :: sum_front, sum_back, solid_angle, zlay
-    
+
     integer :: nsolid_front_verts, nsolid_back_verts
     integer, parameter :: front=1, back=2
     integer :: i, iwall, ivert
-    
- ! vertices    
- !       3--------------4        
- !      /              /
- !     /              / 
- !    /              /
- !   1--------------2    
- !
- !       7--------------8        
- !      /              /
- !     /              / 
- !    /              /
- !   5--------------6    
 
- !       11------------12        
+ ! vertices
+ !       3--------------4
  !      /              /
- !     /              / 
+ !     /              /
  !    /              /
- !   9-------------10  
+ !   1--------------2
+ !
+ !       7--------------8
+ !      /              /
+ !     /              /
+ !    /              /
+ !   5--------------6
+
+ !       11------------12
+ !      /              /
+ !     /              /
+ !    /              /
+ !   9-------------10
 
     integer, dimension(5,10), target :: faces
     integer, dimension(:), pointer :: facei
-    
+
  ! faces   (vertices listed counter clockwise as you are facing the face)
  ! same convention as used for roomptr%wall_center (see def in cfast.f90 )
     data ((faces(i,iwall),i=1,5),iwall=1,10) /& ! for convenience repeat first and last vertex
@@ -429,7 +429,7 @@ module target_routines
     targptr => targetinfo(itarg)
 
     !define vertex locations
-    
+
     zlay = roomi%z0 + zzhlay(iroom,lower)
     room_verts(1:3,1)  = (/roomi%x0, roomi%y0, roomi%z1/)
     room_verts(1:3,2)  = (/roomi%x1, roomi%y0, roomi%z1/)
@@ -443,14 +443,14 @@ module target_routines
     room_verts(1:3,10) = (/roomi%x1, roomi%y0, roomi%z0/)
     room_verts(1:3,11) = (/roomi%x0, roomi%y1, roomi%z0/)
     room_verts(1:3,12) = (/roomi%x1, roomi%y1, roomi%z0/)
-    
+
 ! vert_distance = target_normal_xyz .dot. (vertex_xyz - target_origin_xyz)
-    
+
     do ivert = 1, 12
        rel_room_vert(1:3) = room_verts(1:3,ivert) - targptr%center(1:3)
        vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal,1)
     end do
-    
+
     target_factors_front(1:10)=0.0_eb
     target_factors_back(1:10)=0.0_eb
     do iwall=1, 10
@@ -460,15 +460,15 @@ module target_routines
        do ivert = 1, 4
           d1 = vert_distance(facei(ivert))
           v1(1:3) => room_verts(1:3,facei(ivert))
-          
+
           d2 = vert_distance(facei(ivert+1))
           v2(1:3) => room_verts(1:3,facei(ivert+1))
-          
+
           if(d1.gt.0)then  ! face vertex is above target plane
              nsolid_front_verts=nsolid_front_verts+1
              solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
           end if
-          
+
           if(d1.lt.0)then  ! face vertex is below target plane
              nsolid_back_verts=nsolid_back_verts+1
              solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
@@ -476,7 +476,7 @@ module target_routines
           if(d1*d2.lt.0)then ! two successive face vertices are on opposite sides of target plane
                              ! interpolate to find vertex that lies on target plane
              !  d1   0    d2
-             !  v1   v0   v2    
+             !  v1   v0   v2
              !
              !  (v0-v1)/(0-d1) = (v2-v1)/(d2-d1)
              !  solve for v0
@@ -499,16 +499,16 @@ module target_routines
           v1 => solid_angle_front_verts(1:3,1)
           t1(1:3) = v1(1:3) - targptr%center(1:3)
           d1 = dnrm2(3,t1,1)
-          
+
           if(d1.gt.0.0_eb)then
              t1(1:3) = t1(1:3)/d1
              do i = 2, nsolid_front_verts-1
                 v2 => solid_angle_front_verts(1:3,i)
-             
+
                 t2(1:3) = v2(1:3) - targptr%center(1:3)
                 d2 = dnrm2(3,t2,1)
                 if(d2.eq.0.0_eb)cycle
-             
+
                 v3 => solid_angle_front_verts(1:3,i+1)
                 t3(1:3) = v3(1:3) - targptr%center(1:3)
                 d3 = dnrm2(3,t3,1)
@@ -516,7 +516,7 @@ module target_routines
 
                 t2(1:3) = t2(1:3)/d2
                 t3(1:3) = t3(1:3)/d3
-             
+
                 call solid_angle_triangle(solid_angle,t1,t2,t3)
                 target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
              end do
@@ -530,16 +530,16 @@ module target_routines
           v1 => solid_angle_back_verts(1:3,1)
           t1(1:3) = v1(1:3) - targptr%center(1:3)
           d1 = dnrm2(3,t1,1)
-          
+
           if(d1.gt.0.0_eb)then
              t1(1:3) = t1(1:3)/d1
              do i = 2, nsolid_back_verts-1
                 v2 => solid_angle_back_verts(1:3,i)
-             
+
                 t2(1:3) = v2(1:3) - targptr%center(1:3)
                 d2 = dnrm2(3,t2,1)
                 if(d2.eq.0.0_eb)cycle
-                
+
                 v3 => solid_angle_back_verts(1:3,i+1)
                 t3(1:3) = v3(1:3) - targptr%center(1:3)
                 d3 = dnrm2(3,t3,1)
@@ -547,7 +547,7 @@ module target_routines
 
                 t2(1:3) = t2(1:3)/d2
                 t3(1:3) = t3(1:3)/d3
-             
+
                 call solid_angle_triangle(solid_angle,t1,t2,t3)
                 target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
           end do
@@ -564,7 +564,7 @@ module target_routines
     if(sum_back>0.0_eb)target_factors_back(1:10) = target_factors_back(1:10)/sum_back
 
  end subroutine get_target_factors
-   
+
 ! --------------------------- getylyu -------------------------------------------
 
     subroutine getylyu (yo,y,yt,s,yl,yu)
@@ -593,18 +593,18 @@ module target_routines
     yu = s - yl
     return
     end subroutine getylyu
-    
+
 ! --------------------------- get_target_temperature -------------------------------------------
-    
+
     subroutine get_target_temperatures ()
-    
+
     !   purpose: updates the internal temperature of each target at the depth(s) specified by the user
-    
+
     integer itarg
     real(eb) :: diam, dr, r, rint, factor, depth, tempx, x_node(nnodes_trg), targx, targdx(nnodes_trg)
     integer :: nx, left, right, i
     type(target_type), pointer :: targptr
-    
+
     call target_nodes (x_node)
 
     do itarg = 1, ntarg
@@ -631,7 +631,7 @@ module target_routines
                 factor = (rint-int(rint))
                 tempx = factor*targptr%temperature(right) + (1.0_eb-factor)*targptr%temperature(left)
             end if
-            
+
             targptr%tfront = targptr%temperature(nx)
             targptr%tinternal = tempx
             targptr%tback = targptr%temperature(1)
@@ -667,30 +667,30 @@ module target_routines
     end do
 
     return
-    
+
     end subroutine get_target_temperatures
-    
+
 ! --------------------------- update_detectors -------------------------------------------
 
     subroutine update_detectors (imode,tcur,dstep,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
 
     !     routine: update_detectors
-    !     purpose: updates the temperature of each detector link.  it also determine whether the 
-    !              detector has activated in the time interval (tcur,tcur+dstep).  if this has occured then a 
+    !     purpose: updates the temperature of each detector link.  it also determine whether the
+    !              detector has activated in the time interval (tcur,tcur+dstep).  if this has occured then a
     !              quenching algorithm will be invoked if the appropriate option has been set.
     !     arguments: tcur    current time
     !                dstep   time step size (to next time)
-    !                ndtect  number of detectors 
+    !                ndtect  number of detectors
     !                ixdtect 2-d array containing integer detector data structures
     !                iquench if the j=iquench(i) is non-zero then the j'th sprinkler in the i'th room is quenching the fire
     !                idset   room where activated detector resides
 
     integer, intent(in) :: imode, ndtect
     real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
-    
+
     integer, intent(out) :: idset, ifdtect, iquench(*)
     real(eb), intent(out) :: tdtect
-    
+
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
        bnp1, denom, fact1, fact2, delta, tmp
     integer :: i, iroom, idold, iqu
@@ -704,7 +704,7 @@ module target_routines
     cjetmin = 0.10_eb
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
-        
+
         iroom = dtectptr%room
 
         zdetect = dtectptr%center(3)
@@ -718,11 +718,11 @@ module target_routines
         tjeto = max(dtectptr%temp_gas_o,tlay)
         vel = max(dtectptr%velocity,cjetmin)
         velo = max(dtectptr%velocity_o,cjetmin)
-        
-        if (dtectptr%dtype==smoked) then  
+
+        if (dtectptr%dtype==smoked) then
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = dtectptr%value
-            tlink = dtectptr%obscuration        
+            tlink = dtectptr%obscuration
             if (tcur>350._eb) then
                 continue
             end if
@@ -771,13 +771,13 @@ module target_routines
                     previous_activation => detectorinfo(idold)
                     if(dtectptr%activation_time<previous_activation%activation_time)then
 
-                        ! this can only happen if two detectors have activated in the same room in the same 
+                        ! this can only happen if two detectors have activated in the same room in the same
                         ! (possibly very short) time interval
                         iqu = i
                     end if
                 end if
 
-                ! if this detector has activated before all others in this room and the quenching flag was turned on 
+                ! if this detector has activated before all others in this room and the quenching flag was turned on
                 !  then let the sprinkler quench the fire
                 if(iqu/=0.and.dtectptr%quench)then
                     iquench(iroom)=iqu
@@ -790,7 +790,7 @@ module target_routines
     end do
     return
     end subroutine update_detectors
-      
+
     ! --------------------------- detector_temp_and_velocity -------------------------------------------
 
     subroutine get_detector_temp_and_velocity
@@ -834,11 +834,11 @@ module target_routines
     end do
 
     return
-    
+
     end subroutine get_detector_temp_and_velocity
 
     ! --------------------------- smv_device_activated -------------------------------------------
-    
+
     subroutine device_activated (idtect, tdtect, istate)
 
     !
@@ -856,5 +856,5 @@ module target_routines
     return
 
     end subroutine device_activated
-    
-end module target_routines    
+
+end module target_routines

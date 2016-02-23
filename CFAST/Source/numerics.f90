@@ -1,13 +1,13 @@
 module numerics_routines
-    
+
     use utility_routines, only: d1mach, xerror, xerrwv, xerrmod
-    
+
     implicit none
-    
+
     private
-    
+
     public ddassl, ddot, dnrm2, dgefa, dgesl, jac, setderv, snsqe, gjac, dscal
-    
+
     contains
 ! --------------------------- ddassl -------------------------------------------
 
@@ -553,7 +553,7 @@ module numerics_routines
     !     idid = 2 -- the integration to tout was successfully
     !       completed (t=tout) by stepping exactly to tout.
     !
-    !     idid = 3 -- the integration to tout was successfully completed (t=tout) by 
+    !     idid = 3 -- the integration to tout was successfully completed (t=tout) by
     !       stepping past tout. y(*) is obtained by interpolation. yprime(*) is obtained by interpolation.
     !
     !                    *** task interrupted ***
@@ -563,23 +563,23 @@ module numerics_routines
     !       call the code again. an additional 500 steps will be allowed.
     !
     !     idid = -2, the error tolerances are too stringent. the error tolerances rtol, atol have been
-    !       increased to values the code estimates appropriate for continuing. you may want to 
-    !	change them yourself. if you are sure you want to continue with relaxed error 
+    !       increased to values the code estimates appropriate for continuing. you may want to
+    !	change them yourself. if you are sure you want to continue with relaxed error
     !	tolerances, set info(1)=1 and call the code again.
     !
     !     idid = -3  the local error test cannot be satisfied because you specified a zero component in atol
     !       and the corresponding computed solution component is zero. thus, a pure relative error
     !       test is impossible for this component. a solution component is zero and you set the
-    !       corresponding component of atol to zero. if you are sure you want to continue, you must 
-    !	first alter the error criterion to use positive values for those components of atol 
+    !       corresponding component of atol to zero. if you are sure you want to continue, you must
+    !	first alter the error criterion to use positive values for those components of atol
     !	corresponding to zero solution components, then set info(1)=1 and call the code again.
     !
-    !     idid = -6, repeated error test failures occurred on the last attempted step in ddassl. a singularity 
-    !     	in the solution may be present. if you are absolutely certain you want to continue, you 
+    !     idid = -6, repeated error test failures occurred on the last attempted step in ddassl. a singularity
+    !     	in the solution may be present. if you are absolutely certain you want to continue, you
     !	should restart the integration. (provide initial values of y and yprime which are consistent)
     !
-    !     idid = -7, repeated convergence test failures occurred on the last attempted step in ddassl. an 
-    !     	inaccurate or ill-conditioned jacobian may be the problem. if you are absolutely certain 
+    !     idid = -7, repeated convergence test failures occurred on the last attempted step in ddassl. an
+    !     	inaccurate or ill-conditioned jacobian may be the problem. if you are absolutely certain
     !	you want to continue, you should restart the integration.
     !
     !     idid = -8, the matrix of partial derivatives is singular. some of your equations may be redundant.
@@ -587,8 +587,8 @@ module numerics_routines
     !       that a solution to your problem either does not exist or is not unique.
     !
     !     idid = -9, ddassl had multiple convergence test (corrector) failures, preceeded by multiple error
-    !       test failures, on the last attempted step. it is possible that your problem is ill-posed, 
-    !	and cannot be solved using this code. or, there may be a discontinuity or a singularity in 
+    !       test failures, on the last attempted step. it is possible that your problem is ill-posed,
+    !	and cannot be solved using this code. or, there may be a discontinuity or a singularity in
     !	the solution. if you are absolutely certain you want to continue, you should restart the integration.
     !
     !     idid =-10, ddassl had multiple convergence test failures because ires was equal to minus one.
@@ -596,8 +596,8 @@ module numerics_routines
     !
     !     idid =-11, ires=-2 was encountered, and control is being returned to the calling program.
     !
-    !     idid =-12, ddassl failed to compute the initial yprime. this could happen because the initial 
-    !       approximation to yprime was not very good, or if a yprime consistent with the initial y does not 
+    !     idid =-12, ddassl failed to compute the initial yprime. this could happen because the initial
+    !       approximation to yprime was not very good, or if a yprime consistent with the initial y does not
     !       exist. the problem could also be caused by an inaccurate or singular iteration matrix.
     !
     !
@@ -610,9 +610,9 @@ module numerics_routines
     !       it cannot recover. a message is printed explaining the trouble and control is returned
     !       to the calling program. for example, this occurs when invalid input is detected.
     !
-    !     rtol, atol -- these quantities remain unchanged except when idid = -2. in this case, 
+    !     rtol, atol -- these quantities remain unchanged except when idid = -2. in this case,
     !       the error tolerances have been increased by the code to values which are estimated to
-    !       be appropriate for continuing the integration. however, the reported solution at t was obtained using 
+    !       be appropriate for continuing the integration. however, the reported solution at t was obtained using
     !       the input values of rtol and atol.
     !
     !   rwork, iwork -- contain information which is usually of no
@@ -713,7 +713,7 @@ module numerics_routines
     real(8) :: y(*),yprime(*),rwork(*),rtol(*),atol(*),rpar(*)
     integer :: info(15), iwork(*),ipar(*)
     character :: msg*80, mesg*128
-    
+
     real(8) :: uround, tn, rtoli, atoli, hmin, hmax, t, tout, tdist, ho, ypnorm, dsign, rh, abs, tstop, h, tnext, r
     integer :: i, neq, mxord, lenpd, lenrw, jacdim, mband, msave, leniw, lrw, liw
     integer :: idid, nzflg, le, lwt, lphi, lpd, lwm, ntemp, itemp
@@ -752,7 +752,7 @@ module numerics_routines
         else
             if(info(i)/=0.and.info(i)/=1) go to 701
         end if
-    end do       
+    end do
     !
     if(neq<=0)go to 702
     !
@@ -1164,7 +1164,7 @@ module numerics_routines
     else
       ! code should never reach here
     end if
-    
+
 
     !     the maximum number of steps was taken before reaching tout
 
@@ -1227,7 +1227,7 @@ module numerics_routines
     return
 
     !-------------------------------------------------------------------------
-    !     this block handles all error returns due to illegal input, as 
+    !     this block handles all error returns due to illegal input, as
     !     detected before calling ddastp. first the error message routine is
     !     called. if this happens twice in succession, execution is terminated
     !-------------------------------------------------------------------------
@@ -1355,7 +1355,7 @@ module numerics_routines
     !-----------------------------------------------------------------------
     !
     implicit none
-    
+
     integer :: ipar(*), i, neq
     real(8) :: v(neq), wt(neq), vmax, sum
     ddanrm = 0.0d0
@@ -1427,7 +1427,7 @@ module numerics_routines
     !
     !
     implicit none
-    
+
     logical :: convgd
     integer :: iwm(*), ipar(*), maxit, mjac, idid, nef, ncf, nsf, i, jcalc, m, ires, ier, ntemp, nonneg, neq
     real(8) :: y(*),yprime(*),wt(*), phi(neq,*),delta(*),e(*),wm(*),rpar(*), damp, xold, x, ynorm, cj, h, uround,&
@@ -1672,7 +1672,7 @@ module numerics_routines
     !-----------------------------------------------------------------------
     !
     implicit none
-    
+
     integer :: i, j, neq, koldp1, kold
     real(8) ::  yout(*), ypout(*), phi(neq,*), psi(*), temp1, xout, x, c, d, gamma
     !
@@ -2403,7 +2403,7 @@ module numerics_routines
     else
        ! should never get here
     end if
-    
+
     !
     !
     !     dense user-supplied matrix
@@ -2919,12 +2919,12 @@ module numerics_routines
     !                 p. rabinowitz, editor.  gordon and breach, 1970.
     !***routines called  snsq,xerror
     !***end prologue  snsqe
-    
+
     implicit none
     integer :: iopt,  n,  nprint,  info,  lwa, index, j, lr, maxfev, ml, mode, mu, nfev, njev
     real(8) :: x(n), fvec(n), wa(lwa), factor, one, zero, tol, xtol, epsfcn
     external fcn,jac
-    
+
     data factor,one,zero /1.0d2,1.0d0,0.0d0/
     !***first executable statement  snsqe
     info = 0
@@ -3021,14 +3021,14 @@ module numerics_routines
     !     **********
     !***routines called  enorm,r1mach
     !***end prologue  dogleg
-    
+
     implicit none
     integer :: n, lr, i, j, jj, jp1, k, l
     real(8) ::  r(lr), diag(n), qtb(n), x(n), wa1(n), wa2(n), one, zero, epsmch, sum, temp, qnorm, &
        delta, gnorm, sgnorm, alpha, bnorm
 
     data one,zero /1.0d0,0.0d0/
-    
+
     !***first executable statement  dogleg
     epsmch = d1mach(4)
     !
@@ -3180,11 +3180,11 @@ module numerics_routines
     !     **********
     !***routines called  (none)
     !***end prologue  enorm
-    
+
     implicit none
     integer :: n, i
     real(8) ::  x(n), one, zero, rdwarf, rgiant, s1, s2, s3, x1max, x3max, floatn, agiant, xabs
-    
+
     data one,zero,rdwarf,rgiant /1.0d0,0.0d0,3.834d-20,1.304d19/
     !***first executable statement  enorm
     s1 = zero
@@ -3340,11 +3340,11 @@ module numerics_routines
     !     **********
     !***routines called  r1mach
     !***end prologue  fdjac1
-    
+
     implicit none
-    
+
     external fcn
-    
+
     integer :: n, ldfjac, iflag, ml, mu, i, j, k, msum
     real(8) :: x(n), fvec(n), fjac(ldfjac, n), wa1(n), wa2(n), zero, epsmch, eps, epsfcn, temp, h
 
@@ -3446,9 +3446,9 @@ module numerics_routines
     !     **********
     !***routines called  (none)
     !***end prologue  qform
-    
+
     implicit none
-    
+
     integer :: m, n, ldq,  i, j, jm1, k, l, minmn, np1
     real(8) :: q(ldq, m), wa(m), one, zero, sum, temp
 
@@ -3584,9 +3584,9 @@ module numerics_routines
     !     **********
     !***routines called  enorm,r1mach
     !***end prologue  qrfac
-    
+
     implicit none
-    
+
     integer :: m,n,lda,lipvt,ipvt(lipvt),i,j,jp1,k,kmax,minmn
     logical pivot
     real(8) ::  a(lda,n),sigma(n),acnorm(n),wa(n), one, zero, p05, epsmch, temp, ajnorm, sum
@@ -3726,7 +3726,7 @@ module numerics_routines
     !     **********
     !***routines called  (none)
     !***end prologue  r1mpyq
-    
+
     implicit none
     integer m,n,lda,i,j,nmj,nm1
     real(8) :: a(lda,n),v(n),w(n),one, temp, cos, sin
@@ -3841,12 +3841,12 @@ module numerics_routines
     !     **********
     !***routines called  r1mach
     !***end prologue  r1updt
-    
+
     implicit none
     integer :: m,n,ls, i,j,jj,l,nmj,nm1
     logical :: sing
     real(8) :: s(ls),u(m),v(n),w(m), one, p5, p25, zero, giant, cotan, sin, cos, tau, tan, temp
-    
+
     data one,p5,p25,zero /1.0d0,5.0d-1,2.5d-1,0.0d0/
     !***first executable statement  r1updt
     giant = d1mach(2)
@@ -4391,7 +4391,7 @@ module numerics_routines
     !***routines called  dogleg,enorm,fdjac1,qform,qrfac,r1mach,r1mpyq,
     !                    r1updt,xerror
     !***end prologue  snsq
-    
+
     implicit none
     integer :: iopt,n,maxfev,ml,mu,mode,nprint,info,nfev,ldfjac,lr,njev,i,iflag,iter,j,jm1,l,ncfail,ncsuc,nslow1,nslow2,iwa(1)
     real(8) :: x(n),fvec(n),diag(n),fjac(ldfjac,n),r(lr),qtf(n),wa1(n),wa2(n),wa3(n),wa4(n), one, p1, p5, &
@@ -4701,7 +4701,7 @@ module numerics_routines
     !***date written   791001   (yymmdd)
     !***revision date  820801   (yymmdd)
     !***category no.  d1a2
-    !***keywords  blas,real(8),linear algebra,maximum component, 
+    !***keywords  blas,real(8),linear algebra,maximum component,
     !             vector
     !***author  lawson, c. l., (jpl)
     !           hanson, r. j., (snla)
@@ -4714,7 +4714,7 @@ module numerics_routines
     !    description of parameters
     !
     !     --input--
-    !        n  number of elements in input vector(s) 
+    !        n  number of elements in input vector(s)
     !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
     !
@@ -4745,7 +4745,7 @@ module numerics_routines
     dmax = abs(dx(1))
     ns = n*incx
     ii = 1
-    do i = 1,ns,incx 
+    do i = 1,ns,incx
         xmag = abs(dx(i))
         if(xmag<=dmax) go to 5
         idamax = ii
@@ -4757,7 +4757,7 @@ module numerics_routines
     !        code for increments equal to 1.
     !
 20  dmax = abs(dx(1))
-    do i = 2,n 
+    do i = 2,n
         xmag = abs(dx(i))
         if(xmag<=dmax) go to 30
         idamax = i
@@ -4806,7 +4806,7 @@ module numerics_routines
     implicit none
     real(8) :: dx(*)
     integer :: n, i, m, mp1, ns, incx
-    
+
     !***first executable statement  dasum
     dasum = 0.d0
     if(n<=0)return
@@ -4857,7 +4857,7 @@ module numerics_routines
     !    description of parameters
     !
     !     --input--
-    !        n  number of elements in input vector(s) 
+    !        n  number of elements in input vector(s)
     !       da  real(8) scalar multiplier
     !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
@@ -4865,9 +4865,9 @@ module numerics_routines
     !     incy  storage spacing between elements of dy
     !
     !     --output--
-    !       dy  real(8) result (unchanged if n <= 0) 
+    !       dy  real(8) result (unchanged if n <= 0)
     !
-    !     overwrite real(8) dy with real(8) da*dx + dy. 
+    !     overwrite real(8) dy with real(8) da*dx + dy.
     !     for i = 0 to n-1, replace  dy(ly+i*incy) with da*dx(lx+i*incx) +
     !       dy(ly+i*incy), where lx = 1 if incx >= 0, else lx = (-incx)*n
     !       and ly is defined in a similar way using incy.
@@ -4881,7 +4881,7 @@ module numerics_routines
     implicit none
     real(8) :: dx(*), dy(*), da
     integer :: n, incx, incy, ix, iy, i, m, mp1, ns
-    
+
     !***first executable statement  daxpy
     if(n<=0.or.da==0.d0) return
     if(incx==incy) then
@@ -4900,9 +4900,9 @@ module numerics_routines
     !
     ix = 1
     iy = 1
-    if(incx<0)ix = (-n+1)*incx + 1 
-    if(incy<0)iy = (-n+1)*incy + 1 
-    do i = 1,n 
+    if(incx<0)ix = (-n+1)*incx + 1
+    if(incy<0)iy = (-n+1)*incy + 1
+    do i = 1,n
         dy(iy) = dy(iy) + da*dx(ix)
         ix = ix + incx
         iy = iy + incy
@@ -4912,11 +4912,11 @@ module numerics_routines
     !        code for both increments equal to 1
     !
     !
-    !        clean-up loop so remaining vector length is a multiple of 4. 
+    !        clean-up loop so remaining vector length is a multiple of 4.
     !
 20  m = mod(n,4)
-    if( m == 0 ) go to 40 
-    do i = 1,m 
+    if( m == 0 ) go to 40
+    do i = 1,m
         dy(i) = dy(i) + da*dx(i)
     end do
     if( n < 4 ) return
@@ -4959,14 +4959,14 @@ module numerics_routines
     !    description of parameters
     !
     !     --input--
-    !        n  number of elements in input vector(s) 
+    !        n  number of elements in input vector(s)
     !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
     !       dy  real(8) vector with n elements
     !     incy  storage spacing between elements of dy
     !
     !     --output--
-    !     ddot  real(8) dot product (zero if n <= 0) 
+    !     ddot  real(8) dot product (zero if n <= 0)
     !
     !     returns the dot product of real(8) dx and dy.
     !     ddot = sum for i = 0 to n-1 of  dx(lx+i*incx) * dy(ly+i*incy)
@@ -4979,11 +4979,11 @@ module numerics_routines
     !***routines called  (none)
     !***end prologue  ddot
     !
-    
+
     implicit none
     real(8) :: dx(*),dy(*)
     integer :: n, incx, incy, ix, iy, i, m, mp1, ns
-    
+
     !***first executable statement  ddot
     ddot = 0.d0
     if(n<=0)return
@@ -5003,9 +5003,9 @@ module numerics_routines
     !
     ix = 1
     iy = 1
-    if(incx<0)ix = (-n+1)*incx + 1 
-    if(incy<0)iy = (-n+1)*incy + 1 
-    do 10 i = 1,n 
+    if(incx<0)ix = (-n+1)*incx + 1
+    if(incy<0)iy = (-n+1)*incy + 1
+    do 10 i = 1,n
         ddot = ddot + dx(ix)*dy(iy)
         ix = ix + incx
         iy = iy + incy
@@ -5015,11 +5015,11 @@ module numerics_routines
     !        code for both increments equal to 1.
     !
     !
-    !        clean-up loop so remaining vector length is a multiple of 5. 
+    !        clean-up loop so remaining vector length is a multiple of 5.
     !
 20  m = mod(n,5)
-    if( m == 0 ) go to 40 
-    do 30 i = 1,m 
+    if( m == 0 ) go to 40
+    do 30 i = 1,m
         ddot = ddot + dx(i)*dy(i)
 30  continue
     if( n < 5 ) return
@@ -5127,7 +5127,7 @@ module numerics_routines
     !    description of parameters
     !
     !     --input--
-    !        n  number of elements in input vector(s) 
+    !        n  number of elements in input vector(s)
     !       da  real(8) scale factor
     !       dx  real(8) vector with n elements
     !     incx  storage spacing between elements of dx
@@ -5144,11 +5144,11 @@ module numerics_routines
     !***routines called  (none)
     !***end prologue  dscal
     !
-    
+
     implicit none
     real(8) :: da,dx(*)
     integer :: n, incx, i, m, mp1, ns
-    
+
     !***first executable statement  dscal
     if(n<=0)return
     if(incx==1)goto 20
@@ -5156,7 +5156,7 @@ module numerics_routines
     !        code for increments not equal to 1.
     !
     ns = n*incx
-    do i = 1,ns,incx 
+    do i = 1,ns,incx
         dx(i) = da*dx(i)
     end do
     return
@@ -5164,11 +5164,11 @@ module numerics_routines
     !        code for increments equal to 1.
     !
     !
-    !        clean-up loop so remaining vector length is a multiple of 5. 
+    !        clean-up loop so remaining vector length is a multiple of 5.
     !
 20  m = mod(n,5)
-    if( m == 0 ) go to 40 
-    do i = 1,m 
+    if( m == 0 ) go to 40
+    do i = 1,m
         dx(i) = da*dx(i)
     end do
     if( n < 5 ) return
@@ -5186,7 +5186,7 @@ module numerics_routines
 ! --------------------------- dgefa -------------------------------------------
 
     subroutine dgefa(a,lda,n,ipvt,info)
-    
+
     implicit none
     integer :: lda, n, ipvt(*), info
     real(8) :: a(lda,*)
@@ -5293,7 +5293,7 @@ module numerics_routines
 ! --------------------------- dgesl -------------------------------------------
 
     subroutine dgesl(a,lda,n,ipvt,b,job)
-    
+
     implicit none
     integer :: lda, n, ipvt(*), job
     real(8) :: a(lda,*), b(*)
@@ -5592,7 +5592,7 @@ module numerics_routines
 ! --------------------------- dgbsl -------------------------------------------
 
     subroutine dgbsl(abd,lda,n,ml,mu,ipvt,b,job)
-    
+
     implicit none
     integer :: lda, n, ml, mu, ipvt(*), job
     real(8) :: abd(lda,*), b(*)
@@ -5733,7 +5733,7 @@ module numerics_routines
 ! --------------------------- gjac -------------------------------------------
 
     subroutine gjac
-    
+
     implicit none
 
     !--------------------------------- nist/bfrl ---------------------------------
@@ -5742,11 +5742,11 @@ module numerics_routines
     !
     !     source file: jacs.sor
     !
-    !     functional class:  
+    !     functional class:
     !
     !     description:  dummy routine to keep the linker happy
     !
-    !     arguments: 
+    !     arguments:
     !
     !     revision history:
     !        created:  12/2/1992 at 11:28 by par
@@ -5761,7 +5761,7 @@ module numerics_routines
 ! --------------------------- jac -------------------------------------------
 
     subroutine jac
-    
+
     implicit none
 
     !--------------------------------- nist/bfrl ---------------------------------
@@ -5770,11 +5770,11 @@ module numerics_routines
     !
     !     source file: jacs.sor
     !
-    !     functional class:  
+    !     functional class:
     !
     !     description:  dummy routine to keep the linker happy
     !
-    !     arguments: 
+    !     arguments:
     !
     !     revision history:
     !        created:  12/2/1992 at 11:28 by par
@@ -5797,13 +5797,13 @@ module numerics_routines
     !
     !     source file: jacs.sor
     !
-    !     functional class:  
+    !     functional class:
     !
     !     description:  used by dassl to determine how many columns of the
-    !                   jacobian are going to be computed the "hard way".  
+    !                   jacobian are going to be computed the "hard way".
     !                   this method avoids adding cfast common blocks to dassl.
     !
-    !     arguments: 
+    !     arguments:
     !
     !     revision history:
     !        created:  2/4/1993 at 17:13 by gpf
@@ -5827,10 +5827,10 @@ module numerics_routines
     !
     !     source file: jacs.sor
     !
-    !     functional class:  
+    !     functional class:
     !
-    !     description: this routine sets the value of jaccol for use by dassl. 
-    !                                                                   
+    !     description: this routine sets the value of jaccol for use by dassl.
+    !
     !     arguments: j       value to be copied into jaccol
     !
     !     revision history:

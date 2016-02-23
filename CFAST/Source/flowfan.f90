@@ -1,10 +1,10 @@
 module mflow_routines
-    
+
     use precision_parameters
-    
+
     use opening_fractions, only : qcffraction, qcifraction
     use utility_routines, only: d1mach
-    
+
     use precision_parameters
     use cfast_main
     use cenviro
@@ -12,13 +12,13 @@ module mflow_routines
     use opt
     use params
     use vent_data
-    
+
     implicit none
-    
+
     private
-    
+
     public mechanical_flow, getmventinfo
-    
+
     contains
 
 ! --------------------------- mechanical_flow -------------------------------------------
@@ -30,18 +30,18 @@ module mflow_routines
     !     it returns rates of mass and energy flows into the layers from all mechancial vents in the building.
     !     revision: $revision: 461 $
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    
+
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
-    real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*) 
+    real(eb), intent(out) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
 
     real(eb) :: filter, vheight, layer_height
     integer :: i, ii, j, k, isys, nprod, iroom
     logical :: hvacflg
-    
+
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.  
+    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.
     ! chv should eventually be defined elsewhere.
 
     hvacflg = .false.
@@ -135,11 +135,11 @@ module mflow_routines
 
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: deltpmv(*)
-    
+
     real(eb) :: pav, xtemp, f, dp
 
     integer :: ib, niter, iter, i, ii, j, k
-    
+
     ! calculate average temperatures and densities for each branch
     pav = pofset
     rohb(1:nbr) = pav/(rgas*tbr(1:nbr))
@@ -174,7 +174,7 @@ module mflow_routines
                 dp = hvp(mvintnode(i,j)) - hvp(i) + dpz(i,j)
                 if (nf(icmv(i,j))==0) then
 
-                    ! resistive branch connection 
+                    ! resistive branch connection
                     hvflow(i,j) = sign(ce(icmv(i,j))*sqrt(abs(dp)), dp)
                     bflo(icmv(i,j)) = abs(hvflow(i,j))
                 else
@@ -212,7 +212,7 @@ module mflow_routines
 
     real(eb), intent(in) :: tprime(*)
     real(eb), intent(out) :: delttmv(*)
-    
+
     real(eb) :: hvta, flowin, hvtemp
     integer ib, i, ii, j
 
@@ -234,7 +234,7 @@ module mflow_routines
         if (flowin>0.0_eb) then
             hvta = hvta/flowin
         else
-            
+
             ! this is a bad situation.  we have no flow, yet must calculate the inflow concentrations.
             hvta = tbr(1)
             do ii = 1, next
@@ -273,19 +273,19 @@ module mflow_routines
     real(eb) function hvfan(tsec,i,j,k,dp)
 
     !     routine: hvfan
-    !     purpose: calculates mass flow through a fan. this function has been modified to prevent negative flow.  
-    !              a max function was inserted just after the calculation off, the flow to do this.  if the flow is 
-    !              allowed to be negative (flow reversal) then this statement must be removed. !lso, there is now a flow 
+    !     purpose: calculates mass flow through a fan. this function has been modified to prevent negative flow.
+    !              a max function was inserted just after the calculation off, the flow to do this.  if the flow is
+    !              allowed to be negative (flow reversal) then this statement must be removed. !lso, there is now a flow
     !              restriction on the fan, using qcmfraction
     !     arguments: tsec   current simulation time
     !                i      node number
-    !                j      jj'th connection to node ii 
+    !                j      jj'th connection to node ii
     !                k      fan number
     !                dp     head pressure across the fan
 
     real(eb), intent(in) :: tsec, dp
     integer, intent(in) :: i,j,k
-        
+
     real(eb) :: hvfanl, openfraction, minimumopen, roh, f
     logical :: firstc = .true.
     save firstc, minimumopen
@@ -311,11 +311,11 @@ module mflow_routines
     subroutine hvfrex (hvpsolv, hvtsolv)
 
     !     routine: hvfrex
-    !     purpose: update arrays and assign compartment pressures, temperatures and concentrations to flow 
+    !     purpose: update arrays and assign compartment pressures, temperatures and concentrations to flow
     !              into the system from exterior nodes
 
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*)
-    
+
     real(eb) :: z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
     integer :: i, ii, j, lsp
     type(room_type), pointer :: roomptr
@@ -326,7 +326,7 @@ module mflow_routines
         z = zzhlay(i,lower)
         if (hvorien(ii)==1) then
 
-            ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate 
+            ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate
             ! the scaling length of the duct
             xxlower = sqrt(arext(ii))
         else
@@ -381,7 +381,7 @@ module mflow_routines
 
     tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)
     return
-    
+
     end subroutine hvfrex
 
 
@@ -395,11 +395,11 @@ module mflow_routines
     !                prprime
     !                nprod
 
-    real(eb), intent(out) :: prprime(*) 
+    real(eb), intent(out) :: prprime(*)
     integer, intent(in) :: nprod
-    
+
     integer ii, j, k, ib, isys, isof, nhvpr
-    
+
     ! sum product flows entering system
     nhvpr = nlspct*nhvsys
     if(nprod/=0)then
@@ -476,7 +476,7 @@ module mflow_routines
                 end if
             end do
         end if
-    end if           
+    end if
 
     ! define flows or temperature leaving system
     do ii = 1, next
@@ -493,7 +493,7 @@ module mflow_routines
                     if (zzhvm(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = zzhvpr(isys,k)/zzhvm(isys)
                         hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
-                    ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass) 
+                    ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
                     !         - see keywordcases to change this
                     elseif(hvmfsys(isys)/=0.0_eb) then
                         hvexcn(ii,k,upper) = -(dhvprsys(isys,k)/hvmfsys(isys))
@@ -508,21 +508,21 @@ module mflow_routines
     end do
     return
     end subroutine hvtoex
-    
+
     subroutine getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
-    
+
     !       This is a routine to get the shape data for mechanical flow vent external connections
 
     integer, intent(in) :: i
     integer, intent(out) :: iroom
     real(eb), intent(out) :: xyz(6),vred,vgreen,vblue
-    
+
     real(eb) :: vheight, varea
     type(room_type), pointer :: roomptr
-    
+
     iroom = hvnode(1,i)
     roomptr => roominfo(iroom)
-    
+
     vheight = hvelxt(i)
     varea = arext(i)
     if (hvorien(i)==1) then
@@ -540,13 +540,13 @@ module mflow_routines
         xyz(5) = vheight
         xyz(6) = vheight
     end if
-    
+
     vred = 1.0_eb
     vgreen = 1.0_eb
     vblue = 1.0_eb
-    
+
     return
-    
+
     end subroutine getmventinfo
 
 end module mflow_routines

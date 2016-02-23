@@ -58,10 +58,6 @@
     call read_command_options
     call open_files
 
-    mpsdat(1) = rundat(1)
-    mpsdat(2) = rundat(2)
-    mpsdat(3) = rundat(3)
-
     call output_version (logerr)
 
     call read_solver_ini

@@ -439,7 +439,7 @@ module solve_routines
     dt = tstop - tstart
     dprint = abs(lprint)
     dplot = abs(lsmv)
-    dspread = abs(lcopyss)
+    dspread = abs(ss_out_interval)
     rpar(1) = rptol
 
     ! initialize print and output times
@@ -466,7 +466,7 @@ module solve_routines
         ismv = .true.
     end if
 
-    if (dspread<0.0001_eb.or.lcopyss<=0) then
+    if (dspread<0.0001_eb.or.ss_out_interval<=0) then
         ispread = .false.
         tspread = tstop + 1.0_eb
     else

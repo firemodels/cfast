@@ -54,7 +54,7 @@ module cfast_main
     implicit none
     save
 
-    integer :: ivers, mpsdat(3), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, itmstp
+    integer :: ss_out_interval, lprint, lsmv, nlspct, nsmax, itmmax, itmstp
 
 
     real(eb) :: cp, gamma, rgas

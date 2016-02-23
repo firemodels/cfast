@@ -221,12 +221,6 @@ module fire_routines
     qheatl = xqpyrl
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
-    ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
-    if (lfbt==free) then
-        write (logerr,'(a)') '***Error: Internal error, unsupported unconstrained fire.'
-        stop 101
-    end if
-
     ! Check for sprinkler activation
     if (iquench(iroom)>0) then
         dtectptr => detectorinfo(iquench(iroom))

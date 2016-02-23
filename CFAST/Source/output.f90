@@ -626,7 +626,7 @@ module output_routines
 
     write (iofilo,5000)
     write (iofilo,5010) nm1, n_hvents, n_vvents, next
-    write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
+    write (iofilo,5020) nsmax, lprint, lsmv, ss_out_interval
 
 5000 format (//,'OVERVIEW',/)
 5010 FORMAT (/,'Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,61('-'),/,i4,12x,i4,10x,i4,17x,i4)
@@ -1348,7 +1348,7 @@ module output_routines
     end if
 
     ! next the spread sheet files
-    if (lcopyss>0) then
+    if (ss_out_interval>0) then
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')
         open (unit=23, file=ssspecies,form='formatted')

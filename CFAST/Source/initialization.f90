@@ -760,8 +760,6 @@ module initialization_routines
     !     arguments: none
 
     ! a specified fire in the center of the room
-    lfbt = 2
-    lfmax = 1
     heatfl = .false.
     heatfp(1:3) = -1.0_eb
 
@@ -1166,27 +1164,16 @@ module initialization_routines
     ! count the species
     nlspct = 0
 
-    if (lfbt==1) then
-        do i = 1, ns
-            if (allowed(i).and.activs(i)) then
+    do i = 1, ns
+        if (allowed(i)) then
+            if (activs(i)) then
                 nlspct = nlspct + 1
             end if
-        end do
-    else if (lfbt==2.or.lfbt==0) then
-        do i = 1, ns
-            if (allowed(i)) then
-                if (activs(i)) then
-                    nlspct = nlspct + 1
-                end if
-            else if (i/=7) then
-                nlspct = nlspct + 1
-            end if
-        end do
-        nlspct = nlspct + 1
-    else
-        write (logerr,'(a,i0)') 'Error: Invalid fire type specified: ', lfbt
-        stop
-    end if
+        else if (i/=7) then
+            nlspct = nlspct + 1
+        end if
+    end do
+    nlspct = nlspct + 1
 
     ! count the number of walls
     nwalls = 0
@@ -1201,7 +1188,6 @@ module initialization_routines
     end do
 
     ! set number of implicit oxygen variables
-    if(lfbt==1)option(foxygen) = off
     if(option(foxygen)==on)then
         noxygen = nm1
     else

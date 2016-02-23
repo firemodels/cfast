@@ -44,7 +44,7 @@ module input_routines
     real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
-    integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij
+    integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij, ivers
     character :: aversion*5
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
@@ -839,12 +839,12 @@ module input_routines
                 nsmax =  lrarray(1)
                 lprint = abs(lrarray(2))
                 lsmv = lrarray(4)
-                lcopyss =  lrarray(5)
+                ss_out_interval =  lrarray(5)
             else if (countargs(lcarray)>=4) then
                 nsmax =  lrarray(1)
                 lprint = lrarray(2)
                 lsmv = lrarray(3)
-                lcopyss =  lrarray(4)
+                ss_out_interval =  lrarray(4)
             else
                 write (logerr,*) '***Error: Bad TIMES input. At least 4 arguments required.'
                 stop

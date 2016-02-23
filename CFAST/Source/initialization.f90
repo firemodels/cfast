@@ -232,7 +232,7 @@ module initialization_routines
     end do
     do ib = 1, nbr
         isys = izhvbsys(ib)
-        rden = (pofset+pav)/(rgas*tbr(ib))
+        rden = (pressure_offset+pav)/(rgas*tbr(ib))
         hvtm(isys) = hvtm(isys) + rden*hvdvol(ib)
     end do
 
@@ -328,7 +328,7 @@ module initialization_routines
 
     ! we have to update nequals.  nequals was originally defined in
     ! offset but offset was called before nhvsys was defined.
-    nequals = nofhvpr + nhvsys*nlspct
+    nequals = nofhvpr + nhvsys*n_species
 
     do i = 1, nnode
         isys = izhvsys(i)
@@ -384,9 +384,9 @@ module initialization_routines
         exterior_rel_pressure(i) = exterior_rel_pressure(i) - xxpmin
         interior_rel_pressure(i) = interior_rel_pressure(i) - xxpmin
     end do
-    pofset = pofset + xxpmin
-    interior_abs_pressure = interior_abs_pressure + xxpmin - pofset
-    exterior_abs_pressure = exterior_abs_pressure + xxpmin - pofset
+    pressure_offset = pressure_offset + xxpmin
+    interior_abs_pressure = interior_abs_pressure + xxpmin - pressure_offset
+    exterior_abs_pressure = exterior_abs_pressure + xxpmin - pressure_offset
 
     ! copy all of the variables from the initial values into the data arrays
     call update_data (dummy,constvar)
@@ -598,17 +598,16 @@ module initialization_routines
     gamma = 1.40_eb
     rgas = (gamma-1.0_eb)/gamma*cp
     stime = 0.0_eb
-    tref = 293.15_eb
+    t_ref = 293.15_eb
     lower_o2_limit = 0.15_eb
-    pref = 101325.0_eb
-    interior_abs_pressure = pref
-    pofset = pref
-    te = tref
-    interior_temperature = tref
-    tgignt = te + 200.0_eb
+    pressure_ref = 101325.0_eb
+    interior_abs_pressure = pressure_ref
+    pressure_offset = pressure_ref
+    interior_temperature = t_ref
+    tgignt = t_ref + 200.0_eb
     exterior_temperature = interior_temperature
     exterior_abs_pressure = interior_abs_pressure
-    relhum = 0.5_eb
+    relative_humidity = 0.5_eb
 
     ! species
     allowed(1:ns) = .false.
@@ -645,7 +644,7 @@ module initialization_routines
     roominfo(1:nr)%deadroom = 0
     roominfo(1:nr)%hall = .false.
     roominfo(1:nr)%shaft = .false.
-    nlspct = 0
+    n_species = 0
     numthrm = 0
     n = 0
     ! room to room heat transfer
@@ -760,8 +759,6 @@ module initialization_routines
     !     arguments: none
 
     ! a specified fire in the center of the room
-    lfbt = 2
-    lfmax = 1
     heatfl = .false.
     heatfp(1:3) = -1.0_eb
 
@@ -802,7 +799,7 @@ module initialization_routines
 
     do i = 1, nm1
 
-        !  set the water content to relhum - the polynomial fit is to (t-273), and
+        !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
         ! tables in the handbook of physics and chemistry.  we are being clever
         ! here.  the final result in initial_mass_fraction should be the value used in stport for
@@ -810,7 +807,7 @@ module initialization_routines
         xt = interior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        initial_mass_fraction(8) = relhum*xh2o
+        initial_mass_fraction(8) = relative_humidity*xh2o
 
         ! normalize the atmosphere
         totmass = 0.0_eb
@@ -1164,29 +1161,18 @@ module initialization_routines
     nm1 = n - 1
 
     ! count the species
-    nlspct = 0
+    n_species = 0
 
-    if (lfbt==1) then
-        do i = 1, ns
-            if (allowed(i).and.activs(i)) then
-                nlspct = nlspct + 1
+    do i = 1, ns
+        if (allowed(i)) then
+            if (activs(i)) then
+                n_species = n_species + 1
             end if
-        end do
-    else if (lfbt==2.or.lfbt==0) then
-        do i = 1, ns
-            if (allowed(i)) then
-                if (activs(i)) then
-                    nlspct = nlspct + 1
-                end if
-            else if (i/=7) then
-                nlspct = nlspct + 1
-            end if
-        end do
-        nlspct = nlspct + 1
-    else
-        write (logerr,'(a,i0)') 'Error: Invalid fire type specified: ', lfbt
-        stop
-    end if
+        else if (i/=7) then
+            n_species = n_species + 1
+        end if
+    end do
+    n_species = n_species + 1
 
     ! count the number of walls
     nwalls = 0
@@ -1201,7 +1187,6 @@ module initialization_routines
     end do
 
     ! set number of implicit oxygen variables
-    if(lfbt==1)option(foxygen) = off
     if(option(foxygen)==on)then
         noxygen = nm1
     else
@@ -1222,11 +1207,11 @@ module initialization_routines
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
     nofprd = nofwt + nwalls
-    nofhvpr = nofprd + 2*nm1*nlspct
+    nofhvpr = nofprd + 2*nm1*n_species
 
     ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.
     ! after nhvsys is defined the following statement can be used to define nequals
-    ! nequals = nofhvpr + nhvsys*nlspct
+    ! nequals = nofhvpr + nhvsys*n_species
     nequals = nofhvpr
 
     return

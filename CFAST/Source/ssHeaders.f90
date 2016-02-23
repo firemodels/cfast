@@ -603,7 +603,7 @@ module spreadsheet_header_routines
     headertext(1,1) = Labels(1)
     headertext(2,1) = ' '
     headertext(3,1) = LabelUnits(1)
-    nprod = nlspct
+    nprod = n_species
 
     position = 1
 

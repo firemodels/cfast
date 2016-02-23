@@ -221,12 +221,6 @@ module fire_routines
     qheatl = xqpyrl
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
-    ! we have eliminated unconstrained fires, if we reach this point, the input parser has failed!
-    if (lfbt==free) then
-        write (logerr,'(a)') '***Error: Internal error, unsupported unconstrained fire.'
-        stop 101
-    end if
-
     ! Check for sprinkler activation
     if (iquench(iroom)>0) then
         dtectptr => detectorinfo(iquench(iroom))
@@ -713,9 +707,9 @@ module fire_routines
 
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
-        if(zztemp(iroom1,upper)>=tgignt)then
+        if (zztemp(iroom1,upper)>=tgignt) then
             flw1to2 = vss(1,i)+vsa(1,i)
-            if(vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb)then
+            if (vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb) then
                 djetflg = .true.
                 exit
             end if

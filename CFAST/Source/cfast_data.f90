@@ -54,12 +54,13 @@ module cfast_main
     implicit none
     save
 
-    integer :: ivers, mpsdat(3), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, itmstp
+    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
+    integer :: n_species
+    real(eb) :: stime, deltat
 
 
     real(eb) :: cp, gamma, rgas
-    real(eb) :: relhum, interior_abs_pressure, pofset, pref, te, tref
-    real(eb) :: stime, deltat
+    real(eb) :: relative_humidity, interior_abs_pressure, pressure_offset, pressure_ref, t_ref
 
     logical activs(ns)
 

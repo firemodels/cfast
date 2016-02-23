@@ -24,7 +24,7 @@ module output_routines
     use wnodes
 
     implicit none
-    
+
     character(lbufln) :: lbuf, cbuf
 
     private

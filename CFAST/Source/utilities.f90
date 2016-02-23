@@ -1,28 +1,28 @@
 module utility_routines
-    
+
     use precision_parameters
- 
+
     use cparams
-    use cshell 
+    use cshell
     use iofiles, only: ncol
     use opt
     use params
     use solver_parameters
     use wnodes
-  
+
     implicit none
-    
+
     character(lbufln) :: lbuf
-    
+
     ! unlike most other routines, this one does not have the private specifier since all routines here are intended to be
     ! used by other routines
-   
+
     contains
-    
+
 ! --------------------------- SSaddtolist -------------------------------------------
 
     subroutine ssaddtolist (ic, valu, array)
-    
+
     real(eb), intent(in) :: valu
     real(eb), intent(out) :: array(*)
     integer, intent(inout) :: ic
@@ -36,18 +36,18 @@ module utility_routines
         array(ic) = valu
     end if
     return
-    
+
     end subroutine ssaddtolist
-    
+
 ! --------------------------- toIntString -------------------------------------------
 
     subroutine toIntString(i,istring)
-    
+
     integer, intent(in) :: i
     character(len=*), intent(out) :: istring
-    
+
     character :: string*256
-    
+
     if (i<10) then
         write (string,'(i1)') i
     else if (i<100) then
@@ -66,11 +66,11 @@ module utility_routines
     istring = trim(string)
     return
     end subroutine toIntString
-    
+
 ! --------------------------- tanhsmooth ---------------------------------------
-    
+
     real(eb) function tanhsmooth (x, xmax, xmin, ymax, ymin)
-    
+
     !     routine: tanhsmooth
     !     purpose: calculate a smooth transition from 1 (at xmax) to zero (at xmin)
     !     arguments: x    current value
@@ -78,45 +78,45 @@ module utility_routines
     !                xmin minimum value of independent variable. Return ymin below this value
     !                ymax value returned at or above xmax
     !                ymin value return at or below xmin
-    
+
     real(eb), intent(in) :: x, xmax, xmin, ymax, ymin
     real(eb) :: f
     f = min(max(0.5_eb + tanh(8.0_eb/(xmax-xmin)*(x-xmin)-4.0_eb)/2.0_eb,0.0_eb),1.0_eb)
     if (f<1.0d-6) f = 0.0_eb
     tanhsmooth = f*(ymax-ymin)+ymin
-    
-    
+
+
     return
     end function tanhsmooth
-   
+
 ! --------------------------- xerror -------------------------------------------
 
     subroutine xerror(messg,nmessg,nerr,level)
 
     !     routine: xerror
-    !     purpose: XERROR processes a diagnostic message. It is a stub routine written for the book above. 
-    !              Actually, XERROR is a sophisticated error handling package with many options. Our version 
-    !              has the same calling sequence but only prints an error message and either returns (if 
+    !     purpose: XERROR processes a diagnostic message. It is a stub routine written for the book above.
+    !              Actually, XERROR is a sophisticated error handling package with many options. Our version
+    !              has the same calling sequence but only prints an error message and either returns (if
     !              the input value of ABS(LEVEL) is less than 2) or stops (if the input value of ABS(LEVEL) equals 2).
     !     Revision: $Revision$
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
     !     arguments: MESSG - the Hollerith message to be processed.
     !                NMESSG- the actual number of characters in MESSG. (this is ignored in this stub routine)
-    !                NERR  - the error number associated with this message. NERR must not be zero. (this is 
+    !                NERR  - the error number associated with this message. NERR must not be zero. (this is
     !                        ignored in this stub routine)
     !                LEVEL - error category.
     !                       = 2 means this is an unconditionally fatal error.
     !                       = 1 means this is a recoverable error.  (I.e., it is non-fatal if XSETF has been appropriately called.)
     !                       = 0 means this is a warning message only.
-    !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times 
-    !                          this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then 
+    !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times
+    !                          this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then
     !                          a stop. LEVEL=-1,0,1 causes a message to  be printed and then a return.
 
     character(*), intent(in) :: messg
     integer, intent(in) :: nmessg, level, nerr
-    
+
     character(32) :: error_label
-    
+
     integer :: nmess
 
     if(level==2)then
@@ -149,7 +149,7 @@ module utility_routines
     subroutine xerrwv(msg,nmes,nerr,level,ni,i1,i2,nnr,r1,r2)
 
     !     routine: xerrwv
-    !     purpose: xerrwv, as given here, constitutes a simplified version of the slatec error handling package. It just prints 
+    !     purpose: xerrwv, as given here, constitutes a simplified version of the slatec error handling package. It just prints
     !              our error messages with codes as requested
     !     arguments: msg - the message (character array).
     !                nmes - the length of msg (number of characters).
@@ -163,7 +163,7 @@ module utility_routines
     integer, intent(in) :: nmes, nerr, level, ni, i1, i2, nnr
     real(eb), intent(in) :: r1, r2
     character, intent(in) :: msg(nmes)*1
-    
+
     integer :: i, lunit, mesflg
 
     ! define message print flag and logical unit number
@@ -196,13 +196,13 @@ module utility_routines
     real(eb) function d1mach (i)
 
     !     routine: d1mach
-    !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.  
-    !              it is a function subprogram with one (input) argument. reference  p. a. fox, a. d. hall and 
+    !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.
+    !              it is a function subprogram with one (input) argument. reference  p. a. fox, a. d. hall and
     !              n. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
     !              2 (june 1978), pp. 177-188.
     !     arguments:  i
     !
-    !           where i = 1,...,5.  the (output) value of a above is determined by the (input) value of i.  the 
+    !           where i = 1,...,5.  the (output) value of a above is determined by the (input) value of i.  the
     !           results for various values of i are discussed below.
     !
     !           d1mach(1) = b**(emin-1), the smallest positive magnitude.
@@ -224,7 +224,7 @@ module utility_routines
     !           i1mach(13) = emax, the largest exponent e.
 
     integer, intent(in) :: i
-    
+
     real(eb) :: b, x
 
     x = 1.0_eb
@@ -263,7 +263,7 @@ module utility_routines
     integer, intent(in) :: nerr, nnr
     real(eb), intent(in) :: r1, r2
     character, intent(in) :: mesg*(*)
-    
+
     integer :: lm
 
     lm = len_trim(mesg)
@@ -284,7 +284,7 @@ module utility_routines
     subroutine cmdline (nargs,strs,iarg,iopt)
 
     !     routine: cmdline
-    !     purpose: gets argument list and options from command line. options may be of the form c:<string> where <c> 
+    !     purpose: gets argument list and options from command line. options may be of the form c:<string> where <c>
     !              is the desired option a-z and <string> is a character string associated with that option.
     !     arguments: nargs maximum number of arguments expected (dimension limit on input, actual number on output.
     !                strs  returned strings of arguments and options
@@ -293,9 +293,9 @@ module utility_routines
 
     integer, intent(inout) :: nargs
     integer, intent(out) :: iarg(nargs), iopt(26)
-    character, intent(out) :: strs(nargs)*(*) 
-    
-    integer :: ic, ia, i 
+    character, intent(out) :: strs(nargs)*(*)
+
+    integer :: ic, ia, i
     character :: cmdlin*127, optsep
 
     optsep = '-'
@@ -393,11 +393,11 @@ module utility_routines
 
     character, intent(in) :: chr
     integer, intent(in) :: i1, i2, i3, i4, i5
-    
+
     character, intent(inout) :: cmdlin*(*)
-    
-    character :: temp*127 
-    
+
+    character :: temp*127
+
     temp = cmdlin
     temp(i1:i2) = cmdlin(i3:i4)
     temp(i5:i5) = chr
@@ -414,7 +414,7 @@ module utility_routines
     !     arguments: cmdlin - command line
 
     character, intent(out) :: cmdlin*127
-    
+
     integer first, last, lpoint
     integer maxarg, iar, i, ic
     logical valid
@@ -422,7 +422,7 @@ module utility_routines
     maxarg = 5 + 2
     lpoint = 0
     iar = command_argument_count()
-    
+
     if (iar==0) then
         cmdlin = ' '
     else
@@ -446,12 +446,12 @@ module utility_routines
     integer function countargs (lcarray)
 
     !     routine: countargs
-    !     purpose: Count the number of non-blank arguments on the input line. 
+    !     purpose: Count the number of non-blank arguments on the input line.
     !     arguments: lcarray - character array of arguments.  There should be tocount non-blank entries
     !                numc - dimension limit on lcarray
 
     character(128), intent(in) :: lcarray(ncol)
-    
+
     integer :: i, nret
 
     nret = 0
@@ -474,12 +474,12 @@ module utility_routines
     subroutine cptime (cputim)
 
     !     routine: cptime
-    !     purpose: routine to calculate amount of computer time (cputim) in seconds used so far.  
+    !     purpose: routine to calculate amount of computer time (cputim) in seconds used so far.
     !              this routine will generally be different for each computer.
-    !     arguments: cputim (output) - elapsed cpu time 
+    !     arguments: cputim (output) - elapsed cpu time
 
     real(eb), intent(out) :: cputim
-    
+
     call CPU_TIME(cputim)
     return
     end subroutine cptime
@@ -515,11 +515,11 @@ module utility_routines
     !     purpose: get the arguments used to call the main program
     !     arguments: exepath - path (without the name) to the folder where the executable resides
     !                datapath - path (without a file name) to the folder where the project data file resides
-    !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of 
+    !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of
     !                          datapath + project cannot exceed 256 characters
 
     character(*), intent(out) :: exepath, datapath, project
-    
+
     integer :: i, loop, status, n, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
     character (64) :: name(2)
@@ -608,7 +608,7 @@ module utility_routines
     subroutine mat2mult(mat1,mat2,idim,n)
 
     !     routine: mat2mult
-    !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix 
+    !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix
     !              mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
     !     arguments: mat1 - matrix
     !                mat2 - work array of same size as mat1
@@ -619,7 +619,7 @@ module utility_routines
     integer, intent(in) :: idim, n
     integer, intent(inout) :: mat1(idim,n)
     integer, intent(out) :: mat2(idim,n)
-    
+
     integer :: i, j, k
 
     do i = 1, n
@@ -644,18 +644,18 @@ module utility_routines
     subroutine indexi (n,arrin,indx)
 
     !     routine: indexi
-    !     purpose: this routines sorts the array arrin passively via the permuation array indx. the 
-    !              elements arrin(indx(i)), i=1, ..., n are in increasing order. this routine uses a 
-    !              bubble sort.  it should not be used for large n (n>30), since bubble sorts are not efficient.  
+    !     purpose: this routines sorts the array arrin passively via the permuation array indx. the
+    !              elements arrin(indx(i)), i=1, ..., n are in increasing order. this routine uses a
+    !              bubble sort.  it should not be used for large n (n>30), since bubble sorts are not efficient.
     !     arguments: n     number of elements in n
     !                arrin array to be passively sorted
     !                indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
 
     integer, intent(in) :: n, arrin(*)
     integer, intent(out) :: indx(*)
-    
+
     integer ai, aip1, i, iswitch, itemp
-    
+
     do i = 1, n
         indx(i) = i
     end do
@@ -688,23 +688,23 @@ module utility_routines
     subroutine interp (x,y,n,t,icode,yint)
 
     !     routine: indexi
-    !     purpose: routine interpolates a table of numbers found in the arrays, x and y.  
+    !     purpose: routine interpolates a table of numbers found in the arrays, x and y.
     !     arguments: x,y - arrays of size n to be interpolated at x=t
     !                icode - code to select how to extrapolate values if t is less than x(1) or greater than x(n).
     !                          if icode = 1 then yint = y(1) for t < x(1) and yint = y(n) for t > x(n).
-    !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n) 
+    !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n)
     !                              and by extrapolation if t < x(1) or    t > x(n)
     !                yint (output) - interpolated value of the y array at t
 
     real(eb), intent(in) :: x(*), y(*), t
     integer, intent(in) :: n, icode
-    
+
     real(eb) :: yint
-    
+
     integer :: ilast, imid, ia, iz
     real(eb) :: dydx
 
-    
+
     save
     data ilast /1/
     if (n==1) then
@@ -754,7 +754,7 @@ module utility_routines
     yint = y(imid) + dydx*(t-x(imid))
     ilast = imid
     return
-    
+
     end subroutine interp
 
 ! --------------------------- cmdflag -------------------------------------------
@@ -763,9 +763,9 @@ module utility_routines
 
       character(1), intent(in) :: ic
       integer, intent(in) :: iopt(26)
-      
+
       cmdflag = iopt(ichar(ic)-ichar('A')+1)
-      
+
    end function cmdflag
 
 ! --------------------------- read_command_options -------------------------------------------
@@ -851,12 +851,12 @@ module utility_routines
     !                   version of cfast.  it is created using:
     !                   cfast -s filename
     !                   where filename is the name of the file to contain
-    !                   the solver.ini options .  the default name is 
+    !                   the solver.ini options .  the default name is
     !                   solve.ini (so as to not overwrite solver.ini if
     !                   it is present)
 
     character(*), intent(in) :: file
-    
+
     integer :: nnnopt, i, j, iunit
 
     nnnopt = 21
@@ -917,7 +917,7 @@ module utility_routines
 
     integer, intent(in) :: n
     real(eb), intent(inout) :: ra(n)
-        
+
     integer j, i, inc
     real(eb) rra
 
@@ -945,12 +945,12 @@ module utility_routines
 
     subroutine sort_fire (nfire,ifroom,xfire,ifrpnt,nm1)
 
-    !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used 
+    !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used
     !              in this order by the ceiling jet and radiation algorithms
     !     arguments: nfire   number of fires
     !                ifroom (output)  room numbers for each of the fires
     !                xfire   fire related quantities used by other routines. see routine fires for definition.
-    !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r. 
+    !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r.
     !                        (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
     !                nm1 number of compartments minus 1
 
@@ -958,7 +958,7 @@ module utility_routines
     integer, intent(inout) :: ifroom(mxfire)
     real(eb), intent(inout) :: xfire(mxfire,mxfirp)
     integer, intent(out) :: ifrpnt(nr,2)
-    
+
     integer :: iperm(mxfire), iwork(mxfire), i, j, irm
     real(eb) :: work(mxfire)
 
@@ -986,7 +986,7 @@ module utility_routines
         if (ifrpnt(i,2)==0) ifrpnt(i,2) = 1
     end do
     return
-    
+
     end subroutine sort_fire
 
 ! --------------------------- sstrng -------------------------------------------
@@ -994,10 +994,10 @@ module utility_routines
     subroutine sstrng (string,wcount,sstart,sfirst,slast,svalid)
 
     !     routine: sstrng
-    !     purpose: this routine finds positions of substrings within a character string.  a space, comma, - , (, or ) 
-    !              indicates the beginning or end of a substring. when called, the string is passed as an integer(choose) 
+    !     purpose: this routine finds positions of substrings within a character string.  a space, comma, - , (, or )
+    !              indicates the beginning or end of a substring. when called, the string is passed as an integer(choose)
     !              along with the number of characters in the string(wcount) and a starting position(sstart).  beginning at
-    !              "sstart", the routine searches for a substring. if a substring is found, its first and last character 
+    !              "sstart", the routine searches for a substring. if a substring is found, its first and last character
     !              positions are returned along with a true value in "svalid"; otherwise "svalid" is set false.
     !     arguments: string - the character string
     !                wcount - number of characters in the string
@@ -1009,9 +1009,9 @@ module utility_routines
     integer, intent(in) :: sstart, wcount
     character, intent(in) :: string(*)
     logical, intent(out) :: svalid
-    
+
     integer, intent(out) :: sfirst, slast
-    
+
     integer :: endstr, i, j
     character :: space = ' ', comma = ','
 
@@ -1057,7 +1057,7 @@ module utility_routines
     !     arguments: string - string to be converted
 
     character, intent(inout) :: string*(*)
-        
+
     integer n, i
     character :: c
 
@@ -1081,7 +1081,7 @@ module utility_routines
     !     arguments: io - beginning unit number for search
 
     integer, intent(in) :: io
-    
+
     integer, parameter :: mxio=32767
     integer :: itmp
     logical opend
@@ -1107,11 +1107,11 @@ module utility_routines
     !     purpose: opens a file using the extension to distinguish previous open files
     !     arguments: filname - base filename for file to be opened
     !                iounit - desired unit number for file
-    
+
     integer, intent(in) :: iounit
     character, intent(in) :: filname*(*)
-    
-    integer :: first, last , length, ilen, itmp   
+
+    integer :: first, last , length, ilen, itmp
     character :: namefil*60, workfil*60, fmt*14
     logical :: existed, valid
 
@@ -1159,13 +1159,13 @@ module utility_routines
     logical function lsame ( ca, cb )
 
     !     routine: lsame
-    !     purpose: tests if ca is the same letter as cb regardless of case. cb is assumed to be an upper 
+    !     purpose: tests if ca is the same letter as cb regardless of case. cb is assumed to be an upper
     !              case letter. lsame returns .true. if ca is either the same as cb or the equivalent lower case letter.
     !     arguments: ca - first character
     !                cb - second character
 
     character(1), intent(in) :: ca, cb
-    
+
     integer, parameter :: ioff = 32
     intrinsic ichar
 
@@ -1185,9 +1185,9 @@ module utility_routines
     real(fb), intent(in) :: f, a, b
 
     fmix = (1.0_fb-f)*a + f*b
-    
+
     return
-    
+
     end function fmix
 
 ! ------------------ emix ------------------------
@@ -1197,9 +1197,9 @@ module utility_routines
     real(eb), intent(in) :: f, a, b
 
     emix = (1.0_eb-f)*a + f*b
-  
+
     return
-    
+
     end function emix
 
 ! ------------------ get_igrid ------------------------
@@ -1227,7 +1227,7 @@ module utility_routines
     end function get_igrid
 
 end module utility_routines
-        
+
 module opening_fractions
 
     !	The following functions implement the open/close function for vents.
@@ -1246,13 +1246,13 @@ module opening_fractions
     !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and hvfan
 
     use precision_parameters
-    
+
     implicit none
-    
+
     private
-    
+
     public qchfraction, qcvfraction, qcffraction, qcifraction
-    
+
     contains
 
     ! --------------------------- qchfraction -------------------------------------------
@@ -1362,6 +1362,5 @@ module opening_fractions
     end if
     return
     end function qcifraction
-    
+
     end module opening_fractions
-    

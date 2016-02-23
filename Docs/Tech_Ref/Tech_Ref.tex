@@ -253,6 +253,27 @@ where $\dm_i$ represents the sum of all mass flow terms, such as plume mass entr
 \be
    \dbydt{(c_v m_i T_i)} +  P \dbydt{V_i} =  \dot h_i \label{eq:first_law}
 \ee
+
+\noindent A differential equation for compartment pressure may be derived by using Eq. \ref{eq:first_law} for both layers, the ideal gas law approximation $P/R\approx\rho_l T_l\approx\rho_u T_u$ and standard
+ definitions for density, $R$ and $\gamma$.  Rewriting Eq. \ref{eq:first_law} for the upper and lower layer and substituting $\rho_i=m_i/V_i$ gives
+\begin{eqnarray}
+   c_v\dbydt{( V_l\rho_l T_l)} +  P \dbydt{V_l} &=  &\dot h_l \label{eq:lower}\\
+   c_v\dbydt{( V_u\rho_u T_u)} +  P \dbydt{V_u} &=  &\dot h_u \label{eq:upper}
+\end{eqnarray}
+
+\noindent Summing Eqs. \ref{eq:lower} and \ref{eq:upper} using $dV_l/dt=-dV_u/dt$ since $d/dt(V_l+V_u)=dV/dt=0$ and using the assumption that $\rho_l T_L=\rho_u T_U = P/R$ gives
+\begin{eqnarray}
+   \frac{c_vV}{R}\dbydt{ P}  &=  &\dot h_l + \dot h_u
+\end{eqnarray}
+
+\noindent Finally using $R=c_p-c_v$ and $\gamma=c_p/c_v$ to show that $R/c_v=\gamma-1$ gives
+
+\begin{eqnarray}
+   \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\dot h_l + \dot h_u\right)
+\end{eqnarray}
+
+\noindent the pressure differential equation.
+
 The enthalpy source term, $\dot h_i$, consists of the fire's heat release rate, conduction losses to walls, and radiation exchange. The layer temperature and mass are related to the layer volume and compartment pressure via the ideal gas law:
 \be
   P \, V_i = m_i \, R \, T_i \label{EoS}
@@ -776,14 +797,14 @@ The effective path length, $L$, is calculated between the center-points of the e
 
 Objects, often referred to as ``targets,'' may be added to any compartment  to represent measurement devices or equipment that might be damaged in a fire. Targets absorb thermal radiation from the fire, walls and hot gas layer, but targets do not affect the fire simulation. That is, there is a one-way coupling between the target and the fires, 10 compartment surfaces (ceiling, floor, 4 walls--upper and lower) and 2 gas layers. The net radiative heat flux to a target is given by:
 %\begin{split}
-%   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}=1}^{n_{\rm fires}} \cos(\theta_{\rm f}) \tau_u \tau_l \; \frac{\chi_{\rm r} \, \dQ_{\rm f}}{4 \pi R_{\rm f}^2} + 
+%   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}=1}^{n_{\rm fires}} \cos(\theta_{\rm f}) \tau_u \tau_l \; \frac{\chi_{\rm r} \, \dQ_{\rm f}}{4 \pi R_{\rm f}^2} +
 %     \displaystyle\sum_{w=1}^{10} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
-%    & \left. \displaystyle\sum_{w=1}^5 \sigma \, F_w \, \left(T_{\rm l}^4 \alpha_l \tau_u + T_{\rm u}^4 \alpha_u\right) + \displaystyle\sum_{w=5}^{10} \sigma \, F_w \, \left(T_{\rm u}^4 \alpha_u \tau_l + T_{\rm l}^4 \alpha_l\right) - 
+%    & \left. \displaystyle\sum_{w=1}^5 \sigma \, F_w \, \left(T_{\rm l}^4 \alpha_l \tau_u + T_{\rm u}^4 \alpha_u\right) + \displaystyle\sum_{w=5}^{10} \sigma \, F_w \, \left(T_{\rm u}^4 \alpha_u \tau_l + T_{\rm l}^4 \alpha_l\right) -
 %     \sigma T_{\rm t}^4 \right)
 %\end{split}
 \be \label{target_rad}
 \begin{split}
-   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}}^{{\rm fires}} 
+   \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}}^{{\rm fires}}
    \frac{\cos(\theta_{\rm f})}{4 \pi R_{\rm f}^2} \tau_u \tau_l \; \chi_{\rm r} \, \dQ_{\rm f} +
    \displaystyle\sum_{w}^{\rm walls} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
     & \left. \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_u \alpha_l \sigma T_l^4  + \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_l \alpha_u\sigma T_u^4 - \sigma T_t^4 \right)

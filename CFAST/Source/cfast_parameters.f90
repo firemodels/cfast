@@ -3,7 +3,7 @@
 
 module cparams
     use precision_parameters
-    
+
     integer, parameter :: lbufln=1024           ! default line length for all inputs
 
     ! geometry parameters

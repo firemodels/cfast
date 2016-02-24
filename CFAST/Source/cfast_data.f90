@@ -48,27 +48,21 @@ module cenviro
 
 end module cenviro
 
-! --------------------------- cfast_main -------------------------------------------
+! --------------------------- ramp_data -------------------------------------------
 
-module cfast_main
+module ramp_data
     use precision_parameters
     use cfast_types
     use cparams
     implicit none
     save
 
-    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
-    real(eb) :: stime, deltat
-
-    character(128) :: title
-
     ! ramping variables
     integer :: nramps = 0
     real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
     type(ramp_type), target :: rampinfo(mxramps)
 
-
-end module cfast_main
+end module ramp_data
 
 ! --------------------------- setup_data -------------------------------------------
 
@@ -77,6 +71,11 @@ module setup_data
     use precision_parameters
     implicit none
     save
+    
+    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
+    real(eb) :: stime, deltat
+
+    character(128) :: title
 
     logical :: nokbd=.false., initializeonly=.false.
     logical :: debugging=.false., validate=.false., netheatflux=.false.
@@ -295,7 +294,7 @@ module option_data
 
       end module option_data
 
-! --------------------------- smkview -------------------------------------------
+! --------------------------- smkview_data -------------------------------------------
 
 module smkview_data
 

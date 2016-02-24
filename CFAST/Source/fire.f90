@@ -6,7 +6,7 @@ module fire_routines
     use utility_routines
 
     use cenviro
-    use cfast_main
+    use ramp_data
     use room_data
     use fireptrs
     use target_data

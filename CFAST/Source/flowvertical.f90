@@ -26,7 +26,7 @@ module vflow_routines
 
     use precision_parameters
     use cenviro
-    use cfast_main
+    use ramp_data
     use flwptrs
     use option_data
     use vent_data
@@ -184,7 +184,7 @@ module vflow_routines
 
     use precision_parameters
     use cenviro
-    use cfast_main, only: qcvv, nramps, rampinfo
+    use ramp_data, only: qcvv, nramps, rampinfo
     implicit none
 
     character, intent(in) :: venttype
@@ -254,7 +254,7 @@ module vflow_routines
 
     use precision_parameters
     use cenviro
-    use cfast_main
+    use ramp_data
     implicit none
 
     integer, intent(in) :: itop, ibot, nshape
@@ -396,7 +396,7 @@ module vflow_routines
 
     !       this is a routine to get the shape data for vertical flow (horizontal) vents
 
-    use cfast_main
+    use ramp_data
     use vent_data
 
     use precision_parameters

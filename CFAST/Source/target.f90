@@ -11,7 +11,6 @@ module target_routines
     use utility_routines, only: xerror
 
     use cenviro
-    use cfast_main
     use detectorptrs
     use target_data
     use fire_data, only: xfire, ifrpnt

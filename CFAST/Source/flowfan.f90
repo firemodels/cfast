@@ -6,7 +6,7 @@ module mflow_routines
     use utility_routines, only: d1mach
 
     use precision_parameters
-    use cfast_main
+    use ramp_data
     use cenviro
     use flwptrs
     use option_data

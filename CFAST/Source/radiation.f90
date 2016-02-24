@@ -9,7 +9,6 @@ module radiation_routines
     use cenviro
     use setup_data, only: logerr
     use fireptrs
-    use cfast_main
     use room_data
     use fire_data, only: xfire, ifrpnt
     use option_data

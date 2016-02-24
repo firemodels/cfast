@@ -4,7 +4,7 @@
     use fireptrs
     use wallptrs
     use cenviro
-    use cfast_main
+    use ramp_data
     use fire_data, only: xfire, ifrpnt
     use room_data
     use option_data

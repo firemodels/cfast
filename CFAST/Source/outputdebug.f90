@@ -7,7 +7,6 @@ module debug_routines
 
     use cenviro
     use cfast_types
-    use cfast_main
     use cparams
     use debug_data
     use room_data

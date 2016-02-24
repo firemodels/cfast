@@ -9,7 +9,7 @@ module initialization_routines
     use utility_routines, only: indexi, xerror
 
     use cenviro
-    use cfast_main
+    use ramp_data
     use cparams
     use setup_data
     use solver_data

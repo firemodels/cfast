@@ -30,7 +30,7 @@ module hflow_routines
 
     use precision_parameters
     use cenviro
-    use cfast_main
+    use ramp_data
     use flwptrs
     use option_data
     use vent_data
@@ -552,7 +552,7 @@ module hflow_routines
 
     use precision_parameters
     use cenviro
-    use cfast_main
+    use ramp_data
     use vent_data
     implicit none
 

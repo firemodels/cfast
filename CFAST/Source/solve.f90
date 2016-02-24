@@ -20,7 +20,7 @@ module solve_routines
     use vflow_routines, only: vertical_flow
 
     use cenviro
-    use cfast_main
+    use ramp_data
     use setup_data
     use solver_data
     use debug_data

@@ -4,7 +4,6 @@ module output_routines
     use target_routines, only: get_target_temperatures
     use utility_routines, only: xerror, doesthefileexist, funit
 
-    use cfast_main
     use cenviro
     use setup_data
     use solver_data

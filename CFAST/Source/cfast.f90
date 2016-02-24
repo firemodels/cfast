@@ -34,7 +34,6 @@
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
 
-    use cfast_main
     use setup_data
     use thermal_data
     use option_data, only: total_steps

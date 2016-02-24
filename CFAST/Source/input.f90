@@ -10,7 +10,7 @@ module input_routines
 
     use wallptrs
     use cenviro
-    use cfast_main
+    use ramp_data
     use cparams, only: mx_hsep
     use setup_data
     use debug_data

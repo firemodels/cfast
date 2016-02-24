@@ -35,8 +35,7 @@
     use utility_routines, only : cptime, read_command_options
 
     use cfast_main
-    use cshell
-    use iofiles
+    use setup_data
     use thermp
     use opt, only: total_steps
 
@@ -113,8 +112,7 @@
     !                errorcode - numeric code indicating reason for an error exit.  0 for a normal exit
 
     use output_routines, only : deleteoutputfiles
-    use cshell
-    use iofiles, only: stopfile
+    use setup_data
 
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode

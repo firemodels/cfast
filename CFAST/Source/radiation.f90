@@ -7,7 +7,7 @@ module radiation_routines
 
     use precision_parameters
     use cenviro
-    use cshell, only: logerr
+    use setup_data, only: logerr
     use fireptrs
     use cfast_main
     use fire_data, only: xfire, ifrpnt

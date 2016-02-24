@@ -3,10 +3,8 @@ module utility_routines
     use precision_parameters
 
     use cparams
-    use cshell
-    use iofiles, only: ncol
+    use setup_data
     use opt
-    use params
     use solver_parameters
     use vent_data, only: ductcv
     use wnodes

@@ -12,7 +12,6 @@ module fire_routines
     use flwptrs
     use fire_data
     use opt
-    use params
     use smkview_data
     use vent_data
 

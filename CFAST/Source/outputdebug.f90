@@ -11,7 +11,6 @@ module debug_routines
     use cparams
     use debug
     use vent_data
-    use vent_slab
 
     implicit none
 

@@ -10,7 +10,6 @@ module mflow_routines
     use cenviro
     use flwptrs
     use opt
-    use params
     use vent_data
 
     implicit none

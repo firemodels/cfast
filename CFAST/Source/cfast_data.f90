@@ -60,12 +60,14 @@ module cfast_main
 
     real(eb) :: cp, gamma, rgas
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
+    logical :: exset
 
     character(128) :: title
 
     ! compartment variables
     integer n, nm1
-    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns)
+    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns), &
+        initial_mass_fraction(ns), qfc(2,nr)
     type(room_type), target :: roominfo(nr)
 
     ! wall variables
@@ -79,35 +81,40 @@ module cfast_main
     real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
     type(ramp_type), target :: rampinfo(mxramps)
 
-    ! visualization variables
-    integer :: nvisualinfo = 0
-    type(visual_type), dimension (mxslice), target :: visualinfo
-
-    integer :: nsliceinfo = 0
-    type(slice_type), allocatable, dimension(:), target :: sliceinfo
-
-    integer :: nisoinfo = 0
-    type(iso_type), allocatable, dimension(:), target :: isoinfo
-
 
 end module cfast_main
 
-! --------------------------- cshell -------------------------------------------
+! --------------------------- setup_data -------------------------------------------
 
-module cshell
+module setup_data
 
+    use precision_parameters
     implicit none
     save
 
     logical :: nokbd=.false., initializeonly=.false.
     logical :: debugging=.false., validate=.false., netheatflux=.false.
-    integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3
+    integer :: version, outputformat=0
     integer, dimension(3) :: rundat
     character(128) :: thrmfile="thermal"
     character(60) :: nnfile=" ", datafile
     character(32) :: mpsdatc
+    
+    !File descriptors for cfast
+    integer :: iofili=1, iofilo=6, logerr=3
+    character(6), parameter :: heading="VERSN"
+    character(64) :: project
+    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
+        ssflow, ssnormal, ssspecies, sswall, errorlogging, stopfile, solverini, &
+        historyfile, queryfile, statusfile, kernelisrunning
 
-end module cshell
+! Work arrays for the csv input routines
+
+    integer, parameter :: nrow=10000, ncol=100
+    real(eb) :: rarray(nrow,ncol)
+    character(128) :: carray(nrow,ncol)
+
+end module setup_data
 
 ! --------------------------- solver_data -------------------------------------------
 
@@ -152,30 +159,6 @@ module target_data
     type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
 
 end module target_data
-
-! --------------------------- iofiles -------------------------------------------
-
-module  iofiles
-
-    use precision_parameters
-    implicit none
-    save
-
-!File descriptors for cfast
-
-    character(6), parameter :: heading="VERSN"
-    character(64) :: project
-    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
-        ssflow, ssnormal, ssspecies, sswall, errorlogging, stopfile, solverini, &
-        historyfile, queryfile, statusfile, kernelisrunning
-
-! Work arrays for the csv input routines
-
-    integer, parameter :: nrow=10000, ncol=100
-    real(eb) :: rarray(nrow,ncol)
-    character(128) :: carray(nrow,ncol)
-
-end module iofiles
 
 ! --------------------------- debug -------------------------------------------
 
@@ -313,37 +296,12 @@ module opt
 
       end module opt
 
-! --------------------------- params -------------------------------------------
-
-module params
-
-    use precision_parameters
-    use cparams
-    implicit none
-    save
-
-!   these are temporary work arrays
-
-!   ex... are the settings for the external ambient
-!   qfr,... are the heat balance calculations for calculate_residuals and conductive_flux. it is now indexed by
-!    fire rather than by compartment
-!   the variables ht.. and hf.. are for vertical flow
-!   the volume fractions volfru and volfrl are calculated by calculate_residuals at the beginning of a time step
-!   hvfrac is the fraction that a mv duct is in the upper or lower layer
-
-    logical :: exset
-    integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
-
-    real(eb) :: qfc(2,nr), initial_mass_fraction(ns), &
-        volfru(nr), volfrl(nr)
-
-end module params
-
 ! --------------------------- smkview -------------------------------------------
 
 module smkview_data
 
     use precision_parameters
+    use cfast_types
     use cparams
     implicit none
     save
@@ -352,6 +310,16 @@ module smkview_data
     character(60) :: smkgeom, smkplot, smkplottrunc
     logical :: remapfiresdone
     real(eb), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+    
+    ! visualization variables
+    integer :: nvisualinfo = 0
+    type(visual_type), dimension (mxslice), target :: visualinfo
+
+    integer :: nsliceinfo = 0
+    type(slice_type), allocatable, dimension(:), target :: sliceinfo
+
+    integer :: nisoinfo = 0
+    type(iso_type), allocatable, dimension(:), target :: isoinfo
 
 end module smkview_data
 
@@ -402,12 +370,6 @@ module thermp
 
     end module thermp
 
-! --------------------------- fires -------------------------------------------
-
-module fires
-
-end module fires
-
 ! --------------------------- vent_data -------------------------------------------
 
 module vent_data
@@ -430,7 +392,8 @@ module vent_data
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
-        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr
+        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr, &
+        izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
     real(eb) :: hveflo(2,mxext), hveflot(2,mxext), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
@@ -444,27 +407,17 @@ module vent_data
 
     real(eb), dimension(nr,mxhvent) :: zzventdist
     real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
+    
+    !slab data
+    real(eb), dimension(mxfslab) :: yvelev, dpv1m2
+    integer, dimension(mxfslab) ::  dirs12
+    integer :: nvelev, ioutf
 
     type (vent_type), dimension(mxhvent), target :: hventinfo
     type (vent_type), dimension(mxvvent), target :: vventinfo
     type (vent_type), dimension(mxext), target :: mventinfo
 
 end module vent_data
-
-! --------------------------- vent_slab -------------------------------------------
-
-module vent_slab
-
-    use precision_parameters
-    use cparams, only: mxfslab
-    implicit none
-    save
-
-    real(eb), dimension(mxfslab) :: yvelev, dpv1m2
-    integer, dimension(mxfslab) ::  dirs12
-    integer :: nvelev, ioutf
-
-end module vent_slab
 
 ! --------------------------- wdervs -------------------------------------------
 

@@ -12,15 +12,14 @@ module input_routines
     use cenviro
     use cfast_main
     use cparams, only: mx_hsep
-    use cshell
+    use setup_data
     use debug
     use detectorptrs
     use target_data
-    use iofiles
     use fire_data
     use opt
-    use params
     use solver_parameters
+    use smkview_data
     use thermp
     use vent_data
     use wnodes

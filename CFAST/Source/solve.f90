@@ -21,15 +21,13 @@ module solve_routines
 
     use cenviro
     use cfast_main
-    use cshell
+    use setup_data
     use solver_data
     use debug
     use flwptrs
     use target_data
-    use iofiles
     use fire_data
     use opt
-    use params
     use smkview_data
     use solver_parameters
     use vent_data
@@ -1675,13 +1673,6 @@ module solve_routines
             zzvol(iroom,upper) = min(zzvol(iroom,upper),roomptr%vmax)
             zzvol(iroom,lower) = max(roomptr%volume-zzvol(iroom,upper),roomptr%vmin)
             zzvol(iroom,lower) = min(zzvol(iroom,lower),roomptr%vmax)
-
-            ! prevent flow from being withdrawn from a layer if the layer
-            ! is at the minimum size
-            volfru(iroom) = (zzvol(iroom,upper)-vminfrac*roomptr%volume)/roomptr%volume*(1.0_eb-2.0_eb*vminfrac)
-            volfru(iroom) = max(min(volfru(iroom),1.0_eb),0.0_eb)
-            volfrl(iroom) = 1.0_eb - volfru(iroom)
-            volfrl(iroom) = max(min(volfrl(iroom),1.0_eb),0.0_eb)
 
             ! calculate layer height for non-rectangular rooms
             npts = izrvol(iroom)

@@ -11,10 +11,9 @@ module initialization_routines
     use cenviro
     use cfast_main
     use cparams
-    use cshell
+    use setup_data
     use solver_data
     use fire_data
-    use params
     use opt
     use target_data
     use thermp

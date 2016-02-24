@@ -6,16 +6,14 @@ module output_routines
 
     use cfast_main
     use cenviro
-    use cshell
+    use setup_data
     use solver_data
     use detectorptrs
     use fireptrs
     use flwptrs
     use target_data
-    use iofiles
     use fire_data
     use opt
-    use params
     use solver_parameters
     use thermp
     use vent_data

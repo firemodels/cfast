@@ -33,7 +33,6 @@ module hflow_routines
     use flwptrs
     use opt
     use vent_data
-    use vent_slab
     use debug
     implicit none
 

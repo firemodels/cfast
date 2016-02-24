@@ -10,12 +10,13 @@
     use utility_routines, only: funit
 
     use cenviro
-    use cfast_main
+    use cfast_main, only: roominfo, nm1
     use cfast_types
     use detectorptrs
     use target_data
     use vent_data
-    use iofiles
+    use setup_data
+    use smkview_data
 
     implicit none
 
@@ -486,9 +487,10 @@ module isosurface
     use fire_routines, only: get_gas_temp_velocity
     use utility_routines, only : funit
 
-    use iofiles
+    use setup_data
     use cenviro
-    use cfast_main
+    use cfast_main, only: roominfo
+    use smkview_data
 
     implicit none
 

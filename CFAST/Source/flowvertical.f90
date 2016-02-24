@@ -28,7 +28,6 @@ module vflow_routines
     use cfast_main
     use flwptrs
     use opt
-    use params
     use vent_data
     implicit none
 

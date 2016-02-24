@@ -339,7 +339,7 @@ module spreadsheet_routines
     save outarray, firstc
 
     ! If there are no species, then don't do the output
-    if (nlspct==0) return
+    if (n_species==0) return
 
     ! Set up the headings
     if (firstc) then

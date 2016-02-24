@@ -54,14 +54,12 @@ module cfast_main
     implicit none
     save
 
-    integer :: ivers, mpsdat(3), lcopyss, lfmax, lfbt, lprint, lsmv, nlspct, nsmax, itmmax, itmstp
-
-
-    real(eb) :: cp, gamma, rgas
-    real(eb) :: relhum, interior_abs_pressure, pofset, pref, te, tref
+    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
+    integer :: n_species
     real(eb) :: stime, deltat
 
-    logical activs(ns)
+    real(eb) :: cp, gamma, rgas
+    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
 
     character(128) :: title
 
@@ -333,12 +331,11 @@ module params
 !   the volume fractions volfru and volfrl are calculated by calculate_residuals at the beginning of a time step
 !   hvfrac is the fraction that a mv duct is in the upper or lower layer
 
-    logical :: allowed(ns), exset
+    logical :: exset
     integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
 
     real(eb) :: qfc(2,nr), initial_mass_fraction(ns), &
-        volfru(nr), volfrl(nr), hvfrac(2,mxext), exterior_abs_pressure, &
-        chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
+        volfru(nr), volfrl(nr)
 
 end module params
 
@@ -438,7 +435,8 @@ module vent_data
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
-        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext)
+        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext), hvfrac(2,mxext), &
+        chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
     logical :: mvcalc_on
 
     integer, dimension(mxhvent,2) :: ivvent

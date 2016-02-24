@@ -90,7 +90,7 @@ module radiation_routines
             end if
         end do
         if(.not.black)then
-            if(option(frad)==4.or.lfbt==1)then
+            if(option(frad)==4)then
                 zzabsb(upper,i) = defabsup
                 zzabsb(lower,i) = defabslow
             else

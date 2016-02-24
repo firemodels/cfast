@@ -154,24 +154,22 @@ module vflow_routines
 
             ! species transfer for vertical vents
             do lsp = 1, ns
-                if (activs(lsp)) then
-                    index = pp+lsp-1
-                    speciesl = zzcspec(ifrm,lower,lsp)*fromml
-                    speciesu = zzcspec(ifrm,upper,lsp)*frommu
+                index = pp+lsp-1
+                speciesl = zzcspec(ifrm,lower,lsp)*fromml
+                speciesu = zzcspec(ifrm,upper,lsp)*frommu
 
-                    ! extract mass and enthalpy from "from" room (not from the outside)
-                    if (ifrm<=nm1) then
-                        flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - speciesu
-                        flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - speciesl
-                    end if
+                ! extract mass and enthalpy from "from" room (not from the outside)
+                if (ifrm<=nm1) then
+                    flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - speciesu
+                    flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - speciesl
+                end if
 
-                    ! deposit mass and enthalphy into "to" room variables (not outside)
-                    if (ito<=nm1) then
-                        pmtoup = (speciesu + speciesl)*fu
-                        pmtolp = (speciesu + speciesl)*fl
-                        flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
-                        flwvf(ito,index,lower) = flwvf(ito,index,lower) + pmtolp
-                    end if
+                ! deposit mass and enthalphy into "to" room variables (not outside)
+                if (ito<=nm1) then
+                    pmtoup = (speciesu + speciesl)*fu
+                    pmtolp = (speciesu + speciesl)*fl
+                    flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
+                    flwvf(ito,index,lower) = flwvf(ito,index,lower) + pmtolp
                 end if
             end do
         end do

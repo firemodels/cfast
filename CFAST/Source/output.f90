@@ -258,7 +258,7 @@ module output_routines
     integer :: i, icomp, layer, ic, lsp
     type(room_type), pointer :: roomptr
 
-    if (nlspct/=0) then
+    if (n_species/=0) then
 
         do layer = upper, lower
             write (iofilo,5050) lnames(layer)
@@ -266,7 +266,7 @@ module output_routines
             cjout = ' '
             ic = 16
             do lsp = 1, ns
-                if (activs(lsp).and.lsp/=10) then
+                if (lsp/=10) then
                     write (ciout(ic:ic+9),5000) stype(lsp)
                     write (cjout(ic:ic+9),5000) sunits(lsp)
                     ic = ic + 11
@@ -282,7 +282,7 @@ module output_routines
                 ic = 14
                 if (layer==upper.or..not.roomptr%shaft) then
                     do lsp = 1, ns
-                        if (activs(lsp).and.lsp/=10) then
+                        if (lsp/=10) then
                             write (ciout(ic:ic+9),5040) toxict(icomp,layer,lsp)
                             ic = ic + 11
                         end if
@@ -626,7 +626,7 @@ module output_routines
 
     write (iofilo,5000)
     write (iofilo,5010) nm1, n_hvents, n_vvents, next
-    write (iofilo,5020) nsmax, lprint, lsmv, lcopyss
+    write (iofilo,5020) time_end, print_out_interval, smv_out_interval, ss_out_interval
 
 5000 format (//,'OVERVIEW',/)
 5010 FORMAT (/,'Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,61('-'),/,i4,12x,i4,10x,i4,17x,i4)
@@ -641,8 +641,8 @@ module output_routines
 
     !     Description:  Output initial test case ambient conditions
 
-    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pofset, &
-       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pofset
+    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
+       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
     return
 
 5000 format (//,'AMBIENT CONDITIONS',//, &
@@ -887,7 +887,7 @@ module output_routines
                 roomptr => roominfo(objrm(j))
                 write (iofilo,5020) objnin(j)(1:len_trim(objnin(j))), j, fire_geometry(obj_fpos(j))
                 write (iofilo,5030) roomptr%name, ftype(objtyp(j)), objpos(1,j), objpos(2,j), &
-                   objpos(3,j), relhum*100., lower_o2_limit*100.,radconsplit(j)
+                   objpos(3,j), relative_humidity*100., lower_o2_limit*100.,radconsplit(j)
                 write (iofilo,5031) obj_c(j), obj_h(j), obj_o(j), obj_n(j), obj_cl(j)
                 write (cbuf,5040)
                 write (cbuf(51:132),5050)
@@ -1171,11 +1171,9 @@ module output_routines
             write (*,5020) '   Lower temp(K)', zztemp(i,lower)
             write (*,5020) ' Interface ht(m)', zzhlay(i,lower)
             write (*,5020) '   Pressure (pa)', zzrelp(i)
-            if (nlspct>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
+            if (n_species>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
-                if (activs(iprod)) then
-                    write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
-                end if
+                write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
@@ -1309,7 +1307,6 @@ module output_routines
     subroutine openoutputfiles
 
     !	Now that we know what output is needed, open the appropriate files
-    !	Note that the sign of lprint determines whether we write to the console or  file
     !	Unit numbers defined here and readinputfiles
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
@@ -1334,21 +1331,20 @@ module output_routines
 
     ! first the file for "printed" output
     open (unit=iofilo,file=outputfile,status='new')
-    lprint = abs(lprint)
     if (outputformat==0) outputformat = 2
 
     ! next create the status file
     open (12,file=statusfile,access='append',err=81,iostat=ios)
 
     ! now the smokeview files
-    if (lsmv>0) then
+    if (smv_out_interval>0) then
         open (unit=13,file=smvhead,form='formatted',err=11,iostat=ios)
         open (unit=14,file=smvdata,form="unformatted",err=11,iostat=ios)
         open (unit=15, file=smvcsv,form='formatted')
     end if
 
     ! next the spread sheet files
-    if (lcopyss>0) then
+    if (ss_out_interval>0) then
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')
         open (unit=23, file=ssspecies,form='formatted')

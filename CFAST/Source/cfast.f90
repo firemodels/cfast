@@ -58,10 +58,6 @@
     call read_command_options
     call open_files
 
-    mpsdat(1) = rundat(1)
-    mpsdat(2) = rundat(2)
-    mpsdat(3) = rundat(3)
-
     call output_version (logerr)
 
     call read_solver_ini
@@ -69,9 +65,9 @@
 
     call initialize_species
 
-    xdelt = nsmax/deltat
-    itmmax = xdelt + 1
-    tstop = itmmax - 1
+    xdelt = time_end/deltat
+    i_time_end = xdelt + 1
+    tstop = i_time_end - 1
 
     ! add the default thermal property
     maxct = maxct + 1
@@ -87,10 +83,10 @@
     call initialize_walls (tstop)
 
     stime = 0.0_eb
-    itmstp = 1
-    xdelt = nsmax/deltat
-    itmmax = xdelt + 1
-    tstop = itmmax - 1
+    i_time_step = 1
+    xdelt = time_end/deltat
+    i_time_end = xdelt + 1
+    tstop = i_time_end - 1
 
     call output_initial_conditions
 

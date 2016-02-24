@@ -102,10 +102,8 @@ module mflow_routines
         flwmv(i,q,upper) = flwmv(i,q,upper) + hveflo(upper,ii)*cp*hvextt(ii,upper)
         flwmv(i,q,lower) = flwmv(i,q,lower) + hveflo(lower,ii)*cp*hvextt(ii,lower)
         do k = 1, ns
-            if (activs(k)) then
-                flwmv(i,2+k,lower) = flwmv(i,2+k,lower) + hvexcn(ii,k,lower)*hveflo(lower,ii)
-                flwmv(i,2+k,upper) = flwmv(i,2+k,upper) + hvexcn(ii,k,upper)*hveflo(upper,ii)
-            end if
+            flwmv(i,2+k,lower) = flwmv(i,2+k,lower) + hvexcn(ii,k,lower)*hveflo(lower,ii)
+            flwmv(i,2+k,upper) = flwmv(i,2+k,upper) + hvexcn(ii,k,upper)*hveflo(upper,ii)
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling
@@ -362,15 +360,13 @@ module mflow_routines
             hvp(j) =  exterior_abs_pressure - exterior_density*grav_con*hvelxt(ii)
         end if
         do lsp = 1, ns
-            if (activs(lsp)) then
-                if (i<n) then
-                    hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
-                    hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
-                else
-                    xxrho = initial_mass_fraction(lsp)*exterior_density
-                    hvexcn(ii,lsp,upper) = xxrho
-                    hvexcn(ii,lsp,lower) = xxrho
-                end if
+            if (i<n) then
+                hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
+                hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
+            else
+                xxrho = initial_mass_fraction(lsp)*exterior_density
+                hvexcn(ii,lsp,upper) = xxrho
+                hvexcn(ii,lsp,lower) = xxrho
             end if
         end do
     end do
@@ -421,8 +417,8 @@ module mflow_routines
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if(nprod/=0)then
                 do k = 1, ns
-                    if (activs(k)) dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(upper,ii))*hvexcn(ii,k,upper) + &
-                                                      abs(hveflo(lower,ii))*hvexcn(ii,k,lower)
+                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(upper,ii))*hvexcn(ii,k,upper) + &
+                                       abs(hveflo(lower,ii))*hvexcn(ii,k,lower)
                 end do
             end if
         end if
@@ -431,42 +427,24 @@ module mflow_routines
     ! flow out of the isys system
     if(nprod/=0)then
         do k = 1, min(ns,9)
-            if(activs(k))then
-                do isys = 1, nhvsys
-                    if (zzhvm(isys)/=0.0_eb)then
-                        dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
-                    end if
-                end do
-            end if
-        end do
-
-        ! do a special case for the non-reacting gas(es)
-        k = 11
-        if(activs(k))then
             do isys = 1, nhvsys
                 if (zzhvm(isys)/=0.0_eb)then
                     dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
                 end if
             end do
-        end if
+        end do
+
+        ! do a special case for the non-reacting gas(es)
+        k = 11
+        do isys = 1, nhvsys
+            if (zzhvm(isys)/=0.0_eb)then
+                dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
+            end if
+        end do
 
         ! pack the species change for dassl (actually calculate_residuals)
         isof = 0
         do k = 1, min(ns,9)
-            if(activs(k))then
-                do isys = 1, nhvsys
-                    isof = isof + 1
-                    if (zzhvm(isys)/=0.0_eb)then
-                        prprime(isof) = dhvprsys(isys,k)
-                    else
-                        prprime(isof) = 0.0_eb
-                    end if
-                end do
-            end if
-        end do
-        ! do a special case for the non-reacting gas(es)
-        k = 11
-        if(activs(k))then
             do isys = 1, nhvsys
                 isof = isof + 1
                 if (zzhvm(isys)/=0.0_eb)then
@@ -475,7 +453,17 @@ module mflow_routines
                     prprime(isof) = 0.0_eb
                 end if
             end do
-        end if
+        end do
+        ! do a special case for the non-reacting gas(es)
+        k = 11
+        do isys = 1, nhvsys
+            isof = isof + 1
+            if (zzhvm(isys)/=0.0_eb)then
+                prprime(isof) = dhvprsys(isys,k)
+            else
+                prprime(isof) = 0.0_eb
+            end if
+        end do
     end if
 
     ! define flows or temperature leaving system
@@ -488,20 +476,18 @@ module mflow_routines
             hvextt(ii,upper) = tbr(ib)
             hvextt(ii,lower) = tbr(ib)
             do k = 1, ns
-                if (activs(k))then
-                    ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
-                    if (zzhvm(isys)/=0.0_eb) then
-                        hvexcn(ii,k,upper) = zzhvpr(isys,k)/zzhvm(isys)
-                        hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
+                ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
+                if (zzhvm(isys)/=0.0_eb) then
+                    hvexcn(ii,k,upper) = zzhvpr(isys,k)/zzhvm(isys)
+                    hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
                     ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
                     !         - see keywordcases to change this
-                    elseif(hvmfsys(isys)/=0.0_eb) then
-                        hvexcn(ii,k,upper) = -(dhvprsys(isys,k)/hvmfsys(isys))
-                        hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
-                    else
-                        hvexcn(ii,k,upper) = 0.0_eb
-                        hvexcn(ii,k,lower) = 0.0_eb
-                    end if
+                elseif(hvmfsys(isys)/=0.0_eb) then
+                    hvexcn(ii,k,upper) = -(dhvprsys(isys,k)/hvmfsys(isys))
+                    hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
+                else
+                    hvexcn(ii,k,upper) = 0.0_eb
+                    hvexcn(ii,k,lower) = 0.0_eb
                 end if
             end do
         end if

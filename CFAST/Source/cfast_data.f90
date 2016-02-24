@@ -58,11 +58,8 @@ module cfast_main
     integer :: n_species
     real(eb) :: stime, deltat
 
-
     real(eb) :: cp, gamma, rgas
     real(eb) :: relative_humidity, interior_abs_pressure, pressure_offset, pressure_ref, t_ref
-
-    logical activs(ns)
 
     character(128) :: title
 
@@ -334,7 +331,7 @@ module params
 !   the volume fractions volfru and volfrl are calculated by calculate_residuals at the beginning of a time step
 !   hvfrac is the fraction that a mv duct is in the upper or lower layer
 
-    logical :: allowed(ns), exset
+    logical :: exset
     integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
 
     real(eb) :: qfc(2,nr), initial_mass_fraction(ns), &

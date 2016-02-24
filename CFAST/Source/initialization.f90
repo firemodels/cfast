@@ -610,8 +610,6 @@ module initialization_routines
     relative_humidity = 0.5_eb
 
     ! species
-    allowed(1:ns) = .false.
-    activs(1:ns) = .true.
     initial_mass_fraction(1:ns) = 0.0_eb
     ! normal air
     initial_mass_fraction(1) = 0.77_eb
@@ -826,26 +824,22 @@ module initialization_routines
 
     isof = nofprd
     do lsp = 1, ns
-        if (activs(lsp)) then
-            do i = 1, nm1
-                do k = upper, lower
-                    isof = isof + 1
-                    p(isof) = initialmass(k,i,lsp)
-                end do
+        do i = 1, nm1
+            do k = upper, lower
+                isof = isof + 1
+                p(isof) = initialmass(k,i,lsp)
             end do
-        end if
+        end do
     end do
 
     ! hvinit define initial products for hvac systems (if any)
     if(nhvsys/=0)then
         isof = nofhvpr
         do lsp = 1, min(ns,9)
-            if(activs(lsp))then
-                do isys = 1, nhvsys
-                    isof = isof + 1
-                    p(isof) = initial_mass_fraction(lsp)*hvtm(isys)
-                end do
-            end if
+            do isys = 1, nhvsys
+                isof = isof + 1
+                p(isof) = initial_mass_fraction(lsp)*hvtm(isys)
+            end do
         end do
     end if
 
@@ -854,10 +848,8 @@ module initialization_routines
     izpmap(2) = 2
     ip = 2
     do iprod = 1, ns
-        if (activs(iprod)) then
-            ip = ip + 1
-            izpmap(ip) = iprod + 2
-        end if
+        ip = ip + 1
+        izpmap(ip) = iprod + 2
     end do
 
     return
@@ -1164,11 +1156,7 @@ module initialization_routines
     n_species = 0
 
     do i = 1, ns
-        if (allowed(i)) then
-            if (activs(i)) then
-                n_species = n_species + 1
-            end if
-        else if (i/=7) then
+        if  (i/=7) then
             n_species = n_species + 1
         end if
     end do

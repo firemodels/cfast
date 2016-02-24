@@ -266,7 +266,7 @@ module output_routines
             cjout = ' '
             ic = 16
             do lsp = 1, ns
-                if (activs(lsp).and.lsp/=10) then
+                if (lsp/=10) then
                     write (ciout(ic:ic+9),5000) stype(lsp)
                     write (cjout(ic:ic+9),5000) sunits(lsp)
                     ic = ic + 11
@@ -282,7 +282,7 @@ module output_routines
                 ic = 14
                 if (layer==upper.or..not.roomptr%shaft) then
                     do lsp = 1, ns
-                        if (activs(lsp).and.lsp/=10) then
+                        if (lsp/=10) then
                             write (ciout(ic:ic+9),5040) toxict(icomp,layer,lsp)
                             ic = ic + 11
                         end if
@@ -1173,9 +1173,7 @@ module output_routines
             write (*,5020) '   Pressure (pa)', zzrelp(i)
             if (n_species>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
-                if (activs(iprod)) then
-                    write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
-                end if
+                write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then

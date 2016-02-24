@@ -1838,24 +1838,22 @@ module solve_routines
         ! define species amounts
         isof = nofprd
         do lsp = 1, ns
-            if (activs(lsp)) then
-                do iroom = 1, nm1
-                    isof = isof + 1
-                    if (iflag==odevarb) then
-                        ppgas = pold(isof) + dt*pdold(isof)
-                    else
-                        ppgas = pdif(isof)
-                    end if
-                    zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
-                    isof = isof + 1
-                    if (iflag==odevarb) then
-                        ppgas = pold(isof) + dt*pdold(isof)
-                    else
-                        ppgas = pdif(isof)
-                    end if
-                    zzgspec(iroom,lower,lsp) = max(ppgas,0.0_eb)
-                end do
-            end if
+            do iroom = 1, nm1
+                isof = isof + 1
+                if (iflag==odevarb) then
+                    ppgas = pold(isof) + dt*pdold(isof)
+                else
+                    ppgas = pdif(isof)
+                end if
+                zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
+                isof = isof + 1
+                if (iflag==odevarb) then
+                    ppgas = pold(isof) + dt*pdold(isof)
+                else
+                    ppgas = pdif(isof)
+                end if
+                zzgspec(iroom,lower,lsp) = max(ppgas,0.0_eb)
+            end do
         end do
 
         ! define species mass fractions: normalize to total product mass
@@ -1866,22 +1864,18 @@ module solve_routines
             totl = 0.0_eb
             totu = 0.0_eb
             do lsp = 1, min(9,ns)
-                if (activs(lsp)) then
-                    totu = totu + zzgspec(iroom,upper,lsp)
-                    totl = totl + zzgspec(iroom,lower,lsp)
-                end if
+                totu = totu + zzgspec(iroom,upper,lsp)
+                totl = totl + zzgspec(iroom,lower,lsp)
             end do
             rtotl = 1.0_eb
             rtotu = 1.0_eb
             if (totl>0.0_eb) rtotl = 1.0_eb/totl
             if (totu>0.0_eb) rtotu = 1.0_eb/totu
             do lsp = 1, ns
-                if (activs(lsp)) then
-                    zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp)*rtotu
-                    zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp)*rtotl
-                    if(roomptr%shaft)then
-                        zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
-                    end if
+                zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp)*rtotu
+                zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp)*rtotl
+                if(roomptr%shaft)then
+                    zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
                 end if
             end do
 
@@ -1909,18 +1903,16 @@ module solve_routines
         zzhvm(1:nhvsys) = 0.0_eb
 
         do lsp = 1, ns
-            if (activs(lsp)) then
-                do isys = 1, nhvsys
-                    isof = isof + 1
-                    if (iflag==odevarb) then
-                        pphv = max(0.0_eb,pold(isof)+dt*pdold(isof))
-                    else
-                        pphv = max(0.0_eb,pdif(isof))
-                    end if
-                    zzhvpr(isys,lsp) = pphv
-                    zzhvm(isys) = zzhvm(isys) + zzhvpr(isys,lsp)
-                end do
-            end if
+            do isys = 1, nhvsys
+                isof = isof + 1
+                if (iflag==odevarb) then
+                    pphv = max(0.0_eb,pold(isof)+dt*pdold(isof))
+                else
+                    pphv = max(0.0_eb,pdif(isof))
+                end if
+                zzhvpr(isys,lsp) = pphv
+                zzhvm(isys) = zzhvm(isys) + zzhvpr(isys,lsp)
+            end do
         end do
     end if
     return
@@ -1949,14 +1941,12 @@ module solve_routines
 
     isof = ibeg
     do iprod = 1, min(ns,9)
-        if (activs(iprod)) then
-            do iroom = 1, nm1
-                factor(iroom,upper) = factor(iroom,upper) + pdif(isof)
-                isof = isof + 1
-                factor(iroom,lower) = factor(iroom,lower) + pdif(isof)
-                isof = isof + 1
-            end do
-        end if
+        do iroom = 1, nm1
+            factor(iroom,upper) = factor(iroom,upper) + pdif(isof)
+            isof = isof + 1
+            factor(iroom,lower) = factor(iroom,lower) + pdif(isof)
+            isof = isof + 1
+        end do
     end do
 
     do iroom = 1, nm1
@@ -1974,14 +1964,12 @@ module solve_routines
 
     isof = ibeg
     do iprod = 1, min(ns,9)
-        if (activs(iprod)) then
-            do iroom = 1, nm1
-                pdif(isof) = pdif(isof)*factor(iroom,upper)
-                isof = isof + 1
-                pdif(isof) = pdif(isof)*factor(iroom,lower)
-                isof = isof + 1
-            end do
-        end if
+        do iroom = 1, nm1
+            pdif(isof) = pdif(isof)*factor(iroom,upper)
+            isof = isof + 1
+            pdif(isof) = pdif(isof)*factor(iroom,lower)
+            isof = isof + 1
+        end do
     end do
 
     return

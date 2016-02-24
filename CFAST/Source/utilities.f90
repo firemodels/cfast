@@ -8,6 +8,7 @@ module utility_routines
     use opt
     use params
     use solver_parameters
+    use vent_data, only: ductcv
     use wnodes
 
     implicit none

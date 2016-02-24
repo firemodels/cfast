@@ -59,7 +59,7 @@ module cfast_main
     real(eb) :: stime, deltat
 
     real(eb) :: cp, gamma, rgas
-    real(eb) :: relative_humidity, interior_abs_pressure, pressure_offset, pressure_ref, t_ref
+    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
 
     character(128) :: title
 
@@ -335,8 +335,7 @@ module params
     integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
 
     real(eb) :: qfc(2,nr), initial_mass_fraction(ns), &
-        volfru(nr), volfrl(nr), hvfrac(2,mxext), exterior_abs_pressure, &
-        chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
+        volfru(nr), volfrl(nr)
 
 end module params
 
@@ -436,7 +435,8 @@ module vent_data
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
-        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext)
+        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext), hvfrac(2,mxext), &
+        chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
     logical :: mvcalc_on
 
     integer, dimension(mxhvent,2) :: ivvent

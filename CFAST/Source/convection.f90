@@ -6,8 +6,8 @@
     use cenviro
     use cfast_main
     use fire_data, only: xfire, ifrpnt
-    use wnodes
-    use opt
+    use room_data
+    use option_data
 
     implicit none
 
@@ -36,9 +36,9 @@
     type(room_type), pointer :: roomptr
 
 
-    flwcv(1:nm1,upper) = 0.0_eb
-    flwcv(1:nm1,lower) = 0.0_eb
-    flxcv(1:nm1,1:nwal) = 0.0_eb
+    flwcv(1:n_inside_rooms,upper) = 0.0_eb
+    flwcv(1:n_inside_rooms,lower) = 0.0_eb
+    flxcv(1:n_inside_rooms,1:nwal) = 0.0_eb
 
     if (option(fconvec)/=on) return
 

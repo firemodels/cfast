@@ -4,6 +4,7 @@ module hflow_routines
 
     use opening_fractions, only: qchfraction
     use debug_routines, only: ssprintslab, spreadsheetfslabs
+    use room_data
 
     implicit none
 
@@ -31,9 +32,9 @@ module hflow_routines
     use cenviro
     use cfast_main
     use flwptrs
-    use opt
+    use option_data
     use vent_data
-    use debug
+    use debug_data
     implicit none
 
     real(eb), intent(in) :: tsec, epsp
@@ -57,8 +58,8 @@ module hflow_routines
 
     position = 0
 
-    uflw(1:nm1,1:nprod+2,lower) = 0.0_eb
-    uflw(1:nm1,1:nprod+2,upper) = 0.0_eb
+    uflw(1:n_inside_rooms,1:nprod+2,lower) = 0.0_eb
+    uflw(1:n_inside_rooms,1:nprod+2,upper) = 0.0_eb
 
     if (option(fhflow)/=on) return
 
@@ -130,7 +131,7 @@ module hflow_routines
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
 
-            if (iroom1>=1.and.iroom1<=nm1) then
+            if (iroom1>=1.and.iroom1<=n_inside_rooms) then
                 uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw2(1,1:nprod+2,l)
                 uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw2(1,1:nprod+2,u)
                 if (option(fentrain)==on) then
@@ -138,7 +139,7 @@ module hflow_routines
                     uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw3(1,1:nprod+2,u)
                 end if
             end if
-            if (iroom2>=1.and.iroom2<=nm1) then
+            if (iroom2>=1.and.iroom2<=n_inside_rooms) then
                 uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw2(2,1:nprod+2,l)
                 uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw2(2,1:nprod+2,u)
                 if (option(fentrain)==on) then
@@ -185,7 +186,7 @@ module hflow_routines
     real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
     real(eb), intent(out) :: uflw3(2,mxfprd+2,2), vsas(2), vasa(2), pmix(mxfprd)
 
-    integer :: iprod, n , ifrom, ito
+    integer :: iprod, n_rooms , ifrom, ito
     real(eb) :: tmix, zd
 
     ! initialize outputs
@@ -194,21 +195,21 @@ module hflow_routines
     vsas(1:2) = 0.0_eb
     vasa(1:2) = 0.0_eb
 
-    do n = 1, nslab
+    do n_rooms = 1, nslab
 
         ! eliminate cases where entrainment does not occur, i.e. a slab which is adjacent to the upper layer on
         !    both sides or a slab which is adjacent to the lower layer on both sides
-        if (yslab(n)<zlay(1).or.yslab(n)<zlay(2)) then
-            if (yslab(n)>=zlay(1).or.yslab(n)>=zlay(2)) then
+        if (yslab(n_rooms)<zlay(1).or.yslab(n_rooms)<zlay(2)) then
+            if (yslab(n_rooms)>=zlay(1).or.yslab(n_rooms)>=zlay(2)) then
 
                 ! slabs with no flow cause no entrainment
-                if (xmslab(n)/=0.0_eb) then
+                if (xmslab(n_rooms)/=0.0_eb) then
 
                     ! determine what room flow is coming from
-                    if (dirs12(n)==1) then
+                    if (dirs12(n_rooms)==1) then
                         ifrom = 1
                         ito = 2
-                    else if (dirs12(n)==-1) then
+                    else if (dirs12(n_rooms)==-1) then
                         ifrom = 2
                         ito = 1
                     else
@@ -216,7 +217,7 @@ module hflow_routines
                     end if
 
                     ! determine temperature and product concentrations of entrained flow
-                    if (yslab(n)<zlay(ito)) then
+                    if (yslab(n_rooms)<zlay(ito)) then
                         tmix = tl(ito)
                         do iprod = 1, nprod
                             pmix(iprod) = conl(iprod,ito)
@@ -229,25 +230,25 @@ module hflow_routines
                     end if
 
                     ! compute the size of the entrained mass flow
-                    if (yslab(n)>=zlay(ifrom)) then
+                    if (yslab(n_rooms)>=zlay(ifrom)) then
 
                         ! into upper
-                        if (tu(ifrom)>tl(ito).and.xmslab(n)/=0.0_eb) then
+                        if (tu(ifrom)>tl(ito).and.xmslab(n_rooms)/=0.0_eb) then
                             zd = max(0.0_eb,zlay(ito)-max(yvbot,zlay(ifrom)))
-                            call poreh_plume (tu(ifrom),tl(ito),xmslab(n),zd,width,uflw3(ito,m,u))
+                            call poreh_plume (tu(ifrom),tl(ito),xmslab(n_rooms),zd,width,uflw3(ito,m,u))
                             uflw3(ito,m,l) = -uflw3(ito,m,u)
                             vsas(ito) = uflw3(ito,m,u)
                         end if
                     else
 
                         ! into lower
-                        if (tl(ifrom)<tu(ito).and.xmslab(n)/=0.0_eb) then
+                        if (tl(ifrom)<tu(ito).and.xmslab(n_rooms)/=0.0_eb) then
                             ! zd = max(0.0_eb,zlay(ifrom)-max(yvbot,zlay(ito)))
 
                             ! need to re-work distance zd for both into upper and into upper case.
                             ! the above doesn't work for all cases
                             zd = min(yvtop,zlay(ifrom)) - max(zlay(ito),yvbot)
-                            call poreh_plume (tu(ito),tl(ifrom),xmslab(n),zd,width,uflw3(ito,m,l))
+                            call poreh_plume (tu(ito),tl(ifrom),xmslab(n_rooms),zd,width,uflw3(ito,m,l))
 
                             ! the following factor (0.25 as of 10/1/93) now multiplies the lower layer entrainment
                             !    to try to approximate the reduced kelvin-helmholz type mixing.
@@ -287,7 +288,7 @@ module hflow_routines
     !                fm_entrained - mass entrained (output) (kg/s)
 
     use precision_parameters
-    use cfast_main, only : cp
+    use cenviro, only: cp
     implicit none
 
     real(eb), intent(in) :: tu, tl, fmd, zz, w
@@ -353,7 +354,7 @@ module hflow_routines
     real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
     real(eb), intent(out) :: vss(2), vsa(2), vas(2), vaa(2)
 
-    integer :: nneut, nelev, i, n, jroom, iprod, nvelev
+    integer :: nneut, nelev, i, n_rooms, jroom, iprod, nvelev
 
     real(eb) ::  yelev(10), dp1m2(10), yn(10)
     real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, r1m8, sum, ys
@@ -396,90 +397,90 @@ module hflow_routines
     end do
 
     ! initialize cfast data structures for flow storage
-    do n = 1, nslab
+    do n_rooms = 1, nslab
 
         ! determine whether temperature and density properties should come from room 1 or room 2
-        ptest = dpv1m2(n+1) + dpv1m2(n)
+        ptest = dpv1m2(n_rooms+1) + dpv1m2(n_rooms)
         if (ptest>0.0_eb) then
             jroom = 1
-            dirs12(n) = 1
+            dirs12(n_rooms) = 1
         else if (ptest<0.0_eb) then
-            dirs12(n) = -1
+            dirs12(n_rooms) = -1
             jroom = 2
         else
-            dirs12(n) = 0
+            dirs12(n_rooms) = 0
             jroom = 1
         end if
 
         ! determine whether temperature and density properties should come from upper or lower layer
-        if (yslab(n)<=zlay(jroom)) then
-            tslab(n) = tl(jroom)
-            rslab(n) = denl(jroom)
+        if (yslab(n_rooms)<=zlay(jroom)) then
+            tslab(n_rooms) = tl(jroom)
+            rslab(n_rooms) = denl(jroom)
             do iprod = 1, nprod
-                cslab(n,iprod) = conl(iprod,jroom)
+                cslab(n_rooms,iprod) = conl(iprod,jroom)
             end do
         else
-            tslab(n) = tu(jroom)
-            rslab(n) = denu(jroom)
+            tslab(n_rooms) = tu(jroom)
+            rslab(n_rooms) = denu(jroom)
             do iprod = 1, nprod
-                cslab(n,iprod) = conu(iprod,jroom)
+                cslab(n_rooms,iprod) = conu(iprod,jroom)
             end do
         end if
 
-        ! for nonzero-flow slabs determine xmslab(n) and yslab(n)
-        xmslab(n) = 0.0_eb
-        qslab(n) = 0.0_eb
+        ! for nonzero-flow slabs determine xmslab(n_rooms) and yslab(n_rooms)
+        xmslab(n_rooms) = 0.0_eb
+        qslab(n_rooms) = 0.0_eb
         do iprod = 1, nprod
-            pslab(n,iprod) = 0.0_eb
+            pslab(n_rooms,iprod) = 0.0_eb
         end do
-        p1 = abs(dpv1m2(n))
-        p2 = abs(dpv1m2(n+1))
+        p1 = abs(dpv1m2(n_rooms))
+        p2 = abs(dpv1m2(n_rooms+1))
         p1rt = sqrt(p1)
         p2rt = sqrt(p2)
 
         ! if both cross pressures are 0 then then there is no flow
         if (p1>0.0_eb.or.p2>0.0_eb) then
-            r1 = max(rslab(n),0.0_eb)
-            y2 = yvelev(n+1)
-            y1 = yvelev(n)
+            r1 = max(rslab(n_rooms),0.0_eb)
+            y2 = yvelev(n_rooms+1)
+            y1 = yvelev(n_rooms)
             cvent = 0.70_eb
 
             area = avent*(y2-y1)/(yvtop-yvbot)
             r1m8 = 8.0_eb*r1
-            xmslab(n) = cvent*sqrt(r1m8)*area*(p2+p1rt*p2rt+p1)/(p2rt+p1rt)/3.0_eb
-            qslab(n) = cp*xmslab(n)*tslab(n)
+            xmslab(n_rooms) = cvent*sqrt(r1m8)*area*(p2+p1rt*p2rt+p1)/(p2rt+p1rt)/3.0_eb
+            qslab(n_rooms) = cp*xmslab(n_rooms)*tslab(n_rooms)
             sum = 0.0_eb
             do iprod = 1, nprod
-                pslab(n,iprod) = cslab(n,iprod)*xmslab(n)
-                sum = sum + pslab(n,iprod)
+                pslab(n_rooms,iprod) = cslab(n_rooms,iprod)*xmslab(n_rooms)
+                sum = sum + pslab(n_rooms,iprod)
             end do
         end if
 
         ! construct cfast data structures ss, sa, as, aa
-        ys = yslab(n)
+        ys = yslab(n_rooms)
         if (ys>max(zlay(1),zlay(2))) then
-            if (dirs12(n)>0) then
-                vss(1) = xmslab(n)
+            if (dirs12(n_rooms)>0) then
+                vss(1) = xmslab(n_rooms)
             else
-                vss(2) = xmslab(n)
+                vss(2) = xmslab(n_rooms)
             end if
         else if (ys<min(zlay(1),zlay(2))) then
-            if (dirs12(n)>0) then
-                vaa(1) = xmslab(n)
+            if (dirs12(n_rooms)>0) then
+                vaa(1) = xmslab(n_rooms)
             else
-                vaa(2) = xmslab(n)
+                vaa(2) = xmslab(n_rooms)
             end if
         else if (ys>zlay(1)) then
-            if (dirs12(n)>0) then
-                vsa(1) = xmslab(n)
+            if (dirs12(n_rooms)>0) then
+                vsa(1) = xmslab(n_rooms)
             else
-                vas(2) = xmslab(n)
+                vas(2) = xmslab(n_rooms)
             end if
         else if (ys>zlay(2)) then
-            if (dirs12(n)>0) then
-                vas(1) = xmslab(n)
+            if (dirs12(n_rooms)>0) then
+                vas(1) = xmslab(n_rooms)
             else
-                vsa(2) = xmslab(n)
+                vsa(2) = xmslab(n_rooms)
             end if
         end if
     end do
@@ -629,7 +630,7 @@ module hflow_routines
     real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), zlay(*), pslab(mxfslab,*), tu(*), tl(*)
     real(eb), intent(out) :: mflows(2,2,2), uflw2(2,mxfprd+2,2)
 
-    integer :: iprod, n, ifrom, ito, ilay
+    integer :: iprod, n_rooms, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab
 
 
@@ -639,13 +640,13 @@ module hflow_routines
     uflw2(1:2,1:nprod+2,u) = 0.0_eb
 
     ! put each slab flow into appropriate layer of room i to and take slab flow out of appropriate layer of room ifrom
-    do n = 1, nslab
+    do n_rooms = 1, nslab
 
         ! determine where room flow is coming from
-        if (dirs12(n)==1) then
+        if (dirs12(n_rooms)==1) then
             ifrom = 1
             ito = 2
-        else if (dirs12(n)==-1) then
+        else if (dirs12(n_rooms)==-1) then
             ifrom = 2
             ito = 1
         else
@@ -654,7 +655,7 @@ module hflow_routines
         end if
 
         ! put slab flow into "to" flow according to slab temperature
-        temp_slab = tslab(n)
+        temp_slab = tslab(n_rooms)
         temp_upper = tu(ito)
         temp_lower = tl(ito)
 
@@ -674,23 +675,23 @@ module hflow_routines
         flow_fraction(l) = flower
         flow_fraction(u) = fupper
 
-        xmterm = xmslab(n)
-        qterm = qslab(n)
+        xmterm = xmslab(n_rooms)
+        qterm = qslab(n_rooms)
 
         ! take it out of the origin room
-        if (yslab(n)>=zlay(ifrom)) then
+        if (yslab(n_rooms)>=zlay(ifrom)) then
             mflows(ifrom,u,2) = mflows(ifrom,u,2) + xmterm
             uflw2(ifrom,m,u) = uflw2(ifrom,m,u) - xmterm
             uflw2(ifrom,q,u) = uflw2(ifrom,q,u) - qterm
             do iprod = 1, nprod
-                uflw2(ifrom,2+iprod,u) = uflw2(ifrom,2+iprod,u) - pslab(n,iprod)
+                uflw2(ifrom,2+iprod,u) = uflw2(ifrom,2+iprod,u) - pslab(n_rooms,iprod)
             end do
         else
             mflows(ifrom,l,2) = mflows(ifrom,l,2) + xmterm
             uflw2(ifrom,m,l) = uflw2(ifrom,m,l) - xmterm
             uflw2(ifrom,q,l) = uflw2(ifrom,q,l) - qterm
             do iprod = 1, nprod
-                uflw2(ifrom,2+iprod,l) = uflw2(ifrom,2+iprod,l) - pslab(n,iprod)
+                uflw2(ifrom,2+iprod,l) = uflw2(ifrom,2+iprod,l) - pslab(n_rooms,iprod)
             end do
         end if
 
@@ -700,7 +701,7 @@ module hflow_routines
             uflw2(ito,m,ilay) = uflw2(ito,m,ilay) + flow_fraction(ilay)*xmterm
             uflw2(ito,q,ilay) = uflw2(ito,q,ilay) + flow_fraction(ilay)*qterm
             do iprod = 1, nprod
-                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + flow_fraction(ilay)*pslab(n,iprod)
+                uflw2(ito,2+iprod,ilay) = uflw2(ito,2+iprod,ilay) + flow_fraction(ilay)*pslab(n_rooms,iprod)
             end do
         end do
 

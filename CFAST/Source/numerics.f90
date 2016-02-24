@@ -5810,7 +5810,7 @@ module numerics_routines
     !
     !---------------------------- all rights reserved ----------------------------
 
-    use wdervs
+    use solver_data, only: jacdim
     implicit none
 
     jacd = jacdim

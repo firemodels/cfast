@@ -10,13 +10,13 @@
     use utility_routines, only: funit
 
     use cenviro
-    use cfast_main, only: roominfo, nm1
     use cfast_types
     use detectorptrs
     use target_data
     use vent_data
     use setup_data
     use smkview_data
+    use room_data
 
     implicit none
 
@@ -28,7 +28,7 @@
 
     ! --------------------------- output_smokeview -------------------------------------------
 
-    subroutine output_smokeview(pabs_ref,pamb,tamb,nrooms, n_hvents, n_vvents, nfires, froom_number,&
+    subroutine output_smokeview(pabs_ref,pamb,tamb,nrm, n_hvents, n_vvents, nfires, froom_number,&
         fx0,fy0,fz0, ntarg, stime, nscount)
     !
     ! this routine creates the .smv file used by smokeview to determine size and location of
@@ -41,7 +41,7 @@
     !  pabs_ref -   reference absolute pressure
     !  pamb -       ambient pressure
     !  tamb -       ambient temperature
-    !  nrooms -     number of rooms
+    !  nrm -     number of rooms
     !  x0,y0,z0 -   room origin
     !  n_hvents -     number of vents
     !  vfrom -      from room number
@@ -55,7 +55,7 @@
     !  fx0,fy0,fz0 - location of fire base
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
-    integer, intent(in) :: nrooms, nscount, n_hvents, nfires, n_vvents, ntarg
+    integer, intent(in) :: nrm, nscount, n_hvents, nfires, n_vvents, ntarg
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
 
@@ -99,7 +99,7 @@
     write(13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
     ! Compartment geometry
-    do i = 1, nrooms
+    do i = 1, nrm
         rm=>roominfo(i)
 
         write(13,"(a,1x)")"ROOM"
@@ -186,7 +186,7 @@
     ! mechanical vents
     if (nnode/=0.and.next/=0) then
         do i = 1, next
-            if (hvnode(1,i)<=nm1) then
+            if (hvnode(1,i)<=n_inside_rooms) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
                 write (13,'(a)') "MVENTGEOM"
                 write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
@@ -231,25 +231,25 @@
 
     ! --------------------------- output_smokeview_plot_data -------------------------------------------
 
-    subroutine  output_smokeview_plot_data(time,nrooms,pr,zlay,tl,tu,nfires,qdot,height)
+    subroutine  output_smokeview_plot_data(time,nrm,pr,zlay,tl,tu,nfires,qdot,height)
 
     !
     ! this routine records data for the current time step into the smokeview zone fire data file
     !
     !     time - current time
-    !   nrooms   number of rooms
-    !       pr - real array of size nrooms of room pressures
-    !     zlay - real array of size nrooms of layer interface heights
-    !       tl - real array of size nrooms of lower layer temperatures
-    !       tu - real array of size nrooms of upper layer temperatures
+    !   nrm   number of rooms
+    !       pr - real array of size nrm of room pressures
+    !     zlay - real array of size nrm of layer interface heights
+    !       tl - real array of size nrm of lower layer temperatures
+    !       tu - real array of size nrm of upper layer temperatures
     !   nfires - number of fires
     !     qdot - real array of size nfires of fire heat release rates
     !   height - real array of size nfires of fire heights
     !
 
     real(eb), intent(in) :: time
-    integer, intent(in) :: nrooms
-    real(eb), intent(in), dimension(nrooms) :: pr, zlay, tl, tu
+    integer, intent(in) :: nrm
+    real(eb), intent(in), dimension(nrm) :: pr, zlay, tl, tu
     integer, intent(in) :: nfires
     real(eb), intent(in), dimension(nfires) :: qdot, height
     real xxtime, xxpr, xxylay, xxtl, xxtu, xxheight, xxqdot
@@ -259,7 +259,7 @@
     xxtime = time
     write(14) xxtime
 
-    do i = 1, nrooms
+    do i = 1, nrm
         xxpr = pr(i)
         xxylay = zlay(i)
         xxtl = tl(i)
@@ -405,7 +405,7 @@
 
     ! --------------------------- output_smokeview_header -------------------------------------------
 
-    subroutine output_smokeview_header (version, nrooms, nfires)
+    subroutine output_smokeview_header (version, nrm, nfires)
 
     !
     ! This routine prints out a header for the smokeview zone fire data file
@@ -415,14 +415,14 @@
     !  version  - Presently smokeview only supports version=1 .  In the future
     !            if the file format changes then change version to allow
     !            smokeview to determine how the data file is organized
-    !  nrooms  - number of rooms in simulation
+    !  nrm  - number of rooms in simulation
     !  nfires  - number of fires in simulation
     !
 
-    integer, intent(in) :: version, nrooms, nfires
+    integer, intent(in) :: version, nrm, nfires
 
     write(14) version
-    write(14) nrooms
+    write(14) nrm
     write(14) nfires
     return
     end subroutine output_smokeview_header
@@ -486,10 +486,10 @@ module isosurface
     use precision_parameters
     use fire_routines, only: get_gas_temp_velocity
     use utility_routines, only : funit
+    use room_data, only: roominfo
 
     use setup_data
     use cenviro
-    use cfast_main, only: roominfo
     use smkview_data
 
     implicit none
@@ -861,7 +861,7 @@ module isosurface
     REAL(FB), DIMENSION(:), POINTER :: NODES_FROM
     INTEGER, INTENT(IN) :: NTRIS_FROM,NNODES_FROM
 
-    INTEGER :: NNODES_NEW, NTRIS_NEW, N
+    INTEGER :: NNODES_NEW, NTRIS_NEW, n_rooms
 
     NNODES_NEW = NNODES_TO + NNODES_FROM
     NTRIS_NEW = NTRIS_TO + NTRIS_FROM
@@ -874,8 +874,8 @@ module isosurface
     TRIS_TO(1+3*NTRIS_TO:3*NTRIS_NEW) = TRIS_FROM(1:3*NTRIS_FROM)
     SURFACES_TO(1+NTRIS_TO:NTRIS_NEW) = SURFACES_FROM(1:NTRIS_FROM)
 
-    DO N=1,3*NTRIS_FROM
-        TRIS_TO(3*NTRIS_TO+N) = TRIS_TO(3*NTRIS_TO+N) + NNODES_TO
+    DO n_rooms=1,3*NTRIS_FROM
+        TRIS_TO(3*NTRIS_TO+n_rooms) = TRIS_TO(3*NTRIS_TO+n_rooms) + NNODES_TO
     END DO
     NNODES_TO = NNODES_NEW
     NTRIS_TO = NTRIS_NEW
@@ -884,7 +884,7 @@ module isosurface
     ! ------------------ GETISOBOX ------------------------
 
     SUBROUTINE GETISOBOX(X,Y,Z,VALS,LEVEL,XYZV_LOCAL,NXYZV,TRIS,NTRIS)
-    USE utility_routines
+    USE utility_routines, only: fmix
 
     IMPLICIT NONE
     REAL(FB), DIMENSION(0:1), INTENT(IN) :: X, Y, Z
@@ -1121,7 +1121,7 @@ module isosurface
         /
 
     REAL(FB) :: VMIN, VMAX
-    INTEGER :: CASENUM, BIGGER, SIGN, N
+    INTEGER :: CASENUM, BIGGER, SIGN, n_rooms
     INTEGER, DIMENSION(0:7) :: PRODS=(/1,2,4,8,16,32,64,128/);
     REAL(FB), DIMENSION(0:7) :: XXVAL,YYVAL,ZZVAL
     INTEGER, DIMENSION(0:3) :: IXMIN=(/0,1,4,5/), IXMAX=(/2,3,6,7/)
@@ -1154,10 +1154,10 @@ module isosurface
     BIGGER=0
     SIGN=1
 
-    DO N = 0, 7
-        IF (VALS(N)>LEVEL) THEN
+    DO n_rooms = 0, 7
+        IF (VALS(n_rooms)>LEVEL) THEN
             BIGGER=BIGGER+1
-            CASENUM = CASENUM + PRODS(N);
+            CASENUM = CASENUM + PRODS(n_rooms);
         end if
     END DO
 
@@ -1167,9 +1167,9 @@ module isosurface
     IF (BIGGER > 4) THEN
         SIGN=-1
         CASENUM=0
-        DO N=0, 7
-            IF (VALS(N)<LEVEL) THEN
-                CASENUM = CASENUM + PRODS(N)
+        DO n_rooms=0, 7
+            IF (VALS(n_rooms)<LEVEL) THEN
+                CASENUM = CASENUM + PRODS(n_rooms)
             end if
         END DO
     end if
@@ -1188,13 +1188,13 @@ module isosurface
     !  0--X-----3
 
 
-    DO N=0, 3
-        XXVAL(IXMIN(N)) = X(0);
-        XXVAL(IXMAX(N)) = X(1);
-        YYVAL(IYMIN(N)) = Y(0);
-        YYVAL(IYMAX(N)) = Y(1);
-        ZZVAL(IZMIN(N)) = Z(0);
-        ZZVAL(IZMAX(N)) = Z(1);
+    DO n_rooms=0, 3
+        XXVAL(IXMIN(n_rooms)) = X(0);
+        XXVAL(IXMAX(n_rooms)) = X(1);
+        YYVAL(IYMIN(n_rooms)) = Y(0);
+        YYVAL(IYMAX(n_rooms)) = Y(1);
+        ZZVAL(IZMIN(n_rooms)) = Z(0);
+        ZZVAL(IZMAX(n_rooms)) = Z(1);
     END DO
 
     IF (CASENUM<=0.OR.CASENUM>=255) THEN ! NO ISO-SURFACE
@@ -1240,8 +1240,8 @@ module isosurface
     NEDGES = EDGES(-1);
 
     OUTOFBOUNDS=0
-    DO N=0,NEDGES-1
-        EDGE = EDGES(N)
+    DO n_rooms=0,NEDGES-1
+        EDGE = EDGES(n_rooms)
         V1 = CASE2(EDGE2VERTEX(EDGE,0));
         V2 = CASE2(EDGE2VERTEX(EDGE,1));
         VAL1 = VALS(V1)-LEVEL
@@ -1252,9 +1252,9 @@ module isosurface
         XX = FMIX(FACTOR,XXVAL(V1),XXVAL(V2));
         YY = FMIX(FACTOR,YYVAL(V1),YYVAL(V2));
         ZZ = FMIX(FACTOR,ZZVAL(V1),ZZVAL(V2));
-        XYZV_LOCAL(3*N) = XX;
-        XYZV_LOCAL(3*N+1) = YY;
-        XYZV_LOCAL(3*N+2) = ZZ;
+        XYZV_LOCAL(3*n_rooms) = XX;
+        XYZV_LOCAL(3*n_rooms+1) = YY;
+        XYZV_LOCAL(3*n_rooms+2) = ZZ;
 
     END DO
 

@@ -7,11 +7,12 @@ module fire_routines
 
     use cenviro
     use cfast_main
+    use room_data
     use fireptrs
     use target_data
     use flwptrs
     use fire_data
-    use opt
+    use option_data
     use smkview_data
     use vent_data
 
@@ -57,8 +58,8 @@ module fire_routines
     integer lsp, iroom, nobj, iobj, i, j
     type(room_type), pointer :: roomptr
 
-    flwf(1:n,1:ns+2,upper) = 0.0_eb
-    flwf(1:n,1:ns+2,lower) = 0.0_eb
+    flwf(1:n_rooms,1:ns+2,upper) = 0.0_eb
+    flwf(1:n_rooms,1:ns+2,lower) = 0.0_eb
     nfire = 0
 
     if (option(ffire)/=fcfast) return
@@ -645,7 +646,7 @@ module fire_routines
     ! sum the hvac flow
     ! tracet is the trace species which gets through the vent, traces is the mass stopped. Has to be calculated here since
     ! there is no equivalent to 1-...
-    do irm = 1, n
+    do irm = 1, n_rooms
         do ii = 1, next
             i = hvnode(1,ii)
             j = hvnode(2,ii)
@@ -724,9 +725,9 @@ module fire_routines
     end do
 
     if(.not.djetflg)return
-    flwdjf(1:n,1:ns+2,lower) = 0.0_eb
-    flwdjf(1:n,1:ns+2,upper) = 0.0_eb
-    fqdj(1:n) = 0.0_eb
+    flwdjf(1:n_rooms,1:ns+2,lower) = 0.0_eb
+    flwdjf(1:n_rooms,1:ns+2,upper) = 0.0_eb
+    fqdj(1:n_rooms) = 0.0_eb
 
     hcombt = 5.005e7_eb
 
@@ -756,7 +757,7 @@ module fire_routines
                 end if
         end do
 
-    do i = 1, n
+    do i = 1, n_rooms
         fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)
     end do
     return
@@ -1107,7 +1108,7 @@ module fire_routines
     data avagad /1.66e-24_eb/
     aweigh(7) = aweigh7
 
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         v(upper) = zzvol(i,upper)
         v(lower) = zzvol(i,lower)
         do k = upper, lower

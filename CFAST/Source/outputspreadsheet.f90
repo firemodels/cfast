@@ -15,6 +15,7 @@ module spreadsheet_routines
     use target_data
     use fire_data
     use vent_data
+    use room_data
 
     implicit none
 
@@ -66,7 +67,7 @@ module spreadsheet_routines
     call ssaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
@@ -78,7 +79,7 @@ module spreadsheet_routines
     end do
 
     ! Fires
-    do i = 1,n
+    do i = 1,n_rooms
         call ssaddtolist (position,fqdj(i),outarray)
     end do
 
@@ -240,7 +241,7 @@ module spreadsheet_routines
 
     !     First the surface temperatures for each compartment
 
-    do i=1,nm1
+    do i=1,n_inside_rooms
         do iw = 1, 4
             call SSaddtolist (position,zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,outarray)
         end do
@@ -351,7 +352,7 @@ module spreadsheet_routines
     position = 0
     call SSaddtolist (position,time,outarray)
 
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         do layer = upper, lower
             do lsp = 1, ns
@@ -407,7 +408,7 @@ module spreadsheet_routines
     call SSaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
@@ -468,7 +469,7 @@ module spreadsheet_routines
         call SSaddtolist (position,slabs,outarray)
         do j = 2, 1, -1
             vflow = ventptr%flow_slab(j)
-            if (ventptr%top<=nm1.and.j==1) vflow = -vflow
+            if (ventptr%top<=n_inside_rooms.and.j==1) vflow = -vflow
             call ssaddtolist(position,ventptr%temp_slab(j),outarray)
             call ssaddtolist(position,vflow,outarray)
             call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
@@ -479,7 +480,7 @@ module spreadsheet_routines
     !mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
     if (nnode/=0.and.next/=0) then
         do i = 1, next
-            if (hvnode(1,i)<=nm1) then
+            if (hvnode(1,i)<=n_inside_rooms) then
                 ventptr => mventinfo(i)
                 avent = arext(i)
                 call SSaddtolist (position,avent,outarray)

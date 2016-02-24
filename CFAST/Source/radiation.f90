@@ -10,9 +10,10 @@ module radiation_routines
     use setup_data, only: logerr
     use fireptrs
     use cfast_main
+    use room_data
     use fire_data, only: xfire, ifrpnt
-    use opt
-    use debug
+    use option_data
+    use debug_data
 
     implicit none
 
@@ -48,14 +49,14 @@ module radiation_routines
     real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(nwal,mxfire)
     real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire)
 
-    flxrad(1:nm1,1:nwal) = 0.0_eb
-    flwrad(1:nm1,1:2) = 0.0_eb
+    flxrad(1:n_inside_rooms,1:nwal) = 0.0_eb
+    flwrad(1:n_inside_rooms,1:2) = 0.0_eb
 
     if(option(frad)==off) return
     black = .false.
     if(option(frad)==3) black = .true.
 
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
         zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
@@ -64,7 +65,7 @@ module radiation_routines
     defabsup = 0.50_eb
     defabslow = 0.01_eb
 
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         tg(upper) = zztemp(i,upper)
         tg(lower) = zztemp(i,lower)
@@ -245,7 +246,7 @@ module radiation_routines
 
     !     note: we want to solve the linear system
     !         a*dq = b*e + c
-    !         where a and b are nxn matrices, q, e and c are n vectors
+    !         where a and b are nxn matrices, q, e and c are n_rooms vectors
 
     ! define e vector
     do i = 1, 4

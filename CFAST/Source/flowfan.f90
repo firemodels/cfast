@@ -9,7 +9,8 @@ module mflow_routines
     use cfast_main
     use cenviro
     use flwptrs
-    use opt
+    use option_data
+    use room_data
     use vent_data
 
     implicit none
@@ -49,10 +50,10 @@ module mflow_routines
 
     chv(1:nbr) = ductcv
 
-    flwmv(1:n,1:ns+2,upper) = 0.0_eb
-    flwmv(1:n,1:ns+2,lower) = 0.0_eb
-    filtered(1:n,1:ns+2,upper) = 0.0_eb
-    filtered(1:n,1:ns+2,lower) = 0.0_eb
+    flwmv(1:n_rooms,1:ns+2,upper) = 0.0_eb
+    flwmv(1:n_rooms,1:ns+2,lower) = 0.0_eb
+    filtered(1:n_rooms,1:ns+2,upper) = 0.0_eb
+    filtered(1:n_rooms,1:ns+2,lower) = 0.0_eb
     deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
     delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
 
@@ -95,7 +96,7 @@ module mflow_routines
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         isys = izhvsys(j)
-        if(i<1.or.i>nm1) cycle
+        if(i<1.or.i>n_inside_rooms) cycle
         flwmv(i,m,upper) = flwmv(i,m,upper) + hveflo(upper,ii)
         flwmv(i,m,lower) = flwmv(i,m,lower) + hveflo(lower,ii)
         flwmv(i,q,upper) = flwmv(i,q,upper) + hveflo(upper,ii)*cp*hvextt(ii,upper)
@@ -344,7 +345,7 @@ module mflow_routines
     do ii = 1, next
         i = hvnode(1,ii)
         j = hvnode(2,ii)
-        if (i<n) then
+        if (i<n_rooms) then
             z = zzhlay(i,lower)
             zl = min(z,hvelxt(ii))
             zu = min(0.0_eb,hvelxt(ii)-zl)
@@ -359,7 +360,7 @@ module mflow_routines
             hvp(j) =  exterior_abs_pressure - exterior_density*grav_con*hvelxt(ii)
         end if
         do lsp = 1, ns
-            if (i<n) then
+            if (i<n_rooms) then
                 hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
                 hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
             else

@@ -9,7 +9,8 @@ module debug_routines
     use cfast_types
     use cfast_main
     use cparams
-    use debug
+    use debug_data
+    use room_data
     use vent_data
 
     implicit none
@@ -130,7 +131,7 @@ module debug_routines
     call SSaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         call SSaddtolist (position,zzrelp(i),outarray)
         call SSaddtolist (position,zzvol(i,upper),outarray)
         call SSaddtolist(position,zztemp(i,upper),outarray)
@@ -150,7 +151,7 @@ module debug_routines
         end do
     end do
     ! species mass flow
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         do j = 1, 2
             do k = 1, 9
                 !call SSaddtolist (position,flwtot(i,k,j),outarray)

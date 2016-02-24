@@ -16,8 +16,8 @@ module target_routines
     use target_data
     use fire_data, only: xfire, ifrpnt
     use fireptrs
-    use wnodes, only: nfurn, qfurnout
-    use opt, only: fcjet, option, off
+    use room_data
+    use option_data, only: fcjet, option, off
 
     implicit none
 

@@ -14,12 +14,12 @@ module initialization_routines
     use setup_data
     use solver_data
     use fire_data
-    use opt
+    use option_data
     use target_data
-    use thermp
+    use thermal_data
     use vent_data
     use wallptrs
-    use wnodes
+    use room_data
 
     implicit none
 
@@ -165,7 +165,7 @@ module initialization_routines
         j = hvnode(2,ii)
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
-        if (i<n) then
+        if (i<n_rooms) then
             hvextt(ii,upper) = interior_temperature
             hvextt(ii,lower) = interior_temperature
             hvp(j) = zzrelp(i) - grav_con*interior_density*hvelxt(ii)
@@ -179,7 +179,7 @@ module initialization_routines
         s2 = s2 + tbr(ib)
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
-            if (i<n) then
+            if (i<n_rooms) then
                 hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*interior_density
                 hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*interior_density
             else
@@ -366,20 +366,20 @@ module initialization_routines
     ! an initial solution.  the initial temperature values calculated by atmosp
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         interior_rel_pressure(i) = -interior_density*grav_con*roomptr%z0
         exterior_rel_pressure(i) = -exterior_density*grav_con*roomptr%z0
     end do
-    exterior_rel_pressure(n) = 0.0_eb
+    exterior_rel_pressure(n_rooms) = 0.0_eb
 
 
     ! normalize pressures so that the smallest pressure is zero
     xxpmin = min(interior_rel_pressure(1),exterior_rel_pressure(1))
-    do i = 2, nm1
+    do i = 2, n_inside_rooms
         xxpmin = max(xxpmin,interior_rel_pressure(i),exterior_rel_pressure(i))
     end do
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         exterior_rel_pressure(i) = exterior_rel_pressure(i) - xxpmin
         interior_rel_pressure(i) = interior_rel_pressure(i) - xxpmin
     end do
@@ -391,7 +391,7 @@ module initialization_routines
     call update_data (dummy,constvar)
 
     ! define the p array, the solution to the ode
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         p(i) = interior_rel_pressure(i)
         p(i+noftu) = interior_temperature
@@ -420,7 +420,7 @@ module initialization_routines
 
     ! define interior surface wall temperatures
     ii = nofwt
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
@@ -485,7 +485,7 @@ module initialization_routines
     ! initialize solver oxygen values if required.   (must be initialized
     ! after zzmass is defined)
     if(option(foxygen)==on)then
-        do iroom = 1, nm1
+        do iroom = 1, n_inside_rooms
             p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,upper)
             p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,lower)
         end do
@@ -493,74 +493,6 @@ module initialization_routines
 
     return
     end subroutine initamb
-
-! --------------------------- sortbrm -------------------------------------------
-
-    subroutine sortbrm (x,lx,ix,lix,nrow,ncolx,ncolix,isort,ldp,nroom,ipoint)
-
-    !     routine: sortbrm
-    !     purpose:  sort the two arrays x and ix by the isort'th column of ix which contains room data.  this routine is used to
-    !               sort fire and detector data structures by room number.
-    !     arguments: x       floating point info to be sorted
-    !                lx      leading dimension of x
-    !                ix      integer info to be sorted
-    !                lix     leading dimension of ix in calling routine
-    !                nrow    number of rows in x and ix
-    !                ncolx   number of columns in x
-    !                ncolix  number of columns in ix
-    !                isort   column in ix to sort on (usually contains room numbers)
-    !                ldp     leading dimension of ipoint
-    !                nroom   number of elements for which ipoint is defined, also the number of rooms
-    !                ipoint (output)  pointer array for sorted x and ix list.
-    !                                 (r,1) = number of items (fires or detectors so far) in room r
-    !                                 (r,2) = pointer to beginning element in ix and x for fire or detector in room r
-
-    ! if the number of fires, detectors or rooms ever exceeds 100 then the following dimension statement needs to be changed
-    integer, parameter :: lwork = nr + mxfires + mxdtect
-
-
-    integer, intent(in) :: lix, ncolix, ncolx
-    integer, intent(in) :: nrow, isort, nroom, lx, ldp
-    integer, intent(inout) :: ix(lix,ncolix)
-    integer, intent(out) :: ipoint(ldp,*)
-    real(eb), intent(inout) :: x(lx,ncolx)
-
-    integer :: i, j, iroom, iwork(lwork), iperm(lwork)
-    real(eb) :: work(lwork)
-
-    if(nrow>lwork)then
-        call xerror('Error: Internal error sorting detectors. Not enough work space in sortbrm',0,1,2)
-    end if
-
-    ! create a permutation vector using the isort'th column of ix
-    iperm(1:nrow) = (/(i,i=1,nrow)/)
-    call indexi(nrow,ix(1,isort),iperm)
-
-    ! reorder integer array using the permutation vector
-    do j = 1, ncolix
-        iwork(1:nrow) = ix(iperm(1:nrow),j)
-        ix(1:nrow,j) = iwork(1:nrow)
-    end do
-
-    ! reorder the floating point arrays using the permutation vector
-    do j = 1, ncolx
-        work(1:nrow) = x(iperm(1:nrow),j)
-        x(1:nrow,j) = work(1:nrow)
-    end do
-
-    ! construct the pointer array
-    ipoint(1:nroom,1:2) = 0
-    do i = 1, nrow
-        iroom = ix(i,isort)
-        ipoint(iroom,1) = ipoint(iroom,1) + 1
-        if (ipoint(iroom,2)==0) ipoint(iroom,2) = i
-    end do
-    do i = 1, nroom
-        if (ipoint(i,2)==0) ipoint(i,2) = 1
-    end do
-    return
-
-    end subroutine sortbrm
 
 ! --------------------------- initialize_memory -------------------------------------------
 
@@ -577,7 +509,6 @@ module initialization_routines
     exset = .false.
     debugging = .false.
     jaccol = -2
-    neqoff = 10
 
     ! DASSL forcing functions
     p(1:maxteq) = 0.0_eb
@@ -643,7 +574,7 @@ module initialization_routines
     roominfo(1:nr)%shaft = .false.
     n_species = 0
     numthrm = 0
-    n = 0
+    n_rooms = 0
     ! room to room heat transfer
     nswal = 0
 
@@ -794,7 +725,7 @@ module initialization_routines
     integer i, j, k, ip, iprod, isof, isys, lsp
 
 
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
 
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -823,7 +754,7 @@ module initialization_routines
 
     isof = nofprd
     do lsp = 1, ns
-        do i = 1, nm1
+        do i = 1, n_inside_rooms
             do k = upper, lower
                 isof = isof + 1
                 p(isof) = initialmass(k,i,lsp)
@@ -870,10 +801,10 @@ module initialization_routines
 
     do itarg = 1, ntarg
 
-        ! room number must be between 1 and nm1
+        ! room number must be between 1 and n_inside_rooms
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        if(iroom<1.or.iroom>nm1)then
+        if(iroom<1.or.iroom>n_inside_rooms)then
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
         end if
@@ -989,7 +920,7 @@ module initialization_routines
     ! map the thermal data into its appropriate wall specification
     ! if name is "OFF" or "NONE" then just turn all off
     do i = 1, nwal
-        do j = 1, nm1
+        do j = 1, n_inside_rooms
             roomptr => roominfo(j)
             if (roomptr%surface_on(i)) then
                 if (roomptr%matl(i)==off.or.roomptr%matl(i)==none) then
@@ -1010,10 +941,10 @@ module initialization_routines
     end do
 
     ! Initialize the interior temperatures to the interior ambient
-    twj(1:nnodes,1:nm1,1:nwal) = interior_temperature
+    twj(1:nnodes,1:n_inside_rooms,1:nwal) = interior_temperature
 
     ! initialize temperature profile data structures
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
@@ -1109,14 +1040,14 @@ module initialization_routines
     subroutine offset ()
 
     ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.
-    !          thus, the actual pressure array goes from nofp+1 to nofp+nm1.  the total number of equations to be considered
+    !          thus, the actual pressure array goes from nofp+1 to nofp+n_inside_rooms.  the total number of equations to be considered
     !          is nequals, and is the last element in the last vector. each physical interface routine is responsible for
     !          the count of the number of elements in the vector for which it is resonsible.
 
     ! this set of parameters is set by nputp and is kept in the environment module cenviro.
     ! to index a variable, the list is something like (for temperature in this case)
 
-    ! noftu+1, noftu+nm1
+    ! noftu+1, noftu+n_inside_rooms
 
     ! the structure of the solver array is
 
@@ -1149,7 +1080,7 @@ module initialization_routines
     end if
 
     ! set the number of compartments and offsets
-    nm1 = n - 1
+    n_inside_rooms = n_rooms - 1
 
     ! count the species
     n_species = 0
@@ -1163,7 +1094,7 @@ module initialization_routines
 
     ! count the number of walls
     nwalls = 0
-    do i = 1, nm1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
@@ -1175,7 +1106,7 @@ module initialization_routines
 
     ! set number of implicit oxygen variables
     if(option(foxygen)==on)then
-        noxygen = nm1
+        noxygen = n_inside_rooms
     else
         noxygen = 0
     end if
@@ -1184,17 +1115,17 @@ module initialization_routines
     nhvpvar = nnode - next
     nhvtvar = nbr
     nofp = 0
-    nofpmv = nofp + nm1
+    nofpmv = nofp + n_inside_rooms
     noftmv = nofpmv + nhvpvar
     noffsm = noftmv + nhvtvar
     noftu = noffsm
-    nofvu = noftu + nm1
-    noftl = nofvu + nm1
-    nofoxyl = noftl + nm1
+    nofvu = noftu + n_inside_rooms
+    noftl = nofvu + n_inside_rooms
+    nofoxyl = noftl + n_inside_rooms
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
     nofprd = nofwt + nwalls
-    nofhvpr = nofprd + 2*nm1*n_species
+    nofhvpr = nofprd + 2*n_inside_rooms*n_species
 
     ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.
     ! after nhvsys is defined the following statement can be used to define nequals

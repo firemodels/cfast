@@ -8,7 +8,7 @@ module conduction_routines
     use cenviro
     use solver_data, only: nofwt
     use cfast_main
-    use wnodes
+    use room_data
     use cparams, only: nnodes
 
     implicit none
@@ -99,7 +99,7 @@ module conduction_routines
                         end if
                         dflor = roominfo(j)%z0 - roomptr%z0
                         yy = zzhlay(j,lower) + dflor
-                        if(j/=nm1+1)then
+                        if(j/=n_inside_rooms+1)then
                             if(yy>yt)then
                                 fu = 0.0_eb
                             elseif(yy<yb)then

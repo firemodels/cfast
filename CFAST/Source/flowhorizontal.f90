@@ -5,6 +5,14 @@ module hflow_routines
     use opening_fractions, only: qchfraction
     use debug_routines, only: ssprintslab, spreadsheetfslabs
     use room_data
+    
+    use precision_parameters
+    use cenviro
+    use ramp_data
+    use flwptrs
+    use option_data
+    use vent_data
+    use debug_data
 
     implicit none
 
@@ -27,15 +35,6 @@ module hflow_routines
     !                epsp  pressure error tolerance
     !                nprod
     !                uflw
-
-    use precision_parameters
-    use cenviro
-    use ramp_data
-    use flwptrs
-    use option_data
-    use vent_data
-    use debug_data
-    implicit none
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw(nr,mxfprd+2,2)
@@ -178,10 +177,6 @@ module hflow_routines
     !                uflw3(i,2+k,j), i=1 or 2, k=1 to nprod, j=1 or 2 (output) - product k flow rate
     !                      to upper (j=2) or lower (j=1) layer of room i due entrainment
 
-    use precision_parameters
-    use flwptrs
-    implicit none
-
     integer, intent(in) :: dirs12(10), nprod, nslab, mxfprd
     real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
     real(eb), intent(out) :: uflw3(2,mxfprd+2,2), vsas(2), vasa(2), pmix(mxfprd)
@@ -287,10 +282,6 @@ module hflow_routines
     !                zz - height over which entrainment takes place (input) (m)
     !                fm_entrained - mass entrained (output) (kg/s)
 
-    use precision_parameters
-    use cenviro, only: cp
-    implicit none
-
     real(eb), intent(in) :: tu, tl, fmd, zz, w
     real(eb), intent(out) :: fm_entrained
 
@@ -340,9 +331,6 @@ module hflow_routines
     !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
     !                nvelev - number of unique elevations delineating slabs
     !                nslab  - number of slabs between bottom and top of the vent
-
-    use precision_parameters
-    implicit none
 
     integer, intent(in) :: nprod, mxfprd, mxfslab
     integer, intent(out) :: nslab, dirs12(*)
@@ -490,8 +478,6 @@ module hflow_routines
     ! --------------------------- getelev -------------------------------------------
 
     subroutine getelev (yvbot,yvtop,zlay,yelev,nelev)
-    use precision_parameters
-    implicit none
 
     integer, intent(out) :: nelev
     real(eb), intent(in) :: zlay(*), yvbot, yvtop
@@ -549,12 +535,6 @@ module hflow_routines
     !                conu    concentration of upper layer for each product [unit of product/kg of layer]
     !                tl      temperature of lower layer [k]
     !                tu      temperature of upper layer [k]
-
-    use precision_parameters
-    use cenviro
-    use ramp_data
-    use vent_data
-    implicit none
 
     integer, intent(in) :: from_room, to_room, nprod
     real(eb), intent(out) :: conl(mxfprd,2), conu(mxfprd,2)
@@ -619,11 +599,6 @@ module hflow_routines
     !                             of room i due to all slab flows of vent [(kg oxygen)/s]
     !                uflw2(i,3+k,j), i=1 or 2, k=2 to nprod, j=1 or 2 (output) - product k flow rate to upper (j=2)
     !                             or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
-
-    use precision_parameters
-    use cparams, only: deltatemp_min
-    use flwptrs
-    implicit none
 
     integer, intent(in) :: dirs12(*)
     integer, intent(in) :: nprod, nslab, mxfprd, mxfslab
@@ -726,9 +701,6 @@ module hflow_routines
     !                pflor - pressure at base of each room above absolute reference pressure [kg/(m*s**2) = pascal]
     !                dp    - change in pressure between two rooms [kg/(m*s**2) = pascal]
 
-    use precision_parameters
-    implicit none
-
     integer, intent(in) :: nelev
     real(eb), intent(in) :: y(*),  zflor(*), zlay(*), denl(*), denu(*), pflor(*), epsp
     real(eb), intent(out) :: dp(*)
@@ -780,10 +752,6 @@ module hflow_routines
     subroutine gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
 
     !       This is a routine to get the shape data for horizontal flow vents
-
-    use precision_parameters
-    use vent_data
-    implicit none
 
     integer, intent(in) :: i
     integer, intent(out) :: ifrom,ito,iface

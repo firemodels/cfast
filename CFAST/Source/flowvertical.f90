@@ -5,6 +5,13 @@ module vflow_routines
     use room_data
     use opening_fractions, only: qcvfraction
     use utility_routines, only: tanhsmooth
+    
+    use precision_parameters
+    use cenviro
+    use ramp_data
+    use flwptrs
+    use option_data
+    use vent_data
 
     implicit none
 
@@ -23,14 +30,6 @@ module vflow_routines
     !     arguments: tsec: current simulation time
     !                flwvf: change in mass and energy for each layer of each compartment
     !                vflowflg (output): true if vertical flow is included in the simulation
-
-    use precision_parameters
-    use cenviro
-    use ramp_data
-    use flwptrs
-    use option_data
-    use vent_data
-    implicit none
 
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flwvf(nr,ns+2,2)
@@ -182,11 +181,6 @@ module vflow_routines
 
     subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
 
-    use precision_parameters
-    use cenviro
-    use ramp_data, only: qcvv, nramps, rampinfo
-    implicit none
-
     character, intent(in) :: venttype
     integer, intent(in) :: room1, room2, vent_number, vent_index
     real(eb), intent(in) :: time
@@ -251,11 +245,6 @@ module vflow_routines
     !                           i = 2, mass flow from room itop to room ibot
     !               tmvent(i)   i = 1, temperature in layer next to vent in top room
     !                           i = 2, temperature in layer next to vent in bottom room
-
-    use precision_parameters
-    use cenviro
-    use ramp_data
-    implicit none
 
     integer, intent(in) :: itop, ibot, nshape
     real(eb), intent(in) :: avent, epsp
@@ -395,9 +384,6 @@ module vflow_routines
     subroutine getvventinfo (iinvvent,itop,ibot,harea,hshape,hface)
 
     !       this is a routine to get the shape data for vertical flow (horizontal) vents
-
-    use ramp_data
-    use vent_data
 
     use precision_parameters
     implicit none

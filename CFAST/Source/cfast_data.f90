@@ -9,10 +9,13 @@ module cenviro
     implicit none
     save
 
-    integer :: jaccol, neqoff
+    integer :: jaccol
 
     integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
-    integer, parameter :: eqp = 1, eqpmv = 2, eqtmv = 3, eqtu = 4, eqvu = 5, eqtl = 6, eqoxyl = 7, eqoxyu = 8, eqtt = 9, eqwt = 10
+    
+    real(eb) :: cp, gamma, rgas
+    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
+    logical :: exset
 
     logical izdtflag, izcon(nr), izhvac(nr)
 
@@ -55,26 +58,9 @@ module cfast_main
     save
 
     integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
-    integer :: n_species
     real(eb) :: stime, deltat
 
-    real(eb) :: cp, gamma, rgas
-    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
-    logical :: exset
-
     character(128) :: title
-
-    ! compartment variables
-    integer n, nm1
-    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns), &
-        initial_mass_fraction(ns), qfc(2,nr)
-    type(room_type), target :: roominfo(nr)
-
-    ! wall variables
-    integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr)
-    real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), &
-        epw(nwal,nr), twj(nnodes,nr,nwal)
-    logical :: adiabatic_wall
 
     ! ramping variables
     integer :: nramps = 0
@@ -124,12 +110,31 @@ module solver_data
     use cparams
     implicit none
     save
+    ! default solver tolerences
+    real(eb) :: aptol = 1.0e-6_eb        ! absolute pressure tolerance
+    real(eb) :: rptol = 1.0e-6_eb        ! relative pressure tolerance
+    real(eb) :: atol = 1.0e-5_eb         ! absolute other tolerance
+    real(eb) :: rtol = 1.0e-5_eb         ! relative other tolerance
+    real(eb) :: awtol = 1.0e-2_eb        ! absolute wall tolerance
+    real(eb) :: rwtol = 1.0e-2_eb        ! relative wall tolerance
+    real(eb) :: algtol = 1.0e-8_eb       ! initialization tolerance
+    real(eb) :: ahvptol = 1.0e-6_eb      ! absolute HVAC pressure tolerance
+    real(eb) :: rhvptol = 1.0e-6_eb      ! relative HVAC pressure tolerance
+    real(eb) :: ahvttol = 1.0e-5_eb      ! absolute HVAC temperature tolerance
+    real(eb) :: rhvttol = 1.0e-5_eb      ! relative HVAC temperature tolerance
 
+    real(eb), dimension(nt) :: pinit
+    real(eb), dimension(1) :: rpar2
+    integer, dimension(3) :: ipar2
+    real(eb) :: stpmax = 1.0_eb        ! maximum solver time step, if negative, then solver will decide
+    real(eb) :: dasslfts = 0.005_eb    ! first time step for DASSL
     ! solver variables
     integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
         nofhvpr, nequals, noffsm
     real(eb), dimension(maxteq) :: p, pold, pdold
     real(eb) :: told, dt
+    
+    integer :: jacn1, jacn2, jacn3, jacdim
 
 end module solver_data
 
@@ -160,9 +165,9 @@ module target_data
 
 end module target_data
 
-! --------------------------- debug -------------------------------------------
+! --------------------------- debug_data -------------------------------------------
 
-module  debug
+module  debug_data
 
     use precision_parameters
     implicit none
@@ -176,7 +181,7 @@ module  debug
     real(eb) ::   dbtime
     character(256) :: residfile, jacfile, residcsv, jaccsv, slabcsv
 
-end module debug
+end module debug_data
 
 ! --------------------------- fire_data -------------------------------------------
 
@@ -219,9 +224,9 @@ module fire_data
 
 end module fire_data
 
-! --------------------------- opt -------------------------------------------
+! --------------------------- option_data -------------------------------------------
 
-module opt
+module option_data
 
     use precision_parameters
     use cparams
@@ -270,9 +275,6 @@ module opt
     integer, parameter :: d_dpdt = 18
     integer, parameter :: d_diag = 19
 
-    integer, parameter :: verysm = -9
-    integer, parameter :: verybg = 9
-
     integer, dimension(mxopt) :: option = &
         ! fire, hflow, entrain, vflow, cjet
         (/   2,     1,       1,     1,    1,  &
@@ -291,10 +293,7 @@ module opt
     integer :: iprtalg = 0, jacchk = 0
     integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0, total_steps = 0
 
-    integer(2), dimension(mxdebug,2,nr) :: dbugsw
-
-
-      end module opt
+      end module option_data
 
 ! --------------------------- smkview -------------------------------------------
 
@@ -323,38 +322,9 @@ module smkview_data
 
 end module smkview_data
 
-! --------------------------- solver_parameters -------------------------------------------
+! --------------------------- thermal_data -------------------------------------------
 
-module solver_parameters
-
-    use precision_parameters
-    use cparams
-    implicit none
-    save
-
-    real(eb), dimension(nt) :: pinit
-    real(eb), dimension(1) :: rpar2
-    integer, dimension(3) :: ipar2
-    real(eb) :: aptol = 1.0e-6_eb        ! absolute pressure tolerance
-    real(eb) :: rptol = 1.0e-6_eb        ! relative pressure tolerance
-    real(eb) :: atol = 1.0e-5_eb         ! absolute other tolerance
-    real(eb) :: rtol = 1.0e-5_eb         ! relative other tolerance
-    real(eb) :: awtol = 1.0e-2_eb        ! absolute wall tolerance
-    real(eb) :: rwtol = 1.0e-2_eb        ! relative wall tolerance
-    real(eb) :: algtol = 1.0e-8_eb       ! initialization tolerance
-    real(eb) :: ahvptol = 1.0e-6_eb      ! absolute HVAC pressure tolerance
-    real(eb) :: rhvptol = 1.0e-6_eb      ! relative HVAC pressure tolerance
-    real(eb) :: ahvttol = 1.0e-5_eb      ! absolute HVAC temperature tolerance
-    real(eb) :: rhvttol = 1.0e-5_eb      ! relative HVAC temperature tolerance
-
-    real(eb) :: stpmax = 1.0_eb        ! maximum solver time step, if negative, then solver will decide
-    real(eb) :: dasslfts = 0.005_eb    ! first time step for DASSL
-
-end module solver_parameters
-
-! --------------------------- thermp -------------------------------------------
-
-module thermp
+module thermal_data
 
     use precision_parameters
     use cparams
@@ -368,7 +338,7 @@ module thermp
     integer, dimension(mxthrmp) :: lnslb
     character(mxthrmplen), dimension(mxthrmp) :: nlist
 
-    end module thermp
+    end module thermal_data
 
 ! --------------------------- vent_data -------------------------------------------
 
@@ -419,35 +389,40 @@ module vent_data
 
 end module vent_data
 
-! --------------------------- wdervs -------------------------------------------
+! --------------------------- room_data -------------------------------------------
 
-module wdervs
-
-    implicit none
-    save
-
-    integer :: jacn1, jacn2, jacn3, jacdim
-
-end module wdervs
-
-! --------------------------- wnodes -------------------------------------------
-
-module wnodes
+module room_data
 
     use precision_parameters
+    use cfast_types
     use cparams
     implicit none
     save
 
-    integer :: nwpts = 30                                   ! number of wall nodes
-    integer :: iwbound = 3                                  !boundary condition type (1=constant temperature, 2=insulated 3=flux)
-     ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
-    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)
+    integer :: nwpts = (nnodes-1)/2                                     ! number of wall nodes 
+    integer :: iwbound = 3                                              ! boundary condition type 
+                                                                        !   1 = constant exterior surface temperature, 
+                                                                        !   2 = insulated exterior surface, 
+                                                                        !   3 =radiates to ambient
+    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
+                                                                        ! initially fractions for inner, middle and outer wall slab
 
-    integer nwalls, nfurn
+
+    ! compartment variables
+    integer n_rooms, n_inside_rooms, n_species
+    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns), &
+        initial_mass_fraction(ns), qfc(2,nr)
+    type(room_type), target :: roominfo(nr)
+
+    ! wall variables
+    integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr),nwalls, nfurn
+    real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), &
+        epw(nwal,nr), twj(nnodes,nr,nwal)
+    logical :: adiabatic_wall
+    
     real(eb), dimension (nr,4) :: wlength
     real(eb), dimension (nnodes,nr,4) :: walldx
     real(eb), dimension(mxpts) :: furn_time, furn_temp
     real(eb) :: qfurnout
 
-end module wnodes
+end module room_data

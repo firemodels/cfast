@@ -36,8 +36,8 @@
 
     use cfast_main
     use setup_data
-    use thermp
-    use opt, only: total_steps
+    use thermal_data
+    use option_data, only: total_steps
 
     implicit none
 

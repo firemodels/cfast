@@ -384,6 +384,7 @@ module target_routines
     real(eb) :: sum_front, sum_back, solid_angle, zlay
 
     integer :: nsolid_front_verts, nsolid_back_verts
+    integer, parameter :: front=1, back=2
     integer :: i, iwall, ivert
 
  ! vertices

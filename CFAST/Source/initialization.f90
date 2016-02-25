@@ -3,7 +3,10 @@ module initialization_routines
     use precision_parameters
 
     use numerics_routines, only: dnrm2, dscal
+    use opening_fractions, only : qchfraction
+    use output_routines, only : deleteoutputfiles
     use solve_routines, only : update_data
+    use utility_routines, only: indexi, xerror
 
     use cenviro
     use ramp_data
@@ -515,9 +518,9 @@ module initialization_routines
     deltat = 1.0_eb
 
     ! time step checking
-    mindt = 1.0e-09_eb
+    zzdtcrit = 1.0e-09_eb
     izdtnum = 0
-    mindt_max = 100
+    izdtmax = 100
     izdtflag = .true.
 
     ! define universal constants
@@ -582,9 +585,9 @@ module initialization_routines
     zzrhgt(1:mxcross,1:nrooms) = 0.0_eb
 
     ! initialize inter-compartment heat transfer fractions
-    heat_frac(1:nrooms,1:nrooms) = 0.0_eb
-    iheat(1:nrooms) = 0
-    iheat_connections(1:nrooms,1:nrooms) = 0
+    zzhtfrac(1:nrooms,1:nrooms) = 0.0_eb
+    izheat(1:nrooms) = 0
+    izhtfrac(1:nrooms,1:nrooms) = 0
 
     ! initialize number of furnace temperature nodes
     nfurn=0

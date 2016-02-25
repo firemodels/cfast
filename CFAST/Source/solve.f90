@@ -36,7 +36,6 @@ module solve_routines
     implicit none
     
     integer :: ndisc
-    real(eb), dimension(0:mxpts+1) :: discontinuities
 
     private
 
@@ -669,7 +668,7 @@ module solve_routines
         ! find the interval next discontinuity is in
         idisc = 0
         do i = 1, ndisc
-            if(t>=discontinuities(i-1).and.t<discontinuities(i))then
+            if(t>=zzdisc(i-1).and.t<zzdisc(i))then
                 idisc = i
                 exit
             end if
@@ -678,8 +677,8 @@ module solve_routines
 
         ! if there is a discontinuity then tell DASSL
         if(idisc/=0)then
-            tout = min(tout,discontinuities(idisc))
-            rwork(1) = discontinuities(idisc)
+            tout = min(tout,zzdisc(idisc))
+            rwork(1) = zzdisc(idisc)
             info(4) = 1
         else
             info(4) = 0
@@ -716,12 +715,12 @@ module solve_routines
 
         dt = t - told
         if(izdtflag)then
-            if(dt<mindt)then
+            if(dt<zzdtcrit)then
                 izdtnum = izdtnum + 1
-                if(izdtnum>mindt_max)then
-                    ! model has hung (mindt_max consective time step sizes were below mindt)
+                if(izdtnum>izdtmax)then
+                    ! model has hung (izdtmax consective time step sizes were below zzdtcrit)
                     write(logerr,'(i0,a,e11.4,a,e11.4)') &
-                        '***Error: Consecutive time steps with size below ', mindt_max, mindt, ' at t = ', t
+                        '***Error: Consecutive time steps with size below ', izdtmax, zzdtcrit, ' at t = ', t
                     call cfastexit ('CFAST',1)
                     stop
                 end if
@@ -1377,7 +1376,7 @@ module solve_routines
     !     arguments: pdif   solver vector
     !                iflag  action flag:
     !     iflag = constvar ==> constant data (data that does not change
-    !                          with time) or first time initialization
+    !                          with time)
     !     iflag = odevara  ==> ode variables: pressure, temperature and upper
     !                          layer volume
     !     iflag = odevarb  ==> species data and wall temperature profile.
@@ -1561,40 +1560,41 @@ module solve_routines
         itstop = xdelt + 1
         tstop = itstop - 1
 
-        discontinuities(0) = 0.0_eb
-        discontinuities(1) = tstop
+        zzdisc(0) = 0.0_eb
+        zzdisc(1) = tstop
         ndisc = 1
 
         ! add each of the change arrays to the discontinuity list
         do  i = 1, n_hvents
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvh(1,i)
+            zzdisc(ndisc) = qcvh(1,i)
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvh(3,i)
+            zzdisc(ndisc) = qcvh(3,i)
         end do
         do  i = 1, n_vvents
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvv(1,i)
+            zzdisc(ndisc) = qcvv(1,i)
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvv(3,i)
+            zzdisc(ndisc) = qcvv(3,i)
         end do
         do  i = 1, nfan
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvm(1,i)
+            zzdisc(ndisc) = qcvm(1,i)
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvm(3,i)
+            zzdisc(ndisc) = qcvm(3,i)
         end do
         do i = 1, nfilter
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvf(1,i)
+            zzdisc(ndisc) = qcvf(1,i)
             ndisc = ndisc + 1
-            discontinuities(ndisc) = qcvf(3,i)
+            zzdisc(ndisc) = qcvf(3,i)
         end do
 
         ! put the discontinuity array into order
-        call shellsort (discontinuities(0), ndisc+1)
+        call shellsort (zzdisc(0), ndisc+1)
 
-        ! define izwmap that define connected walls for dassl and the conduction routine
+        ! define izwmap for jac and other constants for the custom linear
+        ! algebra routines that are called in dassl
         icol = 0
         ieq = nofwt
         ! set izwmap2 for the outside room first

@@ -79,16 +79,16 @@ module conduction_routines
                 call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
                 wfluxout = wfluxout + sigma*(tgas**4-twext**4)
                 wfluxsave = wfluxout
-                if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
+                if(iheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
 
-                    ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.
-                    !  if izheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero
+                    ! back wall is connected to rooms defined by iheat_connections with fractions defined by heat_frac.
+                    !  if iheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero
                     ! for iwall=3 and iwall=4
                     wfluxout = 0.0_eb
-                    nwroom = izhtfrac(iroom,0)
+                    nwroom = iheat_connections(iroom,0)
                     do jj = 1, nwroom
-                        j = izhtfrac(iroom,jj)
-                        frac = zzhtfrac(iroom,j)
+                        j = iheat_connections(iroom,jj)
+                        frac = heat_frac(iroom,j)
                         if(iwall==3)then
                             yb = zzhlay(iroom,lower)
                             yt = roomptr%z1

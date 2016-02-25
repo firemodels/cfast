@@ -29,15 +29,10 @@ module cenviro
     real(eb), dimension(nrooms,10) :: zzwarea10
     real(eb), dimension(mxcross,nrooms) :: zzrvol, zzrarea, zzrhgt
     real(eb), dimension(2,nrooms) :: zzabsb, zzbeam
-    real(eb), dimension(0:mxpts+1) :: zzdisc
-    real(eb), dimension(nrooms,nrooms) :: zzhtfrac
-    real(eb) :: zzdtcrit
     
     ! hvac results
     real(eb), dimension(mxhvsys,ns) :: zzhvpr
     real(eb), dimension(mxhvsys) :: zzhvm
-
-    real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
 
     integer, dimension(ns+2) :: izpmap
     integer, dimension(2,nrooms) :: izwmap
@@ -45,9 +40,8 @@ module cenviro
     integer, dimension(nrooms,4) :: izswal
     integer, dimension(4*nrooms,5) :: izwall
     integer, dimension(nrooms) :: izrvol, iznwall(nrooms), izshaft(nrooms)
-    integer, dimension(0:nrooms) :: izheat
-    integer, dimension(nrooms,0:nrooms) :: izhtfrac
-    integer :: izdtnum,izdtmax, nswal
+    
+    integer :: izdtnum, nswal
 
 end module cenviro
 
@@ -218,6 +212,9 @@ module room_data
 
     ! compartment variables
     integer nr, nr_m1, n_species
+
+    real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
+    
     real(eb) interior_rel_pressure(nrooms), exterior_rel_pressure(nrooms), species_mass_density(nrooms,2,ns), toxict(nrooms,2,ns), &
         initial_mass_fraction(ns), qfc(2,nrooms)
     type(room_type), target :: roominfo(nrooms)
@@ -233,6 +230,12 @@ module room_data
     real(eb), dimension(mxpts) :: furn_time, furn_temp
     real(eb) :: qfurnout
 
+    
+    ! room to room heat transfer
+    real(eb), dimension(nrooms,nrooms) :: heat_frac
+    integer, dimension(0:nrooms) :: iheat
+    integer, dimension(nrooms,0:nrooms) :: iheat_connections
+
 end module room_data
 
 ! --------------------------- setup_data -------------------------------------------
@@ -243,8 +246,8 @@ module setup_data
     implicit none
     save
     
-    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
-    real(eb) :: stime, deltat
+    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step, mindt_max
+    real(eb) :: stime, deltat, mindt
 
     character(128) :: title
 

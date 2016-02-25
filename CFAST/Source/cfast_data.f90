@@ -37,11 +37,10 @@ module cenviro
     real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
 
     integer, dimension(ns+2) :: izpmap
-    integer, dimension(2,nr) :: izwmap
-    integer, dimension(4,nr) :: izwmap2
+    integer, dimension(4,nr) :: izwmap
     integer, dimension(nr,4) :: izswal
     integer, dimension(4*nr,5) :: izwall
-    integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
+    integer, dimension(nr) :: izrvol
     integer, dimension(0:nr) :: izheat
     integer, dimension(nr,0:nr) :: izhtfrac
     integer :: izdtnum,izdtmax, izndisc, nswal

@@ -68,7 +68,7 @@ module conduction_routines
             twint = zzwtemp(iroom,iwall,1)
             twext = zzwtemp(iroom,iwall,2)
             tgas = exterior_temperature
-            iweq = izwmap2(iwall,iroom) - nofwt
+            iweq = izwmap(iwall,iroom) - nofwt
             iwb = izwall(iweq,w_boundary_condition)
 
             ! compute flux seen by exterior of wall

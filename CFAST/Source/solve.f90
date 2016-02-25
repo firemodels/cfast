@@ -1387,7 +1387,7 @@ module solve_routines
 
     integer frmask(mxccv)
 
-    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii
+    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, ieq, iwall, ii
     integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp
@@ -1592,23 +1592,15 @@ module solve_routines
         ! put the discontinuity array into order
         call shellsort (zzdisc(0), izndisc+1)
 
-        ! define izwmap for jac and other constants for the custom linear
-        ! algebra routines that are called in dassl
-        icol = 0
+        ! define izwmap for jac and other constants for dassl and the conduction routine
         ieq = nofwt
-        ! set izwmap2 for the outside room first
-        izwmap2(1:4,n_inside_rooms+1) = 0
+        izwmap(1:4,n_inside_rooms+1) = 0
         do iroom = 1, n_inside_rooms
             roomptr => roominfo(iroom)
-            icnt = 0
-            iznwall(iroom) = 0
             do iwall = 1, 4
                 if (roomptr%surface_on(iwall)) then
                     ieq = ieq + 1
-                    izwmap2(iwall,iroom) = ieq
-                    icnt = icnt + 1
-                    icol = icol + 1
-                    iznwall(iroom) = iznwall(iroom) + 1
+                    izwmap(iwall,iroom) = ieq
 
                     ! define izwall, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
@@ -1625,11 +1617,9 @@ module solve_routines
                     izwall(ii,w_boundary_condition) = iwbound
 
                 else
-                    izwmap2(iwall,iroom) = 0
+                    izwmap(iwall,iroom) = 0
                 end if
             end do
-            izwmap(1,iroom) = icol - icnt + 1
-            izwmap(2,iroom) = icnt
         end do
 
         ! update izwall for ceiling/floors that are connected
@@ -1638,8 +1628,8 @@ module solve_routines
             ifromw = izswal(i,w_from_wall)
             itor = izswal(i,w_to_room)
             itow = izswal(i,w_to_wall)
-            ieqfrom = izwmap2(ifromw,ifromr) - nofwt
-            ieqto = izwmap2(itow,itor) - nofwt
+            ieqfrom = izwmap(ifromw,ifromr) - nofwt
+            ieqto = izwmap(itow,itor) - nofwt
 
             izwall(ieqfrom,w_to_room) = itor
             izwall(ieqfrom,w_to_wall) = itow
@@ -1781,7 +1771,7 @@ module solve_routines
         isof = nofwt
         do iroom = 1, n_inside_rooms
             do iwall = 1, nwal
-                iwalleq = izwmap2(iwall,iroom)
+                iwalleq = izwmap(iwall,iroom)
                 if(iwalleq/=0)then
                     ieqfrom = iwalleq - nofwt
                     ifromr = izwall(ieqfrom,w_from_room)
@@ -1793,7 +1783,7 @@ module solve_routines
                     else
                        zzwtemp(iroom,iwall,1) = pdif(iwalleq)
                     end if
-                    iwalleq2 = izwmap2(itow,itor)
+                    iwalleq2 = izwmap(itow,itor)
                     iinode = numnode(1,iwall,iroom)
                     if(nfurn.gt.0)then
                        zzwtemp(iroom,iwall,2) = wtemp

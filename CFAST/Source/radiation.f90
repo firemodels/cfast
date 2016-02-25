@@ -35,8 +35,8 @@ module radiation_routines
     !     arguments: flwrad      net enthalphy into each layer
     !                flxrad      net enthalphy flux into surface
 
-    real(eb), intent(out), dimension(nr,2) :: flwrad
-    real(eb), intent(out), dimension(nr,nwal) :: flxrad
+    real(eb), intent(out), dimension(nrooms,2) :: flwrad
+    real(eb), intent(out), dimension(nrooms,nwal) :: flxrad
 
     real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
@@ -48,14 +48,14 @@ module radiation_routines
     real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(nwal,mxfire)
     real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire)
 
-    flxrad(1:n_inside_rooms,1:nwal) = 0.0_eb
-    flwrad(1:n_inside_rooms,1:2) = 0.0_eb
+    flxrad(1:nr_m1,1:nwal) = 0.0_eb
+    flwrad(1:nr_m1,1:2) = 0.0_eb
 
     if(option(frad)==off) return
     black = .false.
     if(option(frad)==3) black = .true.
 
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         roomptr => roominfo(i)
         zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
         zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
@@ -64,7 +64,7 @@ module radiation_routines
     defabsup = 0.50_eb
     defabslow = 0.01_eb
 
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         roomptr => roominfo(i)
         tg(upper) = zztemp(i,upper)
         tg(lower) = zztemp(i,lower)
@@ -245,7 +245,7 @@ module radiation_routines
 
     !     note: we want to solve the linear system
     !         a*dq = b*e + c
-    !         where a and b are nxn matrices, q, e and c are n_rooms vectors
+    !         where a and b are nxn matrices, q, e and c are nr vectors
 
     ! define e vector
     do i = 1, 4

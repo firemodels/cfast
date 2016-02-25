@@ -94,26 +94,26 @@ module debug_routines
 
     real(eb), intent(in) :: time
     ! data structure for total flows and fluxes
-    real(eb), intent(in) :: flwtot(nr,mxfprd+2,2)
+    real(eb), intent(in) :: flwtot(nrooms,mxfprd+2,2)
 
     ! data structures for flow through vents
-    real(eb), intent(in) :: flwnvnt(nr,mxfprd+2,2)
-    real(eb), intent(in) :: flwhvnt(nr,ns+2,2)
+    real(eb), intent(in) :: flwnvnt(nrooms,mxfprd+2,2)
+    real(eb), intent(in) :: flwhvnt(nrooms,ns+2,2)
 
     ! data structures for fires
-    real(eb), intent(in) :: flwf(nr,ns+2,2)
+    real(eb), intent(in) :: flwf(nrooms,ns+2,2)
 
     ! data structures for convection and radiation
-    real(eb), intent(in) :: flwcv(nr,2)
-    real(eb), intent(in) :: flwrad(nr,2)
+    real(eb), intent(in) :: flwcv(nrooms,2)
+    real(eb), intent(in) :: flwrad(nrooms,2)
 
     ! data structures for mechanical vents
-    real(eb), intent(in) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+    real(eb), intent(in) :: flwmv(nrooms,ns+2,2), filtered(nrooms,ns+2,2)
 
     ! data structures for door jet fires
-    real(eb), intent(in) :: flwdjf(nr,ns+2,2)
+    real(eb), intent(in) :: flwdjf(nrooms,ns+2,2)
 
-    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
+    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nrooms + 4*nrooms
     real(eb) :: outarray(maxhead)
     logical :: firstc
     integer :: position, i, j, k
@@ -130,7 +130,7 @@ module debug_routines
     call SSaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         call SSaddtolist (position,zzrelp(i),outarray)
         call SSaddtolist (position,zzvol(i,upper),outarray)
         call SSaddtolist(position,zztemp(i,upper),outarray)
@@ -150,7 +150,7 @@ module debug_routines
         end do
     end do
     ! species mass flow
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         do j = 1, 2
             do k = 1, 9
                 !call SSaddtolist (position,flwtot(i,k,j),outarray)

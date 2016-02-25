@@ -34,6 +34,8 @@ module solve_routines
     use room_data
 
     implicit none
+    
+    integer :: ndisc
 
     private
 
@@ -58,7 +60,7 @@ module solve_routines
     real(eb), intent(in) :: t,pdzero(*), rpar(*)
     real(eb), intent(out) :: pdold(*)
 
-    integer, parameter :: mxalg = 4*nr+mxnode+mxbranch
+    integer, parameter :: mxalg = 4*nrooms+mxnode+mxbranch
     real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrw = (3*mxalg**2+13*mxalg)/2
     real(eb) :: work(lrw)
@@ -79,22 +81,22 @@ module solve_routines
     tol = algtol
     nhvalg = nhvpvar + nhvtvar
     nalg0 = nhvalg
-    nalg1 = n_inside_rooms + nhvalg
+    nalg1 = nr_m1 + nhvalg
     nprint = -1
 
     ! room pressures
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         hhvp(i) = p(i+nofp)
     end do
 
     ! hvac pressures
     do i = 1, nhvpvar
-        hhvp(i+n_inside_rooms) = p(i+nofpmv)
+        hhvp(i+nr_m1) = p(i+nofpmv)
     end do
 
     ! hvac temperatures
     do i = 1, nhvtvar
-        hhvp(i+n_inside_rooms+nhvpvar) = p(i+noftmv)
+        hhvp(i+nr_m1+nhvpvar) = p(i+noftmv)
     end do
 
     do i = 1, nequals
@@ -104,7 +106,7 @@ module solve_routines
         call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info, work,lrw)
     else
         if (nhvalg>0) then
-            call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+n_inside_rooms),deltamv(1+n_inside_rooms),tol,nprint,info,work,lrw)
+            call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+nr_m1),deltamv(1+nr_m1),tol,nprint,info,work,lrw)
         else
             info = 1
         end if
@@ -123,14 +125,14 @@ module solve_routines
     ! if a room is not connected to any other room via a horizontal or
     ! vertical vent then do not use the snsqe pressure solution,
     ! use the original pressure solution that was based on rho*g*h.
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         if(izcon(i)) p(i+nofp) = hhvp(i)
     end do
     do i = 1, nhvpvar
-        p(i+nofpmv) = hhvp(i+n_inside_rooms)
+        p(i+nofpmv) = hhvp(i+nr_m1)
     end do
     do i = 1, nhvtvar
-        p(i+noftmv) = hhvp(i+n_inside_rooms+nhvpvar)
+        p(i+noftmv) = hhvp(i+nr_m1+nhvpvar)
     end do
 
     call calculate_residuals(t,p,pdzero,pdold,ires,rpar,ipar)
@@ -163,14 +165,14 @@ module solve_routines
     real(eb), intent(in) :: tsec
 
     real(eb) :: factor2, height, width, avent
-    integer roomc(nr,nr), tempmat(nr,nr), i, iroom1, iroom2, ik, im, ix, matiter
+    integer roomc(nrooms,nrooms), tempmat(nrooms,nrooms), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
 
     type(vent_type), pointer :: ventptr
 
     ! initially assume that no rooms are connected
-    roomc(1:n_rooms,1:n_rooms) = 0
-    do i = 1, n_rooms
+    roomc(1:nr,1:nr) = 0
+    do i = 1, nr
         roomc(i,i) = 1
     end do
 
@@ -203,22 +205,22 @@ module solve_routines
         end if
     end do
 
-    ! construct roomc**matiter where matiter > n_rooms
+    ! construct roomc**matiter where matiter > nr
     ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection
     !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.
     !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.
-    !        since there are only n_rooms rooms, roomc**n_rooms tells us whether any given room is connected to any 
-    !        other room in n_rooms steps. the entries roomc**n_rooms(i,n_rooms) then indicates whether a room is connected
+    !        since there are only nr rooms, roomc**nr tells us whether any given room is connected to any 
+    !        other room in nr steps. the entries roomc**nr(i,nr) then indicates whether a room is connected
     !        to the outside (perhaps through several other intermediate rooms).
     matiter = 1
-    do i = 1, n_rooms
-        if(n_rooms<=matiter) exit
-        call mat2mult(roomc,tempmat,nr,n_rooms)
+    do i = 1, nr
+        if(nr<=matiter) exit
+        call mat2mult(roomc,tempmat,nrooms,nr)
         matiter = matiter*2
     end do
 
-    do i = 1, n_inside_rooms
-        if(roomc(i,n_rooms)/=0)then
+    do i = 1, nr_m1
+        if(roomc(i,nr)/=0)then
             izcon(i) = .true.
         else
             izcon(i) = .false.
@@ -252,7 +254,7 @@ module solve_routines
     data pdzero /maxteq*0.0_eb/
 
     if(1.eq.2) iflag=-1 ! dummy statement to eliminate compiler warnings
-    nalg = n_inside_rooms + nhvpvar + nhvtvar
+    nalg = nr_m1 + nhvpvar + nhvtvar
     do i = 1, nalg
         p2(i) = hvpsolv(i)
     end do
@@ -261,7 +263,7 @@ module solve_routines
     end do
     if(iprtalg/=0)then
         write(iofilo,*) 'room pressures'
-        do i = 1, n_inside_rooms
+        do i = 1, nr_m1
             write(iofilo,*) i,p2(i)
         end do
         if(nhvpvar>0) write (iofilo,*) 'hvac pressures'
@@ -279,12 +281,12 @@ module solve_routines
     do i = 1, nalg
         deltamv(i) = delta(i)
     end do
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         if(.not.izcon(i)) deltamv(i) = 0.0_eb
     end do
     if(iprtalg/=0) then
         write(iofilo,*)'room pressure residuals'
-        do i = 1, n_inside_rooms
+        do i = 1, nr_m1
             write(iofilo,*)i,delta(i)
         end do
         if(nhvpvar>0)write (iofilo,*) 'hvac pressure residuals'
@@ -379,7 +381,7 @@ module solve_routines
 
     !     Offset in the following context is the beginning of the vector for
     !     that particular variable minus one.  Thus, the actual pressure array
-    !     goes from NOFP+1 to NOFP+n_inside_rooms.  The total number of equations to be
+    !     goes from NOFP+1 to NOFP+nr_m1.  The total number of equations to be
     !     considered is NEQUALS, and is the last element in the last vector.
     !     Each physical interface routine is responsible for the COUNT of the
     !     number of elements in the vector for which it is resonsible.
@@ -388,7 +390,7 @@ module solve_routines
     !     common block CFAST.INC.  To index a variable, the list is something
     !     like (for temperature in this case)
 
-    !     NOFTU+1, NOFTU+n_inside_rooms
+    !     NOFTU+1, NOFTU+nr_m1
 
     !     The structure of the solver array is
 
@@ -473,7 +475,7 @@ module solve_routines
 
     ! copy error tolerances into arrays. if the location of pressure is
     ! changed in the solver array then the following code has to be changed
-    do i = 1, n_inside_rooms
+    do i = 1, nr_m1
         vatol(i+nofp) = aptol
         vrtol(i+nofp) = rptol
         vatol(i+noftu) = atol
@@ -535,7 +537,7 @@ module solve_routines
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run
         ! then we need the output now
         call remap_fires (nfires)
-        call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_temperature, n_inside_rooms,  &
+        call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_temperature, nr_m1,  &
              n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, 0.0_eb, 1)
         icode = 0
         write (logerr, '(a)') 'Initialize only'
@@ -633,11 +635,11 @@ module solve_routines
                 firstpassforsmokeview = .false.
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
-                call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_temperature, n_inside_rooms, &
+                call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_temperature, nr_m1, &
                     n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, i_time_step)
-                call output_smokeview_header (version,n_inside_rooms,nfires)
+                call output_smokeview_header (version,nr_m1,nfires)
             end if
-            call output_smokeview_plot_data(t,n_inside_rooms,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
+            call output_smokeview_plot_data(t,nr_m1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
             call output_spreadsheet_smokeview(t)
             tsmv = tsmv + dplot
             call output_status (t, dt)
@@ -665,7 +667,7 @@ module solve_routines
 
         ! find the interval next discontinuity is in
         idisc = 0
-        do i = 1, izndisc
+        do i = 1, ndisc
             if(t>=zzdisc(i-1).and.t<zzdisc(i))then
                 idisc = i
                 exit
@@ -1074,24 +1076,24 @@ module solve_routines
     type(room_type), pointer :: roomptr
 
     ! data structure for total flows and fluxes
-    real(eb) :: flwtot(nr,mxfprd+2,2), flxtot(nr,nwal)
+    real(eb) :: flwtot(nrooms,mxfprd+2,2), flxtot(nrooms,nwal)
 
     ! data structures for flow through vents
-    real(eb) :: flwnvnt(nr,mxfprd+2,2)
-    real(eb) :: flwhvnt(nr,ns+2,2)
+    real(eb) :: flwnvnt(nrooms,mxfprd+2,2)
+    real(eb) :: flwhvnt(nrooms,ns+2,2)
 
     ! data structures for fires
-    real(eb) :: flwf(nr,ns+2,2)
+    real(eb) :: flwf(nrooms,ns+2,2)
 
     ! data structures for convection, radiation, and ceiling jets
-    real(eb) :: flwcv(nr,2), flxcv(nr,nwal)
-    real(eb) :: flwrad(nr,2), flxrad(nr,nwal)
+    real(eb) :: flwcv(nrooms,2), flxcv(nrooms,nwal)
+    real(eb) :: flwrad(nrooms,2), flxrad(nrooms,nwal)
 
     ! data structures for mechanical vents
-    real(eb) :: flwmv(nr,ns+2,2), filtered(nr,ns+2,2)
+    real(eb) :: flwmv(nrooms,ns+2,2), filtered(nrooms,ns+2,2)
 
     ! data structures for door jet fires
-    real(eb) :: flwdjf(nr,ns+2,2)
+    real(eb) :: flwdjf(nrooms,ns+2,2)
     integer :: update
 
     logical :: vflowflg, hvacflg, djetflg
@@ -1128,7 +1130,7 @@ module solve_routines
 
     epsp = rpar(1)
 
-    do i = 1, n_rooms
+    do i = 1, nr
         qf(i) = 0.0_eb
     end do
 
@@ -1141,7 +1143,7 @@ module solve_routines
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flwf)
-    call sort_fire (nfire,ifroom,xfire,ifrpnt,n_inside_rooms)
+    call sort_fire (nfire,ifroom,xfire,ifrpnt,nr_m1)
     call door_jet (flwdjf,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
@@ -1149,13 +1151,13 @@ module solve_routines
     call radiation (flwrad,flxrad)
 
     if(djetflg)then
-        do i = 1, n_inside_rooms
+        do i = 1, nr_m1
             qf(i) = qf(i) + flwdjf(i,q,ll) + flwdjf(i,q,uu)
         end do
     end if
 
     ! sum flow for inside rooms
-    do iroom = 1, n_inside_rooms
+    do iroom = 1, nr_m1
         roomptr => roominfo(iroom)
 
         do iprod = 1, nprod + 2
@@ -1220,7 +1222,7 @@ module solve_routines
         end if
     end if
     ! sum flux for inside rooms
-    do iroom = 1, n_inside_rooms
+    do iroom = 1, nr_m1
         roomptr => roominfo(iroom)
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
@@ -1236,7 +1238,7 @@ module solve_routines
     end if
 
     ! calculate rhs of ode's for each room
-    do iroom = 1, n_inside_rooms
+    do iroom = 1, nr_m1
         roomptr => roominfo(iroom)
         aroom = roomptr%area
         hceil = roomptr%height
@@ -1293,7 +1295,7 @@ module solve_routines
     if (nprod>0.and.ipar(2)==all) then
         iprodu = nofprd - 1
         do iprod = 1, nprod
-            do iroom = 1, n_inside_rooms
+            do iroom = 1, nr_m1
                 roomptr => roominfo(iroom)
                 hceil = roomptr%height
                 hinter = zzhlay(iroom,ll)
@@ -1324,18 +1326,18 @@ module solve_routines
     end if
 
     ! residuals for pressure
-    do i = nofp + 1, nofp + n_inside_rooms
+    do i = nofp + 1, nofp + nr_m1
         delta(i) = xprime(i) - xpsolve(i)
     end do
 
     ! residuals for layer volume, and layer temperatures
-    do i = noftu + 1, noftu + 3*n_inside_rooms
+    do i = noftu + 1, noftu + 3*nr_m1
         delta(i) = xprime(i) - xpsolve(i)
     end do
 
     ! residual for oxygen
     if(option(foxygen)==on)then
-        do i = 1, n_inside_rooms
+        do i = 1, nr_m1
             delta(i+nofoxyu) = xprime(i+nofoxyu) - xpsolve(i+nofoxyu)
             delta(i+nofoxyl) = xprime(i+nofoxyl) - xpsolve(i+nofoxyl)
         end do
@@ -1348,7 +1350,7 @@ module solve_routines
     if (nprod/=0) then
 
         ! residuals for gas layer species
-        do i = nofprd + 1, nofprd + 2*nprod*n_inside_rooms
+        do i = nofprd + 1, nofprd + 2*nprod*nr_m1
             delta(i) = xprime(i) - xpsolve(i)
         end do
 
@@ -1387,7 +1389,7 @@ module solve_routines
 
     integer frmask(mxccv)
 
-    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, icol, ieq, iwall, icnt, ii
+    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, ndisc, icol, ieq, iwall, icnt, ii
     integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp
@@ -1407,12 +1409,12 @@ module solve_routines
     end if
 
     if (iflag==constvar) then
-        do iroom = 1, n_rooms
+        do iroom = 1, nr
             roomptr => roominfo(iroom)
             roomptr%vmin = min(vminfrac*roomptr%volume, 1.0_eb)
             roomptr%vmax = roomptr%volume - roomptr%vmin
         end do
-        do iroom = 1, n_inside_rooms
+        do iroom = 1, nr_m1
             roomptr=>roominfo(iroom)
 
             roomptr%x1 = roomptr%x0 + roomptr%width
@@ -1469,27 +1471,27 @@ module solve_routines
             roomptr%wall_center(3,10) = 0.0_eb
         end do
 
-        roomptr=>roominfo(n_rooms)
+        roomptr=>roominfo(nr)
 
         roomptr%z0 = 0.0_eb
         roomptr%z1 = 100000.0_eb
 
-        zzvol(n_rooms,upper) = 0.0_eb
-        zzvol(n_rooms,lower) = 100000.0_eb
-        zzhlay(n_rooms,upper) = 0.0_eb
-        zzhlay(n_rooms,lower) = 100000.0_eb
-        zzrelp(n_rooms) = 0.0_eb
-        zzpabs(n_rooms) = pressure_offset
-        zztemp(n_rooms,upper) = exterior_temperature
-        zztemp(n_rooms,lower) = exterior_temperature
-        zzcspec(n_rooms,upper,3:ns) = 0.0_eb
-        zzcspec(n_rooms,lower,3:ns) = 0.0_eb
-        zzgspec(n_rooms,lower,3:ns) = 0.0_eb
-        zzgspec(n_rooms,upper,3:ns) = 0.0_eb
-        zzcspec(n_rooms,upper,1) = 0.770_eb
-        zzcspec(n_rooms,lower,1) = 0.770_eb
-        zzcspec(n_rooms,upper,2) = 0.230_eb
-        zzcspec(n_rooms,lower,2) = 0.230_eb
+        zzvol(nr,upper) = 0.0_eb
+        zzvol(nr,lower) = 100000.0_eb
+        zzhlay(nr,upper) = 0.0_eb
+        zzhlay(nr,lower) = 100000.0_eb
+        zzrelp(nr) = 0.0_eb
+        zzpabs(nr) = pressure_offset
+        zztemp(nr,upper) = exterior_temperature
+        zztemp(nr,lower) = exterior_temperature
+        zzcspec(nr,upper,3:ns) = 0.0_eb
+        zzcspec(nr,lower,3:ns) = 0.0_eb
+        zzgspec(nr,lower,3:ns) = 0.0_eb
+        zzgspec(nr,upper,3:ns) = 0.0_eb
+        zzcspec(nr,upper,1) = 0.770_eb
+        zzcspec(nr,lower,1) = 0.770_eb
+        zzcspec(nr,upper,2) = 0.230_eb
+        zzcspec(nr,lower,2) = 0.230_eb
         
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -1498,17 +1500,17 @@ module solve_routines
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        zzcspec(n_rooms,upper,8) = relative_humidity*xh2o
-        zzcspec(n_rooms,lower,8) = relative_humidity*xh2o
+        zzcspec(nr,upper,8) = relative_humidity*xh2o
+        zzcspec(nr,lower,8) = relative_humidity*xh2o
 
-        zzrho(n_rooms,upper:lower) = zzpabs(n_rooms)/rgas/zztemp(n_rooms,upper:lower)
-        zzmass(n_rooms,upper:lower) = zzrho(n_rooms,upper:lower)*zzvol(n_rooms,upper:lower)
+        zzrho(nr,upper:lower) = zzpabs(nr)/rgas/zztemp(nr,upper:lower)
+        zzmass(nr,upper:lower) = zzrho(nr,upper:lower)*zzvol(nr,upper:lower)
 
         ! define horizontal vent data structures
         frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)
         n_hvents = 0
-        do i = 1, n_inside_rooms
-            do j = i + 1, n_rooms
+        do i = 1, nr_m1
+            do j = i + 1, nr
                 if (ihvent_connections(i,j)/=0) then
                     do k = 1, mxccv
                         if (iand(frmask(k),ihvent_connections(i,j))/=0) then
@@ -1534,8 +1536,8 @@ module solve_routines
 
         !define vents for vertical flow
         n_vvents = 0
-        do i = 1, n_rooms
-            do j = 1, n_rooms
+        do i = 1, nr
+            do j = 1, nr
                 if (ivvent_connections(i,j)/=0) then
                     n_vvents = n_vvents + 1
                     ivvent(n_vvents,1) = i
@@ -1560,45 +1562,44 @@ module solve_routines
 
         zzdisc(0) = 0.0_eb
         zzdisc(1) = tstop
-        iii = 1
+        ndisc = 1
 
         ! add each of the change arrays to the discontinuity list
         do  i = 1, n_hvents
-            iii = iii + 1
-            zzdisc(iii) = qcvh(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvh(3,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvh(1,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvh(3,i)
         end do
         do  i = 1, n_vvents
-            iii = iii + 1
-            zzdisc(iii) = qcvv(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvv(3,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvv(1,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvv(3,i)
         end do
         do  i = 1, nfan
-            iii = iii + 1
-            zzdisc(iii) = qcvm(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvm(3,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvm(1,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvm(3,i)
         end do
         do i = 1, nfilter
-            iii = iii + 1
-            zzdisc(iii) = qcvf(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvf(3,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvf(1,i)
+            ndisc = ndisc + 1
+            zzdisc(ndisc) = qcvf(3,i)
         end do
-        izndisc = iii
 
         ! put the discontinuity array into order
-        call shellsort (zzdisc(0), izndisc+1)
+        call shellsort (zzdisc(0), ndisc+1)
 
         ! define izwmap for jac and other constants for the custom linear
         ! algebra routines that are called in dassl
         icol = 0
         ieq = nofwt
         ! set izwmap2 for the outside room first
-        izwmap2(1:4,n_inside_rooms+1) = 0
-        do iroom = 1, n_inside_rooms
+        izwmap2(1:4,nr_m1+1) = 0
+        do iroom = 1, nr_m1
             roomptr => roominfo(iroom)
             icnt = 0
             iznwall(iroom) = 0
@@ -1615,7 +1616,7 @@ module solve_routines
                     ii = ieq - nofwt
                     izwall(ii,w_from_room) = iroom
                     izwall(ii,w_from_wall) = iwall
-                    izwall(ii,w_to_room) = n_inside_rooms + 1
+                    izwall(ii,w_to_room) = nr_m1 + 1
                     if(iwall==1.or.iwall==2)then
                         iwfar = 3 - iwall
                     else
@@ -1657,14 +1658,14 @@ module solve_routines
         jacdim = jacn1 + jacn2 + jacn3
 
         ! indicate which rooms are connected to an hvac system
-        izhvac(1:n_inside_rooms) = .false.
+        izhvac(1:nr_m1) = .false.
         do ii = 1, next
             i = hvnode(1,ii)
             izhvac(i) = .true.
         end do
 
     else if (iflag==odevara) then
-        do iroom = 1, n_inside_rooms
+        do iroom = 1, nr_m1
             roomptr=>roominfo(iroom)
 
             zzvol(iroom,upper) = max(pdif(iroom+nofvu),roomptr%vmin)
@@ -1713,22 +1714,22 @@ module solve_routines
             ymax = roomptr%depth
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
-            zzwarea2(iroom,1) = roomptr%area
-            zzwarea2(iroom,2) = zzu*xmax
-            zzwarea2(iroom,3) = zzu*ymax
-            zzwarea2(iroom,4) = zzu*xmax
-            zzwarea2(iroom,5) = zzu*ymax
-            zzwarea2(iroom,6) = zzl*xmax
-            zzwarea2(iroom,7) = zzl*ymax
-            zzwarea2(iroom,8) = zzl*xmax
-            zzwarea2(iroom,9) = zzl*ymax
-            zzwarea2(iroom,10) = roomptr%area
+            zzwarea10(iroom,1) = roomptr%area
+            zzwarea10(iroom,2) = zzu*xmax
+            zzwarea10(iroom,3) = zzu*ymax
+            zzwarea10(iroom,4) = zzu*xmax
+            zzwarea10(iroom,5) = zzu*ymax
+            zzwarea10(iroom,6) = zzl*xmax
+            zzwarea10(iroom,7) = zzl*ymax
+            zzwarea10(iroom,8) = zzl*xmax
+            zzwarea10(iroom,9) = zzl*ymax
+            zzwarea10(iroom,10) = roomptr%area
 
             ! compute area of 4 wall segments
-            zzwarea(iroom,1) = roomptr%area
-            zzwarea(iroom,2) = roomptr%area
-            zzwarea(iroom,3) = (ymax + xmax)*zzu*2.0_eb
-            zzwarea(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
+            zzwarea4(iroom,1) = roomptr%area
+            zzwarea4(iroom,2) = roomptr%area
+            zzwarea4(iroom,3) = (ymax + xmax)*zzu*2.0_eb
+            zzwarea4(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
 
             ! define z wall centers (the z coordinate changes with time)
             ! (other coordinates are static and are defined earlier)
@@ -1756,7 +1757,7 @@ module solve_routines
             end do
         end do
 
-        do i = 1, n_inside_rooms
+        do i = 1, nr_m1
             roomptr => roominfo(i)
             if(roomptr%deadroom.eq.0) cycle
             zzrelp(i) = zzrelp(roomptr%deadroom)
@@ -1779,7 +1780,7 @@ module solve_routines
         ! define surface wall temperatures (interior=1,exterior=2)
     else if (iflag==odevarb.or.iflag==odevarc) then
         isof = nofwt
-        do iroom = 1, n_inside_rooms
+        do iroom = 1, nr_m1
             do iwall = 1, nwal
                 iwalleq = izwmap2(iwall,iroom)
                 if(iwalleq/=0)then
@@ -1827,7 +1828,7 @@ module solve_routines
         ! define species amounts
         isof = nofprd
         do lsp = 1, ns
-            do iroom = 1, n_inside_rooms
+            do iroom = 1, nr_m1
                 isof = isof + 1
                 if (iflag==odevarb) then
                     ppgas = pold(isof) + dt*pdold(isof)
@@ -1848,7 +1849,7 @@ module solve_routines
         ! define species mass fractions: normalize to total product mass
         ! rather than total mass (this is equivalent to what was being done
         ! in chemistry)
-        do iroom = 1, n_inside_rooms
+        do iroom = 1, nr_m1
             roomptr => roominfo(iroom)
             totl = 0.0_eb
             totu = 0.0_eb
@@ -1922,15 +1923,15 @@ module solve_routines
     integer, intent(in) :: ibeg
     real(eb), intent(out) :: pdif(*)
 
-    real(eb) :: factor(nr,2)
+    real(eb) :: factor(nrooms,2)
     integer :: iroom, isof, iprod
 
-    factor(1:n_inside_rooms,upper) = 0.0_eb
-    factor(1:n_inside_rooms,lower) = 0.0_eb
+    factor(1:nr_m1,upper) = 0.0_eb
+    factor(1:nr_m1,lower) = 0.0_eb
 
     isof = ibeg
     do iprod = 1, min(ns,9)
-        do iroom = 1, n_inside_rooms
+        do iroom = 1, nr_m1
             factor(iroom,upper) = factor(iroom,upper) + pdif(isof)
             isof = isof + 1
             factor(iroom,lower) = factor(iroom,lower) + pdif(isof)
@@ -1938,7 +1939,7 @@ module solve_routines
         end do
     end do
 
-    do iroom = 1, n_inside_rooms
+    do iroom = 1, nr_m1
         if (factor(iroom,upper)>0.0_eb.and.zzmass(iroom,upper)>0.0_eb) then
             factor(iroom,upper) = zzmass(iroom,upper)/factor(iroom,upper)
         else
@@ -1953,7 +1954,7 @@ module solve_routines
 
     isof = ibeg
     do iprod = 1, min(ns,9)
-        do iroom = 1, n_inside_rooms
+        do iroom = 1, nr_m1
             pdif(isof) = pdif(isof)*factor(iroom,upper)
             isof = isof + 1
             pdif(isof) = pdif(isof)*factor(iroom,lower)

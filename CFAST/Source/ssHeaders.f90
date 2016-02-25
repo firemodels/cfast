@@ -25,7 +25,7 @@ module spreadsheet_header_routines
 
     ! This is the header information for the normal spreadsheet output
 
-    integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
+    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfire
     character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
     type(room_type), pointer :: roomptr
@@ -47,7 +47,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Compartment variables
-    do j = 1, n_inside_rooms
+    do j = 1, nrm1
         roomptr => roominfo(j)
         do i = 1, 5
             if (i/=2.or..not.roomptr%shaft) then
@@ -64,17 +64,17 @@ module spreadsheet_header_routines
     end do
 
     ! Door jet fires
-    do i = 1, n_rooms
+    do i = 1, nr
         roomptr => roominfo(i)
         position = position + 1
         call toIntString(i,cRoom)
-        if (i==n_rooms) then
+        if (i==nr) then
             headertext(1,position) = trim(LabelsShort(7)) // 'Out'
         else
             headertext(1,position) = trim(LabelsShort(7)) // trim(cRoom)
         end if
         headertext(2,position) = Labels(7)
-        if (i==n_rooms) then
+        if (i==nr) then
             headertext(3,position) = 'Outside'
         else
             headertext(3,position) = roomptr%name
@@ -109,7 +109,7 @@ module spreadsheet_header_routines
     ! This is the header information for the spreadsheet output
 
     ! local variables
-    integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
+    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfire
     character(35) :: headertext(4,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     logical tooutput(ns), molfrac(ns)
     data tooutput /9*.true.,.false.,.true./
@@ -136,7 +136,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Species by compartment, then layer, then species type
-    do i = 1, n_inside_rooms
+    do i = 1, nrm1
         roomptr => roominfo(i)
         do j = upper, lower
             if (j==upper.or..not.roomptr%shaft) then
@@ -185,7 +185,7 @@ module spreadsheet_header_routines
     !.....  sensor number
     !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
 
-    integer, parameter :: maxhead = 1+9*nr+14*mxtarg+4*mxdtect
+    integer, parameter :: maxhead = 1+9*mxrooms+14*mxtarg+4*mxdtect
     character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
     integer position, i, j, itarg, itype
     type(room_type), pointer :: roomptr
@@ -216,7 +216,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Compartment surfaces temperatures
-    do i = 1, n_inside_rooms
+    do i = 1, nrm1
         roomptr => roominfo(i)
         do j = 1, 4
             position = position + 1
@@ -316,10 +316,10 @@ module spreadsheet_header_routines
 
         ifrom = ventptr%from
         call tointstring(ifrom,cifrom)
-        if (ifrom==n_rooms) cifrom = 'Outside'
+        if (ifrom==nr) cifrom = 'Outside'
         ito = ventptr%to
         call tointstring(ito,cito)
-        if (ito==n_rooms) cito = 'Outside'
+        if (ito==nr) cito = 'Outside'
 
         position = position + 1
         call tointstring(ventptr%counter,cvent)
@@ -343,10 +343,10 @@ module spreadsheet_header_routines
 
         ifrom = ivvent(i,botrm)
         call tointstring(ifrom,ciFrom)
-        if (ifrom==n_rooms) cifrom = 'Outside'
+        if (ifrom==nr) cifrom = 'Outside'
         ito = ivvent(i,toprm)
         call tointstring(ito,cito)
-        if (ito==n_rooms) cito = 'Outside'
+        if (ito==nr) cito = 'Outside'
         position = position + 1
         write (ctemp,'(5a)') trim(labelsshort(3)),trim(cifrom),'_',trim(cito)
         headertext(1,position) = ctemp
@@ -369,7 +369,7 @@ module spreadsheet_header_routines
             ii = hvnode(1,i)
             inode = hvnode(2,i)
             call toIntString(ii,ciFrom)
-            if (ii==n_rooms) cifrom = 'Outside'
+            if (ii==nr) cifrom = 'Outside'
             call toIntString(inode,ciTo)
             do ih = 1,3
                 position = position + 1
@@ -411,7 +411,7 @@ module spreadsheet_header_routines
 
     logical, intent(in) :: lmode
 
-    integer, parameter :: maxhead = 1+8*nr+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
+    integer, parameter :: maxhead = 1+8*mxrooms+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr
@@ -434,7 +434,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Compartment variables
-    do j = 1, n_inside_rooms
+    do j = 1, nrm1
         roomptr => roominfo(j)
         do i = 1, 8
             if (i==1.or.i==4.or.i==5.or.i==7.or..not.roomptr%shaft) then
@@ -526,7 +526,7 @@ module spreadsheet_header_routines
     ! Mechanical vent variables
     iv = 0
     do j = 1, next
-        if (hvnode(1,j)<=n_inside_rooms) then
+        if (hvnode(1,j)<=nrm1) then
             iv = iv + 1
             position = position + 1
             call toIntString(iv,cVent)
@@ -587,7 +587,7 @@ module spreadsheet_header_routines
 
     ! This is the header information for the calculate_residuals spreadsheet output
 
-    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*nr + 4*nr
+    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*mxrooms + 4*mxrooms
     character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2), Species(9)
     integer position, i, j, k, l, nprod
     type(room_type), pointer :: roomptr
@@ -608,7 +608,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Compartment variables
-    do j = 1, n_inside_rooms
+    do j = 1, nrm1
         roomptr => roominfo(j)
         position = position + 1
         headertext(1,position) = trim(Labels(2))
@@ -647,7 +647,7 @@ module spreadsheet_header_routines
     end do
 
     ! Species
-    do j = 1, n_inside_rooms
+    do j = 1, nrm1
         roomptr => roominfo(j)
         do i = 1, 2
             do k = 1, 9

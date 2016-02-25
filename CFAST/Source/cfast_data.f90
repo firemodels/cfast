@@ -17,33 +17,30 @@ module cenviro
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
     logical :: exset
 
-    logical izdtflag, izcon(nr), izhvac(nr)
+    logical izdtflag, izcon(mxrooms), izhvac(mxrooms)
 
-    real(eb), dimension(nr) :: zzrelp, zzpabs
-    real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
-    real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
-    real(eb), dimension(nr,nwal) :: zzwspec
-    real(eb), dimension(nr,nwal,2) :: zzwtemp
+    real(eb), dimension(mxrooms) :: zzrelp, zzpabs
+    real(eb), dimension(mxrooms,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
+    real(eb), dimension(mxrooms,2,ns) :: zzgspec, zzcspec
+    real(eb), dimension(mxrooms,nwal) :: zzwspec
+    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp
     real(eb), dimension(mxhvsys,ns) :: zzhvpr
     real(eb), dimension(mxhvsys) :: zzhvm
-    real(eb), dimension(nr,4) :: zzwarea
-    real(eb), dimension(nr,10) :: zzwarea2
-    real(eb), dimension(mxcross,nr) :: zzrvol, zzrarea, zzrhgt
-    real(eb), dimension(2,nr) :: zzabsb, zzbeam
+    real(eb), dimension(mxrooms,4) :: zzwarea
+    real(eb), dimension(mxrooms,10) :: zzwarea2
+    real(eb), dimension(mxcross,mxrooms) :: zzrvol, zzrarea, zzrhgt
+    real(eb), dimension(2,mxrooms) :: zzabsb, zzbeam
     real(eb), dimension(0:mxpts+1) :: zzdisc
-    real(eb), dimension(nr,nr) :: zzhtfrac
-    real(eb) :: zzdtcrit
-
-    real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
+    real(eb), dimension(mxrooms,mxrooms) :: zzhtfrac
 
     integer, dimension(ns+2) :: izpmap
-    integer, dimension(4,nr) :: izwmap
-    integer, dimension(nr,4) :: izswal
-    integer, dimension(4*nr,5) :: izwall
-    integer, dimension(nr) :: izrvol
-    integer, dimension(0:nr) :: izheat
-    integer, dimension(nr,0:nr) :: izhtfrac
-    integer :: izdtnum,izdtmax, izndisc, nswal
+    integer, dimension(4,mxrooms) :: izwmap
+    integer, dimension(mxrooms,4) :: izswal
+    integer, dimension(4*mxrooms,5) :: izwall
+    integer, dimension(mxrooms) :: izrvol
+    integer, dimension(0:mxrooms) :: izheat
+    integer, dimension(mxrooms,0:mxrooms) :: izhtfrac
+    integer :: izndisc, nswal
 
 end module cenviro
 
@@ -124,8 +121,14 @@ module solver_data
     real(eb), dimension(nt) :: pinit
     real(eb), dimension(1) :: rpar2
     integer, dimension(3) :: ipar2
-    real(eb) :: stpmax = 1.0_eb        ! maximum solver time step, if negative, then solver will decide
-    real(eb) :: dasslfts = 0.005_eb    ! first time step for DASSL
+    
+    ! time step setup values
+    real(eb) :: stpmax = 1.0_eb         ! maximum solver time step, if negative, then solver will decide
+    real(eb) :: stpfirst = 0.005_eb     ! first time step for DASSL    
+    real(eb) :: stpmin                  ! minimum time step below which DASSL may be failing to find a solution.
+    integer :: stpmin_cnt               ! current count of time steps below stpmin
+    integer :: stpmin_cnt_max           ! maximum number of time steps below stpmin before DASSL calls it quits
+    
     ! solver variables
     integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
         nofhvpr, nequals, noffsm
@@ -192,12 +195,12 @@ module fire_data
     save
 
     ! fire variables
-    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), &
-        ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
-    real(eb) :: lower_o2_limit, qf(nr), objmaspy(0:mxfire), heatup(nr), heatlp(nr), oplume(3,mxfires), &
+    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(mxrooms), ifroom(mxfire), &
+        ifrpnt(mxrooms,2), heatfr, obj_fpos(0:mxfires)
+    real(eb) :: lower_o2_limit, qf(mxrooms), objmaspy(0:mxfire), heatup(mxrooms), heatlp(mxrooms), oplume(3,mxfires), &
         qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
         radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
-        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
+        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(mxrooms), &
         farea(0:mxfire), tgignt
     logical objon(0:mxfires), heatfl
     type(fire_type), target :: fireinfo(mxfire)
@@ -349,13 +352,13 @@ module vent_data
     save
 
     ! hvent variables
-    integer :: ihvent_connections(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
+    integer :: ihvent_connections(mxrooms,mxrooms), ijk(mxrooms,mxrooms,mxccv), vface(mxhvents), nventijk
     real(eb) :: hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), &
     hlp(mxhvents)
 
     ! vvent variables
-    integer :: ivvent_connections(nr,nr), vshape(nr,nr)
-    real(eb) :: vvarea(nr,nr), vmflo(nr,nr,2), qcvpp(4,nr,nr)
+    integer :: ivvent_connections(mxrooms,mxrooms), vshape(mxrooms,mxrooms)
+    real(eb) :: vvarea(mxrooms,mxrooms), vmflo(mxrooms,mxrooms,2), qcvpp(4,mxrooms,mxrooms)
 
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
@@ -373,7 +376,7 @@ module vent_data
     integer, dimension(mxhvent,2) :: ivvent
     integer :: n_hvents, n_vvents
 
-    real(eb), dimension(nr,mxhvent) :: zzventdist
+    real(eb), dimension(mxrooms,mxhvent) :: zzventdist
     real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
     
     !slab data
@@ -407,19 +410,22 @@ module room_data
 
 
     ! compartment variables
-    integer n_rooms, n_inside_rooms, n_species
-    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns), &
-        initial_mass_fraction(ns), qfc(2,nr)
-    type(room_type), target :: roominfo(nr)
+    integer nr, nrm1, n_species
+
+    real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
+    real(eb) interior_rel_pressure(mxrooms), exterior_rel_pressure(mxrooms), species_mass_density(mxrooms,2,ns), &
+        toxict(mxrooms,2,ns), initial_mass_fraction(ns), qfc(2,mxrooms)
+    
+    type(room_type), target :: roominfo(mxrooms)
 
     ! wall variables
-    integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr),nwalls, nfurn
-    real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), &
-        epw(nwal,nr), twj(nnodes,nr,nwal)
+    integer :: numnode(mxslb+1,4,mxrooms), nslb(nwal,mxrooms),nwalls, nfurn
+    real(eb) :: rdqout(4,mxrooms), fkw(mxslb,nwal,mxrooms), cw(mxslb,nwal,mxrooms), rw(mxslb,nwal,mxrooms), &
+        flw(mxslb,nwal,mxrooms), epw(nwal,mxrooms), twj(nnodes,mxrooms,nwal)
     logical :: adiabatic_wall
     
-    real(eb), dimension (nr,4) :: wlength
-    real(eb), dimension (nnodes,nr,4) :: walldx
+    real(eb), dimension (mxrooms,4) :: wlength
+    real(eb), dimension (nnodes,mxrooms,4) :: walldx
     real(eb), dimension(mxpts) :: furn_time, furn_temp
     real(eb) :: qfurnout
 

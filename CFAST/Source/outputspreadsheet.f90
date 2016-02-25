@@ -48,7 +48,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    integer, parameter :: maxhead = 1+8*nr+5+9*mxfire
+    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfire
     real(eb) :: outarray(maxhead), fheight
     logical :: firstc
     integer :: position, i
@@ -67,7 +67,7 @@ module spreadsheet_routines
     call ssaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, n_inside_rooms
+    do i = 1, nrm1
         roomptr => roominfo(i)
         call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
@@ -79,7 +79,7 @@ module spreadsheet_routines
     end do
 
     ! Fires
-    do i = 1,n_rooms
+    do i = 1,nr
         call ssaddtolist (position,fqdj(i),outarray)
     end do
 
@@ -213,7 +213,7 @@ module spreadsheet_routines
 
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
-    integer, parameter :: maxoutput=4*nr+26*mxtarg+4*mxdtect
+    integer, parameter :: maxoutput=4*mxrooms+26*mxtarg+4*mxdtect
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
@@ -241,7 +241,7 @@ module spreadsheet_routines
 
     !     First the surface temperatures for each compartment
 
-    do i=1,n_inside_rooms
+    do i=1,nrm1
         do iw = 1, 4
             call SSaddtolist (position,zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,outarray)
         end do
@@ -325,7 +325,7 @@ module spreadsheet_routines
 
     !	Write out the species to the spread sheet file
 
-    integer, parameter :: maxhead = 1+22*nr
+    integer, parameter :: maxhead = 1+22*mxrooms
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxhead), ssvalue
@@ -352,7 +352,7 @@ module spreadsheet_routines
     position = 0
     call SSaddtolist (position,time,outarray)
 
-    do i = 1, n_inside_rooms
+    do i = 1, nrm1
         roomptr => roominfo(i)
         do layer = upper, lower
             do lsp = 1, ns
@@ -383,7 +383,7 @@ module spreadsheet_routines
 
     ! This routine writes to the {project}_zone.csv file, the smokeview information
 
-    integer, parameter :: maxhead = 1+7*nr+5+7*mxfire
+    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfire
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxhead), fheight, factor2, height, width, avent, slabs, vflow
@@ -408,7 +408,7 @@ module spreadsheet_routines
     call SSaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, n_inside_rooms
+    do i = 1, nrm1
         roomptr => roominfo(i)
         call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
@@ -469,7 +469,7 @@ module spreadsheet_routines
         call SSaddtolist (position,slabs,outarray)
         do j = 2, 1, -1
             vflow = ventptr%flow_slab(j)
-            if (ventptr%top<=n_inside_rooms.and.j==1) vflow = -vflow
+            if (ventptr%top<=nrm1.and.j==1) vflow = -vflow
             call ssaddtolist(position,ventptr%temp_slab(j),outarray)
             call ssaddtolist(position,vflow,outarray)
             call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
@@ -480,7 +480,7 @@ module spreadsheet_routines
     !mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
     if (nnode/=0.and.next/=0) then
         do i = 1, next
-            if (hvnode(1,i)<=n_inside_rooms) then
+            if (hvnode(1,i)<=nrm1) then
                 ventptr => mventinfo(i)
                 avent = arext(i)
                 call SSaddtolist (position,avent,outarray)

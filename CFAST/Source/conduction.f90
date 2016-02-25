@@ -35,10 +35,10 @@ module conduction_routines
     !                delta   the residual of q'' + k dt/dx
 
     integer, intent(in) :: update
-    real(eb), intent(in) :: dt, flxtot(nr,nwal)
+    real(eb), intent(in) :: dt, flxtot(mxrooms,nwal)
     real(eb), intent(out) :: delta(*)
 
-    real(eb) :: tgrad(2), vtgrad(4*nr)
+    real(eb) :: tgrad(2), vtgrad(4*mxrooms)
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j
@@ -98,7 +98,7 @@ module conduction_routines
                         end if
                         dflor = roominfo(j)%z0 - roomptr%z0
                         yy = zzhlay(j,lower) + dflor
-                        if(j/=n_inside_rooms+1)then
+                        if(j/=nrm1+1)then
                             if(yy>yt)then
                                 fu = 0.0_eb
                             elseif(yy<yb)then

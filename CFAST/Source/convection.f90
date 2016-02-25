@@ -28,7 +28,7 @@
     !                 flxcv       net heat flux onto surface
 
 
-    real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
+    real(eb), intent(out) :: flwcv(mxrooms,2), flxcv(mxrooms,nwal)
 
     real(eb) :: qconv, qconv_avg
 
@@ -36,9 +36,9 @@
     type(room_type), pointer :: roomptr
 
 
-    flwcv(1:n_inside_rooms,upper) = 0.0_eb
-    flwcv(1:n_inside_rooms,lower) = 0.0_eb
-    flxcv(1:n_inside_rooms,1:nwal) = 0.0_eb
+    flwcv(1:nrm1,upper) = 0.0_eb
+    flwcv(1:nrm1,lower) = 0.0_eb
+    flxcv(1:nrm1,1:nwal) = 0.0_eb
 
     if (option(fconvec)/=on) return
 

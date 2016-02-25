@@ -40,7 +40,7 @@ module input_routines
 
     implicit none
 
-    real(eb) :: yinter(nrooms), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
+    real(eb) :: yinter(nr), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij, ivers
@@ -103,7 +103,7 @@ module input_routines
     end if
     title = carray(1,3)
 
-    do i = 1, nrooms
+    do i = 1, nr
         yinter(i) = -1.0_eb
     end do
 
@@ -123,8 +123,8 @@ module input_routines
     end if
 
     ! Compartment geometry related data
-    nr_m1 = nr - 1
-    do i = 1, nr_m1
+    n_inside_rooms = n_rooms - 1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         roomptr%x1 = roomptr%x0 + roomptr%width
         roomptr%y1 = roomptr%y0 + roomptr%depth
@@ -162,7 +162,7 @@ module input_routines
     ! make sure ceiling/floor vent specifications are correct -  we have to do this
     ! here rather than right after keywordcases because floor_height and ceiling_height were just defined
     ! above
-    do itop = 1, nr_m1
+    do itop = 1, n_inside_rooms
         if (ivvent_connections(itop,itop)/=0) then
             write (logerr,*) '***Error: A room can not be connected to itself with a vertical vent'
             stop
@@ -204,7 +204,7 @@ module input_routines
     end do
 
     ! Compartment area and volume
-    do i = 1, nr_m1
+    do i = 1, n_inside_rooms
         roomptr => roominfo(i)
         roomptr%area = roomptr%width*roomptr%depth
         roomptr%volume = roomptr%area*roomptr%height
@@ -218,15 +218,15 @@ module input_routines
         iroom1 = izswal(i,w_from_room)
         iroom2 = izswal(i,w_to_room)
 
-        ! room numbers must be between 1 and nr_m1
-        if(iroom1<1.or.iroom2<1.or.iroom1>nr_m1+1.or.iroom2>nr_m1+1)then
+        ! room numbers must be between 1 and n_inside_rooms
+        if(iroom1<1.or.iroom2<1.or.iroom1>n_inside_rooms+1.or.iroom2>n_inside_rooms+1)then
             write (logerr,201) iroom1, iroom2
 201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
             stop
         end if
 
         ! if room is connected to the outside then ignore it
-        if(iroom1==nr_m1+1.or.iroom2==nr_m1+1)then
+        if(iroom1==n_inside_rooms+1.or.iroom2==n_inside_rooms+1)then
             nswall2 = nswall2 - 1
             cycle
         else
@@ -273,17 +273,17 @@ module input_routines
     nswal = nswall2
 
     ! check shafts
-    do iroom = nr_m1 + 1, nrooms
+    do iroom = n_inside_rooms + 1, nr
         roomptr => roominfo(iroom)
         if(roomptr%shaft)then
             write (logerr,'(a,i0,a,i0)') &
-                '***Error: Invalid SHAFT specification. Room',iroom,'must be less than or equal to ',nr_m1
+                '***Error: Invalid SHAFT specification. Room',iroom,'must be less than or equal to ',n_inside_rooms
             stop
         end if
     end do
 
     ! check variable cross-sectional area specs and convert to volume
-    do i = 1, nr_m1
+    do i = 1, n_inside_rooms
         npts = izrvol(i)
         if(npts/=0)then
             roomptr => roominfo(i)
@@ -359,7 +359,7 @@ module input_routines
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
         iroom = dtectptr%room
-        if(iroom<1.or.iroom>nr_m1)then
+        if(iroom<1.or.iroom>n_inside_rooms)then
             write (logerr,104) iroom
 104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
             stop
@@ -402,16 +402,16 @@ module input_routines
 
     ! force all rooms to transfer heat between connected rooms
     if(izheat(0)==1)then
-        do i = 1, nr_m1
+        do i = 1, n_inside_rooms
             izheat(i) = 1
         end do
     end if
 
-    do i = 1, nr_m1
+    do i = 1, n_inside_rooms
 
         ! force heat transfer between rooms connected by vents.
         if(izheat(i)==1)then
-            do j = 1, nr
+            do j = 1, n_rooms
                 roomptr => roominfo(j)
                 nventij = 0
                 do k = 1, 4
@@ -420,28 +420,28 @@ module input_routines
                 if(nventij/=0)zzhtfrac(i,j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if(j<=nr_m1.and..not.roomptr%surface_on(3)) zzhtfrac(i,j) = 0.0_eb
+                if(j<=n_inside_rooms.and..not.roomptr%surface_on(3)) zzhtfrac(i,j) = 0.0_eb
             end do
         end if
 
         ! normalize zzhtfrac fraction matrix so that rows sum to one
         if(izheat(i)/=0)then
             sum = 0.0_eb
-            do j = 1, nr_m1+1
+            do j = 1, n_inside_rooms+1
                 sum = sum + zzhtfrac(i,j)
             end do
             if(sum<1.e-5_eb)then
-                do j = 1, nr_m1
+                do j = 1, n_inside_rooms
                     zzhtfrac(i,j) = 0.0_eb
                 end do
-                zzhtfrac(i,nr_m1+1) = 1.0_eb
+                zzhtfrac(i,n_inside_rooms+1) = 1.0_eb
             else
-                do j = 1, nr_m1+1
+                do j = 1, n_inside_rooms+1
                     zzhtfrac(i,j) = zzhtfrac(i,j)/sum
                 end do
             end if
             jj = 0
-            do j = 1, nr_m1
+            do j = 1, n_inside_rooms
                 if(zzhtfrac(i,j)/=0.0_eb)then
                     izhtfrac(i,0) = izhtfrac(i,0) + 1
                     jj = jj + 1
@@ -493,7 +493,7 @@ module input_routines
 
     !	Start with a clean slate
 
-    do i = 1, nrooms
+    do i = 1, nr
         roomptr => roominfo(i)
         do j = 1, 4
             roomptr%matl(j) = 'OFF'
@@ -552,7 +552,7 @@ module input_routines
             if (countargs(lcarray)>=10) then
 
                 ncomp = ncomp + 1
-                if (ncomp>nrooms) then
+                if (ncomp>nr) then
                     write (logerr, 5062) ncomp
                     stop
                 end if
@@ -606,7 +606,7 @@ module input_routines
                 end if
 
                 ! Reset this each time in case this is the last entry
-                nr = ncomp + 1
+                n_rooms = ncomp + 1
             else
                 write (logerr,*) '***Error: Bad COMPA input. At least 10 arguments required.'
                 stop
@@ -636,7 +636,7 @@ module input_routines
                 ! The target can exist, now for the compartment
                 ntarg = ntarg + 1
                 iroom = lrarray(1)
-                if(iroom<1.or.iroom>nr)then
+                if(iroom<1.or.iroom>n_rooms)then
                     write(logerr,5003) iroom
                     stop
                 end if
@@ -716,7 +716,7 @@ module input_routines
                 stop
             end if
             iroom = lrarray(1)
-            if (iroom<1.or.iroom>nr-1) then
+            if (iroom<1.or.iroom>n_rooms-1) then
                 write(logerr,5320)iroom
                 stop
             end if
@@ -907,7 +907,7 @@ module input_routines
                 k = lrarray(3)
                 imin = min(i,j)
                 jmax = max(i,j)
-                if (imin>nrooms-1.or.jmax>nrooms.or.imin==jmax) then
+                if (imin>nr-1.or.jmax>nr.or.imin==jmax) then
                     write (logerr,5070) i, j
                     stop
                 end if
@@ -973,7 +973,7 @@ module input_routines
         case ('DEADR')
             i = lrarray(1)
             j = lrarray(2)
-            if (i.ge.1.and.i.le.nrooms.and.j.le.1.and.j.le.nrooms.and.i.ne.j) then
+            if (i.ge.1.and.i.le.nr.and.j.le.1.and.j.le.nr.and.i.ne.j) then
                 roomptr => roominfo(i)
                 roomptr%deadroom = j
             end if
@@ -1068,7 +1068,7 @@ module input_routines
                 i = lrarray(1)
                 j = lrarray(2)
                 ! check for outside of compartment space; self pointers are covered in read_input_file
-                if (i>nrooms.or.j>nrooms) then
+                if (i>nr.or.j>nr) then
                     write (logerr,5070) i, j
                     stop
                 end if
@@ -1106,7 +1106,7 @@ module input_routines
             mid = lrarray(3)
             iecfrom = lrarray(1)
             iecto = lrarray(2)
-            if (iecfrom>nr.or.iecto>nr) then
+            if (iecfrom>n_rooms.or.iecto>n_rooms) then
                 write(logerr,5191) iecfrom, iecto
                 stop
             end if
@@ -1213,7 +1213,7 @@ module input_routines
             end if
             tcname = lcarray(1)
             iroom = lrarray(2)
-            if (iroom<1.or.iroom>nr-1) then
+            if (iroom<1.or.iroom>n_rooms-1) then
                 write(logerr,5320)iroom
                 stop
             end if
@@ -1325,7 +1325,7 @@ module input_routines
                 i2 = lrarray(2)
                 iroom = i2
                 dtectptr%room = iroom
-                if(iroom<1.or.iroom>nrooms)then
+                if(iroom<1.or.iroom>nr)then
                     write (logerr,5342) i2
                     stop
                 end if
@@ -1374,7 +1374,7 @@ module input_routines
             if (countargs(lcarray)>=2) then
                 i1 = lrarray(1)
                 i2 = lrarray(2)
-                if (i1<1.or.i2<1.or.i1>nr.or.i2>nr) then
+                if (i1<1.or.i2<1.or.i1>n_rooms.or.i2>n_rooms) then
                     write(logerr,5345) i1, i2
                     stop
                 end if
@@ -1393,7 +1393,7 @@ module input_routines
         case ('ONEZ')
             if (countargs(lcarray)>=1) then
                 iroom = lrarray(1)
-                if(iroom<1.or.iroom>nr)then
+                if(iroom<1.or.iroom>n_rooms)then
                     write(logerr, 5001) i1
                     stop
                 end if
@@ -1410,7 +1410,7 @@ module input_routines
                 iroom = lrarray(1)
 
                 ! check that specified room is valid
-                if(iroom<0.or.iroom>nr)then
+                if(iroom<0.or.iroom>n_rooms)then
                     write(logerr,5346) iroom
                     stop
                 end if
@@ -1430,7 +1430,7 @@ module input_routines
                 iroom = lrarray(1)
 
                 ! make sure the room number is valid
-                if(iroom<1.or.iroom>nr)then
+                if(iroom<1.or.iroom>n_rooms)then
                     write(logerr,5347) iroom
                     stop
                 end if
@@ -1468,7 +1468,7 @@ module input_routines
                 iroom = lrarray(1)
 
                 ! make sure the room number is valid
-                if(iroom<1.or.iroom>nr)then
+                if(iroom<1.or.iroom>n_rooms)then
                     write(logerr,5349) iroom
                     stop
                 end if
@@ -1513,11 +1513,11 @@ module input_routines
                 stop
             end if
 
-            ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts nr pairs of {Second_Compartment, Fraction}
+            ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts n_rooms pairs of {Second_Compartment, Fraction}
 
             ! There are two forms of the command
             !   The first (single entry of the room number) - all connections based on horizontal flow
-            !   The second is the compartment number followed by nr pairs of compartments to which the heat
+            !   The second is the compartment number followed by n_rooms pairs of compartments to which the heat
             !   will flow and the fraction of the vertical surface of the compartment that loses heat
         case ('HHEAT')
             if (countargs(lcarray)>=1) then
@@ -1529,7 +1529,7 @@ module input_routines
                     cycle
                 else
                     nto = lrarray(2)
-                    if(nto<1.or.nto>nr)then
+                    if(nto<1.or.nto>n_rooms)then
                         write(logerr,5354) nto
                         stop
                     end if
@@ -1543,7 +1543,7 @@ module input_routines
                         i2 = 2*i+2
                         ito = lrarray(i1)
                         frac = lrarray(i2)
-                        if(ito<1.or.ito==ifrom.or.ito>nr)then
+                        if(ito<1.or.ito==ifrom.or.ito>n_rooms)then
                             write(logerr, 5356) ifrom,ito
                             stop
                         end if
@@ -1578,7 +1578,7 @@ module input_routines
         case ('HEATF')
             if (countargs(lcarray)>=5) then
                 heatfr = lrarray(1)
-                if(heatfr<1.or.heatfr>nr-1) then
+                if(heatfr<1.or.heatfr>n_rooms-1) then
                     stop
                 end if
                 heatfl = .true.
@@ -1614,7 +1614,7 @@ module input_routines
                         else
                             sliceptr%roomnum = 0
                         end if
-                        if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                        if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms-1) then
                             write (logerr, 5403) nvisualinfo
                             stop
                         end if
@@ -1660,7 +1660,7 @@ module input_routines
                     else
                         sliceptr%roomnum = 0
                     end if
-                    if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                    if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms-1) then
                         write (logerr, 5403) nvisualinfo
                         stop
                     end if
@@ -1682,7 +1682,7 @@ module input_routines
                 else
                     sliceptr%roomnum = 0
                 end if
-                if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms-1) then
                     write (logerr, 5404) nvisualinfo
                     stop
                 end if
@@ -2250,7 +2250,7 @@ module input_routines
    nisoinfo = 0
    if(nvisualinfo.eq.0)return
 
-   nrm = nr_m1
+   nrm = n_inside_rooms
 
    ! count number of isosurfaces and slices
 
@@ -2435,25 +2435,25 @@ module input_routines
 
    ! --------------------------- set_grid -------------------------------------------
 
-   subroutine set_grid (xgrid,nr,xmin,xsplit,xmax,nsplit)
+   subroutine set_grid (xgrid,n_rooms,xmin,xsplit,xmax,nsplit)
 
-   integer, intent(in) :: nr, nsplit
-   real(eb), dimension(nr), intent(out) :: xgrid
+   integer, intent(in) :: n_rooms, nsplit
+   real(eb), dimension(n_rooms), intent(out) :: xgrid
    real(eb), intent(in) :: xmin, xsplit, xmax
 
    real(eb) :: factor
    integer :: i
 
-!   1            nr-nsplit          nr
+!   1            n_rooms-nsplit          n_rooms
 !  xmin          xsplit          xmax
 
-   do i = 1, nr-nsplit
-      factor = real(i-1,eb)/real(nr-nsplit-1,eb)
+   do i = 1, n_rooms-nsplit
+      factor = real(i-1,eb)/real(n_rooms-nsplit-1,eb)
       xgrid(i) = emix(factor,xmin,xsplit)
    end do
 
-   do i = nr-nsplit+1, nr
-      factor = real(i-(nr-nsplit),eb)/real(nsplit,eb)
+   do i = n_rooms-nsplit+1, n_rooms
+      factor = real(i-(n_rooms-nsplit),eb)/real(nsplit,eb)
       xgrid(i) = emix(factor,xsplit,xmax)
    end do
 

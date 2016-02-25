@@ -32,7 +32,7 @@ module vflow_routines
     !                vflowflg (output): true if vertical flow is included in the simulation
 
     real(eb), intent(in) :: tsec
-    real(eb), intent(out) :: flwvf(nrooms,ns+2,2)
+    real(eb), intent(out) :: flwvf(nr,ns+2,2)
     logical, intent(out) :: vflowflg
 
     real(eb) :: vvent(2), xmvent(2), tmvent(2), epscut, frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
@@ -43,10 +43,10 @@ module vflow_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    flwvf(1:nr,1:ns+2,upper) = 0.0_eb
-    flwvf(1:nr,1:ns+2,lower) = 0.0_eb
-    vmflo(1:nr,1:nr,upper) = 0.0_eb
-    vmflo(1:nr,1:nr,lower) = 0.0_eb
+    flwvf(1:n_rooms,1:ns+2,upper) = 0.0_eb
+    flwvf(1:n_rooms,1:ns+2,lower) = 0.0_eb
+    vmflo(1:n_rooms,1:n_rooms,upper) = 0.0_eb
+    vmflo(1:n_rooms,1:n_rooms,lower) = 0.0_eb
     vflowflg = .false.
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
@@ -87,7 +87,7 @@ module vflow_routines
             end if
 
             ! determine mass and enthalpy fractions for the from room
-            if (ifrm<=nr_m1) then
+            if (ifrm<=n_inside_rooms) then
                 if (tmvent(iflow)>interior_temperature) then
                     zlayer = zzhlay(ifrm,ilay)
                     froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
@@ -121,7 +121,7 @@ module vflow_routines
             fromtq = fromqu + fromql
 
             ! extract mass and enthalpy from "from" room (not from outside)
-            if (ifrm<=nr_m1) then
+            if (ifrm<=n_inside_rooms) then
                 flwvf(ifrm,m,upper) = flwvf(ifrm,m,upper) - frommu
                 flwvf(ifrm,m,lower) = flwvf(ifrm,m,lower) - fromml
                 flwvf(ifrm,q,upper) = flwvf(ifrm,q,upper) - fromqu
@@ -142,7 +142,7 @@ module vflow_routines
             toql = fl*fromtq
 
             ! deposit mass and enthalpy into "to" room varibles (not outside)
-            if (ito<=nr_m1) then
+            if (ito<=n_inside_rooms) then
                 flwvf(ito,m,upper) = flwvf(ito,m,upper) + tomu
                 flwvf(ito,m,lower) = flwvf(ito,m,lower) + toml
                 flwvf(ito,q,upper) = flwvf(ito,q,upper) + toqu
@@ -158,13 +158,13 @@ module vflow_routines
                 speciesu = zzcspec(ifrm,upper,lsp)*frommu
 
                 ! extract mass and enthalpy from "from" room (not from the outside)
-                if (ifrm<=nr_m1) then
+                if (ifrm<=n_inside_rooms) then
                     flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - speciesu
                     flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - speciesl
                 end if
 
                 ! deposit mass and enthalphy into "to" room variables (not outside)
-                if (ito<=nr_m1) then
+                if (ito<=n_inside_rooms) then
                     pmtoup = (speciesu + speciesl)*fu
                     pmtolp = (speciesu + speciesl)*fl
                     flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
@@ -261,7 +261,7 @@ module vflow_routines
 
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     ! dp at top of bottom room and bottom of top room
-    if (ibot<=nr_m1) then
+    if (ibot<=n_inside_rooms) then
         dp(2) = -grav_con*(zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
         relp(2) = zzrelp(ibot)
     else
@@ -269,7 +269,7 @@ module vflow_routines
         relp(2) = exterior_rel_pressure(itop)
     end if
 
-    if (itop<=nr_m1) then
+    if (itop<=n_inside_rooms) then
         dp(1) = 0.0_eb
         relp(1) = zzrelp(itop)
     else
@@ -299,12 +299,12 @@ module vflow_routines
     end if
 
     ! delden is density immediately above the vent less density immediately below the vent
-    if (itop<=nr_m1) then
+    if (itop<=n_inside_rooms) then
         den(1) = zzrho(itop,ilay(1))
     else
         den(1) = exterior_density
     end if
-    if (ibot<=nr_m1) then
+    if (ibot<=n_inside_rooms) then
         den(2) = zzrho(ibot,ilay(2))
     else
         den(2) = exterior_density
@@ -368,7 +368,7 @@ module vflow_routines
     do i = 1, 2
         vvent(i) = vst(i) + vex
         xmvent(i) = denvnt(i)*vvent(i)
-        if (iroom(i)<=nr_m1) then
+        if (iroom(i)<=n_inside_rooms) then
             ! iroom(i) is an inside room so use the environment variable zztemp for temperature
             tmvent(i) = zztemp(iroom(i),ilay(3-i))
         else
@@ -397,7 +397,7 @@ module vflow_routines
     ibot = ivvent(iinvvent,2)
     harea = vvarea(itop,ibot)
     hshape = vshape(itop,ibot)
-    if (itop>nr_m1) then
+    if (itop>n_inside_rooms) then
         hface = 6
     else
         hface = 5

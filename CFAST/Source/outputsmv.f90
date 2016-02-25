@@ -186,7 +186,7 @@
     ! mechanical vents
     if (nnode/=0.and.next/=0) then
         do i = 1, next
-            if (hvnode(1,i)<=nr_m1) then
+            if (hvnode(1,i)<=n_inside_rooms) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
                 write (13,'(a)') "MVENTGEOM"
                 write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
@@ -861,7 +861,7 @@ module isosurface
     REAL(FB), DIMENSION(:), POINTER :: NODES_FROM
     INTEGER, INTENT(IN) :: NTRIS_FROM,NNODES_FROM
 
-    INTEGER :: NNODES_NEW, NTRIS_NEW, nr
+    INTEGER :: NNODES_NEW, NTRIS_NEW, n_rooms
 
     NNODES_NEW = NNODES_TO + NNODES_FROM
     NTRIS_NEW = NTRIS_TO + NTRIS_FROM
@@ -874,8 +874,8 @@ module isosurface
     TRIS_TO(1+3*NTRIS_TO:3*NTRIS_NEW) = TRIS_FROM(1:3*NTRIS_FROM)
     SURFACES_TO(1+NTRIS_TO:NTRIS_NEW) = SURFACES_FROM(1:NTRIS_FROM)
 
-    DO nr=1,3*NTRIS_FROM
-        TRIS_TO(3*NTRIS_TO+nr) = TRIS_TO(3*NTRIS_TO+nr) + NNODES_TO
+    DO n_rooms=1,3*NTRIS_FROM
+        TRIS_TO(3*NTRIS_TO+n_rooms) = TRIS_TO(3*NTRIS_TO+n_rooms) + NNODES_TO
     END DO
     NNODES_TO = NNODES_NEW
     NTRIS_TO = NTRIS_NEW
@@ -1121,7 +1121,7 @@ module isosurface
         /
 
     REAL(FB) :: VMIN, VMAX
-    INTEGER :: CASENUM, BIGGER, SIGN, nr
+    INTEGER :: CASENUM, BIGGER, SIGN, n_rooms
     INTEGER, DIMENSION(0:7) :: PRODS=(/1,2,4,8,16,32,64,128/);
     REAL(FB), DIMENSION(0:7) :: XXVAL,YYVAL,ZZVAL
     INTEGER, DIMENSION(0:3) :: IXMIN=(/0,1,4,5/), IXMAX=(/2,3,6,7/)
@@ -1154,10 +1154,10 @@ module isosurface
     BIGGER=0
     SIGN=1
 
-    DO nr = 0, 7
-        IF (VALS(nr)>LEVEL) THEN
+    DO n_rooms = 0, 7
+        IF (VALS(n_rooms)>LEVEL) THEN
             BIGGER=BIGGER+1
-            CASENUM = CASENUM + PRODS(nr);
+            CASENUM = CASENUM + PRODS(n_rooms);
         end if
     END DO
 
@@ -1167,9 +1167,9 @@ module isosurface
     IF (BIGGER > 4) THEN
         SIGN=-1
         CASENUM=0
-        DO nr=0, 7
-            IF (VALS(nr)<LEVEL) THEN
-                CASENUM = CASENUM + PRODS(nr)
+        DO n_rooms=0, 7
+            IF (VALS(n_rooms)<LEVEL) THEN
+                CASENUM = CASENUM + PRODS(n_rooms)
             end if
         END DO
     end if
@@ -1188,13 +1188,13 @@ module isosurface
     !  0--X-----3
 
 
-    DO nr=0, 3
-        XXVAL(IXMIN(nr)) = X(0);
-        XXVAL(IXMAX(nr)) = X(1);
-        YYVAL(IYMIN(nr)) = Y(0);
-        YYVAL(IYMAX(nr)) = Y(1);
-        ZZVAL(IZMIN(nr)) = Z(0);
-        ZZVAL(IZMAX(nr)) = Z(1);
+    DO n_rooms=0, 3
+        XXVAL(IXMIN(n_rooms)) = X(0);
+        XXVAL(IXMAX(n_rooms)) = X(1);
+        YYVAL(IYMIN(n_rooms)) = Y(0);
+        YYVAL(IYMAX(n_rooms)) = Y(1);
+        ZZVAL(IZMIN(n_rooms)) = Z(0);
+        ZZVAL(IZMAX(n_rooms)) = Z(1);
     END DO
 
     IF (CASENUM<=0.OR.CASENUM>=255) THEN ! NO ISO-SURFACE
@@ -1240,8 +1240,8 @@ module isosurface
     NEDGES = EDGES(-1);
 
     OUTOFBOUNDS=0
-    DO nr=0,NEDGES-1
-        EDGE = EDGES(nr)
+    DO n_rooms=0,NEDGES-1
+        EDGE = EDGES(n_rooms)
         V1 = CASE2(EDGE2VERTEX(EDGE,0));
         V2 = CASE2(EDGE2VERTEX(EDGE,1));
         VAL1 = VALS(V1)-LEVEL
@@ -1252,9 +1252,9 @@ module isosurface
         XX = FMIX(FACTOR,XXVAL(V1),XXVAL(V2));
         YY = FMIX(FACTOR,YYVAL(V1),YYVAL(V2));
         ZZ = FMIX(FACTOR,ZZVAL(V1),ZZVAL(V2));
-        XYZV_LOCAL(3*nr) = XX;
-        XYZV_LOCAL(3*nr+1) = YY;
-        XYZV_LOCAL(3*nr+2) = ZZ;
+        XYZV_LOCAL(3*n_rooms) = XX;
+        XYZV_LOCAL(3*n_rooms+1) = YY;
+        XYZV_LOCAL(3*n_rooms+2) = ZZ;
 
     END DO
 

@@ -12,30 +12,30 @@ module cylinder_routines
 
 ! --------------------------- cylindrical_conductive_flux -------------------------------------------
 
-    subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nrooms,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
+    subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nr,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
     !     arguments: wtemp    cable temperature profile
-    !                nrooms       number of nodes
+    !                nr       number of nodes
     !                wfluxin  flux striking cable
     !                dt       time step interval from last valid solution point
     !                wrho     cable density
     !                diam     cable diameter
 
-    integer, intent(in) :: nrooms, iwbound
+    integer, intent(in) :: nr, iwbound
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin
     real(eb), intent(in)  :: wfluxin
-    real(eb), intent(inout), dimension(nrooms) :: wtemp
+    real(eb), intent(inout), dimension(nr) :: wtemp
     real(eb), intent(out), dimension(2) :: tgrad
 
     ! declare local variables
 
     integer :: i, niter, iter
-    real(eb), dimension(nrooms) :: aim1, ai, aip1, tnew
-    real(eb), dimension(nrooms) :: cc, dd
+    real(eb), dimension(nr) :: aim1, ai, aip1, tnew
+    real(eb), dimension(nr) :: cc, dd
     real(eb) :: alpha, dr, factor, dt_iter
     real(eb) :: ddif(2)
 
-    dr = (diam/2.0_eb)/nrooms
+    dr = (diam/2.0_eb)/nr
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
     if(dt_iter.gt.0.0_eb)then
@@ -47,73 +47,73 @@ module cylinder_routines
     end if
 
     do iter=1,niter
-       do i = 1, nrooms
+       do i = 1, nr
           cc(i)=factor*real(i-1,eb)/(2.0_eb*real(i,eb)-1.0_eb)
           dd(i)=factor*real(i,eb)/(2.0_eb*real(i,eb)-1.0_eb)
        end do
 ! if iwbound==3 then constant temperature boundary condition
 !                    flux boundary condition otherwise
 
-       aim1(1:nrooms-1) = -cc(1:nrooms-1)
-       ai(1:nrooms-1) = 1.0_eb + factor
-       aip1(1:nrooms-1) = -dd(1:nrooms-1)
-       tnew(1:nrooms-1) = wtemp(1:nrooms-1)
+       aim1(1:nr-1) = -cc(1:nr-1)
+       ai(1:nr-1) = 1.0_eb + factor
+       aip1(1:nr-1) = -dd(1:nr-1)
+       tnew(1:nr-1) = wtemp(1:nr-1)
 
-       aim1(nrooms) = -cc(nrooms)
-       ai(nrooms) = 1.0_eb + cc(nrooms)
-       aip1(nrooms) = -dd(nrooms)
+       aim1(nr) = -cc(nr)
+       ai(nr) = 1.0_eb + cc(nr)
+       aip1(nr) = -dd(nr)
 
        if(iwbound==3)then
-          cc(nrooms) = 0.0_eb
-          dd(nrooms) = 0.0_eb
-          tnew(nrooms) = tempin
+          cc(nr) = 0.0_eb
+          dd(nr) = 0.0_eb
+          tnew(nr) = tempin
        else
-          tnew(nrooms) = wtemp(nrooms) + dd(nrooms)*wfluxin*dr/wk
+          tnew(nr) = wtemp(nr) + dd(nr)*wfluxin*dr/wk
        end if
 
-       ! aim1(nrooms) = -1.0
-       ! ai(nrooms) = 1.0_eb
-       ! aip1(nrooms) = 0.0
-       ! tnew(nrooms) = wfluxin*room_depth/wk
+       ! aim1(nr) = -1.0
+       ! ai(nr) = 1.0_eb
+       ! aip1(nr) = 0.0
+       ! tnew(nr) = wfluxin*room_depth/wk
        ! now perform an LU factorization of this matrix (see atkinson p.455)
        ! note: matrix is diagonally dominant so pivoting is not necessary
 
        ! note we do the following in case a(1) is not 1
 
        aip1(1) = aip1(1)/ai(1)
-       do i = 2, nrooms - 1
+       do i = 2, nr - 1
           ai(i) = ai(i) - aim1(i)*aip1(i-1)
           aip1(i) = aip1(i)/ai(i)
        end do
-       ai(nrooms) = ai(nrooms) - aim1(nrooms)*aip1(nrooms-1)
+       ai(nr) = ai(nr) - aim1(nr)*aip1(nr-1)
 
         ! now construct guess at new temperature profile
 
         ! forward substition
        tnew(1) = tnew(1)/ai(1)
-       do i = 2, nrooms
+       do i = 2, nr
           tnew(i) = (tnew(i)-aim1(i)*tnew(i-1))/ai(i)
        end do
 
        ! backward substition
-       do i = nrooms - 1, 1, -1
+       do i = nr - 1, 1, -1
           tnew(i) = tnew(i) - aip1(i)*tnew(i+1)
        end do
 
-       wtemp(1:nrooms) = tnew(1:nrooms)
+       wtemp(1:nr) = tnew(1:nr)
     end do
     ! estimate temperature gradient at target surface by constructing a quadratic polynomial that
     ! interpolates first three data points in the temperature profile using divided differences.
 
     ! first divided difference
-    ddif(1) = (wtemp(nrooms-1)-wtemp(nrooms))/dr
-    ddif(2) = (wtemp(nrooms-2)-wtemp(nrooms-1))/dr
+    ddif(1) = (wtemp(nr-1)-wtemp(nr))/dr
+    ddif(2) = (wtemp(nr-2)-wtemp(nr-1))/dr
 
     ! second divided difference
     ddif(2) = (ddif(2)-ddif(1))/(2.0_eb*dr)
 
     tgrad(1) = (ddif(1)-ddif(2)*dr)
-    tgrad(2) = (wtemp(nrooms-1)-wtemp(nrooms))/dr
+    tgrad(2) = (wtemp(nr-1)-wtemp(nr))/dr
     return
 
     end subroutine cylindrical_conductive_flux

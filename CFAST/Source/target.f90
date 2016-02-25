@@ -685,7 +685,7 @@ module target_routines
     !                idset   room where activated detector resides
 
     integer, intent(in) :: imode, ndtect
-    real(eb), intent(in) :: tcur, dstep, zzhlay(nrooms,2), zztemp(nrooms,2)
+    real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
 
     integer, intent(out) :: idset, ifdtect, iquench(*)
     real(eb), intent(out) :: tdtect

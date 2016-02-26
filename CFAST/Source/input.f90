@@ -286,13 +286,13 @@ module input_routines
 
     ! check variable cross-sectional area specs and convert to volume
     do i = 1, nrm1
-        npts = izrvol(i)
+        roomptr => roominfo(i)
+        npts = roomptr%nvars
         if(npts/=0)then
-            roomptr => roominfo(i)
 
             ! force first elevation to be at the floor; add a data point if necessary (same area as first entered data point)
-            if(zzrhgt(1,i)/=0.0_eb)then
-                temparea(1) = zzrarea(1,i)
+            if(roomptr%var_height(1)/=0.0_eb)then
+                temparea(1) = roomptr%var_area(1)
                 temphgt(1) = 0.0_eb
                 ioff = 1
             else
@@ -301,37 +301,38 @@ module input_routines
 
             ! copy data to temporary arrays
             do j = 1, npts
-                temparea(j+ioff) = zzrarea(j,i)
-                temphgt(j+ioff) = zzrhgt(j,i)
+                temparea(j+ioff) = roomptr%var_area(j)
+                temphgt(j+ioff) = roomptr%var_height(j)
             end do
 
             ! force last elevation to be at the ceiling (as defined by room_height(i)
-            if(roomptr%height/=zzrhgt(npts,i))then
+            if(roomptr%height/=roomptr%var_height(npts))then
                 ioff2 = 1
-                temparea(npts+ioff+ioff2) = zzrarea(npts,i)
+                temparea(npts+ioff+ioff2) = roomptr%var_area(npts)
                 temphgt(npts+ioff+ioff2) = roomptr%height
             else
                 ioff2 = 0
             end if
 
             npts = npts + ioff + ioff2
-            izrvol(i) = npts
+            roomptr%nvars = npts
 
-            ! copy temporary arrays to zzrhgt and zzrarea; define volume by integrating areas
-            zzrhgt(1,i) = 0.0_eb
-            zzrvol(1,i) = 0.0_eb
-            zzrarea(1,i) = temparea(1)
+            ! copy temporary arrays to var_height and var_area; define volume by integrating areas
+            roomptr%var_height(1) = 0.0_eb
+            roomptr%var_volume(1) = 0.0_eb
+            roomptr%var_area(1) = temparea(1)
             j = 1
             do j = 2, npts
-                zzrhgt(j,i) = temphgt(j)
-                zzrarea(j,i) = temparea(j)
-                dheight = zzrhgt(j,i) - zzrhgt(j-1,i)
-                if(zzrarea(j,i)/=zzrarea(j-1,i)) then
+                roomptr%var_height(j) = temphgt(j)
+                roomptr%var_area(j) = temparea(j)
+                dheight = roomptr%var_height(j) - roomptr%var_height(j-1)
+                if(roomptr%var_area(j)/=roomptr%var_area(j-1)) then
                     ! if the area changes, we assume it's a pyramid
-                    pyramid_height = dheight/(1.0_eb-sqrt(zzrarea(j,i)/zzrarea(j-1,i)))
-                    zzrvol(j,i) = zzrvol(j-1,i) + (zzrarea(j-1,i)*pyramid_height-zzrarea(j,i)*(pyramid_height-dheight))/3.0_eb
+                    pyramid_height = dheight/(1.0_eb-sqrt(roomptr%var_area(j)/roomptr%var_area(j-1)))
+                    roomptr%var_volume(j) = roomptr%var_volume(j-1) + &
+                        (roomptr%var_area(j-1)*pyramid_height-roomptr%var_area(j)*(pyramid_height-dheight))/3.0_eb
                 else
-                    zzrvol(j,i) = zzrvol(j-1,i) + zzrarea(j,i)*dheight
+                    roomptr%var_volume(j) = roomptr%var_volume(j-1) + roomptr%var_area(j)*dheight
                 end if
             end do
 
@@ -343,7 +344,7 @@ module input_routines
             ! room_width*room_depth=room_area and room_width/room_depth remain the same as entered on
             ! the width and depth  commands.
 
-            roomptr%volume = zzrvol(npts,i)
+            roomptr%volume = roomptr%var_volume(npts)
             roomptr%area = roomptr%volume/roomptr%height
             xx = roomptr%width/roomptr%depth
             roomptr%width = sqrt(roomptr%area*xx)
@@ -1430,6 +1431,7 @@ module input_routines
         case ('ROOMA')
             if (countargs(lcarray)>=2) then
                 iroom = lrarray(1)
+                roomptr => roominfo(iroom)
 
                 ! make sure the room number is valid
                 if(iroom<1.or.iroom>nr)then
@@ -1443,8 +1445,8 @@ module input_routines
                     write (logerr,5347) npts
                     stop
                 end if
-                if(izrvol(iroom)/=0) npts = min(izrvol(iroom),npts)
-                izrvol(iroom) = npts
+                if(roomptr%nvars/=0) npts = min(roomptr%nvars,npts)
+                roomptr%nvars = npts
 
                 ! make sure all data is positive
                 do  i = 1, npts
@@ -1456,7 +1458,7 @@ module input_routines
 
                 ! put the data in its place
                 do i = 1, npts
-                    zzrarea(i,iroom) = lrarray(i+2)
+                    roomptr%var_area(i) = lrarray(i+2)
                 end do
             else
                 write (logerr,*) '***Error: Bad ROOMA input. At least 2 arguments must be specified.'
@@ -1468,6 +1470,7 @@ module input_routines
         case ('ROOMH')
             if (countargs(lcarray)>=2) then
                 iroom = lrarray(1)
+                roomptr => roominfo(iroom)
 
                 ! make sure the room number is valid
                 if(iroom<1.or.iroom>nr)then
@@ -1481,8 +1484,8 @@ module input_routines
                     write(logerr,5350) npts
                     stop
                 end if
-                if(izrvol(iroom)/=0)npts = min(izrvol(iroom),npts)
-                izrvol(iroom) = npts
+                if(roomptr%nvars/=0)npts = min(roomptr%nvars,npts)
+                roomptr%nvars = npts
 
                 ! make sure all data is positive
                 do i = 1, npts
@@ -1494,7 +1497,7 @@ module input_routines
 
                 ! put the data in its place
                 do i = 1, npts
-                    zzrhgt(i,iroom) = lrarray(i+2)
+                    roomptr%var_height(i) = lrarray(i+2)
                 end do
 
             else

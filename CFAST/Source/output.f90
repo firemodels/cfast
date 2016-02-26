@@ -154,11 +154,11 @@ module output_routines
         izzvol = zzvol(icomp,upper)/roomptr%volume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
             write (iofilo,5071) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zzvol(icomp,upper), &
-            zzabsb(icomp,upper),zzrelp(icomp) - roomptr%interior_relp
+            zzabsb(icomp,upper),zzrelp(icomp) - roomptr%interior_relp_initial
         else
             write (iofilo,5070) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zztemp(icomp,lower)-kelvin_c_offset, &
             zzhlay(icomp,lower), zzvol(icomp,upper), izzvol, zzabsb(upper,icomp),zzabsb(icomp,lower), &
-               zzrelp(icomp) - roomptr%interior_relp
+               zzrelp(icomp) - roomptr%interior_relp_initial
         end if
     end do
     return
@@ -465,10 +465,10 @@ module output_routines
         xqf = xqf + fqdj(ir)
         if (roomptr%shaft) then
             write (iounit,5040) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, &
-               zzrelp(ir) - roomptr%interior_relp
+               zzrelp(ir) - roomptr%interior_relp_initial
         else
             write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, &
-               zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - roomptr%interior_relp
+               zzhlay(ir,lower), xemp, xqf, zzrelp(ir) - roomptr%interior_relp_initial
         end if
     end do
     write (iounit,5020) fqdj(nr)

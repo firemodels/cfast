@@ -24,12 +24,16 @@ module cfast_types
         real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
         real(eb), allocatable, dimension(:) :: xplt, yplt, zplt     ! grid for slice / isosurface files
         real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
-        real(eb), dimension(mxcross) :: var_volume      ! variable cross-secitonal area volumes
+        
+        ! cross-sectional area variables
+        integer :: nvars                                ! number of data points for variable cross-secitonal area
+        real(eb), dimension(mxcross) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
         real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
         real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
 
-        real(eb) :: interior_relp
-        real(eb) :: exterior_relp
+        ! calculated values of the compartment environment
+        real(eb) :: interior_relp_initial               ! initial value of interior pressure relative to minimum pressure
+        real(eb) :: exterior_relp_initial               ! initial value of exterior pressure relative to minimum pressure
     end type room_type
 
     ! ramp data structure

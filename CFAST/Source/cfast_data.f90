@@ -201,10 +201,6 @@ module room_data
         initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
     
     real(eb) species_rho(mxrooms,2,ns), toxict(mxrooms,2,ns)
-
-    ! cross-sectional area variables
-    real(eb), dimension(mxcross,mxrooms) :: zzrvol, zzrarea, zzrhgt
-    integer, dimension(mxrooms) :: izrvol
     
     type(room_type), target :: roominfo(mxrooms)
 

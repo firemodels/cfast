@@ -269,7 +269,7 @@ module vflow_routines
         relp(2) = zzrelp(ibot)
     else
         dp(2) = 0.0_eb
-        relp(2) = toproomptr%exterior_relp
+        relp(2) = toproomptr%exterior_relp_initial
     end if
 
     if (itop<=nrm1) then
@@ -277,7 +277,7 @@ module vflow_routines
         relp(1) = zzrelp(itop)
     else
         dp(1) = -grav_con*roominfo(ibot)%height*exterior_rho
-        relp(1) = botroomptr%exterior_relp
+        relp(1) = botroomptr%exterior_relp_initial
     end if
 
     ! delp is pressure immediately below the vent less pressure immediately above the vent.

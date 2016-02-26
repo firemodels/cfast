@@ -1649,12 +1649,12 @@ module solve_routines
             zzvol(iroom,lower) = min(zzvol(iroom,lower),roomptr%vmax)
 
             ! calculate layer height for non-rectangular rooms
-            npts = izrvol(iroom)
+            npts = roomptr%nvars
             if(npts==0)then
                 zzhlay(iroom,upper) = zzvol(iroom,upper)/roomptr%area
                 zzhlay(iroom,lower) = zzvol(iroom,lower)/roomptr%area
             else
-                call interp(zzrvol(1,iroom),zzrhgt(1,iroom),npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
+                call interp(roomptr%var_volume,roomptr%var_height,npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
                 zzhlay(iroom,upper) = roomptr%height - zzhlay(iroom,lower)
             end if
 

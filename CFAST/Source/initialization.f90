@@ -368,24 +368,24 @@ module initialization_routines
     ! about 0.2 k different that at the base.
     do i = 1, nrm1
         roomptr => roominfo(i)
-        roomptr%interior_relp = -interior_rho*grav_con*roomptr%z0
-        roomptr%exterior_relp = -exterior_rho*grav_con*roomptr%z0
+        roomptr%interior_relp_initial = -interior_rho*grav_con*roomptr%z0
+        roomptr%exterior_relp_initial = -exterior_rho*grav_con*roomptr%z0
     end do
     roomptr => roominfo(nr)
-    roomptr%exterior_relp = 0.0_eb
+    roomptr%exterior_relp_initial = 0.0_eb
 
 
     ! normalize pressures so that the smallest pressure is zero
     roomptr => roominfo(1)
-    xxpmin = min(roomptr%interior_relp,roomptr%exterior_relp)
+    xxpmin = min(roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
     do i = 2, nrm1
         roomptr => roominfo(i)
-        xxpmin = max(xxpmin,roomptr%interior_relp,roomptr%exterior_relp)
+        xxpmin = max(xxpmin,roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
     end do
     do i = 1, nrm1
         roomptr => roominfo(i)
-        roomptr%interior_relp = roomptr%interior_relp - xxpmin
-        roomptr%exterior_relp = roomptr%exterior_relp - xxpmin
+        roomptr%interior_relp_initial = roomptr%interior_relp_initial - xxpmin
+        roomptr%exterior_relp_initial = roomptr%exterior_relp_initial - xxpmin
     end do
     pressure_offset = pressure_offset + xxpmin
     interior_abs_pressure = interior_abs_pressure + xxpmin - pressure_offset
@@ -397,7 +397,7 @@ module initialization_routines
     ! define the p array, the solution to the ode
     do i = 1, nrm1
         roomptr => roominfo(i)
-        p(i) = roomptr%interior_relp
+        p(i) = roomptr%interior_relp_initial
         p(i+noftu) = interior_temperature
 
         ! check for a special setting of the interface height
@@ -578,14 +578,18 @@ module initialization_routines
     n_species = 0
     numthrm = 0
     nr = 0
+    
     ! room to room heat transfer
     nswal = 0
 
     ! variable cross sectional area
-    izrvol(1:mxrooms) = 0
-    zzrvol(1:mxcross,1:mxrooms) = 0.0_eb
-    zzrarea(1:mxcross,1:mxrooms) = 0.0_eb
-    zzrhgt(1:mxcross,1:mxrooms) = 0.0_eb
+    do i = 1, mxrooms
+        roomptr => roominfo(i)
+        roomptr%nvars = 0
+        roomptr%var_volume(1:mxcross) = 0.0_eb
+        roomptr%var_area(1:mxcross) = 0.0_eb
+        roomptr%var_height(1:mxcross) = 0.0_eb
+    end do
 
     ! initialize inter-compartment heat transfer fractions
     heat_frac(1:mxrooms,1:mxrooms) = 0.0_eb

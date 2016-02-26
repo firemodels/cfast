@@ -357,14 +357,14 @@ module mflow_routines
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) =  exterior_abs_pressure - exterior_density*grav_con*hvelxt(ii)
+            hvp(j) =  exterior_abs_pressure - exterior_rho*grav_con*hvelxt(ii)
         end if
         do lsp = 1, ns
             if (i<nr) then
                 hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
                 hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
             else
-                xxrho = initial_mass_fraction(lsp)*exterior_density
+                xxrho = initial_mass_fraction(lsp)*exterior_rho
                 hvexcn(ii,lsp,upper) = xxrho
                 hvexcn(ii,lsp,lower) = xxrho
             end if

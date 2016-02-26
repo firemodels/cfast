@@ -273,7 +273,7 @@ module vflow_routines
         dp(1) = 0.0_eb
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con*roominfo(ibot)%height*exterior_density
+        dp(1) = -grav_con*roominfo(ibot)%height*exterior_rho
         relp(1) = exterior_rel_pressure(ibot)
     end if
 
@@ -302,12 +302,12 @@ module vflow_routines
     if (itop<=nrm1) then
         den(1) = zzrho(itop,ilay(1))
     else
-        den(1) = exterior_density
+        den(1) = exterior_rho
     end if
     if (ibot<=nrm1) then
         den(2) = zzrho(ibot,ilay(2))
     else
-        den(2) = exterior_density
+        den(2) = exterior_rho
     end if
     delden = den(1) - den(2)
 

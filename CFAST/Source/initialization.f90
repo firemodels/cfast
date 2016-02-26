@@ -168,11 +168,11 @@ module initialization_routines
         if (i<nr) then
             hvextt(ii,upper) = interior_temperature
             hvextt(ii,lower) = interior_temperature
-            hvp(j) = zzrelp(i) - grav_con*interior_density*hvelxt(ii)
+            hvp(j) = zzrelp(i) - grav_con*interior_rho*hvelxt(ii)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
-            hvp(j) = exterior_abs_pressure - grav_con*exterior_density*hvelxt(ii)
+            hvp(j) = exterior_abs_pressure - grav_con*exterior_rho*hvelxt(ii)
         end if
         tbr(ib) = hvextt(ii,upper)
         s1 = s1 + hvp(j)
@@ -180,11 +180,11 @@ module initialization_routines
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<nr) then
-                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*interior_density
-                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*interior_density
+                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*interior_rho
+                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*interior_rho
             else
-                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*exterior_density
-                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*exterior_density
+                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*exterior_rho
+                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*exterior_rho
             end if
             hvconc(j,lsp) = hvexcn(ii,lsp,upper)
             c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
@@ -368,8 +368,8 @@ module initialization_routines
     ! about 0.2 k different that at the base.
     do i = 1, nrm1
         roomptr => roominfo(i)
-        interior_rel_pressure(i) = -interior_density*grav_con*roomptr%z0
-        exterior_rel_pressure(i) = -exterior_density*grav_con*roomptr%z0
+        interior_rel_pressure(i) = -interior_rho*grav_con*roomptr%z0
+        exterior_rel_pressure(i) = -exterior_rho*grav_con*roomptr%z0
     end do
     exterior_rel_pressure(nr) = 0.0_eb
 
@@ -594,7 +594,6 @@ module initialization_routines
     ! flow variables
     heatup(1:mxrooms) = 0.0_eb
     heatlp(1:mxrooms) = 0.0_eb
-    qfc(upper:lower,1:mxrooms) = 0.0_eb
 
     ! horizontal vents
     ihvent_connections(1:mxrooms,1:mxrooms) = 0.0_eb
@@ -746,7 +745,7 @@ module initialization_routines
         do k = upper, lower
             do lsp = 1, ns
                 toxict(i,k,lsp) = 0.0_eb
-                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_density*zzvol(i,k)
+                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*zzvol(i,k)
             end do
         end do
     end do

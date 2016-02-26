@@ -136,8 +136,8 @@ module input_routines
     ! We now know what output is going to be generated, so create the files
     call openoutputfiles
 
-    interior_density = interior_abs_pressure/interior_temperature/rgas
-    exterior_density = exterior_abs_pressure/exterior_temperature/rgas
+    interior_rho = interior_abs_pressure/interior_temperature/rgas
+    exterior_rho = exterior_abs_pressure/exterior_temperature/rgas
 
     ! initialize the targets.
     call inittarg
@@ -869,7 +869,7 @@ module input_routines
             if (.not.exset) then
                 exterior_temperature = interior_temperature
                 exterior_abs_pressure = interior_abs_pressure
-                exterior_density = interior_density
+                exterior_rho = interior_rho
             end if
             tgignt = interior_temperature + 200.0_eb
 

@@ -54,7 +54,7 @@ module fire_routines
     real(eb), intent(out) :: flwf(mxrooms,ns+2,2)
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
-    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr
+    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
     integer lsp, iroom, nobj, iobj, i, j
     type(room_type), pointer :: roomptr
 
@@ -80,7 +80,7 @@ module fire_routines
 
             call do_fire(i,iroom,oplume(1,iobj),roomptr%height,roomptr%width,roomptr%depth,objhct,y_soot,y_co, &
                y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat, &
-               oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),qfc(1,iroom),xqfr,heatlp(iroom),heatup(iroom))
+               oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
             xtl = zztemp(iroom,lower)
@@ -88,7 +88,7 @@ module fire_routines
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
             q_firemass = cp*oplume(1,iobj)*interior_temperature
             q_entrained = cp*oplume(2,iobj)*xtl
-            flwf(iroom,q,upper) = flwf(iroom,q,upper) + qfc(upper,iroom) + q_firemass + q_entrained
+            flwf(iroom,q,upper) = flwf(iroom,q,upper) + xqfc + q_firemass + q_entrained
             flwf(iroom,q,lower) = flwf(iroom,q,lower) - q_entrained
             do lsp = 1, ns
                 flwf(iroom,lsp+2,upper) = flwf(iroom,lsp+2,upper) + xntms(upper,lsp)
@@ -107,7 +107,7 @@ module fire_routines
             xfire(nfire,f_plume_zpos) = oplume(3,iobj)
             xfire(nfire,f_plume_xpos) = oplume(1,iobj)
             xfire(nfire,f_plume_ypos) = oplume(2,iobj)
-            xfire(nfire,f_qfc) = qfc(1,iroom)
+            xfire(nfire,f_qfc) = xqfc
             xfire(nfire,f_qfr) = xqfr
             xfire(nfire,f_heatlpup) = heatlp(iroom) + heatup(iroom)
             xfire(nfire,f_heatlp) = heatlp(iroom)
@@ -125,7 +125,7 @@ module fire_routines
             ! and interpolate_pyrolysis)
             femr(nobj) = oplume(1,iobj)*y_trace
             fqf(nobj) = heatlp(iroom) + heatup(iroom)
-            fqfc(nobj) = qfc(1,iroom)
+            fqfc(nobj) = xqfc
             fqlow(nobj) = heatlp(iroom)
             fqupr(nobj) = heatup(iroom)
             farea(nobj) = oareat
@@ -168,7 +168,7 @@ module fire_routines
     !                 xqpyrl (output): actual heat release rate of the fire (w)
     !                 xntms (output): net change in mass of a species in a layer
     !                 xqf (output): net heat generation rate into upper layer (w)
-    !                 xqfc (output): net convection into layers (w)
+    !                 xqfc (output): net convection into upper layer (w)
     !                 xqfr (output): net radiation from fire (w)
     !                 xqlp (output): heat release in the lower plume (w)
     !                 xqup (output): heat release rate in the upper plume (w)
@@ -176,7 +176,7 @@ module fire_routines
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: xemp, xhr, xbr, xdr, hcombt, y_soot, y_co, y_trace, n_C ,n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: mol_mass, stmass(2,ns), xfx, xfy, xfz, object_area
-    real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc(2), xqfr, xqlp, xqup
+    real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc, xqfr, xqlp, xqup
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
@@ -188,8 +188,7 @@ module fire_routines
     xz = zzhlay(iroom,upper)
     xtl = zztemp(iroom,lower)
     xtu = zztemp(iroom,upper)
-    xqfc(lower) = 0.0_eb
-    xqfc(upper) = 0.0_eb
+    xqfc = 0.0_eb
     xqlp = 0.0_eb
     xeme = 0.0_eb
 
@@ -289,7 +288,7 @@ module fire_routines
     xntms(upper,7) = xntms(upper,7) + xemp
 
     xqfr = xqpyrl*chirad
-    xqfc(upper) = xqpyrl*(1.0_eb-chirad)
+    xqfc = xqpyrl*(1.0_eb-chirad)
     xqlp = xqpyrl
     xqf = xqpyrl
 
@@ -314,7 +313,7 @@ module fire_routines
             xqpyrl, xntfl, xmass)
 
         xqfr = xqpyrl*chirad + xqfr
-        xqfc(upper) = xqpyrl*(1.0_eb-chirad) + xqfc(upper)
+        xqfc = xqpyrl*(1.0_eb-chirad) + xqfc
         xqup = xqpyrl
         xqf = xqpyrl + xqf
         do i = 1, ns
@@ -1122,7 +1121,7 @@ module fire_routines
         ! calculate the mass density in kg/m^3
         do lsp = 1, ns
             do k = upper, lower
-                species_mass_density(i,k,lsp) = zzgspec(i,k,lsp)/v(k)
+                species_rho(i,k,lsp) = zzgspec(i,k,lsp)/v(k)
             end do
         end do
 
@@ -1139,13 +1138,13 @@ module fire_routines
         ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
         lsp = 9
         do k = upper, lower
-            toxict(i,k,lsp) = species_mass_density(i,k,lsp)*3778.0_eb
+            toxict(i,k,lsp) = species_rho(i,k,lsp)*3778.0_eb
         end do
 
         ! ct is the integration of the total "junk" being transported
         lsp = 10
         do k = upper, lower
-            toxict(i,k,lsp) = toxict(i,k,lsp) + species_mass_density(i,k,lsp)*1000.0_eb*deltt/60.0_eb
+            toxict(i,k,lsp) = toxict(i,k,lsp) + species_rho(i,k,lsp)*1000.0_eb*deltt/60.0_eb
         end do
 
         ! ts (trace species) is the filtered concentration - this is the total mass.

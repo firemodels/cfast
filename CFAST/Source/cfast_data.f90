@@ -26,19 +26,15 @@ module cenviro
     real(eb), dimension(mxrooms,2) :: zzmass        ! total mass of each layer
     real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
     real(eb), dimension(mxrooms,2,ns) :: zzcspec    ! mass fraction of species in each layer
-    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures
-    real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of species in hvac system
-    real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
-    real(eb), dimension(mxrooms,4) :: zzwarea4      ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
-    real(eb), dimension(mxrooms,10) :: zzwarea10    ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
     real(eb), dimension(mxrooms,2) :: zzbeam        ! characteristic length for absorbtivity in each layer
     real(eb), dimension(mxrooms,2) :: zzabsb        ! layer absorbtivity
-
-    integer, dimension(ns+2) :: izpmap              ! maps species to corresponding DASSL equations
-    integer, dimension(mxrooms,4) :: izwmap         ! maps walls to corresponding DASSL equations
-    integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
-    integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
-    integer :: nswal
+    
+    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures
+    real(eb), dimension(mxrooms,4) :: zzwarea4      ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
+    real(eb), dimension(mxrooms,10) :: zzwarea10    ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
+    
+    real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
+    real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
 
 end module cenviro
 
@@ -201,11 +197,11 @@ module room_data
     ! compartment variables
     integer nr, nrm1, n_species
 
-    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
-
-    real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
-    real(eb) interior_rel_pressure(mxrooms), exterior_rel_pressure(mxrooms), species_mass_density(mxrooms,2,ns), &
-        toxict(mxrooms,2,ns), initial_mass_fraction(ns), qfc(2,mxrooms)
+    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
+        initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
+    
+    real(eb) interior_rel_pressure(mxrooms), exterior_rel_pressure(mxrooms), species_rho(mxrooms,2,ns), &
+        toxict(mxrooms,2,ns)
 
     ! cross-sectional area variables
     real(eb), dimension(mxcross,mxrooms) :: zzrvol, zzrarea, zzrhgt
@@ -225,6 +221,7 @@ module room_data
     integer :: numnode(mxslb+1,4,mxrooms), nslb(nwal,mxrooms),nwalls, nfurn
     real(eb) :: rdqout(4,mxrooms), fkw(mxslb,nwal,mxrooms), cw(mxslb,nwal,mxrooms), rw(mxslb,nwal,mxrooms), &
         flw(mxslb,nwal,mxrooms), epw(nwal,mxrooms), twj(nnodes,mxrooms,nwal)
+    integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
     logical :: adiabatic_wall
     
     real(eb), dimension (mxrooms,4) :: wlength
@@ -236,6 +233,11 @@ module room_data
     real(eb), dimension(mxrooms,mxrooms) :: heat_frac
     integer, dimension(0:mxrooms) :: iheat
     integer, dimension(mxrooms,0:mxrooms) :: iheat_connections
+
+    integer, dimension(ns+2) :: izpmap              ! maps species to corresponding DASSL equations
+    integer, dimension(mxrooms,4) :: izwmap         ! maps walls to corresponding DASSL equations
+    integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
+    integer :: nswal
 
 end module room_data
 

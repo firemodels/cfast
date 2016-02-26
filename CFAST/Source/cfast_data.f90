@@ -17,29 +17,31 @@ module cenviro
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
     logical :: exset
 
-    logical izcon(mxrooms), izhvac(mxrooms)
+    logical :: izcon(mxrooms)                       ! true if there is a natural flow vent connection in the room that
+                                                    ! connects to the outside (perhaps through several other intermediate rooms)
+    logical :: izhvac(mxrooms)                      ! true if there is an HVAC vent connection in the room
 
-    real(eb), dimension(mxrooms) :: zzrelp              ! pressure at floor level relative to exterior
-    real(eb), dimension(mxrooms) :: zzabsp              ! absolute pressure at floor level
-    real(eb), dimension(mxrooms,2) :: zzvol             ! volume of each layer
-    real(eb), dimension(mxrooms,2) :: zzhlay            ! thickness of each layer
-    real(eb), dimension(mxrooms,2) :: zztemp            ! temperature of each layer
-    real(eb), dimension(mxrooms,2) :: zzrho             ! density of each layer
-    real(eb), dimension(mxrooms,2) :: zzmass            ! total mass of each layer
-    real(eb), dimension(mxrooms,2,ns) :: zzgspec        ! mass of species in each layer
-    real(eb), dimension(mxrooms,2,ns) :: zzcspec        ! mass fraction of species in each layer
-    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp      ! compartment surface temperatures
-    real(eb), dimension(mxhvsys,ns) :: zzhvspec         ! mass of species in hvac system
-    real(eb), dimension(mxhvsys) :: zzhvm               ! total mass of gas in hvac system
-    real(eb), dimension(mxrooms,4) :: zzwarea4          ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
-    real(eb), dimension(mxrooms,10) :: zzwarea10        ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
-    real(eb), dimension(mxrooms,2) :: zzbeam            ! characteristic length for absorbtivity in each layer
-    real(eb), dimension(mxrooms,2) :: zzabsb            ! layer absorbtivity
+    real(eb), dimension(mxrooms) :: zzrelp          ! pressure at floor level relative to exterior
+    real(eb), dimension(mxrooms) :: zzabsp          ! absolute pressure at floor level
+    real(eb), dimension(mxrooms,2) :: zzvol         ! volume of each layer
+    real(eb), dimension(mxrooms,2) :: zzhlay        ! thickness of each layer
+    real(eb), dimension(mxrooms,2) :: zztemp        ! temperature of each layer
+    real(eb), dimension(mxrooms,2) :: zzrho         ! density of each layer
+    real(eb), dimension(mxrooms,2) :: zzmass        ! total mass of each layer
+    real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
+    real(eb), dimension(mxrooms,2,ns) :: zzcspec    ! mass fraction of species in each layer
+    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures
+    real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of species in hvac system
+    real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
+    real(eb), dimension(mxrooms,4) :: zzwarea4      ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
+    real(eb), dimension(mxrooms,10) :: zzwarea10    ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
+    real(eb), dimension(mxrooms,2) :: zzbeam        ! characteristic length for absorbtivity in each layer
+    real(eb), dimension(mxrooms,2) :: zzabsb        ! layer absorbtivity
 
-    integer, dimension(ns+2) :: izpmap
-    integer, dimension(4,mxrooms) :: izwmap
-    integer, dimension(mxrooms,4) :: izswal
-    integer, dimension(4*mxrooms,5) :: izwall
+    integer, dimension(ns+2) :: izpmap              ! maps species to corresponding DASSL equations
+    integer, dimension(mxrooms,4) :: izwmap         ! maps walls to corresponding DASSL equations
+    integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
+    integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
     integer :: nswal
 
 end module cenviro

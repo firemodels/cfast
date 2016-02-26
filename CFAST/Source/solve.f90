@@ -1580,13 +1580,13 @@ module solve_routines
 
         ! define izwmap for jac and other constants for dassl and the conduction routine
         ieq = nofwt
-        izwmap(1:4,nrm1+1) = 0
+        izwmap(nr,1:4) = 0
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
             do iwall = 1, 4
                 if (roomptr%surface_on(iwall)) then
                     ieq = ieq + 1
-                    izwmap(iwall,iroom) = ieq
+                    izwmap(iroom,iwall) = ieq
 
                     ! define izwall, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
@@ -1603,7 +1603,7 @@ module solve_routines
                     izwall(ii,w_boundary_condition) = iwbound
 
                 else
-                    izwmap(iwall,iroom) = 0
+                    izwmap(iroom,iwall) = 0
                 end if
             end do
         end do
@@ -1614,8 +1614,8 @@ module solve_routines
             ifromw = izswal(i,w_from_wall)
             itor = izswal(i,w_to_room)
             itow = izswal(i,w_to_wall)
-            ieqfrom = izwmap(ifromw,ifromr) - nofwt
-            ieqto = izwmap(itow,itor) - nofwt
+            ieqfrom = izwmap(ifromr,ifromw) - nofwt
+            ieqto = izwmap(itor,itow) - nofwt
 
             izwall(ieqfrom,w_to_room) = itor
             izwall(ieqfrom,w_to_wall) = itow
@@ -1757,7 +1757,7 @@ module solve_routines
         isof = nofwt
         do iroom = 1, nrm1
             do iwall = 1, nwal
-                iwalleq = izwmap(iwall,iroom)
+                iwalleq = izwmap(iroom,iwall)
                 if(iwalleq/=0)then
                     ieqfrom = iwalleq - nofwt
                     ifromr = izwall(ieqfrom,w_from_room)
@@ -1769,7 +1769,7 @@ module solve_routines
                     else
                        zzwtemp(iroom,iwall,1) = pdif(iwalleq)
                     end if
-                    iwalleq2 = izwmap(itow,itor)
+                    iwalleq2 = izwmap(itor,itow)
                     iinode = numnode(1,iwall,iroom)
                     if(nfurn.gt.0)then
                        zzwtemp(iroom,iwall,2) = wtemp

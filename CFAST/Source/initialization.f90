@@ -368,20 +368,24 @@ module initialization_routines
     ! about 0.2 k different that at the base.
     do i = 1, nrm1
         roomptr => roominfo(i)
-        interior_rel_pressure(i) = -interior_rho*grav_con*roomptr%z0
-        exterior_rel_pressure(i) = -exterior_rho*grav_con*roomptr%z0
+        roomptr%interior_relp = -interior_rho*grav_con*roomptr%z0
+        roomptr%exterior_relp = -exterior_rho*grav_con*roomptr%z0
     end do
-    exterior_rel_pressure(nr) = 0.0_eb
+    roomptr => roominfo(nr)
+    roomptr%exterior_relp = 0.0_eb
 
 
     ! normalize pressures so that the smallest pressure is zero
-    xxpmin = min(interior_rel_pressure(1),exterior_rel_pressure(1))
+    roomptr => roominfo(1)
+    xxpmin = min(roomptr%interior_relp,roomptr%exterior_relp)
     do i = 2, nrm1
-        xxpmin = max(xxpmin,interior_rel_pressure(i),exterior_rel_pressure(i))
+        roomptr => roominfo(i)
+        xxpmin = max(xxpmin,roomptr%interior_relp,roomptr%exterior_relp)
     end do
     do i = 1, nrm1
-        exterior_rel_pressure(i) = exterior_rel_pressure(i) - xxpmin
-        interior_rel_pressure(i) = interior_rel_pressure(i) - xxpmin
+        roomptr => roominfo(i)
+        roomptr%interior_relp = roomptr%interior_relp - xxpmin
+        roomptr%exterior_relp = roomptr%exterior_relp - xxpmin
     end do
     pressure_offset = pressure_offset + xxpmin
     interior_abs_pressure = interior_abs_pressure + xxpmin - pressure_offset
@@ -393,7 +397,7 @@ module initialization_routines
     ! define the p array, the solution to the ode
     do i = 1, nrm1
         roomptr => roominfo(i)
-        p(i) = interior_rel_pressure(i)
+        p(i) = roomptr%interior_relp
         p(i+noftu) = interior_temperature
 
         ! check for a special setting of the interface height

@@ -200,8 +200,7 @@ module room_data
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
         initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
     
-    real(eb) interior_rel_pressure(mxrooms), exterior_rel_pressure(mxrooms), species_rho(mxrooms,2,ns), &
-        toxict(mxrooms,2,ns)
+    real(eb) species_rho(mxrooms,2,ns), toxict(mxrooms,2,ns)
 
     ! cross-sectional area variables
     real(eb), dimension(mxcross,mxrooms) :: zzrvol, zzrarea, zzrhgt

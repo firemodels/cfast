@@ -258,7 +258,10 @@ module vflow_routines
     real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
     real(eb) :: v, cshape, d, delpflood, vex
     integer :: i, deadtop, deadbot
+    type(room_type), pointer :: toproomptr, botroomptr
 
+    toproomptr => roominfo(itop)
+    botroomptr => roominfo(ibot)
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     ! dp at top of bottom room and bottom of top room
     if (ibot<=nrm1) then
@@ -266,7 +269,7 @@ module vflow_routines
         relp(2) = zzrelp(ibot)
     else
         dp(2) = 0.0_eb
-        relp(2) = exterior_rel_pressure(itop)
+        relp(2) = toproomptr%exterior_relp
     end if
 
     if (itop<=nrm1) then
@@ -274,7 +277,7 @@ module vflow_routines
         relp(1) = zzrelp(itop)
     else
         dp(1) = -grav_con*roominfo(ibot)%height*exterior_rho
-        relp(1) = exterior_rel_pressure(ibot)
+        relp(1) = botroomptr%exterior_relp
     end if
 
     ! delp is pressure immediately below the vent less pressure immediately above the vent.

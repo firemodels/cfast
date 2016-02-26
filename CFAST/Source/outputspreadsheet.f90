@@ -75,7 +75,7 @@ module spreadsheet_routines
             call ssaddtolist (position,zzhlay(i,lower),outarray)
         end if
         call ssaddtolist (position,zzvol(i,upper),outarray)
-        call ssaddtolist (position,zzrelp(i) - interior_rel_pressure(i) ,outarray)
+        call ssaddtolist (position,zzrelp(i) - roomptr%interior_relp ,outarray)
     end do
 
     ! Fires

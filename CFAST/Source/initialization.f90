@@ -506,7 +506,6 @@ module initialization_routines
     type(room_type), pointer :: roomptr
 
     ! simple control stuff
-    exset = .false.
     debugging = .false.
     jaccol = -2
 

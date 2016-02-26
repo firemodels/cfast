@@ -25,6 +25,8 @@ module input_routines
     use room_data
 
     implicit none
+    
+    logical :: exset = .false.
 
     private
 

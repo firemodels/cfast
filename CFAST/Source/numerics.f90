@@ -5839,11 +5839,11 @@ module numerics_routines
     !
     !---------------------------- all rights reserved ----------------------------
 
-    use cenviro
+    use solver_data, only: jaccol
     implicit none
     integer :: j
     !
-    if(j>-10) jaccol = j
+    if (j>-10) jaccol = j
     return
     end subroutine setderv
 

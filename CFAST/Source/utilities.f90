@@ -3,13 +3,11 @@ module utility_routines
     use precision_parameters
 
     use cparams
-    use cshell
-    use iofiles, only: ncol
-    use opt
-    use params
-    use solver_parameters
+    use setup_data
+    use option_data
+    use solver_data
     use vent_data, only: ductcv
-    use wnodes
+    use room_data, only: nwpts, wsplit, iwbound
 
     implicit none
 
@@ -199,7 +197,7 @@ module utility_routines
     !     routine: d1mach
     !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.
     !              it is a function subprogram with one (input) argument. reference  p. a. fox, a. d. hall and
-    !              n. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
+    !              nr. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
     !              2 (june 1978), pp. 177-188.
     !     arguments:  i
     !
@@ -254,7 +252,7 @@ module utility_routines
 
     !     routine: xerrmod
     !     purpose: xerrmod is a simplified version of the slatec error handling package. it just logs our error messages
-    !              with codes as requested. adapted from code written by a. c. hindmarsh and p. n. brown at llnl.
+    !              with codes as requested. adapted from code written by a. c. hindmarsh and p. nr. brown at llnl.
     !     arguments: msg - the message (character array).
     !                nmes - the length of msg (number of characters).
     !                nerr - the error number (not used).
@@ -521,7 +519,7 @@ module utility_routines
 
     character(*), intent(out) :: exepath, datapath, project
 
-    integer :: i, loop, status, n, ld(2), li(2), ln(2), le(2), lb
+    integer :: i, loop, status, nargs, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
     character (64) :: name(2)
 
@@ -530,12 +528,12 @@ module utility_routines
     character(64) :: ext(2)
     integer(4) :: length, pathcount, splitpathqq, ilen
 
-    n = command_argument_count() + 1
+    nargs = command_argument_count() + 1
     project = ' '
     exepath = ' '
     datapath = ' '
 
-    if (n<2) then
+    if (nargs<2) then
         write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
         stop
     end if
@@ -606,7 +604,7 @@ module utility_routines
 
 ! --------------------------- mat2mult -------------------------------------------
 
-    subroutine mat2mult(mat1,mat2,idim,n)
+    subroutine mat2mult(mat1,mat2,idim,nr)
 
     !     routine: mat2mult
     !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix
@@ -614,26 +612,26 @@ module utility_routines
     !     arguments: mat1 - matrix
     !                mat2 - work array of same size as mat1
     !                idim - actual dimensino limit on first subscript of mat1
-    !                n - size of matrix
+    !                nr - size of matrix
     !                matiter - unused
 
-    integer, intent(in) :: idim, n
-    integer, intent(inout) :: mat1(idim,n)
-    integer, intent(out) :: mat2(idim,n)
+    integer, intent(in) :: idim, nr
+    integer, intent(inout) :: mat1(idim,nr)
+    integer, intent(out) :: mat2(idim,nr)
 
     integer :: i, j, k
 
-    do i = 1, n
-        do j = 1, n
+    do i = 1, nr
+        do j = 1, nr
             mat2(i,j) = 0
-            do k = 1, n
+            do k = 1, nr
                 mat2(i,j) = mat2(i,j)+mat1(i,k)*mat1(k,j)
             end do
             if(mat2(i,j)>=1) mat2(i,j) = 1
         end do
     end do
-    do i = 1, n
-        do j = 1, n
+    do i = 1, nr
+        do j = 1, nr
             mat1(i,j) = mat2(i,j)
         end do
     end do
@@ -642,27 +640,27 @@ module utility_routines
 
 ! --------------------------- indexi -------------------------------------------
 
-    subroutine indexi (n,arrin,indx)
+    subroutine indexi (nr,arrin,indx)
 
     !     routine: indexi
     !     purpose: this routines sorts the array arrin passively via the permuation array indx. the
-    !              elements arrin(indx(i)), i=1, ..., n are in increasing order. this routine uses a
-    !              bubble sort.  it should not be used for large n (n>30), since bubble sorts are not efficient.
-    !     arguments: n     number of elements in n
+    !              elements arrin(indx(i)), i=1, ..., nr are in increasing order. this routine uses a
+    !              bubble sort.  it should not be used for large nr (nr>30), since bubble sorts are not efficient.
+    !     arguments: nr     number of elements in nr
     !                arrin array to be passively sorted
     !                indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
 
-    integer, intent(in) :: n, arrin(*)
+    integer, intent(in) :: nr, arrin(*)
     integer, intent(out) :: indx(*)
 
     integer ai, aip1, i, iswitch, itemp
 
-    do i = 1, n
+    do i = 1, nr
         indx(i) = i
     end do
 5   continue
     iswitch = 0
-    do i = 1, n-1, 2
+    do i = 1, nr-1, 2
         ai = arrin(indx(i))
         aip1 = arrin(indx(i+1))
         if(ai<=aip1) cycle
@@ -671,7 +669,7 @@ module utility_routines
         indx(i) = indx(i+1)
         indx(i+1) = itemp
     end do
-    do  i = 2, n-1, 2
+    do  i = 2, nr-1, 2
         ai = arrin(indx(i))
         aip1 = arrin(indx(i+1))
         if(ai<=aip1) cycle
@@ -686,19 +684,19 @@ module utility_routines
 
 ! --------------------------- interp -------------------------------------------
 
-    subroutine interp (x,y,n,t,icode,yint)
+    subroutine interp (x,y,nr,t,icode,yint)
 
     !     routine: indexi
     !     purpose: routine interpolates a table of numbers found in the arrays, x and y.
-    !     arguments: x,y - arrays of size n to be interpolated at x=t
-    !                icode - code to select how to extrapolate values if t is less than x(1) or greater than x(n).
-    !                          if icode = 1 then yint = y(1) for t < x(1) and yint = y(n) for t > x(n).
-    !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n)
-    !                              and by extrapolation if t < x(1) or    t > x(n)
+    !     arguments: x,y - arrays of size nr to be interpolated at x=t
+    !                icode - code to select how to extrapolate values if t is less than x(1) or greater than x(nr).
+    !                          if icode = 1 then yint = y(1) for t < x(1) and yint = y(nr) for t > x(nr).
+    !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(nr)
+    !                              and by extrapolation if t < x(1) or    t > x(nr)
     !                yint (output) - interpolated value of the y array at t
 
     real(eb), intent(in) :: x(*), y(*), t
-    integer, intent(in) :: n, icode
+    integer, intent(in) :: nr, icode
 
     real(eb) :: yint
 
@@ -708,7 +706,7 @@ module utility_routines
 
     save
     data ilast /1/
-    if (n==1) then
+    if (nr==1) then
         yint = y(1)
         return
     end if
@@ -721,25 +719,25 @@ module utility_routines
             go to 20
         end if
     end if
-    if (t>=x(n)) then
+    if (t>=x(nr)) then
         if (icode==1) then
-            yint = y(n)
+            yint = y(nr)
             return
         else
-            imid = n - 1
+            imid = nr - 1
             go to 20
         end if
     end if
-    if (ilast+1<=n) then
+    if (ilast+1<=nr) then
         imid = ilast
         if (x(imid)<=t.and.t<=x(imid+1)) go to 20
     end if
-    if (ilast+2<=n) then
+    if (ilast+2<=nr) then
         imid = ilast + 1
         if (x(imid)<=t.and.t<=x(imid+1)) go to 20
     end if
     ia = 1
-    iz = n - 1
+    iz = nr - 1
 10  continue
     imid = (ia+iz)/2
     if (t<x(imid)) then
@@ -795,7 +793,7 @@ module utility_routines
     !     d to turn on debugging writes
     !     t to output trace species mass
     !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
-    !     n to output just target fluxes relative to ambient (smoke still in od)
+    !     nr to output just target fluxes relative to ambient (smoke still in od)
 
     integer :: year, month, day, iarg(8), iopt(26), nargs, values(8)
     character :: strs(8)*60
@@ -900,7 +898,7 @@ module utility_routines
     write (iunit,*) iwbound
 
     write(iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP -  IF EITHER <0 THEN SOLVER DECIDES'
-    write (iunit,11) stpmax, dasslfts
+    write (iunit,11) stpmax, stpfirst
 
     write(iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
     write(iunit,11) ductcv
@@ -914,20 +912,20 @@ module utility_routines
 
 ! --------------------------- shellsort -------------------------------------------
 
-    subroutine shellsort (ra, n)
+    subroutine shellsort (ra, nr)
 
-    integer, intent(in) :: n
-    real(eb), intent(inout) :: ra(n)
+    integer, intent(in) :: nr
+    real(eb), intent(inout) :: ra(nr)
 
     integer j, i, inc
     real(eb) rra
 
     inc = 1
 1   inc = 3*inc+1
-    if (inc<=n) go to 1
+    if (inc<=nr) go to 1
 2   continue
     inc = inc/3
-    do i = inc+1, n
+    do i = inc+1, nr
         rra = ra(i)
         j = i
 3       if(ra(j-inc)>rra) then
@@ -944,7 +942,7 @@ module utility_routines
 
 ! --------------------------- sort_fire -------------------------------------------
 
-    subroutine sort_fire (nfire,ifroom,xfire,ifrpnt,nm1)
+    subroutine sort_fire (nfire,ifroom,xfire,ifrpnt,nrm1)
 
     !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used
     !              in this order by the ceiling jet and radiation algorithms
@@ -953,12 +951,12 @@ module utility_routines
     !                xfire   fire related quantities used by other routines. see routine fires for definition.
     !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r.
     !                        (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
-    !                nm1 number of compartments minus 1
+    !                nrm1 number of compartments minus 1
 
-    integer, intent(in) :: nm1, nfire
+    integer, intent(in) :: nrm1, nfire
     integer, intent(inout) :: ifroom(mxfire)
     real(eb), intent(inout) :: xfire(mxfire,mxfirp)
-    integer, intent(out) :: ifrpnt(nr,2)
+    integer, intent(out) :: ifrpnt(mxrooms,2)
 
     integer :: iperm(mxfire), iwork(mxfire), i, j, irm
     real(eb) :: work(mxfire)
@@ -977,13 +975,13 @@ module utility_routines
     end do
 
     ! do the pointer arrays for the radiation and ceiling jet routines
-    ifrpnt(1:nm1,1:2) = 0
+    ifrpnt(1:nrm1,1:2) = 0
     do i = 1, nfire
         irm = ifroom(i)
         ifrpnt(irm,1) = ifrpnt(irm,1) + 1
         if (ifrpnt(irm,2)==0) ifrpnt(irm,2) = i
     end do
-    do i = 1, nm1
+    do i = 1, nrm1
         if (ifrpnt(i,2)==0) ifrpnt(i,2) = 1
     end do
     return
@@ -1059,11 +1057,11 @@ module utility_routines
 
     character, intent(inout) :: string*(*)
 
-    integer n, i
+    integer nr, i
     character :: c
 
-    n = len_trim(string)
-    do i = 1, n
+    nr = len_trim(string)
+    do i = 1, nr
         c = string(i:i)
         if(c>='a'.and.c<='z')then
             c = char(ichar(c) + ichar('A')-ichar('a'))
@@ -1205,22 +1203,22 @@ module utility_routines
 
 ! ------------------ get_igrid ------------------------
 
-    integer function get_igrid (x,xgrid,n)
+    integer function get_igrid (x,xgrid,nr)
 
-    integer, intent(in) :: n
-    real(eb), intent(in), dimension(0:n) :: xgrid
+    integer, intent(in) :: nr
+    real(eb), intent(in), dimension(0:nr) :: xgrid
     real(eb), intent(in) :: x
 
     integer :: i
 
-    do i = 0, n-1
+    do i = 0, nr-1
         if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
             get_igrid=i
             return
         end if
     end do
-    if(xgrid(n).eq.x)then
-        get_igrid=n
+    if(xgrid(nr).eq.x)then
+        get_igrid=nr
     else
         get_igrid=-1
     end if
@@ -1233,7 +1231,7 @@ module opening_fractions
 
     !	The following functions implement the open/close function for vents.
     !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,nr), qcvm(4,mxfan),
+    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,mxrooms), qcvm(4,mxfan),
     !         and qcvi(4,mxfan).
 
     !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
@@ -1265,17 +1263,16 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6/
 
     if (time<points(1,index)) then
         qchfraction = points(2,index)
     else if (time>points(3,index)) then
         qchfraction = points(4,index)
     else
-        dt = max(points(3,index) - points(1,index),mintime)
-        deltat = max(time - points(1,index),mintime)
+        dt = max(points(3,index) - points(1,index), mintime)
+        deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qchfraction = points(2,index) + dydt*deltat
@@ -1292,17 +1289,16 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6/
 
     if (time<points(1,index)) then
         qcvfraction = points(2,index)
     else if (time>points(3,index)) then
         qcvfraction = points(4,index)
     else
-        dt = max(points(3,index) - points(1,index),mintime)
-        deltat = max(time - points(1,index),mintime)
+        dt = max(points(3,index) - points(1,index), mintime)
+        deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qcvfraction = points(2,index) + dydt*deltat
@@ -1319,9 +1315,8 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6_eb/
 
     if (time<points(1,index)) then
         qcffraction = points(2,index)
@@ -1346,16 +1341,15 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6_eb/
 
     if (time<points(1,index)) then
         qcifraction = points(2,index)
     else if (time>points(3,index)) then
         qcifraction = points(4,index)
     else
-        dt = max(points(3,index) - points(1,index),mintime)
+        dt = max(points(3,index) - points(1,index), mintime)
         deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
         dydt = dy/dt

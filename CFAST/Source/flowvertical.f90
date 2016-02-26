@@ -2,8 +2,16 @@ module vflow_routines
 
     use precision_parameters
 
+    use room_data
     use opening_fractions, only: qcvfraction
     use utility_routines, only: tanhsmooth
+    
+    use precision_parameters
+    use cenviro
+    use ramp_data
+    use flwptrs
+    use option_data
+    use vent_data
 
     implicit none
 
@@ -23,17 +31,8 @@ module vflow_routines
     !                flwvf: change in mass and energy for each layer of each compartment
     !                vflowflg (output): true if vertical flow is included in the simulation
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    use flwptrs
-    use opt
-    use params
-    use vent_data
-    implicit none
-
     real(eb), intent(in) :: tsec
-    real(eb), intent(out) :: flwvf(nr,ns+2,2)
+    real(eb), intent(out) :: flwvf(mxrooms,ns+2,2)
     logical, intent(out) :: vflowflg
 
     real(eb) :: vvent(2), xmvent(2), tmvent(2), epscut, frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
@@ -44,10 +43,10 @@ module vflow_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    flwvf(1:n,1:ns+2,upper) = 0.0_eb
-    flwvf(1:n,1:ns+2,lower) = 0.0_eb
-    vmflo(1:n,1:n,upper) = 0.0_eb
-    vmflo(1:n,1:n,lower) = 0.0_eb
+    flwvf(1:nr,1:ns+2,upper) = 0.0_eb
+    flwvf(1:nr,1:ns+2,lower) = 0.0_eb
+    vmflo(1:nr,1:nr,upper) = 0.0_eb
+    vmflo(1:nr,1:nr,lower) = 0.0_eb
     vflowflg = .false.
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
@@ -88,7 +87,7 @@ module vflow_routines
             end if
 
             ! determine mass and enthalpy fractions for the from room
-            if (ifrm<=nm1) then
+            if (ifrm<=nrm1) then
                 if (tmvent(iflow)>interior_temperature) then
                     zlayer = zzhlay(ifrm,ilay)
                     froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
@@ -122,7 +121,7 @@ module vflow_routines
             fromtq = fromqu + fromql
 
             ! extract mass and enthalpy from "from" room (not from outside)
-            if (ifrm<=nm1) then
+            if (ifrm<=nrm1) then
                 flwvf(ifrm,m,upper) = flwvf(ifrm,m,upper) - frommu
                 flwvf(ifrm,m,lower) = flwvf(ifrm,m,lower) - fromml
                 flwvf(ifrm,q,upper) = flwvf(ifrm,q,upper) - fromqu
@@ -143,7 +142,7 @@ module vflow_routines
             toql = fl*fromtq
 
             ! deposit mass and enthalpy into "to" room varibles (not outside)
-            if (ito<=nm1) then
+            if (ito<=nrm1) then
                 flwvf(ito,m,upper) = flwvf(ito,m,upper) + tomu
                 flwvf(ito,m,lower) = flwvf(ito,m,lower) + toml
                 flwvf(ito,q,upper) = flwvf(ito,q,upper) + toqu
@@ -159,13 +158,13 @@ module vflow_routines
                 speciesu = zzcspec(ifrm,upper,lsp)*frommu
 
                 ! extract mass and enthalpy from "from" room (not from the outside)
-                if (ifrm<=nm1) then
+                if (ifrm<=nrm1) then
                     flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - speciesu
                     flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - speciesl
                 end if
 
                 ! deposit mass and enthalphy into "to" room variables (not outside)
-                if (ito<=nm1) then
+                if (ito<=nrm1) then
                     pmtoup = (speciesu + speciesl)*fu
                     pmtolp = (speciesu + speciesl)*fl
                     flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
@@ -181,11 +180,6 @@ module vflow_routines
 ! --------------------------- getventfraction-------------------------------------
 
     subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
-
-    use precision_parameters
-    use cenviro
-    use cfast_main, only: qcvv, nramps, rampinfo
-    implicit none
 
     character, intent(in) :: venttype
     integer, intent(in) :: room1, room2, vent_number, vent_index
@@ -252,11 +246,6 @@ module vflow_routines
     !               tmvent(i)   i = 1, temperature in layer next to vent in top room
     !                           i = 2, temperature in layer next to vent in bottom room
 
-    use precision_parameters
-    use cenviro
-    use cfast_main
-    implicit none
-
     integer, intent(in) :: itop, ibot, nshape
     real(eb), intent(in) :: avent, epsp
     real(eb), intent(out) :: vvent(2), xmvent(2), tmvent(2)
@@ -269,23 +258,26 @@ module vflow_routines
     real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
     real(eb) :: v, cshape, d, delpflood, vex
     integer :: i, deadtop, deadbot
+    type(room_type), pointer :: toproomptr, botroomptr
 
+    toproomptr => roominfo(itop)
+    botroomptr => roominfo(ibot)
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     ! dp at top of bottom room and bottom of top room
-    if (ibot<=nm1) then
+    if (ibot<=nrm1) then
         dp(2) = -grav_con*(zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
         relp(2) = zzrelp(ibot)
     else
         dp(2) = 0.0_eb
-        relp(2) = exterior_rel_pressure(itop)
+        relp(2) = toproomptr%exterior_relp_initial
     end if
 
-    if (itop<=nm1) then
+    if (itop<=nrm1) then
         dp(1) = 0.0_eb
         relp(1) = zzrelp(itop)
     else
-        dp(1) = -grav_con*roominfo(ibot)%height*exterior_density
-        relp(1) = exterior_rel_pressure(ibot)
+        dp(1) = -grav_con*roominfo(ibot)%height*exterior_rho
+        relp(1) = botroomptr%exterior_relp_initial
     end if
 
     ! delp is pressure immediately below the vent less pressure immediately above the vent.
@@ -310,15 +302,15 @@ module vflow_routines
     end if
 
     ! delden is density immediately above the vent less density immediately below the vent
-    if (itop<=nm1) then
+    if (itop<=nrm1) then
         den(1) = zzrho(itop,ilay(1))
     else
-        den(1) = exterior_density
+        den(1) = exterior_rho
     end if
-    if (ibot<=nm1) then
+    if (ibot<=nrm1) then
         den(2) = zzrho(ibot,ilay(2))
     else
-        den(2) = exterior_density
+        den(2) = exterior_rho
     end if
     delden = den(1) - den(2)
 
@@ -379,7 +371,7 @@ module vflow_routines
     do i = 1, 2
         vvent(i) = vst(i) + vex
         xmvent(i) = denvnt(i)*vvent(i)
-        if (iroom(i)<=nm1) then
+        if (iroom(i)<=nrm1) then
             ! iroom(i) is an inside room so use the environment variable zztemp for temperature
             tmvent(i) = zztemp(iroom(i),ilay(3-i))
         else
@@ -396,9 +388,6 @@ module vflow_routines
 
     !       this is a routine to get the shape data for vertical flow (horizontal) vents
 
-    use cfast_main
-    use vent_data
-
     use precision_parameters
     implicit none
 
@@ -411,7 +400,7 @@ module vflow_routines
     ibot = ivvent(iinvvent,2)
     harea = vvarea(itop,ibot)
     hshape = vshape(itop,ibot)
-    if (itop>nm1) then
+    if (itop>nrm1) then
         hface = 6
     else
         hface = 5

@@ -11,13 +11,12 @@ module target_routines
     use utility_routines, only: xerror
 
     use cenviro
-    use cfast_main
     use detectorptrs
     use target_data
     use fire_data, only: xfire, ifrpnt
     use fireptrs
-    use wnodes, only: nfurn, qfurnout
-    use opt, only: fcjet, option, off
+    use room_data
+    use option_data, only: fcjet, option, off
 
     implicit none
 
@@ -686,7 +685,7 @@ module target_routines
     !                idset   room where activated detector resides
 
     integer, intent(in) :: imode, ndtect
-    real(eb), intent(in) :: tcur, dstep, zzhlay(nr,2), zztemp(nr,2)
+    real(eb), intent(in) :: tcur, dstep, zzhlay(mxrooms,2), zztemp(mxrooms,2)
 
     integer, intent(out) :: idset, ifdtect, iquench(*)
     real(eb), intent(out) :: tdtect

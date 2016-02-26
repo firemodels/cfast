@@ -7,8 +7,7 @@ module conduction_routines
     use wallptrs
     use cenviro
     use solver_data, only: nofwt
-    use cfast_main
-    use wnodes
+    use room_data
     use cparams, only: nnodes
 
     implicit none
@@ -36,10 +35,10 @@ module conduction_routines
     !                delta   the residual of q'' + k dt/dx
 
     integer, intent(in) :: update
-    real(eb), intent(in) :: dt, flxtot(nr,nwal)
+    real(eb), intent(in) :: dt, flxtot(mxrooms,nwal)
     real(eb), intent(out) :: delta(*)
 
-    real(eb) :: tgrad(2), vtgrad(4*nr)
+    real(eb) :: tgrad(2), vtgrad(4*mxrooms)
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j
@@ -69,7 +68,7 @@ module conduction_routines
             twint = zzwtemp(iroom,iwall,1)
             twext = zzwtemp(iroom,iwall,2)
             tgas = exterior_temperature
-            iweq = izwmap2(iwall,iroom) - nofwt
+            iweq = izwmap(iroom,iwall) - nofwt
             iwb = izwall(iweq,w_boundary_condition)
 
             ! compute flux seen by exterior of wall
@@ -80,16 +79,16 @@ module conduction_routines
                 call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
                 wfluxout = wfluxout + sigma*(tgas**4-twext**4)
                 wfluxsave = wfluxout
-                if(izheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
+                if(iheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
 
-                    ! back wall is connected to rooms defined by izhtfrac with fractions defined by zzhtfrac.
-                    !  if izheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero
+                    ! back wall is connected to rooms defined by iheat_connections with fractions defined by heat_frac.
+                    !  if iheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero
                     ! for iwall=3 and iwall=4
                     wfluxout = 0.0_eb
-                    nwroom = izhtfrac(iroom,0)
+                    nwroom = iheat_connections(iroom,0)
                     do jj = 1, nwroom
-                        j = izhtfrac(iroom,jj)
-                        frac = zzhtfrac(iroom,j)
+                        j = iheat_connections(iroom,jj)
+                        frac = heat_frac(iroom,j)
                         if(iwall==3)then
                             yb = zzhlay(iroom,lower)
                             yt = roomptr%z1
@@ -99,7 +98,7 @@ module conduction_routines
                         end if
                         dflor = roominfo(j)%z0 - roomptr%z0
                         yy = zzhlay(j,lower) + dflor
-                        if(j/=nm1+1)then
+                        if(j/=nrm1+1)then
                             if(yy>yt)then
                                 fu = 0.0_eb
                             elseif(yy<yb)then

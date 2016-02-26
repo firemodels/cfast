@@ -4,10 +4,10 @@
     use fireptrs
     use wallptrs
     use cenviro
-    use cfast_main
+    use ramp_data
     use fire_data, only: xfire, ifrpnt
-    use wnodes
-    use opt
+    use room_data
+    use option_data
 
     implicit none
 
@@ -28,7 +28,7 @@
     !                 flxcv       net heat flux onto surface
 
 
-    real(eb), intent(out) :: flwcv(nr,2), flxcv(nr,nwal)
+    real(eb), intent(out) :: flwcv(mxrooms,2), flxcv(mxrooms,nwal)
 
     real(eb) :: qconv, qconv_avg
 
@@ -36,9 +36,9 @@
     type(room_type), pointer :: roomptr
 
 
-    flwcv(1:nm1,upper) = 0.0_eb
-    flwcv(1:nm1,lower) = 0.0_eb
-    flxcv(1:nm1,1:nwal) = 0.0_eb
+    flwcv(1:nrm1,upper) = 0.0_eb
+    flwcv(1:nrm1,lower) = 0.0_eb
+    flxcv(1:nrm1,1:nwal) = 0.0_eb
 
     if (option(fconvec)/=on) return
 
@@ -64,7 +64,7 @@
             qconv_avg = 0.27_eb*qconv/((roomptr%width*roomptr%depth)**0.68_eb*roomptr%height**0.64_eb)
             if (qconv_avg>flxcv(i,iwall)) flxcv(i,iwall) = qconv_avg
         end if
-        flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)
+        flwcv(i,ilay) = flwcv(i,ilay) - zzwarea4(i,iwall)*flxcv(i,iwall)
 
     end do
 

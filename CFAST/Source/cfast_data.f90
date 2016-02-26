@@ -9,177 +9,38 @@ module cenviro
     implicit none
     save
 
-    integer :: jaccol, neqoff
-
     integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
-    integer, parameter :: eqp = 1, eqpmv = 2, eqtmv = 3, eqtu = 4, eqvu = 5, eqtl = 6, eqoxyl = 7, eqoxyu = 8, eqtt = 9, eqwt = 10
+    
+    real(eb) :: cp, gamma, rgas
 
-    logical izdtflag, izcon(nr), izhvac(nr)
+    logical :: izcon(mxrooms)                       ! true if there is a natural flow vent connection in the room that
+                                                    ! connects to the outside (perhaps through several other intermediate rooms)
+    logical :: izhvac(mxrooms)                      ! true if there is an HVAC vent connection in the room
 
-    real(eb), dimension(nr) :: zzrelp, zzpabs
-    real(eb), dimension(nr,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
-    real(eb), dimension(nr,2,ns) :: zzgspec, zzcspec
-    real(eb), dimension(nr,nwal) :: zzwspec
-    real(eb), dimension(nr,nwal,2) :: zzwtemp
-    real(eb), dimension(mxhvsys,ns) :: zzhvpr
-    real(eb), dimension(mxhvsys) :: zzhvm
-    real(eb), dimension(nr,4) :: zzwarea
-    real(eb), dimension(nr,10) :: zzwarea2
-    real(eb), dimension(mxcross,nr) :: zzrvol, zzrarea, zzrhgt
-    real(eb), dimension(2,nr) :: zzabsb, zzbeam
-    real(eb), dimension(0:mxpts+1) :: zzdisc
-    real(eb), dimension(nr,nr) :: zzhtfrac
-    real(eb) :: zzdtcrit
-
-    real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
-
-    integer, dimension(ns+2) :: izpmap
-    integer, dimension(2,nr) :: izwmap
-    integer, dimension(4,nr) :: izwmap2
-    integer, dimension(nr,4) :: izswal
-    integer, dimension(4*nr,5) :: izwall
-    integer, dimension(nr) :: izrvol, iznwall(nr), izshaft(nr)
-    integer, dimension(0:nr) :: izheat
-    integer, dimension(nr,0:nr) :: izhtfrac
-    integer :: izdtnum,izdtmax, izndisc, nswal
+    real(eb), dimension(mxrooms) :: zzrelp          ! pressure at floor level relative to exterior
+    real(eb), dimension(mxrooms) :: zzabsp          ! absolute pressure at floor level
+    real(eb), dimension(mxrooms,2) :: zzvol         ! volume of each layer
+    real(eb), dimension(mxrooms,2) :: zzhlay        ! thickness of each layer
+    real(eb), dimension(mxrooms,2) :: zztemp        ! temperature of each layer
+    real(eb), dimension(mxrooms,2) :: zzrho         ! density of each layer
+    real(eb), dimension(mxrooms,2) :: zzmass        ! total mass of each layer
+    real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
+    real(eb), dimension(mxrooms,2,ns) :: zzcspec    ! mass fraction of species in each layer
+    real(eb), dimension(mxrooms,2) :: zzbeam        ! characteristic length for absorbtivity in each layer
+    real(eb), dimension(mxrooms,2) :: zzabsb        ! layer absorbtivity
+    
+    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures
+    real(eb), dimension(mxrooms,4) :: zzwarea4      ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
+    real(eb), dimension(mxrooms,10) :: zzwarea10    ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
+    
+    real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
+    real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
 
 end module cenviro
 
-! --------------------------- cfast_main -------------------------------------------
+! --------------------------- debug_data -------------------------------------------
 
-module cfast_main
-    use precision_parameters
-    use cfast_types
-    use cparams
-    implicit none
-    save
-
-    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
-    integer :: n_species
-    real(eb) :: stime, deltat
-
-    real(eb) :: cp, gamma, rgas
-    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
-
-    character(128) :: title
-
-    ! compartment variables
-    integer n, nm1
-    real(eb) interior_rel_pressure(nr), exterior_rel_pressure(nr), species_mass_density(nr,2,ns), toxict(nr,2,ns)
-    type(room_type), target :: roominfo(nr)
-
-    ! wall variables
-    integer :: numnode(mxslb+1,4,nr), nslb(nwal,nr)
-    real(eb) :: rdqout(4,nr), fkw(mxslb,nwal,nr), cw(mxslb,nwal,nr), rw(mxslb,nwal,nr), flw(mxslb,nwal,nr), &
-        epw(nwal,nr), twj(nnodes,nr,nwal)
-    logical :: adiabatic_wall
-
-    ! ramping variables
-    integer :: nramps = 0
-    real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
-    type(ramp_type), target :: rampinfo(mxramps)
-
-    ! visualization variables
-    integer :: nvisualinfo = 0
-    type(visual_type), dimension (mxslice), target :: visualinfo
-
-    integer :: nsliceinfo = 0
-    type(slice_type), allocatable, dimension(:), target :: sliceinfo
-
-    integer :: nisoinfo = 0
-    type(iso_type), allocatable, dimension(:), target :: isoinfo
-
-
-end module cfast_main
-
-! --------------------------- cshell -------------------------------------------
-
-module cshell
-
-    implicit none
-    save
-
-    logical :: nokbd=.false., initializeonly=.false.
-    logical :: debugging=.false., validate=.false., netheatflux=.false.
-    integer :: version, iofili=1, iofilo=6, outputformat=0, logerr=3
-    integer, dimension(3) :: rundat
-    character(128) :: thrmfile="thermal"
-    character(60) :: nnfile=" ", datafile
-    character(32) :: mpsdatc
-
-end module cshell
-
-! --------------------------- solver_data -------------------------------------------
-
-module solver_data
-
-    use precision_parameters
-    use cparams
-    implicit none
-    save
-
-    ! solver variables
-    integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
-        nofhvpr, nequals, noffsm
-    real(eb), dimension(maxteq) :: p, pold, pdold
-    real(eb) :: told, dt
-
-end module solver_data
-
-! --------------------------- target_data -------------------------------------------
-
-module target_data
-    use precision_parameters
-    use cparams, only: mxthrmplen, mxtarg, mxdtect
-    use  cfast_types, only: target_type, detector_type
-    implicit none
-    save
-
-    ! variables for calculation of flux to a target
-
-    integer, parameter :: pde = 1                                   ! plate targets (cartesian coordinates)
-    integer, parameter :: cylpde = 2                                ! cylindrical targets (cylindrical coordinates)
-    integer, parameter :: interior = 1                              ! back surface of target is exposed to compartment interior
-    integer, parameter :: exterior = 2                              ! back surface of target is exposed to compartment exterior
-
-    integer :: ndtect                                               ! number of detectors in the simulation
-    integer :: ntarg                                                ! number of detectors in the simulation
-    integer :: idset                                                ! compartment where detector just went off. more than one
-                                                                    ! sprinkler in a compartment is meaningless to CFAST
-
-    type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
-
-    type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
-
-end module target_data
-
-! --------------------------- iofiles -------------------------------------------
-
-module  iofiles
-
-    use precision_parameters
-    implicit none
-    save
-
-!File descriptors for cfast
-
-    character(6), parameter :: heading="VERSN"
-    character(64) :: project
-    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
-        ssflow, ssnormal, ssspecies, sswall, errorlogging, stopfile, solverini, &
-        historyfile, queryfile, statusfile, kernelisrunning
-
-! Work arrays for the csv input routines
-
-    integer, parameter :: nrow=10000, ncol=100
-    real(eb) :: rarray(nrow,ncol)
-    character(128) :: carray(nrow,ncol)
-
-end module iofiles
-
-! --------------------------- debug -------------------------------------------
-
-module  debug
+module  debug_data
 
     use precision_parameters
     implicit none
@@ -193,7 +54,7 @@ module  debug
     real(eb) ::   dbtime
     character(256) :: residfile, jacfile, residcsv, jaccsv, slabcsv
 
-end module debug
+end module debug_data
 
 ! --------------------------- fire_data -------------------------------------------
 
@@ -206,12 +67,12 @@ module fire_data
     save
 
     ! fire variables
-    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(nr), ifroom(mxfire), &
-        ifrpnt(nr,2), heatfr, obj_fpos(0:mxfires)
-    real(eb) :: lower_o2_limit, qf(nr), objmaspy(0:mxfire), heatup(nr), heatlp(nr), oplume(3,mxfires), &
+    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(mxrooms), ifroom(mxfire), &
+        ifrpnt(mxrooms,2), heatfr, obj_fpos(0:mxfires)
+    real(eb) :: lower_o2_limit, qf(mxrooms), objmaspy(0:mxfire), heatup(mxrooms), heatlp(mxrooms), oplume(3,mxfires), &
         qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
         radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
-        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(nr), &
+        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(mxrooms), &
         farea(0:mxfire), tgignt
     logical objon(0:mxfires), heatfl
     type(fire_type), target :: fireinfo(mxfire)
@@ -236,9 +97,9 @@ module fire_data
 
 end module fire_data
 
-! --------------------------- opt -------------------------------------------
+! --------------------------- option_data -------------------------------------------
 
-module opt
+module option_data
 
     use precision_parameters
     use cparams
@@ -287,9 +148,6 @@ module opt
     integer, parameter :: d_dpdt = 18
     integer, parameter :: d_diag = 19
 
-    integer, parameter :: verysm = -9
-    integer, parameter :: verybg = 9
-
     integer, dimension(mxopt) :: option = &
         ! fire, hflow, entrain, vflow, cjet
         (/   2,     1,       1,     1,    1,  &
@@ -308,42 +166,119 @@ module opt
     integer :: iprtalg = 0, jacchk = 0
     integer :: numjac = 0, numstep = 0, numresd = 0, numitr = 0, totjac = 0, totstep = 0, totresd = 0, totitr = 0, total_steps = 0
 
-    integer(2), dimension(mxdebug,2,nr) :: dbugsw
+      end module option_data
 
+! --------------------------- ramp_data -------------------------------------------
 
-      end module opt
-
-! --------------------------- params -------------------------------------------
-
-module params
-
+module ramp_data
     use precision_parameters
+    use cfast_types
     use cparams
     implicit none
     save
 
-!   these are temporary work arrays
+    ! ramping variables
+    integer :: nramps = 0
+    real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
+    type(ramp_type), target :: rampinfo(mxramps)
 
-!   ex... are the settings for the external ambient
-!   qfr,... are the heat balance calculations for calculate_residuals and conductive_flux. it is now indexed by
-!    fire rather than by compartment
-!   the variables ht.. and hf.. are for vertical flow
-!   the volume fractions volfru and volfrl are calculated by calculate_residuals at the beginning of a time step
-!   hvfrac is the fraction that a mv duct is in the upper or lower layer
+end module ramp_data
 
-    logical :: exset
-    integer :: izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
+! --------------------------- room_data -------------------------------------------
 
-    real(eb) :: qfc(2,nr), initial_mass_fraction(ns), &
-        volfru(nr), volfrl(nr)
+module room_data
 
-end module params
+    use precision_parameters
+    use cfast_types
+    use cparams
+    implicit none
+    save
 
-! --------------------------- smkview -------------------------------------------
+    ! compartment variables
+    integer nr, nrm1, n_species
+
+    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
+        initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
+    
+    real(eb) species_rho(mxrooms,2,ns), toxict(mxrooms,2,ns)
+    
+    type(room_type), target :: roominfo(mxrooms)
+
+    ! wall variables
+    integer :: nwpts = (nnodes-1)/2                                     ! number of wall nodes 
+    integer :: iwbound = 3                                              ! boundary condition type 
+                                                                        !   1 = constant exterior surface temperature, 
+                                                                        !   2 = insulated exterior surface, 
+                                                                        !   3 =radiates to ambient
+    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
+                                                                        ! initially fractions for inner, middle and outer wall slab
+    
+    integer :: numnode(mxslb+1,4,mxrooms), nslb(nwal,mxrooms),nwalls, nfurn
+    real(eb) :: rdqout(4,mxrooms), fkw(mxslb,nwal,mxrooms), cw(mxslb,nwal,mxrooms), rw(mxslb,nwal,mxrooms), &
+        flw(mxslb,nwal,mxrooms), epw(nwal,mxrooms), twj(nnodes,mxrooms,nwal)
+    integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
+    logical :: adiabatic_wall
+    
+    real(eb), dimension (mxrooms,4) :: wlength
+    real(eb), dimension (nnodes,mxrooms,4) :: walldx
+    real(eb), dimension(mxpts) :: furn_time, furn_temp
+    real(eb) :: qfurnout
+    
+    ! room to room heat transfer
+    real(eb), dimension(mxrooms,mxrooms) :: heat_frac
+    integer, dimension(0:mxrooms) :: iheat
+    integer, dimension(mxrooms,0:mxrooms) :: iheat_connections
+
+    integer, dimension(ns+2) :: izpmap              ! maps species to corresponding DASSL equations
+    integer, dimension(mxrooms,4) :: izwmap         ! maps walls to corresponding DASSL equations
+    integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
+    integer :: nswal
+
+end module room_data
+
+! --------------------------- setup_data -------------------------------------------
+
+module setup_data
+
+    use precision_parameters
+    implicit none
+    save
+    
+    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
+    real(eb) :: stime, deltat
+
+    character(128) :: title
+
+    logical :: nokbd=.false., initializeonly=.false.
+    logical :: debugging=.false., validate=.false., netheatflux=.false.
+    integer :: version, outputformat=0
+    integer, dimension(3) :: rundat
+    character(128) :: thrmfile="thermal"
+    character(60) :: nnfile=" ", datafile
+    character(32) :: mpsdatc
+    
+    !File descriptors for cfast
+    integer :: iofili=1, iofilo=6, logerr=3
+    character(6), parameter :: heading="VERSN"
+    character(64) :: project
+    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
+        ssflow, ssnormal, ssspecies, sswall, errorlogging, stopfile, solverini, &
+        historyfile, queryfile, statusfile, kernelisrunning
+
+! Work arrays for the csv input routines
+
+    integer, parameter :: nrow=10000, ncol=100
+    real(eb) :: rarray(nrow,ncol)
+    character(128) :: carray(nrow,ncol)
+
+end module setup_data
+
+! --------------------------- smkview_data -------------------------------------------
 
 module smkview_data
 
     use precision_parameters
+    use cfast_types
     use cparams
     implicit none
     save
@@ -352,21 +287,28 @@ module smkview_data
     character(60) :: smkgeom, smkplot, smkplottrunc
     logical :: remapfiresdone
     real(eb), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+    
+    ! visualization variables
+    integer :: nvisualinfo = 0
+    type(visual_type), dimension (mxslice), target :: visualinfo
+
+    integer :: nsliceinfo = 0
+    type(slice_type), allocatable, dimension(:), target :: sliceinfo
+
+    integer :: nisoinfo = 0
+    type(iso_type), allocatable, dimension(:), target :: isoinfo
 
 end module smkview_data
 
-! --------------------------- solver_parameters -------------------------------------------
+! --------------------------- solver_data -------------------------------------------
 
-module solver_parameters
+module solver_data
 
     use precision_parameters
     use cparams
     implicit none
     save
-
-    real(eb), dimension(nt) :: pinit
-    real(eb), dimension(1) :: rpar2
-    integer, dimension(3) :: ipar2
+    ! default solver tolerences
     real(eb) :: aptol = 1.0e-6_eb        ! absolute pressure tolerance
     real(eb) :: rptol = 1.0e-6_eb        ! relative pressure tolerance
     real(eb) :: atol = 1.0e-5_eb         ! absolute other tolerance
@@ -379,14 +321,62 @@ module solver_parameters
     real(eb) :: ahvttol = 1.0e-5_eb      ! absolute HVAC temperature tolerance
     real(eb) :: rhvttol = 1.0e-5_eb      ! relative HVAC temperature tolerance
 
-    real(eb) :: stpmax = 1.0_eb        ! maximum solver time step, if negative, then solver will decide
-    real(eb) :: dasslfts = 0.005_eb    ! first time step for DASSL
+    real(eb), dimension(nt) :: pinit
+    real(eb), dimension(1) :: rpar2
+    integer, dimension(3) :: ipar2
+    
+    ! time step setup values
+    real(eb) :: stpmax = 1.0_eb         ! maximum solver time step, if negative, then solver will decide
+    real(eb) :: stpfirst = 0.005_eb     ! first time step for DASSL
+    logical :: stpminflag               ! true if CFAST should check for too small time steps
+    real(eb) :: stpmin                  ! minimum time step below which DASSL may be failing to find a solution.
+    integer :: stpmin_cnt               ! current count of time steps below stpmin
+    integer :: stpmin_cnt_max           ! maximum number of time steps below stpmin before DASSL calls it quits
+    
+    ! solver variables
+    integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
+        nofhvpr, nequals, noffsm
+    real(eb), dimension(maxteq) :: p, pold, pdold
+    real(eb) :: told, dt
+    
+    integer :: jaccol
+    integer :: jacn1, jacn2, jacn3, jacdim
+                             
+    integer :: ndisc                            ! number of discontinuities fed to DASSL
+    real(eb), dimension(0:mxpts+1) :: discon    ! list of discontinuities fed to DASSL to ease solution
 
-end module solver_parameters
+end module solver_data
 
-! --------------------------- thermp -------------------------------------------
+! --------------------------- target_data -------------------------------------------
 
-module thermp
+module target_data
+    use precision_parameters
+    use cparams, only: mxthrmplen, mxtarg, mxdtect
+    use  cfast_types, only: target_type, detector_type
+    implicit none
+    save
+
+    ! variables for calculation of flux to a target
+
+    integer, parameter :: pde = 1                                   ! plate targets (cartesian coordinates)
+    integer, parameter :: cylpde = 2                                ! cylindrical targets (cylindrical coordinates)
+    integer, parameter :: interior = 1                              ! back surface of target is exposed to compartment interior
+    integer, parameter :: exterior = 2                              ! back surface of target is exposed to compartment exterior
+
+    integer :: ndtect                                               ! number of detectors in the simulation
+    integer :: ntarg                                                ! number of detectors in the simulation
+    integer :: idset                                                ! compartment where detector just went off. more than one
+                                                                    ! sprinkler in a compartment is meaningless to CFAST
+
+    type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
+
+    type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
+
+end module target_data
+
+! --------------------------- thermal_data -------------------------------------------
+
+module thermal_data
 
     use precision_parameters
     use cparams
@@ -400,13 +390,7 @@ module thermp
     integer, dimension(mxthrmp) :: lnslb
     character(mxthrmplen), dimension(mxthrmp) :: nlist
 
-    end module thermp
-
-! --------------------------- fires -------------------------------------------
-
-module fires
-
-end module fires
+    end module thermal_data
 
 ! --------------------------- vent_data -------------------------------------------
 
@@ -419,18 +403,19 @@ module vent_data
     save
 
     ! hvent variables
-    integer :: ihvent_connections(nr,nr), ijk(nr,nr,mxccv), vface(mxhvents), nventijk
+    integer :: ihvent_connections(mxrooms,mxrooms), ijk(mxrooms,mxrooms,mxccv), vface(mxhvents), nventijk
     real(eb) :: hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), &
     hlp(mxhvents)
 
     ! vvent variables
-    integer :: ivvent_connections(nr,nr), vshape(nr,nr)
-    real(eb) :: vvarea(nr,nr), vmflo(nr,nr,2), qcvpp(4,nr,nr)
+    integer :: ivvent_connections(mxrooms,mxrooms), vshape(mxrooms,mxrooms)
+    real(eb) :: vvarea(mxrooms,mxrooms), vmflo(mxrooms,mxrooms,2), qcvpp(4,mxrooms,mxrooms)
 
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
-        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr
+        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr, &
+        izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
     real(eb) :: hveflo(2,mxext), hveflot(2,mxext), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
@@ -442,59 +427,16 @@ module vent_data
     integer, dimension(mxhvent,2) :: ivvent
     integer :: n_hvents, n_vvents
 
-    real(eb), dimension(nr,mxhvent) :: zzventdist
+    real(eb), dimension(mxrooms,mxhvent) :: zzventdist
     real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
+    
+    !slab data
+    real(eb), dimension(mxfslab) :: yvelev, dpv1m2
+    integer, dimension(mxfslab) ::  dirs12
+    integer :: nvelev, ioutf
 
     type (vent_type), dimension(mxhvent), target :: hventinfo
     type (vent_type), dimension(mxvvent), target :: vventinfo
     type (vent_type), dimension(mxext), target :: mventinfo
 
 end module vent_data
-
-! --------------------------- vent_slab -------------------------------------------
-
-module vent_slab
-
-    use precision_parameters
-    use cparams, only: mxfslab
-    implicit none
-    save
-
-    real(eb), dimension(mxfslab) :: yvelev, dpv1m2
-    integer, dimension(mxfslab) ::  dirs12
-    integer :: nvelev, ioutf
-
-end module vent_slab
-
-! --------------------------- wdervs -------------------------------------------
-
-module wdervs
-
-    implicit none
-    save
-
-    integer :: jacn1, jacn2, jacn3, jacdim
-
-end module wdervs
-
-! --------------------------- wnodes -------------------------------------------
-
-module wnodes
-
-    use precision_parameters
-    use cparams
-    implicit none
-    save
-
-    integer :: nwpts = 30                                   ! number of wall nodes
-    integer :: iwbound = 3                                  !boundary condition type (1=constant temperature, 2=insulated 3=flux)
-     ! computed values for boundary thickness, initially fractions for inner, middle and outer wall slab
-    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)
-
-    integer nwalls, nfurn
-    real(eb), dimension (nr,4) :: wlength
-    real(eb), dimension (nnodes,nr,4) :: walldx
-    real(eb), dimension(mxpts) :: furn_time, furn_temp
-    real(eb) :: qfurnout
-
-end module wnodes

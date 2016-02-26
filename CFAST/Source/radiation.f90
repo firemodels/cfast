@@ -38,7 +38,7 @@ module radiation_routines
     real(eb), intent(out), dimension(mxrooms,2) :: flwrad
     real(eb), intent(out), dimension(mxrooms,nwal) :: flxrad
 
-    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight
+    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight, rabsorb(2)
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
     type(room_type), pointer :: roomptr
@@ -57,8 +57,8 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
-        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
+        zzbeam(i,lower) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
+        zzbeam(i,upper) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
     end do
 
     defabsup = 0.50_eb
@@ -68,8 +68,8 @@ module radiation_routines
         roomptr => roominfo(i)
         tg(upper) = zztemp(i,upper)
         tg(lower) = zztemp(i,lower)
-        zzbeam(lower,i) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
-        zzbeam(upper,i) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
+        zzbeam(i,lower) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
+        zzbeam(i,upper) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
         do iwall = 1, 4
             imap = map(iwall)
             twall(imap) = zzwtemp(i,iwall,1)
@@ -91,14 +91,16 @@ module radiation_routines
         end do
         if(.not.black)then
             if(option(frad)==4)then
-                zzabsb(upper,i) = defabsup
-                zzabsb(lower,i) = defabslow
+                zzabsb(i,upper) = defabsup
+                zzabsb(i,lower) = defabslow
             else
-                zzabsb(upper,i) = absorb(i, upper)
-                zzabsb(lower,i) = absorb(i, lower)
+                zzabsb(i,upper) = absorb(i, upper)
+                zzabsb(i,lower) = absorb(i, lower)
             end if
         end if
-        call rad4(twall,tg,emis,zzabsb(1,i),i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
+        rabsorb(1) = zzabsb(i,upper)
+        rabsorb(2) = zzabsb(i,lower)
+        call rad4(twall,tg,emis,rabsorb,i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
         do j = 1, nwal
@@ -915,7 +917,7 @@ module radiation_routines
     ! layer-specific factors
     tg = zztemp(cmpt, layer)
     rtv = (rg*tg)/zzvol(cmpt, layer)
-    l = zzbeam(layer,cmpt)
+    l = zzbeam(cmpt,layer)
 
     ag = 0.0_eb
 

@@ -14,7 +14,6 @@ module cenviro
     integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
     
     real(eb) :: cp, gamma, rgas
-    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
     logical :: exset
 
     logical :: izcon(mxrooms)                       ! true if there is a natural flow vent connection in the room that
@@ -406,17 +405,10 @@ module room_data
     implicit none
     save
 
-    integer :: nwpts = (nnodes-1)/2                                     ! number of wall nodes 
-    integer :: iwbound = 3                                              ! boundary condition type 
-                                                                        !   1 = constant exterior surface temperature, 
-                                                                        !   2 = insulated exterior surface, 
-                                                                        !   3 =radiates to ambient
-    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
-                                                                        ! initially fractions for inner, middle and outer wall slab
-
-
     ! compartment variables
     integer nr, nrm1, n_species
+
+    real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
 
     real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
     real(eb) interior_rel_pressure(mxrooms), exterior_rel_pressure(mxrooms), species_mass_density(mxrooms,2,ns), &
@@ -429,6 +421,14 @@ module room_data
     type(room_type), target :: roominfo(mxrooms)
 
     ! wall variables
+    integer :: nwpts = (nnodes-1)/2                                     ! number of wall nodes 
+    integer :: iwbound = 3                                              ! boundary condition type 
+                                                                        !   1 = constant exterior surface temperature, 
+                                                                        !   2 = insulated exterior surface, 
+                                                                        !   3 =radiates to ambient
+    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
+                                                                        ! initially fractions for inner, middle and outer wall slab
+    
     integer :: numnode(mxslb+1,4,mxrooms), nslb(nwal,mxrooms),nwalls, nfurn
     real(eb) :: rdqout(4,mxrooms), fkw(mxslb,nwal,mxrooms), cw(mxslb,nwal,mxrooms), rw(mxslb,nwal,mxrooms), &
         flw(mxslb,nwal,mxrooms), epw(nwal,mxrooms), twj(nnodes,mxrooms,nwal)

@@ -31,15 +31,12 @@ module cenviro
     real(eb), dimension(mxcross,mxrooms) :: zzrvol, zzrarea, zzrhgt
     real(eb), dimension(2,mxrooms) :: zzabsb, zzbeam
     real(eb), dimension(0:mxpts+1) :: zzdisc
-    real(eb), dimension(mxrooms,mxrooms) :: zzhtfrac
 
     integer, dimension(ns+2) :: izpmap
     integer, dimension(4,mxrooms) :: izwmap
     integer, dimension(mxrooms,4) :: izswal
     integer, dimension(4*mxrooms,5) :: izwall
     integer, dimension(mxrooms) :: izrvol
-    integer, dimension(0:mxrooms) :: izheat
-    integer, dimension(mxrooms,0:mxrooms) :: izhtfrac
     integer :: izndisc, nswal
 
 end module cenviro
@@ -428,5 +425,10 @@ module room_data
     real(eb), dimension (nnodes,mxrooms,4) :: walldx
     real(eb), dimension(mxpts) :: furn_time, furn_temp
     real(eb) :: qfurnout
+    
+    ! room to room heat transfer
+    real(eb), dimension(mxrooms,mxrooms) :: heat_frac
+    integer, dimension(0:mxrooms) :: iheat
+    integer, dimension(mxrooms,0:mxrooms) :: iheat_connections
 
 end module room_data

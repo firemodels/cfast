@@ -393,59 +393,59 @@ module input_routines
 
     ! check room to room heat transfer
 
-    ! The array IZHEAT may have one of three values, 0, 1, 2.
+    ! The array iheat may have one of three values, 0, 1, 2.
     ! 0 = no room to room heat transfer
     ! 1 = fractions are determined by what rooms are connected by vents
     ! For example, if room 1 is connected to rooms 2, 3, 4 and the outside
-    ! by vents then the first row of ZZHTFRAC will have the values
+    ! by vents then the first row of heat_frac will have the values
     ! 0. .25 .25 .25 .25
 
     ! force all rooms to transfer heat between connected rooms
-    if(izheat(0)==1)then
+    if(iheat(0)==1)then
         do i = 1, nrm1
-            izheat(i) = 1
+            iheat(i) = 1
         end do
     end if
 
     do i = 1, nrm1
 
         ! force heat transfer between rooms connected by vents.
-        if(izheat(i)==1)then
+        if(iheat(i)==1)then
             do j = 1, nr
                 roomptr => roominfo(j)
                 nventij = 0
                 do k = 1, 4
                     nventij = nventij + ijk(i,j,k)
                 end do
-                if(nventij/=0)zzhtfrac(i,j) = 1.0_eb
+                if(nventij/=0)heat_frac(i,j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if(j<=nrm1.and..not.roomptr%surface_on(3)) zzhtfrac(i,j) = 0.0_eb
+                if(j<=nrm1.and..not.roomptr%surface_on(3)) heat_frac(i,j) = 0.0_eb
             end do
         end if
 
-        ! normalize zzhtfrac fraction matrix so that rows sum to one
-        if(izheat(i)/=0)then
+        ! normalize heat_frac fraction matrix so that rows sum to one
+        if(iheat(i)/=0)then
             sum = 0.0_eb
             do j = 1, nrm1+1
-                sum = sum + zzhtfrac(i,j)
+                sum = sum + heat_frac(i,j)
             end do
             if(sum<1.e-5_eb)then
                 do j = 1, nrm1
-                    zzhtfrac(i,j) = 0.0_eb
+                    heat_frac(i,j) = 0.0_eb
                 end do
-                zzhtfrac(i,nrm1+1) = 1.0_eb
+                heat_frac(i,nrm1+1) = 1.0_eb
             else
                 do j = 1, nrm1+1
-                    zzhtfrac(i,j) = zzhtfrac(i,j)/sum
+                    heat_frac(i,j) = heat_frac(i,j)/sum
                 end do
             end if
             jj = 0
             do j = 1, nrm1
-                if(zzhtfrac(i,j)/=0.0_eb)then
-                    izhtfrac(i,0) = izhtfrac(i,0) + 1
+                if(heat_frac(i,j)/=0.0_eb)then
+                    iheat_connections(i,0) = iheat_connections(i,0) + 1
                     jj = jj + 1
-                    izhtfrac(i,jj) = j
+                    iheat_connections(i,jj) = j
                 end if
             end do
         end if
@@ -1525,7 +1525,7 @@ module input_routines
                 ifrom = lrarray(1)
 
                 if (countargs(lcarray)>=1) then
-                    izheat(ifrom) = 1
+                    iheat(ifrom) = 1
                     cycle
                 else
                     nto = lrarray(2)
@@ -1533,8 +1533,8 @@ module input_routines
                         write(logerr,5354) nto
                         stop
                     end if
-                    izheat(ifrom) = 2
-                    izheat(ifrom) = 2
+                    iheat(ifrom) = 2
+                    iheat(ifrom) = 2
                 end if
 
                 if (2*nto==(countargs(lcarray)-2)) then
@@ -1551,7 +1551,7 @@ module input_routines
                             write(logerr, 5357) ifrom,ito,frac
                             stop
                         end if
-                        zzhtfrac(ifrom,ito) = frac
+                        heat_frac(ifrom,ito) = frac
                     end do
                 else
                     write(logerr,5355) ifrom, nto

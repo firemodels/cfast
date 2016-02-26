@@ -585,9 +585,9 @@ module initialization_routines
     zzrhgt(1:mxcross,1:mxrooms) = 0.0_eb
 
     ! initialize inter-compartment heat transfer fractions
-    zzhtfrac(1:mxrooms,1:mxrooms) = 0.0_eb
-    izheat(1:mxrooms) = 0
-    izhtfrac(1:mxrooms,1:mxrooms) = 0
+    heat_frac(1:mxrooms,1:mxrooms) = 0.0_eb
+    iheat(1:mxrooms) = 0
+    iheat_connections(1:mxrooms,1:mxrooms) = 0
 
     ! initialize number of furnace temperature nodes
     nfurn=0

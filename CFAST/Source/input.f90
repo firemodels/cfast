@@ -1506,8 +1506,7 @@ module input_routines
                 stpmin = abs(lrarray(1))
                 stpmin_cnt_max = abs(lrarray(2))
                 ! a negative turns off the check
-                if(lrarray(2)<=0)izdtflag = .false.
-
+                if (lrarray(2)<=0) stpminflag = .false.
             else
                 write (logerr,*) '***Error: Bad DTCHE input. At least 2 arguments must be specified.'
                 stop

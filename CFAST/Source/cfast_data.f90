@@ -17,11 +17,17 @@ module cenviro
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref
     logical :: exset
 
-    logical izdtflag, izcon(mxrooms), izhvac(mxrooms)
+    logical izcon(mxrooms), izhvac(mxrooms)
 
-    real(eb), dimension(mxrooms) :: zzrelp, zzabsp
-    real(eb), dimension(mxrooms,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass
-    real(eb), dimension(mxrooms,2,ns) :: zzgspec, zzcspec
+    real(eb), dimension(mxrooms) :: zzrelp              ! pressure at floor level relative to exterior
+    real(eb), dimension(mxrooms) :: zzabsp              ! absolute pressure at floor level
+    real(eb), dimension(mxrooms,2) :: zzvol             ! volume of each layer
+    real(eb), dimension(mxrooms,2) :: zzhlay            ! thickness of each layer
+    real(eb), dimension(mxrooms,2) :: zztemp            ! temperature of each layer
+    real(eb), dimension(mxrooms,2) :: zzrho             ! density of each layer
+    real(eb), dimension(mxrooms,2) :: zzmass            ! total mass of each layer
+    real(eb), dimension(mxrooms,2,ns) :: zzgspec        ! mass of species in each layer
+    real(eb), dimension(mxrooms,2,ns) :: zzcspec        ! mass fraction of species in each layer
     real(eb), dimension(mxrooms,nwal,2) :: zzwtemp      ! compartment surface temperatures
     real(eb), dimension(mxhvsys,ns) :: zzhvspec         ! mass of species in hvac system
     real(eb), dimension(mxhvsys) :: zzhvm               ! total mass of gas in hvac system
@@ -118,7 +124,8 @@ module solver_data
     
     ! time step setup values
     real(eb) :: stpmax = 1.0_eb         ! maximum solver time step, if negative, then solver will decide
-    real(eb) :: stpfirst = 0.005_eb     ! first time step for DASSL    
+    real(eb) :: stpfirst = 0.005_eb     ! first time step for DASSL
+    logical :: stpminflag               ! true if CFAST should check for too small time steps
     real(eb) :: stpmin                  ! minimum time step below which DASSL may be failing to find a solution.
     integer :: stpmin_cnt               ! current count of time steps below stpmin
     integer :: stpmin_cnt_max           ! maximum number of time steps below stpmin before DASSL calls it quits
@@ -130,7 +137,7 @@ module solver_data
     real(eb) :: told, dt
     
     integer :: jacn1, jacn2, jacn3, jacdim
-    
+                             
     integer :: ndisc                            ! number of discontinuities fed to DASSL
     real(eb), dimension(0:mxpts+1) :: discon    ! list of discontinuities fed to DASSL to ease solution
 

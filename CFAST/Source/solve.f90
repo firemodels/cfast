@@ -712,7 +712,7 @@ module solve_routines
         end if
 
         dt = t - told
-        if(izdtflag)then
+        if(stpminflag)then
             if(dt<stpmin)then
                 stpmin_cnt = stpmin_cnt + 1
                 if(stpmin_cnt>stpmin_cnt_max)then
@@ -1800,7 +1800,7 @@ module solve_routines
             end do
         end do
 
-        ! define species amounts
+        ! define species masses
         isof = nofprd
         do lsp = 1, ns
             do iroom = 1, nrm1

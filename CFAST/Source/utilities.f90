@@ -1263,17 +1263,16 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6/
 
     if (time<points(1,index)) then
         qchfraction = points(2,index)
     else if (time>points(3,index)) then
         qchfraction = points(4,index)
     else
-        dt = max(points(3,index) - points(1,index),mintime)
-        deltat = max(time - points(1,index),mintime)
+        dt = max(points(3,index) - points(1,index), mintime)
+        deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qchfraction = points(2,index) + dydt*deltat
@@ -1290,17 +1289,16 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6/
 
     if (time<points(1,index)) then
         qcvfraction = points(2,index)
     else if (time>points(3,index)) then
         qcvfraction = points(4,index)
     else
-        dt = max(points(3,index) - points(1,index),mintime)
-        deltat = max(time - points(1,index),mintime)
+        dt = max(points(3,index) - points(1,index), mintime)
+        deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
         dydt = dy/dt
         qcvfraction = points(2,index) + dydt*deltat
@@ -1317,9 +1315,8 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6_eb/
 
     if (time<points(1,index)) then
         qcffraction = points(2,index)
@@ -1344,16 +1341,15 @@ module opening_fractions
     integer, intent(in) :: index
     real(eb), intent(in) :: points(4,*), time
 
-    real(eb) :: dt, dy, dydt, mintime
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
-    data mintime/1.0e-6_eb/
 
     if (time<points(1,index)) then
         qcifraction = points(2,index)
     else if (time>points(3,index)) then
         qcifraction = points(4,index)
     else
-        dt = max(points(3,index) - points(1,index),mintime)
+        dt = max(points(3,index) - points(1,index), mintime)
         deltat = max(time - points(1,index), mintime)
         dy = points(4,index) - points(2,index)
         dydt = dy/dt

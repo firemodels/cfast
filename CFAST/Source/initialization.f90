@@ -521,7 +521,7 @@ module initialization_routines
     stpmin = 1.0e-09_eb
     stpmin_cnt = 0
     stpmin_cnt_max = 100
-    izdtflag = .true.
+    stpminflag = .true.
 
     ! define universal constants
     cp = 1012.0_eb

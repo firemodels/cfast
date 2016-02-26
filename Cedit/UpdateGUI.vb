@@ -36,10 +36,13 @@ Public Class UpdateGUI
         MainWin.OutputValidation.Checked = ValidationOutput
     End Sub
     Public Sub General()
+        Dim sLen As Integer, aVersion As String
+        sLen = Len(Application.ProductVersion)
+        aVersion = Application.ProductVersion.Substring(0, sLen - 2)
         If myEnvironment.InputFileName = Nothing Then
-            MainWin.Text = "Newfile"
+            MainWin.Text = "CEdit " + aVersion + " (Newfile)"
         Else
-            MainWin.Text = "CEdit (" + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
+            MainWin.Text = "CEdit " + aVersion + " (" + System.IO.Path.GetFileName(myEnvironment.InputFileName) + ")"
         End If
         If myEnvironment.FileChanged Then MainWin.Text = MainWin.Text + " *"
         If DoErrorCheck Then

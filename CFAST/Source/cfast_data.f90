@@ -19,25 +19,22 @@ module cenviro
 
     logical izdtflag, izcon(mxrooms), izhvac(mxrooms)
 
-    real(eb), dimension(mxrooms) :: zzrelp, zzpabs
-    real(eb), dimension(mxrooms,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass, zzftemp
+    real(eb), dimension(mxrooms) :: zzrelp, zzabsp
+    real(eb), dimension(mxrooms,2) :: zzvol, zzhlay, zztemp, zzrho, zzmass
     real(eb), dimension(mxrooms,2,ns) :: zzgspec, zzcspec
-    real(eb), dimension(mxrooms,nwal) :: zzwspec
-    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp
-    real(eb), dimension(mxhvsys,ns) :: zzhvpr
-    real(eb), dimension(mxhvsys) :: zzhvm
-    real(eb), dimension(mxrooms,4) :: zzwarea
-    real(eb), dimension(mxrooms,10) :: zzwarea2
-    real(eb), dimension(mxcross,mxrooms) :: zzrvol, zzrarea, zzrhgt
-    real(eb), dimension(2,mxrooms) :: zzabsb, zzbeam
-    real(eb), dimension(0:mxpts+1) :: zzdisc
+    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp      ! compartment surface temperatures
+    real(eb), dimension(mxhvsys,ns) :: zzhvspec         ! mass of species in hvac system
+    real(eb), dimension(mxhvsys) :: zzhvm               ! total mass of gas in hvac system
+    real(eb), dimension(mxrooms,4) :: zzwarea4          ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
+    real(eb), dimension(mxrooms,10) :: zzwarea10        ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
+    real(eb), dimension(2,mxrooms) :: zzbeam            ! characteristic length for absorbtivity in each layer
+    real(eb), dimension(2,mxrooms) :: zzabsb            ! layer absorbtivity
 
     integer, dimension(ns+2) :: izpmap
     integer, dimension(4,mxrooms) :: izwmap
     integer, dimension(mxrooms,4) :: izswal
     integer, dimension(4*mxrooms,5) :: izwall
-    integer, dimension(mxrooms) :: izrvol
-    integer :: izndisc, nswal
+    integer :: nswal
 
 end module cenviro
 
@@ -133,6 +130,9 @@ module solver_data
     real(eb) :: told, dt
     
     integer :: jacn1, jacn2, jacn3, jacdim
+    
+    integer :: ndisc                            ! number of discontinuities fed to DASSL
+    real(eb), dimension(0:mxpts+1) :: discon    ! list of discontinuities fed to DASSL to ease solution
 
 end module solver_data
 
@@ -412,6 +412,10 @@ module room_data
     real(eb) :: interior_density, exterior_density, interior_temperature, exterior_temperature
     real(eb) interior_rel_pressure(mxrooms), exterior_rel_pressure(mxrooms), species_mass_density(mxrooms,2,ns), &
         toxict(mxrooms,2,ns), initial_mass_fraction(ns), qfc(2,mxrooms)
+
+    ! cross-sectional area variables
+    real(eb), dimension(mxcross,mxrooms) :: zzrvol, zzrarea, zzrhgt
+    integer, dimension(mxrooms) :: izrvol
     
     type(room_type), target :: roominfo(mxrooms)
 

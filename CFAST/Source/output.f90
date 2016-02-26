@@ -1191,7 +1191,7 @@ module output_routines
             write (*,*) 'Mass flow of system ', hvmfsys(isys)
             write (*,*) 'Mass of gas in system ', zzhvm(isys)
             do iprod = 1, ns
-                write (*,*) 'Mass of ', spname(iprod), ' ',zzhvpr(isys,iprod)
+                write (*,*) 'Mass of ', spname(iprod), ' ',zzhvspec(isys,iprod)
             end do
             do idt = 1, nbr
                 if (izhvbsys(idt)==isys) then

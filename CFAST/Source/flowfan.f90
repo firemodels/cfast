@@ -429,7 +429,7 @@ module mflow_routines
         do k = 1, min(ns,9)
             do isys = 1, nhvsys
                 if (zzhvm(isys)/=0.0_eb)then
-                    dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
+                    dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvspec(isys,k)/zzhvm(isys)
                 end if
             end do
         end do
@@ -438,7 +438,7 @@ module mflow_routines
         k = 11
         do isys = 1, nhvsys
             if (zzhvm(isys)/=0.0_eb)then
-                dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvpr(isys,k)/zzhvm(isys)
+                dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvspec(isys,k)/zzhvm(isys)
             end if
         end do
 
@@ -478,7 +478,7 @@ module mflow_routines
             do k = 1, ns
                 ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
                 if (zzhvm(isys)/=0.0_eb) then
-                    hvexcn(ii,k,upper) = zzhvpr(isys,k)/zzhvm(isys)
+                    hvexcn(ii,k,upper) = zzhvspec(isys,k)/zzhvm(isys)
                     hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
                     ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
                     !         - see keywordcases to change this

@@ -665,8 +665,8 @@ module solve_routines
 
         ! find the interval next discontinuity is in
         idisc = 0
-        do i = 1, izndisc
-            if(t>=zzdisc(i-1).and.t<zzdisc(i))then
+        do i = 1, ndisc
+            if(t>=discon(i-1).and.t<discon(i))then
                 idisc = i
                 exit
             end if
@@ -675,8 +675,8 @@ module solve_routines
 
         ! if there is a discontinuity then tell DASSL
         if(idisc/=0)then
-            tout = min(tout,zzdisc(idisc))
-            rwork(1) = zzdisc(idisc)
+            tout = min(tout,discon(idisc))
+            rwork(1) = discon(idisc)
             info(4) = 1
         else
             info(4) = 0
@@ -1096,8 +1096,8 @@ module solve_routines
 
     logical :: vflowflg, hvacflg, djetflg
     integer :: nprod, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
-    real(eb) :: epsp, xqu, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
-    real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ, xmu
+    real(eb) :: epsp, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
+    real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ
 
     ires = ires ! just to get rid of a warning message
     nprod = n_species
@@ -1199,19 +1199,6 @@ module solve_routines
                 flwtot(iroom,iprod,ll) = 0.0_eb
             end do
         end if
-
-        ! calculate temperature of flow going into the upper layer
-        ! of each room
-        if(jaccol<=0)then
-            xqu = flwtot(iroom,q,upper)
-            xmu = flwtot(iroom,m,upper)
-            if(xmu>0.0001_eb)then
-                zzftemp(iroom,upper) = xqu/(cp*xmu)
-            else
-                zzftemp(iroom,upper) = interior_temperature
-            end if
-        end if
-
     end do
 
     if (update==all) then
@@ -1240,7 +1227,7 @@ module solve_routines
         roomptr => roominfo(iroom)
         aroom = roomptr%area
         hceil = roomptr%height
-        pabs = zzpabs(iroom)
+        pabs = zzabsp(iroom)
         hinter = zzhlay(iroom,ll)
         ql = flwtot(iroom,q,ll)
         qu = flwtot(iroom,q,uu)
@@ -1387,7 +1374,7 @@ module solve_routines
 
     integer frmask(mxccv)
 
-    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, iii, ieq, iwall, ii
+    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, ieq, iwall, ii
     integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp
@@ -1479,7 +1466,7 @@ module solve_routines
         zzhlay(nr,upper) = 0.0_eb
         zzhlay(nr,lower) = 100000.0_eb
         zzrelp(nr) = 0.0_eb
-        zzpabs(nr) = pressure_offset
+        zzabsp(nr) = pressure_offset
         zztemp(nr,upper) = exterior_temperature
         zztemp(nr,lower) = exterior_temperature
         zzcspec(nr,upper,3:ns) = 0.0_eb
@@ -1501,7 +1488,7 @@ module solve_routines
         zzcspec(nr,upper,8) = relative_humidity*xh2o
         zzcspec(nr,lower,8) = relative_humidity*xh2o
 
-        zzrho(nr,upper:lower) = zzpabs(nr)/rgas/zztemp(nr,upper:lower)
+        zzrho(nr,upper:lower) = zzabsp(nr)/rgas/zztemp(nr,upper:lower)
         zzmass(nr,upper:lower) = zzrho(nr,upper:lower)*zzvol(nr,upper:lower)
 
         ! define horizontal vent data structures
@@ -1558,39 +1545,38 @@ module solve_routines
         itstop = xdelt + 1
         tstop = itstop - 1
 
-        zzdisc(0) = 0.0_eb
-        zzdisc(1) = tstop
-        iii = 1
+        discon(0) = 0.0_eb
+        discon(1) = tstop
+        ndisc = 1
 
         ! add each of the change arrays to the discontinuity list
         do  i = 1, n_hvents
-            iii = iii + 1
-            zzdisc(iii) = qcvh(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvh(3,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvh(1,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvh(3,i)
         end do
         do  i = 1, n_vvents
-            iii = iii + 1
-            zzdisc(iii) = qcvv(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvv(3,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvv(1,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvv(3,i)
         end do
         do  i = 1, nfan
-            iii = iii + 1
-            zzdisc(iii) = qcvm(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvm(3,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvm(1,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvm(3,i)
         end do
         do i = 1, nfilter
-            iii = iii + 1
-            zzdisc(iii) = qcvf(1,i)
-            iii = iii + 1
-            zzdisc(iii) = qcvf(3,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvf(1,i)
+            ndisc = ndisc + 1
+            discon(ndisc) = qcvf(3,i)
         end do
-        izndisc = iii
 
         ! put the discontinuity array into order
-        call shellsort (zzdisc(0), izndisc+1)
+        call shellsort (discon(0), ndisc+1)
 
         ! define izwmap for jac and other constants for dassl and the conduction routine
         ieq = nofwt
@@ -1673,7 +1659,7 @@ module solve_routines
             end if
 
             zzrelp(iroom) = pdif(iroom)
-            zzpabs(iroom) = pdif(iroom) + pressure_offset
+            zzabsp(iroom) = pdif(iroom) + pressure_offset
             if(nfurn>0)then
               zztemp(iroom,upper) = wtemp
               zztemp(iroom,lower) = wtemp
@@ -1703,22 +1689,22 @@ module solve_routines
             ymax = roomptr%depth
             zzu = zzhlay(iroom,upper)
             zzl = zzhlay(iroom,lower)
-            zzwarea2(iroom,1) = roomptr%area
-            zzwarea2(iroom,2) = zzu*xmax
-            zzwarea2(iroom,3) = zzu*ymax
-            zzwarea2(iroom,4) = zzu*xmax
-            zzwarea2(iroom,5) = zzu*ymax
-            zzwarea2(iroom,6) = zzl*xmax
-            zzwarea2(iroom,7) = zzl*ymax
-            zzwarea2(iroom,8) = zzl*xmax
-            zzwarea2(iroom,9) = zzl*ymax
-            zzwarea2(iroom,10) = roomptr%area
+            zzwarea10(iroom,1) = roomptr%area
+            zzwarea10(iroom,2) = zzu*xmax
+            zzwarea10(iroom,3) = zzu*ymax
+            zzwarea10(iroom,4) = zzu*xmax
+            zzwarea10(iroom,5) = zzu*ymax
+            zzwarea10(iroom,6) = zzl*xmax
+            zzwarea10(iroom,7) = zzl*ymax
+            zzwarea10(iroom,8) = zzl*xmax
+            zzwarea10(iroom,9) = zzl*ymax
+            zzwarea10(iroom,10) = roomptr%area
 
             ! compute area of 4 wall segments
-            zzwarea(iroom,1) = roomptr%area
-            zzwarea(iroom,2) = roomptr%area
-            zzwarea(iroom,3) = (ymax + xmax)*zzu*2.0_eb
-            zzwarea(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
+            zzwarea4(iroom,1) = roomptr%area
+            zzwarea4(iroom,2) = roomptr%area
+            zzwarea4(iroom,3) = (ymax + xmax)*zzu*2.0_eb
+            zzwarea4(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
 
             ! define z wall centers (the z coordinate changes with time)
             ! (other coordinates are static and are defined earlier)
@@ -1737,7 +1723,7 @@ module solve_routines
             if (abs(zzrelp(iroom)/epscut)<=130.0_eb) then
                 ptemp = zzrelp(iroom)*(1.0_eb - exp(-abs(zzrelp(iroom)/epscut))) + pressure_offset
             else
-                ptemp = zzpabs(iroom)
+                ptemp = zzabsp(iroom)
             end if
 
             do layer = upper, lower
@@ -1750,7 +1736,7 @@ module solve_routines
             roomptr => roominfo(i)
             if(roomptr%deadroom.eq.0) cycle
             zzrelp(i) = zzrelp(roomptr%deadroom)
-            zzpabs(i) = zzpabs(roomptr%deadroom)
+            zzabsp(i) = zzabsp(roomptr%deadroom)
         end do
 
         ! record which layer target is in
@@ -1876,7 +1862,6 @@ module solve_routines
     end if
 
     ! copy hvac product values for each hvac system
-
     if (nhvsys/=0.and.ns/=0) then
         isof = nofhvpr
         zzhvm(1:nhvsys) = 0.0_eb
@@ -1889,8 +1874,8 @@ module solve_routines
                 else
                     pphv = max(0.0_eb,pdif(isof))
                 end if
-                zzhvpr(isys,lsp) = pphv
-                zzhvm(isys) = zzhvm(isys) + zzhvpr(isys,lsp)
+                zzhvspec(isys,lsp) = pphv
+                zzhvm(isys) = zzhvm(isys) + zzhvspec(isys,lsp)
             end do
         end do
     end if

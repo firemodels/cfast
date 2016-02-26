@@ -64,7 +64,7 @@
             qconv_avg = 0.27_eb*qconv/((roomptr%width*roomptr%depth)**0.68_eb*roomptr%height**0.64_eb)
             if (qconv_avg>flxcv(i,iwall)) flxcv(i,iwall) = qconv_avg
         end if
-        flwcv(i,ilay) = flwcv(i,ilay) - zzwarea(i,iwall)*flxcv(i,iwall)
+        flwcv(i,ilay) = flwcv(i,ilay) - zzwarea4(i,iwall)*flxcv(i,iwall)
 
     end do
 

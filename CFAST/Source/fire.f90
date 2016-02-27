@@ -1087,7 +1087,7 @@ module fire_routines
     return
     end subroutine get_plume_tempandvelocity
 
-! --------------------------- update_species -------------------------------------------
+! --------------------------- update_species (toxict) -------------------------------------------
 
     subroutine update_species (deltt)
 
@@ -1100,6 +1100,7 @@ module fire_routines
 
     real(eb) :: aweigh(ns), air(2), v(2), aweigh7, avagad
     integer i, k, lsp
+    type(room_type), pointer :: roomptr
 
     ! aweigh's are molar weights of the species, avagad is the reciprocal
     ! of avagadro's number (so you can't have less than an atom of a species
@@ -1108,6 +1109,7 @@ module fire_routines
     aweigh(7) = aweigh7
 
     do i = 1, nrm1
+        roomptr => roominfo(i)
         v(upper) = zzvol(i,upper)
         v(lower) = zzvol(i,lower)
         do k = upper, lower
@@ -1121,14 +1123,14 @@ module fire_routines
         ! calculate the mass density in kg/m^3
         do lsp = 1, ns
             do k = upper, lower
-                species_rho(i,k,lsp) = zzgspec(i,k,lsp)/v(k)
+                roomptr%species_rho(k,lsp) = zzgspec(i,k,lsp)/v(k)
             end do
         end do
 
         ! calculate the molar density in percent
         do lsp = 1, 8
             do k = upper, lower
-                toxict(i,k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
+                roomptr%species_output(k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
             end do
         end do
 
@@ -1138,13 +1140,13 @@ module fire_routines
         ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
         lsp = 9
         do k = upper, lower
-            toxict(i,k,lsp) = species_rho(i,k,lsp)*3778.0_eb
+            roomptr%species_output(k,lsp) = roomptr%species_rho(k,lsp)*3778.0_eb
         end do
 
         ! ct is the integration of the total "junk" being transported
         lsp = 10
         do k = upper, lower
-            toxict(i,k,lsp) = toxict(i,k,lsp) + species_rho(i,k,lsp)*1000.0_eb*deltt/60.0_eb
+            roomptr%species_output(k,lsp) = roomptr%species_output(k,lsp) + roomptr%species_rho(k,lsp)*1000.0_eb*deltt/60.0_eb
         end do
 
         ! ts (trace species) is the filtered concentration - this is the total mass.
@@ -1152,7 +1154,7 @@ module fire_routines
         ! this step being correct depends on the integratemass routine
         lsp = 11
         do k = upper, lower
-            toxict(i,k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
+            roomptr%species_output(k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
         end do
 
     end do

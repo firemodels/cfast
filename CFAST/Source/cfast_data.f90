@@ -200,8 +200,6 @@ module room_data
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
         initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
     
-    real(eb) species_rho(mxrooms,2,ns), toxict(mxrooms,2,ns)
-    
     type(room_type), target :: roominfo(mxrooms)
 
     ! wall variables

@@ -801,11 +801,13 @@ module target_routines
     real(eb) :: xloc, yloc, zloc, tg, vg(4)
     integer :: id, iroom
     type(detector_type), pointer :: dtectptr
+    type(room_type), pointer :: roomptr
 
     ! If ceiling jet option is turned off, conditions default to the appropriate layer temperature
     do id = 1, ndtect
         dtectptr => detectorinfo(id)
         iroom = dtectptr%room
+        roomptr => roominfo(iroom)
         xloc = dtectptr%center(1)
         yloc = dtectptr%center(2)
         zloc = dtectptr%center(3)
@@ -813,10 +815,10 @@ module target_routines
             ! if ceiling jet option is off, things default to appropriate layer temperature
             if(zloc>zzhlay(iroom,lower))then
                 dtectptr%temp_gas = zztemp(iroom,upper)
-                dtectptr%obscuration = toxict(iroom,upper,9)
+                dtectptr%obscuration = roomptr%species_output(upper,9)
             else
                 dtectptr%temp_gas = zztemp(iroom,lower)
-                dtectptr%obscuration = toxict(iroom,lower,9)
+                dtectptr%obscuration = roomptr%species_output(lower,9)
             end if
             dtectptr%velocity = 0.1_eb
         else
@@ -825,9 +827,9 @@ module target_routines
             dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
             if(zloc>zzhlay(iroom,lower))then
-                dtectptr%obscuration = toxict(iroom,upper,9)
+                dtectptr%obscuration = roomptr%species_output(upper,9)
             else
-                dtectptr%obscuration = toxict(iroom,lower,9)
+                dtectptr%obscuration = roomptr%species_output(lower,9)
             end if
         end if
     end do

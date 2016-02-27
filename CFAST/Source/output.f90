@@ -157,7 +157,7 @@ module output_routines
             zzabsb(icomp,upper),zzrelp(icomp) - roomptr%interior_relp_initial
         else
             write (iofilo,5070) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zztemp(icomp,lower)-kelvin_c_offset, &
-            zzhlay(icomp,lower), zzvol(icomp,upper), izzvol, zzabsb(upper,icomp),zzabsb(icomp,lower), &
+            zzhlay(icomp,lower), zzvol(icomp,upper), izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), &
                zzrelp(icomp) - roomptr%interior_relp_initial
         end if
     end do
@@ -278,7 +278,7 @@ module output_routines
                 if (layer==upper.or..not.roomptr%shaft) then
                     do lsp = 1, ns
                         if (lsp/=10) then
-                            write (ciout(ic:ic+9),5040) toxict(icomp,layer,lsp)
+                            write (ciout(ic:ic+9),5040) roomptr%species_output(layer,lsp)
                             ic = ic + 11
                         end if
                     end do

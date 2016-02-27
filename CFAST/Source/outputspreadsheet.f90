@@ -358,9 +358,9 @@ module spreadsheet_routines
             do lsp = 1, ns
                 if (layer==upper.or..not.roomptr%shaft) then
                     if (tooutput(lsp)) then
-                        ssvalue = toxict(i,layer,lsp)
+                        ssvalue = roomptr%species_output(layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
-                        if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see toxict od calculation)
+                        if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
                         !ssvalue = zzgspec(i,layer,lsp) ! Use this to print out total mass of species in layers
                         call SSaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
@@ -418,8 +418,8 @@ module spreadsheet_routines
         call SSaddtolist(position,zzrelp(i),outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)
         if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,lower),outarray)
-        call SSaddtolist(position,toxict(i,upper,9),outarray)
-        if (.not.roomptr%shaft) call SSaddtolist(position,toxict(i,lower,9),outarray)
+        call SSaddtolist(position,roomptr%species_output(upper,9),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%species_output(lower,9),outarray)
     end do
 
     ! fires

@@ -346,12 +346,13 @@ module mflow_routines
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         if (i<nr) then
+            roomptr => roominfo(i)
             z = zzhlay(i,lower)
             zl = min(z,hvelxt(ii))
             zu = min(0.0_eb,hvelxt(ii)-zl)
             ru = zzrho(i,upper)
             rl = zzrho(i,lower)
-            hvp(j) = zzrelp(i) - (ru*zu+rl*zl)*grav_con
+            hvp(j) = roomptr%relp - (ru*zu+rl*zl)*grav_con
             hvextt(ii,upper) = zztemp(i,upper)
             hvextt(ii,lower) = zztemp(i,lower)
         else

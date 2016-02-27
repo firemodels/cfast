@@ -162,13 +162,14 @@ module initialization_routines
     end do
     do ii = 1, next
         i = hvnode(1,ii)
+        roomptr => roominfo(i)
         j = hvnode(2,ii)
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
             hvextt(ii,upper) = interior_temperature
             hvextt(ii,lower) = interior_temperature
-            hvp(j) = zzrelp(i) - grav_con*interior_rho*hvelxt(ii)
+            hvp(j) = roomptr%relp - grav_con*interior_rho*hvelxt(ii)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature

@@ -266,7 +266,7 @@ module vflow_routines
     ! dp at top of bottom room and bottom of top room
     if (ibot<=nrm1) then
         dp(2) = -grav_con*(zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
-        relp(2) = zzrelp(ibot)
+        relp(2) = botroomptr%relp
     else
         dp(2) = 0.0_eb
         relp(2) = toproomptr%exterior_relp_initial
@@ -274,7 +274,7 @@ module vflow_routines
 
     if (itop<=nrm1) then
         dp(1) = 0.0_eb
-        relp(1) = zzrelp(itop)
+        relp(1) = toproomptr%relp
     else
         dp(1) = -grav_con*roominfo(ibot)%height*exterior_rho
         relp(1) = botroomptr%exterior_relp_initial

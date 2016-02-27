@@ -34,6 +34,8 @@ module cfast_types
         ! calculated values of the compartment environment
         real(eb) :: interior_relp_initial               ! initial value of interior pressure relative to minimum pressure
         real(eb) :: exterior_relp_initial               ! initial value of exterior pressure relative to minimum pressure
+        real(eb) :: relp                                ! pressure at floor level relative to exterior
+        real(eb) :: absp                                ! absolute pressure at floor level
         real(eb) :: species_rho(2,ns)                   ! density of species in each layer
         real(eb) :: species_output(2,ns)                ! species converted to output units
     end type room_type

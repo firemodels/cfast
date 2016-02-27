@@ -75,7 +75,7 @@ module spreadsheet_routines
             call ssaddtolist (position,zzhlay(i,lower),outarray)
         end if
         call ssaddtolist (position,zzvol(i,upper),outarray)
-        call ssaddtolist (position,zzrelp(i) - roomptr%interior_relp_initial ,outarray)
+        call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
     end do
 
     ! Fires
@@ -415,7 +415,7 @@ module spreadsheet_routines
             call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call SSaddtolist(position,zzhlay(i,lower),outarray)
         end if
-        call SSaddtolist(position,zzrelp(i),outarray)
+        call SSaddtolist(position,roomptr%relp,outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)
         if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,lower),outarray)
         call SSaddtolist(position,roomptr%species_output(upper,9),outarray)

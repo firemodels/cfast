@@ -637,7 +637,8 @@ module solve_routines
                     n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, i_time_step)
                 call output_smokeview_header (version,nrm1,nfires)
             end if
-            call output_smokeview_plot_data(t,nrm1,zzrelp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
+            smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
+            call output_smokeview_plot_data(t,nrm1,smv_relp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
             call output_spreadsheet_smokeview(t)
             tsmv = tsmv + dplot
             call output_status (t, dt)
@@ -1227,7 +1228,7 @@ module solve_routines
         roomptr => roominfo(iroom)
         aroom = roomptr%area
         hceil = roomptr%height
-        pabs = zzabsp(iroom)
+        pabs = roomptr%absp
         hinter = zzhlay(iroom,ll)
         ql = flwtot(iroom,q,ll)
         qu = flwtot(iroom,q,uu)
@@ -1384,7 +1385,7 @@ module solve_routines
     real(eb) :: xmax, xmid, ymax, ymid, zmax
 
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
 
     if(nfurn>0)then
@@ -1465,8 +1466,8 @@ module solve_routines
         zzvol(nr,lower) = 100000.0_eb
         zzhlay(nr,upper) = 0.0_eb
         zzhlay(nr,lower) = 100000.0_eb
-        zzrelp(nr) = 0.0_eb
-        zzabsp(nr) = pressure_offset
+        roomptr%relp = 0.0_eb
+        roomptr%absp = pressure_offset
         zztemp(nr,upper) = exterior_temperature
         zztemp(nr,lower) = exterior_temperature
         zzcspec(nr,upper,3:ns) = 0.0_eb
@@ -1488,7 +1489,7 @@ module solve_routines
         zzcspec(nr,upper,8) = relative_humidity*xh2o
         zzcspec(nr,lower,8) = relative_humidity*xh2o
 
-        zzrho(nr,upper:lower) = zzabsp(nr)/rgas/zztemp(nr,upper:lower)
+        zzrho(nr,upper:lower) = roomptr%absp/rgas/zztemp(nr,upper:lower)
         zzmass(nr,upper:lower) = zzrho(nr,upper:lower)*zzvol(nr,upper:lower)
 
         ! define horizontal vent data structures
@@ -1658,8 +1659,8 @@ module solve_routines
                 zzhlay(iroom,upper) = roomptr%height - zzhlay(iroom,lower)
             end if
 
-            zzrelp(iroom) = pdif(iroom)
-            zzabsp(iroom) = pdif(iroom) + pressure_offset
+            roomptr%relp = pdif(iroom)
+            roomptr%absp = pdif(iroom) + pressure_offset
             if(nfurn>0)then
               zztemp(iroom,upper) = wtemp
               zztemp(iroom,lower) = wtemp
@@ -1718,12 +1719,12 @@ module solve_routines
             ! Eliminate very small noise in the pressure equation. This was added to correct
             ! phantom flows with very small pressure differences. This is the same algorithm
             ! used in hrozontal and vertical flow
-            epscut = 1.0e-5_eb*max(1.0_eb,abs(zzrelp(iroom)))
+            epscut = 1.0e-5_eb*max(1.0_eb,abs(roomptr%relp))
             ! test for underflow
-            if (abs(zzrelp(iroom)/epscut)<=130.0_eb) then
-                ptemp = zzrelp(iroom)*(1.0_eb - exp(-abs(zzrelp(iroom)/epscut))) + pressure_offset
+            if (abs(roomptr%relp/epscut)<=130.0_eb) then
+                ptemp = roomptr%relp*(1.0_eb - exp(-abs(roomptr%relp/epscut))) + pressure_offset
             else
-                ptemp = zzabsp(iroom)
+                ptemp = roomptr%absp
             end if
 
             do layer = upper, lower
@@ -1735,8 +1736,9 @@ module solve_routines
         do i = 1, nrm1
             roomptr => roominfo(i)
             if(roomptr%deadroom.eq.0) cycle
-            zzrelp(i) = zzrelp(roomptr%deadroom)
-            zzabsp(i) = zzabsp(roomptr%deadroom)
+            deadroomptr => roominfo(roomptr%deadroom)
+            roomptr%relp = deadroomptr%relp
+            roomptr%absp = deadroomptr%absp
         end do
 
         ! record which layer target is in

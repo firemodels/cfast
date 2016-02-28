@@ -1256,7 +1256,7 @@ module solve_routines
         ! upper layer volume equation
         vlayd = (gamma-1.0_eb)*qu/(gamma*pabs)
         if (option(fode)==on) then
-            vlayd = vlayd - zzvol(iroom,uu)*pdot/(gamma*pabs)
+            vlayd = vlayd - roomptr%layer_volume(uu)*pdot/(gamma*pabs)
         end if
         if(roomptr%shaft) vlayd = 0.0_eb
 
@@ -1462,8 +1462,8 @@ module solve_routines
         roomptr%z0 = 0.0_eb
         roomptr%z1 = 100000.0_eb
 
-        zzvol(nr,upper) = 0.0_eb
-        zzvol(nr,lower) = 100000.0_eb
+        roomptr%layer_volume(upper) = 0.0_eb
+        roomptr%layer_volume(lower) = 100000.0_eb
         zzhlay(nr,upper) = 0.0_eb
         zzhlay(nr,lower) = 100000.0_eb
         roomptr%relp = 0.0_eb
@@ -1490,7 +1490,7 @@ module solve_routines
         zzcspec(nr,lower,8) = relative_humidity*xh2o
 
         zzrho(nr,upper:lower) = roomptr%absp/rgas/zztemp(nr,upper:lower)
-        zzmass(nr,upper:lower) = zzrho(nr,upper:lower)*zzvol(nr,upper:lower)
+        zzmass(nr,upper:lower) = zzrho(nr,upper:lower)*roomptr%layer_volume(upper:lower)
 
         ! define horizontal vent data structures
         frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)
@@ -1644,18 +1644,18 @@ module solve_routines
         do iroom = 1, nrm1
             roomptr=>roominfo(iroom)
 
-            zzvol(iroom,upper) = max(pdif(iroom+nofvu),roomptr%vmin)
-            zzvol(iroom,upper) = min(zzvol(iroom,upper),roomptr%vmax)
-            zzvol(iroom,lower) = max(roomptr%volume-zzvol(iroom,upper),roomptr%vmin)
-            zzvol(iroom,lower) = min(zzvol(iroom,lower),roomptr%vmax)
+            roomptr%layer_volume(upper) = max(pdif(iroom+nofvu),roomptr%vmin)
+            roomptr%layer_volume(upper) = min(roomptr%layer_volume(upper),roomptr%vmax)
+            roomptr%layer_volume(lower) = max(roomptr%volume-roomptr%layer_volume(upper),roomptr%vmin)
+            roomptr%layer_volume(lower) = min(roomptr%layer_volume(lower),roomptr%vmax)
 
             ! calculate layer height for non-rectangular rooms
             npts = roomptr%nvars
             if(npts==0)then
-                zzhlay(iroom,upper) = zzvol(iroom,upper)/roomptr%area
-                zzhlay(iroom,lower) = zzvol(iroom,lower)/roomptr%area
+                zzhlay(iroom,upper) = roomptr%layer_volume(upper)/roomptr%area
+                zzhlay(iroom,lower) = roomptr%layer_volume(lower)/roomptr%area
             else
-                call interp(roomptr%var_volume,roomptr%var_height,npts,zzvol(iroom,lower),1,zzhlay(iroom,lower))
+                call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%layer_volume(lower),1,zzhlay(iroom,lower))
                 zzhlay(iroom,upper) = roomptr%height - zzhlay(iroom,lower)
             end if
 
@@ -1729,7 +1729,7 @@ module solve_routines
 
             do layer = upper, lower
                 zzrho(iroom,layer) = ptemp/rgas/zztemp(iroom,layer)
-                zzmass(iroom,layer) = zzrho(iroom,layer)*zzvol(iroom,layer)
+                zzmass(iroom,layer) = zzrho(iroom,layer)*roomptr%layer_volume(layer)
             end do
         end do
 

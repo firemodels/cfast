@@ -74,7 +74,7 @@ module spreadsheet_routines
             call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
             call ssaddtolist (position,zzhlay(i,lower),outarray)
         end if
-        call ssaddtolist (position,zzvol(i,upper),outarray)
+        call ssaddtolist (position,roomptr%layer_volume(upper),outarray)
         call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
     end do
 

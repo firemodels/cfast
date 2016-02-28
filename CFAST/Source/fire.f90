@@ -1110,8 +1110,8 @@ module fire_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        v(upper) = zzvol(i,upper)
-        v(lower) = zzvol(i,lower)
+        v(upper) = roomptr%layer_volume(upper)
+        v(lower) = roomptr%layer_volume(lower)
         do k = upper, lower
             air(k) = 0.0_eb
             do lsp = 1, 9

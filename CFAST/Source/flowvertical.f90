@@ -98,12 +98,16 @@ module vflow_routines
                 roomptr => roominfo(ifrm)
                 if (ilay==upper) then
                     ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-exisitant layer
-                    fu = min(tanhsmooth(zzvol(ifrm,upper), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
-                    fu = min(tanhsmooth(zzvol(ifrm,lower), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, fu, 1.0_eb), 1.0_eb)
+                    fu = min(tanhsmooth(roomptr%layer_volume(upper), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
+                    fu = min(tanhsmooth(roomptr%layer_volume(lower), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, fu, 1.0_eb), 1.0_eb)
                     fl = max(1.0_eb-fu, 0.0_eb)
                 else
-                    fl = min(tanhsmooth(zzvol(ifrm,lower), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
-                    fl = min(tanhsmooth(zzvol(ifrm,upper), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, fl, 1.0_eb), 1.0_eb)
+                    fl = min(tanhsmooth(roomptr%layer_volume(lower), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
+                    fl = min(tanhsmooth(roomptr%layer_volume(upper), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, fl, 1.0_eb), 1.0_eb)
                     fu = max(1.0_eb-fl, 0.0_eb)
                 end if
                 frommu = fu*xmvent(iflow)
@@ -290,12 +294,12 @@ module vflow_routines
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
-    if (zzvol(itop,l)<=2.0_eb*roominfo(itop)%vmin) then
+    if (toproomptr%layer_volume(l)<=2.0_eb*roominfo(itop)%vmin) then
         ilay(1) = u
     else
         ilay(1) = l
     end if
-    if (zzvol(ibot,u)<=2.0_eb*roominfo(ibot)%vmin) then
+    if (botroomptr%layer_volume(u)<=2.0_eb*roominfo(ibot)%vmin) then
         ilay(2) = l
     else
         ilay(2) = u

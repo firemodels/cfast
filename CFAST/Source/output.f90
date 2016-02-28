@@ -151,13 +151,13 @@ module output_routines
     write (iofilo,5040)
     do icomp = 1, nrm1
         roomptr =>roominfo(icomp)
-        izzvol = zzvol(icomp,upper)/roomptr%volume*100.0_eb+0.5_eb
+        izzvol = roomptr%layer_volume(upper)/roomptr%volume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
-            write (iofilo,5071) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zzvol(icomp,upper), &
+            write (iofilo,5071) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, roomptr%layer_volume(upper), &
             zzabsb(icomp,upper),roomptr%relp - roomptr%interior_relp_initial
         else
             write (iofilo,5070) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zztemp(icomp,lower)-kelvin_c_offset, &
-            zzhlay(icomp,lower), zzvol(icomp,upper), izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), &
+            zzhlay(icomp,lower), roomptr%layer_volume(upper), izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), &
                roomptr%relp - roomptr%interior_relp_initial
         end if
     end do

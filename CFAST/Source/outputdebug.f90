@@ -134,7 +134,7 @@ module debug_routines
     do i = 1, nrm1
         roomptr => roominfo(i)
         call SSaddtolist (position,roomptr%relp,outarray)
-        call SSaddtolist (position,zzvol(i,upper),outarray)
+        call SSaddtolist (position,roomptr%layer_volume(upper),outarray)
         call SSaddtolist(position,zztemp(i,upper),outarray)
         call SSaddtolist(position,zztemp(i,lower),outarray)
         do j = 1, 2

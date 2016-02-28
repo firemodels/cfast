@@ -553,7 +553,7 @@ module hflow_routines
         zflor(i) = roomptr%z0
         zceil(i) = roomptr%z1
         pflor(i) = roomptr%relp
-        zlay(i) = zzhlay(iroom,lower)
+        zlay(i) = roomptr%layer_depth(lower)
         denu(i) = zzrho(iroom,upper)
         denl(i) = zzrho(iroom,lower)
         do iprod = 1, nprod

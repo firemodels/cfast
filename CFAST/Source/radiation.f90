@@ -57,8 +57,10 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
-        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
+        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
+            (roomptr%area + roomptr%layer_depth(lower)*(roomptr%depth + roomptr%width))
+        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
+            (roomptr%area + roomptr%layer_depth(upper)*(roomptr%depth + roomptr%width))
     end do
 
     defabsup = 0.50_eb
@@ -68,8 +70,10 @@ module radiation_routines
         roomptr => roominfo(i)
         tg(upper) = zztemp(i,upper)
         tg(lower) = zztemp(i,lower)
-        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
-        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
+        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
+            (roomptr%area + roomptr%layer_depth(lower)*(roomptr%depth + roomptr%width))
+        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
+            (roomptr%area + roomptr%layer_depth(upper)*(roomptr%depth + roomptr%width))
         do iwall = 1, 4
             imap = map(iwall)
             twall(imap) = zzwtemp(i,iwall,1)
@@ -100,7 +104,7 @@ module radiation_routines
         end if
         rabsorb(1) = zzabsb(i,upper)
         rabsorb(2) = zzabsb(i,lower)
-        call rad4(twall,tg,emis,rabsorb,i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
+        call rad4(twall,tg,emis,rabsorb,i,roomptr%width,roomptr%depth,roomptr%height,roomptr%layer_depth(lower), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
         do j = 1, nwal

@@ -182,10 +182,13 @@ module fire_routines
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
     type(detector_type), pointer :: dtectptr
+    type(room_type), pointer :: roomptr
+
+    roomptr => roominfo(iroom)
 
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
-    xz = zzhlay(iroom,upper)
+    xz = roomptr%layer_depth(upper)
     xtl = zztemp(iroom,lower)
     xtu = zztemp(iroom,upper)
     xqfc = 0.0_eb
@@ -858,8 +861,10 @@ module fire_routines
     integer :: i
     type(room_type), pointer :: roomptr
 
+    roomptr => roominfo(iroom)
+
     ! default is the appropriate layer temperature and a velocity of 0.1 m/s
-    if (z>=zzhlay(iroom,lower)) then
+    if (z>=roomptr%layer_depth(lower)) then
         tg = zztemp(iroom,upper)
     else
         tg = zztemp(iroom,lower)
@@ -868,7 +873,6 @@ module fire_routines
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,nfire
         if (ifroom(i)==iroom) then
-            roomptr => roominfo(iroom)
             qdot = fqf(i)
             xrad = radconsplit(i)
             area = farea(i)
@@ -879,7 +883,7 @@ module fire_routines
             if (abs(xdistance)<=mx_hsep) xdistance = 0.0_eb
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
-            zlayer = zzhlay(iroom,lower)
+            zlayer = roomptr%layer_depth(lower)
             zceil = roomptr%height
             r = sqrt(xdistance**2 + ydistance**2)
             if (roomptr%hall) then

@@ -638,7 +638,8 @@ module solve_routines
                 call output_smokeview_header (version,nrm1,nfires)
             end if
             smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
-            call output_smokeview_plot_data(t,nrm1,smv_relp,zzhlay(1,lower),zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
+            smv_zlay(1:nrm1) = roominfo(1:nrm1)%layer_depth(lower)
+            call output_smokeview_plot_data(t,nrm1,smv_relp,smv_zlay,zztemp(1,2),zztemp(1,1),nfires, fqlocal,fhlocal)
             call output_spreadsheet_smokeview(t)
             tsmv = tsmv + dplot
             call output_status (t, dt)
@@ -736,14 +737,14 @@ module solve_routines
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
         call get_detector_temp_and_velocity
-        call update_detectors (check_detector_state,told,dt,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
+        call update_detectors (check_detector_state,told,dt,ndtect,zztemp,iquench,idset,ifdtect,tdtect)
         call update_fire_objects (check_detector_state,told,dt,ifobj,tobj)
         td = min(tdtect,tobj)
 
         ! a detector is the first one that went off
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
-            call update_detectors (set_detector_state,told,dt,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
+            call update_detectors (set_detector_state,told,dt,ndtect,zztemp,iquench,idset,ifdtect,tdtect)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
                 idsave = idset
@@ -754,7 +755,7 @@ module solve_routines
                 idset = 0
             end if
         else
-            call update_detectors (update_detector_state,told,dt,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
+            call update_detectors (update_detector_state,told,dt,ndtect,zztemp,iquench,idset,ifdtect,tdtect)
         end if
 
         ! object ignition is the first thing to happen
@@ -1229,7 +1230,7 @@ module solve_routines
         aroom = roomptr%area
         hceil = roomptr%height
         pabs = roomptr%absp
-        hinter = zzhlay(iroom,ll)
+        hinter = roomptr%layer_depth(ll)
         ql = flwtot(iroom,q,ll)
         qu = flwtot(iroom,q,uu)
         tmu = flwtot(iroom,m,uu)
@@ -1284,7 +1285,7 @@ module solve_routines
             do iroom = 1, nrm1
                 roomptr => roominfo(iroom)
                 hceil = roomptr%height
-                hinter = zzhlay(iroom,ll)
+                hinter = roomptr%layer_depth(ll)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
                 prodl = flwtot(iroom,iprod+2,ll)
@@ -1464,8 +1465,8 @@ module solve_routines
 
         roomptr%layer_volume(upper) = 0.0_eb
         roomptr%layer_volume(lower) = 100000.0_eb
-        zzhlay(nr,upper) = 0.0_eb
-        zzhlay(nr,lower) = 100000.0_eb
+        roomptr%layer_depth(upper) = 0.0_eb
+        roomptr%layer_depth(lower) = 100000.0_eb
         roomptr%relp = 0.0_eb
         roomptr%absp = pressure_offset
         zztemp(nr,upper) = exterior_temperature
@@ -1652,11 +1653,11 @@ module solve_routines
             ! calculate layer height for non-rectangular rooms
             npts = roomptr%nvars
             if(npts==0)then
-                zzhlay(iroom,upper) = roomptr%layer_volume(upper)/roomptr%area
-                zzhlay(iroom,lower) = roomptr%layer_volume(lower)/roomptr%area
+                roomptr%layer_depth(upper) = roomptr%layer_volume(upper)/roomptr%area
+                roomptr%layer_depth(lower) = roomptr%layer_volume(lower)/roomptr%area
             else
-                call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%layer_volume(lower),1,zzhlay(iroom,lower))
-                zzhlay(iroom,upper) = roomptr%height - zzhlay(iroom,lower)
+                call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%layer_volume(lower),1,roomptr%layer_depth(lower))
+                roomptr%layer_depth(upper) = roomptr%height - roomptr%layer_depth(lower)
             end if
 
             roomptr%relp = pdif(iroom)
@@ -1688,8 +1689,8 @@ module solve_routines
             ! compute area of 10 wall segments
             xmax = roomptr%width
             ymax = roomptr%depth
-            zzu = zzhlay(iroom,upper)
-            zzl = zzhlay(iroom,lower)
+            zzu = roomptr%layer_depth(upper)
+            zzl = roomptr%layer_depth(lower)
             zzwarea10(iroom,1) = roomptr%area
             zzwarea10(iroom,2) = zzu*xmax
             zzwarea10(iroom,3) = zzu*ymax
@@ -1711,7 +1712,7 @@ module solve_routines
             ! (other coordinates are static and are defined earlier)
 
             do i = 1, 4
-                zlay = zzhlay(iroom,lower)
+                zlay = roomptr%layer_depth(lower)
                 roomptr%wall_center(3,i+1) =  (roomptr%z1+zlay)/2.0_eb
                 roomptr%wall_center(3,i+5) = zlay/2.0_eb
             end do
@@ -1745,7 +1746,8 @@ module solve_routines
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
             iroom = targptr%room
-            zlay = zzhlay(iroom,lower)
+            roomptr => roominfo(iroom)
+            zlay = roomptr%layer_depth(lower)
             ztarg = targptr%center(3)
             if(ztarg>=zlay)then
                 targptr%layer = upper

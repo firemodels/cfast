@@ -47,6 +47,7 @@ module target_routines
     integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom
 
     type(target_type), pointer :: targptr
+    type(room_type), pointer :: roomptr
 
     save first,x_node
 
@@ -64,7 +65,8 @@ module target_routines
 
         ! calculate net flux striking each side of target
         iroom = targptr%room
-        if (targptr%center(3)>zzhlay(iroom,lower)) then
+        roomptr => roominfo(iroom)
+        if (targptr%center(3)>roomptr%layer_depth(lower)) then
             t_inf = zztemp(iroom,upper)
         else
             t_inf = zztemp(iroom,lower)
@@ -175,7 +177,7 @@ module target_routines
                 cosang = -ddot(3,svect,1,targptr%normal,1)/s
             end if
             ztarg = targptr%center(3)
-            zlay = zzhlay(iroom,lower)
+            zlay = roomptr%layer_depth(lower)
 
             ! compute portion of path in lower and upper layers
             call getylyu(zfire,zlay,ztarg,s,zl,zu)
@@ -226,7 +228,7 @@ module target_routines
             s = dnrm2(3,svect,1)
             zwall = roomptr%wall_center(3,iwall)
             ztarg = targptr%center(3)
-            zlay = zzhlay(iroom,lower)
+            zlay = roomptr%layer_depth(lower)
             tl = zztemp(iroom,lower)
             tu = zztemp(iroom,upper)
 
@@ -429,7 +431,7 @@ module target_routines
 
     !define vertex locations
 
-    zlay = roomi%z0 + zzhlay(iroom,lower)
+    zlay = roomi%z0 + roomi%layer_depth(lower)
     room_verts(1:3,1)  = (/roomi%x0, roomi%y0, roomi%z1/)
     room_verts(1:3,2)  = (/roomi%x1, roomi%y0, roomi%z1/)
     room_verts(1:3,3)  = (/roomi%x0, roomi%y1, roomi%z1/)
@@ -671,7 +673,7 @@ module target_routines
 
 ! --------------------------- update_detectors -------------------------------------------
 
-    subroutine update_detectors (imode,tcur,dstep,ndtect,zzhlay,zztemp,iquench,idset,ifdtect,tdtect)
+    subroutine update_detectors (imode,tcur,dstep,ndtect,zztemp,iquench,idset,ifdtect,tdtect)
 
     !     routine: update_detectors
     !     purpose: updates the temperature of each detector link.  it also determine whether the
@@ -685,7 +687,7 @@ module target_routines
     !                idset   room where activated detector resides
 
     integer, intent(in) :: imode, ndtect
-    real(eb), intent(in) :: tcur, dstep, zzhlay(mxrooms,2), zztemp(mxrooms,2)
+    real(eb), intent(in) :: tcur, dstep, zztemp(mxrooms,2)
 
     integer, intent(out) :: idset, ifdtect, iquench(*)
     real(eb), intent(out) :: tdtect
@@ -696,6 +698,7 @@ module target_routines
     character(133) :: messg
     character(11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm ','Sprinkler  '/)
     type(detector_type), pointer :: dtectptr, previous_activation
+    type(room_type), pointer :: roomptr
 
     idset = 0
     ifdtect = 0
@@ -705,9 +708,10 @@ module target_routines
         dtectptr => detectorinfo(i)
 
         iroom = dtectptr%room
+        roomptr => roominfo(iroom)
 
         zdetect = dtectptr%center(3)
-        if(zdetect>zzhlay(iroom,lower))then
+        if(zdetect>roomptr%layer_depth(lower))then
             tlay = zztemp(iroom,upper)
         else
             tlay = zztemp(iroom,lower)
@@ -813,7 +817,7 @@ module target_routines
         zloc = dtectptr%center(3)
         if (option(fcjet)==off) then
             ! if ceiling jet option is off, things default to appropriate layer temperature
-            if(zloc>zzhlay(iroom,lower))then
+            if(zloc>roomptr%layer_depth(lower))then
                 dtectptr%temp_gas = zztemp(iroom,upper)
                 dtectptr%obscuration = roomptr%species_output(upper,9)
             else
@@ -826,7 +830,7 @@ module target_routines
             call get_gas_temp_velocity (iroom,xloc,yloc,zloc,tg,vg)
             dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
-            if(zloc>zzhlay(iroom,lower))then
+            if(zloc>roomptr%layer_depth(lower))then
                 dtectptr%obscuration = roomptr%species_output(upper,9)
             else
                 dtectptr%obscuration = roomptr%species_output(lower,9)

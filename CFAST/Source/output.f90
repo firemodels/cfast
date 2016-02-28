@@ -157,7 +157,7 @@ module output_routines
             zzabsb(icomp,upper),roomptr%relp - roomptr%interior_relp_initial
         else
             write (iofilo,5070) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zztemp(icomp,lower)-kelvin_c_offset, &
-            zzhlay(icomp,lower), roomptr%layer_volume(upper), izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), &
+            roomptr%layer_depth(lower), roomptr%layer_volume(upper), izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), &
                roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
@@ -468,7 +468,7 @@ module output_routines
                roomptr%relp - roomptr%interior_relp_initial
         else
             write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, &
-               zzhlay(ir,lower), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
+               roomptr%layer_depth(lower), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
     write (iounit,5020) fqdj(nr)
@@ -579,7 +579,7 @@ module output_routines
         roomptr => roominfo(iroom)
 
         zdetect = dtectptr%center(3)
-        if(zdetect>zzhlay(iroom,lower))then
+        if(zdetect>roomptr%layer_depth(lower))then
             tlay = zztemp(iroom,upper)
         else
             tlay = zztemp(iroom,lower)
@@ -1164,7 +1164,7 @@ module output_routines
             write (*,5010) i
             write (*,5020) '   Upper temp(K)', zztemp(i,upper)
             write (*,5020) '   Lower temp(K)', zztemp(i,lower)
-            write (*,5020) ' Interface ht(m)', zzhlay(i,lower)
+            write (*,5020) ' Interface ht(m)', roomptr%layer_depth(lower)
             write (*,5020) '   Pressure (pa)', roomptr%relp
             if (n_species>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
@@ -1222,8 +1222,8 @@ module output_routines
         write(*,6030)
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
-            write(*,6000)iroom,roomptr%relp,zzhlay(iroom,lower),zztemp(iroom,lower),zztemp(iroom,upper),&
-               zzcspec(iroom,lower,2),zzcspec(iroom,upper,2)
+            write(*,6000) iroom, roomptr%relp, roomptr%layer_depth(lower), zztemp(iroom,lower), zztemp(iroom,upper), &
+               zzcspec(iroom,lower,2), zzcspec(iroom,upper,2)
         end do
         if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
         if(nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)

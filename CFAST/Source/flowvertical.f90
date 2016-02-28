@@ -88,14 +88,14 @@ module vflow_routines
 
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nrm1) then
+                roomptr => roominfo(ifrm)
                 if (tmvent(iflow)>interior_temperature) then
-                    zlayer = zzhlay(ifrm,ilay)
+                    zlayer = roomptr%layer_depth(ilay)
                     froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
                 else
                     froude(iflow) = 0.0_eb
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
-                roomptr => roominfo(ifrm)
                 if (ilay==upper) then
                     ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-exisitant layer
                     fu = min(tanhsmooth(roomptr%layer_volume(upper), 3.0_eb*roomptr%vmin, &
@@ -269,7 +269,7 @@ module vflow_routines
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     ! dp at top of bottom room and bottom of top room
     if (ibot<=nrm1) then
-        dp(2) = -grav_con*(zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
+        dp(2) = -grav_con*(zzrho(ibot,l)*botroomptr%layer_depth(l)+zzrho(ibot,u)*botroomptr%layer_depth(u))
         relp(2) = botroomptr%relp
     else
         dp(2) = 0.0_eb
@@ -280,7 +280,7 @@ module vflow_routines
         dp(1) = 0.0_eb
         relp(1) = toproomptr%relp
     else
-        dp(1) = -grav_con*roominfo(ibot)%height*exterior_rho
+        dp(1) = -grav_con*botroomptr%height*exterior_rho
         relp(1) = botroomptr%exterior_relp_initial
     end if
 

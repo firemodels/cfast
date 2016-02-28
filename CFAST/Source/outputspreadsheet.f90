@@ -72,7 +72,7 @@ module spreadsheet_routines
         call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
             call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
-            call ssaddtolist (position,zzhlay(i,lower),outarray)
+            call ssaddtolist (position,roomptr%layer_depth(lower),outarray)
         end if
         call ssaddtolist (position,roomptr%layer_volume(upper),outarray)
         call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
@@ -222,6 +222,7 @@ module spreadsheet_routines
 
     type(target_type), pointer :: targptr
     type(detector_type), pointer ::dtectptr
+    type(room_type), pointer :: roomptr
 
     data iwptr /1, 3, 4, 2/
     logical :: firstc
@@ -293,9 +294,10 @@ module spreadsheet_routines
     cjetmin = 0.10_eb
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
-        iroom = dtectptr%room
         zdetect = dtectptr%center(3)
-        if(zdetect>zzhlay(iroom,lower))then
+        iroom = dtectptr%room
+        roomptr => roominfo(iroom)
+        if(zdetect>roomptr%layer_depth(lower))then
             tlay = zztemp(iroom,upper)
         else
             tlay = zztemp(iroom,lower)
@@ -413,7 +415,7 @@ module spreadsheet_routines
         call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
             call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
-            call SSaddtolist(position,zzhlay(i,lower),outarray)
+            call SSaddtolist(position,roomptr%layer_depth(lower),outarray)
         end if
         call SSaddtolist(position,roomptr%relp,outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)

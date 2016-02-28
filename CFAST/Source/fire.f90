@@ -83,7 +83,7 @@ module fire_routines
                oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
-            xtl = zztemp(iroom,lower)
+            xtl = roomptr%layer_temp(lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
             q_firemass = cp*oplume(1,iobj)*interior_temperature
@@ -189,8 +189,8 @@ module fire_routines
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
     xz = roomptr%layer_depth(upper)
-    xtl = zztemp(iroom,lower)
-    xtu = zztemp(iroom,upper)
+    xtl = roomptr%layer_temp(lower)
+    xtu = roomptr%layer_temp(upper)
     xqfc = 0.0_eb
     xqlp = 0.0_eb
     xeme = 0.0_eb
@@ -695,6 +695,7 @@ module fire_routines
 
     logical :: dj1flag, dj2flag
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: room1ptr, room2ptr
 
     ! initialize summations and local data
     djetflg = .false.
@@ -707,7 +708,8 @@ module fire_routines
 
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
-        if (zztemp(iroom1,upper)>=tgignt) then
+        room1ptr => roominfo(iroom1)
+        if (room1ptr%layer_temp(upper)>=tgignt) then
             flw1to2 = vss(1,i)+vsa(1,i)
             if (vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb) then
                 djetflg = .true.
@@ -717,7 +719,8 @@ module fire_routines
 
         !is there a door jet fire into room iroom2
         iroom2 = ventptr%to
-        if(zztemp(iroom2,upper)>=tgignt)then
+        room2ptr => roominfo(iroom2)
+        if(room2ptr%layer_temp(upper)>=tgignt)then
             flw2to1 = vss(2,i)+vsa(2,i)
             if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
                 djetflg = .true.
@@ -741,8 +744,8 @@ module fire_routines
                 iroom2 = ventptr%to
                 flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
                 flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
-                call door_jet_fire (iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
-                call door_jet_fire (iroom1,zztemp(iroom2,upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
+                call door_jet_fire (iroom2,room1ptr%layer_temp(upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+                call door_jet_fire (iroom1,room2ptr%layer_temp(upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if(dj1flag)then
@@ -865,9 +868,9 @@ module fire_routines
 
     ! default is the appropriate layer temperature and a velocity of 0.1 m/s
     if (z>=roomptr%layer_depth(lower)) then
-        tg = zztemp(iroom,upper)
+        tg = roomptr%layer_temp(upper)
     else
-        tg = zztemp(iroom,lower)
+        tg = roomptr%layer_temp(lower)
     end if
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
@@ -876,8 +879,8 @@ module fire_routines
             qdot = fqf(i)
             xrad = radconsplit(i)
             area = farea(i)
-            tu = zztemp(iroom,upper)
-            tl = zztemp(iroom,lower)
+            tu = roomptr%layer_temp(upper)
+            tl = roomptr%layer_temp(lower)
             zfire = xfire(i,f_fire_zpos)
             xdistance = x - xfire(i,f_fire_xpos)
             if (abs(xdistance)<=mx_hsep) xdistance = 0.0_eb

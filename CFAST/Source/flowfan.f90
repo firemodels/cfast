@@ -353,8 +353,8 @@ module mflow_routines
             ru = zzrho(i,upper)
             rl = zzrho(i,lower)
             hvp(j) = roomptr%relp - (ru*zu+rl*zl)*grav_con
-            hvextt(ii,upper) = zztemp(i,upper)
-            hvextt(ii,lower) = zztemp(i,lower)
+            hvextt(ii,upper) = roomptr%layer_temp(upper)
+            hvextt(ii,lower) = roomptr%layer_temp(lower)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature

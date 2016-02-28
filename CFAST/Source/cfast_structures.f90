@@ -40,6 +40,8 @@ module cfast_types
         real(eb) :: species_output(2,ns)                ! species converted to output units
         real(eb), dimension(2) :: layer_volume          ! volume of each layer
         real(eb), dimension(2) :: layer_depth           ! thickness of each layer
+        real(eb), dimension(2) :: layer_temp            ! temperature of each layer
+        
     end type room_type
 
     ! ramp data structure

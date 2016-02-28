@@ -67,9 +67,9 @@ module target_routines
         iroom = targptr%room
         roomptr => roominfo(iroom)
         if (targptr%center(3)>roomptr%layer_depth(lower)) then
-            t_inf = zztemp(iroom,upper)
+            t_inf = roomptr%layer_temp(upper)
         else
-            t_inf = zztemp(iroom,lower)
+            t_inf = roomptr%layer_temp(lower)
         end if
         ttarg(1) = targptr%temperature(idx_tempf_trg)
         ttarg(2) = targptr%temperature(idx_tempb_trg)
@@ -229,8 +229,8 @@ module target_routines
             zwall = roomptr%wall_center(3,iwall)
             ztarg = targptr%center(3)
             zlay = roomptr%layer_depth(lower)
-            tl = zztemp(iroom,lower)
-            tu = zztemp(iroom,upper)
+            tl = roomptr%layer_temp(lower)
+            tu = roomptr%layer_temp(upper)
 
             ! compute path length in lower (zl) and upper (zu) layer
             call getylyu(zwall,zlay,ztarg,s,zl,zu)
@@ -673,7 +673,7 @@ module target_routines
 
 ! --------------------------- update_detectors -------------------------------------------
 
-    subroutine update_detectors (imode,tcur,dstep,ndtect,zztemp,iquench,idset,ifdtect,tdtect)
+    subroutine update_detectors (imode,tcur,dstep,ndtect,iquench,idset,ifdtect,tdtect)
 
     !     routine: update_detectors
     !     purpose: updates the temperature of each detector link.  it also determine whether the
@@ -687,7 +687,7 @@ module target_routines
     !                idset   room where activated detector resides
 
     integer, intent(in) :: imode, ndtect
-    real(eb), intent(in) :: tcur, dstep, zztemp(mxrooms,2)
+    real(eb), intent(in) :: tcur, dstep
 
     integer, intent(out) :: idset, ifdtect, iquench(*)
     real(eb), intent(out) :: tdtect
@@ -712,9 +712,9 @@ module target_routines
 
         zdetect = dtectptr%center(3)
         if(zdetect>roomptr%layer_depth(lower))then
-            tlay = zztemp(iroom,upper)
+            tlay = roomptr%layer_temp(upper)
         else
-            tlay = zztemp(iroom,lower)
+            tlay = roomptr%layer_temp(lower)
         end if
 
         tjet = max(dtectptr%temp_gas,tlay)
@@ -818,10 +818,10 @@ module target_routines
         if (option(fcjet)==off) then
             ! if ceiling jet option is off, things default to appropriate layer temperature
             if(zloc>roomptr%layer_depth(lower))then
-                dtectptr%temp_gas = zztemp(iroom,upper)
+                dtectptr%temp_gas = roomptr%layer_temp(upper)
                 dtectptr%obscuration = roomptr%species_output(upper,9)
             else
-                dtectptr%temp_gas = zztemp(iroom,lower)
+                dtectptr%temp_gas = roomptr%layer_temp(lower)
                 dtectptr%obscuration = roomptr%species_output(lower,9)
             end if
             dtectptr%velocity = 0.1_eb

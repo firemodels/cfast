@@ -135,8 +135,8 @@ module debug_routines
         roomptr => roominfo(i)
         call SSaddtolist (position,roomptr%relp,outarray)
         call SSaddtolist (position,roomptr%layer_volume(upper),outarray)
-        call SSaddtolist(position,zztemp(i,upper),outarray)
-        call SSaddtolist(position,zztemp(i,lower),outarray)
+        call SSaddtolist(position,roomptr%layer_temp(upper),outarray)
+        call SSaddtolist(position,roomptr%layer_temp(lower),outarray)
         do j = 1, 2
             do k = 1, 2
                 call SSaddtolist (position,flwtot(i,k,j),outarray)

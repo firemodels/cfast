@@ -68,8 +68,8 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        tg(upper) = zztemp(i,upper)
-        tg(lower) = zztemp(i,lower)
+        tg(upper) = roomptr%layer_temp(upper)
+        tg(lower) = roomptr%layer_temp(lower)
         zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
             (roomptr%area + roomptr%layer_depth(lower)*(roomptr%depth + roomptr%width))
         zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
@@ -921,7 +921,7 @@ module radiation_routines
 
     roomptr => roominfo(cmpt)
     ! layer-specific factors
-    tg = zztemp(cmpt, layer)
+    tg = roomptr%layer_temp(layer)
     rtv = (rg*tg)/roomptr%layer_volume(layer)
     l = zzbeam(cmpt,layer)
 

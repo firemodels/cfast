@@ -69,9 +69,9 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
+        call ssaddtolist (position,roomptr%layer_temp(upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
+            call ssaddtolist(position,roomptr%layer_temp(lower)-kelvin_c_offset,outarray)
             call ssaddtolist (position,roomptr%layer_depth(lower),outarray)
         end if
         call ssaddtolist (position,roomptr%layer_volume(upper),outarray)
@@ -298,9 +298,9 @@ module spreadsheet_routines
         iroom = dtectptr%room
         roomptr => roominfo(iroom)
         if(zdetect>roomptr%layer_depth(lower))then
-            tlay = zztemp(iroom,upper)
+            tlay = roomptr%layer_temp(upper)
         else
-            tlay = zztemp(iroom,lower)
+            tlay = roomptr%layer_temp(lower)
         end if
         if (dtectptr%activated) then
             xact = 1.0_eb
@@ -412,9 +412,9 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
+        call SSaddtolist(position,roomptr%layer_temp(upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
+            call SSaddtolist(position,roomptr%layer_temp(lower)-kelvin_c_offset,outarray)
             call SSaddtolist(position,roomptr%layer_depth(lower),outarray)
         end if
         call SSaddtolist(position,roomptr%relp,outarray)

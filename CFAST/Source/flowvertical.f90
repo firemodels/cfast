@@ -112,15 +112,15 @@ module vflow_routines
                 end if
                 frommu = fu*xmvent(iflow)
                 fromml = fl*xmvent(iflow)
-                fromqu = cp*frommu*zztemp(ifrm,upper)
-                fromql = cp*fromml*zztemp(ifrm,lower)
-                from_temp = fu*zztemp(ifrm,upper) + fl*zztemp(ifrm,lower)
+                fromqu = cp*frommu*roomptr%layer_temp(upper)
+                fromql = cp*fromml*roomptr%layer_temp(lower)
+                from_temp = fu*roomptr%layer_temp(upper) + fl*roomptr%layer_temp(lower)
             else
                 frommu = 0.0_eb
                 fromml = xmvent(iflow)
                 fromqu = 0.0_eb
                 fromql = cp*fromml*exterior_temperature
-                from_temp = zztemp(ifrm,lower)
+                from_temp = roomptr%layer_temp(lower)
             end if
             fromtq = fromqu + fromql
 
@@ -135,8 +135,9 @@ module vflow_routines
             vmflo(ito,ifrm,lower) = vmflo(ito,ifrm,lower) - fromml
 
             ! determine mass and enthalpy fractions for the to room
-            temp_upper = zztemp(ito,upper)
-            temp_lower = zztemp(ito,lower)
+            roomptr => roominfo(ito)
+            temp_upper = roomptr%layer_temp(upper)
+            temp_lower = roomptr%layer_temp(lower)
             fu = 0.0_eb
             if (from_temp>temp_lower+deltatemp_min) fu = 1.0_eb
             fl = 1.0_eb - fu
@@ -262,7 +263,7 @@ module vflow_routines
     real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
     real(eb) :: v, cshape, d, delpflood, vex
     integer :: i, deadtop, deadbot
-    type(room_type), pointer :: toproomptr, botroomptr
+    type(room_type), pointer :: roomptr, toproomptr, botroomptr
 
     toproomptr => roominfo(itop)
     botroomptr => roominfo(ibot)
@@ -376,8 +377,9 @@ module vflow_routines
         vvent(i) = vst(i) + vex
         xmvent(i) = denvnt(i)*vvent(i)
         if (iroom(i)<=nrm1) then
-            ! iroom(i) is an inside room so use the environment variable zztemp for temperature
-            tmvent(i) = zztemp(iroom(i),ilay(3-i))
+            ! iroom(i) is an inside room so use the appropriate layer temperature
+            roomptr => roominfo(iroom(i))
+            tmvent(i) = roomptr%layer_temp(ilay(3-i))
         else
             ! iroom(i) is an outside room so use exterior_temperature for temperature
             tmvent(i) = exterior_temperature

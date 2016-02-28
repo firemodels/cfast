@@ -153,12 +153,12 @@ module output_routines
         roomptr =>roominfo(icomp)
         izzvol = roomptr%layer_volume(upper)/roomptr%volume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
-            write (iofilo,5071) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, roomptr%layer_volume(upper), &
-            zzabsb(icomp,upper),roomptr%relp - roomptr%interior_relp_initial
+            write (iofilo,5071) roomptr%name, roomptr%layer_temp(upper)-kelvin_c_offset, roomptr%layer_volume(upper), &
+                zzabsb(icomp,upper),roomptr%relp - roomptr%interior_relp_initial
         else
-            write (iofilo,5070) roomptr%name, zztemp(icomp,upper)-kelvin_c_offset, zztemp(icomp,lower)-kelvin_c_offset, &
-            roomptr%layer_depth(lower), roomptr%layer_volume(upper), izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), &
-               roomptr%relp - roomptr%interior_relp_initial
+            write (iofilo,5070) roomptr%name, roomptr%layer_temp(upper)-kelvin_c_offset, &
+                roomptr%layer_temp(lower)-kelvin_c_offset, roomptr%layer_depth(lower), roomptr%layer_volume(upper), &
+                izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
     return
@@ -464,10 +464,10 @@ module output_routines
         end do
         xqf = xqf + fqdj(ir)
         if (roomptr%shaft) then
-            write (iounit,5040) ir, zztemp(ir,upper)-kelvin_c_offset, xemp, xqf, &
+            write (iounit,5040) ir, roomptr%layer_temp(upper)-kelvin_c_offset, xemp, xqf, &
                roomptr%relp - roomptr%interior_relp_initial
         else
-            write (iounit,5030) ir, zztemp(ir,upper)-kelvin_c_offset, zztemp(ir,lower)-kelvin_c_offset, &
+            write (iounit,5030) ir, roomptr%layer_temp(upper)-kelvin_c_offset, roomptr%layer_temp(lower)-kelvin_c_offset, &
                roomptr%layer_depth(lower), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
@@ -580,9 +580,9 @@ module output_routines
 
         zdetect = dtectptr%center(3)
         if(zdetect>roomptr%layer_depth(lower))then
-            tlay = zztemp(iroom,upper)
+            tlay = roomptr%layer_temp(upper)
         else
-            tlay = zztemp(iroom,lower)
+            tlay = roomptr%layer_temp(lower)
         end if
 
         tjet = max(dtectptr%temp_gas,tlay)-kelvin_c_offset
@@ -1162,8 +1162,8 @@ module output_routines
         do i = 1, nrm1
             roomptr => roominfo(i)
             write (*,5010) i
-            write (*,5020) '   Upper temp(K)', zztemp(i,upper)
-            write (*,5020) '   Lower temp(K)', zztemp(i,lower)
+            write (*,5020) '   Upper temp(K)', roomptr%layer_temp(upper)
+            write (*,5020) '   Lower temp(K)', roomptr%layer_temp(lower)
             write (*,5020) ' Interface ht(m)', roomptr%layer_depth(lower)
             write (*,5020) '   Pressure (pa)', roomptr%relp
             if (n_species>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
@@ -1222,7 +1222,7 @@ module output_routines
         write(*,6030)
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
-            write(*,6000) iroom, roomptr%relp, roomptr%layer_depth(lower), zztemp(iroom,lower), zztemp(iroom,upper), &
+            write(*,6000) iroom, roomptr%relp, roomptr%layer_depth(lower), roomptr%layer_temp(lower), roomptr%layer_temp(upper), &
                zzcspec(iroom,lower,2), zzcspec(iroom,upper,2)
         end do
         if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)

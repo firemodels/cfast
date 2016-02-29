@@ -69,7 +69,7 @@ module mflow_routines
         iroom = hvnode(1,ii)
         roomptr => roominfo(iroom)
         vheight = roomptr%z0 + hvelxt(ii)
-        layer_height = max(min(roomptr%layer_depth(lower) + roomptr%z0, vheight + sqrt(arext(ii))/2), vheight - sqrt(arext(ii))/2)
+        layer_height = max(min(roomptr%depth(lower) + roomptr%z0, vheight + sqrt(arext(ii))/2), vheight - sqrt(arext(ii))/2)
         do j = upper, lower
             ventptr%temp_slab(j) = hvextt(ii,j)
             ventptr%flow_slab(j) = hveflo(j,ii)
@@ -321,7 +321,7 @@ module mflow_routines
     do ii = 1, next
         i = hvnode(1,ii)
         roomptr => roominfo(i)
-        z = roomptr%layer_depth(lower)
+        z = roomptr%depth(lower)
         j = hvnode(2,ii)
         if (hvorien(ii)==1) then
 
@@ -347,14 +347,14 @@ module mflow_routines
         j = hvnode(2,ii)
         if (i<nr) then
             roomptr => roominfo(i)
-            z = roomptr%layer_depth(lower)
+            z = roomptr%depth(lower)
             zl = min(z,hvelxt(ii))
             zu = min(0.0_eb,hvelxt(ii)-zl)
             ru = zzrho(i,upper)
             rl = zzrho(i,lower)
             hvp(j) = roomptr%relp - (ru*zu+rl*zl)*grav_con
-            hvextt(ii,upper) = roomptr%layer_temp(upper)
-            hvextt(ii,lower) = roomptr%layer_temp(lower)
+            hvextt(ii,upper) = roomptr%temp(upper)
+            hvextt(ii,lower) = roomptr%temp(lower)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature

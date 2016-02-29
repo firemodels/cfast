@@ -57,10 +57,10 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
-            (roomptr%floor_area + roomptr%layer_depth(lower)*(roomptr%cdepth + roomptr%cwidth))
-        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
-            (roomptr%floor_area + roomptr%layer_depth(upper)*(roomptr%cdepth + roomptr%cwidth))
+        zzbeam(i,lower) = (1.8_eb*roomptr%volume(lower)) / &
+            (roomptr%floor_area + roomptr%depth(lower)*(roomptr%cdepth + roomptr%cwidth))
+        zzbeam(i,upper) = (1.8_eb*roomptr%volume(upper)) / &
+            (roomptr%floor_area + roomptr%depth(upper)*(roomptr%cdepth + roomptr%cwidth))
     end do
 
     defabsup = 0.50_eb
@@ -68,12 +68,12 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        tg(upper) = roomptr%layer_temp(upper)
-        tg(lower) = roomptr%layer_temp(lower)
-        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
-            (roomptr%floor_area + roomptr%layer_depth(lower)*(roomptr%cdepth + roomptr%cwidth))
-        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
-            (roomptr%floor_area + roomptr%layer_depth(upper)*(roomptr%cdepth + roomptr%cwidth))
+        tg(upper) = roomptr%temp(upper)
+        tg(lower) = roomptr%temp(lower)
+        zzbeam(i,lower) = (1.8_eb*roomptr%volume(lower)) / &
+            (roomptr%floor_area + roomptr%depth(lower)*(roomptr%cdepth + roomptr%cwidth))
+        zzbeam(i,upper) = (1.8_eb*roomptr%volume(upper)) / &
+            (roomptr%floor_area + roomptr%depth(upper)*(roomptr%cdepth + roomptr%cwidth))
         do iwall = 1, 4
             imap = map(iwall)
             twall(imap) = zzwtemp(i,iwall,1)
@@ -104,7 +104,7 @@ module radiation_routines
         end if
         rabsorb(1) = zzabsb(i,upper)
         rabsorb(2) = zzabsb(i,lower)
-        call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%layer_depth(lower), &
+        call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(lower), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
         do j = 1, nwal
@@ -921,8 +921,8 @@ module radiation_routines
 
     roomptr => roominfo(cmpt)
     ! layer-specific factors
-    tg = roomptr%layer_temp(layer)
-    rtv = (rg*tg)/roomptr%layer_volume(layer)
+    tg = roomptr%temp(layer)
+    rtv = (rg*tg)/roomptr%volume(layer)
     l = zzbeam(cmpt,layer)
 
     ag = 0.0_eb
@@ -952,7 +952,7 @@ module radiation_routines
     end if
 
     ! total absorbance
-    vfs = zzgspec(cmpt,layer,soot)/(roomptr%layer_volume(layer)*rhos)
+    vfs = zzgspec(cmpt,layer,soot)/(roomptr%volume(layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
 
     return

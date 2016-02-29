@@ -66,10 +66,10 @@ module target_routines
         ! calculate net flux striking each side of target
         iroom = targptr%room
         roomptr => roominfo(iroom)
-        if (targptr%center(3)>roomptr%layer_depth(lower)) then
-            t_inf = roomptr%layer_temp(upper)
+        if (targptr%center(3)>roomptr%depth(lower)) then
+            t_inf = roomptr%temp(upper)
         else
-            t_inf = roomptr%layer_temp(lower)
+            t_inf = roomptr%temp(lower)
         end if
         ttarg(1) = targptr%temperature(idx_tempf_trg)
         ttarg(2) = targptr%temperature(idx_tempb_trg)
@@ -177,7 +177,7 @@ module target_routines
                 cosang = -ddot(3,svect,1,targptr%normal,1)/s
             end if
             ztarg = targptr%center(3)
-            zlay = roomptr%layer_depth(lower)
+            zlay = roomptr%depth(lower)
 
             ! compute portion of path in lower and upper layers
             call getylyu(zfire,zlay,ztarg,s,zl,zu)
@@ -228,9 +228,9 @@ module target_routines
             s = dnrm2(3,svect,1)
             zwall = roomptr%wall_center(3,iwall)
             ztarg = targptr%center(3)
-            zlay = roomptr%layer_depth(lower)
-            tl = roomptr%layer_temp(lower)
-            tu = roomptr%layer_temp(upper)
+            zlay = roomptr%depth(lower)
+            tl = roomptr%temp(lower)
+            tu = roomptr%temp(upper)
 
             ! compute path length in lower (zl) and upper (zu) layer
             call getylyu(zwall,zlay,ztarg,s,zl,zu)
@@ -431,7 +431,7 @@ module target_routines
 
     !define vertex locations
 
-    zlay = roomi%z0 + roomi%layer_depth(lower)
+    zlay = roomi%z0 + roomi%depth(lower)
     room_verts(1:3,1)  = (/roomi%x0, roomi%y0, roomi%z1/)
     room_verts(1:3,2)  = (/roomi%x1, roomi%y0, roomi%z1/)
     room_verts(1:3,3)  = (/roomi%x0, roomi%y1, roomi%z1/)
@@ -711,10 +711,10 @@ module target_routines
         roomptr => roominfo(iroom)
 
         zdetect = dtectptr%center(3)
-        if(zdetect>roomptr%layer_depth(lower))then
-            tlay = roomptr%layer_temp(upper)
+        if(zdetect>roomptr%depth(lower))then
+            tlay = roomptr%temp(upper)
         else
-            tlay = roomptr%layer_temp(lower)
+            tlay = roomptr%temp(lower)
         end if
 
         tjet = max(dtectptr%temp_gas,tlay)
@@ -817,11 +817,11 @@ module target_routines
         zloc = dtectptr%center(3)
         if (option(fcjet)==off) then
             ! if ceiling jet option is off, things default to appropriate layer temperature
-            if(zloc>roomptr%layer_depth(lower))then
-                dtectptr%temp_gas = roomptr%layer_temp(upper)
+            if(zloc>roomptr%depth(lower))then
+                dtectptr%temp_gas = roomptr%temp(upper)
                 dtectptr%obscuration = roomptr%species_output(upper,9)
             else
-                dtectptr%temp_gas = roomptr%layer_temp(lower)
+                dtectptr%temp_gas = roomptr%temp(lower)
                 dtectptr%obscuration = roomptr%species_output(lower,9)
             end if
             dtectptr%velocity = 0.1_eb
@@ -830,7 +830,7 @@ module target_routines
             call get_gas_temp_velocity (iroom,xloc,yloc,zloc,tg,vg)
             dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
-            if(zloc>roomptr%layer_depth(lower))then
+            if(zloc>roomptr%depth(lower))then
                 dtectptr%obscuration = roomptr%species_output(upper,9)
             else
                 dtectptr%obscuration = roomptr%species_output(lower,9)

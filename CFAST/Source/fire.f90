@@ -83,7 +83,7 @@ module fire_routines
                oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
-            xtl = roomptr%layer_temp(lower)
+            xtl = roomptr%temp(lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
             q_firemass = cp*oplume(1,iobj)*interior_temperature
@@ -188,9 +188,9 @@ module fire_routines
 
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
-    xz = roomptr%layer_depth(upper)
-    xtl = roomptr%layer_temp(lower)
-    xtu = roomptr%layer_temp(upper)
+    xz = roomptr%depth(upper)
+    xtl = roomptr%temp(lower)
+    xtu = roomptr%temp(upper)
     xqfc = 0.0_eb
     xqlp = 0.0_eb
     xeme = 0.0_eb
@@ -709,7 +709,7 @@ module fire_routines
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
         room1ptr => roominfo(iroom1)
-        if (room1ptr%layer_temp(upper)>=tgignt) then
+        if (room1ptr%temp(upper)>=tgignt) then
             flw1to2 = vss(1,i)+vsa(1,i)
             if (vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb) then
                 djetflg = .true.
@@ -720,7 +720,7 @@ module fire_routines
         !is there a door jet fire into room iroom2
         iroom2 = ventptr%to
         room2ptr => roominfo(iroom2)
-        if(room2ptr%layer_temp(upper)>=tgignt)then
+        if(room2ptr%temp(upper)>=tgignt)then
             flw2to1 = vss(2,i)+vsa(2,i)
             if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
                 djetflg = .true.
@@ -744,8 +744,8 @@ module fire_routines
                 iroom2 = ventptr%to
                 flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
                 flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
-                call door_jet_fire (iroom2,room1ptr%layer_temp(upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
-                call door_jet_fire (iroom1,room2ptr%layer_temp(upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
+                call door_jet_fire (iroom2,room1ptr%temp(upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+                call door_jet_fire (iroom1,room2ptr%temp(upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if(dj1flag)then
@@ -867,10 +867,10 @@ module fire_routines
     roomptr => roominfo(iroom)
 
     ! default is the appropriate layer temperature and a velocity of 0.1 m/s
-    if (z>=roomptr%layer_depth(lower)) then
-        tg = roomptr%layer_temp(upper)
+    if (z>=roomptr%depth(lower)) then
+        tg = roomptr%temp(upper)
     else
-        tg = roomptr%layer_temp(lower)
+        tg = roomptr%temp(lower)
     end if
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
@@ -879,14 +879,14 @@ module fire_routines
             qdot = fqf(i)
             xrad = radconsplit(i)
             area = farea(i)
-            tu = roomptr%layer_temp(upper)
-            tl = roomptr%layer_temp(lower)
+            tu = roomptr%temp(upper)
+            tl = roomptr%temp(lower)
             zfire = xfire(i,f_fire_zpos)
             xdistance = x - xfire(i,f_fire_xpos)
             if (abs(xdistance)<=mx_hsep) xdistance = 0.0_eb
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
-            zlayer = roomptr%layer_depth(lower)
+            zlayer = roomptr%depth(lower)
             zceil = roomptr%cheight
             r = sqrt(xdistance**2 + ydistance**2)
             if (roomptr%hall) then
@@ -1117,8 +1117,8 @@ module fire_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        v(upper) = roomptr%layer_volume(upper)
-        v(lower) = roomptr%layer_volume(lower)
+        v(upper) = roomptr%volume(upper)
+        v(lower) = roomptr%volume(lower)
         do k = upper, lower
             air(k) = 0.0_eb
             do lsp = 1, 9

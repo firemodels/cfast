@@ -38,9 +38,9 @@ module cfast_types
         real(eb) :: absp                                ! absolute pressure at floor level
         real(eb) :: species_rho(2,ns)                   ! density of species in each layer
         real(eb) :: species_output(2,ns)                ! species converted to output units
-        real(eb), dimension(2) :: layer_volume          ! volume of each layer
-        real(eb), dimension(2) :: layer_depth           ! thickness of each layer
-        real(eb), dimension(2) :: layer_temp            ! temperature of each layer
+        real(eb), dimension(2) :: volume                ! volume of each layer
+        real(eb), dimension(2) :: depth                 ! thickness of each layer
+        real(eb), dimension(2) :: temp                  ! temperature of each layer
         
     end type room_type
 

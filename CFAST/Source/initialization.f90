@@ -756,7 +756,7 @@ module initialization_routines
         do k = upper, lower
             do lsp = 1, ns
                 roomptr%species_output(k,lsp) = 0.0_eb
-                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*roomptr%layer_volume(k)
+                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*roomptr%volume(k)
             end do
         end do
     end do

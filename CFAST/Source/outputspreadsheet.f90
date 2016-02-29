@@ -69,12 +69,12 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call ssaddtolist (position,roomptr%layer_temp(upper)-kelvin_c_offset,outarray)
+        call ssaddtolist (position,roomptr%temp(upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call ssaddtolist(position,roomptr%layer_temp(lower)-kelvin_c_offset,outarray)
-            call ssaddtolist (position,roomptr%layer_depth(lower),outarray)
+            call ssaddtolist(position,roomptr%temp(lower)-kelvin_c_offset,outarray)
+            call ssaddtolist (position,roomptr%depth(lower),outarray)
         end if
-        call ssaddtolist (position,roomptr%layer_volume(upper),outarray)
+        call ssaddtolist (position,roomptr%volume(upper),outarray)
         call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
     end do
 
@@ -297,10 +297,10 @@ module spreadsheet_routines
         zdetect = dtectptr%center(3)
         iroom = dtectptr%room
         roomptr => roominfo(iroom)
-        if(zdetect>roomptr%layer_depth(lower))then
-            tlay = roomptr%layer_temp(upper)
+        if(zdetect>roomptr%depth(lower))then
+            tlay = roomptr%temp(upper)
         else
-            tlay = roomptr%layer_temp(lower)
+            tlay = roomptr%temp(lower)
         end if
         if (dtectptr%activated) then
             xact = 1.0_eb
@@ -412,10 +412,10 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call SSaddtolist(position,roomptr%layer_temp(upper)-kelvin_c_offset,outarray)
+        call SSaddtolist(position,roomptr%temp(upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call SSaddtolist(position,roomptr%layer_temp(lower)-kelvin_c_offset,outarray)
-            call SSaddtolist(position,roomptr%layer_depth(lower),outarray)
+            call SSaddtolist(position,roomptr%temp(lower)-kelvin_c_offset,outarray)
+            call SSaddtolist(position,roomptr%depth(lower),outarray)
         end if
         call SSaddtolist(position,roomptr%relp,outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)

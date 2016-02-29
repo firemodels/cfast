@@ -282,7 +282,7 @@ module numerics_routines
     !              numerical differencing will be performed much cheaper,
     !              and a number of important algorithms will execute much
     !              faster. the differential equation is said to have
-    !              half-bandwidths ml (lower) and mu (upper) if equation i
+    !              half-bandwidths ml (l) and mu (u) if equation i
     !              involves only unknowns y(j) with
     !                             i-ml <= j <= i+mu
     !              for all i=1,2,...,neq. thus, ml and mu are the widths

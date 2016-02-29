@@ -9,7 +9,7 @@ module hflow_routines
     use precision_parameters
     use cenviro
     use ramp_data
-    use flwptrs
+    use cparams
     use option_data
     use vent_data
     use debug_data
@@ -57,8 +57,8 @@ module hflow_routines
 
     position = 0
 
-    uflw(1:nrm1,1:nprod+2,lower) = 0.0_eb
-    uflw(1:nrm1,1:nprod+2,upper) = 0.0_eb
+    uflw(1:nrm1,1:nprod+2,l) = 0.0_eb
+    uflw(1:nrm1,1:nprod+2,u) = 0.0_eb
 
     if (option(fhflow)/=on) return
 
@@ -131,19 +131,19 @@ module hflow_routines
             ! (but only if the room is an inside room)
 
             if (iroom1>=1.and.iroom1<=nrm1) then
-                uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw2(1,1:nprod+2,l)
-                uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw2(1,1:nprod+2,u)
+                uflw(iroom1,1:nprod+2,l) = uflw(iroom1,1:nprod+2,l) + uflw2(1,1:nprod+2,l)
+                uflw(iroom1,1:nprod+2,u) = uflw(iroom1,1:nprod+2,u) + uflw2(1,1:nprod+2,u)
                 if (option(fentrain)==on) then
-                    uflw(iroom1,1:nprod+2,lower) = uflw(iroom1,1:nprod+2,lower) + uflw3(1,1:nprod+2,l)
-                    uflw(iroom1,1:nprod+2,upper) = uflw(iroom1,1:nprod+2,upper) + uflw3(1,1:nprod+2,u)
+                    uflw(iroom1,1:nprod+2,l) = uflw(iroom1,1:nprod+2,l) + uflw3(1,1:nprod+2,l)
+                    uflw(iroom1,1:nprod+2,u) = uflw(iroom1,1:nprod+2,u) + uflw3(1,1:nprod+2,u)
                 end if
             end if
             if (iroom2>=1.and.iroom2<=nrm1) then
-                uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw2(2,1:nprod+2,l)
-                uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw2(2,1:nprod+2,u)
+                uflw(iroom2,1:nprod+2,l) = uflw(iroom2,1:nprod+2,l) + uflw2(2,1:nprod+2,l)
+                uflw(iroom2,1:nprod+2,u) = uflw(iroom2,1:nprod+2,u) + uflw2(2,1:nprod+2,u)
                 if (option(fentrain)==on) then
-                    uflw(iroom2,1:nprod+2,lower) = uflw(iroom2,1:nprod+2,lower) + uflw3(2,1:nprod+2,l)
-                    uflw(iroom2,1:nprod+2,upper) = uflw(iroom2,1:nprod+2,upper) + uflw3(2,1:nprod+2,u)
+                    uflw(iroom2,1:nprod+2,l) = uflw(iroom2,1:nprod+2,l) + uflw3(2,1:nprod+2,l)
+                    uflw(iroom2,1:nprod+2,u) = uflw(iroom2,1:nprod+2,u) + uflw3(2,1:nprod+2,u)
                 end if
             end if
         end if
@@ -553,15 +553,15 @@ module hflow_routines
         zflor(i) = roomptr%z0
         zceil(i) = roomptr%z1
         pflor(i) = roomptr%relp
-        zlay(i) = roomptr%depth(lower)
-        tu(i) = roomptr%temp(upper)
-        tl(i) = roomptr%temp(lower)
-        denu(i) = zzrho(iroom,upper)
-        denl(i) = zzrho(iroom,lower)
+        zlay(i) = roomptr%depth(l)
+        tu(i) = roomptr%temp(u)
+        tl(i) = roomptr%temp(l)
+        denu(i) = zzrho(iroom,u)
+        denl(i) = zzrho(iroom,l)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod,i) = zzcspec(iroom,lower,ip)
-            conu(iprod,i) = zzcspec(iroom,upper,ip)
+            conl(iprod,i) = zzcspec(iroom,l,ip)
+            conu(iprod,i) = zzcspec(iroom,u,ip)
         end do
     end do
     return

@@ -14,6 +14,7 @@ module initialization_routines
     use setup_data
     use solver_data
     use fire_data
+    use cparams
     use option_data
     use target_data
     use thermal_data
@@ -167,28 +168,28 @@ module initialization_routines
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
-            hvextt(ii,upper) = interior_temperature
-            hvextt(ii,lower) = interior_temperature
+            hvextt(ii,u) = interior_temperature
+            hvextt(ii,l) = interior_temperature
             hvp(j) = roomptr%relp - grav_con*interior_rho*hvelxt(ii)
         else
-            hvextt(ii,upper) = exterior_temperature
-            hvextt(ii,lower) = exterior_temperature
+            hvextt(ii,u) = exterior_temperature
+            hvextt(ii,l) = exterior_temperature
             hvp(j) = exterior_abs_pressure - grav_con*exterior_rho*hvelxt(ii)
         end if
-        tbr(ib) = hvextt(ii,upper)
+        tbr(ib) = hvextt(ii,u)
         s1 = s1 + hvp(j)
         s2 = s2 + tbr(ib)
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<nr) then
-                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*interior_rho
-                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*interior_rho
+                hvexcn(ii,lsp,u) = initial_mass_fraction(lsp)*interior_rho
+                hvexcn(ii,lsp,l) = initial_mass_fraction(lsp)*interior_rho
             else
-                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*exterior_rho
-                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*exterior_rho
+                hvexcn(ii,lsp,u) = initial_mass_fraction(lsp)*exterior_rho
+                hvexcn(ii,lsp,l) = initial_mass_fraction(lsp)*exterior_rho
             end if
-            hvconc(j,lsp) = hvexcn(ii,lsp,upper)
-            c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
+            hvconc(j,lsp) = hvexcn(ii,lsp,u)
+            c3(lsp) = c3(lsp) + hvexcn(ii,lsp,u)
         end do
     end do
 
@@ -491,8 +492,8 @@ module initialization_routines
     ! after zzmass is defined)
     if(option(foxygen)==on)then
         do iroom = 1, nrm1
-            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,upper)
-            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,lower)
+            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,u)
+            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,l)
         end do
     end if
 
@@ -548,8 +549,8 @@ module initialization_routines
     ! normal air
     initial_mass_fraction(1) = 0.77_eb
     initial_mass_fraction(2) = 0.23_eb
-    zzgspec(1:mxrooms,upper:lower,1:ns) = 0.0_eb
-    zzcspec(1:mxrooms,upper:lower,1:ns) = 0.0_eb
+    zzgspec(1:mxrooms,u:l,1:ns) = 0.0_eb
+    zzcspec(1:mxrooms,u:l,1:ns) = 0.0_eb
 
     ! rooms
     roominfo(1:mxrooms)%cwidth = xlrg
@@ -638,8 +639,8 @@ module initialization_routines
     next = 0
     mvcalc_on = .false.
     hvght(1:mxnode) = 0.0_eb
-    hveflot(upper:lower,1:mxext) = 0.0_eb
-    tracet(upper:lower,1:mxext) = 0.0_eb
+    hveflot(u:l,1:mxext) = 0.0_eb
+    tracet(u:l,1:mxext) = 0.0_eb
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since
     ! there is not "thing" associated with a filter, there is no (as of 11/21/2006)
     ! way to have an intial value other than 0 (no filtering).
@@ -753,7 +754,7 @@ module initialization_routines
         end do
         initial_mass_fraction(1:ns) = initial_mass_fraction(1:ns)/totmass
 
-        do k = upper, lower
+        do k = u, l
             do lsp = 1, ns
                 roomptr%species_output(k,lsp) = 0.0_eb
                 initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*roomptr%volume(k)
@@ -764,7 +765,7 @@ module initialization_routines
     isof = nofprd
     do lsp = 1, ns
         do i = 1, nrm1
-            do k = upper, lower
+            do k = u, l
                 isof = isof + 1
                 p(isof) = initialmass(k,i,lsp)
             end do

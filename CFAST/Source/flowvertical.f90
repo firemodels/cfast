@@ -9,7 +9,7 @@ module vflow_routines
     use precision_parameters
     use cenviro
     use ramp_data
-    use flwptrs
+    use cparams
     use option_data
     use vent_data
 
@@ -43,10 +43,10 @@ module vflow_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    flwvf(1:nr,1:ns+2,upper) = 0.0_eb
-    flwvf(1:nr,1:ns+2,lower) = 0.0_eb
-    vmflo(1:nr,1:nr,upper) = 0.0_eb
-    vmflo(1:nr,1:nr,lower) = 0.0_eb
+    flwvf(1:nr,1:ns+2,u) = 0.0_eb
+    flwvf(1:nr,1:ns+2,l) = 0.0_eb
+    vmflo(1:nr,1:nr,u) = 0.0_eb
+    vmflo(1:nr,1:nr,l) = 0.0_eb
     vflowflg = .false.
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
@@ -79,11 +79,11 @@ module vflow_routines
             if (iflow==1) then
                 ifrm = ibot
                 ito = itop
-                ilay = upper
+                ilay = u
             else
                 ifrm = itop
                 ito = ibot
-                ilay = lower
+                ilay = l
             end if
 
             ! determine mass and enthalpy fractions for the from room
@@ -96,48 +96,48 @@ module vflow_routines
                     froude(iflow) = 0.0_eb
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
-                if (ilay==upper) then
+                if (ilay==u) then
                     ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-exisitant layer
-                    fu = min(tanhsmooth(roomptr%volume(upper), 3.0_eb*roomptr%vmin, &
+                    fu = min(tanhsmooth(roomptr%volume(u), 3.0_eb*roomptr%vmin, &
                         2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
-                    fu = min(tanhsmooth(roomptr%volume(lower), 3.0_eb*roomptr%vmin, &
+                    fu = min(tanhsmooth(roomptr%volume(l), 3.0_eb*roomptr%vmin, &
                         2.0_eb*roomptr%vmin, fu, 1.0_eb), 1.0_eb)
                     fl = max(1.0_eb-fu, 0.0_eb)
                 else
-                    fl = min(tanhsmooth(roomptr%volume(lower), 3.0_eb*roomptr%vmin, &
+                    fl = min(tanhsmooth(roomptr%volume(l), 3.0_eb*roomptr%vmin, &
                         2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
-                    fl = min(tanhsmooth(roomptr%volume(upper), 3.0_eb*roomptr%vmin, &
+                    fl = min(tanhsmooth(roomptr%volume(u), 3.0_eb*roomptr%vmin, &
                         2.0_eb*roomptr%vmin, fl, 1.0_eb), 1.0_eb)
                     fu = max(1.0_eb-fl, 0.0_eb)
                 end if
                 frommu = fu*xmvent(iflow)
                 fromml = fl*xmvent(iflow)
-                fromqu = cp*frommu*roomptr%temp(upper)
-                fromql = cp*fromml*roomptr%temp(lower)
-                from_temp = fu*roomptr%temp(upper) + fl*roomptr%temp(lower)
+                fromqu = cp*frommu*roomptr%temp(u)
+                fromql = cp*fromml*roomptr%temp(l)
+                from_temp = fu*roomptr%temp(u) + fl*roomptr%temp(l)
             else
                 frommu = 0.0_eb
                 fromml = xmvent(iflow)
                 fromqu = 0.0_eb
                 fromql = cp*fromml*exterior_temperature
-                from_temp = roomptr%temp(lower)
+                from_temp = roomptr%temp(l)
             end if
             fromtq = fromqu + fromql
 
             ! extract mass and enthalpy from "from" room (not from outside)
             if (ifrm<=nrm1) then
-                flwvf(ifrm,m,upper) = flwvf(ifrm,m,upper) - frommu
-                flwvf(ifrm,m,lower) = flwvf(ifrm,m,lower) - fromml
-                flwvf(ifrm,q,upper) = flwvf(ifrm,q,upper) - fromqu
-                flwvf(ifrm,q,lower) = flwvf(ifrm,q,lower) - fromql
+                flwvf(ifrm,m,u) = flwvf(ifrm,m,u) - frommu
+                flwvf(ifrm,m,l) = flwvf(ifrm,m,l) - fromml
+                flwvf(ifrm,q,u) = flwvf(ifrm,q,u) - fromqu
+                flwvf(ifrm,q,l) = flwvf(ifrm,q,l) - fromql
             end if
-            vmflo(ito,ifrm,upper) = vmflo(ito,ifrm,upper) - frommu
-            vmflo(ito,ifrm,lower) = vmflo(ito,ifrm,lower) - fromml
+            vmflo(ito,ifrm,u) = vmflo(ito,ifrm,u) - frommu
+            vmflo(ito,ifrm,l) = vmflo(ito,ifrm,l) - fromml
 
             ! determine mass and enthalpy fractions for the to room
             roomptr => roominfo(ito)
-            temp_upper = roomptr%temp(upper)
-            temp_lower = roomptr%temp(lower)
+            temp_upper = roomptr%temp(u)
+            temp_lower = roomptr%temp(l)
             fu = 0.0_eb
             if (from_temp>temp_lower+deltatemp_min) fu = 1.0_eb
             fl = 1.0_eb - fu
@@ -148,32 +148,32 @@ module vflow_routines
 
             ! deposit mass and enthalpy into "to" room varibles (not outside)
             if (ito<=nrm1) then
-                flwvf(ito,m,upper) = flwvf(ito,m,upper) + tomu
-                flwvf(ito,m,lower) = flwvf(ito,m,lower) + toml
-                flwvf(ito,q,upper) = flwvf(ito,q,upper) + toqu
-                flwvf(ito,q,lower) = flwvf(ito,q,lower) + toql
+                flwvf(ito,m,u) = flwvf(ito,m,u) + tomu
+                flwvf(ito,m,l) = flwvf(ito,m,l) + toml
+                flwvf(ito,q,u) = flwvf(ito,q,u) + toqu
+                flwvf(ito,q,l) = flwvf(ito,q,l) + toql
             end if
-            vmflo(ifrm,ito,upper) = vmflo(ifrm,ito,upper) + tomu
-            vmflo(ifrm,ito,lower) = vmflo(ifrm,ito,lower) + toml
+            vmflo(ifrm,ito,u) = vmflo(ifrm,ito,u) + tomu
+            vmflo(ifrm,ito,l) = vmflo(ifrm,ito,l) + toml
 
             ! species transfer for vertical vents
             do lsp = 1, ns
                 index = pp+lsp-1
-                speciesl = zzcspec(ifrm,lower,lsp)*fromml
-                speciesu = zzcspec(ifrm,upper,lsp)*frommu
+                speciesl = zzcspec(ifrm,l,lsp)*fromml
+                speciesu = zzcspec(ifrm,u,lsp)*frommu
 
                 ! extract mass and enthalpy from "from" room (not from the outside)
                 if (ifrm<=nrm1) then
-                    flwvf(ifrm,index,upper) = flwvf(ifrm,index,upper) - speciesu
-                    flwvf(ifrm,index,lower) = flwvf(ifrm,index,lower) - speciesl
+                    flwvf(ifrm,index,u) = flwvf(ifrm,index,u) - speciesu
+                    flwvf(ifrm,index,l) = flwvf(ifrm,index,l) - speciesl
                 end if
 
                 ! deposit mass and enthalphy into "to" room variables (not outside)
                 if (ito<=nrm1) then
                     pmtoup = (speciesu + speciesl)*fu
                     pmtolp = (speciesu + speciesl)*fl
-                    flwvf(ito,index,upper) = flwvf(ito,index,upper) + pmtoup
-                    flwvf(ito,index,lower) = flwvf(ito,index,lower) + pmtolp
+                    flwvf(ito,index,u) = flwvf(ito,index,u) + pmtoup
+                    flwvf(ito,index,l) = flwvf(ito,index,l) + pmtolp
                 end if
             end do
         end do
@@ -257,8 +257,6 @@ module vflow_routines
 
     real(eb) :: den(2), relp(2), denvnt(2), dp(2), vst(2)
     integer ::  iroom(2), ilay(2)
-
-    integer, parameter :: l = 2, u = 1, q = 2, m = 1
 
     real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
     real(eb) :: v, cshape, d, delpflood, vex

@@ -9,6 +9,7 @@ module radiation_routines
     use cenviro
     use setup_data, only: logerr
     use fireptrs
+    use cparams
     use room_data
     use fire_data, only: xfire, ifrpnt
     use option_data
@@ -57,10 +58,10 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        zzbeam(i,lower) = (1.8_eb*roomptr%volume(lower)) / &
-            (roomptr%floor_area + roomptr%depth(lower)*(roomptr%cdepth + roomptr%cwidth))
-        zzbeam(i,upper) = (1.8_eb*roomptr%volume(upper)) / &
-            (roomptr%floor_area + roomptr%depth(upper)*(roomptr%cdepth + roomptr%cwidth))
+        zzbeam(i,l) = (1.8_eb*roomptr%volume(l)) / &
+            (roomptr%floor_area + roomptr%depth(l)*(roomptr%cdepth + roomptr%cwidth))
+        zzbeam(i,u) = (1.8_eb*roomptr%volume(u)) / &
+            (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
     end do
 
     defabsup = 0.50_eb
@@ -68,12 +69,12 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        tg(upper) = roomptr%temp(upper)
-        tg(lower) = roomptr%temp(lower)
-        zzbeam(i,lower) = (1.8_eb*roomptr%volume(lower)) / &
-            (roomptr%floor_area + roomptr%depth(lower)*(roomptr%cdepth + roomptr%cwidth))
-        zzbeam(i,upper) = (1.8_eb*roomptr%volume(upper)) / &
-            (roomptr%floor_area + roomptr%depth(upper)*(roomptr%cdepth + roomptr%cwidth))
+        tg(u) = roomptr%temp(u)
+        tg(l) = roomptr%temp(l)
+        zzbeam(i,l) = (1.8_eb*roomptr%volume(l)) / &
+            (roomptr%floor_area + roomptr%depth(l)*(roomptr%cdepth + roomptr%cwidth))
+        zzbeam(i,u) = (1.8_eb*roomptr%volume(u)) / &
+            (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
         do iwall = 1, 4
             imap = map(iwall)
             twall(imap) = zzwtemp(i,iwall,1)
@@ -95,16 +96,16 @@ module radiation_routines
         end do
         if(.not.black)then
             if(option(frad)==4)then
-                zzabsb(i,upper) = defabsup
-                zzabsb(i,lower) = defabslow
+                zzabsb(i,u) = defabsup
+                zzabsb(i,l) = defabslow
             else
-                zzabsb(i,upper) = absorb(i, upper)
-                zzabsb(i,lower) = absorb(i, lower)
+                zzabsb(i,u) = absorb(i, u)
+                zzabsb(i,l) = absorb(i, l)
             end if
         end if
-        rabsorb(1) = zzabsb(i,upper)
-        rabsorb(2) = zzabsb(i,lower)
-        call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(lower), &
+        rabsorb(1) = zzabsb(i,u)
+        rabsorb(2) = zzabsb(i,l)
+        call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
         do j = 1, nwal
@@ -125,7 +126,7 @@ module radiation_routines
 
     !     routine: rad4
     !     purpose: this routine computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to
-    !              a point source fire, emitting absorbing gas layers (upper and lower) and heat emitting wall segments.
+    !              a point source fire, emitting absorbing gas layers (u and l) and heat emitting wall segments.
     !              this routine also computes the heat absorbed by the lower and upper layers.
     !     intput arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
     !                          i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively

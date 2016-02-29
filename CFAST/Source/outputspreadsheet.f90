@@ -14,6 +14,7 @@ module spreadsheet_routines
     use setup_data
     use target_data
     use fire_data
+    use cparams
     use vent_data
     use room_data
 
@@ -69,12 +70,12 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call ssaddtolist (position,roomptr%temp(upper)-kelvin_c_offset,outarray)
+        call ssaddtolist (position,roomptr%temp(u)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call ssaddtolist(position,roomptr%temp(lower)-kelvin_c_offset,outarray)
-            call ssaddtolist (position,roomptr%depth(lower),outarray)
+            call ssaddtolist(position,roomptr%temp(l)-kelvin_c_offset,outarray)
+            call ssaddtolist (position,roomptr%depth(l),outarray)
         end if
-        call ssaddtolist (position,roomptr%volume(upper),outarray)
+        call ssaddtolist (position,roomptr%volume(u),outarray)
         call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
     end do
 
@@ -164,14 +165,14 @@ module spreadsheet_routines
         ito = ivvent(i,toprm)
 
         flow = 0.0_eb
-        if (vmflo(ifrom,ito,upper)>=0.0_eb) flow(5) = vmflo(ifrom,ito,upper)
-        if (vmflo(ifrom,ito,upper)<0.0_eb) flow(6) = -vmflo(ifrom,ito,upper)
-        if (vmflo(ifrom,ito,lower)>=0.0_eb) flow(7) = vmflo(ifrom,ito,lower)
-        if (vmflo(ifrom,ito,lower)<0.0_eb) flow(8) = -vmflo(ifrom,ito,lower)
-        if (vmflo(ito,ifrom,upper)>=0.0_eb) flow(1) = vmflo(ito,ifrom,upper)
-        if (vmflo(ito,ifrom,upper)<0.0_eb) flow(2) = -vmflo(ito,ifrom,upper)
-        if (vmflo(ito,ifrom,lower)>=0.0_eb) flow(3) = vmflo(ito,ifrom,lower)
-        if (vmflo(ito,ifrom,lower)<0.0_eb) flow(4) = -vmflo(ito,ifrom,lower)
+        if (vmflo(ifrom,ito,u)>=0.0_eb) flow(5) = vmflo(ifrom,ito,u)
+        if (vmflo(ifrom,ito,u)<0.0_eb) flow(6) = -vmflo(ifrom,ito,u)
+        if (vmflo(ifrom,ito,l)>=0.0_eb) flow(7) = vmflo(ifrom,ito,l)
+        if (vmflo(ifrom,ito,l)<0.0_eb) flow(8) = -vmflo(ifrom,ito,l)
+        if (vmflo(ito,ifrom,u)>=0.0_eb) flow(1) = vmflo(ito,ifrom,u)
+        if (vmflo(ito,ifrom,u)<0.0_eb) flow(2) = -vmflo(ito,ifrom,u)
+        if (vmflo(ito,ifrom,l)>=0.0_eb) flow(3) = vmflo(ito,ifrom,l)
+        if (vmflo(ito,ifrom,l)<0.0_eb) flow(4) = -vmflo(ito,ifrom,l)
 
         sumin = flow(5) + flow(7)
         sumout = flow(6) + flow(8)
@@ -187,14 +188,14 @@ module spreadsheet_routines
     if (nnode/=0.and.next/=0) then
         do i = 1, next
             flow = 0.0_eb
-            if (hveflo(upper,i)>=0.0_eb) flow(1)=hveflo(upper,i)
-            if (hveflo(upper,i)<0.0_eb) flow(2)=-hveflo(upper,i)
-            if (hveflo(lower,i)>=0.0_eb) flow(3)=hveflo(lower,i)
-            if (hveflo(lower,i)<0.0_eb) flow(4)=-hveflo(lower,i)
+            if (hveflo(u,i)>=0.0_eb) flow(1)=hveflo(u,i)
+            if (hveflo(u,i)<0.0_eb) flow(2)=-hveflo(u,i)
+            if (hveflo(l,i)>=0.0_eb) flow(3)=hveflo(l,i)
+            if (hveflo(l,i)<0.0_eb) flow(4)=-hveflo(l,i)
             sumin = flow(1) + flow(3)
             sumout = flow(2) + flow(4)
-            flow(5) =abs(tracet(upper,i))+abs(tracet(lower,i))
-            flow(6) =abs(traces(upper,i))+abs(traces(lower,i))
+            flow(5) =abs(tracet(u,i))+abs(tracet(l,i))
+            flow(6) =abs(traces(u,i))+abs(traces(l,i))
             netflow = sumin - sumout
             call SSaddtolist (position, netflow, outarray)
             call SSaddtolist (position, flow(5), outarray)
@@ -297,10 +298,10 @@ module spreadsheet_routines
         zdetect = dtectptr%center(3)
         iroom = dtectptr%room
         roomptr => roominfo(iroom)
-        if(zdetect>roomptr%depth(lower))then
-            tlay = roomptr%temp(upper)
+        if(zdetect>roomptr%depth(l))then
+            tlay = roomptr%temp(u)
         else
-            tlay = roomptr%temp(lower)
+            tlay = roomptr%temp(l)
         end if
         if (dtectptr%activated) then
             xact = 1.0_eb
@@ -356,9 +357,9 @@ module spreadsheet_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        do layer = upper, lower
+        do layer = u, l
             do lsp = 1, ns
-                if (layer==upper.or..not.roomptr%shaft) then
+                if (layer==u.or..not.roomptr%shaft) then
                     if (tooutput(lsp)) then
                         ssvalue = roomptr%species_output(layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
@@ -412,16 +413,16 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call SSaddtolist(position,roomptr%temp(upper)-kelvin_c_offset,outarray)
+        call SSaddtolist(position,roomptr%temp(u)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call SSaddtolist(position,roomptr%temp(lower)-kelvin_c_offset,outarray)
-            call SSaddtolist(position,roomptr%depth(lower),outarray)
+            call SSaddtolist(position,roomptr%temp(l)-kelvin_c_offset,outarray)
+            call SSaddtolist(position,roomptr%depth(l),outarray)
         end if
         call SSaddtolist(position,roomptr%relp,outarray)
-        call SSaddtolist(position,zzrho(i,upper),outarray)
-        if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,lower),outarray)
-        call SSaddtolist(position,roomptr%species_output(upper,9),outarray)
-        if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%species_output(lower,9),outarray)
+        call SSaddtolist(position,zzrho(i,u),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,l),outarray)
+        call SSaddtolist(position,roomptr%species_output(u,9),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%species_output(l,9),outarray)
     end do
 
     ! fires

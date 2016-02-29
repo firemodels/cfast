@@ -138,8 +138,8 @@ module spreadsheet_header_routines
     ! Species by compartment, then layer, then species type
     do i = 1, nrm1
         roomptr => roominfo(i)
-        do j = upper, lower
-            if (j==upper.or..not.roomptr%shaft) then
+        do j = u, l
+            if (j==u.or..not.roomptr%shaft) then
                 do lsp = 1, ns
                     if(tooutput(lsp)) then
                         position = position + 1

@@ -8,7 +8,7 @@ module conduction_routines
     use cenviro
     use solver_data, only: nofwt
     use room_data
-    use cparams, only: nnodes
+    use cparams
 
     implicit none
 
@@ -90,14 +90,14 @@ module conduction_routines
                         j = iheat_connections(iroom,jj)
                         frac = heat_frac(iroom,j)
                         if(iwall==3)then
-                            yb = roomptr%depth(lower)
+                            yb = roomptr%depth(l)
                             yt = roomptr%z1
                         elseif(iwall==4)then
                             yb = 0.0_eb
-                            yt = roomptr%depth(lower)
+                            yt = roomptr%depth(l)
                         end if
                         dflor = roominfo(j)%z0 - roomptr%z0
-                        yy = roominfo(j)%depth(lower) + dflor
+                        yy = roominfo(j)%depth(l) + dflor
                         if(j/=nrm1+1)then
                             if(yy>yt)then
                                 fu = 0.0_eb

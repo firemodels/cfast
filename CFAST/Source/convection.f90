@@ -2,6 +2,7 @@
 
     use precision_parameters
     use fireptrs
+    use cparams
     use wallptrs
     use cenviro
     use ramp_data
@@ -36,8 +37,8 @@
     type(room_type), pointer :: roomptr
 
 
-    flwcv(1:nrm1,upper) = 0.0_eb
-    flwcv(1:nrm1,lower) = 0.0_eb
+    flwcv(1:nrm1,u) = 0.0_eb
+    flwcv(1:nrm1,l) = 0.0_eb
     flxcv(1:nrm1,1:nwal) = 0.0_eb
 
     if (option(fconvec)/=on) return
@@ -49,9 +50,9 @@
         iwall = izwall(iw,w_from_wall)
         nrmfire = ifrpnt(i,1)
         if(mod(iwall,2)==1)then
-            ilay = upper
+            ilay = u
         else
-            ilay = lower
+            ilay = l
         end if
         ! assume no fires in this room.  just use regular convection
         call convective_flux(iwall,roomptr%temp(ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))

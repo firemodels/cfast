@@ -1229,8 +1229,8 @@ module solve_routines
     ! calculate rhs of ode's for each room
     do iroom = 1, nrm1
         roomptr => roominfo(iroom)
-        aroom = roomptr%area
-        hceil = roomptr%height
+        aroom = roomptr%floor_area
+        hceil = roomptr%cheight
         pabs = roomptr%absp
         hinter = roomptr%layer_depth(ll)
         ql = flwtot(iroom,q,ll)
@@ -1286,7 +1286,7 @@ module solve_routines
         do iprod = 1, nprod
             do iroom = 1, nrm1
                 roomptr => roominfo(iroom)
-                hceil = roomptr%height
+                hceil = roomptr%cheight
                 hinter = roomptr%layer_depth(ll)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
@@ -1400,20 +1400,20 @@ module solve_routines
     if (iflag==constvar) then
         do iroom = 1, nr
             roomptr => roominfo(iroom)
-            roomptr%vmin = min(vminfrac*roomptr%volume, 1.0_eb)
-            roomptr%vmax = roomptr%volume - roomptr%vmin
+            roomptr%vmin = min(vminfrac*roomptr%cvolume, 1.0_eb)
+            roomptr%vmax = roomptr%cvolume - roomptr%vmin
         end do
         do iroom = 1, nrm1
             roomptr=>roominfo(iroom)
 
-            roomptr%x1 = roomptr%x0 + roomptr%width
-            roomptr%y1 = roomptr%y0 + roomptr%depth
-            roomptr%z1 = roomptr%z0 + roomptr%height
+            roomptr%x1 = roomptr%x0 + roomptr%cwidth
+            roomptr%y1 = roomptr%y0 + roomptr%cdepth
+            roomptr%z1 = roomptr%z0 + roomptr%cheight
 
             ! define wall centers
-            xmax = roomptr%width
+            xmax = roomptr%cwidth
             xmid = xmax/2.0_eb
-            ymax = roomptr%depth
+            ymax = roomptr%cdepth
             ymid = ymax/2.0_eb
             zmax = roomptr%z1
 
@@ -1649,17 +1649,17 @@ module solve_routines
 
             roomptr%layer_volume(upper) = max(pdif(iroom+nofvu),roomptr%vmin)
             roomptr%layer_volume(upper) = min(roomptr%layer_volume(upper),roomptr%vmax)
-            roomptr%layer_volume(lower) = max(roomptr%volume-roomptr%layer_volume(upper),roomptr%vmin)
+            roomptr%layer_volume(lower) = max(roomptr%cvolume-roomptr%layer_volume(upper),roomptr%vmin)
             roomptr%layer_volume(lower) = min(roomptr%layer_volume(lower),roomptr%vmax)
 
             ! calculate layer height for non-rectangular rooms
             npts = roomptr%nvars
             if(npts==0)then
-                roomptr%layer_depth(upper) = roomptr%layer_volume(upper)/roomptr%area
-                roomptr%layer_depth(lower) = roomptr%layer_volume(lower)/roomptr%area
+                roomptr%layer_depth(upper) = roomptr%layer_volume(upper)/roomptr%floor_area
+                roomptr%layer_depth(lower) = roomptr%layer_volume(lower)/roomptr%floor_area
             else
                 call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%layer_volume(lower),1,roomptr%layer_depth(lower))
-                roomptr%layer_depth(upper) = roomptr%height - roomptr%layer_depth(lower)
+                roomptr%layer_depth(upper) = roomptr%cheight - roomptr%layer_depth(lower)
             end if
 
             roomptr%relp = pdif(iroom)
@@ -1689,11 +1689,11 @@ module solve_routines
             end if
 
             ! compute area of 10 wall segments
-            xmax = roomptr%width
-            ymax = roomptr%depth
+            xmax = roomptr%cwidth
+            ymax = roomptr%cdepth
             zzu = roomptr%layer_depth(upper)
             zzl = roomptr%layer_depth(lower)
-            zzwarea10(iroom,1) = roomptr%area
+            zzwarea10(iroom,1) = roomptr%floor_area
             zzwarea10(iroom,2) = zzu*xmax
             zzwarea10(iroom,3) = zzu*ymax
             zzwarea10(iroom,4) = zzu*xmax
@@ -1702,11 +1702,11 @@ module solve_routines
             zzwarea10(iroom,7) = zzl*ymax
             zzwarea10(iroom,8) = zzl*xmax
             zzwarea10(iroom,9) = zzl*ymax
-            zzwarea10(iroom,10) = roomptr%area
+            zzwarea10(iroom,10) = roomptr%floor_area
 
             ! compute area of 4 wall segments
-            zzwarea4(iroom,1) = roomptr%area
-            zzwarea4(iroom,2) = roomptr%area
+            zzwarea4(iroom,1) = roomptr%floor_area
+            zzwarea4(iroom,2) = roomptr%floor_area
             zzwarea4(iroom,3) = (ymax + xmax)*zzu*2.0_eb
             zzwarea4(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
 

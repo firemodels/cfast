@@ -16,10 +16,10 @@ module cfast_types
         logical :: shaft                                ! true if compartment is a shaft (one zone calculation)
         logical, dimension(nwal) :: surface_on          ! true if heat conduction is calculated; otherwise adiabatic
         real(eb) :: x0, y0, z0                          ! absolute coordinates of lower left front corner of compartment
-        real(eb) :: width, depth, height                ! width, depth, and height for the compartment
+        real(eb) :: cwidth, cdepth, cheight             ! width, depth, and height for the compartment
         real(eb) :: x1, y1, z1                          ! absolute coordinate of upper right rear corner of compartment
-        real(eb) :: area                                ! compartment floor area
-        real(eb) :: volume                              ! compartment volume
+        real(eb) :: floor_area                          ! compartment floor area
+        real(eb) :: cvolume                             ! compartment volume
         real(eb) :: vmin, vmax                          ! minimum and maximum layer volume for compartment
         real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
         real(eb), allocatable, dimension(:) :: xplt, yplt, zplt     ! grid for slice / isosurface files

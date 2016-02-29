@@ -333,7 +333,7 @@ module mflow_routines
         end if
 
         ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(roomptr%height-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
@@ -515,15 +515,15 @@ module mflow_routines
     if (hvorien(i)==1) then
         xyz(1) = 0.0_eb
         xyz(2) = 0.0_eb
-        xyz(3) = roomptr%depth/2 - sqrt(varea)/2
-        xyz(4) = roomptr%depth/2 + sqrt(varea)/2
+        xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2
+        xyz(4) = roomptr%cdepth/2 + sqrt(varea)/2
         xyz(5) = vheight - sqrt(varea)/2
         xyz(6) = vheight + sqrt(varea)/2
     else
-        xyz(1) = roomptr%depth/2 - sqrt(varea)/2
-        xyz(2) = roomptr%depth/2 + sqrt(varea)/2
-        xyz(3) = roomptr%width/2 - sqrt(varea)/2
-        xyz(4) = roomptr%width/2 + sqrt(varea)/2
+        xyz(1) = roomptr%cdepth/2 - sqrt(varea)/2
+        xyz(2) = roomptr%cdepth/2 + sqrt(varea)/2
+        xyz(3) = roomptr%cwidth/2 - sqrt(varea)/2
+        xyz(4) = roomptr%cwidth/2 + sqrt(varea)/2
         xyz(5) = vheight
         xyz(6) = vheight
     end if

@@ -128,9 +128,9 @@ module input_routines
     nrm1 = nr - 1
     do i = 1, nrm1
         roomptr => roominfo(i)
-        roomptr%x1 = roomptr%x0 + roomptr%width
-        roomptr%y1 = roomptr%y0 + roomptr%depth
-        roomptr%z1 = roomptr%z0 + roomptr%height
+        roomptr%x1 = roomptr%x0 + roomptr%cwidth
+        roomptr%y1 = roomptr%y0 + roomptr%cdepth
+        roomptr%z1 = roomptr%z0 + roomptr%cheight
     end do
 
     ! We now know what output is going to be generated, so create the files
@@ -148,17 +148,17 @@ module input_routines
     ! check and/or set heat source fire position
     if (heatfl) then
         roomptr => roominfo(heatfr)
-        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>roomptr%width)) heatfp(1) = roomptr%width/2.0_eb
-        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>roomptr%depth)) heatfp(2) = roomptr%depth/2.0_eb
-        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>roomptr%height)) heatfp(3) = 0.0_eb
+        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>roomptr%cwidth)) heatfp(1) = roomptr%cwidth/2.0_eb
+        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>roomptr%cdepth)) heatfp(2) = roomptr%cdepth/2.0_eb
+        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>roomptr%cheight)) heatfp(3) = 0.0_eb
     end if
 
     ! check and/or set position of fire objects
     do i = 1, numobjl
         roomptr => roominfo(objrm(i))
-        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%width)) objpos(1,i) = roomptr%width/2.0_eb
-        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%depth)) objpos(2,i) = roomptr%depth/2.0_eb
-        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%height)) objpos(3,i) = 0.0_eb
+        if((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%cwidth)) objpos(1,i) = roomptr%cwidth/2.0_eb
+        if((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%cdepth)) objpos(2,i) = roomptr%cdepth/2.0_eb
+        if((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%cheight)) objpos(3,i) = 0.0_eb
     end do
 
     ! make sure ceiling/floor vent specifications are correct -  we have to do this
@@ -208,8 +208,8 @@ module input_routines
     ! Compartment area and volume
     do i = 1, nrm1
         roomptr => roominfo(i)
-        roomptr%area = roomptr%width*roomptr%depth
-        roomptr%volume = roomptr%area*roomptr%height
+        roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
+        roomptr%cvolume = roomptr%floor_area*roomptr%cheight
     end do
 
 
@@ -306,10 +306,10 @@ module input_routines
             end do
 
             ! force last elevation to be at the ceiling (as defined by room_height(i)
-            if(roomptr%height/=roomptr%var_height(npts))then
+            if(roomptr%cheight/=roomptr%var_height(npts))then
                 ioff2 = 1
                 temparea(npts+ioff+ioff2) = roomptr%var_area(npts)
-                temphgt(npts+ioff+ioff2) = roomptr%height
+                temphgt(npts+ioff+ioff2) = roomptr%cheight
             else
                 ioff2 = 0
             end if
@@ -344,11 +344,11 @@ module input_routines
             ! room_width*room_depth=room_area and room_width/room_depth remain the same as entered on
             ! the width and depth  commands.
 
-            roomptr%volume = roomptr%var_volume(npts)
-            roomptr%area = roomptr%volume/roomptr%height
-            xx = roomptr%width/roomptr%depth
-            roomptr%width = sqrt(roomptr%area*xx)
-            roomptr%depth = sqrt(roomptr%area/xx)
+            roomptr%cvolume = roomptr%var_volume(npts)
+            roomptr%floor_area = roomptr%cvolume/roomptr%cheight
+            xx = roomptr%cwidth/roomptr%cdepth
+            roomptr%cwidth = sqrt(roomptr%floor_area*xx)
+            roomptr%cdepth = sqrt(roomptr%floor_area/xx)
         end if
     end do
 
@@ -380,7 +380,7 @@ module input_routines
         xloc = dtectptr%center(1)
         yloc = dtectptr%center(2)
         zloc = dtectptr%center(3)
-        if(xloc<0.0_eb.or.xloc>roomptr%width.or.yloc<0.0_eb.or.yloc>roomptr%depth.or.zloc<0.0_eb.or.zloc>roomptr%height) then
+        if(xloc<0.0_eb.or.xloc>roomptr%cwidth.or.yloc<0.0_eb.or.yloc>roomptr%cdepth.or.zloc<0.0_eb.or.zloc>roomptr%cheight) then
             write(logerr,102) xloc,yloc,zloc
 102         format('***Error: Invalid DETECTOR specification. X,Y,Z,location =',3e11.4,' is out of bounds')
             stop
@@ -565,9 +565,9 @@ module input_routines
                 roomptr%name = lcarray(1)
 
                 ! Size
-                roomptr%width = lrarray(2)
-                roomptr%depth = lrarray(3)
-                roomptr%height = lrarray(4)
+                roomptr%cwidth = lrarray(2)
+                roomptr%cdepth = lrarray(3)
+                roomptr%cheight = lrarray(4)
                 roomptr%x0 = lrarray(5)
                 roomptr%y0 = lrarray(6)
                 roomptr%z0 = lrarray(7)
@@ -737,15 +737,15 @@ module input_routines
             objpos(1,obpnt) = lrarray(2)
             objpos(2,obpnt) = lrarray(3)
             objpos(3,obpnt) = lrarray(4)
-            if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
+            if (objpos(1,obpnt)>roomptr%cwidth.or.objpos(2,obpnt)>roomptr%cdepth.or.objpos(3,obpnt)>roomptr%cheight) then
                 write(logerr,5323) obpnt
                 stop
             end if
             obj_fpos(obpnt) = 1
-            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
-                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
-                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .or. &
+                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .and. &
+                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire
@@ -959,7 +959,7 @@ module input_routines
 
             ihvent_connections(j,i) = ihvent_connections(i,j)
             roomptr => roominfo(j)
-            hh(jik) = min(roomptr%height,max(0.0_eb,hhp(jik)-roomptr%z0))
+            hh(jik) = min(roomptr%cheight,max(0.0_eb,hhp(jik)-roomptr%z0))
             hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomptr%z0))
 
             ! assure ourselves that the connections are symmetrical
@@ -967,7 +967,7 @@ module input_routines
             hhp(jik) = hh(jik) + roomptr%z0
             hlp(jik) = hl(jik) + roomptr%z0
             roomptr => roominfo(i)
-            hh(iijk) = min(roomptr%height,max(0.0_eb,hhp(iijk)-roomptr%z0))
+            hh(iijk) = min(roomptr%cheight,max(0.0_eb,hhp(iijk)-roomptr%z0))
             hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-roomptr%z0))
 
             ! DEADROOM dead_room_num connected_room_num
@@ -1234,15 +1234,15 @@ module input_routines
             objpos(1,obpnt) = lrarray(3)
             objpos(2,obpnt) = lrarray(4)
             objpos(3,obpnt) = lrarray(5)
-            if (objpos(1,obpnt)>roomptr%width.or.objpos(2,obpnt)>roomptr%depth.or.objpos(3,obpnt)>roomptr%height) then
+            if (objpos(1,obpnt)>roomptr%cwidth.or.objpos(2,obpnt)>roomptr%cdepth.or.objpos(3,obpnt)>roomptr%cheight) then
                 write(logerr,5323) obpnt
                 stop
             end if
             obj_fpos(obpnt) = 1
-            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .or. &
-                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-            if (min(objpos(1,obpnt),roomptr%width-objpos(1,obpnt))<=mx_hsep .and. &
-                min(objpos(2,obpnt),roomptr%depth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .or. &
+                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
+            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .and. &
+                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
 
             objign(obpnt) =   lrarray(7)
             tmpcond =         lrarray(8)
@@ -1361,8 +1361,8 @@ module input_routines
                     stop
                 end if
 
-                if(dtectptr%center(1)>roomptr%width.or. &
-                    dtectptr%center(2)>roomptr%depth.or.dtectptr%center(3)>roomptr%height) then
+                if(dtectptr%center(1)>roomptr%cwidth.or. &
+                    dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
                     write(logerr,5339) ndtect,roomptr%name
                     stop
                 end if
@@ -1626,7 +1626,7 @@ module input_routines
                             sliceptr%axis = 1
                             if (sliceptr%roomnum>0) then
                                 roomptr => roominfo(sliceptr%roomnum)
-                                if (sliceptr%position>roomptr%width.or.sliceptr%position<0.0_eb) then
+                                if (sliceptr%position>roomptr%cwidth.or.sliceptr%position<0.0_eb) then
                                     write (logerr, 5403) nvisualinfo
                                     stop
                                 end if
@@ -1635,7 +1635,7 @@ module input_routines
                             sliceptr%axis = 2
                             if (sliceptr%roomnum>0) then
                                 roomptr => roominfo(sliceptr%roomnum)
-                                if (sliceptr%position>roomptr%depth.or.sliceptr%position<0.0_eb) then
+                                if (sliceptr%position>roomptr%cdepth.or.sliceptr%position<0.0_eb) then
                                     write (logerr, 5403) nvisualinfo
                                     stop
                                 end if
@@ -1644,7 +1644,7 @@ module input_routines
                             sliceptr%axis = 3
                             if (sliceptr%roomnum>0) then
                                 roomptr => roominfo(sliceptr%roomnum)
-                                if (sliceptr%position>roomptr%height.or.sliceptr%position<0.0_eb) then
+                                if (sliceptr%position>roomptr%cheight.or.sliceptr%position<0.0_eb) then
                                     write (logerr, 5403) nvisualinfo
                                     stop
                                 end if
@@ -1882,9 +1882,9 @@ module input_routines
 
     ! Position the object
     roomptr => roominfo(objrm(iobj))
-    call positionobject(objpos,1,iobj,roomptr%width,midpoint,mx_hsep)
-    call positionobject(objpos,2,iobj,roomptr%depth,midpoint,mx_hsep)
-    call positionobject(objpos,3,iobj,roomptr%height,base,mx_hsep)
+    call positionobject(objpos,1,iobj,roomptr%cwidth,midpoint,mx_hsep)
+    call positionobject(objpos,2,iobj,roomptr%cdepth,midpoint,mx_hsep)
+    call positionobject(objpos,3,iobj,roomptr%cheight,base,mx_hsep)
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -2234,7 +2234,7 @@ module input_routines
 
    integer :: i,j,k,iroom,islice
    type(slice_type), pointer :: sliceptr
-   type(room_type), pointer :: rm
+   type(room_type), pointer :: roomptr
    real(eb) :: xb(6)
    character(256) :: slicefilename
    integer :: ijkslice(6)
@@ -2278,33 +2278,33 @@ module input_routines
    ! setup grid locations for each compartment
 
    do iroom = 1, nrm
-       rm=>roominfo(iroom)
-       rm%ibar = min(max(2,int(rm%width/dxyz)),rm%ibar)
+       roomptr=>roominfo(iroom)
+       roomptr%ibar = min(max(2,int(roomptr%cwidth/dxyz)),roomptr%ibar)
 
-       ceiljet_depth = 0.2_eb * rm%z1 ! placeholder now, change to a calculation
+       ceiljet_depth = 0.2_eb * roomptr%z1 ! placeholder now, change to a calculation
 
-       rm%ibar = min(max(2,int(rm%width/dxyz)),rm%ibar)
-       allocate(rm%xplt(0:rm%ibar))
-       allocate(rm%xpltf(0:rm%ibar))
-       call set_grid(rm%xplt,rm%ibar+1,rm%x0,rm%x1,rm%x1,0)
-       do i = 0, rm%ibar
-           rm%xpltf(i) = real(rm%xplt(i),fb)
+       roomptr%ibar = min(max(2,int(roomptr%cwidth/dxyz)),roomptr%ibar)
+       allocate(roomptr%xplt(0:roomptr%ibar))
+       allocate(roomptr%xpltf(0:roomptr%ibar))
+       call set_grid(roomptr%xplt,roomptr%ibar+1,roomptr%x0,roomptr%x1,roomptr%x1,0)
+       do i = 0, roomptr%ibar
+           roomptr%xpltf(i) = real(roomptr%xplt(i),fb)
        end do
 
-       rm%jbar = min(max(2,int(rm%depth/dxyz)),rm%jbar)
-       allocate(rm%yplt(0:rm%jbar))
-       allocate(rm%ypltf(0:rm%jbar))
-       call set_grid(rm%yplt,rm%jbar+1,rm%y0,rm%y1,rm%y1,0)
-       do j = 0, rm%jbar
-           rm%ypltf(j) = real(rm%yplt(j),fb)
+       roomptr%jbar = min(max(2,int(roomptr%cdepth/dxyz)),roomptr%jbar)
+       allocate(roomptr%yplt(0:roomptr%jbar))
+       allocate(roomptr%ypltf(0:roomptr%jbar))
+       call set_grid(roomptr%yplt,roomptr%jbar+1,roomptr%y0,roomptr%y1,roomptr%y1,0)
+       do j = 0, roomptr%jbar
+           roomptr%ypltf(j) = real(roomptr%yplt(j),fb)
        end do
 
-       rm%kbar = min(max(2,int(rm%height/dxyz)),rm%kbar)
-       allocate(rm%zplt(0:rm%kbar))
-       allocate(rm%zpltf(0:rm%kbar))
-       call set_grid(rm%zplt,rm%kbar+1,rm%z0,rm%z1-ceiljet_depth,rm%z1,rm%kbar/3)
-       do k = 0, rm%kbar
-           rm%zpltf(k) = real(rm%zplt(k),fb)
+       roomptr%kbar = min(max(2,int(roomptr%cheight/dxyz)),roomptr%kbar)
+       allocate(roomptr%zplt(0:roomptr%kbar))
+       allocate(roomptr%zpltf(0:roomptr%kbar))
+       call set_grid(roomptr%zplt,roomptr%kbar+1,roomptr%z0,roomptr%z1-ceiljet_depth,roomptr%z1,roomptr%kbar/3)
+       do k = 0, roomptr%kbar
+           roomptr%zpltf(k) = real(roomptr%zplt(k),fb)
        end do
    end do
 
@@ -2324,41 +2324,41 @@ module input_routines
            iend=ir
        end if
        do iroom=ibeg,iend
-           rm=>roominfo(iroom)
-           xb(1) = rm%x0
-           xb(2) = rm%x1
-           xb(3) = rm%y0
-           xb(4) = rm%y1
-           xb(5) = rm%z0
-           xb(6) = rm%z1
+           roomptr=>roominfo(iroom)
+           xb(1) = roomptr%x0
+           xb(2) = roomptr%x1
+           xb(3) = roomptr%y0
+           xb(4) = roomptr%y1
+           xb(5) = roomptr%z0
+           xb(6) = roomptr%z1
            ijkslice(1) = 0
-           ijkslice(2) = rm%ibar
+           ijkslice(2) = roomptr%ibar
            ijkslice(3) = 0
-           ijkslice(4) = rm%jbar
+           ijkslice(4) = roomptr%jbar
            ijkslice(5) = 0
-           ijkslice(6) = rm%kbar
+           ijkslice(6) = roomptr%kbar
            skipslice=0
            if(vptr%vtype.eq.1)then
                position_offset = 0.0_eb
                if(vptr%axis.eq.1)then
-                   if(ir/=0) position_offset = rm%x0
+                   if(ir/=0) position_offset = roomptr%x0
                    xb(1) = vptr%position + position_offset
                    xb(2) = vptr%position + position_offset
-                   ijkslice(1) = get_igrid(xb(1),rm%xplt,rm%ibar)
+                   ijkslice(1) = get_igrid(xb(1),roomptr%xplt,roomptr%ibar)
                    if(ijkslice(1)<0)skipslice=1
                    ijkslice(2) = ijkslice(1)
                else if(vptr%axis.eq.2)then
-                   if(ir/=0) position_offset = rm%y0
+                   if(ir/=0) position_offset = roomptr%y0
                    xb(3) = vptr%position + position_offset
                    xb(4) = vptr%position + position_offset
-                   ijkslice(3) = get_igrid(xb(3),rm%yplt,rm%jbar)
+                   ijkslice(3) = get_igrid(xb(3),roomptr%yplt,roomptr%jbar)
                    if(ijkslice(3)<0)skipslice=1
                    ijkslice(4) = ijkslice(3)
                else if(vptr%axis.eq.3)then
-                   if(ir/=0) position_offset = rm%z0
+                   if(ir/=0) position_offset = roomptr%z0
                    xb(5) = vptr%position + position_offset
                    xb(6) = vptr%position + position_offset
-                   ijkslice(5) = get_igrid(xb(5),rm%zplt,rm%kbar)
+                   ijkslice(5) = get_igrid(xb(5),roomptr%zplt,roomptr%kbar)
                    if(ijkslice(5)<0)skipslice=1
                    ijkslice(6) = ijkslice(5)
                end if
@@ -2417,7 +2417,7 @@ module input_routines
            iend=ir
        end if
        do iroom=ibeg,iend
-           rm=>roominfo(iroom)
+           roomptr=>roominfo(iroom)
            isoptr => isoinfo(i_iso)
 
            write(isofilename,'(A,A,I4.4,A)') trim(project),'_',i_iso,'.iso'

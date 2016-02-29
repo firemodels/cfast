@@ -281,7 +281,7 @@ module vflow_routines
         dp(1) = 0.0_eb
         relp(1) = toproomptr%relp
     else
-        dp(1) = -grav_con*botroomptr%height*exterior_rho
+        dp(1) = -grav_con*botroomptr%cheight*exterior_rho
         relp(1) = botroomptr%exterior_relp_initial
     end if
 

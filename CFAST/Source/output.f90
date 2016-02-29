@@ -151,7 +151,7 @@ module output_routines
     write (iofilo,5040)
     do icomp = 1, nrm1
         roomptr =>roominfo(icomp)
-        izzvol = roomptr%layer_volume(upper)/roomptr%volume*100.0_eb+0.5_eb
+        izzvol = roomptr%layer_volume(upper)/roomptr%cvolume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
             write (iofilo,5071) roomptr%name, roomptr%layer_temp(upper)-kelvin_c_offset, roomptr%layer_volume(upper), &
                 zzabsb(icomp,upper),roomptr%relp - roomptr%interior_relp_initial
@@ -660,7 +660,7 @@ module output_routines
     write (iofilo,5000)
     do i = 1, nrm1
         roomptr => roominfo(i)
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%width, roomptr%depth, roomptr%height, roomptr%z0, roomptr%z1
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1
     end do
     return
 5000 format (//,'COMPARTMENTS',//, &
@@ -719,7 +719,7 @@ module output_routines
                     if (vshape(i,j)==2) csout = 'Square'
                     roomptr => roominfo(j)
                     if (j<nr) then
-                        hrx = roomptr%height
+                        hrx = roomptr%cheight
                         hrpx = roomptr%z1
                     else
                         hrx = roomptr%z0

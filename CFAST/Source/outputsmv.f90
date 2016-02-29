@@ -70,7 +70,7 @@
 
     integer ibar, jbar, kbar
     integer :: j
-    type(room_type), pointer :: rm
+    type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
     type(slice_type), pointer :: sf
     type(iso_type), pointer :: isoptr
@@ -100,38 +100,38 @@
 
     ! Compartment geometry
     do i = 1, nrm
-        rm=>roominfo(i)
+        roomptr=>roominfo(i)
 
         write(13,"(a,1x)")"ROOM"
-        write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") rm%width, rm%depth, rm%height
-        write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") rm%x0, rm%y0, rm%z0
+        write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%cwidth, roomptr%cdepth, roomptr%cheight
+        write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%x0, roomptr%y0, roomptr%z0
 
         if(nsliceinfo.gt.0)then
-            ibar = rm%ibar
-            jbar = rm%jbar
-            kbar = rm%kbar
+            ibar = roomptr%ibar
+            jbar = roomptr%jbar
+            kbar = roomptr%kbar
 
             write(13,"(a,1x)")"GRID"
             write(13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
 
             write(13,"(a,1x)")"PDIM"
-            write(13,"(9(f14.5,1x))")rm%x0,rm%x1,rm%y0,rm%y1,rm%z0,rm%z1,0.0_eb,0.0_eb,0.0_eb
+            write(13,"(9(f14.5,1x))")roomptr%x0,roomptr%x1,roomptr%y0,roomptr%y1,roomptr%z0,roomptr%z1,0.0_eb,0.0_eb,0.0_eb
             write(13,"(a,1x)")"TRNX"
             write(13,"(1x,i1)")0
             do j = 0, ibar
-                write(13,"(i5,1x,f14.5)")j,rm%xplt(j)
+                write(13,"(i5,1x,f14.5)")j,roomptr%xplt(j)
             end do
 
             write(13,"(a,1x)")"TRNY"
             write(13,"(1x,i1)")0
             do j = 0, jbar
-                write(13,"(i5,1x,f14.5)")j,rm%yplt(j)
+                write(13,"(i5,1x,f14.5)")j,roomptr%yplt(j)
             end do
 
             write(13,"(a,1x)")"TRNZ"
             write(13,"(1x,i1)")0
             do j = 0, kbar
-                write(13,"(i5,1x,f14.5)")j,rm%zplt(j)
+                write(13,"(i5,1x,f14.5)")j,roomptr%zplt(j)
             end do
 
             write(13,"(a,1x)")"OBST"
@@ -284,14 +284,14 @@
     real(fb), allocatable, dimension(:,:,:) :: tslicedata, uslicedata, vslicedata, wslicedata, sslicedata
     integer :: nx, ny, nz
     type(slice_type), pointer :: sf
-    type(room_type), pointer :: rm
+    type(room_type), pointer :: roomptr
     integer :: i, ii, jj, kk, roomnum
     real(eb) :: xx, yy, zz, tgas, vgas(4)
     integer :: unit
 
     do i = 1, nsliceinfo, 5
         sf => sliceinfo(i)
-        rm => roominfo(sf%roomnum)
+        roomptr => roominfo(sf%roomnum)
 
         if(sf%skip.eq.1)cycle
         nx = sf%ijk(2) + 1 - sf%ijk(1)
@@ -305,11 +305,11 @@
         allocate(wslicedata(0:nx-1,0:ny-1,0:nz-1))
         allocate(sslicedata(0:nx-1,0:ny-1,0:nz-1))
         do ii = 0, nx-1
-            xx = rm%xplt(sf%ijk(1)+ii) - rm%x0
+            xx = roomptr%xplt(sf%ijk(1)+ii) - roomptr%x0
             do jj = 0, ny-1
-                yy = rm%yplt(sf%ijk(3)+jj) - rm%y0
+                yy = roomptr%yplt(sf%ijk(3)+jj) - roomptr%y0
                 do kk = 0, nz-1
-                    zz = rm%zplt(sf%ijk(5)+kk) - rm%z0
+                    zz = roomptr%zplt(sf%ijk(5)+kk) - roomptr%z0
                     call get_gas_temp_velocity(roomnum,xx,yy,zz,tgas, vgas)
                     tslicedata(ii,jj,kk) = real(tgas-273.15_eb,fb)
                     uslicedata(ii,jj,kk) = real(vgas(1),fb)
@@ -509,7 +509,7 @@ module isosurface
     real(fb), allocatable, dimension(:,:,:) :: isodataf
     integer :: ibar, jbar, kbar
     type(iso_type), pointer :: isoptr
-    type(room_type), pointer :: rm
+    type(room_type), pointer :: roomptr
     integer :: i, ii, jj, kk, roomnum
     real(eb) :: xx, yy, zz, tgas, vgas(4)
     integer :: unit
@@ -525,17 +525,17 @@ module isosurface
 
         levelsf(1) = isoptr%value-273.15_eb
         roomnum = isoptr%roomnum
-        rm => roominfo(roomnum)
-        ibar = rm%ibar
-        jbar = rm%jbar
-        kbar = rm%kbar
+        roomptr => roominfo(roomnum)
+        ibar = roomptr%ibar
+        jbar = roomptr%jbar
+        kbar = roomptr%kbar
         allocate(isodataf(0:ibar+1,0:jbar+1,0:kbar+1))
         do ii = 0, ibar
-            xx = rm%xplt(ii) - rm%x0
+            xx = roomptr%xplt(ii) - roomptr%x0
             do jj = 0, jbar
-                yy = rm%yplt(jj) - rm%y0
+                yy = roomptr%yplt(jj) - roomptr%y0
                 do kk = 0, kbar
-                    zz = rm%zplt(kk) - rm%z0
+                    zz = roomptr%zplt(kk) - roomptr%z0
                     call get_gas_temp_velocity(roomnum,xx,yy,zz,tgas,vgas)
                     isodataf(ii+1,jj+1,kk+1) = real(tgas-273.15_eb,fb)
                 end do
@@ -548,7 +548,7 @@ module isosurface
         else
             open(unit,FILE=isoptr%filename,form='unformatted',status='old',position='append')
         end if
-        call iso_to_file(unit,timef,isodataf,levelsf, nlevels, rm%xpltf, ibar+1, rm%ypltf, jbar+1, rm%zpltf, kbar+1)
+        call iso_to_file(unit,timef,isodataf,levelsf, nlevels, roomptr%xpltf, ibar+1, roomptr%ypltf, jbar+1, roomptr%zpltf, kbar+1)
 
         deallocate(isodataf)
         close(unit)

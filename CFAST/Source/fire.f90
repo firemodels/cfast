@@ -78,7 +78,7 @@ module fire_routines
                 stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
             end do
 
-            call do_fire(i,iroom,oplume(1,iobj),roomptr%height,roomptr%width,roomptr%depth,objhct,y_soot,y_co, &
+            call do_fire(i,iroom,oplume(1,iobj),roomptr%cheight,roomptr%cwidth,roomptr%cdepth,objhct,y_soot,y_co, &
                y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat, &
                oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
@@ -887,15 +887,15 @@ module fire_routines
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = roomptr%layer_depth(lower)
-            zceil = roomptr%height
+            zceil = roomptr%cheight
             r = sqrt(xdistance**2 + ydistance**2)
             if (roomptr%hall) then
-                if (roomptr%depth>roomptr%width)then
+                if (roomptr%cdepth>roomptr%cwidth)then
                     distance = ydistance
-                    hall_width = roomptr%width
+                    hall_width = roomptr%cwidth
                 else
                     distance = xdistance
-                    hall_width = roomptr%depth
+                    hall_width = roomptr%cdepth
                 end if
             else
                 hall_width = 0.0_eb

@@ -58,9 +58,9 @@ module radiation_routines
     do i = 1, nrm1
         roomptr => roominfo(i)
         zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
-            (roomptr%area + roomptr%layer_depth(lower)*(roomptr%depth + roomptr%width))
+            (roomptr%floor_area + roomptr%layer_depth(lower)*(roomptr%cdepth + roomptr%cwidth))
         zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
-            (roomptr%area + roomptr%layer_depth(upper)*(roomptr%depth + roomptr%width))
+            (roomptr%floor_area + roomptr%layer_depth(upper)*(roomptr%cdepth + roomptr%cwidth))
     end do
 
     defabsup = 0.50_eb
@@ -71,9 +71,9 @@ module radiation_routines
         tg(upper) = roomptr%layer_temp(upper)
         tg(lower) = roomptr%layer_temp(lower)
         zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
-            (roomptr%area + roomptr%layer_depth(lower)*(roomptr%depth + roomptr%width))
+            (roomptr%floor_area + roomptr%layer_depth(lower)*(roomptr%cdepth + roomptr%cwidth))
         zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
-            (roomptr%area + roomptr%layer_depth(upper)*(roomptr%depth + roomptr%width))
+            (roomptr%floor_area + roomptr%layer_depth(upper)*(roomptr%cdepth + roomptr%cwidth))
         do iwall = 1, 4
             imap = map(iwall)
             twall(imap) = zzwtemp(i,iwall,1)
@@ -87,8 +87,8 @@ module radiation_routines
             !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
             ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
             call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight)
-            if(fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%height)then
-                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%height-xfire(ifire+j,f_fire_zpos))/3.0_eb
+            if(fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%cheight)then
+                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%cheight-xfire(ifire+j,f_fire_zpos))/3.0_eb
             else
                 zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
             end if
@@ -104,7 +104,7 @@ module radiation_routines
         end if
         rabsorb(1) = zzabsb(i,upper)
         rabsorb(2) = zzabsb(i,lower)
-        call rad4(twall,tg,emis,rabsorb,i,roomptr%width,roomptr%depth,roomptr%height,roomptr%layer_depth(lower), &
+        call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%layer_depth(lower), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
         do j = 1, nwal

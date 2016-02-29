@@ -140,7 +140,7 @@ module initialization_routines
             stop
         end if
         roomptr => roominfo(i)
-        hvelxt(ii) = min(roomptr%height,max(0.0_eb,hvelxt(ii)))
+        hvelxt(ii) = min(roomptr%cheight,max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + roomptr%z0
     end do
 
@@ -406,7 +406,7 @@ module initialization_routines
             if (yinter(i)<0.0_eb) then
                 p(i+nofvu) = roomptr%vmin
             else
-                p(i+nofvu) = min(roomptr%vmax,max(roomptr%vmin,yinter(i)*roomptr%area))
+                p(i+nofvu) = min(roomptr%vmax,max(roomptr%vmin,yinter(i)*roomptr%floor_area))
             end if
             yinter(i) = 0.0_eb
         end if
@@ -440,9 +440,9 @@ module initialization_routines
         dtectptr => detectorinfo(i)
         iroom=dtectptr%room
         roomptr => roominfo(iroom)
-        if (dtectptr%center(1)<0.0_eb) dtectptr%center(1) = roomptr%width*0.5_eb
-        if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%depth*0.5_eb
-        if (dtectptr%center(3)<0.0_eb) dtectptr%center(3) = roomptr%height-mx_vsep
+        if (dtectptr%center(1)<0.0_eb) dtectptr%center(1) = roomptr%cwidth*0.5_eb
+        if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%cdepth*0.5_eb
+        if (dtectptr%center(3)<0.0_eb) dtectptr%center(3) = roomptr%cheight-mx_vsep
 
         ! if tdspray>0 then interpret it as a spray density and convert
         ! to a characteristic quenching time
@@ -552,9 +552,9 @@ module initialization_routines
     zzcspec(1:mxrooms,upper:lower,1:ns) = 0.0_eb
 
     ! rooms
-    roominfo(1:mxrooms)%width = xlrg
-    roominfo(1:mxrooms)%depth = xlrg
-    roominfo(1:mxrooms)%height = xlrg
+    roominfo(1:mxrooms)%cwidth = xlrg
+    roominfo(1:mxrooms)%cdepth = xlrg
+    roominfo(1:mxrooms)%cheight = xlrg
     roominfo(1:mxrooms)%x0 = 0.0_eb
     roominfo(1:mxrooms)%y0 = 0.0_eb
     roominfo(1:mxrooms)%z0 = 0.0_eb
@@ -566,8 +566,8 @@ module initialization_routines
     roominfo(1:mxrooms)%kbar = 50
     do i = 1, mxrooms
         roomptr => roominfo(i)
-        roomptr%area = roomptr%width*roomptr%depth
-        roomptr%volume = roomptr%height*roomptr%area
+        roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
+        roomptr%cvolume = roomptr%cheight*roomptr%floor_area
         roomptr%matl(1:nwal) = 'OFF'
         roomptr%surface_on(1:nwal) = .false.
     end do
@@ -825,9 +825,9 @@ module initialization_routines
         xxnorm = targptr%normal(1)
         yynorm = targptr%normal(2)
         zznorm = targptr%normal(3)
-        xsize = roomptr%width
-        ysize = roomptr%depth
-        zsize = roomptr%height
+        xsize = roomptr%cwidth
+        ysize = roomptr%cdepth
+        zsize = roomptr%cheight
 
         ! if the locator is -1, set to center of room on the floor
         if(xloc==-1.0_eb) xloc = 0.5_eb*xsize

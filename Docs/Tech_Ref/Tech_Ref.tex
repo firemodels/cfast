@@ -128,7 +128,7 @@ This chapter provides a general description of the Consolidated Fire And Smoke T
 
 \section{Model Type}
 
-CFAST is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure. Each compartment is divided into an upper and lower gas layer. The fire drives combustion products from the lower to the upper layer via the plume. The temperature within each layer is uniform, and its evolution in time is described by a set of ordinary differential equations derived from the fundamental laws of mass and energy conservation. The transport of smoke and heat from zone to zone is dictated by empirical correlations. Because the governing equations are relatively simple, CFAST simulations typically require a few tens of seconds of CPU time on typical personal computers.
+CFAST is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure. Each compartment is divided into an upper and lower gas layer (zone in the term zone fire model refers to the layers being modeled). The fire drives combustion products from the lower to the upper layer via the plume. The temperature within each layer is uniform, and its evolution in time is described by a set of ordinary differential equations derived from the fundamental laws of mass and energy conservation. The transport of smoke and heat from zone to zone is dictated by empirical correlations. Because the governing equations are relatively simple, CFAST simulations typically require a few tens of seconds of CPU time on typical personal computers.
 
 
 \section{Model Version}
@@ -151,7 +151,7 @@ The U.S. Nuclear Regulatory Commission has published a verification and validati
 
 \section{Governing Equations and Assumptions}
 
-The governing equations of CFAST are for conservation of mass and energy within the lower and upper layers of connected compartments within a building. The momentum equation is not solved explicitly, except for use of the Bernoulli equation for the flow velocity at vents. Based on an integration over the volume of a layer, the equations are a set of ordinary differential equations that can be solved in seconds on a typical personal computer. Other features of CFAST include:
+The governing equations of CFAST are for conservation of mass and energy within the lower and upper layers of connected compartments within a building. The momentum within any one zone is assumed to be zero.  Momentum between zones in adjacent compartments is accounted for in terms of horizontal or vent flow equations (Bernoulli's law). Other features of CFAST include:
 \begin{itemize}
 \item Compartment geometry: CFAST is generally limited to fire scenarios where the compartment volumes are strongly stratified. The empirical correlations contained in CFAST were developed for relatively uncluttered, flat ceilings in compartments that can be characterized as ``rooms'' as opposed to corridors or vertical shafts. There are no hard limits on what kind of compartment can or cannot be modeled in CFAST. The CFAST Validation Guide indicates the accuracy of its predictions for compartments of various aspect ratios.
 \item Heat Release Rate: CFAST does not predict fire growth on burning objects. The heat release rate is specified by the user for one or more fires. There is a simple sub-model to limit the heat release based on available oxygen.
@@ -226,10 +226,11 @@ The rest of this document is broken into several chapters as follows:
 \chapter{The Basic Transport Equations}
 \label{sec:Theory_Chapter}
 
-The equations used in CFAST take the form of an initial value problem for a system of ordinary differential equations. These equations are derived from the conservation laws of mass and energy (equivalently the first law of thermodynamics) and the ideal gas law. These equations predict the evolution in time of the compartment pressure, layer height, and layer temperatures due to the gains and losses of mass and energy. The assumption of a zone model is that properties such as temperature can be approximated throughout a control volume by a representative average value. Many formulations based upon these assumptions can be derived~\cite{Forney:1994}. Though equivalent mathematically, these formulations differ in their numerical solution.
+The equations used to model pressure, layer height and temperatures in CFAST take the form of an initial value problem for a system of ordinary differential equations. These equations are derived from the principles of conservation of mass and energy using the ideal gas law as an equation of state to relate temperature and density. These equations predict the evolution in time of the compartment pressure (at the floor), upper layer volume, and layer temperatures due to the net gain or loss of mass and energy in these layers. The primary assumption of a zone model is that properties such as temperature can be approximated throughout a control volume by a representative average value. Many formulations based upon these assumptions can be derived~\cite{Forney:1994}. Though equivalent mathematically, these formulations differ in their numerical solution.
 
-The exchange of mass and enthalpy between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and enthalpy between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and enthalpy from the lower to the upper layer, and convection transfers enthalpy from the gas layers to the surrounding walls. The momentum equation is explicitly included since conditions within a control volumes are assumed to be uniform. Of course, included plume entrainment, ceiling jet, and vent flow correlations are applications of momentum principles used for specific purposes within the model.
+The exchange of mass and energy or heat between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and heat between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and heat from the lower to the upper layer, and convection transfers heat from the gas layers to the surrounding walls.  The momentum within any one zone is assumed to be zero. Momentum exchange between zones in adjacent compartments is accounted for in terms of horizontal or vent flow equations (Bernoulli's law).
 
+\newcommand{\qdot}{\dot{q}}
 \section{Equation Derivation}
 
 This section includes the derivation of the governing transport equations. All of the mathematical symbols are defined in Appendix~\ref{nomenclature}.
@@ -246,36 +247,38 @@ It is assumed that each compartment is divided into two control volumes, a relat
 \end{figure}
 
 \subsection{Conservation Laws}
-The set of governing equations start with the conservation of mass. The change of mass in each layer, $i$, is expressed as
+The set of governing equations start with the conservation of mass which in words may be expressed as the net rate at which mass is added to a control volume, $\dot m_i$, is equal to the rate at which mass is accumulated in that control volume, $\dbydt{m_i}$ or equivalently
 \be
    \dbydt{m_i} = \dot m_i  \label{mass_con}
 \ee
-where $\dm_i$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving layer $i$. Conservation of energy takes the form of the first law of thermodynamics, which states that the rate of increase of internal energy plus the rate at which the layer does work by expansion is equal to the rate at which enthalpy is added to the gas:
+where in particular $\dm_i$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving layer $i$. Similarly, the conservation of energy may be stated as the net rate that heat is added to the control volume, $\qdot_i$ minus the work done by the control volume, $P\dbydt{V_i}$, (since the control volume may move), is equal to the rate at which heat or internal energy accumulates in the control volume, $\ddt\left(c_v m_i T_i\right)$  or equivalently
 \be
-   \ddt\left(c_v m_i T_i\right) +  P \dbydt{V_i} =  \dot h_i \label{eq:first_law}
+   \ddt\left(c_v m_i T_i\right)   =  \qdot_i - P \dbydt{V_i}\label{eq:first_law}
 \ee
 
-The enthalpy source term, $\dot h_i$, consists of the fire's heat release rate, convective losses to walls, and radiation exchange. The layer temperature and density are related to the compartment pressure via the ideal gas law:
+Stated in this way, conservation of energy is the first law of thermodynamics.  The heat source term, $\qdot_i$, consists of the fire's heat release rate, convective losses to walls, and radiation exchange. The layer temperature and density are related to the compartment pressure via the ideal gas law:
 \be
   P = R \, \rho_i \, T_i \label{EoS}
 \ee
 
+For the derivations that follow, we assume that the pressure $P$ is the same for the upper and lower layer or equivalently $\rho_l T_l=\rho_u T_u$.
+
 \subsection{Pressure Equation}
 \noindent To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:first_law} for the upper and lower layer and substitute $\rho_i=m_i/V_i$ to give
 \begin{eqnarray}
-   c_v\ddt\left( V_l\rho_l T_l\right) +  P \dbydt{V_l} &=  &\dot h_l \label{eq:lower}\\
-   c_v\ddt\left( V_u\rho_u T_u\right) +  P \dbydt{V_u} &=  &\dot h_u \label{eq:upper}
+   c_v\ddt\left( V_l\rho_l T_l\right)  &=  &\qdot_l - P \dbydt{V_l}\label{eq:lower}\\
+   c_v\ddt\left( V_u\rho_u T_u\right)  &=  &\qdot_u =  P \dbydt{V_u}\label{eq:upper}
 \end{eqnarray}
 
 \noindent Sum Eqs. \ref{eq:lower} and \ref{eq:upper}, noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, and use the assumption that $\rho_l T_L=\rho_u T_U = P/R$ to give
 \begin{eqnarray}
-   \frac{c_vV}{R}\dbydt{ P}  &=  &\dot h_l + \dot h_u
+   \frac{c_vV}{R}\dbydt{ P}  &=  &\qdot_l + \qdot_u
 \end{eqnarray}
 
 \noindent Finally use $R=c_p-c_v$ and $\gamma=c_p/c_v$ to show that $R/c_v=\gamma-1$ giving
 
 \begin{eqnarray}
-   \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\dot h_l + \dot h_u\right)
+   \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\qdot_l + \qdot_u\right)
    \label{eq:ODE_P}
 \end{eqnarray}
 
@@ -287,46 +290,46 @@ To derive the upper layer volume differential equation, first note that
 c_vm_uT_u=c_vV_u\rho_uT_u=c_vV_u\frac{P}{R}=\frac{c_v}{c_p-c_v}V_uP=\frac{1}{\gamma-1}V_uP
 \label{eq:vua}
 \end{equation}
-\noindent Subsituting Eq. \ref{eq:vua} into the upper layer form Eq. \ref{eq:first_law} ($i=u$) gives
+\noindent Substituting Eq. \ref{eq:vua} into the upper layer form Eq. \ref{eq:first_law} ($i=u$) gives
 \begin{eqnarray}
-\dot h_u&=&\frac{1}{\gamma-1}\ddt\left(V_uP\right) + P\dbydt{V_u}\\
+\qdot_u&=&\frac{1}{\gamma-1}\ddt\left(V_uP\right) + P\dbydt{V_u}\\
 &=&\frac{1}{\gamma-1}\left(P\dbydt{V_u} + V_u\dbydt{P}\right) + P\dbydt{V_u}\\
 &=&\frac{\gamma}{\gamma-1}P\dbydt{V_u} + \frac{V_u}{\gamma-1}\dbydt{P}\label{eq:vub}
 \end{eqnarray}
 
 \noindent Finally, solving Eq. \ref{eq:vub} for $\dbydt{Vu}$ gives
 \begin{equation}
-\dbydt{V_u} = \frac{1}{P\gamma}\left((\gamma-1)\dot h - V_u\dbydt{P}\right)
+\dbydt{V_u} = \frac{1}{P\gamma}\left((\gamma-1)\qdot - V_u\dbydt{P}\right)
 \label{eq:ODE_VU}
 \end{equation}
 
 \subsection{Temperature Equations}
-To derive the upper layer temperature differential equation note that 
+To derive the upper layer temperature differential equation note that
 $\ddt(c_vm_uT_u)=c_v\dot m_uT_u+c_vm_u\dbydt{T_u}$ and from Eq. \ref{eq:ODE_VU}
 \begin{equation}
-P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \dot h - \frac{V_u}{\gamma}\dbydt{P}
+P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \qdot - \frac{V_u}{\gamma}\dbydt{P}
 \label{eq:pvu}
 \end{equation}
 
 \noindent Substituting these two expressions into the upper layer form of Eq. \ref{eq:first_law} (again $i=u$) gives
- 
+
 \begin{eqnarray}
-   \ddt\left(c_v m_u T_u\right) +  P \dbydt{V_u} &=  &\dot h_u\\
-c_v\dot m_uT_u+c_vm_u\dbydt{T_u}+\frac{\gamma-1}{\gamma} \dot h - \frac{V_u}{\gamma}\dbydt{P}&=&\dot h_u
+   \ddt\left(c_v m_u T_u\right) +  P \dbydt{V_u} &=  &\qdot_u\\
+c_v\dot m_uT_u+c_vm_u\dbydt{T_u}+\frac{\gamma-1}{\gamma} \qdot - \frac{V_u}{\gamma}\dbydt{P}&=&\qdot_u
 \label{eq:tua}
 \end{eqnarray}
 Multiplying Eq. \ref{eq:tua} by $\gamma$ gives
 \begin{equation}
-c_p\dot m_uT_u+c_pm_u\dbydt{T_u} - \frac{V_u}{\gamma}\dbydt{P}=\dot h_u
+c_p\dot m_uT_u+c_pm_u\dbydt{T_u} - V_u\dbydt{P}=\qdot_u
 \end{equation}
 Finally, solving for $\dbydt{T_u}$ gives
 \begin{equation}
-\dbydt{T_u}=\frac{1}{c_pm_u}\left( \dot h_u-c_p\dot m_uT_u+ \frac{V_u}{\gamma}\dbydt{P}\right)
+\dbydt{T_u}=\frac{1}{c_pm_u}\left( \qdot_u-c_p\dot m_uT_u+ V_u\dbydt{P}\right)
 \label{eq:ODE_TU}
 \end{equation}
 A differential equation for lower layer temperature
 \begin{equation}
-\dbydt{T_l}=\frac{1}{c_pm_l}\left( \dot h_u-c_p\dot m_lT_l+ \frac{V_l}{\gamma}\dbydt{P}\right)
+\dbydt{T_l}=\frac{1}{c_pm_l}\left( \qdot_u-c_p\dot m_lT_l+ V_l\dbydt{P}\right)
 \label{eq:ODE_TL}
 \end{equation}
  may be derived similarly.
@@ -338,13 +341,13 @@ A system of ordinary differential equations consisting of Eqs. \ref{eq:ODE_P}, \
 are summarized below:
 
 \begin{eqnarray}
-\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dhl + \dhu \right)  \label{eq1} \\[.1in]
-\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dhu - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
-\dbydt{\Tu} &=& \frac{1}{c_p \, m_{\rm u}} \left( \dhu - c_p \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
-\dbydt{\Tl} &=& \frac{1}{c_p \, m_{\rm l}} \left( \dhl - c_p \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
+\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \qdot_l + \qdot_u \right)  \label{eq1} \\[.1in]
+\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \qdot_u - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
+\dbydt{\Tu} &=& \frac{1}{c_p \, m_{\rm u}} \left( \qdot_u - c_p \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
+\dbydt{\Tl} &=& \frac{1}{c_p \, m_{\rm l}} \left( \qdot_l - c_p \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
 
-The mass, $\dmau$ and $\dmal$, and enthalpy, $\dhu$ and $\dhl$, terms are simply the net sum of all mass and enthalpy flowing into a layer (through vents, from fires, between layers via a plume, or by radiation and convection from compartment surfaces).
+The mass, $\dmau$ and $\dmal$, and heat flow, $\qdot_u$ and $\qdot_l$, terms are simply the net sum of all mass and heat flowing into a layer (through vents, from fires, between layers via a plume, or by radiation and convection from compartment surfaces).
 
 Algebraic equations for wall surface temperatures can be derived using Fourier's law
 \be
@@ -418,7 +421,7 @@ Note that the nitrogen in the air acts only as a diluent. The yields of hydrogen
 \section{Heat Release Rate}
 \label{section:HRR}
 
-As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected enthalpy:
+As fuel and oxygen are consumed, heat is released and various products of combustion are formed. The heat is released as radiation and convected heat:
 \begin{eqnarray}
    \dQr &=& \chir \, \dQ \\[.1in]
    \dQc &=& (1-\chir) \, \dQ \\
@@ -583,7 +586,7 @@ This is the way it is written in Ref.~\cite{Emmons:SFPE}.
 
 Figure~\ref{fig:Flow_Patterns} indicates schematically how the various mass flows through the opening are distributed. For the flow originating in the upper layer of the upstream compartment flowing into the upper layer of the downstream compartment, $\dm_{\rm u \to u}$, or the flow from the lower layer to the lower layer, $\dm_{\rm l \to l}$, the mass is applied directly to the downstream layer.
 
-The mass flow from the upper layer of the upstream compartment to the lower layer of the downstream, $\dm_{\rm u \to l}$, is assumed to rise into the upper layer via a spill plume. The enthalpy flow rate of the plume is:
+The mass flow from the upper layer of the upstream compartment to the lower layer of the downstream, $\dm_{\rm u \to l}$, is assumed to rise into the upper layer via a spill plume. The heat flow rate of the plume is:
 \be
    \doh_{\rm u \to l} = c_p \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
 \ee
@@ -603,14 +606,14 @@ Cooper~\cite{Cooper:1989} developed a semi-empirical correlation for ceiling ven
    \dot{V}_{\rm up}   &=&  0.68 \, A_{\rm v} \, \sqrt{ 2 \, |\max(\Delta P,0)|/\rho_{\rm bot} } + \dot{V}_{\rm ex}  \\[.1in]
    \dot{V}_{\rm down} &=&  0.68 \, A_{\rm v} \, \sqrt{ 2 \, |\min(\Delta P,0)|/\rho_{\rm top} } + \dot{V}_{\rm ex}
 \end{eqnarray}
-Here, $\Delta P$ is the  lower {\em compartment} pressure minus the upper, $A_{\rm v}$ is the area of the vent, and $\rho_{\rm top}$ and $\rho_{\rm bot}$ are the {\em layer} densities adjacent to the vent. The term, $\dot{V}_{\rm ex}$, represents the density-driven {\em exchange} flow; that is, when $\Delta \rho=\rho_{\rm top}-\rho_{\rm bot}>0$ and $|\Delta P|$ is relatively small, there is an exchange of mass and enthalpy at the vent interface where hot gas from below mixes with cooler gases above:
+Here, $\Delta P$ is the  lower {\em compartment} pressure minus the upper, $A_{\rm v}$ is the area of the vent, and $\rho_{\rm top}$ and $\rho_{\rm bot}$ are the {\em layer} densities adjacent to the vent. The term, $\dot{V}_{\rm ex}$, represents the density-driven {\em exchange} flow; that is, when $\Delta \rho=\rho_{\rm top}-\rho_{\rm bot}>0$ and $|\Delta P|$ is relatively small, there is an exchange of mass and heat at the vent interface where hot gas from below mixes with cooler gases above:
 \be
    \dot{V}_{\rm ex} = 0.10 \, \left( \frac{g \, \Delta \rho \, A_{\rm v}^{5/2}}{\rho_{\rm avg}} \right)^{1/2} \left( 1 - \frac{|\Delta P|}{|\Delta P_{\rm \tiny flood}|} \right) \quad ; \quad
    |\Delta P| < |\Delta P_{\rm \tiny flood}| \equiv \frac{C_{\rm s}^2 \, g \, \Delta \rho \, D^5}{2 \, A_{\rm v}^2 }
 \ee
 Here, $\rho_{\rm avg}$ is the average of the densities above and below the vent,   $D = 2 \sqrt{A_{\rm v} / \pi}$, and the shape factor, $C_{\rm s}$, is 0.754 for round and 0.942 for square openings.
 
-As with doors and windows, mass and enthalpy are exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and enthalpy extracted from the layers of the lower compartment, and then consider where this mass and enthalpy are deposited in the upper compartment. First, the mass and enthalpy are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
+As with doors and windows, mass and heat exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and heat extracted from the layers of the lower compartment, and then consider where this mass and heat are deposited in the upper compartment. First, the mass and heat are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
 \begin{eqnarray}
   \dm_{\rm up}  &=& \alpha \; \rho_{\rm u} \, \dot{V}_{\rm up} + (1-\alpha) \; \rho_{\rm l} \, \dot{V}_{\rm up}  \\[.1in]
   \doh_{\rm up} &=& \alpha \; c_p \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; c_p \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl
@@ -634,7 +637,7 @@ Figure~\ref{correlation} displays the FDS results and correlation.
 \caption[Relative fraction of upper layer gases extracted via a ceiling vent]{Relative fraction of upper layer gases extracted via a ceiling vent.}
 \end{figure}
 
-The previous paragraph explains from where the gas flowing through the vent is extracted. Where the gas goes is more simple. If the temperature of the hot gas layer of the lower compartment is greater than the temperature of the lower layer of the upper compartment, then the mass and enthalpy are deposited into the upper layer of the upper compartment. Otherwise, the mass and enthalpy are deposited into the lower layer of the upper compartment.
+The previous paragraph explains from where the gas flowing through the vent is extracted. Where the gas goes is more simple. If the temperature of the hot gas layer of the lower compartment is greater than the temperature of the lower layer of the upper compartment, then the mass and heat are deposited into the upper layer of the upper compartment. Otherwise, the mass and heat are deposited into the lower layer of the upper compartment.
 
 
 \section{Forced Flow}
@@ -1111,7 +1114,6 @@ $F_{k-j}$           & configuration factor, surface $k$ intercepted by surface $
 $f_v$               & soot volume fraction, dimensionless \\
 $g$                 & gravitational constant, 9.8 m/s$^2$ \\
 $h$                 & convective heat transfer coefficient, W/(m$^2\cdot$K) \\
-$\doh_i$            & rate of addition of enthalpy into layer $i$, kW \\
 $H$                 & height of a compartment, m \\
 $k$                 & thermal conductivity of air, W/(m$\cdot$K) \\
 $L$                 & length of a compartment, m \\
@@ -1124,6 +1126,7 @@ $\dme$              & plume mass entrainment rate, kg/s \\
 $\dmf$              & pyrolysis rate, kg/s \\
 n$_\alpha$          & number of atoms of element $\alpha$ \\
 $P$                 & pressure at floor level of a compartment, Pa \\
+$\qdot_i$           & rate of addition of heat into layer $i$, kW \\
 $\dQ$               & total heat release rate of the fire, kW \\
 $\dQc$              & heat release rate of the fire released as convective energy, kW \\
 $\dq''$             & heat flux, kW/m$^2$ \\

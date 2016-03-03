@@ -77,15 +77,19 @@ module cparams
     integer, parameter :: update_detector_state = 2         ! index to update state of detectors and targets on
                                                             ! successful equation set solution
 
-    integer, parameter :: upper = 1                         ! index for upper layer
-    integer, parameter :: lower = 2                         ! index for lower layer
-
     ! parameters for equation solver
     ! nt = 4*mxrooms(main equ) + 2*mxrooms*ns(species) + mxhvsys*ns(hvac species)
     integer, parameter :: nt = 12*mxrooms + 2*mxrooms*ns + mxhvsys*ns ! total number of main equations for dae solver
     integer, parameter :: maxjeq = 6*mxrooms + mxnode + mxbranch
     integer, parameter :: maxeq = maxjeq + nwal*mxrooms
     integer, parameter :: maxteq = maxeq+2*mxrooms*ns+mxhvsys*ns+4*mxrooms*3
+    
+    ! define indexes for use with product arrays
+    integer, parameter :: l = 2                             ! lower layer
+    integer, parameter :: u = 1                             ! upper layer
+    integer, parameter :: m = 1                             ! mass
+    integer, parameter :: q = 2                             ! energy
+    integer, parameter :: pp = 3                            ! beginning of species
 
 end module cparams
 
@@ -138,17 +142,3 @@ module fireptrs
     integer, parameter :: f_obj_length=19
     integer, parameter :: f_obj_area=20
 end module fireptrs
-
-! --------------------------- flwptrs -------------------------------------------
-
-module flwptrs
-
-    ! define indexes for use with product arrays
-    integer, parameter :: l = 2
-    integer, parameter :: u = 1
-    integer, parameter :: m = 1
-    integer, parameter :: q = 2
-    integer, parameter :: o = 3
-    integer, parameter :: pp = 3
-
-end module flwptrs

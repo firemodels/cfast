@@ -2,6 +2,7 @@
 
     use precision_parameters
     use fireptrs
+    use cparams
     use wallptrs
     use cenviro
     use ramp_data
@@ -36,8 +37,8 @@
     type(room_type), pointer :: roomptr
 
 
-    flwcv(1:nrm1,upper) = 0.0_eb
-    flwcv(1:nrm1,lower) = 0.0_eb
+    flwcv(1:nrm1,u) = 0.0_eb
+    flwcv(1:nrm1,l) = 0.0_eb
     flxcv(1:nrm1,1:nwal) = 0.0_eb
 
     if (option(fconvec)/=on) return
@@ -49,19 +50,19 @@
         iwall = izwall(iw,w_from_wall)
         nrmfire = ifrpnt(i,1)
         if(mod(iwall,2)==1)then
-            ilay = upper
+            ilay = u
         else
-            ilay = lower
+            ilay = l
         end if
         ! assume no fires in this room.  just use regular convection
-        call convective_flux(iwall,roomptr%layer_temp(ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
+        call convective_flux(iwall,roomptr%temp(ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
         ! if there's a fire, we may need to modify the convection to account for the ceiling jet
         if (iwall==1.and.nrmfire>0) then
             qconv = 0.0_eb
             do ifire = 1, nrmfire
                 qconv = max(qconv,xfire(ifrpnt(i,2)+ifire-1,f_qfc))
             end do
-            qconv_avg = 0.27_eb*qconv/((roomptr%width*roomptr%depth)**0.68_eb*roomptr%height**0.64_eb)
+            qconv_avg = 0.27_eb*qconv/((roomptr%cwidth*roomptr%cdepth)**0.68_eb*roomptr%cheight**0.64_eb)
             if (qconv_avg>flxcv(i,iwall)) flxcv(i,iwall) = qconv_avg
         end if
         flwcv(i,ilay) = flwcv(i,ilay) - zzwarea4(i,iwall)*flxcv(i,iwall)

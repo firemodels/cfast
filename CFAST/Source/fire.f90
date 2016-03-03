@@ -10,7 +10,7 @@ module fire_routines
     use room_data
     use fireptrs
     use target_data
-    use flwptrs
+    use cparams
     use fire_data
     use option_data
     use smkview_data
@@ -58,8 +58,8 @@ module fire_routines
     integer lsp, iroom, nobj, iobj, i, j
     type(room_type), pointer :: roomptr
 
-    flwf(1:nr,1:ns+2,upper) = 0.0_eb
-    flwf(1:nr,1:ns+2,lower) = 0.0_eb
+    flwf(1:nr,1:ns+2,u) = 0.0_eb
+    flwf(1:nr,1:ns+2,l) = 0.0_eb
     nfire = 0
 
     if (option(ffire)/=fcfast) return
@@ -74,25 +74,25 @@ module fire_routines
             oplume(1,iobj) = omasst
 
             do lsp = 1, ns
-                stmass(upper,lsp) = zzgspec(iroom,upper,lsp)
-                stmass(lower,lsp) = zzgspec(iroom,lower,lsp)
+                stmass(u,lsp) = zzgspec(iroom,u,lsp)
+                stmass(l,lsp) = zzgspec(iroom,l,lsp)
             end do
 
-            call do_fire(i,iroom,oplume(1,iobj),roomptr%height,roomptr%width,roomptr%depth,objhct,y_soot,y_co, &
+            call do_fire(i,iroom,oplume(1,iobj),roomptr%cheight,roomptr%cwidth,roomptr%cdepth,objhct,y_soot,y_co, &
                y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat, &
                oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
-            xtl = roomptr%layer_temp(lower)
-            flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
-            flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
+            xtl = roomptr%temp(l)
+            flwf(iroom,m,u) = flwf(iroom,m,u) + oplume(3,iobj)
+            flwf(iroom,m,l) = flwf(iroom,m,l) - oplume(2,iobj)
             q_firemass = cp*oplume(1,iobj)*interior_temperature
             q_entrained = cp*oplume(2,iobj)*xtl
-            flwf(iroom,q,upper) = flwf(iroom,q,upper) + xqfc + q_firemass + q_entrained
-            flwf(iroom,q,lower) = flwf(iroom,q,lower) - q_entrained
+            flwf(iroom,q,u) = flwf(iroom,q,u) + xqfc + q_firemass + q_entrained
+            flwf(iroom,q,l) = flwf(iroom,q,l) - q_entrained
             do lsp = 1, ns
-                flwf(iroom,lsp+2,upper) = flwf(iroom,lsp+2,upper) + xntms(upper,lsp)
-                flwf(iroom,lsp+2,lower) = flwf(iroom,lsp+2,lower) + xntms(lower,lsp)
+                flwf(iroom,lsp+2,u) = flwf(iroom,lsp+2,u) + xntms(u,lsp)
+                flwf(iroom,lsp+2,l) = flwf(iroom,lsp+2,l) + xntms(l,lsp)
             end do
 
             ! put the object information to arrays - xfire and froom, ...
@@ -188,9 +188,9 @@ module fire_routines
 
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
-    xz = roomptr%layer_depth(upper)
-    xtl = roomptr%layer_temp(lower)
-    xtu = roomptr%layer_temp(upper)
+    xz = roomptr%depth(u)
+    xtl = roomptr%temp(l)
+    xtu = roomptr%temp(u)
     xqfc = 0.0_eb
     xqlp = 0.0_eb
     xeme = 0.0_eb
@@ -205,14 +205,14 @@ module fire_routines
     xqfr = 0.0_eb
     xems = 0.0_eb
 
-    xntms(upper,1:ns) = 0.0_eb
-    xntms(lower,1:ns) = 0.0_eb
+    xntms(u,1:ns) = 0.0_eb
+    xntms(l,1:ns) = 0.0_eb
     xmass(1:ns) = 0.0_eb
 
     ! the trace species is assumed to be released by the pyrolysis of the burning object regardless of
     ! whether the fuel actually combusts here. this is consistent with the earlier chemistry routine.
     ! release it here and deposit it in the upper layer
-    xntms(upper,11) = xemp*y_trace
+    xntms(u,11) = xemp*y_trace
 
     ! now do the kinetics scheme
 
@@ -251,9 +251,9 @@ module fire_routines
         xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
         xems = xemp + xeme
 
-        source_o2 = zzcspec(iroom,lower,2)
+        source_o2 = zzcspec(iroom,l,2)
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
-            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,lower), &
+            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,l), &
             xqpyrl, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
@@ -272,23 +272,23 @@ module fire_routines
     xems = xemp + xeme
 
     do  i = 1, ns
-        xntms(upper,i) = xmass(i) + xntms(upper,i)
+        xntms(u,i) = xmass(i) + xntms(u,i)
     end do
 
     ! add the species flow entrained by the plume to normalize the yields to unity
     xtemp = 0.0_eb
     do lsp = 1, 9
-        xtemp = xtemp + stmass(lower,lsp)
+        xtemp = xtemp + stmass(l,lsp)
     end do
     if(xtemp==0.0_eb) xtemp = 1.0_eb
     do lsp = 1, ns
-        xnet = xeme*stmass(lower,lsp)/xtemp
-        xntms(upper,lsp) = xntms(upper,lsp) + xnet
-        xntms(lower,lsp) = xntms(lower,lsp) - xnet
+        xnet = xeme*stmass(l,lsp)/xtemp
+        xntms(u,lsp) = xntms(u,lsp) + xnet
+        xntms(l,lsp) = xntms(l,lsp) - xnet
     end do
 
     ! add in the fuel. everything else is done by chemistry.
-    xntms(upper,7) = xntms(upper,7) + xemp
+    xntms(u,7) = xntms(u,7) + xemp
 
     xqfr = xqpyrl*chirad
     xqfc = xqpyrl*(1.0_eb-chirad)
@@ -310,9 +310,9 @@ module fire_routines
         call fire_plume (object_area, qheatu, qheatu_c, height, interior_temperature, uplmep, uplmes, uplmee, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
-        source_o2 = zzcspec(iroom,upper,2)
+        source_o2 = zzcspec(iroom,u,2)
         call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, &
-            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,upper), &
+            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,u), &
             xqpyrl, xntfl, xmass)
 
         xqfr = xqpyrl*chirad + xqfr
@@ -320,7 +320,7 @@ module fire_routines
         xqup = xqpyrl
         xqf = xqpyrl + xqf
         do i = 1, ns
-            xntms(upper,i) = xmass(i) + xntms(upper,i)
+            xntms(u,i) = xmass(i) + xntms(u,i)
         end do
     end if
 
@@ -563,10 +563,10 @@ module fire_routines
 
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad_plume (q, q_c, z, t_inf, emp, ems, eme, area, xfx, xfy)
+    subroutine heskestad_plume (q_t, q_c, z, t_inf, emp, ems, eme, area, xfx, xfy)
 
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
-    !     inputs:    q     fire size (w)
+    !     inputs:    q_t   fire size (w)
     !                z     plume height (m)
     !                t_inf ambient temperature at base of the fire
     !                emp   mass loss rate of the fire (kg/s)
@@ -576,7 +576,7 @@ module fire_routines
     !     outputs:   ems   total mass transfer rate up to height z (kg/s)
     !                eme   net entrainment rate up to height z (kg/s)
 
-    real(eb), intent(in) :: q, q_c, z, t_inf, emp, area, xfx, xfy
+    real(eb), intent(in) :: q_t, q_c, z, t_inf, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
 
     real(eb), parameter :: cp = 1.012_eb
@@ -591,7 +591,7 @@ module fire_routines
     if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
 
     ! qstar and virtual origin correlation are based on total HRR
-    qj = 0.001_eb*q*xf
+    qj = 0.001_eb*q_t*xf
     if (z>0.0_eb.and.qj>0.0_eb) then
         d = sqrt(area*xf/pio4)
         rho_inf = 352.981915_eb/t_inf
@@ -655,12 +655,12 @@ module fire_routines
             isys = izhvsys(j)
             filter = (1.0_eb-qcifraction(qcvf,isys,time))
             if (irm==i) then
-                hveflot(upper,ii) = hveflot(upper,ii) + hveflo(upper,ii)*deltt
-                hveflot(lower,ii) = hveflot(lower,ii) + hveflo(lower,ii)*deltt
-                tracet(upper,ii)  = tracet(upper,ii) + hveflo(upper,ii)*hvexcn(ii,11,upper)*filter*deltt
-                tracet(lower,ii)  = tracet(lower,ii) + hveflo(lower,ii)*hvexcn(ii,11,lower)*filter*deltt
-                traces(upper,ii)  = traces(upper,ii) + hveflo(upper,ii)*hvexcn(ii,11,upper)*(1.0_eb-filter)*deltt
-                traces(lower,ii)  = traces(lower,ii) + hveflo(lower,ii)*hvexcn(ii,11,lower)*(1.0_eb-filter)*deltt
+                hveflot(u,ii) = hveflot(u,ii) + hveflo(u,ii)*deltt
+                hveflot(l,ii) = hveflot(l,ii) + hveflo(l,ii)*deltt
+                tracet(u,ii)  = tracet(u,ii) + hveflo(u,ii)*hvexcn(ii,11,u)*filter*deltt
+                tracet(l,ii)  = tracet(l,ii) + hveflo(l,ii)*hvexcn(ii,11,l)*filter*deltt
+                traces(u,ii)  = traces(u,ii) + hveflo(u,ii)*hvexcn(ii,11,u)*(1.0_eb-filter)*deltt
+                traces(l,ii)  = traces(l,ii) + hveflo(l,ii)*hvexcn(ii,11,l)*(1.0_eb-filter)*deltt
             end if
         end do
     end do
@@ -709,7 +709,7 @@ module fire_routines
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
         room1ptr => roominfo(iroom1)
-        if (room1ptr%layer_temp(upper)>=tgignt) then
+        if (room1ptr%temp(u)>=tgignt) then
             flw1to2 = vss(1,i)+vsa(1,i)
             if (vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb) then
                 djetflg = .true.
@@ -720,7 +720,7 @@ module fire_routines
         !is there a door jet fire into room iroom2
         iroom2 = ventptr%to
         room2ptr => roominfo(iroom2)
-        if(room2ptr%layer_temp(upper)>=tgignt)then
+        if(room2ptr%temp(u)>=tgignt)then
             flw2to1 = vss(2,i)+vsa(2,i)
             if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
                 djetflg = .true.
@@ -730,8 +730,8 @@ module fire_routines
     end do
 
     if(.not.djetflg)return
-    flwdjf(1:nr,1:ns+2,lower) = 0.0_eb
-    flwdjf(1:nr,1:ns+2,upper) = 0.0_eb
+    flwdjf(1:nr,1:ns+2,l) = 0.0_eb
+    flwdjf(1:nr,1:ns+2,u) = 0.0_eb
     fqdj(1:nr) = 0.0_eb
 
     hcombt = 5.005e7_eb
@@ -742,28 +742,28 @@ module fire_routines
             ventptr=>hventinfo(i)
                 iroom1 = ventptr%from
                 iroom2 = ventptr%to
-                flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
-                flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
-                call door_jet_fire (iroom2,room1ptr%layer_temp(upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
-                call door_jet_fire (iroom1,room2ptr%layer_temp(upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
+                flw1to2 = zzcspec(iroom1,u,7)*(vss(1,i)+vsa(1,i))
+                flw2to1 = zzcspec(iroom2,u,7)*(vss(2,i)+vsa(2,i))
+                call door_jet_fire (iroom2,room1ptr%temp(u),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+                call door_jet_fire (iroom1,room2ptr%temp(u),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if(dj1flag)then
-                    flwdjf(iroom1,q,upper) = flwdjf(iroom1,q,upper) + qpyrol1
+                    flwdjf(iroom1,q,u) = flwdjf(iroom1,q,u) + qpyrol1
                     do lsp = 1, ns
-                        flwdjf(iroom1,lsp+2,upper) = flwdjf(iroom1,lsp+2,upper) + xntms1(upper,lsp)
+                        flwdjf(iroom1,lsp+2,u) = flwdjf(iroom1,lsp+2,u) + xntms1(u,lsp)
                     end do
                 end if
                 if(dj2flag)then
-                    flwdjf(iroom2,q,upper) = flwdjf(iroom2,q,upper) + qpyrol2
+                    flwdjf(iroom2,q,u) = flwdjf(iroom2,q,u) + qpyrol2
                     do lsp = 1, ns
-                        flwdjf(iroom2,lsp+2,upper) = flwdjf(iroom2,lsp+2,upper) + xntms2(upper,lsp)
+                        flwdjf(iroom2,lsp+2,u) = flwdjf(iroom2,lsp+2,u) + xntms2(u,lsp)
                     end do
                 end if
         end do
 
     do i = 1, nr
-        fqdj(i) = flwdjf(i,q,upper) + flwdjf(i,q,lower)
+        fqdj(i) = flwdjf(i,q,u) + flwdjf(i,q,l)
     end do
     return
     end subroutine door_jet
@@ -800,15 +800,15 @@ module fire_routines
         ! how to handle it.
         djflowflg = .true.
         xmass(1:ns) = 0.0_eb
-        source_o2 = zzcspec(ito,lower,2)
+        source_o2 = zzcspec(ito,l,2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
         call chemistry (xxnetfl, xxmol_mass, sas, ito, hcombt, 0.0_eb, 0.0_eb, 1.0_eb, 4.0_eb, 0.0_eb, 0.0_eb, 0.0_eb, &
             source_o2, lower_o2_limit, 0, 0, 0.0_eb, 0.0_eb, stime, xxqspray, xqpyrl, xntfl, xmass)
         qpyrol = xqpyrl
 
-        xntms(upper,1:ns) = xmass(1:ns)
-        xntms(lower,1:ns) = 0.0_eb
+        xntms(u,1:ns) = xmass(1:ns)
+        xntms(l,1:ns) = 0.0_eb
     end if
     return
     end subroutine door_jet_fire
@@ -867,10 +867,10 @@ module fire_routines
     roomptr => roominfo(iroom)
 
     ! default is the appropriate layer temperature and a velocity of 0.1 m/s
-    if (z>=roomptr%layer_depth(lower)) then
-        tg = roomptr%layer_temp(upper)
+    if (z>=roomptr%depth(l)) then
+        tg = roomptr%temp(u)
     else
-        tg = roomptr%layer_temp(lower)
+        tg = roomptr%temp(l)
     end if
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
@@ -879,23 +879,23 @@ module fire_routines
             qdot = fqf(i)
             xrad = radconsplit(i)
             area = farea(i)
-            tu = roomptr%layer_temp(upper)
-            tl = roomptr%layer_temp(lower)
+            tu = roomptr%temp(u)
+            tl = roomptr%temp(l)
             zfire = xfire(i,f_fire_zpos)
             xdistance = x - xfire(i,f_fire_xpos)
             if (abs(xdistance)<=mx_hsep) xdistance = 0.0_eb
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
-            zlayer = roomptr%layer_depth(lower)
-            zceil = roomptr%height
+            zlayer = roomptr%depth(l)
+            zceil = roomptr%cheight
             r = sqrt(xdistance**2 + ydistance**2)
             if (roomptr%hall) then
-                if (roomptr%depth>roomptr%width)then
+                if (roomptr%cdepth>roomptr%cwidth)then
                     distance = ydistance
-                    hall_width = roomptr%width
+                    hall_width = roomptr%cwidth
                 else
                     distance = xdistance
-                    hall_width = roomptr%depth
+                    hall_width = roomptr%cdepth
                 end if
             else
                 hall_width = 0.0_eb
@@ -1117,9 +1117,9 @@ module fire_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        v(upper) = roomptr%layer_volume(upper)
-        v(lower) = roomptr%layer_volume(lower)
-        do k = upper, lower
+        v(u) = roomptr%volume(u)
+        v(l) = roomptr%volume(l)
+        do k = u, l
             air(k) = 0.0_eb
             do lsp = 1, 9
                 air(k) = air(k) + zzgspec(i,k,lsp)/aweigh(lsp)
@@ -1129,14 +1129,14 @@ module fire_routines
 
         ! calculate the mass density in kg/m^3
         do lsp = 1, ns
-            do k = upper, lower
+            do k = u, l
                 roomptr%species_rho(k,lsp) = zzgspec(i,k,lsp)/v(k)
             end do
         end do
 
         ! calculate the molar density in percent
         do lsp = 1, 8
-            do k = upper, lower
+            do k = u, l
                 roomptr%species_output(k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
             end do
         end do
@@ -1146,13 +1146,13 @@ module fire_routines
         ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
         ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
         lsp = 9
-        do k = upper, lower
+        do k = u, l
             roomptr%species_output(k,lsp) = roomptr%species_rho(k,lsp)*3778.0_eb
         end do
 
         ! ct is the integration of the total "junk" being transported
         lsp = 10
-        do k = upper, lower
+        do k = u, l
             roomptr%species_output(k,lsp) = roomptr%species_output(k,lsp) + roomptr%species_rho(k,lsp)*1000.0_eb*deltt/60.0_eb
         end do
 
@@ -1160,7 +1160,7 @@ module fire_routines
         ! it is converted to fraction of the total generated by all fires.
         ! this step being correct depends on the integratemass routine
         lsp = 11
-        do k = upper, lower
+        do k = u, l
             roomptr%species_output(k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
         end do
 

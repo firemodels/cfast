@@ -14,6 +14,7 @@ module initialization_routines
     use setup_data
     use solver_data
     use fire_data
+    use cparams
     use option_data
     use target_data
     use thermal_data
@@ -140,7 +141,7 @@ module initialization_routines
             stop
         end if
         roomptr => roominfo(i)
-        hvelxt(ii) = min(roomptr%height,max(0.0_eb,hvelxt(ii)))
+        hvelxt(ii) = min(roomptr%cheight,max(0.0_eb,hvelxt(ii)))
         hvght(j) = hvelxt(ii) + roomptr%z0
     end do
 
@@ -167,28 +168,28 @@ module initialization_routines
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
-            hvextt(ii,upper) = interior_temperature
-            hvextt(ii,lower) = interior_temperature
+            hvextt(ii,u) = interior_temperature
+            hvextt(ii,l) = interior_temperature
             hvp(j) = roomptr%relp - grav_con*interior_rho*hvelxt(ii)
         else
-            hvextt(ii,upper) = exterior_temperature
-            hvextt(ii,lower) = exterior_temperature
+            hvextt(ii,u) = exterior_temperature
+            hvextt(ii,l) = exterior_temperature
             hvp(j) = exterior_abs_pressure - grav_con*exterior_rho*hvelxt(ii)
         end if
-        tbr(ib) = hvextt(ii,upper)
+        tbr(ib) = hvextt(ii,u)
         s1 = s1 + hvp(j)
         s2 = s2 + tbr(ib)
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<nr) then
-                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*interior_rho
-                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*interior_rho
+                hvexcn(ii,lsp,u) = initial_mass_fraction(lsp)*interior_rho
+                hvexcn(ii,lsp,l) = initial_mass_fraction(lsp)*interior_rho
             else
-                hvexcn(ii,lsp,upper) = initial_mass_fraction(lsp)*exterior_rho
-                hvexcn(ii,lsp,lower) = initial_mass_fraction(lsp)*exterior_rho
+                hvexcn(ii,lsp,u) = initial_mass_fraction(lsp)*exterior_rho
+                hvexcn(ii,lsp,l) = initial_mass_fraction(lsp)*exterior_rho
             end if
-            hvconc(j,lsp) = hvexcn(ii,lsp,upper)
-            c3(lsp) = c3(lsp) + hvexcn(ii,lsp,upper)
+            hvconc(j,lsp) = hvexcn(ii,lsp,u)
+            c3(lsp) = c3(lsp) + hvexcn(ii,lsp,u)
         end do
     end do
 
@@ -406,7 +407,7 @@ module initialization_routines
             if (yinter(i)<0.0_eb) then
                 p(i+nofvu) = roomptr%vmin
             else
-                p(i+nofvu) = min(roomptr%vmax,max(roomptr%vmin,yinter(i)*roomptr%area))
+                p(i+nofvu) = min(roomptr%vmax,max(roomptr%vmin,yinter(i)*roomptr%floor_area))
             end if
             yinter(i) = 0.0_eb
         end if
@@ -440,9 +441,9 @@ module initialization_routines
         dtectptr => detectorinfo(i)
         iroom=dtectptr%room
         roomptr => roominfo(iroom)
-        if (dtectptr%center(1)<0.0_eb) dtectptr%center(1) = roomptr%width*0.5_eb
-        if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%depth*0.5_eb
-        if (dtectptr%center(3)<0.0_eb) dtectptr%center(3) = roomptr%height-mx_vsep
+        if (dtectptr%center(1)<0.0_eb) dtectptr%center(1) = roomptr%cwidth*0.5_eb
+        if (dtectptr%center(2)<0.0_eb) dtectptr%center(2) = roomptr%cdepth*0.5_eb
+        if (dtectptr%center(3)<0.0_eb) dtectptr%center(3) = roomptr%cheight-mx_vsep
 
         ! if tdspray>0 then interpret it as a spray density and convert
         ! to a characteristic quenching time
@@ -491,8 +492,8 @@ module initialization_routines
     ! after zzmass is defined)
     if(option(foxygen)==on)then
         do iroom = 1, nrm1
-            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,upper)
-            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,lower)
+            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,u)
+            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,l)
         end do
     end if
 
@@ -548,13 +549,13 @@ module initialization_routines
     ! normal air
     initial_mass_fraction(1) = 0.77_eb
     initial_mass_fraction(2) = 0.23_eb
-    zzgspec(1:mxrooms,upper:lower,1:ns) = 0.0_eb
-    zzcspec(1:mxrooms,upper:lower,1:ns) = 0.0_eb
+    zzgspec(1:mxrooms,u:l,1:ns) = 0.0_eb
+    zzcspec(1:mxrooms,u:l,1:ns) = 0.0_eb
 
     ! rooms
-    roominfo(1:mxrooms)%width = xlrg
-    roominfo(1:mxrooms)%depth = xlrg
-    roominfo(1:mxrooms)%height = xlrg
+    roominfo(1:mxrooms)%cwidth = xlrg
+    roominfo(1:mxrooms)%cdepth = xlrg
+    roominfo(1:mxrooms)%cheight = xlrg
     roominfo(1:mxrooms)%x0 = 0.0_eb
     roominfo(1:mxrooms)%y0 = 0.0_eb
     roominfo(1:mxrooms)%z0 = 0.0_eb
@@ -566,8 +567,8 @@ module initialization_routines
     roominfo(1:mxrooms)%kbar = 50
     do i = 1, mxrooms
         roomptr => roominfo(i)
-        roomptr%area = roomptr%width*roomptr%depth
-        roomptr%volume = roomptr%height*roomptr%area
+        roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
+        roomptr%cvolume = roomptr%cheight*roomptr%floor_area
         roomptr%matl(1:nwal) = 'OFF'
         roomptr%surface_on(1:nwal) = .false.
     end do
@@ -638,8 +639,8 @@ module initialization_routines
     next = 0
     mvcalc_on = .false.
     hvght(1:mxnode) = 0.0_eb
-    hveflot(upper:lower,1:mxext) = 0.0_eb
-    tracet(upper:lower,1:mxext) = 0.0_eb
+    hveflot(u:l,1:mxext) = 0.0_eb
+    tracet(u:l,1:mxext) = 0.0_eb
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since
     ! there is not "thing" associated with a filter, there is no (as of 11/21/2006)
     ! way to have an intial value other than 0 (no filtering).
@@ -753,10 +754,10 @@ module initialization_routines
         end do
         initial_mass_fraction(1:ns) = initial_mass_fraction(1:ns)/totmass
 
-        do k = upper, lower
+        do k = u, l
             do lsp = 1, ns
                 roomptr%species_output(k,lsp) = 0.0_eb
-                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*roomptr%layer_volume(k)
+                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*roomptr%volume(k)
             end do
         end do
     end do
@@ -764,7 +765,7 @@ module initialization_routines
     isof = nofprd
     do lsp = 1, ns
         do i = 1, nrm1
-            do k = upper, lower
+            do k = u, l
                 isof = isof + 1
                 p(isof) = initialmass(k,i,lsp)
             end do
@@ -825,9 +826,9 @@ module initialization_routines
         xxnorm = targptr%normal(1)
         yynorm = targptr%normal(2)
         zznorm = targptr%normal(3)
-        xsize = roomptr%width
-        ysize = roomptr%depth
-        zsize = roomptr%height
+        xsize = roomptr%cwidth
+        ysize = roomptr%cdepth
+        zsize = roomptr%cheight
 
         ! if the locator is -1, set to center of room on the floor
         if(xloc==-1.0_eb) xloc = 0.5_eb*xsize

@@ -9,7 +9,7 @@ module output_routines
     use solver_data
     use detectorptrs
     use fireptrs
-    use flwptrs
+    use cparams
     use target_data
     use fire_data
     use option_data
@@ -151,14 +151,14 @@ module output_routines
     write (iofilo,5040)
     do icomp = 1, nrm1
         roomptr =>roominfo(icomp)
-        izzvol = roomptr%layer_volume(upper)/roomptr%volume*100.0_eb+0.5_eb
+        izzvol = roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
-            write (iofilo,5071) roomptr%name, roomptr%layer_temp(upper)-kelvin_c_offset, roomptr%layer_volume(upper), &
-                zzabsb(icomp,upper),roomptr%relp - roomptr%interior_relp_initial
+            write (iofilo,5071) roomptr%name, roomptr%temp(u)-kelvin_c_offset, roomptr%volume(u), &
+                zzabsb(icomp,u),roomptr%relp - roomptr%interior_relp_initial
         else
-            write (iofilo,5070) roomptr%name, roomptr%layer_temp(upper)-kelvin_c_offset, &
-                roomptr%layer_temp(lower)-kelvin_c_offset, roomptr%layer_depth(lower), roomptr%layer_volume(upper), &
-                izzvol, zzabsb(icomp,upper),zzabsb(icomp,lower), roomptr%relp - roomptr%interior_relp_initial
+            write (iofilo,5070) roomptr%name, roomptr%temp(u)-kelvin_c_offset, &
+                roomptr%temp(l)-kelvin_c_offset, roomptr%depth(l), roomptr%volume(u), &
+                izzvol, zzabsb(icomp,u),zzabsb(icomp,l), roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
     return
@@ -255,7 +255,7 @@ module output_routines
 
     if (n_species/=0) then
 
-        do layer = upper, lower
+        do layer = u, l
             write (iofilo,5050) lnames(layer)
             ciout = 'Compartment'
             cjout = ' '
@@ -275,7 +275,7 @@ module output_routines
                 roomptr => roominfo(icomp)
                 write (ciout,5060) roomptr%name
                 ic = 14
-                if (layer==upper.or..not.roomptr%shaft) then
+                if (layer==u.or..not.roomptr%shaft) then
                     do lsp = 1, ns
                         if (lsp/=10) then
                             write (ciout(ic:ic+9),5040) roomptr%species_output(layer,lsp)
@@ -343,14 +343,14 @@ module output_routines
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'
         flow = 0.0_eb
-        if (vmflo(ifrom,ito,upper)>=0.0_eb) flow(5) = vmflo(ifrom,ito,upper)
-        if (vmflo(ifrom,ito,upper)<0.0_eb) flow(6) = -vmflo(ifrom,ito,upper)
-        if (vmflo(ifrom,ito,lower)>=0.0_eb) flow(7) = vmflo(ifrom,ito,lower)
-        if (vmflo(ifrom,ito,lower)<0.0_eb) flow(8) = -vmflo(ifrom,ito,lower)
-        if (vmflo(ito,ifrom,upper)>=0.0_eb) flow(1) = vmflo(ito,ifrom,upper)
-        if (vmflo(ito,ifrom,upper)<0.0_eb) flow(2) = -vmflo(ito,ifrom,upper)
-        if (vmflo(ito,ifrom,lower)>=0.0_eb) flow(3) = vmflo(ito,ifrom,lower)
-        if (vmflo(ito,ifrom,lower)<0.0_eb) flow(4) = -vmflo(ito,ifrom,lower)
+        if (vmflo(ifrom,ito,u)>=0.0_eb) flow(5) = vmflo(ifrom,ito,u)
+        if (vmflo(ifrom,ito,u)<0.0_eb) flow(6) = -vmflo(ifrom,ito,u)
+        if (vmflo(ifrom,ito,l)>=0.0_eb) flow(7) = vmflo(ifrom,ito,l)
+        if (vmflo(ifrom,ito,l)<0.0_eb) flow(8) = -vmflo(ifrom,ito,l)
+        if (vmflo(ito,ifrom,u)>=0.0_eb) flow(1) = vmflo(ito,ifrom,u)
+        if (vmflo(ito,ifrom,u)<0.0_eb) flow(2) = -vmflo(ito,ifrom,u)
+        if (vmflo(ito,ifrom,l)>=0.0_eb) flow(3) = vmflo(ito,ifrom,l)
+        if (vmflo(ito,ifrom,l)<0.0_eb) flow(4) = -vmflo(ito,ifrom,l)
 
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
         write (iofilo,5010) 'V', i, cifrom, cito, outbuf
@@ -371,15 +371,15 @@ module output_routines
             if (ii==nr) cito = 'Outside'
 
             flow = 0.0_eb
-            if (hveflo(upper,i)>=0.0_eb) flow(1) = hveflo(upper,i)
-            if (hveflo(upper,i)<0.0_eb) flow(2) = -hveflo(upper,i)
-            if (hveflo(lower,i)>=0.0_eb) flow(3) = hveflo(lower,i)
-            if (hveflo(lower,i)<0.0_eb) flow(4) = -hveflo(lower,i)
+            if (hveflo(u,i)>=0.0_eb) flow(1) = hveflo(u,i)
+            if (hveflo(u,i)<0.0_eb) flow(2) = -hveflo(u,i)
+            if (hveflo(l,i)>=0.0_eb) flow(3) = hveflo(l,i)
+            if (hveflo(l,i)<0.0_eb) flow(4) = -hveflo(l,i)
 
-            if (hveflo(upper,i+1)>=0.0_eb) flow(5) = hveflo(upper,i+1)
-            if (hveflo(upper,i+1)<0.0_eb) flow(6) = -hveflo(upper,i+1)
-            if (hveflo(lower,i+1)>=0.0_eb) flow(7) = hveflo(lower,i+1)
-            if (hveflo(lower,i+1)<0.0_eb) flow(8) = -hveflo(lower,i+1)
+            if (hveflo(u,i+1)>=0.0_eb) flow(5) = hveflo(u,i+1)
+            if (hveflo(u,i+1)<0.0_eb) flow(6) = -hveflo(u,i+1)
+            if (hveflo(l,i+1)>=0.0_eb) flow(7) = hveflo(l,i+1)
+            if (hveflo(l,i+1)<0.0_eb) flow(8) = -hveflo(l,i+1)
 
             call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
             write (iofilo,5010) 'M', i, cifrom, cito, outbuf
@@ -404,12 +404,12 @@ module output_routines
                     inode = hvnode(2,i)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
                     flow(1:4) = 0.0_eb
-                    if (hveflot(upper,i)>=0.0_eb) flow(1) = hveflot(upper,i)
-                    if (hveflot(upper,i)<0.0_eb) flow(2) = -hveflot(upper,i)
-                    if (hveflot(lower,i)>=0.0_eb) flow(3) = hveflot(lower,i)
-                    if (hveflot(lower,i)<0.0_eb) flow(4) = -hveflot(lower,i)
-                    flow(5) = abs(tracet(upper,i)) + abs(tracet(lower,i))
-                    flow(6) = abs(traces(upper,i)) + abs(traces(lower,i))
+                    if (hveflot(u,i)>=0.0_eb) flow(1) = hveflot(u,i)
+                    if (hveflot(u,i)<0.0_eb) flow(2) = -hveflot(u,i)
+                    if (hveflot(l,i)>=0.0_eb) flow(3) = hveflot(l,i)
+                    if (hveflot(l,i)<0.0_eb) flow(4) = -hveflot(l,i)
+                    flow(5) = abs(tracet(u,i)) + abs(tracet(l,i))
+                    flow(6) = abs(traces(u,i)) + abs(traces(l,i))
                     call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
                     if (first) then
                         if (i/=1) write (iofilo,5040)
@@ -464,11 +464,11 @@ module output_routines
         end do
         xqf = xqf + fqdj(ir)
         if (roomptr%shaft) then
-            write (iounit,5040) ir, roomptr%layer_temp(upper)-kelvin_c_offset, xemp, xqf, &
+            write (iounit,5040) ir, roomptr%temp(u)-kelvin_c_offset, xemp, xqf, &
                roomptr%relp - roomptr%interior_relp_initial
         else
-            write (iounit,5030) ir, roomptr%layer_temp(upper)-kelvin_c_offset, roomptr%layer_temp(lower)-kelvin_c_offset, &
-               roomptr%layer_depth(lower), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
+            write (iounit,5030) ir, roomptr%temp(u)-kelvin_c_offset, roomptr%temp(l)-kelvin_c_offset, &
+               roomptr%depth(l), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
     write (iounit,5020) fqdj(nr)
@@ -579,10 +579,10 @@ module output_routines
         roomptr => roominfo(iroom)
 
         zdetect = dtectptr%center(3)
-        if(zdetect>roomptr%layer_depth(lower))then
-            tlay = roomptr%layer_temp(upper)
+        if(zdetect>roomptr%depth(l))then
+            tlay = roomptr%temp(u)
         else
-            tlay = roomptr%layer_temp(lower)
+            tlay = roomptr%temp(l)
         end if
 
         tjet = max(dtectptr%temp_gas,tlay)-kelvin_c_offset
@@ -660,7 +660,7 @@ module output_routines
     write (iofilo,5000)
     do i = 1, nrm1
         roomptr => roominfo(i)
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%width, roomptr%depth, roomptr%height, roomptr%z0, roomptr%z1
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1
     end do
     return
 5000 format (//,'COMPARTMENTS',//, &
@@ -719,7 +719,7 @@ module output_routines
                     if (vshape(i,j)==2) csout = 'Square'
                     roomptr => roominfo(j)
                     if (j<nr) then
-                        hrx = roomptr%height
+                        hrx = roomptr%cheight
                         hrpx = roomptr%z1
                     else
                         hrx = roomptr%z0
@@ -1162,13 +1162,13 @@ module output_routines
         do i = 1, nrm1
             roomptr => roominfo(i)
             write (*,5010) i
-            write (*,5020) '   Upper temp(K)', roomptr%layer_temp(upper)
-            write (*,5020) '   Lower temp(K)', roomptr%layer_temp(lower)
-            write (*,5020) ' Interface ht(m)', roomptr%layer_depth(lower)
+            write (*,5020) '   Upper temp(K)', roomptr%temp(u)
+            write (*,5020) '   Lower temp(K)', roomptr%temp(l)
+            write (*,5020) ' Interface ht(m)', roomptr%depth(l)
             write (*,5020) '   Pressure (pa)', roomptr%relp
             if (n_species>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
-                write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= upper,lower)
+                write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= u,l)
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
@@ -1222,8 +1222,8 @@ module output_routines
         write(*,6030)
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
-            write(*,6000) iroom, roomptr%relp, roomptr%layer_depth(lower), roomptr%layer_temp(lower), roomptr%layer_temp(upper), &
-               zzcspec(iroom,lower,2), zzcspec(iroom,upper,2)
+            write(*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
+               zzcspec(iroom,l,2), zzcspec(iroom,u,2)
         end do
         if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
         if(nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)

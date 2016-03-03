@@ -8,7 +8,7 @@ module mflow_routines
     use precision_parameters
     use ramp_data
     use cenviro
-    use flwptrs
+    use cparams
     use option_data
     use room_data
     use vent_data
@@ -50,10 +50,10 @@ module mflow_routines
 
     chv(1:nbr) = ductcv
 
-    flwmv(1:nr,1:ns+2,upper) = 0.0_eb
-    flwmv(1:nr,1:ns+2,lower) = 0.0_eb
-    filtered(1:nr,1:ns+2,upper) = 0.0_eb
-    filtered(1:nr,1:ns+2,lower) = 0.0_eb
+    flwmv(1:nr,1:ns+2,u) = 0.0_eb
+    flwmv(1:nr,1:ns+2,l) = 0.0_eb
+    filtered(1:nr,1:ns+2,u) = 0.0_eb
+    filtered(1:nr,1:ns+2,l) = 0.0_eb
     deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
     delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
 
@@ -69,11 +69,11 @@ module mflow_routines
         iroom = hvnode(1,ii)
         roomptr => roominfo(iroom)
         vheight = roomptr%z0 + hvelxt(ii)
-        layer_height = max(min(roomptr%layer_depth(lower) + roomptr%z0, vheight + sqrt(arext(ii))/2), vheight - sqrt(arext(ii))/2)
-        do j = upper, lower
+        layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(arext(ii))/2), vheight - sqrt(arext(ii))/2)
+        do j = u, l
             ventptr%temp_slab(j) = hvextt(ii,j)
             ventptr%flow_slab(j) = hveflo(j,ii)
-            if (j == upper) then
+            if (j == u) then
                 if (hvorien(ii)==1) then
                     ventptr%ybot_slab(j) = layer_height
                     ventptr%ytop_slab(j) = vheight + sqrt(arext(ii))/2
@@ -97,26 +97,26 @@ module mflow_routines
         j = hvnode(2,ii)
         isys = izhvsys(j)
         if(i<1.or.i>nrm1) cycle
-        flwmv(i,m,upper) = flwmv(i,m,upper) + hveflo(upper,ii)
-        flwmv(i,m,lower) = flwmv(i,m,lower) + hveflo(lower,ii)
-        flwmv(i,q,upper) = flwmv(i,q,upper) + hveflo(upper,ii)*cp*hvextt(ii,upper)
-        flwmv(i,q,lower) = flwmv(i,q,lower) + hveflo(lower,ii)*cp*hvextt(ii,lower)
+        flwmv(i,m,u) = flwmv(i,m,u) + hveflo(u,ii)
+        flwmv(i,m,l) = flwmv(i,m,l) + hveflo(l,ii)
+        flwmv(i,q,u) = flwmv(i,q,u) + hveflo(u,ii)*cp*hvextt(ii,u)
+        flwmv(i,q,l) = flwmv(i,q,l) + hveflo(l,ii)*cp*hvextt(ii,l)
         do k = 1, ns
-            flwmv(i,2+k,lower) = flwmv(i,2+k,lower) + hvexcn(ii,k,lower)*hveflo(lower,ii)
-            flwmv(i,2+k,upper) = flwmv(i,2+k,upper) + hvexcn(ii,k,upper)*hveflo(upper,ii)
+            flwmv(i,2+k,l) = flwmv(i,2+k,l) + hvexcn(ii,k,l)*hveflo(l,ii)
+            flwmv(i,2+k,u) = flwmv(i,2+k,u) + hvexcn(ii,k,u)*hveflo(u,ii)
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,upper) = filtered(i,13,upper) + max(0.0_eb,filter*hvexcn(ii,11,upper)*hveflo(upper,ii))
-        filtered(i,13,lower) = filtered(i,13,lower) + max(0.0_eb,filter*hvexcn(ii,11,lower)*hveflo(lower,ii))
-        filtered(i,11,upper) = filtered(i,11,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
-        filtered(i,11,lower) = filtered(i,11,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
+        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*hvexcn(ii,11,u)*hveflo(u,ii))
+        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*hvexcn(ii,11,l)*hveflo(l,ii))
+        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(u,ii))
+        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(l,ii))
         !   remove filtered smoke mass and energy from the total mass and eneergy added to the system (likely a small effect)
-        filtered(i,m,upper) = filtered(i,m,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii))
-        filtered(i,m,lower) = filtered(i,m,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii))
-        filtered(i,q,upper) = filtered(i,q,upper) + max(0.0_eb,filter*hvexcn(ii,9,upper)*hveflo(upper,ii)*cp*hvextt(ii,upper))
-        filtered(i,q,lower) = filtered(i,q,lower) + max(0.0_eb,filter*hvexcn(ii,9,lower)*hveflo(lower,ii)*cp*hvextt(ii,lower))
+        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(u,ii))
+        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(l,ii))
+        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(u,ii)*cp*hvextt(ii,u))
+        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(l,ii)*cp*hvextt(ii,l))
     end do
 
     return
@@ -237,7 +237,7 @@ module mflow_routines
             hvta = tbr(1)
             do ii = 1, next
                 if (hvnode(2,ii)==i) then
-                    hvta = hvextt(ii,upper)
+                    hvta = hvextt(ii,u)
                     exit
                 end if
             end do
@@ -255,7 +255,7 @@ module mflow_routines
             ii = izhvie(mvintnode(i,j))
             if(ii/=0.and.hvflow(i,j)>0.0_eb) then
                 ib = icmv(i,j)
-                hvta = hvextt(ii,upper)
+                hvta = hvextt(ii,u)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*hvflow(i,j)
                 if(option(fhvloss)==on)then
                     delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
@@ -321,7 +321,7 @@ module mflow_routines
     do ii = 1, next
         i = hvnode(1,ii)
         roomptr => roominfo(i)
-        z = roomptr%layer_depth(lower)
+        z = roomptr%depth(l)
         j = hvnode(2,ii)
         if (hvorien(ii)==1) then
 
@@ -333,12 +333,12 @@ module mflow_routines
         end if
 
         ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(roomptr%height-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
-        hvfrac(upper,ii) = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
-        hvfrac(lower,ii) = min(1.0_eb,max(fraction,0.0_eb))
+        hvfrac(u,ii) = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
+        hvfrac(l,ii) = min(1.0_eb,max(fraction,0.0_eb))
     end do
 
     ! this is the actual duct initialization
@@ -347,27 +347,27 @@ module mflow_routines
         j = hvnode(2,ii)
         if (i<nr) then
             roomptr => roominfo(i)
-            z = roomptr%layer_depth(lower)
+            z = roomptr%depth(l)
             zl = min(z,hvelxt(ii))
             zu = min(0.0_eb,hvelxt(ii)-zl)
-            ru = zzrho(i,upper)
-            rl = zzrho(i,lower)
+            ru = zzrho(i,u)
+            rl = zzrho(i,l)
             hvp(j) = roomptr%relp - (ru*zu+rl*zl)*grav_con
-            hvextt(ii,upper) = roomptr%layer_temp(upper)
-            hvextt(ii,lower) = roomptr%layer_temp(lower)
+            hvextt(ii,u) = roomptr%temp(u)
+            hvextt(ii,l) = roomptr%temp(l)
         else
-            hvextt(ii,upper) = exterior_temperature
-            hvextt(ii,lower) = exterior_temperature
+            hvextt(ii,u) = exterior_temperature
+            hvextt(ii,l) = exterior_temperature
             hvp(j) =  exterior_abs_pressure - exterior_rho*grav_con*hvelxt(ii)
         end if
         do lsp = 1, ns
             if (i<nr) then
-                hvexcn(ii,lsp,upper) = zzcspec(i,upper,lsp)
-                hvexcn(ii,lsp,lower) = zzcspec(i,lower,lsp)
+                hvexcn(ii,lsp,u) = zzcspec(i,u,lsp)
+                hvexcn(ii,lsp,l) = zzcspec(i,l,lsp)
             else
                 xxrho = initial_mass_fraction(lsp)*exterior_rho
-                hvexcn(ii,lsp,upper) = xxrho
-                hvexcn(ii,lsp,lower) = xxrho
+                hvexcn(ii,lsp,u) = xxrho
+                hvexcn(ii,lsp,l) = xxrho
             end if
         end do
     end do
@@ -411,15 +411,15 @@ module mflow_routines
     do ii = 1, next
         j = hvnode(2,ii)
         ib = icmv(j,1)
-        hveflo(upper,ii) = hvflow(j,1)*hvfrac(upper,ii)
-        hveflo(lower,ii) = hvflow(j,1)*hvfrac(lower,ii)
+        hveflo(u,ii) = hvflow(j,1)*hvfrac(u,ii)
+        hveflo(l,ii) = hvflow(j,1)*hvfrac(l,ii)
         isys = izhvsys(j)
         if (hvflow(j,1)<0.0_eb) then
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if(nprod/=0)then
                 do k = 1, ns
-                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(upper,ii))*hvexcn(ii,k,upper) + &
-                                       abs(hveflo(lower,ii))*hvexcn(ii,k,lower)
+                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(u,ii))*hvexcn(ii,k,u) + &
+                                       abs(hveflo(l,ii))*hvexcn(ii,k,l)
                 end do
             end if
         end if
@@ -474,21 +474,21 @@ module mflow_routines
         ! we allow only one connection from a node to an external duct
         ib = icmv(j,1)
         if (hvflow(j,1)>0.0_eb) then
-            hvextt(ii,upper) = tbr(ib)
-            hvextt(ii,lower) = tbr(ib)
+            hvextt(ii,u) = tbr(ib)
+            hvextt(ii,l) = tbr(ib)
             do k = 1, ns
                 ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
                 if (zzhvm(isys)/=0.0_eb) then
-                    hvexcn(ii,k,upper) = zzhvspec(isys,k)/zzhvm(isys)
-                    hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
+                    hvexcn(ii,k,u) = zzhvspec(isys,k)/zzhvm(isys)
+                    hvexcn(ii,k,l) = hvexcn(ii,k,u)
                     ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
                     !         - see keywordcases to change this
                 elseif(hvmfsys(isys)/=0.0_eb) then
-                    hvexcn(ii,k,upper) = -(dhvprsys(isys,k)/hvmfsys(isys))
-                    hvexcn(ii,k,lower) = hvexcn(ii,k,upper)
+                    hvexcn(ii,k,u) = -(dhvprsys(isys,k)/hvmfsys(isys))
+                    hvexcn(ii,k,l) = hvexcn(ii,k,u)
                 else
-                    hvexcn(ii,k,upper) = 0.0_eb
-                    hvexcn(ii,k,lower) = 0.0_eb
+                    hvexcn(ii,k,u) = 0.0_eb
+                    hvexcn(ii,k,l) = 0.0_eb
                 end if
             end do
         end if
@@ -515,15 +515,15 @@ module mflow_routines
     if (hvorien(i)==1) then
         xyz(1) = 0.0_eb
         xyz(2) = 0.0_eb
-        xyz(3) = roomptr%depth/2 - sqrt(varea)/2
-        xyz(4) = roomptr%depth/2 + sqrt(varea)/2
+        xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2
+        xyz(4) = roomptr%cdepth/2 + sqrt(varea)/2
         xyz(5) = vheight - sqrt(varea)/2
         xyz(6) = vheight + sqrt(varea)/2
     else
-        xyz(1) = roomptr%depth/2 - sqrt(varea)/2
-        xyz(2) = roomptr%depth/2 + sqrt(varea)/2
-        xyz(3) = roomptr%width/2 - sqrt(varea)/2
-        xyz(4) = roomptr%width/2 + sqrt(varea)/2
+        xyz(1) = roomptr%cdepth/2 - sqrt(varea)/2
+        xyz(2) = roomptr%cdepth/2 + sqrt(varea)/2
+        xyz(3) = roomptr%cwidth/2 - sqrt(varea)/2
+        xyz(4) = roomptr%cwidth/2 + sqrt(varea)/2
         xyz(5) = vheight
         xyz(6) = vheight
     end if

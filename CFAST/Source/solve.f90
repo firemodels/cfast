@@ -24,7 +24,7 @@ module solve_routines
     use setup_data
     use solver_data
     use debug_data
-    use flwptrs
+    use cparams
     use target_data
     use fire_data
     use option_data
@@ -638,9 +638,9 @@ module solve_routines
                 call output_smokeview_header (version,nrm1,nfires)
             end if
             smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
-            smv_zlay(1:nrm1) = roominfo(1:nrm1)%layer_depth(lower)
-            smv_tu(1:nrm1) = roominfo(1:nrm1)%layer_temp(upper)
-            smv_tl(1:nrm1) = roominfo(1:nrm1)%layer_temp(lower)
+            smv_zlay(1:nrm1) = roominfo(1:nrm1)%depth(l)
+            smv_tu(1:nrm1) = roominfo(1:nrm1)%temp(u)
+            smv_tl(1:nrm1) = roominfo(1:nrm1)%temp(l)
             call output_smokeview_plot_data(t,nrm1,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, fqlocal,fhlocal)
             call output_spreadsheet_smokeview(t)
             tsmv = tsmv + dplot
@@ -1069,7 +1069,7 @@ module solve_routines
     integer, intent(inout) :: ires
     real(eb), intent(out) :: delta(*)
 
-    integer, parameter :: all = 1, some = 0, uu = upper ,ll = lower
+    integer, parameter :: all = 1, some = 0
 
     ! data structures for dassl, the numerical solver
     real(eb) :: xprime(maxteq)
@@ -1154,7 +1154,7 @@ module solve_routines
 
     if(djetflg)then
         do i = 1, nrm1
-            qf(i) = qf(i) + flwdjf(i,q,ll) + flwdjf(i,q,uu)
+            qf(i) = qf(i) + flwdjf(i,q,l) + flwdjf(i,q,u)
         end do
     end if
 
@@ -1164,33 +1164,33 @@ module solve_routines
 
         do iprod = 1, nprod + 2
             ip = izpmap(iprod)
-            flwtot(iroom,iprod,ll) = flwnvnt(iroom,iprod,ll) + flwf(iroom,ip,ll)
-            flwtot(iroom,iprod,uu) = flwnvnt(iroom,iprod,uu) + flwf(iroom,ip,uu)
+            flwtot(iroom,iprod,l) = flwnvnt(iroom,iprod,l) + flwf(iroom,ip,l)
+            flwtot(iroom,iprod,u) = flwnvnt(iroom,iprod,u) + flwf(iroom,ip,u)
         end do
         if(vflowflg)then
             do iprod = 1, nprod + 2
                 ip = izpmap(iprod)
-                flwtot(iroom,iprod,ll) = flwtot(iroom,iprod,ll) + flwhvnt(iroom,ip,ll)
-                flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwhvnt(iroom,ip,uu)
+                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwhvnt(iroom,ip,l)
+                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwhvnt(iroom,ip,u)
             end do
         end if
         if(hvacflg)then
             do iprod = 1, nprod + 2
                 ip = izpmap(iprod)
-                flwtot(iroom,iprod,ll) = flwtot(iroom,iprod,ll) + flwmv(iroom,ip,ll) - filtered(iroom,iprod,ll)
-                flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwmv(iroom,ip,uu) - filtered(iroom,iprod,uu)
+                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwmv(iroom,ip,l) - filtered(iroom,iprod,l)
+                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwmv(iroom,ip,u) - filtered(iroom,iprod,u)
             end do
         end if
         if(djetflg)then
             do iprod = 1, nprod + 2
                 ip = izpmap(iprod)
-                flwtot(iroom,iprod,ll) = flwtot(iroom,iprod,ll) + flwdjf(iroom,ip,ll)
-                flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwdjf(iroom,ip,uu)
+                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwdjf(iroom,ip,l)
+                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwdjf(iroom,ip,u)
             end do
         end if
 
-        flwtot(iroom,q,ll) = flwtot(iroom,q,ll) + flwcv(iroom,ll) + flwrad(iroom,ll)
-        flwtot(iroom,q,uu) = flwtot(iroom,q,uu) + flwcv(iroom,uu) + flwrad(iroom,uu)
+        flwtot(iroom,q,l) = flwtot(iroom,q,l) + flwcv(iroom,l) + flwrad(iroom,l)
+        flwtot(iroom,q,u) = flwtot(iroom,q,u) + flwcv(iroom,u) + flwrad(iroom,u)
 
 
         ! if this room is a shaft then solve for only one zone.
@@ -1199,8 +1199,8 @@ module solve_routines
         ! zero.
         if(roomptr%shaft)then
             do iprod = 1, nprod + 2
-                flwtot(iroom,iprod,uu) = flwtot(iroom,iprod,uu) + flwtot(iroom,iprod,ll)
-                flwtot(iroom,iprod,ll) = 0.0_eb
+                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwtot(iroom,iprod,l)
+                flwtot(iroom,iprod,l) = 0.0_eb
             end do
         end if
     end do
@@ -1229,18 +1229,18 @@ module solve_routines
     ! calculate rhs of ode's for each room
     do iroom = 1, nrm1
         roomptr => roominfo(iroom)
-        aroom = roomptr%area
-        hceil = roomptr%height
+        aroom = roomptr%floor_area
+        hceil = roomptr%cheight
         pabs = roomptr%absp
-        hinter = roomptr%layer_depth(ll)
-        ql = flwtot(iroom,q,ll)
-        qu = flwtot(iroom,q,uu)
-        tmu = flwtot(iroom,m,uu)
-        tml = flwtot(iroom,m,ll)
+        hinter = roomptr%depth(l)
+        ql = flwtot(iroom,q,l)
+        qu = flwtot(iroom,q,u)
+        tmu = flwtot(iroom,m,u)
+        tml = flwtot(iroom,m,l)
 
         if(option(foxygen)==on)then
-            oxydu = flwtot(iroom,4,uu)
-            oxydl = flwtot(iroom,4,ll)
+            oxydu = flwtot(iroom,4,u)
+            oxydl = flwtot(iroom,4,l)
         end if
 
         ! pressure equation
@@ -1251,22 +1251,22 @@ module solve_routines
         end if
 
         ! upper layer temperature equation
-        tlaydu = (qu-cp*tmu*roomptr%layer_temp(uu))/(cp*zzmass(iroom,uu))
+        tlaydu = (qu-cp*tmu*roomptr%temp(u))/(cp*zzmass(iroom,u))
         if (option(fode)==on) then
-            tlaydu = tlaydu + pdot/(cp*zzrho(iroom,uu))
+            tlaydu = tlaydu + pdot/(cp*zzrho(iroom,u))
         end if
 
         ! upper layer volume equation
         vlayd = (gamma-1.0_eb)*qu/(gamma*pabs)
         if (option(fode)==on) then
-            vlayd = vlayd - roomptr%layer_volume(uu)*pdot/(gamma*pabs)
+            vlayd = vlayd - roomptr%volume(u)*pdot/(gamma*pabs)
         end if
         if(roomptr%shaft) vlayd = 0.0_eb
 
         ! lower layer temperature equation
-        tlaydl = (ql-cp*tml*roomptr%layer_temp(ll))/(cp*zzmass(iroom,ll))
+        tlaydl = (ql-cp*tml*roomptr%temp(l))/(cp*zzmass(iroom,l))
         if (option(fode)==on) then
-            tlaydl = tlaydl + pdot/(cp*zzrho(iroom,ll))
+            tlaydl = tlaydl + pdot/(cp*zzrho(iroom,l))
         end if
 
         xprime(iroom) = pdot
@@ -1286,26 +1286,26 @@ module solve_routines
         do iprod = 1, nprod
             do iroom = 1, nrm1
                 roomptr => roominfo(iroom)
-                hceil = roomptr%height
-                hinter = roomptr%layer_depth(ll)
+                hceil = roomptr%cheight
+                hinter = roomptr%depth(l)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
-                prodl = flwtot(iroom,iprod+2,ll)
+                prodl = flwtot(iroom,iprod+2,l)
 
                 ! if this room is a hall and the jet has not reached the end
                 ! of the hall then don't solve for it using dassl
-                produ = flwtot(iroom,iprod+2,uu)
+                produ = flwtot(iroom,iprod+2,u)
 
                 if (hinter<hceil) then
                     xprime(iprodu) = produ
-                else if(hinter>=hceil.and.flwtot(iroom,m,uu)<0.0_eb)  then
+                else if(hinter>=hceil.and.flwtot(iroom,m,u)<0.0_eb)  then
                     xprime(iprodu) = produ
                 else
                     xprime(iprodu) = 0.0_eb
                 end if
                 if (hinter>0.0_eb) then
                     xprime(iprodl) = prodl
-                else if (hinter<=0.0_eb.and.flwtot(iroom,m,ll)>0.0_eb) then
+                else if (hinter<=0.0_eb.and.flwtot(iroom,m,l)>0.0_eb) then
                     xprime(iprodl) = prodl
                 else
                     xprime(iprodl) = 0.0_eb
@@ -1400,20 +1400,20 @@ module solve_routines
     if (iflag==constvar) then
         do iroom = 1, nr
             roomptr => roominfo(iroom)
-            roomptr%vmin = min(vminfrac*roomptr%volume, 1.0_eb)
-            roomptr%vmax = roomptr%volume - roomptr%vmin
+            roomptr%vmin = min(vminfrac*roomptr%cvolume, 1.0_eb)
+            roomptr%vmax = roomptr%cvolume - roomptr%vmin
         end do
         do iroom = 1, nrm1
             roomptr=>roominfo(iroom)
 
-            roomptr%x1 = roomptr%x0 + roomptr%width
-            roomptr%y1 = roomptr%y0 + roomptr%depth
-            roomptr%z1 = roomptr%z0 + roomptr%height
+            roomptr%x1 = roomptr%x0 + roomptr%cwidth
+            roomptr%y1 = roomptr%y0 + roomptr%cdepth
+            roomptr%z1 = roomptr%z0 + roomptr%cheight
 
             ! define wall centers
-            xmax = roomptr%width
+            xmax = roomptr%cwidth
             xmid = xmax/2.0_eb
-            ymax = roomptr%depth
+            ymax = roomptr%cdepth
             ymid = ymax/2.0_eb
             zmax = roomptr%z1
 
@@ -1465,22 +1465,22 @@ module solve_routines
         roomptr%z0 = 0.0_eb
         roomptr%z1 = 100000.0_eb
 
-        roomptr%layer_volume(upper) = 0.0_eb
-        roomptr%layer_volume(lower) = 100000.0_eb
-        roomptr%layer_depth(upper) = 0.0_eb
-        roomptr%layer_depth(lower) = 100000.0_eb
+        roomptr%volume(u) = 0.0_eb
+        roomptr%volume(l) = 100000.0_eb
+        roomptr%depth(u) = 0.0_eb
+        roomptr%depth(l) = 100000.0_eb
         roomptr%relp = 0.0_eb
         roomptr%absp = pressure_offset
-        roomptr%layer_temp(upper) = exterior_temperature
-        roomptr%layer_temp(lower) = exterior_temperature
-        zzcspec(nr,upper,3:ns) = 0.0_eb
-        zzcspec(nr,lower,3:ns) = 0.0_eb
-        zzgspec(nr,lower,3:ns) = 0.0_eb
-        zzgspec(nr,upper,3:ns) = 0.0_eb
-        zzcspec(nr,upper,1) = 0.770_eb
-        zzcspec(nr,lower,1) = 0.770_eb
-        zzcspec(nr,upper,2) = 0.230_eb
-        zzcspec(nr,lower,2) = 0.230_eb
+        roomptr%temp(u) = exterior_temperature
+        roomptr%temp(l) = exterior_temperature
+        zzcspec(nr,u,3:ns) = 0.0_eb
+        zzcspec(nr,l,3:ns) = 0.0_eb
+        zzgspec(nr,l,3:ns) = 0.0_eb
+        zzgspec(nr,u,3:ns) = 0.0_eb
+        zzcspec(nr,u,1) = 0.770_eb
+        zzcspec(nr,l,1) = 0.770_eb
+        zzcspec(nr,u,2) = 0.230_eb
+        zzcspec(nr,l,2) = 0.230_eb
         
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -1489,11 +1489,11 @@ module solve_routines
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        zzcspec(nr,upper,8) = relative_humidity*xh2o
-        zzcspec(nr,lower,8) = relative_humidity*xh2o
+        zzcspec(nr,u,8) = relative_humidity*xh2o
+        zzcspec(nr,l,8) = relative_humidity*xh2o
 
-        zzrho(nr,upper:lower) = roomptr%absp/rgas/roomptr%layer_temp(upper:lower)
-        zzmass(nr,upper:lower) = zzrho(nr,upper:lower)*roomptr%layer_volume(upper:lower)
+        zzrho(nr,u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
+        zzmass(nr,u:l) = zzrho(nr,u:l)*roomptr%volume(u:l)
 
         ! define horizontal vent data structures
         frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)
@@ -1647,29 +1647,29 @@ module solve_routines
         do iroom = 1, nrm1
             roomptr=>roominfo(iroom)
 
-            roomptr%layer_volume(upper) = max(pdif(iroom+nofvu),roomptr%vmin)
-            roomptr%layer_volume(upper) = min(roomptr%layer_volume(upper),roomptr%vmax)
-            roomptr%layer_volume(lower) = max(roomptr%volume-roomptr%layer_volume(upper),roomptr%vmin)
-            roomptr%layer_volume(lower) = min(roomptr%layer_volume(lower),roomptr%vmax)
+            roomptr%volume(u) = max(pdif(iroom+nofvu),roomptr%vmin)
+            roomptr%volume(u) = min(roomptr%volume(u),roomptr%vmax)
+            roomptr%volume(l) = max(roomptr%cvolume-roomptr%volume(u),roomptr%vmin)
+            roomptr%volume(l) = min(roomptr%volume(l),roomptr%vmax)
 
             ! calculate layer height for non-rectangular rooms
             npts = roomptr%nvars
             if(npts==0)then
-                roomptr%layer_depth(upper) = roomptr%layer_volume(upper)/roomptr%area
-                roomptr%layer_depth(lower) = roomptr%layer_volume(lower)/roomptr%area
+                roomptr%depth(u) = roomptr%volume(u)/roomptr%floor_area
+                roomptr%depth(l) = roomptr%volume(l)/roomptr%floor_area
             else
-                call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%layer_volume(lower),1,roomptr%layer_depth(lower))
-                roomptr%layer_depth(upper) = roomptr%height - roomptr%layer_depth(lower)
+                call interp(roomptr%var_volume,roomptr%var_height,npts,roomptr%volume(l),1,roomptr%depth(l))
+                roomptr%depth(u) = roomptr%cheight - roomptr%depth(l)
             end if
 
             roomptr%relp = pdif(iroom)
             roomptr%absp = pdif(iroom) + pressure_offset
             if(nfurn>0)then
-              roomptr%layer_temp(upper) = wtemp
-              roomptr%layer_temp(lower) = wtemp
+              roomptr%temp(u) = wtemp
+              roomptr%temp(l) = wtemp
             else
-              roomptr%layer_temp(upper) = pdif(iroom+noftu)
-              roomptr%layer_temp(lower) = pdif(iroom+noftl)
+              roomptr%temp(u) = pdif(iroom+noftu)
+              roomptr%temp(l) = pdif(iroom+noftl)
             end if
 
             ! there is a problem with how flow is being withdrawn from layers
@@ -1678,22 +1678,22 @@ module solve_routines
             ! (because the rhs of the temperature equation is wrong).  the following
             ! code causes the temperature of the opposite layer to be used in these
             ! situations.
-            if(roomptr%layer_temp(upper)<0.0_eb)then
-                roomptr%layer_temp(upper)=roomptr%layer_temp(lower)
+            if(roomptr%temp(u)<0.0_eb)then
+                roomptr%temp(u)=roomptr%temp(l)
             end if
-            if(roomptr%layer_temp(lower)<0.0_eb)then
-                roomptr%layer_temp(lower)=roomptr%layer_temp(upper)
+            if(roomptr%temp(l)<0.0_eb)then
+                roomptr%temp(l)=roomptr%temp(u)
             end if
             if(roomptr%shaft)then
-                roomptr%layer_temp(lower) = roomptr%layer_temp(upper)
+                roomptr%temp(l) = roomptr%temp(u)
             end if
 
             ! compute area of 10 wall segments
-            xmax = roomptr%width
-            ymax = roomptr%depth
-            zzu = roomptr%layer_depth(upper)
-            zzl = roomptr%layer_depth(lower)
-            zzwarea10(iroom,1) = roomptr%area
+            xmax = roomptr%cwidth
+            ymax = roomptr%cdepth
+            zzu = roomptr%depth(u)
+            zzl = roomptr%depth(l)
+            zzwarea10(iroom,1) = roomptr%floor_area
             zzwarea10(iroom,2) = zzu*xmax
             zzwarea10(iroom,3) = zzu*ymax
             zzwarea10(iroom,4) = zzu*xmax
@@ -1702,11 +1702,11 @@ module solve_routines
             zzwarea10(iroom,7) = zzl*ymax
             zzwarea10(iroom,8) = zzl*xmax
             zzwarea10(iroom,9) = zzl*ymax
-            zzwarea10(iroom,10) = roomptr%area
+            zzwarea10(iroom,10) = roomptr%floor_area
 
             ! compute area of 4 wall segments
-            zzwarea4(iroom,1) = roomptr%area
-            zzwarea4(iroom,2) = roomptr%area
+            zzwarea4(iroom,1) = roomptr%floor_area
+            zzwarea4(iroom,2) = roomptr%floor_area
             zzwarea4(iroom,3) = (ymax + xmax)*zzu*2.0_eb
             zzwarea4(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
 
@@ -1714,7 +1714,7 @@ module solve_routines
             ! (other coordinates are static and are defined earlier)
 
             do i = 1, 4
-                zlay = roomptr%layer_depth(lower)
+                zlay = roomptr%depth(l)
                 roomptr%wall_center(3,i+1) =  (roomptr%z1+zlay)/2.0_eb
                 roomptr%wall_center(3,i+5) = zlay/2.0_eb
             end do
@@ -1730,9 +1730,9 @@ module solve_routines
                 ptemp = roomptr%absp
             end if
 
-            do layer = upper, lower
-                zzrho(iroom,layer) = ptemp/rgas/roomptr%layer_temp(layer)
-                zzmass(iroom,layer) = zzrho(iroom,layer)*roomptr%layer_volume(layer)
+            do layer = u, l
+                zzrho(iroom,layer) = ptemp/rgas/roomptr%temp(layer)
+                zzmass(iroom,layer) = zzrho(iroom,layer)*roomptr%volume(layer)
             end do
         end do
 
@@ -1749,12 +1749,12 @@ module solve_routines
             targptr => targetinfo(itarg)
             iroom = targptr%room
             roomptr => roominfo(iroom)
-            zlay = roomptr%layer_depth(lower)
+            zlay = roomptr%depth(l)
             ztarg = targptr%center(3)
             if(ztarg>=zlay)then
-                targptr%layer = upper
+                targptr%layer = u
             else
-                targptr%layer = lower
+                targptr%layer = l
             end if
         end do
 
@@ -1794,14 +1794,14 @@ module solve_routines
                     ! zzwtemp(iroom,iwall,2) is only referenced if the iwall'th
                     ! wall in room iroom is being solved with the heat equation
                     if(iwall==1.or.iwall==3)then
-                        ilay = upper
+                        ilay = u
                     else
-                        ilay = lower
+                        ilay = l
                     end if
                     if(nfurn.gt.0)then
                       zzwtemp(iroom,iwall,1) = wtemp
                     else
-                      zzwtemp(iroom,iwall,1) = roomptr%layer_temp(ilay)
+                      zzwtemp(iroom,iwall,1) = roomptr%temp(ilay)
                     end if
                 end if
             end do
@@ -1817,14 +1817,14 @@ module solve_routines
                 else
                     ppgas = pdif(isof)
                 end if
-                zzgspec(iroom,upper,lsp) = max(ppgas,0.0_eb)
+                zzgspec(iroom,u,lsp) = max(ppgas,0.0_eb)
                 isof = isof + 1
                 if (iflag==odevarb) then
                     ppgas = pold(isof) + dt*pdold(isof)
                 else
                     ppgas = pdif(isof)
                 end if
-                zzgspec(iroom,lower,lsp) = max(ppgas,0.0_eb)
+                zzgspec(iroom,l,lsp) = max(ppgas,0.0_eb)
             end do
         end do
 
@@ -1836,18 +1836,18 @@ module solve_routines
             totl = 0.0_eb
             totu = 0.0_eb
             do lsp = 1, min(9,ns)
-                totu = totu + zzgspec(iroom,upper,lsp)
-                totl = totl + zzgspec(iroom,lower,lsp)
+                totu = totu + zzgspec(iroom,u,lsp)
+                totl = totl + zzgspec(iroom,l,lsp)
             end do
             rtotl = 1.0_eb
             rtotu = 1.0_eb
             if (totl>0.0_eb) rtotl = 1.0_eb/totl
             if (totu>0.0_eb) rtotu = 1.0_eb/totu
             do lsp = 1, ns
-                zzcspec(iroom,upper,lsp) = zzgspec(iroom,upper,lsp)*rtotu
-                zzcspec(iroom,lower,lsp) = zzgspec(iroom,lower,lsp)*rtotl
+                zzcspec(iroom,u,lsp) = zzgspec(iroom,u,lsp)*rtotu
+                zzcspec(iroom,l,lsp) = zzgspec(iroom,l,lsp)*rtotl
                 if(roomptr%shaft)then
-                    zzcspec(iroom,lower,lsp) = zzcspec(iroom,upper,lsp)
+                    zzcspec(iroom,l,lsp) = zzcspec(iroom,u,lsp)
                 end if
             end do
 
@@ -1857,12 +1857,12 @@ module solve_routines
             if(option(foxygen)==on)then
                 oxyl = max(p(iroom+nofoxyl),0.0_eb)
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
-                zzgspec(iroom,lower,2) = oxyl
-                zzgspec(iroom,upper,2) = oxyu
-                zzcspec(iroom,lower,2) = oxyl/zzmass(iroom,lower)
-                zzcspec(iroom,upper,2) = oxyu/zzmass(iroom,upper)
+                zzgspec(iroom,l,2) = oxyl
+                zzgspec(iroom,u,2) = oxyu
+                zzcspec(iroom,l,2) = oxyl/zzmass(iroom,l)
+                zzcspec(iroom,u,2) = oxyu/zzmass(iroom,u)
                 if(roomptr%shaft)then
-                    zzcspec(iroom,lower,2) = zzcspec(iroom,upper,2)
+                    zzcspec(iroom,l,2) = zzcspec(iroom,u,2)
                 end if
             end if
         end do
@@ -1907,38 +1907,38 @@ module solve_routines
     real(eb) :: factor(mxrooms,2)
     integer :: iroom, isof, iprod
 
-    factor(1:nrm1,upper) = 0.0_eb
-    factor(1:nrm1,lower) = 0.0_eb
+    factor(1:nrm1,u) = 0.0_eb
+    factor(1:nrm1,l) = 0.0_eb
 
     isof = ibeg
     do iprod = 1, min(ns,9)
         do iroom = 1, nrm1
-            factor(iroom,upper) = factor(iroom,upper) + pdif(isof)
+            factor(iroom,u) = factor(iroom,u) + pdif(isof)
             isof = isof + 1
-            factor(iroom,lower) = factor(iroom,lower) + pdif(isof)
+            factor(iroom,l) = factor(iroom,l) + pdif(isof)
             isof = isof + 1
         end do
     end do
 
     do iroom = 1, nrm1
-        if (factor(iroom,upper)>0.0_eb.and.zzmass(iroom,upper)>0.0_eb) then
-            factor(iroom,upper) = zzmass(iroom,upper)/factor(iroom,upper)
+        if (factor(iroom,u)>0.0_eb.and.zzmass(iroom,u)>0.0_eb) then
+            factor(iroom,u) = zzmass(iroom,u)/factor(iroom,u)
         else
-            factor(iroom,upper) = 1.0_eb
+            factor(iroom,u) = 1.0_eb
         end if
-        if (factor(iroom,lower)>0.0_eb.and.zzmass(iroom,lower)>0.0_eb) then
-            factor(iroom,lower) = zzmass(iroom,lower)/factor(iroom,lower)
+        if (factor(iroom,l)>0.0_eb.and.zzmass(iroom,l)>0.0_eb) then
+            factor(iroom,l) = zzmass(iroom,l)/factor(iroom,l)
         else
-            factor(iroom,lower) = 1.0_eb
+            factor(iroom,l) = 1.0_eb
         end if
     end do
 
     isof = ibeg
     do iprod = 1, min(ns,9)
         do iroom = 1, nrm1
-            pdif(isof) = pdif(isof)*factor(iroom,upper)
+            pdif(isof) = pdif(isof)*factor(iroom,u)
             isof = isof + 1
-            pdif(isof) = pdif(isof)*factor(iroom,lower)
+            pdif(isof) = pdif(isof)*factor(iroom,l)
             isof = isof + 1
         end do
     end do

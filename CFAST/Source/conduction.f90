@@ -90,14 +90,14 @@ module conduction_routines
                         j = iheat_connections(iroom,jj)
                         frac = heat_frac(iroom,j)
                         if(iwall==3)then
-                            yb = zzhlay(iroom,lower)
+                            yb = roomptr%layer_depth(lower)
                             yt = roomptr%z1
                         elseif(iwall==4)then
                             yb = 0.0_eb
-                            yt = zzhlay(iroom,lower)
+                            yt = roomptr%layer_depth(lower)
                         end if
                         dflor = roominfo(j)%z0 - roomptr%z0
-                        yy = zzhlay(j,lower) + dflor
+                        yy = roominfo(j)%layer_depth(lower) + dflor
                         if(j/=nrm1+1)then
                             if(yy>yt)then
                                 fu = 0.0_eb

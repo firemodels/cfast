@@ -270,7 +270,7 @@ For the derivations that follow, we assume that the pressure $P$ is the same for
    c_v\ddt\left( V_u\rho_u T_u\right)  &=  &\qdot_u =  P \dbydt{V_u}\label{eq:upper}
 \end{eqnarray}
 
-\noindent Sum Eqs. \ref{eq:lower} and \ref{eq:upper}, noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, and use the assumption that $\rho_l T_L=\rho_u T_U = P/R$ to give
+\noindent Sum Eqs. \ref{eq:lower} and \ref{eq:upper}, noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, and from the ideal gas law that $\rho_l T_L=\rho_u T_U = P/R$ to give
 \begin{eqnarray}
    \frac{c_vV}{R}\dbydt{ P}  &=  &\qdot_l + \qdot_u
 \end{eqnarray}
@@ -305,7 +305,10 @@ c_vm_uT_u=c_vV_u\rho_uT_u=c_vV_u\frac{P}{R}=\frac{c_v}{c_p-c_v}V_uP=\frac{1}{\ga
 
 \subsection{Temperature Equations}
 To derive the upper layer temperature differential equation note that
-$\ddt(c_vm_uT_u)=c_v\dot m_uT_u+c_vm_u\dbydt{T_u}$ and from Eq. \ref{eq:ODE_VU}
+\begin{equation}
+\ddt(c_vm_uT_u)=c_v\dot m_uT_u+c_vm_u\dbydt{T_u}
+\end{equation}
+\noindent and from Eq. \ref{eq:ODE_VU}
 \begin{equation}
 P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \qdot - \frac{V_u}{\gamma}\dbydt{P}
 \label{eq:pvu}

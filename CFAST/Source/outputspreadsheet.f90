@@ -69,13 +69,13 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call ssaddtolist (position,zztemp(i,upper)-kelvin_c_offset,outarray)
+        call ssaddtolist (position,roomptr%layer_temp(upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call ssaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
-            call ssaddtolist (position,zzhlay(i,lower),outarray)
+            call ssaddtolist(position,roomptr%layer_temp(lower)-kelvin_c_offset,outarray)
+            call ssaddtolist (position,roomptr%layer_depth(lower),outarray)
         end if
-        call ssaddtolist (position,zzvol(i,upper),outarray)
-        call ssaddtolist (position,zzrelp(i) - roomptr%interior_relp_initial ,outarray)
+        call ssaddtolist (position,roomptr%layer_volume(upper),outarray)
+        call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
     end do
 
     ! Fires
@@ -222,6 +222,7 @@ module spreadsheet_routines
 
     type(target_type), pointer :: targptr
     type(detector_type), pointer ::dtectptr
+    type(room_type), pointer :: roomptr
 
     data iwptr /1, 3, 4, 2/
     logical :: firstc
@@ -293,12 +294,13 @@ module spreadsheet_routines
     cjetmin = 0.10_eb
     do i = 1, ndtect
         dtectptr => detectorinfo(i)
-        iroom = dtectptr%room
         zdetect = dtectptr%center(3)
-        if(zdetect>zzhlay(iroom,lower))then
-            tlay = zztemp(iroom,upper)
+        iroom = dtectptr%room
+        roomptr => roominfo(iroom)
+        if(zdetect>roomptr%layer_depth(lower))then
+            tlay = roomptr%layer_temp(upper)
         else
-            tlay = zztemp(iroom,lower)
+            tlay = roomptr%layer_temp(lower)
         end if
         if (dtectptr%activated) then
             xact = 1.0_eb
@@ -358,9 +360,9 @@ module spreadsheet_routines
             do lsp = 1, ns
                 if (layer==upper.or..not.roomptr%shaft) then
                     if (tooutput(lsp)) then
-                        ssvalue = toxict(i,layer,lsp)
+                        ssvalue = roomptr%species_output(layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
-                        if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see toxict od calculation)
+                        if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
                         !ssvalue = zzgspec(i,layer,lsp) ! Use this to print out total mass of species in layers
                         call SSaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
@@ -410,16 +412,16 @@ module spreadsheet_routines
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call SSaddtolist(position,zztemp(i,upper)-kelvin_c_offset,outarray)
+        call SSaddtolist(position,roomptr%layer_temp(upper)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call SSaddtolist(position,zztemp(i,lower)-kelvin_c_offset,outarray)
-            call SSaddtolist(position,zzhlay(i,lower),outarray)
+            call SSaddtolist(position,roomptr%layer_temp(lower)-kelvin_c_offset,outarray)
+            call SSaddtolist(position,roomptr%layer_depth(lower),outarray)
         end if
-        call SSaddtolist(position,zzrelp(i),outarray)
+        call SSaddtolist(position,roomptr%relp,outarray)
         call SSaddtolist(position,zzrho(i,upper),outarray)
         if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,lower),outarray)
-        call SSaddtolist(position,toxict(i,upper,9),outarray)
-        if (.not.roomptr%shaft) call SSaddtolist(position,toxict(i,lower,9),outarray)
+        call SSaddtolist(position,roomptr%species_output(upper,9),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%species_output(lower,9),outarray)
     end do
 
     ! fires

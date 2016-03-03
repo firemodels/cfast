@@ -83,7 +83,7 @@ module fire_routines
                oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
             ! sum the flows for return to the source routine
-            xtl = zztemp(iroom,lower)
+            xtl = roomptr%layer_temp(lower)
             flwf(iroom,m,upper) = flwf(iroom,m,upper) + oplume(3,iobj)
             flwf(iroom,m,lower) = flwf(iroom,m,lower) - oplume(2,iobj)
             q_firemass = cp*oplume(1,iobj)*interior_temperature
@@ -182,12 +182,15 @@ module fire_routines
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
     type(detector_type), pointer :: dtectptr
+    type(room_type), pointer :: roomptr
+
+    roomptr => roominfo(iroom)
 
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
-    xz = zzhlay(iroom,upper)
-    xtl = zztemp(iroom,lower)
-    xtu = zztemp(iroom,upper)
+    xz = roomptr%layer_depth(upper)
+    xtl = roomptr%layer_temp(lower)
+    xtu = roomptr%layer_temp(upper)
     xqfc = 0.0_eb
     xqlp = 0.0_eb
     xeme = 0.0_eb
@@ -692,6 +695,7 @@ module fire_routines
 
     logical :: dj1flag, dj2flag
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: room1ptr, room2ptr
 
     ! initialize summations and local data
     djetflg = .false.
@@ -704,7 +708,8 @@ module fire_routines
 
         ! is there a door jet fire into room iroom1
         iroom1 = ventptr%from
-        if (zztemp(iroom1,upper)>=tgignt) then
+        room1ptr => roominfo(iroom1)
+        if (room1ptr%layer_temp(upper)>=tgignt) then
             flw1to2 = vss(1,i)+vsa(1,i)
             if (vsas(2,i)>0.0_eb.and.flw1to2>0.0_eb) then
                 djetflg = .true.
@@ -714,7 +719,8 @@ module fire_routines
 
         !is there a door jet fire into room iroom2
         iroom2 = ventptr%to
-        if(zztemp(iroom2,upper)>=tgignt)then
+        room2ptr => roominfo(iroom2)
+        if(room2ptr%layer_temp(upper)>=tgignt)then
             flw2to1 = vss(2,i)+vsa(2,i)
             if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
                 djetflg = .true.
@@ -738,8 +744,8 @@ module fire_routines
                 iroom2 = ventptr%to
                 flw1to2 = zzcspec(iroom1,upper,7)*(vss(1,i)+vsa(1,i))
                 flw2to1 = zzcspec(iroom2,upper,7)*(vss(2,i)+vsa(2,i))
-                call door_jet_fire (iroom2,zztemp(iroom1,upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
-                call door_jet_fire (iroom1,zztemp(iroom2,upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
+                call door_jet_fire (iroom2,room1ptr%layer_temp(upper),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
+                call door_jet_fire (iroom1,room2ptr%layer_temp(upper),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if(dj1flag)then
@@ -858,28 +864,29 @@ module fire_routines
     integer :: i
     type(room_type), pointer :: roomptr
 
+    roomptr => roominfo(iroom)
+
     ! default is the appropriate layer temperature and a velocity of 0.1 m/s
-    if (z>=zzhlay(iroom,lower)) then
-        tg = zztemp(iroom,upper)
+    if (z>=roomptr%layer_depth(lower)) then
+        tg = roomptr%layer_temp(upper)
     else
-        tg = zztemp(iroom,lower)
+        tg = roomptr%layer_temp(lower)
     end if
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,nfire
         if (ifroom(i)==iroom) then
-            roomptr => roominfo(iroom)
             qdot = fqf(i)
             xrad = radconsplit(i)
             area = farea(i)
-            tu = zztemp(iroom,upper)
-            tl = zztemp(iroom,lower)
+            tu = roomptr%layer_temp(upper)
+            tl = roomptr%layer_temp(lower)
             zfire = xfire(i,f_fire_zpos)
             xdistance = x - xfire(i,f_fire_xpos)
             if (abs(xdistance)<=mx_hsep) xdistance = 0.0_eb
             ydistance = y - xfire(i,f_fire_ypos)
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
-            zlayer = zzhlay(iroom,lower)
+            zlayer = roomptr%layer_depth(lower)
             zceil = roomptr%height
             r = sqrt(xdistance**2 + ydistance**2)
             if (roomptr%hall) then
@@ -1087,7 +1094,7 @@ module fire_routines
     return
     end subroutine get_plume_tempandvelocity
 
-! --------------------------- update_species -------------------------------------------
+! --------------------------- update_species (toxict) -------------------------------------------
 
     subroutine update_species (deltt)
 
@@ -1100,6 +1107,7 @@ module fire_routines
 
     real(eb) :: aweigh(ns), air(2), v(2), aweigh7, avagad
     integer i, k, lsp
+    type(room_type), pointer :: roomptr
 
     ! aweigh's are molar weights of the species, avagad is the reciprocal
     ! of avagadro's number (so you can't have less than an atom of a species
@@ -1108,8 +1116,9 @@ module fire_routines
     aweigh(7) = aweigh7
 
     do i = 1, nrm1
-        v(upper) = zzvol(i,upper)
-        v(lower) = zzvol(i,lower)
+        roomptr => roominfo(i)
+        v(upper) = roomptr%layer_volume(upper)
+        v(lower) = roomptr%layer_volume(lower)
         do k = upper, lower
             air(k) = 0.0_eb
             do lsp = 1, 9
@@ -1121,14 +1130,14 @@ module fire_routines
         ! calculate the mass density in kg/m^3
         do lsp = 1, ns
             do k = upper, lower
-                species_rho(i,k,lsp) = zzgspec(i,k,lsp)/v(k)
+                roomptr%species_rho(k,lsp) = zzgspec(i,k,lsp)/v(k)
             end do
         end do
 
         ! calculate the molar density in percent
         do lsp = 1, 8
             do k = upper, lower
-                toxict(i,k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
+                roomptr%species_output(k,lsp) = 100.0_eb*zzgspec(i,k,lsp)/(air(k)*aweigh(lsp))
             end do
         end do
 
@@ -1138,13 +1147,13 @@ module fire_routines
         ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
         lsp = 9
         do k = upper, lower
-            toxict(i,k,lsp) = species_rho(i,k,lsp)*3778.0_eb
+            roomptr%species_output(k,lsp) = roomptr%species_rho(k,lsp)*3778.0_eb
         end do
 
         ! ct is the integration of the total "junk" being transported
         lsp = 10
         do k = upper, lower
-            toxict(i,k,lsp) = toxict(i,k,lsp) + species_rho(i,k,lsp)*1000.0_eb*deltt/60.0_eb
+            roomptr%species_output(k,lsp) = roomptr%species_output(k,lsp) + roomptr%species_rho(k,lsp)*1000.0_eb*deltt/60.0_eb
         end do
 
         ! ts (trace species) is the filtered concentration - this is the total mass.
@@ -1152,7 +1161,7 @@ module fire_routines
         ! this step being correct depends on the integratemass routine
         lsp = 11
         do k = upper, lower
-            toxict(i,k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
+            roomptr%species_output(k,lsp) = zzgspec(i,k,lsp) !/(tradio+1.0d-10)
         end do
 
     end do

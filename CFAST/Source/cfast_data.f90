@@ -17,11 +17,6 @@ module cenviro
                                                     ! connects to the outside (perhaps through several other intermediate rooms)
     logical :: izhvac(mxrooms)                      ! true if there is an HVAC vent connection in the room
 
-    real(eb), dimension(mxrooms) :: zzrelp          ! pressure at floor level relative to exterior
-    real(eb), dimension(mxrooms) :: zzabsp          ! absolute pressure at floor level
-    real(eb), dimension(mxrooms,2) :: zzvol         ! volume of each layer
-    real(eb), dimension(mxrooms,2) :: zzhlay        ! thickness of each layer
-    real(eb), dimension(mxrooms,2) :: zztemp        ! temperature of each layer
     real(eb), dimension(mxrooms,2) :: zzrho         ! density of each layer
     real(eb), dimension(mxrooms,2) :: zzmass        ! total mass of each layer
     real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
@@ -200,8 +195,6 @@ module room_data
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
         initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
     
-    real(eb) species_rho(mxrooms,2,ns), toxict(mxrooms,2,ns)
-    
     type(room_type), target :: roominfo(mxrooms)
 
     ! wall variables
@@ -287,6 +280,8 @@ module smkview_data
     character(60) :: smkgeom, smkplot, smkplottrunc
     logical :: remapfiresdone
     real(eb), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+    real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu         ! temp arrays to pass info to smokeview
+    real(eb), dimension(mxfires) :: smv_qdot,smv_height                     ! temp arrays to pass info to smokeview
     
     ! visualization variables
     integer :: nvisualinfo = 0

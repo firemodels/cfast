@@ -552,8 +552,10 @@ module hflow_routines
         roomptr=>roominfo(iroom)
         zflor(i) = roomptr%z0
         zceil(i) = roomptr%z1
-        pflor(i) = zzrelp(iroom)
-        zlay(i) = zzhlay(iroom,lower)
+        pflor(i) = roomptr%relp
+        zlay(i) = roomptr%layer_depth(lower)
+        tu(i) = roomptr%layer_temp(upper)
+        tl(i) = roomptr%layer_temp(lower)
         denu(i) = zzrho(iroom,upper)
         denl(i) = zzrho(iroom,lower)
         do iprod = 1, nprod
@@ -561,8 +563,6 @@ module hflow_routines
             conl(iprod,i) = zzcspec(iroom,lower,ip)
             conu(iprod,i) = zzcspec(iroom,upper,ip)
         end do
-        tu(i) = zztemp(iroom,upper)
-        tl(i) = zztemp(iroom,lower)
     end do
     return
 

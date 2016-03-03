@@ -88,35 +88,39 @@ module vflow_routines
 
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nrm1) then
+                roomptr => roominfo(ifrm)
                 if (tmvent(iflow)>interior_temperature) then
-                    zlayer = zzhlay(ifrm,ilay)
+                    zlayer = roomptr%layer_depth(ilay)
                     froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
                 else
                     froude(iflow) = 0.0_eb
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
-                roomptr => roominfo(ifrm)
                 if (ilay==upper) then
                     ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-exisitant layer
-                    fu = min(tanhsmooth(zzvol(ifrm,upper), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
-                    fu = min(tanhsmooth(zzvol(ifrm,lower), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, fu, 1.0_eb), 1.0_eb)
+                    fu = min(tanhsmooth(roomptr%layer_volume(upper), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
+                    fu = min(tanhsmooth(roomptr%layer_volume(lower), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, fu, 1.0_eb), 1.0_eb)
                     fl = max(1.0_eb-fu, 0.0_eb)
                 else
-                    fl = min(tanhsmooth(zzvol(ifrm,lower), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
-                    fl = min(tanhsmooth(zzvol(ifrm,upper), 3.0_eb*roomptr%vmin, 2.0_eb*roomptr%vmin, fl, 1.0_eb), 1.0_eb)
+                    fl = min(tanhsmooth(roomptr%layer_volume(lower), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
+                    fl = min(tanhsmooth(roomptr%layer_volume(upper), 3.0_eb*roomptr%vmin, &
+                        2.0_eb*roomptr%vmin, fl, 1.0_eb), 1.0_eb)
                     fu = max(1.0_eb-fl, 0.0_eb)
                 end if
                 frommu = fu*xmvent(iflow)
                 fromml = fl*xmvent(iflow)
-                fromqu = cp*frommu*zztemp(ifrm,upper)
-                fromql = cp*fromml*zztemp(ifrm,lower)
-                from_temp = fu*zztemp(ifrm,upper) + fl*zztemp(ifrm,lower)
+                fromqu = cp*frommu*roomptr%layer_temp(upper)
+                fromql = cp*fromml*roomptr%layer_temp(lower)
+                from_temp = fu*roomptr%layer_temp(upper) + fl*roomptr%layer_temp(lower)
             else
                 frommu = 0.0_eb
                 fromml = xmvent(iflow)
                 fromqu = 0.0_eb
                 fromql = cp*fromml*exterior_temperature
-                from_temp = zztemp(ifrm,lower)
+                from_temp = roomptr%layer_temp(lower)
             end if
             fromtq = fromqu + fromql
 
@@ -131,8 +135,9 @@ module vflow_routines
             vmflo(ito,ifrm,lower) = vmflo(ito,ifrm,lower) - fromml
 
             ! determine mass and enthalpy fractions for the to room
-            temp_upper = zztemp(ito,upper)
-            temp_lower = zztemp(ito,lower)
+            roomptr => roominfo(ito)
+            temp_upper = roomptr%layer_temp(upper)
+            temp_lower = roomptr%layer_temp(lower)
             fu = 0.0_eb
             if (from_temp>temp_lower+deltatemp_min) fu = 1.0_eb
             fl = 1.0_eb - fu
@@ -258,15 +263,15 @@ module vflow_routines
     real(eb) :: delp, delden, rho, epscut, srdelp, fnoise
     real(eb) :: v, cshape, d, delpflood, vex
     integer :: i, deadtop, deadbot
-    type(room_type), pointer :: toproomptr, botroomptr
+    type(room_type), pointer :: roomptr, toproomptr, botroomptr
 
     toproomptr => roominfo(itop)
     botroomptr => roominfo(ibot)
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     ! dp at top of bottom room and bottom of top room
     if (ibot<=nrm1) then
-        dp(2) = -grav_con*(zzrho(ibot,l)*zzhlay(ibot,l)+zzrho(ibot,u)*zzhlay(ibot,u))
-        relp(2) = zzrelp(ibot)
+        dp(2) = -grav_con*(zzrho(ibot,l)*botroomptr%layer_depth(l)+zzrho(ibot,u)*botroomptr%layer_depth(u))
+        relp(2) = botroomptr%relp
     else
         dp(2) = 0.0_eb
         relp(2) = toproomptr%exterior_relp_initial
@@ -274,9 +279,9 @@ module vflow_routines
 
     if (itop<=nrm1) then
         dp(1) = 0.0_eb
-        relp(1) = zzrelp(itop)
+        relp(1) = toproomptr%relp
     else
-        dp(1) = -grav_con*roominfo(ibot)%height*exterior_rho
+        dp(1) = -grav_con*botroomptr%height*exterior_rho
         relp(1) = botroomptr%exterior_relp_initial
     end if
 
@@ -290,12 +295,12 @@ module vflow_routines
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
-    if (zzvol(itop,l)<=2.0_eb*roominfo(itop)%vmin) then
+    if (toproomptr%layer_volume(l)<=2.0_eb*roominfo(itop)%vmin) then
         ilay(1) = u
     else
         ilay(1) = l
     end if
-    if (zzvol(ibot,u)<=2.0_eb*roominfo(ibot)%vmin) then
+    if (botroomptr%layer_volume(u)<=2.0_eb*roominfo(ibot)%vmin) then
         ilay(2) = l
     else
         ilay(2) = u
@@ -372,8 +377,9 @@ module vflow_routines
         vvent(i) = vst(i) + vex
         xmvent(i) = denvnt(i)*vvent(i)
         if (iroom(i)<=nrm1) then
-            ! iroom(i) is an inside room so use the environment variable zztemp for temperature
-            tmvent(i) = zztemp(iroom(i),ilay(3-i))
+            ! iroom(i) is an inside room so use the appropriate layer temperature
+            roomptr => roominfo(iroom(i))
+            tmvent(i) = roomptr%layer_temp(ilay(3-i))
         else
             ! iroom(i) is an outside room so use exterior_temperature for temperature
             tmvent(i) = exterior_temperature

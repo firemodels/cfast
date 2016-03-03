@@ -119,6 +119,7 @@ module debug_routines
     integer :: position, i, j, k
     data firstc/.true./
     save firstc
+    type(room_type), pointer :: roomptr
 
     ! headers
     if (firstc) then
@@ -131,10 +132,11 @@ module debug_routines
 
     ! compartment information
     do i = 1, nrm1
-        call SSaddtolist (position,zzrelp(i),outarray)
-        call SSaddtolist (position,zzvol(i,upper),outarray)
-        call SSaddtolist(position,zztemp(i,upper),outarray)
-        call SSaddtolist(position,zztemp(i,lower),outarray)
+        roomptr => roominfo(i)
+        call SSaddtolist (position,roomptr%relp,outarray)
+        call SSaddtolist (position,roomptr%layer_volume(upper),outarray)
+        call SSaddtolist(position,roomptr%layer_temp(upper),outarray)
+        call SSaddtolist(position,roomptr%layer_temp(lower),outarray)
         do j = 1, 2
             do k = 1, 2
                 call SSaddtolist (position,flwtot(i,k,j),outarray)

@@ -162,13 +162,14 @@ module initialization_routines
     end do
     do ii = 1, next
         i = hvnode(1,ii)
+        roomptr => roominfo(i)
         j = hvnode(2,ii)
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
             hvextt(ii,upper) = interior_temperature
             hvextt(ii,lower) = interior_temperature
-            hvp(j) = zzrelp(i) - grav_con*interior_rho*hvelxt(ii)
+            hvp(j) = roomptr%relp - grav_con*interior_rho*hvelxt(ii)
         else
             hvextt(ii,upper) = exterior_temperature
             hvextt(ii,lower) = exterior_temperature
@@ -729,9 +730,11 @@ module initialization_routines
 
     real(eb) :: xt, xtemp, xh2o, totmass, initialmass(2,mxrooms,ns)
     integer i, j, k, ip, iprod, isof, isys, lsp
+    type(room_type), pointer :: roomptr
 
 
     do i = 1, nrm1
+        roomptr => roominfo(i)
 
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -752,8 +755,8 @@ module initialization_routines
 
         do k = upper, lower
             do lsp = 1, ns
-                toxict(i,k,lsp) = 0.0_eb
-                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*zzvol(i,k)
+                roomptr%species_output(k,lsp) = 0.0_eb
+                initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*roomptr%layer_volume(k)
             end do
         end do
     end do

@@ -57,8 +57,10 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        zzbeam(i,lower) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
-        zzbeam(i,upper) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
+        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
+            (roomptr%area + roomptr%layer_depth(lower)*(roomptr%depth + roomptr%width))
+        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
+            (roomptr%area + roomptr%layer_depth(upper)*(roomptr%depth + roomptr%width))
     end do
 
     defabsup = 0.50_eb
@@ -66,10 +68,12 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        tg(upper) = zztemp(i,upper)
-        tg(lower) = zztemp(i,lower)
-        zzbeam(i,lower) = (1.8_eb*zzvol(i, lower))/(roomptr%area + zzhlay(i, lower)*(roomptr%depth + roomptr%width))
-        zzbeam(i,upper) = (1.8_eb*zzvol(i, upper))/(roomptr%area + zzhlay(i, upper)*(roomptr%depth + roomptr%width))
+        tg(upper) = roomptr%layer_temp(upper)
+        tg(lower) = roomptr%layer_temp(lower)
+        zzbeam(i,lower) = (1.8_eb*roomptr%layer_volume(lower)) / &
+            (roomptr%area + roomptr%layer_depth(lower)*(roomptr%depth + roomptr%width))
+        zzbeam(i,upper) = (1.8_eb*roomptr%layer_volume(upper)) / &
+            (roomptr%area + roomptr%layer_depth(upper)*(roomptr%depth + roomptr%width))
         do iwall = 1, 4
             imap = map(iwall)
             twall(imap) = zzwtemp(i,iwall,1)
@@ -100,7 +104,7 @@ module radiation_routines
         end if
         rabsorb(1) = zzabsb(i,upper)
         rabsorb(2) = zzabsb(i,lower)
-        call rad4(twall,tg,emis,rabsorb,i,roomptr%width,roomptr%depth,roomptr%height,zzhlay(i,lower), &
+        call rad4(twall,tg,emis,rabsorb,i,roomptr%width,roomptr%depth,roomptr%height,roomptr%layer_depth(lower), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
         do j = 1, nwal
@@ -913,10 +917,12 @@ module radiation_routines
         -0.4510_eb, -0.5952_eb, &
         -0.2620_eb, -0.3307_eb, -0.3233_eb, -0.3045_eb, -0.3010_eb, -0.3045_eb, -0.3045_eb, -0.3054_eb, -0.3080_eb, &
         -0.3605_eb, -0.5086_eb], [h2oxsize,h2oysize] )
+    type(room_type), pointer :: roomptr
 
+    roomptr => roominfo(cmpt)
     ! layer-specific factors
-    tg = zztemp(cmpt, layer)
-    rtv = (rg*tg)/zzvol(cmpt, layer)
+    tg = roomptr%layer_temp(layer)
+    rtv = (rg*tg)/roomptr%layer_volume(layer)
     l = zzbeam(cmpt,layer)
 
     ag = 0.0_eb
@@ -946,7 +952,7 @@ module radiation_routines
     end if
 
     ! total absorbance
-    vfs = zzgspec(cmpt,layer,soot)/(zzvol(cmpt,layer)*rhos)
+    vfs = zzgspec(cmpt,layer,soot)/(roomptr%layer_volume(layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
 
     return

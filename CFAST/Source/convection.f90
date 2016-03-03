@@ -54,7 +54,7 @@
             ilay = lower
         end if
         ! assume no fires in this room.  just use regular convection
-        call convective_flux(iwall,zztemp(i,ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
+        call convective_flux(iwall,roomptr%layer_temp(ilay),zzwtemp(i,iwall,1),flxcv(i,iwall))
         ! if there's a fire, we may need to modify the convection to account for the ceiling jet
         if (iwall==1.and.nrmfire>0) then
             qconv = 0.0_eb

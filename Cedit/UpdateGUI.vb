@@ -31,7 +31,6 @@ Public Class UpdateGUI
         FileName = myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".log"
         If System.IO.File.Exists(FileName) Then MainWin.MenuViewLog.Enabled = True
 
-        MainWin.OutputTotalMass.Checked = TotalMassCFASTOutput
         MainWin.OutputShowCFAST.Checked = CommandWindowVisible
         MainWin.OutputValidation.Checked = ValidationOutput
     End Sub
@@ -51,10 +50,9 @@ Public Class UpdateGUI
         End If
 
         Dim OutputOptions As String
-        If ValidationOutput Or TotalMassCFASTOutput Or DebugOutput Or CommandWindowVisible Then
+        If ValidationOutput Or DebugOutput Or CommandWindowVisible Then
             OutputOptions = "Output: "
             If ValidationOutput Then OutputOptions = OutputOptions + "Validation   "
-            If TotalMassCFASTOutput Then OutputOptions = OutputOptions + "Total Mass   "
             If DebugOutput Then OutputOptions = OutputOptions + "Debug   "
             If CommandWindowVisible Then OutputOptions = OutputOptions + "CFAST Window"
             MainWin.StatusBar.Panels(2).Text = OutputOptions

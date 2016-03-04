@@ -49,7 +49,6 @@ Public Class CeditMain
     Friend WithEvents OutputValidation As System.Windows.Forms.CheckBox
     Friend WithEvents OutputShowCFAST As System.Windows.Forms.CheckBox
     Friend WithEvents OutputDebug As System.Windows.Forms.CheckBox
-    Friend WithEvents OutputTotalMass As System.Windows.Forms.CheckBox
     Friend WithEvents Output As System.Windows.Forms.StatusBarPanel
     Friend WithEvents MenuHelpUpdate As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem5 As System.Windows.Forms.MenuItem
@@ -792,7 +791,6 @@ Public Class CeditMain
         Me.Label104 = New System.Windows.Forms.Label()
         Me.ThermalShortName = New System.Windows.Forms.TextBox()
         Me.TabOutput = New System.Windows.Forms.TabPage()
-        Me.OutputTotalMass = New System.Windows.Forms.CheckBox()
         Me.OutputValidation = New System.Windows.Forms.CheckBox()
         Me.OutputShowCFAST = New System.Windows.Forms.CheckBox()
         Me.GroupVisualResolution = New System.Windows.Forms.GroupBox()
@@ -4348,7 +4346,6 @@ Public Class CeditMain
         '
         'TabOutput
         '
-        Me.TabOutput.Controls.Add(Me.OutputTotalMass)
         Me.TabOutput.Controls.Add(Me.OutputValidation)
         Me.TabOutput.Controls.Add(Me.OutputShowCFAST)
         Me.TabOutput.Controls.Add(Me.GroupVisualResolution)
@@ -4362,20 +4359,10 @@ Public Class CeditMain
         Me.TabOutput.Text = "Output"
         Me.TabOutput.UseVisualStyleBackColor = True
         '
-        'OutputTotalMass
-        '
-        Me.OutputTotalMass.AutoSize = True
-        Me.OutputTotalMass.Location = New System.Drawing.Point(818, 272)
-        Me.OutputTotalMass.Name = "OutputTotalMass"
-        Me.OutputTotalMass.Size = New System.Drawing.Size(113, 17)
-        Me.OutputTotalMass.TabIndex = 121
-        Me.OutputTotalMass.Text = "Total Mass Output"
-        Me.OutputTotalMass.UseVisualStyleBackColor = True
-        '
         'OutputValidation
         '
         Me.OutputValidation.AutoSize = True
-        Me.OutputValidation.Location = New System.Drawing.Point(818, 240)
+        Me.OutputValidation.Location = New System.Drawing.Point(818, 253)
         Me.OutputValidation.Name = "OutputValidation"
         Me.OutputValidation.Size = New System.Drawing.Size(107, 17)
         Me.OutputValidation.TabIndex = 118
@@ -4385,7 +4372,7 @@ Public Class CeditMain
         'OutputShowCFAST
         '
         Me.OutputShowCFAST.AutoSize = True
-        Me.OutputShowCFAST.Location = New System.Drawing.Point(818, 336)
+        Me.OutputShowCFAST.Location = New System.Drawing.Point(818, 323)
         Me.OutputShowCFAST.Name = "OutputShowCFAST"
         Me.OutputShowCFAST.Size = New System.Drawing.Size(132, 17)
         Me.OutputShowCFAST.TabIndex = 120
@@ -4481,7 +4468,7 @@ Public Class CeditMain
         'OutputDebug
         '
         Me.OutputDebug.AutoSize = True
-        Me.OutputDebug.Location = New System.Drawing.Point(818, 304)
+        Me.OutputDebug.Location = New System.Drawing.Point(818, 288)
         Me.OutputDebug.Name = "OutputDebug"
         Me.OutputDebug.Size = New System.Drawing.Size(93, 17)
         Me.OutputDebug.TabIndex = 119
@@ -4817,8 +4804,6 @@ Public Class CeditMain
                     Select Case CSet
                         Case "ShowCFASTOutput"
                             CommandWindowVisible = CType(RegistryOptions(iSet, 1), Boolean)
-                        Case "MassOutput"
-                            TotalMassCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
                         Case "NetHeatFlux"
                             NetHeatFluxCFASTOutput = CType(RegistryOptions(iSet, 1), Boolean)
                         Case "Validation"
@@ -6291,15 +6276,6 @@ Public Class CeditMain
             CommandWindowVisible = False
         End If
         SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
-        UpdateGUI.General()
-    End Sub
-    Private Sub TotalMassOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputTotalMass.CheckedChanged
-        If Me.OutputTotalMass.Checked Then
-            TotalMassCFASTOutput = True
-        Else
-            TotalMassCFASTOutput = False
-        End If
-        SaveSetting("CFAST", "Options", "MassOutput", TotalMassCFASTOutput.ToString)
         UpdateGUI.General()
     End Sub
     Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalFromFile.Click, FireFromFile.Click

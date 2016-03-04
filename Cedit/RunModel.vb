@@ -264,10 +264,6 @@ Public Class RunModel
             CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + CFastInputFile + ".in" + """"
         End If
         RunOptions.Text = "RunOptions: "
-        If TotalMassCFASTOutput Then
-            CommandString += " -T"
-            RunOptions.Text += "Total Mass Output"
-        End If
         If NetHeatFluxCFASTOutput Then
             CommandString += " -N"
             If RunOptions.Text.Length > 12 Then RunOptions.Text += ", "

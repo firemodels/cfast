@@ -247,6 +247,7 @@ The exchange of mass and energy or heat between zones is due to physical phenome
 
 \newcommand{\qdot}{\dot{q}}
 \section{Modeling Equations}
+\label{sect:equations}
 
 It is assumed that each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. It is also assumed that all thermodynamic parameters are constant. The specific heat at constant volume and at constant pressure, $c_v$ and $c_p$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = c_p / c_v$ and $R = c_p- c_v$. Regardless of the composition of the gas mixture, $c_p = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
 \be
@@ -273,8 +274,8 @@ Stated in this way, conservation of energy is the first law of thermodynamics.  
   P = R \, \rho_i \, T_i \label{EoS}
 \ee
 
-A system of ordinary differential equations for pressure, upper layer volume, upper and layer temperature are derived in Appendix \ref{chap:derivation}
- and given below:
+A system of ordinary differential equations for pressure, upper layer volume, upper and lower layer temperature are derived in Appendix \ref{chap:derivation}
+ using the conservation of mass and energy and are given below:
 
 \begin{eqnarray}
 \dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \qdot_l + \qdot_u \right)  \label{eq1} \\[.1in]
@@ -1125,25 +1126,34 @@ $\chi_{\rm r}$      & radiative fraction, dimensionless \\
 \chapter{Modeling Equation Derivations}
 \label{chap:derivation}
 
-
-\section{Pressure Equation}
-For convenience, Eq. \ref{eq:first_law} used in the following derivations is re-written here:
+For convenience, Eq. \ref{eq:first_law} (conservation of energy) from Section \ref{sect:equations} used in the following derivations is re-written here:
 \be
    \ddt\left(c_v m_i T_i\right)   =  \qdot_i - P \dbydt{V_i}\label{eq:afirst_law}
 \ee
 
-To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer and substitute $\rho_i=m_i/V_i$ to give
+\section{Pressure Equation}
+
+
+To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer and substitute $m_i=V_i\rho_i$ to give
 \begin{eqnarray}
    c_v\ddt\left( V_l\rho_l T_l\right)  &=  &\qdot_l - P \dbydt{V_l}\label{eq:lower}\\
    c_v\ddt\left( V_u\rho_u T_u\right)  &=  &\qdot_u -  P \dbydt{V_u}\label{eq:upper}
 \end{eqnarray}
 
-\noindent Sum Eqs. \ref{eq:lower} and \ref{eq:upper}, noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, and from the ideal gas law that $\rho_l T_L=\rho_u T_U = P/R$ to give
+\noindent Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, gives 
+
+\begin{equation}
+   c_v\ddt\left( V_l\rho_l T_l+V_u\rho_u T_u\right)  =  \qdot_l + \qdot_u
+\end{equation}
+
+\noindent which simplifies to 
+
 \begin{eqnarray}
    \frac{c_vV}{R}\dbydt{ P}  &=  &\qdot_l + \qdot_u
 \end{eqnarray}
 
-\noindent Finally use $R=c_p-c_v$ and $\gamma=c_p/c_v$ to show that $R/c_v=\gamma-1$ giving
+\noindent after assuming that $\rho_l T_L=\rho_u T_U = P/R$.  
+Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
 
 \begin{eqnarray}
    \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\qdot_l + \qdot_u\right)
@@ -1164,12 +1174,12 @@ c_vm_uT_u=c_vV_u\rho_uT_u=c_vV_u\frac{P}{R}=\frac{c_v}{c_p-c_v}V_uP=\frac{1}{\ga
 &=&\frac{1}{\gamma-1}\left(P\dbydt{V_u} + V_u\dbydt{P}\right) + P\dbydt{V_u}\\
 &=&\frac{\gamma}{\gamma-1}P\dbydt{V_u} + \frac{V_u}{\gamma-1}\dbydt{P}
 \end{eqnarray}
-Multiplying both sides by $(\gamma-1)/(\gamma P)$ gives
+Multiplying both sides by $\frac{\gamma-1}{\gamma P}$ gives
 \begin{equation}
 \frac{\gamma-1}{\gamma P}\qdot_u=\dbydt{V_u} + \frac{V_u}{\gamma P}\dbydt{P}\label{eq:vub}
 \end{equation}
 
-\noindent Finally, solving Eq. \ref{eq:vub} for $\dbydt{Vu}$ gives
+\noindent Finally, solving for $\dbydt{Vu}$ gives
 \begin{equation}
 \dbydt{V_u} = \frac{1}{P\gamma}\left((\gamma-1)\qdot - V_u\dbydt{P}\right)
 \label{eq:ODE_VU}
@@ -1183,7 +1193,7 @@ To derive the upper layer temperature differential equation note that
 \end{equation}
 \noindent and from Eq. \ref{eq:ODE_VU} that
 \begin{equation}
-P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \qdot - \frac{V_u}{\gamma}\dbydt{P}
+P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \qdot_u - \frac{V_u}{\gamma}\dbydt{P}
 \label{eq:pvu}
 \end{equation}
 
@@ -1191,7 +1201,7 @@ P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \qdot - \frac{V_u}{\gamma}\dbydt{P}
 
 \begin{eqnarray}
    \ddt\left(c_v m_u T_u\right) +  P \dbydt{V_u} &=  &\qdot_u\\
-c_v\dot m_uT_u+c_vm_u\dbydt{T_u}+\frac{\gamma-1}{\gamma} \qdot - \frac{V_u}{\gamma}\dbydt{P}&=&\qdot_u
+c_v\dot m_uT_u+c_vm_u\dbydt{T_u}+\frac{\gamma-1}{\gamma} \qdot_u - \frac{V_u}{\gamma}\dbydt{P}&=&\qdot_u
 \label{eq:tua}
 \end{eqnarray}
 Multiplying Eq. \ref{eq:tua} by $\gamma$ gives

@@ -1253,7 +1253,7 @@ module solve_routines
         ! upper layer temperature equation
         tlaydu = (qu-cp*tmu*roomptr%temp(u))/(cp*zzmass(iroom,u))
         if (option(fode)==on) then
-            tlaydu = tlaydu + pdot/(cp*zzrho(iroom,u))
+            tlaydu = tlaydu + pdot/(cp*roomptr%rho(u))
         end if
 
         ! upper layer volume equation
@@ -1266,7 +1266,7 @@ module solve_routines
         ! lower layer temperature equation
         tlaydl = (ql-cp*tml*roomptr%temp(l))/(cp*zzmass(iroom,l))
         if (option(fode)==on) then
-            tlaydl = tlaydl + pdot/(cp*zzrho(iroom,l))
+            tlaydl = tlaydl + pdot/(cp*roomptr%rho(l))
         end if
 
         xprime(iroom) = pdot
@@ -1492,8 +1492,8 @@ module solve_routines
         zzcspec(nr,u,8) = relative_humidity*xh2o
         zzcspec(nr,l,8) = relative_humidity*xh2o
 
-        zzrho(nr,u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
-        zzmass(nr,u:l) = zzrho(nr,u:l)*roomptr%volume(u:l)
+        roomptr%rho(u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
+        zzmass(nr,u:l) = roomptr%rho(u:l)*roomptr%volume(u:l)
 
         ! define horizontal vent data structures
         frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)
@@ -1731,8 +1731,8 @@ module solve_routines
             end if
 
             do layer = u, l
-                zzrho(iroom,layer) = ptemp/rgas/roomptr%temp(layer)
-                zzmass(iroom,layer) = zzrho(iroom,layer)*roomptr%volume(layer)
+                roomptr%rho(layer) = ptemp/rgas/roomptr%temp(layer)
+                zzmass(iroom,layer) = roomptr%rho(layer)*roomptr%volume(layer)
             end do
         end do
 

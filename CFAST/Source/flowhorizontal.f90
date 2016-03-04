@@ -556,8 +556,8 @@ module hflow_routines
         zlay(i) = roomptr%depth(l)
         tu(i) = roomptr%temp(u)
         tl(i) = roomptr%temp(l)
-        denu(i) = zzrho(iroom,u)
-        denl(i) = zzrho(iroom,l)
+        denu(i) = roomptr%rho(u)
+        denl(i) = roomptr%rho(l)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
             conl(iprod,i) = zzcspec(iroom,l,ip)

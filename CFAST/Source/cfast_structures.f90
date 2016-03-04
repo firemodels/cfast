@@ -41,6 +41,7 @@ module cfast_types
         real(eb), dimension(2) :: volume                ! volume of each layer
         real(eb), dimension(2) :: depth                 ! thickness of each layer
         real(eb), dimension(2) :: temp                  ! temperature of each layer
+        real(eb), dimension(2) :: rho                   ! density of each layer
         
     end type room_type
 

@@ -419,8 +419,8 @@ module spreadsheet_routines
             call SSaddtolist(position,roomptr%depth(l),outarray)
         end if
         call SSaddtolist(position,roomptr%relp,outarray)
-        call SSaddtolist(position,zzrho(i,u),outarray)
-        if (.not.roomptr%shaft) call SSaddtolist(position,zzrho(i,l),outarray)
+        call SSaddtolist(position,roomptr%rho(u),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%rho(l),outarray)
         call SSaddtolist(position,roomptr%species_output(u,9),outarray)
         if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%species_output(l,9),outarray)
     end do

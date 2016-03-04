@@ -268,7 +268,7 @@ module vflow_routines
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     ! dp at top of bottom room and bottom of top room
     if (ibot<=nrm1) then
-        dp(2) = -grav_con*(zzrho(ibot,l)*botroomptr%depth(l)+zzrho(ibot,u)*botroomptr%depth(u))
+        dp(2) = -grav_con*(botroomptr%rho(l)*botroomptr%depth(l)+botroomptr%rho(u)*botroomptr%depth(u))
         relp(2) = botroomptr%relp
     else
         dp(2) = 0.0_eb
@@ -293,12 +293,12 @@ module vflow_routines
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent
-    if (toproomptr%volume(l)<=2.0_eb*roominfo(itop)%vmin) then
+    if (toproomptr%volume(l)<=2.0_eb*toproomptr%vmin) then
         ilay(1) = u
     else
         ilay(1) = l
     end if
-    if (botroomptr%volume(u)<=2.0_eb*roominfo(ibot)%vmin) then
+    if (botroomptr%volume(u)<=2.0_eb*botroomptr%vmin) then
         ilay(2) = l
     else
         ilay(2) = u
@@ -306,12 +306,12 @@ module vflow_routines
 
     ! delden is density immediately above the vent less density immediately below the vent
     if (itop<=nrm1) then
-        den(1) = zzrho(itop,ilay(1))
+        den(1) = toproomptr%rho(ilay(1))
     else
         den(1) = exterior_rho
     end if
     if (ibot<=nrm1) then
-        den(2) = zzrho(ibot,ilay(2))
+        den(2) = botroomptr%rho(ilay(2))
     else
         den(2) = exterior_rho
     end if

@@ -350,8 +350,8 @@ module mflow_routines
             z = roomptr%depth(l)
             zl = min(z,hvelxt(ii))
             zu = min(0.0_eb,hvelxt(ii)-zl)
-            ru = zzrho(i,u)
-            rl = zzrho(i,l)
+            ru = roomptr%rho(u)
+            rl = roomptr%rho(l)
             hvp(j) = roomptr%relp - (ru*zu+rl*zl)*grav_con
             hvextt(ii,u) = roomptr%temp(u)
             hvextt(ii,l) = roomptr%temp(l)

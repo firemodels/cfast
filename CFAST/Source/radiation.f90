@@ -96,15 +96,15 @@ module radiation_routines
         end do
         if(.not.black)then
             if(option(frad)==4)then
-                zzabsb(i,u) = defabsup
-                zzabsb(i,l) = defabslow
+                roomptr%absorb(u) = defabsup
+                roomptr%absorb(l) = defabslow
             else
-                zzabsb(i,u) = absorb(i, u)
-                zzabsb(i,l) = absorb(i, l)
+                roomptr%absorb(u) = absorb(i, u)
+                roomptr%absorb(l) = absorb(i, l)
             end if
         end if
-        rabsorb(1) = zzabsb(i,u)
-        rabsorb(2) = zzabsb(i,l)
+        rabsorb(1) = roomptr%absorb(u)
+        rabsorb(2) = roomptr%absorb(l)
         call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
             qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)

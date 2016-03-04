@@ -19,7 +19,6 @@ module cenviro
 
     real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
     real(eb), dimension(mxrooms,2,ns) :: zzcspec    ! mass fraction of species in each layer
-    real(eb), dimension(mxrooms,2) :: zzbeam        ! characteristic length for absorbtivity in each layer
     real(eb), dimension(mxrooms,2) :: zzabsb        ! layer absorbtivity
     
     real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures

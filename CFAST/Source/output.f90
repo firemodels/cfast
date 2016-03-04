@@ -154,11 +154,11 @@ module output_routines
         izzvol = roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
             write (iofilo,5071) roomptr%name, roomptr%temp(u)-kelvin_c_offset, roomptr%volume(u), &
-                zzabsb(icomp,u),roomptr%relp - roomptr%interior_relp_initial
+                roomptr%absorb(u),roomptr%relp - roomptr%interior_relp_initial
         else
             write (iofilo,5070) roomptr%name, roomptr%temp(u)-kelvin_c_offset, &
                 roomptr%temp(l)-kelvin_c_offset, roomptr%depth(l), roomptr%volume(u), &
-                izzvol, zzabsb(icomp,u),zzabsb(icomp,l), roomptr%relp - roomptr%interior_relp_initial
+                izzvol, roomptr%absorb(u),roomptr%absorb(l), roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
     return

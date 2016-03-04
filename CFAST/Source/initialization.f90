@@ -489,11 +489,12 @@ module initialization_routines
     end do
 
     ! initialize solver oxygen values if required.   (must be initialized
-    ! after zzmass is defined)
+    ! after layer mass is defined)
     if(option(foxygen)==on)then
         do iroom = 1, nrm1
-            p(iroom+nofoxyu)=0.23_eb*zzmass(iroom,u)
-            p(iroom+nofoxyl)=0.23_eb*zzmass(iroom,l)
+            roomptr => roominfo(iroom)
+            p(iroom+nofoxyu)=0.23_eb*roomptr%mass(u)
+            p(iroom+nofoxyl)=0.23_eb*roomptr%mass(l)
         end do
     end if
 

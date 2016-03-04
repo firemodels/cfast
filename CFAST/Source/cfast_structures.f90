@@ -42,6 +42,8 @@ module cfast_types
         real(eb), dimension(2) :: depth                 ! thickness of each layer
         real(eb), dimension(2) :: temp                  ! temperature of each layer
         real(eb), dimension(2) :: rho                   ! density of each layer
+        real(eb), dimension(2) :: mass                  ! total mass of each layer
+        real(eb), dimension(2) :: abs_length            ! characteristic length for absorbtivity in each layer
         
     end type room_type
 

@@ -17,7 +17,6 @@ module cenviro
                                                     ! connects to the outside (perhaps through several other intermediate rooms)
     logical :: izhvac(mxrooms)                      ! true if there is an HVAC vent connection in the room
 
-    real(eb), dimension(mxrooms,2) :: zzmass        ! total mass of each layer
     real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
     real(eb), dimension(mxrooms,2,ns) :: zzcspec    ! mass fraction of species in each layer
     real(eb), dimension(mxrooms,2) :: zzbeam        ! characteristic length for absorbtivity in each layer

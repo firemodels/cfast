@@ -56,13 +56,13 @@ module radiation_routines
     black = .false.
     if(option(frad)==3) black = .true.
 
-    do i = 1, nrm1
-        roomptr => roominfo(i)
-        zzbeam(i,l) = (1.8_eb*roomptr%volume(l)) / &
-            (roomptr%floor_area + roomptr%depth(l)*(roomptr%cdepth + roomptr%cwidth))
-        zzbeam(i,u) = (1.8_eb*roomptr%volume(u)) / &
-            (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
-    end do
+    !do i = 1, nrm1
+    !    roomptr => roominfo(i)
+    !    roomptr%abs_length(l) = (1.8_eb*roomptr%volume(l)) / &
+    !        (roomptr%floor_area + roomptr%depth(l)*(roomptr%cdepth + roomptr%cwidth))
+    !    roomptr%abs_length(u) = (1.8_eb*roomptr%volume(u)) / &
+    !        (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
+    !end do
 
     defabsup = 0.50_eb
     defabslow = 0.01_eb
@@ -71,9 +71,9 @@ module radiation_routines
         roomptr => roominfo(i)
         tg(u) = roomptr%temp(u)
         tg(l) = roomptr%temp(l)
-        zzbeam(i,l) = (1.8_eb*roomptr%volume(l)) / &
+        roomptr%abs_length(l) = (1.8_eb*roomptr%volume(l)) / &
             (roomptr%floor_area + roomptr%depth(l)*(roomptr%cdepth + roomptr%cwidth))
-        zzbeam(i,u) = (1.8_eb*roomptr%volume(u)) / &
+        roomptr%abs_length(u) = (1.8_eb*roomptr%volume(u)) / &
             (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
         do iwall = 1, 4
             imap = map(iwall)
@@ -924,7 +924,7 @@ module radiation_routines
     ! layer-specific factors
     tg = roomptr%temp(layer)
     rtv = (rg*tg)/roomptr%volume(layer)
-    l = zzbeam(cmpt,layer)
+    l = roomptr%abs_length(layer)
 
     ag = 0.0_eb
 

@@ -1251,7 +1251,7 @@ module solve_routines
         end if
 
         ! upper layer temperature equation
-        tlaydu = (qu-cp*tmu*roomptr%temp(u))/(cp*zzmass(iroom,u))
+        tlaydu = (qu-cp*tmu*roomptr%temp(u))/(cp*roomptr%mass(u))
         if (option(fode)==on) then
             tlaydu = tlaydu + pdot/(cp*roomptr%rho(u))
         end if
@@ -1264,7 +1264,7 @@ module solve_routines
         if(roomptr%shaft) vlayd = 0.0_eb
 
         ! lower layer temperature equation
-        tlaydl = (ql-cp*tml*roomptr%temp(l))/(cp*zzmass(iroom,l))
+        tlaydl = (ql-cp*tml*roomptr%temp(l))/(cp*roomptr%mass(l))
         if (option(fode)==on) then
             tlaydl = tlaydl + pdot/(cp*roomptr%rho(l))
         end if
@@ -1493,7 +1493,7 @@ module solve_routines
         zzcspec(nr,l,8) = relative_humidity*xh2o
 
         roomptr%rho(u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
-        zzmass(nr,u:l) = roomptr%rho(u:l)*roomptr%volume(u:l)
+        roomptr%mass(u:l) = roomptr%rho(u:l)*roomptr%volume(u:l)
 
         ! define horizontal vent data structures
         frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)
@@ -1732,7 +1732,7 @@ module solve_routines
 
             do layer = u, l
                 roomptr%rho(layer) = ptemp/rgas/roomptr%temp(layer)
-                zzmass(iroom,layer) = roomptr%rho(layer)*roomptr%volume(layer)
+                roomptr%mass(layer) = roomptr%rho(layer)*roomptr%volume(layer)
             end do
         end do
 
@@ -1859,8 +1859,8 @@ module solve_routines
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
                 zzgspec(iroom,l,2) = oxyl
                 zzgspec(iroom,u,2) = oxyu
-                zzcspec(iroom,l,2) = oxyl/zzmass(iroom,l)
-                zzcspec(iroom,u,2) = oxyu/zzmass(iroom,u)
+                zzcspec(iroom,l,2) = oxyl/roomptr%mass(l)
+                zzcspec(iroom,u,2) = oxyu/roomptr%mass(u)
                 if(roomptr%shaft)then
                     zzcspec(iroom,l,2) = zzcspec(iroom,u,2)
                 end if
@@ -1906,6 +1906,7 @@ module solve_routines
 
     real(eb) :: factor(mxrooms,2)
     integer :: iroom, isof, iprod
+    type(room_type), pointer :: roomptr
 
     factor(1:nrm1,u) = 0.0_eb
     factor(1:nrm1,l) = 0.0_eb
@@ -1921,13 +1922,14 @@ module solve_routines
     end do
 
     do iroom = 1, nrm1
-        if (factor(iroom,u)>0.0_eb.and.zzmass(iroom,u)>0.0_eb) then
-            factor(iroom,u) = zzmass(iroom,u)/factor(iroom,u)
+        roomptr => roominfo(iroom)
+        if (factor(iroom,u)>0.0_eb.and.roomptr%mass(u)>0.0_eb) then
+            factor(iroom,u) = roomptr%mass(u)/factor(iroom,u)
         else
             factor(iroom,u) = 1.0_eb
         end if
-        if (factor(iroom,l)>0.0_eb.and.zzmass(iroom,l)>0.0_eb) then
-            factor(iroom,l) = zzmass(iroom,l)/factor(iroom,l)
+        if (factor(iroom,l)>0.0_eb.and.roomptr%mass(l)>0.0_eb) then
+            factor(iroom,l) = roomptr%mass(l)/factor(iroom,l)
         else
             factor(iroom,l) = 1.0_eb
         end if

@@ -498,9 +498,7 @@ module output_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    integer :: iwptr(4)
-
-    data iwptr /1, 3, 4, 2/
+    integer, parameter :: iwptr(4) =(/1, 3, 4, 2/)
 
     if ((itprt==0.and.ntarg<=nrm1).or.ntarg==0) return
     write (iofilo,5000)

@@ -64,6 +64,8 @@ module solve_routines
     real(eb) :: work(lrw)
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nprint, i, info, nodes
     real(eb) :: tol
+    
+    type(room_type), pointer :: roomptr
 
     ires = 0
 1   continue
@@ -124,7 +126,8 @@ module solve_routines
     ! vertical vent then do not use the snsqe pressure solution,
     ! use the original pressure solution that was based on rho*g*h.
     do i = 1, nrm1
-        if(izcon(i)) p(i+nofp) = hhvp(i)
+        roomptr => roominfo(i)
+        if(roomptr%is_connection) p(i+nofp) = hhvp(i)
     end do
     do i = 1, nhvpvar
         p(i+nofpmv) = hhvp(i+nrm1)
@@ -167,6 +170,7 @@ module solve_routines
     integer, parameter :: toprm = 1, botrm = 2
 
     type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomptr
 
     ! initially assume that no rooms are connected
     roomc(1:nr,1:nr) = 0
@@ -218,10 +222,11 @@ module solve_routines
     end do
 
     do i = 1, nrm1
+        roomptr => roominfo(i)
         if(roomc(i,nr)/=0)then
-            izcon(i) = .true.
+            roomptr%is_connection = .true.
         else
-            izcon(i) = .false.
+            roomptr%is_connection = .false.
         end if
     end do
 
@@ -248,6 +253,8 @@ module solve_routines
 
     integer :: nalg, i, ires
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), T
+    
+    type(room_type), pointer :: roomptr
 
     data pdzero /maxteq*0.0_eb/
 
@@ -280,7 +287,8 @@ module solve_routines
         deltamv(i) = delta(i)
     end do
     do i = 1, nrm1
-        if(.not.izcon(i)) deltamv(i) = 0.0_eb
+        roomptr => roominfo(i)
+        if(.not.roomptr%is_connection) deltamv(i) = 0.0_eb
     end do
     if(iprtalg/=0) then
         write(iofilo,*)'room pressure residuals'
@@ -1637,10 +1645,11 @@ module solve_routines
         jacdim = jacn1 + jacn2 + jacn3
 
         ! indicate which rooms are connected to an hvac system
-        izhvac(1:nrm1) = .false.
+        roominfo(1:nrm1)%is_hvac = .false.
         do ii = 1, next
             i = hvnode(1,ii)
-            izhvac(i) = .true.
+            roomptr => roominfo(i)
+            roomptr%is_hvac = .true.
         end do
 
     else if (iflag==odevara) then

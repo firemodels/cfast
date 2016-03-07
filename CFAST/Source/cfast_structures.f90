@@ -45,6 +45,9 @@ module cfast_types
         real(eb), dimension(2) :: mass                  ! total mass of each layer
         real(eb), dimension(2) :: abs_length            ! characteristic length for absorbtivity in each layer
         real(eb), dimension(2) :: absorb                ! layer absorbtivity
+        logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
+                                                        ! connects to the outside (perhaps through other intermediate rooms)
+        logical :: is_hvac                              ! true if there is an HVAC vent connection in the room
         
     end type room_type
 

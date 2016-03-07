@@ -918,15 +918,13 @@ module initialization_routines
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
-    character(mxthrmplen) off, none, tcname
+    character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
 
     ! tp is the pointer into the data base for each material
     integer tp
 
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
-
-    data off /'OFF'/, none /'NONE'/
 
     ! map the thermal data into its appropriate wall specification
     ! if name is "OFF" or "NONE" then just turn all off

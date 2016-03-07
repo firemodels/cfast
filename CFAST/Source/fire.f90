@@ -1105,15 +1105,16 @@ module fire_routines
 
     real(eb), intent(in) :: deltt
 
-    real(eb) :: aweigh(ns), air(2), v(2), aweigh7, avagad
+    ! aweigh's are molar weights of the species, avagad is the reciprocal
+    real(eb), parameter :: aweigh(ns) = &
+        (/28.0_eb, 32.0_eb, 44.0_eb, 28.0_eb, 27.0_eb, 37.0_eb, 12.0_eb, 18.0_eb, 12.0_eb, 0.0_eb, 0.0_eb/)
+
+    ! reciprocal of avagadro's number (so you can't have less than an atom of a species)
+    real(eb), parameter :: avagad = 1.66e-24_eb
+    
+    real(eb) :: air(2), v(2)
     integer i, k, lsp
     type(room_type), pointer :: roomptr
-
-    ! aweigh's are molar weights of the species, avagad is the reciprocal
-    ! of avagadro's number (so you can't have less than an atom of a species
-    data aweigh, aweigh7 /28.0_eb, 32.0_eb, 44.0_eb, 28.0_eb, 27.0_eb, 37.0_eb, 12.0_eb, 18.0_eb, 12.0_eb, 0.0_eb, 0.0_eb, 12.0_eb/
-    data avagad /1.66e-24_eb/
-    aweigh(7) = aweigh7
 
     do i = 1, nrm1
         roomptr => roominfo(i)

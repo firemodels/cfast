@@ -13,13 +13,8 @@ module cenviro
     
     real(eb) :: cp, gamma, rgas
 
-    logical :: izcon(mxrooms)                       ! true if there is a natural flow vent connection in the room that
-                                                    ! connects to the outside (perhaps through several other intermediate rooms)
-    logical :: izhvac(mxrooms)                      ! true if there is an HVAC vent connection in the room
-
     real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
     real(eb), dimension(mxrooms,2,ns) :: zzcspec    ! mass fraction of species in each layer
-    real(eb), dimension(mxrooms,2) :: zzabsb        ! layer absorbtivity
     
     real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures
     real(eb), dimension(mxrooms,4) :: zzwarea4      ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)

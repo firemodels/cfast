@@ -51,11 +51,10 @@ module spreadsheet_routines
 
     integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfire
     real(eb) :: outarray(maxhead), fheight
-    logical :: firstc
+    logical :: firstc = .true.
     integer :: position, i
     type(room_type), pointer :: roomptr
 
-    data firstc/.true./
     save firstc
 
     ! headers
@@ -219,15 +218,14 @@ module spreadsheet_routines
 
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
     real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
-    integer :: iwptr(4), position, i, iw, itarg, iroom
+    integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/) 
+    integer :: position, i, iw, itarg, iroom
 
     type(target_type), pointer :: targptr
     type(detector_type), pointer ::dtectptr
     type(room_type), pointer :: roomptr
 
-    data iwptr /1, 3, 4, 2/
-    logical :: firstc
-    data firstc /.true./
+    logical :: firstc = .true.
     save firstc
 
     if (firstc) then
@@ -333,12 +331,12 @@ module spreadsheet_routines
 
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
-    logical :: tooutput(ns),  molfrac(ns), firstc
+    logical, dimension(ns), parameter :: tooutput(ns) = &
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
+    logical, dimension(ns), parameter :: molfrac(ns) = &
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false./)
+    logical :: firstc = .true.
     type(room_type), pointer :: roomptr
-
-    data tooutput /9*.true.,.false.,.true./
-    data molfrac /8*.true.,3*.false./
-    data firstc /.true./
 
     save outarray, firstc
 

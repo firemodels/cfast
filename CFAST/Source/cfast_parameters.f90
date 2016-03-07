@@ -84,12 +84,25 @@ module cparams
     integer, parameter :: maxeq = maxjeq + nwal*mxrooms
     integer, parameter :: maxteq = maxeq+2*mxrooms*ns+mxhvsys*ns+4*mxrooms*3
     
-    ! define indexes for use with product arrays
+    ! define indices for flow arrays
     integer, parameter :: l = 2                             ! lower layer
     integer, parameter :: u = 1                             ! upper layer
     integer, parameter :: m = 1                             ! mass
     integer, parameter :: q = 2                             ! energy
     integer, parameter :: pp = 3                            ! beginning of species
+    
+    ! define indicies for species arrays
+    integer, parameter :: n2 = 1
+    integer, parameter :: o2 = 2
+    integer, parameter :: co2 = 3
+    integer, parameter :: co = 4
+    integer, parameter :: hcn = 5
+    integer, parameter :: hcl = 6
+    integer, parameter :: fuel = 7
+    integer, parameter :: h2o = 8
+    integer, parameter :: soot = 9
+    integer, parameter :: ct = 10
+    integer, parameter :: ts = 11
 
 end module cparams
 

@@ -251,7 +251,7 @@ module fire_routines
         xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
         xems = xemp + xeme
 
-        source_o2 = zzcspec(iroom,l,2)
+        source_o2 = zzcspec(iroom,l,o2)
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
             lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,l), &
             xqpyrl, xntfl, xmass)
@@ -310,7 +310,7 @@ module fire_routines
         call fire_plume (object_area, qheatu, qheatu_c, height, interior_temperature, uplmep, uplmes, uplmee, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
-        source_o2 = zzcspec(iroom,u,2)
+        source_o2 = zzcspec(iroom,u,o2)
         call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, &
             lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,u), &
             xqpyrl, xntfl, xmass)
@@ -742,8 +742,8 @@ module fire_routines
             ventptr=>hventinfo(i)
                 iroom1 = ventptr%from
                 iroom2 = ventptr%to
-                flw1to2 = zzcspec(iroom1,u,7)*(vss(1,i)+vsa(1,i))
-                flw2to1 = zzcspec(iroom2,u,7)*(vss(2,i)+vsa(2,i))
+                flw1to2 = zzcspec(iroom1,u,fuel)*(vss(1,i)+vsa(1,i))
+                flw2to1 = zzcspec(iroom2,u,fuel)*(vss(2,i)+vsa(2,i))
                 call door_jet_fire (iroom2,room1ptr%temp(u),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
                 call door_jet_fire (iroom1,room2ptr%temp(u),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
@@ -800,7 +800,7 @@ module fire_routines
         ! how to handle it.
         djflowflg = .true.
         xmass(1:ns) = 0.0_eb
-        source_o2 = zzcspec(ito,l,2)
+        source_o2 = zzcspec(ito,l,o2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
         call chemistry (xxnetfl, xxmol_mass, sas, ito, hcombt, 0.0_eb, 0.0_eb, 1.0_eb, 4.0_eb, 0.0_eb, 0.0_eb, 0.0_eb, &

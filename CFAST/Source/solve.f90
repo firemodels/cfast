@@ -1485,10 +1485,10 @@ module solve_routines
         zzcspec(nr,l,3:ns) = 0.0_eb
         zzgspec(nr,l,3:ns) = 0.0_eb
         zzgspec(nr,u,3:ns) = 0.0_eb
-        zzcspec(nr,u,1) = 0.770_eb
-        zzcspec(nr,l,1) = 0.770_eb
-        zzcspec(nr,u,2) = 0.230_eb
-        zzcspec(nr,l,2) = 0.230_eb
+        zzcspec(nr,u,n2) = 0.770_eb
+        zzcspec(nr,l,n2) = 0.770_eb
+        zzcspec(nr,u,o2) = 0.230_eb
+        zzcspec(nr,l,o2) = 0.230_eb
         
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -1497,8 +1497,8 @@ module solve_routines
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        zzcspec(nr,u,8) = relative_humidity*xh2o
-        zzcspec(nr,l,8) = relative_humidity*xh2o
+        zzcspec(nr,u,h2o) = relative_humidity*xh2o
+        zzcspec(nr,l,h2o) = relative_humidity*xh2o
 
         roomptr%rho(u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
         roomptr%mass(u:l) = roomptr%rho(u:l)*roomptr%volume(u:l)
@@ -1866,12 +1866,12 @@ module solve_routines
             if(option(foxygen)==on)then
                 oxyl = max(p(iroom+nofoxyl),0.0_eb)
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
-                zzgspec(iroom,l,2) = oxyl
-                zzgspec(iroom,u,2) = oxyu
-                zzcspec(iroom,l,2) = oxyl/roomptr%mass(l)
-                zzcspec(iroom,u,2) = oxyu/roomptr%mass(u)
+                zzgspec(iroom,l,o2) = oxyl
+                zzgspec(iroom,u,o2) = oxyu
+                zzcspec(iroom,l,o2) = oxyl/roomptr%mass(l)
+                zzcspec(iroom,u,o2) = oxyu/roomptr%mass(u)
                 if(roomptr%shaft)then
-                    zzcspec(iroom,l,2) = zzcspec(iroom,u,2)
+                    zzcspec(iroom,l,o2) = zzcspec(iroom,u,2)
                 end if
             end if
         end do

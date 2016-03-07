@@ -818,7 +818,6 @@ module radiation_routines
     ! declare parameters
     integer, parameter :: noerr=0, hierr=+1, loerr=-1
     integer, parameter :: co2xsize=11, co2ysize=12, h2oxsize=11, h2oysize=12
-    integer, parameter :: co2=3, h2o=8, soot=9
 
     !  declare internal variables
     !  units:

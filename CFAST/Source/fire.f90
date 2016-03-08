@@ -1111,7 +1111,7 @@ module fire_routines
 
     ! molar_masses of the species
     real(eb), parameter :: molar_mass(ns) = &
-        (/28.02_eb, 32.0_eb, 44.01_eb, 28.01_eb, 27.028_eb, 36.458_eb, 12.01_eb, 18.016_eb, 12.01_eb, 0.0_eb, 0.0_eb/)
+        (/0.02802_eb, 0.032_eb, 0.04401_eb, 0.02801_eb, 0.027028_eb, 0.036458_eb, 0.01201_eb, 0.018016_eb, 0.01201_eb, 0.0_eb, 0.0_eb/)
 
     ! reciprocal of avagadro's number (so you can't have less than an atom of a species)
     real(eb), parameter :: avagad = 1.66e-24_eb

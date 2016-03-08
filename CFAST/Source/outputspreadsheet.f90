@@ -362,7 +362,6 @@ module spreadsheet_routines
                         ssvalue = roomptr%species_output(layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
                         if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
-                        !ssvalue = zzgspec(i,layer,lsp) ! Use this to print out total mass of species in layers
                         call SSaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90

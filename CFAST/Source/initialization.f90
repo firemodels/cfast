@@ -550,7 +550,10 @@ module initialization_routines
     ! normal air
     initial_mass_fraction(1) = 0.77_eb
     initial_mass_fraction(2) = 0.23_eb
-    zzgspec(1:mxrooms,u:l,1:ns) = 0.0_eb
+    do i = 1, mxrooms
+        roomptr => roominfo(i)
+        roomptr%species_mass(u:l,1:ns) = 0.0_eb
+    end do
     zzcspec(1:mxrooms,u:l,1:ns) = 0.0_eb
 
     ! rooms

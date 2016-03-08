@@ -1483,8 +1483,8 @@ module solve_routines
         roomptr%temp(l) = exterior_temperature
         zzcspec(nr,u,3:ns) = 0.0_eb
         zzcspec(nr,l,3:ns) = 0.0_eb
-        zzgspec(nr,l,3:ns) = 0.0_eb
-        zzgspec(nr,u,3:ns) = 0.0_eb
+        roomptr%species_mass(l,3:ns) = 0.0_eb
+        roomptr%species_mass(u,3:ns) = 0.0_eb
         zzcspec(nr,u,n2) = 0.770_eb
         zzcspec(nr,l,n2) = 0.770_eb
         zzcspec(nr,u,o2) = 0.230_eb
@@ -1820,20 +1820,21 @@ module solve_routines
         isof = nofprd
         do lsp = 1, ns
             do iroom = 1, nrm1
+                roomptr => roominfo(iroom)
                 isof = isof + 1
                 if (iflag==odevarb) then
                     ppgas = pold(isof) + dt*pdold(isof)
                 else
                     ppgas = pdif(isof)
                 end if
-                zzgspec(iroom,u,lsp) = max(ppgas,0.0_eb)
+                roomptr%species_mass(u,lsp) = max(ppgas,0.0_eb)
                 isof = isof + 1
                 if (iflag==odevarb) then
                     ppgas = pold(isof) + dt*pdold(isof)
                 else
                     ppgas = pdif(isof)
                 end if
-                zzgspec(iroom,l,lsp) = max(ppgas,0.0_eb)
+                roomptr%species_mass(l,lsp) = max(ppgas,0.0_eb)
             end do
         end do
 
@@ -1845,29 +1846,29 @@ module solve_routines
             totl = 0.0_eb
             totu = 0.0_eb
             do lsp = 1, min(9,ns)
-                totu = totu + zzgspec(iroom,u,lsp)
-                totl = totl + zzgspec(iroom,l,lsp)
+                totu = totu + roomptr%species_mass(u,lsp)
+                totl = totl + roomptr%species_mass(l,lsp)
             end do
             rtotl = 1.0_eb
             rtotu = 1.0_eb
             if (totl>0.0_eb) rtotl = 1.0_eb/totl
             if (totu>0.0_eb) rtotu = 1.0_eb/totu
             do lsp = 1, ns
-                zzcspec(iroom,u,lsp) = zzgspec(iroom,u,lsp)*rtotu
-                zzcspec(iroom,l,lsp) = zzgspec(iroom,l,lsp)*rtotl
+                zzcspec(iroom,u,lsp) = roomptr%species_mass(u,lsp)*rtotu
+                zzcspec(iroom,l,lsp) = roomptr%species_mass(l,lsp)*rtotl
                 if(roomptr%shaft)then
                     zzcspec(iroom,l,lsp) = zzcspec(iroom,u,lsp)
                 end if
             end do
 
             ! if oxygen is a dassl variable then use dassl solution array to define
-            ! zzgspec and zzcspec values for oxygen.
+            ! ...%species_mass and zzcspec values for oxygen.
             ! make sure oxygen never goes negative
             if(option(foxygen)==on)then
                 oxyl = max(p(iroom+nofoxyl),0.0_eb)
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
-                zzgspec(iroom,l,o2) = oxyl
-                zzgspec(iroom,u,o2) = oxyu
+                roomptr%species_mass(l,o2) = oxyl
+                roomptr%species_mass(u,o2) = oxyu
                 zzcspec(iroom,l,o2) = oxyl/roomptr%mass(l)
                 zzcspec(iroom,u,o2) = oxyu/roomptr%mass(u)
                 if(roomptr%shaft)then

@@ -829,7 +829,7 @@ module radiation_routines
     !    vfs = number (soot volume fraction)
     !    rhos = kg/cubic meter (soot density)
     !    trans = number (soot transmission = exp(-k*vfs*tg*l))
-    !    k = 1/(kelvin-meter) (ssot absorption constant)
+    !    k = 1/(kelvin-meter) (soot absorption constant)
     !    mwco2, mwh2o = gas molecular weight (kg/gm-mole)
     !    rg = ideal gas constant (atm-m^3/mol-k)
 
@@ -928,7 +928,7 @@ module radiation_routines
     ag = 0.0_eb
 
     ! absorbance for co2
-    ng = zzgspec(cmpt, layer, co2)/mwco2
+    ng = roomptr%species_mass(layer,co2)/mwco2
     plg = ng*rtv*l
     if(plg>0.0_eb)then
         cplg = log10(plg)
@@ -940,7 +940,7 @@ module radiation_routines
     end if
 
     ! absorbance for h2o
-    ng = zzgspec(cmpt, layer, h2o)/mwh2o
+    ng = roomptr%species_mass(layer,h2o)/mwh2o
     plg = ng*rtv*l
     if(plg>0.0_eb)then
         cplg = log10(plg)
@@ -952,7 +952,7 @@ module radiation_routines
     end if
 
     ! total absorbance
-    vfs = zzgspec(cmpt,layer,soot)/(roomptr%volume(layer)*rhos)
+    vfs = roomptr%species_mass(layer,soot)/(roomptr%volume(layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
 
     return

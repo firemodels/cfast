@@ -157,10 +157,11 @@ module vflow_routines
             vmflo(ifrm,ito,l) = vmflo(ifrm,ito,l) + toml
 
             ! species transfer for vertical vents
+            roomptr => roominfo(ifrm)
             do lsp = 1, ns
                 index = pp+lsp-1
-                speciesl = zzcspec(ifrm,l,lsp)*fromml
-                speciesu = zzcspec(ifrm,u,lsp)*frommu
+                speciesl = roomptr%species_fraction(l,lsp)*fromml
+                speciesu = roomptr%species_fraction(u,lsp)*frommu
 
                 ! extract mass and enthalpy from "from" room (not from the outside)
                 if (ifrm<=nrm1) then

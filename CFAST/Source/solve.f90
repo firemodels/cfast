@@ -1481,14 +1481,14 @@ module solve_routines
         roomptr%absp = pressure_offset
         roomptr%temp(u) = exterior_temperature
         roomptr%temp(l) = exterior_temperature
-        zzcspec(nr,u,3:ns) = 0.0_eb
-        zzcspec(nr,l,3:ns) = 0.0_eb
+        roomptr%species_fraction(u,3:ns) = 0.0_eb
+        roomptr%species_fraction(l,3:ns) = 0.0_eb
         roomptr%species_mass(l,3:ns) = 0.0_eb
         roomptr%species_mass(u,3:ns) = 0.0_eb
-        zzcspec(nr,u,n2) = 0.770_eb
-        zzcspec(nr,l,n2) = 0.770_eb
-        zzcspec(nr,u,o2) = 0.230_eb
-        zzcspec(nr,l,o2) = 0.230_eb
+        roomptr%species_fraction(u,n2) = 0.770_eb
+        roomptr%species_fraction(l,n2) = 0.770_eb
+        roomptr%species_fraction(u,o2) = 0.230_eb
+        roomptr%species_fraction(l,o2) = 0.230_eb
         
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
@@ -1497,8 +1497,8 @@ module solve_routines
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        zzcspec(nr,u,h2o) = relative_humidity*xh2o
-        zzcspec(nr,l,h2o) = relative_humidity*xh2o
+        roomptr%species_fraction(u,h2o) = relative_humidity*xh2o
+        roomptr%species_fraction(l,h2o) = relative_humidity*xh2o
 
         roomptr%rho(u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
         roomptr%mass(u:l) = roomptr%rho(u:l)*roomptr%volume(u:l)
@@ -1854,26 +1854,22 @@ module solve_routines
             if (totl>0.0_eb) rtotl = 1.0_eb/totl
             if (totu>0.0_eb) rtotu = 1.0_eb/totu
             do lsp = 1, ns
-                zzcspec(iroom,u,lsp) = roomptr%species_mass(u,lsp)*rtotu
-                zzcspec(iroom,l,lsp) = roomptr%species_mass(l,lsp)*rtotl
-                if(roomptr%shaft)then
-                    zzcspec(iroom,l,lsp) = zzcspec(iroom,u,lsp)
-                end if
+                roomptr%species_fraction(u,lsp) = roomptr%species_mass(u,lsp)*rtotu
+                roomptr%species_fraction(l,lsp) = roomptr%species_mass(l,lsp)*rtotl
+                if(roomptr%shaft) roomptr%species_fraction(l,lsp) = roomptr%species_fraction(u,lsp)
             end do
 
             ! if oxygen is a dassl variable then use dassl solution array to define
-            ! ...%species_mass and zzcspec values for oxygen.
+            ! ...%species_mass and ...%species_fraction values for oxygen.
             ! make sure oxygen never goes negative
             if(option(foxygen)==on)then
                 oxyl = max(p(iroom+nofoxyl),0.0_eb)
                 oxyu = max(p(iroom+nofoxyu),0.0_eb)
                 roomptr%species_mass(l,o2) = oxyl
                 roomptr%species_mass(u,o2) = oxyu
-                zzcspec(iroom,l,o2) = oxyl/roomptr%mass(l)
-                zzcspec(iroom,u,o2) = oxyu/roomptr%mass(u)
-                if(roomptr%shaft)then
-                    zzcspec(iroom,l,o2) = zzcspec(iroom,u,2)
-                end if
+                roomptr%species_fraction(l,o2) = oxyl/roomptr%mass(l)
+                roomptr%species_fraction(u,o2) = oxyu/roomptr%mass(u)
+                if(roomptr%shaft) roomptr%species_fraction(l,o2) = roomptr%species_fraction(u,2)
             end if
         end do
     end if

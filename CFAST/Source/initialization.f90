@@ -553,8 +553,8 @@ module initialization_routines
     do i = 1, mxrooms
         roomptr => roominfo(i)
         roomptr%species_mass(u:l,1:ns) = 0.0_eb
+        roomptr%species_fraction(u:l,1:ns) = 0.0_eb
     end do
-    zzcspec(1:mxrooms,u:l,1:ns) = 0.0_eb
 
     ! rooms
     roominfo(1:mxrooms)%cwidth = xlrg

@@ -1166,7 +1166,7 @@ module output_routines
             write (*,5020) '   Pressure (pa)', roomptr%relp
             if (n_species>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
-                write (*,5030) spname(iprod), (zzcspec(i,il,iprod),il= u,l)
+                write (*,5030) spname(iprod), (roomptr%species_fraction(il,iprod),il= u,l)
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
@@ -1221,7 +1221,7 @@ module output_routines
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
             write(*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
-               zzcspec(iroom,l,2), zzcspec(iroom,u,2)
+               roomptr%species_fraction(l,2), roomptr%species_fraction(u,2)
         end do
         if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
         if(nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)

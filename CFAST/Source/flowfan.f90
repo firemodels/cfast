@@ -362,8 +362,8 @@ module mflow_routines
         end if
         do lsp = 1, ns
             if (i<nr) then
-                hvexcn(ii,lsp,u) = zzcspec(i,u,lsp)
-                hvexcn(ii,lsp,l) = zzcspec(i,l,lsp)
+                hvexcn(ii,lsp,u) = roomptr%species_fraction(u,lsp)
+                hvexcn(ii,lsp,l) = roomptr%species_fraction(l,lsp)
             else
                 xxrho = initial_mass_fraction(lsp)*exterior_rho
                 hvexcn(ii,lsp,u) = xxrho

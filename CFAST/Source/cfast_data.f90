@@ -12,11 +12,8 @@ module cenviro
     integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
     
     real(eb) :: cp, gamma, rgas
-
-    real(eb), dimension(mxrooms,2,ns) :: zzgspec    ! mass of species in each layer
-    real(eb), dimension(mxrooms,2,ns) :: zzcspec    ! mass fraction of species in each layer
     
-    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures
+    real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures (interior, exterior)
     real(eb), dimension(mxrooms,4) :: zzwarea4      ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
     real(eb), dimension(mxrooms,10) :: zzwarea10    ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
     

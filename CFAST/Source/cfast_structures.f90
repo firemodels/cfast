@@ -47,6 +47,7 @@ module cfast_types
         real(eb), dimension(2) :: abs_length            ! characteristic length for absorbtivity in each layer
         real(eb), dimension(2) :: absorb                ! layer absorbtivity
         real(eb), dimension(2,ns) :: species_mass       ! mass of species in each layer
+        real(eb), dimension(2,ns) :: species_fraction   ! mass fraction of species in each layer
         real(eb), dimension(2,ns) :: species_rho        ! density of species in each layer
         real(eb), dimension(2,ns) :: species_output     ! species converted to output units
         

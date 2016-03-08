@@ -560,8 +560,8 @@ module hflow_routines
         denl(i) = roomptr%rho(l)
         do iprod = 1, nprod
             ip = izpmap(iprod+2) - 2
-            conl(iprod,i) = zzcspec(iroom,l,ip)
-            conu(iprod,i) = zzcspec(iroom,u,ip)
+            conl(iprod,i) = roomptr%species_fraction(l,ip)
+            conu(iprod,i) = roomptr%species_fraction(u,ip)
         end do
     end do
     return

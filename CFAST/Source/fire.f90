@@ -251,7 +251,7 @@ module fire_routines
         xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
         xems = xemp + xeme
 
-        source_o2 = zzcspec(iroom,l,o2)
+        source_o2 = roomptr%species_fraction(l,o2)
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
             lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,l), &
             xqpyrl, xntfl, xmass)
@@ -310,7 +310,7 @@ module fire_routines
         call fire_plume (object_area, qheatu, qheatu_c, height, interior_temperature, uplmep, uplmes, uplmee, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
-        source_o2 = zzcspec(iroom,u,o2)
+        source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, &
             lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,u), &
             xqpyrl, xntfl, xmass)
@@ -742,8 +742,10 @@ module fire_routines
             ventptr=>hventinfo(i)
                 iroom1 = ventptr%from
                 iroom2 = ventptr%to
-                flw1to2 = zzcspec(iroom1,u,fuel)*(vss(1,i)+vsa(1,i))
-                flw2to1 = zzcspec(iroom2,u,fuel)*(vss(2,i)+vsa(2,i))
+                room1ptr => roominfo(iroom1)
+                room2ptr => roominfo(iroom2)
+                flw1to2 = room1ptr%species_fraction(u,fuel)*(vss(1,i)+vsa(1,i))
+                flw2to1 = room2ptr%species_fraction(u,fuel)*(vss(2,i)+vsa(2,i))
                 call door_jet_fire (iroom2,room1ptr%temp(u),flw1to2,vsas(2,i),hcombt,qpyrol2,xntms2,dj2flag)
                 call door_jet_fire (iroom1,room2ptr%temp(u),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
@@ -788,9 +790,11 @@ module fire_routines
     real(eb), intent(out) :: qpyrol, xntms(2,ns)
 
     real(eb) :: xmass(ns), source_o2, xxmol_mass, xqpyrl, xntfl, xxqspray
+    type(room_type), pointer :: roomptr
 
     qpyrol = 0.0_eb
     djflowflg = .false.
+    roomptr => roominfo(ito)
 
     ! we only wnat to do the door jet calculation if there is fuel, oxygen, and sufficient temperature in the door jet
     if (xxnetfl>0.0_eb.and.sas>0.0_eb.and.tjet>=tgignt) then
@@ -800,7 +804,7 @@ module fire_routines
         ! how to handle it.
         djflowflg = .true.
         xmass(1:ns) = 0.0_eb
-        source_o2 = zzcspec(ito,l,o2)
+        source_o2 = roomptr%species_fraction(l,o2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
         call chemistry (xxnetfl, xxmol_mass, sas, ito, hcombt, 0.0_eb, 0.0_eb, 1.0_eb, 4.0_eb, 0.0_eb, 0.0_eb, 0.0_eb, &

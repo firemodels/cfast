@@ -20,8 +20,6 @@ module cfast_types
         real(eb) :: x1, y1, z1                          ! absolute coordinate of upper right rear corner of compartment
         real(eb) :: floor_area                          ! compartment floor area
         real(eb) :: cvolume                             ! compartment volume
-        real(eb) :: vmin, vmax                          ! minimum and maximum layer volume for compartment
-        real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
         real(eb), allocatable, dimension(:) :: xplt, yplt, zplt     ! grid for slice / isosurface files
         real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
         
@@ -32,6 +30,8 @@ module cfast_types
         real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
 
         ! calculated values of the compartment environment
+        real(eb) :: vmin, vmax                          ! minimum and maximum layer volume for compartment
+        real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
         real(eb) :: interior_relp_initial               ! initial value of interior pressure relative to minimum pressure
         real(eb) :: exterior_relp_initial               ! initial value of exterior pressure relative to minimum pressure
         logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
@@ -46,10 +46,13 @@ module cfast_types
         real(eb), dimension(2) :: mass                  ! total mass of each layer
         real(eb), dimension(2) :: abs_length            ! characteristic length for absorbtivity in each layer
         real(eb), dimension(2) :: absorb                ! layer absorbtivity
+        
         real(eb), dimension(2,ns) :: species_mass       ! mass of species in each layer
         real(eb), dimension(2,ns) :: species_fraction   ! mass fraction of species in each layer
         real(eb), dimension(2,ns) :: species_rho        ! density of species in each layer
         real(eb), dimension(2,ns) :: species_output     ! species converted to output units
+        
+        real(eb), dimension(nwal,2) :: wall_temp        ! compartment surface temperatures (interior, exterior)
         
     end type room_type
 

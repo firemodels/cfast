@@ -242,8 +242,9 @@ module spreadsheet_routines
     !     First the surface temperatures for each compartment
 
     do i=1,nrm1
+        roomptr => roominfo(i)
         do iw = 1, 4
-            call SSaddtolist (position,zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,outarray)
+            call SSaddtolist (position,roomptr%wall_temp(iwptr(iw),1)-kelvin_c_offset,outarray)
         end do
     end do
 

@@ -65,8 +65,8 @@ module conduction_routines
         else
 
             ! use exterior wall temperature from last time step to ...
-            twint = zzwtemp(iroom,iwall,1)
-            twext = zzwtemp(iroom,iwall,2)
+            twint = roomptr%wall_temp(iwall,1)
+            twext = roomptr%wall_temp(iwall,2)
             tgas = exterior_temperature
             iweq = izwmap(iroom,iwall) - nofwt
             iwb = izwall(iweq,w_boundary_condition)

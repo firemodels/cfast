@@ -1781,26 +1781,26 @@ module solve_routines
                     itor = izwall(ieqfrom,w_to_room)
                     itow = izwall(ieqfrom,w_to_wall)
                     if(nfurn.gt.0)then
-                       zzwtemp(iroom,iwall,1) = wtemp
+                       roomptr%wall_temp(iwall,1) = wtemp
                     else
-                       zzwtemp(iroom,iwall,1) = pdif(iwalleq)
+                       roomptr%wall_temp(iwall,1) = pdif(iwalleq)
                     end if
                     iwalleq2 = izwmap(itor,itow)
                     iinode = numnode(1,iwall,iroom)
                     if(nfurn.gt.0)then
-                       zzwtemp(iroom,iwall,2) = wtemp
+                       roomptr%wall_temp(iwall,2) = wtemp
                     else
                        if(iwalleq2==0)then
-                           zzwtemp(iroom,iwall,2) = twj(iinode,iroom,iwall)
+                           roomptr%wall_temp(iwall,2) = twj(iinode,iroom,iwall)
                        else
-                           zzwtemp(iroom,iwall,2) = pdif(iwalleq2)
+                           roomptr%wall_temp(iwall,2) = pdif(iwalleq2)
                        end if
                     end if
                 else
 
                     ! if we're not solving for the wall temperature then set it
                     ! to the layer temperature that it is adjacent too.  note,
-                    ! zzwtemp(iroom,iwall,2) is only referenced if the iwall'th
+                    ! ...%wall_temp(iwall,2) is only referenced if the iwall'th
                     ! wall in room iroom is being solved with the heat equation
                     if(iwall==1.or.iwall==3)then
                         ilay = u
@@ -1808,9 +1808,9 @@ module solve_routines
                         ilay = l
                     end if
                     if(nfurn.gt.0)then
-                      zzwtemp(iroom,iwall,1) = wtemp
+                      roomptr%wall_temp(iwall,1) = wtemp
                     else
-                      zzwtemp(iroom,iwall,1) = roomptr%temp(ilay)
+                      roomptr%wall_temp(iwall,1) = roomptr%temp(ilay)
                     end if
                 end if
             end do

@@ -507,7 +507,7 @@ module output_routines
 
     do i=1,nrm1
         roomptr => roominfo(i)
-        write (iofilo,5010) roomptr%name, (zzwtemp(i,iwptr(iw),1)-kelvin_c_offset,iw=1,4)
+        write (iofilo,5010) roomptr%name, (roomptr%wall_temp(iwptr(iw),1)-kelvin_c_offset,iw=1,4)
 
         do itarg = 1, ntarg
             targptr => targetinfo(itarg)
@@ -1170,16 +1170,16 @@ module output_routines
             end do
             if (nwalls/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
-                write (*,5040) zzwtemp(i,1,1)
+                write (*,5040) roomptr%wall_temp(1,1)
             end if
             if (roomptr%surface_on(3)) then
-                write (*,5060) zzwtemp(i,3,1)
+                write (*,5060) roomptr%wall_temp(3,1)
             end if
             if (roomptr%surface_on(4)) then
-                write (iofilo,5070) zzwtemp(i,4,1)
+                write (*,5070) roomptr%wall_temp(4,1)
             end if
             if (roomptr%surface_on(2)) then
-                write (iofilo,5050) zzwtemp(i,2,1)
+                write (*,5050) roomptr%wall_temp(2,1)
             end if
         end do
         write (*,*) ' '
@@ -1234,12 +1234,13 @@ module output_routines
         end do
         write(*,6070)
         do iroom = 1, nrm1
+            roomptr => roominfo(iroom)
             xqf = 0.
             do iobj = 1, numobjl
                 if (iroom==froom(iobj))xqf = xqf + fqf(iobj)
             end do
             xqf = xqf + fqdj(iroom)
-            write(*,6060)iroom,zzwtemp(iroom,1,1),zzwtemp(iroom,3,1),zzwtemp(iroom,4,1),zzwtemp(iroom,2,1),xqf
+            write(*,6060) iroom,roomptr%wall_temp(1,1),roomptr%wall_temp(3,1),roomptr%wall_temp(4,1),roomptr%wall_temp(2,1),xqf
         end do
         if(numobjl>0)then
             write(*,6080)

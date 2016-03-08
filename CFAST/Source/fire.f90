@@ -1109,14 +1109,14 @@ module fire_routines
 
     real(eb), intent(in) :: deltt
 
-    ! aweigh's are molar weights of the species, avagad is the reciprocal
-    real(eb), parameter :: aweigh(ns) = &
-        (/28.0_eb, 32.0_eb, 44.0_eb, 28.0_eb, 27.0_eb, 37.0_eb, 12.0_eb, 18.0_eb, 12.0_eb, 0.0_eb, 0.0_eb/)
+    ! molar_masses of the species
+    real(eb), parameter :: molar_mass(ns) = &
+        (/28.02_eb, 32.0_eb, 44.01_eb, 28.01_eb, 27.028_eb, 36.458_eb, 12.01_eb, 18.016_eb, 12.01_eb, 0.0_eb, 0.0_eb/)
 
     ! reciprocal of avagadro's number (so you can't have less than an atom of a species)
     real(eb), parameter :: avagad = 1.66e-24_eb
     
-    real(eb) :: air(2), v(2)
+    real(eb) :: air_moles(2), v(2)
     integer i, layer, lsp
     type(room_type), pointer :: roomptr
 
@@ -1125,11 +1125,11 @@ module fire_routines
         v(u) = roomptr%volume(u)
         v(l) = roomptr%volume(l)
         do layer = u, l
-            air(layer) = 0.0_eb
+            air_moles(layer) = 0.0_eb
             do lsp = 1, 9
-                air(layer) = air(layer) + roomptr%species_mass(layer,lsp)/aweigh(lsp)
+                air_moles(layer) = air_moles(layer) + roomptr%species_mass(layer,lsp)/molar_mass(lsp)
             end do
-            air(layer) = max(avagad,air(layer))
+            air_moles(layer) = max(avagad,air_moles(layer))
         end do
 
         ! calculate the mass density in kg/m^3
@@ -1139,10 +1139,10 @@ module fire_routines
             end do
         end do
 
-        ! calculate the molar density in percent
+        ! calculate the molar fraction (actually in percent)
         do lsp = 1, 8
             do layer = u, l
-                roomptr%species_output(layer,lsp) = 100.0_eb*roomptr%species_mass(layer,lsp)/(air(layer)*aweigh(lsp))
+                roomptr%species_output(layer,lsp) = 100.0_eb*(roomptr%species_mass(layer,lsp)/molar_mass(lsp))/air_moles(layer)
             end do
         end do
 

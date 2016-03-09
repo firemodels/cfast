@@ -13,10 +13,6 @@ module cenviro
     
     real(eb) :: cp, gamma, rgas
     
-    !real(eb), dimension(mxrooms,nwal,2) :: zzwtemp  ! compartment surface temperatures (interior, exterior)
-    real(eb), dimension(mxrooms,4) :: zzwarea4      ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
-    real(eb), dimension(mxrooms,10) :: zzwarea10    ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
-    
     real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
     real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
 

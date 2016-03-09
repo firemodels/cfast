@@ -53,6 +53,8 @@ module cfast_types
         real(eb), dimension(2,ns) :: species_output     ! species converted to output units
         
         real(eb), dimension(nwal,2) :: wall_temp        ! compartment surface temperatures (interior, exterior)
+        real(eb), dimension(4) :: wall_area4            ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
+        real(eb), dimension(10) :: wall_area10          ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
         
     end type room_type
 

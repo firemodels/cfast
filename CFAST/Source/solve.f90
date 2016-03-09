@@ -1490,13 +1490,12 @@ module solve_routines
         roomptr%species_fraction(u,o2) = 0.230_eb
         roomptr%species_fraction(l,o2) = 0.230_eb
         
-        !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
+        ! set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
-        ! tables in the handbook of physics and chemistry. the final result should be the value used for
-        ! the outside ambient.
+        ! tables in the handbook of physics and chemistry. 
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
-        xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
+        xh2o = exp(xtemp)/101325.0_eb*(18.016_eb/28.584_eb)
         roomptr%species_fraction(u,h2o) = relative_humidity*xh2o
         roomptr%species_fraction(l,h2o) = relative_humidity*xh2o
 

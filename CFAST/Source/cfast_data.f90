@@ -11,7 +11,9 @@ module cenviro
 
     integer, parameter :: constvar = 1 ,odevara = 2 ,odevarb = 4, odevarc = 8
     
-    real(eb) :: cp, gamma, rgas
+    real(eb), parameter :: cp = 1012.0_eb
+    real(eb), parameter :: gamma = 1.40_eb
+    real(eb), parameter :: rgas = (gamma-1.0_eb)/gamma*cp
     
     real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
     real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system

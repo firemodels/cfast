@@ -579,7 +579,7 @@ module fire_routines
     real(eb), intent(in) :: q_t, q_c, z, t_inf, emp, area, xfx, xfy
     real(eb), intent(out) :: ems, eme
 
-    real(eb), parameter :: cp = 1.012_eb
+    real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
     real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf
     real(eb) :: c1, c2
 
@@ -595,7 +595,7 @@ module fire_routines
     if (z>0.0_eb.and.qj>0.0_eb) then
         d = sqrt(area*xf/pio4)
         rho_inf = 352.981915_eb/t_inf
-        qstar = qj/(rho_inf*cp*t_inf*gsqrt*d**(2.5_eb))
+        qstar = qj/(rho_inf*cpg*t_inf*gsqrt*d**(2.5_eb))
         z0 = d*(-1.02_eb + 1.4_eb*qstar**0.4_eb)
 
         ! entrainment is based on convective HRR and the mean flame height
@@ -608,8 +608,8 @@ module fire_routines
             factor = z/z_l
             deltaz = max(0.0001_eb, z_l-z0)
         end if
-        c1 = 0.196*(grav_con*rho_inf**2/(cp*t_inf))**onethird  ! under normal conditions, 0.071_eb
-        c2 = 2.9_eb/((gsqrt*cp*rho_inf*t_inf)**twothirds)      ! under normal conditions, 0.026_eb
+        c1 = 0.196*(grav_con*rho_inf**2/(cpg*t_inf))**onethird  ! under normal conditions, 0.071_eb
+        c2 = 2.9_eb/((gsqrt*cpg*rho_inf*t_inf)**twothirds)      ! under normal conditions, 0.026_eb
         eme = (c1*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+c2*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
         ems = emp + eme
     else
@@ -948,7 +948,7 @@ module fire_routines
     real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w
     real(eb), intent(out) :: tcj, vcj
 
-    real(eb), parameter :: cp = 1.012_eb
+    real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
     real(eb), parameter :: deltaT_0star_at_p2 = (0.225_eb+0.27_eb*0.2_eb)**(-4._eb/3._eb)
     real(eb) :: t_inf, t_layer, rho_inf, qstar_h, h, delta_cj
 
@@ -996,7 +996,7 @@ module fire_routines
             end if
 
             ! ceiling jet velocity
-            qstar_h = (qdot/1000._eb)/(rho_inf*cp*t_inf*gsqrt*h**2.5_eb)
+            qstar_h = (qdot/1000._eb)/(rho_inf*cpg*t_inf*gsqrt*h**2.5_eb)
             if (r/h<=0.17_eb) then
                 vcj = gsqrt*sqrt(h)*qstar_h**onethird*3.61_eb
             else
@@ -1037,7 +1037,7 @@ module fire_routines
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume, uplume
 
-    real(eb), parameter :: cp = 1.012_eb
+    real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
     real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u, t_max, u_max
 
     ! default is for temperature to be the layer temperature at the desired location
@@ -1060,7 +1060,7 @@ module fire_routines
         end if
 
         rho = 352.981915_eb/t_inf
-        qstar = (qdot/1000._eb)/(rho*cp*t_inf*gsqrt*d**2.5_eb)
+        qstar = (qdot/1000._eb)/(rho*cpg*t_inf*gsqrt*d**2.5_eb)
         z0 = d*(-1.02_eb+1.4_eb*qstar**0.4_eb)
         z_flame = max(0.1_eb,d*(-1.02_eb+3.7_eb*qstar**0.4_eb))
 
@@ -1071,16 +1071,16 @@ module fire_routines
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)
             rho = 352.981915_eb/tu
             deltaz = max(0.1_eb,zin-zfire-z0_prime)
-            t_excess = min(t_max,9.1_eb*(tu/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+            t_excess = min(t_max,9.1_eb*(tu/(grav_con*cpg**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         else
             ! fire and target point are both in the same layer
             deltaz = max(0.1_eb,zin-zfire-z0)
-            t_excess = min(t_max,9.1_eb*(t_inf/(grav_con*cp**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
+            t_excess = min(t_max,9.1_eb*(t_inf/(grav_con*cpg**2*rho**2))**onethird * qdot_c**twothirds * deltaz**(-5.0_eb/3.0_eb))
         end if
 
         ! plume velocity
-        u_max = 2.2_eb*(grav_con**0.4_eb/(t_inf**0.4_eb*(cp*rho)**0.2_eb))*(650._eb*qdot_c)**0.2_eb
-        uplume = min(u_max,3.4_eb*(grav_con/(cp*rho*t_inf))**onethird * qdot_c**onethird * deltaz**(-onethird))
+        u_max = 2.2_eb*(grav_con**0.4_eb/(t_inf**0.4_eb*(cpg*rho)**0.2_eb))*(650._eb*qdot_c)**0.2_eb
+        uplume = min(u_max,3.4_eb*(grav_con/(cpg*rho*t_inf))**onethird * qdot_c**onethird * deltaz**(-onethird))
 
         ! if it's within the flame (assumed to be a cone of diameter d and height equal to flame height, it's flame temperature
 
@@ -1114,7 +1114,7 @@ module fire_routines
         (/0.02802_eb,0.032_eb,0.04401_eb,0.02801_eb,0.027028_eb,0.036458_eb,0.01201_eb,0.018016_eb,0.01201_eb,0.0_eb,0.0_eb/)
 
     ! reciprocal of avagadro's number (so you can't have less than an atom of a species)
-    real(eb), parameter :: avagad = 1.66e-24_eb
+    real(eb), parameter :: avagad = 1.0_eb/6.022e23_eb
     
     real(eb) :: air_moles(2), v(2)
     integer i, layer, lsp

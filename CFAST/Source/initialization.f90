@@ -530,10 +530,7 @@ module initialization_routines
     stpminflag = .true.
 
     ! define universal constants
-    cp = 1012.0_eb
-    gamma = 1.40_eb
-    rgas = (gamma-1.0_eb)/gamma*cp
-    stime = 0.0_eb
+
     t_ref = 293.15_eb
     lower_o2_limit = 0.15_eb
     pressure_ref = 101325.0_eb
@@ -544,17 +541,6 @@ module initialization_routines
     exterior_temperature = interior_temperature
     exterior_abs_pressure = interior_abs_pressure
     relative_humidity = 0.5_eb
-
-    ! species
-    initial_mass_fraction(1:ns) = 0.0_eb
-    ! normal air
-    initial_mass_fraction(1) = 0.77_eb
-    initial_mass_fraction(2) = 0.23_eb
-    do i = 1, mxrooms
-        roomptr => roominfo(i)
-        roomptr%species_mass(u:l,1:ns) = 0.0_eb
-        roomptr%species_fraction(u:l,1:ns) = 0.0_eb
-    end do
 
     ! rooms
     roominfo(1:mxrooms)%cwidth = xlrg
@@ -728,28 +714,31 @@ module initialization_routines
     subroutine initialize_species
 
     !     routine: initialize_species
-    !     purpose: This routine initializes variables associated with
-    !              species it originally occured in CFAST and INITFS.  It was moved
-    !              to one subroutine to make maintenance easier
+    !     purpose: This routine initializes variables associated with species 
     !     Arguments: none
 
     real(eb) :: xt, xtemp, xh2o, totmass, initialmass(2,mxrooms,ns)
     integer i, j, k, ip, iprod, isof, isys, lsp
     type(room_type), pointer :: roomptr
+    
+    initial_mass_fraction(1:ns) = 0.0_eb
 
-
+    ! normal air
+    initial_mass_fraction(1) = 0.77_eb
+    initial_mass_fraction(2) = 0.23_eb
+    
     do i = 1, nrm1
         roomptr => roominfo(i)
+        roomptr%species_mass(u:l,1:ns) = 0.0_eb
+        roomptr%species_fraction(u:l,1:ns) = 0.0_eb
 
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
-        ! tables in the handbook of physics and chemistry.  we are being clever
-        ! here.  the final result in initial_mass_fraction should be the value used in stport for
-        ! the outside ambient.
+        ! tables in the handbook of physics and chemistry.
         xt = interior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
-        xh2o = exp(xtemp)/101325.0_eb*(18.0_eb/28.4_eb)
-        initial_mass_fraction(8) = relative_humidity*xh2o
+        xh2o = exp(xtemp)/101325.0_eb*(18.016_eb/28.584_eb)
+        initial_mass_fraction(h2o) = relative_humidity*xh2o
 
         ! normalize the atmosphere
         totmass = 0.0_eb

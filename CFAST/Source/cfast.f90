@@ -51,6 +51,7 @@
 
     !     initialize the basic memory configuration
 
+    stime = 0.0_eb
     call initialize_memory
     call initialize_fire_objects
     call read_command_options
@@ -63,6 +64,7 @@
 
     call initialize_species
 
+    i_time_step = 1
     xdelt = time_end/deltat
     i_time_end = xdelt + 1
     tstop = i_time_end - 1
@@ -79,12 +81,6 @@
     lepw(maxct) = 0.90_eb
 
     call initialize_walls (tstop)
-
-    stime = 0.0_eb
-    i_time_step = 1
-    xdelt = time_end/deltat
-    i_time_end = xdelt + 1
-    tstop = i_time_end - 1
 
     call output_initial_conditions
 

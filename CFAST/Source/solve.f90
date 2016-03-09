@@ -1399,7 +1399,7 @@ module solve_routines
     type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
 
-    if(nfurn>0)then
+    if (nfurn>0.and.iflag/=constvar) then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
         wtemp = wtemp + kelvin_c_offset
         qfurnout=sigma*wtemp**4

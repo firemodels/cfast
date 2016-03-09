@@ -259,18 +259,18 @@ It is assumed that each compartment is divided into two control volumes or zones
  \label{fig:Control_Volumes}
 \end{figure}
 
-The set of governing equations start with the conservation of mass which may be expressed as the net rate of mass added to a control volume, $\dmi$, is equal to the rate at which mass accumulates in that control volume, $\dbydt{m_i}$ or equivalently
+The set of governing equations start with the conservation of mass which may be expressed as the net rate of mass added to a control volume, $\dmi$, is equal to the rate at which mass accumulates in that control volume, $\dbydt{\mi}$ or equivalently
 \be
-   \dbydt{m_i} = \dmi  \label{mass_con}
+   \dbydt{\mi} = \dmi  \label{mass_con}
 \ee
-where $\dm_i$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving layer $i$. Similarly, the conservation of energy may be stated as the net rate that heat $\dqi$ is added to a control volume minus the work $P\dbydt{\Vi}$ performed by the control volume (since the control volume may change size), is equal to the rate at which heat or internal energy $\ddt\left(\cv m_i \Ti\right)$ accumulates within the control volume or equivalently
+where $\dmi$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving layer $i$. Similarly, the conservation of energy may be stated as the net rate that heat $\dqi$ is added to a control volume minus the work $P\dbydt{\Vi}$ performed by the control volume (since the control volume may change size), is equal to the rate at which heat or internal energy $\ddt\left(\cv \mi \Ti\right)$ accumulates within the control volume or equivalently
 \be
-   \ddt\left(\cv m_i \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:first_law}
+   \ddt\left(\cv \mi \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:first_law}
 \ee
 
 Stated in this way, conservation of energy is the first law of thermodynamics.  The heat source term, $\dqi$, consists of the fire's heat release rate, convective losses to walls, and radiation exchange. The layer temperature, mass and volume are related to the compartment pressure via the ideal gas law:
 \begin{equation}
-  P\,\Vi = m_i\,R \, \Ti \label{EoS}
+  P\,\Vi = \mi\,R \, \Ti \label{EoS}
 \end{equation}
 
 A system of ordinary differential equations for pressure, upper layer volume, upper and lower layer temperature are derived in Appendix \ref{chap:derivation}
@@ -1065,8 +1065,8 @@ $L$                 & length of a compartment, m \\
                     & mean flame height, m \\
                     & characteristic length for radiation calculation, m \\
 $M_\alpha$          & molar mass of gas species $\alpha$, g/mol \\
-$m_i$               & total mass in gas layer $i$, kg \\
-$\dm_i$             & rate of mass addition, gas layer $i$, kg \\
+$\mi$               & total mass in gas layer $i$, kg \\
+$\dmi$             & rate of mass addition, gas layer $i$, kg \\
 $\dme$              & plume mass entrainment rate, kg/s \\
 $\dmf$              & pyrolysis rate, kg/s \\
 n$_\alpha$          & number of atoms of element $\alpha$ \\
@@ -1171,7 +1171,7 @@ To derive the upper layer volume differential equation, first note that
 \cv\mmu\Tu=\cv\Vu\frac{P}{R}=\frac{\cv}{\cp-\cv}\Vu P=\frac{1}{\gamma-1}\Vu P
 \label{eq:vua}
 \end{equation}
-\noindent Substituting Eq. \ref{eq:vua} into the upper layer form of Eq. \ref{eq:afirst_law} ($i=u$) gives
+\noindent Substituting Eq. \ref{eq:vua} into the upper layer form of Eq. \ref{eq:afirst_law} (${\rm i}={\rm u}$) gives
 \begin{eqnarray}
 \dqu&=&\frac{1}{\gamma-1}\ddt\left(\Vu P\right) + P\dbydt{\Vu}\\
 &=&\frac{1}{\gamma-1}\left(P\dbydt{\Vu} + \Vu\dbydt{P}\right) + P\dbydt{\Vu}\\

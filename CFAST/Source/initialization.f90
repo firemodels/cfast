@@ -530,10 +530,7 @@ module initialization_routines
     stpminflag = .true.
 
     ! define universal constants
-    cp = 1012.0_eb
-    gamma = 1.40_eb
-    rgas = (gamma-1.0_eb)/gamma*cp
-    stime = 0.0_eb
+
     t_ref = 293.15_eb
     lower_o2_limit = 0.15_eb
     pressure_ref = 101325.0_eb

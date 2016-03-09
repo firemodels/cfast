@@ -1702,22 +1702,22 @@ module solve_routines
             ymax = roomptr%cdepth
             zzu = roomptr%depth(u)
             zzl = roomptr%depth(l)
-            zzwarea10(iroom,1) = roomptr%floor_area
-            zzwarea10(iroom,2) = zzu*xmax
-            zzwarea10(iroom,3) = zzu*ymax
-            zzwarea10(iroom,4) = zzu*xmax
-            zzwarea10(iroom,5) = zzu*ymax
-            zzwarea10(iroom,6) = zzl*xmax
-            zzwarea10(iroom,7) = zzl*ymax
-            zzwarea10(iroom,8) = zzl*xmax
-            zzwarea10(iroom,9) = zzl*ymax
-            zzwarea10(iroom,10) = roomptr%floor_area
+            roomptr%wall_area10(1) = roomptr%floor_area
+            roomptr%wall_area10(2) = zzu*xmax
+            roomptr%wall_area10(3) = zzu*ymax
+            roomptr%wall_area10(4) = zzu*xmax
+            roomptr%wall_area10(5) = zzu*ymax
+            roomptr%wall_area10(6) = zzl*xmax
+            roomptr%wall_area10(7) = zzl*ymax
+            roomptr%wall_area10(8) = zzl*xmax
+            roomptr%wall_area10(9) = zzl*ymax
+            roomptr%wall_area10(10) = roomptr%floor_area
 
             ! compute area of 4 wall segments
-            zzwarea4(iroom,1) = roomptr%floor_area
-            zzwarea4(iroom,2) = roomptr%floor_area
-            zzwarea4(iroom,3) = (ymax + xmax)*zzu*2.0_eb
-            zzwarea4(iroom,4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
+            roomptr%wall_area4(1) = roomptr%floor_area
+            roomptr%wall_area4(2) = roomptr%floor_area
+            roomptr%wall_area4(3) = (ymax + xmax)*zzu*2.0_eb
+            roomptr%wall_area4(4) = max(0.0_eb,(ymax+xmax)*zzl*2.0_eb)
 
             ! define z wall centers (the z coordinate changes with time)
             ! (other coordinates are static and are defined earlier)

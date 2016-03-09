@@ -269,10 +269,10 @@ where $\dm_i$ represents the sum of all mass flow terms, such as plume mass entr
    \ddt\left(c_v m_i T_i\right)   =  \qdot_i - P \dbydt{V_i}\label{eq:first_law}
 \ee
 
-Stated in this way, conservation of energy is the first law of thermodynamics.  The heat source term, $\qdot_i$, consists of the fire's heat release rate, convective losses to walls, and radiation exchange. The layer temperature and density are related to the compartment pressure via the ideal gas law:
-\be
-  P = R \, \rho_i \, T_i \label{EoS}
-\ee
+Stated in this way, conservation of energy is the first law of thermodynamics.  The heat source term, $\qdot_i$, consists of the fire's heat release rate, convective losses to walls, and radiation exchange. The layer temperature, mass and volume are related to the compartment pressure via the ideal gas law:
+\begin{equation}
+  P\,V_i = m_i\,R \, T_i \label{EoS}
+\end{equation}
 
 A system of ordinary differential equations for pressure, upper layer volume, upper and lower layer temperature are derived in Appendix \ref{chap:derivation}
  using the conservation of mass and energy and are given below:
@@ -1126,33 +1126,37 @@ $\chi_{\rm r}$      & radiative fraction, dimensionless \\
 \chapter{Modeling Equation Derivations}
 \label{chap:derivation}
 
-For convenience, Eq. \ref{eq:first_law} (conservation of energy) from Section \ref{sect:equations} used in the following derivations is re-written here:
+For convenience, Eq. \ref{eq:first_law} (conservation of energy) and Eq. \ref{EoS} (ideal gas law) from Section \ref{sect:equations} used in the following derivations are re-written here:
 \be
    \ddt\left(c_v m_i T_i\right)   =  \qdot_i - P \dbydt{V_i}\label{eq:afirst_law}
+\ee
+\be
+  P\,V_i = m_i\,R \, T_i \label{eq:ideal_gas_law}
 \ee
 
 \section{Pressure Equation}
 
 
-To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer and substitute $m_i=V_i\rho_i$ to give
+To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer
 \begin{eqnarray}
-   c_v\ddt\left( V_l\rho_l T_l\right)  &=  &\qdot_l - P \dbydt{V_l}\label{eq:lower}\\
-   c_v\ddt\left( V_u\rho_u T_u\right)  &=  &\qdot_u -  P \dbydt{V_u}\label{eq:upper}
+   c_v\ddt\left( m_l T_l\right)  &=  &\qdot_l - P \dbydt{V_l}\label{eq:lower}\\
+   c_v\ddt\left( m_u T_u\right)  &=  &\qdot_u -  P \dbydt{V_u}\label{eq:upper}
 \end{eqnarray}
 
-\noindent Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, gives 
+\noindent Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, gives
 
 \begin{equation}
-   c_v\ddt\left( V_l\rho_l T_l+V_u\rho_u T_u\right)  =  \qdot_l + \qdot_u
+   c_v\ddt\left( m_l T_l+m_u T_u\right)  =  \qdot_l + \qdot_u
 \end{equation}
 
-\noindent which simplifies to 
+
+\noindent which simplifies to
 
 \begin{eqnarray}
    \frac{c_vV}{R}\dbydt{ P}  &=  &\qdot_l + \qdot_u
 \end{eqnarray}
 
-\noindent after assuming that $\rho_l T_L=\rho_u T_U = P/R$.  
+\noindent after assuming that $m_l T_l/V_l=m_u T_u/V_u = P/R$.
 Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
 
 \begin{eqnarray}
@@ -1165,7 +1169,7 @@ Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
 \section{Upper Layer Volume Equation}
 To derive the upper layer volume differential equation, first note that
 \begin{equation}
-c_vm_uT_u=c_vV_u\rho_uT_u=c_vV_u\frac{P}{R}=\frac{c_v}{c_p-c_v}V_uP=\frac{1}{\gamma-1}V_uP
+c_vm_uT_u=c_vV_u\frac{P}{R}=\frac{c_v}{c_p-c_v}V_uP=\frac{1}{\gamma-1}V_uP
 \label{eq:vua}
 \end{equation}
 \noindent Substituting Eq. \ref{eq:vua} into the upper layer form of Eq. \ref{eq:afirst_law} ($i=u$) gives

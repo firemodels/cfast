@@ -268,13 +268,15 @@ where $\dmi$ represents the sum of all mass flow terms, such as plume mass entra
    \ddt\left(\cv \mi \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:first_law}
 \ee
 
-Stated in this way, conservation of energy is the first law of thermodynamics.  As in Eq. \ref{mass_con}, the $\dqi$ term in Eq. \ref{eq:first_law} consists of all sources of heat such as the fire's heat release rate, convective losses to walls, and radiation exchange {\it etc}. The layer temperature, mass and volume are related to the compartment pressure by the ideal gas law:
+Stated in this way, conservation of energy is the first law of thermodynamics.  As in Eq. \ref{mass_con}, the $\dqi$ term in Eq. \ref{eq:first_law} consists of all sources of heat such as the fire's heat release rate, convective losses to walls, and radiation exchange {\it etc}. 
+
+The layer temperature, mass and volume are related to the compartment pressure by the ideal gas law:
 \begin{equation}
   P\,\Vi = \mi\,R \, \Ti \label{EoS}
 \end{equation}
 
-A system of ordinary differential equations for pressure, upper layer volume, upper and lower layer temperature are derived in Appendix \ref{chap:derivation}
- using the conservation of mass and energy and are given below:
+A system of ordinary differential equations for compartment pressure, upper layer volume and upper and lower layer temperature are derived in Appendix \ref{chap:derivation}
+using the conservation of mass and energy (Eqs. \ref{mass_con} and \ref{eq:first_law}) and are given below:
 
 \begin{eqnarray}
 \dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dql + \dqu \right)  \label{eq1} \\[.1in]
@@ -287,11 +289,12 @@ The mass flow, $\dmau$ and $\dmal$, and heat flow, $\dqu$ and $\dql$, terms are 
 
 Algebraic equations for wall surface temperatures can be derived using Fourier's law
 \be
-   \dq'' = -k \, \frac{dT}{dx}  \label{eq:fourier}
+   \dq'' = -k \, \frac{d\Tw}{dx}  \label{eq:fourier}
 \ee
 
-\noindent so that the temperature gradient, $dT/dx$, at the wall surface is consistent with the heat flux, $\dq''$,
-striking that surface.  CFAST then uses the differential~/~algebraic solver DASSL to solve Eqs. (\ref{eq1}) through (\ref{eq:fourier}).
+\noindent so that the temperature gradient, $d\Tw/dx$, at the wall surface is consistent with the heat flux, $\dq''$,
+striking that surface.  CFAST then uses the differential~/~algebraic solver DASSL to solve Eqs. (\ref{eq1}) through (\ref{eq:fourier})
+for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$ (surface wall temperature) 
 
 
 \section{Solution of the Equations}
@@ -303,10 +306,10 @@ Equations (\ref{eq1})~-~(\ref{eq:fourier}) are then solved as a set of simultane
 \begin{center}
 \begin{tabular}{r l l}
 $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compartment)  \\
-               &  $T_{U_1}, T_{U_2}, ..., T_{U_{n-1}}, T_{U_n}$ & (upper layer temperatures for each compartment)  \\
-               &  $V_{U_1}, V_{U_2}, ..., V_{U_{n-1}}, V_{U_n}$ & (upper layer volumes for each compartment)  \\
-               &  $T_{L_1}, T_{L_2}, ..., T_{L_{n-1}}, T_{L_n}$ & (lower layer temperatures for each compartment)  \\
-               &  $T_{W_1}, T_{W_2}, ..., T_{W_{k-1}}, T_{W_k} )$ & (temperatures on each surface of each compartment) \\
+               &  $T_{u_1}, T_{u_2}, ..., T_{u_{n-1}}, T_{u_n}$ & (upper layer temperatures for each compartment)  \\
+               &  $V_{u_1}, V_{u_2}, ..., V_{u_{n-1}}, V_{u_n}$ & (upper layer volumes for each compartment)  \\
+               &  $T_{l_1}, T_{l_2}, ..., T_{l_{n-1}}, T_{l_n}$ & (lower layer temperatures for each compartment)  \\
+               &  $T_{w_1}, T_{w_2}, ..., T_{w_{k-1}}, T_{w_k} )$ & (temperatures on each surface of each compartment) \\
 \end{tabular}
 \end{center}
 
@@ -1166,7 +1169,7 @@ Finally $R/\cv=\gamma-1$ since $R=\cp-\cv$ and $\gamma=\cp/\cv$ giving
 \noindent the pressure differential equation.
 
 \section{Upper Layer Volume Equation}
-To derive the upper layer volume differential equation, first note that
+To derive the upper layer volume differential equation, first note from Eq. \ref{eq:ideal_gas_law} and the definition of $\gamma$ that
 \begin{equation}
 \cv\mmu\Tu=\cv\Vu\frac{P}{R}=\frac{\cv}{\cp-\cv}\Vu P=\frac{1}{\gamma-1}\Vu P
 \label{eq:vua}

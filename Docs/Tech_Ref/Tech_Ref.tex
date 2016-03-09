@@ -245,13 +245,12 @@ The equations used to model pressure, layer height and temperatures in CFAST tak
 
 The exchange of mass and energy or heat between zones is due to physical phenomena such as fire plumes, natural and forced ventilation, convective and radiative heat transfer, and so on. For example, a vent exchanges mass and heat between zones in connected rooms, a fire plume typically adds heat to the upper layer and transfers entrained mass and heat from the lower to the upper layer, and convection transfers heat from the gas layers to the surrounding walls.  The momentum within any one zone is assumed to be zero. Momentum exchange between zones in adjacent compartments is accounted for in terms of horizontal or vent flow equations (Bernoulli's law).
 
-\newcommand{\qdot}{\dot{q}}
 \section{Modeling Equations}
 \label{sect:equations}
 
-It is assumed that each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. It is also assumed that all thermodynamic parameters are constant. The specific heat at constant volume and at constant pressure, $c_v$ and $c_p$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = c_p / c_v$ and $R = c_p- c_v$. Regardless of the composition of the gas mixture, $c_p = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
+It is assumed that each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. It is also assumed that all thermodynamic parameters are constant. The specific heat at constant volume and at constant pressure, $\cv$ and $\cp$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = \cp / \cv$ and $R = \cp- \cv$. Regardless of the composition of the gas mixture, $\cp = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
 \be
-   R = \frac{\gamma-1}{\gamma} \, c_p \approx 289.14 \; \frac{{\rm J}}{{\rm kg} \cdot {\rm K}}
+   R = \frac{\gamma-1}{\gamma} \, \cp \approx 289.14 \; \frac{{\rm J}}{{\rm kg} \cdot {\rm K}}
 \ee
 \begin{figure}[h]
 \centering
@@ -260,31 +259,31 @@ It is assumed that each compartment is divided into two control volumes or zones
  \label{fig:Control_Volumes}
 \end{figure}
 
-The set of governing equations start with the conservation of mass which may be expressed as the net rate of mass added to a control volume, $\dot m_i$, is equal to the rate at which mass accumulates in that control volume, $\dbydt{m_i}$ or equivalently
+The set of governing equations start with the conservation of mass which may be expressed as the net rate of mass added to a control volume, $\dmi$, is equal to the rate at which mass accumulates in that control volume, $\dbydt{m_i}$ or equivalently
 \be
-   \dbydt{m_i} = \dot m_i  \label{mass_con}
+   \dbydt{m_i} = \dmi  \label{mass_con}
 \ee
-where $\dm_i$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving layer $i$. Similarly, the conservation of energy may be stated as the net rate that heat $\qdot_i$ is added to a control volume minus the work $P\dbydt{V_i}$ performed by the control volume (since the control volume may change size), is equal to the rate at which heat or internal energy $\ddt\left(c_v m_i T_i\right)$ accumulates within the control volume or equivalently
+where $\dm_i$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving layer $i$. Similarly, the conservation of energy may be stated as the net rate that heat $\dqi$ is added to a control volume minus the work $P\dbydt{\Vi}$ performed by the control volume (since the control volume may change size), is equal to the rate at which heat or internal energy $\ddt\left(\cv m_i \Ti\right)$ accumulates within the control volume or equivalently
 \be
-   \ddt\left(c_v m_i T_i\right)   =  \qdot_i - P \dbydt{V_i}\label{eq:first_law}
+   \ddt\left(\cv m_i \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:first_law}
 \ee
 
-Stated in this way, conservation of energy is the first law of thermodynamics.  The heat source term, $\qdot_i$, consists of the fire's heat release rate, convective losses to walls, and radiation exchange. The layer temperature, mass and volume are related to the compartment pressure via the ideal gas law:
+Stated in this way, conservation of energy is the first law of thermodynamics.  The heat source term, $\dqi$, consists of the fire's heat release rate, convective losses to walls, and radiation exchange. The layer temperature, mass and volume are related to the compartment pressure via the ideal gas law:
 \begin{equation}
-  P\,V_i = m_i\,R \, T_i \label{EoS}
+  P\,\Vi = m_i\,R \, \Ti \label{EoS}
 \end{equation}
 
 A system of ordinary differential equations for pressure, upper layer volume, upper and lower layer temperature are derived in Appendix \ref{chap:derivation}
  using the conservation of mass and energy and are given below:
 
 \begin{eqnarray}
-\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \qdot_l + \qdot_u \right)  \label{eq1} \\[.1in]
-\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \qdot_u - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
-\dbydt{\Tu} &=& \frac{1}{c_p \, m_{\rm u}} \left( \qdot_u - c_p \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
-\dbydt{\Tl} &=& \frac{1}{c_p \, m_{\rm l}} \left( \qdot_l - c_p \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
+\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dql + \dqu \right)  \label{eq1} \\[.1in]
+\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dqu - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
+\dbydt{\Tu} &=& \frac{1}{\cp \, m_{\rm u}} \left( \dqu - \cp \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
+\dbydt{\Tl} &=& \frac{1}{\cp \, m_{\rm l}} \left( \dql - \cp \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
 
-The mass flow, $\dmau$ and $\dmal$, and heat flow, $\qdot_u$ and $\qdot_l$, terms are simply the net sum of all mass and heat flowing into a layer (through vents, from fires, between layers via a plume, or by radiation and convection from compartment surfaces).
+The mass flow, $\dmau$ and $\dmal$, and heat flow, $\dqu$ and $\dql$, terms are simply the net sum of all mass and heat flowing into a layer (through vents, from fires, between layers via a plume, or by radiation and convection from compartment surfaces).
 
 Algebraic equations for wall surface temperatures can be derived using Fourier's law
 \be
@@ -389,18 +388,18 @@ Any unburned fuel is tracked by the model, and transported to the upper layer vi
 
 \section{Plume Entrainment}
 
-A fire pumps mass and energy from the lower layer into the upper layer. The vertical flow of mass through a horizontal plane at height $z$ above the base of the fire is called the mass entrainment rate, $\dme(z)$. The vertical flow of energy through this horizontal plane is given by $\dQ_{\rm c} + \dme(z) \, c_p \, \Tl$. The empirical correlation for the mass entrainment rate depends on whether the plume is unobstructed, against a wall, or in a corner.
+A fire pumps mass and energy from the lower layer into the upper layer. The vertical flow of mass through a horizontal plane at height $z$ above the base of the fire is called the mass entrainment rate, $\dme(z)$. The vertical flow of energy through this horizontal plane is given by $\dQ_{\rm c} + \dme(z) \, \cp \, \Tl$. The empirical correlation for the mass entrainment rate depends on whether the plume is unobstructed, against a wall, or in a corner.
 
 \subsection{Unobstructed Plumes}
 
 The plume mass entrainment, $\dme(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlation~\cite{Heskestad:2002}:
 \be
-   \dme(z) = 0.196 \, \left( \frac{g \, \rho_\infty^2}{c_p \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \;
-   \left( 1 + \frac{2.9 \, \dQ_{\rm c}^{2/3}}{ \left( \sqrt{g} \, c_p \, \rho_\infty \, T_\infty \right)^{2/3} \, (z-z_0)^{5/3}} \right) \label{mdot_e}
+   \dme(z) = 0.196 \, \left( \frac{g \, \rho_\infty^2}{\cp \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \; \brackets{z - z_0}^{5/3} \;
+   \left( 1 + \frac{2.9 \, \dQ_{\rm c}^{2/3}}{ \left( \sqrt{g} \, \cp \, \rho_\infty \, T_\infty \right)^{2/3} \, (z-z_0)^{5/3}} \right) \label{mdot_e}
 \ee
 where $z_0$ is a virtual origin defined as
 \be
-   \frac{z_0}{D} = -1.02 + 1.4 \, \dQ^{* \, 2/5} \quad ; \quad \dQ^* = \frac{\dQ}{\rho_\infty \, c_p \, T_\infty \, \sqrt{g \, D} \, D^2} \label{virtual_origin}
+   \frac{z_0}{D} = -1.02 + 1.4 \, \dQ^{* \, 2/5} \quad ; \quad \dQ^* = \frac{\dQ}{\rho_\infty \, \cp \, T_\infty \, \sqrt{g \, D} \, D^2} \label{virtual_origin}
 \ee
 Note that the virtual origin is defined in terms of the total heat release rate of the fire, $\dQ$. Equation~(\ref{mdot_e}) is recommended above the mean flame height, $L$. Below the flame height, Heskestad~\cite{Heskestad:2002} recommends the following:
 \be
@@ -418,11 +417,11 @@ If the fire is against a wall, the convective HRR is doubled, the diameter is mu
 
 In CFAST, there is a constraint on the mass entrainment rate because the plume can rise only so high for a given HRR.  Early in a fire, the plume may not have sufficient energy to reach the compartment ceiling. Therefore, a limit is placed on the entrainment rate. For the plume to be able to penetrate the hot upper layer, the density of the gas in the plume must be less than the density of the gas in the upper layer. This implies that the upper layer temperature must be less than the plume temperature:
 \be
-   \Tu < \Tp \approx \frac{ \dQc + \dme \, c_p \, \Tl }{ \dme \, c_p}
+   \Tu < \Tp \approx \frac{ \dQc + \dme \, \cp \, \Tl }{ \dme \, \cp}
 \ee
 Rearranging terms yields a limit on the mass entrainment:
 \be
-   \dm_e < \frac{\dQc}{c_p (\Tu - \Tl)}
+   \dm_e < \frac{\dQc}{\cp (\Tu - \Tl)}
 \ee
 
 
@@ -431,10 +430,10 @@ Rearranging terms yields a limit on the mass entrainment:
 
 The centerline plume temperature rise, $\Delta T_0(z)$, and velocity, $u_0(z)$, at a height $z$ above the base of the fire is estimated using Heskestad's correlations~\cite{Heskestad:2002}:
 \be
-   \Delta T_0(z) = \min \left[ 900 \; \mathrm{K} \; , \; 9.1 \, \left( \frac{T_\infty}{g \, c_p^2 \, \rho_\infty^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0)^{-5/3} \right]  \label{plume_temperature}
+   \Delta T_0(z) = \min \left[ 900 \; \mathrm{K} \; , \; 9.1 \, \left( \frac{T_\infty}{g \, \cp^2 \, \rho_\infty^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0)^{-5/3} \right]  \label{plume_temperature}
 \ee
 \be
-   u_0(z) = \min \left[ u_{0,\max} \; , \; 3.4 \, \left( \frac{g}{c_p \, \rho_\infty \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \, (z-z_0)^{-1/3} \right]  \label{plume_velocity}
+   u_0(z) = \min \left[ u_{0,\max} \; , \; 3.4 \, \left( \frac{g}{\cp \, \rho_\infty \, T_\infty} \right)^{1/3} \, \dQ_{\rm c}^{1/3} \, (z-z_0)^{-1/3} \right]  \label{plume_velocity}
 \ee
 where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is assumed that the temperature and velocity decrease following a Gaussian profile about the centerline:
 \be
@@ -445,13 +444,13 @@ where the virtual origin, $z_0$, is defined in Eq.~(\ref{virtual_origin}). It is
 \ee
 Note that the maximum plume temperature of 900~K is suggested by Heskestad~\cite{Heskestad:2002}. It is also suggested that the maximum centerline plume velocity is reached when the plume temperature rise is 650~K, and is a weak function of the convective HRR:
 \be
-   u_{0,\max} = 2.2 \left( \frac{g^{2/5}}{T_\infty^{2/5} \, (c_p \, \rho_\infty)^{1/5} } \right) \, \left( 650 \, \dQ_{\rm c} \right)^{1/5}
+   u_{0,\max} = 2.2 \left( \frac{g^{2/5}}{T_\infty^{2/5} \, (\cp \, \rho_\infty)^{1/5} } \right) \, \left( 650 \, \dQ_{\rm c} \right)^{1/5}
 \ee
 Note that if the velocity is expressed in units of m/s and the convective HRR in kW, then $u_{0,\max} \approx 2 \; \dQ_{\rm c}^{1/5}$.
 
 Above the interface between the hot upper layer and the cooler lower layer, the temperature and density of the entrained air is significantly different than that of the lower layer. To account for this, the plume temperature correlation~\cite{Heskestad:2002} is modified for values of $z$ greater than the interface height, $z_{\rm I}$:
 \be
-   \Delta T_0(z) = 9.1 \, \left( \frac{\Tu}{g \, c_p^2 \, \rho_{\rm u}^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0')^{-5/3}  \quad ; \quad z>z_{\rm I}  \label{plume_temperature_upper}
+   \Delta T_0(z) = 9.1 \, \left( \frac{\Tu}{g \, \cp^2 \, \rho_{\rm u}^2} \right)^{1/3} \, \dQ_{\rm c}^{2/3} \, (z-z_0')^{-5/3}  \quad ; \quad z>z_{\rm I}  \label{plume_temperature_upper}
 \ee
 where the modified virtual origin is given by:
 \be
@@ -528,11 +527,11 @@ Figure~\ref{fig:Flow_Patterns} indicates schematically how the various mass flow
 
 The mass flow from the upper layer of the upstream compartment to the lower layer of the downstream, $\dm_{\rm u \to l}$, is assumed to rise into the upper layer via a spill plume. The heat flow rate of the plume is:
 \be
-   \doh_{\rm u \to l} = c_p \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
+   \doh_{\rm u \to l} = \cp \brackets{T_{\rm u,1}-T_{\rm l,2}} \, \dm_{\rm u \to l}
 \ee
 Assuming that $T_{\rm u,1} > T_{\rm l,2}$, the mass entrainment of the spill plume is given by Poreh {\em et al.}~\cite{Poreh:1998}:
 \be
-   \dm_{\rm e,p} = \dm_{\rm u \to l} \, + \, C_{\rm m} \, \left( \frac{T_{\rm l,2}}{T_{\rm u,1}} \right)^{2/3} \, \left( \frac{ g \, \rho_{\rm l,2}^2}{c_p \, T_{\rm l,2}} \right)^{1/3} \, \doh_{\rm u \to l}^{1/3} \; w^{2/3} \;
+   \dm_{\rm e,p} = \dm_{\rm u \to l} \, + \, C_{\rm m} \, \left( \frac{T_{\rm l,2}}{T_{\rm u,1}} \right)^{2/3} \, \left( \frac{ g \, \rho_{\rm l,2}^2}{\cp \, T_{\rm l,2}} \right)^{1/3} \, \doh_{\rm u \to l}^{1/3} \; w^{2/3} \;
    (z_{\rm I}-z_{\rm N})
 \ee
 where $C_{\rm m}$ is an empirical constant equal to 0.44, $w$ is the width of the opening, $z_{\rm I}$ is the height of the layer interface, and $z_{\rm N}$ is the height of the neutral plane. Suggested values for $C_{\rm m}$ vary between 0.44 and 0.66, all of which were determined empirically in a number of different experimental configurations.
@@ -556,7 +555,7 @@ Here, $\rho_{\rm avg}$ is the average of the densities above and below the vent,
 As with doors and windows, mass and heat exchanged between the layers of the upper and lower compartments. Take the typical case where the lower compartment has a hot gas layer venting into the upper compartment. Consider first the relative amounts of mass and heat extracted from the layers of the lower compartment, and then consider where this mass and heat are deposited in the upper compartment. First, the mass and heat are extracted from the lower and upper layers of the lower compartment according to the following weighted average:
 \begin{eqnarray}
   \dm_{\rm up}  &=& \alpha \; \rho_{\rm u} \, \dot{V}_{\rm up} + (1-\alpha) \; \rho_{\rm l} \, \dot{V}_{\rm up}  \\[.1in]
-  \doh_{\rm up} &=& \alpha \; c_p \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; c_p \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl
+  \doh_{\rm up} &=& \alpha \; \cp \, \rho_{\rm u} \, \dot{V}_{\rm up} \, \Tu + (1-\alpha) \; \cp \, \rho_{\rm l} \, \dot{V}_{\rm up} \, \Tl
 \end{eqnarray}
 where $\rho_{\rm u}$ and $\rho_{\rm l}$ refer to the upper and lower layers of the lower compartment.
 
@@ -612,7 +611,7 @@ Radiation heat transfer is calculated between the ceiling, floor, wall layers, a
 
 The compartment lining is divided into four surfaces: the ceiling, the floor, and the wall sections above and below the layer interface.  The outgoing radiant flux at surface $i$ consists of an emissive power and reflectance term given by
 \be
-\qout{i}=\sigma\epsilon_i T_i^4+\left(1-\epsilon_i\right)\qin
+\qout{i}=\sigma\epsilon_i \Ti^4+\left(1-\epsilon_i\right)\qin
 \label{eq:qout}
 \ee
 where $\qin$ is a weighted average of all outgoing radiant fluxes from sources such as wall segments, gas layers and fires.  This incoming radiant flux is given by
@@ -625,7 +624,7 @@ which simplifies to
 \label{eq:qin}
 \ee
 after noting that $A_iF_{i-j}=A_jF_{j-i}$.
-The term $F_{j-i}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $i$), $\tau_{j-i}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_i$ is the emissivity, $T_i$ is the temperature  and $c_i''$ is the radiative flux from gas layers and fire of surface $i$ .
+The term $F_{j-i}$ is the configuration factor (fraction of radiant energy emitted by surface $j$ that is intercepted by surface $i$), $\tau_{j-i}$ is the transmittance, $\sigma$ is the Stefan-Boltzman constant, $\epsilon_i$ is the emissivity, $\Ti$ is the temperature  and $c_i''$ is the radiative flux from gas layers and fire of surface $i$ .
 
 The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},i}''$, at each of these surfaces.  This flux is defined as the difference between the incoming and outgoing radiative flux\footnote{The sign for the net radiative flux, $\dot{q}_{{\rm r},i}''$, is defined so that positive radiant fluxes heat up wall segments, consistent with how convective fluxes are defined.  Note that this is opposite to the sign convention used in Siegel and Howell~\cite{SiegelandHowell:1981}.}:
 \be
@@ -634,7 +633,7 @@ The problem then is to determine the net radiative flux, $\dot{q}_{{\rm r},i}''$
 \ee
 Following Eq.~(17-20) in Siegel and Howell~\cite{SiegelandHowell:1981}, Eq.~(\ref{eq:raddiff}) is written as a system of four linear equations (after using Eqs.~(\ref{eq:qout}) and (\ref{eq:qin}) to eliminate $\qout{i}$ and $\qin$):
 \be
-   -\frac{\dot{q}_{{\rm r},i}''}{\epsilon_i} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{i-j} \; \tau_{j-i} \; \dot{q}_{{\rm r},j}'' = \sigma T_i^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{i-j} \; \tau_{j-i} \; \sigma T_j^4 \, } - c''_i \label{RTE}
+   -\frac{\dot{q}_{{\rm r},i}''}{\epsilon_i} + \displaystyle\sum_{j=1}^4 \frac{1 - \epsilon_j}{\epsilon_j} \;  F_{i-j} \; \tau_{j-i} \; \dot{q}_{{\rm r},j}'' = \sigma \Ti^4 - \displaystyle\sum_{j=1}^4 \brackets{F_{i-j} \; \tau_{j-i} \; \sigma T_j^4 \, } - c''_i \label{RTE}
 \ee
 The radiation from the gases in the upper and lower layers and the fire is included in the last term:
 \be
@@ -644,7 +643,7 @@ where $\epsilon_{\rm j}$ is the emittance (absorptance) of the layer, $F_{i-j}$ 
 
 The net radiative flux, $\dq_{{\rm r},i}''$ found in Eq.~(\ref{RTE}), along with the convective flux discussed in Section~\ref{section:convection}\ is used as a boundary condition for computing heat conduction within the solid walls. The outgoing radiative flux, $\qout{i}$ is used in Section~\ref{section:target} for computing radiative flux to a target.  It may be rewritten in terms of known quantities, in particular the net radiative flux found in Eq. (\ref{RTE}), by eliminating $\qin$ in Eqs.~\ref{eq:qout} and~\ref{eq:raddiff} and is given by
 \be
-\qout{i}=\sigma T_i^4+\frac{1-\epsilon_i}{\epsilon_i}\dq_{{\rm r},i}''
+\qout{i}=\sigma \Ti^4+\frac{1-\epsilon_i}{\epsilon_i}\dq_{{\rm r},i}''
 \label{eq:qoutb}
 \ee
 
@@ -806,7 +805,7 @@ Objects, often referred to as ``targets,'' may be added to any compartment  to r
    \dq_{\rm r}'' = \epsilon_{\rm t} & \left( \displaystyle\sum_{{\rm f}}^{{\rm fires}}
    \frac{\cos(\theta_{\rm f})}{4 \pi R_{\rm f}^2} \tau_u \tau_l \; \chi_{\rm r} \, \dQ_{\rm f} +
    \displaystyle\sum_{w}^{\rm walls} \tau_u \tau_l \, F_w \, \epsilon_w \, \qout{w} \right. + \\
-    & \left. \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_u \alpha_l \sigma T_l^4  + \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_l \alpha_u\sigma T_u^4 - \sigma T_t^4 \right)
+    & \left. \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_u \alpha_l \sigma T_l^4  + \frac{\cos(\theta_t)}{4\pi R_t^2}\tau_l \alpha_u\sigma \Tu^4 - \sigma T_t^4 \right)
 \end{split}
 \ee
 
@@ -877,7 +876,7 @@ where $\dq''$ is the net convective and radiative heat flux.
 \newcommand{\Dt}{\Delta t}
 \newcommand{\Dr}{\Delta r}
 \newcommand{\Tipo}{T_{i+1}^{n+1}}
-\newcommand{\Ti}{T_{i}^{n+1}}
+\newcommand{\TTi}{T_{i}^{n+1}}
 \newcommand{\Timo}{T_{i-1}^{n+1}}
 
 The 1-D heat conduction equation can be solved in either Cartesian or cylindrical coordinates. The solution methodology shall be presented for cylindrical coordinates:
@@ -886,19 +885,19 @@ The 1-D heat conduction equation can be solved in either Cartesian or cylindrica
 \ee
 Dividing the cylinder into $N$ uniformly spaced concentric control volumes, this equation can be written in discretized form:
 \begin{eqnarray}
-\Ti-T_i^n&=& \frac{\Dt}{\Dr} \frac{k}{\rho c}
+\TTi-\Ti^n&=& \frac{\Dt}{\Dr} \frac{k}{\rho c}
 \left[
-\left(\frac{\Tipo-\Ti}{\Dr}\right)
+\left(\frac{\Tipo-\TTi}{\Dr}\right)
 \frac{r_i}{r_{i-1/2}}-
-\left(\frac{\Ti-\Timo}{\Dr}\right)
+\left(\frac{\TTi-\Timo}{\Dr}\right)
 \frac{r_{i-1}}{r_{i-1/2}}
 \right]
 \nonumber\\[0.2in]
 &=&\frac{\Dt \, \alpha}{\Dr^2}
 \left[
-\left(\Tipo-\Ti\right)
+\left(\Tipo-\TTi\right)
 \left(\frac{i}{i-0.5}\right)-
-\left(\Ti-\Timo\right)
+\left(\TTi-\Timo\right)
 \left(\frac{i-1}{i-0.5}\right)
 \right]
 \label{eq:cylheat6}
@@ -909,7 +908,7 @@ C_i = \frac{\alpha\Dt}{\Dr^2}\left(\frac{i-1}{i-0.5}\right) \quad ; \quad D_i = 
 \ee
 Equation~(\ref{eq:cylheat6}) can be written:
 \be
--C_i \, \Timo + \left( 1+2\frac{\alpha\Dt}{\Dr^2} \right) \, \Ti - D_i \, \Tipo = T_i^n  \quad \quad i=1...N-1
+-C_i \, \Timo + \left( 1+2\frac{\alpha\Dt}{\Dr^2} \right) \, \TTi - D_i \, \Tipo = \Ti^n  \quad \quad i=1...N-1
 \label{eq:cylheat8}
 \ee
 The boundary condition is applied at control volume $N$:
@@ -922,7 +921,7 @@ or
 -C_N \, T_{N-1}^{n+1}+ \left( 1+C_N \right) T_N^{n+1} = T_N^n+D_N\frac{\Dr}{k} \dq''
 \label{eq:cylheat10}
 \ee
-The internal temperature profile, $T_i$, is then obtained with a tri-diagonal linear solver.
+The internal temperature profile, $\Ti$, is then obtained with a tri-diagonal linear solver.
 
 
 
@@ -984,7 +983,7 @@ The radial velocity is given by:
 \ee
 where the heat release rate of the fire is contained within the non-dimensional expression:
 \be
-\dQ^*_H = \frac{\dQ}{\rho_\infty \, c_p \, T_\infty \, \sqrt{g} \, H^{5/2}}  \label{QsH}
+\dQ^*_H = \frac{\dQ}{\rho_\infty \, \cp \, T_\infty \, \sqrt{g} \, H^{5/2}}  \label{QsH}
 \ee
 To account for the presence of an upper layer, the background temperature, $T_\infty$, in Eq.~(\ref{Tcj}) is replaced with the upper layer temperature, $\Tu$. No adjustment need be made to Eq.~(\ref{QsH}) because $\rho_\infty \, T_\infty$ is assumed constant.
 
@@ -1050,8 +1049,8 @@ $A_{\rm v}$         & cross-sectional area of a vent, m$^2$ \\
 $a$                 & absorption coefficient, m$^{-1}$ \\
 $C$                 & vent constriction (or flow) coefficient, dimensionless \\
 $C_{\rm LOL}$       & lower oxygen limit coefficient, dimensionless \\
-$c_p$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
-$c_v$               & heat capacity of air at constant volume, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
+$\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
+$\cv$               & heat capacity of air at constant volume, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
 $c$                 & heat capacity of a solid, kJ/(kg$\cdot$K) \\
 $D$                 & fire diameter, m \\
                     & optical density, m$^{-1}$ \\
@@ -1072,7 +1071,7 @@ $\dme$              & plume mass entrainment rate, kg/s \\
 $\dmf$              & pyrolysis rate, kg/s \\
 n$_\alpha$          & number of atoms of element $\alpha$ \\
 $P$                 & pressure at floor level of a compartment, Pa \\
-$\qdot_i$           & rate of addition of heat into layer $i$, kW \\
+$\dqi$           & rate of addition of heat into layer $i$, kW \\
 $\dQ$               & total heat release rate of the fire, kW \\
 $\dQc$              & heat release rate of the fire released as convective energy, kW \\
 $\dq''$             & heat flux, kW/m$^2$ \\
@@ -1082,7 +1081,7 @@ $r$                 & radial distance from the fire, m \\
                     & radial coordinate of cylindrical solid, m \\
 $S$                 & vent coefficient for vertical flow vents, dimensionless \\
 $T_\infty$          & ambient gas temperature, K \\
-$T_i$               & gas temperature of layer $i$, K \\
+$\Ti$               & gas temperature of layer $i$, K \\
 $\Tp$               & gas temperature in the plume, K \\
 $t$                 & time, s \\
 $u_{\rm w}$         & water spray density, m/s \\
@@ -1128,10 +1127,10 @@ $\chi_{\rm r}$      & radiative fraction, dimensionless \\
 
 For convenience, Eq. \ref{eq:first_law} (conservation of energy) and Eq. \ref{EoS} (ideal gas law) from Section \ref{sect:equations} used in the following derivations are re-written here:
 \be
-   \ddt\left(c_v m_i T_i\right)   =  \qdot_i - P \dbydt{V_i}\label{eq:afirst_law}
+   \ddt\left(\cv \mi \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:afirst_law}
 \ee
 \be
-  P\,V_i = m_i\,R \, T_i \label{eq:ideal_gas_law}
+  P\,\Vi = \mi\,R \, \Ti \label{eq:ideal_gas_law}
 \ee
 
 \section{Pressure Equation}
@@ -1139,28 +1138,28 @@ For convenience, Eq. \ref{eq:first_law} (conservation of energy) and Eq. \ref{Eo
 
 To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer
 \begin{eqnarray}
-   c_v\ddt\left( m_l T_l\right)  &=  &\qdot_l - P \dbydt{V_l}\label{eq:lower}\\
-   c_v\ddt\left( m_u T_u\right)  &=  &\qdot_u -  P \dbydt{V_u}\label{eq:upper}
+   \cv\ddt\left( \ml \Tl\right)  &=  &\dql - P \dbydt{\Vl}\label{eq:lower}\\
+   \cv\ddt\left( \mmu \Tu\right)  &=  &\dqu -  P \dbydt{\Vu}\label{eq:upper}
 \end{eqnarray}
 
-\noindent Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{V_l}=-\dbydt{V_u}$ since $\ddt(V_l+V_u)=dV/dt=0$, gives
+\noindent Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{\Vl}=-\dbydt{\Vu}$ since $\ddt(\Vl+\Vu)=dV/dt=0$, gives
 
 \begin{equation}
-   c_v\ddt\left( m_l T_l+m_u T_u\right)  =  \qdot_l + \qdot_u
+   \cv\ddt\left( \ml \Tl+\mmu \Tu\right)  =  \dql + \dqu
 \end{equation}
 
 
 \noindent which simplifies to
 
 \begin{eqnarray}
-   \frac{c_vV}{R}\dbydt{ P}  &=  &\qdot_l + \qdot_u
+   \frac{\cv V}{R}\dbydt{ P}  &=  &\dql + \dqu
 \end{eqnarray}
 
-\noindent after assuming that $m_l T_l/V_l=m_u T_u/V_u = P/R$.
-Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
+\noindent after assuming that $\ml \Tl/\Vl=\mmu \Tu/\Vu = P/R$.
+Finally $R/\cv=\gamma-1$ since $R=\cp-\cv$ and $\gamma=\cp/\cv$ giving
 
 \begin{eqnarray}
-   \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\qdot_l + \qdot_u\right)
+   \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\dql + \dqu\right)
    \label{eq:ODE_P}
 \end{eqnarray}
 
@@ -1169,23 +1168,23 @@ Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
 \section{Upper Layer Volume Equation}
 To derive the upper layer volume differential equation, first note that
 \begin{equation}
-c_vm_uT_u=c_vV_u\frac{P}{R}=\frac{c_v}{c_p-c_v}V_uP=\frac{1}{\gamma-1}V_uP
+\cv\mmu\Tu=\cv\Vu\frac{P}{R}=\frac{\cv}{\cp-\cv}\Vu P=\frac{1}{\gamma-1}\Vu P
 \label{eq:vua}
 \end{equation}
 \noindent Substituting Eq. \ref{eq:vua} into the upper layer form of Eq. \ref{eq:afirst_law} ($i=u$) gives
 \begin{eqnarray}
-\qdot_u&=&\frac{1}{\gamma-1}\ddt\left(V_uP\right) + P\dbydt{V_u}\\
-&=&\frac{1}{\gamma-1}\left(P\dbydt{V_u} + V_u\dbydt{P}\right) + P\dbydt{V_u}\\
-&=&\frac{\gamma}{\gamma-1}P\dbydt{V_u} + \frac{V_u}{\gamma-1}\dbydt{P}
+\dqu&=&\frac{1}{\gamma-1}\ddt\left(\Vu P\right) + P\dbydt{\Vu}\\
+&=&\frac{1}{\gamma-1}\left(P\dbydt{\Vu} + \Vu\dbydt{P}\right) + P\dbydt{\Vu}\\
+&=&\frac{\gamma}{\gamma-1}P\dbydt{\Vu} + \frac{\Vu}{\gamma-1}\dbydt{P}
 \end{eqnarray}
 Multiplying both sides by $\frac{\gamma-1}{\gamma P}$ gives
 \begin{equation}
-\frac{\gamma-1}{\gamma P}\qdot_u=\dbydt{V_u} + \frac{V_u}{\gamma P}\dbydt{P}\label{eq:vub}
+\frac{\gamma-1}{\gamma P}\dqu=\dbydt{\Vu} + \frac{\Vu}{\gamma P}\dbydt{P}\label{eq:vub}
 \end{equation}
 
 \noindent Finally, solving for $\dbydt{Vu}$ gives
 \begin{equation}
-\dbydt{V_u} = \frac{1}{P\gamma}\left((\gamma-1)\qdot_u - V_u\dbydt{P}\right)
+\dbydt{\Vu} = \frac{1}{P\gamma}\left((\gamma-1)\dqu - \Vu\dbydt{P}\right)
 \label{eq:ODE_VU}
 \end{equation}
 \noindent the upper layer volume differential equation.
@@ -1193,33 +1192,33 @@ Multiplying both sides by $\frac{\gamma-1}{\gamma P}$ gives
 \section{Temperature Equations}
 To derive the upper layer temperature differential equation note that
 \begin{equation}
-\ddt(c_vm_uT_u)=c_v\dot m_uT_u+c_vm_u\dbydt{T_u}
+\ddt(\cv\mmu\Tu)=\cv\dmu\Tu+\cv \mmu\dbydt{\Tu}
 \end{equation}
 \noindent and from Eq. \ref{eq:ODE_VU} that
 \begin{equation}
-P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \qdot_u - \frac{V_u}{\gamma}\dbydt{P}
+P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}
 \label{eq:pvu}
 \end{equation}
 
 \noindent Substituting these two expressions into the upper layer form of Eq. \ref{eq:afirst_law} (again $i=u$) gives
 
 \begin{eqnarray}
-   \ddt\left(c_v m_u T_u\right) +  P \dbydt{V_u} &=  &\qdot_u\\
-c_v\dot m_uT_u+c_vm_u\dbydt{T_u}+\frac{\gamma-1}{\gamma} \qdot_u - \frac{V_u}{\gamma}\dbydt{P}&=&\qdot_u
+   \ddt\left(\cv \mmu \Tu\right) +  P \dbydt{\Vu} &=  &\dqu\\
+\cv\dmu\Tu+\cv \mmu\dbydt{\Tu}+\frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}&=&\dqu
 \label{eq:tua}
 \end{eqnarray}
 Multiplying Eq. \ref{eq:tua} by $\gamma$ gives
 \begin{equation}
-c_p\dot m_uT_u+c_pm_u\dbydt{T_u} - V_u\dbydt{P}=\qdot_u
+\cp\dmu\Tu+\cp \mmu\dbydt{\Tu} - \Vu\dbydt{P}=\dqu
 \end{equation}
-Finally, solving for $\dbydt{T_u}$ gives
+Finally, solving for $\dbydt{\Tu}$ gives
 \begin{equation}
-\dbydt{T_u}=\frac{1}{c_pm_u}\left( \qdot_u-c_p\dot m_uT_u+ V_u\dbydt{P}\right)
+\dbydt{\Tu}=\frac{1}{\cp \mmu}\left( \dqu-\cp\dmu\Tu+ \Vu\dbydt{P}\right)
 \label{eq:ODE_TU}
 \end{equation}
 \noindent the upper layer temperature differential equation.  A differential equation for lower layer temperature
 \begin{equation}
-\dbydt{T_l}=\frac{1}{c_pm_l}\left( \qdot_l-c_p\dot m_lT_l+ V_l\dbydt{P}\right)
+\dbydt{\Tl}=\frac{1}{\cp\ml}\left( \dql-\cp\dml\Tl+ \Vl\dbydt{P}\right)
 \label{eq:ODE_TL}
 \end{equation}
  may be derived similarly.

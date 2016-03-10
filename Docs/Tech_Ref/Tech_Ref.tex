@@ -259,50 +259,44 @@ It is assumed that each compartment is divided into two control volumes or zones
  \label{fig:Control_Volumes}
 \end{figure}
 
-The set of governing equations start with the conservation of mass which may be expressed as the net rate of mass added to a control volume, $\dmi$, is equal to the rate at which mass accumulates in that control volume, $\dbydt{\mi}$ or equivalently
+The mass conservation equation simply asserts that the rate of change of the mass of layer $i$ is equal to the sum of mass source terms, $\dmi$:
 \be
    \dbydt{\mi} = \dmi  \label{mass_con}
 \ee
-where $\dmi$ represents the sum of all mass flow terms, such as plume mass entrainment and ventilation, entering and leaving layer $i$. Similarly, the conservation of energy may be stated as the net rate that heat $\dqi$ is added to a control volume minus the work $P\dbydt{\Vi}$ performed by the control volume (since the control volume may change size), is equal to the rate at which heat or internal energy $\ddt\left(\cv \mi \Ti\right)$ accumulates within the control volume or equivalently
+Mass source terms include plume mass entrainment and supply/exhaust ventilation. Next, the first law of thermodynamics states that the rate of change in the layer's internal energy, $\cv \mi \Ti$, is equal to the sum of heat source terms, $\dqi$, minus the work associated with expansion or contraction of the layer, $P \, {\rm d} \Vi / {\rm d} t$:
 \be
    \ddt\left(\cv \mi \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:first_law}
 \ee
+Included in $\dqi$ are the fire's heat release rate, convective losses to walls, and radiation exchange.
 
-Stated in this way, conservation of energy is the first law of thermodynamics.  As in Eq. \ref{mass_con}, the $\dqi$ term in Eq. \ref{eq:first_law} consists of all sources of heat such as the fire's heat release rate, convective losses to walls, and radiation exchange {\it etc}. 
-
-The layer temperature, mass and volume are related to the compartment pressure by the ideal gas law:
+The layer's temperature, mass and volume are related to the compartment pressure by the ideal gas law:
 \begin{equation}
   P\,\Vi = \mi\,R \, \Ti \label{EoS}
 \end{equation}
-
-A system of ordinary differential equations for compartment pressure, upper layer volume and upper and lower layer temperature are derived in Appendix \ref{chap:derivation}
-using the conservation of mass and energy (Eqs. \ref{mass_con} and \ref{eq:first_law}) and are given below:
-
+A system of ordinary differential equations for the compartment pressure, upper layer volume, and upper and lower layer temperature can be derived using Eqs.~\ref{mass_con}--\ref{EoS} (for details see Appendix~\ref{chap:derivation}):
 \begin{eqnarray}
 \dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dql + \dqu \right)  \label{eq1} \\[.1in]
 \dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dqu - \Vu \dbydt{P} \right) \label{eq2} \\[.1in]
 \dbydt{\Tu} &=& \frac{1}{\cp \, m_{\rm u}} \left( \dqu - \cp \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
 \dbydt{\Tl} &=& \frac{1}{\cp \, m_{\rm l}} \left( \dql - \cp \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
-
-The mass flow, $\dmau$ and $\dmal$, and heat flow, $\dqu$ and $\dql$, terms are simply the net sum of all mass and heat flowing into a layer (through vents, from fires, between layers via a plume, or by radiation and convection from compartment surfaces).
-
-Algebraic equations for wall surface temperatures can be derived using Fourier's law
+These equations are supplemented by four partial differential equations per compartment governing the temperature in depth of the ceiling, upper wall, lower wall, and floor, which for the sake of brevity will be referred to collectively as $\Tw(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature within a solid of density, $\rho$, specific heat, $c$, and thermal conductivity, $k$, evolves according to the heat conduction equation:
 \be
-   \dq'' = -k \, \frac{d\Tw}{dx}  \label{eq:fourier}
+   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}
 \ee
+The gas and solid phase temperature solutions are linked via the boundary condition:
+\be
+   \dq'' = -k \, \frac{\partial \Tw(0,t)}{\partial x}   \label{bc}
+\ee
+where $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term).
 
-\noindent so that the temperature gradient, $d\Tw/dx$, at the wall surface is consistent with the heat flux, $\dq''$,
-striking that surface.  CFAST then uses the differential~/~algebraic solver DASSL to solve Eqs. (\ref{eq1}) through (\ref{eq:fourier})
-for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$ (surface wall temperature) 
 
 
 \section{Solution of the Equations}
 
-As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, Eqs.~(\ref{eq1}) through (\ref{eq:fourier}) are stiff since pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since solution methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are thus more successful at their solution (see, for example, \cite{Numerical_Recipes}).
+CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve Eqs. (\ref{eq1}) through (\ref{eq:fourier}) for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$, subject to the boundary constraint given in Eq.~(\ref{bc}). As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
 
-Equations (\ref{eq1})~-~(\ref{eq:fourier}) are then solved as a set of simultaneous differential~/~algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$ using the stiff DAE (differential algebraic equation) solver, DASSL \cite{DASSL:1982,DASSL:1989}, where $F\brackets{t,\vec{y},\vec{y}'}$ is the functional relationship between $t$ (the current time in the simulation), $\vec{y}$ (the solution vector at time $t$), and $\vec{y}'$ (the solution vector derivative at time $t$). The solution vector, $\vec{y}$, solved by DASSL is
-
+Equations (\ref{eq1})~-~(\ref{eq:fourier}) are solved as a set of simultaneous differential~/~algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$, where $t$ is the time, $\vec{y}$ is the solution vector at time $t$, and $\vec{y}'$ is the solution vector derivative at time $t$. The solution vector, $\vec{y}$, solved by DASSL is
 \begin{center}
 \begin{tabular}{r l l}
 $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compartment)  \\
@@ -312,8 +306,7 @@ $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each 
                &  $T_{w_1}, T_{w_2}, ..., T_{w_{k-1}}, T_{w_k} )$ & (temperatures on each surface of each compartment) \\
 \end{tabular}
 \end{center}
-
-\noindent where $n$ is the number of compartments and $k$ is the total number of wall surfaces ( $4n$ if all wall surfaces are solved for each compartment ).  In the simplest case, all temperatures are initialized to ambient, all pressures are initialized to zero, and $\vec{y}'$ is zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$, CFAST calculates an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within tolerances specified by CFAST \cite{DASSL:1982,DASSL:1989}.
+where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).  In the simplest case, all temperatures are initialized to ambient, all (over) pressures are initialized to zero, and $\vec{y}'$ is zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$, CFAST calculates an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within a specified tolerance~\cite{DASSL:1982,DASSL:1989}.
 
 \section{Species Transport}
 
@@ -593,6 +586,7 @@ The flow through mechanical vents can be filtered. Filtering affects particulate
 %
 
 \chapter{Heat Transfer}
+\label{chap:heat_transfer}
 
 This section discusses thermal radiation, convection, and conduction, the three mechanisms by which heat is transferred between the gas layers and the enclosing compartment walls. Hot gases exchange heat with solid surfaces via convection and radiation. Heat is transferred through solids via conduction. Different material properties can be used for the ceiling, floor, and walls of each compartment (although all the walls of a compartment must be the same).  Additionally, each surface can be composed of up to three distinct layers.  This allows the user to deal naturally with the actual building construction.  Material thermophysical properties are assumed to be constant. Radiative transfer occurs among the fire(s), gas layers and compartment surfaces (ceiling, walls and floor).  This transfer is a function of the temperature differences and the emissivity of the gas layers as well as the compartment surfaces.  Typical surface emissivity values only vary over a small range.  For the gas layers, however, the emissivity is a function of the concentration of species which are strong radiators, predominately smoke particulates, carbon dioxide, and water.
 
@@ -1141,73 +1135,64 @@ For convenience, Eq. \ref{eq:first_law} (conservation of energy) and Eq. \ref{Eo
 
 To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer
 \begin{eqnarray}
-   \cv\ddt\left( \ml \Tl\right)  &=  &\dql - P \dbydt{\Vl}\label{eq:lower}\\
+   \cv\ddt\left( \ml \Tl\right)  &=  &\dql - P \dbydt{\Vl}\label{eq:lower}\\[.1in]
    \cv\ddt\left( \mmu \Tu\right)  &=  &\dqu -  P \dbydt{\Vu}\label{eq:upper}
 \end{eqnarray}
-
-\noindent Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{\Vl}=-\dbydt{\Vu}$ since $\ddt(\Vl+\Vu)=dV/dt=0$, gives
-
+Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{\Vl}=-\dbydt{\Vu}$ since $\ddt(\Vl+\Vu)=dV/dt=0$, gives
 \begin{equation}
-   \cv\ddt\left( \ml \Tl+\mmu \Tu\right)  =  \dql + \dqu
+   c_v \ddt\left( \ml \Tl+\mmu \Tu\right)  =  \dql + \dqu
 \end{equation}
-
-
-\noindent which simplifies to
-
-\begin{eqnarray}
-   \frac{\cv V}{R}\dbydt{ P}  &=  &\dql + \dqu
-\end{eqnarray}
-
-\noindent after assuming that $\ml \Tl/\Vl=\mmu \Tu/\Vu = P/R$ (product of temperature and density for upper and lower layer assumed to be the same).
-Finally $R/\cv=\gamma-1$ since $R=\cp-\cv$ and $\gamma=\cp/\cv$ giving
-
+which simplifies to
+\be
+   \frac{c_v \, V}{R}\dbydt{P}  =  \dql + \dqu
+\ee
+after assuming that $\ml \Tl/\Vl=\mmu \Tu/\Vu = P/R$ (product of temperature and density for upper and lower layer assumed to be the same). Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
 \begin{eqnarray}
    \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\dql + \dqu\right)
    \label{eq:ODE_P}
 \end{eqnarray}
-
-\noindent the pressure differential equation.
+the pressure differential equation.
 
 \section{Upper Layer Volume Equation}
+
 To derive the upper layer volume differential equation, first note from Eq. \ref{eq:ideal_gas_law} and the definition of $\gamma$ that
 \begin{equation}
-\cv\mmu\Tu=\cv\Vu\frac{P}{R}=\frac{\cv}{\cp-\cv}\Vu P=\frac{1}{\gamma-1}\Vu P
+c_v \mmu\Tu= c_v \Vu \frac{P}{R} = \frac{c_v}{c_p-c_v}\Vu P=\frac{1}{\gamma-1}\Vu P
 \label{eq:vua}
 \end{equation}
-\noindent Substituting Eq. \ref{eq:vua} into the upper layer form of Eq. \ref{eq:afirst_law} (${\rm i}={\rm u}$) gives
+Substituting Eq. \ref{eq:vua} into the upper layer form of Eq. \ref{eq:afirst_law} (${\rm i}={\rm u}$) gives
 \begin{eqnarray}
-\dqu&=&\frac{1}{\gamma-1}\ddt\left(\Vu P\right) + P\dbydt{\Vu}\\
-&=&\frac{1}{\gamma-1}\left(P\dbydt{\Vu} + \Vu\dbydt{P}\right) + P\dbydt{\Vu}\\
+\dqu&=&\frac{1}{\gamma-1}\ddt\left(\Vu P\right) + P\dbydt{\Vu}\\[.1in]
+&=&\frac{1}{\gamma-1}\left(P\dbydt{\Vu} + \Vu\dbydt{P}\right) + P\dbydt{\Vu}\\[.1in]
 &=&\frac{\gamma}{\gamma-1}P\dbydt{\Vu} + \frac{\Vu}{\gamma-1}\dbydt{P}
 \end{eqnarray}
-Multiplying both sides by $\frac{\gamma-1}{\gamma P}$ gives
+Multiplying both sides by $(\gamma-1)/(\gamma P)$ gives
 \begin{equation}
 \frac{\gamma-1}{\gamma P}\dqu=\dbydt{\Vu} + \frac{\Vu}{\gamma P}\dbydt{P}\label{eq:vub}
 \end{equation}
-
-\noindent Finally, solving for $\dbydt{Vu}$ gives
+Finally, rearranging terms yields
 \begin{equation}
 \dbydt{\Vu} = \frac{1}{P\gamma}\left((\gamma-1)\dqu - \Vu\dbydt{P}\right)
 \label{eq:ODE_VU}
 \end{equation}
-\noindent the upper layer volume differential equation.
+the upper layer volume differential equation.
+
 
 \section{Temperature Equations}
+
 To derive the upper layer temperature differential equation note that
 \begin{equation}
-\ddt(\cv\mmu\Tu)=\cv\dmu\Tu+\cv \mmu\dbydt{\Tu}
+\ddt(c_v \mmu\Tu)=c_v \dmu\Tu+ c_v \mmu\dbydt{\Tu}
 \end{equation}
-\noindent and from Eq. \ref{eq:ODE_VU} that
+and from Eq. \ref{eq:ODE_VU} that
 \begin{equation}
 P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}
 \label{eq:pvu}
 \end{equation}
-
-\noindent Substituting these two expressions into the upper layer form of Eq. \ref{eq:afirst_law} (again $i=u$) gives
-
+Substituting these two expressions into the upper layer form of Eq. \ref{eq:afirst_law} (again $i=u$) gives
 \begin{eqnarray}
-   \ddt\left(\cv \mmu \Tu\right) +  P \dbydt{\Vu} &=  &\dqu\\
-\cv\dmu\Tu+\cv \mmu\dbydt{\Tu}+\frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}&=&\dqu
+   \ddt\left(c_v \mmu \Tu\right) +  P \dbydt{\Vu} &=  &\dqu\\[.1in]
+c_v \dmu\Tu+c_v \mmu\dbydt{\Tu}+\frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}&=&\dqu
 \label{eq:tua}
 \end{eqnarray}
 Multiplying Eq. \ref{eq:tua} by $\gamma$ gives
@@ -1219,7 +1204,7 @@ Finally, solving for $\dbydt{\Tu}$ gives
 \dbydt{\Tu}=\frac{1}{\cp \mmu}\left( \dqu-\cp\dmu\Tu+ \Vu\dbydt{P}\right)
 \label{eq:ODE_TU}
 \end{equation}
-\noindent the upper layer temperature differential equation.  A differential equation for lower layer temperature
+the upper layer temperature differential equation.  A differential equation for lower layer temperature
 \begin{equation}
 \dbydt{\Tl}=\frac{1}{\cp\ml}\left( \dql-\cp\dml\Tl+ \Vl\dbydt{P}\right)
 \label{eq:ODE_TL}

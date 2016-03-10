@@ -361,16 +361,13 @@ end module target_data
 module thermal_data
 
     use precision_parameters
-    use cparams
+    use cparams, only : mxthrmp
+    use cfast_types, only: thermal_type
     implicit none
     save
 
-    real(eb), dimension(mxslb,mxthrmp) :: lfkw, lcw, lrw, lflw
-    real(eb), dimension(mxthrmp) :: lepw
-
-    integer maxct, numthrm
-    integer, dimension(mxthrmp) :: lnslb
-    character(mxthrmplen), dimension(mxthrmp) :: nlist
+    integer nthrmp                                                  ! number of unique thermal properties in the simulation
+    type (thermal_type), dimension(mxthrmp), target :: thermalinfo  ! structure thermal property data
 
     end module thermal_data
 

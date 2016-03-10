@@ -1,9 +1,20 @@
 module cfast_types
 
     use precision_parameters
-    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxcross
+    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxcross, mxslb
+    
+    ! thermal properties structure
+    type thermal_type
+        character(mxthrmplen) :: name                   ! user selected name for the material
+        integer :: nslab                                ! number of slabs
+        real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
+        real(eb), dimension(mxslb) :: rho               ! density of each slab
+        real(eb), dimension(mxslb) :: c                 ! specific heat of each slab
+        real(eb), dimension(mxslb) :: thickness         ! slab thickness of each slab
+        real(eb) :: eps                                 ! surface emissivity
+    end type thermal_type
 
-    !  room data structure
+    ! room data structure
     type room_type
         ! These are room definitions from or calculated from the input
         character(128) :: name                          ! user selected name for the compartment
@@ -22,14 +33,6 @@ module cfast_types
         real(eb) :: cvolume                             ! compartment volume
         real(eb), allocatable, dimension(:) :: xplt, yplt, zplt     ! grid for slice / isosurface files
         real(fb), allocatable, dimension(:) :: xpltf, ypltf, zpltf
-        
-        ! cross-sectional area variables
-        integer :: nvars                                ! number of data points for variable cross-secitonal area
-        real(eb), dimension(mxcross) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
-        real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
-        real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
-
-        ! calculated values of the compartment environment
         real(eb) :: vmin, vmax                          ! minimum and maximum layer volume for compartment
         real(eb) :: wall_center(3,10)                   ! coordinates of center of each surface in compartment
         real(eb) :: interior_relp_initial               ! initial value of interior pressure relative to minimum pressure
@@ -37,6 +40,16 @@ module cfast_types
         logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
                                                         ! connects to the outside (perhaps through other intermediate rooms)
         logical :: is_hvac                              ! true if there is an HVAC vent connection in the room
+        
+        ! cross-sectional area variables
+        integer :: nvars                                ! number of data points for variable cross-secitonal area
+        real(eb), dimension(mxcross) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
+        real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
+        real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
+        
+        ! compartment surfaces
+
+        ! result values for the compartment
         real(eb) :: relp                                ! pressure at floor level relative to exterior
         real(eb) :: absp                                ! absolute pressure at floor level
         real(eb), dimension(2) :: volume                ! volume of each layer

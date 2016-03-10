@@ -7,13 +7,13 @@ module cparams
     integer, parameter :: lbufln=1024           ! default line length for all inputs
 
     ! geometry parameters
-    integer, parameter :: mxrooms = 101              ! maximum number of compartments
+    integer, parameter :: mxrooms = 101         ! maximum number of compartments
     integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material
                                                 !                        (at the moment, the gui only support 1)
     integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
     integer, parameter :: mxcross=21            ! maximum number of data points for variable cross-sectional area of a compartment
     integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation
-    integer, parameter :: mxslice = 5*mxrooms        ! maximum number of slices and isosurfaces in an input file
+    integer, parameter :: mxslice = 5*mxrooms   ! maximum number of slices and isosurfaces in an input file
 
     ! fire related input parameters
     integer, parameter :: mxpts = 199           ! maximum number of data points in a time-dependent input curve
@@ -36,17 +36,17 @@ module cparams
     integer, parameter :: mxfprd = ns           ! maximum number of products tracked in the horizontal flow calculation
                                                 !   (should be the same as ns)
 
-    integer, parameter :: mxvvents=2*mxrooms         ! maximum number of vertical flow vents
-    integer, parameter :: mxvvent = mxvvents*2  ! maximum number of connections in vertical flow vents
+    integer, parameter :: mxvvents=2*mxrooms        ! maximum number of vertical flow vents
+    integer, parameter :: mxvvent = mxvvents*2      ! maximum number of connections in vertical flow vents
 
     integer, parameter :: mxhvsys=200               ! maximum number of mechanical ventilation systems
     integer, parameter :: mxfan = 100               ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 5               ! maximum order of fan curve (here, 5th order polynomial. at the moment,
                                                     !   the gui limits to constant flow)
     integer, parameter :: mxcon = 3                 ! maximum number of connections to a node in a mechanical ventilation system
-    integer, parameter :: mxduct = mxrooms+2             ! maximum number of ducts in a mechanical ventilation system
+    integer, parameter :: mxduct = mxrooms+2        ! maximum number of ducts in a mechanical ventilation system
     integer, parameter :: mxnode = 2*mxduct         ! maximum number of nodes in a mechanical ventilation system
-    integer, parameter :: mxext = 2*mxrooms              ! maximum number of external connections in a mechanical ventilation system
+    integer, parameter :: mxext = 2*mxrooms         ! maximum number of external connections in a mechanical ventilation system
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
     integer, parameter :: mxramps = 8*mxfire+mxhvent+mxvvents+mxhvsys ! maximum number of possible time-based ramps
@@ -62,7 +62,7 @@ module cparams
     real(eb), parameter :: deltatemp_min = 0.01_eb  ! minimum temperature difference for bouyancy to deposit all into a layer
 
     ! target parameters
-    integer, parameter :: mxtarg = 10*mxrooms                    ! maximum number of targets
+    integer, parameter :: mxtarg = 10*mxrooms               ! maximum number of targets
     integer, parameter :: nnodes_trg = nnodes-1             ! number of interior nodes in a target for conduction calculation
     integer, parameter :: idx_tempf_trg = 1                 ! position of front temperature of target (front surface temperature)
     integer, parameter :: idx_tempb_trg = idx_tempf_trg+nnodes_trg-1 ! position of back temperature of target
@@ -70,7 +70,7 @@ module cparams
     integer, parameter :: mxr_trg = idx_tempb_trg           ! upper bound of real target array
     integer, parameter :: mxi_trg = 7                       ! upper bound of integer target array
 
-    integer, parameter :: mxdtect=10*mxrooms                     ! maximum number of detectors
+    integer, parameter :: mxdtect=10*mxrooms                ! maximum number of detectors
 
     integer, parameter :: check_detector_state = 0          ! index to check state of detectors and targets
     integer, parameter :: set_detector_state = 1            ! index to calculate full state of detectors and targets

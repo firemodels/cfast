@@ -109,7 +109,7 @@ module input_routines
         yinter(i) = -1.0_eb
     end do
 
-    maxct = 0
+    nthrmp = 0
 
     ! read in data file
     call keywordcases (numr, numc)
@@ -493,6 +493,7 @@ module input_routines
     type(detector_type), pointer :: dtectptr
     type(ramp_type), pointer :: rampptr
     type(visual_type), pointer :: sliceptr
+    type(thermal_type), pointer :: thrmpptr
 
     !	Start with a clean slate
 
@@ -518,19 +519,20 @@ module input_routines
 
         if (label=='MATL') then
             if(countargs(lcarray)>=7) then
-                maxct = maxct + 1
-                if (maxct>mxthrmp) then
+                nthrmp = nthrmp + 1
+                if (nthrmp>mxthrmp) then
                     write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
                         mxthrmp
                     stop
                 end if
-                nlist(maxct) = lcarray(1)
-                lnslb(maxct) = 1
-                lfkw(1,maxct) = lrarray(2)
-                lcw(1,maxct) = lrarray(3)
-                lrw(1,maxct) = lrarray(4)
-                lflw(1,maxct) = lrarray(5)
-                lepw(maxct) = lrarray(6)
+                thrmpptr => thermalinfo(nthrmp)
+                thrmpptr%name = lcarray(1)
+                thrmpptr%nslab = 1
+                thrmpptr%k(1) = lrarray(2)
+                thrmpptr%c(1) = lrarray(3)
+                thrmpptr%rho(1) = lrarray(4)
+                thrmpptr%thickness(1) = lrarray(5)
+                thrmpptr%eps = lrarray(6)
             else
                 write (logerr,*) '***Error: Bad MATL input. At least 7 arguments required.'
                 stop
@@ -577,8 +579,6 @@ module input_routines
                 if (tcname/='OFF') then
                     roomptr%surface_on(1) = .true.
                     roomptr%matl(1) = tcname
-                    ! keep track of the total number of thermal properties used
-                    numthrm = numthrm + 1
                 end if
 
                 ! floor
@@ -586,8 +586,6 @@ module input_routines
                 if (tcname/='OFF') then
                     roomptr%surface_on(2) = .true.
                     roomptr%matl(2) = tcname
-                    ! keep track of the total number of thermal properties used
-                    numthrm = numthrm + 1
                 end if
 
                 ! walls
@@ -597,8 +595,6 @@ module input_routines
                     roomptr%matl(3) = tcname
                     roomptr%surface_on(4) = .true.
                     roomptr%matl(4) = tcname
-                    ! keep track of the total number of thermal properties used
-                    numthrm = numthrm + 1
                 end if
 
                 ! If there are more than 10 arguments, it's the new format that includes grid spacing

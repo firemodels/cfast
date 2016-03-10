@@ -812,6 +812,7 @@ module output_routines
 
     integer i, j
     type(room_type), pointer :: roomptr
+    type(thermal_type), pointer :: thrmpptr
 
     ! check to see if any heat transfer is on
     if (.not.adiabatic_wall) then
@@ -832,12 +833,13 @@ module output_routines
         write (iofilo,5020) roomptr%name, roomptr%matl(1), roomptr%matl(3), roomptr%matl(2)
     end do
 
-    !     print out the properties of the materials used
+    ! print out the properties of the materials used
     write (iofilo,5030)
-    do i = 1, maxct
-        write (iofilo,5040) nlist(i), lfkw(1,i), lcw(1,i), lrw(1,i), lflw(1,i), lepw(i)
-        do j = 2, lnslb(i)
-            write (iofilo,5050) lfkw(j,i), lcw(j,i), lrw(j,i), lflw(j,i)
+    do i = 1, nthrmp
+        thrmpptr => thermalinfo(i)
+        write (iofilo,5040) thrmpptr%name, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
+        do j = 2, thrmpptr%nslab
+            write (iofilo,5050) thrmpptr%k(j), thrmpptr%c(j), thrmpptr%rho(j), thrmpptr%thickness(j)
         end do
     end do
     write (iofilo,5060)

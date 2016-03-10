@@ -60,8 +60,8 @@ module solve_routines
 
     integer, parameter :: mxalg = 4*mxrooms+mxnode+mxbranch
     real(eb) deltamv(mxalg), hhvp(mxalg)
-    integer, parameter :: lrw = (3*mxalg**2+13*mxalg)/2
-    real(eb) :: work(lrw)
+    integer, parameter :: lrwork = (3*mxalg**2+13*mxalg)/2
+    real(eb) :: work(lrwork)
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nprint, i, info, nodes
     real(eb) :: tol
     
@@ -103,10 +103,10 @@ module solve_routines
         pinit(i) = p(i)
     end do
     if (option(fpsteady)==1) then
-        call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info, work,lrw)
+        call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info, work,lrwork)
     else
         if (nhvalg>0) then
-            call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+nrm1),deltamv(1+nrm1),tol,nprint,info,work,lrw)
+            call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+nrm1),deltamv(1+nrm1),tol,nprint,info,work,lrwork)
         else
             info = 1
         end if
@@ -420,11 +420,11 @@ module solve_routines
     real(eb), intent(in) :: tstop
 
     integer, parameter :: maxord = 5
-    integer, parameter :: lrw = 40+(maxord+4)*maxeq+maxeq**2
+    integer, parameter :: lrwork = 40+(maxord+4)*maxeq+maxeq**2
     integer, parameter :: liw = 20+maxeq
     integer, parameter :: all = 1, some = 0
 
-    real(eb) :: rwork(lrw), rpar(1)
+    real(eb) :: rwork(lrwork), rpar(1)
     integer :: iwork(liw), info(15), ipar(3), info2(15)
     real(eb) :: pprime(maxteq), pdnew(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
@@ -701,7 +701,7 @@ module solve_routines
         told = t
         call setderv(-1)
         call cptime(ton)
-        call ddassl (calculate_residuals,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
+        call ddassl (calculate_residuals,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
         ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
         call setderv(-2)
         ieqmax = ipar(3)
@@ -804,7 +804,7 @@ module solve_routines
                 end do
                 info2(2) = 1
                 told = t
-                call ddassl (calculate_residuals,nodes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrw,iwork,liw,rpar,ipar,jac)
+                call ddassl (calculate_residuals,nodes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
 
                 ! make sure dassl is happy (again)
                 if (idid<0) then

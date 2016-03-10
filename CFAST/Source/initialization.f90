@@ -38,21 +38,23 @@ module initialization_routines
 
     !     Routine: get_thermal_Property
     !     Purpose: check for and return index to a thermal property
-    !     Revision: $Revision$
-    !     Revision Date: $Date$
-
+    
     implicit none
     character, intent(in) :: name*(*)
 
     character(mxthrmplen) missingtpp
     integer tp, i
+    type(thermal_type), pointer :: thrmpptr
 
-    do i = 1, maxct
-        tp = i
-        if (name==nlist(i)) return
+    do i = 1, nthrmp
+        thrmpptr => thermalinfo(i)
+        if (name==thrmpptr%name) then
+            tp = i
+            return
+        end if
     end do
     missingtpp = name
-    write(3,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    write(logerr,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     stop
 
     end subroutine get_thermal_property
@@ -568,7 +570,6 @@ module initialization_routines
     roominfo(1:mxrooms)%hall = .false.
     roominfo(1:mxrooms)%shaft = .false.
     n_species = 0
-    numthrm = 0
     nr = 0
     
     ! room to room heat transfer
@@ -906,7 +907,7 @@ module initialization_routines
     !        epw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
     !        matl contains the name of the thermal data subset in the tpp datafile
-    !        maxct is a count of the number of tpp data sets in the database
+    !        nthrmp is a count of the number of tpp data sets in the database
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
@@ -917,6 +918,7 @@ module initialization_routines
 
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
+    type(thermal_type), pointer :: thrmpptr
 
     ! map the thermal data into its appropriate wall specification
     ! if name is "OFF" or "NONE" then just turn all off
@@ -928,14 +930,15 @@ module initialization_routines
                     roomptr%surface_on(i) = .false.
                 else
                     call get_thermal_property(roomptr%matl(i),tp)
-                    nslb(i,j) = lnslb(tp)
+                    thrmpptr => thermalinfo(tp)
+                    epw(i,j) = thrmpptr%eps
+                    nslb(i,j) = thrmpptr%nslab
                     do k = 1, nslb(i,j)
-                        fkw(k,i,j) = lfkw(k,tp)
-                        cw(k,i,j) = lcw(k,tp)
-                        rw(k,i,j) = lrw(k,tp)
-                        flw(k,i,j) = lflw(k,tp)
+                        fkw(k,i,j) = thrmpptr%k(k)
+                        cw(k,i,j) = thrmpptr%c(k)
+                        rw(k,i,j) = thrmpptr%rho(k)
+                        flw(k,i,j) = thrmpptr%thickness(k)
                     end do
-                    epw(i,j) = lepw(tp)
                 end if
             end if
         end do
@@ -1025,12 +1028,13 @@ module initialization_routines
             targptr%material = tcname
         end if
         call get_thermal_property(tcname,tp)
-        targptr%k = lfkw(1,tp)
-        targptr%cp = lcw(1,tp)
-        targptr%rho = lrw(1,tp)
-        targptr%thickness = lflw(1,tp)
+        thrmpptr => thermalinfo(tp)
+        targptr%k = thrmpptr%k(1)
+        targptr%cp = thrmpptr%c(1)
+        targptr%rho = thrmpptr%rho(1)
+        targptr%thickness = thrmpptr%thickness(1)
         targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))
-        targptr%emissivity = lepw(tp)
+        targptr%emissivity = thrmpptr%eps
     end do
 
     return

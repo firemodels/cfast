@@ -41,6 +41,7 @@
     implicit none
 
     real(eb) :: xdelt, tstop, tbeg, tend
+    type(thermal_type), pointer :: thrmpptr
 
     version = 7100        ! Current CFAST version number
 
@@ -70,15 +71,15 @@
     tstop = i_time_end - 1
 
     ! add the default thermal property
-    maxct = maxct + 1
-
-    nlist(maxct) = 'DEFAULT'
-    lnslb(maxct) = 1
-    lfkw(1,maxct) = 0.120_eb
-    lcw(1,maxct) = 900.0_eb
-    lrw(1,maxct) = 800.0_eb
-    lflw(1,maxct) = 0.0120_eb
-    lepw(maxct) = 0.90_eb
+    nthrmp = nthrmp + 1
+    thrmpptr => thermalinfo(nthrmp)
+    thrmpptr%name = 'DEFAULT'
+    thrmpptr%eps = 0.90_eb
+    thrmpptr%nslab = 1
+    thrmpptr%k(1) = 0.120_eb
+    thrmpptr%c(1) = 900.0_eb
+    thrmpptr%rho(1) = 800.0_eb
+    thrmpptr%thickness(1) = 0.0120_eb
 
     call initialize_walls (tstop)
 

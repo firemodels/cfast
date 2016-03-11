@@ -280,23 +280,21 @@ A system of ordinary differential equations for the compartment pressure, upper 
 \dbydt{\Tu} &=& \frac{1}{\cp \, m_{\rm u}} \left( \dqu - \cp \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
 \dbydt{\Tl} &=& \frac{1}{\cp \, m_{\rm l}} \left( \dql - \cp \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
-These equations are supplemented by four partial differential equations per compartment governing the temperature in depth of the ceiling, upper wall, lower wall, and floor, which for the sake of brevity will be referred to collectively as $\Tw(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature within a solid of density, $\rho$, specific heat, $c$, and thermal conductivity, $k$, evolves according to the heat conduction equation:
-\be
-   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}
-\ee
-The gas and solid phase temperature solutions are linked via the boundary condition:
+These equations are supplemented by four partial differential equations per compartment governing the temperature in depth of the ceiling, upper wall, lower wall, and floor, which for the sake of brevity will be referred to collectively as $\Tw(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The gas and solid phase temperature solutions are linked via the boundary condition:
 \be
    \dq'' = -k \, \frac{\partial \Tw(0,t)}{\partial x}   \label{bc}
 \ee
 where $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term).
-
-
+The temperature within a solid of density, $\rho$, specific heat, $c$, and thermal conductivity, $k$, then evolves using this boundary condition according to the heat conduction equation:
+\be
+   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}
+\ee
 
 \section{Solution of the Equations}
 
-CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve Eqs. (\ref{eq1}) through (\ref{eq:fourier}) for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$, subject to the boundary constraint given in Eq.~(\ref{bc}). As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
+CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$ (at the surface only). As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
 
-Equations (\ref{eq1})~-~(\ref{eq:fourier}) are solved as a set of simultaneous differential~/~algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$, where $t$ is the time, $\vec{y}$ is the solution vector at time $t$, and $\vec{y}'$ is the solution vector derivative at time $t$. The solution vector, $\vec{y}$, solved by DASSL is
+Equations (\ref{eq1})~-~(\ref{bc}) are solved as a set of simultaneous differential~/~algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$, where $t$ is the time, $\vec{y}$ is the solution vector at time $t$, and $\vec{y}'$ is the solution vector derivative at time $t$. The solution vector, $\vec{y}$, solved by DASSL is
 \begin{center}
 \begin{tabular}{r l l}
 $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compartment)  \\
@@ -1122,7 +1120,7 @@ $\chi_{\rm r}$      & radiative fraction, dimensionless \\
 \chapter{Modeling Equation Derivations}
 \label{chap:derivation}
 
-For convenience, Eq. \ref{eq:first_law} (conservation of energy) and Eq. \ref{EoS} (ideal gas law) from Section \ref{sect:equations} used in the following derivations are re-written here:
+For convenience, Eq. (\ref{eq:first_law}) (conservation of energy) and Eq. (\ref{EoS}) (ideal gas law) from Section \ref{sect:equations} used in the following derivations are re-written here:
 \be
    \ddt\left(\cv \mi \Ti\right)   =  \dqi - P \dbydt{\Vi}\label{eq:afirst_law}
 \ee
@@ -1133,16 +1131,16 @@ For convenience, Eq. \ref{eq:first_law} (conservation of energy) and Eq. \ref{Eo
 \section{Pressure Equation}
 
 
-To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer to obtain
+To derive a differential equation for compartment pressure, rewrite Eq. (\ref{eq:afirst_law}) for the upper and lower layer to obtain
 \begin{eqnarray}
    \cv\ddt\left( \ml \Tl\right)  &=  &\dql - P \dbydt{\Vl}\label{eq:lower}\\[.1in]
    \cv\ddt\left( \mmu \Tu\right)  &=  &\dqu -  P \dbydt{\Vu}\label{eq:upper}
 \end{eqnarray}
-From Eq. \ref{eq:ideal_gas_law}
+From Eq. (\ref{eq:ideal_gas_law})
 \begin{equation}
 \ml \Tl+\mmu \Tu=P\Vl/R+P\Vu/R=PV/R
 \end{equation}
-therefore summing Eqs. \ref{eq:lower} and \ref{eq:upper} gives
+Therefore summing Eqs. (\ref{eq:lower}) and (\ref{eq:upper}) gives
 \be
    \frac{c_v \, V}{R}\dbydt{P}  =  \dql + \dqu
 \ee
@@ -1155,12 +1153,12 @@ the pressure differential equation.
 
 \section{Upper Layer Volume Equation}
 
-To derive the upper layer volume differential equation, first note from Eq. \ref{eq:ideal_gas_law} and the definition of $\gamma$ that
+To derive the upper layer volume differential equation, first note from Eq. (\ref{eq:ideal_gas_law}) that
 \begin{equation}
 c_v \mmu\Tu= c_v \Vu \frac{P}{R} = \frac{c_v}{c_p-c_v}\Vu P=\frac{1}{\gamma-1}\Vu P
 \label{eq:vua}
 \end{equation}
-Substituting Eq. \ref{eq:vua} into the upper layer form of Eq. \ref{eq:afirst_law} (${\rm i}={\rm u}$) gives
+Substituting Eq. (\ref{eq:vua}) into the upper layer form of Eq. (\ref{eq:afirst_law}) (${\rm i}={\rm u}$) gives
 \begin{eqnarray}
 \dqu&=&\frac{1}{\gamma-1}\ddt\left(\Vu P\right) + P\dbydt{\Vu}\\[.1in]
 &=&\frac{1}{\gamma-1}\left(P\dbydt{\Vu} + \Vu\dbydt{P}\right) + P\dbydt{\Vu}\\[.1in]
@@ -1184,18 +1182,18 @@ To derive the upper layer temperature differential equation note that
 \begin{equation}
 \ddt(c_v \mmu\Tu)=c_v \dmu\Tu+ c_v \mmu\dbydt{\Tu}
 \end{equation}
-and from Eq. \ref{eq:ODE_VU} that
+and from Eq. (\ref{eq:ODE_VU}) that
 \begin{equation}
 P\dbydt{Vu} = \frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}
 \label{eq:pvu}
 \end{equation}
-Substituting these two expressions into the upper layer form of Eq. \ref{eq:afirst_law} (again $i=u$) gives
+Substituting these two expressions into the upper layer form of Eq. (\ref{eq:afirst_law}) (again $i=u$) gives
 \begin{eqnarray}
    \ddt\left(c_v \mmu \Tu\right) +  P \dbydt{\Vu} &=  &\dqu\\[.1in]
 c_v \dmu\Tu+c_v \mmu\dbydt{\Tu}+\frac{\gamma-1}{\gamma} \dqu - \frac{\Vu}{\gamma}\dbydt{P}&=&\dqu
 \label{eq:tua}
 \end{eqnarray}
-Multiplying Eq. \ref{eq:tua} by $\gamma$ gives
+Multiplying Eq. (\ref{eq:tua}) by $\gamma$ gives
 \begin{equation}
 \cp\dmu\Tu+\cp \mmu\dbydt{\Tu} - \Vu\dbydt{P}=\dqu
 \end{equation}

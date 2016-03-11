@@ -1133,20 +1133,20 @@ For convenience, Eq. \ref{eq:first_law} (conservation of energy) and Eq. \ref{Eo
 \section{Pressure Equation}
 
 
-To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer
+To derive a differential equation for compartment pressure, rewrite Eq. \ref{eq:afirst_law} for the upper and lower layer to obtain
 \begin{eqnarray}
    \cv\ddt\left( \ml \Tl\right)  &=  &\dql - P \dbydt{\Vl}\label{eq:lower}\\[.1in]
    \cv\ddt\left( \mmu \Tu\right)  &=  &\dqu -  P \dbydt{\Vu}\label{eq:upper}
 \end{eqnarray}
-Summing Eqs. \ref{eq:lower} and \ref{eq:upper}, after noting that $\dbydt{\Vl}=-\dbydt{\Vu}$ since $\ddt(\Vl+\Vu)=dV/dt=0$, gives
+From Eq. \ref{eq:ideal_gas_law}
 \begin{equation}
-   c_v \ddt\left( \ml \Tl+\mmu \Tu\right)  =  \dql + \dqu
+\ml \Tl+\mmu \Tu=P\Vl/R+P\Vu/R=PV/R
 \end{equation}
-which simplifies to
+therefore summing Eqs. \ref{eq:lower} and \ref{eq:upper} gives
 \be
    \frac{c_v \, V}{R}\dbydt{P}  =  \dql + \dqu
 \ee
-after assuming that $\ml \Tl/\Vl=\mmu \Tu/\Vu = P/R$ (product of temperature and density for upper and lower layer assumed to be the same). Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
+since $\dbydt{\Vu}=-\dbydt{\Vl}$.  Finally $R/c_v=\gamma-1$ since $R=c_p-c_v$ and $\gamma=c_p/c_v$ giving
 \begin{eqnarray}
    \dbydt{ P}  &=  &\frac{\gamma-1}{V}\left(\dql + \dqu\right)
    \label{eq:ODE_P}

@@ -292,9 +292,11 @@ The temperature within a solid of density, $\rho$, specific heat, $c$, and therm
 
 \section{Solution of the Equations}
 
-CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$ (at the surface only). As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
+CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$ (at the surface only).
+DASSL solves these equations by putting them into the form of a root finding problem, $F\brackets{t,\vec{y},\vec{y}'}=0$, where $t$ is the time, 
+$\vec{y}$ is the solution vector and $\vec{y}'$ is the solution vector derivative at time $t$. 
 
-Equations (\ref{eq1})~-~(\ref{bc}) are solved as a set of simultaneous differential~/~algebraic equations of the form $F\brackets{t,\vec{y},\vec{y}'}=0$, where $t$ is the time, $\vec{y}$ is the solution vector at time $t$, and $\vec{y}'$ is the solution vector derivative at time $t$. The solution vector, $\vec{y}$, solved by DASSL is
+The solution vector, $\vec{y}$  is
 \begin{center}
 \begin{tabular}{r l l}
 $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each compartment)  \\
@@ -304,7 +306,36 @@ $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & (pressures for each 
                &  $T_{w_1}, T_{w_2}, ..., T_{w_{k-1}}, T_{w_k} )$ & (temperatures on each surface of each compartment) \\
 \end{tabular}
 \end{center}
-where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).  In the simplest case, all temperatures are initialized to ambient, all (over) pressures are initialized to zero, and $\vec{y}'$ is zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL. At each time step, the solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$, CFAST calculates an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within a specified tolerance~\cite{DASSL:1982,DASSL:1989}.
+where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).  
+The vector, $\vec{y}'$ is defined analogously.  
+
+In the simplest case, all temperatures are initialized to ambient, all (over) pressures are initialized to zero, and the derivative components of$\vec{y}'$ are zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL.
+
+The function $F$ is arranged analogously to $\vec{y}$ and $\vec{y}'$. The first $n$ components correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Vu/dt$ differential equations and so on.  Each component of $F$ is a residual which DASSL drives to zero during the solution process.  For example if $dP_1/dt$ (differential equation for pressure in the first compartment) is computed using Eq. (\ref{eq1}), then $F_1(t,y,y')$ is given by the difference $\vec{y}'_1$ (estimated provided by DASSL) and the $dP/dt$ term computed from Eq. (\ref{eq1}) and DASSL supplied estimates for $\vec{y}$   or equivalently
+
+\begin{equation}
+F_1(t,\vec{y},\vec{y}')=\vec{y}'_1 - dP_1/dt
+\end{equation}
+
+A more complete definition of $F$ is given by
+
+
+
+
+One step of the solution process then is to advance the solution from $t_n$ to $t_{n+1}$ {\em i.e.}\ to find the solution of $F(t_{n+1},\vec{y}_{n+1},\vec{y}'_{n+1})=0$ given that the solution for
+$F(t_{n},\vec{y}_{n},\vec{y}'_{n})=0$ is known.  
+
+A flowchart describing the solution procedure follows
+
+\begin{enumerate}
+\item Assume that $\vec{y}_n$ and $\vec{y}'_n$ are known at $t=t_n$
+\item For some $\Delta t$ guess values for $\vec{y}_{n+1}$ and $\vec{y}'_{n+1}$ at $t_{n+1}=t+\Delta t$
+\item Using the guessed solution, compute heat and mass flow terms and a new temperature profile $t=t_{n+1}$
+\end{enumerate}
+
+As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
+
+At each time step, the solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$, CFAST calculates an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL. DASSL uses an extension of Newton's method to approximate the derivatives using backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within a specified tolerance~\cite{DASSL:1982,DASSL:1989}.
 
 \section{Species Transport}
 

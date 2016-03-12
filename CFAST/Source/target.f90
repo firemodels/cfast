@@ -133,13 +133,11 @@ module target_routines
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
     real(eb) :: dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     real(eb) :: target_factors_front(10), target_factors_back(10)
-    integer :: map10(10), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
+    integer :: map10(10) = (/1,3,3,3,3,4,4,4,4,2/), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
     integer, parameter :: front=1, back=2
 
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
-
-    data map10/1,3,3,3,3,4,4,4,4,2/
 
     absu = 0.50_eb
     absl = 0.01_eb
@@ -223,7 +221,7 @@ module target_routines
             if(nfurn>0)then
                 qout=qfurnout
             else
-                qout = rdqout(map10(iwall),iroom)
+                qout = roomptr%rad_qout(map10(iwall))
             end if
             svect(1:3) = targptr%center(1:3) - roomptr%wall_center(1:3,iwall)
             s = dnrm2(3,svect,1)

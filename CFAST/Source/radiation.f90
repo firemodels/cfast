@@ -107,7 +107,7 @@ module radiation_routines
         rabsorb(2) = roomptr%absorb(l)
         call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-            qflxw,qlay,mxfire,taufl,taufu,firang,rdqout(1,i),black)
+            qflxw,qlay,mxfire,taufl,taufu,firang,roomptr%rad_qout,black)
         do j = 1, nwal
             flxrad(i,j) = qflxw(map(j))
         end do

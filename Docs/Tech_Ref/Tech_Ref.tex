@@ -292,14 +292,18 @@ The temperature within a solid of density, $\rho$, specific heat, $c$, and therm
 
 \section{Solution of the Equations}
 
-CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Vu$, $\Tu$, $\Tl$ and $\Tw$ (at the surface only).
-DASSL solves these equations by formulating them as a root finding problem, $F\brackets{t,\vec{y},\vec{y}'}=0$, where $t$ is the time,
-$\vec{y}$ is the solution vector and $\vec{y}'$ is the solution vector derivative at time $t$.
+CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Tu$, $\Vu$,  $\Tl$ and $\Tw$ (at the surface only).
+DASSL solves these equations by formulating them as a root finding problem
+\begin{equation}
+F\brackets{t,\vecy,\vecy'}=0
+\end{equation}
+where $t$ is the time,
+$\vecy$ is the solution vector and $\vecy'$ is the solution vector derivative at time $t$.
 
-The solution vector, $\vec{y}$  is defined as follows
+The solution vector, $\vecy$  is defined as follows
 \begin{center}
 \begin{tabular}{r l l}
-$\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & pressures for each compartment  \\
+$\boldsymbol{\vecy} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & pressures for each compartment  \\
                &  $T_{u_1}, T_{u_2}, ..., T_{u_{n-1}}, T_{u_n}$ & upper layer temperatures for each compartment  \\
                &  $V_{u_1}, V_{u_2}, ..., V_{u_{n-1}}, V_{u_n}$ & upper layer volumes for each compartment  \\
                &  $T_{l_1}, T_{l_2}, ..., T_{l_{n-1}}, T_{l_n}$ & lower layer temperatures for each compartment  \\
@@ -307,37 +311,41 @@ $\boldsymbol{\vec{y}} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & pressures for each c
 \end{tabular}
 \end{center}
 where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).
-The solution vector derivative, $\vec{y}'$ is defined analogously.
+The components of the solution vector derivative, $\vecy'$ are arranged analogously.
 
-In the simplest case, all temperatures are initialized to ambient, all (over) pressures are initialized to zero, and the derivative components of$\vec{y}'$ are zero. For more complex cases, an initial $\vec{y}$ and $\vec{y}'$ at $t=0$ is calculated and supplied to DASSL.
-
-The function $F$ is arranged analogously to $\vec{y}$ and $\vec{y}'$. The first $n$ components correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Vu/dt$ differential equations and so on.  Each $F$ component is a residual which DASSL drives to zero during the solution process.  For example if $dP_1/dt$ (differential equation for pressure in the first compartment) is computed using Eq. (\ref{eq1}), then  $F_1(t,\vec{y},\vec{y}')$ (first component of $F$) is given by the difference of $y'_1$ (estimate provided by DASSL) and the $dP/dt$ term computed from Eq. (\ref{eq1}) using $\vec{y}$ or equivalently
+The components of the residual function $F$ are also arranged analogously to $\vecy$ and $\vecy'$. The first $n$ components correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Tu/dt$ differential equations and so on.  Each component of $F$ is a residual which DASSL drives to zero.  For example if $dP_1/dt$, the differential equation for pressure in the first compartment, is computed using Eq. (\ref{eq1}), then  $F_1(t,\vecy,\vecy')$, the first component of $F$, is given by the difference between $y'_1$, the estimate of $dP_1/dt$ provided by DASSL, and the $dP_1/dt$ term computed from Eq. (\ref{eq1})  or equivalently
 
 \begin{equation}
-F_1(t,\vec{y},\vec{y}')=\vec{y}'_1 - dP_1/dt
+F_1(t,\vecy,\vecy')=\vecy'_1 - dP_1/dt
 \label{eq:Fp1}
 \end{equation}
-DASSL then determines values for $\vec{y}$ and $\vec{y}'$ so that Eq. (\ref{eq:Fp1}) along with all other components of $F$ sufficiently close to zero (according to a user defined error criteria).
+DASSL then determines values for $\vecy$ and $\vecy'$ so that Eq. (\ref{eq:Fp1}) along with all other components of $F$ are sufficiently close to zero as determined by a user defined error criteria.
 \renewcommand{\arraystretch}{1.5}
-A definition of $F$ for all components is given by
+The definition of $F$ for all components is given by
 \begin{equation}
-F_i(t,\vec{y},\vec{y}')=\left\{
+F_i(t,\vecy,\vecy')=\left\{
 \begin{array}{ll}
-  y'_i-\dbydt{P} & 1\le i \le n \\
-  y'_i-\dbydt{\Vu} & n+1\le i \le 2n \\
-  y'_i-\dbydt{\Tu} & 2n+1\le i \le 3 n \\
-  y'_i-\dbydt{\Tl} & 3n+1\le i \le 4n \\
-  q''(\vec{y})+\dbydt{\Tw}(0,t) & 4n+1\le i \le 4n +k 
+  y'_i-\dbydt{P_i} & 1\le i \le n \\
+  y'_i-\dbydt{T_{i,u}} & n+1\le i \le 2 n \\
+  y'_i-\dbydt{V_{i,u}} & 2n+1\le i \le 3n \\
+  y'_i-\dbydt{T_{i,l}} & 3n+1\le i \le 4n \\
+  q''(\vecy)+k\dbydx{\Tw}(0,t) & 4n+1\le i \le 4n +k
 \end{array}
 \right.\label{eq:resid}
 \end{equation}
 
+The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:
+\begin{equation}
+q''=k\dbydx{T}
+\end{equation}
 
+It is implemented as an algebraic equation by discretizing
+the spatial derivative term $\dbydx{\Tw}$ and evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using Eq. (\ref{eq:fourier}) and the temperature boundary condition $\dbydx{\Tw}(0,t)=T_w$ provided by DASSL in $\vecy$.
 
-
-One step of the solution process then is to advance the solution from $t_n$ to $t_{n+1}$ {\em i.e.}\ to find the solution of $F(t_{n+1},\vec{y}_{n+1},\vec{y}'_{n+1})=0$ given that the solution for
-$F(t_{n},\vec{y}_{n},\vec{y}'_{n})=0$ is known.
-The solver estimates values for $\vec{y}$ and $\vec{y}'$ at $t+\Delta t$. CFAST does this by calculating an actual $\vec{y}'$ from the estimated values of $\vec{y}$ and returns the difference between the estimated $\vec{y}'$ and calculated $\vec{y}'$ to DASSL using Eq. (\ref{eq:resid}). DASSL then advances the solution using an extension of Newton's method using derivatives that are approximated with backward differentiation formulae of orders one through five to solve for $\vec{y}$ and $\vec{y}'$ to within a specified tolerance~\cite{DASSL:1982,DASSL:1989}.
+One step in the solution process then is to advance the solution from $t_n$ to $t_{n+1}$ {\em i.e.}\ to find the solution of $F(t_{n+1},\vecy_{n+1},\vecy'_{n+1})=0$ given that the solution for
+$F(t_{n},\vecy_{n},\vecy'_{n})=0$ is known.
+The solver estimates values for $\vecy$ and $\vecy'$ at $t+\Delta t$. CFAST does this by calculating an actual $\vecy'$ from the estimated values of $\vecy$ and returns the difference between the estimated $\vecy'$ and calculated $\vecy'$ to DASSL using Eq. (\ref{eq:resid}). DASSL then advances the solution using an extension of Newton's method using derivatives that are approximated with backward differentiation formulae of orders one through five to solve for $\vecy$ and $\vecy'$ to within a specified tolerance~\cite{DASSL:1982,DASSL:1989}.
+To start the solution process, all temperatures are initialized to ambient, all (over) pressures are initialized to zero, and the derivative components of $\vecy'$ are set to zero. For more complex cases, an initial $\vecy$ and $\vecy'$ at $t=0$ is calculated and supplied to DASSL.
 
 
 As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
@@ -345,9 +353,28 @@ As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations a
 A flowchart describing the solution procedure follows
 
 \begin{enumerate}
-\item Assume that $\vec{y}_n$ and $\vec{y}'_n$ are known at $t=t_n$
-\item For some $\Delta t$ guess values for $\vec{y}_{n+1}$ and $\vec{y}'_{n+1}$ at $t_{n+1}=t+\Delta t$
-\item Using the guessed solution, compute heat and mass flow terms and a new temperature profile $t=t_{n+1}$
+\item Assume that $\vecy_n$ and $\vecy'_n$ are known at $t=t_n$
+\item For some $\Delta t$ guess values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}=t+\Delta t$
+\label{step:init}
+\item Using the guessed solution $\vecy_{n+1}$, compute mass flow rates: $\dml$ and $\dmu$ and heat flow rates: $\dql$ and $\dqu$ for each compartment
+\label{step:flow}
+\item Using the guessed solution $\vecy_{n+1}$ provided by DASSL and the mass and heat flow rate terms computed in step \ref{step:flow}, compute
+the right hands side of Eqs. (\ref{eq1}) through (\ref{eq4}).  Denote these computations $\hat{\vecy}'$
+\label{step:rhs}
+\item Compute the gas equation residuals, $\vecy'_{n+1}-\hat{\vecy}'_{n+1}$, using $\vecy'_{n+1}$ given in step \ref{step:init} and $\hat{\vecy}'_{n+1}$
+computed in step \ref{step:rhs}.
+\label{step:residode}
+\item Compute the Fourier law residual (last row of Eq. (\ref{eq:resid}))
+\label{step:residfourier}
+\begin{enumerate}
+\item Using the surface temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fourier})
+\label{step:profile}
+\item Compute the temperature gradient $\dbydx{\Tw}$ at the wall surface using the temperature profile computed in step \ref{step:profile}
+\label{step:gradient}
+\item Compute the residual $q''+k\dbydx{\Tw}$ using heat flow rates computed in step \ref{step:flow} and temperature gradient computed in step \ref{step:gradient}
+\end{enumerate}
+\item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small (according to a user specified error tolerance)?
+
 \end{enumerate}
 
 

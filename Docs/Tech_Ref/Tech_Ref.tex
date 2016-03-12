@@ -282,7 +282,7 @@ A system of ordinary differential equations for the compartment pressure, upper 
 \end{eqnarray}
 These equations are supplemented by four partial differential equations per compartment governing the temperature in depth of the ceiling, upper wall, lower wall, and floor, which for the sake of brevity will be referred to collectively as $\Tw(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The gas and solid phase temperature solutions are linked via the boundary condition:
 \be
-   \dq'' = -k \, \frac{\partial \Tw(0,t)}{\partial x}   \label{bc}
+   \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x}=0   \label{bc}
 \ee
 where $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term).
 The temperature within a solid of density, $\rho$, specific heat, $c$, and thermal conductivity, $k$, then evolves using this boundary condition according to the heat conduction equation:
@@ -292,14 +292,22 @@ The temperature within a solid of density, $\rho$, specific heat, $c$, and therm
 
 \section{Solution of the Equations}
 
+\renewcommand{\arraystretch}{1.5}
 CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Tu$, $\Vu$,  $\Tl$ and $\Tw$ (at the surface only).
-DASSL solves these equations by formulating them as a root finding problem
+DASSL solves these equations by formulating a root finding problem
 \begin{equation}
 F\brackets{t,\vecy,\vecy'}=0
 \end{equation}
-where $t$ is the time,
-$\vecy$ is the solution vector and $\vecy'$ is the solution vector derivative at time $t$.
-
+where $F$ is formulated as
+\begin{equation}
+F(t,\vecy,\vecy')=\left\{
+\begin{array}{ll}
+  \vecy'-f(t,\vecy) & {\rm gas~ode's} \\
+  \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
+\end{array}
+\right.\label{eq:resid}
+\end{equation}
+$t$ is the time, $\vecy$ is the solution vector and $\vecy'$ is the solution vector derivative at time $t$.
 The solution vector, $\vecy$  is defined as follows
 \begin{center}
 \begin{tabular}{r l l}
@@ -311,16 +319,14 @@ $\boldsymbol{\vecy} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & pressures for each com
 \end{tabular}
 \end{center}
 where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).
-The components of the solution vector derivative, $\vecy'$ are arranged analogously.
-
-The components of the residual function $F$ are also arranged analogously to $\vecy$ and $\vecy'$. The first $n$ components correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Tu/dt$ differential equations and so on.  Each component of $F$ is a residual which DASSL drives to zero.  For example if $dP_1/dt$, the differential equation for pressure in the first compartment, is computed using Eq. (\ref{eq1}), then  $F_1(t,\vecy,\vecy')$, the first component of $F$, is given by the difference between $y'_1$, the estimate of $dP_1/dt$ provided by DASSL, and the $dP_1/dt$ term computed from Eq. (\ref{eq1})  or equivalently
+The components of $\vecy'$ and the residual function $F$ are arranged analogously.  The first $n$ components of $F$ correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Tu/dt$ differential equations and so on.  Each component of $F$ is a residual which DASSL drives to zero.  For example if $dP_1/dt$, the differential equation for pressure in the first compartment, is computed using Eq. (\ref{eq1}), then  $F_1(t,\vecy,\vecy')$, the first component of $F$, is given by the difference between $y'_1$, the estimate of $dP_1/dt$ provided by DASSL, and the $dP_1/dt$ term computed from Eq. (\ref{eq1})  or equivalently
 
 \begin{equation}
 F_1(t,\vecy,\vecy')=\vecy'_1 - dP_1/dt
 \label{eq:Fp1}
 \end{equation}
 DASSL then determines values for $\vecy$ and $\vecy'$ so that Eq. (\ref{eq:Fp1}) along with all other components of $F$ are sufficiently close to zero as determined by a user defined error criteria.
-\renewcommand{\arraystretch}{1.5}
+
 The definition of $F$ for all components is given by
 \begin{equation}
 F_i(t,\vecy,\vecy')=\left\{

@@ -47,7 +47,7 @@ module cfast_types
         real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
         real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
         
-        ! compartment surfaces
+        ! compartment surfaces 
 
         ! result values for the compartment
         real(eb) :: relp                                ! pressure at floor level relative to exterior
@@ -67,6 +67,7 @@ module cfast_types
         
         real(eb), dimension(nwal,2) :: wall_temp        ! compartment surface temperatures (interior, exterior)
         real(eb), dimension(4) :: wall_area4            ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
+        real(eb), dimension(4) :: rad_qout              ! flux radiated from the four surfaces of the compartments
         real(eb), dimension(10) :: wall_area10          ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
         
     end type room_type

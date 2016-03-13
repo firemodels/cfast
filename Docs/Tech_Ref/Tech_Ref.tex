@@ -248,7 +248,7 @@ The exchange of mass and energy or heat between zones is due to physical phenome
 \section{Modeling Equations}
 \label{sect:equations}
 
-It is assumed that each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. It is also assumed that all thermodynamic parameters are constant. The specific heat at constant volume and at constant pressure, $\cv$ and $\cp$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = \cp / \cv$ and $R = \cp- \cv$. Regardless of the composition of the gas mixture, $\cp = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
+Each compartment is divided into two control volumes or zones, a relatively hot upper layer and a relatively cool lower layer, as illustrated in Fig.~\ref{fig:Control_Volumes}. The gas temperature and density are assumed constant in each layer. The compartment as a whole is assumed to have a single value of pressure, $P$. All thermodynamic parameters are are assumed to be constant. The specific heat at constant volume and at constant pressure, $\cv$ and $\cp$, the specific\footnote{The specific gas constant is the universal gas constant divided by the molar mass of the gas mixture. In CFAST, it is assumed that the molar mass of the mixture is that of air; thus, the specific gas constant is indeed constant.} gas constant, $R$, and the ratio of specific heats, $\gamma$, are related by $\gamma = \cp / \cv$ and $R = \cp- \cv$. Regardless of the composition of the gas mixture, $\cp = 1012$~J/(kg$\cdot$K) and $\gamma = 1.4$; thus,
 \be
    R = \frac{\gamma-1}{\gamma} \, \cp \approx 289.14 \; \frac{{\rm J}}{{\rm kg} \cdot {\rm K}}
 \ee
@@ -280,25 +280,35 @@ A system of ordinary differential equations for the compartment pressure, upper 
 \dbydt{\Tu} &=& \frac{1}{\cp \, m_{\rm u}} \left( \dqu - \cp \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3} \\[.1in]
 \dbydt{\Tl} &=& \frac{1}{\cp \, m_{\rm l}} \left( \dql - \cp \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4}
 \end{eqnarray}
-These equations are supplemented by four partial differential equations per compartment governing the temperature in depth of the ceiling, upper wall, lower wall, and floor, which for the sake of brevity will be referred to collectively as $\Tw(x,t)$. The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The gas and solid phase temperature solutions are linked via the boundary condition:
+
+An algebraic equation for each wall surface temperature (ceiling, upper wall, lower wall and floor) is also solved:
 \be
    \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x}=0   \label{bc}
 \ee
-where $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term).
-The temperature within a solid of density, $\rho$, specific heat, $c$, and thermal conductivity, $k$, then evolves using this boundary condition according to the heat conduction equation:
-\be
-   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}
-\ee
 
-\section{Solution of the Equations}
+\noindent where $T_w=\Tw(0,t)$ is the wall surface temperature, $\dq''$ is the net radiative and convective heat flux from the adjacent gas layer (see Chapter~\ref{chap:heat_transfer} for a description of the heat flux term)
+and for brevity the temperature wall profiles are referred to collectively as $\Tw(x,t)$.
+The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface.
+
+The unknown surface wall temperatures, $T_w$ (and solutions variables for the gas layers) are iterated until the $\dq''$ flux term from the gas layers matches the temperature gradient
+ $\partial\Tw(0,t)/\partial{\rm x}$ at the wall surface according to Eq. (\ref{bc}).  The temperature gradient for each iteration is determined by advancing the known temperature profile from some previous time $t_{\rm old}$ to the current time $t$ using the heat conduction equation:
+\begin{eqnarray}
+   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}\\
+\Tw(0,t_{\rm old})&=&T_w
+\end{eqnarray}
+
+\noindent where the iterated surface wall temperature, $T_w$ is a boundary condition, 
+and $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material.
+
+\section{Solution Procedure}
 
 \renewcommand{\arraystretch}{1.5}
-CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Tu$, $\Vu$,  $\Tl$ and $\Tw$ (at the surface only).
+CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to solve the differential equations Eqs. (\ref{eq1}) through (\ref{eq4}) and the algebraic equation (once it is discretized) Eq. (\ref{bc}) for $P$, $\Tu$, $\Vu$,  $\Tl$ and $T_w$.
 DASSL solves these equations by formulating a root finding problem
 \begin{equation}
 F\brackets{t,\vecy,\vecy'}=0
 \end{equation}
-where $F$ is formulated as
+where $F$ is given by
 \begin{equation}
 F(t,\vecy,\vecy')=\left\{
 \begin{array}{ll}
@@ -307,7 +317,7 @@ F(t,\vecy,\vecy')=\left\{
 \end{array}
 \right.\label{eq:resid}
 \end{equation}
-$t$ is the time, $\vecy$ is the solution vector and $\vecy'$ is the solution vector derivative at time $t$.
+and where $f$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time, $\vecy$ is the solution vector and $\vecy'$ is the solution vector derivative at time $t$.
 The solution vector, $\vecy$  is defined as follows
 \begin{center}
 \begin{tabular}{r l l}
@@ -327,7 +337,7 @@ F_1(t,\vecy,\vecy')=\vecy'_1 - dP_1/dt
 \end{equation}
 DASSL then determines values for $\vecy$ and $\vecy'$ so that Eq. (\ref{eq:Fp1}) along with all other components of $F$ are sufficiently close to zero as determined by a user defined error criteria.
 
-The definition of $F$ for all components is given by
+In more detail, $F$ for all components is given by
 \begin{equation}
 F_i(t,\vecy,\vecy')=\left\{
 \begin{array}{ll}
@@ -340,13 +350,13 @@ F_i(t,\vecy,\vecy')=\left\{
 \right.\label{eq:resid}
 \end{equation}
 
-The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:
+The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid phase.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:
 \begin{equation}
 q''=k\dbydx{T}
 \end{equation}
 
 It is implemented as an algebraic equation by discretizing
-the spatial derivative term $\dbydx{\Tw}$ and evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using Eq. (\ref{eq:fourier}) and the temperature boundary condition $\dbydx{\Tw}(0,t)=T_w$ provided by DASSL in $\vecy$.
+the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using Eq. (\ref{eq:fourier}) and the temperature boundary condition $\dbydx{\Tw}(0,t)=T_w$ provided by DASSL in $\vecy$.
 
 One step in the solution process then is to advance the solution from $t_n$ to $t_{n+1}$ {\em i.e.}\ to find the solution of $F(t_{n+1},\vecy_{n+1},\vecy'_{n+1})=0$ given that the solution for
 $F(t_{n},\vecy_{n},\vecy'_{n})=0$ is known.
@@ -356,31 +366,33 @@ To start the solution process, all temperatures are initialized to ambient, all 
 
 As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
 
-A flowchart describing the solution procedure follows
+An outline of the solution procedure is as follows:
 
 \begin{enumerate}
-\item Assume that $\vecy_n$ and $\vecy'_n$ are known at $t=t_n$
+\item Assume that $\vecy_n$ and $\vecy'_n$ are known at $t=t_n$\
+\label{step:first}
 \item For some $\Delta t$ guess values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}=t+\Delta t$
+\label{step:second}
 \label{step:init}
-\item Using the guessed solution $\vecy_{n+1}$, compute mass flow rates: $\dml$ and $\dmu$ and heat flow rates: $\dql$ and $\dqu$ for each compartment
+\item Using the guessed solution $\vecy_{n+1}$, compute mass flow rates: $\dml$ and $\dmu$ and heat flow rates: $\dql$ and $\dqu$
 \label{step:flow}
-\item Using the guessed solution $\vecy_{n+1}$ provided by DASSL and the mass and heat flow rate terms computed in step \ref{step:flow}, compute
+\item Using the guessed solution $\vecy_{n+1}$ and the mass and heat flow rates computed in step \ref{step:flow}, compute
 the right hands side of Eqs. (\ref{eq1}) through (\ref{eq4}).  Denote these computations $\hat{\vecy}'$
 \label{step:rhs}
 \item Compute the gas equation residuals, $\vecy'_{n+1}-\hat{\vecy}'_{n+1}$, using $\vecy'_{n+1}$ given in step \ref{step:init} and $\hat{\vecy}'_{n+1}$
 computed in step \ref{step:rhs}.
 \label{step:residode}
-\item Compute the Fourier law residual (last row of Eq. (\ref{eq:resid}))
+\item Compute the tempeature gradient residual (last row of Eq. (\ref{eq:resid})):
 \label{step:residfourier}
 \begin{enumerate}
 \item Using the surface temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fourier})
 \label{step:profile}
-\item Compute the temperature gradient $\dbydx{\Tw}$ at the wall surface using the temperature profile computed in step \ref{step:profile}
+\item Compute the temperature gradient, $\partial\Tw/\partial x(0,t_{n+1})$, at the wall surface using the temperature profile computed in step \ref{step:profile}
 \label{step:gradient}
-\item Compute the residual $q''+k\dbydx{\Tw}$ using heat flow rates computed in step \ref{step:flow} and temperature gradient computed in step \ref{step:gradient}
+\item Compute the residual $q''+k\dbydx{\Tw}$ using heat flow rates computed in step \ref{step:flow} and temperature gradients computed in step \ref{step:gradient}
 \end{enumerate}
-\item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small (according to a user specified error tolerance)?
-
+\item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small according to a specified error tolerance?
+If yes, advance $n$ and go to step \ref{step:first} to compute a solution at the next time step.  If no, go to step \ref{step:second} and iterate again.
 \end{enumerate}
 
 

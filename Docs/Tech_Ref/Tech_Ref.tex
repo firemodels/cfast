@@ -291,7 +291,7 @@ and for brevity the temperature wall profiles are referred to collectively as $\
 The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq. (\ref{bc}) is evaluated by advancing a known temperature profile from $t_{\rm old}$ to $t$ using the heat conduction equation
 
 \begin{equation}
-   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}
+   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier1}
 \end{equation}
 with a constant temperature boundary condition
 \begin{equation}
@@ -337,7 +337,7 @@ through five~\cite{DASSL:1982,DASSL:1989}.
 The unknown wall surface temperatures, $T_{\rm w}$ are iterated until the $\dq''$ flux term from the gas layers matches the temperature gradient
  $\partial\Tw(0,t)/\partial{\rm x}$ at the wall surface according to Eq. (\ref{bc}).  The $\partial\Tw(0,t)/\partial{\rm x}$ term is determined by advancing the temperature profile from $t_{n}$ to $t_{n+1}$ using a value of $T_{\rm w}$ supplied by DASSL as a boundary condition for the heat conduction problem:
 \begin{eqnarray}
-   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}\\
+   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier2}\\
 \Tw(0,t)&=&T_{\rm w}
 \end{eqnarray}
 
@@ -1282,7 +1282,7 @@ where $\vecF$ is given by
   \vecy'-f(t,\vecy) & {\rm gas~ode's} \\
   \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
 \end{array}
-\right.\label{eq:resid}
+\right.\label{eq:resid1}
 \end{equation}
 and where $\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time,
 $\vecy$ is the solution vector containing pressures, upper layer volumes, layer temperatures and wall surface temperatures  and $\vecy'$ is the solution vector derivative of these quantities at time $t$.
@@ -1315,7 +1315,7 @@ F_i(t,\vecy,\vecy')=\left\{
   y'_i-\dbydt{T_{i,l}} & 3n+1\le i \le 4n \\
   q''(\vecy)+k\dbydx{\Tw}(0,t) & 4n+1\le i \le 4n +k
 \end{array}
-\right.\label{eq:resid}
+\right.\label{eq:resid2}
 \end{equation}
 
 The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid phase.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:

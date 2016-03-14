@@ -291,7 +291,7 @@ and for brevity the temperature wall profiles are referred to collectively as $\
 The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq. (\ref{bc}) is evaluated by advancing a known temperature profile from $t_{\rm old}$ to $t$ using the heat conduction equation
 
 \begin{equation}
-   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}
+   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} 
 \end{equation}
 with a constant temperature boundary condition
 \begin{equation}
@@ -317,7 +317,7 @@ where $\vecF$ is a vector valued function of residuals given by
   \vecy'-\mathbf{f}(t,\vecy) & {\rm gas~ode's} \\
   \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
 \end{array}
-\right.\label{eq:resida}
+\right.
 \end{equation}
 and where $\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time,
 $\vecy$ is the solution vector containing the quantities $P$, $\Tu$, $\Vu$,  $\Tl$ and $T_{\rm w}$  at time $t$ and $\vecy'$ is the derivative of these quantities at time $t$.
@@ -1282,7 +1282,7 @@ where $\vecF$ is given by
   \vecy'-f(t,\vecy) & {\rm gas~ode's} \\
   \dq'' +k \, \frac{\partial \Tw(0,t)}{\partial x} & {\rm gas/solid~constraint}
 \end{array}
-\right.\label{eq:resid}
+\right.
 \end{equation}
 and where $\mathbf{f}$ is the right hand side of Eqs. (\ref{eq1}) through (\ref{eq4}), $t$ is the time,
 $\vecy$ is the solution vector containing pressures, upper layer volumes, layer temperatures and wall surface temperatures  and $\vecy'$ is the solution vector derivative of these quantities at time $t$.
@@ -1324,8 +1324,12 @@ q''=-k\dbydx{T}
 \end{equation}
 
 It is implemented as an algebraic equation by discretizing
-the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using Eq. (\ref{eq:fourier}) and the temperature boundary condition $\dbydx{\Tw}(0,t)=T_{\rm w}$ provided by DASSL in the solution vector $\vecy$.
+the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using the heat conduction equation
+\begin{eqnarray}
+   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fouriera}
+\end{eqnarray}
 
+\noindent and the boundary condition $\Tw(0,t)=T_{\rm w}$ at the surface provided by DASSL.
 An outline of the solution procedure is as follows:
 
 \begin{enumerate}
@@ -1345,7 +1349,7 @@ computed in step \ref{step:rhs}.
 \item Compute the temperature gradient residual (last row of Eq. (\ref{eq:resid})):
 \label{step:residfourier}
 \begin{enumerate}
-\item Using the surface wall temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fourier})
+\item Using the surface wall temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fouriera})
 \label{step:profile}
 \item Compute the temperature gradient, $\partial\Tw/\partial x(0,t_{n+1})$, at the wall surface using the temperature profile computed in step \ref{step:profile}
 \label{step:gradient}

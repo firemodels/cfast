@@ -291,7 +291,7 @@ and for brevity the temperature wall profiles are referred to collectively as $\
 The spatial coordinate $x$ refers to the depth inside the wall; $x=0$ is the wall surface. The temperature gradient in Eq. (\ref{bc}) is evaluated by advancing a known temperature profile from $t_{\rm old}$ to $t$ using the heat conduction equation
 
 \begin{equation}
-   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} 
+   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2}
 \end{equation}
 with a constant temperature boundary condition
 \begin{equation}
@@ -1346,7 +1346,7 @@ the right hands side of Eqs. (\ref{eq1}) through (\ref{eq4}).  Denote these comp
 \item Compute the gas equation residuals, $\vecy'_{n+1}-\hat{\vecy}'_{n+1}$, using $\vecy'_{n+1}$ given in step \ref{step:init} and $\hat{\vecy}'_{n+1}$
 computed in step \ref{step:rhs}.
 \label{step:residode}
-\item Compute the temperature gradient residual (last row of Eq. (\ref{eq:resid})):
+\item Compute the temperature gradient residual (last row of Eq. (\ref{eq:resid2})):
 \label{step:residfourier}
 \begin{enumerate}
 \item Using the surface wall temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fouriera})

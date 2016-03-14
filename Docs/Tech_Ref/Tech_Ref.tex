@@ -337,7 +337,7 @@ through five~\cite{DASSL:1982,DASSL:1989}.
 The unknown wall surface temperatures, $T_{\rm w}$ are iterated until the $\dq''$ flux term from the gas layers matches the temperature gradient
  $\partial\Tw(0,t)/\partial{\rm x}$ at the wall surface according to Eq. (\ref{bc}).  The $\partial\Tw(0,t)/\partial{\rm x}$ term is determined by advancing the temperature profile from $t_{n}$ to $t_{n+1}$ using a value of $T_{\rm w}$ supplied by DASSL as a boundary condition for the heat conduction problem:
 \begin{eqnarray}
-   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier}\\
+   \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourier2}\\
 \Tw(0,t)&=&T_{\rm w}
 \end{eqnarray}
 
@@ -1315,7 +1315,7 @@ F_i(t,\vecy,\vecy')=\left\{
   y'_i-\dbydt{T_{i,l}} & 3n+1\le i \le 4n \\
   q''(\vecy)+k\dbydx{\Tw}(0,t) & 4n+1\le i \le 4n +k
 \end{array}
-\right.\label{eq:resid}
+\right.\label{eq:resid2}
 \end{equation}
 
 The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid phase.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:

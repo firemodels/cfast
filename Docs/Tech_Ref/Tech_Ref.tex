@@ -327,9 +327,9 @@ To start the solution process, all temperatures are initialized to ambient, all 
 One step in the solution process then is to advance the solution from $t_n$ to $t_{n+1}$ {\em i.e.}\ to find the solution of $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})=0$ given that the solution for
 $\vecF(t_{n},\vecy_{n},\vecy'_{n})=0$ is known.
 The solver estimates values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}$. CFAST uses this information to
-compute the residual $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})$.  
+compute the residual $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})$.
 Based upon these residual values, DASSL generates new values of $\vecy_{n+1}$ and $\vecy'_{n+1}$ until $\vecF(t_{n+1},\vecy_{n+1},\vecy'_{n+1})$ is zero
-within a specified tolerance. 
+within a specified tolerance.
 DASSL performs these iterations using an extension of
 Newton's method using derivatives that are approximated with backward differentiation formulae of orders one
 through five~\cite{DASSL:1982,DASSL:1989}.
@@ -905,7 +905,7 @@ Wall and target temperature profiles are advanced in time using the heat equatio
 The heat conduction equation normal to the solid surface is:
 \be \frac{\partial T}{\partial t} = \frac{k}{\rho c}\frac{\partial^2 T}{\partial x^2}
 \label{eq:Target_PDE} \ee
-where $k$, $\rho$ and $c$ are the thermal conductivity, density and heat capacity of the target or wall material. The boundary condition used at the wall surface is :
+where $k$, $\rho$ and $c$ are the thermal conductivity, density and heat capacity of the target or wall material. The boundary condition used at the front wall surface is :
 \be
    \Tw(0,t)=T_{\rm w}
 \ee
@@ -1320,16 +1320,16 @@ F_i(t,\vecy,\vecy')=\left\{
 
 The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas with the solid phase.  It does this by requiring that the convective and radiative flux , $q''(\vecy)$, striking the wall surface  be consistent with the temperature gradient, $\dbydx{\Tw}(0,t)$, at that surface according to Fourier's law:
 \begin{equation}
-q''=k\dbydx{T}
+q''=-k\dbydx{T}
 \end{equation}
 
 It is implemented as an algebraic equation by discretizing
-the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using Eq. (\ref{eq:fourier}) and the temperature boundary condition $\dbydx{\Tw}(0,t)=T_{\rm w}$ provided by DASSL in $\vecy$.
+the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using Eq. (\ref{eq:fourier}) and the temperature boundary condition $\dbydx{\Tw}(0,t)=T_{\rm w}$ provided by DASSL in the solution vector $\vecy$.
 
 An outline of the solution procedure is as follows:
 
 \begin{enumerate}
-\item Assume that $\vecy_n$ and $\vecy'_n$ are known at $t=t_n$\
+\item Assume that $\vecy_n$ and $\vecy'_n$ are known at time $t=t_n$\
 \label{step:first}
 \item For some $\Delta t$ guess values for $\vecy_{n+1}$ and $\vecy'_{n+1}$ at $t_{n+1}=t+\Delta t$
 \label{step:second}
@@ -1345,7 +1345,7 @@ computed in step \ref{step:rhs}.
 \item Compute the temperature gradient residual (last row of Eq. (\ref{eq:resid})):
 \label{step:residfourier}
 \begin{enumerate}
-\item Using the surface temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fourier})
+\item Using the surface wall temperature found in $\vecy_{n+1}$ as a boundary condition, advance the temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq. (\ref{eq:fourier})
 \label{step:profile}
 \item Compute the temperature gradient, $\partial\Tw/\partial x(0,t_{n+1})$, at the wall surface using the temperature profile computed in step \ref{step:profile}
 \label{step:gradient}

@@ -1297,7 +1297,7 @@ $\boldsymbol{\vecy} =$& $(P_1, P_2, ..., P_{n-1}, P_n,$ & pressures for each com
 \end{tabular}
 \end{center}
 where $n$ is the number of compartments and $k$ is the total number of wall surfaces ($4n$ if all wall surfaces are solved for each compartment).
-The components of $\vecy'$ and the residual function $F$ are arranged analogously.  The first $n$ components of $F$ correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Tu/dt$ differential equations and so on.  Each component of $F$ is a residual which DASSL drives to zero.  For example if $dP_1/dt$, the differential equation for pressure in the first compartment, is computed using Eq. (\ref{eq1}), then  $F_1(t,\vecy,\vecy')$, the first component of $F$, is given by the difference between $y'_1$, the estimate of $dP_1/dt$ provided by DASSL, and the $dP_1/dt$ term computed from Eq. (\ref{eq1})  or equivalently
+The components of $\vecy'$ and the residual function $\vecF$ are arranged analogously.  The first $n$ components of $\vecF$ correspond to the $dP/dt$ differential equations, the next $n$ to the $d\Tu/dt$ differential equations and so on.  Each component of $\vecF$ is a residual which DASSL drives to zero.  For example if $dP_1/dt$, the differential equation for pressure in the first compartment, is computed using Eq. (\ref{eq1}), then  $F_1(t,\vecy,\vecy')$, the first component of $\vecF$, is given by the difference between $y'_1$, the estimate of $dP_1/dt$ provided by DASSL, and the $dP_1/dt$ term computed from Eq. (\ref{eq1})  or equivalently
 
 \begin{equation}
 F_1(t,\vecy,\vecy')=\vecy'_1 - dP_1/dt

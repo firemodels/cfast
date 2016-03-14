@@ -184,10 +184,13 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \setlength{\oddsidemargin}{0.0in}
 \setlength{\evensidemargin}{0.0in}
 
-
+\newcommand{\vecy}{\mathbf{y}}
+\newcommand{\vecF}{\mathbf{F}}
 \newcommand{\rd}{\mathrm{d}}
 \newcommand{\brackets}[1]{ { \left( {#1} \right) } }
+\newcommand{\dcydt}[1]{\rd{#1}/\rd t}
 \newcommand{\dbydt}[1]{\frac{\rd {#1}}{\rd t}}
+\newcommand{\dbydx}[1]{\frac{\partial {#1}}{\partial x}}
 \newcommand{\ddt}{\frac{\rd}{\rd t}}
 \newcommand{\superscript}[1]{\ensuremath{^{\textnormal{\scriptsize \hbox{#1}}}}}
 \newcommand{\subscript}[1]{\ensuremath{_{\textnormal{\scriptsize \hbox{#1}}}}}
@@ -211,14 +214,14 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \newcommand{\Tp}{T_{\rm p}}
 \newcommand{\Tu}{T_{\rm u}}
 \newcommand{\Tl}{T_{\rm l}}
-\newcommand{\Ti}{T_{\rm i}}
-\newcommand{\Tw}{T_{\rm w}}
+\newcommand{\Ti}{T_i}
+\newcommand{\Tw}{\mathbf{T}_{\rm w}}
 \newcommand{\Ts}{T_{\rm s}}
 \newcommand{\Tg}{T_{\rm g}}
 \newcommand{\TL}{T_{\rm L}}
 \newcommand{\Vu}{V_{\rm u}}
 \newcommand{\Vl}{V_{\rm l}}
-\newcommand{\Vi}{V_{\rm i}}
+\newcommand{\Vi}{V_i}
 \newcommand{\doh}{\dot{h}}
 \newcommand{\dhl}{\dot{h}_{\rm l}}
 \newcommand{\dhu}{\dot{h}_{\rm u}}
@@ -229,17 +232,17 @@ http://dx.doi.org/10.6028/NIST.TN.#1}
 \newcommand{\dqr}{\dot{q}_{\rm r}}
 \newcommand{\dql}{\dot{q}_{\rm l}}
 \newcommand{\dqu}{\dot{q}_{\rm u}}
-\newcommand{\dqi}{\dot{q}_{\rm i}}
+\newcommand{\dqi}{\dot{q}_i}
 \newcommand{\dm}{\dot{m}}
 \newcommand{\dme}{\dot{m}_{\rm e}}
 \newcommand{\dmp}{\dot{m}_{\rm p}}
 \newcommand{\dml}{\dot{m}_{\rm l}}
 \newcommand{\dmu}{\dot{m}_{\rm u}}
-\newcommand{\dmi}{\dot{m}_{\rm i}}
+\newcommand{\dmi}{\dot{m}_i}
 \newcommand{\dmf}{\dot{m}_{\rm f}}
 \newcommand{\ml}{m_{\rm l}}
 \newcommand{\mmu}{m_{\rm u}}
-\newcommand{\mi}{m_{\rm i}}
+\newcommand{\mi}{m_i}
 
 \newcommand{\be}{\begin{equation}}
 \newcommand{\ee}{\end{equation}}

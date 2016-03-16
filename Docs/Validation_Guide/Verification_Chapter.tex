@@ -174,10 +174,12 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 
 A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  The governing equation for the pressure and temperature of the single zone compartment are:
 \begin{eqnarray}
-   \frac{{\rm d} P}{{\rm d}t} &=& \frac{\gamma-1}{V} \, \dot{h} \quad ; \quad \dot{h} = \dot{Q} + c_p \, \dot{m}_{\rm f} \, T_\infty \\[0.1in]
-   \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{h} - c_p \, \dot{m}_{\rm f} \, T + V \, \frac{{\rm d} P}{{\rm d}t} \right)
+   \frac{{\rm d} P}{{\rm d}t} &=& \frac{\gamma-1}{V} \, \dot{q}\\[0.1in]
+   \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{q} - c_p \, \dot{m} \, T + V \, \frac{{\rm d} P}{{\rm d}t} \right)
 \end{eqnarray}
-where $\dm_{\rm f}$ is the fuel flow rate and $m$ is the total mass. Figure~\ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and a simple second-order accurate ODE solver of the equations above.
+where $m$ is the total mass in the volume, $\dot{m}=\dm_{\rm f}$ is the mass flow rate of the fuel, and
+$\dot{q}=\dot{Q} + c_p \, \dot{m}_{\rm f} \, T_\infty $ is the heat release rate of the fire plus the heat flow rate of the fuel.
+Figure~\ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and a simple second-order accurate ODE solver of the equations above.
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_temp} &

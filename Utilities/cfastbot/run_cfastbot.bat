@@ -10,6 +10,7 @@ set stopscript=0
 set installed=0
 set force=0
 set skip_cases=0
+set official=0
 
 set RUNDIR=%CD%
 
@@ -96,7 +97,7 @@ if %update% == 0 goto no_update
 :: run cfastbot
 
   echo 1 > %running%
-  call cfastbot.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %installed% %skip_cases% %emailto%
+  call cfastbot.bat %cfastrepo% %fdsrepo% %usematlab% %clean% %update% %installed% %skip_cases% %official% %emailto%
   erase %running%
   goto end_running
 :skip_running
@@ -137,6 +138,10 @@ goto eof
  if /I "%1" EQU "-nomatlab" (
    set valid=1
    set usematlab=0
+ )
+ if /I "%1" EQU "-official" (
+   set official=1
+   set valid=1
  )
  if /I "%1" EQU "-installed" (
    set valid=1
@@ -191,6 +196,7 @@ echo -installed      - use installed smokeview
 echo -clean          - clean repository
 echo -update         - update repository
 echo -nomatlab       - do not use matlab
+echo -official       - build official version of cfast
 exit /b
 
 :normalise

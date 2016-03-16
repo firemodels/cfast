@@ -10,6 +10,7 @@
 # The variable VPATH defines where the source code is relative to the current directory
 
 VPATH = Source
+VERSION=Test
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
 # windows
@@ -23,7 +24,7 @@ else
   BUILD_DATE := $(shell date "+%b %d, %Y  %T")
 endif
 
-GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)\" -DGITDATE_PP=\""$(GIT_DATE)\""
+GITINFO_BASE=-DGITHASH_PP=\"$(GIT_HASH)\" -DGITDATE_PP=\""$(GIT_DATE)\""  -DVERSION_PP=\""$(VERSION)\""
 GITINFO=-fpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 
@@ -184,6 +185,11 @@ srev.o:	.FORCE
 srev.obj:	.FORCE
 
 .FORCE:
+
+output.o:	.FORCE2
+output.obj:	.FORCE2
+
+.FORCE2:
 
 #*** Clean Target to remove Object and Module files ***
 

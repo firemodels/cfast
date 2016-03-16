@@ -14,7 +14,8 @@ set clean=%4
 set update=%5
 set installed=%6
 set skip_cases=%7
-set emailto=%8
+set official=%8
+set emailto=%9
 
 set size=_64
 
@@ -102,6 +103,11 @@ if NOT "%emailto%" == "" (
   echo  email: %emailto%
   set mailToCFAST=%emailto%
 )
+set version=test
+if %official% == "1" (
+  set version=release
+)
+
 echo cfast repo: %cfastroot%
 echo   FDS repo: %FDSroot%
 :: -------------------------------------------------------------
@@ -311,7 +317,7 @@ echo             debug cfast
 
 cd %cfastroot%\CFAST\intel_win%size%_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
-call make_cfast bot 1>> %OUTDIR%\stage1a.txt 2>&1
+call make_cfast bot %version% 1>> %OUTDIR%\stage1a.txt 2>&1
 
 
 call :does_file_exist cfast7_win%size%_db.exe %OUTDIR%\stage1a.txt|| exit /b 1
@@ -322,7 +328,7 @@ echo             release cfast
 
 cd %cfastroot%\CFAST\intel_win%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
-call make_cfast bot 1>> %OUTDIR%\stage1b.txt 2>&1
+call make_cfast bot %version% 1>> %OUTDIR%\stage1b.txt 2>&1
 
 call :does_file_exist cfast7_win%size%.exe %OUTDIR%\stage1b.txt|| exit /b 1
 call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"

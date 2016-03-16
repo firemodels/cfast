@@ -45,7 +45,10 @@ module output_routines
     call splitversion(version,imajor,iminor,iminorrev)
 
     write(iunit,'(/A/)')                    'CFAST'
-    write(iunit,'(a,i0,".",i0,".",i0)')     'Version          : CFAST ',imajor, iminor, iminorrev
+#ifndef VERSION_PP
+#define VERSION_PP "Test Version     :"
+#endif
+    write(iunit,'(a,a,i0,".",i0,".",i0)')     TRIM(VERSION_PP),' CFAST ',imajor, iminor, iminorrev
     write(iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
     write(iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
     write(iunit,'(A,A/)')                   'Compilation Date : ',TRIM(compile_date)

@@ -104,7 +104,7 @@ if NOT "%emailto%" == "" (
   set mailToCFAST=%emailto%
 )
 set version=test
-if %official% == "1" (
+if %official% == 1 (
   set version=release
 )
 

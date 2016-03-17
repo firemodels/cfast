@@ -24,7 +24,7 @@ set bundleinfo=%git_root%\scripts\bundleinfo
 call Create_Install_Files.bat
 
 copy "%bundleinfo%\wrapup_cfast_install.bat" "%DISTDIR%\wrapup_cfast_install.bat"
-copy "%userprofile%\FIRE-LOCAL\repo_exes\Shortcut.exe"                 "%DISTDIR%\Ssethortcut.exe"
+copy "%userprofile%\FIRE-LOCAL\repo_exes\Shortcut.exe"                 "%DISTDIR%\Shortcut.exe"
 copy "%userprofile%\FIRE-LOCAL\repo_exes\set_path.exe"                 "%DISTDIR%\set_path.exe"
 
 cd %DISTDIR%

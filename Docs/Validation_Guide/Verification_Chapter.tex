@@ -201,9 +201,18 @@ since ${\rm d}V/{\rm d}t=0$.
 c_v\dot{m}T+c_vm\frac{{\rm d}T}{{\rm d}t} &= &\dot{q}\\
     \frac{{\rm d} T}{{\rm d}t}&=& \frac{1}{c_v \, m} \left( \dot{q} - c_v \, \dot{m} \, T   \right)
 \end{eqnarray}
-which is identical Eq.~(\ref{eq4}).
+which is identical Eq.~(\ref{eq4}) and therefore equivalent to Eq.~(\ref{eq2}).
 
-Figure~\ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and a simple second-order accurate ODE solver of the equations above.
+For an initial pressure $P_0$ and temperature $T_0$ the analytical solution to Eqs.~(\ref{eq1}) and (\ref{eq2}) are
+\begin{eqnarray}
+P(t)&=&P_0+\frac{\gamma-1}{V}\,\dot{q}\,t \label{eq:soleq1}\\
+T(t)&=&\frac{V\,P(t)}{R\,m(t)}\label{eq:soleq2}
+\end{eqnarray}
+where $m(t)=m_0+\dot{m}\,t$ and $m_0=\frac{P_0\,V}{R\,T_0}$.
+
+Figure~\ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and the analytic solutions given
+in Eqs.~(\ref{eq:soleq1}) and (\ref{eq:soleq2}).
+
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{FIGURES/Verification/sealed_test_temp} &

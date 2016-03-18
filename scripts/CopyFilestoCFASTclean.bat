@@ -19,3 +19,6 @@ copy ..\SMV6\textures\*.* %cfastroot%\SMV6\textures\ /Y
 
 @echo *** copying DLLs
 copy ..\bin\C1*.dll %cfastroot%\bin /Y
+
+@echo *** copy install utilities
+copy \users\rpeacoc\FIRE-LOCAL\repo_exes\set_path.exe %cfastroot%\scripts\bundleinfo\ /Y

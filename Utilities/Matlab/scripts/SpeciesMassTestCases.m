@@ -1,4 +1,4 @@
-function [] = SpeciesMassTestCases(data_dir,plot_dir)
+function [] = SpeciesMassTestCases(data_dir)
 
 %This script will calculate the experimental and theoretical yields of H2O
 %and CO2 for several test cases. The program functions by reading in

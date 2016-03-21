@@ -29,21 +29,20 @@ addpath 'scripts'
 %run('./scripts/SpeciesMassTestCases.m')
 
 data_dir = '../../Verification/Mass_Balance/';
-plot_dir = '../../Docs/Validation_Guide/FIGURES/Verification/';
-SpeciesMassTestCases(data_dir,plot_dir)
+SpeciesMassTestCases(data_dir)
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
 Dataplot_Inputs_File = [pwd,'/CFAST_verification_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Verification/'];
-Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/FIGURES/'];
+Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
 
 % Statistics output options
 
 Stats_Output = 'Verification';
 Output_File = [pwd, '/CFAST_verification_scatterplot_output.csv'];
-Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/FIGURES/ScatterPlots/verification_statistics.tex'];
+Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/SCRIPT_FIGURES/Verification/verification_statistics.tex'];
 
 % Override the plot style options with NRC 1824 plot options
 

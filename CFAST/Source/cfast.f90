@@ -50,7 +50,7 @@
         stop
     end if
 
-    !     initialize the basic memory configuration
+    ! initialize the basic memory configuration
 
     stime = 0.0_eb
     call initialize_memory

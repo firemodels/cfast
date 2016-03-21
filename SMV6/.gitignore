@@ -5,3 +5,6 @@
 *.svo
 *.ssf
 *.ini
+*.po
+release_notes.html
+wrapup_smv_install.bat

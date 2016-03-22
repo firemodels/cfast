@@ -24,7 +24,7 @@ echo Using GIT revision %smv_revision% to build a 64 bit Windows Smokeview
 
 %git_drive%
 
-cd %git_root%\CFAST\\intel_win_64
+cd %git_root%\Source\CFAST\intel_win_64
 erase *.obj *.mod
 call make_cfast
 

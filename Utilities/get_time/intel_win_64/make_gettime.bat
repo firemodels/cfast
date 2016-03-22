@@ -1,6 +1,6 @@
 @echo off
 :: setup compiler environment
-call ..\..\..\CFAST\scripts\setup_intel_compilers.bat intel64
+call ..\..\..\Source\CFAST\scripts\setup_intel_compilers.bat intel64
 
 Title Building make_time for 64 bit Windows
 

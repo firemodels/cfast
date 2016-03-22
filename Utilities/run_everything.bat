@@ -1,6 +1,7 @@
 @echo off
 echo.| time
 echo Compiling CFAST
+call ..\Source\CFAST\\scripts\setup_intel_compilers.bat intel64
 cd ..\Source\CFAST\intel_win_64%1
 del *.obj *.mod *.exe /q
 call make_cfast.bat bot

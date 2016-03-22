@@ -197,7 +197,7 @@ run_auto()
    git_CFASTSOURCEFILE=$GITSTATUS_DIR/cfast_source_revision
    git_CFASTSOURCELOG=$GITSTATUS_DIR/cfast_source_log
   
-   CFAST_DOCS=$cfastrepo/Docs
+   CFAST_DOCS=$cfastrepo/Manuals
    git_CFASTDOCSFILE=$GITSTATUS_DIR/cfast_docs_revision
    git_CFASTDOCSLOG=$GITSTATUS_DIR/cfast_docs_log
 
@@ -314,7 +314,7 @@ clean_git_repo()
         git clean -dxf &> /dev/null
         git add . &> /dev/null
         git reset --hard HEAD &> /dev/null
-        cd $cfastrepo/Docs
+        cd $cfastrepo/Manuals
         git clean -dxf &> /dev/null
         git add . &> /dev/null
         git reset --hard HEAD &> /dev/null
@@ -1064,44 +1064,44 @@ make_cfast_tech_guide()
 {
    # Build CFAST Tech Guide
    echo Building CFAST Tech guide
-   cd $cfastrepo/Docs/Tech_Ref
+   cd $cfastrepo/Manuals/Tech_Ref
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_tech_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $cfastrepo/Docs/Tech_Ref Tech_Ref.pdf 'CFAST Technical Reference Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $cfastrepo/Manuals/Tech_Ref Tech_Ref.pdf 'CFAST Technical Reference Guide'
 }
 
 make_cfast_user_guide()
 {
    # Build CFAST User Guide
    echo Building CFAST User guide
-   cd $cfastrepo/Docs/Users_Guide
+   cd $cfastrepo/Manuals/Users_Guide
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_user_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_user_guide $cfastrepo/Docs/Users_Guide Users_Guide.pdf 'CFAST Users Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_user_guide $cfastrepo/Manuals/Users_Guide Users_Guide.pdf 'CFAST Users Guide'
 }
 
 make_cfast_vv_guide()
 {
    # Build CFAST Tech Guide
    echo Building CFAST VV guide
-   cd $cfastrepo/Docs/Validation_Guide
+   cd $cfastrepo/Manuals/Validation_Guide
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $cfastrepo/Docs/Validation_Guide Validation_Guide.pdf 'CFAST Verification and Validation Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $cfastrepo/Manuals/Validation_Guide Validation_Guide.pdf 'CFAST Verification and Validation Guide'
 }
 
 make_cfast_config_guide()
 {
    # Build CFAST Configuration Guide
    echo Building CFAST Configuration guide
-   cd $cfastrepo/Docs/Configuration_Guide
+   cd $cfastrepo/Manuals/Configuration_Guide
    ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_config_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_config_guide $cfastrepo/Docs/Configuration_Guide Configuration_Guide.pdf 'CFAST Configuration Guide'
+   check_guide $OUTPUT_DIR/stage8_cfast_config_guide $cfastrepo/Manuals/Configuration_Guide Configuration_Guide.pdf 'CFAST Configuration Guide'
 }
 
 #  =====================================================
@@ -1199,7 +1199,7 @@ email_build_status()
    fi
    if [[ "$UPLOADGUIDES" == "1" ]]; then
      if [ -e $UploadGuides ]; then
-        $UploadGuides $NEWGUIDE_DIR $cfastrepo/Docs > /dev/null
+        $UploadGuides $NEWGUIDE_DIR $cfastrepo/Manuals > /dev/null
      fi
    fi
 

@@ -259,7 +259,7 @@ if %clean% == 0 goto skip_update0
    call :git_clean %cfastroot%\Verification
    call :git_clean %cfastroot%\Validation
    call :git_clean %cfastroot%\VandV_Calcs
-   call :git_clean %cfastroot%\Docs
+   call :git_clean %cfastroot%\Manuals
 :skip_update0
 
 ::*** update cfast repository
@@ -502,18 +502,18 @@ call :GET_TIME MAKEGUIDES_beg
 echo Stage 6 - Building CFAST guides
 
 echo             Users Guide
-call :build_guide Users_Guide %cfastroot%\Docs\Users_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide Users_Guide %cfastroot%\Manuals\Users_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 echo             Technical Reference Guide
-call :build_guide Tech_Ref %cfastroot%\Docs\Tech_Ref 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide Tech_Ref %cfastroot%\Manuals\Tech_Ref 1>> %OUTDIR%\stage6.txt 2>&1
 
 if %nothaveValidation% == 0 (
   echo             Validation Guide
-  call :build_guide Validation_Guide %cfastroot%\Docs\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+  call :build_guide Validation_Guide %cfastroot%\Manuals\Validation_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 )
 
 echo             Configuration Management Guide
-call :build_guide Configuration_Guide %cfastroot%\Docs\Configuration_Guide 1>> %OUTDIR%\stage6.txt 2>&1
+call :build_guide Configuration_Guide %cfastroot%\Manuals\Configuration_Guide 1>> %OUTDIR%\stage6.txt 2>&1
 
 call :GET_DURATION MAKEGUIDES %MAKEGUIDES_beg%
 call :GET_DURATION TOTALTIME %TIME_beg%

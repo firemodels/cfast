@@ -1,6 +1,6 @@
 @echo off
 echo Make Technical Reference Guide
-cd ..\Docs\Tech_Ref
+cd ..\Manuals\Tech_Ref
 call make_guide.bat
 
 echo Make Users Guide

@@ -32,15 +32,15 @@ addpath 'scripts'
 
 Dataplot_Inputs_File = [pwd,'/CFAST_validation_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Validation/'];
-Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/'];
+Manuals_Dir = [pwd, '/../../Manuals/Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];
 
 % Statistics output options
 
 Stats_Output = 'Validation';
 Output_File = [pwd, '/CFAST_validation_scatterplot_output.csv'];
-Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_statistics.tex'];
-Histogram_Tex_Output = [pwd, '/../../Docs/Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_histograms.tex'];
+Statistics_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_statistics.tex'];
+Histogram_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/ScatterPlots/validation_histograms.tex'];
 
 % Override the plot style options with NRC 1824 plot options
 NRC_Options = false;

@@ -35,14 +35,14 @@ SpeciesMassTestCases(data_dir)
 
 Dataplot_Inputs_File = [pwd,'/CFAST_verification_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Verification/'];
-Manuals_Dir = [pwd, '/../../Docs/Validation_Guide/'];
+Manuals_Dir = [pwd, '/../../Manuals/Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
 
 % Statistics output options
 
 Stats_Output = 'Verification';
 Output_File = [pwd, '/CFAST_verification_scatterplot_output.csv'];
-Statistics_Tex_Output = [pwd, '/../../Docs/Validation_Guide/SCRIPT_FIGURES/Verification/verification_statistics.tex'];
+Statistics_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/Verification/verification_statistics.tex'];
 
 % Override the plot style options with NRC 1824 plot options
 

@@ -1,7 +1,7 @@
 @echo off
 
 set bindir=%git_root%\bin
-set docdir=%git_root%\Docs
+set docdir=%git_root%\Manuals
 
 echo.
 echo ***making directories

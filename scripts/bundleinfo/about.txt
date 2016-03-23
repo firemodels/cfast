@@ -1,2 +1,0 @@
-The Consolidated Fire and Smoke Transport model (cfast), is a zone
-fire model of fire-driven fluid flow. 

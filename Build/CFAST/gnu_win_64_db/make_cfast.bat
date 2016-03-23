@@ -2,6 +2,6 @@
 
 Title Building cfast for 64 bit Windows
 
-make VPATH="../Source" -f ..\makefile gnu_win_64_db
+make -f ..\makefile gnu_win_64_db
 pause
 

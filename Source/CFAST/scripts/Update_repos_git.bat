@@ -26,7 +26,7 @@ echo Updating the repo:%git_root%
 git remote update
 git merge origin/master
 
-set scriptdir=%linux_git_root%/CFAST/scripts/
+set scriptdir=%linux_git_root%/Source/CFAST/scripts/
 set linux_cfastdir=%linux_git_root%
 
 echo.

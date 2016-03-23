@@ -1,12 +1,12 @@
 @echo off
 echo.| time
 echo Compiling CFAST
-cd ..\CFAST\intel_win_64%1
+call ..\Source\CFAST\\scripts\setup_intel_compilers.bat intel64
+cd ..\Source\CFAST\intel_win_64%1
 del *.obj *.mod *.exe /q
-call ..\scripts\setup_intel_compilers.bat intel64%1
-make VPATH="../Source:../Include" INCLUDE="../Include" -f ..\makefile intel_win_64%1
-copy /Y cfast7_win_64%1.exe ..\..\bin\cfast.exe
-cd ..\..\Utilities
+call make_cfast.bat bot
+copy /Y cfast7_win_64%1.exe ..\..\..\bin\cfast.exe
+cd ..\..\..\Utilities
 echo Running validation cases
 Title Running Validation Cases
 cd ..\Validation

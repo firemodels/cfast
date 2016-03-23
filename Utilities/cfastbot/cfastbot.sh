@@ -193,7 +193,7 @@ run_auto()
    git_SMVFILE=$GITSTATUS_DIR/smokeview_source_revision
    git_SMVLOG=$GITSTATUS_DIR/smokeview_source_log
 
-   CFAST_SOURCE=$cfastrepo/CFAST/Source
+   CFAST_SOURCE=$cfastrepo/Source/CFAST/Source
    git_CFASTSOURCEFILE=$GITSTATUS_DIR/cfast_source_revision
    git_CFASTSOURCELOG=$GITSTATUS_DIR/cfast_source_log
   
@@ -363,7 +363,7 @@ compile_cfast_db()
    echo "Building:"
    echo "   cfast"
    echo "      debug"
-   cd $cfastrepo/CFAST/${compiler}_${platform}${size}_db
+   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2a
  }
@@ -371,7 +371,7 @@ compile_cfast_db()
 check_compile_cfast_db()
 {
    # Check for errors in CFAST debug compilation
-   cd $cfastrepo/CFAST/${compiler}_${platform}${size}_db
+   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}_db
    if [ -e "cfast7_${platform}${size}_db" ]
    then
       stage2a_success=true
@@ -519,7 +519,7 @@ compile_cfast()
 { 
    # Build release CFAST
    echo "      release"
-   cd $cfastrepo/CFAST/${compiler}_${platform}${size}
+   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2b
 }
@@ -527,7 +527,7 @@ compile_cfast()
 check_compile_cfast()
 {
    # Check for errors in CFAST release compilation
-   cd $cfastrepo/CFAST/${compiler}_${platform}${size}
+   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}
    if [[ -e "cfast7_${platform}${size}" ]]
    then
       stage2b_success=true
@@ -553,14 +553,14 @@ compile_vvcalc()
 { 
    # Build release vvcalc
    echo "   VandV_Calcs - release" 
-   cd $cfastrepo/VandV_Calcs/${compiler}_${platform}${size}
+   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
    ./make_vv.sh &> $OUTPUT_DIR/stage2c
 }
 
 check_compile_vvcalc()
 {
-   cd $cfastrepo/VandV_Calcs/${compiler}_${platform}${size}
+   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
    if [[ -e "VandV_Calcs_${platform}${size}" ]]
    then
       stage2c_success=true
@@ -953,11 +953,11 @@ run_matlab_validation()
    echo "Validation"
    echo "   VandV_Calcs"
    cd $cfastrepo/Validation
-   ../VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Pressure_Correction_inputs.csv &> /dev/null
+   ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Pressure_Correction_inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
-   ../VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Temperature_Profile_inputs.csv &> /dev/null
+   ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Temperature_Profile_inputs.csv &> /dev/null
    cp profiles.csv Steckler_Compartment/.
-   ../VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
+   ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
    cp flux_profiles.csv Fleury_Heat_Flux/.
    
    echo "   Making plots"

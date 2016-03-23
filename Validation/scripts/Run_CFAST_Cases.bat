@@ -21,7 +21,7 @@ set SVNROOT=%CD%
 set SH2BAT=%userprofile%\FIRE-LOCAL\repo_exes\sh2bat.exe
 set BACKGROUNDEXE=%userprofile%\FIRE-LOCAL\repo_exes\background.exe
 set bg=%BACKGROUNDEXE% -u 85 -d 0.1
-set CFASTEXE=%SVNROOT%\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
+set CFASTEXE=%SVNROOT%\Source\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
 set CFAST=%bg% %CFASTEXE%
 
 set RUNCFAST_R=call %SCRIPT_DIR%\runcfast.bat

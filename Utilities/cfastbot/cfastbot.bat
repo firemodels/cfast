@@ -255,7 +255,7 @@ if %usematlab% == 1 goto skip_matlabexe
 
 if %clean% == 0 goto skip_update0
    echo             cleaning %cfastbasename% repository
-   call :git_clean %cfastroot%\CFAST
+   call :git_clean %cfastroot%\Source\CFAST
    call :git_clean %cfastroot%\Verification
    call :git_clean %cfastroot%\Validation
    call :git_clean %cfastroot%\VandV_Calcs
@@ -315,7 +315,7 @@ echo Stage 1 - Building CFAST and VandV_Calcs
 
 echo             debug cfast
 
-cd %cfastroot%\CFAST\intel_win%size%_db
+cd %cfastroot%\Source\CFAST\intel_win%size%_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
 call make_cfast bot %version% 1>> %OUTDIR%\stage1a.txt 2>&1
 
@@ -326,7 +326,7 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
 
 echo             release cfast
 
-cd %cfastroot%\CFAST\intel_win%size%
+cd %cfastroot%\Source\CFAST\intel_win%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
 call make_cfast bot %version% 1>> %OUTDIR%\stage1b.txt 2>&1
 
@@ -335,7 +335,7 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1b.txt "Stage 1b"
 
 echo             release VandV_Calcs
 
-cd %cfastroot%\VandV_Calcs\intel_win%size%
+cd %cfastroot%\Source\VandV_Calcs\intel_win%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1c.txt 2>&1
 call make_vv bot 1>> %OUTDIR%\stage1c.txt 2>&1
 
@@ -456,11 +456,11 @@ echo Stage 5 - Making matlab plots
 echo             Validation
 echo               VandV_Calcs
 cd %cfastroot%\Validation
-..\VandV_Calcs\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Pressure_Correction_Inputs.csv 1> Nul 2>&1
+..\Source\VandV_Calcs\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Pressure_Correction_Inputs.csv 1> Nul 2>&1
 copy pressures.csv LLNL_Enclosure\LLNL_pressures.csv /Y 1> Nul 2>&1
-..\VandV_Calcs\\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Temperature_Profile_inputs.csv 1> Nul 2>&1
+..\Source\VandV_Calcs\\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Temperature_Profile_inputs.csv 1> Nul 2>&1
 copy profiles.csv Steckler_Compartment /Y 1> Nul 2>&1
-..\VandV_Calcs\\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Heat_Flux_Profile_inputs.csv 1> Nul 2>&1
+..\Source\VandV_Calcs\\intel_win%size%\VandV_Calcs_win%size%.exe CFAST_Heat_Flux_Profile_inputs.csv 1> Nul 2>&1
 copy flux_profiles.csv Fleury_Heat_Flux /Y 1> Nul 2>&1
 
 

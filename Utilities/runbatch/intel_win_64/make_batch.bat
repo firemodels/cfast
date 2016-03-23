@@ -1,6 +1,6 @@
 @echo off
 :: setup compiler environment
-call ..\..\..\CFAST\scripts\setup_intel_compilers.bat intel64
+call ..\..\..\Source\CFAST\scripts\setup_intel_compilers.bat intel64
 
 set SMV_TESTFLAG=
 set SMV_TESTSTRING=

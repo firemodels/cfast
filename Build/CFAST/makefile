@@ -9,7 +9,7 @@
 
 # The variable VPATH defines where the source code is relative to the current directory
 
-VPATH = Source
+VPATH = ../../../Source/CFAST
 VERSION=Test
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")

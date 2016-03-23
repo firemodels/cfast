@@ -14,8 +14,8 @@ VERSION=Test
 
 ifeq ($(shell echo "check_quotes"),"check_quotes")
 # windows
-  GIT_HASH := $(shell ..\scripts\githash)
-  GIT_DATE := $(shell ..\scripts\gitlog)
+  GIT_HASH := $(shell ..\..\scripts\githash)
+  GIT_DATE := $(shell ..\..\scripts\gitlog)
   BUILD_DATE := $(shell date /t) $(shell time /t)
 else
 # linux/osx

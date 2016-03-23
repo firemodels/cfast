@@ -4,7 +4,7 @@ set arg2=%2
 
 :: setup compiler environment
 if x%arg1% == xbot goto skip1
-call ..\scripts\setup_intel_compilers.bat intel64
+call ..\..\scripts\setup_intel_compilers.bat intel64
 :skip1
 
 set version=Test Version     :
@@ -14,7 +14,7 @@ if "x%arg2%" == "xrelease" (
 
 Title Building cfast for 64 bit Windows
 
-make VPATH="../Source:../Include" SHELL="%ComSpec%" VERSION="%version%" INCLUDE="../Include" -f ..\makefile intel_win_64
+make SHELL="%ComSpec%" VERSION="%version%" -f ..\makefile intel_win_64
 if x%arg1% == xbot goto skip2
 pause
 :skip2

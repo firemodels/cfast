@@ -302,18 +302,22 @@ clean_git_repo()
       if [ "$CLEANREPO" == "1" ]; then
         echo "   cfast repo"
         echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1a 2>&1
-        cd $cfastrepo/CFAST
+
+        cd $cfastrepo/Build
         git clean -dxf &> /dev/null
         git add . &> /dev/null
         git reset --hard HEAD &> /dev/null
+
         cd $cfastrepo/Verification
         git clean -dxf &> /dev/null
         git add . &> /dev/null
         git reset --hard HEAD &> /dev/null
+
         cd $cfastrepo/Validation
         git clean -dxf &> /dev/null
         git add . &> /dev/null
         git reset --hard HEAD &> /dev/null
+
         cd $cfastrepo/Manuals
         git clean -dxf &> /dev/null
         git add . &> /dev/null

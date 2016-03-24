@@ -363,7 +363,7 @@ compile_cfast_db()
    echo "Building:"
    echo "   cfast"
    echo "      debug"
-   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}_db
+   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}_db
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2a
  }
@@ -371,7 +371,7 @@ compile_cfast_db()
 check_compile_cfast_db()
 {
    # Check for errors in CFAST debug compilation
-   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}_db
+   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}_db
    if [ -e "cfast7_${platform}${size}_db" ]
    then
       stage2a_success=true
@@ -519,7 +519,7 @@ compile_cfast()
 { 
    # Build release CFAST
    echo "      release"
-   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}
+   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
    ./make_cfast.sh &> $OUTPUT_DIR/stage2b
 }
@@ -527,7 +527,7 @@ compile_cfast()
 check_compile_cfast()
 {
    # Check for errors in CFAST release compilation
-   cd $cfastrepo/Source/CFAST/${compiler}_${platform}${size}
+   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}
    if [[ -e "cfast7_${platform}${size}" ]]
    then
       stage2b_success=true

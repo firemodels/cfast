@@ -1,5 +1,4 @@
 @echo off
-set size=intel64
 
 IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
 
@@ -14,6 +13,6 @@ IF "%SETUP_IFORT_COMPILER_64%"=="1" GOTO envexist
   )
   IF DEFINED IFORT_COMPILER (
     echo Setting up compiler environment
-    call "%IFORT_COMPILER%\bin\compilervars" %size%
+    call "%IFORT_COMPILER%\bin\compilervars" intel64
   )
 :envexist

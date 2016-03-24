@@ -75,7 +75,7 @@ shift $(($OPTIND-1))
 
 export SVNROOT=$fdsrepo
 if [ "$SMV_PATH" == "" ]; then
-  SMV_PATH=$SVNROOT/SMV/Build/$COMPILER_$PLATFORM$SIZE
+  SMV_PATH=$SVNROOT/SMV/Build/smokeview/$COMPILER_$PLATFORM$SIZE
 fi
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview

@@ -700,7 +700,7 @@ compile_smv_utilities()
 
    # background
      if [ "$QUEUE" == "none" ]; then
-       cd $fdsrepo/Utilities/background/${compiler}_${platform}${size}
+       cd $fdsrepo/SMV/Build/background/${compiler}_${platform}${size}
        echo '   background'
        echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
        ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
@@ -731,7 +731,7 @@ check_smv_utilities()
      cd $fdsrepo
      stage1b_success="1"
      if [ "$QUEUE" == "none" ]; then
-       if [ ! -e "$fdsrepo/Utilities/background/${compiler}_${platform}${size}/background" ]; then
+       if [ ! -e "$fdsrepo/SMV/Build/background/${compiler}_${platform}${size}/background" ]; then
          stage1b_success="0"
        fi
      fi
@@ -765,7 +765,7 @@ compile_smv_db()
    if [ "$USEINSTALL" == "" ]; then
      echo "   smokeview"
      echo "      debug"
-     cd $fdsrepo/SMV/Build/${compiler}_${platform}${size}
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
      ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
    else
      echo "   smokeview"
@@ -777,7 +777,7 @@ check_compile_smv_db()
 {
    # Check for errors in SMV DB compilation
    if [ "$USEINSTALL" == "" ]; then
-     cd $fdsrepo/SMV/Build/${compiler}_${platform}${size}
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
      if [ -e "smokeview_${platform}${size}_db" ]
      then
         stage6a_success=true
@@ -810,7 +810,7 @@ compile_smv()
    # Clean and compile SMV
    if [ "$USEINSTALL" == "" ]; then
      echo "      release"
-     cd $fdsrepo/SMV/Build/${compiler}_${platform}${size}
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
      ./make_smv.sh &> $OUTPUT_DIR/stage6b
    else
      echo "      release - not built, using installed smokeview"
@@ -821,7 +821,7 @@ check_compile_smv()
 {
    # Check for errors in SMV release compilation
    if [ "$USEINSTALL" == "" ]; then
-     cd $fdsrepo/SMV/Build/${compiler}_${platform}${size}
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
      if [ -e "smokeview_${platform}${size}" ]
      then
         stage6b_success=true

@@ -89,7 +89,7 @@ set /p startdate=<%OUTDIR%\starttime.txt
 time /t > %OUTDIR%\starttime.txt
 set /p starttime=<%OUTDIR%\starttime.txt
 
-call %cfastroot%\for_bundle\scripts\setup_intel_compilers.bat 1> Nul 2>&1
+call %cfastroot%\Build\scripts\setup_intel_compilers.bat 1> Nul 2>&1
 call %cfastroot%\Utilities\cfastbot\cfastbot_email_list.bat 1> Nul 2>&1
 
 set usematlab=%3
@@ -255,10 +255,10 @@ if %usematlab% == 1 goto skip_matlabexe
 
 if %clean% == 0 goto skip_update0
    echo             cleaning %cfastbasename% repository
+   call :git_clean %cfastroot%\Source\Build
    call :git_clean %cfastroot%\Source\CFAST
    call :git_clean %cfastroot%\Verification
    call :git_clean %cfastroot%\Validation
-   call :git_clean %cfastroot%\VandV_Calcs
    call :git_clean %cfastroot%\Manuals
 :skip_update0
 
@@ -315,7 +315,7 @@ echo Stage 1 - Building CFAST and VandV_Calcs
 
 echo             debug cfast
 
-cd %cfastroot%\Source\CFAST\intel_win%size%_db
+cd %cfastroot%\Build\CFAST\intel_win%size%_db
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1a.txt 2>&1
 call make_cfast bot %version% 1>> %OUTDIR%\stage1a.txt 2>&1
 
@@ -326,7 +326,7 @@ call :find_cfast_warnings "warning" %OUTDIR%\stage1a.txt "Stage 1a"
 
 echo             release cfast
 
-cd %cfastroot%\Source\CFAST\intel_win%size%
+cd %cfastroot%\Build\CFAST\intel_win%size%
 erase *.obj *.mod *.exe *.pdb *.optrpt 1> %OUTDIR%\stage1b.txt 2>&1
 call make_cfast bot %version% 1>> %OUTDIR%\stage1b.txt 2>&1
 

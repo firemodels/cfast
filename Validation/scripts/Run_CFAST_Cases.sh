@@ -88,7 +88,7 @@ else
 fi
 export BACKGROUND
 
-export CFAST="$SVNROOT/Source/CFAST/$compiler$underscore$PLATFORM/cfast7_$PLATFORM"
+export CFAST="$SVNROOT/Build/CFAST/$compiler$underscore$PLATFORM/cfast7_$PLATFORM"
 
 if [ "$queue" != "" ]; then
    queue="-q $queue"

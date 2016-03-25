@@ -1,7 +1,7 @@
 FILTERC =
 FILTERF =
 
-VPATH = ../../source
+VPATH = ../../../Source/zfm
 bin = .
 
 # Definition of the object variables

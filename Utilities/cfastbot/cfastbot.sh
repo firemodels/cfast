@@ -855,8 +855,8 @@ check_cfast_pictures()
 
 run_matlab_license_test()
 {
-   echo "Matlab"
-   echo "   license test"
+   echo "V&V"
+   echo "   matlab license test"
    # Run simple test to see if Matlab license is available
    cd $cfastrepo/Utilities/Matlab
    matlab -logfile licmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_matlab_license
@@ -891,7 +891,7 @@ check_matlab_license_server()
 compile_vvcalc()
 { 
    # Build release vvcalc
-   echo "   VandV_Calcs" 
+   echo "   build VandV_Calcs" 
    cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
    ./make_vv.sh &> $OUTPUT_DIR/stage7b
@@ -928,7 +928,7 @@ check_compile_vvcalc()
 run_matlab_verification()
 {
    echo "   Verification"
-   echo "      making plots"
+   echo "      make plots"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
 
@@ -960,7 +960,7 @@ run_matlab_validation()
 {
    
    echo "   Validation"
-   echo "      VandV_Calcs"
+   echo "      run VandV_Calcs"
    cd $cfastrepo/Validation
    ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Pressure_Correction_inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
@@ -969,7 +969,7 @@ run_matlab_validation()
    ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
    cp flux_profiles.csv Fleury_Heat_Flux/.
    
-   echo "      Making plots"
+   echo "      make plots"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
    matlab -logfile valmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7d_validation

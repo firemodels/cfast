@@ -130,7 +130,7 @@ fi
 if [[ "$UPDATEREPO" == "1" ]]; then
    UPDATEREPO=-u
    cd $cfastrepo
-   if [[ "$RUNCFASTEBOT" == "1" ]]; then
+   if [[ "$RUNCFASTBOT" == "1" ]]; then
      git remote update
      git checkout master
      git merge origin/master

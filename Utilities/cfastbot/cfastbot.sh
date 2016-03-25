@@ -566,13 +566,13 @@ check_compile_smv()
 
    # Check for compiler warnings/remarks
    # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage5b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2e | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
      then
         # Continue along
         :
      else
         echo "Stage 2e warnings:" >> $WARNING_LOG
-        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage5b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2e | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
         echo "" >> $WARNING_LOG
      fi
    else
@@ -596,7 +596,7 @@ compile_vvcalc()
    echo "   VandV_Calcs - release" 
    cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
-   ./make_vv.sh &> $OUTPUT_DIR/stage2c
+   ./make_vv.sh &> $OUTPUT_DIR/stage2f
 }
 
 check_compile_vvcalc()

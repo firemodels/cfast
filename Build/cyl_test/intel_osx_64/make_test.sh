@@ -5,4 +5,4 @@ target=${dir##*/}
 
 source $IFORT_COMPILER/bin/compilervars.sh $platform
 
-make VPATH="../source:../../CFAST/Source" -f ../makefile intel_linux_64
+make -f ../makefile intel_osx_64

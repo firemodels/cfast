@@ -894,7 +894,7 @@ compile_vvcalc()
    echo "   build VandV_Calcs" 
    cd $cfastrepo/Build/VandV_Calcs/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
-   ./make_vv.sh &> $OUTPUT_DIR/stage7b
+   ./make_vv.sh &> $OUTPUT_DIR/stage7c
 }
 
 check_compile_vvcalc()
@@ -902,21 +902,21 @@ check_compile_vvcalc()
    cd $cfastrepo/Build/VandV_Calcs/${compiler}_${platform}${size}
    if [[ -e "VandV_Calcs_${platform}${size}" ]]
    then
-      stage7b_success=true
+      stage7c_success=true
    else
       echo "Errors from Stage 7b - Compile VandV_Calcs:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage7b >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage7c >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 
    # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage7b` == "" ]]
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage7c` == "" ]]
    then
       # Continue along
       :
    else
       echo "Warnings from Stage 7b - Compile VV calcs:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage7b >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage7c >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -932,7 +932,7 @@ run_matlab_verification()
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
 
-   matlab -logfile vermat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_verification
+   matlab -logfile vermat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7b_verification
 }
 
 check_matlab_verification()
@@ -940,14 +940,14 @@ check_matlab_verification()
    # Scan and report any errors in Matlab scripts
    cd $CFASTBOT_RUNDIR
 
-   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7c_verification` == "" ]]
+   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7b_verification` == "" ]]
    then
-      stage7c_success=true
+      stage7b_success=true
    else
-      grep -A 50 "Error" $OUTPUT_DIR/stage7c_verification >> $OUTPUT_DIR/stage7c_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage7b_verification >> $OUTPUT_DIR/stage7b_warnings
 
       echo "Warnings from Stage 7c - Matlab plotting (verification):" >> $WARNING_LOG
-      cat $OUTPUT_DIR/stage7c_warnings >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage7b_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -1283,8 +1283,12 @@ if [[ "$SKIP" == "" ]]; then
 fi
 
 ### Stage 6b ###
-compile_vvcalc
-check_compile_vvcalc
+if [[ "$SKIP" == "" ]]; then
+  if [ "$MATLABEXE" == "" ]; then
+    compile_vvcalc
+    check_compile_vvcalc
+  fi
+fi
 
 ### Stage 6c ###
 if [[ "$SKIP" == "" ]]; then

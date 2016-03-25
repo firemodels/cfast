@@ -1,4 +1,4 @@
-cd ..\Source\VandV_Calcs\intel_win_64
+cd ..\Build\VandV_Calcs\intel_win_64
 del *.obj *.mod *.exe /q >nul
 call make_vv.bat bot
 copy VandV_Calcs_win_64.exe ..\..\..\Validation\VandV_Calcs.exe

@@ -1,6 +1,6 @@
-# Makefile for cyltest
+# Makefile for cyl_test
 
-VPATH = .;../CFAST/Source
+VPATH = ../../../Source/cyl_test;../../../Source/CFAST
 
 # Definition of the object variables
 

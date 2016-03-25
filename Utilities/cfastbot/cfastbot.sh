@@ -892,14 +892,14 @@ compile_vvcalc()
 { 
    # Build release vvcalc
    echo "   build VandV_Calcs" 
-   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
+   cd $cfastrepo/Build/VandV_Calcs/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
    ./make_vv.sh &> $OUTPUT_DIR/stage7b
 }
 
 check_compile_vvcalc()
 {
-   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
+   cd $cfastrepo/Build/VandV_Calcs/${compiler}_${platform}${size}
    if [[ -e "VandV_Calcs_${platform}${size}" ]]
    then
       stage7b_success=true
@@ -962,11 +962,11 @@ run_matlab_validation()
    echo "   Validation"
    echo "      run VandV_Calcs"
    cd $cfastrepo/Validation
-   ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Pressure_Correction_inputs.csv &> /dev/null
+   ../Build/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Pressure_Correction_inputs.csv &> /dev/null
    cp pressures.csv LLNL_Enclosure/LLNL_pressures.csv
-   ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Temperature_Profile_inputs.csv &> /dev/null
+   ../Build/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Temperature_Profile_inputs.csv &> /dev/null
    cp profiles.csv Steckler_Compartment/.
-   ../Source/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
+   ../Build/VandV_Calcs/${compiler}_${platform}${size}/VandV_Calcs_${platform}${size} CFAST_Heat_Flux_Profile_inputs.csv &> /dev/null
    cp flux_profiles.csv Fleury_Heat_Flux/.
    
    echo "      make plots"

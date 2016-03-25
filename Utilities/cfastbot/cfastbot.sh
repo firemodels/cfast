@@ -566,13 +566,13 @@ check_compile_smv()
 
    # Check for compiler warnings/remarks
    # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage5b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2e | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
      then
         # Continue along
         :
      else
         echo "Stage 2e warnings:" >> $WARNING_LOG
-        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage5b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2e | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
         echo "" >> $WARNING_LOG
      fi
    else
@@ -596,7 +596,7 @@ compile_vvcalc()
    echo "   VandV_Calcs - release" 
    cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
    make -f ../makefile clean &> /dev/null
-   ./make_vv.sh &> $OUTPUT_DIR/stage2c
+   ./make_vv.sh &> $OUTPUT_DIR/stage2f
 }
 
 check_compile_vvcalc()
@@ -882,7 +882,9 @@ check_cfast_pictures()
 #  = Stage 6 - Matlab =
 #  ====================
 
-# Functions to check for an available Matlab license
+#  =============================================
+#  = Stage 6a - Matlab license check           =
+#  =============================================
 
 run_matlab_license_test()
 {
@@ -900,7 +902,7 @@ scan_matlab_license_test()
       # Continue along
       :
    else
-      TIME_LIMIT_STAGE="7"
+      TIME_LIMIT_STAGE="6"
       check_time_limit
       # Wait 5 minutes until retry
       sleep 300
@@ -933,20 +935,20 @@ check_matlab_verification()
    # Scan and report any errors in Matlab scripts
    cd $CFASTBOT_RUNDIR
 
-   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage6a_verification` == "" ]]
+   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage6b_verification` == "" ]]
    then
-      stage6a_success=true
+      stage6b_success=true
    else
-      grep -A 50 "Error" $OUTPUT_DIR/stage6a_verification >> $OUTPUT_DIR/stage6a_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage6b_verification >> $OUTPUT_DIR/stage6b_warnings
 
       echo "Warnings from Stage 6a - Matlab plotting (verification):" >> $WARNING_LOG
-      cat $OUTPUT_DIR/stage6a_warnings >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage6b_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
 
 #  ==========================================================
-#  = Stage 6b - Matlab plotting and statistics (validation) =
+#  = Stage 6c - Matlab plotting and statistics (validation) =
 #  ==========================================================
 
 run_matlab_validation()
@@ -974,12 +976,12 @@ check_matlab_validation()
    cd $CFASTBOT_RUNDIR
    if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage6c_validation` == "" ]]
    then
-      stage6b_success=true
+      stage6c_success=true
    else
-      grep -A 50 "Error" $OUTPUT_DIR/stage6c_validation >> $OUTPUT_DIR/stage6b_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage6c_validation >> $OUTPUT_DIR/stage6c_warnings
 
       echo "Warnings from Stage 6b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
-      cat $OUTPUT_DIR/stage6b_warnings >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage6c_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }

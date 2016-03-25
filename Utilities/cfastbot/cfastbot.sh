@@ -276,7 +276,7 @@ clean_cfastbot_history()
 #  =========================
 
 #  ============================
-#  = Stage 1b - git operations =
+#  = Stage 1 - git operations =
 #  ============================
 
 clean_git_repo()
@@ -285,7 +285,7 @@ clean_git_repo()
    if [ -e "$fdsrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
         echo "   FDS-SMV repo"
-        echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1a 2>&1
+        echo "Cleaning FDS-SMV repo." >> $OUTPUT_DIR/stage1 2>&1
         cd $fdsrepo
         git clean -dxf &> /dev/null
         git add . &> /dev/null
@@ -301,7 +301,7 @@ clean_git_repo()
    if [ -e "$cfastrepo" ]; then
       if [ "$CLEANREPO" == "1" ]; then
         echo "   cfast repo"
-        echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1a 2>&1
+        echo "Cleaning cfast repo." >> $OUTPUT_DIR/stage1 2>&1
 
         cd $cfastrepo/Build
         git clean -dxf &> /dev/null
@@ -336,17 +336,17 @@ do_git_checkout()
      cd $fdsrepo
      echo Checking out:
      echo "   latest FDS-SMV revision"
-     echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1a 2>&1
+     echo "Checking out latest FDS-SMV revision." >> $OUTPUT_DIR/stage1 2>&1
      git remote update &> /dev/null
      git checkout development &> /dev/null
-     git pull >> $OUTPUT_DIR/stage1a 2>&1
+     git pull >> $OUTPUT_DIR/stage1 2>&1
 
      cd $cfastrepo
      echo "   latest cfast revision"
-     echo "Checking out latest cfast revision." >> $OUTPUT_DIR/stage1a 2>&1
+     echo "Checking out latest cfast revision." >> $OUTPUT_DIR/stage1 2>&1
      git remote update &> /dev/null
      git checkout master &> /dev/null
-     git pull >> $OUTPUT_DIR/stage1a 2>&1
+     git pull >> $OUTPUT_DIR/stage1 2>&1
      GIT_REVISION=`git describe --long --dirty`
    fi
 }
@@ -354,7 +354,7 @@ do_git_checkout()
 check_git_checkout()
 {
    # Check for git errors
-   stage1a_success=true
+   stage1_success=true
 }
 
 #  =================================
@@ -380,7 +380,7 @@ check_compile_cfast_db()
    then
       stage2a_success=true
    else
-      echo "Errors from Stage 2 - Compile CFAST debug:" >> $ERROR_LOG
+      echo "Errors from Stage 2a - Compile CFAST debug:" >> $ERROR_LOG
       cat $OUTPUT_DIR/stage2a >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
@@ -391,8 +391,234 @@ check_compile_cfast_db()
       # Continue along
       :
    else
-      echo "Warnings from Stage 2 - Compile CFAST debug:" >> $WARNING_LOG
+      echo "Warnings from Stage 2a - Compile CFAST debug:" >> $WARNING_LOG
       grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2a >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
+   fi
+}
+
+compile_cfast()
+{ 
+   # Build release CFAST
+   echo "      release"
+   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}
+   make -f ../makefile clean &> /dev/null
+   ./make_cfast.sh &> $OUTPUT_DIR/stage2b
+}
+
+check_compile_cfast()
+{
+   # Check for errors in CFAST release compilation
+   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}
+   if [[ -e "cfast7_${platform}${size}" ]]
+   then
+      stage2b_success=true
+   else
+      echo "Errors from Stage 2b - Compile CFAST:" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage2b >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+   fi
+
+   # Check for compiler warnings/remarks
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2b` == "" ]]
+   then
+      # Continue along
+      :
+   else
+      echo "Warnings from Stage 2b - Compile CFAST release:" >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2b >> $WARNING_LOG
+      echo "" >> $WARNING_LOG
+   fi
+}
+
+compile_smv_utilities()
+{
+   if [ "$USEINSTALL" == "" ]; then
+   # smokeview libraries
+     cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_${compiler}${size}
+     echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage2c 2>&1
+     echo "   smokeview libraries"
+     ./makelibs.sh >> $OUTPUT_DIR/stage2c 2>&1
+
+   # background
+     if [ "$QUEUE" == "none" ]; then
+       cd $fdsrepo/SMV/Build/background/${compiler}_${platform}${size}
+       echo '   background'
+       echo 'Compiling background:' >> $OUTPUT_DIR/stage2c 2>&1
+       ./make_background.sh >> $OUTPUT_DIR/stage2c 2>&1
+     fi
+   else
+     echo "   smokeview libraries - not built, using installed smokview"
+     if [ "$QUEUE" == "none" ]; then
+       echo "   background - not built, using installed smokeview"
+       echo "Using installed smokeview, libraries not built" >> $OUTPUT_DIR/stage2c 2>&1
+     fi
+   fi
+}
+
+check_smv_utilities()
+{
+   if [ "$USEINSTALL" == "" ] ; then
+     # Check for errors in SMV utilities compilation
+     cd $fdsrepo
+     stage2c_success="1"
+     if [ "$QUEUE" == "none" ]; then
+       if [ ! -e "$fdsrepo/SMV/Build/background/${compiler}_${platform}${size}/background" ]; then
+         stage2c_success="0"
+       fi
+     fi
+     if [ "$stage2csuccess" == "0" ]; then
+        echo "error building background"
+        echo "Errors from Stage 2c - building background:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage2c >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
+   else
+     stage2c_success="1"
+     if [ "$QUEUE" == "none" ]; then
+       is_file_installed background stage2c
+     fi
+     if [ "$stage2csuccess" == "0" ] ; then
+        echo "background not installed"
+        echo "Errors from Stage 2c - background not installed:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage2c >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
+   fi
+}
+
+#  ==================================
+#  = Stage 2d - Compile SMV debug =
+#  ==================================
+
+compile_smv_db()
+{
+   # Clean and compile SMV DB
+   if [ "$USEINSTALL" == "" ]; then
+     echo "   smokeview"
+     echo "      debug"
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
+     ./make_smv_db.sh &> $OUTPUT_DIR/stage2d
+   else
+     echo "   smokeview"
+     echo "      debug - not built, using installed smokeview"
+   fi
+}
+
+check_compile_smv_db()
+{
+   # Check for errors in SMV DB compilation
+   if [ "$USEINSTALL" == "" ]; then
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
+     if [ -e "smokeview_${platform}${size}_db" ]
+     then
+        stage2d_success=true
+     else
+        echo "Errors from Stage 2d - Compile SMV DB:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage2d >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
+
+   # Check for compiler warnings/remarks
+   # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
+     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+     then
+        # Continue along
+        :
+     else
+        echo "Stage 2d warnings:" >> $WARNING_LOG
+        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2d | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+        echo "" >> $WARNING_LOG
+     fi
+   fi
+}
+
+#  ==================================
+#  = Stage 2e - Compile SMV release =
+#  ==================================
+
+compile_smv()
+{
+   # Clean and compile SMV
+   if [ "$USEINSTALL" == "" ]; then
+     echo "      release"
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
+     ./make_smv.sh &> $OUTPUT_DIR/stage2e
+   else
+     echo "      release - not built, using installed smokeview"
+   fi
+}
+
+check_compile_smv()
+{
+   # Check for errors in SMV release compilation
+   if [ "$USEINSTALL" == "" ]; then
+     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
+     if [ -e "smokeview_${platform}${size}" ]
+     then
+        stage2e_success=true
+     else
+        echo smokeview not found
+        echo "Errors from Stage 2e - Compile SMV release:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage2e >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
+
+   # Check for compiler warnings/remarks
+   # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
+     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage5b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
+     then
+        # Continue along
+        :
+     else
+        echo "Stage 2e warnings:" >> $WARNING_LOG
+        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage5b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
+        echo "" >> $WARNING_LOG
+     fi
+   else
+     is_file_installed smokeview stage2e 
+     if [ "$stage2e_success" == "0" ] ; then
+        echo "smokeview not installed"
+        echo "Errors from Stage 2e - smokeview not installed:" >> $ERROR_LOG
+        cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
+        echo "" >> $ERROR_LOG
+     fi
+   fi
+}
+
+#  ==================================
+#  = Stage 2f - Compile VV calcs    =
+#  ==================================
+
+compile_vvcalc()
+{ 
+   # Build release vvcalc
+   echo "   VandV_Calcs - release" 
+   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
+   make -f ../makefile clean &> /dev/null
+   ./make_vv.sh &> $OUTPUT_DIR/stage2c
+}
+
+check_compile_vvcalc()
+{
+   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
+   if [[ -e "VandV_Calcs_${platform}${size}" ]]
+   then
+      stage2f_success=true
+   else
+      echo "Errors from Stage 2f - Compile VandV_Calcs:" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage2f >> $ERROR_LOG
+      echo "" >> $ERROR_LOG
+   fi
+
+   # Check for compiler warnings/remarks
+   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2f` == "" ]]
+   then
+      # Continue along
+      :
+   else
+      echo "Warnings from Stage 2f - Compile VV calcs:" >> $WARNING_LOG
+      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2f >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -420,7 +646,7 @@ wait_vv_cases_debug_end()
    then
      while [[ `ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep` != '' ]]; do
         JOBS_REMAINING=`ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep | wc -l`
-        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage3a
+        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage3
         TIME_LIMIT_STAGE="3"
         check_time_limit
         sleep 30
@@ -515,79 +741,8 @@ check_vv_cases_debug()
    fi
 }
 
-#  ===================================
-#  = Stage 4 - Compile CFAST release =
-#  ===================================
-
-compile_cfast()
-{ 
-   # Build release CFAST
-   echo "      release"
-   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}
-   make -f ../makefile clean &> /dev/null
-   ./make_cfast.sh &> $OUTPUT_DIR/stage2b
-}
-
-check_compile_cfast()
-{
-   # Check for errors in CFAST release compilation
-   cd $cfastrepo/Build/CFAST/${compiler}_${platform}${size}
-   if [[ -e "cfast7_${platform}${size}" ]]
-   then
-      stage2b_success=true
-   else
-      echo "Errors from Stage 4 - Compile CFAST:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage2b >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
-   fi
-
-   # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2b` == "" ]]
-   then
-      # Continue along
-      :
-   else
-      echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2b >> $WARNING_LOG
-      echo "" >> $WARNING_LOG
-   fi
-}
-
-compile_vvcalc()
-{ 
-   # Build release vvcalc
-   echo "   VandV_Calcs - release" 
-   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
-   make -f ../makefile clean &> /dev/null
-   ./make_vv.sh &> $OUTPUT_DIR/stage2c
-}
-
-check_compile_vvcalc()
-{
-   cd $cfastrepo/Source/VandV_Calcs/${compiler}_${platform}${size}
-   if [[ -e "VandV_Calcs_${platform}${size}" ]]
-   then
-      stage2c_success=true
-   else
-      echo "Errors from Stage 4b - Compile VandV_Calcs:" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage2c >> $ERROR_LOG
-      echo "" >> $ERROR_LOG
-   fi
-
-   # Check for compiler warnings/remarks
-   if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2c` == "" ]]
-   then
-      # Continue along
-      :
-   else
-      echo "Warnings from Stage 4 - Compile CFAST release:" >> $WARNING_LOG
-      grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage2c >> $WARNING_LOG
-      echo "" >> $WARNING_LOG
-   fi
-}
-
 #  ==========================================
-#  = Stage 5 - Run V&V cases (release mode) =
+#  = Stage 4 - Run V&V cases (release mode) =
 #  ==========================================
 
 wait_vv_cases_release_start()
@@ -595,8 +750,8 @@ wait_vv_cases_release_start()
    # Scans qstat and waits for V&V cases to start
    while [[ `qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q` != '' ]]; do
       JOBS_REMAINING=`qstat -a | grep $(whoami) | grep -v grep | grep $JOBPREFIX | grep Q | wc -l`
-      echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage5
-      TIME_LIMIT_STAGE="5"
+      echo "Waiting for ${JOBS_REMAINING} V&V cases to start." >> $OUTPUT_DIR/stage4
+      TIME_LIMIT_STAGE="4"
       check_time_limit
       sleep 30
    done
@@ -609,15 +764,15 @@ wait_vv_cases_release_end()
    then
      while [[ `ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep` != '' ]]; do
         JOBS_REMAINING=`ps -u $USER -f | fgrep .in | fgrep cfast | grep -v grep | wc -l`
-        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage5
-        TIME_LIMIT_STAGE="5"
+        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage4
+        TIME_LIMIT_STAGE="4"
         check_time_limit
         sleep 30
      done
    else
      while [[ `qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX` != '' ]]; do
         JOBS_REMAINING=`qstat -a | awk '{print $2 $4}' | grep $(whoami) | grep $JOBPREFIX | wc -l`
-        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage5
+        echo "Waiting for ${JOBS_REMAINING} verification cases to complete." >> $OUTPUT_DIR/stage4
         TIME_LIMIT_STAGE="5"
         check_time_limit
         sleep 30
@@ -630,8 +785,8 @@ run_vv_cases_release()
    # Start running all CFAST V&V cases
    cd $cfastrepo/Validation/scripts
    echo '   release'
-   echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage5 2>&1
-   ./Run_CFAST_Cases.sh -I $compiler -F $fdsrepo $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage5 2>&1
+   echo 'Running CFAST V&V cases:' >> $OUTPUT_DIR/stage4 2>&1
+   ./Run_CFAST_Cases.sh -I $compiler -F $fdsrepo $USEINSTALL2 -j $JOBPREFIX -q $QUEUE >> $OUTPUT_DIR/stage4 2>&1
    if [ "$QUEUE" != "none" ]; then
      wait_vv_cases_release_start
    fi
@@ -645,20 +800,20 @@ check_vv_cases_release()
    # Scan and report any errors in CFAST Verificaion cases
    cd $cfastrepo/Verification
 
-   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage4` == "" ]] && \
       [[ `grep -F "***Error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -F "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage5 >> $OUTPUT_DIR/stage5_errors
-      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
-      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
-      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage4 >> $OUTPUT_DIR/stage4_errors
+      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage4_errors
+      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage4_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage4_errors
       
-      echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage5_errors >> $ERROR_LOG
+      echo "Errors from Stage 4 - Run V&V cases (release mode):" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage4_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       THIS_CFAST_FAILED=1
    fi
@@ -666,222 +821,65 @@ check_vv_cases_release()
    # Scan and report any errors in CFAST Validation cases
    cd $cfastrepo/Validation
 
-   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage5` == "" ]] && \
+   if [[ `grep 'Run aborted' -riI --include *.log --include *.err ${OUTPUT_DIR}/stage4` == "" ]] && \
       [[ `grep -F "***Error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -F "***Fatal error" -riI --include *.log --include *.err *` == "" ]] && \
       [[ `grep -A 20 forrtl -riI --include *.log --include *.err *` == "" ]]
    then
       :
    else
-      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage5 >> $OUTPUT_DIR/stage5_errors
-      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
-      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
-      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage5_errors
+      grep 'Run aborted' -riI --include *.log --include *.err $OUTPUT_DIR/stage4 >> $OUTPUT_DIR/stage4_errors
+      grep -F "***Error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage4_errors
+      grep -F "***Fatal error" -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage4_errors
+      grep -A 20 forrtl -riI --include *.log --include *.err * >> $OUTPUT_DIR/stage4_errors
       
-      echo "Errors from Stage 5 - Run V&V cases (release mode):" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage5_errors >> $ERROR_LOG
+      echo "Errors from Stage 4 - Run V&V cases (release mode):" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage4_errors >> $ERROR_LOG
       echo "" >> $ERROR_LOG
       THIS_CFAST_FAILED=1
-   fi
-}
-
-#  ====================================
-#  = Stage 1b - Compile SMV utilities =
-#  ====================================
-
-compile_smv_utilities()
-{
-   if [ "$USEINSTALL" == "" ]; then
-   # smokeview libraries
-     cd $fdsrepo/SMV/Build/LIBS/lib_${platform}_${compiler}${size}
-     echo 'Building Smokeview libraries:' >> $OUTPUT_DIR/stage1b 2>&1
-     echo "   smokeview libraries"
-     ./makelibs.sh >> $OUTPUT_DIR/stage1b 2>&1
-
-   # background
-     if [ "$QUEUE" == "none" ]; then
-       cd $fdsrepo/SMV/Build/background/${compiler}_${platform}${size}
-       echo '   background'
-       echo 'Compiling background:' >> $OUTPUT_DIR/stage1b 2>&1
-       ./make_background.sh >> $OUTPUT_DIR/stage1b 2>&1
-     fi
-   else
-     echo "   smokeview libraries - not built, using installed smokview"
-     if [ "$QUEUE" == "none" ]; then
-       echo "   background - not built, using installed smokeview"
-       echo "Using installed smokeview, libraries not built" >> $OUTPUT_DIR/stage1b 2>&1
-     fi
    fi
 }
 
 is_file_installed()
 {
   program=$1
+  stage=$2
   prognotfound=`$program -help | tail -1 | grep "not found" | wc -l`
   if [ "$prognotfound" == "1" ] ; then
-    stage1b_success="0"
-    echo "***error: the $program is not installed" >> $OUTPUT_DIR/stage1b
+    ${stage}_success="0"
+    echo "***error: the $program is not installed" >> $OUTPUT_DIR/$stage
   fi
 }
 
-check_smv_utilities()
-{
-   if [ "$USEINSTALL" == "" ] ; then
-     # Check for errors in SMV utilities compilation
-     cd $fdsrepo
-     stage1b_success="1"
-     if [ "$QUEUE" == "none" ]; then
-       if [ ! -e "$fdsrepo/SMV/Build/background/${compiler}_${platform}${size}/background" ]; then
-         stage1b_success="0"
-       fi
-     fi
-     if [ "$stage1b_success" == "0" ]; then
-        echo "error building background"
-        echo "Errors from Stage 1b - building background:" >> $ERROR_LOG
-        cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
-        echo "" >> $ERROR_LOG
-     fi
-   else
-     stage1b_success="1"
-     if [ "$QUEUE" == "none" ]; then
-       is_file_installed background
-     fi
-     if [ "$stage1b_success" == "0" ] ; then
-        echo "background not installed"
-        echo "Errors from Stage 1b - background not installed:" >> $ERROR_LOG
-        cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
-        echo "" >> $ERROR_LOG
-     fi
-   fi
-}
-
-#  =============================
-#  = Stage 6a - Compile SMV DB =
-#  =============================
-
-compile_smv_db()
-{
-   # Clean and compile SMV DB
-   if [ "$USEINSTALL" == "" ]; then
-     echo "   smokeview"
-     echo "      debug"
-     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
-     ./make_smv_db.sh &> $OUTPUT_DIR/stage6a
-   else
-     echo "   smokeview"
-     echo "      debug - not built, using installed smokeview"
-   fi
-}
-
-check_compile_smv_db()
-{
-   # Check for errors in SMV DB compilation
-   if [ "$USEINSTALL" == "" ]; then
-     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
-     if [ -e "smokeview_${platform}${size}_db" ]
-     then
-        stage6a_success=true
-     else
-        echo "Errors from Stage 6a - Compile SMV DB:" >> $ERROR_LOG
-        cat $OUTPUT_DIR/stage6a >> $ERROR_LOG
-        echo "" >> $ERROR_LOG
-     fi
-
-   # Check for compiler warnings/remarks
-   # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
-     then
-        # Continue along
-        :
-     else
-        echo "Stage 6b warnings:" >> $WARNING_LOG
-        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6a | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
-        echo "" >> $WARNING_LOG
-     fi
-   fi
-}
-
-#  ==================================
-#  = Stage 6b - Compile SMV release =
-#  ==================================
-
-compile_smv()
-{
-   # Clean and compile SMV
-   if [ "$USEINSTALL" == "" ]; then
-     echo "      release"
-     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
-     ./make_smv.sh &> $OUTPUT_DIR/stage6b
-   else
-     echo "      release - not built, using installed smokeview"
-   fi
-}
-
-check_compile_smv()
-{
-   # Check for errors in SMV release compilation
-   if [ "$USEINSTALL" == "" ]; then
-     cd $fdsrepo/SMV/Build/smokeview/${compiler}_${platform}${size}
-     if [ -e "smokeview_${platform}${size}" ]
-     then
-        stage6b_success=true
-     else
-        echo smokeview not found
-        echo "Errors from Stage 6d - Compile SMV release:" >> $ERROR_LOG
-        cat $OUTPUT_DIR/stage6b >> $ERROR_LOG
-        echo "" >> $ERROR_LOG
-     fi
-
-   # Check for compiler warnings/remarks
-   # grep -v 'feupdateenv ...' ignores a known FDS MPI compiler warning (http://software.intel.com/en-us/forums/showthread.php?t=62806)
-     if [[ `grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked'` == "" ]]
-     then
-        # Continue along
-        :
-     else
-        echo "Stage 6d warnings:" >> $WARNING_LOG
-        grep -A 5 -E 'warning|remark' ${OUTPUT_DIR}/stage6b | grep -v 'feupdateenv is not implemented' | grep -v 'lcilkrts linked' >> $WARNING_LOG
-        echo "" >> $WARNING_LOG
-     fi
-   else
-     is_file_installed smokeview 
-     if [ "$stage1b_success" == "0" ] ; then
-        echo "smokeview not installed"
-        echo "Errors from Stage 1b - smokeview not installed:" >> $ERROR_LOG
-        cat $OUTPUT_DIR/stage1b >> $ERROR_LOG
-        echo "" >> $ERROR_LOG
-     fi
-   fi
-}
 
 #  ===============================================
-#  = Stage 6c - Make cfast pictures (release mode) =
+#  = Stage 5c - Make cfast pictures (release mode) =
 #  ===============================================
 
 make_cfast_pictures()
 {
    echo "Generating smokeview images"
    cd $cfastrepo/Validation/scripts
-   ./Make_CFAST_Pictures.sh -I $COMPILER $USEINSTALL 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage6c
+   ./Make_CFAST_Pictures.sh -I $COMPILER $USEINSTALL 2>&1 | grep -v FreeFontPath &> $OUTPUT_DIR/stage5
 }
 
 check_cfast_pictures()
 {
    # Scan and report any errors in make SMV pictures process
    cd $CFASTBOT_RUNDIR
-   if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage6c` == "" && `grep -F "*** Error" -I $OUTPUT_DIR/stage6c` == "" ]]
+   if [[ `grep -B 50 -A 50 "Segmentation" -I $OUTPUT_DIR/stage5` == "" && `grep -F "*** Error" -I $OUTPUT_DIR/stage5` == "" ]]
    then
-      stage6c_success=true
+      stage5_success=true
    else
-      cp $OUTPUT_DIR/stage6c  $OUTPUT_DIR/stage6c_errors
-      echo "Errors from Stage 6e - Make CFAST pictures (release mode):" >> $ERROR_LOG
-      cat $OUTPUT_DIR/stage6c >> $ERROR_LOG
+      cp $OUTPUT_DIR/stage5  $OUTPUT_DIR/stage5_errors
+      echo "Errors from Stage 5 - Make CFAST pictures (release mode):" >> $ERROR_LOG
+      cat $OUTPUT_DIR/stage5 >> $ERROR_LOG
       echo "" >> $ERROR_LOG
    fi
 }
 
 #  ====================
-#  = Stage 7 - Matlab =
+#  = Stage 6 - Matlab =
 #  ====================
 
 # Functions to check for an available Matlab license
@@ -891,13 +889,13 @@ run_matlab_license_test()
    echo "Running matlab license test"
    # Run simple test to see if Matlab license is available
    cd $cfastrepo/Utilities/Matlab
-   matlab -logfile licmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7a_matlab_license
+   matlab -logfile licmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab License Check'), catch, disp('License Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage6a_matlab_license
 }
 
 scan_matlab_license_test()
 {
    # Check for failed license
-   if [[ `grep "License checkout failed" $OUTPUT_DIR/stage7a_matlab_license` == "" ]]
+   if [[ `grep "License checkout failed" $OUTPUT_DIR/stage6a_matlab_license` == "" ]]
    then
       # Continue along
       :
@@ -917,7 +915,7 @@ check_matlab_license_server()
 }
 
 #  =============================================
-#  = Stage 7a - Matlab plotting (verification) =
+#  = Stage 6a - Matlab plotting (verification) =
 #  =============================================
 
 run_matlab_verification()
@@ -927,7 +925,7 @@ run_matlab_verification()
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
 
-   matlab -logfile vermat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7b_verification
+   matlab -logfile vermat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Verification script'), CFAST_verification_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage6b_verification
 }
 
 check_matlab_verification()
@@ -935,20 +933,20 @@ check_matlab_verification()
    # Scan and report any errors in Matlab scripts
    cd $CFASTBOT_RUNDIR
 
-   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7b_verification` == "" ]]
+   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage6a_verification` == "" ]]
    then
-      stage7a_success=true
+      stage6a_success=true
    else
-      grep -A 50 "Error" $OUTPUT_DIR/stage7b_verification >> $OUTPUT_DIR/stage7b_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage6a_verification >> $OUTPUT_DIR/stage6a_warnings
 
-      echo "Warnings from Stage 7a - Matlab plotting (verification):" >> $WARNING_LOG
-      cat $OUTPUT_DIR/stage7b_warnings >> $WARNING_LOG
+      echo "Warnings from Stage 6a - Matlab plotting (verification):" >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage6a_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
 
 #  ==========================================================
-#  = Stage 7c - Matlab plotting and statistics (validation) =
+#  = Stage 6b - Matlab plotting and statistics (validation) =
 #  ==========================================================
 
 run_matlab_validation()
@@ -967,21 +965,21 @@ run_matlab_validation()
    echo "   Making plots"
    # Run Matlab plotting script
    cd $cfastrepo/Utilities/Matlab
-   matlab -logfile valmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage7c_validation
+   matlab -logfile valmat.log -nodesktop -noFigureWindows -r "try, disp('Running Matlab Validation script'), CFAST_validation_script, catch, disp('Error'), err = lasterror, err.message, err.stack, end, exit" &> $OUTPUT_DIR/stage6c_validation
 }
 
 check_matlab_validation()
 {
    # Scan and report any errors in Matlab scripts
    cd $CFASTBOT_RUNDIR
-   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage7c_validation` == "" ]]
+   if [[ `grep -A 50 "Error" $OUTPUT_DIR/stage6c_validation` == "" ]]
    then
-      stage7b_success=true
+      stage6b_success=true
    else
-      grep -A 50 "Error" $OUTPUT_DIR/stage7c_validation >> $OUTPUT_DIR/stage7c_warnings
+      grep -A 50 "Error" $OUTPUT_DIR/stage6c_validation >> $OUTPUT_DIR/stage6b_warnings
 
-      echo "Warnings from Stage 7c - Matlab plotting and statistics (validation):" >> $WARNING_LOG
-      cat $OUTPUT_DIR/stage7b_warnings >> $WARNING_LOG
+      echo "Warnings from Stage 6b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
+      cat $OUTPUT_DIR/stage6b_warnings >> $WARNING_LOG
       echo "" >> $WARNING_LOG
    fi
 }
@@ -1013,7 +1011,7 @@ check_validation_stats()
          echo "" >> $VALIDATION_STATS_LOG
       fi
    else
-      echo "Warnings from Stage 7b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
+      echo "Warnings from Stage 6b - Matlab plotting and statistics (validation):" >> $WARNING_LOG
       echo "Error: The validation statistics output file does not exist." >> $WARNING_LOG
       echo "Expected the file Utilities/Matlab/CFAST_validation_scatterplot_output.csv" >> $WARNING_LOG
       echo "" >> $WARNING_LOG
@@ -1037,7 +1035,7 @@ archive_validation_stats()
 }
 
 #  ================================
-#  = Stage 8 - Build CFAST Guides =
+#  = Stage 7 - Build CFAST Guides =
 #  ================================
 
 check_guide()
@@ -1053,7 +1051,7 @@ check_guide()
       fi
    else
       # There were errors/warnings in the guide build process
-      echo "Warnings from Stage 8 - Build CFAST Guides:" >> $WARNING_LOG
+      echo "Warnings from Stage 7 - Build CFAST Guides:" >> $WARNING_LOG
       echo $4 >> $WARNING_LOG # Name of guide
       if [ ! -e $2/$3 ]; then
          echo The guide $4 failed to be built >> $WARNING_LOG
@@ -1069,10 +1067,10 @@ make_cfast_tech_guide()
    # Build CFAST Tech Guide
    echo Building CFAST Tech guide
    cd $cfastrepo/Manuals/Tech_Ref
-   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_tech_guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage7_cfast_tech_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_tech_guide $cfastrepo/Manuals/Tech_Ref Tech_Ref.pdf 'CFAST Technical Reference Guide'
+   check_guide $OUTPUT_DIR/stage7_cfast_tech_guide $cfastrepo/Manuals/Tech_Ref Tech_Ref.pdf 'CFAST Technical Reference Guide'
 }
 
 make_cfast_user_guide()
@@ -1080,10 +1078,10 @@ make_cfast_user_guide()
    # Build CFAST User Guide
    echo Building CFAST User guide
    cd $cfastrepo/Manuals/Users_Guide
-   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_user_guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage7_cfast_user_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_user_guide $cfastrepo/Manuals/Users_Guide Users_Guide.pdf 'CFAST Users Guide'
+   check_guide $OUTPUT_DIR/stage7_cfast_user_guide $cfastrepo/Manuals/Users_Guide Users_Guide.pdf 'CFAST Users Guide'
 }
 
 make_cfast_vv_guide()
@@ -1091,10 +1089,10 @@ make_cfast_vv_guide()
    # Build CFAST Tech Guide
    echo Building CFAST VV guide
    cd $cfastrepo/Manuals/Validation_Guide
-   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_vv_guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage7_cfast_vv_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_vv_guide $cfastrepo/Manuals/Validation_Guide Validation_Guide.pdf 'CFAST Verification and Validation Guide'
+   check_guide $OUTPUT_DIR/stage7_cfast_vv_guide $cfastrepo/Manuals/Validation_Guide Validation_Guide.pdf 'CFAST Verification and Validation Guide'
 }
 
 make_cfast_config_guide()
@@ -1102,10 +1100,10 @@ make_cfast_config_guide()
    # Build CFAST Configuration Guide
    echo Building CFAST Configuration guide
    cd $cfastrepo/Manuals/Configuration_Guide
-   ./make_guide.sh &> $OUTPUT_DIR/stage8_cfast_config_guide
+   ./make_guide.sh &> $OUTPUT_DIR/stage7_cfast_config_guide
 
    # Check guide for completion and copy to website if successful
-   check_guide $OUTPUT_DIR/stage8_cfast_config_guide $cfastrepo/Manuals/Configuration_Guide Configuration_Guide.pdf 'CFAST Configuration Guide'
+   check_guide $OUTPUT_DIR/stage7_cfast_config_guide $cfastrepo/Manuals/Configuration_Guide Configuration_Guide.pdf 'CFAST Configuration Guide'
 }
 
 #  =====================================================
@@ -1233,20 +1231,24 @@ check_git_checkout
 ### Stage 2a ###
 compile_cfast_db
 check_compile_cfast_db
+
+### Stage 2b ###
 compile_cfast
 check_compile_cfast
 
-### Stage 2b ###
+### Stage 2c ###
 compile_smv_utilities
 check_smv_utilities
 
-### Stage 2c ###
+### Stage 2d ###
 compile_smv_db
 check_compile_smv_db
+
+### Stage 2e ###
 compile_smv
 check_compile_smv
 
-### Stage 2d ###
+### Stage 2f ###
 compile_vvcalc
 check_compile_vvcalc
 
@@ -1263,7 +1265,7 @@ if [[ $stage2b_success ]] ; then
 fi
 
 ### Stage 5 ###
-if [[ $stage2b_success && $stage6b_success ]] ; then
+if [[ $stage2b_success && $stage2e_success ]] ; then
    make_cfast_pictures
    check_cfast_pictures
 fi

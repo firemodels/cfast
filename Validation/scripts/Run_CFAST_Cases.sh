@@ -84,7 +84,7 @@ PLATFORM=$PLATFORM$DEBUG
 if [ "$use_installed" == "1" ] ; then
   BACKGROUND=background
 else
-  BACKGROUND=$fdsrepo/Utilities/background/$compiler$underscore$PLATFORM2/background
+  BACKGROUND=$fdsrepo/SMV/Build/background/$compiler$underscore$PLATFORM2/background
 fi
 export BACKGROUND
 

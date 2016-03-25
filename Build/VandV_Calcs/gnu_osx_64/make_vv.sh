@@ -1,7 +1,7 @@
 #!/bin/bash
-platform=gnu_linux_64
+platform=gnu_osx_64
 dir=`pwd`
 target=${dir##*/}
 
 echo Building $target
-make VPATH=".." -f ../makefile $target
+make -f ../makefile $target

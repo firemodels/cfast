@@ -4,7 +4,7 @@
 
 # The variable VPATH defines where the source code is relative to the current directory
 
-VPATH = .
+VPATH = ../../../Source/VandV_Calcs
 
 # Definition of the object variables
 

@@ -193,7 +193,7 @@ run_auto()
    git_SMVFILE=$GITSTATUS_DIR/smokeview_source_revision
    git_SMVLOG=$GITSTATUS_DIR/smokeview_source_log
 
-   CFAST_SOURCE=$cfastrepo/Source/CFAST/Source
+   CFAST_SOURCE=$cfastrepo/Source/CFAST
    git_CFASTSOURCEFILE=$GITSTATUS_DIR/cfast_source_revision
    git_CFASTSOURCELOG=$GITSTATUS_DIR/cfast_source_log
   

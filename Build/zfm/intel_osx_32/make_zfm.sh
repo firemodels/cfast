@@ -1,3 +1,3 @@
 #!/bin/bash
 rm -f *.o *.mod
-make -f ../Makefile intel_osx_32
+make -f ../makefile intel_osx_32

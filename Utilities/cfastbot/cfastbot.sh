@@ -221,7 +221,7 @@ run_auto()
    git merge origin/master &> /dev/null
 
    is_changed $TRIGGER $git_TRIGGER
-   if [ "$IS_CHANGED" == ""]; then
+   if [ "$IS_CHANGED" == "" ]; then
       exit
    fi
 
@@ -234,7 +234,7 @@ run_auto()
    fi
 
    is_changed $TRIGGERONLY $git_TRIGGERONLY
-   if [ "$IS_CHANGED" == "1"]; then
+   if [ "$IS_CHANGED" == "1" ]; then
       SKIP=1
       partial=1
    fi

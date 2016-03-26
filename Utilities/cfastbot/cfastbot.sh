@@ -238,6 +238,9 @@ run_auto()
       SKIP=1
       partial=1
    fi
+   echo SKIP=$SKIP
+   echo partial=$partial
+   echo IS_CHANGED=$IS_CHANGED
 
    rm -f $MESSAGE_FILE
 

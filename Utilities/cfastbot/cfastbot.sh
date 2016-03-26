@@ -187,31 +187,44 @@ START_TIME=$(date +%s)
 TIME_LIMIT=10800
 TIME_LIMIT_EMAIL_NOTIFICATION="unsent"
 
+is_changed()
+{
+   trigger_file=$1
+   trigger_save=$2
+   
+   THIS_REVISION=`git log --abbrev-commit $trigger_file | head -1 | awk '{print $2}'`
+   LAST_REVISION=`cat $trigger_save`
+   
+   if [[ $THIS_REVISION == $LAST_REVISION ]] ; then
+      IS_CHANGED=
+   else
+      IS_CHANGED=1
+      echo $THIS_REVISION>$trigger_save
+   fi
+   
+}
+
 run_auto()
 {
-   SMV_SOURCE=$fdsrepo/SMV/source
-   git_SMVFILE=$GITSTATUS_DIR/smokeview_source_revision
-   git_SMVLOG=$GITSTATUS_DIR/smokeview_source_log
-
    CFAST_SOURCE=$cfastrepo/Source/CFAST
-   git_CFASTSOURCEFILE=$GITSTATUS_DIR/cfast_source_revision
    git_CFASTSOURCELOG=$GITSTATUS_DIR/cfast_source_log
-  
-   CFAST_DOCS=$cfastrepo/Manuals
-   git_CFASTDOCSFILE=$GITSTATUS_DIR/cfast_docs_revision
-   git_CFASTDOCSLOG=$GITSTATUS_DIR/cfast_docs_log
-
-   SMOKEBOTDIR=~/CFASTBOT/
-   SMOKEBOTEXE=./run_cfastbot.sh
-
    MESSAGE_FILE=$GITSTATUS_DIR/message
-
-   cd $CFAST_SOURCE
-   git pull &> /dev/null
-   THIS_REVISION=`git log --abbrev-commit . | head -1 | awk '{print $2}'`
-   LAST_REVISION=`cat $git_CFASTSOURCEFILE`
-
+   partial=
    
+   TRIGGER=$cfastrepo/Source/CFAST
+   git_TRIGGER=$GITSTATUS_DIR/cfast_source_revision
+   TRIGGERONLY=$cfastrepo/Source/CFAST/runonly_trigger.txt
+   git_TRIGGERONLY=$GITSTATUS_DIR/cfastonly_source_revision
+   
+   cd $CFAST_SOURCE
+   git remote update &> /dev/null
+   git merge origin/master &> /dev/null
+
+   is_changed $TRIGGER $git_TRIGGER
+   if [ "$IS_CHANGED" == ""]; then
+      exit
+   fi
+
    THIS_AUTHOR=`git log . | head -2 | tail -1 | awk '{print $2}'`
 
    git log . | head -5 | tail -1 > $git_CFASTSOURCELOG
@@ -220,14 +233,23 @@ run_auto()
       exit
    fi
 
+   is_changed $TRIGGERONLY $git_TRIGGERONLY
+   if [ "$IS_CHANGED" == "1"]; then
+      SKIP=1
+      partial=1
+   fi
+
    rm -f $MESSAGE_FILE
 
-   echo $THIS_REVISION>$git_CFASTSOURCEFILE
    echo -e "CFAST source directory has changed. $LAST_REVISION->$THIS_CFASTSOURCE($THIS_AUTHOR)" >> $MESSAGE_FILE
    cat $git_CFASTSOURCELOG >> $MESSAGE_FILE
 
    echo -e "CFASTbot run initiated." >> $MESSAGE_FILE
-   cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo &> /dev/null
+   if [ "$partial" == "" ]; then
+     cat $MESSAGE_FILE | mail -s "CFASTbot run initiated" $mailTo &> /dev/null
+   else
+     cat $MESSAGE_FILE | mail -s "CFASTbot run initiated (skip matlab/doc stages)" $mailTo &> /dev/null
+   fi
 }
 
 check_time_limit()
@@ -1216,7 +1238,7 @@ email_build_status()
 
 # if -a option is invoked, only proceed running CFASTbot if the smokeview or CFAST source has changed
 
-if [[ $RUNAUTO == "y" ]] ; then
+if [[ "$RUNAUTO" == "y" ]] ; then
   run_auto
 fi
 

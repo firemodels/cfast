@@ -191,6 +191,10 @@ is_changed()
 {
    trigger_file=$1
    trigger_save=$2
+ 
+   if [ ! -e $trigger_save ]; then
+      touch $trigger_save
+   fi
    
    THIS_REVISION=`git log --abbrev-commit $trigger_file | head -1 | awk '{print $2}'`
    LAST_REVISION=`cat $trigger_save`
@@ -213,7 +217,7 @@ run_auto()
    
    TRIGGER=$cfastrepo/Source/CFAST
    git_TRIGGER=$GITSTATUS_DIR/cfast_source_revision
-   TRIGGERONLY=$cfastrepo/Source/CFAST/runonly_trigger.txt
+   TRIGGERONLY=$cfastrepo/Source/CFAST/skipmatlab_trigger.txt
    git_TRIGGERONLY=$GITSTATUS_DIR/cfastonly_source_revision
    
    cd $CFAST_SOURCE
@@ -238,9 +242,6 @@ run_auto()
       SKIP=1
       partial=1
    fi
-   echo SKIP=$SKIP
-   echo partial=$partial
-   echo IS_CHANGED=$IS_CHANGED
 
    rm -f $MESSAGE_FILE
 

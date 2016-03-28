@@ -16,6 +16,7 @@ mkdir %DISTDIR%\Uninstall
 set SMVDISTDIR=%DISTDIR%\..\SMV6
 if exist %SMVDISTDIR% rmdir /s /q %SMVDISTDIR%
 mkdir %SMVDISTDIR%
+mkdir %SMVDISTDIR%\textures
 
 echo.
 echo ***Copying executables
@@ -28,17 +29,19 @@ echo.
 echo ***Copying CFAST DLLs
 echo.
 
-call :COPY  %bindir%\C1.C1Report.4.dll           %DISTDIR%\
-call :COPY  %bindir%\C1.C1Zip.4.dll              %DISTDIR%\
-call :COPY  %bindir%\C1.Win.4.dll                %DISTDIR%\
-call :COPY  %bindir%\C1.Win.BarCode.4.dll        %DISTDIR%\
-call :COPY  %bindir%\C1.Win.C1Document.4.dll     %DISTDIR%\
-call :COPY  %bindir%\C1.Win.C1DX.4.dll           %DISTDIR%\
-call :COPY  %bindir%\C1.Win.C1FlexGrid.4.dll     %DISTDIR%\
-call :COPY  %bindir%\C1.Win.C1Report.4.dll       %DISTDIR%\
-call :COPY  %bindir%\C1.Win.C1Sizer.4.dll        %DISTDIR%\
-call :COPY  %bindir%\C1.Win.ImportServices.4.dll %DISTDIR%\
-call :COPY  %bindir%\NPlot.dll %DISTDIR%\
+call :COPY  %bindir%\C1.C1Pdf.4.dll           		%DISTDIR%\
+call :COPY  %bindir%\C1.C1Report.4.dll          	%DISTDIR%\
+call :COPY  %bindir%\C1.C1Zip.4.dll           		%DISTDIR%\
+call :COPY  %bindir%\C1.Win.4.dll           		%DISTDIR%\
+call :COPY  %bindir%\C1.Win.BarCode.4.dll       	%DISTDIR%\
+call :COPY  %bindir%\C1.Win.C1Document.4.dll     	%DISTDIR%\
+call :COPY  %bindir%\C1.Win.C1DX.4.dll           	%DISTDIR%\
+call :COPY  %bindir%\C1.Win.C1FlexGrid.4.dll           	%DISTDIR%\
+call :COPY  %bindir%\C1.Win.C1Report.4.dll           	%DISTDIR%\
+call :COPY  %bindir%\C1.Win.C1ReportDesigner.4.dll      %DISTDIR%\
+call :COPY  %bindir%\C1.Win.C1Sizer.4.dll           	%DISTDIR%\
+call :COPY  %bindir%\C1.Win.ImportServices.4.dll        %DISTDIR%\
+call :COPY  %bindir%\NPlot.dll 				%DISTDIR%\
 
 echo.
 echo ***Copying CFAST support files
@@ -97,9 +100,11 @@ echo.
 call :COPY  %bundleinfo%\uninstall.bat        %DISTDIR%\Uninstall
 call :COPY  %bundleinfo%\uninstall_cfast.bat  %DISTDIR%\Uninstall\uninstall_base.bat 
 call :COPY  %bundleinfo%\uninstall_cfast2.bat %DISTDIR%\Uninstall\uninstall_base2.bat 
-call :COPY  %bundleinfo%\uninstall_cfast2.bat %DISTDIR%\Uninstall\uninstall_base2.bat 
+call :COPY  %bundleinfo%\uninstall_cfast2.bat %DISTDIR%\Uninstall\uninstall_base2.bat
 
-call :COPY  %bundleinfo%\set_path.exe         %DISTDIR%\Uninstall\set_path.exe
+where set_path.exe > set_path.txt
+set /p setpath=<set_path.txt
+call :COPY  %setpath% %DISTDIR%\Uninstall\set_path.exe
 cd %CURDIR%
 
 GOTO :EOF

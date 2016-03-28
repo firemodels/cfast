@@ -20,7 +20,7 @@ goto:eof
 call %envfile%
 
 %git_drive%
-set scriptdir=%linux_git_root%/Source/CFAST/scripts
+set scriptdir=%linux_git_root%/Build/scripts
 
 plink %git_logon% %scriptdir%/ssh_command.csh %osx_hostname% %scriptdir% MAKEcfastosx64.sh
 

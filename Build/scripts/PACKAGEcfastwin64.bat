@@ -20,7 +20,7 @@ call %envfile%
 
 %git_drive%
 
-cd %git_root%\scripts
+cd %git_root%\Utilities\for_bundle\scripts
 call BUNDLE_cfast.bat
 
 pause

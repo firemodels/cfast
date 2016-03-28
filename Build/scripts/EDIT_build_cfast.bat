@@ -22,5 +22,5 @@ goto:eof
 call %envfile%
 
 %git_drive%
-cd %git_root%\CFAST
+cd %git_root%\Build
 start notepad build_cfast.html

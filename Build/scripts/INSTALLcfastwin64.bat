@@ -20,7 +20,7 @@ call %envfile%
 
 %git_drive%
 echo cd to bundle location
-::cd %git_root%\CFAST\uploads
+cd %git_root%\Utilities\uploads
 
 Rem ----------------------------------------------------------
 Rem should not need to edit any lines below
@@ -29,7 +29,7 @@ set version=%cfast_version%
 set platform=win64
 set exe=cfast_%version%_%platform%.exe
 
-echo Running Smokeview installer: %exe%
+echo Running cfast installer: %exe%
 pause
 echo call cfast installer
 ::call  %exe%

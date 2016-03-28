@@ -1,6 +1,6 @@
 @echo off
 
-set bindir=%git_root%\bin
+set bindir=%git_root%\Utilities\for_bundle\Bin
 set docdir=%git_root%\Manuals
 
 echo.

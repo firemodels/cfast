@@ -9,17 +9,16 @@ set distname=cfast7
 
 :: VVVVVVVVVVVVVVVVV shouldn't need to change anything below VVVVVVVVVVVVVVV
 
-
 set CURDIR=%CD%
-cd ..
+cd ..\..\..
 set git_root=%CD%
 cd %CURDIR%
 set git_drive=c:
 
 %git_drive%
 
-set DISTDIR=%git_root%\scripts\BUNDLEDIR\%installerbase%
-set bundleinfo=%git_root%\scripts\bundleinfo
+set DISTDIR=%git_root%\Utilities\for_bundle\scripts\BUNDLEDIR\%installerbase%
+set bundleinfo=%git_root%\Utilities\for_bundle\scripts\bundleinfo
 
 call Create_Install_Files.bat
 
@@ -42,8 +41,8 @@ echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
 wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\firemodels\%distname%" -c wrapup_cfast_install.bat
 
-echo copying %installerbase%.exe to %git_root%\CFAST\uploads\cftest.exe"
-copy %installerbase%.exe %git_root%\CFAST\uploads\cftest.exe"
+echo copying %installerbase%.exe to %git_root%\Utilities\uploads\cftest.exe"
+copy %installerbase%.exe %git_root%\Utilities\uploads\cftest.exe"
 
 
 echo.

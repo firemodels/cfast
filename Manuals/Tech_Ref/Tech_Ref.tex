@@ -1053,17 +1053,24 @@ where $\Delta \Tp$ is the excess plume temperature at the ceiling. This correlat
 \section{Visibility}
 \label{Visibility}
 
-The visibility calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density is given by the expression:
+The visibility calculation depends solely on the soot concentration. Soot production is specified by the user in terms of a yield. Soot is transported like all other gas species and its concentration is used in the optical density calculation. The optical density per unit distance, $D_u$, is given by the expression:
 \be
-   D = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
+   D_u = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
 \ee
-where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}.
-
+where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. From the optical density, the percent obscuration per unit distance, $O_u$, can be calculated from the definitions of optical density and percent obscuration as a function of light attenuation \cite{Schifiliti:2002} as 
+\be
+    D_u = \frac{1}{d}log_{10}\brackets{\frac{I_0}{I}}, O_u = 100 \brackets{1-\brackets{\frac{I}{I_0}}^{{\frac{1}{d}}}} \implies O_u = 100 \frac{10^{D_u}-1}{10^{D_u}}
+\ee
+which is used to determine smoke detector activation, below.
 \section{Smoke Detection}
 
-CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself. Instead, CFAST treats a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
+CFAST estimates the activation of smoke detectors based on either the smoke concentration or temperature at the detector location.
 
-Users are cautioned that this model is very crude and the uncertainty in its predictions are substantial. Consult the CFAST Validation Guide for more details on its validation.
+\begin{itemize}
+\item For smoke detector response based on smoke obscuration, the calculated percent obscuration in the layer where the detector is located is compared to a user-specified value. A default activation value of 24 \%/m (8~\%/ft) obscuration is assumed for both ionization and photoelectric smoke detectors \cite{Milke:2008}. CFAST does not contain an algorithm that accounts for the time delay owing to smoke transport from the fire to the detector location, nor to the penetration of smoke into the detector chamber itself.
+\item CFAST can also a smoke detector as a very sensitive heat detector with an activation temperature rise of 5~$^\circ$C and RTI of 5~(m$\cdot$s)$^{1/2}$. The temperature rise estimate is based on a study performed by Bukowski and Averill~\cite{Bukowski:1998}. The RTI is not based on experiment; it simply provides a slight time delay in activation.
+\end{itemize}
+Users are cautioned that both these models are very crude and the uncertainty in predictions are substantial. Consult the CFAST Validation Guide for more details on its validation.
 
 
 \section{Fire Suppression} \label{sec:suppression}
@@ -1102,7 +1109,7 @@ $\cp$               & heat capacity of air at constant pressure, J/(kg$\cdot$K) 
 $\cv$               & heat capacity of air at constant volume, J/(kg$\cdot$K) or kJ/(kg$\cdot$K) \\
 $c$                 & heat capacity of a solid, kJ/(kg$\cdot$K) \\
 $D$                 & fire diameter, m \\
-                    & optical density, m$^{-1}$ \\
+$D_u$               & optical density per unit distance, m$^{-1}$ \\
 $D^*$               & characteristic fire diameter, m \\
 $F_{k-j}$           & configuration factor, surface $k$ intercepted by surface $j$, dimensionless \\
 $f_v$               & soot volume fraction, dimensionless \\
@@ -1115,12 +1122,13 @@ $L$                 & length of a compartment, m \\
                     & characteristic length for radiation calculation, m \\
 $M_\alpha$          & molar mass of gas species $\alpha$, g/mol \\
 $\mi$               & total mass in gas layer $i$, kg \\
-$\dmi$             & rate of mass addition, gas layer $i$, kg \\
+$\dmi$              & rate of mass addition, gas layer $i$, kg \\
 $\dme$              & plume mass entrainment rate, kg/s \\
 $\dmf$              & pyrolysis rate, kg/s \\
 n$_\alpha$          & number of atoms of element $\alpha$ \\
+$O_u$               & Obscuration per unit distance, \%/m \\
 $P$                 & pressure at floor level of a compartment, Pa \\
-$\dqi$           & rate of addition of heat into layer $i$, kW \\
+$\dqi$              & rate of addition of heat into layer $i$, kW \\
 $\dQ$               & total heat release rate of the fire, kW \\
 $\dQc$              & heat release rate of the fire released as convective energy, kW \\
 $\dq''$             & heat flux, kW/m$^2$ \\
@@ -1323,8 +1331,7 @@ The last equation, $q''(\vecy)+k\dbydx{\Tw}(0,t)$, is used to couple the gas wit
 q''=-k\dbydx{T}
 \end{equation}
 
-It is implemented as an algebraic equation by discretizing
-the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using the heat conduction equation
+It is implemented as an algebraic equation by discretizing the spatial derivative term $\dbydx{\Tw}$ and is evaluated by advancing the wall temperature profile from a previously known solution at $t_{\rm old}$ to $t$ using the heat conduction equation
 \begin{eqnarray}
    \frac{\partial \Tw}{\partial t} &= &\frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fouriera}
 \end{eqnarray}

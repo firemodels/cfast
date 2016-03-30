@@ -63,8 +63,76 @@ With the exterior temperature still set to 25~\degc, the elevation is raised to 
 \label{fig:Temperature_Equilibrium_Elevation}
 \end{figure}
 
+\subsection{A Fire in a Single, Sealed Compartment with a Single Zone}
+\label{sealed_test}
+
+A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  From Eqs. (2.5) and (2.6) in the CFAST Technical Guide~\cite{CFAST_Tech_Guide_6}, the governing equation for the pressure and temperature of the single zone compartment are:
+\begin{eqnarray}
+   \frac{{\rm d} P}{{\rm d}t} &=& \frac{\gamma-1}{V} \, \dot{q}   \label{eq1}
+ \\[0.1in]
+   \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{q} - c_p \, \dot{m} \, T + V \, \frac{{\rm d} P}{{\rm d}t} \right)
+   \label{eq2}
+\end{eqnarray}
+where $m$ is the total mass in the volume, $\dot{m}=\dm_{\rm f}$ is the mass flow rate of the fuel into the volume, and
+$\dot{q}=\dot{Q} + c_p \, \dot{m}_{\rm f} \, T_{\rm f} $ is the heat release rate of the fire plus the heat flow rate of the fuel flowing into the volume.
+Note that $\dot{m}$ and $\dot{q}$ are source terms, they are assumed to have this form for this test problem.
+
+Eq.~(\ref{eq2}) can be shown to be equivalent to the first law of thermodynamics by first substituting ${\rm d}P/{\rm d}t$ from Eq.~(\ref{eq1}) and noting that $\gamma=c_p/c_v$ to obtain
+\begin{eqnarray}
+   \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{q} - c_p \, \dot{m} \, T +  (\gamma-1) \, \dot{q}\right)\\
+   \label{eq3}
+    &=& \frac{1}{c_p \, m} \left( \gamma\dot{q} - c_p \, \dot{m} \, T   \right)\\
+    &=& \frac{1}{c_v \, m} \left( \dot{q} - c_v \, \dot{m} \, T   \right)\label{eq4}
+\end{eqnarray}
+
+\noindent Next, the first law of thermodynamics can be stated as
+\begin{eqnarray}
+\frac{\rm d}{{\rm d}t}\left(c_vmT\right) = \dot{q} - P\frac{{\rm d}V}{{\rm d}t}=\dot{q}\label{eq5}
+\end{eqnarray}
+since ${\rm d}V/{\rm d}t=0$ (for this case).
+\noindent Expanding and solving for ${\rm d} T/{\rm d}t$ results in
+\begin{eqnarray}
+c_v\dot{m}T+c_vm\frac{{\rm d}T}{{\rm d}t} &= &\dot{q}\\
+    \frac{{\rm d} T}{{\rm d}t}&=& \frac{1}{c_v \, m} \left( \dot{q} - c_v \, \dot{m} \, T   \right)
+\end{eqnarray}
+which is identical Eq.~(\ref{eq4}) and therefore equivalent to Eq.~(\ref{eq2}).
+
+Since the right hand side of Eq.~(\ref{eq1}) is constant, it may be integrated to obtain the solution
+\begin{equation}
+P(t)=P_0+\frac{\gamma-1}{V}\,\dot{q}\,t \label{eq:soleq1}
+\end{equation}
+where $P_0$ is the initial pressure.  A solution for Eq.~(\ref{eq2}) may be found by using Eq.~(\ref{eq:soleq1}) and the ideal gas law to obtain
+\begin{equation}
+T(t)=\frac{V\,P(t)}{R\,m(t)}\label{eq:soleq2}
+\end{equation}
+where $m(t)=m_0+\dot{m}\,t$, $m_0=\frac{P_0\,V}{R\,T_0}$, is the initial mass, $T_0$ is the initial pressure and $R=c_p-c_v$.
+
+Figure~\ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and the analytic solutions given
+in Eqs.~(\ref{eq:soleq1}) and (\ref{eq:soleq2}).
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_temp} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_pres}
+\end{tabular*}
+\caption[Results of the test case {\ct sealed\_test.in}]{Temperature and pressure rise due to a fire in a closed compartment. The case is called {\ct sealed\_test.in}.}
+\label{fig:Analytical_Closed_Compartment}
+\end{figure}
+
+\subsection{A Fire in a Single, Sealed Compartment with Two Zones}
+
+Consider now the same case as in Section~\ref{sealed_test}, but now with two zones rather than one. The compartment pressure ought to be the same as before, and the upper layer temperature ought to converge to the single layer temperature as seen in Fig.~\ref{fig:Analytical_Closed_Compartment2}.
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_2_layers_temp} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_2_layers_pres}
+\end{tabular*}
+\caption[Results of the test case {\ct sealed\_test\_2\_layers.in}]{Hot gas layer temperature and pressure rise due to a fire in a closed compartment with two zones. The case is called {\ct sealed\_test\_2\_layers.in}.}
+\label{fig:Analytical_Closed_Compartment2}
+\end{figure}
 
 \clearpage
+
 
 \section{Mass Balance}
 
@@ -135,7 +203,7 @@ Figure~\ref{specmass2} shows the resulting product masses, which are consistent 
 \subsection{A Fire in a Four Compartment Assembly}
 \label{sec:specmass4}
 
-Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time. Figure~\ref{fig:specmass4TP} shows that the expected temperature and pressure values of compartment one are consistent with the values produced by CFAST.
+Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time. 
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -153,88 +221,6 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \end{tabular*}
 \caption[Results of the test case {\ct species\_mass\_4.in}]{Expected and CFAST calculated values for the masses of CO$_2$ and H$_2$O in compartments three and four for case {\ct species\_mass\_4.in}.}
 \label{fig:specmass4cd}
-\end{figure}
-
-\begin{figure}[!ht]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/species_mass_4_temperature} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/species_mass_4_pressure}
-\end{tabular*}
-\caption[Results of the test case {\ct species\_mass\_4.in}]{Expected and CFAST calculated values for pressure and temperature of the first compartment for the case {\ct species\_mass\_4.in}.}
-\label{fig:specmass4TP}
-\end{figure}
-
-\clearpage
-
-
-\section{Energy Balance}
-
-\subsection{A Fire in a Single, Sealed Compartment with a Single Zone}
-\label{sealed_test}
-
-A 100~kW methane fire burns in a sealed compartment with no ventilation, adiabatic walls, and no radiative emission. A single zone simulation is run in which it is assumed that the entire volume is taken up by the upper layer.  From Eqs. (2.5) and (2.6) in the CFAST Technical Guide~\cite{CFAST_Tech_Guide_6}, the governing equation for the pressure and temperature of the single zone compartment are:
-\begin{eqnarray}
-   \frac{{\rm d} P}{{\rm d}t} &=& \frac{\gamma-1}{V} \, \dot{q}   \label{eq1}
- \\[0.1in]
-   \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{q} - c_p \, \dot{m} \, T + V \, \frac{{\rm d} P}{{\rm d}t} \right)
-   \label{eq2}
-\end{eqnarray}
-where $m$ is the total mass in the volume, $\dot{m}=\dm_{\rm f}$ is the mass flow rate of the fuel into the volume, and
-$\dot{q}=\dot{Q} + c_p \, \dot{m}_{\rm f} \, T_{\rm f} $ is the heat release rate of the fire plus the heat flow rate of the fuel flowing into the volume.
-Note that $\dot{m}$ and $\dot{q}$ are source terms, they are assumed to have this form for this test problem.
-
-Eq.~(\ref{eq2}) can be shown to be equivalent to the first law of thermodynamics by first substituting ${\rm d}P/{\rm d}t$ from Eq.~(\ref{eq1}) and noting that $\gamma=c_p/c_v$ to obtain
-\begin{eqnarray}
-   \frac{{\rm d} T}{{\rm d}t} &=& \frac{1}{c_p \, m} \left( \dot{q} - c_p \, \dot{m} \, T +  (\gamma-1) \, \dot{q}\right)\\
-   \label{eq3}
-    &=& \frac{1}{c_p \, m} \left( \gamma\dot{q} - c_p \, \dot{m} \, T   \right)\\
-    &=& \frac{1}{c_v \, m} \left( \dot{q} - c_v \, \dot{m} \, T   \right)\label{eq4}
-\end{eqnarray}
-
-\noindent Next, the first law of thermodynamics can be stated as
-\begin{eqnarray}
-\frac{\rm d}{{\rm d}t}\left(c_vmT\right) = \dot{q} - P\frac{{\rm d}V}{{\rm d}t}=\dot{q}\label{eq5}
-\end{eqnarray}
-since ${\rm d}V/{\rm d}t=0$ (for this case).
-\noindent Expanding and solving for ${\rm d} T/{\rm d}t$ results in
-\begin{eqnarray}
-c_v\dot{m}T+c_vm\frac{{\rm d}T}{{\rm d}t} &= &\dot{q}\\
-    \frac{{\rm d} T}{{\rm d}t}&=& \frac{1}{c_v \, m} \left( \dot{q} - c_v \, \dot{m} \, T   \right)
-\end{eqnarray}
-which is identical Eq.~(\ref{eq4}) and therefore equivalent to Eq.~(\ref{eq2}).
-
-Since the right hand side of Eq.~(\ref{eq1}) is constant, it may be integrated to obtain the solution
-\begin{equation}
-P(t)=P_0+\frac{\gamma-1}{V}\,\dot{q}\,t \label{eq:soleq1}
-\end{equation}
-where $P_0$ is the initial pressure.  A solution for Eq.~(\ref{eq2}) may be found by using Eq.~(\ref{eq:soleq1}) and the ideal gas law to obtain
-\begin{equation}
-T(t)=\frac{V\,P(t)}{R\,m(t)}\label{eq:soleq2}
-\end{equation}
-where $m(t)=m_0+\dot{m}\,t$, $m_0=\frac{P_0\,V}{R\,T_0}$, is the initial mass, $T_0$ is the initial pressure and $R=c_p-c_v$.
-
-Figure~\ref{fig:Analytical_Closed_Compartment} includes comparisons of the temperature and pressure as predicted by CFAST and the analytic solutions given
-in Eqs.~(\ref{eq:soleq1}) and (\ref{eq:soleq2}).
-
-\begin{figure}[!ht]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_temp} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_pres}
-\end{tabular*}
-\caption[Results of the test case {\ct sealed\_test.in}]{Temperature and pressure rise due to a fire in a closed compartment. The case is called {\ct sealed\_test.in}.}
-\label{fig:Analytical_Closed_Compartment}
-\end{figure}
-
-\subsection{A Fire in a Single, Sealed Compartment with Two Zones}
-
-Consider now the same case as in Section~\ref{sealed_test}, but now with two zones rather than one. The compartment pressure ought to be the same as before, and the upper layer temperature ought to converge to the single layer temperature as seen in Fig.~\ref{fig:Analytical_Closed_Compartment2}.
-\begin{figure}[!ht]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_2_layers_temp} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/sealed_test_2_layers_pres}
-\end{tabular*}
-\caption[Results of the test case {\ct sealed\_test\_2\_layers.in}]{Hot gas layer temperature and pressure rise due to a fire in a closed compartment with two zones. The case is called {\ct sealed\_test\_2\_layers.in}.}
-\label{fig:Analytical_Closed_Compartment2}
 \end{figure}
 
 \clearpage

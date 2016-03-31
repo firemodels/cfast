@@ -18,7 +18,10 @@ if NOT exist %cfastroot%\Utilities\for_bundle\SMV6\textures (
 copy ..\SMV6\textures\*.* %cfastroot%\Utilities\for_bundle\SMV6\textures\ /Y
 
 @echo *** copying DLLs
-copy ..\Utilities\for_bundle\Bin\C1*.dll %cfastroot%\bin /Y
+copy ..\Bin\C1*.dll %cfastroot%\Utilities\for_bundle\Bin /Y
+
+@echo *** copying additional files
+copy ..\Bin\*.o %cfastroot%\Utilities\for_bundle\Bin /Y
 
 @echo *** copy install utilities
 copy \users\rpeacoc\FIRE-LOCAL\repo_exes\set_path.exe %cfastroot%\Utilities\for_bundle\scripts\bundleinfo\ /Y

@@ -1,13 +1,14 @@
 @echo off
+Title Building cfast for 64 bit Linuux
 
-Rem  Windows batch file to build a test Smokeview for Windows 64
+Rem  Windows batch file to build a release Smokeview for Linux 64.
 
 Rem setup environment variables (defining where repository resides etc) 
 
 set envfile="%userprofile%"\cfast_env.bat
 IF EXIST %envfile% GOTO endif_envexist
 echo ***Fatal error.  The environment setup file %envfile% does not exist. 
-echo Create a file named %envfile% and use cfast/Source/CFAST/scripts/cfast_env_template.bat
+echo Create a file named %envfile% and use SMV/scripts/fds_smv_env_template.bat
 echo as an example.
 echo.
 echo Aborting now...
@@ -19,9 +20,10 @@ goto:eof
 call %envfile%
 
 %git_drive%
-echo cd %git_root%\Build\CFAST\intel_win_64
-cd %git_root%\Build\CFAST\intel_win_64
+set scriptdir=%linux_git_root%/Build/scripts
 
-cfast7_win_64
+plink %git_logon% %scriptdir%/ssh_command.csh %linux_hostname% %scriptdir% MAKEcfastlinux64db.sh
 
+echo.
+echo compilation complete
 pause

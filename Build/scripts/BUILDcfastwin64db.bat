@@ -1,7 +1,7 @@
 @echo off
-Title Building cfast for 64 bit Linux
+Title Building cfast for 64 bit Windows
 
-Rem  Windows batch file to build a release Smokeview for Linux 64.
+Rem  Windows batch file to build a release Smokeview for Windows 64.
 
 Rem setup environment variables (defining where repository resides etc) 
 
@@ -18,11 +18,15 @@ goto:eof
 :endif_envexist
 
 call %envfile%
+echo Using the environment variables:
+echo.
+echo Using GIT revision %smv_revision% to build a 64 bit Windows Smokeview
 
 %git_drive%
-set scriptdir=%linux_git_root%/Build/scripts
 
-plink %linux_logon% %scriptdir%/ssh_command.csh %linux_hostname% %scriptdir% MAKEcfastlinux64.sh
+cd %git_root%\Build\CFAST\intel_win_64_db
+erase *.obj *.mod
+call make_cfast
 
 echo.
 echo compilation complete

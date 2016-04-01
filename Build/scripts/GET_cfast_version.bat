@@ -19,8 +19,8 @@ goto:eof
 call %envfile%
 
 %git_drive%
-echo cd %git_root%\Source\CFAST\intel_win_64
-cd %git_root%\Source\CFAST\intel_win_64
+echo cd %git_root%\Build\CFAST\intel_win_64
+cd %git_root%\Build\CFAST\intel_win_64
 
 cfast7_win_64
 

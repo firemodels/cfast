@@ -1,2 +1,2 @@
 @echo off
-start wordpad "%userprofile%"\cfast_env.bat
+start notepad %userprofile%\cfast_env.bat

@@ -1,14 +1,14 @@
-@echo off
+ @echo off
 
-echo Testing that software and environment variables used by 
-echo the FDS/Smokeview web scripts are setup.  
+echo Testing that the software and environment variables
+echo used by the cfast web scripts are setup properly.
 echo.
 echo Press any key to begin test.
 pause >NUL
 
-set envfile="%userprofile%"\fds_smv_env.bat
+set envfile="%userprofile%"\cfast_env.bat
 IF EXIST %envfile% GOTO endif_envexist
-echo The file fds_smv_env.bat was not found in your
+echo The file cfast_env.bat was not found in your
 echo home directory: %userprofile%
 echo.
 echo 1.  Copy it from SMV\for_bundle in the repository to %userprofile%
@@ -20,14 +20,14 @@ goto:eof
 
 :endif_envexist
 
-echo fds_smv_env.bat was found in your home directory.
+echo cfast_env.bat was found in your home directory.
 echo Press any key to view settings.
 pause >NUL
 
-%svn_drive%
+%git_drive%
 call %envfile%
 
-call %svn_root%\SMV\scripts\SHOW_setup.bat
+call %git_root%\Build\scripts\SHOW_setup.bat
 
 echo.
 echo Press any key to test putty installation

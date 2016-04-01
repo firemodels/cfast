@@ -7,10 +7,9 @@ echo ***Fatal error.  The environment setup file %envfile% does not exist.
 echo Create a file named %envfile% and define the environment
 echo variables: git_root, git_drive, smv_version and cluster_logon . Example:
 echo.
-echo set git_root=d:\fds_smv
-echo set git_drive=d:
+echo set git_root=c:\cfast
+echo set git_drive=c:
 echo set git_logon=username@computername
-echo set smv_version=5.3.7_3177
 echo.
 echo Aborting now...
 
@@ -22,5 +21,5 @@ goto:eof
 call %envfile%
 
 %git_drive%
-cd %git_root%\CFAST\scripts
+cd %git_root%\Build\scripts
 start notepad getting_started.html

@@ -26,15 +26,14 @@ echo Updating the repo:%git_root%
 git remote update
 git merge origin/master
 
-set scriptdir=%linux_git_root%/Source/CFAST/scripts/
-set linux_cfastdir=%linux_git_root%
+set scriptdir=%linux_git_root%/Build/scripts/
 
 echo.
 echo Updating the Linux repository, %linux_git_root%, on %linux_hostname% to the latest revision
-plink %git_logon% %scriptdir%/UPDATE_latest_cfast_onhost.csh  %linux_git_root% %linux_hostname%
+plink %linux_logon% %scriptdir%/UPDATE_latest_cfast_onhost.csh  %linux_git_root% %linux_hostname%
 
 echo.
-echo Updating the OSX repository, %linux_git_root%, on %osx_hostname% to the latest revision
-plink %git_logon% %scriptdir%/UPDATE_latest_cfast_onhost.csh  %linux_git_root% %osx_hostname%
+echo Updating the OSX repository, %osx_git_root%, on %osx_hostname% to the latest revision
+plink %osx_logon% %scriptdir%/UPDATE_latest_cfast_onhost.csh  %osx_git_root% %osx_hostname%
 
 pause

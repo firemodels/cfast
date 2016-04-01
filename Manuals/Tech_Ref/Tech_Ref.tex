@@ -1057,7 +1057,7 @@ The visibility calculation depends solely on the soot concentration. Soot produc
 \be
    D_u = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
 \ee
-where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. From the optical density, the percent obscuration per unit distance, $O_u$, can be calculated from the definitions of optical density and percent obscuration as a function of light attenuation \cite{Schifiliti:2002} as 
+where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. From the optical density, the percent obscuration per unit distance, $O_u$, can be calculated from the definitions of optical density and percent obscuration as a function of light attenuation \cite{Schifiliti:2002} as
 \be
     D_u = \frac{1}{d}log_{10}\brackets{\frac{I_0}{I}}, O_u = 100 \brackets{1-\brackets{\frac{I}{I_0}}^{{\frac{1}{d}}}} \implies O_u = 100 \frac{10^{D_u}-1}{10^{D_u}}
 \ee
@@ -1364,6 +1364,38 @@ computed in step \ref{step:rhs}.
 \end{enumerate}
 \item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small according to a specified error tolerance?
 If yes, advance $n$ and go to step \ref{step:first} to compute a solution at the next time step.  If no, go to step \ref{step:second} and iterate again.
+\end{enumerate}
+
+
+
+
+
+
+\chapter{Solving the Modeling Equations (alternative)}
+\label{chap:heatsolution2}
+
+As described in Section~\ref{sect:solution}, CFAST uses the differential~/~algebraic solver DASSL~\cite{DASSL:1982,DASSL:1989} to update the pressure, upper layer volume and zone temperatures of each compartment according to the set of ordinary differential equations:
+\begin{eqnarray}
+\dbydt{P} &=& \frac{{\gamma-1}}{{V}} \left( \dql + \dqu \right)  \label{eq1a} \\[.1in]
+\dbydt{\Vu} &=& \frac{1}{P \gamma} \left( (\gamma-1) \, \dqu - \Vu \dbydt{P} \right) \label{eq2a} \\[.1in]
+\dbydt{\Tu} &=& \frac{1}{\cp \, m_{\rm u}} \left( \dqu - \cp \, \dmau \, \Tu + \Vu \dbydt{P} \right) \label{eq3a} \\[.1in]
+\dbydt{\Tl} &=& \frac{1}{\cp \, m_{\rm l}} \left( \dql - \cp \, \dmal \, \Tl + \Vl \dbydt{P} \right) \label{eq4a}
+\end{eqnarray}
+The surface and internal temperatures of the compartment lining (floor, ceiling, upper/lower walls) are advanced in time according to the partial differential equation:
+\begin{equation}
+   \frac{\partial \Tw}{\partial t} = \frac{k}{c \, \rho} \frac{\partial^2 \Tw}{\partial x^2} \label{eq:fourierb}
+\end{equation}
+The temperature gradient at the solid surfaces must match the heat flux to that surface which is governed by the gas phase thermal environment:
+\begin{equation}
+\mathbf{\dq}''=-k \dbydx{\Tw}
+\end{equation}
+The procedure to advance the solution of the equations from time $t_n$ to $t_{n+1}=t_n+\Delta t$ is as follows:
+\begin{enumerate}
+\item Estimate $P_{n+1}$, $V_{{\rm u},n+1}$, $T_{{\rm u},n+1}$, and $T_{{\rm l},n+1}$ using a 5th order backward difference approximation of the time derivative in Eqs.~(\ref{eq1a}) through (\ref{eq4a}).  
+\item Using the estimated gas phase quantities, compute mass flow rates: $\dml$ and $\dmu$ and heat flow rates: $\dql$ and $\dqu$. In particular, compute the heat flux to the four solid surfaces of each compartment, $\mathbf{\dq}''$.
+\item Using the surface wall temperature found in the previous iteration, advance the solid temperature profile $\Tw$ from $t=t_n$ to $t=t_{n+1}$ using Eq.~(\ref{eq:fourierb}). At the first iteration, just use the wall temperature at $t_n$.
+\item Compute the residual $\mathbf{\epsilon}=\mathbf{\dq}''+k\dbydx{\Tw}$ .
+\item Iterate until $\mathbf{\epsilon}$ drops below a specified tolerance.
 \end{enumerate}
 
 

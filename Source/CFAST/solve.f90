@@ -64,7 +64,7 @@ module solve_routines
     real(eb) :: work(lrwork)
     integer :: ires, iopt, nhvalg, nalg0, nalg1, nprint, i, info, nodes
     real(eb) :: tol
-    
+
     type(room_type), pointer :: roomptr
 
     ires = 0
@@ -211,7 +211,7 @@ module solve_routines
     ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection
     !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.
     !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.
-    !        since there are only nr rooms, roomc**nr tells us whether any given room is connected to any 
+    !        since there are only nr rooms, roomc**nr tells us whether any given room is connected to any
     !        other room in nr steps. the entries roomc**nr(i,nr) then indicates whether a room is connected
     !        to the outside (perhaps through several other intermediate rooms).
     matiter = 1
@@ -253,7 +253,7 @@ module solve_routines
 
     integer :: nalg, i, ires
     real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), T
-    
+
     type(room_type), pointer :: roomptr
 
     data pdzero /maxteq*0.0_eb/
@@ -1032,7 +1032,7 @@ module solve_routines
 
 ! --------------------------- calculate_residuals -------------------------------------------
 
-    subroutine calculate_residuals (tsec,x,xpsolve,delta,ires,rpar,ipar)
+    subroutine calculate_residuals (tsec,y_vector,yprime_vector,f_vector,ires,rpar,ipar)
 
 
     !     Routine: cfast calculate_residuals
@@ -1051,10 +1051,10 @@ module solve_routines
     !     Revision: $Revision$
     !     Revision Date: $Date$
     !     Arguments: TSEC    Current simulation time (T above in s)
-    !                X       Current guess at solution vector (Y above)
-    !                XPSOLVE XPSOLVE Current guess at derivative of solution
+    !                Y_VECTOR Current guess at solution vector (Y above)
+    !                YPRIME_VECTOR Current guess at derivative of solution
     !                        vector (Y' above)
-    !                DELTA   Residual or value of F(t,y,dy/dt)
+    !                F_VECTOR Residual or value of F(t,y,dy/dt)
     !                IRES    Outputs:  IRES    Integer flag which is always equal to
     !                        zero on input. calculate_residuals should alter IRES
     !                        only if it encounters an illegal value of Y or
@@ -1071,16 +1071,16 @@ module solve_routines
     !                        a partial/total flag for solution of the
     !                        species equations.
 
-    real(eb), intent(in) :: tsec, x(*), xpsolve(*), rpar(*)
+    real(eb), intent(in) :: tsec, y_vector(*), yprime_vector(*), rpar(*)
     integer, intent(in) :: ipar(*)
 
     integer, intent(inout) :: ires
-    real(eb), intent(out) :: delta(*)
+    real(eb), intent(out) :: f_vector(*)
 
     integer, parameter :: all = 1, some = 0
 
     ! data structures for dassl, the numerical solver
-    real(eb) :: xprime(maxteq)
+    real(eb) :: yhatprime_vector(maxteq)
 
     ! data structures for rooms
     type(room_type), pointer :: roomptr
@@ -1117,8 +1117,8 @@ module solve_routines
     numresd = numresd + 1
     stime = tsec
 
-    call update_data (x,odevara)
-    call update_data (x,odevarb)
+    call update_data (y_vector,odevara)
+    call update_data (y_vector,odevarb)
 
     ! If calculate_residuals is called by solve_simulation then IPAR(2)==ALL all residuals
     ! are computed.  If calculate_residuals is called by DASSL residuals are not
@@ -1148,8 +1148,9 @@ module solve_routines
     ! and vertical_flow for ceiling/floor vents
     call horizontal_flow (tsec,epsp,nprod,flwnvnt)
     call vertical_flow (tsec,flwhvnt,vflowflg)
-    call mechanical_flow (tsec,x(nofpmv+1),x(noftmv+1),xpsolve(noftmv+1),flwmv,delta(nofpmv+1),&
-                delta(noftmv+1),xprime(nofhvpr+1),nprod,hvacflg,filtered)
+    call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flwmv,&
+                               f_vector(nofpmv+1),f_vector(noftmv+1),&
+                               yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flwf)
@@ -1277,14 +1278,14 @@ module solve_routines
             tlaydl = tlaydl + pdot/(cp*roomptr%rho(l))
         end if
 
-        xprime(iroom) = pdot
-        xprime(iroom+noftl) = tlaydl
-        xprime(iroom+nofvu) = vlayd
-        xprime(iroom+noftu) = tlaydu
+        yhatprime_vector(iroom) = pdot
+        yhatprime_vector(iroom+noftl) = tlaydl
+        yhatprime_vector(iroom+nofvu) = vlayd
+        yhatprime_vector(iroom+noftu) = tlaydu
 
         if(option(foxygen)==on)then
-            xprime(iroom+nofoxyu) = oxydu
-            xprime(iroom+nofoxyl) = oxydl
+            yhatprime_vector(iroom+nofoxyu) = oxydu
+            yhatprime_vector(iroom+nofoxyl) = oxydl
         end if
     end do
 
@@ -1305,18 +1306,18 @@ module solve_routines
                 produ = flwtot(iroom,iprod+2,u)
 
                 if (hinter<hceil) then
-                    xprime(iprodu) = produ
+                    yhatprime_vector(iprodu) = produ
                 else if(hinter>=hceil.and.flwtot(iroom,m,u)<0.0_eb)  then
-                    xprime(iprodu) = produ
+                    yhatprime_vector(iprodu) = produ
                 else
-                    xprime(iprodu) = 0.0_eb
+                    yhatprime_vector(iprodu) = 0.0_eb
                 end if
                 if (hinter>0.0_eb) then
-                    xprime(iprodl) = prodl
+                    yhatprime_vector(iprodl) = prodl
                 else if (hinter<=0.0_eb.and.flwtot(iroom,m,l)>0.0_eb) then
-                    xprime(iprodl) = prodl
+                    yhatprime_vector(iprodl) = prodl
                 else
-                    xprime(iprodl) = 0.0_eb
+                    yhatprime_vector(iprodl) = 0.0_eb
                 end if
             end do
         end do
@@ -1324,36 +1325,36 @@ module solve_routines
 
     ! residuals for pressure
     do i = nofp + 1, nofp + nrm1
-        delta(i) = xprime(i) - xpsolve(i)
+        f_vector(i) = yhatprime_vector(i) - yprime_vector(i)
     end do
 
     ! residuals for layer volume, and layer temperatures
     do i = noftu + 1, noftu + 3*nrm1
-        delta(i) = xprime(i) - xpsolve(i)
+        f_vector(i) = yhatprime_vector(i) - yprime_vector(i)
     end do
 
     ! residual for oxygen
     if(option(foxygen)==on)then
         do i = 1, nrm1
-            delta(i+nofoxyu) = xprime(i+nofoxyu) - xpsolve(i+nofoxyu)
-            delta(i+nofoxyl) = xprime(i+nofoxyl) - xpsolve(i+nofoxyl)
+            f_vector(i+nofoxyu) = yhatprime_vector(i+nofoxyu) - yprime_vector(i+nofoxyu)
+            f_vector(i+nofoxyl) = yhatprime_vector(i+nofoxyl) - yprime_vector(i+nofoxyl)
         end do
     end if
 
     ! conduction residual
-    call conduction (update,dt,flxtot,delta)
+    call conduction (update,dt,flxtot,f_vector)
 
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then
 
         ! residuals for gas layer species
         do i = nofprd + 1, nofprd + 2*nprod*nrm1
-            delta(i) = xprime(i) - xpsolve(i)
+            f_vector(i) = yhatprime_vector(i) - yprime_vector(i)
         end do
 
         ! residual for hvac species
         do i = nofhvpr+1, nofhvpr+n_species*nhvsys
-            delta(i) = xprime(i) - xpsolve(i)
+            f_vector(i) = yhatprime_vector(i) - yprime_vector(i)
         end do
     end if
 
@@ -1489,10 +1490,10 @@ module solve_routines
         roomptr%species_fraction(l,n2) = 0.770_eb
         roomptr%species_fraction(u,o2) = 0.230_eb
         roomptr%species_fraction(l,o2) = 0.230_eb
-        
+
         ! set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
-        ! tables in the handbook of physics and chemistry. 
+        ! tables in the handbook of physics and chemistry.
         xt = exterior_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.016_eb/28.584_eb)

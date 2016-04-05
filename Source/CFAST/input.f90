@@ -1951,7 +1951,7 @@ module input_routines
     !     arguments: errorcode: return error indication if non-zero
 
     integer :: lp, ld, ios
-    character(256) :: testpath, testproj
+    character(256) :: testpath, testproj, revision, revision_date, compile_date
 
     ! get the path and project names
     call exehandle (exepath, datapath, project)
@@ -1970,13 +1970,13 @@ module input_routines
     ssnormal = testpath(1:lp) // testproj(1:ld) // '_n.csv'
     ssspecies = testpath(1:lp) // testproj(1:ld) // '_s.csv'
     sswall = testpath(1:lp) // testproj(1:ld) // '_w.csv'
+    gitfile = testpath(1:lp) // testproj(1:ld) // '_git.txt'
     errorlogging = testpath(1:lp) // testproj(1:ld) // '.log'
     stopfile = testpath(1:lp) // testproj(1:ld) // '.stop'
     residfile = testpath(1:lp) // testproj(1:ld) // '.debug'
     residcsv = testpath(1:lp) // testproj(1:ld) // '_resid.csv'
     jacfile = testpath(1:lp) // testproj(1:ld) // '.jac'
     jaccsv = testpath(1:lp) // testproj(1:ld) // '_jac.csv'
-    historyfile = testpath(1:lp) // testproj(1:ld) // '.hi'
     queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
     statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
     kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'
@@ -1989,6 +1989,18 @@ module input_routines
 
     open (unit=1, file=inputfile, action='read', status='old', iostat=ios)
 
+    ! output the revision for later identification of validaiton plots
+    if (validate) then
+        call deleteoutputfiles (gitfile)
+        open (unit=3, file=gitfile, action='write', iostat=ios, status='new')
+        if (ios==0) then
+            call get_info(revision, revision_date, compile_date)
+            write (3,'(a)') revision
+            close (unit=3)
+        end if
+    end if
+
+    ! open the log file to write error messages and such
     call deleteoutputfiles (errorlogging)
     open (unit=3, file=errorlogging, action='write', iostat=ios, status='new')
     if (ios/=0) then
@@ -2004,7 +2016,6 @@ module input_routines
     call deleteoutputfiles (ssnormal)
     call deleteoutputfiles (ssspecies)
     call deleteoutputfiles (sswall)
-    call deleteoutputfiles (historyfile)
     call deleteoutputfiles (statusfile)
     call deleteoutputfiles (queryfile)
     call deleteoutputfiles (kernelisrunning)

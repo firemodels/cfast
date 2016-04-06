@@ -213,7 +213,7 @@ module input_routines
     end do
 
 
-    ! check room to room heat transfer parameters (cfcon command)
+    ! check room to room heat transfer parameters (VHEAT command)
     nswall2 = nswal
     ii = 0
     do i = 1, nswal
@@ -223,7 +223,7 @@ module input_routines
         ! room numbers must be between 1 and nrm1
         if(iroom1<1.or.iroom2<1.or.iroom1>nrm1+1.or.iroom2>nrm1+1)then
             write (logerr,201) iroom1, iroom2
-201         format('***Error: Invalid CFCON specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
+201         format('***Error: Invalid VHEAT specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
             stop
         end if
 
@@ -254,7 +254,7 @@ module input_routines
             end if
         else
             write (logerr,202) iroom1, iroom2
-202         format('***Error: Invalid CFCON specification:'' ceiling and floor of rooms',i0,'-',i0,' are not connectetd')
+202         format('***Error: Invalid VHEAT specification:'' ceiling and floor of rooms',i0,'-',i0,' are not connectetd')
             stop
         end if
 
@@ -265,7 +265,7 @@ module input_routines
         if(.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2))then
             if(.not.roominfo(iroom1)%surface_on(iwall1))then
                 write(logerr,204) iwall1, iroom1
-204             format('***Error: Invalid CFCON specification. Wall ',i0,' of room ',i0,' is adiabatic')
+204             format('***Error: Invalid VHEAT specification. Wall ',i0,' of room ',i0,' is adiabatic')
             else
                 write(logerr,204)iwall2, iroom2
             end if
@@ -1523,8 +1523,7 @@ module input_routines
             if (countargs(lcarray)>=1) then
                 nto = 0
                 ifrom = lrarray(1)
-
-                if (countargs(lcarray)>=1) then
+                if (countargs(lcarray)==1) then
                     iheat(ifrom) = 1
                     cycle
                 else

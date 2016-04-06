@@ -1057,7 +1057,7 @@ The visibility calculation depends solely on the soot concentration. Soot produc
 \be
    D_u = \frac{K_m \, m_{\rm s}'''}{\ln \, 10}
 \ee
-where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. From the optical density, the percent obscuration per unit distance, $O_u$, can be calculated from the definitions of optical density and percent obscuration as a function of light attenuation \cite{Schifiliti:2002} as 
+where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specific extinction coefficient. The default value is 8700~m$^2$/kg based on the recommendation of Mulholland~\cite{Mulholland:SFPE}. From the optical density, the percent obscuration per unit distance, $O_u$, can be calculated from the definitions of optical density and percent obscuration as a function of light attenuation \cite{Schifiliti:2002} as
 \be
     D_u = \frac{1}{d}log_{10}\brackets{\frac{I_0}{I}}, O_u = 100 \brackets{1-\brackets{\frac{I}{I_0}}^{{\frac{1}{d}}}} \implies O_u = 100 \frac{10^{D_u}-1}{10^{D_u}}
 \ee
@@ -1365,6 +1365,7 @@ computed in step \ref{step:rhs}.
 \item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small according to a specified error tolerance?
 If yes, advance $n$ and go to step \ref{step:first} to compute a solution at the next time step.  If no, go to step \ref{step:second} and iterate again.
 \end{enumerate}
+
 
 
 

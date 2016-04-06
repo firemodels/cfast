@@ -24,6 +24,6 @@ echo Using GIT revision %smv_revision% to build a 64 bit Windows Smokeview
 
 %git_drive%
 
-cd %git_root%\CFAST\\uploads
+cd %git_root%\Utilities\uploads
 explorer .
 start chrome https://drive.google.com/drive/my-drive

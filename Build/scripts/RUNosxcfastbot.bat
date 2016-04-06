@@ -1,9 +1,5 @@
 @echo off
-Title Building cfast for 64 bit OSX
-
-Rem  Windows batch file to build a release Smokeview for Linux 64.
-
-Rem setup environment variables (defining where repository resides etc) 
+Title run osx cfastbot
 
 set envfile="%userprofile%"\cfast_env.bat
 IF EXIST %envfile% GOTO endif_envexist
@@ -22,8 +18,8 @@ call %envfile%
 %git_drive%
 set scriptdir=%osx_git_root%/Build/scripts
 
-plink %osx_logon% %scriptdir%/MAKEcfastosx64.sh
+plink %osx_logon% %scriptdir%/RUNosxcfastbot.sh
 
 echo.
-echo compilation complete
+echo cfastbot complete
 pause

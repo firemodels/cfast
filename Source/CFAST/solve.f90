@@ -1366,24 +1366,24 @@ module solve_routines
 
 ! --------------------------- update_data -------------------------------------------
 
-    subroutine update_data (pdif,iflag)
+    subroutine update_data (y_vector,iflag)
 
     !     routine: update_data (datacopy)
     !     purpose: calculate environment variables from the solver vector
 
-    !     arguments: pdif   solver vector
+    !     arguments: y_vector   solver vector
     !                iflag  action flag:
     !     iflag = constvar ==> constant data (data that does not change
     !                          with time)
     !     iflag = odevara  ==> ode variables: pressure, temperature and upper
     !                          layer volume
     !     iflag = odevarb  ==> species data and wall temperature profile.
-    !                          use pold and pdold to estimate species
+    !                          use yvector_old and pdold to estimate species
     !     iflag = odevarc  ==> species data and wall temperature profile.
     !                          use pdif array for species
 
     integer, intent(in) :: iflag
-    real(eb), intent(in) :: pdif(*)
+    real(eb), intent(in) :: y_vector(*)
 
     integer frmask(mxccv)
 
@@ -1656,7 +1656,7 @@ module solve_routines
         do iroom = 1, nrm1
             roomptr=>roominfo(iroom)
 
-            roomptr%volume(u) = max(pdif(iroom+nofvu),roomptr%vmin)
+            roomptr%volume(u) = max(y_vector(iroom+nofvu),roomptr%vmin)
             roomptr%volume(u) = min(roomptr%volume(u),roomptr%vmax)
             roomptr%volume(l) = max(roomptr%cvolume-roomptr%volume(u),roomptr%vmin)
             roomptr%volume(l) = min(roomptr%volume(l),roomptr%vmax)
@@ -1671,14 +1671,14 @@ module solve_routines
                 roomptr%depth(u) = roomptr%cheight - roomptr%depth(l)
             end if
 
-            roomptr%relp = pdif(iroom)
-            roomptr%absp = pdif(iroom) + pressure_offset
+            roomptr%relp = y_vector(iroom)
+            roomptr%absp = y_vector(iroom) + pressure_offset
             if(nfurn>0)then
               roomptr%temp(u) = wtemp
               roomptr%temp(l) = wtemp
             else
-              roomptr%temp(u) = pdif(iroom+noftu)
-              roomptr%temp(l) = pdif(iroom+noftl)
+              roomptr%temp(u) = y_vector(iroom+noftu)
+              roomptr%temp(l) = y_vector(iroom+noftl)
             end if
 
             ! there is a problem with how flow is being withdrawn from layers
@@ -1783,7 +1783,7 @@ module solve_routines
                     if(nfurn.gt.0)then
                        roomptr%wall_temp(iwall,1) = wtemp
                     else
-                       roomptr%wall_temp(iwall,1) = pdif(iwalleq)
+                       roomptr%wall_temp(iwall,1) = y_vector(iwalleq)
                     end if
                     iwalleq2 = izwmap(itor,itow)
                     iinode = numnode(1,iwall,iroom)
@@ -1793,7 +1793,7 @@ module solve_routines
                        if(iwalleq2==0)then
                            roomptr%wall_temp(iwall,2) = twj(iinode,iroom,iwall)
                        else
-                           roomptr%wall_temp(iwall,2) = pdif(iwalleq2)
+                           roomptr%wall_temp(iwall,2) = y_vector(iwalleq2)
                        end if
                     end if
                 else
@@ -1825,14 +1825,14 @@ module solve_routines
                 if (iflag==odevarb) then
                     ppgas = pold(isof) + dt*pdold(isof)
                 else
-                    ppgas = pdif(isof)
+                    ppgas = y_vector(isof)
                 end if
                 roomptr%species_mass(u,lsp) = max(ppgas,0.0_eb)
                 isof = isof + 1
                 if (iflag==odevarb) then
                     ppgas = pold(isof) + dt*pdold(isof)
                 else
-                    ppgas = pdif(isof)
+                    ppgas = y_vector(isof)
                 end if
                 roomptr%species_mass(l,lsp) = max(ppgas,0.0_eb)
             end do
@@ -1885,7 +1885,7 @@ module solve_routines
                 if (iflag==odevarb) then
                     pphv = max(0.0_eb,pold(isof)+dt*pdold(isof))
                 else
-                    pphv = max(0.0_eb,pdif(isof))
+                    pphv = max(0.0_eb,y_vector(isof))
                 end if
                 zzhvspec(isys,lsp) = pphv
                 zzhvm(isys) = zzhvm(isys) + zzhvspec(isys,lsp)

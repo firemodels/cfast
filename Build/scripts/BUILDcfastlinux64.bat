@@ -22,7 +22,7 @@ call %envfile%
 %git_drive%
 set scriptdir=%linux_git_root%/Build/scripts
 
-plink %linux_logon% %scriptdir%/ssh_command.csh %linux_hostname% %scriptdir% MAKEcfastlinux64.sh
+plink %linux_logon% %scriptdir%/MAKEcfastlinux64.sh
 
 echo.
 echo compilation complete

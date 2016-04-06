@@ -22,7 +22,7 @@ call %envfile%
 %git_drive%
 set scriptdir=%osx_git_root%/Build/scripts
 
-plink %osx_logon% %scriptdir%/ssh_command.csh %osx_hostname% %scriptdir% MAKEcfastosx64db.sh
+plink %osx_logon% %scriptdir%/MAKEcfastosx64db.sh
 
 echo.
 echo compilation complete

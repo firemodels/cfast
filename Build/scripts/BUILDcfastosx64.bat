@@ -20,9 +20,8 @@ goto:eof
 call %envfile%
 
 %git_drive%
-set scriptdir=%osx_git_root%/Build/scripts
 
-plink %osx_logon% %scriptdir%/MAKEcfastosx64.sh
+plink %osx_logon% %osx_git_root%/Build/scripts/run_command.sh Build/CFAST/intel_osx_64 make_cfast.sh 
 
 echo.
 echo compilation complete

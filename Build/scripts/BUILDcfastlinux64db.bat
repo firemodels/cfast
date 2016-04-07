@@ -1,5 +1,5 @@
 @echo off
-Title Building cfast for 64 bit OSX
+Title Building debug cfast for 64 bit linux
 
 Rem  Windows batch file to build a release Smokeview for Linux 64.
 
@@ -20,9 +20,8 @@ goto:eof
 call %envfile%
 
 %git_drive%
-set scriptdir=%linux_git_root%/Build/scripts
 
-plink %linux_logon% %scriptdir%/MAKEcfastlinux64db.sh
+plink %linux_logon% %linux_git_root%/Build/scripts/run_command.sh Build/CFAST/intel_linux_64_db make_cfast.sh 
 
 echo.
 echo compilation complete

@@ -413,7 +413,7 @@ module initialization_routines
             end if
             yinter(i) = 0.0_eb
         end if
-        if(roomptr%shaft) p(i+nofvu) = roomptr%vmax
+        if (roomptr%shaft) p(i+nofvu) = roomptr%vmax
         p(i+noftl) = interior_temperature
     end do
 
@@ -453,9 +453,9 @@ module initialization_routines
         ! required to reduce the fire size by 50 per cent
         ! if tdspray = 0 then turn the sprinkler off
         tdspray = dtectptr%spray_density
-        if(tdspray>0.0_eb)then
+        if (tdspray>0.0_eb) then
             tdrate = 3.0_eb/tdspray**1.8_eb
-        elseif(tdspray<0.0_eb)then
+        else if (tdspray<0.0_eb) then
             tdrate = abs(tdspray)/log(2.0_eb)
             tdspray = (3.0_eb/tdrate)**(1.0_eb/1.8_eb)
         else
@@ -492,7 +492,7 @@ module initialization_routines
 
     ! initialize solver oxygen values if required.   (must be initialized
     ! after layer mass is defined)
-    if(option(foxygen)==on)then
+    if (option(foxygen)==on) then
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
             p(iroom+nofoxyu)=0.23_eb*roomptr%mass(u)
@@ -767,7 +767,7 @@ module initialization_routines
     end do
 
     ! hvinit define initial products for hvac systems (if any)
-    if(nhvsys/=0)then
+    if (nhvsys/=0) then
         isof = nofhvpr
         do lsp = 1, min(ns,9)
             do isys = 1, nhvsys
@@ -808,7 +808,7 @@ module initialization_routines
         ! room number must be between 1 and nrm1
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        if(iroom<1.or.iroom>nrm1)then
+        if (iroom<1.or.iroom>nrm1) then
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
         end if
@@ -825,46 +825,46 @@ module initialization_routines
         zsize = roomptr%cheight
 
         ! if the locator is -1, set to center of room on the floor
-        if(xloc==-1.0_eb) xloc = 0.5_eb*xsize
-        if(yloc==-1.0_eb) yloc = 0.5_eb*ysize
-        if(zloc==-1.0_eb) zloc = 0.0_eb
-        if(iwall/=0)then
+        if (xloc==-1.0_eb) xloc = 0.5_eb*xsize
+        if (yloc==-1.0_eb) yloc = 0.5_eb*ysize
+        if (zloc==-1.0_eb) zloc = 0.0_eb
+        if (iwall/=0) then
             xxnorm = 0.0_eb
             yynorm = 0.0_eb
             zznorm = 0.0_eb
         end if
-        if(iwall==1)then
+        if (iwall==1) then
             zznorm = -1.0_eb
             xx = xloc
             yy = yloc
             zz = zsize
-        elseif(iwall==2)then
+        else if (iwall==2) then
             yynorm = -1.0_eb
             xx = xsize
             yy = ysize
             zz = yloc
-        elseif(iwall==3)then
+        else if (iwall==3) then
             xxnorm = -1.0_eb
             xx = xsize
             yy = xloc
             zz = yloc
-        elseif(iwall==4)then
+        else if (iwall==4) then
             yynorm = 1.0_eb
             xx = xloc
             yy = 0.0_eb
             zz = yloc
-        elseif(iwall==5)then
+        else if (iwall==5) then
             xxnorm = 1.0_eb
             xx = 0.0_eb
             yy = ysize
             zz = yloc
-        elseif(iwall==6)then
+        else if (iwall==6) then
             zznorm = 1.0_eb
             xx = xloc
             yy = ysize
             zz = 0.0_eb
         end if
-        if(iwall/=0)then
+        if (iwall/=0) then
             targptr%center(1) = xx
             targptr%center(2) = yy
             targptr%center(3) = zz
@@ -875,7 +875,7 @@ module initialization_routines
             yloc = yy
             zloc = zz
             iwall2 = map6(iwall)
-            if(roomptr%surface_on(iwall2))then
+            if (roomptr%surface_on(iwall2)) then
                 targptr%material = roomptr%matl(iwall2)
             else
                 targptr%material = ' '
@@ -883,7 +883,7 @@ module initialization_routines
         end if
 
         ! center coordinates need to be within room
-        if(xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize)then
+        if (xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize) then
             write(logerr,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             stop
         end if
@@ -1110,7 +1110,7 @@ module initialization_routines
     end do
 
     ! set number of implicit oxygen variables
-    if(option(foxygen)==on)then
+    if (option(foxygen)==on) then
         noxygen = nrm1
     else
         noxygen = 0

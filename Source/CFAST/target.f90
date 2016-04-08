@@ -53,7 +53,7 @@ module target_routines
     save first,x_node
 
     ! initialize non-dimensional target node thicknesses the first time target is called
-    if(first)then
+    if (first) then
         first = .false.
         call target_nodes (x_node)
         tempin = 0.0_eb
@@ -92,12 +92,12 @@ module target_routines
         nmnode(1) = nnodes_trg
         nmnode(2) = nnodes_trg - 2
         nslab = 1
-        if(iieq==pde)then
+        if (iieq==pde) then
             iwbound = 4
             walldx(1:nnodes_trg-1) = xl*x_node(1:nnodes_trg-1)
             call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
                 wfluxin,wfluxout,iwbound,tgrad,tderv)
-        else if(iieq==cylpde)then
+        else if (iieq==cylpde) then
             wfluxavg = (wfluxin+wfluxout)/2.0_eb
             iwbound = 4
             call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
@@ -147,7 +147,7 @@ module target_routines
     roomptr => roominfo(iroom)
 
     ! terms that do not depend upon the target temperature only need to be calculated once
-    if(iter==1)then
+    if (iter==1) then
 
         ! initialize flux counters: total, fire, wall, gas
         qtfflux(front:back) = 0.0_eb
@@ -164,7 +164,7 @@ module target_routines
             !svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
             ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
             call flame_height (xfire(ifire,f_qfr)+xfire(ifire,f_qfc),xfire(ifire,f_obj_area),fheight)
-            if(fheight+xfire(ifire,f_fire_zpos)>roomptr%cheight)then
+            if (fheight+xfire(ifire,f_fire_zpos)>roomptr%cheight) then
                 zfire = xfire(ifire,f_fire_zpos) + (roomptr%cheight-xfire(ifire,f_fire_zpos))/3.0_eb
             else
                 zfire = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
@@ -172,7 +172,7 @@ module target_routines
             svect(3) = targptr%center(3) - zfire
             cosang = 0.0_eb
             s = max(dnrm2(3,svect,1),mx_hsep)
-            if(s/=0.0_eb)then
+            if (s/=0.0_eb) then
                 cosang = -ddot(3,svect,1,targptr%normal,1)/s
             end if
             ztarg = targptr%center(3)
@@ -180,7 +180,7 @@ module target_routines
 
             ! compute portion of path in lower and upper layers
             call getylyu(zfire,zlay,ztarg,s,zl,zu)
-            if(nfurn>0)then
+            if (nfurn>0) then
                 absl=0.0
                 absu=0.0
                 taul = 1.0_eb
@@ -193,7 +193,7 @@ module target_routines
                 tauu = exp(-absu*zu)
                 qfire = xfire(ifire,f_qfr)
             end if
-            if(s/=0.0_eb)then
+            if (s/=0.0_eb) then
                 qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
             else
                 qft = 0.0_eb
@@ -201,10 +201,10 @@ module target_routines
 
             ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution
             ! if the target is interior to the room
-            if(cosang>=0.0_eb)then
+            if (cosang>=0.0_eb) then
                 qtfflux(1) = qtfflux(1) + qft
             else
-                if(targptr%back==interior)then
+                if (targptr%back==interior) then
                     qtfflux(2) = qtfflux(2) + qft
                 end if
             end if
@@ -218,7 +218,7 @@ module target_routines
         qgassum(back) = 0.0_eb
         call get_target_factors (iroom,itarg,target_factors_front,target_factors_back)
         do iwall = 1, 10
-            if(nfurn>0)then
+            if (nfurn>0) then
                 qout=qfurnout
             else
                 qout = roomptr%rad_qout(map10(iwall))
@@ -241,7 +241,7 @@ module target_routines
             alphau = 1.0_eb - tauu
 
             qwt = qout*taul*tauu
-            if(iwall<=5)then
+            if (iwall<=5) then
                 qgas = tl**4*alphal*tauu + tu**4*alphau
             else
                 qgas = tu**4*alphau*taul + tl**4*alphal
@@ -250,7 +250,7 @@ module target_routines
 
             qwtsum(front) = qwtsum(front) + qwt*target_factors_front(iwall)
             qgassum(front) = qgassum(front) + qgt*target_factors_front(iwall)
-            if(targptr%back==interior)then
+            if (targptr%back==interior) then
                 qwtsum(back) = qwtsum(back) + qwt*target_factors_back(iwall)
                 qgassum(back) = qgassum(back) + qgt*target_factors_back(iwall)
             end if
@@ -261,16 +261,16 @@ module target_routines
         qtgflux(back) = qgassum(back)
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if(targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_temperature**4
+        if (targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_temperature**4
     end if
 
     ! compute convective flux
     ! assume target is a 'floor', 'ceiling' or 'wall' depending on how much the target is tilted.
     zznorm = targptr%normal(3)
-    if(zznorm<=1.0_eb.and.zznorm>=cos45)then
+    if (zznorm<=1.0_eb.and.zznorm>=cos45) then
         iw = 2
         iwb = 1
-    elseif(zznorm>=-1.0_eb.and.zznorm<=-cos45)then
+    else if (zznorm>=-1.0_eb.and.zznorm<=-cos45) then
         iw = 1
         iwb = 2
     else
@@ -283,7 +283,7 @@ module target_routines
     ztarg = targptr%center(3)
     call get_gas_temp_velocity(iroom,xtarg,ytarg,ztarg,tg,vg)
     targptr%tgas = tg
-    if(targptr%back==interior)then
+    if (targptr%back==interior) then
         tgb = tg
     else
         tgb = interior_temperature
@@ -354,7 +354,7 @@ module target_routines
             x_node(i) = x_node(i-1)*1.50_eb
             x_node(nnn+1-i) = x_node(i)
         end do
-        if(mod(nnn,2)==1) x_node(nnn/2+1)=x_node(nnn/2)*1.50_eb
+        if (mod(nnn,2)==1) x_node(nnn/2+1)=x_node(nnn/2)*1.50_eb
         sum = 0.0_eb
         do i = 1, nnn
             sum = sum + x_node(i)
@@ -464,16 +464,16 @@ module target_routines
           d2 = vert_distance(facei(ivert+1))
           v2(1:3) => room_verts(1:3,facei(ivert+1))
 
-          if(d1.gt.0)then  ! face vertex is above target plane
+          if (d1.gt.0) then  ! face vertex is above target plane
              nsolid_front_verts=nsolid_front_verts+1
              solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
           end if
 
-          if(d1.lt.0)then  ! face vertex is below target plane
+          if (d1.lt.0) then  ! face vertex is below target plane
              nsolid_back_verts=nsolid_back_verts+1
              solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
           end if
-          if(d1*d2.lt.0)then ! two successive face vertices are on opposite sides of target plane
+          if (d1*d2.lt.0) then ! two successive face vertices are on opposite sides of target plane
                              ! interpolate to find vertex that lies on target plane
              !  d1   0    d2
              !  v1   v0   v2
@@ -491,7 +491,7 @@ module target_routines
              solid_angle_back_verts(1:3,nsolid_back_verts) =   v0(1:3)
           end if
        end do
-       if(nsolid_front_verts.ge.3)then
+       if (nsolid_front_verts.ge.3) then
 
           ! triangulate polygon, compute solid angle for each triangle and sum
           ! the solid angle is zero whenever a vertex coincides with the target location
@@ -500,19 +500,19 @@ module target_routines
           t1(1:3) = v1(1:3) - targptr%center(1:3)
           d1 = dnrm2(3,t1,1)
 
-          if(d1.gt.0.0_eb)then
+          if (d1.gt.0.0_eb) then
              t1(1:3) = t1(1:3)/d1
              do i = 2, nsolid_front_verts-1
                 v2 => solid_angle_front_verts(1:3,i)
 
                 t2(1:3) = v2(1:3) - targptr%center(1:3)
                 d2 = dnrm2(3,t2,1)
-                if(d2.eq.0.0_eb)cycle
+                if (d2.eq.0.0_eb)cycle
 
                 v3 => solid_angle_front_verts(1:3,i+1)
                 t3(1:3) = v3(1:3) - targptr%center(1:3)
                 d3 = dnrm2(3,t3,1)
-                if(d3.eq.0.0_eb)cycle
+                if (d3.eq.0.0_eb)cycle
 
                 t2(1:3) = t2(1:3)/d2
                 t3(1:3) = t3(1:3)/d3
@@ -522,7 +522,7 @@ module target_routines
              end do
           end if
        end if
-       if(nsolid_back_verts.ge.3)then
+       if (nsolid_back_verts.ge.3) then
 
           ! triangulate polygon, compute solid angle for each triangle and sum
           ! the solid angle is zero whenever a vertex coincides with the target location
@@ -531,19 +531,19 @@ module target_routines
           t1(1:3) = v1(1:3) - targptr%center(1:3)
           d1 = dnrm2(3,t1,1)
 
-          if(d1.gt.0.0_eb)then
+          if (d1.gt.0.0_eb) then
              t1(1:3) = t1(1:3)/d1
              do i = 2, nsolid_back_verts-1
                 v2 => solid_angle_back_verts(1:3,i)
 
                 t2(1:3) = v2(1:3) - targptr%center(1:3)
                 d2 = dnrm2(3,t2,1)
-                if(d2.eq.0.0_eb)cycle
+                if (d2.eq.0.0_eb)cycle
 
                 v3 => solid_angle_back_verts(1:3,i+1)
                 t3(1:3) = v3(1:3) - targptr%center(1:3)
                 d3 = dnrm2(3,t3,1)
-                if(d3.eq.0.0_eb)cycle
+                if (d3.eq.0.0_eb)cycle
 
                 t2(1:3) = t2(1:3)/d2
                 t3(1:3) = t3(1:3)/d3
@@ -560,8 +560,8 @@ module target_routines
        sum_front = sum_front + target_factors_front(iwall)
        sum_back = sum_back + target_factors_back(iwall)
     end do
-    if(sum_front>0.0_eb)target_factors_front(1:10) = target_factors_front(1:10)/sum_front
-    if(sum_back>0.0_eb)target_factors_back(1:10) = target_factors_back(1:10)/sum_back
+    if (sum_front>0.0_eb)target_factors_front(1:10) = target_factors_front(1:10)/sum_front
+    if (sum_back>0.0_eb)target_factors_back(1:10) = target_factors_back(1:10)/sum_back
 
  end subroutine get_target_factors
 
@@ -576,14 +576,14 @@ module target_routines
     real(eb), intent(out) :: yl, yu
 
 
-    if(yo<=y)then
-        if(yt<=y)then
+    if (yo<=y) then
+        if (yt<=y) then
             yl = 1.0_eb
         else
             yl = (y-yo)/(yt-yo)
         end if
     else
-        if(yt>=y)then
+        if (yt>=y) then
             yl = 0.0_eb
         else
             yl = (y-yt)/(yo-yt)
@@ -710,7 +710,7 @@ module target_routines
         roomptr => roominfo(iroom)
 
         zdetect = dtectptr%center(3)
-        if(zdetect>roomptr%depth(l))then
+        if (zdetect>roomptr%depth(l)) then
             tlay = roomptr%temp(u)
         else
             tlay = roomptr%temp(l)
@@ -728,7 +728,7 @@ module target_routines
             if (tcur>350._eb) then
                 continue
             end if
-        elseif (dtectptr%dtype>=heatd) then
+        else if (dtectptr%dtype>=heatd) then
             rti = dtectptr%rti
             trig = dtectptr%trigger
             tlinko = dtectptr%value
@@ -747,7 +747,7 @@ module target_routines
         end if
 
         ! determine if detector has activated in this time interval (and not earlier)
-        if(tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated)then
+        if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
             delta = (trig-tlinko)/(tlink-tlinko)
             tmp = tcur+dstep*delta
             tdtect = min(tmp,tdtect)
@@ -767,11 +767,11 @@ module target_routines
                 ! determine if this is the first detector to have activated in this room
                 idold = iquench(iroom)
                 iqu = 0
-                if(idold==0)then
+                if (idold==0) then
                     iqu = i
                 else
                     previous_activation => detectorinfo(idold)
-                    if(dtectptr%activation_time<previous_activation%activation_time)then
+                    if (dtectptr%activation_time<previous_activation%activation_time) then
 
                         ! this can only happen if two detectors have activated in the same room in the same
                         ! (possibly very short) time interval
@@ -781,7 +781,7 @@ module target_routines
 
                 ! if this detector has activated before all others in this room and the quenching flag was turned on
                 !  then let the sprinkler quench the fire
-                if(iqu/=0.and.dtectptr%quench)then
+                if (iqu/=0.and.dtectptr%quench) then
                     iquench(iroom)=iqu
                     idset = iroom
                 end if
@@ -816,7 +816,7 @@ module target_routines
         zloc = dtectptr%center(3)
         if (option(fcjet)==off) then
             ! if ceiling jet option is off, things default to appropriate layer temperature
-            if(zloc>roomptr%depth(l))then
+            if (zloc>roomptr%depth(l)) then
                 dtectptr%temp_gas = roomptr%temp(u)
                 dtectptr%obscuration = roomptr%species_output(u,9)
             else
@@ -829,7 +829,7 @@ module target_routines
             call get_gas_temp_velocity (iroom,xloc,yloc,zloc,tg,vg)
             dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
-            if(zloc>roomptr%depth(l))then
+            if (zloc>roomptr%depth(l)) then
                 dtectptr%obscuration = roomptr%species_output(u,9)
             else
                 dtectptr%obscuration = roomptr%species_output(l,9)

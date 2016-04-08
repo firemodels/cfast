@@ -290,7 +290,7 @@ module vflow_routines
     ! if the room above or the room below is dead then  there is no pressure difference at vent opening
     deadtop = roominfo(itop)%deadroom
     deadbot = roominfo(ibot)%deadroom
-    if(deadtop.ne.0.and.deadbot.ne.0.and.deadtop.eq.ibot.or.deadbot.eq.itop) delp=0.0_eb
+    if (deadtop.ne.0.and.deadbot.ne.0.and.deadtop.eq.ibot.or.deadbot.eq.itop) delp=0.0_eb
 
     ! ilay(1) contains layer index in top room that is adjacent to vent
     ! ilay(2) contains layer index in bottom room that is adjacent to vent

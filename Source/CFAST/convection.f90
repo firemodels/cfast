@@ -49,7 +49,7 @@
         roomptr => roominfo(i)
         iwall = izwall(iw,w_from_wall)
         nrmfire = ifrpnt(i,1)
-        if(mod(iwall,2)==1)then
+        if (mod(iwall,2)==1) then
             ilay = u
         else
             ilay = l

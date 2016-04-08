@@ -118,23 +118,23 @@ module utility_routines
 
     integer :: nmess
 
-    if(level==2)then
+    if (level==2) then
        error_label = "***Fatal error:"
-    else if(level==1)then
+    else if (level==1) then
        error_label = "***Error:"
     else
        error_label = "***Warning:"
     end if
 
-    if(nmessg==0)then
+    if (nmessg==0) then
         nmess = len_trim(messg)
     else
         nmess = nmessg
     end if
     nmess = max(1,nmess)
 
-    if(level==-2)then
-    else if(level==-3)then
+    if (level==-2) then
+    else if (level==-3) then
        call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
     else
        call xerrwv(trim(error_label)//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
@@ -546,7 +546,7 @@ module utility_routines
     do i = 1, 2
         loop = i - 1
         call get_command_argument(loop, buf, ilen, status)
-        if(ilen>0) then
+        if (ilen>0) then
             xname = buf
 
             !	Split out the components
@@ -627,7 +627,7 @@ module utility_routines
             do k = 1, nr
                 mat2(i,j) = mat2(i,j)+mat1(i,k)*mat1(k,j)
             end do
-            if(mat2(i,j)>=1) mat2(i,j) = 1
+            if (mat2(i,j)>=1) mat2(i,j) = 1
         end do
     end do
     do i = 1, nr
@@ -663,7 +663,7 @@ module utility_routines
     do i = 1, nr-1, 2
         ai = arrin(indx(i))
         aip1 = arrin(indx(i+1))
-        if(ai<=aip1) cycle
+        if (ai<=aip1) cycle
         iswitch = 1
         itemp = indx(i)
         indx(i) = indx(i+1)
@@ -672,13 +672,13 @@ module utility_routines
     do  i = 2, nr-1, 2
         ai = arrin(indx(i))
         aip1 = arrin(indx(i+1))
-        if(ai<=aip1) cycle
+        if (ai<=aip1) cycle
         iswitch = 1
         itemp = indx(i)
         indx(i) = indx(i+1)
         indx(i+1) = itemp
     end do
-    if(iswitch==1) go to 5
+    if (iswitch==1) go to 5
     return
     end subroutine indexi
 
@@ -928,15 +928,15 @@ module utility_routines
     do i = inc+1, nr
         rra = ra(i)
         j = i
-3       if(ra(j-inc)>rra) then
+3       if (ra(j-inc)>rra) then
             ra(j) = ra(j-inc)
             j = j - inc
-            if(j<=inc) go to 4
+            if (j<=inc) go to 4
             go to 3
         end if
 4       ra(j) = rra
     enddo
-    if(inc>1) go to 2
+    if (inc>1) go to 2
     return
     end  subroutine shellsort
 
@@ -1024,7 +1024,7 @@ module utility_routines
 
     ! move to the beginning of the substring
     sfirst = i
-    if((string(i)/=space).and.(string(i)/=comma)) goto 60
+    if ((string(i)/=space).and.(string(i)/=comma)) goto 60
     end do
 
     ! no substring found - only delimiter
@@ -1035,7 +1035,7 @@ module utility_routines
 
     ! position of last element of substring
     slast = j-1
-    if((string(j)==space).or.(string(j)==comma)) go to 100
+    if ((string(j)==space).or.(string(j)==comma)) go to 100
     end do
 
     ! no substring delimiter => last character of substring is the last character of the string
@@ -1063,7 +1063,7 @@ module utility_routines
     nr = len_trim(string)
     do i = 1, nr
         c = string(i:i)
-        if(c>='a'.and.c<='z')then
+        if (c>='a'.and.c<='z') then
             c = char(ichar(c) + ichar('A')-ichar('a'))
         end if
         string(i:i) = c
@@ -1212,12 +1212,12 @@ module utility_routines
     integer :: i
 
     do i = 0, nr-1
-        if(xgrid(i).le.x.and.x.lt.xgrid(i+1))then
+        if (xgrid(i).le.x.and.x.lt.xgrid(i+1)) then
             get_igrid=i
             return
         end if
     end do
-    if(xgrid(nr).eq.x)then
+    if (xgrid(nr).eq.x) then
         get_igrid=nr
     else
         get_igrid=-1

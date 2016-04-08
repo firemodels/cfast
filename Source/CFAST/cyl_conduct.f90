@@ -38,7 +38,7 @@ module cylinder_routines
     dr = (diam/2.0_eb)/nnodes
     alpha = wk/(wspec*wrho)
     dt_iter = min(dt,0.1_eb)
-    if(dt_iter.gt.0.0_eb)then
+    if (dt_iter.gt.0.0_eb) then
        niter = dt/dt_iter + 0.5_eb
        dt_iter=dt/niter
        factor = 2.0_eb*alpha*dt_iter/dr**2
@@ -63,7 +63,7 @@ module cylinder_routines
        ai(nnodes) = 1.0_eb + cc(nnodes)
        aip1(nnodes) = -dd(nnodes)
 
-       if(iwbound==3)then
+       if (iwbound==3) then
           cc(nnodes) = 0.0_eb
           dd(nnodes) = 0.0_eb
           tnew(nnodes) = tempin
@@ -132,11 +132,11 @@ module cylinder_routines
 
     dr = rad/nx
     r = rad-x
-    if(r<=dr/2.0_eb)then
+    if (r<=dr/2.0_eb) then
         tempx = wtemp(1)
         return
     end if
-    if(r>=rad-dr/2.0_eb)then
+    if (r>=rad-dr/2.0_eb) then
         tempx = wtemp(nx)
         return
     end if

@@ -96,7 +96,7 @@ module mflow_routines
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         isys = izhvsys(j)
-        if(i<1.or.i>nrm1) cycle
+        if (i<1.or.i>nrm1) cycle
         flwmv(i,m,u) = flwmv(i,m,u) + hveflo(u,ii)
         flwmv(i,m,l) = flwmv(i,m,l) + hveflo(l,ii)
         flwmv(i,q,u) = flwmv(i,q,u) + hveflo(u,ii)*cp*hvextt(ii,u)
@@ -180,7 +180,7 @@ module mflow_routines
                     ! fan branch connection
 
                     k = nf(icmv(i,j))
-                    if(ne(icmv(i,j)) /= i)then
+                    if (ne(icmv(i,j)) /= i) then
                         ! flow is at fan inlet
                         hvflow(i,j) = -hvfan(tsec,i,j,k,dp)
                     else
@@ -191,10 +191,10 @@ module mflow_routines
                 end if
                 f = f + hvflow(i,j)
                 ii = izhvie(mvintnode(i,j))
-                if(ii/=0)hvflow(mvintnode(i,j),1) = -hvflow(i,j)
+                if (ii/=0)hvflow(mvintnode(i,j),1) = -hvflow(i,j)
             end do
             ii = izhvmape(i)
-            if(ii>0) deltpmv(ii) = f
+            if (ii>0) deltpmv(ii) = f
         end do
     end do
 
@@ -248,16 +248,16 @@ module mflow_routines
             if (hvflow(i,j)<0.0_eb) then
                 ib = icmv (i,j)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*abs(hvflow(i,j))
-                if(option(fhvloss)==on)then
+                if (option(fhvloss)==on) then
                     delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
                 end if
             end if
             ii = izhvie(mvintnode(i,j))
-            if(ii/=0.and.hvflow(i,j)>0.0_eb) then
+            if (ii/=0.and.hvflow(i,j)>0.0_eb) then
                 ib = icmv(i,j)
                 hvta = hvextt(ii,u)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*hvflow(i,j)
-                if(option(fhvloss)==on)then
+                if (option(fhvloss)==on) then
                     delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
                 end if
             end if
@@ -399,10 +399,10 @@ module mflow_routines
 
     ! sum product flows entering system
     nhvpr = n_species*nhvsys
-    if(nprod/=0)then
+    if (nprod/=0) then
         prprime(1:nhvpr) = 0.0_eb
     end if
-    if(ns>0)then
+    if (ns>0) then
         hvmfsys(1:nhvsys) = 0.0_eb
         dhvprsys(1:nhvsys,1:ns) = 0.0_eb
     end if
@@ -416,7 +416,7 @@ module mflow_routines
         isys = izhvsys(j)
         if (hvflow(j,1)<0.0_eb) then
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
-            if(nprod/=0)then
+            if (nprod/=0) then
                 do k = 1, ns
                     dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(u,ii))*hvexcn(ii,k,u) + &
                                        abs(hveflo(l,ii))*hvexcn(ii,k,l)
@@ -426,10 +426,10 @@ module mflow_routines
     end do
 
     ! flow out of the isys system
-    if(nprod/=0)then
+    if (nprod/=0) then
         do k = 1, min(ns,9)
             do isys = 1, nhvsys
-                if (zzhvm(isys)/=0.0_eb)then
+                if (zzhvm(isys)/=0.0_eb) then
                     dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvspec(isys,k)/zzhvm(isys)
                 end if
             end do
@@ -438,7 +438,7 @@ module mflow_routines
         ! do a special case for the non-reacting gas(es)
         k = 11
         do isys = 1, nhvsys
-            if (zzhvm(isys)/=0.0_eb)then
+            if (zzhvm(isys)/=0.0_eb) then
                 dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvspec(isys,k)/zzhvm(isys)
             end if
         end do
@@ -448,7 +448,7 @@ module mflow_routines
         do k = 1, min(ns,9)
             do isys = 1, nhvsys
                 isof = isof + 1
-                if (zzhvm(isys)/=0.0_eb)then
+                if (zzhvm(isys)/=0.0_eb) then
                     prprime(isof) = dhvprsys(isys,k)
                 else
                     prprime(isof) = 0.0_eb
@@ -459,7 +459,7 @@ module mflow_routines
         k = 11
         do isys = 1, nhvsys
             isof = isof + 1
-            if (zzhvm(isys)/=0.0_eb)then
+            if (zzhvm(isys)/=0.0_eb) then
                 prprime(isof) = dhvprsys(isys,k)
             else
                 prprime(isof) = 0.0_eb
@@ -483,7 +483,7 @@ module mflow_routines
                     hvexcn(ii,k,l) = hvexcn(ii,k,u)
                     ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
                     !         - see keywordcases to change this
-                elseif(hvmfsys(isys)/=0.0_eb) then
+                else if (hvmfsys(isys)/=0.0_eb) then
                     hvexcn(ii,k,u) = -(dhvprsys(isys,k)/hvmfsys(isys))
                     hvexcn(ii,k,l) = hvexcn(ii,k,u)
                 else

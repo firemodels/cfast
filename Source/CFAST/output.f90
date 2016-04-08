@@ -571,7 +571,7 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
-    if(ndtect==0)return
+    if (ndtect==0)return
     write(iofilo,5000)
     cjetmin = 0.10_eb
     do i = 1, ndtect
@@ -580,7 +580,7 @@ module output_routines
         roomptr => roominfo(iroom)
 
         zdetect = dtectptr%center(3)
-        if(zdetect>roomptr%depth(l))then
+        if (zdetect>roomptr%depth(l)) then
             tlay = roomptr%temp(u)
         else
             tlay = roomptr%temp(l)
@@ -592,12 +592,12 @@ module output_routines
         tlink =  dtectptr%value-kelvin_c_offset
 
         cact = 'NO'
-        if(dtectptr%activated) cact = 'YES'
+        if (dtectptr%activated) cact = 'YES'
 
         itype = dtectptr%dtype
-        if(itype==smoked)then
+        if (itype==smoked) then
             write(iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
-        elseif(itype==heatd)then
+        else if (itype==heatd) then
             write(iofilo,5020) i, roomptr%name, 'HEAT  ', tlink, tjet, cact
         else
             write(iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
@@ -928,7 +928,7 @@ module output_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    if(ntarg/=0) write(iofilo,5000)
+    if (ntarg/=0) write(iofilo,5000)
 5000 format(//,'TARGETS',//,'Target',T29,'Compartment',T44,'Position (x, y, z)',T71,&
          'Direction (x, y, z)',T96,'Material',/,102('-'))
 
@@ -954,7 +954,7 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
-    if(ndtect/=0) write(iofilo,5000)
+    if (ndtect/=0) write(iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
          ,'Target  Compartment        Type           Position (x, y, z)            Activation',/ &
          ,'                                                                        Obscuration    ', &
@@ -968,9 +968,9 @@ module output_routines
         iroom = dtectptr%room
         roomptr => roominfo(iroom)
         itype = dtectptr%dtype
-        if(itype==smoked)then
+        if (itype==smoked) then
             write(outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
-        elseif(itype==heatd)then
+        else if (itype==heatd) then
             write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-273.15, dtectptr%rti
         else
             write(outbuf,5020) idtect, roomptr%name, 'SPRINK', dtectptr%center(1:3), &
@@ -1105,13 +1105,13 @@ module output_routines
         if (iw==1) then
             write(lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
             call xerror(lbuf,0,1,0)
-        else if(iw==2) then
+        else if (iw==2) then
             write(lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' floor   '
             call xerror(lbuf,0,1,0)
-        else if(iw==3) then
+        else if (iw==3) then
             write(lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' upper wall '
             call xerror(lbuf,0,1,0)
-        else if(iw==4) then
+        else if (iw==4) then
             write(lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
             call xerror(lbuf,0,1,0)
         end if
@@ -1202,14 +1202,14 @@ module output_routines
                 end if
             end do
         end do
-        if (ndtect/=0)then
+        if (ndtect/=0) then
             write(*,*)'Detector info'
             write(*,100)
 100         format('  nr ',3X,'D temp',6X,'J temp',6X,' Act')
             do i = 1, ndtect
                 dtectptr => detectorinfo(i)
                 iroom = dtectptr%room
-                if (iquench(iroom)==i)then
+                if (iquench(iroom)==i) then
                     ccc='***'
                 else
                     ccc = '   '
@@ -1228,9 +1228,9 @@ module output_routines
             write(*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
                roomptr%species_fraction(l,2), roomptr%species_fraction(u,2)
         end do
-        if(nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
-        if(nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)
-        if(nnode>0)write(*,6040)
+        if (nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
+        if (nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)
+        if (nnode>0)write(*,6040)
         do i = 1, nnode
             do j = 1, ncnode(i)
                 dp = hvp(mvintnode(i,j)) - hvp(i) + dpz(i,j)
@@ -1247,13 +1247,13 @@ module output_routines
             xqf = xqf + fqdj(iroom)
             write(*,6060) iroom,roomptr%wall_temp(1,1),roomptr%wall_temp(3,1),roomptr%wall_temp(4,1),roomptr%wall_temp(2,1),xqf
         end do
-        if(numobjl>0)then
+        if (numobjl>0) then
             write(*,6080)
             do iobj = 1, numobjl
                 write(*,6085)iobj,xfire(iobj,f_heatlp),xfire(iobj,f_heatup)
             end do
         end if
-        if(ntarg>0)then
+        if (ntarg>0) then
             write(*,6090)
             do itarg = 1, ntarg
                 targptr => targetinfo(itarg)

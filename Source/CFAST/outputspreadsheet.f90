@@ -297,7 +297,7 @@ module spreadsheet_routines
         zdetect = dtectptr%center(3)
         iroom = dtectptr%room
         roomptr => roominfo(iroom)
-        if(zdetect>roomptr%depth(l))then
+        if (zdetect>roomptr%depth(l)) then
             tlay = roomptr%temp(u)
         else
             tlay = roomptr%temp(l)

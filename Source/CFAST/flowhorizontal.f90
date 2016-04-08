@@ -637,7 +637,7 @@ module hflow_routines
         if (temp_slab>=temp_upper+deltatemp_min) then
             ! if it's relatively hot, it goes to the upper layer
             fupper = 1.0_eb
-        elseif (temp_slab<=temp_lower-deltatemp_min) then
+        else if (temp_slab<=temp_lower-deltatemp_min) then
             ! if it's really cold, it goes to the lower layer
             fupper = 0.0_eb
         else

@@ -75,36 +75,34 @@ module conduction_routines
             if (iwb==3) then
 
                 ! back wall is connected to the outside
-
                 call convective_flux (irevwc(iwall),tgas,twext,wfluxout)
                 wfluxout = wfluxout + sigma*(tgas**4-twext**4)
                 wfluxsave = wfluxout
-                if(iheat(iroom)/=0.and.iwall/=1.and.iwall/=2)then
 
-                    ! back wall is connected to rooms defined by iheat_connections with fractions defined by heat_frac.
-                    !  if iheat(iroom) is not zero then nwroom better not be zero!  nwroom should always be zero
-                    ! for iwall=3 and iwall=4
+                ! back wall is connected to rooms defined by iheat_connections with fractions defined by heat_frac.
+                !  if iheat(iroom) is not zero then nwroom better not be zero!
+                if (iheat(iroom)/=0.and.iwall/=1.and.iwall/=2) then
                     wfluxout = 0.0_eb
                     nwroom = iheat_connections(iroom,0)
                     do jj = 1, nwroom
                         j = iheat_connections(iroom,jj)
                         frac = heat_frac(iroom,j)
-                        if(iwall==3)then
+                        if (iwall==3) then
                             yb = roomptr%depth(l)
                             yt = roomptr%z1
-                        elseif(iwall==4)then
+                        else if (iwall==4) then
                             yb = 0.0_eb
                             yt = roomptr%depth(l)
                         end if
                         dflor = roominfo(j)%z0 - roomptr%z0
                         yy = roominfo(j)%depth(l) + dflor
-                        if(j/=nrm1+1)then
-                            if(yy>yt)then
+                        if (j/=nrm1+1) then
+                            if (yy>yt) then
                                 fu = 0.0_eb
-                            elseif(yy<yb)then
+                            else if (yy<yb) then
                                 fu = 1.0_eb
                             else
-                                if(yb/=yt)then
+                                if (yb/=yt) then
                                     fu = (yt-yy)/(yt-yb)
                                 else
                                     fu = 0.0_eb
@@ -133,7 +131,7 @@ module conduction_routines
     end do
 
     ! dassl will try to force delta to be zero, so that fourier's law, q = -k dt/dx, is satisfied at the wall surface
-    if(update/=2)then
+    if (update/=2) then
         do iw = 1, nwalls
             icond = nofwt + iw
             iroom = izwall(iw,w_from_room)
@@ -190,7 +188,7 @@ module conduction_routines
     ! set up tri-diagonal coefficient matrix
 
     ! setup first row
-    if(iwbound/=4)then
+    if (iwbound/=4) then
         a(1) = 1.0_eb
         b(1) = 0.0_eb
         c(1) = 0.0_eb

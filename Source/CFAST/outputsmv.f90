@@ -106,7 +106,7 @@
         write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%cwidth, roomptr%cdepth, roomptr%cheight
         write(13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%x0, roomptr%y0, roomptr%z0
 
-        if(nsliceinfo.gt.0)then
+        if (nsliceinfo.gt.0) then
             ibar = roomptr%ibar
             jbar = roomptr%jbar
             kbar = roomptr%kbar
@@ -145,7 +145,7 @@
     do i = 1, nsliceinfo
         sf=>sliceinfo(i)
 
-        if(sf%skip.eq.1)cycle
+        if (sf%skip.eq.1)cycle
         write(13,"(a,1x,i3,' &',6(i4,1x))")"SLCF",sf%roomnum,sf%ijk(1),sf%ijk(2),sf%ijk(3),sf%ijk(4),sf%ijk(5),sf%ijk(6)
         write(13,"(1x,a)")trim(sf%filename)
         write(13,"(1x,a)")trim(sf%menu_label)
@@ -200,7 +200,7 @@
         do i = 1, ndtect
             dtectptr => detectorinfo(i)
             write (13,"(a)") "DEVICE"
-            if(dtectptr%dtype==smoked)then
+            if (dtectptr%dtype==smoked) then
                 write (13,"(a)") "SMOKE_DETECTOR"
             else if (dtectptr%quench) then
                 write (13,"(a)") "SPRINKLER_PENDENT"
@@ -293,12 +293,12 @@
         sf => sliceinfo(i)
         roomptr => roominfo(sf%roomnum)
 
-        if(sf%skip.eq.1)cycle
+        if (sf%skip.eq.1)cycle
         nx = sf%ijk(2) + 1 - sf%ijk(1)
         ny = sf%ijk(4) + 1 - sf%ijk(3)
         nz = sf%ijk(6) + 1 - sf%ijk(5)
         roomnum = sf%roomnum
-        if(nx.le.0.or.ny.le.0.or.nz.le.0)cycle
+        if (nx.le.0.or.ny.le.0.or.nz.le.0)cycle
         allocate(tslicedata(0:nx-1,0:ny-1,0:nz-1))
         allocate(uslicedata(0:nx-1,0:ny-1,0:nz-1))
         allocate(vslicedata(0:nx-1,0:ny-1,0:nz-1))
@@ -321,7 +321,7 @@
         end do
 
         unit=funit(14)
-        if(first_time.eq.1)then
+        if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
             write(unit) sf%menu_label(1:30)
             write(unit) sf%colorbar_label(1:30)
@@ -337,7 +337,7 @@
 
         unit=funit(14)
         sf => sliceinfo(i+1)
-        if(first_time.eq.1)then
+        if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
             write(unit) sf%menu_label(1:30)
             write(unit) sf%colorbar_label(1:30)
@@ -353,7 +353,7 @@
 
         unit=funit(14)
         sf => sliceinfo(i+2)
-        if(first_time.eq.1)then
+        if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
             write(unit) sf%menu_label(1:30)
             write(unit) sf%colorbar_label(1:30)
@@ -369,7 +369,7 @@
 
         unit=funit(14)
         sf => sliceinfo(i+3)
-        if(first_time.eq.1)then
+        if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
             write(unit) sf%menu_label(1:30)
             write(unit) sf%colorbar_label(1:30)
@@ -385,7 +385,7 @@
 
         unit=funit(14)
         sf => sliceinfo(i+4)
-        if(first_time.eq.1)then
+        if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
             write(unit) sf%menu_label(1:30)
             write(unit) sf%colorbar_label(1:30)
@@ -542,7 +542,7 @@ module isosurface
             end do
         end do
         unit=funit(14)
-        if(first_time.eq.1)then
+        if (first_time.eq.1) then
             open(unit,file=isoptr%filename,form='unformatted',status='replace')
             unit=-unit
         else
@@ -703,7 +703,7 @@ module isosurface
     DO IFROM=2, NVERTS
         XYZFROM(1:3) = VERTS(3*IFROM-2:3*IFROM)
         IMATCH = GET_MATCH(XYZFROM,VERTS,ITO-1)
-        IF(IMATCH/=0)THEN
+        if (IMATCH/=0) then
             MAPVERTS(IFROM)=IMATCH
             CYCLE
         end if

@@ -141,7 +141,7 @@ module spreadsheet_header_routines
         do j = u, l
             if (j==u.or..not.roomptr%shaft) then
                 do lsp = 1, ns
-                    if(tooutput(lsp)) then
+                    if (tooutput(lsp)) then
                         position = position + 1
                         call toIntString(i,cRoom)
                         headertext(1,position) = trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
@@ -260,7 +260,7 @@ module spreadsheet_header_routines
         itype = dtectptr%dtype
         if (itype==smoked) then
             cType = 'Smoke'
-        elseif (itype==heatd) then
+        else if (itype==heatd) then
             cType = 'Heat'
         else
             cType = 'Other'
@@ -562,7 +562,7 @@ module spreadsheet_header_routines
 
     ! write out header if called from outputspreadsheet
     ! (this is only one once, but smokeview device tags are done each time)
-    if(lMode) then
+    if (lMode) then
         write(15,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
         write(15,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
     end if

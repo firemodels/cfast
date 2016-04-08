@@ -734,7 +734,7 @@ module numerics_routines
     save
     !
     !***first executable statement  ddassl
-    if(info(1)/=0)go to 100
+    if (info(1)/=0)go to 100
     !
     !-----------------------------------------------------------------------
     !     this block is executed for the initial call only.
@@ -750,24 +750,24 @@ module numerics_routines
         if (i==5) then
             if (info(5)/=0.and.info(5)/=1.and.info(5)/=2) go to 701
         else
-            if(info(i)/=0.and.info(i)/=1) go to 701
+            if (info(i)/=0.and.info(i)/=1) go to 701
         end if
     end do
     !
-    if(neq<=0)go to 702
+    if (neq<=0)go to 702
     !
     !     check and compute maximum order
     mxord=5
-    if(info(9)==0)go to 20
+    if (info(9)==0)go to 20
     mxord=iwork(lmxord)
-    if(mxord<1.or.mxord>5)go to 703
+    if (mxord<1.or.mxord>5)go to 703
 20  iwork(lmxord)=mxord
     !
     !     compute mtype,lenpd,lenrw.check ml and mu.
-    if(info(6)/=0)go to 40
+    if (info(6)/=0)go to 40
     lenpd=neq**2
     lenrw=40+(iwork(lmxord)+4)*neq+lenpd
-    if(info(5)/=0)go to 30
+    if (info(5)/=0)go to 30
     iwork(lmtype)=2
     go to 60
     !
@@ -782,10 +782,10 @@ module numerics_routines
         lenrw=40+(iwork(lmxord)+4)*neq+lenpd
     end if
     go to 60
-40  if(iwork(lml)<0.or.iwork(lml)>=neq)go to 717
-    if(iwork(lmu)<0.or.iwork(lmu)>=neq)go to 718
+40  if (iwork(lml)<0.or.iwork(lml)>=neq)go to 717
+    if (iwork(lmu)<0.or.iwork(lmu)>=neq)go to 718
     lenpd=(2*iwork(lml)+iwork(lmu)+1)*neq
-    if(info(5)/=0)go to 50
+    if (info(5)/=0)go to 50
     iwork(lmtype)=5
     mband=iwork(lml)+iwork(lmu)+1
     msave=(neq/mband)+1
@@ -797,16 +797,16 @@ module numerics_routines
     !     check lengths of rwork and iwork
 60  leniw=20+neq
     iwork(lnpd)=lenpd
-    if(lrw<lenrw)go to 704
-    if(liw<leniw)go to 705
+    if (lrw<lenrw)go to 704
+    if (liw<leniw)go to 705
     !
     !     check to see that tout is different from t
-    if(tout == t)go to 719
+    if (tout == t)go to 719
     !
     !     check hmax
-    if(info(7)==0)go to 70
+    if (info(7)==0)go to 70
     hmax=rwork(lhmax)
-    if(hmax<=0.0d0)go to 710
+    if (hmax<=0.0d0)go to 710
 70  continue
     !
     !     initialize counters
@@ -826,8 +826,8 @@ module numerics_routines
     !-----------------------------------------------------------------------
     !
 100 continue
-    if(info(1)==1)go to 110
-    if(info(1)/=-1)go to 701
+    if (info(1)==1)go to 110
+    if (info(1)/=-1)go to 701
     !     if we are here, the last step was interrupted
     !     by an error condition from ddastp,and
     !     appropriate action was not taken. this
@@ -855,13 +855,13 @@ module numerics_routines
     rtoli=rtol(1)
     atoli=atol(1)
     do 210 i=1,neq
-        if(info(2)==1)rtoli=rtol(i)
-        if(info(2)==1)atoli=atol(i)
-        if(rtoli>0.0d0.or.atoli>0.0d0)nzflg=1
-        if(rtoli<0.0d0)go to 706
-        if(atoli<0.0d0)go to 707
+        if (info(2)==1)rtoli=rtol(i)
+        if (info(2)==1)atoli=atol(i)
+        if (rtoli>0.0d0.or.atoli>0.0d0)nzflg=1
+        if (rtoli<0.0d0)go to 706
+        if (atoli<0.0d0)go to 707
 210 continue
-    if(nzflg==0)go to 708
+    if (nzflg==0)go to 708
     !
     !     set up rwork storage.iwork storage is fixed
     !     in data statement.
@@ -871,7 +871,7 @@ module numerics_routines
     lpd=lphi+(iwork(lmxord)+1)*neq
     lwm=lpd
     ntemp=npd+iwork(lnpd)
-    if(info(1)==1)go to 400
+    if (info(1)==1)go to 400
     !
     !-----------------------------------------------------------------------
     !     this block is executed on the initial call
@@ -886,7 +886,7 @@ module numerics_routines
     !     set error weight vector wt
     call ddawts(neq,info(2),rtol,atol,y,rwork(lwt))
     do 305 i = 1,neq
-        if(rwork(lwt+i-1)<=0.0d0) go to 713
+        if (rwork(lwt+i-1)<=0.0d0) go to 713
 305 continue
     !
     !     compute unit roundoff and hmin
@@ -896,7 +896,7 @@ module numerics_routines
     !
     !     check initial interval to see that it is long enough
     tdist = abs(tout - t)
-    if(tdist < hmin) go to 714
+    if (tdist < hmin) go to 714
     !
     !     check ho, if this was input
     if (info(8) == 0) go to 310
@@ -954,22 +954,22 @@ module numerics_routines
     done = .false.
     tn=rwork(ltn)
     h=rwork(lh)
-    if(info(7) == 0) go to 410
+    if (info(7) == 0) go to 410
     rh = abs(h)/rwork(lhmax)
-    if(rh > 1.0d0) h = h/rh
+    if (rh > 1.0d0) h = h/rh
 410 continue
-    if(t == tout) go to 719
-    if((t - tout)*h > 0.0d0) go to 711
-    if(info(4) == 1) go to 430
-    if(info(3) == 1) go to 420
-    if((tn-tout)*h<0.0d0)go to 490
+    if (t == tout) go to 719
+    if ((t - tout)*h > 0.0d0) go to 711
+    if (info(4) == 1) go to 430
+    if (info(3) == 1) go to 420
+    if ((tn-tout)*h<0.0d0)go to 490
     call ddatrp(tn,tout,y,yprime,neq,iwork(lkold),rwork(lphi),rwork(lpsi))
     t=tout
     idid = 3
     done = .true.
     go to 490
-420 if((tn-t)*h <= 0.0d0) go to 490
-    if((tn - tout)*h > 0.0d0) go to 425
+420 if ((tn-t)*h <= 0.0d0) go to 490
+    if ((tn - tout)*h > 0.0d0) go to 425
     call ddatrp(tn,tn,y,yprime,neq,iwork(lkold),rwork(lphi),rwork(lpsi))
     t = tn
     idid = 1
@@ -981,21 +981,21 @@ module numerics_routines
     idid = 3
     done = .true.
     go to 490
-430 if(info(3) == 1) go to 440
+430 if (info(3) == 1) go to 440
     tstop=rwork(ltstop)
-    if((tn-tstop)*h>0.0d0) go to 715
-    if((tstop-tout)*h<0.0d0)go to 709
-    if((tn-tout)*h<0.0d0)go to 450
+    if ((tn-tstop)*h>0.0d0) go to 715
+    if ((tstop-tout)*h<0.0d0)go to 709
+    if ((tn-tout)*h<0.0d0)go to 450
     call ddatrp(tn,tout,y,yprime,neq,iwork(lkold),rwork(lphi),rwork(lpsi))
     t=tout
     idid = 3
     done = .true.
     go to 490
 440 tstop = rwork(ltstop)
-    if((tn-tstop)*h > 0.0d0) go to 715
-    if((tstop-tout)*h < 0.0d0) go to 709
-    if((tn-t)*h <= 0.0d0) go to 450
-    if((tn - tout)*h > 0.0d0) go to 445
+    if ((tn-tstop)*h > 0.0d0) go to 715
+    if ((tstop-tout)*h < 0.0d0) go to 709
+    if ((tn-t)*h <= 0.0d0) go to 450
+    if ((tn - tout)*h > 0.0d0) go to 445
     call ddatrp(tn,tn,y,yprime,neq,iwork(lkold),rwork(lphi),rwork(lpsi))
     t = tn
     idid = 1
@@ -1009,13 +1009,13 @@ module numerics_routines
     go to 490
 450 continue
     !     check whether we are with in roundoff of tstop
-    if(abs(tn-tstop)>100.0d0*uround*(abs(tn)+abs(h)))go to 460
+    if (abs(tn-tstop)>100.0d0*uround*(abs(tn)+abs(h)))go to 460
     idid=2
     t=tstop
     done = .true.
     go to 490
 460 tnext=tn+h*(1.0d0+4.0d0*uround)
-    if((tnext-tstop)*h<=0.0d0)go to 490
+    if ((tnext-tstop)*h<=0.0d0)go to 490
     h=(tstop-tn)*(1.0d0-4.0d0*uround)
     rwork(lh)=h
     !
@@ -1036,23 +1036,23 @@ module numerics_routines
     if (idid == -12) go to 527
     !
     !     check for too many steps
-    if((iwork(lnst)-iwork(lnstl))<500)go to 510
+    if ((iwork(lnst)-iwork(lnstl))<500)go to 510
     idid=-1
     go to 527
     !
     !     update wt
 510 call ddawts(neq,info(2),rtol,atol,rwork(lphi),rwork(lwt))
     do 520 i=1,neq
-        if(rwork(i+lwt-1)>0.0d0)go to 520
+        if (rwork(i+lwt-1)>0.0d0)go to 520
         idid=-3
         go to 527
 520 continue
     !
     !     test for too much accuracy requested.
     r=ddanrm(neq,rwork(lphi),rwork(lwt),ipar)*100.0d0*uround
-    if(r<=1.0d0)go to 525
+    if (r<=1.0d0)go to 525
     !     multiply rtol and atol by r and return
-    if(info(2)==1)go to 523
+    if (info(2)==1)go to 523
     rtol(1)=r*rtol(1)
     atol(1)=r*atol(1)
     idid=-2
@@ -1072,21 +1072,21 @@ module numerics_routines
        rwork(le),rwork(lwm),iwork(liwm),rwork(lalpha),rwork(lbeta),rwork(lgamma),rwork(lpsi),rwork(lsigma),&
        rwork(lcj),rwork(lcjold),rwork(lhold),rwork(ls),hmin,rwork(lround),iwork(lphase),iwork(ljcalc),iwork(lk),&
        iwork(lkold),iwork(lns),info(10),ntemp)
-527 if(idid<0)go to 600
+527 if (idid<0)go to 600
     !
     !--------------------------------------------------------
     !     this block handles the case of a successful return
     !     from ddastp (idid=1).  test for stop conditions.
     !--------------------------------------------------------
     !
-    if(info(4)/=0)go to 540
-    if(info(3)/=0)go to 530
-    if((tn-tout)*h<0.0d0)go to 500
+    if (info(4)/=0)go to 540
+    if (info(3)/=0)go to 530
+    if ((tn-tout)*h<0.0d0)go to 500
     call ddatrp(tn,tout,y,yprime,neq,iwork(lkold),rwork(lphi),rwork(lpsi))
     idid=3
     t=tout
     go to 580
-530 if((tn-tout)*h>=0.0d0)go to 535
+530 if ((tn-tout)*h>=0.0d0)go to 535
     t=tn
     idid=1
     go to 580
@@ -1094,22 +1094,22 @@ module numerics_routines
     idid=3
     t=tout
     go to 580
-540 if(info(3)/=0)go to 550
-    if((tn-tout)*h<0.0d0)go to 542
+540 if (info(3)/=0)go to 550
+    if ((tn-tout)*h<0.0d0)go to 542
     call ddatrp(tn,tout,y,yprime,neq,iwork(lkold),rwork(lphi),rwork(lpsi))
     t=tout
     idid=3
     go to 580
-542 if(abs(tn-tstop)<=100.0d0*uround*(abs(tn)+abs(h)))go to 545
+542 if (abs(tn-tstop)<=100.0d0*uround*(abs(tn)+abs(h)))go to 545
     tnext=tn+h*(1.0d0+4.0d0*uround)
-    if((tnext-tstop)*h<=0.0d0)go to 500
+    if ((tnext-tstop)*h<=0.0d0)go to 500
     h=(tstop-tn)*(1.0d0-4.0d0*uround)
     go to 500
 545 idid=2
     t=tstop
     go to 580
-550 if((tn-tout)*h>=0.0d0)go to 555
-    if(abs(tn-tstop)<=100.0d0*uround*(abs(tn)+abs(h)))go to 552
+550 if ((tn-tout)*h>=0.0d0)go to 555
+    if (abs(tn-tstop)<=100.0d0*uround*(abs(tn)+abs(h)))go to 552
     t=tn
     idid=1
     go to 580
@@ -1137,29 +1137,29 @@ module numerics_routines
 600 continue
     itemp= iabs(idid)
     !go to (610,620,630,690,690,640,650,660,670,675,680,685), itemp
-    if(itemp.eq.1)then
+    if (itemp.eq.1) then
        goto 610
-    else if(itemp.eq.2)then
+    else if (itemp.eq.2) then
        goto 620
-    else if(itemp.eq.3)then
+    else if (itemp.eq.3) then
        goto 630
-    else if(itemp.eq.4)then
+    else if (itemp.eq.4) then
        goto 690
-    else if(itemp.eq.5)then
+    else if (itemp.eq.5) then
        goto 690
-    else if(itemp.eq.6)then
+    else if (itemp.eq.6) then
        goto 640
-    else if(itemp.eq.7)then
+    else if (itemp.eq.7) then
        goto 650
-    else if(itemp.eq.8)then
+    else if (itemp.eq.8) then
        goto 660
-    else if(itemp.eq.9)then
+    else if (itemp.eq.9) then
        goto 670
-    else if(itemp.eq.10)then
+    else if (itemp.eq.10) then
        goto 675
-    else if(itemp.eq.11)then
+    else if (itemp.eq.11) then
        goto 680
-    else if(itemp.eq.12)then
+    else if (itemp.eq.12) then
        goto 685
     else
       ! code should never reach here
@@ -1286,7 +1286,7 @@ module numerics_routines
 719 msg = '***Fatal error: dassl--  tout (=r1) is equal to t (=r2)'
     call xerrwv(msg,len_trim(msg),19,0,0,0,0,2,tout,t)
     go to 750
-750 if(info(1)==-1) go to 760
+750 if (info(1)==-1) go to 760
     info(1)=-1
     idid=-33
     return
@@ -1362,12 +1362,12 @@ module numerics_routines
     vmax = 0.0d0
     ipar(3) = 1
     do i = 1,neq
-        if(abs(v(i)/wt(i)) > vmax) then
+        if (abs(v(i)/wt(i)) > vmax) then
             vmax = abs(v(i)/wt(i))
             ipar(3) = i
         end if
     end do
-    if(vmax <= 0.0d0) go to 30
+    if (vmax <= 0.0d0) go to 30
     sum = 0.0d0
     do  i = 1,neq
         sum = sum + ((v(i)/wt(i))/vmax)**2
@@ -1828,7 +1828,7 @@ module numerics_routines
     ncf=0
     nsf=0
     nef=0
-    if(jstart /= 0) go to 120
+    if (jstart /= 0) go to 120
     !
     !     if this is the first step,perform
     !     other initializations
@@ -1862,10 +1862,10 @@ module numerics_routines
     kp2=k+2
     km1=k-1
     xold=x
-    if(h/=hold.or.k /= kold) ns = 0
+    if (h/=hold.or.k /= kold) ns = 0
     ns=min0(ns+1,kold+2)
     nsp1=ns+1
-    if(kp1 < ns)go to 230
+    if (kp1 < ns)go to 230
     !
     beta(1)=1.0d0
     alpha(1)=1.0d0
@@ -1907,7 +1907,7 @@ module numerics_routines
     if (cj /= cjlast) s = 100.d0
     !
     !     change phi to phi star
-    if(kp1 < nsp1) go to 280
+    if (kp1 < nsp1) go to 280
     do j=nsp1,kp1
         do i=1,neq
             phi(i,j)=beta(j)*phi(i,j)
@@ -1966,14 +1966,14 @@ module numerics_routines
     !     (where g(x,y,yprime)=0). set
     !     jcalc to 0 as an indicator that
     !     this has been done.
-    if(jcalc /= -1)go to 340
+    if (jcalc /= -1)go to 340
     iwm(lnje)=iwm(lnje)+1
     jcalc=0
     call ddajac(neq,x,y,yprime,delta,cj,h,ier,wt,e,wm,iwm,res,ires,uround,jac,rpar,ipar,ntemp)
     cjold=cj
     s = 100.d0
     if (ires < 0) go to 380
-    if(ier /= 0)go to 380
+    if (ier /= 0)go to 380
     nsf=0
     !
     !
@@ -2020,7 +2020,7 @@ module numerics_routines
     !     maximum number of iterations have
     !     been tried.
     m=m+1
-    if(m>=maxit)go to 370
+    if (m>=maxit)go to 370
     !
     !     evaluate the residual
     !     and go back to do another iteration
@@ -2036,7 +2036,7 @@ module numerics_routines
     !     is not current,re-do the step with
     !     a new iteration matrix.
 370 continue
-    if(jcalc==0)go to 380
+    if (jcalc==0)go to 380
     jcalc=-1
     go to 300
     !
@@ -2045,12 +2045,12 @@ module numerics_routines
     !     required, set the solution nonnegative, if the perturbation
     !     to do it is small enough.  if the change is too large, then
     !     consider the corrector iteration to have failed.
-375 if(nonneg == 0) go to 390
+375 if (nonneg == 0) go to 390
     do i = 1,neq
         delta(i) = dmin1(y(i),0.0d0)
     end do
     delnrm = ddanrm(neq,delta,wt,ipar)
-    if(delnrm > 0.33d0) go to 380
+    if (delnrm > 0.33d0) go to 380
     do i = 1,neq
         e(i) = e(i) - delta(i)
     end do
@@ -2062,7 +2062,7 @@ module numerics_routines
     !     matrix,or singular iteration matrix
 380 convgd= .false.
 390 jcalc = 1
-    if(.not.convgd)go to 600
+    if (.not.convgd)go to 600
     !
     !
     !
@@ -2082,14 +2082,14 @@ module numerics_routines
     terk = float(k+1)*erk
     est = erk
     knew=k
-    if(k == 1)go to 430
+    if (k == 1)go to 430
     do i = 1,neq
         delta(i) = phi(i,kp1) + e(i)
     end do
     erkm1=sigma(k)*ddanrm(neq,delta,wt,ipar)
     terkm1 = float(k)*erkm1
-    if(k > 2)go to 410
-    if(terkm1 <= 0.5d0*terk)go to 420
+    if (k > 2)go to 410
+    if (terkm1 <= 0.5d0*terk)go to 420
     go to 430
 410 continue
     do i = 1,neq
@@ -2097,7 +2097,7 @@ module numerics_routines
     end do
     erkm2=sigma(k-1)*ddanrm(neq,delta,wt,ipar)
     terkm2 = float(k-1)*erkm2
-    if(dmax1(terkm1,terkm2)>terk)go to 430
+    if (dmax1(terkm1,terkm2)>terk)go to 430
     !     lower the order
 420 continue
     knew=k-1
@@ -2108,7 +2108,7 @@ module numerics_routines
     !     to see if the step was successful
 430 continue
     err = ck * enorm
-    if(err > 1.0d0)go to 600
+    if (err > 1.0d0)go to 600
     !
     !
     !
@@ -2133,21 +2133,21 @@ module numerics_routines
     !        already using maximum order, or
     !        stepsize not constant, or
     !        order raised in previous step
-    if(knew==km1.or.k==iwm(lmxord))iphase=1
-    if(iphase == 0)go to 545
-    if(knew==km1)go to 540
-    if(k==iwm(lmxord)) go to 550
-    if(kp1>=ns.or.kdiff==1)go to 550
+    if (knew==km1.or.k==iwm(lmxord))iphase=1
+    if (iphase == 0)go to 545
+    if (knew==km1)go to 540
+    if (k==iwm(lmxord)) go to 550
+    if (kp1>=ns.or.kdiff==1)go to 550
     do i=1,neq
         delta(i)=e(i)-phi(i,kp2)
     end do
     erkp1 = (1.0d0/float(k+2))*ddanrm(neq,delta,wt,ipar)
     terkp1 = float(k+2)*erkp1
-    if(k>1)go to 520
-    if(terkp1>=0.5d0*terk)go to 550
+    if (k>1)go to 520
+    if (terkp1>=0.5d0*terk)go to 550
     go to 530
-520 if(terkm1<=dmin1(terk,terkp1))go to 540
-    if(terkp1>=terk.or.k==iwm(lmxord))go to 550
+520 if (terkm1<=dmin1(terk,terkp1))go to 540
+    if (terkp1>=terk.or.k==iwm(lmxord))go to 550
     !
     !     raise order
 530 k=kp1
@@ -2172,10 +2172,10 @@ module numerics_routines
 550 hnew=h
     temp2=k+1
     r=(2.0d0*est+0.0001d0)**(-1.0d0/temp2)
-    if(r < 2.0d0) go to 555
+    if (r < 2.0d0) go to 555
     hnew = 2.0d0*h
     go to 560
-555 if(r > 1.0d0) go to 560
+555 if (r > 1.0d0) go to 560
     r = dmax1(0.5d0,dmin1(0.9d0,r))
     hnew = h*r
 560 h=hnew
@@ -2183,7 +2183,7 @@ module numerics_routines
     !
     !     update differences for next step
 575 continue
-    if(kold==iwm(lmxord))go to 585
+    if (kold==iwm(lmxord))go to 585
     do i=1,neq
         phi(i,kp2)=e(i)
     end do
@@ -2215,7 +2215,7 @@ module numerics_routines
     !
     !     restore x,phi,psi
     x=xold
-    if(kp1<nsp1)go to 630
+    if (kp1<nsp1)go to 630
     do j=nsp1,kp1
         temp1=1.0d0/beta(j)
         do i=1,neq
@@ -2230,14 +2230,14 @@ module numerics_routines
     !
     !     test whether failure is due to corrector iteration
     !     or error test
-    if(convgd)go to 660
+    if (convgd)go to 660
     iwm(lctf)=iwm(lctf)+1
     !
     !
     !     the newton iteration failed to converge with
     !     a current iteration matrix.  determine the cause
     !     of the failure and take appropriate action.
-    if(ier==0)go to 650
+    if (ier==0)go to 650
     !
     !     the iteration matrix is singular. reduce
     !     the stepsize by a factor of 4. if
@@ -2388,17 +2388,17 @@ module numerics_routines
     !     modified by par 01/08/93 to allow custom solution for cfast
     !
     !go to (100,200,300,400,500,600),mtype
-    if(mtype==1)then
+    if (mtype==1) then
        go to 100
-    else if(mtype==2)then
+    else if (mtype==2) then
        go to 200
-    else if(mtype==3)then
+    else if (mtype==3) then
        go to 300
-    else if(mtype==4)then
+    else if (mtype==4) then
        go to 400
-    else if(mtype==5)then
+    else if (mtype==5) then
        go to 500
-    else if(mtype==6)then
+    else if (mtype==6) then
        go to 600
     else
        ! should never get here
@@ -2553,17 +2553,17 @@ module numerics_routines
     !     modified by par 01/08/93 for custom solution for cfast
     !
     !go to(100,100,300,400,400,600),mtype
-    if(mtype==1)then
+    if (mtype==1) then
        go to 100
-    else if(mtype==2)then
+    else if (mtype==2) then
        go to 100
-    else if(mtype==3)then
+    else if (mtype==3) then
        go to 300
-    else if(mtype==4)then
+    else if (mtype==4) then
        go to 400
-    else if(mtype==5)then
+    else if (mtype==5) then
        go to 400
-    else if(mtype==6)then
+    else if (mtype==6) then
        go to 600
     else
        ! should never get here
@@ -4735,10 +4735,10 @@ module numerics_routines
     integer :: n, incx, ns, ii, i
     !***first executable statement  idamax
     idamax = 0
-    if(n<=0) return
+    if (n<=0) return
     idamax = 1
-    if(n<=1)return
-    if(incx==1)goto 20
+    if (n<=1)return
+    if (incx==1)goto 20
     !
     !        code for increments not equal to 1.
     !
@@ -4747,7 +4747,7 @@ module numerics_routines
     ii = 1
     do i = 1,ns,incx
         xmag = abs(dx(i))
-        if(xmag<=dmax) go to 5
+        if (xmag<=dmax) go to 5
         idamax = ii
         dmax = xmag
 5       ii = ii + 1
@@ -4759,7 +4759,7 @@ module numerics_routines
 20  dmax = abs(dx(1))
     do i = 2,n
         xmag = abs(dx(i))
-        if(xmag<=dmax) go to 30
+        if (xmag<=dmax) go to 30
         idamax = i
         dmax = xmag
 30      continue
@@ -4809,8 +4809,8 @@ module numerics_routines
 
     !***first executable statement  dasum
     dasum = 0.d0
-    if(n<=0)return
-    if(incx==1)goto 20
+    if (n<=0)return
+    if (incx==1)goto 20
     !
     !        code for increments not equal to 1.
     !
@@ -4826,11 +4826,11 @@ module numerics_routines
     !        clean-up loop so remaining vector length is a multiple of 6.
     !
 20  m = mod(n,6)
-    if( m == 0 ) go to 40
+    if ( m == 0 ) go to 40
     do i = 1,m
         dasum = dasum + abs(dx(i))
     end do
-    if( n < 6 ) return
+    if ( n < 6 ) return
 40  mp1 = m + 1
     do i = mp1,n,6
         dasum = dasum + abs(dx(i)) + abs(dx(i+1)) + abs(dx(i+2)) + abs(dx(i+3)) + abs(dx(i+4)) + abs(dx(i+5))
@@ -4883,12 +4883,12 @@ module numerics_routines
     integer :: n, incx, incy, ix, iy, i, m, mp1, ns
 
     !***first executable statement  daxpy
-    if(n<=0.or.da==0.d0) return
-    if(incx==incy) then
-       !if(incx-1) 5,20,60
-       if(incx-1.LT.0)then
+    if (n<=0.or.da==0.d0) return
+    if (incx==incy) then
+       !if (incx-1) 5,20,60
+       if (incx-1.LT.0) then
           goto 5
-       else if(incx.eq.0)then
+       else if (incx.eq.0) then
           goto 20
        else
           goto 60
@@ -4900,8 +4900,8 @@ module numerics_routines
     !
     ix = 1
     iy = 1
-    if(incx<0)ix = (-n+1)*incx + 1
-    if(incy<0)iy = (-n+1)*incy + 1
+    if (incx<0)ix = (-n+1)*incx + 1
+    if (incy<0)iy = (-n+1)*incy + 1
     do i = 1,n
         dy(iy) = dy(iy) + da*dx(ix)
         ix = ix + incx
@@ -4915,11 +4915,11 @@ module numerics_routines
     !        clean-up loop so remaining vector length is a multiple of 4.
     !
 20  m = mod(n,4)
-    if( m == 0 ) go to 40
+    if ( m == 0 ) go to 40
     do i = 1,m
         dy(i) = dy(i) + da*dx(i)
     end do
-    if( n < 4 ) return
+    if ( n < 4 ) return
 40  mp1 = m + 1
     do i = mp1,n,4
         dy(i) = dy(i) + da*dx(i)
@@ -4986,12 +4986,12 @@ module numerics_routines
 
     !***first executable statement  ddot
     ddot = 0.d0
-    if(n<=0)return
-    if(incx==incy) then
-      ! if(incx-1) 5,20,60
-       if(incx-1.lt.0)then
+    if (n<=0)return
+    if (incx==incy) then
+      ! if (incx-1) 5,20,60
+       if (incx-1.lt.0) then
           goto 5
-       else if(incx-1.eq.0)then
+       else if (incx-1.eq.0) then
           goto 20
        else
           go to 60
@@ -5003,8 +5003,8 @@ module numerics_routines
     !
     ix = 1
     iy = 1
-    if(incx<0)ix = (-n+1)*incx + 1
-    if(incy<0)iy = (-n+1)*incy + 1
+    if (incx<0)ix = (-n+1)*incx + 1
+    if (incy<0)iy = (-n+1)*incy + 1
     do 10 i = 1,n
         ddot = ddot + dx(ix)*dy(iy)
         ix = ix + incx
@@ -5018,11 +5018,11 @@ module numerics_routines
     !        clean-up loop so remaining vector length is a multiple of 5.
     !
 20  m = mod(n,5)
-    if( m == 0 ) go to 40
+    if ( m == 0 ) go to 40
     do 30 i = 1,m
         ddot = ddot + dx(i)*dy(i)
 30  continue
-    if( n < 5 ) return
+    if ( n < 5 ) return
 40  mp1 = m + 1
     do i = mp1,n,5
         ddot = ddot + dx(i)*dy(i) + dx(i+1)*dy(i+1) + dx(i + 2)*dy(i + 2) + dx(i + 3)*dy(i + 3) + dx(i + 4)*dy(i + 4)
@@ -5150,8 +5150,8 @@ module numerics_routines
     integer :: n, incx, i, m, mp1, ns
 
     !***first executable statement  dscal
-    if(n<=0)return
-    if(incx==1)goto 20
+    if (n<=0)return
+    if (incx==1)goto 20
     !
     !        code for increments not equal to 1.
     !
@@ -5167,11 +5167,11 @@ module numerics_routines
     !        clean-up loop so remaining vector length is a multiple of 5.
     !
 20  m = mod(n,5)
-    if( m == 0 ) go to 40
+    if ( m == 0 ) go to 40
     do i = 1,m
         dx(i) = da*dx(i)
     end do
-    if( n < 5 ) return
+    if ( n < 5 ) return
 40  mp1 = m + 1
     do i = mp1,n,5
         dx(i) = da*dx(i)

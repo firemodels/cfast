@@ -280,7 +280,7 @@ module fire_routines
     do lsp = 1, 9
         xtemp = xtemp + stmass(l,lsp)
     end do
-    if(xtemp==0.0_eb) xtemp = 1.0_eb
+    if (xtemp==0.0_eb) xtemp = 1.0_eb
     do lsp = 1, ns
         xnet = xeme*stmass(l,lsp)/xtemp
         xntms(u,lsp) = xntms(u,lsp) + xnet
@@ -487,7 +487,7 @@ module fire_routines
 
     id = iquench(iroom)
 
-    if(id==0)then
+    if (id==0) then
 
         ! if a sprinkler is not active then interpolate at current time
         ifact = 0
@@ -504,7 +504,7 @@ module fire_routines
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,qtf)
         ifact = 1
         tfact = exp(-(xxtime-xxtimef)/tdrate)
-        if(qt<tfact*qtf)then
+        if (qt<tfact*qtf) then
 
             ! current time heat release rate is smaller than sprinklerd value
             ! so use current time and reset ifact to 0 so rates are not
@@ -531,13 +531,13 @@ module fire_routines
     n_Cl = obj_Cl(objn)
 
     ! attenuate mass and energy release rates if there is an active sprinkler in this room
-    if(id/=0.and.ifact==1)then
+    if (id/=0.and.ifact==1) then
         omasst = omasst*tfact
         oqdott = oqdott*tfact
     end if
 
     tfilter_max=1.0_eb
-    if(adiabatic_wall.and.time<tfilter_max)then
+    if (adiabatic_wall.and.time<tfilter_max) then
         factor = time/tfilter_max
         omasst = omasst*factor
         oqdott = oqdott*factor
@@ -720,16 +720,16 @@ module fire_routines
         !is there a door jet fire into room iroom2
         iroom2 = ventptr%to
         room2ptr => roominfo(iroom2)
-        if(room2ptr%temp(u)>=tgignt)then
+        if (room2ptr%temp(u)>=tgignt) then
             flw2to1 = vss(2,i)+vsa(2,i)
-            if(vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb)then
+            if (vsas(1,i)>0.0_eb.and.flw2to1>0.0_eb) then
                 djetflg = .true.
                 exit
             end if
         end if
     end do
 
-    if(.not.djetflg)return
+    if (.not.djetflg)return
     flwdjf(1:nr,1:ns+2,l) = 0.0_eb
     flwdjf(1:nr,1:ns+2,u) = 0.0_eb
     fqdj(1:nr) = 0.0_eb
@@ -750,13 +750,13 @@ module fire_routines
                 call door_jet_fire (iroom1,room2ptr%temp(u),flw2to1,vsas(1,i),hcombt,qpyrol1,xntms1,dj1flag)
 
                 ! sum the flows for return to the source routine
-                if(dj1flag)then
+                if (dj1flag) then
                     flwdjf(iroom1,q,u) = flwdjf(iroom1,q,u) + qpyrol1
                     do lsp = 1, ns
                         flwdjf(iroom1,lsp+2,u) = flwdjf(iroom1,lsp+2,u) + xntms1(u,lsp)
                     end do
                 end if
-                if(dj2flag)then
+                if (dj2flag) then
                     flwdjf(iroom2,q,u) = flwdjf(iroom2,q,u) + qpyrol2
                     do lsp = 1, ns
                         flwdjf(iroom2,lsp+2,u) = flwdjf(iroom2,lsp+2,u) + xntms2(u,lsp)
@@ -894,7 +894,7 @@ module fire_routines
             zceil = roomptr%cheight
             r = sqrt(xdistance**2 + ydistance**2)
             if (roomptr%hall) then
-                if (roomptr%cdepth>roomptr%cwidth)then
+                if (roomptr%cdepth>roomptr%cwidth) then
                     distance = ydistance
                     hall_width = roomptr%cwidth
                 else

@@ -52,9 +52,9 @@ module radiation_routines
     flxrad(1:nrm1,1:nwal) = 0.0_eb
     flwrad(1:nrm1,1:2) = 0.0_eb
 
-    if(option(frad)==off) return
+    if (option(frad)==off) return
     black = .false.
-    if(option(frad)==3) black = .true.
+    if (option(frad)==3) black = .true.
 
     !do i = 1, nrm1
     !    roomptr => roominfo(i)
@@ -88,14 +88,14 @@ module radiation_routines
             !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
             ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
             call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight)
-            if(fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%cheight)then
+            if (fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%cheight) then
                 zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%cheight-xfire(ifire+j,f_fire_zpos))/3.0_eb
             else
                 zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
             end if
         end do
-        if(.not.black)then
-            if(option(frad)==4)then
+        if (.not.black) then
+            if (option(frad)==4) then
                 roomptr%absorb(u) = defabsup
                 roomptr%absorb(l) = defabslow
             else
@@ -164,7 +164,7 @@ module radiation_routines
 
     data iflag /mxroom*0/
 
-    if(iflag(iroom)==0)then
+    if (iflag(iroom)==0) then
         f14(iroom) = rdparfig(xroom,yroom,zroom)
         iflag(iroom) = 1
     end if
@@ -241,12 +241,12 @@ module radiation_routines
     call rdrtran(4,2,absorb,beam,hlay,zz,tauu,taul,black)
 
     ! define transmission factors for fires
-    if(nfire/=0)then
+    if (nfire/=0) then
         call rdftran(mxfire,4,2,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
     end if
 
     ! define solid angles for fires
-    if(nfire/=0)then
+    if (nfire/=0) then
         call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
     end if
 
@@ -285,7 +285,7 @@ module radiation_routines
     ! solve the linear system
 
     call dgefa(a,4,4,ipvt,info)
-    if(info/=0)then
+    if (info/=0) then
         write (logerr,*) '***Error: RAD4 - singular matrix'
         do k = 1, 4
             rhs(k) = 0.0_eb
@@ -366,7 +366,7 @@ module radiation_routines
         do ifire = 1, nfire
             qfflux = qfire(ifire)*firang(k,ifire)/(fourpi*area(k))
             c(k) = c(k) + qfflux*taufl(ifire,k)*taufu(ifire,k)
-            if(zfire(ifire)>hlay)then
+            if (zfire(ifire)>hlay) then
                 factu = 1.0_eb - taufu(ifire,k)
                 factl = 0.0_eb
             else
@@ -405,7 +405,7 @@ module radiation_routines
         do ifire = 1, nfire
             qfflux = qfire(ifire)*firang(k,ifire)/(fourpi*area(k))
             c(k) = c(k) + qfflux*taufl(ifire,k)*taufu(ifire,k)
-            if(zfire(ifire)>hlay)then
+            if (zfire(ifire)>hlay) then
                 factu = 1.0_eb - taufu(ifire,k)
                 factl = (1.0_eb - taufl(ifire,k))*taufu(ifire,k)
             else
@@ -478,7 +478,7 @@ module radiation_routines
     real(eb) :: xx, yy, xsq, ysq, f1, f2, f3, f4, f5
 
     rdparfig = 0.0_eb
-    if(z==0.0_eb.or.x==0.0_eb.or.y==0.0_eb) return
+    if (z==0.0_eb.or.x==0.0_eb.or.y==0.0_eb) return
     xx = x/z
     yy = y/z
     f1 = 0.5_eb*log((1.0_eb+xx**2)*(1.0_eb+yy**2)/(1.0_eb+xx**2+yy**2))
@@ -566,7 +566,7 @@ module radiation_routines
        call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
        solid_angle_layer = solid_angle1 + solid_angle2
 
-        if(zfire(i)<hlay)then
+        if (zfire(i)<hlay) then
             firang(2,i) = solid_angle_layer - firang(1,i)
             firang(3,i) = fourpi - solid_angle_layer - firang(4,i)
         else
@@ -594,10 +594,10 @@ module radiation_routines
 
     do i = 1, nfire
         do j = 1, nup
-            if(zfire(i)>hlay)then
+            if (zfire(i)>hlay) then
                 beam = abs(zz(j)-zfire(i))
                 taufl(i,j) = 1.0_eb
-                if(.not.black)then
+                if (.not.black) then
                     taufu(i,j) = exp(-absorb(1)*beam)
                 else
                     taufu(i,j) = 0.0_eb
@@ -606,7 +606,7 @@ module radiation_routines
             else
                 beamu = zz(j) - hlay
                 beaml = hlay - zfire(i)
-                if(.not.black)then
+                if (.not.black) then
                     taufu(i,j) = exp(-absorb(1)*beamu)
                     taufl(i,j) = exp(-absorb(2)*beaml)
                 else
@@ -616,10 +616,10 @@ module radiation_routines
             end if
         end do
         do j = nup + 1, nzone
-            if(zfire(i)<=hlay)then
+            if (zfire(i)<=hlay) then
                 beam = abs(zz(j)-zfire(i))
                 taufu(i,j) = 1.0_eb
-                if(.not.black)then
+                if (.not.black) then
                     taufl(i,j) = exp(-absorb(2)*beam)
                 else
                     taufl(i,j) = 0.0_eb
@@ -628,7 +628,7 @@ module radiation_routines
             else
                 beamu = zfire(i) - hlay
                 beaml = hlay - zz(j)
-                if(.not.black)then
+                if (.not.black) then
                     taufu(i,j) = exp(-absorb(1)*beamu)
                     taufl(i,j) = exp(-absorb(2)*beaml)
                 else
@@ -661,14 +661,14 @@ module radiation_routines
 
     do i = 1, nup
         do j = i + 1, nup
-            if(.not.black)then
+            if (.not.black) then
                 tauu(i,j) = exp(-absorb(1)*beam(i,j))
             else
                 tauu(i,j) = 0.0_eb
             end if
             tauu(j,i) = tauu(i,j)
         end do
-        if(.not.black)then
+        if (.not.black) then
             tauu(i,i) = exp(-absorb(1)*beam(i,i))
         else
             tauu(i,i) = 0.0_eb
@@ -680,7 +680,7 @@ module radiation_routines
     do i = 1, nup
         do j = nup + 1, nzone
             fu = (zz(i)-hlay)/(zz(i)-zz(j))
-            if(.not.black)then
+            if (.not.black) then
                 tauu(i,j) = exp(-absorb(1)*beam(i,j)*fu)
             else
                 tauu(i,j) = 0.0_eb
@@ -692,7 +692,7 @@ module radiation_routines
     ! lower to lower
     do i = nup + 1, nzone
         do j = nup + 1, nzone
-            if(.not.black)then
+            if (.not.black) then
                 tauu(i,j) = 1.0_eb
             else
                 tauu(i,j) = 0.0_eb
@@ -705,14 +705,14 @@ module radiation_routines
     ! lower to lower
     do i = nup + 1, nzone
         do j = i + 1, nzone
-            if(.not.black)then
+            if (.not.black) then
                 taul(i,j) = exp(-absorb(2)*beam(i,j))
             else
                 taul(i,j) = 0.0_eb
             end if
             taul(j,i) = taul(i,j)
         end do
-        if(.not.black)then
+        if (.not.black) then
             taul(i,i) = exp(-absorb(2)*beam(i,i))
         else
             taul(i,i) = 0.0_eb
@@ -723,7 +723,7 @@ module radiation_routines
 
     do i = 1, nup
         do j = 1, nup
-            if(.not.black)then
+            if (.not.black) then
                 taul(i,j) = 1.0_eb
             else
                 taul(i,j) = 0.0_eb
@@ -736,7 +736,7 @@ module radiation_routines
     do i = nup + 1, nzone
         do j = 1, nup
             fl = (hlay-zz(i))/(zz(j)-zz(i))
-            if(.not.black)then
+            if (.not.black) then
                 taul(i,j) = exp(-absorb(2)*beam(i,j)*fl)
             else
                 taul(i,j) = 0.0_eb
@@ -930,7 +930,7 @@ module radiation_routines
     ! absorbance for co2
     ng = roomptr%species_mass(layer,co2)/mwco2
     plg = ng*rtv*l
-    if(plg>0.0_eb)then
+    if (plg>0.0_eb) then
         cplg = log10(plg)
         tglog = log10(tg)
         call linterp(co2xsize, co2ysize, tco2, plco2, eco2, tglog, cplg, aco2, xco2, yco2)
@@ -942,7 +942,7 @@ module radiation_routines
     ! absorbance for h2o
     ng = roomptr%species_mass(layer,h2o)/mwh2o
     plg = ng*rtv*l
-    if(plg>0.0_eb)then
+    if (plg>0.0_eb) then
         cplg = log10(plg)
         tglog = log10(tg)
         call linterp(h2oxsize, h2oysize, th2o, plh2o, eh2o, tglog, cplg, ah2o, xh2o, yh2o)
@@ -991,14 +991,14 @@ module radiation_routines
 
     ! check the special case of xval < x(1)
 
-    if(xval < x(1))then
+    if (xval < x(1)) then
         xerr = loerr
         xval = x(1)
         i = 1
 
         ! check the special case of xval > x(xdim)
 
-    else if(xval > x(xdim))then
+    else if (xval > x(xdim)) then
         xerr = hierr
         xval = x(xdim)
         i = xdim
@@ -1008,7 +1008,7 @@ module radiation_routines
     else
         xerr = noerr
         do count=2,xdim
-            if(xval < x(count))then
+            if (xval < x(count)) then
                 i = count - 1
                 go to 20
             end if
@@ -1020,14 +1020,14 @@ module radiation_routines
 
     ! check the special case of yval < y(1)
 
-    if(yval < y(1))then
+    if (yval < y(1)) then
         yerr = loerr
         yval = y(1)
         j = 1
 
         ! check the special case of yval > y(ydim)
 
-    else if(yval > y(ydim))then
+    else if (yval > y(ydim)) then
         yerr = hierr
         yval = y(ydim)
         j = ydim
@@ -1037,7 +1037,7 @@ module radiation_routines
     else
         yerr = noerr
         do count=2,ydim
-            if(yval < y(count))then
+            if (yval < y(count)) then
                 j = count - 1
                 go to 40
             end if

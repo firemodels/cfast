@@ -911,6 +911,7 @@ module initialization_routines
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
+    real(eb) :: fkw(mxslb)
     character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
 
     ! tp is the pointer into the data base for each material
@@ -934,7 +935,7 @@ module initialization_routines
                     epw(i,j) = thrmpptr%eps
                     nslb(i,j) = thrmpptr%nslab
                     do k = 1, nslb(i,j)
-                        fkw(k,i,j) = thrmpptr%k(k)
+                        roomptr%k_w(k,i) = thrmpptr%k(k)
                         cw(k,i,j) = thrmpptr%c(k)
                         rw(k,i,j) = thrmpptr%rho(k)
                         flw(k,i,j) = thrmpptr%thickness(k)
@@ -952,8 +953,9 @@ module initialization_routines
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
-                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),&
-                   roomptr%wall_thickness(j),twj(1,i,j),interior_temperature,exterior_temperature)
+                fkw(1:mxslb) = roomptr%k_w(1:mxslb,j)
+                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw,cw(1,j,i),rw(1,j,i),flw(1,j,i),&
+                   roomptr%total_thick_w(j),twj(1,i,j),interior_temperature,exterior_temperature)
             end if
         end do
     end do
@@ -977,15 +979,15 @@ module initialization_routines
         numnode(1,itow,itor) = nptsf + nptst - 1
         numnode(1,ifromw,ifromr) = nptsf + nptst - 1
 
-        wfrom = from_roomptr%wall_thickness(ifromw)
-        wto = to_roomptr%wall_thickness(itow)
-        from_roomptr%wall_thickness(ifromw) = wfrom + wto
-        to_roomptr%wall_thickness(itow) = wfrom + wto
+        wfrom = from_roomptr%total_thick_w(ifromw)
+        wto = to_roomptr%total_thick_w(itow)
+        from_roomptr%total_thick_w(ifromw) = wfrom + wto
+        to_roomptr%total_thick_w(itow) = wfrom + wto
 
         jj = nslabt + 1
         do j = nslabf+1, nslabf+nslabt
             jj = jj - 1
-            fkw(j,ifromw,ifromr) = fkw(jj,itow,itor)
+            from_roomptr%k_w(j,ifromw) = to_roomptr%k_w(jj,itow)
             cw(j,ifromw,ifromr) =  cw(jj,itow,itor)
             rw(j,ifromw,ifromr) =  rw(jj,itow,itor)
             flw(j,ifromw,ifromr) = flw(jj,itow,itor)
@@ -995,7 +997,7 @@ module initialization_routines
         jj = nslabf + 1
         do j = nslabt+1, nslabt+nslabf
             jj = jj - 1
-            fkw(j,itow,itor) = fkw(jj,ifromw,ifromr)
+            to_roomptr%k_w(j,itow) = from_roomptr%k_w(jj,ifromw)
             cw(j,itow,itor) =  cw(jj,ifromw,ifromr)
             rw(j,itow,itor) =  rw(jj,ifromw,ifromr)
             flw(j,itow,itor) = flw(jj,ifromw,ifromr)

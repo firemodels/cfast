@@ -41,6 +41,7 @@ module conduction_routines
     real(eb) :: tgrad(2), vtgrad(4*mxrooms)
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
+    real(eb) :: fkw(mxslb)
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j
 
     type(room_type), pointer :: roomptr
@@ -118,7 +119,8 @@ module conduction_routines
                     end do
                 end if
             end if
-            call conductive_flux (update,twint,twext,dt,fkw(1,iwall,iroom),cw(1,iwall,iroom),rw(1,iwall,iroom), &
+            fkw(1:mxslb) = roomptr%k_w(1:mxslb,iwall)
+            call conductive_flux (update,twint,twext,dt,fkw,cw(1,iwall,iroom),rw(1,iwall,iroom), &
                 twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode(1,iwall,iroom),nslb(iwall,iroom),wfluxin,wfluxout,iwb,tgrad,tderv)
 
             ! store wall gradient
@@ -135,8 +137,9 @@ module conduction_routines
         do iw = 1, nwalls
             icond = nofwt + iw
             iroom = izwall(iw,w_from_room)
+            roomptr => roominfo(iroom)
             iwall = izwall(iw,w_from_wall)
-            delta(icond) = flxtot(iroom,iwall) + vtgrad(iw)*fkw(1,iwall,iroom)
+            delta(icond) = flxtot(iroom,iwall) + vtgrad(iw)*roomptr%k_w(1,iwall)
         end do
     end if
 

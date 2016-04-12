@@ -86,6 +86,9 @@ module cfast_types
         ! compartment surfaces 
         real(eb), dimension(nwal) :: total_thick_w      ! total thickness of wall surface
         real(eb), dimension(mxslb,nwal) :: k_w          ! thermal conductivity of each slab
+        real(eb), dimension(mxslb,nwal) :: c_w          ! specific heat of each slab
+        real(eb), dimension(mxslb,nwal) :: rho_w        ! density of each slab
+        real(eb), dimension(mxslb,nwal) :: thick_w      ! thickness of each slab
 
         ! result values for the compartment
         real(eb) :: relp                                ! pressure at floor level relative to exterior
@@ -119,7 +122,7 @@ module cfast_types
         real(eb) :: normal(3)           ! target normal vector
         real(eb) :: k                   ! target thermal conductivity (from matching thermal properties input)
         real(eb) :: rho                 ! target density (from matching thermal properties input)
-        real(eb) :: cp                  ! target heat capacity (from matching thermal properties input)
+        real(eb) :: c                   ! target specific heat (from matching thermal properties input)
         real(eb) :: emissivity          ! target emissivity (from matching thermal properties input)
         real(eb) :: thickness           ! target thickness (from matching thermal properties input)
         real(eb) :: depth_loc           ! depth location for output of internal temperature
@@ -155,7 +158,7 @@ module cfast_types
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
         real(eb), dimension(mxslb) :: rho               ! density of each slab
         real(eb), dimension(mxslb) :: c                 ! specific heat of each slab
-        real(eb), dimension(mxslb) :: thickness         ! slab thickness of each slab
+        real(eb), dimension(mxslb) :: thickness         ! thickness of each slab
         real(eb) :: eps                                 ! surface emissivity
     end type thermal_type
 

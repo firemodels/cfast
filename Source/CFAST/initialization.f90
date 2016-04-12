@@ -900,10 +900,10 @@ module initialization_routines
     !             with walls and targets
     !     Arguments: TSTOP
 
-    !        fkw = thermal conductivity
+    !        kw = thermal conductivity
     !        cw = specific heat (j/kg)
-    !        rw = density of the wall (kg/m**3)
-    !        flw = thickness of the wall (m)
+    !        rhow = density of the wall (kg/m**3)
+    !        thickw = thickness of the wall (m)
     !        epw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
     !        matl contains the name of the thermal data subset in the tpp datafile
@@ -911,12 +911,13 @@ module initialization_routines
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
+    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb)
     character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
 
     ! tp is the pointer into the data base for each material
     integer tp
 
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomptr, from_roomptr, to_roomptr
     type(target_type), pointer :: targptr
     type(thermal_type), pointer :: thrmpptr
 
@@ -934,10 +935,10 @@ module initialization_routines
                     epw(i,j) = thrmpptr%eps
                     nslb(i,j) = thrmpptr%nslab
                     do k = 1, nslb(i,j)
-                        fkw(k,i,j) = thrmpptr%k(k)
-                        cw(k,i,j) = thrmpptr%c(k)
-                        rw(k,i,j) = thrmpptr%rho(k)
-                        flw(k,i,j) = thrmpptr%thickness(k)
+                        roomptr%k_w(k,i) = thrmpptr%k(k)
+                        roomptr%c_w(k,i) = thrmpptr%c(k)
+                        roomptr%rho_w(k,i) = thrmpptr%rho(k)
+                        roomptr%thick_w(k,i) = thrmpptr%thickness(k)
                     end do
                 end if
             end if
@@ -952,8 +953,12 @@ module initialization_routines
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
-                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),&
-                   wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
+                k_w(1:mxslb) = roomptr%k_w(1:mxslb,j)
+                c_w(1:mxslb) = roomptr%c_w(1:mxslb,j)
+                rho_w(1:mxslb) = roomptr%rho_w(1:mxslb,j)
+                thick_w(1:mxslb) = roomptr%thick_w(1:mxslb,j)
+                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,k_w,c_w,rho_w,thick_w,&
+                   roomptr%total_thick_w(j),twj(1,i,j),interior_temperature,exterior_temperature)
             end if
         end do
     end do
@@ -964,6 +969,8 @@ module initialization_routines
         ifromw = izswal(i,w_from_wall)
         itor = izswal(i,w_to_room)
         itow = izswal(i,w_to_wall)
+        from_roomptr => roominfo(ifromr)
+        to_roomptr => roominfo(itor)
 
         nslabf = nslb(ifromw,ifromr)
         nslabt = nslb(itow,itor)
@@ -975,28 +982,28 @@ module initialization_routines
         numnode(1,itow,itor) = nptsf + nptst - 1
         numnode(1,ifromw,ifromr) = nptsf + nptst - 1
 
-        wfrom = wlength(ifromr,ifromw)
-        wto = wlength(itor,itow)
-        wlength(ifromr,ifromw) = wfrom + wto
-        wlength(itor,itow) = wfrom + wto
+        wfrom = from_roomptr%total_thick_w(ifromw)
+        wto = to_roomptr%total_thick_w(itow)
+        from_roomptr%total_thick_w(ifromw) = wfrom + wto
+        to_roomptr%total_thick_w(itow) = wfrom + wto
 
         jj = nslabt + 1
         do j = nslabf+1, nslabf+nslabt
             jj = jj - 1
-            fkw(j,ifromw,ifromr) = fkw(jj,itow,itor)
-            cw(j,ifromw,ifromr) =  cw(jj,itow,itor)
-            rw(j,ifromw,ifromr) =  rw(jj,itow,itor)
-            flw(j,ifromw,ifromr) = flw(jj,itow,itor)
+            from_roomptr%k_w(j,ifromw) = to_roomptr%k_w(jj,itow)
+            from_roomptr%c_w(j,ifromw) = to_roomptr%c_w(jj,itow)
+            from_roomptr%rho_w(j,ifromw) = to_roomptr%rho_w(jj,itow)
+            from_roomptr%thick_w(j,ifromw) = to_roomptr%thick_w(jj,itow)
             numnode(j+1,ifromw,ifromr) = numnode(jj+1,itow,itor)
         end do
 
         jj = nslabf + 1
         do j = nslabt+1, nslabt+nslabf
             jj = jj - 1
-            fkw(j,itow,itor) = fkw(jj,ifromw,ifromr)
-            cw(j,itow,itor) =  cw(jj,ifromw,ifromr)
-            rw(j,itow,itor) =  rw(jj,ifromw,ifromr)
-            flw(j,itow,itor) = flw(jj,ifromw,ifromr)
+            to_roomptr%k_w(j,itow) = from_roomptr%k_w(jj,ifromw)
+            to_roomptr%c_w(j,itow) = from_roomptr%c_w(jj,ifromw)
+            to_roomptr%rho_w(j,itow) = from_roomptr%rho_w(jj,ifromw)
+            to_roomptr%thick_w(j,itow) = from_roomptr%thick_w(jj,ifromw)
             numnode(j+1,itow,itor) = numnode(jj+1,ifromw,ifromr)
         end do
 
@@ -1030,7 +1037,7 @@ module initialization_routines
         call get_thermal_property(tcname,tp)
         thrmpptr => thermalinfo(tp)
         targptr%k = thrmpptr%k(1)
-        targptr%cp = thrmpptr%c(1)
+        targptr%c = thrmpptr%c(1)
         targptr%rho = thrmpptr%rho(1)
         targptr%thickness = thrmpptr%thickness(1)
         targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))

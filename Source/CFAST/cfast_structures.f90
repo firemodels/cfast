@@ -2,17 +2,53 @@ module cfast_types
 
     use precision_parameters
     use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxcross, mxslb
-    
-    ! thermal properties structure
-    type thermal_type
-        character(mxthrmplen) :: name                   ! user selected name for the material
-        integer :: nslab                                ! number of slabs
-        real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
-        real(eb), dimension(mxslb) :: rho               ! density of each slab
-        real(eb), dimension(mxslb) :: c                 ! specific heat of each slab
-        real(eb), dimension(mxslb) :: thickness         ! slab thickness of each slab
-        real(eb) :: eps                                 ! surface emissivity
-    end type thermal_type
+
+    ! detector / sprinkler structure
+    type detector_type
+        real(eb) :: center(3)           ! position of detector center (user input)
+        real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
+        real(eb) :: rti                 ! rti value for heat detector or sprinkler (user input)
+        real(eb) :: spray_density       ! sprinkler spray density (user input)
+
+        integer :: room                 ! compartment where the detector is located (user input)
+        integer :: dtype                ! detector type; 1=smoke, 2=heat, 3=sprinkler (user input)
+        logical :: quench               ! true if type is sprinkler and spray is non-zero (user input)
+
+        ! these are the results of the detector calculations that are used for printout and spreadsheet output
+        real(eb) :: value               ! current link temperature or detector obscuration (calculated)
+        real(eb) :: value_o             ! link temperature or detector obscuration from previous time step (calculated)
+        real(eb) :: temp_gas            ! current gas temperature near detector (calculated)
+        real(eb) :: temp_gas_o          ! gas temperature neat detector from previous time step (calculated)
+        real(eb) :: velocity            ! current gas velocity near detector (calculated)
+        real(eb) :: velocity_o          ! gas velocity near detector from previous time step (calculated)
+        real(eb) :: obscuration         ! smoke obscuration near detector (calculated)
+        real(eb) :: activation_time     ! time of detector activation (calculated)
+        real(eb) :: tau                 ! characteristice quencing time (calculated)
+        real(eb) :: half_life           ! time for fire to diminish by a factor of two (calculated)
+        logical :: activated            ! true if detector has activated (calculated)
+        logical :: reported             ! true if detector activation has already been reported (calculated)
+    end type detector_type
+
+    ! fire data structure
+    type fire_type
+        ! These are the fire definitions from the input
+        integer(eb) :: room, object
+        real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass
+        real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
+            y_co_i(mxpts), y_trace_i(mxpts)
+
+        ! These are calculated values for the current time step
+        real(eb) :: x_position, y_position, z_position, area
+        real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
+        real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
+    end type fire_type
+
+    ! ramp data structure
+    type ramp_type
+        character :: type
+        integer :: from_room, to_room, vent_number, npoints
+        real(eb) :: time(mxpts), value(mxpts)
+    end type ramp_type
 
     ! room data structure
     type room_type
@@ -48,6 +84,11 @@ module cfast_types
         real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
         
         ! compartment surfaces 
+        real(eb), dimension(nwal) :: total_thick_w      ! total thickness of wall surface
+        real(eb), dimension(mxslb,nwal) :: k_w          ! thermal conductivity of each slab
+        real(eb), dimension(mxslb,nwal) :: c_w          ! specific heat of each slab
+        real(eb), dimension(mxslb,nwal) :: rho_w        ! density of each slab
+        real(eb), dimension(mxslb,nwal) :: thick_w      ! thickness of each slab
 
         ! result values for the compartment
         real(eb) :: relp                                ! pressure at floor level relative to exterior
@@ -65,34 +106,13 @@ module cfast_types
         real(eb), dimension(2,ns) :: species_rho        ! density of species in each layer
         real(eb), dimension(2,ns) :: species_output     ! species converted to output units
         
-        real(eb), dimension(nwal,2) :: wall_temp        ! compartment surface temperatures (interior, exterior)
-        real(eb), dimension(4) :: wall_area4            ! area of 4 wall surfaces (ceiling, upper wall, lower wall, floor)
-        real(eb), dimension(4) :: rad_qout              ! flux radiated from the four surfaces of the compartments
+        real(eb), dimension(4) :: wall_area4            ! area of 4 compartment surfaces (ceiling, upper wall, lower wall, floor)
         real(eb), dimension(10) :: wall_area10          ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
+        real(eb), dimension(nwal,2) :: wall_temp        ! compartment surface temperatures (interior, exterior)
+        real(eb), dimension(nwal) :: rad_qout           ! flux radiated from compartment surfaces
         
     end type room_type
-
-    ! ramp data structure
-    type ramp_type
-        character :: type
-        integer :: from_room, to_room, vent_number, npoints
-        real(eb) :: time(mxpts), value(mxpts)
-    end type ramp_type
-
-    ! fire data structure
-    type fire_type
-        ! These are the fire definitions from the input
-        integer(eb) :: room, object
-        real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass
-        real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
-            y_co_i(mxpts), y_trace_i(mxpts)
-
-        ! These are calculated values for the current time step
-        real(eb) :: x_position, y_position, z_position, area
-        real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
-        real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
-    end type fire_type
-
+    
     ! target data structure
     type target_type
         character(128) :: name          ! user selected name for the target
@@ -102,7 +122,7 @@ module cfast_types
         real(eb) :: normal(3)           ! target normal vector
         real(eb) :: k                   ! target thermal conductivity (from matching thermal properties input)
         real(eb) :: rho                 ! target density (from matching thermal properties input)
-        real(eb) :: cp                  ! target heat capacity (from matching thermal properties input)
+        real(eb) :: c                   ! target specific heat (from matching thermal properties input)
         real(eb) :: emissivity          ! target emissivity (from matching thermal properties input)
         real(eb) :: thickness           ! target thickness (from matching thermal properties input)
         real(eb) :: depth_loc           ! depth location for output of internal temperature
@@ -130,32 +150,17 @@ module cfast_types
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
 
     end type target_type
-
-    ! detector / sprinkler structure
-    type detector_type
-        real(eb) :: center(3)           ! position of detector center (user input)
-        real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
-        real(eb) :: rti                 ! rti value for heat detector or sprinkler (user input)
-        real(eb) :: spray_density       ! sprinkler spray density (user input)
-
-        integer :: room                 ! compartment where the detector is located (user input)
-        integer :: dtype                ! detector type; 1=smoke, 2=heat, 3=sprinkler (user input)
-        logical :: quench               ! true if type is sprinkler and spray is non-zero (user input)
-
-        ! these are the results of the detector calculations that are used for printout and spreadsheet output
-        real(eb) :: value               ! current link temperature or detector obscuration (calculated)
-        real(eb) :: value_o             ! link temperature or detector obscuration from previous time step (calculated)
-        real(eb) :: temp_gas            ! current gas temperature near detector (calculated)
-        real(eb) :: temp_gas_o          ! gas temperature neat detector from previous time step (calculated)
-        real(eb) :: velocity            ! current gas velocity near detector (calculated)
-        real(eb) :: velocity_o          ! gas velocity near detector from previous time step (calculated)
-        real(eb) :: obscuration         ! smoke obscuration near detector (calculated)
-        real(eb) :: activation_time     ! time of detector activation (calculated)
-        real(eb) :: tau                 ! characteristice quencing time (calculated)
-        real(eb) :: half_life           ! time for fire to diminish by a factor of two (calculated)
-        logical :: activated            ! true if detector has activated (calculated)
-        logical :: reported             ! true if detector activation has already been reported (calculated)
-    end type detector_type
+    
+    ! thermal properties structure
+    type thermal_type
+        character(mxthrmplen) :: name                   ! user selected name for the material
+        integer :: nslab                                ! number of slabs
+        real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
+        real(eb), dimension(mxslb) :: rho               ! density of each slab
+        real(eb), dimension(mxslb) :: c                 ! specific heat of each slab
+        real(eb), dimension(mxslb) :: thickness         ! thickness of each slab
+        real(eb) :: eps                                 ! surface emissivity
+    end type thermal_type
 
     ! vent data structure
     type vent_type

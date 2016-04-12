@@ -84,7 +84,7 @@ module target_routines
         ! do conduction into target
         wfluxin = targptr%flux_net_front
         wfluxout = targptr%flux_net_back
-        wspec(1) = targptr%cp
+        wspec(1) = targptr%c
         wrho(1) =  targptr%rho
         wk(1) =  targptr%k
         xl = targptr%thickness

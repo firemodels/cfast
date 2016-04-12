@@ -48,6 +48,7 @@ module cfast_types
         real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
         
         ! compartment surfaces 
+        real(eb), dimension(4) :: wall_thickness
 
         ! result values for the compartment
         real(eb) :: relp                                ! pressure at floor level relative to exterior

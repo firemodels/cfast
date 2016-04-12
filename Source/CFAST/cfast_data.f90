@@ -199,7 +199,7 @@ module room_data
     integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
     logical :: adiabatic_wall
     
-    real(eb), dimension (mxrooms,4) :: wlength
+    !real(eb), dimension (mxrooms,4) :: wlength
     real(eb), dimension (nnodes,mxrooms,4) :: walldx
     real(eb), dimension(mxpts) :: furn_time, furn_temp
     real(eb) :: qfurnout

@@ -916,7 +916,7 @@ module initialization_routines
     ! tp is the pointer into the data base for each material
     integer tp
 
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomptr, from_roomptr, to_roomptr
     type(target_type), pointer :: targptr
     type(thermal_type), pointer :: thrmpptr
 
@@ -953,7 +953,7 @@ module initialization_routines
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
                 call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,fkw(1,j,i),cw(1,j,i),rw(1,j,i),flw(1,j,i),&
-                   wlength(i,j),twj(1,i,j),interior_temperature,exterior_temperature)
+                   roomptr%wall_thickness(j),twj(1,i,j),interior_temperature,exterior_temperature)
             end if
         end do
     end do
@@ -964,6 +964,8 @@ module initialization_routines
         ifromw = izswal(i,w_from_wall)
         itor = izswal(i,w_to_room)
         itow = izswal(i,w_to_wall)
+        from_roomptr => roominfo(ifromr)
+        to_roomptr => roominfo(itor)
 
         nslabf = nslb(ifromw,ifromr)
         nslabt = nslb(itow,itor)
@@ -975,10 +977,10 @@ module initialization_routines
         numnode(1,itow,itor) = nptsf + nptst - 1
         numnode(1,ifromw,ifromr) = nptsf + nptst - 1
 
-        wfrom = wlength(ifromr,ifromw)
-        wto = wlength(itor,itow)
-        wlength(ifromr,ifromw) = wfrom + wto
-        wlength(itor,itow) = wfrom + wto
+        wfrom = from_roomptr%wall_thickness(ifromw)
+        wto = to_roomptr%wall_thickness(itow)
+        from_roomptr%wall_thickness(ifromw) = wfrom + wto
+        to_roomptr%wall_thickness(itow) = wfrom + wto
 
         jj = nslabt + 1
         do j = nslabf+1, nslabf+nslabt

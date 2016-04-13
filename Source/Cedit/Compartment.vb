@@ -97,7 +97,7 @@ Public Class Compartment
             Return myUnits.Convert(UnitsNum.Length).FromSI(aRoomOriginX)
         End Get
         Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aRoomOriginX And Value >= 0.0 Then
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aRoomOriginX Then
                 aChanged = True
                 aRoomOriginX = myUnits.Convert(UnitsNum.Length).ToSI(Value)
             End If
@@ -108,7 +108,7 @@ Public Class Compartment
             Return myUnits.Convert(UnitsNum.Length).FromSI(aRoomOriginY)
         End Get
         Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aRoomOriginY And Value >= 0.0 Then
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aRoomOriginY Then
                 aChanged = True
                 aRoomOriginY = myUnits.Convert(UnitsNum.Length).ToSI(Value)
             End If
@@ -119,7 +119,7 @@ Public Class Compartment
             Return myUnits.Convert(UnitsNum.Length).FromSI(aRoomOriginZ)
         End Get
         Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aRoomOriginZ And Value >= 0.0 Then
+            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aRoomOriginZ Then
                 aChanged = True
                 aRoomOriginZ = myUnits.Convert(UnitsNum.Length).ToSI(Value)
             End If

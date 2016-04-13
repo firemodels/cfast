@@ -83,13 +83,14 @@ module cfast_types
         real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
         real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
         
-        ! compartment surfaces 
-        real(eb), dimension(nwal) :: total_thick_w      ! total thickness of wall surface
+        ! compartment surfaces
+        real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface
+        real(eb), dimension(nwal) :: total_thick_w      ! total thickness of wall
+        integer, dimension(nwal) :: nslab_w             ! number of slabs for wall
         real(eb), dimension(mxslb,nwal) :: k_w          ! thermal conductivity of each slab
         real(eb), dimension(mxslb,nwal) :: c_w          ! specific heat of each slab
         real(eb), dimension(mxslb,nwal) :: rho_w        ! density of each slab
         real(eb), dimension(mxslb,nwal) :: thick_w      ! thickness of each slab
-        real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface
 
         ! result values for the compartment
         real(eb) :: relp                                ! pressure at floor level relative to exterior

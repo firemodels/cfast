@@ -194,7 +194,7 @@ module room_data
                                                                         ! initially fractions for inner, middle and outer wall slab
     
     integer :: numnode(mxslb+1,nwal,mxrooms), nslb(nwal,mxrooms), nwalls, nfurn
-    real(eb) :: epw(nwal,mxrooms), twj(nnodes,mxrooms,nwal)
+    real(eb) :: twj(nnodes,mxrooms,nwal)
     integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
     logical :: adiabatic_wall
     

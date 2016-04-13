@@ -545,6 +545,8 @@ module initialization_routines
     relative_humidity = 0.5_eb
 
     ! rooms
+    n_species = 0
+    nr = 0
     roominfo(1:mxrooms)%cwidth = xlrg
     roominfo(1:mxrooms)%cdepth = xlrg
     roominfo(1:mxrooms)%cheight = xlrg
@@ -557,20 +559,18 @@ module initialization_routines
     roominfo(1:mxrooms)%ibar = 50
     roominfo(1:mxrooms)%jbar = 50
     roominfo(1:mxrooms)%kbar = 50
+    adiabatic_wall = .false.
+    roominfo(1:mxrooms)%deadroom = 0
+    roominfo(1:mxrooms)%hall = .false.
+    roominfo(1:mxrooms)%shaft = .false.
     do i = 1, mxrooms
         roomptr => roominfo(i)
         roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
         roomptr%cvolume = roomptr%cheight*roomptr%floor_area
         roomptr%matl(1:nwal) = 'OFF'
         roomptr%surface_on(1:nwal) = .false.
+        roomptr%eps_w(1:nwal) = 0.0_eb
     end do
-    epw(1:nwal,1:mxrooms) = 0.0_eb
-    adiabatic_wall = .false.
-    roominfo(1:mxrooms)%deadroom = 0
-    roominfo(1:mxrooms)%hall = .false.
-    roominfo(1:mxrooms)%shaft = .false.
-    n_species = 0
-    nr = 0
     
     ! room to room heat transfer
     nswal = 0
@@ -904,7 +904,7 @@ module initialization_routines
     !        cw = specific heat (j/kg)
     !        rhow = density of the wall (kg/m**3)
     !        thickw = thickness of the wall (m)
-    !        epw = emmisivity of the wall
+    !        epsw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
     !        matl contains the name of the thermal data subset in the tpp datafile
     !        nthrmp is a count of the number of tpp data sets in the database
@@ -932,7 +932,7 @@ module initialization_routines
                 else
                     call get_thermal_property(roomptr%matl(i),tp)
                     thrmpptr => thermalinfo(tp)
-                    epw(i,j) = thrmpptr%eps
+                    roomptr%eps_w(i) = thrmpptr%eps
                     nslb(i,j) = thrmpptr%nslab
                     do k = 1, nslb(i,j)
                         roomptr%k_w(k,i) = thrmpptr%k(k)

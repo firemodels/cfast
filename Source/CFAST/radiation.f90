@@ -78,7 +78,7 @@ module radiation_routines
         do iwall = 1, 4
             imap = map(iwall)
             twall(imap) = roomptr%wall_temp(iwall,1)
-            emis(imap) = epw(iwall,i)
+            emis(imap) = roomptr%eps_w(iwall)
         end do
         ifire = ifrpnt(i,2)
         nrmfire = ifrpnt(i,1)

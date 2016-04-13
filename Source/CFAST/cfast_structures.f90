@@ -89,6 +89,7 @@ module cfast_types
         real(eb), dimension(mxslb,nwal) :: c_w          ! specific heat of each slab
         real(eb), dimension(mxslb,nwal) :: rho_w        ! density of each slab
         real(eb), dimension(mxslb,nwal) :: thick_w      ! thickness of each slab
+        real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface
 
         ! result values for the compartment
         real(eb) :: relp                                ! pressure at floor level relative to exterior

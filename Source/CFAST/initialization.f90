@@ -911,7 +911,8 @@ module initialization_routines
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
-    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb)
+    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick
+    integer nslab
     character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
 
     ! tp is the pointer into the data base for each material
@@ -933,8 +934,8 @@ module initialization_routines
                     call get_thermal_property(roomptr%matl(i),tp)
                     thrmpptr => thermalinfo(tp)
                     roomptr%eps_w(i) = thrmpptr%eps
-                    nslb(i,j) = thrmpptr%nslab
-                    do k = 1, nslb(i,j)
+                    roomptr%nslab_w(i) = thrmpptr%nslab
+                    do k = 1, roomptr%nslab_w(i)
                         roomptr%k_w(k,i) = thrmpptr%k(k)
                         roomptr%c_w(k,i) = thrmpptr%c(k)
                         roomptr%rho_w(k,i) = thrmpptr%rho(k)
@@ -957,8 +958,10 @@ module initialization_routines
                 c_w(1:mxslb) = roomptr%c_w(1:mxslb,j)
                 rho_w(1:mxslb) = roomptr%rho_w(1:mxslb,j)
                 thick_w(1:mxslb) = roomptr%thick_w(1:mxslb,j)
-                call wset(numnode(1,j,i),nslb(j,i),tstop,walldx(1,i,j),wsplit,k_w,c_w,rho_w,thick_w,&
-                   roomptr%total_thick_w(j),twj(1,i,j),interior_temperature,exterior_temperature)
+                nslab = roomptr%nslab_w(j)
+                thick = roomptr%total_thick_w(j)
+                call wset(numnode(1,j,i),nslab,tstop,walldx(1,i,j),wsplit,k_w,c_w,rho_w,thick_w,&
+                   thick,twj(1,i,j),interior_temperature,exterior_temperature)
             end if
         end do
     end do
@@ -972,10 +975,10 @@ module initialization_routines
         from_roomptr => roominfo(ifromr)
         to_roomptr => roominfo(itor)
 
-        nslabf = nslb(ifromw,ifromr)
-        nslabt = nslb(itow,itor)
-        nslb(ifromw,ifromr) = nslabf + nslabt
-        nslb(itow,itor) = nslabf + nslabt
+        nslabf = from_roomptr%nslab_w(ifromw)
+        nslabt = to_roomptr%nslab_w(itow)
+        from_roomptr%nslab_w(ifromw) = nslabf + nslabt
+        to_roomptr%nslab_w(itow) = nslabf + nslabt
 
         nptsf = numnode(1,ifromw,ifromr)
         nptst = numnode(1,itow,itor)

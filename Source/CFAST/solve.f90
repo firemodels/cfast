@@ -1636,7 +1636,6 @@ module solve_routines
             izwall(ieqto,w_to_room) = ifromr
             izwall(ieqto,w_to_wall) = ifromw
             izwall(ieqto,w_boundary_condition) = 1
-
         end do
 
         jacn1 = nofpmv - nofp

@@ -5,11 +5,11 @@ Public Class Vent
     Friend Const TypeMVent As Integer = 2
     Friend Const TypeVHeat As Integer = 3
     Friend Const TypeHHeat As Integer = 4
-    Friend Const MaximumHVents As Integer = 100
-    Friend Const MaximumVVents As Integer = 100
-    Friend Const MaximumMVents As Integer = 100
-    Friend Const MaximumVHeats As Integer = 60
-    Friend Const MaximumHHeats As Integer = 120
+    Friend Const MaximumHVents As Integer = 25 * Compartment.MaximumCompartments
+    Friend Const MaximumVVents As Integer = 2 * Compartment.MaximumCompartments
+    Friend Const MaximumMVents As Integer = 2 * Compartment.MaximumCompartments
+    Friend Const MaximumVHeats As Integer = Compartment.MaximumCompartments
+    Friend Const MaximumHHeats As Integer = 2 * Compartment.MaximumCompartments
 
     Public Const MaxPressure As Single = 8000.0
 
@@ -580,14 +580,14 @@ Public Class Vent
                     End If
                 Case TypeVHeat, TypeHHeat
                     If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
-                        myErrors.Add("Heat flow vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Heat transfer connection " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstCompartment = aSecondCompartment Then
-                        myErrors.Add("Heat flow vent " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                     If aInitialOpening < 0.0 Or aInitialOpening > 1.0 Then
-                        myErrors.Add("Heat flow vent " + VentNumber.ToString + ". Fraction of connected surface area is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Fraction of connected surface area is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
             End Select
@@ -713,6 +713,34 @@ Public Class VentCollection
             Return numVents
         End Get
     End Property
+    Public ReadOnly Property FromConnections(ByVal index As Integer) As Integer
+        Get
+            Dim aVent As Vent
+            Dim numVents As Integer = 0
+            numVents = 0
+            If Count > 0 Then
+                For i = 0 To Count - 1
+                    aVent = CType(List.Item(i), Vent)
+                    If aVent.FirstCompartment = index Then numVents += 1
+                Next
+            End If
+            Return numVents
+        End Get
+    End Property
+    Public ReadOnly Property ToConnections(ByVal index As Integer) As Integer
+        Get
+            Dim aVent As Vent
+            Dim numVents As Integer = 0
+            numVents = 0
+            If Count > 0 Then
+                For i = 0 To Count - 1
+                    aVent = CType(List.Item(i), Vent)
+                    If aVent.SecondCompartment = index Then numVents += 1
+                Next
+            End If
+            Return numVents
+        End Get
+    End Property
     Public ReadOnly Property Changed() As Boolean
         Get
             If Count > 0 Then
@@ -768,12 +796,33 @@ Public Class VentCollection
     End Property
     Public ReadOnly Property IsValid() As Integer
         Get
+            Dim FractionTotal As Single, j As Integer
             HasError = 0
             If Count > 0 Then
                 Dim aVent As Vent
                 For i = 0 To Count - 1
                     aVent = CType(List(i), Vent)
                     HasError += aVent.IsValid(i + 1)
+
+                    ' We have to check total connected area here since we only know compartment number outside of IsValid for the vent
+                    If aVent.VentType = Vent.TypeHHeat And FromConnections(aVent.FirstCompartment) <> 0 Then
+                        FractionTotal = 0.0
+                        For j = 1 To myHHeats.Count
+                            Dim aHeat As New Vent
+                            aHeat = myHHeats.Item(j - 1)
+                            If aHeat.FirstCompartment = aVent.FirstCompartment Then
+                                FractionTotal += aHeat.InitialOpening
+                            End If
+                        Next
+                        If FractionTotal > 1.0 Then
+                            myErrors.Add("Horizontal heat transfer connections to compartment " + (aVent.FirstCompartment + 1).ToString + ". Fraction of connected surface area is greater than 1.", ErrorMessages.TypeError)
+                            HasError += 1
+                        ElseIf FractionTotal > 0.0 And FractionTotal < 1.0 Then
+                            myErrors.Add("Horizontal heat transfer connections to compartment " + (aVent.FirstCompartment + 1).ToString + ". Fraction of connected surface area is less than 1. Remaining fraction will be allocated to the outside.", ErrorMessages.TypeWarning)
+                            HasError += 1
+                        End If
+                    End If
+
                 Next
             End If
             Return HasError

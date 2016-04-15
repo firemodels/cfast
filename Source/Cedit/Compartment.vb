@@ -2,7 +2,7 @@ Public Class Compartment
     Friend Const TypeNormal As Integer = 0
     Friend Const TypeShaft As Integer = 1
     Friend Const TypeCorridor As Integer = 2
-    Friend Const MaximumCompartments As Integer = 30
+    Friend Const MaximumCompartments As Integer = 100
     Friend Const OutsideCompartment As Integer = -1
     Friend Const UndefinedCompartment As Integer = -2
     Friend Const TempCompartment As Integer = -3

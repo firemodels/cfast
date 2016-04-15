@@ -741,6 +741,19 @@ Public Class VentCollection
             Return numVents
         End Get
     End Property
+    Public ReadOnly Property ConnectedFraction(ByVal index As Integer) As Single
+        Get
+            Dim aVent As Vent
+            Dim TotalFraction As Single = 0
+            If Count > 0 And FromConnections(index) <> 0 Then
+                For i = 0 To Count - 1
+                    aVent = CType(List.Item(i), Vent)
+                    If aVent.FirstCompartment = index Then TotalFraction += aVent.InitialOpening
+                Next
+            End If
+            Return TotalFraction
+        End Get
+    End Property
     Public ReadOnly Property Changed() As Boolean
         Get
             If Count > 0 Then
@@ -806,14 +819,7 @@ Public Class VentCollection
 
                     ' We have to check total connected area here since we only know compartment number outside of IsValid for the vent
                     If aVent.VentType = Vent.TypeHHeat And FromConnections(aVent.FirstCompartment) <> 0 Then
-                        FractionTotal = 0.0
-                        For j = 1 To myHHeats.Count
-                            Dim aHeat As New Vent
-                            aHeat = myHHeats.Item(j - 1)
-                            If aHeat.FirstCompartment = aVent.FirstCompartment Then
-                                FractionTotal += aHeat.InitialOpening
-                            End If
-                        Next
+                        FractionTotal = ConnectedFraction(aVent.FirstCompartment)
                         If FractionTotal > 1.0 Then
                             myErrors.Add("Horizontal heat transfer connections to compartment " + (aVent.FirstCompartment + 1).ToString + ". Fraction of connected surface area is greater than 1.", ErrorMessages.TypeError)
                             HasError += 1

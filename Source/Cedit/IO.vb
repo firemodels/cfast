@@ -795,7 +795,7 @@ Module IO
             i += 1
         Next
         'comment for configuration section
-        AddHeadertoOutput(csv, i, "Scenario Configuration Keywords")
+        AddHeadertoOutput(csv, i, "Scenario Configuration")
         'Time line
         csv.str(i, CFASTlnNum.keyWord) = "TIMES"
         csv.num(i, timesNum.simTime) = myEnvironment.SimulationTime
@@ -841,7 +841,7 @@ Module IO
             aThermalProperty.Changed = False
         Next
         'comment header of compartment section
-        If myCompartments.Count > 0 Then AddHeadertoOutput(csv, i, "Compartment keywords")
+        If myCompartments.Count > 0 Then AddHeadertoOutput(csv, i, "Compartments")
         'compartments
         Dim aCompartment As Compartment
         For j = 0 To myCompartments.Count - 1
@@ -902,7 +902,7 @@ Module IO
             End If
         Next
         'comment header for vents
-        If myVVents.Count > 0 Or myHVents.Count > 0 Or myMVents.Count > 0 Then AddHeadertoOutput(csv, i, "Vent keywords")
+        If myVVents.Count > 0 Or myHVents.Count > 0 Or myMVents.Count > 0 Then AddHeadertoOutput(csv, i, "Vents")
         Dim aVent As Vent
         'horizontal flow
         For j = 0 To myHVents.Count - 1
@@ -1031,7 +1031,7 @@ Module IO
             End If
         Next
         'comment header for fire keywords
-        If myFires.Count > 0 Then AddHeadertoOutput(csv, i, "Fire keywords")
+        If myFires.Count > 0 Then AddHeadertoOutput(csv, i, "Fires")
 
         Dim aFire As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
         For j = 0 To myFires.Count - 1
@@ -1080,7 +1080,7 @@ Module IO
         Next
 
         'comment header of targets and detectors
-        If myDetectors.Count > 0 Or myTargets.Count > 0 Then AddHeadertoOutput(csv, i, "Target and detector keywords")
+        If myDetectors.Count > 0 Or myTargets.Count > 0 Then AddHeadertoOutput(csv, i, "Targets and detectors")
         'detectors
         Dim aDetect As New Target
         For j = 0 To myDetectors.Count - 1
@@ -1133,21 +1133,35 @@ Module IO
         Next
 
         'comment header for heat transfer section
-        If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Heat flow keywords")
+        If myHHeats.Count > 0 Or myVHeats.Count > 0 Then AddHeadertoOutput(csv, i, "Intercompartment heat transfer")
         'HHeat and VHeat
-        For j = 0 To myHHeats.Count - 1
-            aVent = myHHeats.Item(j)
-            csv.str(i, CFASTlnNum.keyWord) = "HHEAT"
-            csv.num(i, hheatNum.firstCompartment) = aVent.FirstCompartment + 1
-            csv.num(i, hheatNum.num) = 1
-            If csv.num(i, hheatNum.secondCompartment) = -1 Then
-                csv.num(i, hheatNum.secondCompartment) = myCompartments.Count + 1
-            Else
-                csv.num(i, hheatNum.secondCompartment) = aVent.SecondCompartment + 1
+        For j = 0 To myCompartments.Count - 1
+            If myHHeats.FromConnections(j) > 0 Then
+                l = 0
+                csv.str(i, CFASTlnNum.keyWord) = "HHEAT"
+                csv.num(i, hheatNum.firstCompartment) = j + 1
+                csv.num(i, hheatNum.num) = myHHeats.FromConnections(j)
+                For k = 0 To myHHeats.Count - 1
+                    aVent = myHHeats.Item(k)
+                    If aVent.FirstCompartment = j Then
+                        l += 1
+                        If csv.num(i, hheatNum.secondCompartment + 2 * (l - 1)) = -1 Then
+                            csv.num(i, hheatNum.secondCompartment + 2 * (l - 1)) = myCompartments.Count + 1
+                        Else
+                            csv.num(i, hheatNum.secondCompartment + 2 * (l - 1)) = aVent.SecondCompartment + 1
+                        End If
+                        csv.num(i, hheatNum.fraction + 2 * (l - 1)) = aVent.InitialOpening
+                        aVent.Changed = False
+                    End If
+                Next
+                If myHHeats.ConnectedFraction(j) < 1 Then
+                    csv.num(i, hheatNum.num) = myHHeats.FromConnections(j) + 1
+                    l += 1
+                    csv.num(i, hheatNum.secondCompartment + 2 * (l - 1)) = myCompartments.Count + 1
+                    csv.num(i, hheatNum.fraction + 2 * (l - 1)) = 1.0 - myHHeats.ConnectedFraction(j)
+                End If
+                i += 1
             End If
-            csv.num(i, hheatNum.fraction) = aVent.InitialOpening
-            aVent.Changed = False
-            i += 1
         Next
         For j = 0 To myVHeats.Count - 1
             aVent = myVHeats.Item(j)
@@ -1164,7 +1178,7 @@ Module IO
 
         'comment header of visualizations
         If myVisuals.Count > 0 Then
-            AddHeadertoOutput(csv, i, "visualizations")
+            AddHeadertoOutput(csv, i, "Visualizations")
             Dim aVisual As Visual
             For j = 0 To myVisuals.Count - 1
                 aVisual = myVisuals.Item(j)
@@ -1192,7 +1206,7 @@ Module IO
 
         'comment header of misc.
         If myEnvironment.MaximumTimeStep > 0 Or myThermalProperties.FileName <> "thermal" Then _
-            AddHeadertoOutput(csv, i, "Misc. stuff")
+            AddHeadertoOutput(csv, i, "Misc.")
         'stepmax
         If myEnvironment.MaximumTimeStep > 0 Then
             csv.str(i, CFASTlnNum.keyWord) = "STPMAX"

@@ -166,20 +166,27 @@ Module IO
                             myCompartments(j).Changed = False
                         End If
                     Case "HHEAT"
-                        If csv.num(i, hheatNum.num) = 1 Then
+                        If csv.num(i, hheatNum.num) > 1 Then
+                            Dim cFirst As Integer, CSecond As Integer, cFraction As Single
+                            For j = 1 To csv.num(i, hheatNum.num)
+                                Dim aHeat As New Vent
+                                cFirst = csv.num(i, hheatNum.firstCompartment)
+                                CSecond = csv.num(i, hheatNum.secondCompartment + 2 * (j - 1))
+                                cFraction = csv.num(i, hheatNum.fraction + 2 * (j - 1))
+                                If CSecond > myCompartments.Count Then CSecond = 0
+                                aHeat.SetVent(cFirst - 1, CSecond - 1, cFraction)
+                                aHeat.Changed = False
+                                myHHeats.Add(aHeat)
+                            Next
+                        ElseIf csv.num(i, hheatNum.num) = 1 Then
                             Dim aHeat As New Vent
-                            If csv.num(i, hheatNum.secondCompartment) > myCompartments.Count Then _
-                                csv.num(i, hheatNum.secondCompartment) = 0
-                            aHeat.SetVent(csv.num(i, hheatNum.firstCompartment) - 1, csv.num(i, hheatNum.secondCompartment) - 1, _
-                            csv.num(i, hheatNum.fraction))
+                            If csv.num(i, hheatNum.secondCompartment) > myCompartments.Count Then csv.num(i, hheatNum.secondCompartment) = 0
+                            aHeat.SetVent(csv.num(i, hheatNum.firstCompartment) - 1, csv.num(i, hheatNum.secondCompartment) - 1, csv.num(i, hheatNum.fraction))
                             aHeat.Changed = False
                             myHHeats.Add(aHeat)
                         ElseIf csv.num(i, hheatNum.num) = 0 Then
                             dataFileComments.Add("!" + csv.strrow(i))
                             myErrors.Add("Keyword HHEAT with single compartment specification not supported line" + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
-                        Else
-                            dataFileComments.Add("!" + csv.strrow(i))
-                            myErrors.Add("Keyword HHEAT with multiple fraction specifications not supported line" + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
                         End If
                     Case "HVENT"
                         Dim hvent As New Vent
@@ -1145,7 +1152,7 @@ Module IO
                     aVent = myHHeats.Item(k)
                     If aVent.FirstCompartment = j Then
                         l += 1
-                        If csv.num(i, hheatNum.secondCompartment + 2 * (l - 1)) = -1 Then
+                        If aVent.SecondCompartment = -1 Then
                             csv.num(i, hheatNum.secondCompartment + 2 * (l - 1)) = myCompartments.Count + 1
                         Else
                             csv.num(i, hheatNum.secondCompartment + 2 * (l - 1)) = aVent.SecondCompartment + 1

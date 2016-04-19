@@ -837,7 +837,7 @@ Public Class VentCollection
     End Property
     Public ReadOnly Property IsValid() As Integer
         Get
-            Dim FractionTotal As Single, j As Integer
+            Dim FractionTotal As Single
             HasError = 0
             If Count > 0 Then
                 Dim aVent As Vent

@@ -460,16 +460,18 @@ Several cautions should be observed when using estimates of sprinkler suppressio
 The Surface Connections page allows the user to define heat transfer between compartments in a simulation. Energy can be transferred from compartment to compartment through solid boundaries (walls, ceilings and floors) by means of conduction. The heat transfer between connected compartments is modeled by setting the boundary condition for the outside surface of a compartment to the temperature of the outside surface of the  connected compartment.   As before, temperatures are determined by the solver so that the heat flux striking the wall surface (both interior and exterior) is consistent with the temperature gradient at that surface.
 
 \begin{description}
-\item[First Compartment] First of the connected compartments. Order of the inputs is not important.
+\item[First Compartment] First of the compartments whose walls are connected for horizontal heat transfer.
 
-\item[Second Compartment] Second of the connected compartments. Order of the inputs is not important.
+\item[Second Compartment] Second of the compartments whose walls are connected for horizontal heat transfer.
 
-\item[Fraction] Specifies the fraction of the vertical surface areas of the compartments which are connected can be specified. The fraction specifies the fraction of the vertical surface area connecting the first and second compartment pair.
+\item[Fraction] Specifies the fraction of the vertical surface areas of the compartments which are connected. The fraction specifies the fraction of the vertical surface area of the first compartment that connects the first and second compartment pair.
 
 \item[Top Compartment] The top or first of the two compartments to be connected by a vertical heat transfer connection. The connection is through the floor of this compartment.
 
 \item[Bottom Compartment] The bottom or second of the two compartments to be connected by a vertical heat transfer connection. The connection is through the ceiling of this compartment.
 \end{description}
+
+\graybox{For horizontal heat transfer, you must include a connection for each compartment. For example, for a connected between compartment 1 and compartment 2, you must include a connection from 1 to 2 AND a connection from 2 to 1.  For consistency, the fraction for each compartment needs to specify equal areas in the two compartments.  Fractions for connections should add to unity.  An error is generated if the fractions for a compartment add to greater than unity. If the fractions for a compartment add to less than unity, the remaining surface area will be assigned to be connected to the outdoors.}
 
 
 \chapter{Visualization}

@@ -578,13 +578,41 @@ Public Class Vent
                         myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Filter operation time is less than 0 or greater than simulation time.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
-                Case TypeVHeat, TypeHHeat
+                Case TypeHHeat
+                    Dim cFirst, cSecond As New Compartment
                     If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
                         myErrors.Add("Heat transfer connection " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstCompartment = aSecondCompartment Then
                         myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
+                    Else
+                        cFirst = myCompartments(aFirstCompartment)
+                        cSecond = myCompartments(aSecondCompartment)
+                        If cFirst.WallMaterial = "Off" Or cSecond.WallMaterial = "Off" Then
+                            myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Thermal properties for wall surfaces cannot be set to Off.", ErrorMessages.TypeFatal)
+                            HasErrors += 1
+                        End If
+                    End If
+                    If aInitialOpening < 0.0 Or aInitialOpening > 1.0 Then
+                        myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Fraction of connected surface area is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
+                Case TypeVHeat
+                    Dim cTop, cBottom As New Compartment
+                    If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
+                        myErrors.Add("Heat transfer connection " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    ElseIf aFirstCompartment = aSecondCompartment Then
+                        myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    Else
+                        cTop = myCompartments(aFirstCompartment)
+                        cBottom = myCompartments(aSecondCompartment)
+                        If cTop.FloorMaterial = "Off" Or cBottom.CeilingMaterial = "Off" Then
+                            myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Thermal properties for floor and ceiling surfaces cannot be set to Off.", ErrorMessages.TypeFatal)
+                            HasErrors += 1
+                        End If
                     End If
                     If aInitialOpening < 0.0 Or aInitialOpening > 1.0 Then
                         myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Fraction of connected surface area is less than 0 or greater than 1.", ErrorMessages.TypeFatal)

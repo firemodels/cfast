@@ -268,9 +268,15 @@ module utility_routines
     lm = len_trim(mesg)
 
     ! write the message
+    write(*,5000) mesg(1:lm)
     write(logerr,5000) mesg(1:lm)
-    if (nnr==1) write(logerr,5001) nerr,r1
-    if (nnr==2) write(logerr,5002) nerr,r1,r2
+    if (nnr==1) then
+        write(*,5001) nerr,r1
+        write(logerr,5001) nerr,r1
+    else if (nnr==2) then
+        write(*,5002) nerr,r1,r2
+        write(logerr,5002) nerr,r1,r2
+    end if
     return
 
 5000 format(a)

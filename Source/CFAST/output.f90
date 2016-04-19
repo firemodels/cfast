@@ -1361,10 +1361,12 @@ module output_routines
     ! error processing
 
     !	smokeview file
-11  write(logerr,5040) mod(ios,256),trim(smvhead),trim(smvdata)
+11  write(*,5040) mod(ios,256),trim(smvhead),trim(smvdata)
+    write(logerr,5040) mod(ios,256),trim(smvhead),trim(smvdata)
     stop
     !	this one comes from writing to the status file
-81  write(logerr,*) '***Fatal error writing to the status file ',ios
+81  write(*,*) '***Fatal error writing to the status file ',ios
+    write(logerr,*) '***Fatal error writing to the status file ',ios
     stop
 
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
@@ -1385,6 +1387,8 @@ module output_routines
             close(fileunit, status='delete', iostat=ios)
             if (ios/=0) then
                 write (logerr,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
+                    '. File may be in use by another application.'
+                write (*,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
                     '. File may be in use by another application.'
                 stop
             end if

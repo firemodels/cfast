@@ -54,6 +54,7 @@ module initialization_routines
         end if
     end do
     missingtpp = name
+    write(*,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     write(logerr,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     stop
 
@@ -129,6 +130,7 @@ module initialization_routines
     ! check interior nodes
     do i = 1, nnode
         if (ncnode(i)<1.or.ncnode(i)>mxcon) then
+            write (*,*) '***Error: HVINIT - interior node has too many or too few connections'
             write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
             stop
         end if
@@ -139,6 +141,7 @@ module initialization_routines
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         if (ncnode(j)>1) then
+            write (*,*) '***Error: HVINIT - exterior node has too many or too few connections'
             write (logerr,*) '***Error: HVINIT - exterior node has too many or too few connections'
             stop
         end if
@@ -809,6 +812,7 @@ module initialization_routines
         targptr => targetinfo(itarg)
         iroom = targptr%room
         if (iroom<1.or.iroom>nrm1) then
+            write(*,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
         end if
@@ -884,6 +888,7 @@ module initialization_routines
 
         ! center coordinates need to be within room
         if (xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize) then
+            write(*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             write(logerr,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             stop
         end if
@@ -1090,6 +1095,7 @@ module initialization_routines
         nnode = max(nnode,na(ib),ne(ib))
     end do
     if (nnode>mxnode) then
+        write (*,*) '***Error: offset - Too many nodes in hvac specification'
         write (logerr,*) '***Error: offset - Too many nodes in hvac specification'
         stop
     end if

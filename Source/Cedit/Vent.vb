@@ -89,9 +89,9 @@ Public Class Vent
                     Dim aCompartment As New Compartment
                     aCompartment = myCompartments.Item(aFirstCompartment)
                     If aFace = 1 Or aFace = 3 Then
-                        aOffset = aCompartment.RoomWidth / 2 - aWidth / 2
+                        aOffset = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2 - aWidth / 2
                     Else
-                        aOffset = aCompartment.RoomDepth / 2 - aWidth / 2
+                        aOffset = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomDepth) / 2 - aWidth / 2
                     End If
                 End If
 

@@ -190,7 +190,11 @@ Public Class Fire
     End Property
     Property XPosition() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aXPosition)
+            If aXPosition = -1 Then
+                Return -1
+            Else
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aXPosition)
+            End If
         End Get
         Set(ByVal Value As Single)
             If Value >= 0 Then
@@ -198,22 +202,29 @@ Public Class Fire
                     aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                     aChanged = True
                 End If
-            Else
+            ElseIf Value = -1 Then
                 If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
                     Dim tmpCompartment As New Compartment
                     tmpCompartment = myCompartments.Item(aCompartment)
-                    aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth / 2)
+                    aXPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomWidth) / 2
                     aChanged = True
                 Else
-                    aXPosition = Value
+                    aXPosition = -1
                     aChanged = True
                 End If
+            Else
+                aXPosition = -1
+                aChanged = True
             End If
         End Set
     End Property
     Property YPosition() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aYPosition)
+            If aYPosition = -1 Then
+                Return -1
+            Else
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aYPosition)
+            End If
         End Get
         Set(ByVal Value As Single)
             If Value >= 0 Then
@@ -221,22 +232,29 @@ Public Class Fire
                     aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                     aChanged = True
                 End If
-            Else
+            ElseIf Value = -1 Then
                 If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
                     Dim tmpCompartment As New Compartment
                     tmpCompartment = myCompartments.Item(aCompartment)
                     aYPosition = myUnits.Convert(UnitsNum.Length).ToSI(tmpCompartment.RoomDepth / 2)
                     aChanged = True
                 Else
-                    aYPosition = Value
+                    aYPosition = -1
                     aChanged = True
                 End If
+            Else
+                aYPosition = -1
+                aChanged = True
             End If
         End Set
     End Property
     Property ZPosition() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aZPosition)
+            If aZPosition = -1 Then
+                Return -1
+            Else
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aZPosition)
+            End If
         End Get
         Set(ByVal Value As Single)
             If Value >= 0 Then
@@ -244,14 +262,17 @@ Public Class Fire
                     aZPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                     aChanged = True
                 End If
-            Else
+            ElseIf Value = -1 Then
                 If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
                     aZPosition = 0.0
                     aChanged = True
                 Else
-                    aZPosition = Value
+                    aZPosition = -1
                     aChanged = True
                 End If
+            Else
+                aZPosition = -1
+                aChanged = True
             End If
         End Set
     End Property

@@ -37,7 +37,7 @@ module cfast_types
         real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
             y_co_i(mxpts), y_trace_i(mxpts)
 
-        ! These are calculated values for the current time step
+        ! These are calculated results for the current time step
         real(eb) :: x_position, y_position, z_position, area
         real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
@@ -91,8 +91,9 @@ module cfast_types
         real(eb), dimension(mxslb,nwal) :: c_w          ! specific heat of each slab
         real(eb), dimension(mxslb,nwal) :: rho_w        ! density of each slab
         real(eb), dimension(mxslb,nwal) :: thick_w      ! thickness of each slab
+        integer, dimension(mxslb,nwal) :: numnodes_w    ! number of nodes in each slab
 
-        ! result values for the compartment
+        ! These are calculated results for the current time step
         real(eb) :: relp                                ! pressure at floor level relative to exterior
         real(eb) :: absp                                ! absolute pressure at floor level
         real(eb), dimension(2) :: volume                ! volume of each layer
@@ -140,7 +141,7 @@ module cfast_types
         integer :: back                 ! whether the back surface of the target is exposed to interior or exterior temperatures
         integer :: wall                 ! wall surface the target is located on. Normal wall numbering
 
-        ! these are the results of the target calculations that are used for printout and spreadsheet output
+        ! These are calculated results for the current time step
         integer :: layer                ! layer (within the compartment) where the target is located (calculated)
         real(eb) :: tgas                ! gas temperature near target
         real(eb) :: tinternal           ! target temperature at depth_loc

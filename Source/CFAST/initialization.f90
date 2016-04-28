@@ -1177,8 +1177,8 @@ module initialization_routines
     !            text     ambient temperature seen by exterior wall
 
     integer, intent(in) :: nslab
-    integer, intent(inout) :: numnode(*)
     real(eb), intent(in) :: tstop, wsplit(*), wk(*), wspec(*), wrho(*), wthick(*), tamb, text
+    integer, intent(inout) :: numnode(*)
     real(eb), intent(out) :: wlen, walldx(*)
 
     integer :: cumpts(10), numpts(10), i, ii, nx, nintx, nsplit, islab, isum, nint, ibeg, iend
@@ -1280,9 +1280,7 @@ module initialization_routines
         ! calculate wall positions for last slab (bunched near right)
         if (nslab>=2) then
             ibeg = cumpts(nslab)
-
-            ! include last point for last slab
-            iend = cumpts(nslab+1)
+            iend = cumpts(nslab+1) ! include last point for last slab
             xxi3 = iend - ibeg
             do i = ibeg, iend
                 xxi1 = iend - i

@@ -42,7 +42,7 @@ module conduction_routines
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb)
-    integer :: nslab_w
+    integer :: nslab_w, numnode(mxslb+1)
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j
 
     type(room_type), pointer :: roomptr
@@ -124,8 +124,9 @@ module conduction_routines
             c_w(1:mxslb) = roomptr%c_w(1:mxslb,iwall)
             rho_w(1:mxslb) = roomptr%rho_w(1:mxslb,iwall)
             nslab_w = roomptr%nslab_w(iwall)
+            numnode = roomptr%nodes_w(1:mxslb+1,iwall)
             call conductive_flux (update,twint,twext,dt,k_w,c_w,rho_w, &
-                twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode(1,iwall,iroom),nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
+                twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode,nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
 
             ! store wall gradient
             vtgrad(iw) = tgrad(2)

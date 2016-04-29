@@ -193,7 +193,7 @@ module room_data
     real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
                                                                         ! initially fractions for inner, middle and outer wall slab
     
-    integer :: numnode(mxslb+1,nwal,mxrooms), nwalls, nfurn
+    integer :: nwalls, nfurn
     real(eb) :: twj(nnodes,mxrooms,nwal)
     integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
     logical :: adiabatic_wall

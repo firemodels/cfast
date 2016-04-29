@@ -91,7 +91,7 @@ module cfast_types
         real(eb), dimension(mxslb,nwal) :: c_w          ! specific heat of each slab
         real(eb), dimension(mxslb,nwal) :: rho_w        ! density of each slab
         real(eb), dimension(mxslb,nwal) :: thick_w      ! thickness of each slab
-        integer, dimension(mxslb,nwal) :: numnodes_w    ! number of nodes in each slab
+        integer, dimension(mxslb+1,nwal) :: nodes_w     ! number of nodes in each slab
 
         ! These are calculated results for the current time step
         real(eb) :: relp                                ! pressure at floor level relative to exterior

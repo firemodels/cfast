@@ -917,7 +917,7 @@ module initialization_routines
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick
-    integer nslab
+    integer nslab, numnode(mxslb+1)
     character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
 
     ! tp is the pointer into the data base for each material
@@ -965,8 +965,10 @@ module initialization_routines
                 thick_w(1:mxslb) = roomptr%thick_w(1:mxslb,j)
                 nslab = roomptr%nslab_w(j)
                 thick = roomptr%total_thick_w(j)
-                call wset(numnode(1,j,i),nslab,tstop,walldx(1,i,j),wsplit,k_w,c_w,rho_w,thick_w,&
+                numnode = roomptr%nodes_w(1:mxslb+1,j)
+                call wset(numnode,nslab,tstop,walldx(1,i,j),wsplit,k_w,c_w,rho_w,thick_w,&
                    thick,twj(1,i,j),interior_temperature,exterior_temperature)
+                roomptr%nodes_w(1:mxslb+1,j) = numnode
             end if
         end do
     end do
@@ -985,10 +987,10 @@ module initialization_routines
         from_roomptr%nslab_w(ifromw) = nslabf + nslabt
         to_roomptr%nslab_w(itow) = nslabf + nslabt
 
-        nptsf = numnode(1,ifromw,ifromr)
-        nptst = numnode(1,itow,itor)
-        numnode(1,itow,itor) = nptsf + nptst - 1
-        numnode(1,ifromw,ifromr) = nptsf + nptst - 1
+        nptsf = from_roomptr%nodes_w(1,ifromw)
+        nptst = to_roomptr%nodes_w(1,itow)
+        to_roomptr%nodes_w(1,itow) = nptsf + nptst - 1
+        from_roomptr%nodes_w(1,ifromw) = nptsf + nptst - 1
 
         wfrom = from_roomptr%total_thick_w(ifromw)
         wto = to_roomptr%total_thick_w(itow)
@@ -1002,7 +1004,7 @@ module initialization_routines
             from_roomptr%c_w(j,ifromw) = to_roomptr%c_w(jj,itow)
             from_roomptr%rho_w(j,ifromw) = to_roomptr%rho_w(jj,itow)
             from_roomptr%thick_w(j,ifromw) = to_roomptr%thick_w(jj,itow)
-            numnode(j+1,ifromw,ifromr) = numnode(jj+1,itow,itor)
+            from_roomptr%nodes_w(j+1,ifromw) = to_roomptr%nodes_w(jj+1,itow)
         end do
 
         jj = nslabf + 1
@@ -1012,7 +1014,7 @@ module initialization_routines
             to_roomptr%c_w(j,itow) = from_roomptr%c_w(jj,ifromw)
             to_roomptr%rho_w(j,itow) = from_roomptr%rho_w(jj,ifromw)
             to_roomptr%thick_w(j,itow) = from_roomptr%thick_w(jj,ifromw)
-            numnode(j+1,itow,itor) = numnode(jj+1,ifromw,ifromr)
+            to_roomptr%nodes_w(j+1,itow) = from_roomptr%nodes_w(jj+1,ifromw)
         end do
 
         do j = 1,nptsf
@@ -1121,7 +1123,7 @@ module initialization_routines
             if (roomptr%surface_on(j)) then
                 nwalls = nwalls + 1
             end if
-            if (nwpts/=0) numnode(1,j,i) = nwpts
+            if (nwpts/=0) roomptr%nodes_w(1,j) = nwpts
         end do
     end do
 

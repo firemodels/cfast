@@ -1796,7 +1796,7 @@ module solve_routines
                        roomptr%wall_temp(iwall,1) = y_vector(iwalleq)
                     end if
                     iwalleq2 = izwmap(itor,itow)
-                    iinode = numnode(1,iwall,iroom)
+                    iinode = roomptr%nodes_w(1,iwall)
                     if (nfurn.gt.0) then
                        roomptr%wall_temp(iwall,2) = wtemp
                     else

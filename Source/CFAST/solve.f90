@@ -1041,7 +1041,7 @@ module solve_routines
 
     end subroutine set_info_flags
 
-! --------------------------- calculate_residuals -------------------------------------------
+! --------------------------- calculate_residuals (resid) -------------------------------------------
 
     subroutine calculate_residuals (tsec,y_vector,yprime_vector,f_vector,ires,rpar,ipar)
 
@@ -1792,15 +1792,12 @@ module solve_routines
                     itow = izwall(ieqfrom,w_to_wall)
                     if (nfurn.gt.0) then
                        roomptr%wall_temp(iwall,1) = wtemp
-                    else
-                       roomptr%wall_temp(iwall,1) = y_vector(iwalleq)
-                    end if
-                    iwalleq2 = izwmap(itor,itow)
-                    iinode = roomptr%nodes_w(1,iwall)
-                    if (nfurn.gt.0) then
                        roomptr%wall_temp(iwall,2) = wtemp
                     else
+                       roomptr%wall_temp(iwall,1) = y_vector(iwalleq)
+                       iwalleq2 = izwmap(itor,itow)
                        if (iwalleq2==0) then
+                           iinode = roomptr%nodes_w(1,iwall)
                            roomptr%wall_temp(iwall,2) = twj(iinode,iroom,iwall)
                        else
                            roomptr%wall_temp(iwall,2) = y_vector(iwalleq2)

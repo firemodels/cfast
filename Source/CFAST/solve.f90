@@ -1041,7 +1041,7 @@ module solve_routines
 
     end subroutine set_info_flags
 
-! --------------------------- calculate_residuals -------------------------------------------
+! --------------------------- calculate_residuals (resid) -------------------------------------------
 
     subroutine calculate_residuals (tsec,y_vector,yprime_vector,f_vector,ires,rpar,ipar)
 
@@ -1160,8 +1160,8 @@ module solve_routines
     call horizontal_flow (tsec,epsp,nprod,flwnvnt)
     call vertical_flow (tsec,flwhvnt,vflowflg)
     call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flwmv,&
-                               f_vector(nofpmv+1),f_vector(noftmv+1),&
-                               yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)
+        f_vector(nofpmv+1),f_vector(noftmv+1),&
+        yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flwf)
@@ -1785,26 +1785,21 @@ module solve_routines
             do iwall = 1, nwal
                 iwalleq = izwmap(iroom,iwall)
                 if (iwalleq/=0) then
-                    ieqfrom = iwalleq - nofwt
-                    ifromr = izwall(ieqfrom,w_from_room)
-                    ifromw = izwall(ieqfrom,w_from_wall)
-                    itor = izwall(ieqfrom,w_to_room)
-                    itow = izwall(ieqfrom,w_to_wall)
                     if (nfurn.gt.0) then
-                       roomptr%wall_temp(iwall,1) = wtemp
+                        roomptr%wall_temp(iwall,1) = wtemp
+                        roomptr%wall_temp(iwall,2) = wtemp
                     else
-                       roomptr%wall_temp(iwall,1) = y_vector(iwalleq)
-                    end if
-                    iwalleq2 = izwmap(itor,itow)
-                    iinode = roomptr%nodes_w(1,iwall)
-                    if (nfurn.gt.0) then
-                       roomptr%wall_temp(iwall,2) = wtemp
-                    else
-                       if (iwalleq2==0) then
-                           roomptr%wall_temp(iwall,2) = twj(iinode,iroom,iwall)
-                       else
-                           roomptr%wall_temp(iwall,2) = y_vector(iwalleq2)
-                       end if
+                        roomptr%wall_temp(iwall,1) = y_vector(iwalleq)
+                        ieqfrom = iwalleq - nofwt
+                        itor = izwall(ieqfrom,w_to_room)
+                        itow = izwall(ieqfrom,w_to_wall)
+                        iwalleq2 = izwmap(itor,itow)
+                        if (iwalleq2==0) then
+                            iinode = roomptr%nodes_w(1,iwall)
+                            roomptr%wall_temp(iwall,2) = twj(iinode,iroom,iwall)
+                        else
+                            roomptr%wall_temp(iwall,2) = y_vector(iwalleq2)
+                        end if
                     end if
                 else
 
@@ -1818,9 +1813,9 @@ module solve_routines
                         ilay = l
                     end if
                     if (nfurn.gt.0) then
-                      roomptr%wall_temp(iwall,1) = wtemp
+                        roomptr%wall_temp(iwall,1) = wtemp
                     else
-                      roomptr%wall_temp(iwall,1) = roomptr%temp(ilay)
+                        roomptr%wall_temp(iwall,1) = roomptr%temp(ilay)
                     end if
                 end if
             end do

@@ -916,7 +916,7 @@ module initialization_routines
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
-    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick
+    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes)
     integer nslab, numnode(mxslb+1)
     character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
 
@@ -951,13 +951,11 @@ module initialization_routines
         end do
     end do
 
-    ! Initialize the interior temperatures to the interior ambient
-    twj(1:nnodes,1:nrm1,1:nwal) = interior_temperature
-
     ! initialize temperature profile data structures
     do i = 1, nrm1
         roomptr => roominfo(i)
         do j = 1, nwal
+            roomptr%t_profile(1:nnodes,j) = interior_temperature
             if (roomptr%surface_on(j)) then
                 k_w(1:mxslb) = roomptr%k_w(1:mxslb,j)
                 c_w(1:mxslb) = roomptr%c_w(1:mxslb,j)
@@ -966,9 +964,11 @@ module initialization_routines
                 nslab = roomptr%nslab_w(j)
                 thick = roomptr%total_thick_w(j)
                 numnode = roomptr%nodes_w(1:mxslb+1,j)
+                wtemps = roomptr%t_profile(1:nnodes,j)
                 call wset(numnode,nslab,tstop,walldx(1,i,j),wsplit,k_w,c_w,rho_w,thick_w,&
-                   thick,twj(1,i,j),interior_temperature,exterior_temperature)
+                   thick,wtemps,interior_temperature,exterior_temperature)
                 roomptr%nodes_w(1:mxslb+1,j) = numnode
+                roomptr%t_profile(1:nnodes,j) = wtemps
             end if
         end do
     end do
@@ -1018,20 +1018,20 @@ module initialization_routines
         end do
 
         do j = 1,nptsf
-            twj(j,ifromr,ifromw) = interior_temperature
-            twj(j,itor,itow) = interior_temperature
+            from_roomptr%t_profile(j,ifromw) = interior_temperature
+            to_roomptr%t_profile(j,itow) = interior_temperature
         end do
         jj = nptst
         do j = nptsf+1,nptsf+nptst - 1
             jj = jj - 1
-            twj(j,ifromr,ifromw) = interior_temperature
+            from_roomptr%t_profile(j,ifromw) = interior_temperature
             walldx(j-1,ifromr,ifromw) = walldx(jj,itor,itow)
         end do
 
         jj = nptsf
         do j = nptst+1,nptst+nptsf - 1
             jj = jj - 1
-            twj(j,itor,itow) = interior_temperature
+            to_roomptr%t_profile(j,itow) = interior_temperature
             walldx(j-1,itor,itow) = walldx(jj,ifromr,ifromw)
         end do
     end do

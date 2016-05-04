@@ -1796,7 +1796,7 @@ module solve_routines
                         iwalleq2 = izwmap(itor,itow)
                         if (iwalleq2==0) then
                             iinode = roomptr%nodes_w(1,iwall)
-                            roomptr%t_surfaces(2,iwall) = twj(iinode,iroom,iwall)
+                            roomptr%t_surfaces(2,iwall) = roomptr%t_profile(iinode,iwall)
                         else
                             roomptr%t_surfaces(2,iwall) = y_vector(iwalleq2)
                         end if

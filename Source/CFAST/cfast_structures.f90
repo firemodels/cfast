@@ -111,7 +111,7 @@ module cfast_types
         
         real(eb), dimension(4) :: wall_area4            ! area of 4 compartment surfaces (ceiling, upper wall, lower wall, floor)
         real(eb), dimension(10) :: wall_area10          ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
-        real(eb), dimension(nwal,nnodes) :: t_profile   ! temperature profile within compartment surfaces
+        real(eb), dimension(nnodes,nwal) :: t_profile   ! temperature profile within compartment surfaces
         real(eb), dimension(2,nwal) :: t_surfaces       ! compartment surface temperatures (interior, exterior)
         real(eb), dimension(nwal) :: rad_qout           ! flux radiated from compartment surfaces
         

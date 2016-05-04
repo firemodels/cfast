@@ -125,10 +125,10 @@ module conduction_routines
             rho_w(1:mxslb) = roomptr%rho_w(1:mxslb,iwall)
             nslab_w = roomptr%nslab_w(iwall)
             numnode = roomptr%nodes_w(1:mxslb+1,iwall)
-            wtemps = roomptr%t_profile(iwall,1:nnodes)
+            wtemps = roomptr%t_profile(1:nnodes,iwall)
             call conductive_flux (update,twint,twext,dt,k_w,c_w,rho_w, &
-                twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode,nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
-
+                wtemps,walldx(1,iroom,iwall),numnode,nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
+            roomptr%t_profile(1:nnodes,iwall) = wtemps
             ! store wall gradient
             vtgrad(iw) = tgrad(2)
 

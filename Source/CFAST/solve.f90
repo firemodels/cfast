@@ -1786,26 +1786,26 @@ module solve_routines
                 iwalleq = izwmap(iroom,iwall)
                 if (iwalleq/=0) then
                     if (nfurn.gt.0) then
-                        roomptr%wall_temp(iwall,1) = wtemp
-                        roomptr%wall_temp(iwall,2) = wtemp
+                        roomptr%t_surfaces(1,iwall) = wtemp
+                        roomptr%t_surfaces(2,iwall) = wtemp
                     else
-                        roomptr%wall_temp(iwall,1) = y_vector(iwalleq)
+                        roomptr%t_surfaces(1,iwall) = y_vector(iwalleq)
                         ieqfrom = iwalleq - nofwt
                         itor = izwall(ieqfrom,w_to_room)
                         itow = izwall(ieqfrom,w_to_wall)
                         iwalleq2 = izwmap(itor,itow)
                         if (iwalleq2==0) then
                             iinode = roomptr%nodes_w(1,iwall)
-                            roomptr%wall_temp(iwall,2) = twj(iinode,iroom,iwall)
+                            roomptr%t_surfaces(2,iwall) = roomptr%t_profile(iinode,iwall)
                         else
-                            roomptr%wall_temp(iwall,2) = y_vector(iwalleq2)
+                            roomptr%t_surfaces(2,iwall) = y_vector(iwalleq2)
                         end if
                     end if
                 else
 
                     ! if we're not solving for the wall temperature then set it
                     ! to the layer temperature that it is adjacent too.  note,
-                    ! ...%wall_temp(iwall,2) is only referenced if the iwall'th
+                    ! ...%t_surfaces(2,iwall) is only referenced if the iwall'th
                     ! wall in room iroom is being solved with the heat equation
                     if (iwall==1.or.iwall==3) then
                         ilay = u
@@ -1813,9 +1813,9 @@ module solve_routines
                         ilay = l
                     end if
                     if (nfurn.gt.0) then
-                        roomptr%wall_temp(iwall,1) = wtemp
+                        roomptr%t_surfaces(1,iwall) = wtemp
                     else
-                        roomptr%wall_temp(iwall,1) = roomptr%temp(ilay)
+                        roomptr%t_surfaces(1,iwall) = roomptr%temp(ilay)
                     end if
                 end if
             end do

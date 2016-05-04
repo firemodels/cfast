@@ -244,7 +244,7 @@ module spreadsheet_routines
     do i=1,nrm1
         roomptr => roominfo(i)
         do iw = 1, 4
-            call SSaddtolist (position,roomptr%wall_temp(iwptr(iw),1)-kelvin_c_offset,outarray)
+            call SSaddtolist (position,roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,outarray)
         end do
     end do
 

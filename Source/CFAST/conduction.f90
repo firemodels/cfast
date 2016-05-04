@@ -38,7 +38,7 @@ module conduction_routines
     real(eb), intent(in) :: dt, flxtot(mxrooms,nwal)
     real(eb), intent(out) :: delta(*)
 
-    real(eb) :: tgrad(2), vtgrad(4*mxrooms)
+    real(eb) :: tgrad(2), vtgrad(4*mxrooms), wtemps(nnodes)
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb)
@@ -67,8 +67,8 @@ module conduction_routines
         else
 
             ! use exterior wall temperature from last time step to ...
-            twint = roomptr%wall_temp(iwall,1)
-            twext = roomptr%wall_temp(iwall,2)
+            twint = roomptr%t_surfaces(1,iwall)
+            twext = roomptr%t_surfaces(2,iwall)
             tgas = exterior_temperature
             iweq = izwmap(iroom,iwall) - nofwt
             iwb = izwall(iweq,w_boundary_condition)
@@ -125,6 +125,7 @@ module conduction_routines
             rho_w(1:mxslb) = roomptr%rho_w(1:mxslb,iwall)
             nslab_w = roomptr%nslab_w(iwall)
             numnode = roomptr%nodes_w(1:mxslb+1,iwall)
+            wtemps = roomptr%t_profile(iwall,1:nnodes)
             call conductive_flux (update,twint,twext,dt,k_w,c_w,rho_w, &
                 twj(1,iroom,iwall),walldx(1,iroom,iwall),numnode,nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
 

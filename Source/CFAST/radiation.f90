@@ -77,7 +77,7 @@ module radiation_routines
             (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
         do iwall = 1, 4
             imap = map(iwall)
-            twall(imap) = roomptr%wall_temp(iwall,1)
+            twall(imap) = roomptr%t_surfaces(1,iwall)
             emis(imap) = roomptr%eps_w(iwall)
         end do
         ifire = ifrpnt(i,2)

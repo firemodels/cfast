@@ -149,7 +149,7 @@ module spreadsheet_header_routines
                         headertext(3,position) = roomptr%name
                         headertext(4,position) = LabelUnits((j-1)*11+lsp+1)
                         if (molfrac(lsp)) headertext(4,position) = 'mol frac'
-                        if (lsp==9) headertext(4,position) = 'mg/m^3'
+                        if (validate.and.lsp==9) headertext(4,position) = 'mg/m^3'
                     end if
                 end do
             end if

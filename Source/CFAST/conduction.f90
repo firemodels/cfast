@@ -43,7 +43,7 @@ module conduction_routines
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb)
     integer :: nslab_w, numnode(mxslb+1)
-    integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, nwroom, jj, j
+    integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, jj, j
 
     type(room_type), pointer :: roomptr
 
@@ -82,13 +82,11 @@ module conduction_routines
                 wfluxsave = wfluxout
 
                 ! back wall is connected to rooms defined by iheat_connections with fractions defined by heat_frac.
-                !  if iheat(iroom) is not zero then nwroom better not be zero!
-                if (iheat(iroom)/=0.and.iwall/=1.and.iwall/=2) then
+                if (roomptr%iheat/=0.and.iwall/=1.and.iwall/=2) then
                     wfluxout = 0.0_eb
-                    nwroom = iheat_connections(iroom,0)
-                    do jj = 1, nwroom
-                        j = iheat_connections(iroom,jj)
-                        frac = heat_frac(iroom,j)
+                    do jj = 1, roomptr%nheats
+                        j = roomptr%iheat_connections(jj)
+                        frac = roomptr%heat_frac(j)
                         if (iwall==3) then
                             yb = roomptr%depth(l)
                             yt = roomptr%z1

@@ -578,19 +578,20 @@ module initialization_routines
     ! room to room heat transfer
     nswal = 0
 
-    ! variable cross sectional area
     do i = 1, mxrooms
         roomptr => roominfo(i)
+        
+        ! variable cross sectional area
         roomptr%nvars = 0
         roomptr%var_volume(1:mxcross) = 0.0_eb
         roomptr%var_area(1:mxcross) = 0.0_eb
         roomptr%var_height(1:mxcross) = 0.0_eb
+        
+        ! initialize inter-compartment heat transfer fractions
+        roomptr%iheat = 0
+        roomptr%iheat_connections(1:mxrooms) = 0
+        roomptr%heat_frac(1:mxrooms) = 0
     end do
-
-    ! initialize inter-compartment heat transfer fractions
-    heat_frac(1:mxrooms,1:mxrooms) = 0.0_eb
-    iheat(1:mxrooms) = 0
-    iheat_connections(1:mxrooms,1:mxrooms) = 0
 
     ! initialize number of furnace temperature nodes
     nfurn=0

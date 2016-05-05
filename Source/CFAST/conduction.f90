@@ -62,7 +62,7 @@ module conduction_routines
         icond = nofwt + iw
 
         roomptr => roominfo(iroom)
-        if (adiabatic_wall.or..not.roomptr%surface_on(iwall)) then
+        if (adiabatic_walls.or..not.roomptr%surface_on(iwall)) then
             vtgrad(iw) = 0.0_eb
         else
 

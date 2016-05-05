@@ -13,7 +13,7 @@ module target_routines
     use cenviro
     use detectorptrs
     use target_data
-    use fire_data, only: xfire, ifrpnt
+    use fire_data, only: xfire, ifrpnt, nfurn, qfurnout
     use fireptrs
     use cparams
     use room_data

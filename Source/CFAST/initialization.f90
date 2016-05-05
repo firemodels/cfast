@@ -916,7 +916,7 @@ module initialization_routines
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
-    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes)
+    real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
     integer nslab, numnode(mxslb+1)
     character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
 
@@ -965,10 +965,12 @@ module initialization_routines
                 thick = roomptr%total_thick_w(j)
                 numnode = roomptr%nodes_w(1:mxslb+1,j)
                 wtemps = roomptr%t_profile(1:nnodes,j)
-                call wset(numnode,nslab,tstop,walldx(1,i,j),wsplit,k_w,c_w,rho_w,thick_w,&
+                walldx = roomptr%walldx(1:nnodes,j)
+                call wset(numnode,nslab,tstop,walldx,wsplit,k_w,c_w,rho_w,thick_w,&
                    thick,wtemps,interior_temperature,exterior_temperature)
                 roomptr%nodes_w(1:mxslb+1,j) = numnode
                 roomptr%t_profile(1:nnodes,j) = wtemps
+                roomptr%walldx(1:nnodes,j) = walldx
             end if
         end do
     end do
@@ -1025,14 +1027,14 @@ module initialization_routines
         do j = nptsf+1,nptsf+nptst - 1
             jj = jj - 1
             from_roomptr%t_profile(j,ifromw) = interior_temperature
-            walldx(j-1,ifromr,ifromw) = walldx(jj,itor,itow)
+            from_roomptr%walldx(j-1,ifromw) = to_roomptr%walldx(jj,itow)
         end do
 
         jj = nptsf
         do j = nptst+1,nptst+nptsf - 1
             jj = jj - 1
             to_roomptr%t_profile(j,itow) = interior_temperature
-            walldx(j-1,itor,itow) = walldx(jj,ifromr,ifromw)
+            to_roomptr%walldx(j-1,itow) = from_roomptr%walldx(jj,ifromw)
         end do
     end do
 

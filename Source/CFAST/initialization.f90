@@ -589,11 +589,9 @@ module initialization_routines
         
         ! initialize inter-compartment heat transfer fractions
         roomptr%iheat = 0
+        roomptr%iheat_connections(1:mxrooms) = 0
+        roomptr%heat_frac(1:mxrooms) = 0
     end do
-
-    ! initialize inter-compartment heat transfer fractions
-    heat_frac(1:mxrooms,1:mxrooms) = 0.0_eb
-    iheat_connections(1:mxrooms,1:mxrooms) = 0
 
     ! initialize number of furnace temperature nodes
     nfurn=0

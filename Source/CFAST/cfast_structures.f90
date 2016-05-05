@@ -99,7 +99,7 @@ module cfast_types
                                                         !   1 = all rooms connected here by vents
                                                         !   2 = only user specified vents
         integer, dimension(mxrooms) :: iheat_connections! list of connected compartments
-        real(eb), dimension(mxrooms) :: iheat_fractions ! fractions of wall surface of this room connected to other rooms in list
+        real(eb), dimension(mxrooms) :: heat_frac       ! fractions of wall surface of this room connected to other rooms in list
         
 
         ! These are calculated results for the current time step

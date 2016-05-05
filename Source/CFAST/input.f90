@@ -44,7 +44,7 @@ module input_routines
 
     real(eb) :: yinter(mxrooms), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
-    integer :: numr, numc, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
+    integer :: numr, numc, ios, iversion, i, ii, j, k, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij, ivers
     character :: aversion*5
     type(room_type), pointer :: roomptr, roomptr2
@@ -431,10 +431,10 @@ module input_routines
                 do k = 1, 4
                     nventij = nventij + ijk(i,j,k)
                 end do
-                if (nventij/=0) heat_frac(i,j) = 1.0_eb
+                if (nventij/=0) roomptr%heat_frac(j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if (j<=nrm1.and..not.roomptr2%surface_on(3)) heat_frac(i,j) = 0.0_eb
+                if (j<=nrm1.and..not.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 0.0_eb
             end do
         end if
 
@@ -442,25 +442,19 @@ module input_routines
         if (roomptr%iheat/=0) then
             sum = 0.0_eb
             do j = 1, nrm1+1
-                sum = sum + heat_frac(i,j)
+                sum = sum + roomptr%heat_frac(j)
             end do
             if (sum<1.e-5_eb) then
-                do j = 1, nrm1
-                    heat_frac(i,j) = 0.0_eb
-                end do
-                heat_frac(i,nrm1+1) = 1.0_eb
+                roomptr%heat_frac(1:nrm1) = 0.0_eb
+                roomptr%heat_frac(nr) = 1.0_eb
             else
-                do j = 1, nrm1+1
-                    heat_frac(i,j) = heat_frac(i,j)/sum
-                end do
+                roomptr%heat_frac(1:nr) = roomptr%heat_frac(1:nr)/sum
             end if
-            roomptr => roominfo(i)
-            jj = 0
+            roomptr%nheats = 0
             do j = 1, nrm1
-                if (heat_frac(i,j)/=0.0_eb) then
+                if (roomptr%heat_frac(j)/=0.0_eb) then
                     roomptr%nheats = roomptr%nheats + 1
-                    jj = jj + 1
-                    iheat_connections(i,jj) = j
+                    roomptr%iheat_connections(roomptr%nheats) = j
                 end if
             end do
         end if
@@ -1638,7 +1632,7 @@ module input_routines
                             write(logerr, 5357) ifrom,ito,frac
                             stop
                         end if
-                        heat_frac(ifrom,ito) = frac
+                        roomptr%heat_frac(ito) = frac
                     end do
                 else
                     write(*,5355) ifrom, nto

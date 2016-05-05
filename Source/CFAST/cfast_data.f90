@@ -206,11 +206,6 @@ module room_data
                                                     !   5 = boundary condition type for exterior surface
     logical :: adiabatic_walls
 
-    
-    ! room to room heat transfer
-    real(eb), dimension(mxrooms,mxrooms) :: heat_frac
-    integer, dimension(0:mxrooms) :: iheat
-    integer, dimension(mxrooms,mxrooms) :: iheat_connections
     integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
 
     integer :: nswal

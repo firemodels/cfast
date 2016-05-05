@@ -537,7 +537,7 @@ module fire_routines
     end if
 
     tfilter_max=1.0_eb
-    if (adiabatic_wall.and.time<tfilter_max) then
+    if (adiabatic_walls.and.time<tfilter_max) then
         factor = time/tfilter_max
         omasst = omasst*factor
         oqdott = oqdott*factor

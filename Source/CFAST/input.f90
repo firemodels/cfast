@@ -1667,7 +1667,7 @@ module input_routines
 
             ! ADIAB - all surfaces are adiabatic so that dT/dx at the surface = 0
         case ('ADIAB')
-            adiabatic_wall = .true.
+            adiabatic_walls = .true.
 
             !  HEATF Special fire - heat source only; no mass
         case ('HEATF')

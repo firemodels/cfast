@@ -76,6 +76,10 @@ module fire_data
     real(eb), dimension(mxpts,mxfires) :: otime
     real(eb), dimension(2,0:mxfires) :: obcond
     real(eb) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
+    
+    integer :: nfurn                                    ! number of data points in furnace temperature curve
+    real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature
+    real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
 end module fire_data
 
@@ -191,19 +195,17 @@ module room_data
                                                                         !   2 = insulated exterior surface, 
                                                                         !   3 =radiates to ambient
     real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
-                                                                        ! initially fractions for inner, middle and outer wall slab
+                                                                        ! initial fractions for inner, middle and outer wall slab
     
-    integer :: nwalls, nfurn
+    integer :: nwalls
     integer, dimension(mxwal,5) :: izwall           ! defines all surfaces for conduction routine, 1 entry for each wall that's on
                                                     !   1 = from room number
                                                     !   2 = from wall number (ceiling, upper walls, lower walls, floor)
                                                     !   3 = to room number
                                                     !   4 = to wall number
                                                     !   5 = boundary condition type for exterior surface
-    logical :: adiabatic_wall
-    
-    real(eb), dimension(mxpts) :: furn_time, furn_temp
-    real(eb) :: qfurnout
+    logical :: adiabatic_walls
+
     
     ! room to room heat transfer
     real(eb), dimension(mxrooms,mxrooms) :: heat_frac

@@ -818,7 +818,7 @@ module output_routines
     type(thermal_type), pointer :: thrmpptr
 
     ! check to see if any heat transfer is on
-    if (.not.adiabatic_wall) then
+    if (.not.adiabatic_walls) then
         do i = 1, nrm1
             roomptr => roominfo(i)
             do j = 1, nwal

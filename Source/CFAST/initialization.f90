@@ -562,7 +562,7 @@ module initialization_routines
     roominfo(1:mxrooms)%ibar = 50
     roominfo(1:mxrooms)%jbar = 50
     roominfo(1:mxrooms)%kbar = 50
-    adiabatic_wall = .false.
+    adiabatic_walls = .false.
     roominfo(1:mxrooms)%deadroom = 0
     roominfo(1:mxrooms)%hall = .false.
     roominfo(1:mxrooms)%shaft = .false.

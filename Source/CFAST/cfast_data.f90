@@ -209,10 +209,8 @@ module room_data
     real(eb), dimension(mxrooms,mxrooms) :: heat_frac
     integer, dimension(0:mxrooms) :: iheat
     integer, dimension(mxrooms,0:mxrooms) :: iheat_connections
-
-    integer, dimension(ns+2) :: izpmap              ! maps species to corresponding DASSL equations
-    integer, dimension(mxrooms,4) :: izwmap         ! maps walls to corresponding DASSL equations
     integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
+
     integer :: nswal
 
 end module room_data
@@ -292,35 +290,38 @@ module solver_data
     implicit none
     save
     ! default solver tolerences
-    real(eb) :: aptol = 1.0e-6_eb        ! absolute pressure tolerance
-    real(eb) :: rptol = 1.0e-6_eb        ! relative pressure tolerance
-    real(eb) :: atol = 1.0e-5_eb         ! absolute other tolerance
-    real(eb) :: rtol = 1.0e-5_eb         ! relative other tolerance
-    real(eb) :: awtol = 1.0e-2_eb        ! absolute wall tolerance
-    real(eb) :: rwtol = 1.0e-2_eb        ! relative wall tolerance
-    real(eb) :: algtol = 1.0e-8_eb       ! initialization tolerance
-    real(eb) :: ahvptol = 1.0e-6_eb      ! absolute HVAC pressure tolerance
-    real(eb) :: rhvptol = 1.0e-6_eb      ! relative HVAC pressure tolerance
-    real(eb) :: ahvttol = 1.0e-5_eb      ! absolute HVAC temperature tolerance
-    real(eb) :: rhvttol = 1.0e-5_eb      ! relative HVAC temperature tolerance
+    real(eb) :: aptol = 1.0e-6_eb               ! absolute pressure tolerance
+    real(eb) :: rptol = 1.0e-6_eb               ! relative pressure tolerance
+    real(eb) :: atol = 1.0e-5_eb                ! absolute other tolerance
+    real(eb) :: rtol = 1.0e-5_eb                ! relative other tolerance
+    real(eb) :: awtol = 1.0e-2_eb               ! absolute wall tolerance
+    real(eb) :: rwtol = 1.0e-2_eb               ! relative wall tolerance
+    real(eb) :: algtol = 1.0e-8_eb              ! initialization tolerance
+    real(eb) :: ahvptol = 1.0e-6_eb             ! absolute HVAC pressure tolerance
+    real(eb) :: rhvptol = 1.0e-6_eb             ! relative HVAC pressure tolerance
+    real(eb) :: ahvttol = 1.0e-5_eb             ! absolute HVAC temperature tolerance
+    real(eb) :: rhvttol = 1.0e-5_eb             ! relative HVAC temperature tolerance
 
     real(eb), dimension(nt) :: pinit
     real(eb), dimension(1) :: rpar2
     integer, dimension(3) :: ipar2
     
     ! time step setup values
-    real(eb) :: stpmax = 1.0_eb         ! maximum solver time step, if negative, then solver will decide
-    real(eb) :: stpfirst = 0.005_eb     ! first time step for DASSL
-    logical :: stpminflag               ! true if CFAST should check for too small time steps
-    real(eb) :: stpmin                  ! minimum time step below which DASSL may be failing to find a solution.
-    integer :: stpmin_cnt               ! current count of time steps below stpmin
-    integer :: stpmin_cnt_max           ! maximum number of time steps below stpmin before DASSL calls it quits
+    real(eb) :: stpmax = 1.0_eb                 ! maximum solver time step, if negative, then solver will decide
+    real(eb) :: stpfirst = 0.005_eb             ! first time step for DASSL
+    logical :: stpminflag                       ! true if CFAST should check for too small time steps
+    real(eb) :: stpmin                          ! minimum time step below which DASSL may be failing to find a solution.
+    integer :: stpmin_cnt                       ! current count of time steps below stpmin
+    integer :: stpmin_cnt_max                   ! maximum number of time steps below stpmin before DASSL calls it quits
     
     ! solver variables
     integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
         nofhvpr, nequals, noffsm
     real(eb), dimension(maxteq) :: p, pold, pdold
     real(eb) :: told, dt
+
+    integer, dimension(ns+2) :: i_speciesmap    ! maps species to corresponding DASSL equations
+    integer, dimension(mxrooms,4) :: i_wallmap  ! maps wall surface temperatures to corresponding DASSL equations
     
     integer :: jaccol
     integer :: jacn1, jacn2, jacn3, jacdim

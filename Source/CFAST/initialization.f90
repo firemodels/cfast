@@ -781,12 +781,12 @@ module initialization_routines
     end if
 
     ! define product map array
-    izpmap(1) = 1
-    izpmap(2) = 2
+    i_speciesmap(1) = 1
+    i_speciesmap(2) = 2
     ip = 2
     do iprod = 1, ns
         ip = ip + 1
-        izpmap(ip) = iprod + 2
+        i_speciesmap(ip) = iprod + 2
     end do
 
     return

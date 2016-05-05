@@ -1183,27 +1183,27 @@ module solve_routines
         roomptr => roominfo(iroom)
 
         do iprod = 1, nprod + 2
-            ip = izpmap(iprod)
+            ip = i_speciesmap(iprod)
             flwtot(iroom,iprod,l) = flwnvnt(iroom,iprod,l) + flwf(iroom,ip,l)
             flwtot(iroom,iprod,u) = flwnvnt(iroom,iprod,u) + flwf(iroom,ip,u)
         end do
         if (vflowflg) then
             do iprod = 1, nprod + 2
-                ip = izpmap(iprod)
+                ip = i_speciesmap(iprod)
                 flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwhvnt(iroom,ip,l)
                 flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwhvnt(iroom,ip,u)
             end do
         end if
         if (hvacflg) then
             do iprod = 1, nprod + 2
-                ip = izpmap(iprod)
+                ip = i_speciesmap(iprod)
                 flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwmv(iroom,ip,l) - filtered(iroom,iprod,l)
                 flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwmv(iroom,ip,u) - filtered(iroom,iprod,u)
             end do
         end if
         if (djetflg) then
             do iprod = 1, nprod + 2
-                ip = izpmap(iprod)
+                ip = i_speciesmap(iprod)
                 flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwdjf(iroom,ip,l)
                 flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwdjf(iroom,ip,u)
             end do
@@ -1601,15 +1601,15 @@ module solve_routines
         ! put the discontinuity array into order
         call shellsort (discon(0), ndisc+1)
 
-        ! define izwmap for jac and other constants for dassl and the conduction routine
+        ! define i_wallmap for jac and other constants for dassl and the conduction routine
         ieq = nofwt
-        izwmap(nr,1:4) = 0
+        i_wallmap(nr,1:4) = 0
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
             do iwall = 1, 4
                 if (roomptr%surface_on(iwall)) then
                     ieq = ieq + 1
-                    izwmap(iroom,iwall) = ieq
+                    i_wallmap(iroom,iwall) = ieq
 
                     ! define izwall, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
@@ -1626,7 +1626,7 @@ module solve_routines
                     izwall(ii,w_boundary_condition) = iwbound
 
                 else
-                    izwmap(iroom,iwall) = 0
+                    i_wallmap(iroom,iwall) = 0
                 end if
             end do
         end do
@@ -1637,8 +1637,8 @@ module solve_routines
             ifromw = izswal(i,w_from_wall)
             itor = izswal(i,w_to_room)
             itow = izswal(i,w_to_wall)
-            ieqfrom = izwmap(ifromr,ifromw) - nofwt
-            ieqto = izwmap(itor,itow) - nofwt
+            ieqfrom = i_wallmap(ifromr,ifromw) - nofwt
+            ieqto = i_wallmap(itor,itow) - nofwt
 
             izwall(ieqfrom,w_to_room) = itor
             izwall(ieqfrom,w_to_wall) = itow
@@ -1783,7 +1783,7 @@ module solve_routines
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
             do iwall = 1, nwal
-                iwalleq = izwmap(iroom,iwall)
+                iwalleq = i_wallmap(iroom,iwall)
                 if (iwalleq/=0) then
                     if (nfurn.gt.0) then
                         roomptr%t_surfaces(1,iwall) = wtemp
@@ -1793,7 +1793,7 @@ module solve_routines
                         ieqfrom = iwalleq - nofwt
                         itor = izwall(ieqfrom,w_to_room)
                         itow = izwall(ieqfrom,w_to_wall)
-                        iwalleq2 = izwmap(itor,itow)
+                        iwalleq2 = i_wallmap(itor,itow)
                         if (iwalleq2==0) then
                             iinode = roomptr%nodes_w(1,iwall)
                             roomptr%t_surfaces(2,iwall) = roomptr%t_profile(iinode,iwall)

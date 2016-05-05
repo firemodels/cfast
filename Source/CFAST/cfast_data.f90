@@ -210,7 +210,7 @@ module room_data
     ! room to room heat transfer
     real(eb), dimension(mxrooms,mxrooms) :: heat_frac
     integer, dimension(0:mxrooms) :: iheat
-    integer, dimension(mxrooms,0:mxrooms) :: iheat_connections
+    integer, dimension(mxrooms,mxrooms) :: iheat_connections
     integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
 
     integer :: nswal

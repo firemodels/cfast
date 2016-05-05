@@ -85,7 +85,7 @@ module conduction_routines
                 !  if iheat(iroom) is not zero then nwroom better not be zero!
                 if (iheat(iroom)/=0.and.iwall/=1.and.iwall/=2) then
                     wfluxout = 0.0_eb
-                    nwroom = iheat_connections(iroom,0)
+                    nwroom = roomptr%nheats
                     do jj = 1, nwroom
                         j = iheat_connections(iroom,jj)
                         frac = heat_frac(iroom,j)

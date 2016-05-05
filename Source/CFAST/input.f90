@@ -461,10 +461,11 @@ module input_routines
                     heat_frac(i,j) = heat_frac(i,j)/sum
                 end do
             end if
+            roomptr => roominfo(i)
             jj = 0
             do j = 1, nrm1
                 if (heat_frac(i,j)/=0.0_eb) then
-                    iheat_connections(i,0) = iheat_connections(i,0) + 1
+                    roomptr%nheats = roomptr%nheats + 1
                     jj = jj + 1
                     iheat_connections(i,jj) = j
                 end if

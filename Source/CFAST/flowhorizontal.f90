@@ -13,6 +13,7 @@ module hflow_routines
     use option_data
     use vent_data
     use debug_data
+    use solver_data, only: i_wallmap, i_speciesmap
 
     implicit none
 
@@ -559,7 +560,7 @@ module hflow_routines
         denu(i) = roomptr%rho(u)
         denl(i) = roomptr%rho(l)
         do iprod = 1, nprod
-            ip = izpmap(iprod+2) - 2
+            ip = i_speciesmap(iprod+2) - 2
             conl(iprod,i) = roomptr%species_fraction(l,ip)
             conu(iprod,i) = roomptr%species_fraction(u,ip)
         end do

@@ -6,7 +6,7 @@ module conduction_routines
 
     use wallptrs
     use cenviro
-    use solver_data, only: nofwt
+    use solver_data, only: nofwt, i_wallmap
     use room_data
     use cparams
 
@@ -70,7 +70,7 @@ module conduction_routines
             twint = roomptr%t_surfaces(1,iwall)
             twext = roomptr%t_surfaces(2,iwall)
             tgas = exterior_temperature
-            iweq = izwmap(iroom,iwall) - nofwt
+            iweq = i_wallmap(iroom,iwall) - nofwt
             iwb = izwall(iweq,w_boundary_condition)
 
             ! compute flux seen by exterior of wall

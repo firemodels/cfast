@@ -89,8 +89,8 @@
     call solve_simulation (tstop)
     call cptime(tend)
 
-    write (*,5000) tend - tbeg
-    write (*,5010) total_steps
+    if (.not.validate) write (*,5000) tend - tbeg
+    if (.not.validate) write (*,5010) total_steps
     write (logerr,5000) tend - tbeg
     write (logerr,5010) total_steps
     call cfastexit ('CFAST', 0)
@@ -116,7 +116,7 @@
     integer, intent(in) :: errorcode
 
     if (errorcode==0) then
-        write(*, '(''Normal exit from '',a)') trim(name)
+        if (.not.validate) write(*, '(''Normal exit from '',a)') trim(name)
         write(logerr, '(''Normal exit from '',a)') trim(name)
     else
         write(*,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode

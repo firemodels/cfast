@@ -194,10 +194,14 @@ module room_data
                                                                         ! initially fractions for inner, middle and outer wall slab
     
     integer :: nwalls, nfurn
-    integer, dimension(4*mxrooms,5) :: izwall       ! defines all surfaces for conduction routine
+    integer, dimension(mxwal,5) :: izwall           ! defines all surfaces for conduction routine, 1 entry for each wall that's on
+                                                    !   1 = from room number
+                                                    !   2 = from wall number (ceiling, upper walls, lower walls, floor)
+                                                    !   3 = to room number
+                                                    !   4 = to wall number
+                                                    !   5 = boundary condition type for exterior surface
     logical :: adiabatic_wall
     
-    real(eb), dimension (nnodes,mxrooms,4) :: walldx
     real(eb), dimension(mxpts) :: furn_time, furn_temp
     real(eb) :: qfurnout
     

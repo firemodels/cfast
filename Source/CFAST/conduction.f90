@@ -82,8 +82,7 @@ module conduction_routines
                 wfluxsave = wfluxout
 
                 ! back wall is connected to rooms defined by iheat_connections with fractions defined by heat_frac.
-                !  if iheat(iroom) is not zero then nwroom better not be zero!
-                if (iheat(iroom)/=0.and.iwall/=1.and.iwall/=2) then
+                if (roomptr%iheat/=0.and.iwall/=1.and.iwall/=2) then
                     wfluxout = 0.0_eb
                     nwroom = roomptr%nheats
                     do jj = 1, nwroom

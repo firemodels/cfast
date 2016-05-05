@@ -47,7 +47,7 @@ module input_routines
     integer :: numr, numc, ios, iversion, i, ii, j, jj, k, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij, ivers
     character :: aversion*5
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomptr, roomptr2
     type(detector_type), pointer :: dtectptr
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
@@ -414,39 +414,32 @@ module input_routines
 
     ! check room to room heat transfer
 
-    ! The array iheat may have one of three values, 0, 1, 2.
+    !iheat may have one of three values, 0, 1, 2.
     ! 0 = no room to room heat transfer
     ! 1 = fractions are determined by what rooms are connected by vents
     ! For example, if room 1 is connected to rooms 2, 3, 4 and the outside
     ! by vents then the first row of heat_frac will have the values
     ! 0. .25 .25 .25 .25
 
-    ! force all rooms to transfer heat between connected rooms
-    if (iheat(0)==1) then
-        do i = 1, nrm1
-            iheat(i) = 1
-        end do
-    end if
-
     do i = 1, nrm1
-
+        roomptr => roominfo(i)
         ! force heat transfer between rooms connected by vents.
-        if (iheat(i)==1) then
+        if (roomptr%iheat==1) then
             do j = 1, nr
-                roomptr => roominfo(j)
+                roomptr2 => roominfo(j)
                 nventij = 0
                 do k = 1, 4
                     nventij = nventij + ijk(i,j,k)
                 end do
-                if (nventij/=0)heat_frac(i,j) = 1.0_eb
+                if (nventij/=0) heat_frac(i,j) = 1.0_eb
 
                 ! if the back wall is not active then don't consider its contribution
-                if (j<=nrm1.and..not.roomptr%surface_on(3)) heat_frac(i,j) = 0.0_eb
+                if (j<=nrm1.and..not.roomptr2%surface_on(3)) heat_frac(i,j) = 0.0_eb
             end do
         end if
 
         ! normalize heat_frac fraction matrix so that rows sum to one
-        if (iheat(i)/=0) then
+        if (roomptr%iheat/=0) then
             sum = 0.0_eb
             do j = 1, nrm1+1
                 sum = sum + heat_frac(i,j)
@@ -1615,8 +1608,9 @@ module input_routines
             if (countargs(lcarray)>=1) then
                 nto = 0
                 ifrom = lrarray(1)
+                roomptr => roominfo(ifrom)
                 if (countargs(lcarray)==1) then
-                    iheat(ifrom) = 1
+                    roomptr%iheat = 1
                     cycle
                 else
                     nto = lrarray(2)
@@ -1625,8 +1619,7 @@ module input_routines
                         write(logerr,5354) nto
                         stop
                     end if
-                    iheat(ifrom) = 2
-                    iheat(ifrom) = 2
+                    roomptr%iheat = 2
                 end if
 
                 if (2*nto==(countargs(lcarray)-2)) then

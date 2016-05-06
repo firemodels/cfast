@@ -44,10 +44,10 @@
     if (option(fconvec)/=on) return
 
     ! calculate convection for all surfaces in all rooms
-    do iw = 1, nwalls
-        i = izwall(iw,w_from_room)
+    do iw = 1, nhcons
+        i = i_hconnections(iw,w_from_room)
         roomptr => roominfo(i)
-        iwall = izwall(iw,w_from_wall)
+        iwall = i_hconnections(iw,w_from_wall)
         nrmfire = ifrpnt(i,1)
         if (mod(iwall,2)==1) then
             ilay = u

@@ -147,7 +147,7 @@ module solve_routines
     do i = 1, nhvtvar
         pdold(i+noftmv) = 0.0_eb
     end do
-    do i = 1, nwalls
+    do i = 1, nhcons
         pdold(i+nofwt) = 0.0_eb
     end do
     return
@@ -415,7 +415,7 @@ module solve_routines
     !     An important note - solve sets the last variable to be solved to NOFPRD
     !     which is the beginning of the species (-1) and the end of the array which
     !     is presently used by DASSL. The important point is that NODES is set to
-    !     NOFPRD which is the equivalent to NOFWT+NWALLS
+    !     NOFPRD which is the equivalent to NOFWT+nhcons
 
     real(eb), intent(in) :: tstop
 
@@ -505,7 +505,7 @@ module solve_routines
         vatol(i+noftmv) = ahvttol
         vrtol(i+noftmv) = rhvttol
     end do
-    do i = 1, nwalls
+    do i = 1, nhcons
         vatol(i+nofwt) = awtol
         vrtol(i+nofwt) = rwtol
     end do
@@ -1611,19 +1611,19 @@ module solve_routines
                     ieq = ieq + 1
                     i_wallmap(iroom,iwall) = ieq
 
-                    ! define izwall, to describe ceiling-floor connections
+                    ! define i_hconnections, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
                     ii = ieq - nofwt
-                    izwall(ii,w_from_room) = iroom
-                    izwall(ii,w_from_wall) = iwall
-                    izwall(ii,w_to_room) = nrm1 + 1
+                    i_hconnections(ii,w_from_room) = iroom
+                    i_hconnections(ii,w_from_wall) = iwall
+                    i_hconnections(ii,w_to_room) = nrm1 + 1
                     if (iwall==1.or.iwall==2) then
                         iwfar = 3 - iwall
                     else
                         iwfar = iwall
                     end if
-                    izwall(ii,w_to_wall) = iwfar
-                    izwall(ii,w_boundary_condition) = iwbound
+                    i_hconnections(ii,w_to_wall) = iwfar
+                    i_hconnections(ii,w_boundary_condition) = iwbound
 
                 else
                     i_wallmap(iroom,iwall) = 0
@@ -1631,22 +1631,22 @@ module solve_routines
             end do
         end do
 
-        ! update izwall for ceiling/floors that are connected
-        do i = 1, nswal
-            ifromr = izswal(i,w_from_room)
-            ifromw = izswal(i,w_from_wall)
-            itor = izswal(i,w_to_room)
-            itow = izswal(i,w_to_wall)
+        ! update i_hconnections for ceiling/floors that are connected
+        do i = 1, nvcons
+            ifromr = i_vconnections(i,w_from_room)
+            ifromw = i_vconnections(i,w_from_wall)
+            itor = i_vconnections(i,w_to_room)
+            itow = i_vconnections(i,w_to_wall)
             ieqfrom = i_wallmap(ifromr,ifromw) - nofwt
             ieqto = i_wallmap(itor,itow) - nofwt
 
-            izwall(ieqfrom,w_to_room) = itor
-            izwall(ieqfrom,w_to_wall) = itow
-            izwall(ieqfrom,w_boundary_condition) = 1
+            i_hconnections(ieqfrom,w_to_room) = itor
+            i_hconnections(ieqfrom,w_to_wall) = itow
+            i_hconnections(ieqfrom,w_boundary_condition) = 1
 
-            izwall(ieqto,w_to_room) = ifromr
-            izwall(ieqto,w_to_wall) = ifromw
-            izwall(ieqto,w_boundary_condition) = 1
+            i_hconnections(ieqto,w_to_room) = ifromr
+            i_hconnections(ieqto,w_to_wall) = ifromw
+            i_hconnections(ieqto,w_boundary_condition) = 1
         end do
 
         jacn1 = nofpmv - nofp
@@ -1791,8 +1791,8 @@ module solve_routines
                     else
                         roomptr%t_surfaces(1,iwall) = y_vector(iwalleq)
                         ieqfrom = iwalleq - nofwt
-                        itor = izwall(ieqfrom,w_to_room)
-                        itow = izwall(ieqfrom,w_to_wall)
+                        itor = i_hconnections(ieqfrom,w_to_room)
+                        itow = i_hconnections(ieqfrom,w_to_wall)
                         iwalleq2 = i_wallmap(itor,itow)
                         if (iwalleq2==0) then
                             iinode = roomptr%nodes_w(1,iwall)

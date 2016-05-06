@@ -1100,8 +1100,8 @@ module output_routines
         end if
     else if (icomp<=nofprd) then
         itmp = icomp - nofwt
-        irm = izwall(itmp,w_from_room)
-        iw = izwall(itmp,w_from_wall)
+        irm = i_hconnections(itmp,w_from_room)
+        iw = i_hconnections(itmp,w_from_wall)
         if (iw==1) then
             write(lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
             call xerror(lbuf,0,1,0)
@@ -1173,7 +1173,7 @@ module output_routines
             do iprod = 1, ns
                 write (*,5030) spname(iprod), (roomptr%species_fraction(il,iprod),il= u,l)
             end do
-            if (nwalls/=0) write (*,*) ' Wall temperatures'
+            if (nhcons/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
                 write (*,5040) roomptr%t_surfaces(1,1)
             end if

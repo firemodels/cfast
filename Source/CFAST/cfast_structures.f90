@@ -93,12 +93,12 @@ module cfast_types
         real(eb), dimension(mxslb,nwal) :: thick_w      ! thickness of each slab
         integer, dimension(mxslb+1,nwal) :: nodes_w     ! number of nodes in each slab
         real(eb), dimension(nnodes,nwal) :: walldx      ! thickness of each node in each slab
-        
+
         integer :: nheats                               ! number of horizontal heat transfer connections to this room
-        integer :: iheat                                ! type of heat connections to this room
+        integer :: iheat                                ! type of horizontal heat connections to this room
                                                         !   1 = all rooms connected here by vents
                                                         !   2 = only user specified vents
-        integer, dimension(mxrooms) :: iheat_connections! list of connected compartments
+        integer, dimension(mxrooms) :: hheat_connections! list of connected compartments for horizontal heat transfer
         real(eb), dimension(mxrooms) :: heat_frac       ! fractions of wall surface of this room connected to other rooms in list
         
 

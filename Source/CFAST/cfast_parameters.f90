@@ -13,7 +13,7 @@ module cparams
     integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
     integer, parameter :: mxwal = mxrooms*nwal  ! maximum total number of compartment surfaces
     integer, parameter :: mxcross=21            ! maximum number of data points for variable cross-sectional area of a compartment
-    integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation
+    integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation (should be odd number)
     integer, parameter :: mxslice = 5*mxrooms   ! maximum number of slices and isosurfaces in an input file
 
     ! fire related input parameters

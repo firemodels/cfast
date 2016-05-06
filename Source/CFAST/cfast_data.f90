@@ -49,7 +49,9 @@ module fire_data
     save
 
     ! fire variables
-    integer :: nfire, objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(mxrooms), ifroom(mxfire), &
+    integer :: nfire    ! number of fires in the current simulation
+    
+    integer :: objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(mxrooms), ifroom(mxfire), &
         ifrpnt(mxrooms,2), heatfr, obj_fpos(0:mxfires)
     real(eb) :: lower_o2_limit, qf(mxrooms), objmaspy(0:mxfire), heatup(mxrooms), heatlp(mxrooms), oplume(3,mxfires), &
         qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
@@ -197,18 +199,21 @@ module room_data
     real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
                                                                         ! initial fractions for inner, middle and outer wall slab
     
-    integer :: nwalls
-    integer, dimension(mxwal,5) :: izwall           ! defines all surfaces for conduction routine, 1 entry for each wall that's on
+    integer :: nhcons
+    integer, dimension(mxwal,5) :: i_hconnections   ! defines all surfaces for conduction routine, 1 entry for each wall that's on
                                                     !   1 = from room number
                                                     !   2 = from wall number (ceiling, upper walls, lower walls, floor)
                                                     !   3 = to room number
                                                     !   4 = to wall number
                                                     !   5 = boundary condition type for exterior surface
+    integer :: nvcons
+    integer, dimension(mxwal,4) :: i_vconnections   ! list of connected compartments for vertical heat transfer
+                                                    !   1 = from room number
+                                                    !   2 = from wall number (ceiling, upper walls, lower walls, floor)
+                                                    !   3 = to room number
+                                                    !   4 = to wall number
+
     logical :: adiabatic_walls
-
-    integer, dimension(mxrooms,4) :: izswal         ! maps connecting walls between compartments for conduction
-
-    integer :: nswal
 
 end module room_data
 
@@ -229,7 +234,6 @@ module setup_data
     logical :: debugging=.false., validate=.false., netheatflux=.false.
     integer :: version, outputformat=0
     integer, dimension(3) :: rundat
-    character(128) :: thrmfile="thermal"
     character(60) :: nnfile=" ", datafile
     character(32) :: mpsdatc
     

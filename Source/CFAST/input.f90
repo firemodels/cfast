@@ -222,11 +222,11 @@ module input_routines
 
 
     ! check room to room heat transfer parameters (VHEAT command)
-    nswall2 = nswal
+    nswall2 = nvcons
     ii = 0
-    do i = 1, nswal
-        iroom1 = izswal(i,w_from_room)
-        iroom2 = izswal(i,w_to_room)
+    do i = 1, nvcons
+        iroom1 = i_vconnections(i,w_from_room)
+        iroom2 = i_vconnections(i,w_to_room)
 
         ! room numbers must be between 1 and nrm1
         if (iroom1<1.or.iroom2<1.or.iroom1>nrm1+1.or.iroom2>nrm1+1) then
@@ -243,10 +243,10 @@ module input_routines
         else
             ii = ii + 1
             if (i/=ii) then
-                izswal(ii,w_from_room) = izswal(i,w_from_room)
-                izswal(ii,w_from_wall) = izswal(i,w_from_wall)
-                izswal(ii,w_to_room) = izswal(i,w_to_room)
-                izswal(ii,w_to_wall) = izswal(i,w_to_wall)
+                i_vconnections(ii,w_from_room) = i_vconnections(i,w_from_room)
+                i_vconnections(ii,w_from_wall) = i_vconnections(i,w_from_wall)
+                i_vconnections(ii,w_to_room) = i_vconnections(i,w_to_room)
+                i_vconnections(ii,w_to_wall) = i_vconnections(i,w_to_wall)
             end if
         end if
 
@@ -255,11 +255,11 @@ module input_routines
         dwall2 = abs(roominfo(iroom2)%z0 - roominfo(iroom1)%z1)
         if (dwall1<mx_vsep.or.dwall2<=mx_vsep) then
             if (dwall1<mx_vsep) then
-                izswal(ii,w_from_wall) = 2
-                izswal(ii,w_to_wall) = 1
+                i_vconnections(ii,w_from_wall) = 2
+                i_vconnections(ii,w_to_wall) = 1
             else
-                izswal(ii,w_from_wall) = 1
-                izswal(ii,w_to_wall) = 2
+                i_vconnections(ii,w_from_wall) = 1
+                i_vconnections(ii,w_to_wall) = 2
             end if
         else
             write (*,202) iroom1, iroom2
@@ -270,8 +270,8 @@ module input_routines
 
         ! walls must be turned on, ie surface_on must be set
         ! for the ceiling in the lower room and the floor of the upper room
-        iwall1 = izswal(ii,w_from_wall)
-        iwall2 = izswal(ii,w_to_wall)
+        iwall1 = i_vconnections(ii,w_from_wall)
+        iwall2 = i_vconnections(ii,w_to_wall)
         if (.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2)) then
             if (.not.roominfo(iroom1)%surface_on(iwall1)) then
                 write(*,204) iwall1, iroom1
@@ -284,7 +284,7 @@ module input_routines
             stop
         end if
     end do
-    nswal = nswall2
+    nvcons = nswall2
 
     ! check shafts
     do iroom = nrm1 + 1, mxrooms
@@ -454,7 +454,7 @@ module input_routines
             do j = 1, nrm1
                 if (roomptr%heat_frac(j)/=0.0_eb) then
                     roomptr%nheats = roomptr%nheats + 1
-                    roomptr%iheat_connections(roomptr%nheats) = j
+                    roomptr%hheat_connections(roomptr%nheats) = j
                 end if
             end do
         end if
@@ -906,16 +906,6 @@ module input_routines
             exterior_temperature = lrarray(1)
             exterior_abs_pressure = lrarray(2)
             exset = .true.
-
-            ! Rename the thermal data file
-        case ("THRMF")
-            if (countargs(lcarray)>=1) then
-                thrmfile = lcarray(1)
-            else
-                write (*,*) '***Error: Bad THRMF input. 1 argument required.'
-                write (logerr,*) '***Error: Bad THRMF input. 1 argument required.'
-                stop
-            end if
 
             ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
             !		    bw = width, hh = soffit, hl = sill,
@@ -1440,11 +1430,11 @@ module input_routines
                     stop
                 end if
 
-                nswal = nswal + 1
-                izswal(nswal,w_from_room) = i1
-                izswal(nswal,w_from_wall) = 2
-                izswal(nswal,w_to_room) = i2
-                izswal(nswal,w_to_wall) = 1
+                nvcons = nvcons + 1
+                i_vconnections(nvcons,w_from_room) = i1
+                i_vconnections(nvcons,w_from_wall) = 2
+                i_vconnections(nvcons,w_to_room) = i2
+                i_vconnections(nvcons,w_to_wall) = 1
             else
                 write (*,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
                 write (logerr,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
@@ -1790,7 +1780,7 @@ module input_routines
         case ('CJET','WIND','LIMO2','GLOBA','DJIGN')            ! Just ignore these inputs ... they shouldn't be fatal
             write (*,5407) label
             write (logerr,5407) label
-        case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP')   ! these are clearly outdated and should produce errors
+        case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP','THRMF')   ! these are clearly outdated and should produce errors
             write (*,5405) label
             write (logerr,5405) label
             stop

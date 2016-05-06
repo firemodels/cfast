@@ -576,7 +576,7 @@ module initialization_routines
     end do
     
     ! room to room heat transfer
-    nswal = 0
+    nvcons = 0
 
     do i = 1, mxrooms
         roomptr => roominfo(i)
@@ -589,7 +589,7 @@ module initialization_routines
         
         ! initialize inter-compartment heat transfer fractions
         roomptr%iheat = 0
-        roomptr%iheat_connections(1:mxrooms) = 0
+        roomptr%hheat_connections(1:mxrooms) = 0
         roomptr%heat_frac(1:mxrooms) = 0
     end do
 
@@ -977,11 +977,11 @@ module initialization_routines
     end do
 
     ! concatenate slab properties of wall nodes that are connected to each other
-    do i = 1, nswal
-        ifromr = izswal(i,w_from_room)
-        ifromw = izswal(i,w_from_wall)
-        itor = izswal(i,w_to_room)
-        itow = izswal(i,w_to_wall)
+    do i = 1, nvcons
+        ifromr = i_vconnections(i,w_from_room)
+        ifromw = i_vconnections(i,w_from_wall)
+        itor = i_vconnections(i,w_to_room)
+        itow = i_vconnections(i,w_to_wall)
         from_roomptr => roominfo(ifromr)
         to_roomptr => roominfo(itor)
 
@@ -1119,12 +1119,12 @@ module initialization_routines
     n_species = n_species + 1
 
     ! count the number of walls
-    nwalls = 0
+    nhcons = 0
     do i = 1, nrm1
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
-                nwalls = nwalls + 1
+                nhcons = nhcons + 1
             end if
             if (nwpts/=0) roomptr%nodes_w(1,j) = nwpts
         end do
@@ -1150,7 +1150,7 @@ module initialization_routines
     nofoxyl = noftl + nrm1
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
-    nofprd = nofwt + nwalls
+    nofprd = nofwt + nhcons
     nofhvpr = nofprd + 2*nrm1*n_species
 
     ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.

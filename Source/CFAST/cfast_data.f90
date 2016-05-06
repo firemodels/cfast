@@ -51,6 +51,8 @@ module fire_data
     ! fire variables
     integer :: nfire    ! number of fires in the current simulation
     
+    type(fire_type), target :: fireinfo(mxfires)
+    
     integer :: objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(mxrooms), ifroom(mxfire), &
         ifrpnt(mxrooms,2), heatfr, obj_fpos(0:mxfires)
     real(eb) :: lower_o2_limit, qf(mxrooms), objmaspy(0:mxfire), heatup(mxrooms), heatlp(mxrooms), oplume(3,mxfires), &
@@ -59,7 +61,6 @@ module fire_data
         femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(mxrooms), &
         farea(0:mxfire), tgignt
     logical objon(0:mxfires), heatfl
-    type(fire_type), target :: fireinfo(mxfire)
 
     logical, dimension(0:mxfires) :: objld
     character(64), dimension(0:mxfires) :: odbnam

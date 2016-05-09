@@ -49,7 +49,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfire
+    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfires
     real(eb) :: outarray(maxhead), fheight
     logical :: firstc = .true.
     integer :: position, i
@@ -384,7 +384,7 @@ module spreadsheet_routines
 
     ! This routine writes to the {project}_zone.csv file, the smokeview information
 
-    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfire
+    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxhead), fheight, factor2, height, width, avent, slabs, vflow

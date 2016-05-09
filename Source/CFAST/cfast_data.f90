@@ -49,26 +49,27 @@ module fire_data
     save
 
     ! fire variables
-    integer :: nfire    ! number of fires in the current simulation
+    integer :: nfire, numobjl                       ! number of fires in the current simulation
+    integer :: objrm(0:mxfires), froom(0:mxfires)   ! room fire is located in
+    integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
+    integer, dimension(0:mxfires) :: objpnt         ! pointer in sorted fire list to time data for this fire
+    integer :: objign(mxfires)                      ! ignition criterion for each fire (1 = time, 2 = temperature, 3 = heat flux)
+    integer :: iquench(mxrooms)                     ! 1 if sprinkler has activated in this room
+    integer :: obj_fpos(0:mxfires)                  ! fire plume flag for each fire (1 = center, 2 = wall, 3 = corner) used only in printout
+    integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires (1 = number of fire in this room, 2 => first fire in this room)
+    
+    logical objon(0:mxfires)                        ! true if fire has ignited
+    
+    character(256), dimension(0:mxfires) :: objnin  ! name of each fire
     
     type(fire_type), target :: fireinfo(mxfires)
-    
-    integer :: objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(mxrooms), ifroom(mxfire), &
-        ifrpnt(mxrooms,2), heatfr, obj_fpos(0:mxfires)
-    real(eb) :: lower_o2_limit, qf(mxrooms), objmaspy(0:mxfire), heatup(mxrooms), heatlp(mxrooms), oplume(3,mxfires), &
-        qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
-        radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
-        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(mxrooms), &
-        farea(0:mxfire), tgignt
-    logical objon(0:mxfires), heatfl
 
-    logical, dimension(0:mxfires) :: objld
-    character(64), dimension(0:mxfires) :: odbnam
-    character(256), dimension(0:mxfires) :: objnin
-    integer, dimension(0:mxfires) :: objpnt
+    real(eb) :: lower_o2_limit, qf(mxrooms), objmaspy(0:mxfires), heatup(mxrooms), heatlp(mxrooms), oplume(3,mxfires), &
+        qspray(0:mxfires,2), xfire(mxfires,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfires),tradio, &
+        radio(0:mxfires), fopos(3,0:mxfires), femr(0:mxfires), objpos(3,0:mxfires),fpos(3), &
+        femp(0:mxfires),fems(0:mxfires),fqf(0:mxfires), fqfc(0:mxfires), fqlow(0:mxfires), fqupr(0:mxfires),fqdj(mxrooms), &
+        farea(0:mxfires), tgignt
 
-    logical, dimension(0:mxfires) :: objdef
-    character(60), dimension(0:mxfires) :: omatl
     integer, dimension(mxfires) :: objlfm,objtyp,obtarg, objset
 
     real(eb), dimension(mxfires) :: obj_c, obj_h, obj_o, obj_n, obj_cl
@@ -264,10 +265,10 @@ module smkview_data
     implicit none
     save
 
-    integer :: smkunit, spltunit, flocal(mxfire+1)
+    integer :: smkunit, spltunit, flocal(mxfires+1)
     character(60) :: smkgeom, smkplot, smkplottrunc
     logical :: remapfiresdone
-    real(eb), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+    real(eb), dimension(mxfires+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
     real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu         ! temp arrays to pass info to smokeview
     real(eb), dimension(mxfires) :: smv_qdot,smv_height                     ! temp arrays to pass info to smokeview
     

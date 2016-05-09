@@ -25,7 +25,7 @@ module spreadsheet_header_routines
 
     ! This is the header information for the normal spreadsheet output
 
-    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfire
+    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfires
     character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
     type(room_type), pointer :: roomptr
@@ -109,7 +109,7 @@ module spreadsheet_header_routines
     ! This is the header information for the spreadsheet output
 
     ! local variables
-    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfire
+    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
     character(35) :: headertext(4,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
     logical tooutput(ns), molfrac(ns)
     data tooutput /9*.true.,.false.,.true./
@@ -411,7 +411,7 @@ module spreadsheet_header_routines
 
     logical, intent(in) :: lmode
 
-    integer, parameter :: maxhead = 1+8*mxrooms+4*mxfire+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
+    integer, parameter :: maxhead = 1+8*mxrooms+4*mxfires+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr

@@ -19,9 +19,8 @@ module cparams
     ! fire related input parameters
     integer, parameter :: mxpts = 199           ! maximum number of data points in a time-dependent input curve
     integer, parameter :: ns = 11               ! number of species
-    integer, parameter :: mxfires = 200         ! maximum number of fire objects
+    integer, parameter :: mxfires = 202         ! maximum number of fire objects
     integer, parameter :: mxfirp = 20           ! number of parameters for each fire object
-    integer, parameter :: mxfire = 2*mxfires    ! maximum number of fires in a single simulation
     integer, parameter :: igntemp = 1           ! object ignition criteria index for temperature
     integer, parameter :: ignflux = 2           ! object ignition criteria index for heat flux
 
@@ -50,7 +49,7 @@ module cparams
     integer, parameter :: mxext = 2*mxrooms         ! maximum number of external connections in a mechanical ventilation system
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
-    integer, parameter :: mxramps = 8*mxfire+mxhvent+mxvvents+mxhvsys ! maximum number of possible time-based ramps
+    integer, parameter :: mxramps = 8*mxfires+mxhvent+mxvvents+mxhvsys ! maximum number of possible time-based ramps
 
     ! room related parameters
     real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume

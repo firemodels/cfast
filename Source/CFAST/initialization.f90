@@ -689,26 +689,19 @@ module initialization_routines
     !     purpose: this routine initializes the fire objects
     !     arguments: none
 
-    ! a specified fire in the center of the room
-    heatfl = .false.
-    heatfp(1:3) = -1.0_eb
-
     ! turn off objects
     numobjl = 0
     objon(0:mxfires) = .false.
     objpos(1:3,0:mxfires) = -1.0
     objrm(0:mxfires) = 0
     objnin(0:mxfires) = ' '
-    objld(0:mxfires) = .false.
     objpnt(0:mxfires) = 0
     objcri(1:3,0:mxfires) = 0.0
-    objdef(0:mxfires) = .false.
-    odbnam(0:mxfires) = ' '
 
     ! trace species stuff
-    objmaspy(0:mxfire) = 0.0_eb
-    radio(0:mxfire) = 0.0_eb
-    radconsplit(0:mxfire) = 0.35_eb
+    objmaspy(0:mxfires) = 0.0_eb
+    radio(0:mxfires) = 0.0_eb
+    radconsplit(0:mxfires) = 0.35_eb
     tradio = 0.0_eb
 
     return

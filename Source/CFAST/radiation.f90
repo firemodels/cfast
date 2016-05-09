@@ -46,8 +46,8 @@ module radiation_routines
 
     ! work and dummy arrays passed to rad2 and rad4
 
-    real(eb) :: taufl(mxfire,nwal), taufu(mxfire,nwal), firang(nwal,mxfire)
-    real(eb) :: xrfirepos(mxfire), yrfirepos(mxfire), zrfirepos(mxfire)
+    real(eb) :: taufl(mxfires,nwal), taufu(mxfires,nwal), firang(nwal,mxfires)
+    real(eb) :: xrfirepos(mxfires), yrfirepos(mxfires), zrfirepos(mxfires)
 
     flxrad(1:nrm1,1:nwal) = 0.0_eb
     flwrad(1:nrm1,1:2) = 0.0_eb
@@ -107,7 +107,7 @@ module radiation_routines
         rabsorb(2) = roomptr%absorb(l)
         call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
             xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
-            qflxw,qlay,mxfire,taufl,taufu,firang,roomptr%rad_qout,black)
+            qflxw,qlay,mxfires,taufl,taufu,firang,roomptr%rad_qout,black)
         do j = 1, nwal
             flxrad(i,j) = qflxw(map(j))
         end do
@@ -122,7 +122,7 @@ module radiation_routines
 ! --------------------------- rad4 -------------------------------------------
 
     subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,&
-       qflux,qlay,mxfire,taufl,taufu,firang,qout,black)
+       qflux,qlay,mxfires,taufl,taufu,firang,qout,black)
 
     !     routine: rad4
     !     purpose: this routine computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to
@@ -149,10 +149,10 @@ module radiation_routines
     !                qout (output): qout(i) is the output flux from the i'th wall
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
-    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfire
+    integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfires
 
     real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
-    real(eb), intent(out) :: taufl(mxfire,*), taufu(mxfire,*), firang(4,mxfire)
+    real(eb), intent(out) :: taufl(mxfires,*), taufu(mxfires,*), firang(4,mxfires)
 
     real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
 
@@ -242,12 +242,12 @@ module radiation_routines
 
     ! define transmission factors for fires
     if (nfire/=0) then
-        call rdftran(mxfire,4,2,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
+        call rdftran(mxfires,4,2,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
     end if
 
     ! define solid angles for fires
     if (nfire/=0) then
-        call rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+        call rdfang(mxfires,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
     end if
 
     !     note: we want to solve the linear system
@@ -274,7 +274,7 @@ module radiation_routines
     ! define c vector
     ! also, calculate energy absorbed by upper, lower layer gases due to fires and gas layer emission
 
-    call rdflux(mxfire,4,2,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
+    call rdflux(mxfires,4,2,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
 
     ! construct right hand side (rhs) of linear system to be solved, i.e. compute b*e - c
 
@@ -321,15 +321,15 @@ module radiation_routines
 
 ! --------------------------- rdflux -------------------------------------------
 
-    subroutine rdflux(mxfire,nzone,nup,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
+    subroutine rdflux(mxfires,nzone,nup,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
 
     !     routine: rad4
     !     purpose: this routine calculates the 'c' vector in the net radiation equations of seigel and howell and the
     !        heat absorbed by the lower and upper layer fires due to gas layer emission and fires..
 
-    integer, intent(in) :: mxfire, nzone, nfire, nup
-    real(eb), intent(in) :: area(*), hlay, tlay(2), zfire(*), qfire(mxfire)
-    real(eb), intent(in) :: figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfire,*), taufu(mxfire,*), firang(4,mxfire)
+    integer, intent(in) :: mxfires, nzone, nfire, nup
+    real(eb), intent(in) :: area(*), hlay, tlay(2), zfire(*), qfire(mxfires)
+    real(eb), intent(in) :: figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl(mxfires,*), taufu(mxfires,*), firang(4,mxfires)
 
     real(eb), intent(out) :: qulay, qllay, c(*)
 
@@ -507,15 +507,15 @@ module radiation_routines
 
 ! --------------------------- rdfang -------------------------------------------
 
-    subroutine rdfang(mxfire,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
+    subroutine rdfang(mxfires,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
 
     !     routine: rdfang
     !     purpose:
 
-    integer, intent(in) :: mxfire, nfire
+    integer, intent(in) :: mxfires, nfire
     real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
 
-    real(eb), intent(out) :: firang(4,mxfire)
+    real(eb), intent(out) :: firang(4,mxfires)
 
     real(eb), dimension(3) :: v1ceil, v2ceil, v3ceil, v4ceil
     real(eb), dimension(3) :: v1floor, v2floor, v3floor, v4floor
@@ -580,15 +580,15 @@ module radiation_routines
 
 ! --------------------------- rdftran -------------------------------------------
 
-    subroutine rdftran (mxfire,nzone,nup,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
+    subroutine rdftran (mxfires,nzone,nup,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
 
     !     routine: rdftran
     !     purpose:
 
     real(eb), intent(in) :: absorb(*), zz(*), zfire(*)
-    integer, intent(in) :: mxfire, nzone, nup, nfire
+    integer, intent(in) :: mxfires, nzone, nup, nfire
     logical, intent(in) :: black
-    real(eb), intent(out) :: taufu(mxfire,*), taufl(mxfire,*)
+    real(eb), intent(out) :: taufu(mxfires,*), taufl(mxfires,*)
 
     real(eb) :: hlay, beam, beamu, beaml
     integer :: i, j

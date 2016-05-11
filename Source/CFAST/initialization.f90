@@ -648,9 +648,6 @@ module initialization_routines
     qcvm(3,1:mxfan) = 0.0_eb
     qcvm(4,1:mxfan) = 1.0_eb
 
-    ! set to -1 as a flag for nputp initialization - any value not set will be set to the
-    ! default which is the center of the respective wall
-    fpos(1:3) = -1.0_eb
     fqdj(1:mxrooms) = 0.0_eb
 
     ! detectors

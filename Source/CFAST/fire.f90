@@ -129,9 +129,8 @@ module fire_routines
             fqlow(nobj) = heatlp(iroom)
             fqupr(nobj) = heatup(iroom)
             farea(nobj) = oareat
-            do j = 1,3
-                fopos (j,nobj) = objpos(j,iobj) + ohight
-            end do
+            fopos(1:3,nobj) = objpos(1:3,iobj)
+            fopos(3,nobj) = fopos(3,nobj) + ohight
 
         end if
     end do

@@ -897,7 +897,7 @@ module output_routines
                     write (cbuf,5060) otime(i,j), omass(i,j), objhc(i,j), oqdot(i,j), ohigh(i,j)
                     y_HCN = obj_n(j)*0.027028_eb/objgmw(j)
                     y_HCl = obj_cl(j)*0.036458_eb/objgmw(j)
-                    write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, y_HCl,omprodr(i,11,j)
+                    write (cbuf(51:132),5070) ood(i,j), oco(i,j), y_HCN, y_HCl,otrace(i,j)
                     write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
                 end do
             end if

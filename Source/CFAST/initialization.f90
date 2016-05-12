@@ -688,17 +688,17 @@ module initialization_routines
 
     ! turn off objects
     numobjl = 0
-    objon(0:mxfires) = .false.
-    objpos(1:3,0:mxfires) = -1.0
-    objrm(0:mxfires) = 0
-    objnin(0:mxfires) = ' '
-    objpnt(0:mxfires) = 0
-    objcri(1:3,0:mxfires) = 0.0
+    objon(1:mxfires) = .false.
+    objpos(1:3,1:mxfires) = -1.0
+    objrm(1:mxfires) = 0
+    objnin(1:mxfires) = ' '
+    objpnt(1:mxfires) = 0
+    objcri(1:3,1:mxfires) = 0.0
 
     ! trace species stuff
-    objmaspy(0:mxfires) = 0.0_eb
-    radio(0:mxfires) = 0.0_eb
-    radconsplit(0:mxfires) = 0.35_eb
+    objmaspy(1:mxfires) = 0.0_eb
+    radio(1:mxfires) = 0.0_eb
+    radconsplit(1:mxfires) = 0.35_eb
     tradio = 0.0_eb
 
     return

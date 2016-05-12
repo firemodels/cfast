@@ -1895,9 +1895,7 @@ module input_routines
         case ('TRACE')
             ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
             do ii = 1, nret
-                omprodr(ii,7,iobj) = 0.0_eb
-                omprodr(ii,10,iobj) = 1.0_eb
-                omprodr(ii,11,iobj) = lrarray(ii)
+                otrace(ii,iobj) = lrarray(ii)
             end do
         case ('AREA')
             max_area = 0.0_eb

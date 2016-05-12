@@ -960,12 +960,12 @@ module utility_routines
     !                nrm1 number of compartments minus 1
 
     integer, intent(in) :: nrm1, nfire
-    integer, intent(inout) :: ifroom(mxfire)
-    real(eb), intent(inout) :: xfire(mxfire,mxfirp)
+    integer, intent(inout) :: ifroom(mxfires)
+    real(eb), intent(inout) :: xfire(mxfires,mxfirp)
     integer, intent(out) :: ifrpnt(mxrooms,2)
 
-    integer :: iperm(mxfire), iwork(mxfire), i, j, irm
-    real(eb) :: work(mxfire)
+    integer :: iperm(mxfires), iwork(mxfires), i, j, irm
+    real(eb) :: work(mxfires)
 
     ! create a permutation vector from the list of fire rooms which is ordered by increasing room number
     iperm(1:nfire) = (/(i,i=1,nfire)/)

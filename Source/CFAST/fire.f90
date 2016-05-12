@@ -55,7 +55,7 @@ module fire_routines
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
-    integer lsp, iroom, nobj, iobj, i, j
+    integer lsp, iroom, nobj, iobj, i
     type(room_type), pointer :: roomptr
 
     flwf(1:nr,1:ns+2,u) = 0.0_eb
@@ -129,9 +129,8 @@ module fire_routines
             fqlow(nobj) = heatlp(iroom)
             fqupr(nobj) = heatup(iroom)
             farea(nobj) = oareat
-            do j = 1,3
-                fopos (j,nobj) = objpos(j,iobj) + ohight
-            end do
+            fopos(1:3,nobj) = objpos(1:3,iobj)
+            fopos(3,nobj) = fopos(3,nobj) + ohight
 
         end if
     end do
@@ -520,7 +519,7 @@ module fire_routines
     call interp(otime(1,objn),objhc(1,objn),lobjlfm,xxtime,1,objhct)
     call interp(otime(1,objn),ood(1,objn),lobjlfm,xxtime,1,y_soot)
     call interp(otime(1,objn),oco(1,objn),lobjlfm,xxtime,1,y_co)
-    call interp(otime(1,objn),omprodr(1,11,objn),lobjlfm,xxtime,1,y_trace)
+    call interp(otime(1,objn),otrace(1,objn),lobjlfm,xxtime,1,y_trace)
     call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,oareat)
     call interp(otime(1,objn),ohigh(1,objn),lobjlfm,xxtime,1,ohight)
 

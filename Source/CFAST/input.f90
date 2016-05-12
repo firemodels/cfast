@@ -150,14 +150,6 @@ module input_routines
     ! now calculate the offsets - the order is important
     call offset
 
-    ! check and/or set heat source fire position
-    if (heatfl) then
-        roomptr => roominfo(heatfr)
-        if ((heatfp(1)<0.0_eb).or.(heatfp(1)>roomptr%cwidth)) heatfp(1) = roomptr%cwidth/2.0_eb
-        if ((heatfp(2)<0.0_eb).or.(heatfp(2)>roomptr%cdepth)) heatfp(2) = roomptr%cdepth/2.0_eb
-        if ((heatfp(3)<0.0_eb).or.(heatfp(3)>roomptr%cheight)) heatfp(3) = 0.0_eb
-    end if
-
     ! check and/or set position of fire objects
     do i = 1, numobjl
         roomptr => roominfo(objrm(i))
@@ -799,7 +791,6 @@ module input_routines
             end if
             objrm(obpnt) = iroom
             objnin(obpnt) = lcarray(11)
-            objld(obpnt) = .true.
             objon(obpnt) = .false.
             ! This is redudant but needed to be compatible with the object database format
             objpnt(obpnt) = obpnt
@@ -1296,7 +1287,6 @@ module input_routines
             end if
             objrm(obpnt) = iroom
             objnin(obpnt) = tcname
-            objld(obpnt) = .true.
             objon(obpnt) = .false.
             ! This is redudant but needed to be compatible with the object database format
             objpnt(obpnt) = obpnt
@@ -1647,23 +1637,6 @@ module input_routines
         case ('ADIAB')
             adiabatic_walls = .true.
 
-            !  HEATF Special fire - heat source only; no mass
-        case ('HEATF')
-            if (countargs(lcarray)>=5) then
-                heatfr = lrarray(1)
-                if (heatfr<1.or.heatfr>nr-1) then
-                    stop
-                end if
-                heatfl = .true.
-                heatfp(1) = lrarray(2)
-                heatfp(2) = lrarray(3)
-                heatfp(3) = lrarray(4)
-            else
-                write (*,*) '***Error: Bad HEATF input. At least 5 arguments must be specified.'
-                write (logerr,*) '***Error: Bad HEATF input. At least 5 arguments must be specified.'
-                stop
-            end if
-
             ! SLCF 2-D and 3-D slice files
         case ('SLCF')
             if (countargs(lcarray)>=1) then
@@ -1893,7 +1866,6 @@ module input_routines
                     write(logerr,5001) ohcomb
                     stop
                 end if
-                omatl(iobj) = lcarray(8)
             else
                 write (*,*) '***Error: At least 7 arguments required on CHEMI input'
                 write (logerr,*) '***Error: At least 7 arguments required on CHEMI input'
@@ -1923,9 +1895,7 @@ module input_routines
         case ('TRACE')
             ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
             do ii = 1, nret
-                omprodr(ii,7,iobj) = 0.0_eb
-                omprodr(ii,10,iobj) = 1.0_eb
-                omprodr(ii,11,iobj) = lrarray(ii)
+                otrace(ii,iobj) = lrarray(ii)
             end do
         case ('AREA')
             max_area = 0.0_eb

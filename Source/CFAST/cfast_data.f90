@@ -49,35 +49,73 @@ module fire_data
     save
 
     ! fire variables
-    integer :: nfire    ! number of fires in the current simulation
     
-    integer :: objrm(0:mxfires), objign(mxfires),  froom(0:mxfire), numobjl, iquench(mxrooms), ifroom(mxfire), &
-        ifrpnt(mxrooms,2), heatfr, obj_fpos(0:mxfires)
-    real(eb) :: lower_o2_limit, qf(mxrooms), objmaspy(0:mxfire), heatup(mxrooms), heatlp(mxrooms), oplume(3,mxfires), &
-        qspray(0:mxfire,2), xfire(mxfire,mxfirp), objxyz(4,mxfires), radconsplit(0:mxfire),heatfp(3), tradio, &
-        radio(0:mxfire), fopos(3,0:mxfire), femr(0:mxfire), objpos(3,0:mxfires),fpos(3), &
-        femp(0:mxfire),fems(0:mxfire),fqf(0:mxfire), fqfc(0:mxfire), fqlow(0:mxfire), fqupr(0:mxfire),fqdj(mxrooms), &
-        farea(0:mxfire), tgignt
-    logical objon(0:mxfires), heatfl
-    type(fire_type), target :: fireinfo(mxfire)
+    character(256), dimension(mxfires) :: objnin    ! name of each fire
+    
+    integer :: nfire, numobjl                       ! number of fires in the current simulation
+    real(eb) :: tgignt                              ! gaseous ignition temperature for burning in upper layer and door jets
+    real(eb) :: lower_o2_limit                      ! minimum oxygen level for combustion
+    real(eb) :: tradio                              ! total trace species released up to the current time
+    
+    integer :: objrm(mxfires), froom(mxfires)       ! room fire is located in
+    integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
+    integer, dimension(mxfires) :: objpnt           ! pointer in sorted fire list to time data for this fire
+    real(eb), dimension(3,mxfires) :: objort        ! normal vector on front face of each fire
+    integer, dimension(mxfires) :: obtarg           ! target number associated with each fire (to calculate ignition conditions)
+    real(eb), dimension(mxfires) :: objclen         ! characteristic length of each fire = max fire diameter
+    integer, dimension(mxfires) :: objtyp           ! fire type for each fire. Currently, only type = 2, constrained fire, is used
+    
+    integer :: objign(mxfires)                      ! ignition type for each fire (1 = time, 2 = temperature, 3 = heat flux)
+    real(eb), dimension(3,mxfires) :: objcri        ! ignition criteria for each fire (1 = time, 2 = flux, 3 = temperature)
 
-    logical, dimension(0:mxfires) :: objld
-    character(64), dimension(0:mxfires) :: odbnam
-    character(256), dimension(0:mxfires) :: objnin
-    integer, dimension(0:mxfires) :: objpnt
+    real(eb), dimension(mxfires) :: obj_c           ! number of atoms of carbon in fuel
+    real(eb), dimension(mxfires) :: obj_h           ! number of atoms of hydrogen in fuel
+    real(eb), dimension(mxfires) :: obj_o           ! number of atoms of oxygen in fuel
+    real(eb), dimension(mxfires) :: obj_n           ! number of atoms of nitrogen in fuel
+    real(eb), dimension(mxfires) :: obj_cl          ! number of atoms of chlorine in fuel
+    real(eb), dimension(mxfires) :: objgmw          ! molar mass of each fire calculated from fuel composition
 
-    logical, dimension(0:mxfires) :: objdef
-    character(60), dimension(0:mxfires) :: omatl
-    integer, dimension(mxfires) :: objlfm,objtyp,obtarg, objset
+    integer, dimension(mxfires) :: objlfm           ! actual number of time points for each fire
+    real(eb), dimension(mxpts,mxfires) :: otime     ! time points for fire inputs
+    real(eb), dimension(mxpts,mxfires) :: objhc     ! heat of combustion as a function of time
+    real(eb), dimension(mxpts,mxfires) :: omass     ! pyrolysis rate as a function of time
+    real(eb), dimension(mxpts,mxfires) :: oarea     ! area of the base of the fire as a function of time
+    real(eb), dimension(mxpts,mxfires) :: ohigh     ! height of the base of the fire as a function of time
+    real(eb), dimension(mxpts,mxfires) :: oqdot     ! heat release rate of the fire as a function of time
+    real(eb), dimension(mxpts,mxfires) :: oco       ! CO production rate as a function of time
+    real(eb), dimension(mxpts,mxfires) :: ood       ! soot production rate as a funciton of time
+    real(eb), dimension(mxpts,mxfires) :: otrace    ! trace species production rate as a funciton of time
+    
+    integer, dimension(mxfires) :: objset           ! 0 if object has ignited, 1 otherwise. Only used for backtracking ignition
+    logical objon(mxfires)                          ! true if fire has ignited    
+    integer :: iquench(mxrooms)                     ! 1 if sprinkler has activated in this room
+    integer :: obj_fpos(mxfires)                    ! fire plume flag for each fire (1 = center, 2 = wall, 3 = corner)
+    real(eb) :: objmaspy(mxfires)                   ! total pyroysate released by each fire up to the current time
+    real(eb), dimension(2,mxfires) :: obcond        ! current conditions of each fire (1 = temperature, 2 = heat flux)
+    real(eb) :: fqlow(mxfires), heatlp(mxfires)     ! HRR of current fire into lower layer
+    real(eb) :: fqupr(mxfires), heatup(mxfires)     ! HRR of current fire into upper layer
+    real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 
+                                                    !   (1=mass pyrolysed, 2=mass entrained, 3=mass burned)
+    real(eb) :: qspray(mxfires,2)                   ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
+    real(eb) :: objxyz(4,mxfires)                   ! object size (barely used ... replace it)
+    real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time
+    real(eb) :: radconsplit(mxfires)                ! radiative fraction for each fire
+    real(eb) :: radio(mxfires)                      ! trace species released for each fire at the current time
+    real(eb) :: fopos(3,mxfires),objpos(3,mxfires) ! position of the base of each fire at the current time
+    real(eb) :: femr(mxfires)                       ! trace species production rate at the current time
+    real(eb) :: femp(mxfires)                       ! pyroysis rate for each fire at the current time
+    real(eb) :: fems(mxfires)                       ! mass burning rate for each fire at the current time
+    real(eb) :: fqf(mxfires)                        ! HRR of each fire at the current time
+    real(eb) :: fqfc(mxfires)                       ! convective HRR of each fire at the current time
+    real(eb) :: xfire(mxfires,mxfirp)               ! various fire outputs at current time
+    
+    integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
+                                                    !   (1 = number of fire in this room, 2 => first fire in this room)
+    real(eb) :: qf(mxrooms)                         ! total fire heat release rate in each compartment
+    real(eb) :: fqdj(mxrooms)                       ! HRR of door jet fires in each room at the current time
+    
+    type(fire_type), target :: fireinfo(mxfires)
 
-    real(eb), dimension(mxfires) :: obj_c, obj_h, obj_o, obj_n, obj_cl
-    real(eb), dimension(3,0:mxfires) :: objcri, objort
-    real(eb), dimension(0:mxfires) :: objmas, objgmw, objclen
-    real(eb), dimension(mxpts,0:mxfires) :: objhc, omass, oarea, ohigh, oqdot ,oco, ohcr, ood, ooc
-    real(eb), dimension(mxpts,ns,mxfires) :: omprodr
-    real(eb), dimension(mxpts,mxfires) :: otime
-    real(eb), dimension(2,0:mxfires) :: obcond
-    real(eb) :: objmint, objphi, objhgas, objqarea, pnlds, dypdt, dxpdt, dybdt, dxbdt, dqdt
     
     integer :: nfurn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature
@@ -263,10 +301,10 @@ module smkview_data
     implicit none
     save
 
-    integer :: smkunit, spltunit, flocal(mxfire+1)
+    integer :: smkunit, spltunit, flocal(mxfires+1)
     character(60) :: smkgeom, smkplot, smkplottrunc
     logical :: remapfiresdone
-    real(eb), dimension(mxfire+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
+    real(eb), dimension(mxfires+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
     real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu         ! temp arrays to pass info to smokeview
     real(eb), dimension(mxfires) :: smv_qdot,smv_height                     ! temp arrays to pass info to smokeview
     

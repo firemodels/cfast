@@ -2183,7 +2183,7 @@ module input_routines
 
     integer, intent(in) :: index, defaultposition, opoint
     real(eb), intent(in) :: minimumseparation, pos_max
-    real(eb), intent(inout) :: xyz(3,0:*)
+    real(eb), intent(inout) :: xyz(3,*)
 
     if ((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>pos_max)) then
         select case (defaultposition)

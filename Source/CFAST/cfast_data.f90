@@ -58,6 +58,7 @@ module fire_data
     type(fire_type), target :: fireinfo(mxfires)
     
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
+    
     integer, dimension(mxfires) :: obtarg           ! target number associated with each fire (to calculate ignition conditions)
     real(eb), dimension(mxfires) :: objclen         ! characteristic length of each fire = max fire diameter
     integer, dimension(mxfires) :: objtyp           ! fire type for each fire. Currently, only type = 2, constrained fire, is used

@@ -1188,13 +1188,13 @@ module fire_routines
     ! now the other objects
     do i = 1, n_fires
         fireptr => fireinfo(i)
-        fxlocal(i) = fopos(1,i)
-        fylocal(i) = fopos(2,i)
-        fzlocal(i) = fopos(3,i)
+        smv_xfire(i) = fopos(1,i)
+        smv_yfire(i) = fopos(2,i)
+        smv_zfire(i) = fopos(3,i)
         call flame_height (fqf(i),farea(i),fheight)
-        fqlocal(i) = fqf(i)
-        fhlocal(i) = fheight
-        frlocal(i) = fireptr%room
+        smv_qdot(i) = fqf(i)
+        smv_height(i) = fheight
+        smv_room(i) = fireptr%room
     end do
     return
     end subroutine remap_fires

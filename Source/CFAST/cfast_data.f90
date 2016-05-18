@@ -295,12 +295,9 @@ module smkview_data
     implicit none
     save
 
-    integer :: smkunit, spltunit, frlocal(mxfires+1)
-    character(60) :: smkgeom, smkplot, smkplottrunc
-    logical :: remapfiresdone
-    real(eb), dimension(mxfires+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
-    real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu         ! temp arrays to pass info to smokeview
-    real(eb), dimension(mxfires) :: smv_qdot,smv_height                     ! temp arrays to pass info to smokeview
+    integer, dimension (mxfires) :: smv_room
+    real(eb), dimension(mxfires) :: smv_qdot, smv_zfire, smv_xfire, smv_yfire, smv_height
+    real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu
     
     ! visualization variables
     integer :: nvisualinfo = 0

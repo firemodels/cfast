@@ -792,8 +792,6 @@ module input_routines
             objrm(obpnt) = iroom
             objnin(obpnt) = lcarray(11)
             objon(obpnt) = .false.
-            ! This is redudant but needed to be compatible with the object database format
-            objpnt(obpnt) = obpnt
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
             ! The critiria for temperature and flux are stored backupwards - this is historical
             ! See corresponding code in update_fire_objects
@@ -1288,8 +1286,6 @@ module input_routines
             objrm(obpnt) = iroom
             objnin(obpnt) = tcname
             objon(obpnt) = .false.
-            ! This is redudant but needed to be compatible with the object database format
-            objpnt(obpnt) = obpnt
 
             !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
             !!!!! The critiria for temperature and flux are stored backupwards - this is historical

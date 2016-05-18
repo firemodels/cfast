@@ -52,14 +52,13 @@ module fire_data
     
     character(256), dimension(mxfires) :: objnin    ! name of each fire
     
-    integer :: nfire, numobjl                       ! number of fires in the current simulation
+    integer :: nfire, numobjl, n_fires              ! number of fires in the current simulation
     real(eb) :: tgignt                              ! gaseous ignition temperature for burning in upper layer and door jets
     real(eb) :: lower_o2_limit                      ! minimum oxygen level for combustion
     real(eb) :: tradio                              ! total trace species released up to the current time
     
     integer :: objrm(mxfires), froom(mxfires)       ! room fire is located in
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
-    integer, dimension(mxfires) :: objpnt           ! pointer in sorted fire list to time data for this fire
     real(eb), dimension(3,mxfires) :: objort        ! normal vector on front face of each fire
     integer, dimension(mxfires) :: obtarg           ! target number associated with each fire (to calculate ignition conditions)
     real(eb), dimension(mxfires) :: objclen         ! characteristic length of each fire = max fire diameter

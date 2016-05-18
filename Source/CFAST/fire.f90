@@ -55,7 +55,7 @@ module fire_routines
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
-    integer lsp, iroom, nobj, iobj, i
+    integer lsp, iroom, nobj, i
     type(room_type), pointer :: roomptr
 
     flwf(1:nr,1:ns+2,u) = 0.0_eb
@@ -66,73 +66,69 @@ module fire_routines
 
     nobj = 0
     do i = 1, numobjl
-        if (objpnt(i)>0) then
-            iroom = objrm(i)
-            roomptr => roominfo(iroom)
-            iobj = objpnt(i)
-            call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
-            oplume(1,iobj) = omasst
+        iroom = objrm(i)
+        roomptr => roominfo(iroom)
+        call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
+        oplume(1,i) = omasst
 
-            do lsp = 1, ns
-                stmass(u,lsp) = roomptr%species_mass(u,lsp)
-                stmass(l,lsp) = roomptr%species_mass(l,lsp)
-            end do
+        do lsp = 1, ns
+            stmass(u,lsp) = roomptr%species_mass(u,lsp)
+            stmass(l,lsp) = roomptr%species_mass(l,lsp)
+        end do
 
-            call do_fire(i,iroom,oplume(1,iobj),roomptr%cheight,roomptr%cwidth,roomptr%cdepth,objhct,y_soot,y_co, &
-               y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,iobj),objpos(2,iobj),objpos(3,iobj)+ohight,oareat, &
-               oplume(2,iobj),oplume(3,iobj),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
+        call do_fire(i,iroom,oplume(1,i),roomptr%cheight,roomptr%cwidth,roomptr%cdepth,objhct,y_soot,y_co, &
+            y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,i),objpos(2,i),objpos(3,i)+ohight,oareat, &
+            oplume(2,i),oplume(3,i),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
-            ! sum the flows for return to the source routine
-            xtl = roomptr%temp(l)
-            flwf(iroom,m,u) = flwf(iroom,m,u) + oplume(3,iobj)
-            flwf(iroom,m,l) = flwf(iroom,m,l) - oplume(2,iobj)
-            q_firemass = cp*oplume(1,iobj)*interior_temperature
-            q_entrained = cp*oplume(2,iobj)*xtl
-            flwf(iroom,q,u) = flwf(iroom,q,u) + xqfc + q_firemass + q_entrained
-            flwf(iroom,q,l) = flwf(iroom,q,l) - q_entrained
-            do lsp = 1, ns
-                flwf(iroom,lsp+2,u) = flwf(iroom,lsp+2,u) + xntms(u,lsp)
-                flwf(iroom,lsp+2,l) = flwf(iroom,lsp+2,l) + xntms(l,lsp)
-            end do
+        ! sum the flows for return to the source routine
+        xtl = roomptr%temp(l)
+        flwf(iroom,m,u) = flwf(iroom,m,u) + oplume(3,i)
+        flwf(iroom,m,l) = flwf(iroom,m,l) - oplume(2,i)
+        q_firemass = cp*oplume(1,i)*interior_temperature
+        q_entrained = cp*oplume(2,i)*xtl
+        flwf(iroom,q,u) = flwf(iroom,q,u) + xqfc + q_firemass + q_entrained
+        flwf(iroom,q,l) = flwf(iroom,q,l) - q_entrained
+        do lsp = 1, ns
+            flwf(iroom,lsp+2,u) = flwf(iroom,lsp+2,u) + xntms(u,lsp)
+            flwf(iroom,lsp+2,l) = flwf(iroom,lsp+2,l) + xntms(l,lsp)
+        end do
 
-            ! put the object information to arrays - xfire and froom, ...
-            ! note that we are carrying parallel data structures for the fire information
-            ! output uses the unsorted arrays, froom, ..., ordered by object
-            ! fire physics uses the sorted arrays, sorted by compartment
-            nfire = nfire + 1
-            ifroom(nfire) = iroom
-            xfire(nfire,f_fire_xpos) = objpos(1,iobj)
-            xfire(nfire,f_fire_ypos) = objpos(2,iobj)
-            xfire(nfire,f_fire_zpos) = objpos(3,iobj) + ohight
-            xfire(nfire,f_plume_zpos) = oplume(3,iobj)
-            xfire(nfire,f_plume_xpos) = oplume(1,iobj)
-            xfire(nfire,f_plume_ypos) = oplume(2,iobj)
-            xfire(nfire,f_qfc) = xqfc
-            xfire(nfire,f_qfr) = xqfr
-            xfire(nfire,f_heatlpup) = heatlp(iroom) + heatup(iroom)
-            xfire(nfire,f_heatlp) = heatlp(iroom)
-            xfire(nfire,f_heatup) = heatup(iroom)
-            xfire(nfire,f_objct) = objhct
-            xfire(nfire,f_ysoot) = y_soot
-            xfire(nfire,f_yco) = y_co
-            xfire(nfire,f_obj_length) = objclen(iobj)
-            xfire(nfire,f_obj_area) = oareat
-            nobj = nobj + 1
-            froom(nobj) = iroom
-            femp(nobj) = oplume(1,iobj)
-            fems(nobj) = oplume(3,iobj)
-            ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry
-            ! and interpolate_pyrolysis)
-            femr(nobj) = oplume(1,iobj)*y_trace
-            fqf(nobj) = heatlp(iroom) + heatup(iroom)
-            fqfc(nobj) = xqfc
-            fqlow(nobj) = heatlp(iroom)
-            fqupr(nobj) = heatup(iroom)
-            farea(nobj) = oareat
-            fopos(1:3,nobj) = objpos(1:3,iobj)
-            fopos(3,nobj) = fopos(3,nobj) + ohight
-
-        end if
+        ! put the object information to arrays - xfire and froom, ...
+        ! note that we are carrying parallel data structures for the fire information
+        ! output uses the unsorted arrays, froom, ..., ordered by object
+        ! fire physics uses the sorted arrays, sorted by compartment
+        nfire = nfire + 1
+        ifroom(nfire) = iroom
+        xfire(nfire,f_fire_xpos) = objpos(1,i)
+        xfire(nfire,f_fire_ypos) = objpos(2,i)
+        xfire(nfire,f_fire_zpos) = objpos(3,i) + ohight
+        xfire(nfire,f_plume_zpos) = oplume(3,i)
+        xfire(nfire,f_plume_xpos) = oplume(1,i)
+        xfire(nfire,f_plume_ypos) = oplume(2,i)
+        xfire(nfire,f_qfc) = xqfc
+        xfire(nfire,f_qfr) = xqfr
+        xfire(nfire,f_heatlpup) = heatlp(iroom) + heatup(iroom)
+        xfire(nfire,f_heatlp) = heatlp(iroom)
+        xfire(nfire,f_heatup) = heatup(iroom)
+        xfire(nfire,f_objct) = objhct
+        xfire(nfire,f_ysoot) = y_soot
+        xfire(nfire,f_yco) = y_co
+        xfire(nfire,f_obj_length) = objclen(i)
+        xfire(nfire,f_obj_area) = oareat
+        nobj = nobj + 1
+        froom(nobj) = iroom
+        femp(nobj) = oplume(1,i)
+        fems(nobj) = oplume(3,i)
+        ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry
+        ! and interpolate_pyrolysis)
+        femr(nobj) = oplume(1,i)*y_trace
+        fqf(nobj) = heatlp(iroom) + heatup(iroom)
+        fqfc(nobj) = xqfc
+        fqlow(nobj) = heatlp(iroom)
+        fqupr(nobj) = heatup(iroom)
+        farea(nobj) = oareat
+        fopos(1:3,nobj) = objpos(1:3,i)
+        fopos(3,nobj) = fopos(3,nobj) + ohight
     end do
 
     return

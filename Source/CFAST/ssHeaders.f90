@@ -83,7 +83,7 @@ module spreadsheet_header_routines
     end do
 
     ! Fire variables.
-    do j = 1, numobjl
+    do j = 1, n_fires
         do i = 1, 9
             position = position + 1
             call toIntString(j,cFire)
@@ -449,7 +449,7 @@ module spreadsheet_header_routines
     end do
 
     ! Fire variables.
-    do j = 1, numobjl
+    do j = 1, n_fires
         do i = 1, 4
             position = position + 1
             call toIntString(j,cFire)

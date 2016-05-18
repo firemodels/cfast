@@ -151,7 +151,7 @@ module input_routines
     call offset
 
     ! check and/or set position of fire objects
-    do i = 1, numobjl
+    do i = 1, n_fires
         roomptr => roominfo(objrm(i))
         if ((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%cwidth)) objpos(1,i) = roomptr%cwidth/2.0_eb
         if ((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%cdepth)) objpos(2,i) = roomptr%cdepth/2.0_eb
@@ -719,7 +719,7 @@ module input_routines
                 write (logerr,*) '***Error: Bad FIRE input. 11 arguments required.'
                 stop
             end if
-            if (numobjl>=mxfires) then
+            if (n_fires>=mxfires) then
                 write(*,5300)
                 write(logerr,5300)
                 stop
@@ -730,15 +730,15 @@ module input_routines
                 write(logerr,5320) iroom
                 stop
             end if
-            obpnt = numobjl + 1
-            numobjl = obpnt
+            obpnt = n_fires + 1
+            n_fires = obpnt
             roomptr => roominfo(iroom)
 
             ! Only constrained fires
-            objtyp(numobjl) = 2
-            if (objtyp(numobjl)>2) then
-                write(*,5321) objtyp(numobjl)
-                write(logerr,5321) objtyp(numobjl)
+            objtyp(n_fires) = 2
+            if (objtyp(n_fires)>2) then
+                write(*,5321) objtyp(n_fires)
+                write(logerr,5321) objtyp(n_fires)
                 stop
             end if
 
@@ -1234,7 +1234,7 @@ module input_routines
                 write(logerr,5310)
                 stop
             end if
-            if (numobjl>=mxfires) then
+            if (n_fires>=mxfires) then
                 write(*,5300)
                 write(logerr,5300)
                 stop
@@ -1246,15 +1246,15 @@ module input_routines
                 write(logerr,5320) iroom
                 stop
             end if
-            obpnt = numobjl + 1
-            numobjl = obpnt
+            obpnt = n_fires + 1
+            n_fires = obpnt
             roomptr => roominfo(iroom)
 
             ! Only constrained fires
-            objtyp(numobjl) = 2
-            if (objtyp(numobjl)>2) then
-                write(*,5321) objtyp(numobjl)
-                write(logerr,5321) objtyp(numobjl)
+            objtyp(n_fires) = 2
+            if (objtyp(n_fires)>2) then
+                write(*,5321) objtyp(n_fires)
+                write(logerr,5321) objtyp(n_fires)
                 stop
             end if
 

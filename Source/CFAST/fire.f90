@@ -65,7 +65,7 @@ module fire_routines
     if (option(ffire)/=fcfast) return
 
     nobj = 0
-    do i = 1, numobjl
+    do i = 1, n_fires
         iroom = objrm(i)
         roomptr => roominfo(iroom)
         call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
@@ -629,14 +629,14 @@ module fire_routines
     integer ::i, j, irm, ii, isys
     real(eb) :: filter
 
-    do i = 1, numobjl
+    do i = 1, n_fires
         objmaspy(i) = objmaspy(i) + femp(i)*deltt
         radio(i) = radio(i) + femr(i)*deltt
     end do
 
     ! sum the trace release from all of the fires
     tradio = 0.0_eb
-    do i = 1, numobjl
+    do i = 1, n_fires
         tradio = tradio + radio(i)
     end do
 
@@ -694,7 +694,7 @@ module fire_routines
 
     ! initialize summations and local data
     djetflg = .false.
-    if (option(fdfire)/=on.or.numobjl<=0) return
+    if (option(fdfire)/=on.or.n_fires<=0) return
 
 
     ! if no vents have a door jet fire then exit
@@ -873,7 +873,7 @@ module fire_routines
     end if
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
-    do i = 1,numobjl
+    do i = 1,n_fires
         if (ifroom(i)==iroom) then
             qdot = fqf(i)
             xrad = radconsplit(i)
@@ -1185,7 +1185,7 @@ module fire_routines
     nfires = 0
 
     ! now the other objects
-    do i = 1, numobjl
+    do i = 1, n_fires
         nfires = nfires + 1
         fxlocal(nfires) = fopos(1,i)
         fylocal(nfires) = fopos(2,i)
@@ -1228,7 +1228,7 @@ module fire_routines
     ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature
     ! and flux are stored backupwards - this is historical
     ! see corresponding code in keywordcases
-    do iobj = 1, numobjl
+    do iobj = 1, n_fires
         if (.not.objon(iobj)) then
             ignflg = objign(iobj)
             itarg = obtarg(iobj)
@@ -1258,7 +1258,7 @@ module fire_routines
     end do
 
     if (iflag/=check_detector_state) then
-        do iobj = 1, numobjl
+        do iobj = 1, n_fires
             if (.not.objon(iobj)) then
                 itarg = obtarg(iobj)
                 if (ignflg>1) then

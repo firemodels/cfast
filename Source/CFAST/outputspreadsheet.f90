@@ -83,8 +83,8 @@ module spreadsheet_routines
         call ssaddtolist (position,fqdj(i),outarray)
     end do
 
-    if (numobjl/=0) then
-        do i = 1, numobjl
+    if (n_fires/=0) then
+        do i = 1, n_fires
             call flame_height (fqf(i),farea(i),fheight)
             call ssaddtolist (position,fems(i),outarray)
             call ssaddtolist (position,femp(i),outarray)
@@ -424,8 +424,8 @@ module spreadsheet_routines
     end do
 
     ! fires
-    if (numobjl/=0) then
-        do i = 1, numobjl
+    if (n_fires/=0) then
+        do i = 1, n_fires
             call flame_height (fqf(i),farea(i),fheight)
             call SSaddtolist (position,fqf(i)/1000.,outarray)
             call SSaddtolist (position,fheight,outarray)

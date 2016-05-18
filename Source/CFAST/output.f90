@@ -190,8 +190,8 @@ module output_routines
     type(room_type), pointer :: roomptr
 
     write (iofilo,5000)
-    if (numobjl/=0) then
-        do i = 1, numobjl
+    if (n_fires/=0) then
+        do i = 1, n_fires
             call flame_height (fqf(i),farea(i),fheight)
             if (isw/=0) then
                 write (iofilo,5010) objnin(i)(1:len_trim(objnin(i))), fems(i), femp(i), fqf(i), &
@@ -210,7 +210,7 @@ module output_routines
         xqf = 0.0_eb
         xqupr = 0.0_eb
         xqlow = 0.0_eb
-        do i = 1, numobjl
+        do i = 1, n_fires
             if (icomp==froom(i)) then
                 xems = xems + fems(i)
                 xemp = xemp + femp(i)
@@ -456,7 +456,7 @@ module output_routines
         roomptr => roominfo(ir)
         xemp = 0.0_eb
         xqf = 0.0_eb
-        do i = 1, numobjl
+        do i = 1, n_fires
             if (ir==froom(i)) then
                 xemp = xemp + femp(i)
                 xqf = xqf + fqf(i)
@@ -873,9 +873,9 @@ module output_routines
 
     type(room_type), pointer :: roomptr
 
-    if (numobjl>0) then
+    if (n_fires>0) then
         write (iofilo,5080)
-        do io = 1, numobjl
+        do io = 1, n_fires
             nnv = objlfm(io)
             roomptr => roominfo(objrm(io))
             write (iofilo,5020) objnin(io)(1:len_trim(objnin(io))), io, fire_geometry(obj_fpos(io))
@@ -1235,15 +1235,15 @@ module output_routines
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
             xqf = 0.
-            do iobj = 1, numobjl
+            do iobj = 1, n_fires
                 if (iroom==froom(iobj))xqf = xqf + fqf(iobj)
             end do
             xqf = xqf + fqdj(iroom)
             write(*,6060) iroom,roomptr%t_surfaces(1,1),roomptr%t_surfaces(1,3),roomptr%t_surfaces(1,4),roomptr%t_surfaces(1,2),xqf
         end do
-        if (numobjl>0) then
+        if (n_fires>0) then
             write(*,6080)
-            do iobj = 1, numobjl
+            do iobj = 1, n_fires
                 write(*,6085)iobj,xfire(iobj,f_heatlp),xfire(iobj,f_heatup)
             end do
         end if

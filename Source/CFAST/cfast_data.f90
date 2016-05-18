@@ -52,7 +52,7 @@ module fire_data
     
     character(256), dimension(mxfires) :: objnin    ! name of each fire
     
-    integer :: numobjl, n_fires                     ! number of fires in the current simulation
+    integer :: n_fires                              ! number of fires in the current simulation
     real(eb) :: tgignt                              ! gaseous ignition temperature for burning in upper layer and door jets
     real(eb) :: lower_o2_limit                      ! minimum oxygen level for combustion
     real(eb) :: tradio                              ! total trace species released up to the current time

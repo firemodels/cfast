@@ -29,6 +29,7 @@ module spreadsheet_header_routines
     character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
     integer :: position, i, j
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
     'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
@@ -83,13 +84,14 @@ module spreadsheet_header_routines
     end do
 
     ! Fire variables.
-    do j = 1, numobjl
+    do j = 1, n_fires
+        fireptr => fireinfo(j)
         do i = 1, 9
             position = position + 1
             call toIntString(j,cFire)
             headertext(1,position) = trim(LabelsShort(i+7))//trim(cFire)
             headertext(2,position) = Labels(i+7)
-            headertext(3,position) = objnin(j)
+            headertext(3,position) = fireptr%name
             headertext(4,position) = LabelUnits(i+7)
         end do
     end do
@@ -449,7 +451,7 @@ module spreadsheet_header_routines
     end do
 
     ! Fire variables.
-    do j = 1, numobjl
+    do j = 1, n_fires
         do i = 1, 4
             position = position + 1
             call toIntString(j,cFire)

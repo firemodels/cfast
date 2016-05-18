@@ -49,17 +49,16 @@ module fire_data
     save
 
     ! fire variables
-    
-    character(256), dimension(mxfires) :: objnin    ! name of each fire
-    
-    integer :: nfire, numobjl                       ! number of fires in the current simulation
+
+    integer :: n_fires                              ! number of fires in the current simulation
+    type(fire_type), target :: fireinfo(mxfires)
+
     real(eb) :: tgignt                              ! gaseous ignition temperature for burning in upper layer and door jets
     real(eb) :: lower_o2_limit                      ! minimum oxygen level for combustion
     real(eb) :: tradio                              ! total trace species released up to the current time
     
     integer :: objrm(mxfires), froom(mxfires)       ! room fire is located in
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
-    integer, dimension(mxfires) :: objpnt           ! pointer in sorted fire list to time data for this fire
     real(eb), dimension(3,mxfires) :: objort        ! normal vector on front face of each fire
     integer, dimension(mxfires) :: obtarg           ! target number associated with each fire (to calculate ignition conditions)
     real(eb), dimension(mxfires) :: objclen         ! characteristic length of each fire = max fire diameter
@@ -113,10 +112,7 @@ module fire_data
                                                     !   (1 = number of fire in this room, 2 => first fire in this room)
     real(eb) :: qf(mxrooms)                         ! total fire heat release rate in each compartment
     real(eb) :: fqdj(mxrooms)                       ! HRR of door jet fires in each room at the current time
-    
-    type(fire_type), target :: fireinfo(mxfires)
 
-    
     integer :: nfurn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4

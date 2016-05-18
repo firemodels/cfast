@@ -151,7 +151,7 @@ module input_routines
     call offset
 
     ! check and/or set position of fire objects
-    do i = 1, numobjl
+    do i = 1, n_fires
         roomptr => roominfo(objrm(i))
         if ((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%cwidth)) objpos(1,i) = roomptr%cwidth/2.0_eb
         if ((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%cdepth)) objpos(2,i) = roomptr%cdepth/2.0_eb
@@ -480,7 +480,7 @@ module input_routines
 
     integer, intent(in) :: inumr, inumc
 
-    integer :: obpnt, i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
+    integer :: i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
     integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: frac, tmpcond
@@ -492,6 +492,7 @@ module input_routines
     type(ramp_type), pointer :: rampptr
     type(visual_type), pointer :: sliceptr
     type(thermal_type), pointer :: thrmpptr
+    type(fire_type), pointer :: fireptr
 
     !	Start with a clean slate
 
@@ -719,7 +720,7 @@ module input_routines
                 write (logerr,*) '***Error: Bad FIRE input. 11 arguments required.'
                 stop
             end if
-            if (numobjl>=mxfires) then
+            if (n_fires>=mxfires) then
                 write(*,5300)
                 write(logerr,5300)
                 stop
@@ -730,95 +731,93 @@ module input_routines
                 write(logerr,5320) iroom
                 stop
             end if
-            obpnt = numobjl + 1
-            numobjl = obpnt
             roomptr => roominfo(iroom)
+            n_fires = n_fires + 1
+            fireptr => fireinfo(n_fires)
 
             ! Only constrained fires
-            objtyp(numobjl) = 2
-            if (objtyp(numobjl)>2) then
-                write(*,5321) objtyp(numobjl)
-                write(logerr,5321) objtyp(numobjl)
+            objtyp(n_fires) = 2
+            if (objtyp(n_fires)>2) then
+                write(*,5321) objtyp(n_fires)
+                write(logerr,5321) objtyp(n_fires)
                 stop
             end if
 
-            objpos(1,obpnt) = lrarray(2)
-            objpos(2,obpnt) = lrarray(3)
-            objpos(3,obpnt) = lrarray(4)
-            if (objpos(1,obpnt)>roomptr%cwidth.or.objpos(2,obpnt)>roomptr%cdepth.or.objpos(3,obpnt)>roomptr%cheight) then
-                write(*,5323) obpnt
-                write(logerr,5323) obpnt
+            objpos(1,n_fires) = lrarray(2)
+            objpos(2,n_fires) = lrarray(3)
+            objpos(3,n_fires) = lrarray(4)
+            if (objpos(1,n_fires)>roomptr%cwidth.or.objpos(2,n_fires)>roomptr%cdepth.or.objpos(3,n_fires)>roomptr%cheight) then
+                write(*,5323) n_fires
+                write(logerr,5323) n_fires
                 stop
             end if
-            obj_fpos(obpnt) = 1
-            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .or. &
-                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .and. &
-                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+            obj_fpos(n_fires) = 1
+            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .or. &
+                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 2
+            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .and. &
+                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 3
 
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire
-                if (lcarray(6)=='TIME') objign(obpnt) = 1
-                if (lcarray(6)=='TEMP') objign(obpnt) = 2
-                if (lcarray(6)=='FLUX') objign(obpnt) = 3
+                if (lcarray(6)=='TIME') objign(n_fires) = 1
+                if (lcarray(6)=='TEMP') objign(n_fires) = 2
+                if (lcarray(6)=='FLUX') objign(n_fires) = 3
                 tmpcond = lrarray(7)
-                obtarg(obpnt) = 0
+                obtarg(n_fires) = 0
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                     do i = 1,ntarg
                         targptr => targetinfo(i)
-                        if (targptr%name==lcarray(8)) obtarg(obpnt) = i
+                        if (targptr%name==lcarray(8)) obtarg(n_fires) = i
                     end do
-                    if (obtarg(obpnt)==0) then
-                        write (*,5324) obpnt
-                        write (logerr,5324) obpnt
+                    if (obtarg(n_fires)==0) then
+                        write (*,5324) n_fires
+                        write (logerr,5324) n_fires
                         stop
                     end if
                 end if
             else
                 ! it's the old format fire line that creates a target for each fire
-                objign(obpnt) =   lrarray(6)
+                objign(n_fires) =   lrarray(6)
                 tmpcond =         lrarray(7)
-                objort(1,obpnt) = lrarray(8)
-                objort(2,obpnt) = lrarray(9)
-                objort(3,obpnt) = lrarray(10)
+                objort(1,n_fires) = lrarray(8)
+                objort(2,n_fires) = lrarray(9)
+                objort(3,n_fires) = lrarray(10)
 
                 ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-                if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
+                if (dnrm2(3,objort(1,n_fires),1)<=0.0) then
                     write(*,5322)
                     write(logerr,5322)
                     stop
                 end if
             end if
-            objrm(obpnt) = iroom
-            objnin(obpnt) = lcarray(11)
-            objon(obpnt) = .false.
-            ! This is redudant but needed to be compatible with the object database format
-            objpnt(obpnt) = obpnt
+            objrm(n_fires) = iroom
+            fireptr%name = lcarray(11)
+            objon(n_fires) = .false.
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
             ! The critiria for temperature and flux are stored backupwards - this is historical
             ! See corresponding code in update_fire_objects
             if (tmpcond>0.0_eb) then
-                if (objign(obpnt)==1) then
-                    objcri(1,obpnt) = tmpcond
-                    objcri(2,obpnt) = 1.0e30_eb
-                    objcri(3,obpnt) = 1.0e30_eb
-                else if (objign(obpnt)==2) then
-                    objcri(1,obpnt) = 1.0e30_eb
-                    objcri(2,obpnt) = 1.0e30_eb
-                    objcri(3,obpnt) = tmpcond
-                else if (objign(obpnt)==3) then
-                    objcri(1,obpnt) = 1.0e30_eb
-                    objcri(2,obpnt) = tmpcond
-                    objcri(3,obpnt) = 1.0e30_eb
+                if (objign(n_fires)==1) then
+                    objcri(1,n_fires) = tmpcond
+                    objcri(2,n_fires) = 1.0e30_eb
+                    objcri(3,n_fires) = 1.0e30_eb
+                else if (objign(n_fires)==2) then
+                    objcri(1,n_fires) = 1.0e30_eb
+                    objcri(2,n_fires) = 1.0e30_eb
+                    objcri(3,n_fires) = tmpcond
+                else if (objign(n_fires)==3) then
+                    objcri(1,n_fires) = 1.0e30_eb
+                    objcri(2,n_fires) = tmpcond
+                    objcri(3,n_fires) = 1.0e30_eb
                 else
-                    write(*,5358) objign(obpnt)
-                    write(logerr,5358) objign(obpnt)
+                    write(*,5358) objign(n_fires)
+                    write(logerr,5358) objign(n_fires)
                     stop
                 end if
             else
-                objon(obpnt) = .true.
+                objon(n_fires) = .true.
             end if
-            if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
+            if (option(fbtobj)==off.and.objign(n_fires)/=1.0_eb) then
                 if (stpmax>0.0_eb) then
                     stpmax = min(stpmax,1.0_eb)
                 else
@@ -827,7 +826,7 @@ module input_routines
             end if
 
             ! read and set the other stuff for this fire
-            call inputembeddedfire (objnin(obpnt), ir, inumc, obpnt)
+            call inputembeddedfire (fireptr, ir, inumc, n_fires)
         end if
     end do
 
@@ -1236,7 +1235,7 @@ module input_routines
                 write(logerr,5310)
                 stop
             end if
-            if (numobjl>=mxfires) then
+            if (n_fires>=mxfires) then
                 write(*,5300)
                 write(logerr,5300)
                 stop
@@ -1248,74 +1247,73 @@ module input_routines
                 write(logerr,5320) iroom
                 stop
             end if
-            obpnt = numobjl + 1
-            numobjl = obpnt
             roomptr => roominfo(iroom)
+            
+            n_fires = n_fires + 1
+            fireptr => fireinfo(n_fires)
 
             ! Only constrained fires
-            objtyp(numobjl) = 2
-            if (objtyp(numobjl)>2) then
-                write(*,5321) objtyp(numobjl)
-                write(logerr,5321) objtyp(numobjl)
+            objtyp(n_fires) = 2
+            if (objtyp(n_fires)>2) then
+                write(*,5321) objtyp(n_fires)
+                write(logerr,5321) objtyp(n_fires)
                 stop
             end if
 
-            objpos(1,obpnt) = lrarray(3)
-            objpos(2,obpnt) = lrarray(4)
-            objpos(3,obpnt) = lrarray(5)
-            if (objpos(1,obpnt)>roomptr%cwidth.or.objpos(2,obpnt)>roomptr%cdepth.or.objpos(3,obpnt)>roomptr%cheight) then
-                write(*,5323) obpnt
-                write(logerr,5323) obpnt
+            objpos(1,n_fires) = lrarray(3)
+            objpos(2,n_fires) = lrarray(4)
+            objpos(3,n_fires) = lrarray(5)
+            if (objpos(1,n_fires)>roomptr%cwidth.or.objpos(2,n_fires)>roomptr%cdepth.or.objpos(3,n_fires)>roomptr%cheight) then
+                write(*,5323) n_fires
+                write(logerr,5323) n_fires
                 stop
             end if
-            obj_fpos(obpnt) = 1
-            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .or. &
-                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 2
-            if (min(objpos(1,obpnt),roomptr%cwidth-objpos(1,obpnt))<=mx_hsep .and. &
-                min(objpos(2,obpnt),roomptr%cdepth-objpos(2,obpnt))<=mx_hsep) obj_fpos(obpnt) = 3
+            obj_fpos(n_fires) = 1
+            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .or. &
+                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 2
+            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .and. &
+                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 3
 
-            objign(obpnt) =   lrarray(7)
+            objign(n_fires) =   lrarray(7)
             tmpcond =         lrarray(8)
-            objort(1,obpnt) = lrarray(9)
-            objort(2,obpnt) = lrarray(10)
-            objort(3,obpnt) = lrarray(11)
+            objort(1,n_fires) = lrarray(9)
+            objort(2,n_fires) = lrarray(10)
+            objort(3,n_fires) = lrarray(11)
             ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-            if (dnrm2(3,objort(1,obpnt),1)<=0.0) then
+            if (dnrm2(3,objort(1,n_fires),1)<=0.0) then
                 write(*,5322)
                 write(logerr,5322)
                 stop
             end if
-            objrm(obpnt) = iroom
-            objnin(obpnt) = tcname
-            objon(obpnt) = .false.
-            ! This is redudant but needed to be compatible with the object database format
-            objpnt(obpnt) = obpnt
+            objrm(n_fires) = iroom
+            fireptr%name = tcname
+            objon(n_fires) = .false.
 
             !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
             !!!!! The critiria for temperature and flux are stored backupwards - this is historical
             !!!!! See corresponding code in update_fire_objects
             if (tmpcond>0.0_eb) then
-                if (objign(obpnt)==1) then
-                    objcri(1,obpnt) = tmpcond
-                    objcri(2,obpnt) = 1.0e30_eb
-                    objcri(3,obpnt) = 1.0e30_eb
-                else if (objign(obpnt)==2) then
-                    objcri(1,obpnt) = 1.0e30_eb
-                    objcri(2,obpnt) = 1.0e30_eb
-                    objcri(3,obpnt) = tmpcond
-                else if (objign(obpnt)==3) then
-                    objcri(1,obpnt) = 1.0e30_eb
-                    objcri(2,obpnt) = tmpcond
-                    objcri(3,obpnt) = 1.0e30_eb
+                if (objign(n_fires)==1) then
+                    objcri(1,n_fires) = tmpcond
+                    objcri(2,n_fires) = 1.0e30_eb
+                    objcri(3,n_fires) = 1.0e30_eb
+                else if (objign(n_fires)==2) then
+                    objcri(1,n_fires) = 1.0e30_eb
+                    objcri(2,n_fires) = 1.0e30_eb
+                    objcri(3,n_fires) = tmpcond
+                else if (objign(n_fires)==3) then
+                    objcri(1,n_fires) = 1.0e30_eb
+                    objcri(2,n_fires) = tmpcond
+                    objcri(3,n_fires) = 1.0e30_eb
                 else
-                    write(*,5358) objign(obpnt)
-                    write(logerr,5358) objign(obpnt)
+                    write(*,5358) objign(n_fires)
+                    write(logerr,5358) objign(n_fires)
                     stop
                 end if
             else
-                objon(obpnt) = .true.
+                objon(n_fires) = .true.
             end if
-            if (option(fbtobj)==off.and.objign(obpnt)/=1.0_eb) then
+            if (option(fbtobj)==off.and.objign(n_fires)/=1.0_eb) then
                 if (stpmax>0.0_eb) then
                     stpmax = min(stpmax,1.0_eb)
                 else
@@ -1814,19 +1812,18 @@ module input_routines
 
 ! --------------------------- inputembeddedfire -------------------------------------------
 
-    subroutine inputembeddedfire(objname, lrowcount, inumc, iobj)
+    subroutine inputembeddedfire(fireptr, lrowcount, inumc, iobj)
 
     !     routine: inputembeddedfire
     !     purpose: This routine reads a new format fire definition that begins with a FIRE keyword (already read in keywordcases)
     !              followed by CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH keywords (read in here)
-    !     Arguments: objname: name of this fire object
-    !                iroom:   compartment where this fire is located
+    !     Arguments: fireptr: pointer to data for this fire object
     !                lrowcount: current row in the input file.  We begin one row after this one
     !                inumc:   number of columns in the input file
     !                iobj:    pointer to the fire object that will contain all the data we read in here
 
     integer, intent(in) :: inumc, iobj, lrowcount
-    character(*), intent(in) :: objname
+    type(fire_type), pointer :: fireptr
 
     character(128) :: lcarray(ncol)
     character(5) :: label
@@ -1952,15 +1949,15 @@ module input_routines
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
     hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
     if (hrrpm3>4.0e6_eb) then
-        write (*,5106) trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
+        write (*,5106) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
         write (*, 5108)
-        write (logerr,5106) trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
+        write (logerr,5106) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
         write (logerr, 5108)
         stop
     else if (hrrpm3>2.0e6_eb) then
-        write (*,5107) trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
+        write (*,5107) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
         write (*, 5108)
-        write (logerr,5107) trim(objname),(objpos(i,iobj),i=1,3),hrrpm3
+        write (logerr,5107) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
         write (logerr, 5108)
     end if
 

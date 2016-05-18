@@ -50,16 +50,14 @@ module fire_data
 
     ! fire variables
 
-    integer :: n_fires                              ! number of fires in the current simulation
-    type(fire_type), target :: fireinfo(mxfires)
-
     real(eb) :: tgignt                              ! gaseous ignition temperature for burning in upper layer and door jets
     real(eb) :: lower_o2_limit                      ! minimum oxygen level for combustion
-    real(eb) :: tradio                              ! total trace species released up to the current time
+    real(eb) :: tradio     
+
+    integer :: n_fires                              ! number of fires in the current simulation
+    type(fire_type), target :: fireinfo(mxfires)
     
-    integer :: objrm(mxfires), froom(mxfires)       ! room fire is located in
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
-    real(eb), dimension(3,mxfires) :: objort        ! normal vector on front face of each fire
     integer, dimension(mxfires) :: obtarg           ! target number associated with each fire (to calculate ignition conditions)
     real(eb), dimension(mxfires) :: objclen         ! characteristic length of each fire = max fire diameter
     integer, dimension(mxfires) :: objtyp           ! fire type for each fire. Currently, only type = 2, constrained fire, is used
@@ -99,8 +97,8 @@ module fire_data
     real(eb) :: objxyz(4,mxfires)                   ! object size (barely used ... replace it)
     real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time
     real(eb) :: radconsplit(mxfires)                ! radiative fraction for each fire
-    real(eb) :: radio(mxfires)                      ! trace species released for each fire at the current time
-    real(eb) :: fopos(3,mxfires),objpos(3,mxfires) ! position of the base of each fire at the current time
+    real(eb) :: radio(mxfires)                      ! total trace species released up to the current time
+    real(eb) :: fopos(3,mxfires),objpos(3,mxfires)  ! position of the base of each fire at the current time
     real(eb) :: femr(mxfires)                       ! trace species production rate at the current time
     real(eb) :: femp(mxfires)                       ! pyroysis rate for each fire at the current time
     real(eb) :: fems(mxfires)                       ! mass burning rate for each fire at the current time
@@ -297,12 +295,9 @@ module smkview_data
     implicit none
     save
 
-    integer :: smkunit, spltunit, flocal(mxfires+1)
-    character(60) :: smkgeom, smkplot, smkplottrunc
-    logical :: remapfiresdone
-    real(eb), dimension(mxfires+1) :: fqlocal, fzlocal, fxlocal, fylocal, fhlocal
-    real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu         ! temp arrays to pass info to smokeview
-    real(eb), dimension(mxfires) :: smv_qdot,smv_height                     ! temp arrays to pass info to smokeview
+    integer, dimension (mxfires) :: smv_room
+    real(eb), dimension(mxfires) :: smv_qdot, smv_zfire, smv_xfire, smv_yfire, smv_height
+    real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu
     
     ! visualization variables
     integer :: nvisualinfo = 0

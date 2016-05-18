@@ -546,7 +546,7 @@ module solve_routines
         ! then we need the output now
         call remap_fires (nfires)
         call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_temperature, nrm1,  &
-             n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, 0.0_eb, 1)
+             n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, ntarg, 0.0_eb, 1)
         icode = 0
         write (*, '(a)') 'Initialize only'
         write (logerr, '(a)') 'Initialize only'
@@ -646,14 +646,14 @@ module solve_routines
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
                 call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_temperature, nrm1, &
-                    n_hvents, n_vvents, nfires, flocal, fxlocal, fylocal, fzlocal, ntarg, t, i_time_step)
+                    n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, ntarg, t, i_time_step)
                 call output_smokeview_header (version,nrm1,nfires)
             end if
             smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
             smv_zlay(1:nrm1) = roominfo(1:nrm1)%depth(l)
             smv_tu(1:nrm1) = roominfo(1:nrm1)%temp(u)
             smv_tl(1:nrm1) = roominfo(1:nrm1)%temp(l)
-            call output_smokeview_plot_data(t,nrm1,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, fqlocal,fhlocal)
+            call output_smokeview_plot_data(t,nrm1,smv_relp,smv_zlay,smv_tl,smv_tu,nfires, smv_qdot,smv_height)
             call output_spreadsheet_smokeview(t)
             tsmv = tsmv + dplot
             call output_status (t, dt)

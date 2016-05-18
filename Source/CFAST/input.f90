@@ -48,6 +48,7 @@ module input_routines
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij, ivers
     character :: aversion*5
     type(room_type), pointer :: roomptr, roomptr2
+    type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
@@ -152,7 +153,8 @@ module input_routines
 
     ! check and/or set position of fire objects
     do i = 1, n_fires
-        roomptr => roominfo(objrm(i))
+        fireptr => fireinfo(i)
+        roomptr => roominfo(fireptr%room)
         if ((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%cwidth)) objpos(1,i) = roomptr%cwidth/2.0_eb
         if ((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%cdepth)) objpos(2,i) = roomptr%cdepth/2.0_eb
         if ((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%cheight)) objpos(3,i) = 0.0_eb
@@ -776,21 +778,11 @@ module input_routines
                     end if
                 end if
             else
-                ! it's the old format fire line that creates a target for each fire
-                objign(n_fires) =   lrarray(6)
-                tmpcond =         lrarray(7)
-                objort(1,n_fires) = lrarray(8)
-                objort(2,n_fires) = lrarray(9)
-                objort(3,n_fires) = lrarray(10)
-
-                ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-                if (dnrm2(3,objort(1,n_fires),1)<=0.0) then
-                    write(*,5322)
-                    write(logerr,5322)
-                    stop
-                end if
+                write(*,5322)
+                write(logerr,5322)
+                stop
             end if
-            objrm(n_fires) = iroom
+            fireptr%room = iroom
             fireptr%name = lcarray(11)
             objon(n_fires) = .false.
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
@@ -1225,102 +1217,7 @@ module input_routines
             ! finally, we set the initial fraction opening
             qcvm(2,mid) = lrarray(13)
             qcvm(4,mid) = lrarray(13)
-
-            ! OBJEC name room pos(3) plume ignition_type ignition_criterion normal(3)
-            ! This is the old format fire object specification
-        case ('OBJEC')
-
-            if (countargs(lcarray)/=11) then
-                write(*,5310)
-                write(logerr,5310)
-                stop
-            end if
-            if (n_fires>=mxfires) then
-                write(*,5300)
-                write(logerr,5300)
-                stop
-            end if
-            tcname = lcarray(1)
-            iroom = lrarray(2)
-            if (iroom<1.or.iroom>nr-1) then
-                write(*,5320) iroom
-                write(logerr,5320) iroom
-                stop
-            end if
-            roomptr => roominfo(iroom)
             
-            n_fires = n_fires + 1
-            fireptr => fireinfo(n_fires)
-
-            ! Only constrained fires
-            objtyp(n_fires) = 2
-            if (objtyp(n_fires)>2) then
-                write(*,5321) objtyp(n_fires)
-                write(logerr,5321) objtyp(n_fires)
-                stop
-            end if
-
-            objpos(1,n_fires) = lrarray(3)
-            objpos(2,n_fires) = lrarray(4)
-            objpos(3,n_fires) = lrarray(5)
-            if (objpos(1,n_fires)>roomptr%cwidth.or.objpos(2,n_fires)>roomptr%cdepth.or.objpos(3,n_fires)>roomptr%cheight) then
-                write(*,5323) n_fires
-                write(logerr,5323) n_fires
-                stop
-            end if
-            obj_fpos(n_fires) = 1
-            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .or. &
-                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 2
-            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .and. &
-                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 3
-
-            objign(n_fires) =   lrarray(7)
-            tmpcond =         lrarray(8)
-            objort(1,n_fires) = lrarray(9)
-            objort(2,n_fires) = lrarray(10)
-            objort(3,n_fires) = lrarray(11)
-            ! Enforce sanity; normal pointing vector must be non-zero (blas routine)
-            if (dnrm2(3,objort(1,n_fires),1)<=0.0) then
-                write(*,5322)
-                write(logerr,5322)
-                stop
-            end if
-            objrm(n_fires) = iroom
-            fireptr%name = tcname
-            objon(n_fires) = .false.
-
-            !!!!! Note that ignition type 1 is time, type 2 is temperature and 3 is flux !!!
-            !!!!! The critiria for temperature and flux are stored backupwards - this is historical
-            !!!!! See corresponding code in update_fire_objects
-            if (tmpcond>0.0_eb) then
-                if (objign(n_fires)==1) then
-                    objcri(1,n_fires) = tmpcond
-                    objcri(2,n_fires) = 1.0e30_eb
-                    objcri(3,n_fires) = 1.0e30_eb
-                else if (objign(n_fires)==2) then
-                    objcri(1,n_fires) = 1.0e30_eb
-                    objcri(2,n_fires) = 1.0e30_eb
-                    objcri(3,n_fires) = tmpcond
-                else if (objign(n_fires)==3) then
-                    objcri(1,n_fires) = 1.0e30_eb
-                    objcri(2,n_fires) = tmpcond
-                    objcri(3,n_fires) = 1.0e30_eb
-                else
-                    write(*,5358) objign(n_fires)
-                    write(logerr,5358) objign(n_fires)
-                    stop
-                end if
-            else
-                objon(n_fires) = .true.
-            end if
-            if (option(fbtobj)==off.and.objign(n_fires)/=1.0_eb) then
-                if (stpmax>0.0_eb) then
-                    stpmax = min(stpmax,1.0_eb)
-                else
-                    stpmax = 1.0_eb
-                end if
-            end if
-
             ! STPMAX # - set the maximum time step to #
         case ('STPMA')
             if (countargs(lcarray)>=1) then
@@ -1748,10 +1645,10 @@ module input_routines
             end if
 
             ! Outdated keywords
-        case ('CJET','WIND','LIMO2','GLOBA','DJIGN')            ! Just ignore these inputs ... they shouldn't be fatal
+        case ('CJET','WIND','LIMO2','GLOBA','DJIGN') ! Just ignore these inputs ... they shouldn't be fatal
             write (*,5407) label
             write (logerr,5407) label
-        case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP','THRMF')   ! these are clearly outdated and should produce errors
+        case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP','THRMF','OBJEC') ! these are clearly outdated and produce errors
             write (*,5405) label
             write (logerr,5405) label
             stop
@@ -1782,10 +1679,10 @@ module input_routines
 5196 format ('***Error: Bad EVENT input. Fan has not been defined for this filter ',i0)
 5300 format ('***Error: Bad FIRE input. Too many objects defined in datafile')
 5310 format ('***Error: Bad FIRE input. Incorrect number of parameters for OBJECT')
-5320 format ('***Error: Bad FIRE input. Object specification error, room ',i0,' out of range')
-5321 format ('***Error: Bad FIRE input. Object specification error, not an allowed fire type',i0)
-5322 format ('***Error: Bad FIRE input. Object normal vector must be non-zero')
-5323 format ('***Error: Bad FIRE input. Object ',i0,' is outside its compartment')
+5320 format ('***Error: Bad FIRE input. Fire specification error, room ',i0,' out of range')
+5321 format ('***Error: Bad FIRE input. Fire specification error, not an allowed fire type',i0)
+5322 format ('***Error: Bad FIRE input. Fire specification is outdated and must include target for ignition')
+5323 format ('***Error: Bad FIRE input. Fire location ',i0,' is outside its compartment')
 5324 format ('***Error: Bad FIRE input. Target specified for fire ',i0, ' does not exist')
 5338 format ('***Error: Bad DETEC input. Exceed allowed number of detectors')
 5339 format ('***Error: Bad DETEC input. Detector ',i0,' is outside of compartment ',a)
@@ -1804,7 +1701,7 @@ module input_routines
 5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
 5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)
 5404 format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)
-5405 format ('***Error: Invalid keyword in CFAST input file ',a)
+5405 format ('***Error: Invalid or outdated keyword in CFAST input file ',a)
 5406 format ('***Error: Bad HALL input. Outdated HALL command for compartment ',i0,' Flow inputs are no longer used')
 5407 format ('***Warning: Outdated keyword in CFAST input file ignored ',a)
 
@@ -1823,7 +1720,7 @@ module input_routines
     !                iobj:    pointer to the fire object that will contain all the data we read in here
 
     integer, intent(in) :: inumc, iobj, lrowcount
-    type(fire_type), pointer :: fireptr
+    type(fire_type), intent(inout), pointer :: fireptr
 
     character(128) :: lcarray(ncol)
     character(5) :: label
@@ -1936,7 +1833,7 @@ module input_routines
     call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
-    roomptr => roominfo(objrm(iobj))
+    roomptr => roominfo(fireptr%room)
     call positionobject(objpos,1,iobj,roomptr%cwidth,midpoint,mx_hsep)
     call positionobject(objpos,2,iobj,roomptr%cdepth,midpoint,mx_hsep)
     call positionobject(objpos,3,iobj,roomptr%cheight,base,mx_hsep)

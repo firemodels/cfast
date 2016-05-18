@@ -1165,7 +1165,7 @@ module solve_routines
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flwf)
-    call sort_fire (nfire,ifroom,xfire,ifrpnt,nrm1)
+    call sort_fire (numobjl,ifroom,xfire,ifrpnt,nrm1)
     call door_jet (flwdjf,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)

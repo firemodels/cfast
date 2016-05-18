@@ -55,7 +55,7 @@ module fire_routines
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
-    integer lsp, iroom, nobj, i
+    integer lsp, iroom, nobj, i, nfire
     type(room_type), pointer :: roomptr
 
     flwf(1:nr,1:ns+2,u) = 0.0_eb
@@ -694,7 +694,7 @@ module fire_routines
 
     ! initialize summations and local data
     djetflg = .false.
-    if (option(fdfire)/=on.or.nfire<=0) return
+    if (option(fdfire)/=on.or.numobjl<=0) return
 
 
     ! if no vents have a door jet fire then exit
@@ -873,7 +873,7 @@ module fire_routines
     end if
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
-    do i = 1,nfire
+    do i = 1,numobjl
         if (ifroom(i)==iroom) then
             qdot = fqf(i)
             xrad = radconsplit(i)

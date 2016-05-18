@@ -867,7 +867,7 @@ module output_routines
     if (n_fires>0) then
         write (iofilo,5080)
         do io = 1, n_fires
-            fireptr => fireinfo(i)
+            fireptr => fireinfo(io)
             nnv = objlfm(io)
             roomptr => roominfo(objrm(io))
             write (iofilo,5020) trim(fireptr%name), io, fire_geometry(obj_fpos(io))

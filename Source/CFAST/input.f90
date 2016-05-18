@@ -1816,7 +1816,7 @@ module input_routines
             ! calculate a characteristic length of an object (we assume the diameter).
             ! This is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances
-            objclen(iobj) = sqrt(max_area/pio4)
+            fireptr%characteristic_length = sqrt(max_area/pio4)
         case ('HEIGH')
             do ii = 1, nret
                 ohigh(ii,iobj) = max(lrarray(ii),0.0_eb)

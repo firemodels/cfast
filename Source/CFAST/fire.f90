@@ -114,7 +114,7 @@ module fire_routines
         xfire(nfire,f_objct) = objhct
         xfire(nfire,f_ysoot) = y_soot
         xfire(nfire,f_yco) = y_co
-        xfire(nfire,f_obj_length) = objclen(i)
+        xfire(nfire,f_obj_length) = fireptr%characteristic_length
         xfire(nfire,f_obj_area) = oareat
         nobj = nobj + 1
         femp(nobj) = oplume(1,i)
@@ -1175,7 +1175,7 @@ module fire_routines
     subroutine remap_fires (nfires)
 
     ! this routine is to combine fire objects into a single list
-    ! there does not have to be a main fire nor any objects, so nfires may be zero
+    ! there does not have to be a fire, so nfires may be zero
 
     integer, intent(out) :: nfires
 
@@ -1185,7 +1185,6 @@ module fire_routines
 
     nfires = n_fires
 
-    ! now the other objects
     do i = 1, n_fires
         fireptr => fireinfo(i)
         smv_xfire(i) = fopos(1,i)

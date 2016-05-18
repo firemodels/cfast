@@ -34,6 +34,8 @@ module cfast_types
         ! These are the fire definitions from the input
         character(128) :: name                          ! user selected name for the fire (user input)
         integer :: room                                 ! compartment where the fire is located (user input)
+        real(eb) :: characteristic_length               ! characteristic length of each fire = max fire diameter
+        
         integer(eb) :: object, fire_type
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass
         real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &

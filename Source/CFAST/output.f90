@@ -187,8 +187,8 @@ module output_routines
         do i = 1, n_fires
             fireptr => fireinfo(i)
             call flame_height (fqf(i),farea(i),fheight)
-                write (iofilo,5010) trim(fireptr%name), fems(i), femp(i), fqf(i), &
-                    fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
+            write (iofilo,5010) trim(fireptr%name), fems(i), femp(i), fqf(i),&
+                fheight, fqfc(i), fqf(i)-fqfc(i), objmaspy(i), radio(i)
         end do
     end if
     write (iofilo,'(a)') ' '
@@ -201,7 +201,8 @@ module output_routines
         xqupr = 0.0_eb
         xqlow = 0.0_eb
         do i = 1, n_fires
-            if (icomp==froom(i)) then
+            fireptr => fireinfo(i)
+            if (icomp==fireptr%room) then
                 xems = xems + fems(i)
                 xemp = xemp + femp(i)
                 xqf = xqf + fqf(i)
@@ -439,6 +440,7 @@ module output_routines
     integer :: i, ir
     real(eb) :: xemp, xqf
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     write (iounit,5000)
     write (iounit,5010)
@@ -447,7 +449,8 @@ module output_routines
         xemp = 0.0_eb
         xqf = 0.0_eb
         do i = 1, n_fires
-            if (ir==froom(i)) then
+            fireptr => fireinfo(i)
+            if (ir==fireptr%room) then
                 xemp = xemp + femp(i)
                 xqf = xqf + fqf(i)
             end if
@@ -869,7 +872,7 @@ module output_routines
         do io = 1, n_fires
             fireptr => fireinfo(io)
             nnv = objlfm(io)
-            roomptr => roominfo(objrm(io))
+            roomptr => roominfo(fireptr%room)
             write (iofilo,5020) trim(fireptr%name), io, fire_geometry(obj_fpos(io))
             write (iofilo,5030) roomptr%name, ftype(objtyp(io)), objpos(1,io), objpos(2,io), &
                 objpos(3,io), relative_humidity*100., lower_o2_limit*100.,radconsplit(io)
@@ -1121,6 +1124,7 @@ module output_routines
     logical :: firstc = .true.
 
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
 
     save bmap
@@ -1228,7 +1232,8 @@ module output_routines
             roomptr => roominfo(iroom)
             xqf = 0.
             do iobj = 1, n_fires
-                if (iroom==froom(iobj))xqf = xqf + fqf(iobj)
+                fireptr => fireinfo(iobj)
+                if (iroom==fireptr%room) xqf = xqf + fqf(iobj)
             end do
             xqf = xqf + fqdj(iroom)
             write(*,6060) iroom,roomptr%t_surfaces(1,1),roomptr%t_surfaces(1,3),roomptr%t_surfaces(1,4),roomptr%t_surfaces(1,2),xqf

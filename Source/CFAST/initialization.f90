@@ -690,7 +690,7 @@ module initialization_routines
     n_fires = 0
     objon(1:mxfires) = .false.
     objpos(1:3,1:mxfires) = -1.0
-    objrm(1:mxfires) = 0
+    fireinfo(1:mxfires)%room = 0
     fireinfo(1:mxfires)%name = ' '
     objcri(1:3,1:mxfires) = 0.0
 

@@ -48,6 +48,7 @@ module input_routines
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij, ivers
     character :: aversion*5
     type(room_type), pointer :: roomptr, roomptr2
+    type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
@@ -152,7 +153,8 @@ module input_routines
 
     ! check and/or set position of fire objects
     do i = 1, n_fires
-        roomptr => roominfo(objrm(i))
+        fireptr => fireinfo(i)
+        roomptr => roominfo(fireptr%room)
         if ((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%cwidth)) objpos(1,i) = roomptr%cwidth/2.0_eb
         if ((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%cdepth)) objpos(2,i) = roomptr%cdepth/2.0_eb
         if ((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%cheight)) objpos(3,i) = 0.0_eb
@@ -780,7 +782,7 @@ module input_routines
                 write(logerr,5322)
                 stop
             end if
-            objrm(n_fires) = iroom
+            fireptr%room = iroom
             fireptr%name = lcarray(11)
             objon(n_fires) = .false.
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
@@ -1718,7 +1720,7 @@ module input_routines
     !                iobj:    pointer to the fire object that will contain all the data we read in here
 
     integer, intent(in) :: inumc, iobj, lrowcount
-    type(fire_type), pointer :: fireptr
+    type(fire_type), intent(inout), pointer :: fireptr
 
     character(128) :: lcarray(ncol)
     character(5) :: label
@@ -1831,7 +1833,7 @@ module input_routines
     call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
 
     ! Position the object
-    roomptr => roominfo(objrm(iobj))
+    roomptr => roominfo(fireptr%room)
     call positionobject(objpos,1,iobj,roomptr%cwidth,midpoint,mx_hsep)
     call positionobject(objpos,2,iobj,roomptr%cdepth,midpoint,mx_hsep)
     call positionobject(objpos,3,iobj,roomptr%cheight,base,mx_hsep)

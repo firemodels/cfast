@@ -57,6 +57,7 @@ module fire_routines
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
     integer lsp, iroom, nobj, i, nfire
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     flwf(1:nr,1:ns+2,u) = 0.0_eb
     flwf(1:nr,1:ns+2,l) = 0.0_eb
@@ -66,7 +67,8 @@ module fire_routines
 
     nobj = 0
     do i = 1, n_fires
-        iroom = objrm(i)
+        fireptr => fireinfo(i)
+        iroom = fireptr%room
         roomptr => roominfo(iroom)
         call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
         oplume(1,i) = omasst
@@ -93,9 +95,8 @@ module fire_routines
             flwf(iroom,lsp+2,l) = flwf(iroom,lsp+2,l) + xntms(l,lsp)
         end do
 
-        ! put the object information to arrays - xfire and froom, ...
+        ! put the object information to arrays - xfire ...
         ! note that we are carrying parallel data structures for the fire information
-        ! output uses the unsorted arrays, froom, ..., ordered by object
         ! fire physics uses the sorted arrays, sorted by compartment
         nfire = nfire + 1
         ifroom(nfire) = iroom
@@ -116,7 +117,6 @@ module fire_routines
         xfire(nfire,f_obj_length) = objclen(i)
         xfire(nfire,f_obj_area) = oareat
         nobj = nobj + 1
-        froom(nobj) = iroom
         femp(nobj) = oplume(1,i)
         fems(nobj) = oplume(3,i)
         ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry
@@ -1181,19 +1181,20 @@ module fire_routines
 
     real(eb) :: fheight
     integer :: i
+    type(fire_type), pointer :: fireptr
 
-    nfires = 0
+    nfires = n_fires
 
     ! now the other objects
     do i = 1, n_fires
-        nfires = nfires + 1
-        fxlocal(nfires) = fopos(1,i)
-        fylocal(nfires) = fopos(2,i)
-        fzlocal(nfires) = fopos(3,i)
+        fireptr => fireinfo(i)
+        fxlocal(i) = fopos(1,i)
+        fylocal(i) = fopos(2,i)
+        fzlocal(i) = fopos(3,i)
         call flame_height (fqf(i),farea(i),fheight)
-        fqlocal(nfires) = fqf(i)
-        fhlocal(nfires) = fheight
-        flocal(nfires) = froom(i)
+        fqlocal(i) = fqf(i)
+        fhlocal(i) = fheight
+        frlocal(i) = fireptr%room
     end do
     return
     end subroutine remap_fires

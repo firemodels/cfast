@@ -103,7 +103,7 @@ module output_routines
 
 ! --------------------------- output_results -------------------------------------------
 
-    subroutine output_results(time,isw)
+    subroutine output_results(time)
 
     !     Description:  Output the results of the simulation at the current time
     !                results_layers is the basic environment
@@ -114,21 +114,17 @@ module output_routines
     !                results_species species
 
     !     Arguments: TIME  Current time (s)
-    !                ISW   1 if called from CFAST, 0 otherwise (only effects
-    !                      printout of object names -- only CFAST knows actual
-    !                      names, others just do it by numbers
 
-    integer, intent(in) :: isw
     real(eb), intent(in) :: time
 
     write (iofilo,5000) time
     if (outputformat>1) then
         call results_layers
-        call results_fires(isw)
+        call results_fires
         call results_targets(1)
         call results_detectors
         call results_species
-        call results_vent_flows ()
+        call results_vent_flows
     else if (outputformat==1) then
         call results_compressed (iofilo)
     end if
@@ -177,28 +173,22 @@ module output_routines
 
 ! --------------------------- results_fires -------------------------------------------
 
-    subroutine results_fires (isw)
+    subroutine results_fires
 
-    !     Description:  Output the fire environment at the current time
-
-    !     Arguments: ISW    Print switch for object fire printout
-
-    integer, intent(in) :: isw
+    ! Output the fire environment at the current time
 
     integer i, icomp
     real(eb) :: fheight, xems, xemp, xqf, xqupr, xqlow
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     write (iofilo,5000)
     if (n_fires/=0) then
         do i = 1, n_fires
+            fireptr => fireinfo(i)
             call flame_height (fqf(i),farea(i),fheight)
-            if (isw/=0) then
-                write (iofilo,5010) objnin(i)(1:len_trim(objnin(i))), fems(i), femp(i), fqf(i), &
+                write (iofilo,5010) trim(fireptr%name), fems(i), femp(i), fqf(i), &
                     fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
-            else
-                write (iofilo,5020) i, fems(i), femp(i), fqf(i), fheight,fqfc(i),fqf(i)-fqfc(i),objmaspy(i),radio(i)
-            end if
         end do
     end if
     write (iofilo,'(a)') ' '
@@ -872,13 +862,15 @@ module output_routines
     character(6), dimension(1:3) :: fire_geometry = (/character(6) :: 'Normal', 'Wall', 'Corner'/)
 
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     if (n_fires>0) then
         write (iofilo,5080)
         do io = 1, n_fires
+            fireptr => fireinfo(i)
             nnv = objlfm(io)
             roomptr => roominfo(objrm(io))
-            write (iofilo,5020) objnin(io)(1:len_trim(objnin(io))), io, fire_geometry(obj_fpos(io))
+            write (iofilo,5020) trim(fireptr%name), io, fire_geometry(obj_fpos(io))
             write (iofilo,5030) roomptr%name, ftype(objtyp(io)), objpos(1,io), objpos(2,io), &
                 objpos(3,io), relative_humidity*100., lower_o2_limit*100.,radconsplit(io)
             write (iofilo,5031) obj_c(io), obj_h(io), obj_o(io), obj_n(io), obj_cl(io)

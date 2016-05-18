@@ -691,7 +691,7 @@ module initialization_routines
     objon(1:mxfires) = .false.
     objpos(1:3,1:mxfires) = -1.0
     objrm(1:mxfires) = 0
-    objnin(1:mxfires) = ' '
+    fireinfo(1:mxfires)%name = ' '
     objcri(1:3,1:mxfires) = 0.0
 
     ! trace species stuff

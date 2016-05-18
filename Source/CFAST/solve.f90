@@ -434,6 +434,8 @@ module solve_routines
         ostptime, tdtect, tobj
     integer :: first_time
     integer :: stopunit, stopiter, ios
+    
+    type(fire_type), pointer :: fireptr
 
     call cptime(toff)
     ires = 0
@@ -626,7 +628,7 @@ module solve_routines
         ! printed output
         if (t+0.0001_eb>min(tprint,tstop).and.iprint) then
             i_time_step = tprint
-            call output_results (t,1)
+            call output_results (t)
             call output_status (t, dt)
             tprint = tprint + dprint
             numjac = 0
@@ -671,7 +673,7 @@ module solve_routines
         ! diagnostic output
         if (t+0.0001_eb>tpaws) then
             i_time_step = tpaws
-            call output_results (t,1)
+            call output_results (t)
             call output_debug (1,t,dt,ieqmax)
             tpaws = tstop + 1.0_eb
             call output_status (t, dt)
@@ -775,12 +777,13 @@ module solve_routines
 
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
+            fireptr => fireinfo(ifobj)
             call update_fire_objects (set_detector_state,told,dt,ifobj,tobj)
-            write(iofilo,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ', &
+            write(iofilo,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
-            write(*,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ', &
+            write(*,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
-            write(logerr,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(objnin(ifobj)),') ignited at ', &
+            write(logerr,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
             ! check to see if we are backing up objects igniting
             if (option(fbtobj)==on) then
@@ -803,7 +806,7 @@ module solve_routines
             ! in time to t=td.  this is better than using simple linear interpolation
             ! because in general dassl could be taking very big time steps
             if (told<=td.and.td<t) then
-                call output_results (t,1)
+                call output_results (t)
                 ipar(2) = some
                 tdout = td
                 do i = 1, 11

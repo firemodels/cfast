@@ -187,8 +187,8 @@ module spreadsheet_header_routines
     !.....  sensor number
     !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
 
-    integer, parameter :: maxhead = 1+9*mxrooms+14*mxtarg+4*mxdtect
-    character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(23), LabelsShort(23), LabelUnits(23), frontorback(2)
+    integer, parameter :: maxhead = 1+9*mxrooms+15*mxtarg+4*mxdtect
+    character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(24), LabelsShort(24), LabelUnits(24), frontorback(2)
     integer position, i, j, itarg, itype
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
@@ -196,18 +196,18 @@ module spreadsheet_header_routines
 
     data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
         'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
-        'Target Total Flux', 'Target Radiative Flux', 'Target Convective Flux', 'Target Fire Radiative Flux', &
-        'Target Surface Radiative Flux', 'Target Gas Radiative Flux', 'Target Radiative Loss Flux', &
-        'Target Total Gauge Flux', 'Target Radiative Gauge Flux', 'Target Convective Gauge Flux', &
+        'Target Incident Flux','Target Net Flux', 'Target Radiative Flux', 'Target Convective Flux', &
+        'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', &
+        'Target Radiative Loss Flux', 'Target Total Gauge Flux', 'Target Radiative Gauge Flux', 'Target Convective Gauge Flux', &
         'Target Radiative Loss Gauge Flux',  &
         'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
 
     data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', &
-        'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXT_', 'TRGFLXR_', &
+        'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXI_', 'TRGFLXT_', 'TRGFLXR_', &
         'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG_', 'TRGFLXREG_',  &
         'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
 
-    data LabelUnits / 's', 7*'C', 11*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
+    data LabelUnits / 's', 7*'C', 12*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
     data frontorback / '','B_'/
 
     !  spreadsheet header.  Add time first
@@ -235,7 +235,7 @@ module spreadsheet_header_routines
         call toIntString(itarg,cDet)
         targptr => targetinfo(itarg)
         ! front surface
-        do j = 1, 14
+        do j = 1, 15
             position = position + 1
             headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
             headertext(2,position) = Labels(j+5)
@@ -244,7 +244,7 @@ module spreadsheet_header_routines
         end do
         ! back surface
         if (validate) then
-            do j = 2, 14
+            do j = 3, 15
                 if (j==3) cycle
                 position = position + 1
                 headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(j+5)) // trim(cDet)
@@ -269,8 +269,8 @@ module spreadsheet_header_routines
         end if
         do j = 1, 4
             position = position + 1
-            headertext(1,position) = trim(LabelsShort(j+19))//trim(cDet)
-            headertext(2,position) = Labels(j+19)
+            headertext(1,position) = trim(LabelsShort(j+20))//trim(cDet)
+            headertext(2,position) = Labels(j+20)
             write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
             headertext(3,position) = cTemp
             headertext(4,position) = LabelUnits(j+19)

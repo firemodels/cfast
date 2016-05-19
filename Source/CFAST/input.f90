@@ -786,8 +786,6 @@ module input_routines
             fireptr%name = lcarray(11)
             objon(n_fires) = .false.
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
-            ! The critiria for temperature and flux are stored backupwards - this is historical
-            ! See corresponding code in update_fire_objects
             if (tmpcond>0.0_eb) then
                 if (objign(n_fires)==1) then
                     objcri(1,n_fires) = tmpcond
@@ -795,12 +793,12 @@ module input_routines
                     objcri(3,n_fires) = 1.0e30_eb
                 else if (objign(n_fires)==2) then
                     objcri(1,n_fires) = 1.0e30_eb
-                    objcri(2,n_fires) = 1.0e30_eb
-                    objcri(3,n_fires) = tmpcond
-                else if (objign(n_fires)==3) then
-                    objcri(1,n_fires) = 1.0e30_eb
                     objcri(2,n_fires) = tmpcond
                     objcri(3,n_fires) = 1.0e30_eb
+                else if (objign(n_fires)==3) then
+                    objcri(1,n_fires) = 1.0e30_eb
+                    objcri(2,n_fires) = 1.0e30_eb
+                    objcri(3,n_fires) = tmpcond
                 else
                     write(*,5358) objign(n_fires)
                     write(logerr,5358) objign(n_fires)

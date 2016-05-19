@@ -213,7 +213,7 @@ module spreadsheet_routines
 
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
-    integer, parameter :: maxoutput=4*mxrooms+26*mxtarg+4*mxdtect
+    integer, parameter :: maxoutput=4*mxrooms+27*mxtarg+4*mxdtect
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
@@ -261,6 +261,7 @@ module spreadsheet_routines
         call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
         call SSaddtolist (position, tctemp-kelvin_c_offset, outarray)
         ! front surface
+        call SSaddtolist (position, targptr%flux_incident_front / 1000._eb, outarray)
         call SSaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
         call SSaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
         call SSaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)

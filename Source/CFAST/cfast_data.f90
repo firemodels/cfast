@@ -62,12 +62,6 @@ module fire_data
     integer :: objign(mxfires)                      ! ignition type for each fire (1 = time, 2 = temperature, 3 = heat flux)
     real(eb), dimension(3,mxfires) :: objcri        ! ignition criteria for each fire (1 = time, 2 = flux, 3 = temperature)
 
-    real(eb), dimension(mxfires) :: obj_c           ! number of atoms of carbon in fuel
-    real(eb), dimension(mxfires) :: obj_h           ! number of atoms of hydrogen in fuel
-    real(eb), dimension(mxfires) :: obj_o           ! number of atoms of oxygen in fuel
-    real(eb), dimension(mxfires) :: obj_n           ! number of atoms of nitrogen in fuel
-    real(eb), dimension(mxfires) :: obj_cl          ! number of atoms of chlorine in fuel
-
     integer, dimension(mxfires) :: objlfm           ! actual number of time points for each fire
     real(eb), dimension(mxpts,mxfires) :: otime     ! time points for fire inputs
     real(eb), dimension(mxpts,mxfires) :: objhc     ! heat of combustion as a function of time

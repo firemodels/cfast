@@ -459,7 +459,10 @@ module fire_routines
     real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max
     integer :: lobjlfm, id, ifact
     type(detector_type), pointer :: dtectptr
+    type(fire_type), pointer :: fireptr
 
+    fireptr => fireinfo(objn)
+    
     if (.not.objon(objn).or.objset(objn)>0) then
         omasst = 0.0_eb
         oareat = 0.0_eb
@@ -519,11 +522,11 @@ module fire_routines
     call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,oareat)
     call interp(otime(1,objn),ohigh(1,objn),lobjlfm,xxtime,1,ohight)
 
-    n_C = obj_C(objn)
-    n_H = obj_H(objn)
-    n_O = obj_O(objn)
-    n_N = obj_N(objn)
-    n_Cl = obj_Cl(objn)
+    n_C = fireptr%n_C
+    n_H = fireptr%n_H
+    n_O = fireptr%n_O
+    n_N = fireptr%n_N
+    n_Cl = fireptr%n_Cl
 
     ! attenuate mass and energy release rates if there is an active sprinkler in this room
     if (id/=0.and.ifact==1) then

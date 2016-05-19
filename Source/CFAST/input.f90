@@ -1746,13 +1746,13 @@ module input_routines
         case ('CHEMI')
             if (countargs(lcarray)>=7) then
                 ! define chemical formula
-                obj_c(iobj) = lrarray(1)
-                obj_h(iobj) = lrarray(2)
-                obj_o(iobj) = lrarray(3)
-                obj_n(iobj) = lrarray(4)
-                obj_cl(iobj) = lrarray(5)
-                fireptr%molar_mass = (12.01*obj_c(iobj) + 1.008*obj_h(iobj) + 16.0*obj_o(iobj) + &
-                    14.01*obj_n(iobj) + 35.45*obj_cl(iobj))/1000.0
+                fireptr%n_C = lrarray(1)
+                fireptr%n_H = lrarray(2)
+                fireptr%n_O = lrarray(3)
+                fireptr%n_N = lrarray(4)
+                fireptr%n_Cl = lrarray(5)
+                fireptr%molar_mass = (12.01*fireptr%n_C + 1.008*fireptr%n_H + 16.0*fireptr%n_O + &
+                    14.01*fireptr%n_N + 35.45*fireptr%n_Cl)/1000.0
                 radconsplit(iobj) = lrarray(6)
                 ohcomb = lrarray(7)
                 if (ohcomb<=0.0_eb) then

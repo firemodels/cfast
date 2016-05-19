@@ -851,9 +851,7 @@ module solve_routines
                 call cfastexit ('CFAST', idid)
                 stop
             end if
-            do  i = 1, mxfires
-                objset(i) = 0
-            end do
+            objset(1:mxfires) = 0
         end if
 
         ! calculate the mass of objects that have been pyrolized

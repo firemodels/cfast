@@ -876,7 +876,7 @@ module output_routines
             write (iofilo,5020) trim(fireptr%name), io, fire_geometry(obj_fpos(io))
             write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), objpos(1,io), objpos(2,io), &
                 objpos(3,io), relative_humidity*100., lower_o2_limit*100.,radconsplit(io)
-            write (iofilo,5031) obj_c(io), obj_h(io), obj_o(io), obj_n(io), obj_cl(io)
+            write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
             write (cbuf(51:132),5050)
             is = 103
@@ -885,9 +885,9 @@ module output_routines
             write (iofilo,5010) ('-',i = 1,is-1)
             do i = 1, nnv
                 write (cbuf,5060) otime(i,io), omass(i,io), objhc(i,io), oqdot(i,io), ohigh(i,io)
-                y_HCN = obj_n(io)*0.027028_eb/objgmw(io)
-                y_HCl = obj_cl(io)*0.036458_eb/objgmw(io)
-                write (cbuf(51:132),5070) ood(i,io), oco(i,io), y_HCN, y_HCl,otrace(i,io)
+                y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
+                y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
+                write (cbuf(51:132),5070) ood(i,io), oco(i,io), y_HCN, y_HCl, otrace(i,io)
                 write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             end do
         end do

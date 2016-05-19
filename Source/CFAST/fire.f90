@@ -79,7 +79,7 @@ module fire_routines
         end do
 
         call do_fire(i,iroom,oplume(1,i),roomptr%cheight,roomptr%cwidth,roomptr%cdepth,objhct,y_soot,y_co, &
-            y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,i),objpos(2,i),objpos(3,i)+ohight,oareat, &
+            y_trace,n_C,n_H,n_O,n_N,n_Cl,fireptr%molar_mass,stmass,objpos(1,i),objpos(2,i),objpos(3,i)+ohight,oareat, &
             oplume(2,i),oplume(3,i),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
         ! sum the flows for return to the source routine
@@ -459,7 +459,10 @@ module fire_routines
     real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max
     integer :: lobjlfm, id, ifact
     type(detector_type), pointer :: dtectptr
+    type(fire_type), pointer :: fireptr
 
+    fireptr => fireinfo(objn)
+    
     if (.not.objon(objn).or.objset(objn)>0) then
         omasst = 0.0_eb
         oareat = 0.0_eb
@@ -519,11 +522,11 @@ module fire_routines
     call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,oareat)
     call interp(otime(1,objn),ohigh(1,objn),lobjlfm,xxtime,1,ohight)
 
-    n_C = obj_C(objn)
-    n_H = obj_H(objn)
-    n_O = obj_O(objn)
-    n_N = obj_N(objn)
-    n_Cl = obj_Cl(objn)
+    n_C = fireptr%n_C
+    n_H = fireptr%n_H
+    n_O = fireptr%n_O
+    n_N = fireptr%n_N
+    n_Cl = fireptr%n_Cl
 
     ! attenuate mass and energy release rates if there is an active sprinkler in this room
     if (id/=0.and.ifact==1) then

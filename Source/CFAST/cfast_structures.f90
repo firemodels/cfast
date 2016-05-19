@@ -35,12 +35,13 @@ module cfast_types
         character(128) :: name                          ! user selected name for the fire (user input)
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
-        integer :: chemistry_type                       ! fire type. Currently, only type = 2, constrained fire, is used
+        integer :: chemistry_type                       ! fire type. Currently, only constrained fire (user input)
+        real(eb) :: n_C, n_H, n_O, n_N, n_Cl            ! stociometry of the fuel (user input)
         
         real(eb) :: characteristic_length               ! characteristic length for fire = max fire diameter
+        real(eb) :: molar_mass                          ! molar mass calculated from fuel composition
         
         integer(eb) :: object, fire_type
-        real(eb) :: n_C, n_H, n_O, n_N, n_Cl, molar_mass
         real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
             y_co_i(mxpts), y_trace_i(mxpts)
         integer :: igntion_type

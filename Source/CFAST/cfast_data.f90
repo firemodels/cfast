@@ -67,7 +67,6 @@ module fire_data
     real(eb), dimension(mxfires) :: obj_o           ! number of atoms of oxygen in fuel
     real(eb), dimension(mxfires) :: obj_n           ! number of atoms of nitrogen in fuel
     real(eb), dimension(mxfires) :: obj_cl          ! number of atoms of chlorine in fuel
-    real(eb), dimension(mxfires) :: objgmw          ! molar mass of each fire calculated from fuel composition
 
     integer, dimension(mxfires) :: objlfm           ! actual number of time points for each fire
     real(eb), dimension(mxpts,mxfires) :: otime     ! time points for fire inputs

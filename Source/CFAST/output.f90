@@ -885,8 +885,8 @@ module output_routines
             write (iofilo,5010) ('-',i = 1,is-1)
             do i = 1, nnv
                 write (cbuf,5060) otime(i,io), omass(i,io), objhc(i,io), oqdot(i,io), ohigh(i,io)
-                y_HCN = obj_n(io)*0.027028_eb/objgmw(io)
-                y_HCl = obj_cl(io)*0.036458_eb/objgmw(io)
+                y_HCN = obj_n(io)*0.027028_eb/fireptr%molar_mass
+                y_HCl = obj_cl(io)*0.036458_eb/fireptr%molar_mass
                 write (cbuf(51:132),5070) ood(i,io), oco(i,io), y_HCN, y_HCl,otrace(i,io)
                 write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             end do

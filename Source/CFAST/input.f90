@@ -1751,7 +1751,7 @@ module input_routines
                 obj_o(iobj) = lrarray(3)
                 obj_n(iobj) = lrarray(4)
                 obj_cl(iobj) = lrarray(5)
-                objgmw(iobj) = (12.01*obj_c(iobj) + 1.008*obj_h(iobj) + 16.0*obj_o(iobj) + &
+                fireptr%molar_mass = (12.01*obj_c(iobj) + 1.008*obj_h(iobj) + 16.0*obj_o(iobj) + &
                     14.01*obj_n(iobj) + 35.45*obj_cl(iobj))/1000.0
                 radconsplit(iobj) = lrarray(6)
                 ohcomb = lrarray(7)

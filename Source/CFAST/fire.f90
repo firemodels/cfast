@@ -79,7 +79,7 @@ module fire_routines
         end do
 
         call do_fire(i,iroom,oplume(1,i),roomptr%cheight,roomptr%cwidth,roomptr%cdepth,objhct,y_soot,y_co, &
-            y_trace,n_C,n_H,n_O,n_N,n_Cl,objgmw(i),stmass,objpos(1,i),objpos(2,i),objpos(3,i)+ohight,oareat, &
+            y_trace,n_C,n_H,n_O,n_N,n_Cl,fireptr%molar_mass,stmass,objpos(1,i),objpos(2,i),objpos(3,i)+ohight,oareat, &
             oplume(2,i),oplume(3,i),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
 
         ! sum the flows for return to the source routine

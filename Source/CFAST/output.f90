@@ -486,7 +486,7 @@ module output_routines
     integer, intent(in) :: itprt
 
     integer :: i, iw, itarg
-    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, tgtemp, tttemp, tctemp
+    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, itotal, tgtemp, tttemp, tctemp
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -514,21 +514,26 @@ module output_routines
                     wtotal = targptr%flux_surface(1)
                     gtotal = targptr%flux_gas(1)
                     ctotal = targptr%flux_convection_gauge(1)
+                    itotal = targptr%flux_incident_front
                 else
                     total = targptr%flux_net(1)
                     ftotal = targptr%flux_fire(1)
                     wtotal = targptr%flux_surface(1)
                     gtotal = targptr%flux_gas(1)
                     ctotal = targptr%flux_convection(1)
+                    itotal = targptr%flux_incident_front
                 end if
-                if (total<=1.0e-10_eb) total = 0.0_eb
-                if (ftotal<=1.0e-10_eb) ftotal = 0.0_eb
-                if (wtotal<=1.0e-10_eb) wtotal = 0.0_eb
-                if (gtotal<=1.0e-10_eb) gtotal = 0.0_eb
-                if (ctotal<=1.0e-10_eb) ctotal = 0.0_eb
+                if (abs(total)<=1.0e-10_eb) total = 0.0_eb
+                if (abs(ftotal)<=1.0e-10_eb) ftotal = 0.0_eb
+                if (abs(wtotal)<=1.0e-10_eb) wtotal = 0.0_eb
+                if (abs(gtotal)<=1.0e-10_eb) gtotal = 0.0_eb
+                if (abs(ctotal)<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
                     write(iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
-                        tctemp-kelvin_c_offset, total, ftotal, wtotal, gtotal, ctotal
+                        tctemp-kelvin_c_offset, itotal, total, ftotal, wtotal, gtotal, ctotal
+                elseif (itotal/=0.0_eb) then
+                    write(iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                        itotal
                 else
                     write(iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
                 end if
@@ -539,13 +544,14 @@ module output_routines
     return
 5000 format (//,'SURFACES AND TARGETS',//, &
     'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       ', &
-    'Surface   Interior Flux To      Fire         Surface      Gas',/, &
+    'Surface   Interior Incident     Net          Fire         Surface      Gas',/, &
     '               Temp.     Temp.     Temp.     Temp.                  Temp.     ', &
-    'Temp.     Temp.    Target       Rad.         Rad.         Rad.         Convect.',/, &
+    'Temp.     Temp.    Flux         Flux         Rad.         Rad.         Rad.         Convect.',/, &
     '               (C)       (C)       (C)       (C)                    (C)       ', &
-         '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      ',/,158('-'))
+         '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)',/,172('-'))
 5010 format (a14,4(1pg10.3))
-5020 format (54x,a8,4x,3(1pg10.3),1x,5(1pg10.3,3x))
+5020 format (54x,a8,4x,3(1pg10.3),1x,6(1pg10.3,3x))
+5030 format (54x,a8,4x,3(1pg10.3),66x,1pg10.3)
     end subroutine results_targets
 
 ! --------------------------- results_detectors -------------------------------------------

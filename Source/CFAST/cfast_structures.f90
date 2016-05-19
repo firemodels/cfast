@@ -152,8 +152,8 @@ module cfast_types
         real(eb) :: thickness           ! target thickness (from matching thermal properties input)
         real(eb) :: depth_loc           ! depth location for output of internal temperature
                                         !       (from user input with default of 0.5*thickness)
-        real(eb) :: flux_front          ! incident heat flux to front surface of target (calculated)
-        real(eb) :: flux_back           ! incident heat flux to back surface of target (calculated)
+        real(eb) :: flux_incident_front ! incident heat flux to front surface of target (calculated)
+        real(eb) :: flux_incident_back  ! incident heat flux to back surface of target (calculated)
         real(eb) :: flux_net_front      ! net heat flux to front surface of target (calculated)
         real(eb) :: flux_net_back       ! net heat flux to back surface of target (calculated)
         real(eb), dimension(nnodes_trg) :: temperature  ! target temperatures from front to back

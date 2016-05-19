@@ -22,6 +22,7 @@ module target_routines
     implicit none
 
     real(eb), dimension(2) :: qtcflux, qtfflux, qtwflux, qtgflux    ! temporary variables for target flux calculation
+    integer, parameter :: front=1, back=2                           ! subscripts for flux variables
 
     private
 
@@ -74,12 +75,16 @@ module target_routines
         end if
         ttarg(1) = targptr%temperature(idx_tempf_trg)
         ttarg(2) = targptr%temperature(idx_tempb_trg)
-        call target_flux(1,itarg,ttarg,flux,dflux)
-        call target_flux(2,itarg,ttarg,flux,dflux)
-        targptr%flux_front = qtwflux(1) + qtfflux(1) + qtcflux(1) + qtgflux(1)
-        targptr%flux_back = qtwflux(2) + qtfflux(2) + qtcflux(2) + qtgflux(2)
-        targptr%flux_net_front = flux(1)
-        targptr%flux_net_back = flux(2)
+        
+        call target_flux(front,itarg,ttarg,flux,dflux)
+        targptr%flux_incident_front = targptr%flux_surface(front) + targptr%flux_fire(front)+ targptr%flux_gas(front) + &
+            targptr%flux_convection(front)
+        targptr%flux_net_front = flux(front)
+        
+        call target_flux(back,itarg,ttarg,flux,dflux) 
+        targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back) + &
+            targptr%flux_convection(back)
+        targptr%flux_net_back = flux(back)
 
         ! do conduction into target
         wfluxin = targptr%flux_net_front
@@ -134,7 +139,6 @@ module target_routines
     real(eb) :: dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     real(eb) :: target_factors_front(10), target_factors_back(10)
     integer :: map10(10) = (/1,3,3,3,3,4,4,4,4,2/), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
-    integer, parameter :: front=1, back=2
 
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr

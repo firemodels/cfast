@@ -672,7 +672,7 @@ module target_routines
 
 ! --------------------------- update_detectors -------------------------------------------
 
-    subroutine update_detectors (imode,tcur,dstep,ndtect,iquench,idset,ifdtect,tdtect)
+    subroutine update_detectors (imode,tcur,dstep,ndtect,idset,ifdtect,tdtect)
 
     !     routine: update_detectors
     !     purpose: updates the temperature of each detector link.  it also determine whether the
@@ -682,13 +682,12 @@ module target_routines
     !                dstep   time step size (to next time)
     !                ndtect  number of detectors
     !                ixdtect 2-d array containing integer detector data structures
-    !                iquench if the j=iquench(i) is non-zero then the j'th sprinkler in the i'th room is quenching the fire
     !                idset   room where activated detector resides
 
     integer, intent(in) :: imode, ndtect
     real(eb), intent(in) :: tcur, dstep
 
-    integer, intent(out) :: idset, ifdtect, iquench(*)
+    integer, intent(out) :: idset, ifdtect
     real(eb), intent(out) :: tdtect
 
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
@@ -765,7 +764,7 @@ module target_routines
                 end if
 
                 ! determine if this is the first detector to have activated in this room
-                idold = iquench(iroom)
+                idold = roomptr%sprinkler_activated
                 iqu = 0
                 if (idold==0) then
                     iqu = i
@@ -782,7 +781,7 @@ module target_routines
                 ! if this detector has activated before all others in this room and the quenching flag was turned on
                 !  then let the sprinkler quench the fire
                 if (iqu/=0.and.dtectptr%quench) then
-                    iquench(iroom)=iqu
+                    roomptr%sprinkler_activated = iqu
                     idset = iroom
                 end if
             end if

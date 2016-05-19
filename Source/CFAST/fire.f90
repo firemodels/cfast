@@ -219,8 +219,8 @@ module fire_routines
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
     ! Check for sprinkler activation
-    if (iquench(iroom)>0) then
-        dtectptr => detectorinfo(iquench(iroom))
+    if (roomptr%sprinkler_activated>0) then
+        dtectptr => detectorinfo(roomptr%sprinkler_activated)
         activated_time = dtectptr%activation_time
         tau = dtectptr%tau
     else
@@ -248,7 +248,7 @@ module fire_routines
 
         source_o2 = roomptr%species_fraction(l,o2)
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
-            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,l), &
+            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, qspray(ifire,l), &
             xqpyrl, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
@@ -307,7 +307,7 @@ module fire_routines
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, &
-            lower_o2_limit, idset, iquench(iroom), activated_time, tau, stime, qspray(ifire,u), &
+            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, qspray(ifire,u), &
             xqpyrl, xntfl, xmass)
 
         xqfr = xqpyrl*chirad + xqfr
@@ -458,9 +458,12 @@ module fire_routines
 
     real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max
     integer :: lobjlfm, id, ifact
+    
+    type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
     type(fire_type), pointer :: fireptr
 
+    roomptr => roominfo(iroom)
     fireptr => fireinfo(objn)
     
     if (.not.objon(objn).or.objset(objn)>0) then
@@ -483,7 +486,7 @@ module fire_routines
     lobjlfm = objlfm(objn)
     xxtime = time - objcri(1,objn)
 
-    id = iquench(iroom)
+    id = roomptr%sprinkler_activated
 
     if (id==0) then
 

@@ -1199,7 +1199,8 @@ module output_routines
             do i = 1, ndtect
                 dtectptr => detectorinfo(i)
                 iroom = dtectptr%room
-                if (iquench(iroom)==i) then
+                roomptr => roominfo(iroom)
+                if (roomptr%sprinkler_activated==i) then
                     ccc='***'
                 else
                     ccc = '   '

@@ -566,6 +566,7 @@ module initialization_routines
     roominfo(1:mxrooms)%deadroom = 0
     roominfo(1:mxrooms)%hall = .false.
     roominfo(1:mxrooms)%shaft = .false.
+    roominfo(1:mxrooms)%sprinkler_activated = 0
     do i = 1, mxrooms
         roomptr => roominfo(i)
         roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
@@ -666,8 +667,6 @@ module initialization_routines
     detectorinfo(1:mxdtect)%quench = .false.
     detectorinfo(1:mxdtect)%activated = .false.
     detectorinfo(1:mxdtect)%reported = .false.
-
-    iquench(1:mxrooms) = 0
 
     ! targets
     ntarg = 0

@@ -765,13 +765,13 @@ module input_routines
                 if (lcarray(6)=='TEMP') objign(n_fires) = 2
                 if (lcarray(6)=='FLUX') objign(n_fires) = 3
                 tmpcond = lrarray(7)
-                obtarg(n_fires) = 0
+                fireptr%ignition_target = 0
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                     do i = 1,ntarg
                         targptr => targetinfo(i)
-                        if (targptr%name==lcarray(8)) obtarg(n_fires) = i
+                        if (targptr%name==lcarray(8)) fireptr%ignition_target = i
                     end do
-                    if (obtarg(n_fires)==0) then
+                    if (fireptr%ignition_target==0) then
                         write (*,5324) n_fires
                         write (logerr,5324) n_fires
                         stop

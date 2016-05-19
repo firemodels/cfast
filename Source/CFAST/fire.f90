@@ -1217,8 +1217,9 @@ module fire_routines
 
     real(eb) :: tmpob(2,mxfires), tnobj
 
-    integer :: iobj, ignflg, itarg
+    integer :: i, ignflg, itarg
 
+    type(fire_type), pointer :: fireptr
     type(target_type), pointer :: targptr
 
     ifobj = 0
@@ -1228,28 +1229,29 @@ module fire_routines
     ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature
     ! and flux are stored backupwards - this is historical
     ! see corresponding code in keywordcases
-    do iobj = 1, n_fires
-        if (.not.objon(iobj)) then
-            ignflg = objign(iobj)
-            itarg = obtarg(iobj)
+    do i = 1, n_fires
+        fireptr => fireinfo(i)
+        if (.not.objon(i)) then
+            ignflg = objign(i)
+            itarg = fireptr%ignition_target
             if (ignflg==1) then
-                if (objcri(1,iobj)<=tnobj) then
-                    tobj = min(objcri(1,iobj),tobj)
-                    ifobj = iobj
-                    tmpob(1,iobj) = 1.0_eb
-                    tmpob(2,iobj) = objcri(1,iobj)
+                if (objcri(1,i)<=tnobj) then
+                    tobj = min(objcri(1,i),tobj)
+                    ifobj = i
+                    tmpob(1,i) = 1.0_eb
+                    tmpob(2,i) = objcri(1,i)
                 else
-                    tmpob(1,iobj) = 0.0_eb
-                    tmpob(2,iobj) = tnobj + dt
+                    tmpob(1,i) = 0.0_eb
+                    tmpob(2,i) = tnobj + dt
                 end if
             else if (ignflg==2) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),objcri(3,iobj),obcond(igntemp,iobj),&
-                   iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),objcri(3,i),obcond(igntemp,i),&
+                   i,ifobj,tobj,tmpob(1,i))
             else if (ignflg==3) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition(told,dt,targptr%flux_front,objcri(2,iobj),obcond(ignflux,iobj),&
-                   iobj,ifobj,tobj,tmpob(1,iobj))
+                call check_object_ignition(told,dt,targptr%flux_front,objcri(2,i),obcond(ignflux,i),&
+                   i,ifobj,tobj,tmpob(1,i))
             else
                 call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
                 stop
@@ -1258,23 +1260,24 @@ module fire_routines
     end do
 
     if (iflag/=check_detector_state) then
-        do iobj = 1, n_fires
-            if (.not.objon(iobj)) then
-                itarg = obtarg(iobj)
+        do i = 1, n_fires
+            fireptr => fireinfo(i)
+            if (.not.objon(i)) then
+                itarg = fireptr%ignition_target
                 if (ignflg>1) then
                     targptr => targetinfo(itarg)
-                    obcond(igntemp,iobj) = targptr%temperature(idx_tempf_trg)
-                    obcond(ignflux,iobj) = targptr%flux_front
+                    obcond(igntemp,i) = targptr%temperature(idx_tempf_trg)
+                    obcond(ignflux,i) = targptr%flux_front
                 end if
-                if (iflag==set_detector_state.and.tmpob(1,iobj)>0.0_eb) then
-                    if (tmpob(2,iobj)<=tobj) then
-                        objon(iobj) = .true.
+                if (iflag==set_detector_state.and.tmpob(1,i)>0.0_eb) then
+                    if (tmpob(2,i)<=tobj) then
+                        objon(i) = .true.
                         if (option(fbtobj)==on) then
-                            objset(iobj) = 1
+                            objset(i) = 1
                         else
-                            objset(iobj) = 0
+                            objset(i) = 0
                         end if
-                        objcri(1,iobj) = tmpob(2,iobj)
+                        objcri(1,i) = tmpob(2,i)
                     end if
                 end if
             end if

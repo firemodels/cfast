@@ -35,6 +35,7 @@ module cfast_types
         character(128) :: name                          ! user selected name for the fire (user input)
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
+        integer :: chemistry_type                       ! fire type. Currently, only type = 2, constrained fire, is used
         
         real(eb) :: characteristic_length               ! characteristic length for fire = max fire diameter
         

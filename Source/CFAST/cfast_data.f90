@@ -58,8 +58,6 @@ module fire_data
     type(fire_type), target :: fireinfo(mxfires)
     
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
-
-    integer, dimension(mxfires) :: objtyp           ! fire type for each fire. Currently, only type = 2, constrained fire, is used
     
     integer :: objign(mxfires)                      ! ignition type for each fire (1 = time, 2 = temperature, 3 = heat flux)
     real(eb), dimension(3,mxfires) :: objcri        ! ignition criteria for each fire (1 = time, 2 = flux, 3 = temperature)

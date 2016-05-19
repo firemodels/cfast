@@ -738,10 +738,10 @@ module input_routines
             fireptr => fireinfo(n_fires)
 
             ! Only constrained fires
-            objtyp(n_fires) = 2
-            if (objtyp(n_fires)>2) then
-                write(*,5321) objtyp(n_fires)
-                write(logerr,5321) objtyp(n_fires)
+            fireptr%chemistry_type = 2
+            if (fireptr%chemistry_type>2) then
+                write(*,5321) fireptr%chemistry_type
+                write(logerr,5321) fireptr%chemistry_type
                 stop
             end if
 

@@ -484,7 +484,7 @@ module fire_routines
     end if
 
     lobjlfm = objlfm(objn)
-    xxtime = time - objcri(1,objn)
+    xxtime = time - fireptr%ignition_time
 
     id = roomptr%sprinkler_activated
 
@@ -500,7 +500,7 @@ module fire_routines
         ! and rate at sprinkler activation time*exp( ...)
         dtectptr => detectorinfo(id)
         tdrate = dtectptr%tau
-        xxtimef = dtectptr%activation_time - objcri(1,objn)
+        xxtimef = dtectptr%activation_time - fireptr%ignition_time
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,qt)
         call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,qtf)
         ifact = 1
@@ -1241,22 +1241,22 @@ module fire_routines
             ignflg = objign(i)
             itarg = fireptr%ignition_target
             if (ignflg==1) then
-                if (objcri(1,i)<=tnobj) then
-                    tobj = min(objcri(1,i),tobj)
+                if (fireptr%ignition_time<=tnobj) then
+                    tobj = min(fireptr%ignition_time,tobj)
                     ifobj = i
                     tmpob(1,i) = 1.0_eb
-                    tmpob(2,i) = objcri(1,i)
+                    tmpob(2,i) = fireptr%ignition_time
                 else
                     tmpob(1,i) = 0.0_eb
                     tmpob(2,i) = tnobj + dt
                 end if
             else if (ignflg==2) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),objcri(2,i),obcond(igntemp,i),&
+                call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),fireptr%ignition_criterion,obcond(igntemp,i),&
                    i,ifobj,tobj,tmpob(1,i))
             else if (ignflg==3) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition(told,dt,targptr%flux_incident_front,objcri(3,i),obcond(ignflux,i),&
+                call check_object_ignition(told,dt,targptr%flux_incident_front,fireptr%ignition_criterion,obcond(ignflux,i),&
                    i,ifobj,tobj,tmpob(1,i))
             else
                 call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
@@ -1283,7 +1283,7 @@ module fire_routines
                         else
                             objset(i) = 0
                         end if
-                        objcri(1,i) = tmpob(2,i)
+                        fireptr%ignition_time = tmpob(2,i)
                     end if
                 end if
             end if
@@ -1295,7 +1295,7 @@ module fire_routines
 
 ! --------------------------- check_object_ignition -------------------------------------------
 
-    subroutine check_object_ignition(told, dt, cond, trip, oldcond, iobj,ifobj, tobj, tmpob)
+    subroutine check_object_ignition(told, dt, cond, trip, oldcond, iobj, ifobj, tobj, tmpob)
 
     integer, intent(in) :: iobj
     real(eb), intent(in) :: told, dt, cond, trip, oldcond

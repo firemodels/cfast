@@ -753,11 +753,11 @@ module input_routines
                 write(logerr,5323) n_fires
                 stop
             end if
-            obj_fpos(n_fires) = 1
+            fireptr%modified_plume = 1
             if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .or. &
-                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 2
+                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) fireptr%modified_plume = 2
             if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .and. &
-                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) obj_fpos(n_fires) = 3
+                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) fireptr%modified_plume = 3
 
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire

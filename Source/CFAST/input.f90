@@ -761,9 +761,9 @@ module input_routines
 
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire
-                if (lcarray(6)=='TIME') objign(n_fires) = 1
-                if (lcarray(6)=='TEMP') objign(n_fires) = 2
-                if (lcarray(6)=='FLUX') objign(n_fires) = 3
+                if (lcarray(6)=='TIME') fireptr%ignition_type = 1
+                if (lcarray(6)=='TEMP') fireptr%ignition_type = 2
+                if (lcarray(6)=='FLUX') fireptr%ignition_type = 3
                 tmpcond = lrarray(7)
                 fireptr%ignition_target = 0
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
@@ -784,24 +784,26 @@ module input_routines
             end if
             fireptr%room = iroom
             fireptr%name = lcarray(11)
-            objon(n_fires) = .false.
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
             if (tmpcond>0.0_eb) then
-                if (objign(n_fires)==1) then
+                fireptr%ignited = .false.
+                if (fireptr%ignition_type==1) then
                     fireptr%ignition_time = tmpcond
                     fireptr%ignition_criterion = 1.0e30_eb
-                else if (objign(n_fires)==2.or.objign(n_fires)==3) then
+                else if (fireptr%ignition_type==2.or.fireptr%ignition_type==3) then
                     fireptr%ignition_time = 1.0e30_eb
                     fireptr%ignition_criterion = tmpcond
                 else
-                    write(*,5358) objign(n_fires)
-                    write(logerr,5358) objign(n_fires)
+                    write(*,5358) fireptr%ignition_type
+                    write(logerr,5358) fireptr%ignition_type
                     stop
                 end if
             else
-                objon(n_fires) = .true.
+                fireptr%ignited = .true.
             end if
-            if (option(fbtobj)==off.and.objign(n_fires)/=1.0_eb) then
+
+            ! If fire ignition backtracking is on, make sure time step is small enough to work
+            if (option(fbtobj)==off.and.fireptr%ignition_type/=1) then
                 if (stpmax>0.0_eb) then
                     stpmax = min(stpmax,1.0_eb)
                 else

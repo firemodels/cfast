@@ -687,14 +687,14 @@ module initialization_routines
 
     ! turn off objects
     n_fires = 0
-    objon(1:mxfires) = .false.
     objpos(1:3,1:mxfires) = -1.0_eb
     fireinfo(1:mxfires)%room = 0
     fireinfo(1:mxfires)%name = ' '
     fireinfo(1:mxfires)%chemistry_type = 2
-    fireinfo(1:mxfires)%igntion_type = 1
+    fireinfo(1:mxfires)%ignition_type = 1
     fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
     fireinfo(1:mxfires)%ignition_time = 0.0_eb
+    fireinfo(1:mxfires)%ignited = .false.
 
     ! trace species stuff
     objmaspy(1:mxfires) = 0.0_eb

@@ -791,7 +791,7 @@ module solve_routines
             else
                 idsave = idset
                 td = tdtect
-                objon(ifobj) = .true.
+                fireptr%ignited = .true.
                 objset(ifobj) = 0
                 call set_info_flags(info,rwork)
                 ifobj = 0

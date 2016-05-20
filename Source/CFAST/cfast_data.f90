@@ -58,8 +58,6 @@ module fire_data
     type(fire_type), target :: fireinfo(mxfires)
     
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
-    
-    integer :: objign(mxfires)                      ! ignition type for each fire (1 = time, 2 = temperature, 3 = heat flux)
 
     integer, dimension(mxfires) :: objlfm           ! actual number of time points for each fire
     real(eb), dimension(mxpts,mxfires) :: otime     ! time points for fire inputs
@@ -73,7 +71,6 @@ module fire_data
     real(eb), dimension(mxpts,mxfires) :: otrace    ! trace species production rate as a funciton of time
     
     integer, dimension(mxfires) :: objset           ! 0 if object has ignited, 1 otherwise. Only used for backtracking ignition
-    logical objon(mxfires)                          ! true if fire has ignited
     integer :: obj_fpos(mxfires)                    ! fire plume flag for each fire (1 = center, 2 = wall, 3 = corner)
     real(eb) :: objmaspy(mxfires)                   ! total pyroysate released by each fire up to the current time
     real(eb), dimension(2,mxfires) :: obcond        ! current conditions of each fire (1 = temperature, 2 = heat flux)

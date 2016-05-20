@@ -466,7 +466,7 @@ module fire_routines
     roomptr => roominfo(iroom)
     fireptr => fireinfo(objn)
     
-    if (.not.fireptr%ignited.or.objset(objn)>0) then
+    if (.not.fireptr%ignited.or.fireptr%backtrack) then
         omasst = 0.0_eb
         oareat = 0.0_eb
         ohight = 0.0_eb
@@ -1277,9 +1277,9 @@ module fire_routines
                     if (tmpob(2,i)<=tobj) then
                         fireptr%ignited = .true.
                         if (option(fbtobj)==on) then
-                            objset(i) = 1
+                            fireptr%backtrack = .true.
                         else
-                            objset(i) = 0
+                            fireptr%backtrack = .false.
                         end if
                         fireptr%ignition_time = tmpob(2,i)
                     end if

@@ -792,7 +792,7 @@ module solve_routines
                 idsave = idset
                 td = tdtect
                 fireptr%ignited = .true.
-                objset(ifobj) = 0
+                fireptr%backtrack = .false.
                 call set_info_flags(info,rwork)
                 ifobj = 0
             end if
@@ -851,7 +851,7 @@ module solve_routines
                 call cfastexit ('CFAST', idid)
                 stop
             end if
-            objset(1:mxfires) = 0
+            fireinfo(1:mxfires)%backtrack = .false.
         end if
 
         ! calculate the mass of objects that have been pyrolized

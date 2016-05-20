@@ -45,6 +45,7 @@ module cfast_types
         real(eb) :: molar_mass                          ! molar mass calculated from fuel composition
         real(eb) :: ignition_time                       ! time at ignition of fire, default is 0
         logical :: ignited                              ! true if fire has ignited
+        logical :: backtrack                            ! true if fire has ignited and we need to backtrack to find ignition time
         
         real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
             y_co_i(mxpts), y_trace_i(mxpts)

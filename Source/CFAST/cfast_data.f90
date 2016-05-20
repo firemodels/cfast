@@ -60,7 +60,6 @@ module fire_data
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
     
     integer :: objign(mxfires)                      ! ignition type for each fire (1 = time, 2 = temperature, 3 = heat flux)
-    real(eb), dimension(3,mxfires) :: objcri        ! ignition criteria for each fire (1 = time, 2 = temperature, 3 = heat flux)
 
     integer, dimension(mxfires) :: objlfm           ! actual number of time points for each fire
     real(eb), dimension(mxpts,mxfires) :: otime     ! time points for fire inputs

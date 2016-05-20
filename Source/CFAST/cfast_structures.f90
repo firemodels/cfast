@@ -40,12 +40,12 @@ module cfast_types
         
         real(eb) :: characteristic_length               ! characteristic length for fire = max fire diameter
         real(eb) :: molar_mass                          ! molar mass calculated from fuel composition
+        integer :: igntion_type                         ! ignition type for fire (1 = time, 2 = temperature, 3 = heat flux)
+        real(eb) :: ignition_criterion                  ! ignition criteria for fire. Units depend on ignition type
+        real(eb) :: ignition_time                       ! time at ignition of fire, default is 0
         
-        integer(eb) :: object, fire_type
         real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
             y_co_i(mxpts), y_trace_i(mxpts)
-        integer :: igntion_type
-        real(eb) :: ignition_criterion
 
         ! These are calculated results for the current time step
         real(eb) :: x_position, y_position, z_position, area

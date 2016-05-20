@@ -69,9 +69,7 @@ module fire_data
     real(eb), dimension(mxpts,mxfires) :: oco       ! CO production rate as a function of time
     real(eb), dimension(mxpts,mxfires) :: ood       ! soot production rate as a funciton of time
     real(eb), dimension(mxpts,mxfires) :: otrace    ! trace species production rate as a funciton of time
-    
-    integer, dimension(mxfires) :: objset           ! 0 if object has ignited, 1 otherwise. Only used for backtracking ignition
-    integer :: obj_fpos(mxfires)                    ! fire plume flag for each fire (1 = center, 2 = wall, 3 = corner)
+
     real(eb) :: objmaspy(mxfires)                   ! total pyroysate released by each fire up to the current time
     real(eb), dimension(2,mxfires) :: obcond        ! current conditions of each fire (1 = temperature, 2 = heat flux)
     real(eb) :: fqlow(mxfires), heatlp(mxfires)     ! HRR of current fire into lower layer

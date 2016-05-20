@@ -466,7 +466,7 @@ module fire_routines
     roomptr => roominfo(iroom)
     fireptr => fireinfo(objn)
     
-    if (.not.objon(objn).or.objset(objn)>0) then
+    if (.not.fireptr%ignited.or.objset(objn)>0) then
         omasst = 0.0_eb
         oareat = 0.0_eb
         ohight = 0.0_eb
@@ -1232,13 +1232,11 @@ module fire_routines
     tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
-    ! note that ignition type 1 is time, type 2 is temperature and 3 is flux !!! the critiria for temperature
-    ! and flux are stored backupwards - this is historical
-    ! see corresponding code in keywordcases
+    ! note that ignition type 1 = time, type 2 = temperature and 3 = incident flux
     do i = 1, n_fires
         fireptr => fireinfo(i)
-        if (.not.objon(i)) then
-            ignflg = objign(i)
+        if (.not.fireptr%ignited) then
+            ignflg = fireptr%ignition_type
             itarg = fireptr%ignition_target
             if (ignflg==1) then
                 if (fireptr%ignition_time<=tnobj) then
@@ -1268,7 +1266,7 @@ module fire_routines
     if (iflag/=check_detector_state) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
-            if (.not.objon(i)) then
+            if (.not.fireptr%ignited) then
                 itarg = fireptr%ignition_target
                 if (ignflg>1) then
                     targptr => targetinfo(itarg)
@@ -1277,7 +1275,7 @@ module fire_routines
                 end if
                 if (iflag==set_detector_state.and.tmpob(1,i)>0.0_eb) then
                     if (tmpob(2,i)<=tobj) then
-                        objon(i) = .true.
+                        fireptr%ignited = .true.
                         if (option(fbtobj)==on) then
                             objset(i) = 1
                         else

@@ -1719,7 +1719,7 @@ module input_routines
     character(128) :: lcarray(ncol)
     character(5) :: label
     integer :: logerr = 3, midpoint = 1, base = 2, ir, i, ii, nret
-    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, area, flamelength
+    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, flamelength
     type(room_type), pointer :: roomptr
 
     ! there are eight required inputs for each fire
@@ -1801,12 +1801,6 @@ module input_routines
                 max_area = max(max_area,oarea(ii,iobj))
             end do
 
-            ! calculate size of the object based on the maximum area with a thickness assuming it's a cube
-            ! as with the flame height calculation, the minimum area is 0.09 m^2 (about 1 ft^2)
-            objxyz(1,iobj) = sqrt(max(max_area,pio4*0.2_eb**2))
-            objxyz(2,iobj) = objxyz(1,iobj)
-            objxyz(3,iobj) = objxyz(1,iobj)
-
             ! calculate a characteristic length of an object (we assume the diameter).
             ! This is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances
@@ -1834,11 +1828,10 @@ module input_routines
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
-    area = objxyz(1,iobj)*objxyz(2,iobj)
-    call flame_height(max_hrr, area, flamelength)
+    call flame_height(max_hrr, max_area, flamelength)
     flamelength = max (0.0_eb, flamelength)
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
-    hrrpm3 = max_hrr/(area*(objxyz(3,iobj)+flamelength))
+    hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
     if (hrrpm3>4.0e6_eb) then
         write (*,5106) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
         write (*, 5108)

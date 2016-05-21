@@ -57,7 +57,9 @@ module fire_data
     integer :: n_fires                              ! number of fires in the current simulation
     type(fire_type), target :: fireinfo(mxfires)
     
-    integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)
+    integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)    
+    integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
+                                                    !   (1 = number of fire in this room, 2 => first fire in this room)
 
     integer, dimension(mxfires) :: objlfm           ! actual number of time points for each fire
     real(eb), dimension(mxpts,mxfires) :: otime     ! time points for fire inputs
@@ -76,19 +78,16 @@ module fire_data
     real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 
                                                     !   (1=mass pyrolysed, 2=mass entrained, 3=mass burned)
     real(eb) :: qspray(mxfires,2)                   ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
-    real(eb) :: objxyz(4,mxfires)                   ! object size (barely used ... replace it)
     real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time
     real(eb) :: radio(mxfires)                      ! total trace species released up to the current time
-    real(eb) :: fopos(3,mxfires),objpos(3,mxfires)  ! position of the base of each fire at the current time
+    real(eb) :: fopos(3,mxfires),objpos(3,mxfires)  ! initial position of the base of each fire
     real(eb) :: femr(mxfires)                       ! trace species production rate at the current time
     real(eb) :: femp(mxfires)                       ! pyroysis rate for each fire at the current time
     real(eb) :: fems(mxfires)                       ! mass burning rate for each fire at the current time
     real(eb) :: fqf(mxfires)                        ! HRR of each fire at the current time
     real(eb) :: fqfc(mxfires)                       ! convective HRR of each fire at the current time
     real(eb) :: xfire(mxfires,mxfirp)               ! various fire outputs at current time
-    
-    integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
-                                                    !   (1 = number of fire in this room, 2 => first fire in this room)
+
     real(eb) :: qf(mxrooms)                         ! total fire heat release rate in each compartment
     real(eb) :: fqdj(mxrooms)                       ! HRR of door jet fires in each room at the current time
 

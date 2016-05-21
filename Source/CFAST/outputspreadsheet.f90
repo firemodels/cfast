@@ -54,6 +54,7 @@ module spreadsheet_routines
     logical :: firstc = .true.
     integer :: position, i
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     save firstc
 
@@ -85,6 +86,7 @@ module spreadsheet_routines
 
     if (n_fires/=0) then
         do i = 1, n_fires
+            fireptr => fireinfo(i)
             call flame_height (fqf(i),farea(i),fheight)
             call ssaddtolist (position,fems(i),outarray)
             call ssaddtolist (position,femp(i),outarray)
@@ -93,7 +95,7 @@ module spreadsheet_routines
             call ssaddtolist (position,fqupr(i),outarray)
             call ssaddtolist (position,fheight,outarray)
             call ssaddtolist (position,fqfc(i),outarray)
-            call ssaddtolist (position,objmaspy(i),outarray)
+            call ssaddtolist (position,fireptr%total_pyrolysate,outarray)
             call ssaddtolist (position,radio(i),outarray)
         end do
     end if

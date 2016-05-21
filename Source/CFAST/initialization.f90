@@ -697,11 +697,11 @@ module initialization_routines
     fireinfo(1:mxfires)%ignited = .false.
     fireinfo(1:mxfires)%backtrack = .false.
     fireinfo(1:mxfires)%modified_plume = 1
+    fireinfo(1:mxfires)%chirad = 0.35_eb
 
     ! trace species stuff
-    objmaspy(1:mxfires) = 0.0_eb
+    fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
     radio(1:mxfires) = 0.0_eb
-    radconsplit(1:mxfires) = 0.35_eb
     tradio = 0.0_eb
 
     return

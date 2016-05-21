@@ -70,8 +70,7 @@ module fire_data
     real(eb), dimension(mxpts,mxfires) :: ood       ! soot production rate as a funciton of time
     real(eb), dimension(mxpts,mxfires) :: otrace    ! trace species production rate as a funciton of time
 
-    real(eb) :: objmaspy(mxfires)                   ! total pyroysate released by each fire up to the current time
-    real(eb), dimension(2,mxfires) :: obcond        ! current conditions of each fire (1 = temperature, 2 = heat flux)
+    real(eb), dimension(2,mxfires) :: obcond        ! current conditions at each fire (1 = temperature, 2 = heat flux)
     real(eb) :: fqlow(mxfires), heatlp(mxfires)     ! HRR of current fire into lower layer
     real(eb) :: fqupr(mxfires), heatup(mxfires)     ! HRR of current fire into upper layer
     real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 
@@ -79,7 +78,6 @@ module fire_data
     real(eb) :: qspray(mxfires,2)                   ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
     real(eb) :: objxyz(4,mxfires)                   ! object size (barely used ... replace it)
     real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time
-    real(eb) :: radconsplit(mxfires)                ! radiative fraction for each fire
     real(eb) :: radio(mxfires)                      ! total trace species released up to the current time
     real(eb) :: fopos(3,mxfires),objpos(3,mxfires)  ! position of the base of each fire at the current time
     real(eb) :: femr(mxfires)                       ! trace species production rate at the current time

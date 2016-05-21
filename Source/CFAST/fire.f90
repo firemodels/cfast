@@ -178,8 +178,10 @@ module fire_routines
     integer :: lsp, ipass, i
     type(detector_type), pointer :: dtectptr
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     roomptr => roominfo(iroom)
+    fireptr => fireinfo(ifire)
 
     ! note: added upper/lower parameters to following three statements.
     ! xtu was incorrectly set to lower layer temp, fixed it
@@ -214,7 +216,7 @@ module fire_routines
     ! divvy up the plume output into radiation and convective energy.
     ! convection drives the plume entrainment
 
-    chirad = max(min(radconsplit(ifire),1.0_eb),0.0_eb)
+    chirad = max(min(fireptr%chirad,1.0_eb),0.0_eb)
     qheatl = xqpyrl
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
 
@@ -634,9 +636,11 @@ module fire_routines
 
     integer ::i, j, irm, ii, isys
     real(eb) :: filter
+    type(fire_type), pointer :: fireptr
 
     do i = 1, n_fires
-        objmaspy(i) = objmaspy(i) + femp(i)*deltt
+        fireptr => fireinfo(i)
+        fireptr%total_pyrolysate = fireptr%total_pyrolysate + femp(i)*deltt
         radio(i) = radio(i) + femr(i)*deltt
     end do
 
@@ -864,10 +868,11 @@ module fire_routines
 
     real(eb), intent(out) :: tg, vg(4)
 
-    real(eb) :: qdot, xrad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
+    real(eb) :: qdot, chirad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
     real(eb) :: xdistance, ydistance, distance, hall_width
     integer :: i
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     roomptr => roominfo(iroom)
 
@@ -880,9 +885,10 @@ module fire_routines
     vg = 0.0_eb
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,n_fires
+        fireptr => fireinfo(i)
         if (ifroom(i)==iroom) then
             qdot = fqf(i)
-            xrad = radconsplit(i)
+            chirad = fireptr%chirad
             area = farea(i)
             tu = roomptr%temp(u)
             tl = roomptr%temp(l)
@@ -906,9 +912,10 @@ module fire_routines
                 hall_width = 0.0_eb
             end if
             ! first calculate plume temperature at desired location
-            call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
+            call get_plume_tempandvelocity (qdot, chirad, area, tu, tl, zfire, zlayer, z, r, tplume, vplume)
             ! include ceiling jet effects if desired location is in the ceiling jet
-            call get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, tplume_ceiling, vplume_ceiling)
+            call get_plume_tempandvelocity (qdot, chirad, area, tu, tl, zfire, zlayer, zceil, 0.0_eb, &
+                tplume_ceiling, vplume_ceiling)
             call get_ceilingjet_tempandvelocity(qdot, tu, tl, tplume_ceiling, zfire, zlayer, zceil, z, distance, r, &
                 hall_width, tcj, vcj)
             tg = max(tg,tplume,tcj)

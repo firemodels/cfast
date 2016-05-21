@@ -1747,7 +1747,7 @@ module input_routines
                 fireptr%n_Cl = lrarray(5)
                 fireptr%molar_mass = (12.01*fireptr%n_C + 1.008*fireptr%n_H + 16.0*fireptr%n_O + &
                     14.01*fireptr%n_N + 35.45*fireptr%n_Cl)/1000.0
-                radconsplit(iobj) = lrarray(6)
+                fireptr%chirad = lrarray(6)
                 ohcomb = lrarray(7)
                 if (ohcomb<=0.0_eb) then
                     write(*,5001) ohcomb

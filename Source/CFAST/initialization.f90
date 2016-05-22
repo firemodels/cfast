@@ -701,7 +701,7 @@ module initialization_routines
 
     ! trace species stuff
     fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
-    radio(1:mxfires) = 0.0_eb
+    fireinfo(1:mxfires)%total_trace = 0.0_eb
     tradio = 0.0_eb
 
     return

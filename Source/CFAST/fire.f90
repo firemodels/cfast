@@ -641,13 +641,14 @@ module fire_routines
     do i = 1, n_fires
         fireptr => fireinfo(i)
         fireptr%total_pyrolysate = fireptr%total_pyrolysate + femp(i)*deltt
-        radio(i) = radio(i) + femr(i)*deltt
+        fireptr%total_trace = fireptr%total_trace + femr(i)*deltt
     end do
 
     ! sum the trace release from all of the fires
     tradio = 0.0_eb
     do i = 1, n_fires
-        tradio = tradio + radio(i)
+        fireptr => fireinfo(i)
+        tradio = tradio + fireptr%total_trace
     end do
 
     ! sum the hvac flow

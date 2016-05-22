@@ -49,6 +49,7 @@ module cfast_types
         logical :: backtrack                            ! true if fire has ignited and we need to backtrack to find ignition time
         integer :: modified_plume                       ! fire plume flag, 1 = center, 2 = wall, 3 = corner
         real(eb) :: total_pyrolysate                    ! total pyroysate released by fire up to the current time
+        real(eb) :: total_trace                         ! total trace species released by fire up to the current time
         
         real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
             y_co_i(mxpts), y_trace_i(mxpts)

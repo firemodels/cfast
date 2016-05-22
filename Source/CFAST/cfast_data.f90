@@ -79,7 +79,6 @@ module fire_data
                                                     !   (1=mass pyrolysed, 2=mass entrained, 3=mass burned)
     real(eb) :: qspray(mxfires,2)                   ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
     real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time
-    real(eb) :: radio(mxfires)                      ! total trace species released up to the current time
     real(eb) :: fopos(3,mxfires),objpos(3,mxfires)  ! initial position of the base of each fire
     real(eb) :: femr(mxfires)                       ! trace species production rate at the current time
     real(eb) :: femp(mxfires)                       ! pyroysis rate for each fire at the current time

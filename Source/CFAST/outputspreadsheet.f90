@@ -96,7 +96,7 @@ module spreadsheet_routines
             call ssaddtolist (position,fheight,outarray)
             call ssaddtolist (position,fqfc(i),outarray)
             call ssaddtolist (position,fireptr%total_pyrolysate,outarray)
-            call ssaddtolist (position,radio(i),outarray)
+            call ssaddtolist (position,fireptr%total_trace,outarray)
         end do
     end if
 

@@ -188,7 +188,7 @@ module output_routines
             fireptr => fireinfo(i)
             call flame_height (fqf(i),farea(i),fheight)
             write (iofilo,5010) trim(fireptr%name), fems(i), femp(i), fqf(i),&
-                fheight, fqfc(i), fqf(i)-fqfc(i), fireptr%total_pyrolysate, radio(i)
+                fheight, fqfc(i), fqf(i)-fqfc(i), fireptr%total_pyrolysate, fireptr%total_trace
         end do
     end if
     write (iofilo,'(a)') ' '

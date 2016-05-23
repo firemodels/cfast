@@ -72,7 +72,6 @@ module fire_data
     real(eb), dimension(mxpts,mxfires) :: ood       ! soot production rate as a funciton of time
     real(eb), dimension(mxpts,mxfires) :: otrace    ! trace species production rate as a funciton of time
 
-    real(eb), dimension(2,mxfires) :: obcond        ! current conditions at each fire (1 = temperature, 2 = heat flux)
     real(eb) :: fqlow(mxfires), heatlp(mxfires)     ! HRR of current fire into lower layer
     real(eb) :: fqupr(mxfires), heatup(mxfires)     ! HRR of current fire into upper layer
     real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 

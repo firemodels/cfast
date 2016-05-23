@@ -21,8 +21,6 @@ module cparams
     integer, parameter :: ns = 11               ! number of species
     integer, parameter :: mxfires = 202         ! maximum number of fire objects
     integer, parameter :: mxfirp = 20           ! number of parameters for each fire object
-    integer, parameter :: igntemp = 1           ! object ignition criteria index for temperature
-    integer, parameter :: ignflux = 2           ! object ignition criteria index for heat flux
 
     integer, parameter :: mxthrmp = 125         ! maximum number of thermal properties
     integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names

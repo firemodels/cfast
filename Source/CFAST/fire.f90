@@ -1260,12 +1260,12 @@ module fire_routines
                 end if
             else if (ignflg==2) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition(told,dt,targptr%temperature(idx_tempf_trg),fireptr%ignition_criterion,obcond(igntemp,i),&
-                   i,ifobj,tobj,tmpob(1,i))
+                call check_object_ignition (told,dt,targptr%temperature(idx_tempf_trg),fireptr%ignition_criterion, &
+                    fireptr%temperature,i,ifobj,tobj,tmpob(1,i))
             else if (ignflg==3) then
                 targptr => targetinfo(itarg)
-                call check_object_ignition(told,dt,targptr%flux_incident_front,fireptr%ignition_criterion,obcond(ignflux,i),&
-                   i,ifobj,tobj,tmpob(1,i))
+                call check_object_ignition (told,dt,targptr%flux_incident_front,fireptr%ignition_criterion, &
+                    fireptr%incident_flux,i,ifobj,tobj,tmpob(1,i))
             else
                 call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
                 stop
@@ -1280,8 +1280,8 @@ module fire_routines
                 itarg = fireptr%ignition_target
                 if (ignflg>1) then
                     targptr => targetinfo(itarg)
-                    obcond(igntemp,i) = targptr%temperature(idx_tempf_trg)
-                    obcond(ignflux,i) = targptr%flux_incident_front
+                    fireptr%temperature = targptr%temperature(idx_tempf_trg)
+                    fireptr%incident_flux = targptr%flux_incident_front
                 end if
                 if (iflag==set_detector_state.and.tmpob(1,i)>0.0_eb) then
                     if (tmpob(2,i)<=tobj) then

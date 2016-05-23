@@ -398,6 +398,7 @@ module spreadsheet_routines
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     data firstc/.true./
     save firstc
@@ -429,10 +430,11 @@ module spreadsheet_routines
     ! fires
     if (n_fires/=0) then
         do i = 1, n_fires
+            fireptr => fireinfo(i)
             call flame_height (fqf(i),farea(i),fheight)
             call SSaddtolist (position,fqf(i)/1000.,outarray)
             call SSaddtolist (position,fheight,outarray)
-            call SSaddtolist (position,fopos(3,i),outarray)
+            call SSaddtolist (position,fireptr%z_position+fireptr%z_offset,outarray)
             call SSaddtolist (position,farea(i),outarray)
         end do
     end if

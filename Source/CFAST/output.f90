@@ -880,8 +880,8 @@ module output_routines
             nnv = objlfm(io)
             roomptr => roominfo(fireptr%room)
             write (iofilo,5020) trim(fireptr%name), io, fire_geometry(fireptr%modified_plume)
-            write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), objpos(1,io), objpos(2,io), &
-                objpos(3,io), relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
+            write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), fireptr%x_position, fireptr%y_position, &
+                fireptr%z_position, relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
             write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
             write (cbuf(51:132),5050)

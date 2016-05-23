@@ -687,7 +687,9 @@ module initialization_routines
 
     ! turn off objects
     n_fires = 0
-    objpos(1:3,1:mxfires) = -1.0_eb
+    fireinfo(1:mxfires)%x_position = -1.0_eb
+    fireinfo(1:mxfires)%y_position = -1.0_eb
+    fireinfo(1:mxfires)%z_position = -1.0_eb
     fireinfo(1:mxfires)%room = 0
     fireinfo(1:mxfires)%name = ' '
     fireinfo(1:mxfires)%chemistry_type = 2

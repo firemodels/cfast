@@ -155,9 +155,9 @@ module input_routines
     do i = 1, n_fires
         fireptr => fireinfo(i)
         roomptr => roominfo(fireptr%room)
-        if ((objpos(1,i)<0.0_eb).or.(objpos(1,i)>roomptr%cwidth)) objpos(1,i) = roomptr%cwidth/2.0_eb
-        if ((objpos(2,i)<0.0_eb).or.(objpos(2,i)>roomptr%cdepth)) objpos(2,i) = roomptr%cdepth/2.0_eb
-        if ((objpos(3,i)<0.0_eb).or.(objpos(3,i)>roomptr%cheight)) objpos(3,i) = 0.0_eb
+        if ((fireptr%x_position<0.0_eb).or.(fireptr%x_position>roomptr%cwidth)) fireptr%x_position = roomptr%cwidth/2.0_eb
+        if ((fireptr%y_position<0.0_eb).or.(fireptr%y_position>roomptr%cdepth)) fireptr%y_position = roomptr%cdepth/2.0_eb
+        if ((fireptr%z_position<0.0_eb).or.(fireptr%z_position>roomptr%cheight)) fireptr%z_position = 0.0_eb
     end do
 
     ! make sure ceiling/floor vent specifications are correct -  we have to do this
@@ -745,19 +745,19 @@ module input_routines
                 stop
             end if
 
-            objpos(1,n_fires) = lrarray(2)
-            objpos(2,n_fires) = lrarray(3)
-            objpos(3,n_fires) = lrarray(4)
-            if (objpos(1,n_fires)>roomptr%cwidth.or.objpos(2,n_fires)>roomptr%cdepth.or.objpos(3,n_fires)>roomptr%cheight) then
+            fireptr%x_position = lrarray(2)
+            fireptr%y_position = lrarray(3)
+            fireptr%z_position = lrarray(4)
+            if (fireptr%x_position>roomptr%cwidth.or.fireptr%y_position>roomptr%cdepth.or.fireptr%z_position>roomptr%cheight) then
                 write(*,5323) n_fires
                 write(logerr,5323) n_fires
                 stop
             end if
             fireptr%modified_plume = 1
-            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .or. &
-                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) fireptr%modified_plume = 2
-            if (min(objpos(1,n_fires),roomptr%cwidth-objpos(1,n_fires))<=mx_hsep .and. &
-                min(objpos(2,n_fires),roomptr%cdepth-objpos(2,n_fires))<=mx_hsep) fireptr%modified_plume = 3
+            if (min(fireptr%x_position,roomptr%cwidth-fireptr%x_position)<=mx_hsep .or. &
+                min(fireptr%y_position,roomptr%cdepth-fireptr%y_position)<=mx_hsep) fireptr%modified_plume = 2
+            if (min(fireptr%x_position,roomptr%cwidth-fireptr%x_position)<=mx_hsep .and. &
+                min(fireptr%y_position,roomptr%cdepth-fireptr%y_position)<=mx_hsep) fireptr%modified_plume = 3
 
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire
@@ -1822,9 +1822,9 @@ module input_routines
 
     ! Position the object
     roomptr => roominfo(fireptr%room)
-    call positionobject(objpos,1,iobj,roomptr%cwidth,midpoint,mx_hsep)
-    call positionobject(objpos,2,iobj,roomptr%cdepth,midpoint,mx_hsep)
-    call positionobject(objpos,3,iobj,roomptr%cheight,base,mx_hsep)
+    call positionobject(fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
+    call positionobject(fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
+    call positionobject(fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -1833,15 +1833,15 @@ module input_routines
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
     hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
     if (hrrpm3>4.0e6_eb) then
-        write (*,5106) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
+        write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (*, 5108)
-        write (logerr,5106) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
+        write (logerr,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (logerr, 5108)
         stop
     else if (hrrpm3>2.0e6_eb) then
-        write (*,5107) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
+        write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (*, 5108)
-        write (logerr,5107) trim(fireptr%name),(objpos(i,iobj),i=1,3),hrrpm3
+        write (logerr,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (logerr, 5108)
     end if
 
@@ -2050,37 +2050,34 @@ module input_routines
 
 ! --------------------------- positionobject -------------------------------------------
 
-    subroutine positionobject (xyz,index,opoint,pos_max,defaultposition,minimumseparation)
+    subroutine positionobject (xyorz,pos_max,defaultposition,minimumseparation)
 
     !     routine: positionobject
     !     purpose: Position an object in a compartment
-    !     arguments: xyz: objposition (objpos)
-    !                index: 1, 2 or 3 for x, y or z
-    !		         opoint: the object pointer
-    !		         rpoint: the compartment
+    !     arguments: xyorz: object position in the x, y, or z direction
     !		         pos_max: the maximum extent
     !		         defaultposition: to set to zero (base)(2) or midpoint(1)
     !		         minimumseparation: the closest the object can be to a wall
 
-    integer, intent(in) :: index, defaultposition, opoint
+    integer, intent(in) :: defaultposition
     real(eb), intent(in) :: minimumseparation, pos_max
-    real(eb), intent(inout) :: xyz(3,*)
+    real(eb), intent(inout) :: xyorz
 
-    if ((xyz(index,opoint)<0.0_eb).or.(xyz(index,opoint)>pos_max)) then
+    if ((xyorz<0.0_eb).or.(xyorz>pos_max)) then
         select case (defaultposition)
         case (1)
-            xyz(index,opoint) = pos_max/2.0_eb
+            xyorz = pos_max / 2.0_eb
         case (2)
-            xyz(index,opoint) = minimumseparation
+            xyorz = minimumseparation
         case default
             write (*,*) 'Fire objects positioned specified outside compartment bounds.'
             write (logerr,*) 'Fire objects positioned specified outside compartment bounds.'
             stop
         end select
-    else if (xyz(index,opoint)==0.0_eb) then
-        xyz(index,opoint) = minimumseparation
-    else if (xyz(index,opoint)==pos_max) then
-        xyz(index,opoint) = pos_max-minimumseparation
+    else if (xyorz==0.0_eb) then
+        xyorz = minimumseparation
+    else if (xyorz==pos_max) then
+        xyorz = pos_max - minimumseparation
     end if
 
     return

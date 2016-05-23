@@ -71,6 +71,9 @@ module fire_routines
         iroom = fireptr%room
         roomptr => roominfo(iroom)
         call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
+
+        fireptr%z_offset = ohight
+        
         oplume(1,i) = omasst
 
         do lsp = 1, ns
@@ -78,9 +81,10 @@ module fire_routines
             stmass(l,lsp) = roomptr%species_mass(l,lsp)
         end do
 
-        call do_fire(i,iroom,oplume(1,i),roomptr%cheight,roomptr%cwidth,roomptr%cdepth,objhct,y_soot,y_co, &
-            y_trace,n_C,n_H,n_O,n_N,n_Cl,fireptr%molar_mass,stmass,objpos(1,i),objpos(2,i),objpos(3,i)+ohight,oareat, &
-            oplume(2,i),oplume(3,i),oqdott,xntms,qf(iroom),xqfc,xqfr,heatlp(iroom),heatup(iroom))
+        call do_fire(i, iroom, oplume(1,i), roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, y_co, &
+            y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, fireptr%x_position, fireptr%y_position, &
+            fireptr%z_position+fireptr%z_offset, oareat, oplume(2,i), oplume(3,i), oqdott, xntms, qf(iroom), xqfc, xqfr, &
+            heatlp(iroom), heatup(iroom))
 
         ! sum the flows for return to the source routine
         xtl = roomptr%temp(l)
@@ -100,9 +104,9 @@ module fire_routines
         ! fire physics uses the sorted arrays, sorted by compartment
         nfire = nfire + 1
         ifroom(nfire) = iroom
-        xfire(nfire,f_fire_xpos) = objpos(1,i)
-        xfire(nfire,f_fire_ypos) = objpos(2,i)
-        xfire(nfire,f_fire_zpos) = objpos(3,i) + ohight
+        xfire(nfire,f_fire_xpos) = fireptr%x_position
+        xfire(nfire,f_fire_ypos) = fireptr%y_position
+        xfire(nfire,f_fire_zpos) = fireptr%z_position + fireptr%z_offset
         xfire(nfire,f_plume_zpos) = oplume(3,i)
         xfire(nfire,f_plume_xpos) = oplume(1,i)
         xfire(nfire,f_plume_ypos) = oplume(2,i)
@@ -127,8 +131,6 @@ module fire_routines
         fqlow(nobj) = heatlp(iroom)
         fqupr(nobj) = heatup(iroom)
         farea(nobj) = oareat
-        fopos(1:3,nobj) = objpos(1:3,i)
-        fopos(3,nobj) = fopos(3,nobj) + ohight
     end do
 
     return
@@ -1201,9 +1203,9 @@ module fire_routines
 
     do i = 1, n_fires
         fireptr => fireinfo(i)
-        smv_xfire(i) = fopos(1,i)
-        smv_yfire(i) = fopos(2,i)
-        smv_zfire(i) = fopos(3,i)
+        smv_xfire(i) = fireptr%x_position
+        smv_yfire(i) = fireptr%y_position
+        smv_zfire(i) = fireptr%z_position + fireptr%z_offset
         call flame_height (fqf(i),farea(i),fheight)
         smv_qdot(i) = fqf(i)
         smv_height(i) = fheight

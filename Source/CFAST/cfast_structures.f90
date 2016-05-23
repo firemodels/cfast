@@ -40,8 +40,12 @@ module cfast_types
         real(eb) :: ignition_criterion                  ! ignition criteria for fire. Units depend on ignition type (user input)
         integer :: chemistry_type                       ! fire type. Currently, only constrained fire (user input)
         real(eb) :: n_C, n_H, n_O, n_N, n_Cl            ! stociometry of the fuel (user input)
-        real(eb) :: chirad                              ! fraction of fire HRR released as radiation (unser input)
-        
+        real(eb) :: chirad                              ! fraction of fire HRR released as radiation (user input)
+        real(eb) :: x_position                          ! initial X position of the base of fire (user input)
+        real(eb) :: y_position                          ! initial Y position of the base of fire (user input)
+        real(eb) :: z_position                          ! initial Z position of the base of fire (user input)
+
+        real(eb) :: z_offset                            ! current height of the fire above initial Z position
         real(eb) :: characteristic_length               ! characteristic length for fire = max fire diameter
         real(eb) :: molar_mass                          ! molar mass calculated from fuel composition
         real(eb) :: ignition_time                       ! time at ignition of fire, default is 0
@@ -55,7 +59,7 @@ module cfast_types
             y_co_i(mxpts), y_trace_i(mxpts)
 
         ! These are calculated results for the current time step
-        real(eb) :: x_position, y_position, z_position, area
+        real(eb) :: area
         real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
     end type fire_type

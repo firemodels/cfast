@@ -812,7 +812,7 @@ module input_routines
             end if
 
             ! read and set the other stuff for this fire
-            call inputembeddedfire (fireptr, ir, inumc, n_fires)
+            call inputembeddedfire (fireptr, ir, inumc)
         end if
     end do
 
@@ -1703,7 +1703,7 @@ module input_routines
 
 ! --------------------------- inputembeddedfire -------------------------------------------
 
-    subroutine inputembeddedfire(fireptr, lrowcount, inumc, iobj)
+    subroutine inputembeddedfire(fireptr, lrowcount, inumc)
 
     !     routine: inputembeddedfire
     !     purpose: This routine reads a new format fire definition that begins with a FIRE keyword (already read in keywordcases)
@@ -1713,12 +1713,12 @@ module input_routines
     !                inumc:   number of columns in the input file
     !                iobj:    pointer to the fire object that will contain all the data we read in here
 
-    integer, intent(in) :: inumc, iobj, lrowcount
+    integer, intent(in) :: inumc, lrowcount
     type(fire_type), intent(inout), pointer :: fireptr
 
     character(128) :: lcarray(ncol)
     character(5) :: label
-    integer :: logerr = 3, midpoint = 1, base = 2, ir, i, ii, nret
+    integer :: logerr = 3, midpoint = 1, base = 2, ir, i, nret
     real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, flamelength
     type(room_type), pointer :: roomptr
 
@@ -1761,44 +1761,44 @@ module input_routines
             end if
         case ('TIME')
             nret = countargs(lcarray)
-            objlfm(iobj) = nret
-            do ii = 1, nret
-                otime(ii,iobj) = lrarray(ii)
+            fireptr%npoints = nret
+            do i = 1, nret
+                fireptr%time(i) = lrarray(i)
             end do
         case ('HRR')
             max_hrr = 0.0_eb
-            do ii = 1, nret
-                oqdot(ii,iobj) = lrarray(ii)
-                max_hrr = max(max_hrr, oqdot(ii,iobj))
-                omass(ii,iobj) = oqdot(ii,iobj)/ohcomb
+            do i = 1, nret
+                fireptr%qdot(i) = lrarray(i)
+                max_hrr = max(max_hrr, fireptr%qdot(i))
+                fireptr%mdot(i) = fireptr%qdot(i)/ohcomb
             end do
         case ('SOOT')
-            do ii = 1, nret
-                ood(ii,iobj) = lrarray(ii)
+            do i = 1, nret
+                fireptr%y_soot(i) = lrarray(i)
             end do
         case ('CO')
-            do ii = 1, nret
-                oco(ii,iobj) = lrarray(ii)
+            do i = 1, nret
+                fireptr%y_co(i) = lrarray(i)
             end do
         case ('TRACE')
             ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
-            do ii = 1, nret
-                otrace(ii,iobj) = lrarray(ii)
+            do i = 1, nret
+                fireptr%y_trace(i) = lrarray(i)
             end do
         case ('AREA')
             max_area = 0.0_eb
-            do ii = 1, nret
-                ! The minimum area is to stop dassl from an floating point underflow when it tries to extrapolate back to the
-                ! ignition point. It only occurs for objects which are on the floor and ignite after t=0 The assumed minimum fire
+            do i = 1, nret
+                ! The minimum area is to stop dassl from a floating point underflow when it tries to extrapolate back to the
+                ! ignition point. It only occurs for objects which are on the floor and ignite after t=0. The assumed minimum fire
                 ! diameter of 0.2 m below is the minimum valid fire diameter for Heskestad's plume correlation
                 ! (from SFPE Handbook chapter)
-                if (lrarray(ii)==0.0_eb) then
+                if (lrarray(i)==0.0_eb) then
                     write (*,5002)
                     write (logerr,5002)
                     stop
                 end if
-                oarea(ii,iobj) = max(lrarray(ii),pio4*0.2_eb**2)
-                max_area = max(max_area,oarea(ii,iobj))
+                fireptr%area(i) = max(lrarray(i),pio4*0.2_eb**2)
+                max_area = max(max_area,fireptr%area(i))
             end do
 
             ! calculate a characteristic length of an object (we assume the diameter).
@@ -1806,8 +1806,8 @@ module input_routines
             ! distance between the fire and the target which only impact very small fire to target distances
             fireptr%characteristic_length = sqrt(max_area/pio4)
         case ('HEIGH')
-            do ii = 1, nret
-                ohigh(ii,iobj) = max(lrarray(ii),0.0_eb)
+            do i = 1, nret
+                fireptr%height(i) = max(lrarray(i),0.0_eb)
             end do
         case default
             write(*, 5000) label
@@ -1818,7 +1818,7 @@ module input_routines
     end do
 
     ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-    call set_heat_of_combustion (objlfm(iobj), omass(1,iobj), oqdot(1,iobj), objhc(1,iobj), ohcomb)
+    call set_heat_of_combustion (fireptr%npoints, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
 
     ! Position the object
     roomptr => roominfo(fireptr%room)

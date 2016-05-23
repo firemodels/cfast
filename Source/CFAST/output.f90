@@ -863,7 +863,7 @@ module output_routines
     !     purpose: This routine outputs the fire specification for all the object fires
     !     Arguments: none
 
-    integer :: io, i, nnv, is
+    integer :: io, i, is
     real(eb) :: y_hcn, y_hcl
 
     character(13), dimension(0:4) :: ftype = &
@@ -877,23 +877,21 @@ module output_routines
         write (iofilo,5080)
         do io = 1, n_fires
             fireptr => fireinfo(io)
-            nnv = objlfm(io)
             roomptr => roominfo(fireptr%room)
             write (iofilo,5020) trim(fireptr%name), io, fire_geometry(fireptr%modified_plume)
             write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), fireptr%x_position, fireptr%y_position, &
                 fireptr%z_position, relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
             write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
-            write (cbuf(51:132),5050)
             is = 103
             write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
             write (iofilo,5010) ('-',i = 1,is-1)
-            do i = 1, nnv
-                write (cbuf,5060) otime(i,io), omass(i,io), objhc(i,io), oqdot(i,io), ohigh(i,io)
+            do i = 1, fireptr%npoints
+                write (cbuf,5060) fireptr%time(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
                 y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
                 y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
-                write (cbuf(51:132),5070) ood(i,io), oco(i,io), y_HCN, y_HCl, otrace(i,io)
+                write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i)
                 write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             end do
         end do
@@ -905,8 +903,7 @@ module output_routines
           '   Position (x,y,z)     Relative    Lower O2    Radiative',/,52x,'Humidity    Limit       Fraction',/85('-'))
 5030 format (a14,1x,a13,3(f7.2),f7.1,6x,f7.2,5x,f7.2//)
 5031 format ('Chemical formula of the fuel',/,'Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine',/,50('-'),/,5(f7.3,3x),//)
-5040 format ('Time      Fmdot     Hcomb     Fqdot     Fheight   ')
-5050 format ('Soot      CO        HCN       HCl       TS')
+5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
 5070 format (10(1PG10.2),2x,2g10.2)
 5080 format (/,'FIRES')

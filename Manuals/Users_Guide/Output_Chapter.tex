@@ -161,9 +161,9 @@ Material choices of the ceiling, walls, and floors come from the CEILI, WALLS, a
 
 \subsubsection{Fires}
 
-The fire section lists all the information about the main fire and any object fires that might exist.  All the information for each fire is listed separately.  If there is a main fire, it comes first.  Each fire listing has the same form.  First is the name of the fire followed by a list of general information.  Listed left to right is the compartment the fire is in, the type of fire, the x, y, z position, the relative humidity, the lower oxygen limit, and finally the radiative fraction for the fire.
+The fire section lists all the information about the main fire and any object fires that might exist.  All the information for each fire is listed separately.  If there is a main fire, it comes first.  Each fire listing has the same form.  First is the name of the fire followed by a list of general information.  Listed left to right is the compartment the fire is in, the type of fire, the initial x (width), y (depth), z (height) position of the fire, the relative humidity, the lower oxygen limit, and finally the radiative fraction for the fire.
 
-A table of time history curves for the fire follows.  The table contains all the time history curves for the fire.  Each row on the table is a specific time given in the left most column.  The rest of the columns give the values at that particular time.  The column headers indicate each input quantity and correspond to specific keywords in the fire definition. The headings are defined as follows: `Fmdot' is pyrolysis rate; `Hcomb' is the heat of combustion; `Fqdot' is the heat release rate; `Fheight' is height of fire; `Soot' is the fraction of the fuel mass converted to soot during combustion; `CO' is the fraction of the fuel mass converted to carbon monoxide during combustion; `HCN' is the fraction of the fuel mass converted to hydrogen cyanide during combustion; `HCl' is the fraction of the fuel mass converted to hydrogen chloride during combustion; `CT' is the concentration-time product; and `TS' is the fraction of fuel mass converted to trace species during combustion.
+A table of time history curves for the fire follows.  The table contains all the time history curves for the fire.  Each row on the table is a specific time given in the left most column.  The rest of the columns give the values at that particular time.  The column headers indicate each input quantity and correspond to specific keywords in the fire definition. The headings are defined as follows: `Mdot' is pyrolysis rate; `Hcomb' is the heat of combustion; `Qdot' is the heat release rate; `Zoffset' is height of the fire above the base z-position; `Soot' is the fraction of the fuel mass converted to soot during combustion; `CO' is the fraction of the fuel mass converted to carbon monoxide during combustion; `HCN' is the fraction of the fuel mass converted to hydrogen cyanide during combustion; `HCl' is the fraction of the fuel mass converted to hydrogen chloride during combustion; `CT' is the concentration-time product; and `TS' is the fraction of fuel mass converted to trace species during combustion.
 
 \begin{lstlisting}[basicstyle=\tiny]
 FIRES
@@ -183,7 +183,7 @@ Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine
   1.000     4.000     0.000     0.000     0.000
 
 
-Time      Fmdot     Hcomb     Fqdot     Fheight   Soot      CO        HCN       HCl       TS
+  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS
   (s)       (kg/s)    (J/kg)    (W)       (m)       (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)
 ------------------------------------------------------------------------------------------------------
      0.      0.0      5.00E+07   0.0       0.0       0.0      1.05E-03   0.0       0.0       0.0
@@ -213,7 +213,7 @@ Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine
   6.000    10.000     5.000     0.000     0.000
 
 
-Time      Fmdot     Hcomb     Fqdot     Fheight   Soot      CO        HCN       HCl       TS
+  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS
   (s)       (kg/s)    (J/kg)    (W)       (m)       (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)
 ------------------------------------------------------------------------------------------------------
      0.      0.0      1.81E+07   0.0       0.0      2.00E-02  2.00E-02   0.0       0.0       0.0

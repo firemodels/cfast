@@ -44,6 +44,17 @@ module cfast_types
         real(eb) :: x_position                          ! initial X position of the base of fire (user input)
         real(eb) :: y_position                          ! initial Y position of the base of fire (user input)
         real(eb) :: z_position                          ! initial Z position of the base of fire (user input)
+        
+        integer :: npoints                              ! actual number of time points for fire (user input)
+        real(eb), dimension(mxpts) :: time              ! time points for fire inputs (user input)
+        real(eb), dimension(mxpts) :: mdot              ! pyrolysis rate as a function of time (user input)
+        real(eb), dimension(mxpts) :: qdot              ! heat release rate of the fire as a function of time (user input)
+        real(eb), dimension(mxpts) :: area              ! area of the base of the fire as a function of time (user input)
+        real(eb), dimension(mxpts) :: height            ! height of the base of the fire as a function of time (user input)
+        real(eb), dimension(mxpts) :: y_soot            ! soot production rate as a funciton of time (user input)
+        real(eb), dimension(mxpts) :: y_co              ! CO production rate as a function of time (user input)
+        real(eb), dimension(mxpts) :: y_trace           ! trace species production rate as a funciton of time (user input)
+        real(eb), dimension(mxpts) :: hoc               ! heat of combustion as a function of time
 
         real(eb) :: z_offset                            ! current height of the fire above initial Z position
         real(eb) :: characteristic_length               ! characteristic length for fire = max fire diameter
@@ -56,12 +67,8 @@ module cfast_types
         real(eb) :: total_trace                         ! total trace species released by fire up to the current time
         real(eb) :: temperature                         ! current surface temperature on attached target (only for ignition)
         real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
-        
-        real(eb) :: time_i(mxpts), mdot_i(mxpts), qdot_i(mxpts), area_i(mxpts), height_i(mxpts), y_soot_i(mxpts), &
-            y_co_i(mxpts), y_trace_i(mxpts)
 
         ! These are calculated results for the current time step
-        real(eb) :: area
         real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
     end type fire_type

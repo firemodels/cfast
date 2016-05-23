@@ -487,7 +487,7 @@ module fire_routines
         return
     end if
 
-    lobjlfm = objlfm(objn)
+    lobjlfm = fireptr%npoints
     xxtime = time - fireptr%ignition_time
 
     id = roomptr%sprinkler_activated
@@ -505,8 +505,8 @@ module fire_routines
         dtectptr => detectorinfo(id)
         tdrate = dtectptr%tau
         xxtimef = dtectptr%activation_time - fireptr%ignition_time
-        call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,qt)
-        call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtimef,1,qtf)
+        call interp(fireptr%time,fireptr%qdot,lobjlfm,xxtime,1,qt)
+        call interp(fireptr%time,fireptr%qdot,lobjlfm,xxtimef,1,qtf)
         ifact = 1
         tfact = exp(-(xxtime-xxtimef)/tdrate)
         if (qt<tfact*qtf) then
@@ -520,14 +520,14 @@ module fire_routines
         end if
     end if
 
-    call interp(otime(1,objn),omass(1,objn),lobjlfm,xxtime,1,omasst)
-    call interp(otime(1,objn),oqdot(1,objn),lobjlfm,xxtime,1,oqdott)
-    call interp(otime(1,objn),objhc(1,objn),lobjlfm,xxtime,1,objhct)
-    call interp(otime(1,objn),ood(1,objn),lobjlfm,xxtime,1,y_soot)
-    call interp(otime(1,objn),oco(1,objn),lobjlfm,xxtime,1,y_co)
-    call interp(otime(1,objn),otrace(1,objn),lobjlfm,xxtime,1,y_trace)
-    call interp(otime(1,objn),oarea(1,objn),lobjlfm,xxtime,1,oareat)
-    call interp(otime(1,objn),ohigh(1,objn),lobjlfm,xxtime,1,ohight)
+    call interp(fireptr%time,fireptr%mdot,lobjlfm,xxtime,1,omasst)
+    call interp(fireptr%time,fireptr%qdot,lobjlfm,xxtime,1,oqdott)
+    call interp(fireptr%time,fireptr%hoc,lobjlfm,xxtime,1,objhct)
+    call interp(fireptr%time,fireptr%y_soot,lobjlfm,xxtime,1,y_soot)
+    call interp(fireptr%time,fireptr%y_co,lobjlfm,xxtime,1,y_co)
+    call interp(fireptr%time,fireptr%y_trace,lobjlfm,xxtime,1,y_trace)
+    call interp(fireptr%time,fireptr%area,lobjlfm,xxtime,1,oareat)
+    call interp(fireptr%time,fireptr%height,lobjlfm,xxtime,1,ohight)
 
     n_C = fireptr%n_C
     n_H = fireptr%n_H

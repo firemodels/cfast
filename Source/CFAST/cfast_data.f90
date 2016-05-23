@@ -61,17 +61,6 @@ module fire_data
     integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
                                                     !   (1 = number of fire in this room, 2 => first fire in this room)
 
-    integer, dimension(mxfires) :: objlfm           ! actual number of time points for each fire
-    real(eb), dimension(mxpts,mxfires) :: otime     ! time points for fire inputs
-    real(eb), dimension(mxpts,mxfires) :: objhc     ! heat of combustion as a function of time
-    real(eb), dimension(mxpts,mxfires) :: omass     ! pyrolysis rate as a function of time
-    real(eb), dimension(mxpts,mxfires) :: oarea     ! area of the base of the fire as a function of time
-    real(eb), dimension(mxpts,mxfires) :: ohigh     ! height of the base of the fire as a function of time
-    real(eb), dimension(mxpts,mxfires) :: oqdot     ! heat release rate of the fire as a function of time
-    real(eb), dimension(mxpts,mxfires) :: oco       ! CO production rate as a function of time
-    real(eb), dimension(mxpts,mxfires) :: ood       ! soot production rate as a funciton of time
-    real(eb), dimension(mxpts,mxfires) :: otrace    ! trace species production rate as a funciton of time
-
     real(eb) :: fqlow(mxfires), heatlp(mxfires)     ! HRR of current fire into lower layer
     real(eb) :: fqupr(mxfires), heatup(mxfires)     ! HRR of current fire into upper layer
     real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 

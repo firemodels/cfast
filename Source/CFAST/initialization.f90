@@ -700,6 +700,9 @@ module initialization_routines
     fireinfo(1:mxfires)%modified_plume = 1
     fireinfo(1:mxfires)%chirad = 0.35_eb
 
+    fireinfo(1:mxfires)%qdot_at_activation(u) = 0.0_eb
+    fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb
+
     ! trace species stuff
     fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
     fireinfo(1:mxfires)%total_trace = 0.0_eb

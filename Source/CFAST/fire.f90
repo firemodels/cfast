@@ -251,7 +251,7 @@ module fire_routines
 
         source_o2 = roomptr%species_fraction(l,o2)
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
-            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, qspray(ifire,l), &
+            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, fireptr%qdot_at_activation(l), &
             xqpyrl, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
@@ -309,7 +309,7 @@ module fire_routines
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, &
-            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, qspray(ifire,u), &
+            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, fireptr%qdot_at_activation(u), &
             xqpyrl, xntfl, xmass)
 
         xqfr = xqpyrl*chirad + xqfr

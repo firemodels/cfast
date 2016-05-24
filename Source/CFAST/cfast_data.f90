@@ -74,8 +74,6 @@ module fire_data
     real(eb) :: fqfc(mxfires)                       ! convective HRR of each fire at the current time
     real(eb) :: xfire(mxfires,mxfirp)               ! various fire outputs at current time
 
-    real(eb) :: qf(mxrooms)                         ! total fire heat release rate in each compartment
-
     integer :: nfurn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4

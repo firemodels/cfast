@@ -1152,10 +1152,6 @@ module solve_routines
 
     epsp = rpar(1)
 
-    do i = 1, nr
-        qf(i) = 0.0_eb
-    end do
-
     ! calculate flow due to unforced vents (horizontal_flow for doors/windows
     ! and vertical_flow for ceiling/floor vents
     call horizontal_flow (tsec,epsp,nprod,flwnvnt)
@@ -1172,12 +1168,6 @@ module solve_routines
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
     call convection (flwcv,flxcv)
     call radiation (flwrad,flxrad)
-
-    if (djetflg) then
-        do i = 1, nrm1
-            qf(i) = qf(i) + flwdjf(i,q,l) + flwdjf(i,q,u)
-        end do
-    end if
 
     ! sum flow for inside rooms
     do iroom = 1, nrm1

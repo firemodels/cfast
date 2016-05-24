@@ -83,7 +83,7 @@ module fire_routines
 
         call do_fire(i, iroom, oplume(1,i), roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, y_co, &
             y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, fireptr%x_position, fireptr%y_position, &
-            fireptr%z_position+fireptr%z_offset, oareat, oplume(2,i), oplume(3,i), oqdott, xntms, qf(iroom), xqfc, xqfr, &
+            fireptr%z_position+fireptr%z_offset, oareat, oplume(2,i), oplume(3,i), oqdott, xntms, xqfc, xqfr, &
             heatlp(iroom), heatup(iroom))
 
         ! sum the flows for return to the source routine
@@ -139,7 +139,7 @@ module fire_routines
 ! --------------------------- do_fire -------------------------------------------
 
     subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,&
-       object_area,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
+       object_area,xeme,xems,xqpyrl,xntms,xqfc,xqfr,xqlp,xqup)
 
     !     routine: do_fire
     !     purpose: do heat release and species from a fire
@@ -164,7 +164,6 @@ module fire_routines
     !                 xems (output): plume flow rate into the upper layer (kg/s)
     !                 xqpyrl (output): actual heat release rate of the fire (w)
     !                 xntms (output): net change in mass of a species in a layer
-    !                 xqf (output): net heat generation rate into upper layer (w)
     !                 xqfc (output): net convection into upper layer (w)
     !                 xqfr (output): net radiation from fire (w)
     !                 xqlp (output): heat release in the lower plume (w)
@@ -176,7 +175,7 @@ module fire_routines
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc, xqfr, xqlp, xqup
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
-    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
+    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
     type(detector_type), pointer :: dtectptr
     type(room_type), pointer :: roomptr
@@ -292,7 +291,6 @@ module fire_routines
     xqfr = xqpyrl*chirad
     xqfc = xqpyrl*(1.0_eb-chirad)
     xqlp = xqpyrl
-    xqf = xqpyrl
 
     ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
     ! heat released in the lower layer and what can be released in the upper layer.
@@ -317,7 +315,6 @@ module fire_routines
         xqfr = xqpyrl*chirad + xqfr
         xqfc = xqpyrl*(1.0_eb-chirad) + xqfc
         xqup = xqpyrl
-        xqf = xqpyrl + xqf
         do i = 1, ns
             xntms(u,i) = xmass(i) + xntms(u,i)
         end do

@@ -139,9 +139,6 @@ module fireptrs
     integer, parameter :: f_fire_xpos=1
     integer, parameter :: f_fire_ypos=2
     integer, parameter :: f_fire_zpos=3
-    integer, parameter :: f_plume_zpos=4
-    integer, parameter :: f_plume_xpos=5
-    integer, parameter :: f_plume_ypos=6
     integer, parameter :: f_qfc=7
     integer, parameter :: f_qfr=8
     integer, parameter :: f_heatlpup=9

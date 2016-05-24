@@ -186,9 +186,9 @@ module output_routines
     if (n_fires/=0) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
-            call flame_height (fqf(i),farea(i),fheight)
-            write (iofilo,5010) trim(fireptr%name), fems(i), femp(i), fqf(i),&
-                fheight, fqfc(i), fqf(i)-fqfc(i), fireptr%total_pyrolysate, fireptr%total_trace
+            call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+            write (iofilo,5010) trim(fireptr%name), fireptr%mdot_plume, fireptr%mdot_pyrolysis, fireptr%qdot_actual, &
+                fheight, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
         end do
     end if
     write (iofilo,'(a)') ' '
@@ -204,9 +204,9 @@ module output_routines
             do i = 1, n_fires
                 fireptr => fireinfo(i)
                 if (icomp==fireptr%room) then
-                    xems = xems + fems(i)
-                    xemp = xemp + femp(i)
-                    xqf = xqf + fqf(i)
+                    xems = xems + fireptr%mdot_plume
+                    xemp = xemp + fireptr%mdot_pyrolysis
+                    xqf = xqf + fireptr%qdot_actual
                     xqupr = xqupr + fireptr%qdot_layers(u)
                     xqlow = xqlow + fireptr%qdot_layers(l)
                 end if
@@ -456,8 +456,8 @@ module output_routines
             do i = 1, n_fires
                 fireptr => fireinfo(i)
                 if (ir==fireptr%room) then
-                    xemp = xemp + femp(i)
-                    xqf = xqf + fqf(i)
+                    xemp = xemp + fireptr%mdot_pyrolysis
+                    xqf = xqf + fireptr%qdot_actual
                 end if
             end do
             xqf = xqf + roomptr%qdot_doorjet
@@ -1244,7 +1244,7 @@ module output_routines
             xqf = 0.
             do iobj = 1, n_fires
                 fireptr => fireinfo(iobj)
-                if (iroom==fireptr%room) xqf = xqf + fqf(iobj)
+                if (iroom==fireptr%room) xqf = xqf + fireptr%qdot_actual
             end do
             xqf = xqf + roomptr%qdot_doorjet
             write(*,6060) iroom,roomptr%t_surfaces(1,1),roomptr%t_surfaces(1,3),roomptr%t_surfaces(1,4),roomptr%t_surfaces(1,2),xqf

@@ -60,19 +60,10 @@ module fire_data
     integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)    
     integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
                                                     !   (1 = number of fire in this room, 2 => first fire in this room)
-
-    real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 
-                                                    !   (1=mass pyrolysed, 2=mass entrained, 3=mass burned)
-    real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time
-    real(eb) :: femr(mxfires)                       ! trace species production rate at the current time
-    real(eb) :: femp(mxfires)                       ! pyroysis rate for each fire at the current time
-    real(eb) :: fems(mxfires)                       ! mass burning rate for each fire at the current time
-    real(eb) :: fqf(mxfires)                        ! HRR of each fire at the current time
-    real(eb) :: fqfc(mxfires)                       ! convective HRR of each fire at the current time
-    real(eb) :: xfire(mxfires,mxfirp)               ! various fire outputs at current time
+    real(eb) :: xfire(mxfires,mxfirp)               ! various fire outputs at current time for sorted fires
 
     integer :: nfurn                                    ! number of data points in furnace temperature curve
-    real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature
+    real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
 end module fire_data

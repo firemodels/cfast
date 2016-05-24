@@ -192,29 +192,33 @@ module output_routines
         end do
     end if
     write (iofilo,'(a)') ' '
-    do icomp = 1, nrm1
+    do icomp = 1, nr
         roomptr => roominfo(icomp)
 
-        xems = 0.0_eb
-        xemp = 0.0_eb
-        xqf = 0.0_eb
-        xqupr = 0.0_eb
-        xqlow = 0.0_eb
-        do i = 1, n_fires
-            fireptr => fireinfo(i)
-            if (icomp==fireptr%room) then
-                xems = xems + fems(i)
-                xemp = xemp + femp(i)
-                xqf = xqf + fqf(i)
-                xqupr = xqupr + fqupr(i)
-                xqlow = xqlow + fqlow(i)
-            end if
-        end do
-        xqf = xqf + fqdj(icomp)
-        if (xems+xemp+xqf+xqupr+xqlow+fqdj(icomp)/=0.0_eb) write (iofilo,5030) roomptr%name, &
-           xems, xemp, xqf, xqupr, xqlow, fqdj(icomp)
+        if (icomp<nr) then
+            xems = 0.0_eb
+            xemp = 0.0_eb
+            xqf = 0.0_eb
+            xqupr = 0.0_eb
+            xqlow = 0.0_eb
+            do i = 1, n_fires
+                fireptr => fireinfo(i)
+                if (icomp==fireptr%room) then
+                    xems = xems + fems(i)
+                    xemp = xemp + femp(i)
+                    xqf = xqf + fqf(i)
+                    xqupr = xqupr + fqupr(i)
+                    xqlow = xqlow + fqlow(i)
+                end if
+            end do
+            xqf = xqf + roomptr%qdot_doorjet
+            if (xems+xemp+xqf+xqupr+xqlow+roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5030) roomptr%name, &
+                xems, xemp, xqf, xqupr, xqlow, roomptr%qdot_doorjet
+        else 
+            if (roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5040) roomptr%qdot_doorjet
+        end if
     end do
-    if (fqdj(nr)/=0.0_eb) write (iofilo,5040) fqdj(nr)
+    
     return
 
 5000 format (//,'FIRES',//,&
@@ -444,27 +448,30 @@ module output_routines
 
     write (iounit,5000)
     write (iounit,5010)
-    do ir = 1, nrm1
+    do ir = 1, nr
         roomptr => roominfo(ir)
-        xemp = 0.0_eb
-        xqf = 0.0_eb
-        do i = 1, n_fires
-            fireptr => fireinfo(i)
-            if (ir==fireptr%room) then
-                xemp = xemp + femp(i)
-                xqf = xqf + fqf(i)
+        if (ir<nr) then
+            xemp = 0.0_eb
+            xqf = 0.0_eb
+            do i = 1, n_fires
+                fireptr => fireinfo(i)
+                if (ir==fireptr%room) then
+                    xemp = xemp + femp(i)
+                    xqf = xqf + fqf(i)
+                end if
+            end do
+            xqf = xqf + roomptr%qdot_doorjet
+            if (roomptr%shaft) then
+                write (iounit,5040) ir, roomptr%temp(u)-kelvin_c_offset, xemp, xqf, &
+                    roomptr%relp - roomptr%interior_relp_initial
+            else
+                write (iounit,5030) ir, roomptr%temp(u)-kelvin_c_offset, roomptr%temp(l)-kelvin_c_offset, &
+                    roomptr%depth(l), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
             end if
-        end do
-        xqf = xqf + fqdj(ir)
-        if (roomptr%shaft) then
-            write (iounit,5040) ir, roomptr%temp(u)-kelvin_c_offset, xemp, xqf, &
-               roomptr%relp - roomptr%interior_relp_initial
         else
-            write (iounit,5030) ir, roomptr%temp(u)-kelvin_c_offset, roomptr%temp(l)-kelvin_c_offset, &
-               roomptr%depth(l), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
+            write (iounit,5020) roomptr%qdot_doorjet
         end if
     end do
-    write (iounit,5020) fqdj(nr)
     return
 
 5000 format (' ')
@@ -1239,7 +1246,7 @@ module output_routines
                 fireptr => fireinfo(iobj)
                 if (iroom==fireptr%room) xqf = xqf + fqf(iobj)
             end do
-            xqf = xqf + fqdj(iroom)
+            xqf = xqf + roomptr%qdot_doorjet
             write(*,6060) iroom,roomptr%t_surfaces(1,1),roomptr%t_surfaces(1,3),roomptr%t_surfaces(1,4),roomptr%t_surfaces(1,2),xqf
         end do
         if (n_fires>0) then

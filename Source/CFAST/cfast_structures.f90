@@ -63,12 +63,13 @@ module cfast_types
         logical :: ignited                              ! true if fire has ignited
         logical :: backtrack                            ! true if fire has ignited and we need to backtrack to find ignition time
         integer :: modified_plume                       ! fire plume flag, 1 = center, 2 = wall, 3 = corner
+
+        ! These are calculated results for the current time step
         real(eb) :: total_pyrolysate                    ! total pyroysate released by fire up to the current time
         real(eb) :: total_trace                         ! total trace species released by fire up to the current time
         real(eb) :: temperature                         ! current surface temperature on attached target (only for ignition)
         real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
 
-        ! These are calculated results for the current time step
         real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
     end type fire_type
@@ -155,6 +156,7 @@ module cfast_types
         real(eb), dimension(nnodes,nwal) :: t_profile   ! temperature profile within compartment surfaces
         real(eb), dimension(2,nwal) :: t_surfaces       ! compartment surface temperatures (interior, exterior)
         real(eb), dimension(nwal) :: rad_qout           ! flux radiated from compartment surfaces
+        real(eb) :: qdot_doorjet                        ! HRR of door jet fires at the current time
         
     end type room_type
     

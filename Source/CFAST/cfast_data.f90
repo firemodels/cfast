@@ -61,11 +61,8 @@ module fire_data
     integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
                                                     !   (1 = number of fire in this room, 2 => first fire in this room)
 
-    real(eb) :: fqlow(mxfires), heatlp(mxfires)     ! HRR of current fire into lower layer
-    real(eb) :: fqupr(mxfires), heatup(mxfires)     ! HRR of current fire into upper layer
     real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 
                                                     !   (1=mass pyrolysed, 2=mass entrained, 3=mass burned)
-    real(eb) :: qspray(mxfires,2)                   ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
     real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time
     real(eb) :: femr(mxfires)                       ! trace species production rate at the current time
     real(eb) :: femp(mxfires)                       ! pyroysis rate for each fire at the current time
@@ -73,8 +70,6 @@ module fire_data
     real(eb) :: fqf(mxfires)                        ! HRR of each fire at the current time
     real(eb) :: fqfc(mxfires)                       ! convective HRR of each fire at the current time
     real(eb) :: xfire(mxfires,mxfirp)               ! various fire outputs at current time
-
-    real(eb) :: qf(mxrooms)                         ! total fire heat release rate in each compartment
 
     integer :: nfurn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature

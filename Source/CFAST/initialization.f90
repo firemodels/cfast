@@ -598,10 +598,6 @@ module initialization_routines
     ! initialize number of furnace temperature nodes
     nfurn=0
 
-    ! flow variables
-    heatup(1:mxrooms) = 0.0_eb
-    heatlp(1:mxrooms) = 0.0_eb
-
     ! horizontal vents
     ihvent_connections(1:mxrooms,1:mxrooms) = 0.0_eb
     bw(1:mxhvents) = 0.0_eb
@@ -699,6 +695,11 @@ module initialization_routines
     fireinfo(1:mxfires)%backtrack = .false.
     fireinfo(1:mxfires)%modified_plume = 1
     fireinfo(1:mxfires)%chirad = 0.35_eb
+
+    fireinfo(1:mxfires)%qdot_at_activation(u) = 0.0_eb
+    fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb
+    fireinfo(1:mxfires)%qdot_layers(u) = 0.0_eb
+    fireinfo(1:mxfires)%qdot_layers(l) = 0.0_eb
 
     ! trace species stuff
     fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb

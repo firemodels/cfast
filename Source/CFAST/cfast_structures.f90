@@ -69,6 +69,8 @@ module cfast_types
         real(eb) :: total_trace                         ! total trace species released by fire up to the current time
         real(eb) :: temperature                         ! current surface temperature on attached target (only for ignition)
         real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
+        real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
+        real(eb), dimension(2) :: qdot_layers           ! current HRR into each layer (1=upper layer, 2=lower layer)
 
         real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion

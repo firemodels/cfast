@@ -83,8 +83,8 @@ module fire_routines
 
         call do_fire(i, iroom, oplume(1,i), roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, y_co, &
             y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, fireptr%x_position, fireptr%y_position, &
-            fireptr%z_position+fireptr%z_offset, oareat, oplume(2,i), oplume(3,i), oqdott, xntms, qf(iroom), xqfc, xqfr, &
-            heatlp(iroom), heatup(iroom))
+            fireptr%z_position+fireptr%z_offset, oareat, oplume(2,i), oplume(3,i), oqdott, xntms, xqfc, xqfr, &
+            fireptr%qdot_layers(l), fireptr%qdot_layers(u))
 
         ! sum the flows for return to the source routine
         xtl = roomptr%temp(l)
@@ -112,9 +112,9 @@ module fire_routines
         xfire(nfire,f_plume_ypos) = oplume(2,i)
         xfire(nfire,f_qfc) = xqfc
         xfire(nfire,f_qfr) = xqfr
-        xfire(nfire,f_heatlpup) = heatlp(iroom) + heatup(iroom)
-        xfire(nfire,f_heatlp) = heatlp(iroom)
-        xfire(nfire,f_heatup) = heatup(iroom)
+        xfire(nfire,f_heatlpup) = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
+        xfire(nfire,f_heatlp) = fireptr%qdot_layers(l)
+        xfire(nfire,f_heatup) = fireptr%qdot_layers(u)
         xfire(nfire,f_objct) = objhct
         xfire(nfire,f_ysoot) = y_soot
         xfire(nfire,f_yco) = y_co
@@ -126,10 +126,8 @@ module fire_routines
         ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry
         ! and interpolate_pyrolysis)
         femr(nobj) = oplume(1,i)*y_trace
-        fqf(nobj) = heatlp(iroom) + heatup(iroom)
+        fqf(nobj) = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
         fqfc(nobj) = xqfc
-        fqlow(nobj) = heatlp(iroom)
-        fqupr(nobj) = heatup(iroom)
         farea(nobj) = oareat
     end do
 
@@ -139,7 +137,7 @@ module fire_routines
 ! --------------------------- do_fire -------------------------------------------
 
     subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,mol_mass,stmass,xfx,xfy,xfz,&
-       object_area,xeme,xems,xqpyrl,xntms,xqf,xqfc,xqfr,xqlp,xqup)
+       object_area,xeme,xems,xqpyrl,xntms,xqfc,xqfr,xqlp,xqup)
 
     !     routine: do_fire
     !     purpose: do heat release and species from a fire
@@ -164,7 +162,6 @@ module fire_routines
     !                 xems (output): plume flow rate into the upper layer (kg/s)
     !                 xqpyrl (output): actual heat release rate of the fire (w)
     !                 xntms (output): net change in mass of a species in a layer
-    !                 xqf (output): net heat generation rate into upper layer (w)
     !                 xqfc (output): net convection into upper layer (w)
     !                 xqfr (output): net radiation from fire (w)
     !                 xqlp (output): heat release in the lower plume (w)
@@ -176,7 +173,7 @@ module fire_routines
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc, xqfr, xqlp, xqup
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
-    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, xqf, uplmep, uplmes, uplmee, height
+    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, uplmep, uplmes, uplmee, height
     integer :: lsp, ipass, i
     type(detector_type), pointer :: dtectptr
     type(room_type), pointer :: roomptr
@@ -252,7 +249,7 @@ module fire_routines
 
         source_o2 = roomptr%species_fraction(l,o2)
         call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N ,n_Cl, source_o2, &
-            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, qspray(ifire,l), &
+            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, fireptr%qdot_at_activation(l), &
             xqpyrl, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
@@ -292,7 +289,6 @@ module fire_routines
     xqfr = xqpyrl*chirad
     xqfc = xqpyrl*(1.0_eb-chirad)
     xqlp = xqpyrl
-    xqf = xqpyrl
 
     ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
     ! heat released in the lower layer and what can be released in the upper layer.
@@ -311,13 +307,12 @@ module fire_routines
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, &
-            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, qspray(ifire,u), &
+            lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, fireptr%qdot_at_activation(u), &
             xqpyrl, xntfl, xmass)
 
         xqfr = xqpyrl*chirad + xqfr
         xqfc = xqpyrl*(1.0_eb-chirad) + xqfc
         xqup = xqpyrl
-        xqf = xqpyrl + xqf
         do i = 1, ns
             xntms(u,i) = xmass(i) + xntms(u,i)
         end do

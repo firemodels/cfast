@@ -703,7 +703,7 @@ module fire_routines
 
     logical :: dj1flag, dj2flag
     type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: room1ptr, room2ptr
+    type(room_type), pointer :: roomptr, room1ptr, room2ptr
 
     ! initialize summations and local data
     djetflg = .false.
@@ -740,7 +740,7 @@ module fire_routines
     if (.not.djetflg)return
     flwdjf(1:nr,1:ns+2,l) = 0.0_eb
     flwdjf(1:nr,1:ns+2,u) = 0.0_eb
-    fqdj(1:nr) = 0.0_eb
+    roominfo(1:nr)%qdot_doorjet = 0.0_eb
 
     hcombt = 5.005e7_eb
 
@@ -773,7 +773,8 @@ module fire_routines
         end do
 
     do i = 1, nr
-        fqdj(i) = flwdjf(i,q,u) + flwdjf(i,q,l)
+        roomptr => roominfo(i)
+        roomptr%qdot_doorjet = flwdjf(i,q,u) + flwdjf(i,q,l)
     end do
     return
     end subroutine door_jet

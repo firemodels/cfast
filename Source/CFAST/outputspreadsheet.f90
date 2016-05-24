@@ -81,7 +81,8 @@ module spreadsheet_routines
 
     ! Fires
     do i = 1,nr
-        call ssaddtolist (position,fqdj(i),outarray)
+        roomptr => roominfo(i)
+        call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
     end do
 
     if (n_fires/=0) then

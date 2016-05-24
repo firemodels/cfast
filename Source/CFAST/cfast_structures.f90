@@ -71,6 +71,14 @@ module cfast_types
         real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
         real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
         real(eb), dimension(2) :: qdot_layers           ! current HRR into each layer (1=upper layer, 2=lower layer)
+        real(eb) :: qdot_actual                         ! current actual HRR (limited by available oxygen)
+        real(eb) :: qdot_radiative                      ! current actual radiative HRR = qdot_actual * chirad
+        real(eb) :: qdot_convective                     ! current actual convective HRR = qdot_actual * (1 - chirad)
+        real(eb) :: firearea                            ! current area of the base of the fire
+        real(eb) :: mdot_trace                          ! current trace species production rate
+        real(eb) :: mdot_pyrolysis                      ! current mass pyrolysis rate of the fire
+        real(eb) :: mdot_entrained                      ! current mass entrainment rate into the plume
+        real(eb) :: mdot_plume                          ! current mass rate from plume into upper layer = pyrolysis + entrained
 
         real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
         real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion

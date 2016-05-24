@@ -88,14 +88,14 @@ module spreadsheet_routines
     if (n_fires/=0) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
-            call flame_height (fqf(i),farea(i),fheight)
-            call ssaddtolist (position,fems(i),outarray)
-            call ssaddtolist (position,femp(i),outarray)
-            call ssaddtolist (position,fqf(i),outarray)
+            call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+            call ssaddtolist (position,fireptr%mdot_plume,outarray)
+            call ssaddtolist (position,fireptr%mdot_pyrolysis,outarray)
+            call ssaddtolist (position,fireptr%qdot_actual,outarray)
             call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
             call ssaddtolist (position,fireptr%qdot_layers(u),outarray)
             call ssaddtolist (position,fheight,outarray)
-            call ssaddtolist (position,fqfc(i),outarray)
+            call ssaddtolist (position,fireptr%qdot_convective,outarray)
             call ssaddtolist (position,fireptr%total_pyrolysate,outarray)
             call ssaddtolist (position,fireptr%total_trace,outarray)
         end do
@@ -432,11 +432,11 @@ module spreadsheet_routines
     if (n_fires/=0) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
-            call flame_height (fqf(i),farea(i),fheight)
-            call SSaddtolist (position,fqf(i)/1000.,outarray)
+            call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+            call SSaddtolist (position,fireptr%qdot_actual/1000.,outarray)
             call SSaddtolist (position,fheight,outarray)
             call SSaddtolist (position,fireptr%z_position+fireptr%z_offset,outarray)
-            call SSaddtolist (position,farea(i),outarray)
+            call SSaddtolist (position,fireptr%firearea,outarray)
         end do
     end if
 

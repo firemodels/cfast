@@ -55,7 +55,7 @@ module fire_routines
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
-    integer lsp, iroom, nobj, i, nfire
+    integer lsp, iroom, i, nfire
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -65,33 +65,37 @@ module fire_routines
 
     if (option(ffire)/=fcfast) return
 
-    nobj = 0
     do i = 1, n_fires
         fireptr => fireinfo(i)
         iroom = fireptr%room
         roomptr => roominfo(iroom)
         call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_co,y_trace)
 
+        fireptr%mdot_pyrolysis = omasst
         fireptr%z_offset = ohight
-        
-        oplume(1,i) = omasst
 
         do lsp = 1, ns
             stmass(u,lsp) = roomptr%species_mass(u,lsp)
             stmass(l,lsp) = roomptr%species_mass(l,lsp)
         end do
 
-        call do_fire(i, iroom, oplume(1,i), roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, y_co, &
+        call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, y_co, &
             y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, fireptr%x_position, fireptr%y_position, &
-            fireptr%z_position+fireptr%z_offset, oareat, oplume(2,i), oplume(3,i), oqdott, xntms, xqfc, xqfr, &
+            fireptr%z_position+fireptr%z_offset, oareat, fireptr%mdot_entrained, fireptr%mdot_plume, oqdott, xntms, xqfc, xqfr, &
             fireptr%qdot_layers(l), fireptr%qdot_layers(u))
+        
+        fireptr%firearea = oareat
+        fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
+        fireptr%qdot_actual = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
+        fireptr%qdot_actual = xqfc
+        fireptr%qdot_radiative = xqfr
 
         ! sum the flows for return to the source routine
         xtl = roomptr%temp(l)
-        flwf(iroom,m,u) = flwf(iroom,m,u) + oplume(3,i)
-        flwf(iroom,m,l) = flwf(iroom,m,l) - oplume(2,i)
-        q_firemass = cp*oplume(1,i)*interior_temperature
-        q_entrained = cp*oplume(2,i)*xtl
+        flwf(iroom,m,u) = flwf(iroom,m,u) + fireptr%mdot_plume
+        flwf(iroom,m,l) = flwf(iroom,m,l) - fireptr%mdot_entrained
+        q_firemass = cp*fireptr%mdot_pyrolysis*interior_temperature
+        q_entrained = cp*fireptr%mdot_entrained*xtl
         flwf(iroom,q,u) = flwf(iroom,q,u) + xqfc + q_firemass + q_entrained
         flwf(iroom,q,l) = flwf(iroom,q,l) - q_entrained
         do lsp = 1, ns
@@ -107,9 +111,6 @@ module fire_routines
         xfire(nfire,f_fire_xpos) = fireptr%x_position
         xfire(nfire,f_fire_ypos) = fireptr%y_position
         xfire(nfire,f_fire_zpos) = fireptr%z_position + fireptr%z_offset
-        xfire(nfire,f_plume_zpos) = oplume(3,i)
-        xfire(nfire,f_plume_xpos) = oplume(1,i)
-        xfire(nfire,f_plume_ypos) = oplume(2,i)
         xfire(nfire,f_qfc) = xqfc
         xfire(nfire,f_qfr) = xqfr
         xfire(nfire,f_heatlpup) = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
@@ -120,15 +121,6 @@ module fire_routines
         xfire(nfire,f_yco) = y_co
         xfire(nfire,f_obj_length) = fireptr%characteristic_length
         xfire(nfire,f_obj_area) = oareat
-        nobj = nobj + 1
-        femp(nobj) = oplume(1,i)
-        fems(nobj) = oplume(3,i)
-        ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry
-        ! and interpolate_pyrolysis)
-        femr(nobj) = oplume(1,i)*y_trace
-        fqf(nobj) = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
-        fqfc(nobj) = xqfc
-        farea(nobj) = oareat
     end do
 
     return
@@ -637,8 +629,8 @@ module fire_routines
 
     do i = 1, n_fires
         fireptr => fireinfo(i)
-        fireptr%total_pyrolysate = fireptr%total_pyrolysate + femp(i)*deltt
-        fireptr%total_trace = fireptr%total_trace + femr(i)*deltt
+        fireptr%total_pyrolysate = fireptr%total_pyrolysate + fireptr%mdot_pyrolysis*deltt
+        fireptr%total_trace = fireptr%total_trace + fireptr%mdot_trace*deltt
     end do
 
     ! sum the trace release from all of the fires
@@ -886,9 +878,9 @@ module fire_routines
     do i = 1,n_fires
         fireptr => fireinfo(i)
         if (ifroom(i)==iroom) then
-            qdot = fqf(i)
+            qdot = fireptr%qdot_actual
             chirad = fireptr%chirad
-            area = farea(i)
+            area = fireptr%firearea
             tu = roomptr%temp(u)
             tl = roomptr%temp(l)
             zfire = xfire(i,f_fire_zpos)
@@ -1202,8 +1194,8 @@ module fire_routines
         smv_xfire(i) = fireptr%x_position
         smv_yfire(i) = fireptr%y_position
         smv_zfire(i) = fireptr%z_position + fireptr%z_offset
-        call flame_height (fqf(i),farea(i),fheight)
-        smv_qdot(i) = fqf(i)
+        call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+        smv_qdot(i) = fireptr%qdot_actual
         smv_height(i) = fheight
         smv_room(i) = fireptr%room
     end do

@@ -84,7 +84,7 @@ module fire_routines
         call do_fire(i, iroom, oplume(1,i), roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, y_co, &
             y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, fireptr%x_position, fireptr%y_position, &
             fireptr%z_position+fireptr%z_offset, oareat, oplume(2,i), oplume(3,i), oqdott, xntms, xqfc, xqfr, &
-            heatlp(iroom), heatup(iroom))
+            fireptr%qdot_layers(l), fireptr%qdot_layers(u))
 
         ! sum the flows for return to the source routine
         xtl = roomptr%temp(l)
@@ -112,9 +112,9 @@ module fire_routines
         xfire(nfire,f_plume_ypos) = oplume(2,i)
         xfire(nfire,f_qfc) = xqfc
         xfire(nfire,f_qfr) = xqfr
-        xfire(nfire,f_heatlpup) = heatlp(iroom) + heatup(iroom)
-        xfire(nfire,f_heatlp) = heatlp(iroom)
-        xfire(nfire,f_heatup) = heatup(iroom)
+        xfire(nfire,f_heatlpup) = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
+        xfire(nfire,f_heatlp) = fireptr%qdot_layers(l)
+        xfire(nfire,f_heatup) = fireptr%qdot_layers(u)
         xfire(nfire,f_objct) = objhct
         xfire(nfire,f_ysoot) = y_soot
         xfire(nfire,f_yco) = y_co
@@ -126,10 +126,8 @@ module fire_routines
         ! note that cnfrat is not reduced by sprinklers, but oplume(1) is so femr is. (see code in chemistry
         ! and interpolate_pyrolysis)
         femr(nobj) = oplume(1,i)*y_trace
-        fqf(nobj) = heatlp(iroom) + heatup(iroom)
+        fqf(nobj) = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
         fqfc(nobj) = xqfc
-        fqlow(nobj) = heatlp(iroom)
-        fqupr(nobj) = heatup(iroom)
         farea(nobj) = oareat
     end do
 

@@ -207,8 +207,8 @@ module output_routines
                     xems = xems + fems(i)
                     xemp = xemp + femp(i)
                     xqf = xqf + fqf(i)
-                    xqupr = xqupr + fqupr(i)
-                    xqlow = xqlow + fqlow(i)
+                    xqupr = xqupr + fireptr%qdot_layers(u)
+                    xqlow = xqlow + fireptr%qdot_layers(l)
                 end if
             end do
             xqf = xqf + roomptr%qdot_doorjet

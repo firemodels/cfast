@@ -61,8 +61,6 @@ module fire_data
     integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
                                                     !   (1 = number of fire in this room, 2 => first fire in this room)
 
-    real(eb) :: fqlow(mxfires), heatlp(mxfires)     ! HRR of current fire into lower layer
-    real(eb) :: fqupr(mxfires), heatup(mxfires)     ! HRR of current fire into upper layer
     real(eb) :: oplume(3,mxfires)                   ! current plume flow rates for each fire 
                                                     !   (1=mass pyrolysed, 2=mass entrained, 3=mass burned)
     real(eb) :: farea(mxfires)                      ! area of the base of each fire at the current time

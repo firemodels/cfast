@@ -323,11 +323,6 @@ module target_data
 
     ! variables for calculation of flux to a target
 
-    integer, parameter :: pde = 1                                   ! plate targets (cartesian coordinates)
-    integer, parameter :: cylpde = 2                                ! cylindrical targets (cylindrical coordinates)
-    integer, parameter :: interior = 1                              ! back surface of target is exposed to compartment interior
-    integer, parameter :: exterior = 2                              ! back surface of target is exposed to compartment exterior
-
     integer :: ndtect                                               ! number of detectors in the simulation
     integer :: ntarg                                                ! number of detectors in the simulation
     integer :: idset                                                ! compartment where detector just went off. more than one

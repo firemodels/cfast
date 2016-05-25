@@ -883,10 +883,10 @@ module fire_routines
             area = fireptr%firearea
             tu = roomptr%temp(u)
             tl = roomptr%temp(l)
-            zfire = xfire(i,f_fire_zpos)
-            xdistance = x - xfire(i,f_fire_xpos)
+            zfire = fireptr%z_position + fireptr%z_offset
+            xdistance = x - fireptr%x_position
             if (abs(xdistance)<=mx_hsep) xdistance = 0.0_eb
-            ydistance = y - xfire(i,f_fire_ypos)
+            ydistance = y - fireptr%y_position
             if (abs(ydistance)<=mx_hsep) ydistance = 0.0_eb
             zlayer = roomptr%depth(l)
             zceil = roomptr%cheight

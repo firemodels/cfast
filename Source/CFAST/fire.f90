@@ -87,7 +87,7 @@ module fire_routines
         fireptr%firearea = oareat
         fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
         fireptr%qdot_actual = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
-        fireptr%qdot_actual = xqfc
+        fireptr%qdot_convective = xqfc
         fireptr%qdot_radiative = xqfr
 
         ! sum the flows for return to the source routine
@@ -877,7 +877,7 @@ module fire_routines
     ! if there is a fire in the room, calculate plume temperature
     do i = 1,n_fires
         fireptr => fireinfo(i)
-        if (ifroom(i)==iroom) then
+        if (fireptr%room==iroom) then
             qdot = fireptr%qdot_actual
             chirad = fireptr%chirad
             area = fireptr%firearea

@@ -58,6 +58,8 @@ module cparams
                                                     ! be on a surface for entrainmnt
     real(eb), parameter :: xlrg = 1.0e+5_eb         ! sizes for outsize room
     real(eb), parameter :: deltatemp_min = 0.01_eb  ! minimum temperature difference for bouyancy to deposit all into a layer
+    integer, parameter :: interior = 1              ! compartment interior
+    integer, parameter :: exterior = 2              ! compartment exterior
 
     ! target parameters
     integer, parameter :: mxtarg = 10*mxrooms               ! maximum number of targets
@@ -74,6 +76,9 @@ module cparams
     integer, parameter :: set_detector_state = 1            ! index to calculate full state of detectors and targets
     integer, parameter :: update_detector_state = 2         ! index to update state of detectors and targets on
                                                             ! successful equation set solution
+    
+    integer, parameter :: pde = 1                           ! plate targets (cartesian coordinates)
+    integer, parameter :: cylpde = 2                        ! cylindrical targets (cylindrical coordinates)
 
     ! parameters for equation solver
     ! nt = 4*mxrooms(main equ) + 2*mxrooms*ns(species) + mxhvsys*ns(hvac species)
@@ -83,11 +88,11 @@ module cparams
     integer, parameter :: maxteq = maxeq+2*mxrooms*ns+mxhvsys*ns+4*mxrooms*3
     
     ! define indices for flow arrays
-    integer, parameter :: l = 2                             ! lower layer
-    integer, parameter :: u = 1                             ! upper layer
-    integer, parameter :: m = 1                             ! mass
-    integer, parameter :: q = 2                             ! energy
-    integer, parameter :: pp = 3                            ! beginning of species
+    integer, parameter :: l = 2     ! lower layer
+    integer, parameter :: u = 1     ! upper layer
+    integer, parameter :: m = 1     ! mass
+    integer, parameter :: q = 2     ! energy
+    integer, parameter :: pp = 3    ! beginning of species
     
     ! define indicies for species arrays
     integer, parameter :: n2 = 1

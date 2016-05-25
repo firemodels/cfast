@@ -1247,12 +1247,14 @@ module output_routines
                 if (iroom==fireptr%room) xqf = xqf + fireptr%qdot_actual
             end do
             xqf = xqf + roomptr%qdot_doorjet
-            write(*,6060) iroom,roomptr%t_surfaces(1,1),roomptr%t_surfaces(1,3),roomptr%t_surfaces(1,4),roomptr%t_surfaces(1,2),xqf
+            write(*,6060) iroom, roomptr%t_surfaces(interior,1), roomptr%t_surfaces(interior,3), &
+                roomptr%t_surfaces(interior,4), roomptr%t_surfaces(interior,2), xqf
         end do
         if (n_fires>0) then
             write(*,6080)
             do iobj = 1, n_fires
-                write(*,6085)iobj,xfire(iobj,f_heatlp),xfire(iobj,f_heatup)
+                fireptr => fireinfo(iobj)
+                write(*,6085) iobj, fireptr%qdot_layers(l), fireptr%qdot_layers(u)
             end do
         end if
         if (ntarg>0) then

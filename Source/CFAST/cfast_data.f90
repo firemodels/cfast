@@ -14,9 +14,6 @@ module cenviro
     real(eb), parameter :: cp = 1012.0_eb
     real(eb), parameter :: gamma = 1.40_eb
     real(eb), parameter :: rgas = (gamma-1.0_eb)/gamma*cp
-    
-    real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
-    real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
 
 end module cenviro
 
@@ -374,9 +371,13 @@ module vent_data
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
         duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext), hvfrac(2,mxext), &
         chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
+    
+    real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
+    real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
+    
     logical :: mvcalc_on
 
-    integer, dimension(mxhvent,2) :: ivvent
+    integer, dimension(mxvvent,2) :: ivvent
     integer :: n_hvents, n_vvents
 
     real(eb), dimension(mxrooms,mxhvent) :: zzventdist

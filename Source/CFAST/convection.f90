@@ -1,7 +1,6 @@
  module convection_routines
 
     use precision_parameters
-    use fireptrs
     use cparams
     use wallptrs
     use cenviro

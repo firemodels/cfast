@@ -8,7 +8,6 @@ module fire_routines
     use cenviro
     use ramp_data
     use room_data
-    use fireptrs
     use target_data
     use cparams
     use fire_data
@@ -37,18 +36,6 @@ module fire_routines
     !                       standard source routine data structure.
     !                nfire  total number of fires
     !                ifroom room numbers for each of the fires
-    !                xfire  fire related quantities used by other routines.
-    !                       (i,1 to 3) = x, y, and z position for fire i
-    !                       (i,4) = mass into upper layer from fire i (ems)
-    !                       (i,5) = pyrolysis rate from fire i (emp)
-    !                       (i,6) = mass entrained in plume by fire i (eme)
-    !                       (i,7 & 8) = convective, and radiative heat into upper layer, fire i
-    !                       (i,9) = total heat released by fire i
-    !                       (i,10) = total heat into lower layer by fire i
-    !                       (i,11) = total heat into upper layer by fire i
-    !                       (i,12 to 18) = heat of combustion, c/co2, co/co2, h/c, o/c, hcl, hcn yields for fire i
-    !					    (i,19) characteristic length of the burning volume
-    !                       (i,20) fire area
 
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flwf(mxrooms,ns+2,2)
@@ -102,25 +89,6 @@ module fire_routines
             flwf(iroom,lsp+2,u) = flwf(iroom,lsp+2,u) + xntms(u,lsp)
             flwf(iroom,lsp+2,l) = flwf(iroom,lsp+2,l) + xntms(l,lsp)
         end do
-
-        ! put the object information to arrays - xfire ...
-        ! note that we are carrying parallel data structures for the fire information
-        ! fire physics uses the sorted arrays, sorted by compartment
-        nfire = nfire + 1
-        ifroom(nfire) = iroom
-        xfire(nfire,f_fire_xpos) = fireptr%x_position
-        xfire(nfire,f_fire_ypos) = fireptr%y_position
-        xfire(nfire,f_fire_zpos) = fireptr%z_position + fireptr%z_offset
-        xfire(nfire,f_qfc) = xqfc
-        xfire(nfire,f_qfr) = xqfr
-        xfire(nfire,f_heatlpup) = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
-        xfire(nfire,f_heatlp) = fireptr%qdot_layers(l)
-        xfire(nfire,f_heatup) = fireptr%qdot_layers(u)
-        xfire(nfire,f_objct) = objhct
-        xfire(nfire,f_ysoot) = y_soot
-        xfire(nfire,f_yco) = y_co
-        xfire(nfire,f_obj_length) = fireptr%characteristic_length
-        xfire(nfire,f_obj_area) = oareat
     end do
 
     return
@@ -174,8 +142,6 @@ module fire_routines
     roomptr => roominfo(iroom)
     fireptr => fireinfo(ifire)
 
-    ! note: added upper/lower parameters to following three statements.
-    ! xtu was incorrectly set to lower layer temp, fixed it
     xz = roomptr%depth(u)
     xtl = roomptr%temp(l)
     xtu = roomptr%temp(u)

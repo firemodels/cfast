@@ -8,7 +8,6 @@ module radiation_routines
     use precision_parameters
     use cenviro
     use setup_data, only: logerr
-    use fireptrs
     use cparams
     use room_data
     use fire_data, only: n_fires, fireinfo

@@ -56,11 +56,6 @@ module fire_data
 
     integer :: n_fires                              ! number of fires in the current simulation
     type(fire_type), target :: fireinfo(mxfires)
-    
-    integer :: ifroom(mxfires)                      ! room fire is located in (sorted by room number)    
-    integer :: ifrpnt(mxrooms,2)                    ! pointer for sorted fires 
-                                                    !   (1 = number of fire in this room, 2 => first fire in this room)
-    real(eb) :: xfire(mxfires,mxfirp)               ! various fire outputs at current time for sorted fires
 
     integer :: nfurn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time

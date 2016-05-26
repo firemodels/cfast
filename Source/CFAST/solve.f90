@@ -16,7 +16,7 @@ module solve_routines
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
-    use utility_routines, only: mat2mult, sort_fire, interp, shellsort, cptime, xerror, funit
+    use utility_routines, only: mat2mult, interp, shellsort, cptime, xerror, funit
     use vflow_routines, only: vertical_flow
 
     use cenviro
@@ -1162,7 +1162,6 @@ module solve_routines
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flwf)
-    call sort_fire (n_fires,ifroom,xfire,ifrpnt,nrm1)
     call door_jet (flwdjf,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)

@@ -946,54 +946,6 @@ module utility_routines
     return
     end  subroutine shellsort
 
-! --------------------------- sort_fire -------------------------------------------
-
-    subroutine sort_fire (nfire,ifroom,xfire,ifrpnt,nrm1)
-
-    !     purpose: sort the two arrays ifroom and xfire into increasing room number in ifroom.  these are used
-    !              in this order by the ceiling jet and radiation algorithms
-    !     arguments: nfire   number of fires
-    !                ifroom (output)  room numbers for each of the fires
-    !                xfire   fire related quantities used by other routines. see routine fires for definition.
-    !                ifrpnt  pointer array for sorted fire list. (r,1) = number of fires in room r.
-    !                        (r,2) = pointer to beginning element in ifroom and xfire for fires in room r
-    !                nrm1 number of compartments minus 1
-
-    integer, intent(in) :: nrm1, nfire
-    integer, intent(inout) :: ifroom(mxfires)
-    real(eb), intent(inout) :: xfire(mxfires,mxfirp)
-    integer, intent(out) :: ifrpnt(mxrooms,2)
-
-    integer :: iperm(mxfires), iwork(mxfires), i, j, irm
-    real(eb) :: work(mxfires)
-
-    ! create a permutation vector from the list of fire rooms which is ordered by increasing room number
-    iperm(1:nfire) = (/(i,i=1,nfire)/)
-    call indexi(nfire,ifroom,iperm)
-
-    ! reorder the two arrays with the permutation vector
-    iwork(1:nfire) = ifroom(iperm(1:nfire))
-    ifroom(1:nfire) = iwork(1:nfire)
-
-    do j = 1, mxfirp
-        work(1:nfire) = xfire(iperm(1:nfire),j)
-        xfire(1:nfire,j) = work(1:nfire)
-    end do
-
-    ! do the pointer arrays for the radiation and ceiling jet routines
-    ifrpnt(1:nrm1,1:2) = 0
-    do i = 1, nfire
-        irm = ifroom(i)
-        ifrpnt(irm,1) = ifrpnt(irm,1) + 1
-        if (ifrpnt(irm,2)==0) ifrpnt(irm,2) = i
-    end do
-    do i = 1, nrm1
-        if (ifrpnt(i,2)==0) ifrpnt(i,2) = 1
-    end do
-    return
-
-    end subroutine sort_fire
-
 ! --------------------------- sstrng -------------------------------------------
 
     subroutine sstrng (string,wcount,sstart,sfirst,slast,svalid)

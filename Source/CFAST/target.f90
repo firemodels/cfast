@@ -14,7 +14,6 @@ module target_routines
     use detectorptrs
     use target_data
     use fire_data, only: nfurn, qfurnout, n_fires, fireinfo
-    use fireptrs
     use cparams
     use room_data
     use option_data, only: fcjet, option, off

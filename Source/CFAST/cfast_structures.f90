@@ -65,23 +65,23 @@ module cfast_types
         integer :: modified_plume                       ! fire plume flag, 1 = center, 2 = wall, 3 = corner
 
         ! These are calculated results for the current time step
-        real(eb) :: total_pyrolysate                    ! total pyroysate released by fire up to the current time
-        real(eb) :: total_trace                         ! total trace species released by fire up to the current time
-        real(eb) :: temperature                         ! current surface temperature on attached target (only for ignition)
-        real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
-        real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
-        real(eb), dimension(2) :: qdot_layers           ! current HRR into each layer (1=upper layer, 2=lower layer)
-        real(eb) :: qdot_actual                         ! current actual HRR (limited by available oxygen)
-        real(eb) :: qdot_radiative                      ! current actual radiative HRR = qdot_actual * chirad
-        real(eb) :: qdot_convective                     ! current actual convective HRR = qdot_actual * (1 - chirad)
         real(eb) :: firearea                            ! current area of the base of the fire
         real(eb) :: mdot_trace                          ! current trace species production rate
         real(eb) :: mdot_pyrolysis                      ! current mass pyrolysis rate of the fire
         real(eb) :: mdot_entrained                      ! current mass entrainment rate into the plume
         real(eb) :: mdot_plume                          ! current mass rate from plume into upper layer = pyrolysis + entrained
 
-        real(eb) :: plume_entrained, plume_flow, species_flow(2,ns)
-        real(eb) :: hrr_desired, hrr_convective, hrr_radiative, hrr_lower, hrr_upper, hrr_total, heat_of_combustion
+        real(eb) :: total_pyrolysate                    ! total pyroysate released by fire up to the current time
+        real(eb) :: total_trace                         ! total trace species released by fire up to the current time
+
+        real(eb) :: qdot_actual                         ! current actual HRR (limited by available oxygen)
+        real(eb) :: qdot_radiative                      ! current actual radiative HRR = qdot_actual * chirad
+        real(eb) :: qdot_convective                     ! current actual convective HRR = qdot_actual * (1 - chirad)
+        real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
+        real(eb), dimension(2) :: qdot_layers           ! current HRR into each layer (1=upper layer, 2=lower layer)
+
+        real(eb) :: temperature                         ! current surface temperature on attached target (only for ignition)
+        real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
     end type fire_type
 
     ! ramp data structure

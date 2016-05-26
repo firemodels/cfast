@@ -8,7 +8,6 @@ module output_routines
     use setup_data
     use solver_data
     use detectorptrs
-    use fireptrs
     use cparams
     use target_data
     use fire_data

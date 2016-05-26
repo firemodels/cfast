@@ -11,7 +11,7 @@ module radiation_routines
     use fireptrs
     use cparams
     use room_data
-    use fire_data, only: xfire, ifrpnt
+    use fire_data, only: n_fires, fireinfo
     use option_data
     use debug_data
 
@@ -42,12 +42,14 @@ module radiation_routines
     real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight, rabsorb(2)
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
+    
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
 
     ! work and dummy arrays passed to rad2 and rad4
 
     real(eb) :: taufl(mxfires,nwal), taufu(mxfires,nwal), firang(nwal,mxfires)
-    real(eb) :: xrfirepos(mxfires), yrfirepos(mxfires), zrfirepos(mxfires)
+    real(eb) :: xrfire(mxfires), yrfire(mxfires), zrfire(mxfires), qrfire(mxfires)
 
     flxrad(1:nrm1,1:nwal) = 0.0_eb
     flwrad(1:nrm1,1:2) = 0.0_eb
@@ -55,14 +57,6 @@ module radiation_routines
     if (option(frad)==off) return
     black = .false.
     if (option(frad)==3) black = .true.
-
-    !do i = 1, nrm1
-    !    roomptr => roominfo(i)
-    !    roomptr%abs_length(l) = (1.8_eb*roomptr%volume(l)) / &
-    !        (roomptr%floor_area + roomptr%depth(l)*(roomptr%cdepth + roomptr%cwidth))
-    !    roomptr%abs_length(u) = (1.8_eb*roomptr%volume(u)) / &
-    !        (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
-    !end do
 
     defabsup = 0.50_eb
     defabslow = 0.01_eb
@@ -80,18 +74,22 @@ module radiation_routines
             twall(imap) = roomptr%t_surfaces(1,iwall)
             emis(imap) = roomptr%eps_w(iwall)
         end do
-        ifire = ifrpnt(i,2)
-        nrmfire = ifrpnt(i,1)
-        do j = 1, nrmfire
-            xrfirepos(j) = xfire(ifire+j-1,f_fire_xpos)
-            yrfirepos(j) = xfire(ifire+j-1,f_fire_ypos)
-            !zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) ! This is point radiation at the base of the fire
-            ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
-            call flame_height (xfire(ifire+j-1,f_qfr),xfire(ifire+j-1,f_obj_area),fheight)
-            if (fheight+xfire(ifire+j-1,f_fire_zpos)>roomptr%cheight) then
-                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + (roomptr%cheight-xfire(ifire+j,f_fire_zpos))/3.0_eb
-            else
-                zrfirepos(j) = xfire(ifire+j-1,f_fire_zpos) + fheight/3.0_eb
+        nrmfire = 0
+        do ifire = 1, n_fires
+            fireptr => fireinfo(ifire)
+            if (fireptr%room==i) then
+                nrmfire = nrmfire + 1
+                xrfire(nrmfire) = fireptr%x_position
+                yrfire(nrmfire) = fireptr%y_position
+                ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
+                call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+                if (fheight+(fireptr%z_position+fireptr%z_offset)>roomptr%cheight) then
+                    zrfire(nrmfire) = (fireptr%z_position+fireptr%z_offset) + &
+                        (roomptr%cheight-(fireptr%z_position+fireptr%z_offset))/3.0_eb
+                else
+                    zrfire(nrmfire) = (fireptr%z_position+fireptr%z_offset) + fheight/3.0_eb
+                end if
+                qrfire(nrmfire) = fireptr%qdot_radiative
             end if
         end do
         if (.not.black) then
@@ -106,7 +104,7 @@ module radiation_routines
         rabsorb(1) = roomptr%absorb(u)
         rabsorb(2) = roomptr%absorb(l)
         call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
-            xfire(ifire,f_qfr),xrfirepos,yrfirepos,zrfirepos,nrmfire, &
+            qrfire,xrfire,yrfire,zrfire,nrmfire, &
             qflxw,qlay,mxfires,taufl,taufu,firang,roomptr%rad_qout,black)
         do j = 1, nwal
             flxrad(i,j) = qflxw(map(j))

@@ -13,7 +13,7 @@ module target_routines
     use cenviro
     use detectorptrs
     use target_data
-    use fire_data, only: xfire, ifrpnt, nfurn, qfurnout
+    use fire_data, only: nfurn, qfurnout, n_fires, fireinfo
     use fireptrs
     use cparams
     use room_data
@@ -138,10 +138,11 @@ module target_routines
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
     real(eb) :: dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
     real(eb) :: target_factors_front(10), target_factors_back(10)
-    integer :: map10(10) = (/1,3,3,3,3,4,4,4,4,2/), iroom, i, nfirerm, istart, ifire, iwall, iw, iwb
+    integer :: map10(10) = (/1,3,3,3,3,4,4,4,4,2/), iroom, i, ifire, iwall, iw, iwb
 
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
+    type(fire_type), pointer :: fireptr
 
     absu = 0.50_eb
     absl = 0.01_eb
@@ -158,61 +159,61 @@ module target_routines
         qtgflux(front:back) = 0.0_eb
         qtwflux(front:back) = 0.0_eb
 
-        nfirerm = ifrpnt(iroom,1)
-        istart = ifrpnt(iroom,2)
-
         ! compute radiative flux from fire
-        do ifire = istart, istart + nfirerm - 1
-            svect(1) = targptr%center(1) - xfire(ifire,f_fire_xpos)
-            svect(2) = targptr%center(2) - xfire(ifire,f_fire_ypos)
-            !svect(3) = targptr%center(3) - xfire(ifire,f_fire_zpos)! This is point radiation at the base of the fire
-            ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
-            call flame_height (xfire(ifire,f_qfr)+xfire(ifire,f_qfc),xfire(ifire,f_obj_area),fheight)
-            if (fheight+xfire(ifire,f_fire_zpos)>roomptr%cheight) then
-                zfire = xfire(ifire,f_fire_zpos) + (roomptr%cheight-xfire(ifire,f_fire_zpos))/3.0_eb
-            else
-                zfire = xfire(ifire,f_fire_zpos) + fheight/3.0_eb
-            end if
-            svect(3) = targptr%center(3) - zfire
-            cosang = 0.0_eb
-            s = max(dnrm2(3,svect,1),mx_hsep)
-            if (s/=0.0_eb) then
-                cosang = -ddot(3,svect,1,targptr%normal,1)/s
-            end if
-            ztarg = targptr%center(3)
-            zlay = roomptr%depth(l)
+        do ifire = 1, n_fires
+            fireptr => fireinfo(ifire)
+            if (fireptr%room==iroom) then
+                svect(1) = targptr%center(1) - fireptr%x_position
+                svect(2) = targptr%center(2) - fireptr%y_position
+                !svect(3) = targptr%center(3) - (fireptr%z_position + fireptr%z_offset)! This is point radiation at the base of the fire
+                ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
+                call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+                if (fheight + (fireptr%z_position + fireptr%z_offset)>roomptr%cheight) then
+                    zfire = (fireptr%z_position + fireptr%z_offset) + &
+                        (roomptr%cheight- (fireptr%z_position + fireptr%z_offset))/3.0_eb
+                else
+                    zfire = (fireptr%z_position + fireptr%z_offset) + fheight/3.0_eb
+                end if
+                svect(3) = targptr%center(3) - zfire
+                cosang = 0.0_eb
+                s = max(dnrm2(3,svect,1),mx_hsep)
+                if (s/=0.0_eb) then
+                    cosang = -ddot(3,svect,1,targptr%normal,1)/s
+                end if
+                ztarg = targptr%center(3)
+                zlay = roomptr%depth(l)
 
-            ! compute portion of path in lower and upper layers
-            call getylyu(zfire,zlay,ztarg,s,zl,zu)
-            if (nfurn>0) then
-                absl=0.0
-                absu=0.0
-                taul = 1.0_eb
-                tauu = 1.0_eb
-                qfire = 0.0_eb
-            else
-                absl = absorb(iroom, l)
-                absu = absorb(iroom, u)
-                taul = exp(-absl*zl)
-                tauu = exp(-absu*zu)
-                qfire = xfire(ifire,f_qfr)
-            end if
-            if (s/=0.0_eb) then
-                qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
-            else
-                qft = 0.0_eb
-            end if
+                ! compute portion of path in lower and upper layers
+                call getylyu(zfire,zlay,ztarg,s,zl,zu)
+                if (nfurn>0) then
+                    absl=0.0
+                    absu=0.0
+                    taul = 1.0_eb
+                    tauu = 1.0_eb
+                    qfire = 0.0_eb
+                else
+                    absl = absorb(iroom, l)
+                    absu = absorb(iroom, u)
+                    taul = exp(-absl*zl)
+                    tauu = exp(-absu*zu)
+                    qfire = fireptr%qdot_radiative
+                end if
+                if (s/=0.0_eb) then
+                    qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
+                else
+                    qft = 0.0_eb
+                end if
 
-            ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution
-            ! if the target is interior to the room
-            if (cosang>=0.0_eb) then
-                qtfflux(1) = qtfflux(1) + qft
-            else
-                if (targptr%back==interior) then
-                    qtfflux(2) = qtfflux(2) + qft
+                ! decide whether flux is hitting front or back of target. if it's hitting the back target only add contribution
+                ! if the target is interior to the room
+                if (cosang>=0.0_eb) then
+                    qtfflux(1) = qtfflux(1) + qft
+                else
+                    if (targptr%back==interior) then
+                        qtfflux(2) = qtfflux(2) + qft
+                    end if
                 end if
             end if
-
         end do
 
         ! compute radiative flux from walls and gas

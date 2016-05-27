@@ -93,7 +93,7 @@ module cfast_types
 
     ! room data structure
     type room_type
-        ! These are room definitions from or calculated from the input
+        ! These are room definitions from or calculated from user input
         character(128) :: name                          ! user selected name for the compartment
         character(mxthrmplen), dimension(nwal) :: matl  ! surface materials for ceiling, floor, upper wall, lower wall
 
@@ -222,8 +222,8 @@ module cfast_types
     ! vent data structure
     type vent_type
         ! These define a wall vent
-        integer :: from_room
-        integer :: to_room
+        integer :: from_room                ! first compartment for connecting vent
+        integer :: to_room                  ! second compartment for connecting vent
         real(eb) :: sill                    ! height of vent bottom relative to compartment floor
         real(eb) :: soffit                  ! height of vent top relative to compartment floor
         real(eb) :: width                   ! width of sill
@@ -242,9 +242,15 @@ module cfast_types
         ! These define a mechanical vent
 
         ! These are common to all vent types
-        integer :: counter
-        real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
+        real(eb) :: initial_open_fraction   ! initial fraction of vent opening
+        real(eb) :: initital_open_time      ! end time for initial open fraction
+        real(eb) :: final_open_fraction     ! final fraction of vent opening
+        real(eb) :: final_open_time         ! beginning time for final vent open fraction
+                                            ! between initial and final, open fraction changes linearly
+        integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
+
         integer :: n_slabs
+        real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type
 
     ! slice file data structure

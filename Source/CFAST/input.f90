@@ -367,7 +367,7 @@ module input_routines
     call hvinit
 
     ! check detectors
-    do i = 1, ndtect
+    do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         iroom = dtectptr%room
         if (iroom<1.or.iroom>nrm1) then
@@ -633,21 +633,21 @@ module input_routines
         !	TARGET - Compartment position(3) normal(3) Material Method Equation_Type
         if (label=='TARGE') then
             if (countargs(lcarray)>=10) then
-                if (ntarg+1>mxtarg) then
+                if (n_targets+1>mxtarg) then
                     write(*,5002)
                     write(logerr,5002)
                     stop
                 end if
 
                 ! The target can exist, now for the compartment
-                ntarg = ntarg + 1
+                n_targets = n_targets + 1
                 iroom = lrarray(1)
                 if (iroom<1.or.iroom>nr) then
                     write(*,5003) iroom
                     write(logerr,5003) iroom
                     stop
                 end if
-                targptr => targetinfo(ntarg)
+                targptr => targetinfo(n_targets)
                 targptr%room = iroom
 
                 ! position and normal vector
@@ -664,7 +664,7 @@ module input_routines
                 if (countargs(lcarray)>=12) then
                     targptr%name = lcarray(12)
                 else
-                    write (targptr%name,'(a5,i0)') 'Targ ', ntarg
+                    write (targptr%name,'(a5,i0)') 'Targ ', n_targets
                 end if
 
                 ! material type
@@ -767,7 +767,7 @@ module input_routines
                 tmpcond = lrarray(7)
                 fireptr%ignition_target = 0
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
-                    do i = 1,ntarg
+                    do i = 1,n_targets
                         targptr => targetinfo(i)
                         if (targptr%name==lcarray(8)) fireptr%ignition_target = i
                     end do
@@ -1225,15 +1225,15 @@ module input_routines
             ! DETECT Type Compartment Activation_Value Width Depth Height RTI Suppression Spray_Density
         case ('DETEC')
             if (countargs(lcarray)>=9) then
-                ndtect = ndtect + 1
+                n_detectors = n_detectors + 1
 
-                if (ndtect>mxdtect) then
+                if (n_detectors>mxdtect) then
                     write (*, 5338)
                     write (logerr, 5338)
                     stop
                 end if
 
-                dtectptr => detectorinfo(ndtect)
+                dtectptr => detectorinfo(n_detectors)
                 if (lcarray(1)=='SMOKE') then
                     i1 = smoked
                 else if (lcarray(1)=='HEAT') then
@@ -1287,8 +1287,8 @@ module input_routines
 
                 if (dtectptr%center(1)>roomptr%cwidth.or. &
                     dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
-                    write(*,5339) ndtect,roomptr%name
-                    write(logerr,5339) ndtect,roomptr%name
+                    write(*,5339) n_detectors,roomptr%name
+                    write(logerr,5339) n_detectors,roomptr%name
                     stop
                 end if
 

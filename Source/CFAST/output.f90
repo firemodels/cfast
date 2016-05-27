@@ -499,7 +499,7 @@ module output_routines
 
     integer, parameter :: iwptr(4) =(/1, 3, 4, 2/)
 
-    if ((itprt==0.and.ntarg<=nrm1).or.ntarg==0) return
+    if ((itprt==0.and.n_targets<=nrm1).or.n_targets==0) return
     write (iofilo,5000)
 
     call get_target_temperatures
@@ -508,7 +508,7 @@ module output_routines
         roomptr => roominfo(i)
         write (iofilo,5010) roomptr%name, (roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,iw=1,4)
 
-        do itarg = 1, ntarg
+        do itarg = 1, n_targets
             targptr => targetinfo(itarg)
             if (targptr%room==i) then
                 tgtemp = targptr%tgas
@@ -573,10 +573,10 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
-    if (ndtect==0)return
+    if (n_detectors==0)return
     write(iofilo,5000)
     cjetmin = 0.10_eb
-    do i = 1, ndtect
+    do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         iroom = dtectptr%room
         roomptr => roominfo(iroom)
@@ -926,11 +926,11 @@ module output_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    if (ntarg/=0) write(iofilo,5000)
+    if (n_targets/=0) write(iofilo,5000)
 5000 format(//,'TARGETS',//,'Target',T29,'Compartment',T44,'Position (x, y, z)',T71,&
          'Direction (x, y, z)',T96,'Material',/,102('-'))
 
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         roomptr => roominfo(targptr%room)
         write(iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), &
@@ -952,7 +952,7 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
-    if (ndtect/=0) write(iofilo,5000)
+    if (n_detectors/=0) write(iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
          ,'Target  Compartment        Type           Position (x, y, z)            Activation',/ &
          ,'                                                                        Obscuration    ', &
@@ -961,7 +961,7 @@ module output_routines
          '  (C)           (m s)^1/2     (m/s)',/ &
          ,128('-'))
 
-    do idtect = 1, ndtect
+    do idtect = 1, n_detectors
         dtectptr => detectorinfo(idtect)
         iroom = dtectptr%room
         roomptr => roominfo(iroom)
@@ -1201,11 +1201,11 @@ module output_routines
                 end if
             end do
         end do
-        if (ndtect/=0) then
+        if (n_detectors/=0) then
             write(*,*)'Detector info'
             write(*,100)
 100         format('  nr ',3X,'D temp',6X,'J temp',6X,' Act')
-            do i = 1, ndtect
+            do i = 1, n_detectors
                 dtectptr => detectorinfo(i)
                 iroom = dtectptr%room
                 roomptr => roominfo(iroom)
@@ -1256,9 +1256,9 @@ module output_routines
                 write(*,6085) iobj, fireptr%qdot_layers(l), fireptr%qdot_layers(u)
             end do
         end if
-        if (ntarg>0) then
+        if (n_targets>0) then
             write(*,6090)
-            do itarg = 1, ntarg
+            do itarg = 1, n_targets
                 targptr => targetinfo(itarg)
                 write(*,6095) itarg, targptr%temperature(idx_tempf_trg)
             end do

@@ -29,7 +29,7 @@
     ! --------------------------- output_smokeview -------------------------------------------
 
     subroutine output_smokeview(pabs_ref,pamb,tamb,nrm, n_hvents, n_vvents, nfires, froom_number,&
-        fx0,fy0,fz0, ntarg, stime, nscount)
+        fx0,fy0,fz0, n_targets, stime, nscount)
     !
     ! this routine creates the .smv file used by smokeview to determine size and location of
     ! rooms, vents, fires etc
@@ -55,7 +55,7 @@
     !  fx0,fy0,fz0 - location of fire base
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
-    integer, intent(in) :: nrm, nscount, n_hvents, nfires, n_vvents, ntarg
+    integer, intent(in) :: nrm, nscount, n_hvents, nfires, n_vvents, n_targets
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
 
@@ -196,8 +196,8 @@
 
     ! detection devices (smoke detectors, heat detectors, sprinklers).
     !these must be first since activation assumes device number is detector number
-    if (ndtect>0) then
-        do i = 1, ndtect
+    if (n_detectors>0) then
+        do i = 1, n_detectors
             dtectptr => detectorinfo(i)
             write (13,"(a)") "DEVICE"
             if (dtectptr%dtype==smoked) then
@@ -213,7 +213,7 @@
     end if
 
     ! target devices
-    do i = 1, ntarg
+    do i = 1, n_targets
         write(13,"(a)") "DEVICE"
         write(13,"(a)") "TARGET"
         call getabstarget(i,targetvector)

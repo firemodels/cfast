@@ -254,7 +254,7 @@ module spreadsheet_routines
     call get_target_temperatures
 
     ! now do targets if defined
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         tgtemp = targptr%tgas
         tttemp = targptr%tfront
@@ -296,7 +296,7 @@ module spreadsheet_routines
 
     ! detectors (including sprinklers)
     cjetmin = 0.10_eb
-    do i = 1, ndtect
+    do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         zdetect = dtectptr%center(3)
         iroom = dtectptr%room

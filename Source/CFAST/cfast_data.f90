@@ -315,13 +315,13 @@ module target_data
 
     ! variables for calculation of flux to a target
 
-    integer :: ndtect                                               ! number of detectors in the simulation
-    integer :: ntarg                                                ! number of detectors in the simulation
     integer :: idset                                                ! compartment where detector just went off. more than one
                                                                     ! sprinkler in a compartment is meaningless to CFAST
 
+    integer :: n_targets                                            ! number of detectors in the simulation
     type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
 
+    integer :: n_detectors                                          ! number of detectors in the simulation
     type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
 
 end module target_data

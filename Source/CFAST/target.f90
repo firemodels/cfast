@@ -61,7 +61,7 @@ module target_routines
     end if
 
     ! for each target calculate the residual and update target temperature (if update = 1)
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         targptr => targetinfo(itarg)
 
         ! calculate net flux striking each side of target
@@ -611,7 +611,7 @@ module target_routines
 
     call target_nodes (x_node)
 
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         targptr => targetinfo(itarg)
 
         if (targptr%equaton_type == cylpde) then
@@ -676,7 +676,7 @@ module target_routines
 
 ! --------------------------- update_detectors -------------------------------------------
 
-    subroutine update_detectors (imode,tcur,dstep,ndtect,idset,ifdtect,tdtect)
+    subroutine update_detectors (imode,tcur,dstep,n_detectors,idset,ifdtect,tdtect)
 
     !     routine: update_detectors
     !     purpose: updates the temperature of each detector link.  it also determine whether the
@@ -684,11 +684,11 @@ module target_routines
     !              quenching algorithm will be invoked if the appropriate option has been set.
     !     arguments: tcur    current time
     !                dstep   time step size (to next time)
-    !                ndtect  number of detectors
+    !                n_detectors  number of detectors
     !                ixdtect 2-d array containing integer detector data structures
     !                idset   room where activated detector resides
 
-    integer, intent(in) :: imode, ndtect
+    integer, intent(in) :: imode, n_detectors
     real(eb), intent(in) :: tcur, dstep
 
     integer, intent(out) :: idset, ifdtect
@@ -706,7 +706,7 @@ module target_routines
     ifdtect = 0
     tdtect = tcur+2*dstep
     cjetmin = 0.10_eb
-    do i = 1, ndtect
+    do i = 1, n_detectors
         dtectptr => detectorinfo(i)
 
         iroom = dtectptr%room
@@ -810,7 +810,7 @@ module target_routines
     type(room_type), pointer :: roomptr
 
     ! If ceiling jet option is turned off, conditions default to the appropriate layer temperature
-    do id = 1, ndtect
+    do id = 1, n_detectors
         dtectptr => detectorinfo(id)
         iroom = dtectptr%room
         roomptr => roominfo(iroom)

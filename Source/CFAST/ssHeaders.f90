@@ -316,10 +316,10 @@ module spreadsheet_header_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        ifrom = ventptr%from
+        ifrom = ventptr%from_room
         call tointstring(ifrom,cifrom)
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ventptr%to
+        ito = ventptr%to_room
         call tointstring(ito,cito)
         if (ito==nr) cito = 'Outside'
 

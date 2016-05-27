@@ -66,8 +66,8 @@ module hflow_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        iroom1 = ventptr%from
-        iroom2 = ventptr%to
+        iroom1 = ventptr%from_room
+        iroom2 = ventptr%to_room
         ik = ventptr%counter
 
         ventptr%mflow(1,1:2,1) = 0.0_eb
@@ -761,11 +761,11 @@ module hflow_routines
 
     ventptr=>hventinfo(i)
 
-    ifrom =ventptr%from
-    ito = ventptr%to
+    ifrom =ventptr%from_room
+    ito = ventptr%to_room
     iface = ventptr%face
     vwidth = ventptr%width
-    voffset = ventptr%from_hall_offset
+    voffset = ventptr%offset(1)
     vbottom = ventptr%sill
     vtop = ventptr%soffit
     vred = 1.0_eb

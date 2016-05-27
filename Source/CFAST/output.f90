@@ -313,11 +313,11 @@ module output_routines
     ! horizontal flow natural vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
-        ifrom = ventptr%from
+        ifrom = ventptr%from_room
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%name
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ventptr%to
+        ito = ventptr%to_room
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'

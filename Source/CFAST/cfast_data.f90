@@ -112,16 +112,16 @@ module option_data
     integer, parameter :: d_diag = 19
 
     integer, dimension(mxopt) :: option = &
-        ! fire, hflow, entrain, vflow, cjet
-        (/   2,     1,       1,     1,    1,  &
-        ! door-fire, convec, rad, conduct, debug
-                  1,      1,   2,       1,     0,  &
-        ! exact ode,  hcl, mflow, keyboard, type of initialization
-                  1,    0,     1,        1,                      0,  &
-        !  mv heat loss, mod jac, dassl debug, oxygen dassl solve, back track on dtect, back track on objects
-                      0,       0,           0,                  0,                   0,                    0/)
-!*** in above change default rad option from 2 to 4
-!*** this causes absorption coefs to take on constant default values rather than computed from data
+        !   fire,       hflow,      entrain,    vflow,      cjet
+        (/  2,          1,          1,          1,          1,  &
+        !   door-fire,  convec,     rad,        conduct,    debug
+        !                           changing default rad option from 2 to 4 causes absorption coefs 
+        !                           to take on constant default values rather than computed from data
+            1,          1,          2,          1,          0,  &
+        !   exact ode,  hcl,        mflow,      keyboard,   type of initialization
+            1,          0,          1,          1,          0,  &
+        !   mv heat loss,   mod jac,    dassl debug,    oxygen dassl solve,     back track on dtect,    back track on objects
+            0,              0,          0,              0,                      0,                      0/)
     integer, dimension(mxopt) :: d_debug = 0
 
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
@@ -188,7 +188,7 @@ module room_data
                                                     !   3 = to room number
                                                     !   4 = to wall number
 
-    logical :: adiabatic_walls
+    logical :: adiabatic_walls                      ! true if all surfaces are adiabatic
 
 end module room_data
 
@@ -352,11 +352,23 @@ module vent_data
     save
 
     ! hvent variables
-    integer :: ihvent_connections(mxrooms,mxrooms), ijk(mxrooms,mxrooms,mxccv), vface(mxhvents), nventijk
-    real(eb) :: hhp(mxhvents), bw(mxhvents), hh(mxhvents), hl(mxhvents), ventoffset(mxhvents,2), &
-    hlp(mxhvents)
+    integer :: n_hvents, nventijk           ! number of horizontal vents
+
+    integer :: vface(mxhvents)              ! wall where went is located, 1 = x(-), 2 = y(+), 3 = x(+), 4 = y(-)
+    real(eb) :: bw(mxhvents)                ! width
+    real(eb) :: hh(mxhvents)                ! height of soffit
+    real(eb) :: hl(mxhvents)                ! height of sill
+    real(eb) :: ventoffset(mxhvents,2)      ! vent offset from wall origin (1 = first room, 2 = second room)
+    real(eb) :: hlp(mxhvents)               ! absolute height of the sill
+    real(eb) :: hhp(mxhvents)               ! absolute height of the soffit
+    
+    integer :: ihvent_connections(mxrooms,mxrooms)
+    integer :: ijk(mxrooms,mxrooms,mxccv)
 
     ! vvent variables
+    integer :: n_vvents
+
+    integer, dimension(mxvvent,2) :: ivvent
     integer :: ivvent_connections(mxrooms,mxrooms), vshape(mxrooms,mxrooms)
     real(eb) :: vvarea(mxrooms,mxrooms), vmflo(mxrooms,mxrooms,2), qcvpp(4,mxrooms,mxrooms)
 
@@ -376,9 +388,6 @@ module vent_data
     real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
     
     logical :: mvcalc_on
-
-    integer, dimension(mxvvent,2) :: ivvent
-    integer :: n_hvents, n_vvents
 
     real(eb), dimension(mxrooms,mxhvent) :: zzventdist
     real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa

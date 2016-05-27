@@ -182,8 +182,8 @@ module solve_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        iroom1 = ventptr%from
-        iroom2 = ventptr%to
+        iroom1 = ventptr%from_room
+        iroom2 = ventptr%to_room
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
@@ -1519,10 +1519,10 @@ module solve_routines
                             ventptr%soffit = hh(iijk)
                             ventptr%width = bw(iijk)
 
-                            ventptr%from_hall_offset = ventoffset(iijk,1)
-                            ventptr%to_hall_offset = ventoffset(iijk,2)
-                            ventptr%from=i
-                            ventptr%to=j
+                            ventptr%offset(1) = ventoffset(iijk,1)
+                            ventptr%offset(2) = ventoffset(iijk,2)
+                            ventptr%from_room=i
+                            ventptr%to_room=j
                             ventptr%counter=k
                             ! add face (vface) to the data structure
                             ventptr%face = vface(iijk)

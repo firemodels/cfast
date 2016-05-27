@@ -65,23 +65,23 @@ module cfast_types
         integer :: modified_plume                       ! fire plume flag, 1 = center, 2 = wall, 3 = corner
 
         ! These are calculated results for the current time step
-        real(eb) :: firearea                            ! current area of the base of the fire
-        real(eb) :: mdot_trace                          ! current trace species production rate
-        real(eb) :: mdot_pyrolysis                      ! current mass pyrolysis rate of the fire
-        real(eb) :: mdot_entrained                      ! current mass entrainment rate into the plume
-        real(eb) :: mdot_plume                          ! current mass rate from plume into upper layer = pyrolysis + entrained
+        real(eb) :: firearea                            ! area of the base of the fire
+        real(eb) :: mdot_trace                          ! trace species production rate
+        real(eb) :: mdot_pyrolysis                      ! mass pyrolysis rate of the fire
+        real(eb) :: mdot_entrained                      ! mass entrainment rate into the plume
+        real(eb) :: mdot_plume                          ! mass rate from plume into upper layer = pyrolysis + entrained
 
         real(eb) :: total_pyrolysate                    ! total pyroysate released by fire up to the current time
         real(eb) :: total_trace                         ! total trace species released by fire up to the current time
 
-        real(eb) :: qdot_actual                         ! current actual HRR (limited by available oxygen)
-        real(eb) :: qdot_radiative                      ! current actual radiative HRR = qdot_actual * chirad
-        real(eb) :: qdot_convective                     ! current actual convective HRR = qdot_actual * (1 - chirad)
+        real(eb) :: qdot_actual                         ! actual HRR (limited by available oxygen)
+        real(eb) :: qdot_radiative                      ! actual radiative HRR = qdot_actual * chirad
+        real(eb) :: qdot_convective                     ! actual convective HRR = qdot_actual * (1 - chirad)
         real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
-        real(eb), dimension(2) :: qdot_layers           ! current HRR into each layer (1=upper layer, 2=lower layer)
+        real(eb), dimension(2) :: qdot_layers           ! HRR into each layer (1=upper layer, 2=lower layer)
 
-        real(eb) :: temperature                         ! current surface temperature on attached target (only for ignition)
-        real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
+        real(eb) :: temperature                         ! surface temperature on attached target (only for ignition)
+        real(eb) :: incident_flux                       ! flux to attached target (only for ignition)
     end type fire_type
 
     ! ramp data structure
@@ -222,11 +222,17 @@ module cfast_types
     ! vent data structure
     type vent_type
         ! These define a wall vent
-        real(eb) :: sill, soffit, width
-        real(eb) :: from_hall_offset, to_hall_offset
+        integer :: from_room
+        integer :: to_room
+        real(eb) :: sill                    ! height of vent bottom relative to compartment floor
+        real(eb) :: soffit                  ! height of vent top relative to compartment floor
+        real(eb) :: width                   ! width of sill
+        integer :: face                     ! wall where went is located, 1 = x(-), 2 = y(+), 3 = x(+), 4 = y(-)
+        real(eb) :: absolute_sill           ! absolute height of the sill
+        real(eb) :: absolute_soffit         ! absolute height of the soffit
+        real(eb), dimension(2) :: offset    ! vent offset from wall origin (1 = from room, 2 = to room)
+        
         real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
-        integer :: from, to
-        integer :: face
 
         ! These define a ceiling/floor vent
         real(eb) :: area

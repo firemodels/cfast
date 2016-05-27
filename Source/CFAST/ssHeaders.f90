@@ -231,7 +231,7 @@ module spreadsheet_header_routines
     end do
 
     ! Targets
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         call toIntString(itarg,cDet)
         targptr => targetinfo(itarg)
         ! front surface
@@ -256,7 +256,7 @@ module spreadsheet_header_routines
     end do
 
     ! Detectors
-    do i = 1, ndtect
+    do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         call toIntString(i,cDet)
         itype = dtectptr%dtype
@@ -316,10 +316,10 @@ module spreadsheet_header_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        ifrom = ventptr%from
+        ifrom = ventptr%from_room
         call tointstring(ifrom,cifrom)
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ventptr%to
+        ito = ventptr%to_room
         call tointstring(ito,cito)
         if (ito==nr) cito = 'Outside'
 

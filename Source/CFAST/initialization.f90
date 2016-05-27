@@ -442,7 +442,7 @@ module initialization_routines
     end do
 
     ! establish default values for detector data
-    do i = 1, ndtect
+    do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         iroom=dtectptr%room
         roomptr => roominfo(iroom)
@@ -482,7 +482,7 @@ module initialization_routines
     call update_data (p, odevara)
 
     ! initialize target temperatures
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         iroom = targptr%room
         targptr%temperature(idx_tempf_trg:idx_tempb_trg) = interior_temperature
@@ -647,7 +647,7 @@ module initialization_routines
     qcvm(4,1:mxfan) = 1.0_eb
 
     ! detectors
-    ndtect = 0
+    n_detectors = 0
     detectorinfo(1:mxdtect)%rti = 50.0_eb
     detectorinfo(1:mxdtect)%spray_density = -300.0_eb
     detectorinfo(1:mxdtect)%center(1) = -1.0_eb
@@ -664,7 +664,7 @@ module initialization_routines
     detectorinfo(1:mxdtect)%reported = .false.
 
     ! targets
-    ntarg = 0
+    n_targets = 0
     targetinfo(1:mxtarg)%equaton_type = pde
     targetinfo(1:mxtarg)%back = interior
     targetinfo(1:mxtarg)%material = 'DEFAULT'
@@ -802,7 +802,7 @@ module initialization_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
 
         ! room number must be between 1 and nrm1
         targptr => targetinfo(itarg)
@@ -1035,7 +1035,7 @@ module initialization_routines
     end do
 
     ! initialize target data structures
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         tcname = targptr%material
         if (tcname==' ') then

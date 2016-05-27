@@ -182,8 +182,8 @@ module solve_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        iroom1 = ventptr%from
-        iroom2 = ventptr%to
+        iroom1 = ventptr%from_room
+        iroom2 = ventptr%to_room
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
@@ -546,7 +546,7 @@ module solve_routines
         ! then we need the output now
         call remap_fires (nfires)
         call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_temperature, nrm1,  &
-             n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, ntarg, 0.0_eb, 1)
+             n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, 0.0_eb, 1)
         icode = 0
         write (*, '(a)') 'Initialize only'
         write (logerr, '(a)') 'Initialize only'
@@ -646,7 +646,7 @@ module solve_routines
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
                 call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_temperature, nrm1, &
-                    n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, ntarg, t, i_time_step)
+                    n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, t, i_time_step)
                 call output_smokeview_header (version,nrm1,nfires)
             end if
             smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
@@ -754,14 +754,14 @@ module solve_routines
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
         call get_detector_temp_and_velocity
-        call update_detectors (check_detector_state,told,dt,ndtect,idset,ifdtect,tdtect)
+        call update_detectors (check_detector_state,told,dt,n_detectors,idset,ifdtect,tdtect)
         call update_fire_objects (check_detector_state,told,dt,ifobj,tobj)
         td = min(tdtect,tobj)
 
         ! a detector is the first one that went off
         if (ifdtect>0.and.tdtect<=td) then
             isensor = ifdtect
-            call update_detectors (set_detector_state,told,dt,ndtect,idset,ifdtect,tdtect)
+            call update_detectors (set_detector_state,told,dt,n_detectors,idset,ifdtect,tdtect)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
                 idsave = idset
@@ -772,7 +772,7 @@ module solve_routines
                 idset = 0
             end if
         else
-            call update_detectors (update_detector_state,told,dt,ndtect,idset,ifdtect,tdtect)
+            call update_detectors (update_detector_state,told,dt,n_detectors,idset,ifdtect,tdtect)
         end if
 
         ! object ignition is the first thing to happen
@@ -1519,10 +1519,10 @@ module solve_routines
                             ventptr%soffit = hh(iijk)
                             ventptr%width = bw(iijk)
 
-                            ventptr%from_hall_offset = ventoffset(iijk,1)
-                            ventptr%to_hall_offset = ventoffset(iijk,2)
-                            ventptr%from=i
-                            ventptr%to=j
+                            ventptr%offset(1) = ventoffset(iijk,1)
+                            ventptr%offset(2) = ventoffset(iijk,2)
+                            ventptr%from_room=i
+                            ventptr%to_room=j
                             ventptr%counter=k
                             ! add face (vface) to the data structure
                             ventptr%face = vface(iijk)
@@ -1754,7 +1754,7 @@ module solve_routines
         end do
 
         ! record which layer target is in
-        do itarg = 1, ntarg
+        do itarg = 1, n_targets
             targptr => targetinfo(itarg)
             iroom = targptr%room
             roomptr => roominfo(iroom)

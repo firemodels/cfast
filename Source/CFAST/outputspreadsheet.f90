@@ -152,8 +152,8 @@ module spreadsheet_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        ifrom = ventptr%from
-        ito = ventptr%to
+        ifrom = ventptr%from_room
+        ito = ventptr%to_room
         netflow = ventptr%mflow(2,1,1) - ventptr%mflow(2,1,2) + ventptr%mflow(2,2,1) - ventptr%mflow(2,2,2)
         call SSaddtolist (position,netflow,outarray)
         netflow = ventptr%mflow(1,1,1) - ventptr%mflow(1,1,2) + ventptr%mflow(1,2,1) - ventptr%mflow(1,2,2)
@@ -254,7 +254,7 @@ module spreadsheet_routines
     call get_target_temperatures
 
     ! now do targets if defined
-    do itarg = 1, ntarg
+    do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         tgtemp = targptr%tgas
         tttemp = targptr%tfront
@@ -296,7 +296,7 @@ module spreadsheet_routines
 
     ! detectors (including sprinklers)
     cjetmin = 0.10_eb
-    do i = 1, ndtect
+    do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         zdetect = dtectptr%center(3)
         iroom = dtectptr%room
@@ -444,8 +444,8 @@ module spreadsheet_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        iroom1 = ventptr%from
-        iroom2 = ventptr%to
+        iroom1 = ventptr%from_room
+        iroom2 = ventptr%to_room
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)

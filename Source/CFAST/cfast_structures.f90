@@ -65,23 +65,23 @@ module cfast_types
         integer :: modified_plume                       ! fire plume flag, 1 = center, 2 = wall, 3 = corner
 
         ! These are calculated results for the current time step
-        real(eb) :: firearea                            ! current area of the base of the fire
-        real(eb) :: mdot_trace                          ! current trace species production rate
-        real(eb) :: mdot_pyrolysis                      ! current mass pyrolysis rate of the fire
-        real(eb) :: mdot_entrained                      ! current mass entrainment rate into the plume
-        real(eb) :: mdot_plume                          ! current mass rate from plume into upper layer = pyrolysis + entrained
+        real(eb) :: firearea                            ! area of the base of the fire
+        real(eb) :: mdot_trace                          ! trace species production rate
+        real(eb) :: mdot_pyrolysis                      ! mass pyrolysis rate of the fire
+        real(eb) :: mdot_entrained                      ! mass entrainment rate into the plume
+        real(eb) :: mdot_plume                          ! mass rate from plume into upper layer = pyrolysis + entrained
 
         real(eb) :: total_pyrolysate                    ! total pyroysate released by fire up to the current time
         real(eb) :: total_trace                         ! total trace species released by fire up to the current time
 
-        real(eb) :: qdot_actual                         ! current actual HRR (limited by available oxygen)
-        real(eb) :: qdot_radiative                      ! current actual radiative HRR = qdot_actual * chirad
-        real(eb) :: qdot_convective                     ! current actual convective HRR = qdot_actual * (1 - chirad)
+        real(eb) :: qdot_actual                         ! actual HRR (limited by available oxygen)
+        real(eb) :: qdot_radiative                      ! actual radiative HRR = qdot_actual * chirad
+        real(eb) :: qdot_convective                     ! actual convective HRR = qdot_actual * (1 - chirad)
         real(eb), dimension(2) :: qdot_at_activation    ! HRR at sprinkler activation (1=upper layer, 2=lower layer)
-        real(eb), dimension(2) :: qdot_layers           ! current HRR into each layer (1=upper layer, 2=lower layer)
+        real(eb), dimension(2) :: qdot_layers           ! HRR into each layer (1=upper layer, 2=lower layer)
 
-        real(eb) :: temperature                         ! current surface temperature on attached target (only for ignition)
-        real(eb) :: incident_flux                       ! current flux to attached target (only for ignition)
+        real(eb) :: temperature                         ! surface temperature on attached target (only for ignition)
+        real(eb) :: incident_flux                       ! flux to attached target (only for ignition)
     end type fire_type
 
     ! ramp data structure
@@ -93,7 +93,7 @@ module cfast_types
 
     ! room data structure
     type room_type
-        ! These are room definitions from or calculated from the input
+        ! These are room definitions from or calculated from user input
         character(128) :: name                          ! user selected name for the compartment
         character(mxthrmplen), dimension(nwal) :: matl  ! surface materials for ceiling, floor, upper wall, lower wall
 
@@ -222,11 +222,17 @@ module cfast_types
     ! vent data structure
     type vent_type
         ! These define a wall vent
-        real(eb) :: sill, soffit, width
-        real(eb) :: from_hall_offset, to_hall_offset
+        integer :: from_room                ! first compartment for connecting vent
+        integer :: to_room                  ! second compartment for connecting vent
+        real(eb) :: sill                    ! height of vent bottom relative to compartment floor
+        real(eb) :: soffit                  ! height of vent top relative to compartment floor
+        real(eb) :: width                   ! width of sill
+        integer :: face                     ! wall where went is located, 1 = x(-), 2 = y(+), 3 = x(+), 4 = y(-)
+        real(eb) :: absolute_sill           ! absolute height of the sill
+        real(eb) :: absolute_soffit         ! absolute height of the soffit
+        real(eb), dimension(2) :: offset    ! vent offset from wall origin (1 = from room, 2 = to room)
+        
         real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
-        integer :: from, to
-        integer :: face
 
         ! These define a ceiling/floor vent
         real(eb) :: area
@@ -236,9 +242,15 @@ module cfast_types
         ! These define a mechanical vent
 
         ! These are common to all vent types
-        integer :: counter
-        real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
+        real(eb) :: initial_open_fraction   ! initial fraction of vent opening
+        real(eb) :: initital_open_time      ! end time for initial open fraction
+        real(eb) :: final_open_fraction     ! final fraction of vent opening
+        real(eb) :: final_open_time         ! beginning time for final vent open fraction
+                                            ! between initial and final, open fraction changes linearly
+        integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
+
         integer :: n_slabs
+        real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type
 
     ! slice file data structure

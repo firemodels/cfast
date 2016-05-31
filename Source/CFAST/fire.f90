@@ -668,7 +668,7 @@ module fire_routines
         ventptr=>hventinfo(i)
 
         ! is there a door jet fire into room iroom1
-        iroom1 = ventptr%from_room
+        iroom1 = ventptr%room1
         room1ptr => roominfo(iroom1)
         if (room1ptr%temp(u)>=tgignt) then
             flw1to2 = vss(1,i)+vsa(1,i)
@@ -679,7 +679,7 @@ module fire_routines
         end if
 
         !is there a door jet fire into room iroom2
-        iroom2 = ventptr%to_room
+        iroom2 = ventptr%room2
         room2ptr => roominfo(iroom2)
         if (room2ptr%temp(u)>=tgignt) then
             flw2to1 = vss(2,i)+vsa(2,i)
@@ -701,8 +701,8 @@ module fire_routines
 
         do i = 1, n_hvents
             ventptr=>hventinfo(i)
-                iroom1 = ventptr%from_room
-                iroom2 = ventptr%to_room
+                iroom1 = ventptr%room1
+                iroom2 = ventptr%room2
                 room1ptr => roominfo(iroom1)
                 room2ptr => roominfo(iroom2)
                 flw1to2 = room1ptr%species_fraction(u,fuel)*(vss(1,i)+vsa(1,i))

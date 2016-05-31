@@ -100,17 +100,6 @@ module option_data
     integer, parameter :: fbtdtect=20
     integer, parameter :: fbtobj=21
 
-    integer, parameter :: d_jac = 17
-    integer, parameter :: d_cnt = 1
-    integer, parameter :: d_prn = 2
-    integer, parameter :: d_mass = 1
-    integer, parameter :: d_hvac = 2
-    integer, parameter :: d_hflw = 3
-    integer, parameter :: d_vflw = 4
-    integer, parameter :: d_mvnt = 5
-    integer, parameter :: d_dpdt = 18
-    integer, parameter :: d_diag = 19
-
     integer, dimension(mxopt) :: option = &
         !   fire,       hflow,      entrain,    vflow,      cjet
         (/  2,          1,          1,          1,          1,  &
@@ -122,7 +111,6 @@ module option_data
             1,          0,          1,          1,          0,  &
         !   mv heat loss,   mod jac,    dassl debug,    oxygen dassl solve,     back track on dtect,    back track on objects
             0,              0,          0,              0,                      0,                      0/)
-    integer, dimension(mxopt) :: d_debug = 0
 
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
 
@@ -337,7 +325,7 @@ module thermal_data
     save
 
     integer nthrmp                                                  ! number of unique thermal properties in the simulation
-    type (thermal_type), dimension(mxthrmp), target :: thermalinfo  ! structure thermal property data
+    type (thermal_type), dimension(mxthrmp), target :: thermalinfo  ! structured thermal property data
 
     end module thermal_data
 
@@ -352,17 +340,9 @@ module vent_data
     save
 
     ! hvent variables
-    integer :: n_hvents, nventijk           ! number of horizontal vents
+    integer :: n_hvents                                         ! number of horizontal vents
+    type (vent_type), dimension(mxhvent), target :: hventinfo   ! structured horizontal vent data
 
-    integer :: vface(mxhvents)              ! wall where went is located, 1 = x(-), 2 = y(+), 3 = x(+), 4 = y(-)
-    real(eb) :: bw(mxhvents)                ! width
-    real(eb) :: hh(mxhvents)                ! height of soffit
-    real(eb) :: hl(mxhvents)                ! height of sill
-    real(eb) :: ventoffset(mxhvents,2)      ! vent offset from wall origin (1 = first room, 2 = second room)
-    real(eb) :: hlp(mxhvents)               ! absolute height of the sill
-    real(eb) :: hhp(mxhvents)               ! absolute height of the soffit
-    
-    integer :: ihvent_connections(mxrooms,mxrooms)
     integer :: ijk(mxrooms,mxrooms,mxccv)
 
     ! vvent variables
@@ -397,7 +377,6 @@ module vent_data
     integer, dimension(mxfslab) ::  dirs12
     integer :: nvelev, ioutf
 
-    type (vent_type), dimension(mxhvent), target :: hventinfo
     type (vent_type), dimension(mxvvent), target :: vventinfo
     type (vent_type), dimension(mxext), target :: mventinfo
 

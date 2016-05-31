@@ -483,7 +483,7 @@ module input_routines
     integer, intent(in) :: inumr, inumc
 
     integer :: i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
-    integer :: iijk, jik, koffst, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
+    integer :: iijk, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: frac, tmpcond
     character :: label*5, tcname*64, eqtype*3, venttype,orientypefrom*1, orientypeto*1
@@ -495,6 +495,7 @@ module input_routines
     type(visual_type), pointer :: sliceptr
     type(thermal_type), pointer :: thrmpptr
     type(fire_type), pointer :: fireptr
+    type(vent_type), pointer :: ventptr
 
     !	Start with a clean slate
 
@@ -883,12 +884,12 @@ module input_routines
             exterior_abs_pressure = lrarray(2)
             exset = .true.
 
-            ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction
-            !		    bw = width, hh = soffit, hl = sill,
-            !		    hhp = absolute height of the soffit,hlp = absolute height of the sill,
+            ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction, 
+            !           width, soffit, sill
+            !		    absolute height of the soffit, absolute height of the sill,
             !           floor_height = absolute height of the floor (not set here)
             !		    compartment offset for the hall command (2 of these)
-            !		    vface = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
+            !		    face = the relative face of the vent: 1-4 for x plane (-), y plane (+), x plane (+), y plane (-)
             !		    initial open fraction
         case ('HVENT')
             if (countargs(lcarray)<7) then
@@ -907,35 +908,39 @@ module input_routines
                     stop
                 end if
                 if (k>mxccv) then
-                    write (*,5080) i, j, k, ihvent_connections(i,j)
-                    write (logerr,5080) i, j, k, ihvent_connections(i,j)
+                    write (*,5080) i, j, k
+                    write (logerr,5080) i, j, k
                     stop
                 end if
-                nventijk = nventijk + 1
-                if (nventijk>mxhvents) then
+                
+                n_hvents = n_hvents + 1
+                ventptr => hventinfo(n_hvents)
+                ventptr%room1 = lrarray(1)
+                ventptr%room2 = lrarray(2)
+                ventptr%counter = lrarray(3)
+                
+                if (n_hvents>mxhvents) then
                     write(*,5081) i,j,k
                     write(logerr,5081) i,j,k
                     stop
                 end if
-                ijk(i,j,k) = nventijk
-                ijk(j,i,k) = ijk(i,j,k)
+                ijk(i,j,k) = n_hvents
                 iijk = ijk(i,j,k)
-                jik = iijk
-                koffst = 2**k
-                ihvent_connections(i,j) = ior(ihvent_connections(i,j),koffst)
-                bw(iijk) = lrarray(4)
-                hh(iijk) = lrarray(5)
-                hl(iijk) = lrarray(6)
+                ijk(j,i,k) = ijk(i,j,k)
+                
+                ventptr%width = lrarray(4)
+                ventptr%soffit = lrarray(5)
+                ventptr%sill = lrarray(6)
             end if
             if (countargs(lcarray)>=11) then
-                ventoffset(iijk,1) = lrarray(8)
-                ventoffset(iijk,2) = lrarray(9)
-                vface(iijk) = lrarray(10)
+                ventptr%offset(1) = lrarray(8)
+                ventptr%offset(2) = lrarray(9)
+                ventptr%face = lrarray(10)
                 initialopening = lrarray(11)
             else if (countargs(lcarray)>=9) then
-                ventoffset(iijk,1) = lrarray(7)
-                ventoffset(iijk,2) = 0.0_eb
-                vface(iijk) = lrarray(8)
+                ventptr%offset(1) = lrarray(7)
+                ventptr%offset(2) = 0.0_eb
+                ventptr%face = lrarray(8)
                 initialopening = lrarray(9)
             else
                 write (*,*) '***Error: Bad HVENT input. At least 7 arguments required.'
@@ -943,27 +948,14 @@ module input_routines
                 stop
             end if
 
+            ventptr%initial_open_fraction = initialopening
+            ventptr%final_open_fraction = initialopening
             qcvh(2,iijk) = initialopening
             qcvh(4,iijk) = initialopening
 
-            roomptr => roominfo(i)
-            hhp(iijk) = hh(iijk) + roomptr%z0
-            hlp(iijk) = hl(iijk) + roomptr%z0
-
-            ! connections are bidirectional
-
-            ihvent_connections(j,i) = ihvent_connections(i,j)
-            roomptr => roominfo(j)
-            hh(jik) = min(roomptr%cheight,max(0.0_eb,hhp(jik)-roomptr%z0))
-            hl(jik) = min(hh(jik),max(0.0_eb,hlp(jik)-roomptr%z0))
-
-            ! assure ourselves that the connections are symmetrical
-
-            hhp(jik) = hh(jik) + roomptr%z0
-            hlp(jik) = hl(jik) + roomptr%z0
-            roomptr => roominfo(i)
-            hh(iijk) = min(roomptr%cheight,max(0.0_eb,hhp(iijk)-roomptr%z0))
-            hl(iijk) = min(hh(iijk),max(0.0_eb,hlp(iijk)-roomptr%z0))
+            roomptr => roominfo(ventptr%room1)
+            ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+            ventptr%absolute_sill = ventptr%sill + roomptr%z0
 
             ! DEADROOM dead_room_num connected_room_num
             ! pressure in dead_room_num is not solved.  pressure for this room
@@ -1663,7 +1655,7 @@ module input_routines
 5051 format ('***Error: The key word ',a5,' is not recognized')
 5062 format ('***Error: Bad COMPA input. Compartment number outside of allowable range ',i0)
 5070 format ('***Error: Bad VENT input. Parameter(s) outside of allowable range',2I4)
-5080 format ('***Error: Bad HVENT input. Too many pairwise horizontal connections',4I5)
+5080 format ('***Error: Bad HVENT input. Too many pairwise horizontal connections',3I5)
 5081 format ('***Error: Too many horizontal connections ',3i5)
 5191 format ('***Error: Bad MVENT input. Compartments specified in MVENT have not been defined ',2i3)
 5192 format ('***Error: Bad MVENT input. Exceeded maximum number of nodes/openings in MVENT ',2i3)

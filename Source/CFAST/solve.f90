@@ -182,8 +182,8 @@ module solve_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        iroom1 = ventptr%from_room
-        iroom2 = ventptr%to_room
+        iroom1 = ventptr%room1
+        iroom2 = ventptr%room2
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
@@ -1386,9 +1386,8 @@ module solve_routines
     integer, intent(in) :: iflag
     real(eb), intent(in) :: y_vector(*)
 
-    integer frmask(mxccv)
 
-    integer :: iroom, lsp, layer, i, j, k, iijk, itstop, ieq, iwall, ii
+    integer :: iroom, lsp, layer, i, j, itstop, ieq, iwall, ii
     integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp
@@ -1503,34 +1502,6 @@ module solve_routines
 
         roomptr%rho(u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
         roomptr%mass(u:l) = roomptr%rho(u:l)*roomptr%volume(u:l)
-
-        ! define horizontal vent data structures
-        frmask(1:mxccv) = (/(2**i,i=1,mxccv)/)
-        n_hvents = 0
-        do i = 1, nrm1
-            do j = i + 1, nr
-                if (ihvent_connections(i,j)/=0) then
-                    do k = 1, mxccv
-                        if (iand(frmask(k),ihvent_connections(i,j))/=0) then
-                            n_hvents = n_hvents + 1
-                            ventptr => hventinfo(n_hvents)
-                            iijk = ijk(i,j,k)
-                            ventptr%sill = hl(iijk)
-                            ventptr%soffit = hh(iijk)
-                            ventptr%width = bw(iijk)
-
-                            ventptr%offset(1) = ventoffset(iijk,1)
-                            ventptr%offset(2) = ventoffset(iijk,2)
-                            ventptr%from_room=i
-                            ventptr%to_room=j
-                            ventptr%counter=k
-                            ! add face (vface) to the data structure
-                            ventptr%face = vface(iijk)
-                        end if
-                    end do
-                end if
-            end do
-        end do
 
         !define vents for vertical flow
         n_vvents = 0

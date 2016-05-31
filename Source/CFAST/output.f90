@@ -313,11 +313,11 @@ module output_routines
     ! horizontal flow natural vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
-        ifrom = ventptr%from_room
+        ifrom = ventptr%room1
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%name
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ventptr%to_room
+        ito = ventptr%room2
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'
@@ -679,30 +679,26 @@ module output_routines
 
     !     Description:  Output initial test case vent connections
 
-    integer :: i,j,k,iijk, isys, ibr, irm, iext
+    integer :: i, j, isys, ibr, irm, iext
     real(eb) :: hrx, hrpx
     character :: ciout*8, cjout*14, csout*6
     logical :: first
     type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: ventptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
         write (iofilo,5000)
     else
         write (iofilo,5010)
-        do i = 1, nrm1
-            do j = i + 1, nr
-                do k = 1, 4
-                    roomptr => roominfo(j)
-                    write (cjout,'(a14)') roomptr%name
-                    if (j==nr) cjout = 'Outside'
-                    if (iand(1,ishft(ihvent_connections(i,j),-k))/=0) then
-                        iijk = ijk(i,j,k)
-                        roomptr => roominfo(i)
-                        write (iofilo,5020) roomptr%name, cjout, k, bw(iijk), hl(iijk),hh(iijk), hlp(iijk), hhp(iijk)
-                    end if
-                end do
-            end do
+        do i = 1, n_hvents
+            ventptr => hventinfo(i)
+            roomptr => roominfo(ventptr%room2)
+            write (cjout,'(a14)') roomptr%name
+            if (ventptr%room2==nr) cjout = 'Outside'
+            roomptr => roominfo(i)
+            write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                ventptr%absolute_sill, ventptr%absolute_soffit
         end do
     end if
 

@@ -222,8 +222,8 @@ module cfast_types
     ! vent data structure
     type vent_type
         ! These define a wall vent
-        integer :: from_room                ! first compartment for connecting vent
-        integer :: to_room                  ! second compartment for connecting vent
+        integer :: room1                    ! first compartment for connecting vent
+        integer :: room2                    ! second compartment for connecting vent
         real(eb) :: sill                    ! height of vent bottom relative to compartment floor
         real(eb) :: soffit                  ! height of vent top relative to compartment floor
         real(eb) :: width                   ! width of sill

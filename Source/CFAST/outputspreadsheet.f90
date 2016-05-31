@@ -152,8 +152,8 @@ module spreadsheet_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        ifrom = ventptr%from_room
-        ito = ventptr%to_room
+        ifrom = ventptr%room1
+        ito = ventptr%room2
         netflow = ventptr%mflow(2,1,1) - ventptr%mflow(2,1,2) + ventptr%mflow(2,2,1) - ventptr%mflow(2,2,2)
         call SSaddtolist (position,netflow,outarray)
         netflow = ventptr%mflow(1,1,1) - ventptr%mflow(1,1,2) + ventptr%mflow(1,2,1) - ventptr%mflow(1,2,2)
@@ -444,8 +444,8 @@ module spreadsheet_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
-        iroom1 = ventptr%from_room
-        iroom2 = ventptr%to_room
+        iroom1 = ventptr%room1
+        iroom2 = ventptr%room2
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)

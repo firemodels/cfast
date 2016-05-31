@@ -599,20 +599,25 @@ module initialization_routines
     nfurn=0
 
     ! horizontal vents
-    ihvent_connections(1:mxrooms,1:mxrooms) = 0.0_eb
-    bw(1:mxhvents) = 0.0_eb
-    hh(1:mxhvents) = 0.0_eb
-    hl(1:mxhvents) = 0.0_eb
-    hhp(1:mxhvents) = 0.0_eb
-    hlp(1:mxhvents) = 0.0_eb
-    vface(1:mxhvents) = 1
+    n_hvents = 0
+    hventinfo(1:mxhvents)%width = 0.0_eb
+    hventinfo(1:mxhvents)%soffit = 0.0_eb
+    hventinfo(1:mxhvents)%sill = 0.0_eb
+    hventinfo(1:mxhvents)%absolute_soffit = 0.0_eb
+    hventinfo(1:mxhvents)%absolute_sill = 0.0_eb
+    hventinfo(1:mxhvents)%face = 1
     ! start with vents open
+    hventinfo(1:mxhvents)%initial_open_fraction = 0.0_eb
+    hventinfo(1:mxhvents)%initital_open_time = 1.0_eb
+    hventinfo(1:mxhvents)%final_open_time = 0.0_eb
+    hventinfo(1:mxhvents)%final_open_fraction = 1.0_eb
+    
     qcvh(1,1:mxhvents) = 0.0_eb
     qcvh(2,1:mxhvents) = 1.0_eb
     qcvh(3,1:mxhvents) = 0.0_eb
     qcvh(4,1:mxhvents) = 1.0_eb
+
     ijk(1:mxrooms,1:mxrooms,1:mxccv) = 0
-    nventijk = 0
 
     ! vertical vents
     vshape(1:mxrooms,1:mxrooms) = 0

@@ -1187,9 +1187,9 @@ end module utility_routines
 
 module opening_fractions
 
-    !	The following functions implement the open/close function for vents.
+    !	The following functions implement the simplified open/close function for vents.
     !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,mxrooms), qcvm(4,mxfan),
+    !	The arrays to hold the open/close information are qcvv(4,mxrooms), qcvm(4,mxfan),
     !         and qcvi(4,mxfan).
 
     !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
@@ -1204,40 +1204,48 @@ module opening_fractions
 
     use precision_parameters
     use ramp_data
+    use vent_data
+    use setup_data, only: logerr
 
     implicit none
 
     private
 
-    public qchfraction, qcvfraction, qcffraction, qcifraction, getventfraction
+    public findwhichvent, qcvfraction, qcffraction, qcifraction, getventfraction
 
     contains
+    
+    ! --------------------------- findwhichvent -----------------------------------------
+    
+    integer function findwhichvent (venttype, room1, room2, ventnumber)
+    
+    character, intent(in) :: venttype
+    integer, intent(in) :: room1, room2, ventnumber
+    type(vent_type), pointer :: ventptr
+    integer i, ivent
 
-    ! --------------------------- qchfraction -------------------------------------------
-
-    real(eb) function qchfraction (points, index, time)
-
-    !	This is the open/close function for buoyancy driven horizontal flow
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
-    real(eb) :: deltat
-
-    if (time<points(1,index)) then
-        qchfraction = points(2,index)
-    else if (time>points(3,index)) then
-        qchfraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index), mintime)
-        deltat = max(time - points(1,index), mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qchfraction = points(2,index) + dydt*deltat
+    ivent = -1
+    if (venttype=='H') then
+        do i = 1, n_hvents
+            ventptr => hventinfo(i)
+            if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ventnumber) ivent = i
+        end do
+    else if (venttype=='V') then
+        do i = 1, n_vvents
+            ventptr => vventinfo(i)
+            if (ventptr%top==room1.and.ventptr%bottom==room2.and.ventptr%counter==ventnumber) ivent = i
+        end do
     end if
+    if (ivent==-1) then
+        write (*,5000) venttype, room1, room2, ventnumber
+        write (logerr,5000) venttype, room1, room2, ventnumber
+5000    format ('***Error: Requested vent does not exist, type = ',a,', compartments = ',i0,' ',i0,', vent number = ',i0)
+        stop
+    end if
+    findwhichvent = ivent
     return
-    end function qchfraction
+    
+    end function findwhichvent
 
     ! --------------------------- qcvfraction -------------------------------------------
 

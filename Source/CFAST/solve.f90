@@ -10,7 +10,7 @@ module solve_routines
     use hflow_routines, only: horizontal_flow
     use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
-    use opening_fractions, only : qchfraction
+    use opening_fractions, only : findwhichvent, getventfraction
     use output_routines, only: output_results, output_status, output_debug, deleteoutputfiles, find_error_component
     use radiation_routines, only: radiation
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
@@ -1535,10 +1535,15 @@ module solve_routines
 
         ! add each of the change arrays to the discontinuity list
         do  i = 1, n_hvents
-            ndisc = ndisc + 1
-            discon(ndisc) = qcvh(1,i)
-            ndisc = ndisc + 1
-            discon(ndisc) = qcvh(3,i)
+            ventptr => hventinfo(i)
+            if (ventptr%initial_open_time/=0.0_eb) then
+                ndisc = ndisc + 1
+                discon(ndisc) = ventptr%initial_open_time
+            end if
+            if (ventptr%final_open_time/=0.0_eb) then
+                ndisc = ndisc + 1
+                discon(ndisc) = ventptr%final_open_time
+            end if
         end do
         do  i = 1, n_vvents
             ndisc = ndisc + 1

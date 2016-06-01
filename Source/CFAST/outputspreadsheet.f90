@@ -4,7 +4,7 @@ module spreadsheet_routines
 
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
-    use opening_fractions, only : qchfraction
+    use opening_fractions, only : getventfraction
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
 

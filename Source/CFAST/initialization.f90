@@ -3,7 +3,7 @@ module initialization_routines
     use precision_parameters
 
     use numerics_routines, only: dnrm2, dscal
-    use opening_fractions, only : qchfraction
+    use opening_fractions, only : findwhichvent, getventfraction
     use output_routines, only : deleteoutputfiles
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror
@@ -46,7 +46,7 @@ module initialization_routines
     integer tp, i
     type(thermal_type), pointer :: thrmpptr
 
-    do i = 1, nthrmp
+    do i = 1, n_thrmp
         thrmpptr => thermalinfo(i)
         if (name==thrmpptr%name) then
             tp = i
@@ -611,11 +611,6 @@ module initialization_routines
     hventinfo(1:mxhvents)%initial_open_time = 1.0_eb
     hventinfo(1:mxhvents)%final_open_time = 0.0_eb
     hventinfo(1:mxhvents)%final_open_fraction = 1.0_eb
-    
-    qcvh(1,1:mxhvents) = 0.0_eb
-    qcvh(2,1:mxhvents) = 1.0_eb
-    qcvh(3,1:mxhvents) = 0.0_eb
-    qcvh(4,1:mxhvents) = 1.0_eb
 
     ! vertical vents
     vshape(1:mxrooms,1:mxrooms) = 0
@@ -911,7 +906,7 @@ module initialization_routines
     !        epsw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
     !        matl contains the name of the thermal data subset in the tpp datafile
-    !        nthrmp is a count of the number of tpp data sets in the database
+    !        n_thrmp is a count of the number of tpp data sets in the database
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto

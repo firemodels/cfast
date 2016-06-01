@@ -2,7 +2,7 @@ module hflow_routines
 
     use precision_parameters
 
-    use opening_fractions, only: qchfraction
+    use opening_fractions, only: getventfraction
     use debug_routines, only: ssprintslab, spreadsheetfslabs
     use room_data
     

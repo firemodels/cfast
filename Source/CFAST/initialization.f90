@@ -608,7 +608,7 @@ module initialization_routines
     hventinfo(1:mxhvents)%face = 1
     ! start with vents open
     hventinfo(1:mxhvents)%initial_open_fraction = 0.0_eb
-    hventinfo(1:mxhvents)%initital_open_time = 1.0_eb
+    hventinfo(1:mxhvents)%initial_open_time = 1.0_eb
     hventinfo(1:mxhvents)%final_open_time = 0.0_eb
     hventinfo(1:mxhvents)%final_open_fraction = 1.0_eb
     
@@ -616,8 +616,6 @@ module initialization_routines
     qcvh(2,1:mxhvents) = 1.0_eb
     qcvh(3,1:mxhvents) = 0.0_eb
     qcvh(4,1:mxhvents) = 1.0_eb
-
-    ijk(1:mxrooms,1:mxrooms,1:mxccv) = 0
 
     ! vertical vents
     vshape(1:mxrooms,1:mxrooms) = 0

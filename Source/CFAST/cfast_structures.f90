@@ -243,7 +243,7 @@ module cfast_types
 
         ! These are common to all vent types
         real(eb) :: initial_open_fraction   ! initial fraction of vent opening
-        real(eb) :: initital_open_time      ! end time for initial open fraction
+        real(eb) :: initial_open_time       ! end time for initial open fraction
         real(eb) :: final_open_fraction     ! final fraction of vent opening
         real(eb) :: final_open_time         ! beginning time for final vent open fraction
                                             ! between initial and final, open fraction changes linearly

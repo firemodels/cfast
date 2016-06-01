@@ -48,6 +48,7 @@ module input_routines
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, nventij, ivers
     character :: aversion*5
     type(room_type), pointer :: roomptr, roomptr2
+    type(vent_type), pointer :: ventptr
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
 
@@ -419,16 +420,14 @@ module input_routines
         roomptr => roominfo(i)
         ! force heat transfer between rooms connected by vents.
         if (roomptr%iheat==1) then
-            do j = 1, nr
-                roomptr2 => roominfo(j)
-                nventij = 0
-                do k = 1, 4
-                    nventij = nventij + ijk(i,j,k)
-                end do
-                if (nventij/=0) roomptr%heat_frac(j) = 1.0_eb
-
-                ! if the back wall is not active then don't consider its contribution
-                if (j<=nrm1.and..not.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 0.0_eb
+            do j = 1, n_hvents
+                ventptr => hventinfo(j)
+                if (ventptr%room1==i) then 
+                    roomptr%heat_frac(j) = 1.0_eb
+                    roomptr2 =>roominfo(j)
+                    ! if the back wall is not active then don't consider its contribution
+                    if (j<=nrm1.and..not.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 0.0_eb
+                end if
             end do
         end if
 
@@ -924,9 +923,6 @@ module input_routines
                     write(logerr,5081) i,j,k
                     stop
                 end if
-                ijk(i,j,k) = n_hvents
-                iijk = ijk(i,j,k)
-                ijk(j,i,k) = ijk(i,j,k)
                 
                 ventptr%width = lrarray(4)
                 ventptr%soffit = lrarray(5)
@@ -950,8 +946,6 @@ module input_routines
 
             ventptr%initial_open_fraction = initialopening
             ventptr%final_open_fraction = initialopening
-            qcvh(2,iijk) = initialopening
-            qcvh(4,iijk) = initialopening
 
             roomptr => roominfo(ventptr%room1)
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0

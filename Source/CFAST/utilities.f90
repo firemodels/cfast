@@ -1203,12 +1203,13 @@ module opening_fractions
     !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and hvfan
 
     use precision_parameters
+    use ramp_data
 
     implicit none
 
     private
 
-    public qchfraction, qcvfraction, qcffraction, qcifraction
+    public qchfraction, qcvfraction, qcffraction, qcifraction, getventfraction
 
     contains
 
@@ -1315,5 +1316,68 @@ module opening_fractions
     end if
     return
     end function qcifraction
+
+! --------------------------- getventfraction-------------------------------------
+
+    subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction,ventptr)
+
+    character, intent(in) :: venttype
+    integer, intent(in) :: room1, room2, vent_number, vent_index
+    real(eb), intent(in) :: time
+    real(eb), intent(out) :: fraction
+    type(vent_type), intent(in) :: ventptr
+
+    integer :: iramp, i
+    real(eb), parameter :: mintime=1.0e-6_eb
+    real(eb) :: dt, dtfull, dy, dydt
+    type(ramp_type), pointer :: rampptr
+
+    fraction = 1.0_eb
+
+    if (nramps>0) then
+        do iramp = 1, nramps
+            rampptr=>rampinfo(iramp)
+            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and.&
+               rampptr%vent_number==vent_number) then
+                if (time<=rampptr%time(1)) then
+                    fraction = rampptr%value(1)
+                    return
+                else if (time>=rampptr%time(rampptr%npoints)) then
+                    fraction = rampptr%value(rampptr%npoints)
+                    return
+                else
+                    do i=2,rampptr%npoints
+                        if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
+                            dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
+                            dtfull = max(time-rampptr%time(i-1),mintime)
+                            dy = rampptr%value(i)-rampptr%value(i-1)
+                            dydt = dy / dt
+                            fraction = rampptr%value(i-1) + dydt*dtfull
+                            return
+                        end if
+                    end do
+                end if
+            end if
+        end do
+    end if
+
+    ! This is for backwards compatibility with the older EVENT format for single vent changes
+    fraction = 1.0_eb
+    if (venttype=='V') fraction = qcvfraction(qcvv, vent_index, time)
+    if (venttype=='H') then
+        if (time<=ventptr%initial_open_time) then
+            fraction = ventptr%initial_open_fraction
+        else if (time>=ventptr%final_open_time) then
+            fraction = ventptr%final_open_fraction
+        else
+            dt = max(ventptr%final_open_time - ventptr%initial_open_time, mintime)
+            dtfull = max(time - ventptr%initial_open_time, mintime)
+            dy = ventptr%final_open_fraction - ventptr%initial_open_fraction
+            dydt = dy/dt
+            fraction = ventptr%initial_open_fraction + dydt*dtfull
+        end if
+    end if
+    return
+    end subroutine getventfraction
 
     end module opening_fractions

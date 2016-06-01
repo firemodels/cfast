@@ -343,8 +343,6 @@ module vent_data
     integer :: n_hvents                                         ! number of horizontal vents
     type (vent_type), dimension(mxhvent), target :: hventinfo   ! structured horizontal vent data
 
-    integer :: ijk(mxrooms,mxrooms,mxccv)
-
     ! vvent variables
     integer :: n_vvents
 

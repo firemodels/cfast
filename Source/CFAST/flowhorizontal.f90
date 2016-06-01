@@ -2,7 +2,7 @@ module hflow_routines
 
     use precision_parameters
 
-    use opening_fractions, only: qchfraction
+    use opening_fractions, only: getventfraction
     use debug_routines, only: ssprintslab, spreadsheetfslabs
     use room_data
     
@@ -47,7 +47,7 @@ module hflow_routines
     real(eb) :: denl(2), denu(2), tu(2), tl(2)
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
     real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
-    real(eb) :: factor2, height, width
+    real(eb) :: fraction, height, width
     integer :: islab, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
@@ -94,9 +94,9 @@ module hflow_routines
         !  use new interpolator to find vent opening fraction
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        factor2 = qchfraction (qcvh, ijk(im,ix,ik),tsec)
+        call getventfraction ('H',iroom1,iroom2,ik,i,tsec,fraction,ventptr)
         height = ventptr%soffit - ventptr%sill
-        width = ventptr%width*factor2
+        width = ventptr%width*fraction
         avent = height*width
 
         if (avent>=1.0e-10_eb) then

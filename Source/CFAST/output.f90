@@ -836,7 +836,7 @@ module output_routines
 
     ! print out the properties of the materials used
     write (iofilo,5030)
-    do i = 1, nthrmp
+    do i = 1, n_thrmp
         thrmpptr => thermalinfo(i)
         write (iofilo,5040) thrmpptr%name, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
         do j = 2, thrmpptr%nslab

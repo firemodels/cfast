@@ -7,7 +7,6 @@ module input_routines
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
-    use opening_fractions, only: findwhichvent
 
     use wallptrs
     use cenviro
@@ -49,9 +48,9 @@ module input_routines
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, ivers
     character :: aversion*5
     type(room_type), pointer :: roomptr, roomptr2
-    type(vent_type), pointer :: ventptr
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
+    type(vent_type), pointer :: ventptr
 
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
@@ -115,7 +114,7 @@ module input_routines
         yinter(i) = -1.0_eb
     end do
 
-    n_thrmp = 0
+    nthrmp = 0
 
     ! read in data file
     call keywordcases (numr, numc)
@@ -423,11 +422,10 @@ module input_routines
         if (roomptr%iheat==1) then
             do j = 1, n_hvents
                 ventptr => hventinfo(j)
-                if (ventptr%room1==i) then 
-                    roomptr%heat_frac(j) = 1.0_eb
-                    roomptr2 =>roominfo(j)
-                    ! if the back wall is not active then don't consider its contribution
-                    if (j<=nrm1.and..not.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 0.0_eb
+                if (ventptr%room2==j) then
+                    roomptr2 => roominfo(j)
+                    ! if the back wall of to room is not active then don't consider its contribution
+                    if (j<nr.and.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 1.0_eb
                 end if
             end do
         end if
@@ -483,7 +481,7 @@ module input_routines
     integer, intent(in) :: inumr, inumc
 
     integer :: i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
-    integer :: ivent, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
+    integer :: iijk, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: frac, tmpcond
     character :: label*5, tcname*64, eqtype*3, venttype,orientypefrom*1, orientypeto*1
@@ -521,15 +519,15 @@ module input_routines
 
         if (label=='MATL') then
             if (countargs(lcarray)>=7) then
-                n_thrmp = n_thrmp + 1
-                if (n_thrmp>mxthrmp) then
+                nthrmp = nthrmp + 1
+                if (nthrmp>mxthrmp) then
                     write (*,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
                         mxthrmp
                     write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
                         mxthrmp
                     stop
                 end if
-                thrmpptr => thermalinfo(n_thrmp)
+                thrmpptr => thermalinfo(nthrmp)
                 thrmpptr%name = lcarray(1)
                 thrmpptr%nslab = 1
                 thrmpptr%k(1) = lrarray(2)
@@ -947,6 +945,8 @@ module input_routines
 
             ventptr%initial_open_fraction = initialopening
             ventptr%final_open_fraction = initialopening
+            qcvh(2,n_hvents) = initialopening
+            qcvh(4,n_hvents) = initialopening
 
             roomptr => roominfo(ventptr%room1)
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
@@ -983,11 +983,14 @@ module input_routines
                     i = lrarray(2)
                     j = lrarray(3)
                     k = lrarray(4)
-                    ivent = findwhichvent('H',i,j,k)
-                    ventptr => hventinfo(ivent)
-                    ventptr%initial_open_time = lrarray(5)
-                    ventptr%final_open_time = lrarray(5) + lrarray(7)
-                    ventptr%final_open_fraction = lrarray(6)
+                    do iijk = 1, n_hvents
+                        ventptr => hventinfo(iijk)
+                        if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
+                            qcvh(1,iijk) = lrarray(5)
+                            qcvh(3,iijk) = lrarray(5) + lrarray(7)
+                            qcvh(4,iijk) = lrarray(6)
+                        end if
+                    end do
                 case ('V')
                     ! Sort these out in update_data; we duplicate here so that read_input_file does not have to sort these as well
                     itop = lrarray(2)

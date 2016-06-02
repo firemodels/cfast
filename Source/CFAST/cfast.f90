@@ -71,8 +71,8 @@
     tstop = i_time_end - 1
 
     ! add the default thermal property
-    n_thrmp = n_thrmp + 1
-    thrmpptr => thermalinfo(n_thrmp)
+    nthrmp = nthrmp + 1
+    thrmpptr => thermalinfo(nthrmp)
     thrmpptr%name = 'DEFAULT'
     thrmpptr%eps = 0.90_eb
     thrmpptr%nslab = 1

@@ -235,9 +235,10 @@ module cfast_types
         real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
 
         ! These define a ceiling/floor vent
-        real(eb) :: area
-        real(eb) :: top, bottom
-        integer :: shape
+        integer :: top                      ! top compartment for connecting vent
+        integer :: bottom                   ! bottom compartment for connecting vent
+        real(eb) :: area                    ! vent area
+        integer :: shape                    ! vent shape, 1 = circular, 2 = square
 
         ! These define a mechanical vent
 
@@ -249,8 +250,10 @@ module cfast_types
                                             ! between initial and final, open fraction changes linearly
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
 
+        ! These are calculated results for the current time step
         integer :: n_slabs
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
+        real(eb) :: current_area
     end type vent_type
 
     ! slice file data structure

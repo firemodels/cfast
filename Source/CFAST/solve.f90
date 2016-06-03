@@ -199,9 +199,8 @@ module solve_routines
 
     ! check vertical vent flow
     do i = 1, n_vvents
-        iroom1 = ivvent(i,toprm)
-        iroom2 = ivvent(i,botrm)
-        if (vvarea(iroom1,iroom2)/=0.0_eb) then
+        ventptr => vventinfo(i)
+        if (ventptr%current_area/=0.0_eb) then
             roomc(iroom1,iroom2) = 1
             roomc(iroom2,iroom1) = 1
         end if
@@ -1387,7 +1386,7 @@ module solve_routines
     real(eb), intent(in) :: y_vector(*)
 
 
-    integer :: iroom, lsp, layer, i, j, itstop, ieq, iwall, ii
+    integer :: iroom, lsp, layer, i, itstop, ieq, iwall, ii
     integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
     integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
     real(eb) :: wtemp
@@ -1396,7 +1395,6 @@ module solve_routines
     real(eb) :: xt, xtemp, xh2o, ptemp, epscut
     real(eb) :: xmax, xmid, ymax, ymid, zmax
 
-    type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
 
@@ -1503,28 +1501,7 @@ module solve_routines
         roomptr%rho(u:l) = roomptr%absp/rgas/roomptr%temp(u:l)
         roomptr%mass(u:l) = roomptr%rho(u:l)*roomptr%volume(u:l)
 
-        !define vents for vertical flow
-        n_vvents = 0
-        do i = 1, nr
-            do j = 1, nr
-                if (ivvent_connections(i,j)/=0) then
-                    n_vvents = n_vvents + 1
-                    ivvent(n_vvents,1) = i
-                    ivvent(n_vvents,2) = j
-                    qcvv(1,n_vvents) = qcvpp(1,i,j)
-                    qcvv(2,n_vvents) = qcvpp(2,i,j)
-                    qcvv(3,n_vvents) = qcvpp(3,i,j)
-                    qcvv(4,n_vvents) = qcvpp(4,i,j)
-
-                    ventptr => vventinfo(n_vvents)
-                    ventptr%top = ivvent(n_vvents,1)
-                    ventptr%bottom = ivvent(n_vvents,2)
-                end if
-            end do
-        end do
-
         ! define discontinuity array.  first we look at vent openings
-
         xdelt = time_end/deltat
         itstop = xdelt + 1
         tstop = itstop - 1

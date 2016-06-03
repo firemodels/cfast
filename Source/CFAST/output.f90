@@ -298,7 +298,7 @@ module output_routines
 
     !     Description:  Output the vent flow at the current time
 
-    integer :: i, ii, ifrom, ito, toprm = 1, botrm = 2, irm, inode
+    integer :: i, ii, ifrom, ito, irm, inode
     character :: ciout*14, cjout*12
     logical first
     real(eb), dimension(8) :: flow
@@ -328,11 +328,12 @@ module output_routines
 
     ! vertical flow natural vents
     do i = 1, n_vvents
-        ifrom = ivvent(i,botrm)
+        ventptr => vventinfo(i)
+        ifrom = ventptr%bottom
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%name
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ivvent(i,toprm)
+        ito = ventptr%top
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'
@@ -707,26 +708,23 @@ module output_routines
         write (iofilo,5030)
     else
         write (iofilo,5040)
-        do i = 1, nr
-            do j = 1, nr
-                if (ivvent_connections(i,j)/=0) then
-                    write (ciout,'(i5,3x)') i
-                    if (i==nr) ciout = 'Outside'
-                    write (cjout,'(i5,3x)') j
-                    if (j==nr) cjout = 'Outside'
-                    csout = 'Round'
-                    if (vshape(i,j)==2) csout = 'Square'
-                    roomptr => roominfo(j)
-                    if (j<nr) then
-                        hrx = roomptr%cheight
-                        hrpx = roomptr%z1
-                    else
-                        hrx = roomptr%z0
-                        hrpx = roomptr%z0
-                    end if
-                    write (iofilo,5050) ciout, cjout, csout, vvarea(i,j), hrx, hrpx
-                end if
-            end do
+        do i = 1, n_vvents
+            ventptr => vventinfo(i)
+            write (ciout,'(i5,3x)') ventptr%top
+            if (ventptr%top==nr) ciout = 'Outside'
+            write (cjout,'(i5,3x)') ventptr%bottom
+            if (ventptr%bottom==nr) cjout = 'Outside'
+            csout = 'Round'
+            if (ventptr%shape==2) csout = 'Square'
+            roomptr => roominfo(ventptr%bottom)
+            if (ventptr%bottom<nr) then
+                hrx = roomptr%cheight
+                hrpx = roomptr%z1
+            else
+                hrx = roomptr%z0
+                hrpx = roomptr%z0
+            end if
+            write (iofilo,5050) ciout, cjout, csout, ventptr%area, hrx, hrpx
         end do
     end if
 
@@ -836,7 +834,7 @@ module output_routines
 
     ! print out the properties of the materials used
     write (iofilo,5030)
-    do i = 1, nthrmp
+    do i = 1, n_thrmp
         thrmpptr => thermalinfo(i)
         write (iofilo,5040) thrmpptr%name, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
         do j = 2, thrmpptr%nslab

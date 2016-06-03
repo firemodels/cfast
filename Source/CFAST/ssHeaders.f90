@@ -295,7 +295,7 @@ module spreadsheet_header_routines
 
     integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
     character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
-    integer :: position, i, ih, ii, inode, ifrom, ito, toprm = 1, botrm = 2
+    integer :: position, i, ih, ii, inode, ifrom, ito
     type(vent_type), pointer :: ventptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
@@ -343,10 +343,11 @@ module spreadsheet_header_routines
     ! Natural flow through horizontal vents (vertical flow)
     do i = 1,n_vvents
 
-        ifrom = ivvent(i,botrm)
+        ventptr => vventinfo(i)
+        ifrom = ventptr%bottom
         call tointstring(ifrom,ciFrom)
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ivvent(i,toprm)
+        ito = ventptr%top
         call tointstring(ito,cito)
         if (ito==nr) cito = 'Outside'
         position = position + 1

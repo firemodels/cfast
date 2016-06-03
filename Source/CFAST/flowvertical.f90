@@ -37,8 +37,8 @@ module vflow_routines
 
     real(eb) :: vvent(2), xmvent(2), tmvent(2), epscut, frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
-    integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index
-    real(eb) :: area, vvfraction, froude(2), alpha, zlayer, temp_upper, temp_lower
+    integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape
+    real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -58,19 +58,19 @@ module vflow_routines
         ventptr => vventinfo(i)
         itop = ventptr%top
         ibot = ventptr%bottom
-        call getventfraction ('V',itop,ibot,1,i,tsec,vvfraction)
-        area = vvfraction * vvarea(itop,ibot)
-        ventptr%area = area
-        !area = qcvfraction(qcvv, i, tsec)*vvarea(itop,ibot)
-        call ventcf (itop, ibot, area, vshape(itop,ibot), epscut, vvent, xmvent, tmvent)
+        call getventfraction ('V',itop,ibot,1,i,tsec,fraction)
+        area = fraction * ventptr%area
+        ventptr%current_area = area
+        ishape = ventptr%shape
+        call ventcf (itop, ibot, area, ishape, epscut, vvent, xmvent, tmvent)
 
         ventptr%n_slabs = 2
         do iflow = 1, 2
             ! flow information for smokeview is relative to top room
             ventptr%temp_slab(iflow) = tmvent(iflow)
             ventptr%flow_slab(iflow) = xmvent(iflow)
-            ventptr%ybot_slab(iflow) = max(0.0_eb,(vvarea(itop,ibot) - sqrt(area))/2.0_eb)
-            ventptr%ytop_slab(iflow) = min(vvarea(itop,ibot),(vvarea(itop,ibot) + sqrt(area))/2.0_eb)
+            ventptr%ybot_slab(iflow) = max(0.0_eb,(ventptr%area - sqrt(area))/2.0_eb)
+            ventptr%ytop_slab(iflow) = min(ventptr%area,(ventptr%area + sqrt(area))/2.0_eb)
         end do
 
         ! set up flow variables for DAE solver
@@ -389,22 +389,24 @@ module vflow_routines
 
 ! --------------------------- getvventinfo -------------------------------------------
 
-    subroutine getvventinfo (iinvvent,itop,ibot,harea,hshape,hface)
+    subroutine getvventinfo (ivent,itop,ibot,harea,hshape,hface)
 
     !       this is a routine to get the shape data for vertical flow (horizontal) vents
 
     use precision_parameters
     implicit none
 
-    integer, intent(in) :: iinvvent
-
+    integer, intent(in) :: ivent
     integer, intent(out) :: itop, ibot, hshape, hface
     real(eb), intent(out) :: harea
 
-    itop = ivvent(iinvvent,1)
-    ibot = ivvent(iinvvent,2)
-    harea = vvarea(itop,ibot)
-    hshape = vshape(itop,ibot)
+    type(vent_type), pointer :: ventptr
+
+    ventptr => vventinfo(ivent)
+    itop = ventptr%top
+    ibot = ventptr%bottom
+    harea = ventptr%current_area
+    hshape = ventptr%shape
     if (itop>nrm1) then
         hface = 6
     else

@@ -164,7 +164,7 @@ module target_routines
             if (fireptr%room==iroom) then
                 svect(1) = targptr%center(1) - fireptr%x_position
                 svect(2) = targptr%center(2) - fireptr%y_position
-                !svect(3) = targptr%center(3) - (fireptr%z_position + fireptr%z_offset)! This is point radiation at the base of the fire
+                !zfire = fireptr%z_position + fireptr%z_offset
                 ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
                 call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
                 if (fheight + (fireptr%z_position + fireptr%z_offset)>roomptr%cheight) then

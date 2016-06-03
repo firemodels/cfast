@@ -324,7 +324,7 @@ module thermal_data
     implicit none
     save
 
-    integer nthrmp                                                  ! number of unique thermal properties in the simulation
+    integer n_thrmp                                                  ! number of unique thermal properties in the simulation
     type (thermal_type), dimension(mxthrmp), target :: thermalinfo  ! structured thermal property data
 
     end module thermal_data
@@ -343,14 +343,11 @@ module vent_data
     integer :: n_hvents                                         ! number of horizontal vents
     type (vent_type), dimension(mxhvent), target :: hventinfo   ! structured horizontal vent data
 
-    !integer :: ijk(mxrooms,mxrooms,mxccv)
-
     ! vvent variables
     integer :: n_vvents
+    type (vent_type), dimension(mxvvent), target :: vventinfo
 
-    integer, dimension(mxvvent,2) :: ivvent
-    integer :: ivvent_connections(mxrooms,mxrooms), vshape(mxrooms,mxrooms)
-    real(eb) :: vvarea(mxrooms,mxrooms), vmflo(mxrooms,mxrooms,2), qcvpp(4,mxrooms,mxrooms)
+    real(eb) :: vmflo(mxrooms,mxrooms,2)
 
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
@@ -369,7 +366,6 @@ module vent_data
     
     logical :: mvcalc_on
 
-    real(eb), dimension(mxrooms,mxhvent) :: zzventdist
     real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
     
     !slab data
@@ -377,7 +373,6 @@ module vent_data
     integer, dimension(mxfslab) ::  dirs12
     integer :: nvelev, ioutf
 
-    type (vent_type), dimension(mxvvent), target :: vventinfo
     type (vent_type), dimension(mxext), target :: mventinfo
 
 end module vent_data

@@ -133,7 +133,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
-    integer :: position, i, ifrom, ito, toprm = 1, botrm = 2
+    integer :: position, i, ifrom, ito
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
     save firstc
@@ -163,8 +163,9 @@ module spreadsheet_routines
     ! next natural flow through horizontal vents (vertical flow)
     do i = 1, n_vvents
 
-        ifrom = ivvent(i,botrm)
-        ito = ivvent(i,toprm)
+        ventptr => vventinfo(i)
+        ifrom = ventptr%bottom
+        ito = ventptr%top
 
         flow = 0.0_eb
         if (vmflo(ifrom,ito,u)>=0.0_eb) flow(5) = vmflo(ifrom,ito,u)

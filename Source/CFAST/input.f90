@@ -42,7 +42,7 @@ module input_routines
 
     implicit none
 
-    real(eb) :: yinter(mxrooms), temparea(mxcross), temphgt(mxcross), deps1, deps2, dwall1, dwall2, rti
+    real(eb) :: yinter(mxrooms), temparea(mxcross), temphgt(mxcross), deps1, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ios, iversion, i, ii, j, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, ivers
@@ -114,7 +114,7 @@ module input_routines
         yinter(i) = -1.0_eb
     end do
 
-    nthrmp = 0
+    n_thrmp = 0
 
     ! read in data file
     call keywordcases (numr, numc)
@@ -164,48 +164,21 @@ module input_routines
     ! make sure ceiling/floor vent specifications are correct -  we have to do this
     ! here rather than right after keywordcases because floor_height and ceiling_height were just defined
     ! above
-    do itop = 1, nrm1
-        if (ivvent_connections(itop,itop)/=0) then
+    do i = 1, n_vvents
+        ventptr => vventinfo(i)
+        if (ventptr%top==ventptr%bottom) then
             write (*,*) '***Error: A room can not be connected to itself with a vertical vent'
             write (logerr,*) '***Error: A room can not be connected to itself with a vertical vent'
             stop
         end if
-        do ibot = 1, itop - 1
-            if (ivvent_connections(itop,ibot)/=0.or.ivvent_connections(ibot,itop)/=0) then
-
-                ! see which room is on top (if any) - this is like a bubble sort
-                deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
-                deps2 = roominfo(ibot)%z0 - roominfo(itop)%z1
-                if (ivvent_connections(itop,ibot)/=1.or.abs(deps1)>=mx_vsep) then
-                    if (ivvent_connections(ibot,itop)/=1.or.abs(deps2)>=mx_vsep) then
-                        if (ivvent_connections(itop,ibot)==1.and.abs(deps2)<mx_vsep) then
-                            if (ivvent_connections(ibot,itop)/=0) then
-                                write (*,*) '***Error: Vertical vent ', ibot, itop, ' is being redefined'
-                                write (logerr,*) '***Error: Vertical vent ', ibot, itop, ' is being redefined'
-                            end if
-                            ivvent_connections(itop,ibot) = 0
-                            ivvent_connections(ibot,itop) = 1
-                            vvarea(ibot,itop) = vvarea(itop,ibot)
-                            vshape(ibot,itop) = vshape(itop,ibot)
-                            cycle
-                        end if
-                        if (ivvent_connections(ibot,itop)==1.and.abs(deps1)<mx_vsep) then
-                            if (ivvent_connections(itop,ibot)/=0) then
-                                write (*,*) '***Error: Vertical vent ', itop, ibot, ' is being redefined'
-                                write (logerr,*) '***Error: Vertical vent ', itop, ibot, ' is being redefined'
-                            end if
-                            ivvent_connections(itop,ibot) = 1
-                            ivvent_connections(ibot,itop) = 0
-                            vvarea(itop,ibot) = vvarea(ibot,itop)
-                            vshape(itop,ibot) = vshape(ibot,itop)
-                            cycle
-                        end if
-                        ivvent_connections(itop,ibot) = 0
-                        ivvent_connections(ibot,itop) = 0
-                    end if
-                end if
-            end if
-        end do
+        itop = ventptr%top
+        ibot = ventptr%bottom
+        deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
+        if (itop/=nr.and.ibot/=nr.and.abs(deps1)>=mx_vsep) then
+            write (*,*) '***Error: Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
+            write (logerr,*) '***Error: Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
+            stop
+        end if
     end do
 
     ! Compartment area and volume
@@ -481,7 +454,7 @@ module input_routines
     integer, intent(in) :: inumr, inumc
 
     integer :: i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
-    integer :: iijk, jmax, itop, ibot, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
+    integer :: iijk, jmax, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
     real(eb) :: frac, tmpcond
     character :: label*5, tcname*64, eqtype*3, venttype,orientypefrom*1, orientypeto*1
@@ -519,15 +492,15 @@ module input_routines
 
         if (label=='MATL') then
             if (countargs(lcarray)>=7) then
-                nthrmp = nthrmp + 1
-                if (nthrmp>mxthrmp) then
+                n_thrmp = n_thrmp + 1
+                if (n_thrmp>mxthrmp) then
                     write (*,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
                         mxthrmp
                     write (logerr,'(a,i3)') '***Error: Bad MATL input. Too many thermal properties in input data file. Limit is ', &
                         mxthrmp
                     stop
                 end if
-                thrmpptr => thermalinfo(nthrmp)
+                thrmpptr => thermalinfo(n_thrmp)
                 thrmpptr%name = lcarray(1)
                 thrmpptr%nslab = 1
                 thrmpptr%k(1) = lrarray(2)
@@ -992,15 +965,17 @@ module input_routines
                         end if
                     end do
                 case ('V')
-                    ! Sort these out in update_data; we duplicate here so that read_input_file does not have to sort these as well
-                    itop = lrarray(2)
-                    ibot = lrarray(3)
-                    qcvpp(1,itop,ibot) = lrarray(5)
-                    qcvpp(3,itop,ibot) = lrarray(5) + lrarray(7)
-                    qcvpp(4,itop,ibot) = lrarray(6)
-                    qcvpp(1,ibot,itop) = lrarray(5)
-                    qcvpp(3,ibot,itop) = lrarray(5) + lrarray(7)
-                    qcvpp(4,ibot,itop) = lrarray(6)
+                    i = lrarray(2)
+                    j = lrarray(3)
+                    k = 1
+                    do iijk = 1, n_vvents
+                        ventptr => vventinfo(iijk)
+                        if (ventptr%top==i.and.ventptr%bottom==j.and.ventptr%counter==k) then
+                            qcvv(1,iijk) = lrarray(5)
+                            qcvv(3,iijk) = lrarray(5) + lrarray(7)
+                            qcvv(4,iijk) = lrarray(6)
+                        end if
+                    end do
                 case ('M')
                     fannumber = lrarray(4)
                     qcvm(1,fannumber) = lrarray(5)
@@ -1062,26 +1037,30 @@ module input_routines
             if (countargs(lcarray)>=5) then
                 i = lrarray(1)
                 j = lrarray(2)
+                k = 1
                 ! check for outside of compartment space; self pointers are covered in read_input_file
                 if (i>mxrooms.or.j>mxrooms) then
                     write (logerr,5070) i, j
                     write (logerr,5070) i, j
                     stop
                 end if
-
+                n_vvents = n_vvents + 1
+                ventptr => vventinfo(n_vvents)
+                ventptr%top = i
+                ventptr%bottom = j
+                ventptr%counter = k
                 ! read_input_file will verify the orientation (i is on top of j)
-                ivvent_connections(i,j) = 1
-                vvarea(i,j) = lrarray(3)
+                ventptr%area = lrarray(3)
                 ! check the shape parameter. the default (1) is a circle)
                 if (lrarray(4)<1.or.lrarray(4)>2) then
-                    vshape(i,j) = 1
+                    ventptr%shape = 1
                 else
-                    vshape(i,j) = lrarray(4)
+                    ventptr%shape = lrarray(4)
                 end if
-                qcvpp(2,i,j) = lrarray(5)
-                qcvpp(2,j,i) = lrarray(5)
-                qcvpp(4,i,j) = lrarray(5)
-                qcvpp(4,j,i) = lrarray(5)
+                qcvv(2,n_vvents) = lrarray(5)
+                qcvv(2,n_vvents) = lrarray(5)
+                qcvv(4,n_vvents) = lrarray(5)
+                qcvv(4,n_vvents) = lrarray(5)
             else
                 write (*,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'

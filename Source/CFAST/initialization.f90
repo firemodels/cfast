@@ -46,7 +46,7 @@ module initialization_routines
     integer tp, i
     type(thermal_type), pointer :: thrmpptr
 
-    do i = 1, nthrmp
+    do i = 1, n_thrmp
         thrmpptr => thermalinfo(i)
         if (name==thrmpptr%name) then
             tp = i
@@ -618,10 +618,14 @@ module initialization_routines
     qcvh(4,1:mxhvents) = 1.0_eb
 
     ! vertical vents
-    vshape(1:mxrooms,1:mxrooms) = 0
-    ivvent_connections(1:mxrooms,1:mxrooms) = 0
-    vvarea(1:mxrooms,1:mxrooms) = 0.0_eb
+    vventinfo(1:mxvvents)%shape = 1
+    vventinfo(1:mxvvents)%area = 0.0_eb
     ! start with vents open
+    vventinfo(1:mxvvents)%initial_open_fraction = 0.0_eb
+    vventinfo(1:mxvvents)%initital_open_time = 1.0_eb
+    vventinfo(1:mxvvents)%final_open_time = 0.0_eb
+    vventinfo(1:mxvvents)%final_open_fraction = 1.0_eb
+    
     qcvv(1,1:mxrooms) = 0.0_eb
     qcvv(2,1:mxrooms) = 1.0_eb
     qcvv(3,1:mxrooms) = 0.0_eb
@@ -911,7 +915,7 @@ module initialization_routines
     !        epsw = emmisivity of the wall
     !        nslb = discretization of the wall slabs (number of nodes)
     !        matl contains the name of the thermal data subset in the tpp datafile
-    !        nthrmp is a count of the number of tpp data sets in the database
+    !        n_thrmp is a count of the number of tpp data sets in the database
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto

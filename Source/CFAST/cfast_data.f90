@@ -342,11 +342,11 @@ module vent_data
     ! hvent variables
     integer :: n_hvents                                         ! number of horizontal vents
     type (vent_type), dimension(mxhvent), target :: hventinfo   ! structured horizontal vent data
+    real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
 
     ! vvent variables
     integer :: n_vvents
     type (vent_type), dimension(mxvvent), target :: vventinfo
-
     real(eb) :: vmflo(mxrooms,mxrooms,2)
 
     ! hvac variables
@@ -365,8 +365,6 @@ module vent_data
     real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
     
     logical :: mvcalc_on
-
-    real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
     
     !slab data
     real(eb), dimension(mxfslab) :: yvelev, dpv1m2

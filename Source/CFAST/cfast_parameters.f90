@@ -26,16 +26,13 @@ module cparams
     integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names
 
     ! ventilation parameters
-    integer, parameter :: mxccv = 25            ! maximum number of vent connections between compartment pairs
-    integer, parameter :: mxhvents = mxccv*mxrooms   ! maximum number of horizontal flow vents
-    integer, parameter :: mxhvent = mxhvents*2  ! maximum number of connections in horizontal flow vents
-                                                !   (one for "from" one to "to")
-    integer, parameter :: mxfslab = 10          ! number of slabs in a horizontal flow calculation
-    integer, parameter :: mxfprd = ns           ! maximum number of products tracked in the horizontal flow calculation
-                                                !   (should be the same as ns)
+    integer, parameter :: mxccv = 25                ! maximum number of vent connections between compartment pairs
+    integer, parameter :: mxhvents = mxccv*mxrooms  ! maximum number of horizontal flow vents
+    integer, parameter :: mxfslab = 10              ! number of slabs in a horizontal flow calculation
+    integer, parameter :: mxfprd = ns               ! maximum number of products tracked in the horizontal flow calculation
+                                                    !   (should be the same as ns)
 
-    integer, parameter :: mxvvents=2*mxrooms        ! maximum number of vertical flow vents
-    integer, parameter :: mxvvent = mxvvents*2      ! maximum number of connections in vertical flow vents
+    integer, parameter :: mxvvents=mxccv*mxrooms    ! maximum number of vertical flow vents
 
     integer, parameter :: mxhvsys=2*mxrooms         ! maximum number of mechanical ventilation systems
     integer, parameter :: mxfan = mxrooms           ! maximum number of fans in a mechanical ventilation system
@@ -47,7 +44,7 @@ module cparams
     integer, parameter :: mxext = 2*mxrooms         ! maximum number of external connections in a mechanical ventilation system
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
-    integer, parameter :: mxramps = 8*mxfires+mxhvent+mxvvents+mxhvsys ! maximum number of possible time-based ramps
+    integer, parameter :: mxramps = 8*mxfires+mxhvents+mxvvents+mxhvsys ! maximum number of possible time-based ramps
 
     ! room related parameters
     real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume
@@ -56,7 +53,7 @@ module cparams
                                                     ! separate elements (connected compartments for example)
     real(eb), parameter :: mx_hsep = 1.0e-3_eb      ! maximum horizontal distance below which fire is assumed to
                                                     ! be on a surface for entrainmnt
-    real(eb), parameter :: xlrg = 1.0e+5_eb         ! sizes for outsize room
+    real(eb), parameter :: xlrg = 1.0e+5_eb         ! sizes for outside room
     real(eb), parameter :: deltatemp_min = 0.01_eb  ! minimum temperature difference for bouyancy to deposit all into a layer
     integer, parameter :: interior = 1              ! compartment interior
     integer, parameter :: exterior = 2              ! compartment exterior

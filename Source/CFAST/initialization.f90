@@ -626,10 +626,10 @@ module initialization_routines
     vventinfo(1:mxvvents)%final_open_time = 0.0_eb
     vventinfo(1:mxvvents)%final_open_fraction = 1.0_eb
     
-    qcvv(1,1:mxrooms) = 0.0_eb
-    qcvv(2,1:mxrooms) = 1.0_eb
-    qcvv(3,1:mxrooms) = 0.0_eb
-    qcvv(4,1:mxrooms) = 1.0_eb
+    vventinfo(1:mxvvents)%qcvv(1) = 0.0_eb
+    vventinfo(1:mxvvents)%qcvv(2) = 1.0_eb
+    vventinfo(1:mxvvents)%qcvv(3) = 0.0_eb
+    vventinfo(1:mxvvents)%qcvv(4) = 1.0_eb
 
     ! mechanical vents
     nnode = 0

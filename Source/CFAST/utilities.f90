@@ -1189,7 +1189,7 @@ module opening_fractions
 
     !	The following functions implement the open/close function for vents.
     !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4,mxrooms), qcvm(4,mxfan),
+    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4), qcvm(4,mxfan),
     !         and qcvi(4,mxfan).
 
     !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
@@ -1240,26 +1240,25 @@ module opening_fractions
 
     ! --------------------------- qcvfraction -------------------------------------------
 
-    real(eb) function qcvfraction (points, index, time)
+    real(eb) function qcvfraction (points, time)
 
     !	This is the open/close function for buoyancy driven vertical flow
 
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
+    real(eb), intent(in) :: points(4), time
 
     real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
 
-    if (time<points(1,index)) then
-        qcvfraction = points(2,index)
-    else if (time>points(3,index)) then
-        qcvfraction = points(4,index)
+    if (time<points(1)) then
+        qcvfraction = points(2)
+    else if (time>points(3)) then
+        qcvfraction = points(4)
     else
-        dt = max(points(3,index) - points(1,index), mintime)
-        deltat = max(time - points(1,index), mintime)
-        dy = points(4,index) - points(2,index)
+        dt = max(points(3) - points(1), mintime)
+        deltat = max(time - points(1), mintime)
+        dy = points(4) - points(2)
         dydt = dy/dt
-        qcvfraction = points(2,index) + dydt*deltat
+        qcvfraction = points(2) + dydt*deltat
     end if
     return
     end function qcvfraction

@@ -971,9 +971,9 @@ module input_routines
                     do iijk = 1, n_vvents
                         ventptr => vventinfo(iijk)
                         if (ventptr%top==i.and.ventptr%bottom==j.and.ventptr%counter==k) then
-                            qcvv(1,iijk) = lrarray(5)
-                            qcvv(3,iijk) = lrarray(5) + lrarray(7)
-                            qcvv(4,iijk) = lrarray(6)
+                            ventptr%qcvv(1) = lrarray(5)
+                            ventptr%qcvv(3) = lrarray(5) + lrarray(7)
+                            ventptr%qcvv(4) = lrarray(6)
                         end if
                     end do
                 case ('M')
@@ -1057,10 +1057,10 @@ module input_routines
                 else
                     ventptr%shape = lrarray(4)
                 end if
-                qcvv(2,n_vvents) = lrarray(5)
-                qcvv(2,n_vvents) = lrarray(5)
-                qcvv(4,n_vvents) = lrarray(5)
-                qcvv(4,n_vvents) = lrarray(5)
+                ventptr%qcvv(2) = lrarray(5)
+                ventptr%qcvv(2) = lrarray(5)
+                ventptr%qcvv(4) = lrarray(5)
+                ventptr%qcvv(4) = lrarray(5)
             else
                 write (*,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'

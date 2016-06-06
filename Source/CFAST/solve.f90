@@ -1397,6 +1397,7 @@ module solve_routines
 
     type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
+    type(vent_type), pointer ::ventptr
 
     if (nfurn>0.and.iflag/=constvar) then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1518,10 +1519,11 @@ module solve_routines
             discon(ndisc) = qcvh(3,i)
         end do
         do  i = 1, n_vvents
+            ventptr => vventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvv(1,i)
+            discon(ndisc) = ventptr%qcvv(1)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvv(3,i)
+            discon(ndisc) = ventptr%qcvv(3)
         end do
         do  i = 1, nfan
             ndisc = ndisc + 1

@@ -196,6 +196,7 @@ module vflow_routines
     real(eb), parameter :: mintime=1.0e-6_eb
     real(eb) :: dt, dtfull, dy, dydt
     type(ramp_type), pointer :: rampptr
+    type(vent_type), pointer :: ventptr
 
     fraction = 1.0_eb
 
@@ -227,8 +228,11 @@ module vflow_routines
     end if
 
     ! This is for backwards compatibility with the older EVENT format for single vent changes
-    fraction = 1.0_eb
-    if (venttype=='V') fraction = qcvfraction(qcvv, vent_index, time)
+    if (venttype=="V") then
+        fraction = 1.0_eb
+        ventptr => vventinfo(vent_index)
+        fraction = qcvfraction(ventptr%qcvv, time)
+    end if
 
     end subroutine getventfraction
 

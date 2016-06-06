@@ -239,6 +239,7 @@ module cfast_types
         integer :: bottom                   ! bottom compartment for connecting vent
         real(eb) :: area                    ! vent area
         integer :: shape                    ! vent shape, 1 = circular, 2 = square
+        real(eb), dimension(4) :: qcvv
 
         ! These define a mechanical vent
 

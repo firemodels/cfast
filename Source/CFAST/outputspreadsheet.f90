@@ -154,9 +154,9 @@ module spreadsheet_routines
 
         ifrom = ventptr%room1
         ito = ventptr%room2
-        netflow = ventptr%mflow(2,1,1) - ventptr%mflow(2,1,2) + ventptr%mflow(2,2,1) - ventptr%mflow(2,2,2)
+        netflow = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
         call SSaddtolist (position,netflow,outarray)
-        netflow = ventptr%mflow(1,1,1) - ventptr%mflow(1,1,2) + ventptr%mflow(1,2,1) - ventptr%mflow(1,2,2)
+        netflow = ventptr%h_mflow(1,1,1) - ventptr%h_mflow(1,1,2) + ventptr%h_mflow(1,2,1) - ventptr%h_mflow(1,2,2)
         call SSaddtolist (position,netflow,outarray)
     end do
 
@@ -168,14 +168,14 @@ module spreadsheet_routines
         ito = ventptr%top
 
         flow = 0.0_eb
-        if (vmflo(ifrom,ito,u)>=0.0_eb) flow(5) = vmflo(ifrom,ito,u)
-        if (vmflo(ifrom,ito,u)<0.0_eb) flow(6) = -vmflo(ifrom,ito,u)
-        if (vmflo(ifrom,ito,l)>=0.0_eb) flow(7) = vmflo(ifrom,ito,l)
-        if (vmflo(ifrom,ito,l)<0.0_eb) flow(8) = -vmflo(ifrom,ito,l)
-        if (vmflo(ito,ifrom,u)>=0.0_eb) flow(1) = vmflo(ito,ifrom,u)
-        if (vmflo(ito,ifrom,u)<0.0_eb) flow(2) = -vmflo(ito,ifrom,u)
-        if (vmflo(ito,ifrom,l)>=0.0_eb) flow(3) = vmflo(ito,ifrom,l)
-        if (vmflo(ito,ifrom,l)<0.0_eb) flow(4) = -vmflo(ito,ifrom,l)
+        if (ventptr%v_mflow(2,u)>=0.0_eb) flow(5) = ventptr%v_mflow(2,u)
+        if (ventptr%v_mflow(2,u)<0.0_eb) flow(6) = -ventptr%v_mflow(2,u)
+        if (ventptr%v_mflow(2,l)>=0.0_eb) flow(7) = ventptr%v_mflow(2,l)
+        if (ventptr%v_mflow(2,l)<0.0_eb) flow(8) = -ventptr%v_mflow(2,l)
+        if (ventptr%v_mflow(1,u)>=0.0_eb) flow(1) = ventptr%v_mflow(1,u)
+        if (ventptr%v_mflow(1,u)<0.0_eb) flow(2) = -ventptr%v_mflow(1,u)
+        if (ventptr%v_mflow(1,l)>=0.0_eb) flow(3) = ventptr%v_mflow(1,l)
+        if (ventptr%v_mflow(1,l)<0.0_eb) flow(4) = -ventptr%v_mflow(1,l)
 
         sumin = flow(5) + flow(7)
         sumout = flow(6) + flow(8)

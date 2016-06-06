@@ -232,13 +232,16 @@ module cfast_types
         real(eb) :: absolute_soffit         ! absolute height of the soffit
         real(eb), dimension(2) :: offset    ! vent offset from wall origin (1 = from room, 2 = to room)
         
-        real(eb) :: mflow(2,2,2), mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
+        real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
 
         ! These define a ceiling/floor vent
         integer :: top                      ! top compartment for connecting vent
         integer :: bottom                   ! bottom compartment for connecting vent
         real(eb) :: area                    ! vent area
         integer :: shape                    ! vent shape, 1 = circular, 2 = square
+    
+        real(eb) :: current_area
+        real(eb) :: v_mflow(2,2)            ! vent mass flow (top or bottom, upper or lower)
 
         ! These define a mechanical vent
 
@@ -255,7 +258,6 @@ module cfast_types
         ! These are calculated results for the current time step
         integer :: n_slabs
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
-        real(eb) :: current_area
     end type vent_type
 
     ! slice file data structure

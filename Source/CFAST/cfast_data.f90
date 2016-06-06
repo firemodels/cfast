@@ -130,7 +130,7 @@ module ramp_data
 
     ! ramping variables
     integer :: nramps = 0
-    real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
+    real(eb) :: qcvh(4,mxhvents), qcvm(4,mxfan), qcvf(4,mxfan)
     type(ramp_type), target :: rampinfo(mxramps)
 
 end module ramp_data
@@ -341,12 +341,12 @@ module vent_data
 
     ! hvent variables
     integer :: n_hvents                                         ! number of horizontal vents
-    type (vent_type), dimension(mxhvent), target :: hventinfo   ! structured horizontal vent data
-    real(eb), dimension(2,mxhvent) :: vss, vsa, vas, vaa, vsas, vasa
+    type (vent_type), dimension(mxhvents), target :: hventinfo   ! structured horizontal vent data
+    real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa
 
     ! vvent variables
     integer :: n_vvents
-    type (vent_type), dimension(mxvvent), target :: vventinfo
+    type (vent_type), dimension(mxvvents), target :: vventinfo
     real(eb) :: vmflo(mxrooms,mxrooms,2)
 
     ! hvac variables

@@ -3,7 +3,7 @@ module vflow_routines
     use precision_parameters
 
     use room_data
-    use opening_fractions, only: qcvfraction
+    use opening_fractions, only: getventfraction
     use utility_routines, only: tanhsmooth
     
     use precision_parameters
@@ -182,55 +182,6 @@ module vflow_routines
 
     return
     end subroutine vertical_flow
-
-! --------------------------- getventfraction-------------------------------------
-
-    subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
-
-    character, intent(in) :: venttype
-    integer, intent(in) :: room1, room2, vent_number, vent_index
-    real(eb), intent(in) :: time
-    real(eb), intent(out) :: fraction
-
-    integer :: iramp, i
-    real(eb), parameter :: mintime=1.0e-6_eb
-    real(eb) :: dt, dtfull, dy, dydt
-    type(ramp_type), pointer :: rampptr
-
-    fraction = 1.0_eb
-
-    if (nramps>0) then
-        do iramp = 1, nramps
-            rampptr=>rampinfo(iramp)
-            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and.&
-               rampptr%vent_number==vent_number) then
-                if (time<=rampptr%time(1)) then
-                    fraction = rampptr%value(1)
-                    return
-                else if (time>=rampptr%time(rampptr%npoints)) then
-                    fraction = rampptr%value(rampptr%npoints)
-                    return
-                else
-                    do i=2,rampptr%npoints
-                        if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
-                            dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
-                            dtfull = max(time-rampptr%time(i-1),mintime)
-                            dy = rampptr%value(i)-rampptr%value(i-1)
-                            dydt = dy / dt
-                            fraction = rampptr%value(i-1)+dydt * dtfull
-                            return
-                        end if
-                    end do
-                end if
-            end if
-        end do
-    end if
-
-    ! This is for backwards compatibility with the older EVENT format for single vent changes
-    fraction = 1.0_eb
-    if (venttype=='V') fraction = qcvfraction(qcvv, vent_index, time)
-
-    end subroutine getventfraction
 
 ! --------------------------- ventcf -------------------------------------------
 

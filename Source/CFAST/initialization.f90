@@ -607,10 +607,10 @@ module initialization_routines
     hventinfo(1:mxhvents)%absolute_sill = 0.0_eb
     hventinfo(1:mxhvents)%face = 1
     ! start with vents open
-    hventinfo(1:mxhvents)%initial_open_fraction = 0.0_eb
-    hventinfo(1:mxhvents)%initital_open_time = 1.0_eb
-    hventinfo(1:mxhvents)%final_open_time = 0.0_eb
-    hventinfo(1:mxhvents)%final_open_fraction = 1.0_eb
+    hventinfo(1:mxhvents)%opening(initial_time) = 1.0_eb
+    hventinfo(1:mxhvents)%opening(initial_fraction) = 0.0_eb
+    hventinfo(1:mxhvents)%opening(final_time) = 1.0_eb
+    hventinfo(1:mxhvents)%opening(final_fraction) = 0.0_eb
     
     qcvh(1,1:mxhvents) = 0.0_eb
     qcvh(2,1:mxhvents) = 1.0_eb
@@ -621,15 +621,10 @@ module initialization_routines
     vventinfo(1:mxvvents)%shape = 1
     vventinfo(1:mxvvents)%area = 0.0_eb
     ! start with vents open
-    vventinfo(1:mxvvents)%initial_open_fraction = 0.0_eb
-    vventinfo(1:mxvvents)%initital_open_time = 1.0_eb
-    vventinfo(1:mxvvents)%final_open_time = 0.0_eb
-    vventinfo(1:mxvvents)%final_open_fraction = 1.0_eb
-    
-    vventinfo(1:mxvvents)%qcvv(1) = 0.0_eb
-    vventinfo(1:mxvvents)%qcvv(2) = 1.0_eb
-    vventinfo(1:mxvvents)%qcvv(3) = 0.0_eb
-    vventinfo(1:mxvvents)%qcvv(4) = 1.0_eb
+    vventinfo(1:mxvvents)%opening(initial_time) = 1.0_eb
+    vventinfo(1:mxvvents)%opening(initial_fraction) = 0.0_eb
+    vventinfo(1:mxvvents)%opening(final_time) = 1.0_eb
+    vventinfo(1:mxvvents)%opening(final_fraction) = 0.0_eb
 
     ! mechanical vents
     nnode = 0

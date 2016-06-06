@@ -1521,9 +1521,9 @@ module solve_routines
         do  i = 1, n_vvents
             ventptr => vventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%qcvv(1)
+            discon(ndisc) = ventptr%opening(1)
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%qcvv(3)
+            discon(ndisc) = ventptr%opening(3)
         end do
         do  i = 1, nfan
             ndisc = ndisc + 1

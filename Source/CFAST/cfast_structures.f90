@@ -239,15 +239,16 @@ module cfast_types
         integer :: bottom                   ! bottom compartment for connecting vent
         real(eb) :: area                    ! vent area
         integer :: shape                    ! vent shape, 1 = circular, 2 = square
-        real(eb), dimension(4) :: qcvv
 
         ! These define a mechanical vent
 
         ! These are common to all vent types
-        real(eb) :: initial_open_fraction   ! initial fraction of vent opening
-        real(eb) :: initital_open_time      ! end time for initial open fraction
-        real(eb) :: final_open_fraction     ! final fraction of vent opening
-        real(eb) :: final_open_time         ! beginning time for final vent open fraction
+
+        real(eb), dimension(4) :: opening   ! simple open and closing of vents
+                                            ! 1 = initial fraction of vent opening
+                                            ! 2 = end time for initial open fraction
+                                            ! 3 = final fraction of vent opening
+                                            ! 4 = beginning time for final vent open fraction
                                             ! between initial and final, open fraction changes linearly
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
 

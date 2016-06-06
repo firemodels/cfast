@@ -130,7 +130,7 @@ module ramp_data
 
     ! ramping variables
     integer :: nramps = 0
-    real(eb) :: qcvh(4,mxhvents), qcvv(4,mxvvents), qcvm(4,mxfan), qcvf(4,mxfan)
+    real(eb) :: qcvh(4,mxhvents), qcvm(4,mxfan), qcvf(4,mxfan)
     type(ramp_type), target :: rampinfo(mxramps)
 
 end module ramp_data

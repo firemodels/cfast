@@ -45,6 +45,10 @@ module cparams
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
     integer, parameter :: mxramps = 8*mxfires+mxhvents+mxvvents+mxhvsys ! maximum number of possible time-based ramps
+    integer, parameter :: initial_time = 1          ! indicies for simple vent opening data
+    integer, parameter :: initial_fraction = 2
+    integer, parameter :: final_time = 3
+    integer, parameter :: final_fraction = 4
 
     ! room related parameters
     real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume

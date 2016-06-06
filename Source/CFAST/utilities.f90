@@ -1203,14 +1203,94 @@ module opening_fractions
     !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and hvfan
 
     use precision_parameters
+    use ramp_data
+    use vent_data
 
     implicit none
 
     private
 
-    public qchfraction, qcvfraction, qcffraction, qcifraction
+    public getventfraction, qchfraction, qcffraction, qcifraction
 
     contains
+
+! --------------------------- getventfraction-------------------------------------
+
+    subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
+
+    character, intent(in) :: venttype
+    integer, intent(in) :: room1, room2, vent_number, vent_index
+    real(eb), intent(in) :: time
+    real(eb), intent(out) :: fraction
+
+    integer :: iramp, i
+    real(eb), parameter :: mintime=1.0e-6_eb
+    real(eb) :: dt, dtfull, dy, dydt
+    type(ramp_type), pointer :: rampptr
+    type(vent_type), pointer :: ventptr
+
+    fraction = 1.0_eb
+
+    if (nramps>0) then
+        do iramp = 1, nramps
+            rampptr=>rampinfo(iramp)
+            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and.&
+               rampptr%vent_number==vent_number) then
+                if (time<=rampptr%time(1)) then
+                    fraction = rampptr%value(1)
+                    return
+                else if (time>=rampptr%time(rampptr%npoints)) then
+                    fraction = rampptr%value(rampptr%npoints)
+                    return
+                else
+                    do i=2,rampptr%npoints
+                        if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
+                            dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
+                            dtfull = max(time-rampptr%time(i-1),mintime)
+                            dy = rampptr%value(i)-rampptr%value(i-1)
+                            dydt = dy / dt
+                            fraction = rampptr%value(i-1)+dydt * dtfull
+                            return
+                        end if
+                    end do
+                end if
+            end if
+        end do
+    end if
+
+    ! This is for backwards compatibility with the older EVENT format for single vent changes
+    if (venttype=="V") then
+        fraction = 1.0_eb
+        ventptr => vventinfo(vent_index)
+        fraction = vfraction(ventptr%opening, time)
+    end if
+
+    end subroutine getventfraction
+
+    ! --------------------------- vfraction -------------------------------------------
+
+    real(eb) function vfraction (points, time)
+
+    !	This is the open/close function for vent flow
+
+    real(eb), intent(in) :: points(4), time
+
+    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
+    real(eb) :: deltat
+
+    if (time<points(initial_time)) then
+        vfraction = points(initial_fraction)
+    else if (time>points(final_time)) then
+        vfraction = points(final_fraction)
+    else
+        dt = max(points(final_time) - points(initial_time), mintime)
+        deltat = max(time - points(initial_time), mintime)
+        dy = points(final_fraction) - points(initial_fraction)
+        dydt = dy/dt
+        vfraction = points(initial_fraction) + dydt*deltat
+    end if
+    return
+    end function vfraction
 
     ! --------------------------- qchfraction -------------------------------------------
 
@@ -1237,31 +1317,6 @@ module opening_fractions
     end if
     return
     end function qchfraction
-
-    ! --------------------------- qcvfraction -------------------------------------------
-
-    real(eb) function qcvfraction (points, time)
-
-    !	This is the open/close function for buoyancy driven vertical flow
-
-    real(eb), intent(in) :: points(4), time
-
-    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
-    real(eb) :: deltat
-
-    if (time<points(1)) then
-        qcvfraction = points(2)
-    else if (time>points(3)) then
-        qcvfraction = points(4)
-    else
-        dt = max(points(3) - points(1), mintime)
-        deltat = max(time - points(1), mintime)
-        dy = points(4) - points(2)
-        dydt = dy/dt
-        qcvfraction = points(2) + dydt*deltat
-    end if
-    return
-    end function qcvfraction
 
     ! --------------------------- qcffraction -------------------------------------------
 

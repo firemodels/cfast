@@ -321,8 +321,8 @@ module output_routines
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'
-        call flwout(outbuf,ventptr%mflow(1,1,1),ventptr%mflow(1,1,2),ventptr%mflow(1,2,1),ventptr%mflow(1,2,2),&
-           ventptr%mflow(2,1,1),ventptr%mflow(2,1,2),ventptr%mflow(2,2,1),ventptr%mflow(2,2,2))
+        call flwout(outbuf,ventptr%h_mflow(1,1,1),ventptr%h_mflow(1,1,2),ventptr%h_mflow(1,2,1),ventptr%h_mflow(1,2,2),&
+           ventptr%h_mflow(2,1,1),ventptr%h_mflow(2,1,2),ventptr%h_mflow(2,2,1),ventptr%h_mflow(2,2,2))
         write (iofilo,5010) 'H', i, cifrom, cito, outbuf
     end do
 
@@ -338,14 +338,14 @@ module output_routines
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'
         flow = 0.0_eb
-        if (vmflo(ifrom,ito,u)>=0.0_eb) flow(5) = vmflo(ifrom,ito,u)
-        if (vmflo(ifrom,ito,u)<0.0_eb) flow(6) = -vmflo(ifrom,ito,u)
-        if (vmflo(ifrom,ito,l)>=0.0_eb) flow(7) = vmflo(ifrom,ito,l)
-        if (vmflo(ifrom,ito,l)<0.0_eb) flow(8) = -vmflo(ifrom,ito,l)
-        if (vmflo(ito,ifrom,u)>=0.0_eb) flow(1) = vmflo(ito,ifrom,u)
-        if (vmflo(ito,ifrom,u)<0.0_eb) flow(2) = -vmflo(ito,ifrom,u)
-        if (vmflo(ito,ifrom,l)>=0.0_eb) flow(3) = vmflo(ito,ifrom,l)
-        if (vmflo(ito,ifrom,l)<0.0_eb) flow(4) = -vmflo(ito,ifrom,l)
+        if (ventptr%v_mflow(2,u)>=0.0_eb) flow(5) = ventptr%v_mflow(2,u)
+        if (ventptr%v_mflow(2,u)<0.0_eb) flow(6) = -ventptr%v_mflow(2,u)
+        if (ventptr%v_mflow(2,l)>=0.0_eb) flow(7) = ventptr%v_mflow(2,l)
+        if (ventptr%v_mflow(2,l)<0.0_eb) flow(8) = -ventptr%v_mflow(2,l)
+        if (ventptr%v_mflow(1,u)>=0.0_eb) flow(1) = ventptr%v_mflow(1,u)
+        if (ventptr%v_mflow(1,u)<0.0_eb) flow(2) = -ventptr%v_mflow(1,u)
+        if (ventptr%v_mflow(1,l)>=0.0_eb) flow(3) = ventptr%v_mflow(1,l)
+        if (ventptr%v_mflow(1,l)<0.0_eb) flow(4) = -ventptr%v_mflow(1,l)
 
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
         write (iofilo,5010) 'V', i, cifrom, cito, outbuf

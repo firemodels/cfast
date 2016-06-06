@@ -45,8 +45,6 @@ module vflow_routines
 
     flwvf(1:nr,1:ns+2,u) = 0.0_eb
     flwvf(1:nr,1:ns+2,l) = 0.0_eb
-    vmflo(1:nr,1:nr,u) = 0.0_eb
-    vmflo(1:nr,1:nr,l) = 0.0_eb
     vflowflg = .false.
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
@@ -56,6 +54,7 @@ module vflow_routines
 
     do i = 1, n_vvents
         ventptr => vventinfo(i)
+        ventptr%v_mflow(1:2,1:2) = 0.0_eb
         itop = ventptr%top
         ibot = ventptr%bottom
         call getventfraction ('V',itop,ibot,1,i,tsec,fraction)
@@ -131,8 +130,8 @@ module vflow_routines
                 flwvf(ifrm,q,u) = flwvf(ifrm,q,u) - fromqu
                 flwvf(ifrm,q,l) = flwvf(ifrm,q,l) - fromql
             end if
-            vmflo(ito,ifrm,u) = vmflo(ito,ifrm,u) - frommu
-            vmflo(ito,ifrm,l) = vmflo(ito,ifrm,l) - fromml
+            ventptr%v_mflow(1,u) = ventptr%v_mflow(1,u) - frommu
+            ventptr%v_mflow(1,l) = ventptr%v_mflow(1,l) - fromml
 
             ! determine mass and enthalpy fractions for the to room
             roomptr => roominfo(ito)
@@ -153,8 +152,8 @@ module vflow_routines
                 flwvf(ito,q,u) = flwvf(ito,q,u) + toqu
                 flwvf(ito,q,l) = flwvf(ito,q,l) + toql
             end if
-            vmflo(ifrm,ito,u) = vmflo(ifrm,ito,u) + tomu
-            vmflo(ifrm,ito,l) = vmflo(ifrm,ito,l) + toml
+            ventptr%v_mflow(2,u) = ventptr%v_mflow(2,u) + tomu
+            ventptr%v_mflow(2,l) = ventptr%v_mflow(2,l) + tomu
 
             ! species transfer for vertical vents
             roomptr => roominfo(ifrm)

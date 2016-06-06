@@ -107,7 +107,7 @@ module option_data
         !                           changing default rad option from 2 to 4 causes absorption coefs 
         !                           to take on constant default values rather than computed from data
             1,          1,          2,          1,          0,  &
-        !   exact ode,  hcl,        mflow,      keyboard,   type of initialization
+        !   exact ode,  hcl,        h_mflow,      keyboard,   type of initialization
             1,          0,          1,          1,          0,  &
         !   mv heat loss,   mod jac,    dassl debug,    oxygen dassl solve,     back track on dtect,    back track on objects
             0,              0,          0,              0,                      0,                      0/)
@@ -347,7 +347,6 @@ module vent_data
     ! vvent variables
     integer :: n_vvents
     type (vent_type), dimension(mxvvents), target :: vventinfo
-    real(eb) :: vmflo(mxrooms,mxrooms,2)
 
     ! hvac variables
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &

@@ -70,12 +70,12 @@ module hflow_routines
         iroom2 = ventptr%room2
         ik = ventptr%counter
 
-        ventptr%mflow(1,1:2,1) = 0.0_eb
-        ventptr%mflow(2,1:2,1) = 0.0_eb
-        ventptr%mflow(1,1:2,2) = 0.0_eb
-        ventptr%mflow(2,1:2,2) = 0.0_eb
-        ventptr%mflow_mix(1,1:2) = 0.0_eb
-        ventptr%mflow_mix(2,1:2) = 0.0_eb
+        ventptr%h_mflow(1,1:2,1) = 0.0_eb
+        ventptr%h_mflow(2,1:2,1) = 0.0_eb
+        ventptr%h_mflow(1,1:2,2) = 0.0_eb
+        ventptr%h_mflow(2,1:2,2) = 0.0_eb
+        ventptr%h_mflow_mix(1,1:2) = 0.0_eb
+        ventptr%h_mflow_mix(2,1:2) = 0.0_eb
 
         ventptr%temp_slab(1:mxfslab) = 0.0_eb
         ventptr%flow_slab(1:mxfslab) = 0.0_eb
@@ -114,18 +114,18 @@ module hflow_routines
 
             if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
 
-            call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%mflow,uflw2)
+            call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%h_mflow,uflw2)
 
             !  calculate entrainment type mixing at the vents
 
             if (option(fentrain)==on) then
                 call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
                     uflw3,vsas(1,i),vasa(1,i))
-                ventptr%mflow_mix(1,1:2) = uflw3(1,m,1:2)
-                ventptr%mflow_mix(2,1:2) = uflw3(2,m,1:2)
+                ventptr%h_mflow_mix(1,1:2) = uflw3(1,m,1:2)
+                ventptr%h_mflow_mix(2,1:2) = uflw3(2,m,1:2)
             else
-                ventptr%mflow_mix(1,1:2) = 0.0_eb
-                ventptr%mflow_mix(2,1:2) = 0.0_eb
+                ventptr%h_mflow_mix(1,1:2) = 0.0_eb
+                ventptr%h_mflow_mix(2,1:2) = 0.0_eb
             end if
 
             ! sum flows from both rooms for each layer and type of product

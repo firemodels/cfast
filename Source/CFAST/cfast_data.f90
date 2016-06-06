@@ -340,22 +340,33 @@ module vent_data
     save
 
     ! hvent variables
-    integer :: n_hvents                                         ! number of horizontal vents
-    type (vent_type), dimension(mxhvents), target :: hventinfo   ! structured horizontal vent data
-    real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa
+    integer :: n_hvents                                                 ! number of horizontal vents
+    type (vent_type), dimension(mxhvents), target :: hventinfo          ! structured horizontal vent data
+    
+    real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa   ! individual flows for door jet fires (u or l)
+    
+    ! horizontal vent flow slab data by elevation in vent
+    integer :: nvelev                                                  ! current number of slabs
+    real(eb), dimension(mxfslab) :: yvelev                              ! elevations of breakpoints in vent flow
+    real(eb), dimension(mxfslab) :: dpv1m2                              ! pressure in room 1 - pressure in room 2 in each slab
+    integer, dimension(mxfslab) ::  dirs12                              ! direction of flow in each slab
 
     ! vvent variables
-    integer :: n_vvents
-    type (vent_type), dimension(mxvvents), target :: vventinfo
+    integer :: n_vvents                                                 ! number of veritcal flow vents
+    type (vent_type), dimension(mxvvents), target :: vventinfo          ! structured vertical vent data
 
     ! hvac variables
+    integer :: n_mvnodes                                    ! number of nodes in mv system
+    integer :: n_mvext                                      ! number of external nodes (connected to a compartment) in mv system
+    real(eb), dimension(mxnode) :: mv_exrelp(mxnode)        ! pressure at room connections to mv system
+    
     integer :: hvorien(mxext), hvnode(2,mxext), na(mxbranch),  &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
-        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, next, nnode, nfan, nbr, &
+        nf(mxbranch),  ibrd(mxduct), nfilter, ndt, nfan, nbr, &
         izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
     real(eb) :: hveflo(2,mxext), hveflot(2,mxext), hvextt(mxext,2), &
         arext(mxext), hvelxt(mxext), ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
-        hvp(mxnode), hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
+        hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
         duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext), hvfrac(2,mxext), &
         chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
@@ -364,11 +375,7 @@ module vent_data
     real(eb), dimension(mxhvsys,ns) :: zzhvspec     ! mass of each species in hvac system
     
     logical :: mvcalc_on
-    
-    !slab data
-    real(eb), dimension(mxfslab) :: yvelev, dpv1m2
-    integer, dimension(mxfslab) ::  dirs12
-    integer :: nvelev, ioutf
+
 
     type (vent_type), dimension(mxext), target :: mventinfo
 

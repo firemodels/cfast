@@ -352,8 +352,8 @@ module output_routines
     end do
 
     ! mechanical vents
-    if (nnode/=0.and.next/=0) then
-        do i = 1, next-1, 2
+    if (n_mvnodes/=0.and.n_mvext/=0) then
+        do i = 1, n_mvext-1, 2
 
             ii = hvnode(1,i)
             roomptr => roominfo(ii)
@@ -392,8 +392,8 @@ module output_routines
         if (irm==nr) ciout = 'Outside'
 
        ! mechanical vents
-        if (nnode/=0.and.next/=0) then
-            do i = 1, next
+        if (n_mvnodes/=0.and.n_mvext/=0) then
+            do i = 1, n_mvext
                 ii = hvnode(1,i)
                 if (ii==irm) then
                     inode = hvnode(2,i)
@@ -624,7 +624,7 @@ module output_routines
     !     description:  output initial test case overview
 
     write (iofilo,5000)
-    write (iofilo,5010) nrm1, n_hvents, n_vvents, next
+    write (iofilo,5010) nrm1, n_hvents, n_vvents, n_mvext
     write (iofilo,5020) time_end, print_out_interval, smv_out_interval, ss_out_interval
 
 5000 format (//,'OVERVIEW',/)
@@ -729,7 +729,7 @@ module output_routines
     end if
 
     !     mechanical vents
-    if (nnode==0.and.next==0) then
+    if (n_mvnodes==0.and.n_mvext==0) then
         write (iofilo,5060)
     else
 
@@ -990,7 +990,7 @@ module output_routines
 
     integer :: i
 
-    do i = 1, next
+    do i = 1, n_mvext
         if (hvnode(2,i)==ind) then
             iext = i
             irm = hvnode(1,i)
@@ -1191,7 +1191,7 @@ module output_routines
             end do
             do idt = 1, nbr
                 if (izhvbsys(idt)==isys) then
-                    write (*,5080) na(idt), hvp(na(idt)), ne(idt),hvp(ne(idt)), hvflow(na(idt),bmap(idt)), tbr(idt)
+                    write (*,5080) na(idt), mv_exrelp(na(idt)), ne(idt),mv_exrelp(ne(idt)), hvflow(na(idt),bmap(idt)), tbr(idt)
                 end if
             end do
         end do
@@ -1224,11 +1224,11 @@ module output_routines
         end do
         if (nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
         if (nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)
-        if (nnode>0)write(*,6040)
-        do i = 1, nnode
+        if (n_mvnodes>0)write(*,6040)
+        do i = 1, n_mvnodes
             do j = 1, ncnode(i)
-                dp = hvp(mvintnode(i,j)) - hvp(i) + dpz(i,j)
-                write(*,6050) i,mvintnode(i,j),dp,hvp(i),hvp(mvintnode(i,j)), hvght(i)
+                dp = mv_exrelp(mvintnode(i,j)) - mv_exrelp(i) + dpz(i,j)
+                write(*,6050) i,mvintnode(i,j),dp,mv_exrelp(i),mv_exrelp(mvintnode(i,j)), hvght(i)
             end do
         end do
         write(*,6070)
@@ -1330,7 +1330,7 @@ module output_routines
     open (unit=iofilo,file=outputfile,status='new')
     if (outputformat==0) outputformat = 2
 
-    ! next create the status file
+    ! n_mvext create the status file
     open (12,file=statusfile,access='append',err=81,iostat=ios)
 
     ! now the smokeview files
@@ -1340,7 +1340,7 @@ module output_routines
         open (unit=15, file=smvcsv,form='formatted')
     end if
 
-    ! next the spread sheet files
+    ! n_mvext the spread sheet files
     if (ss_out_interval>0) then
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')

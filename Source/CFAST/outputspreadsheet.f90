@@ -188,8 +188,8 @@ module spreadsheet_routines
     end do
 
     ! finally, mechanical ventilation
-    if (nnode/=0.and.next/=0) then
-        do i = 1, next
+    if (n_mvnodes/=0.and.n_mvext/=0) then
+        do i = 1, n_mvext
             flow = 0.0_eb
             if (hveflo(u,i)>=0.0_eb) flow(1)=hveflo(u,i)
             if (hveflo(u,i)<0.0_eb) flow(2)=-hveflo(u,i)
@@ -486,8 +486,8 @@ module spreadsheet_routines
     end do
 
     !mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
-    if (nnode/=0.and.next/=0) then
-        do i = 1, next
+    if (n_mvnodes/=0.and.n_mvext/=0) then
+        do i = 1, n_mvext
             if (hvnode(1,i)<=nrm1) then
                 ventptr => mventinfo(i)
                 avent = arext(i)

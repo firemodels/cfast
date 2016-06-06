@@ -610,7 +610,7 @@ module fire_routines
     ! tracet is the trace species which gets through the vent, traces is the mass stopped. Has to be calculated here since
     ! there is no equivalent to 1-...
     do irm = 1, nr
-        do ii = 1, next
+        do ii = 1, n_mvext
             i = hvnode(1,ii)
             j = hvnode(2,ii)
             isys = izhvsys(j)

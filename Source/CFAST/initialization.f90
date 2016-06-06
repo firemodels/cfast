@@ -108,10 +108,10 @@ module initialization_routines
 
     ! if there are no connections between the hvac system and the
     ! outside world, we do not need to go any further
-    if (next<=0) return
+    if (n_mvext<=0) return
 
     ! arrange data on node basis
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         k = 0
         do ib = 1, nbr
             if (i==na(ib)) then
@@ -128,7 +128,7 @@ module initialization_routines
     end do
 
     ! check interior nodes
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         if (ncnode(i)<1.or.ncnode(i)>mxcon) then
             write (*,*) '***Error: HVINIT - interior node has too many or too few connections'
             write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
@@ -137,7 +137,7 @@ module initialization_routines
     end do
 
     ! limit the range of hvelxt and set the absolute height of the interior node
-    do ii = 1, next
+    do ii = 1, n_mvext
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         if (ncnode(j)>1) then
@@ -151,8 +151,8 @@ module initialization_routines
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
-    do i = 1, nnode
-        hvp(i) = -1.0_eb
+    do i = 1, n_mvnodes
+        mv_exrelp(i) = -1.0_eb
     end do
     do i = 1, nbr
         hvdara(i) = 0.0_eb
@@ -166,7 +166,7 @@ module initialization_routines
     do lsp = 1, ns
         c3(lsp) = 0.0_eb
     end do
-    do ii = 1, next
+    do ii = 1, n_mvext
         i = hvnode(1,ii)
         roomptr => roominfo(i)
         j = hvnode(2,ii)
@@ -175,14 +175,14 @@ module initialization_routines
         if (i<nr) then
             hvextt(ii,u) = interior_temperature
             hvextt(ii,l) = interior_temperature
-            hvp(j) = roomptr%relp - grav_con*interior_rho*hvelxt(ii)
+            mv_exrelp(j) = roomptr%relp - grav_con*interior_rho*hvelxt(ii)
         else
             hvextt(ii,u) = exterior_temperature
             hvextt(ii,l) = exterior_temperature
-            hvp(j) = exterior_abs_pressure - grav_con*exterior_rho*hvelxt(ii)
+            mv_exrelp(j) = exterior_abs_pressure - grav_con*exterior_rho*hvelxt(ii)
         end if
         tbr(ib) = hvextt(ii,u)
-        s1 = s1 + hvp(j)
+        s1 = s1 + mv_exrelp(j)
         s2 = s2 + tbr(ib)
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
@@ -200,15 +200,15 @@ module initialization_routines
 
     ! this is to initialize the nodes and branches to something
     ! we will then let the system equilibrate to give us the true answer
-    xnext = next
+    xnext = n_mvext
     pav = s1/xnext
     tav = s2/xnext
     do lsp = 1, ns
         c3(lsp) = c3(lsp)/xnext
     end do
-    do i = 1, nnode
-        if (hvp(i)<0.0_eb) then
-            hvp(i) = pav
+    do i = 1, n_mvnodes
+        if (mv_exrelp(i)<0.0_eb) then
+            mv_exrelp(i) = pav
         end if
     end do
     do i = 1, nbr
@@ -262,19 +262,19 @@ module initialization_routines
     integer :: istack(100), i, ii, j, icursys, iptr, icurnod, nxtnode, isys, ib
 
     ! construct the array that maps between interior nodes (nodes that dassl solves for) and the entire node array
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         izhvmapi(i) = i
     end do
 
     ! DASSL only solves interior nodes so zero out exterior nodes
-    do ii = 1, next
+    do ii = 1, n_mvext
         i = hvnode(2,ii)
         izhvmapi(i) = 0
     end do
 
     ! and fill in the holes vacated by the exterior nodes
     ii = 0
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         if (izhvmapi(i)/=0) then
             ii = ii + 1
             izhvmapi(ii) = izhvmapi(i)
@@ -282,31 +282,31 @@ module initialization_routines
     end do
 
     ! construct inverse of izhvmapi
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         izhvmape(i) = -1
     end do
-    do i = 1, nnode - next
+    do i = 1, n_mvnodes - n_mvext
         izhvmape(izhvmapi(i)) = i
     end do
 
     ! construct array that maps between all nodes and exterior nodes
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         izhvie(i) = 0
     end do
-    do ii = 1, next
+    do ii = 1, n_mvext
         i = hvnode(2,ii)
         izhvie(i) = ii
     end do
 
     ! construct array that maps between all nodes and hvac system number to which they belong
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         izhvsys(i) = 0
     end do
     icursys = 0
     iptr = 0
 90  continue
     icurnod = 0
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         if (izhvsys(i)==0) then
             icurnod = i
             exit
@@ -336,7 +336,7 @@ module initialization_routines
     ! offset but offset was called before nhvsys was defined.
     nequals = nofhvpr + nhvsys*n_species
 
-    do i = 1, nnode
+    do i = 1, n_mvnodes
         isys = izhvsys(i)
         do j = 1, ncnode(i)
             ib = icmv(i,j)
@@ -627,11 +627,11 @@ module initialization_routines
     vventinfo(1:mxvvents)%opening(final_fraction) = 0.0_eb
 
     ! mechanical vents
-    nnode = 0
+    n_mvnodes = 0
     nfan = 0
     nfilter = 0
     nbr = 0
-    next = 0
+    n_mvext = 0
     mvcalc_on = .false.
     hvght(1:mxnode) = 0.0_eb
     hveflot(u:l,1:mxext) = 0.0_eb
@@ -1092,11 +1092,11 @@ module initialization_routines
     type(room_type), pointer :: roomptr
 
     ! count the of nodes (largest of ns and ne)
-    nnode = max(na(1),ne(1))
+    n_mvnodes = max(na(1),ne(1))
     do ib = 2, nbr
-        nnode = max(nnode,na(ib),ne(ib))
+        n_mvnodes = max(n_mvnodes,na(ib),ne(ib))
     end do
-    if (nnode>mxnode) then
+    if (n_mvnodes>mxnode) then
         write (*,*) '***Error: offset - Too many nodes in hvac specification'
         write (logerr,*) '***Error: offset - Too many nodes in hvac specification'
         stop
@@ -1135,7 +1135,7 @@ module initialization_routines
     end if
 
     ! now do all the equation offsets
-    nhvpvar = nnode - next
+    nhvpvar = n_mvnodes - n_mvext
     nhvtvar = nbr
     nofp = 0
     nofpmv = nofp + nrm1

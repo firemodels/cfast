@@ -70,7 +70,7 @@ module numerics_routines
     !
     !  idid:out  this scalar quantity is an indicator reporting what the
     !            code did.  you must monitor this integer variable to decide
-    !            what action to take next.
+    !            what action to take n_mvext.
     !
     !  rwork:work  a real work array of length lrw which provides the
     !               code with needed storage space.
@@ -227,7 +227,7 @@ module numerics_routines
     !
     !       info(3) - the code integrates from t in the direction
     !              of tout by steps. if you wish, it will return the
-    !              computed solution and derivative at the next
+    !              computed solution and derivative at the n_mvext
     !              intermediate step (the intermediate-output mode) or
     !              tout, whichever comes first. this is a good way to
     !              proceed if you want to see the behavior of the solution.
@@ -235,7 +235,7 @@ module numerics_routines
     !              tout points, this code will compute them efficiently.
     !
     !          **** do you want the solution only at
-    !                tout (and not at the next intermediate step) ...
+    !                tout (and not at the n_mvext intermediate step) ...
     !                 yes - set info(3) = 0
     !                  no - set info(3) = 1 ****
     !
@@ -620,7 +620,7 @@ module numerics_routines
     !               however, you may find use for
     !
     !               rwork(3)--which contains the step size h to be
-    !                       attempted on the next step.
+    !                       attempted on the n_mvext step.
     !
     !               rwork(4)--which contains the current value of the
     !                       independent variable, i.e., the farthest point
@@ -632,7 +632,7 @@ module numerics_routines
     !                       on the last successful step.
     !
     !               iwork(7)--which contains the order of the method to
-    !                       be attempted on the next step.
+    !                       be attempted on the n_mvext step.
     !
     !               iwork(8)--which contains the order of the method used
     !                       on the last step.
@@ -663,7 +663,7 @@ module numerics_routines
     !     this code is organized so that subsequent calls to continue the
     !     integration involve little (if any) additional effort on your
     !     part. you must monitor the idid parameter in order to determine
-    !     what to do next.
+    !     what to do n_mvext.
     !
     !     recalling that the principal task of the code is to integrate
     !     from t to tout (the interval mode), usually all you will need
@@ -1022,7 +1022,7 @@ module numerics_routines
 490 if (done) go to 590
     !
     !-------------------------------------------------------
-    !     the next block contains the call to the
+    !     the n_mvext block contains the call to the
     !     one-step integrator ddastp.
     !     this is a looping point for the integration steps.
     !     check for too many steps.
@@ -1753,7 +1753,7 @@ module numerics_routines
     !                  call jac(x,y,yprime,pd,cj,rpar,ipar)
     !                  pd is the matrix of partial derivatives,
     !                  pd=dg/dy+cj*dg/dyprime
-    !     h --         appropriate step size for next step.
+    !     h --         appropriate step size for n_mvext step.
     !                  normally determined by the code
     !     wt --        vector of weights for error criterion.
     !     jstart --    integer variable set 0 for
@@ -2118,8 +2118,8 @@ module numerics_routines
     !     block 5
     !     the step is successful. determine
     !     the best order and stepsize for
-    !     the next step. update the differences
-    !     for the next step.
+    !     the n_mvext step. update the differences
+    !     for the n_mvext step.
     !-----------------------------------------------------------------------
     idid=1
     iwm(lnst)=iwm(lnst)+1
@@ -2168,7 +2168,7 @@ module numerics_routines
     !
     !
     !     determine the appropriate stepsize for
-    !     the next step.
+    !     the n_mvext step.
 550 hnew=h
     temp2=k+1
     r=(2.0d0*est+0.0001d0)**(-1.0d0/temp2)
@@ -2181,7 +2181,7 @@ module numerics_routines
 560 h=hnew
     !
     !
-    !     update differences for next step
+    !     update differences for n_mvext step
 575 continue
     if (kold==iwm(lmxord))go to 585
     do i=1,neq
@@ -3070,7 +3070,7 @@ module numerics_routines
     if (qnorm <= delta) go to 140
     !
     !     the gauss-newton direction is not acceptable.
-    !     next, calculate the scaled gradient direction.
+    !     n_mvext, calculate the scaled gradient direction.
     !
     l = 1
     do j = 1, n
@@ -5529,7 +5529,7 @@ module numerics_routines
         do k = 1, nm1
             kp1 = k + 1
             !
-            !        zero next fill-in column
+            !        zero n_mvext fill-in column
             !
             jz = jz + 1
             if (jz<=n) then

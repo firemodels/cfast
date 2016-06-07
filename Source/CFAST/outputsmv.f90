@@ -184,8 +184,8 @@
     end do
 
     ! mechanical vents
-    if (nnode/=0.and.next/=0) then
-        do i = 1, next
+    if (n_mvnodes/=0.and.n_mvext/=0) then
+        do i = 1, n_mvext
             if (hvnode(1,i)<=nrm1) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
                 write (13,'(a)') "MVENTGEOM"

@@ -330,7 +330,7 @@ module hflow_routines
     !                                 momentum of each slab [m]
     !                yvelev - elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes [m]
     !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
-    !                nvelev - number of unique elevations delineating slabs
+    !                n_velev - number of unique elevations delineating slabs
     !                nslab  - number of slabs between bottom and top of the vent
 
     integer, intent(in) :: nprod, mxfprd, mxfslab
@@ -343,7 +343,7 @@ module hflow_routines
     real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
     real(eb), intent(out) :: vss(2), vsa(2), vas(2), vaa(2)
 
-    integer :: nneut, nelev, i, nr, jroom, iprod, nvelev
+    integer :: nneut, nelev, i, nr, jroom, iprod
 
     real(eb) ::  yelev(10), dp1m2(10), yn(10)
     real(eb) :: dpp, ptest, p1, p2, p1rt, p2rt, r1, y1, y2, cvent, area, r1m8, sum, ys

@@ -1097,40 +1097,40 @@ module input_routines
             ! We start with two new nodes for the openings into the compartments for connections to the fan
 
             ! first compartment/node opening
-            next = next + 1
-            nnode = nnode + 1
-            if (next>mxext.or.nnode>mxnode) then
-                write (*,5192) next,nnode
-                write (logerr,5192) next,nnode
+            n_mvext = n_mvext + 1
+            n_mvnodes = n_mvnodes + 1
+            if (n_mvext>mxext.or.n_mvnodes>mxnode) then
+                write (*,5192) n_mvext,n_mvnodes
+                write (logerr,5192) n_mvext,n_mvnodes
                 stop
             end if
             if (orientypefrom=='V') then
-                hvorien(next) = 1
+                hvorien(n_mvext) = 1
             else
-                hvorien(next) = 2
+                hvorien(n_mvext) = 2
             end if
-            hvnode(1,next) = iecfrom
-            hvnode(2,next) = nnode
-            hvelxt(next) = heightfrom
-            arext(next) = areafrom
+            hvnode(1,n_mvext) = iecfrom
+            hvnode(2,n_mvext) = n_mvnodes
+            hvelxt(n_mvext) = heightfrom
+            arext(n_mvext) = areafrom
 
             ! second compartment/node opening
-            next = next + 1
-            nnode = nnode + 1
-            if (next>mxext.or.nnode>mxnode) then
-                write (*,5192) next,nnode
-                write (logerr,5192) next,nnode
+            n_mvext = n_mvext + 1
+            n_mvnodes = n_mvnodes + 1
+            if (n_mvext>mxext.or.n_mvnodes>mxnode) then
+                write (*,5192) n_mvext,n_mvnodes
+                write (logerr,5192) n_mvext,n_mvnodes
                 stop
             end if
             if (orientypeto=='V') then
-                hvorien(next) = 1
+                hvorien(n_mvext) = 1
             else
-                hvorien(next) = 2
+                hvorien(n_mvext) = 2
             end if
-            hvnode(1,next) = iecto
-            hvnode(2,next) = nnode
-            hvelxt(next) = heightto
-            arext(next) = areato
+            hvnode(1,n_mvext) = iecto
+            hvnode(2,n_mvext) = n_mvnodes
+            hvelxt(n_mvext) = heightto
+            arext(n_mvext) = areato
 
             ! now connect nodes 1 and 2 with a fan
 
@@ -1156,8 +1156,8 @@ module input_routines
 
             nf(nbr) = nfan
             nfc(nfan) = 1
-            na(nbr) = hvnode(2,next-1)
-            ne(nbr) = hvnode(2,next)
+            na(nbr) = hvnode(2,n_mvext-1)
+            ne(nbr) = hvnode(2,n_mvext)
             hvdvol(nbr) = 0.0_eb
             hmin(nfan) = minpres
             hmax(nfan) = maxpres

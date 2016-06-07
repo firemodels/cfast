@@ -1596,7 +1596,7 @@ module solve_routines
 
         ! indicate which rooms are connected to an hvac system
         roominfo(1:nrm1)%is_hvac = .false.
-        do ii = 1, next
+        do ii = 1, n_mvext
             i = hvnode(1,ii)
             roomptr => roominfo(i)
             roomptr%is_hvac = .true.

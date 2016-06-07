@@ -62,7 +62,7 @@ module mflow_routines
     call hvsflo (tprime,delttmv)
     call hvtoex (prprime,nprod)
 
-    do ii = 1, next
+    do ii = 1, n_mvext
 
         ! flow information for smokeview
         ventptr => mventinfo(ii)
@@ -159,17 +159,17 @@ module mflow_routines
         end do
 
         ! calculate hydrostatic pressure difference terms
-        do i = 1, nnode
+        do i = 1, n_mvnodes
             do j = 1, ncnode(i)
                 dpz(i,j) = rohb(icmv(i,j))*grav_con*(hvght(mvintnode(i,j)) - hvght(i))
             end do
         end do
 
         ! find mass flow for each branch and mass residual at each node
-        do i = 1, nnode
+        do i = 1, n_mvnodes
             f = 0.0_eb
             do j = 1, ncnode(i)
-                dp = hvp(mvintnode(i,j)) - hvp(i) + dpz(i,j)
+                dp = mv_exrelp(mvintnode(i,j)) - mv_exrelp(i) + dpz(i,j)
                 if (nf(icmv(i,j))==0) then
 
                     ! resistive branch connection
@@ -216,7 +216,7 @@ module mflow_routines
 
     delttmv(1:nbr) = rohb(1:nbr)*hvdvol(1:nbr)*tprime(1:nbr)/gamma
 
-    do i = 1, nnode
+    do i = 1, n_mvnodes
 
         ! calculate temperatures & smoke flows in following loop at the connecting nodes
         hvta = 0.0_eb
@@ -235,7 +235,7 @@ module mflow_routines
 
             ! this is a bad situation.  we have no flow, yet must calculate the inflow concentrations.
             hvta = tbr(1)
-            do ii = 1, next
+            do ii = 1, n_mvext
                 if (hvnode(2,ii)==i) then
                     hvta = hvextt(ii,u)
                     exit
@@ -314,11 +314,11 @@ module mflow_routines
 
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*)
 
-    real(eb) :: z, xxlower, xxlower_clamped, fraction, zl, zu, rl, ru, xxrho
+    real(eb) :: z, xxlower, xxlower_clamped, fraction, hl, hu, rhol, rhou, xxrho
     integer :: i, ii, j, lsp
     type(room_type), pointer :: roomptr
 
-    do ii = 1, next
+    do ii = 1, n_mvext
         i = hvnode(1,ii)
         roomptr => roominfo(i)
         z = roomptr%depth(l)
@@ -342,23 +342,23 @@ module mflow_routines
     end do
 
     ! this is the actual duct initialization
-    do ii = 1, next
+    do ii = 1, n_mvext
         i = hvnode(1,ii)
         j = hvnode(2,ii)
         if (i<nr) then
             roomptr => roominfo(i)
             z = roomptr%depth(l)
-            zl = min(z,hvelxt(ii))
-            zu = min(0.0_eb,hvelxt(ii)-zl)
-            ru = roomptr%rho(u)
-            rl = roomptr%rho(l)
-            hvp(j) = roomptr%relp - (ru*zu+rl*zl)*grav_con
+            hl = min(z,hvelxt(ii))
+            hu = min(0.0_eb,hvelxt(ii)-hl)
+            rhou = roomptr%rho(u)
+            rhol = roomptr%rho(l)
+            mv_exrelp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
             hvextt(ii,u) = roomptr%temp(u)
             hvextt(ii,l) = roomptr%temp(l)
         else
             hvextt(ii,u) = exterior_temperature
             hvextt(ii,l) = exterior_temperature
-            hvp(j) =  exterior_abs_pressure - exterior_rho*grav_con*hvelxt(ii)
+            mv_exrelp(j) =  exterior_abs_pressure - exterior_rho*grav_con*hvelxt(ii)
         end if
         do lsp = 1, ns
             if (i<nr) then
@@ -373,7 +373,7 @@ module mflow_routines
     end do
     do i = 1, nhvpvar
         ii = izhvmapi(i)
-        hvp(ii) = hvpsolv(i)
+        mv_exrelp(ii) = hvpsolv(i)
     end do
 
     tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)
@@ -408,7 +408,7 @@ module mflow_routines
     end if
 
     ! flow into the isys system
-    do ii = 1, next
+    do ii = 1, n_mvext
         j = hvnode(2,ii)
         ib = icmv(j,1)
         hveflo(u,ii) = hvflow(j,1)*hvfrac(u,ii)
@@ -468,7 +468,7 @@ module mflow_routines
     end if
 
     ! define flows or temperature leaving system
-    do ii = 1, next
+    do ii = 1, n_mvext
         j = hvnode(2,ii)
         isys = izhvsys(j)
         ! we allow only one connection from a node to an external duct

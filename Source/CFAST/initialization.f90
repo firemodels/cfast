@@ -136,7 +136,7 @@ module initialization_routines
         end if
     end do
 
-    ! limit the range of hvelxt and set the absolute height of the interior node
+    ! limit the range of mvex_height and set the absolute height of the interior node
     do ii = 1, n_mvext
         i = hvnode(1,ii)
         j = hvnode(2,ii)
@@ -146,13 +146,13 @@ module initialization_routines
             stop
         end if
         roomptr => roominfo(i)
-        hvelxt(ii) = min(roomptr%cheight,max(0.0_eb,hvelxt(ii)))
-        hvght(j) = hvelxt(ii) + roomptr%z0
+        mvex_height(ii) = min(roomptr%cheight,max(0.0_eb,mvex_height(ii)))
+        hvght(j) = mvex_height(ii) + roomptr%z0
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
     do i = 1, n_mvnodes
-        mv_exrelp(i) = -1.0_eb
+        mvex_relp(i) = -1.0_eb
     end do
     do i = 1, nbr
         hvdara(i) = 0.0_eb
@@ -175,14 +175,14 @@ module initialization_routines
         if (i<nr) then
             hvextt(ii,u) = interior_temperature
             hvextt(ii,l) = interior_temperature
-            mv_exrelp(j) = roomptr%relp - grav_con*interior_rho*hvelxt(ii)
+            mvex_relp(j) = roomptr%relp - grav_con*interior_rho*mvex_height(ii)
         else
             hvextt(ii,u) = exterior_temperature
             hvextt(ii,l) = exterior_temperature
-            mv_exrelp(j) = exterior_abs_pressure - grav_con*exterior_rho*hvelxt(ii)
+            mvex_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvex_height(ii)
         end if
         tbr(ib) = hvextt(ii,u)
-        s1 = s1 + mv_exrelp(j)
+        s1 = s1 + mvex_relp(j)
         s2 = s2 + tbr(ib)
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
@@ -207,8 +207,8 @@ module initialization_routines
         c3(lsp) = c3(lsp)/xnext
     end do
     do i = 1, n_mvnodes
-        if (mv_exrelp(i)<0.0_eb) then
-            mv_exrelp(i) = pav
+        if (mvex_relp(i)<0.0_eb) then
+            mvex_relp(i) = pav
         end if
     end do
     do i = 1, nbr

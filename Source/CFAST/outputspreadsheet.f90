@@ -485,12 +485,12 @@ module spreadsheet_routines
         end do
     end do
 
-    !mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
+    ! mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
             if (hvnode(1,i)<=nrm1) then
                 ventptr => mventinfo(i)
-                avent = arext(i)
+                avent = mvex_area(i)
                 call SSaddtolist (position,avent,outarray)
                 ! flow slabs for the vent
                 slabs = ventptr%n_slabs

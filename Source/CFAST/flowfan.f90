@@ -68,25 +68,25 @@ module mflow_routines
         ventptr => mventinfo(ii)
         iroom = hvnode(1,ii)
         roomptr => roominfo(iroom)
-        vheight = roomptr%z0 + hvelxt(ii)
-        layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(arext(ii))/2), vheight - sqrt(arext(ii))/2)
+        vheight = roomptr%z0 + mvex_height(ii)
+        layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(mvex_area(ii))/2), vheight - sqrt(mvex_area(ii))/2)
         do j = u, l
             ventptr%temp_slab(j) = hvextt(ii,j)
             ventptr%flow_slab(j) = hveflo(j,ii)
             if (j == u) then
-                if (hvorien(ii)==1) then
+                if (mvex_orientation(ii)==1) then
                     ventptr%ybot_slab(j) = layer_height
-                    ventptr%ytop_slab(j) = vheight + sqrt(arext(ii))/2
+                    ventptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
                 else
                     ventptr%ybot_slab(j) = vheight
-                    ventptr%ytop_slab(j) = vheight + sqrt(arext(ii))/2
+                    ventptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
                 end if
             else
-                if (hvorien(ii)==1) then
-                    ventptr%ybot_slab(j) = vheight - sqrt(arext(ii))/2
+                if (mvex_orientation(ii)==1) then
+                    ventptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
                     ventptr%ytop_slab(j) = layer_height
                 else
-                    ventptr%ybot_slab(j) = vheight - sqrt(arext(ii))/2
+                    ventptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
                     ventptr%ytop_slab(j) = vheight
                 end if
             end if
@@ -169,7 +169,7 @@ module mflow_routines
         do i = 1, n_mvnodes
             f = 0.0_eb
             do j = 1, ncnode(i)
-                dp = mv_exrelp(mvintnode(i,j)) - mv_exrelp(i) + dpz(i,j)
+                dp = mvex_relp(mvintnode(i,j)) - mvex_relp(i) + dpz(i,j)
                 if (nf(icmv(i,j))==0) then
 
                     ! resistive branch connection
@@ -323,17 +323,17 @@ module mflow_routines
         roomptr => roominfo(i)
         z = roomptr%depth(l)
         j = hvnode(2,ii)
-        if (hvorien(ii)==1) then
+        if (mvex_orientation(ii)==1) then
 
             ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate
             ! the scaling length of the duct
-            xxlower = sqrt(arext(ii))
+            xxlower = sqrt(mvex_area(ii))
         else
-            xxlower = sqrt(arext(ii))/10.0_eb
+            xxlower = sqrt(mvex_area(ii))/10.0_eb
         end if
 
         ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((hvelxt(ii) - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((mvex_height(ii) - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
@@ -348,17 +348,17 @@ module mflow_routines
         if (i<nr) then
             roomptr => roominfo(i)
             z = roomptr%depth(l)
-            hl = min(z,hvelxt(ii))
-            hu = min(0.0_eb,hvelxt(ii)-hl)
+            hl = min(z,mvex_height(ii))
+            hu = min(0.0_eb,mvex_height(ii)-hl)
             rhou = roomptr%rho(u)
             rhol = roomptr%rho(l)
-            mv_exrelp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
+            mvex_relp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
             hvextt(ii,u) = roomptr%temp(u)
             hvextt(ii,l) = roomptr%temp(l)
         else
             hvextt(ii,u) = exterior_temperature
             hvextt(ii,l) = exterior_temperature
-            mv_exrelp(j) =  exterior_abs_pressure - exterior_rho*grav_con*hvelxt(ii)
+            mvex_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvex_height(ii)
         end if
         do lsp = 1, ns
             if (i<nr) then
@@ -373,7 +373,7 @@ module mflow_routines
     end do
     do i = 1, nhvpvar
         ii = izhvmapi(i)
-        mv_exrelp(ii) = hvpsolv(i)
+        mvex_relp(ii) = hvpsolv(i)
     end do
 
     tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)
@@ -510,9 +510,9 @@ module mflow_routines
     iroom = hvnode(1,i)
     roomptr => roominfo(iroom)
 
-    vheight = hvelxt(i)
-    varea = arext(i)
-    if (hvorien(i)==1) then
+    vheight = mvex_height(i)
+    varea = mvex_area(i)
+    if (mvex_orientation(i)==1) then
         xyz(1) = 0.0_eb
         xyz(2) = 0.0_eb
         xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2

@@ -1105,14 +1105,14 @@ module input_routines
                 stop
             end if
             if (orientypefrom=='V') then
-                hvorien(n_mvext) = 1
+                mvex_orientation(n_mvext) = 1
             else
-                hvorien(n_mvext) = 2
+                mvex_orientation(n_mvext) = 2
             end if
             hvnode(1,n_mvext) = iecfrom
             hvnode(2,n_mvext) = n_mvnodes
-            hvelxt(n_mvext) = heightfrom
-            arext(n_mvext) = areafrom
+            mvex_height(n_mvext) = heightfrom
+            mvex_area(n_mvext) = areafrom
 
             ! second compartment/node opening
             n_mvext = n_mvext + 1
@@ -1123,14 +1123,14 @@ module input_routines
                 stop
             end if
             if (orientypeto=='V') then
-                hvorien(n_mvext) = 1
+                mvex_orientation(n_mvext) = 1
             else
-                hvorien(n_mvext) = 2
+                mvex_orientation(n_mvext) = 2
             end if
             hvnode(1,n_mvext) = iecto
             hvnode(2,n_mvext) = n_mvnodes
-            hvelxt(n_mvext) = heightto
-            arext(n_mvext) = areato
+            mvex_height(n_mvext) = heightto
+            mvex_area(n_mvext) = areato
 
             ! now connect nodes 1 and 2 with a fan
 

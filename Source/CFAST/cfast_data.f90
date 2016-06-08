@@ -362,13 +362,16 @@ module vent_data
     integer, dimension(mxext) :: mvex_orientation           ! orientation of each room connection in mv system (1 = V, 2 = H)
     real(eb), dimension(mxext) :: mvex_area                 ! cross-sectional area of room connections to mv system
     real(eb), dimension(mxext) :: mvex_height               ! height of room connections to mv system
+    real(eb), dimension(mxext,2) :: hveflo                  ! current mass flow at each room connection into mv system (u,l)
+    real(eb), dimension(mxext,2) :: hveflot                 ! total mass flow at each room connection into mv system (u,l)
+    real(eb), dimension(mxext,2) :: hvextt                  ! temperature at each room connection in mv system (u,l)
     
     integer :: hvnode(2,mxext), na(mxbranch),  &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
         nf(mxbranch),  ibrd(mxduct), nfilter, ndt, nfan, nbr, &
         izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
-    real(eb) :: hveflo(2,mxext), hveflot(2,mxext), hvextt(mxext,2), &
-        ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
+    
+    real(eb) :: ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
         duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext), hvfrac(2,mxext), &

@@ -72,7 +72,7 @@ module mflow_routines
         layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(mvex_area(ii))/2), vheight - sqrt(mvex_area(ii))/2)
         do j = u, l
             ventptr%temp_slab(j) = hvextt(ii,j)
-            ventptr%flow_slab(j) = hveflo(j,ii)
+            ventptr%flow_slab(j) = hveflo(ii,j)
             if (j == u) then
                 if (mvex_orientation(ii)==1) then
                     ventptr%ybot_slab(j) = layer_height
@@ -97,26 +97,26 @@ module mflow_routines
         j = hvnode(2,ii)
         isys = izhvsys(j)
         if (i<1.or.i>nrm1) cycle
-        flwmv(i,m,u) = flwmv(i,m,u) + hveflo(u,ii)
-        flwmv(i,m,l) = flwmv(i,m,l) + hveflo(l,ii)
-        flwmv(i,q,u) = flwmv(i,q,u) + hveflo(u,ii)*cp*hvextt(ii,u)
-        flwmv(i,q,l) = flwmv(i,q,l) + hveflo(l,ii)*cp*hvextt(ii,l)
+        flwmv(i,m,u) = flwmv(i,m,u) + hveflo(ii,u)
+        flwmv(i,m,l) = flwmv(i,m,l) + hveflo(ii,l)
+        flwmv(i,q,u) = flwmv(i,q,u) + hveflo(ii,u)*cp*hvextt(ii,u)
+        flwmv(i,q,l) = flwmv(i,q,l) + hveflo(ii,l)*cp*hvextt(ii,l)
         do k = 1, ns
-            flwmv(i,2+k,l) = flwmv(i,2+k,l) + hvexcn(ii,k,l)*hveflo(l,ii)
-            flwmv(i,2+k,u) = flwmv(i,2+k,u) + hvexcn(ii,k,u)*hveflo(u,ii)
+            flwmv(i,2+k,l) = flwmv(i,2+k,l) + hvexcn(ii,k,l)*hveflo(ii,l)
+            flwmv(i,2+k,u) = flwmv(i,2+k,u) + hvexcn(ii,k,u)*hveflo(ii,u)
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*hvexcn(ii,11,u)*hveflo(u,ii))
-        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*hvexcn(ii,11,l)*hveflo(l,ii))
-        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(u,ii))
-        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(l,ii))
+        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*hvexcn(ii,11,u)*hveflo(ii,u))
+        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*hvexcn(ii,11,l)*hveflo(ii,l))
+        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(ii,u))
+        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(ii,l))
         !   remove filtered smoke mass and energy from the total mass and eneergy added to the system (likely a small effect)
-        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(u,ii))
-        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(l,ii))
-        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(u,ii)*cp*hvextt(ii,u))
-        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(l,ii)*cp*hvextt(ii,l))
+        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(ii,u))
+        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(ii,l))
+        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*hvexcn(ii,9,u)*hveflo(ii,u)*cp*hvextt(ii,u))
+        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*hvexcn(ii,9,l)*hveflo(ii,l)*cp*hvextt(ii,l))
     end do
 
     return
@@ -411,15 +411,15 @@ module mflow_routines
     do ii = 1, n_mvext
         j = hvnode(2,ii)
         ib = icmv(j,1)
-        hveflo(u,ii) = hvflow(j,1)*hvfrac(u,ii)
-        hveflo(l,ii) = hvflow(j,1)*hvfrac(l,ii)
+        hveflo(ii,u) = hvflow(j,1)*hvfrac(u,ii)
+        hveflo(ii,l) = hvflow(j,1)*hvfrac(l,ii)
         isys = izhvsys(j)
         if (hvflow(j,1)<0.0_eb) then
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if (nprod/=0) then
                 do k = 1, ns
-                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(u,ii))*hvexcn(ii,k,u) + &
-                                       abs(hveflo(l,ii))*hvexcn(ii,k,l)
+                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(hveflo(ii,u))*hvexcn(ii,k,u) + &
+                                       abs(hveflo(ii,l))*hvexcn(ii,k,l)
                 end do
             end if
         end if

@@ -616,12 +616,12 @@ module fire_routines
             isys = izhvsys(j)
             filter = (1.0_eb-qcifraction(qcvf,isys,time))
             if (irm==i) then
-                hveflot(u,ii) = hveflot(u,ii) + hveflo(u,ii)*deltt
-                hveflot(l,ii) = hveflot(l,ii) + hveflo(l,ii)*deltt
-                tracet(u,ii)  = tracet(u,ii) + hveflo(u,ii)*hvexcn(ii,11,u)*filter*deltt
-                tracet(l,ii)  = tracet(l,ii) + hveflo(l,ii)*hvexcn(ii,11,l)*filter*deltt
-                traces(u,ii)  = traces(u,ii) + hveflo(u,ii)*hvexcn(ii,11,u)*(1.0_eb-filter)*deltt
-                traces(l,ii)  = traces(l,ii) + hveflo(l,ii)*hvexcn(ii,11,l)*(1.0_eb-filter)*deltt
+                hveflot(ii,u) = hveflot(ii,u) + hveflo(ii,u)*deltt
+                hveflot(ii,l) = hveflot(ii,l) + hveflo(ii,l)*deltt
+                tracet(u,ii)  = tracet(u,ii) + hveflo(ii,u)*hvexcn(ii,11,u)*filter*deltt
+                tracet(l,ii)  = tracet(l,ii) + hveflo(ii,l)*hvexcn(ii,11,l)*filter*deltt
+                traces(u,ii)  = traces(u,ii) + hveflo(ii,u)*hvexcn(ii,11,u)*(1.0_eb-filter)*deltt
+                traces(l,ii)  = traces(l,ii) + hveflo(ii,l)*hvexcn(ii,11,l)*(1.0_eb-filter)*deltt
             end if
         end do
     end do

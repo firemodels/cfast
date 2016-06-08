@@ -366,15 +366,15 @@ module output_routines
             if (ii==nr) cito = 'Outside'
 
             flow = 0.0_eb
-            if (hveflo(u,i)>=0.0_eb) flow(1) = hveflo(u,i)
-            if (hveflo(u,i)<0.0_eb) flow(2) = -hveflo(u,i)
-            if (hveflo(l,i)>=0.0_eb) flow(3) = hveflo(l,i)
-            if (hveflo(l,i)<0.0_eb) flow(4) = -hveflo(l,i)
+            if (hveflo(i,u)>=0.0_eb) flow(1) = hveflo(i,u)
+            if (hveflo(i,u)<0.0_eb) flow(2) = -hveflo(i,u)
+            if (hveflo(i,l)>=0.0_eb) flow(3) = hveflo(i,l)
+            if (hveflo(i,l)<0.0_eb) flow(4) = -hveflo(i,l)
 
-            if (hveflo(u,i+1)>=0.0_eb) flow(5) = hveflo(u,i+1)
-            if (hveflo(u,i+1)<0.0_eb) flow(6) = -hveflo(u,i+1)
-            if (hveflo(l,i+1)>=0.0_eb) flow(7) = hveflo(l,i+1)
-            if (hveflo(l,i+1)<0.0_eb) flow(8) = -hveflo(l,i+1)
+            if (hveflo(i+1,u)>=0.0_eb) flow(5) = hveflo(i+1,u)
+            if (hveflo(i+1,u)<0.0_eb) flow(6) = -hveflo(i+1,u)
+            if (hveflo(i+1,l)>=0.0_eb) flow(7) = hveflo(i+1,l)
+            if (hveflo(i+1,l)<0.0_eb) flow(8) = -hveflo(i+1,l)
 
             call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
             write (iofilo,5010) 'M', i, cifrom, cito, outbuf
@@ -399,10 +399,10 @@ module output_routines
                     inode = hvnode(2,i)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
                     flow(1:4) = 0.0_eb
-                    if (hveflot(u,i)>=0.0_eb) flow(1) = hveflot(u,i)
-                    if (hveflot(u,i)<0.0_eb) flow(2) = -hveflot(u,i)
-                    if (hveflot(l,i)>=0.0_eb) flow(3) = hveflot(l,i)
-                    if (hveflot(l,i)<0.0_eb) flow(4) = -hveflot(l,i)
+                    if (hveflot(i,u)>=0.0_eb) flow(1) = hveflot(i,u)
+                    if (hveflot(i,u)<0.0_eb) flow(2) = -hveflot(i,u)
+                    if (hveflot(i,l)>=0.0_eb) flow(3) = hveflot(i,l)
+                    if (hveflot(i,l)<0.0_eb) flow(4) = -hveflot(i,l)
                     flow(5) = abs(tracet(u,i)) + abs(tracet(l,i))
                     flow(6) = abs(traces(u,i)) + abs(traces(l,i))
                     call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
@@ -746,10 +746,10 @@ module output_routines
                             if (irm==nr) ciout = 'Outside'
                             write (cjout,'(a4,i3)') 'Node', na(ibr)
                             if (first) then
-                                write (iofilo,5100) isys, ciout, hvelxt(iext), cjout, hvght(na(ibr)), arext(iext)
+                                write (iofilo,5100) isys, ciout, mvex_height(iext), cjout, hvght(na(ibr)), mvex_area(iext)
                                 first = .false.
                             else
-                                write (iofilo,5110) ciout, hvelxt(iext), cjout, hvght(na(ibr)), arext(iext)
+                                write (iofilo,5110) ciout, mvex_height(iext), cjout, hvght(na(ibr)), mvex_area(iext)
                             end if
                         end if
                         if (first) then
@@ -766,10 +766,10 @@ module output_routines
                             write (cjout,'(a4,i3)') 'Comp', irm
                             if (irm==nr) cjout = 'Outside'
                             if (first) then
-                                write (iofilo,5100) isys, ciout, hvght(ne(ibr)), cjout, hvelxt(iext), arext(iext)
+                                write (iofilo,5100) isys, ciout, hvght(ne(ibr)), cjout, mvex_height(iext), mvex_area(iext)
                                 first = .false.
                             else
-                                write (iofilo,5110) ciout, hvght(ne(ibr)), cjout, hvelxt(iext), arext(iext)
+                                write (iofilo,5110) ciout, hvght(ne(ibr)), cjout, mvex_height(iext), mvex_area(iext)
                             end if
                         end if
                     end if
@@ -1191,7 +1191,7 @@ module output_routines
             end do
             do idt = 1, nbr
                 if (izhvbsys(idt)==isys) then
-                    write (*,5080) na(idt), mv_exrelp(na(idt)), ne(idt),mv_exrelp(ne(idt)), hvflow(na(idt),bmap(idt)), tbr(idt)
+                    write (*,5080) na(idt), mvex_relp(na(idt)), ne(idt),mvex_relp(ne(idt)), hvflow(na(idt),bmap(idt)), tbr(idt)
                 end if
             end do
         end do
@@ -1227,8 +1227,8 @@ module output_routines
         if (n_mvnodes>0)write(*,6040)
         do i = 1, n_mvnodes
             do j = 1, ncnode(i)
-                dp = mv_exrelp(mvintnode(i,j)) - mv_exrelp(i) + dpz(i,j)
-                write(*,6050) i,mvintnode(i,j),dp,mv_exrelp(i),mv_exrelp(mvintnode(i,j)), hvght(i)
+                dp = mvex_relp(mvintnode(i,j)) - mvex_relp(i) + dpz(i,j)
+                write(*,6050) i,mvintnode(i,j),dp,mvex_relp(i),mvex_relp(mvintnode(i,j)), hvght(i)
             end do
         end do
         write(*,6070)

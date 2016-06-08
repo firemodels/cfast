@@ -355,26 +355,26 @@ module output_routines
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext-1, 2
 
-            ii = hvnode(1,i)
+            ii = mvex_node(i,1)
             roomptr => roominfo(ii)
             write (cifrom,'(a12)') roomptr%name
             if (ii==nr) cifrom = 'Outside'
 
-            ii = hvnode(1,i+1)
+            ii = mvex_node(i+1,1)
             roomptr => roominfo(ii)
             write (cito,'(a12)') roomptr%name
             if (ii==nr) cito = 'Outside'
 
             flow = 0.0_eb
-            if (hveflo(i,u)>=0.0_eb) flow(1) = hveflo(i,u)
-            if (hveflo(i,u)<0.0_eb) flow(2) = -hveflo(i,u)
-            if (hveflo(i,l)>=0.0_eb) flow(3) = hveflo(i,l)
-            if (hveflo(i,l)<0.0_eb) flow(4) = -hveflo(i,l)
+            if (mvex_mflow(i,u)>=0.0_eb) flow(1) = mvex_mflow(i,u)
+            if (mvex_mflow(i,u)<0.0_eb) flow(2) = -mvex_mflow(i,u)
+            if (mvex_mflow(i,l)>=0.0_eb) flow(3) = mvex_mflow(i,l)
+            if (mvex_mflow(i,l)<0.0_eb) flow(4) = -mvex_mflow(i,l)
 
-            if (hveflo(i+1,u)>=0.0_eb) flow(5) = hveflo(i+1,u)
-            if (hveflo(i+1,u)<0.0_eb) flow(6) = -hveflo(i+1,u)
-            if (hveflo(i+1,l)>=0.0_eb) flow(7) = hveflo(i+1,l)
-            if (hveflo(i+1,l)<0.0_eb) flow(8) = -hveflo(i+1,l)
+            if (mvex_mflow(i+1,u)>=0.0_eb) flow(5) = mvex_mflow(i+1,u)
+            if (mvex_mflow(i+1,u)<0.0_eb) flow(6) = -mvex_mflow(i+1,u)
+            if (mvex_mflow(i+1,l)>=0.0_eb) flow(7) = mvex_mflow(i+1,l)
+            if (mvex_mflow(i+1,l)<0.0_eb) flow(8) = -mvex_mflow(i+1,l)
 
             call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
             write (iofilo,5010) 'M', i, cifrom, cito, outbuf
@@ -394,17 +394,17 @@ module output_routines
        ! mechanical vents
         if (n_mvnodes/=0.and.n_mvext/=0) then
             do i = 1, n_mvext
-                ii = hvnode(1,i)
+                ii = mvex_node(i,1)
                 if (ii==irm) then
-                    inode = hvnode(2,i)
+                    inode = mvex_node(i,2)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
                     flow(1:4) = 0.0_eb
-                    if (hveflot(i,u)>=0.0_eb) flow(1) = hveflot(i,u)
-                    if (hveflot(i,u)<0.0_eb) flow(2) = -hveflot(i,u)
-                    if (hveflot(i,l)>=0.0_eb) flow(3) = hveflot(i,l)
-                    if (hveflot(i,l)<0.0_eb) flow(4) = -hveflot(i,l)
-                    flow(5) = abs(tracet(u,i)) + abs(tracet(l,i))
-                    flow(6) = abs(traces(u,i)) + abs(traces(l,i))
+                    if (mvex_total_mass(i,u)>=0.0_eb) flow(1) = mvex_total_mass(i,u)
+                    if (mvex_total_mass(i,u)<0.0_eb) flow(2) = -mvex_total_mass(i,u)
+                    if (mvex_total_mass(i,l)>=0.0_eb) flow(3) = mvex_total_mass(i,l)
+                    if (mvex_total_mass(i,l)<0.0_eb) flow(4) = -mvex_total_mass(i,l)
+                    flow(5) = abs(mvex_total_trace(i,u)) + abs(mvex_total_trace(i,l))
+                    flow(6) = abs(mvex_trace(i,u)) + abs(mvex_trace(i,l))
                     call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
                     if (first) then
                         if (i/=1) write (iofilo,5040)
@@ -991,9 +991,9 @@ module output_routines
     integer :: i
 
     do i = 1, n_mvext
-        if (hvnode(2,i)==ind) then
+        if (mvex_node(i,2)==ind) then
             iext = i
-            irm = hvnode(1,i)
+            irm = mvex_node(i,1)
             return
         end if
     end do

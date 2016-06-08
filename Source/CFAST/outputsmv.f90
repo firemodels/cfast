@@ -186,7 +186,7 @@
     ! mechanical vents
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
-            if (hvnode(1,i)<=nrm1) then
+            if (mvex_node(i,1)<=nrm1) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
                 write (13,'(a)') "MVENTGEOM"
                 write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue

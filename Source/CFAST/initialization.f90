@@ -138,8 +138,8 @@ module initialization_routines
 
     ! limit the range of mvex_height and set the absolute height of the interior node
     do ii = 1, n_mvext
-        i = hvnode(1,ii)
-        j = hvnode(2,ii)
+        i = mvex_node(ii,1)
+        j = mvex_node(ii,2)
         if (ncnode(j)>1) then
             write (*,*) '***Error: HVINIT - exterior node has too many or too few connections'
             write (logerr,*) '***Error: HVINIT - exterior node has too many or too few connections'
@@ -167,34 +167,34 @@ module initialization_routines
         c3(lsp) = 0.0_eb
     end do
     do ii = 1, n_mvext
-        i = hvnode(1,ii)
+        i = mvex_node(ii,1)
         roomptr => roominfo(i)
-        j = hvnode(2,ii)
+        j = mvex_node(ii,2)
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
-            hvextt(ii,u) = interior_temperature
-            hvextt(ii,l) = interior_temperature
+            mvex_temp(ii,u) = interior_temperature
+            mvex_temp(ii,l) = interior_temperature
             mvex_relp(j) = roomptr%relp - grav_con*interior_rho*mvex_height(ii)
         else
-            hvextt(ii,u) = exterior_temperature
-            hvextt(ii,l) = exterior_temperature
+            mvex_temp(ii,u) = exterior_temperature
+            mvex_temp(ii,l) = exterior_temperature
             mvex_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvex_height(ii)
         end if
-        tbr(ib) = hvextt(ii,u)
+        tbr(ib) = mvex_temp(ii,u)
         s1 = s1 + mvex_relp(j)
         s2 = s2 + tbr(ib)
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<nr) then
-                hvexcn(ii,lsp,u) = initial_mass_fraction(lsp)*interior_rho
-                hvexcn(ii,lsp,l) = initial_mass_fraction(lsp)*interior_rho
+                mvex_species_fraction(ii,lsp,u) = initial_mass_fraction(lsp)*interior_rho
+                mvex_species_fraction(ii,lsp,l) = initial_mass_fraction(lsp)*interior_rho
             else
-                hvexcn(ii,lsp,u) = initial_mass_fraction(lsp)*exterior_rho
-                hvexcn(ii,lsp,l) = initial_mass_fraction(lsp)*exterior_rho
+                mvex_species_fraction(ii,lsp,u) = initial_mass_fraction(lsp)*exterior_rho
+                mvex_species_fraction(ii,lsp,l) = initial_mass_fraction(lsp)*exterior_rho
             end if
-            hvconc(j,lsp) = hvexcn(ii,lsp,u)
-            c3(lsp) = c3(lsp) + hvexcn(ii,lsp,u)
+            hvconc(j,lsp) = mvex_species_fraction(ii,lsp,u)
+            c3(lsp) = c3(lsp) + mvex_species_fraction(ii,lsp,u)
         end do
     end do
 
@@ -268,7 +268,7 @@ module initialization_routines
 
     ! DASSL only solves interior nodes so zero out exterior nodes
     do ii = 1, n_mvext
-        i = hvnode(2,ii)
+        i = mvex_node(ii,2)
         izhvmapi(i) = 0
     end do
 
@@ -294,7 +294,7 @@ module initialization_routines
         izhvie(i) = 0
     end do
     do ii = 1, n_mvext
-        i = hvnode(2,ii)
+        i = mvex_node(ii,2)
         izhvie(i) = ii
     end do
 
@@ -634,8 +634,8 @@ module initialization_routines
     n_mvext = 0
     mvcalc_on = .false.
     hvght(1:mxnode) = 0.0_eb
-    hveflot(1:mxext,u:l) = 0.0_eb
-    tracet(u:l,1:mxext) = 0.0_eb
+    mvex_total_mass(1:mxext,u:l) = 0.0_eb
+    mvex_total_trace(1:mxext,u:l) = 0.0_eb
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since
     ! there is not "thing" associated with a filter, there is no (as of 11/21/2006)
     ! way to have an intial value other than 0 (no filtering).

@@ -369,8 +369,8 @@ module spreadsheet_header_routines
     ! Mechanical ventilation
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
-            ii = hvnode(1,i)
-            inode = hvnode(2,i)
+            ii = mvex_node(i,1)
+            inode = mvex_node(i,2)
             call toIntString(ii,ciFrom)
             if (ii==nr) cifrom = 'Outside'
             call toIntString(inode,ciTo)
@@ -529,7 +529,7 @@ module spreadsheet_header_routines
     ! Mechanical vent variables
     iv = 0
     do j = 1, n_mvext
-        if (hvnode(1,j)<=nrm1) then
+        if (mvex_node(j,1)<=nrm1) then
             iv = iv + 1
             position = position + 1
             call toIntString(iv,cVent)

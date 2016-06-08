@@ -358,15 +358,20 @@ module vent_data
     ! hvac variables
     integer :: n_mvnodes                                    ! number of nodes in mv system
     integer :: n_mvext                                      ! number of external nodes (connected to a room) in mv system
+    integer, dimension(mxext,2) :: mvex_node                ! mv node specification (1 = connected room, 2 = mv node)
     real(eb), dimension(mxnode) :: mvex_relp                ! pressure at room connections to mv system
     integer, dimension(mxext) :: mvex_orientation           ! orientation of each room connection in mv system (1 = V, 2 = H)
     real(eb), dimension(mxext) :: mvex_area                 ! cross-sectional area of room connections to mv system
     real(eb), dimension(mxext) :: mvex_height               ! height of room connections to mv system
-    real(eb), dimension(mxext,2) :: hveflo                  ! current mass flow at each room connection into mv system (u,l)
-    real(eb), dimension(mxext,2) :: hveflot                 ! total mass flow at each room connection into mv system (u,l)
-    real(eb), dimension(mxext,2) :: hvextt                  ! temperature at each room connection in mv system (u,l)
+    real(eb), dimension(mxext,2) :: mvex_mflow              ! current mass flow at each room connection into mv system (u,l)
+    real(eb), dimension(mxext,2) :: mvex_total_mass         ! total mass flow at each room connection into mv system (u,l)
+    real(eb), dimension(mxext,2) :: mvex_temp               ! temperature at each room connection in mv system (u,l)
+    real(eb), dimension(mxext,2) :: mvex_flowsplit          ! fraction of flow to or from each layer in mv system (<-> u, <-> l)
+    real(eb), dimension(mxext,2) :: mvex_total_trace        ! total trace species mass through vent up to current time (u,l)
+    real(eb), dimension(mxext,2) :: mvex_trace              ! trace species filtered out at vent at the current time step (u,l)
+    real(eb), dimension(mxext,ns,2) :: mvex_species_fraction! species fraction to or from each layer in mv system (<-> u, <-> l)
     
-    integer :: hvnode(2,mxext), na(mxbranch),  &
+    integer :: na(mxbranch),  &
         ncnode(mxnode), ne(mxbranch), mvintnode(mxnode,mxcon), icmv(mxnode,mxcon), nfc(mxfan), &
         nf(mxbranch),  ibrd(mxduct), nfilter, ndt, nfan, nbr, &
         izhvmapi(mxnode), izhvmape(mxnode), izhvie(mxnode), izhvsys(mxnode), izhvbsys(mxbranch), nhvpvar, nhvtvar, nhvsys
@@ -374,7 +379,7 @@ module vent_data
     real(eb) :: ce(mxbranch), hvdvol(mxbranch), tbr(mxbranch), rohb(mxbranch), bflo(mxbranch), &
         hvght(mxnode), dpz(mxnode,mxcon), hvflow(mxnode,mxcon), &
         qmax(mxfan), hmin(mxfan), hmax(mxfan), hvbco(mxfan,mxcoeff), eff_duct_diameter(mxduct), duct_area(mxduct),&
-        duct_length(mxduct),hvconc(mxbranch,ns), hvexcn(mxext,ns,2), tracet(2,mxext), traces(2,mxext), hvfrac(2,mxext), &
+        duct_length(mxduct),hvconc(mxbranch,ns), &
         chv(mxbranch), dhvprsys(mxnode,ns), hvtm(mxhvsys), hvmfsys(mxhvsys),hvdara(mxbranch), ductcv
     
     real(eb), dimension(mxhvsys) :: zzhvm           ! total mass of gas in hvac system
@@ -383,6 +388,7 @@ module vent_data
     logical :: mvcalc_on
 
 
-    type (vent_type), dimension(mxext), target :: mventinfo
+    type (vent_type), dimension(mxext), target :: mventexinfo
+    type (vent_type), dimension(mxfan), target :: mventfaninfo
 
 end module vent_data

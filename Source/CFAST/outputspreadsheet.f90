@@ -191,14 +191,14 @@ module spreadsheet_routines
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
             flow = 0.0_eb
-            if (hveflo(i,u)>=0.0_eb) flow(1)=hveflo(i,u)
-            if (hveflo(i,u)<0.0_eb) flow(2)=-hveflo(i,u)
-            if (hveflo(i,l)>=0.0_eb) flow(3)=hveflo(i,l)
-            if (hveflo(i,l)<0.0_eb) flow(4)=-hveflo(i,l)
+            if (mvex_mflow(i,u)>=0.0_eb) flow(1)=mvex_mflow(i,u)
+            if (mvex_mflow(i,u)<0.0_eb) flow(2)=-mvex_mflow(i,u)
+            if (mvex_mflow(i,l)>=0.0_eb) flow(3)=mvex_mflow(i,l)
+            if (mvex_mflow(i,l)<0.0_eb) flow(4)=-mvex_mflow(i,l)
             sumin = flow(1) + flow(3)
             sumout = flow(2) + flow(4)
-            flow(5) =abs(tracet(u,i))+abs(tracet(l,i))
-            flow(6) =abs(traces(u,i))+abs(traces(l,i))
+            flow(5) =abs(mvex_total_trace(i,u))+abs(mvex_total_trace(i,l))
+            flow(6) =abs(mvex_trace(i,u))+abs(mvex_trace(i,l))
             netflow = sumin - sumout
             call SSaddtolist (position, netflow, outarray)
             call SSaddtolist (position, flow(5), outarray)
@@ -488,8 +488,8 @@ module spreadsheet_routines
     ! mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
-            if (hvnode(1,i)<=nrm1) then
-                ventptr => mventinfo(i)
+            if (mvex_node(i,1)<=nrm1) then
+                ventptr => mventexinfo(i)
                 avent = mvex_area(i)
                 call SSaddtolist (position,avent,outarray)
                 ! flow slabs for the vent

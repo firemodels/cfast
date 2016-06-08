@@ -607,21 +607,21 @@ module fire_routines
     end do
 
     ! sum the hvac flow
-    ! tracet is the trace species which gets through the vent, traces is the mass stopped. Has to be calculated here since
+    ! mvex_total_trace is the trace species which gets through the vent, mvex_trace is the mass stopped. Has to be calculated here since
     ! there is no equivalent to 1-...
     do irm = 1, nr
         do ii = 1, n_mvext
-            i = hvnode(1,ii)
-            j = hvnode(2,ii)
+            i = mvex_node(ii,1)
+            j = mvex_node(ii,2)
             isys = izhvsys(j)
             filter = (1.0_eb-qcifraction(qcvf,isys,time))
             if (irm==i) then
-                hveflot(ii,u) = hveflot(ii,u) + hveflo(ii,u)*deltt
-                hveflot(ii,l) = hveflot(ii,l) + hveflo(ii,l)*deltt
-                tracet(u,ii)  = tracet(u,ii) + hveflo(ii,u)*hvexcn(ii,11,u)*filter*deltt
-                tracet(l,ii)  = tracet(l,ii) + hveflo(ii,l)*hvexcn(ii,11,l)*filter*deltt
-                traces(u,ii)  = traces(u,ii) + hveflo(ii,u)*hvexcn(ii,11,u)*(1.0_eb-filter)*deltt
-                traces(l,ii)  = traces(l,ii) + hveflo(ii,l)*hvexcn(ii,11,l)*(1.0_eb-filter)*deltt
+                mvex_total_mass(ii,u) = mvex_total_mass(ii,u) + mvex_mflow(ii,u)*deltt
+                mvex_total_mass(ii,l) = mvex_total_mass(ii,l) + mvex_mflow(ii,l)*deltt
+                mvex_total_trace(ii,u)  = mvex_total_trace(ii,u) + mvex_mflow(ii,u)*mvex_species_fraction(ii,11,u)*filter*deltt
+                mvex_total_trace(ii,l)  = mvex_total_trace(ii,l) + mvex_mflow(ii,l)*mvex_species_fraction(ii,11,l)*filter*deltt
+                mvex_trace(ii,u)  = mvex_trace(ii,u) + mvex_mflow(ii,u)*mvex_species_fraction(ii,11,u)*(1.0_eb-filter)*deltt
+                mvex_trace(ii,l)  = mvex_trace(ii,l) + mvex_mflow(ii,l)*mvex_species_fraction(ii,11,l)*(1.0_eb-filter)*deltt
             end if
         end do
     end do

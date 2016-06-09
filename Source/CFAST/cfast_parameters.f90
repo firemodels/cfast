@@ -36,8 +36,8 @@ module cparams
 
     integer, parameter :: mxhvsys=2*mxrooms         ! maximum number of mechanical ventilation systems
     integer, parameter :: mxfan = mxrooms           ! maximum number of fans in a mechanical ventilation system
-    integer, parameter :: mxcoeff = 5               ! maximum order of fan curve (here, 5th order polynomial. at the moment,
-                                                    !   the gui limits to constant flow)
+    integer, parameter :: mxcoeff = 1               ! maximum order of fan curve (as a polynomial). at the moment,
+                                                    !   the gui limits to constant flow
     integer, parameter :: mxcon = 3                 ! maximum number of connections to a node in a mechanical ventilation system
     integer, parameter :: mxduct = mxrooms+2        ! maximum number of ducts in a mechanical ventilation system
     integer, parameter :: mxnode = 2*mxduct         ! maximum number of nodes in a mechanical ventilation system

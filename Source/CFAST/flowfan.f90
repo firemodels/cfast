@@ -112,7 +112,7 @@ module mflow_routines
         filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*mvex_species_fraction(ii,11,l)*mvex_mflow(ii,l))
         filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvex_mflow(ii,u))
         filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvex_mflow(ii,l))
-        !   remove filtered smoke mass and energy from the total mass and eneergy added to the system (likely a small effect)
+        !   remove filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
         filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvex_mflow(ii,u))
         filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvex_mflow(ii,l))
         filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvex_mflow(ii,u)*cp*mvex_temp(ii,u))
@@ -154,7 +154,7 @@ module mflow_routines
         do ib = 1, nbr
             if (ce(ib)/=0.0_eb) then
                 xtemp = 1.0_eb/sqrt(abs(ce(ib)))
-                ce (ib) = sign(xtemp, ce(ib))
+                ce(ib) = sign(xtemp, ce(ib))
             end if
         end do
 
@@ -169,7 +169,7 @@ module mflow_routines
         do i = 1, n_mvnodes
             f = 0.0_eb
             do j = 1, ncnode(i)
-                dp = mvex_relp(mvintnode(i,j)) - mvex_relp(i) + dpz(i,j)
+                dp = mv_relp(mvintnode(i,j)) - mv_relp(i) + dpz(i,j)
                 if (nf(icmv(i,j))==0) then
 
                     ! resistive branch connection
@@ -352,13 +352,13 @@ module mflow_routines
             hu = min(0.0_eb,mvex_height(ii)-hl)
             rhou = roomptr%rho(u)
             rhol = roomptr%rho(l)
-            mvex_relp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
+            mv_relp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
             mvex_temp(ii,u) = roomptr%temp(u)
             mvex_temp(ii,l) = roomptr%temp(l)
         else
             mvex_temp(ii,u) = exterior_temperature
             mvex_temp(ii,l) = exterior_temperature
-            mvex_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvex_height(ii)
+            mv_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvex_height(ii)
         end if
         do lsp = 1, ns
             if (i<nr) then
@@ -373,7 +373,7 @@ module mflow_routines
     end do
     do i = 1, nhvpvar
         ii = izhvmapi(i)
-        mvex_relp(ii) = hvpsolv(i)
+        mv_relp(ii) = hvpsolv(i)
     end do
 
     tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)

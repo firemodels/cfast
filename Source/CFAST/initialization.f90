@@ -81,7 +81,7 @@ module initialization_routines
 
     !    calculate min & max values for fan curve
 
-    do k = 1, nfan
+    do k = 1, n_mvfan
         f = hvbco(k,1)
         df = 0.0_eb
         xx = 1.0_eb
@@ -92,7 +92,7 @@ module initialization_routines
             f = f + hvbco(k,j)*xx
         end do
     end do
-    do k = 1, nfan
+    do k = 1, n_mvfan
         f = hvbco(k,1)
         df = 0.0_eb
         xx = 1.0_eb
@@ -152,7 +152,7 @@ module initialization_routines
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
     do i = 1, n_mvnodes
-        mvex_relp(i) = -1.0_eb
+        mv_relp(i) = -1.0_eb
     end do
     do i = 1, nbr
         hvdara(i) = 0.0_eb
@@ -175,14 +175,14 @@ module initialization_routines
         if (i<nr) then
             mvex_temp(ii,u) = interior_temperature
             mvex_temp(ii,l) = interior_temperature
-            mvex_relp(j) = roomptr%relp - grav_con*interior_rho*mvex_height(ii)
+            mv_relp(j) = roomptr%relp - grav_con*interior_rho*mvex_height(ii)
         else
             mvex_temp(ii,u) = exterior_temperature
             mvex_temp(ii,l) = exterior_temperature
-            mvex_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvex_height(ii)
+            mv_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvex_height(ii)
         end if
         tbr(ib) = mvex_temp(ii,u)
-        s1 = s1 + mvex_relp(j)
+        s1 = s1 + mv_relp(j)
         s2 = s2 + tbr(ib)
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
@@ -207,8 +207,8 @@ module initialization_routines
         c3(lsp) = c3(lsp)/xnext
     end do
     do i = 1, n_mvnodes
-        if (mvex_relp(i)<0.0_eb) then
-            mvex_relp(i) = pav
+        if (mv_relp(i)<0.0_eb) then
+            mv_relp(i) = pav
         end if
     end do
     do i = 1, nbr
@@ -221,7 +221,7 @@ module initialization_routines
     end do
 
     ! calculate area, relative roughness, effective diameter and volume of ducts
-    do id = 1, ndt
+    do id = 1, n_mvduct
         duct_area(id) = (pi*eff_duct_diameter(id)**2)/4.0_eb
         ib = ibrd(id)
         hvdvol(ib) = hvdvol(ib) + duct_area(id)*duct_length(id)
@@ -262,10 +262,8 @@ module initialization_routines
     integer :: istack(100), i, ii, j, icursys, iptr, icurnod, nxtnode, isys, ib
 
     ! construct the array that maps between interior nodes (nodes that dassl solves for) and the entire node array
-    do i = 1, n_mvnodes
-        izhvmapi(i) = i
-    end do
-
+    izhvmapi(1:n_mvnodes) = (/ (i, i=1,n_mvnodes) /)
+    
     ! DASSL only solves interior nodes so zero out exterior nodes
     do ii = 1, n_mvext
         i = mvex_node(ii,2)
@@ -282,26 +280,20 @@ module initialization_routines
     end do
 
     ! construct inverse of izhvmapi
-    do i = 1, n_mvnodes
-        izhvmape(i) = -1
-    end do
+    izhvmape(1:n_mvnodes) = -1
     do i = 1, n_mvnodes - n_mvext
         izhvmape(izhvmapi(i)) = i
     end do
 
     ! construct array that maps between all nodes and exterior nodes
-    do i = 1, n_mvnodes
-        izhvie(i) = 0
-    end do
+    izhvie(1:n_mvnodes) = 0
     do ii = 1, n_mvext
         i = mvex_node(ii,2)
         izhvie(i) = ii
     end do
 
     ! construct array that maps between all nodes and hvac system number to which they belong
-    do i = 1, n_mvnodes
-        izhvsys(i) = 0
-    end do
+    izhvsys(1:n_mvnodes) = 0
     icursys = 0
     iptr = 0
 90  continue
@@ -628,8 +620,8 @@ module initialization_routines
 
     ! mechanical vents
     n_mvnodes = 0
-    nfan = 0
-    nfilter = 0
+    n_mvfan = 0
+    n_mvfanfilters = 0
     nbr = 0
     n_mvext = 0
     mvcalc_on = .false.

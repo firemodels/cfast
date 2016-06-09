@@ -1525,13 +1525,13 @@ module solve_routines
             ndisc = ndisc + 1
             discon(ndisc) = ventptr%opening(3)
         end do
-        do  i = 1, nfan
+        do  i = 1, n_mvfan
             ndisc = ndisc + 1
             discon(ndisc) = qcvm(1,i)
             ndisc = ndisc + 1
             discon(ndisc) = qcvm(3,i)
         end do
-        do i = 1, nfilter
+        do i = 1, n_mvfanfilters
             ndisc = ndisc + 1
             discon(ndisc) = qcvf(1,i)
             ndisc = ndisc + 1

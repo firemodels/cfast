@@ -981,12 +981,12 @@ module input_routines
                     qcvm(4,fannumber) = lrarray(6)
                 case ('F')
                     fannumber = lrarray(4)
-                    if (fannumber>nfan) then
+                    if (fannumber>n_mvfan) then
                         write(*,5196) fannumber
                         write(logerr,5196) fannumber
                         stop
                     end if
-                    nfilter = nfilter + 1
+                    n_mvfanfilters = n_mvfanfilters + 1
                     qcvf(1,fannumber) = lrarray(5)
                     qcvf(3,fannumber) = lrarray(5) + lrarray(7)
                     qcvf(4,fannumber) = lrarray(6)
@@ -1140,39 +1140,39 @@ module input_routines
                 stop
             end if
 
-            nfan = nfan + 1
-            if (mid/=nfan) then
-                write(*,5193) mid,nfan
-                write(logerr,5193) mid,nfan
+            n_mvfan = n_mvfan + 1
+            if (mid/=n_mvfan) then
+                write(*,5193) mid,n_mvfan
+                write(logerr,5193) mid,n_mvfan
                 stop
             end if
 
             nbr = nbr + 1
-            if (nfan>mxfan.or.nbr>mxbranch) then
+            if (n_mvfan>mxfan.or.nbr>mxbranch) then
                 write (*,5195) mxfan
                 write (logerr,5195) mxfan
                 stop
             end if
 
-            nf(nbr) = nfan
-            nfc(nfan) = 1
+            nf(nbr) = n_mvfan
+            nfc(n_mvfan) = 1
             na(nbr) = mvex_node(n_mvext-1,2)
             ne(nbr) = mvex_node(n_mvext,2)
             hvdvol(nbr) = 0.0_eb
-            hmin(nfan) = minpres
-            hmax(nfan) = maxpres
-            hvbco(nfan,1) = lrarray(10)
+            hmin(n_mvfan) = minpres
+            hmax(n_mvfan) = maxpres
+            hvbco(n_mvfan,1) = lrarray(10)
 
             ! add a simple duct to connect the two nodes/fan - this is artificial since we do not
             ! worry about the species within the system
-            ndt = ndt + 1
+            n_mvduct = n_mvduct + 1
 
             ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
             ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation
             ! for flow through the external nodes
-            duct_length(ndt) = 0.0_eb
-            eff_duct_diameter(ndt) = lrarray(6)
-            ibrd(ndt) = nbr
+            duct_length(n_mvduct) = 0.0_eb
+            eff_duct_diameter(n_mvduct) = lrarray(6)
+            ibrd(n_mvduct) = nbr
 
             ! finally, we set the initial fraction opening
             qcvm(2,mid) = lrarray(13)

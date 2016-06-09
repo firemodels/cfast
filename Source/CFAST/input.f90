@@ -1109,8 +1109,8 @@ module input_routines
             else
                 mvex_orientation(n_mvext) = 2
             end if
-            hvnode(1,n_mvext) = iecfrom
-            hvnode(2,n_mvext) = n_mvnodes
+            mvex_node(n_mvext,1) = iecfrom
+            mvex_node(n_mvext,2) = n_mvnodes
             mvex_height(n_mvext) = heightfrom
             mvex_area(n_mvext) = areafrom
 
@@ -1127,8 +1127,8 @@ module input_routines
             else
                 mvex_orientation(n_mvext) = 2
             end if
-            hvnode(1,n_mvext) = iecto
-            hvnode(2,n_mvext) = n_mvnodes
+            mvex_node(n_mvext,1) = iecto
+            mvex_node(n_mvext,2) = n_mvnodes
             mvex_height(n_mvext) = heightto
             mvex_area(n_mvext) = areato
 
@@ -1156,8 +1156,8 @@ module input_routines
 
             nf(nbr) = nfan
             nfc(nfan) = 1
-            na(nbr) = hvnode(2,n_mvext-1)
-            ne(nbr) = hvnode(2,n_mvext)
+            na(nbr) = mvex_node(n_mvext-1,2)
+            ne(nbr) = mvex_node(n_mvext,2)
             hvdvol(nbr) = 0.0_eb
             hmin(nfan) = minpres
             hmax(nfan) = maxpres

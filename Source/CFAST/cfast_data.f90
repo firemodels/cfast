@@ -357,7 +357,6 @@ module vent_data
 
     ! hvac variables
     integer :: n_mvext                                      ! number of external nodes (connected to a room) in mv system
-    integer, dimension(mxext,2) :: mvex_node                ! mv node specification (1 = connected room, 2 = mv node)
     integer, dimension(mxext) :: mvex_orientation           ! orientation of each room connection in mv system (1 = V, 2 = H)
     real(eb), dimension(mxext) :: mvex_area                 ! cross-sectional area of room connections to mv system
     real(eb), dimension(mxext) :: mvex_height               ! height of room connections to mv system

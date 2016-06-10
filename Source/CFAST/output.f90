@@ -398,7 +398,7 @@ module output_routines
                 mvextptr => mventexinfo(i)
                 ii = mvextptr%room
                 if (ii==irm) then
-                    inode = mvex_node(i,2)
+                    inode = mvextptr%exterior_node
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
                     flow(1:4) = 0.0_eb
                     if (mvex_total_mass(i,u)>=0.0_eb) flow(1) = mvex_total_mass(i,u)
@@ -995,7 +995,7 @@ module output_routines
 
     do i = 1, n_mvext
         mvextptr => mventexinfo(i)
-        if (mvex_node(i,2)==ind) then
+        if (mvextptr%exterior_node==ind) then
             iext = i
             irm = mvextptr%room
             return

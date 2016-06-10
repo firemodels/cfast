@@ -141,7 +141,7 @@ module initialization_routines
     do ii = 1, n_mvext
         mvextptr => mventexinfo(ii)
         i = mvextptr%room
-        j = mvex_node(ii,2)
+        j = mvextptr%exterior_node
         if (ncnode(j)>1) then
             write (*,*) '***Error: HVINIT - exterior node has too many or too few connections'
             write (logerr,*) '***Error: HVINIT - exterior node has too many or too few connections'
@@ -172,7 +172,7 @@ module initialization_routines
         mvextptr => mventexinfo(ii)
         i = mvextptr%room
         roomptr => roominfo(i)
-        j = mvex_node(ii,2)
+        j = mvextptr%exterior_node
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
@@ -293,7 +293,8 @@ module initialization_routines
     ! construct array that maps between all nodes and exterior nodes
     izhvie(1:n_mvnodes) = 0
     do ii = 1, n_mvext
-        i = mvex_node(ii,2)
+        mvextptr => mventexinfo(ii)
+        i = mvextptr%exterior_node
         izhvie(i) = ii
     end do
 

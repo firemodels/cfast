@@ -94,7 +94,7 @@ module mflow_routines
         mvextptr%n_slabs = 2
 
         i = mvextptr%room
-        j = mvex_node(ii,2)
+        j = mvextptr%exterior_node
         isys = izhvsys(j)
         if (i<1.or.i>nrm1) cycle
         flwmv(i,m,u) = flwmv(i,m,u) + mvex_mflow(ii,u)
@@ -213,6 +213,7 @@ module mflow_routines
 
     real(eb) :: hvta, flowin, hvtemp
     integer ib, i, ii, j
+    type(vent_type), pointer :: mvextptr
 
     delttmv(1:nbr) = rohb(1:nbr)*hvdvol(1:nbr)*tprime(1:nbr)/gamma
 
@@ -236,7 +237,8 @@ module mflow_routines
             ! this is a bad situation.  we have no flow, yet must calculate the inflow concentrations.
             hvta = tbr(1)
             do ii = 1, n_mvext
-                if (mvex_node(ii,2)==i) then
+                mvextptr => mventexinfo(ii)
+                if (mvextptr%exterior_node==i) then
                     hvta = mvex_temp(ii,u)
                     exit
                 end if
@@ -324,7 +326,7 @@ module mflow_routines
         i = mvextptr%room
         roomptr => roominfo(i)
         z = roomptr%depth(l)
-        j = mvex_node(ii,2)
+        j = mvextptr%exterior_node
         if (mvex_orientation(ii)==1) then
 
             ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate
@@ -347,7 +349,7 @@ module mflow_routines
     do ii = 1, n_mvext
         mvextptr => mventexinfo(ii)
         i = mvextptr%room
-        j = mvex_node(ii,2)
+        j = mvextptr%exterior_node
         if (i<nr) then
             roomptr => roominfo(i)
             z = roomptr%depth(l)
@@ -399,6 +401,7 @@ module mflow_routines
     integer, intent(in) :: nprod
 
     integer ii, j, k, ib, isys, isof, nhvpr
+    type(vent_type), pointer :: mvextptr
 
     ! sum product flows entering system
     nhvpr = n_species*nhvsys
@@ -412,7 +415,8 @@ module mflow_routines
 
     ! flow into the isys system
     do ii = 1, n_mvext
-        j = mvex_node(ii,2)
+        mvextptr => mventexinfo(ii)
+        j = mvextptr%exterior_node
         ib = icmv(j,1)
         mvex_mflow(ii,u) = hvflow(j,1)*mvex_flowsplit(ii,u)
         mvex_mflow(ii,l) = hvflow(j,1)*mvex_flowsplit(ii,l)
@@ -472,7 +476,8 @@ module mflow_routines
 
     ! define flows or temperature leaving system
     do ii = 1, n_mvext
-        j = mvex_node(ii,2)
+        mvextptr => mventexinfo(ii)
+        j = mvextptr%exterior_node
         isys = izhvsys(j)
         ! we allow only one connection from a node to an external duct
         ib = icmv(j,1)

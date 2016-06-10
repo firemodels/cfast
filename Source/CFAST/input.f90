@@ -1111,7 +1111,7 @@ module input_routines
             end if
             mvextptr => mventexinfo(n_mvext)
             mvextptr%room = iecfrom
-            mvex_node(n_mvext,2) = n_mvnodes
+            mvextptr%exterior_node = n_mvnodes
             mvex_height(n_mvext) = heightfrom
             mvex_area(n_mvext) = areafrom
 
@@ -1130,7 +1130,7 @@ module input_routines
             end if
             mvextptr => mventexinfo(n_mvext)
             mvextptr%room = iecto
-            mvex_node(n_mvext,2) = n_mvnodes
+            mvextptr%exterior_node = n_mvnodes
             mvex_height(n_mvext) = heightto
             mvex_area(n_mvext) = areato
 
@@ -1158,8 +1158,10 @@ module input_routines
 
             nf(nbr) = n_mvfan
             nfc(n_mvfan) = 1
-            na(nbr) = mvex_node(n_mvext-1,2)
-            ne(nbr) = mvex_node(n_mvext,2)
+            mvextptr => mventexinfo(n_mvext-1)
+            na(nbr) = mvextptr%exterior_node
+            mvextptr => mventexinfo(n_mvext)
+            ne(nbr) = mvextptr%exterior_node
             hvdvol(nbr) = 0.0_eb
             hmin(n_mvfan) = minpres
             hmax(n_mvfan) = maxpres

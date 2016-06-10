@@ -614,7 +614,7 @@ module fire_routines
         do ii = 1, n_mvext
             mvextptr => mventexinfo(ii)
             i = mvextptr%room
-            j = mvex_node(ii,2)
+            j = mvextptr%exterior_node
             isys = izhvsys(j)
             filter = (1.0_eb-qcifraction(qcvf,isys,time))
             if (irm==i) then

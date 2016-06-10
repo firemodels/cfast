@@ -137,7 +137,7 @@ module initialization_routines
         end if
     end do
 
-    ! limit the range of mvex_height and set the absolute height of the interior node
+    ! limit the range of diffuser height and set the absolute height of the interior node
     do ii = 1, n_mvext
         mvextptr => mventexinfo(ii)
         i = mvextptr%room
@@ -148,8 +148,8 @@ module initialization_routines
             stop
         end if
         roomptr => roominfo(i)
-        mvex_height(ii) = min(roomptr%cheight,max(0.0_eb,mvex_height(ii)))
-        hvght(j) = mvex_height(ii) + roomptr%z0
+        mvextptr%height = min(roomptr%cheight,max(0.0_eb,mvextptr%height))
+        hvght(j) = mvextptr%height + roomptr%z0
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
@@ -178,11 +178,11 @@ module initialization_routines
         if (i<nr) then
             mvex_temp(ii,u) = interior_temperature
             mvex_temp(ii,l) = interior_temperature
-            mv_relp(j) = roomptr%relp - grav_con*interior_rho*mvex_height(ii)
+            mv_relp(j) = roomptr%relp - grav_con*interior_rho*mvextptr%height
         else
             mvex_temp(ii,u) = exterior_temperature
             mvex_temp(ii,l) = exterior_temperature
-            mv_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvex_height(ii)
+            mv_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvextptr%height
         end if
         tbr(ib) = mvex_temp(ii,u)
         s1 = s1 + mv_relp(j)

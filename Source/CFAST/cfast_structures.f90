@@ -244,8 +244,11 @@ module cfast_types
         real(eb) :: v_mflow(2,2)            ! vent mass flow (top or bottom, upper or lower)
 
         ! These define a mechanical vent
+        ! external connections to mv system(s)
         integer :: room                     ! compartment connected to exterior node
         integer :: exterior_node            ! node number connected to compartment above
+        integer :: orientation              ! orientation of each room connection in mv system (1 = V, 2 = H)
+        real(eb) :: height                  ! center height of vent diffuser
 
         ! These are common to all vent types
 

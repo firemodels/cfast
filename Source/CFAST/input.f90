@@ -1104,16 +1104,16 @@ module input_routines
                 write (logerr,5192) n_mvext,n_mvnodes
                 stop
             end if
-            if (orientypefrom=='V') then
-                mvex_orientation(n_mvext) = 1
-            else
-                mvex_orientation(n_mvext) = 2
-            end if
             mvextptr => mventexinfo(n_mvext)
+            if (orientypefrom=='V') then
+                mvextptr%orientation = 1
+            else
+                mvextptr%orientation = 2
+            end if
             mvextptr%room = iecfrom
             mvextptr%exterior_node = n_mvnodes
-            mvex_height(n_mvext) = heightfrom
-            mvex_area(n_mvext) = areafrom
+            mvextptr%height = heightfrom
+            mvextptr%area = areafrom
 
             ! second compartment/node opening
             n_mvext = n_mvext + 1
@@ -1123,16 +1123,16 @@ module input_routines
                 write (logerr,5192) n_mvext,n_mvnodes
                 stop
             end if
-            if (orientypeto=='V') then
-                mvex_orientation(n_mvext) = 1
-            else
-                mvex_orientation(n_mvext) = 2
-            end if
             mvextptr => mventexinfo(n_mvext)
+            if (orientypeto=='V') then
+                mvextptr%orientation = 1
+            else
+                mvextptr%orientation = 2
+            end if
             mvextptr%room = iecto
             mvextptr%exterior_node = n_mvnodes
-            mvex_height(n_mvext) = heightto
-            mvex_area(n_mvext) = areato
+            mvextptr%height = heightto
+            mvextptr%area = areato
 
             ! now connect nodes 1 and 2 with a fan
 

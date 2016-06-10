@@ -71,6 +71,7 @@
     integer ibar, jbar, kbar
     integer :: j
     type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: mvextptr
     type(detector_type), pointer :: dtectptr
     type(slice_type), pointer :: sf
     type(iso_type), pointer :: isoptr
@@ -186,7 +187,8 @@
     ! mechanical vents
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
-            if (mvex_node(i,1)<=nrm1) then
+            mvextptr => mventexinfo(i)
+            if (mvextptr%room<=nrm1) then
                 call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
                 write (13,'(a)') "MVENTGEOM"
                 write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue

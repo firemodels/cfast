@@ -244,6 +244,8 @@ module cfast_types
         real(eb) :: v_mflow(2,2)            ! vent mass flow (top or bottom, upper or lower)
 
         ! These define a mechanical vent
+        integer :: room                     ! compartment connected to exterior node
+        integer :: exterior_node            ! node number connected to compartment above
 
         ! These are common to all vent types
 

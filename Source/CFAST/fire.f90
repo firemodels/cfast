@@ -592,6 +592,7 @@ module fire_routines
     integer ::i, j, irm, ii, isys
     real(eb) :: filter
     type(fire_type), pointer :: fireptr
+    type(vent_type), pointer :: mvextptr
 
     do i = 1, n_fires
         fireptr => fireinfo(i)
@@ -611,7 +612,8 @@ module fire_routines
     ! there is no equivalent to 1-...
     do irm = 1, nr
         do ii = 1, n_mvext
-            i = mvex_node(ii,1)
+            mvextptr => mventexinfo(ii)
+            i = mvextptr%room
             j = mvex_node(ii,2)
             isys = izhvsys(j)
             filter = (1.0_eb-qcifraction(qcvf,isys,time))

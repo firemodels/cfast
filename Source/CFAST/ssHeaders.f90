@@ -296,7 +296,7 @@ module spreadsheet_header_routines
     integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
     character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
     integer :: position, i, ih, ii, inode, ifrom, ito
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: ventptr, mvextptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
        'MVENT Trace Species Filtered' /
@@ -369,7 +369,8 @@ module spreadsheet_header_routines
     ! Mechanical ventilation
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
-            ii = mvex_node(i,1)
+            mvextptr => mventexinfo(i)
+            ii = mvextptr%room
             inode = mvex_node(i,2)
             call toIntString(ii,ciFrom)
             if (ii==nr) cifrom = 'Outside'
@@ -418,6 +419,7 @@ module spreadsheet_header_routines
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: mvextptr
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
@@ -529,7 +531,8 @@ module spreadsheet_header_routines
     ! Mechanical vent variables
     iv = 0
     do j = 1, n_mvext
-        if (mvex_node(j,1)<=nrm1) then
+        mvextptr => mventexinfo(j)
+        if (mvextptr%room<=nrm1) then
             iv = iv + 1
             position = position + 1
             call toIntString(iv,cVent)

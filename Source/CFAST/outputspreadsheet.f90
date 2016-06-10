@@ -398,7 +398,7 @@ module spreadsheet_routines
     integer :: i, j, iroom1, iroom2, ik, im, ix
 
 
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: ventptr, mvextptr
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -488,18 +488,18 @@ module spreadsheet_routines
     ! mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
-            if (mvex_node(i,1)<=nrm1) then
-                ventptr => mventexinfo(i)
+            mvextptr => mventexinfo(i)
+            if (mvextptr%room<=nrm1) then
                 avent = mvex_area(i)
                 call SSaddtolist (position,avent,outarray)
                 ! flow slabs for the vent
-                slabs = ventptr%n_slabs
+                slabs = mvextptr%n_slabs
                 call SSaddtolist (position,slabs,outarray)
                 do j = 1, 2
-                    call ssaddtolist(position,ventptr%temp_slab(j),outarray)
-                    call ssaddtolist(position,-ventptr%flow_slab(j),outarray)
-                    call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
-                    call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
+                    call ssaddtolist(position,mvextptr%temp_slab(j),outarray)
+                    call ssaddtolist(position,-mvextptr%flow_slab(j),outarray)
+                    call ssaddtolist(position,mvextptr%ybot_slab(j),outarray)
+                    call ssaddtolist(position,mvextptr%ytop_slab(j),outarray)
                 end do
             end if
         end do

@@ -466,7 +466,7 @@ module input_routines
     type(visual_type), pointer :: sliceptr
     type(thermal_type), pointer :: thrmpptr
     type(fire_type), pointer :: fireptr
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: ventptr, mvextptr
 
     !	Start with a clean slate
 
@@ -1109,7 +1109,8 @@ module input_routines
             else
                 mvex_orientation(n_mvext) = 2
             end if
-            mvex_node(n_mvext,1) = iecfrom
+            mvextptr => mventexinfo(n_mvext)
+            mvextptr%room = iecfrom
             mvex_node(n_mvext,2) = n_mvnodes
             mvex_height(n_mvext) = heightfrom
             mvex_area(n_mvext) = areafrom
@@ -1127,7 +1128,8 @@ module input_routines
             else
                 mvex_orientation(n_mvext) = 2
             end if
-            mvex_node(n_mvext,1) = iecto
+            mvextptr => mventexinfo(n_mvext)
+            mvextptr%room = iecto
             mvex_node(n_mvext,2) = n_mvnodes
             mvex_height(n_mvext) = heightto
             mvex_area(n_mvext) = areato

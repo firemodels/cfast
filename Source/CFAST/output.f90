@@ -398,7 +398,7 @@ module output_routines
                 mvextptr => mventexinfo(i)
                 ii = mvextptr%room
                 if (ii==irm) then
-                    inode = mvex_node(i,2)
+                    inode = mvextptr%exterior_node
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
                     flow(1:4) = 0.0_eb
                     if (mvex_total_mass(i,u)>=0.0_eb) flow(1) = mvex_total_mass(i,u)
@@ -687,7 +687,7 @@ module output_routines
     character :: ciout*8, cjout*14, csout*6
     logical :: first
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: ventptr, mvextptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
@@ -744,14 +744,15 @@ module output_routines
                     if (nf(ibr)/=0) then
                         call chkext(na(ibr),irm,iext)
                         if (irm>=1.and.irm<=nr) then
+                            mvextptr => mventexinfo(iext)
                             write (ciout,'(a4,i3)') 'Comp', irm
                             if (irm==nr) ciout = 'Outside'
                             write (cjout,'(a4,i3)') 'Node', na(ibr)
                             if (first) then
-                                write (iofilo,5100) isys, ciout, mvex_height(iext), cjout, hvght(na(ibr)), mvex_area(iext)
+                                write (iofilo,5100) isys, ciout, mvextptr%height, cjout, hvght(na(ibr)), mvextptr%area
                                 first = .false.
                             else
-                                write (iofilo,5110) ciout, mvex_height(iext), cjout, hvght(na(ibr)), mvex_area(iext)
+                                write (iofilo,5110) ciout, mvextptr%height, cjout, hvght(na(ibr)), mvextptr%area
                             end if
                         end if
                         if (first) then
@@ -764,19 +765,21 @@ module output_routines
                         end if
                         call chkext(ne(ibr),irm,iext)
                         if (irm>=1.and.irm<=nr) then
+                            mvextptr => mventexinfo(iext)
                             write (ciout,'(a4,i3)') 'Node', ne(ibr)
                             write (cjout,'(a4,i3)') 'Comp', irm
                             if (irm==nr) cjout = 'Outside'
                             if (first) then
-                                write (iofilo,5100) isys, ciout, hvght(ne(ibr)), cjout, mvex_height(iext), mvex_area(iext)
+                                write (iofilo,5100) isys, ciout, hvght(ne(ibr)), cjout, mvextptr%height, mvextptr%area
                                 first = .false.
                             else
-                                write (iofilo,5110) ciout, hvght(ne(ibr)), cjout, mvex_height(iext), mvex_area(iext)
+                                write (iofilo,5110) ciout, hvght(ne(ibr)), cjout, mvextptr%height, mvextptr%area
                             end if
                         end if
                     end if
                 end if
             end do
+            if (isys/=nhvsys) write (*,'(a)') ' '
         end do
     end if
     return
@@ -995,7 +998,7 @@ module output_routines
 
     do i = 1, n_mvext
         mvextptr => mventexinfo(i)
-        if (mvex_node(i,2)==ind) then
+        if (mvextptr%exterior_node==ind) then
             iext = i
             irm = mvextptr%room
             return

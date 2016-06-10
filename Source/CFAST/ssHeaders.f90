@@ -371,7 +371,7 @@ module spreadsheet_header_routines
         do i = 1, n_mvext
             mvextptr => mventexinfo(i)
             ii = mvextptr%room
-            inode = mvex_node(i,2)
+            inode = mvextptr%exterior_node
             call toIntString(ii,ciFrom)
             if (ii==nr) cifrom = 'Outside'
             call toIntString(inode,ciTo)

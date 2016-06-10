@@ -490,7 +490,7 @@ module spreadsheet_routines
         do i = 1, n_mvext
             mvextptr => mventexinfo(i)
             if (mvextptr%room<=nrm1) then
-                avent = mvex_area(i)
+                avent = mvextptr%area
                 call SSaddtolist (position,avent,outarray)
                 ! flow slabs for the vent
                 slabs = mvextptr%n_slabs

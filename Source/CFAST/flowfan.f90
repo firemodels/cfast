@@ -68,25 +68,25 @@ module mflow_routines
         mvextptr => mventexinfo(ii)
         iroom = mvextptr%room
         roomptr => roominfo(iroom)
-        vheight = roomptr%z0 + mvex_height(ii)
-        layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(mvex_area(ii))/2), vheight - sqrt(mvex_area(ii))/2)
+        vheight = roomptr%z0 + mvextptr%height
+        layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(mvextptr%area)/2), vheight - sqrt(mvextptr%area)/2)
         do j = u, l
             mvextptr%temp_slab(j) = mvex_temp(ii,j)
             mvextptr%flow_slab(j) = mvex_mflow(ii,j)
             if (j == u) then
-                if (mvex_orientation(ii)==1) then
+                if (mvextptr%orientation==1) then
                     mvextptr%ybot_slab(j) = layer_height
-                    mvextptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
+                    mvextptr%ytop_slab(j) = vheight + sqrt(mvextptr%area)/2
                 else
                     mvextptr%ybot_slab(j) = vheight
-                    mvextptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
+                    mvextptr%ytop_slab(j) = vheight + sqrt(mvextptr%area)/2
                 end if
             else
-                if (mvex_orientation(ii)==1) then
-                    mvextptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
+                if (mvextptr%orientation==1) then
+                    mvextptr%ybot_slab(j) = vheight - sqrt(mvextptr%area)/2
                     mvextptr%ytop_slab(j) = layer_height
                 else
-                    mvextptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
+                    mvextptr%ybot_slab(j) = vheight - sqrt(mvextptr%area)/2
                     mvextptr%ytop_slab(j) = vheight
                 end if
             end if
@@ -94,7 +94,7 @@ module mflow_routines
         mvextptr%n_slabs = 2
 
         i = mvextptr%room
-        j = mvex_node(ii,2)
+        j = mvextptr%exterior_node
         isys = izhvsys(j)
         if (i<1.or.i>nrm1) cycle
         flwmv(i,m,u) = flwmv(i,m,u) + mvex_mflow(ii,u)
@@ -213,6 +213,7 @@ module mflow_routines
 
     real(eb) :: hvta, flowin, hvtemp
     integer ib, i, ii, j
+    type(vent_type), pointer :: mvextptr
 
     delttmv(1:nbr) = rohb(1:nbr)*hvdvol(1:nbr)*tprime(1:nbr)/gamma
 
@@ -236,7 +237,8 @@ module mflow_routines
             ! this is a bad situation.  we have no flow, yet must calculate the inflow concentrations.
             hvta = tbr(1)
             do ii = 1, n_mvext
-                if (mvex_node(ii,2)==i) then
+                mvextptr => mventexinfo(ii)
+                if (mvextptr%exterior_node==i) then
                     hvta = mvex_temp(ii,u)
                     exit
                 end if
@@ -324,18 +326,18 @@ module mflow_routines
         i = mvextptr%room
         roomptr => roominfo(i)
         z = roomptr%depth(l)
-        j = mvex_node(ii,2)
-        if (mvex_orientation(ii)==1) then
+        j = mvextptr%exterior_node
+        if (mvextptr%orientation==1) then
 
             ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate
             ! the scaling length of the duct
-            xxlower = sqrt(mvex_area(ii))
+            xxlower = sqrt(mvextptr%area)
         else
-            xxlower = sqrt(mvex_area(ii))/10.0_eb
+            xxlower = sqrt(mvextptr%area)/10.0_eb
         end if
 
         ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((mvex_height(ii) - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
+        xxlower_clamped = max(0.0_eb,min((mvextptr%height - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
@@ -347,12 +349,12 @@ module mflow_routines
     do ii = 1, n_mvext
         mvextptr => mventexinfo(ii)
         i = mvextptr%room
-        j = mvex_node(ii,2)
+        j = mvextptr%exterior_node
         if (i<nr) then
             roomptr => roominfo(i)
             z = roomptr%depth(l)
-            hl = min(z,mvex_height(ii))
-            hu = min(0.0_eb,mvex_height(ii)-hl)
+            hl = min(z,mvextptr%height)
+            hu = min(0.0_eb,mvextptr%height-hl)
             rhou = roomptr%rho(u)
             rhol = roomptr%rho(l)
             mv_relp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
@@ -361,7 +363,7 @@ module mflow_routines
         else
             mvex_temp(ii,u) = exterior_temperature
             mvex_temp(ii,l) = exterior_temperature
-            mv_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvex_height(ii)
+            mv_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
         end if
         do lsp = 1, ns
             if (i<nr) then
@@ -399,6 +401,7 @@ module mflow_routines
     integer, intent(in) :: nprod
 
     integer ii, j, k, ib, isys, isof, nhvpr
+    type(vent_type), pointer :: mvextptr
 
     ! sum product flows entering system
     nhvpr = n_species*nhvsys
@@ -412,7 +415,8 @@ module mflow_routines
 
     ! flow into the isys system
     do ii = 1, n_mvext
-        j = mvex_node(ii,2)
+        mvextptr => mventexinfo(ii)
+        j = mvextptr%exterior_node
         ib = icmv(j,1)
         mvex_mflow(ii,u) = hvflow(j,1)*mvex_flowsplit(ii,u)
         mvex_mflow(ii,l) = hvflow(j,1)*mvex_flowsplit(ii,l)
@@ -472,7 +476,8 @@ module mflow_routines
 
     ! define flows or temperature leaving system
     do ii = 1, n_mvext
-        j = mvex_node(ii,2)
+        mvextptr => mventexinfo(ii)
+        j = mvextptr%exterior_node
         isys = izhvsys(j)
         ! we allow only one connection from a node to an external duct
         ib = icmv(j,1)
@@ -515,9 +520,9 @@ module mflow_routines
     iroom = mvextptr%room
     roomptr => roominfo(iroom)
 
-    vheight = mvex_height(i)
-    varea = mvex_area(i)
-    if (mvex_orientation(i)==1) then
+    vheight = mvextptr%height
+    varea = mvextptr%area
+    if (mvextptr%orientation==1) then
         xyz(1) = 0.0_eb
         xyz(2) = 0.0_eb
         xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2

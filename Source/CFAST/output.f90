@@ -304,7 +304,7 @@ module output_routines
     real(eb), dimension(8) :: flow
 
     character outbuf*132, cifrom*12, cito*12
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: ventptr, mvextptr
     type(room_type), pointer :: roomptr
 
     write (iofilo,5000)
@@ -354,13 +354,14 @@ module output_routines
     ! mechanical vents
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext-1, 2
-
-            ii = mvex_node(i,1)
+            mvextptr => mventexinfo(i)
+            ii = mvextptr%room
             roomptr => roominfo(ii)
             write (cifrom,'(a12)') roomptr%name
             if (ii==nr) cifrom = 'Outside'
 
-            ii = mvex_node(i+1,1)
+            mvextptr => mventexinfo(i+1)
+            ii = mvextptr%room
             roomptr => roominfo(ii)
             write (cito,'(a12)') roomptr%name
             if (ii==nr) cito = 'Outside'
@@ -394,7 +395,8 @@ module output_routines
        ! mechanical vents
         if (n_mvnodes/=0.and.n_mvext/=0) then
             do i = 1, n_mvext
-                ii = mvex_node(i,1)
+                mvextptr => mventexinfo(i)
+                ii = mvextptr%room
                 if (ii==irm) then
                     inode = mvex_node(i,2)
                     write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
@@ -987,13 +989,15 @@ module output_routines
 
     integer, intent(in) :: ind
     integer, intent(out) :: irm, iext
+    type(vent_type), pointer :: mvextptr
 
     integer :: i
 
     do i = 1, n_mvext
+        mvextptr => mventexinfo(i)
         if (mvex_node(i,2)==ind) then
             iext = i
-            irm = mvex_node(i,1)
+            irm = mvextptr%room
             return
         end if
     end do

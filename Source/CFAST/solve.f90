@@ -1397,7 +1397,7 @@ module solve_routines
 
     type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
-    type(vent_type), pointer ::ventptr
+    type(vent_type), pointer ::ventptr, mvextptr
 
     if (nfurn>0.and.iflag/=constvar) then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1597,7 +1597,8 @@ module solve_routines
         ! indicate which rooms are connected to an hvac system
         roominfo(1:nrm1)%is_hvac = .false.
         do ii = 1, n_mvext
-            i = mvex_node(ii,1)
+            mvextptr => mventexinfo(ii)
+            i = mvextptr%room
             roomptr => roominfo(i)
             roomptr%is_hvac = .true.
         end do

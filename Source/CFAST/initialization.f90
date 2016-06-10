@@ -78,6 +78,7 @@ module initialization_routines
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
     type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: mvextptr
 
     !    calculate min & max values for fan curve
 
@@ -138,7 +139,8 @@ module initialization_routines
 
     ! limit the range of mvex_height and set the absolute height of the interior node
     do ii = 1, n_mvext
-        i = mvex_node(ii,1)
+        mvextptr => mventexinfo(ii)
+        i = mvextptr%room
         j = mvex_node(ii,2)
         if (ncnode(j)>1) then
             write (*,*) '***Error: HVINIT - exterior node has too many or too few connections'
@@ -167,7 +169,8 @@ module initialization_routines
         c3(lsp) = 0.0_eb
     end do
     do ii = 1, n_mvext
-        i = mvex_node(ii,1)
+        mvextptr => mventexinfo(ii)
+        i = mvextptr%room
         roomptr => roominfo(i)
         j = mvex_node(ii,2)
         ib = icmv(j,1)
@@ -260,13 +263,15 @@ module initialization_routines
 
 
     integer :: istack(100), i, ii, j, icursys, iptr, icurnod, nxtnode, isys, ib
+    type(vent_type), pointer :: mvextptr
 
     ! construct the array that maps between interior nodes (nodes that dassl solves for) and the entire node array
     izhvmapi(1:n_mvnodes) = (/ (i, i=1,n_mvnodes) /)
     
     ! DASSL only solves interior nodes so zero out exterior nodes
     do ii = 1, n_mvext
-        i = mvex_node(ii,2)
+        mvextptr => mventexinfo(ii)
+        i = mvextptr%room
         izhvmapi(i) = 0
     end do
 

@@ -38,7 +38,7 @@ module mflow_routines
     integer :: i, ii, j, k, isys, nprod, iroom
     logical :: hvacflg
 
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: mvextptr
     type(room_type), pointer :: roomptr
 
     ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.
@@ -65,35 +65,35 @@ module mflow_routines
     do ii = 1, n_mvext
 
         ! flow information for smokeview
-        ventptr => mventexinfo(ii)
-        iroom = mvex_node(ii,1)
+        mvextptr => mventexinfo(ii)
+        iroom = mvextptr%room
         roomptr => roominfo(iroom)
         vheight = roomptr%z0 + mvex_height(ii)
         layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(mvex_area(ii))/2), vheight - sqrt(mvex_area(ii))/2)
         do j = u, l
-            ventptr%temp_slab(j) = mvex_temp(ii,j)
-            ventptr%flow_slab(j) = mvex_mflow(ii,j)
+            mvextptr%temp_slab(j) = mvex_temp(ii,j)
+            mvextptr%flow_slab(j) = mvex_mflow(ii,j)
             if (j == u) then
                 if (mvex_orientation(ii)==1) then
-                    ventptr%ybot_slab(j) = layer_height
-                    ventptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
+                    mvextptr%ybot_slab(j) = layer_height
+                    mvextptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
                 else
-                    ventptr%ybot_slab(j) = vheight
-                    ventptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
+                    mvextptr%ybot_slab(j) = vheight
+                    mvextptr%ytop_slab(j) = vheight + sqrt(mvex_area(ii))/2
                 end if
             else
                 if (mvex_orientation(ii)==1) then
-                    ventptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
-                    ventptr%ytop_slab(j) = layer_height
+                    mvextptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
+                    mvextptr%ytop_slab(j) = layer_height
                 else
-                    ventptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
-                    ventptr%ytop_slab(j) = vheight
+                    mvextptr%ybot_slab(j) = vheight - sqrt(mvex_area(ii))/2
+                    mvextptr%ytop_slab(j) = vheight
                 end if
             end if
         end do
-        ventptr%n_slabs = 2
+        mvextptr%n_slabs = 2
 
-        i = mvex_node(ii,1)
+        i = mvextptr%room
         j = mvex_node(ii,2)
         isys = izhvsys(j)
         if (i<1.or.i>nrm1) cycle
@@ -317,9 +317,11 @@ module mflow_routines
     real(eb) :: z, xxlower, xxlower_clamped, fraction, hl, hu, rhol, rhou, xxrho
     integer :: i, ii, j, lsp
     type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: mvextptr
 
     do ii = 1, n_mvext
-        i = mvex_node(ii,1)
+        mvextptr => mventexinfo(ii)
+        i = mvextptr%room
         roomptr => roominfo(i)
         z = roomptr%depth(l)
         j = mvex_node(ii,2)
@@ -343,7 +345,8 @@ module mflow_routines
 
     ! this is the actual duct initialization
     do ii = 1, n_mvext
-        i = mvex_node(ii,1)
+        mvextptr => mventexinfo(ii)
+        i = mvextptr%room
         j = mvex_node(ii,2)
         if (i<nr) then
             roomptr => roominfo(i)
@@ -496,7 +499,7 @@ module mflow_routines
     return
     end subroutine hvtoex
 
-    subroutine getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
+    subroutine getmventinfo (i, iroom, xyz, vred, vgreen, vblue)
 
     !       This is a routine to get the shape data for mechanical flow vent external connections
 
@@ -506,8 +509,10 @@ module mflow_routines
 
     real(eb) :: vheight, varea
     type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: mvextptr
 
-    iroom = mvex_node(i,1)
+    mvextptr => mventexinfo(i)
+    iroom = mvextptr%room
     roomptr => roominfo(iroom)
 
     vheight = mvex_height(i)

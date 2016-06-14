@@ -530,10 +530,10 @@ module mflow_routines
         xyz(5) = vheight - sqrt(varea)/2
         xyz(6) = vheight + sqrt(varea)/2
     else
-        xyz(1) = roomptr%cdepth/2 - sqrt(varea)/2
-        xyz(2) = roomptr%cdepth/2 + sqrt(varea)/2
-        xyz(3) = roomptr%cwidth/2 - sqrt(varea)/2
-        xyz(4) = roomptr%cwidth/2 + sqrt(varea)/2
+        xyz(1) = roomptr%cwidth/2 - sqrt(varea)/2
+        xyz(2) = roomptr%cwidth/2 + sqrt(varea)/2
+        xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2
+        xyz(4) = roomptr%cdepth/2 + sqrt(varea)/2
         xyz(5) = vheight
         xyz(6) = vheight
     end if

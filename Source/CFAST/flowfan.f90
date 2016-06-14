@@ -71,7 +71,7 @@ module mflow_routines
         vheight = roomptr%z0 + mvextptr%height
         layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(mvextptr%area)/2), vheight - sqrt(mvextptr%area)/2)
         do j = u, l
-            mvextptr%temp_slab(j) = mvex_temp(ii,j)
+            mvextptr%temp_slab(j) = mvextptr%temp(j)
             mvextptr%flow_slab(j) = mvextptr%mv_mflow(j)
             if (j == u) then
                 if (mvextptr%orientation==1) then
@@ -99,8 +99,8 @@ module mflow_routines
         if (i<1.or.i>nrm1) cycle
         flwmv(i,m,u) = flwmv(i,m,u) + mvextptr%mv_mflow(u)
         flwmv(i,m,l) = flwmv(i,m,l) + mvextptr%mv_mflow(l)
-        flwmv(i,q,u) = flwmv(i,q,u) + mvextptr%mv_mflow(u)*cp*mvex_temp(ii,u)
-        flwmv(i,q,l) = flwmv(i,q,l) + mvextptr%mv_mflow(l)*cp*mvex_temp(ii,l)
+        flwmv(i,q,u) = flwmv(i,q,u) + mvextptr%mv_mflow(u)*cp*mvextptr%temp(u)
+        flwmv(i,q,l) = flwmv(i,q,l) + mvextptr%mv_mflow(l)*cp*mvextptr%temp(l)
         do k = 1, ns
             flwmv(i,2+k,u) = flwmv(i,2+k,u) + mvex_species_fraction(ii,k,u)*mvextptr%mv_mflow(u)
             flwmv(i,2+k,l) = flwmv(i,2+k,l) + mvex_species_fraction(ii,k,l)*mvextptr%mv_mflow(l)
@@ -115,8 +115,8 @@ module mflow_routines
         !   remove filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
         filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u))
         filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l))
-        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u)*cp*mvex_temp(ii,u))
-        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l)*cp*mvex_temp(ii,l))
+        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u)*cp*mvextptr%temp(u))
+        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l)*cp*mvextptr%temp(l))
     end do
 
     return
@@ -239,7 +239,7 @@ module mflow_routines
             do ii = 1, n_mvext
                 mvextptr => mventexinfo(ii)
                 if (mvextptr%exterior_node==i) then
-                    hvta = mvex_temp(ii,u)
+                    hvta = mvextptr%temp(u)
                     exit
                 end if
             end do
@@ -257,7 +257,7 @@ module mflow_routines
             ii = izhvie(mvintnode(i,j))
             if (ii/=0.and.hvflow(i,j)>0.0_eb) then
                 ib = icmv(i,j)
-                hvta = mvex_temp(ii,u)
+                hvta = mvextptr%temp(u)
                 delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*hvflow(i,j)
                 if (option(fhvloss)==on) then
                     delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
@@ -358,11 +358,11 @@ module mflow_routines
             rhou = roomptr%rho(u)
             rhol = roomptr%rho(l)
             mv_relp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
-            mvex_temp(ii,u) = roomptr%temp(u)
-            mvex_temp(ii,l) = roomptr%temp(l)
+            mvextptr%temp(u) = roomptr%temp(u)
+            mvextptr%temp(l) = roomptr%temp(l)
         else
-            mvex_temp(ii,u) = exterior_temperature
-            mvex_temp(ii,l) = exterior_temperature
+            mvextptr%temp(u) = exterior_temperature
+            mvextptr%temp(l) = exterior_temperature
             mv_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
         end if
         do lsp = 1, ns
@@ -392,7 +392,7 @@ module mflow_routines
     subroutine hvtoex(prprime,nprod)
 
     !     routine: hvfrex
-    !     purpose: assign results of hvac simulation to the transfer variables (mvex_temp, mvex_species_fraction)
+    !     purpose: assign results of hvac simulation to the transfer variables (temp, mvex_species_fraction)
     !     arguments: tsec   current simulation time
     !                prprime
     !                nprod
@@ -482,8 +482,8 @@ module mflow_routines
         ! we allow only one connection from a node to an external duct
         ib = icmv(j,1)
         if (hvflow(j,1)>0.0_eb) then
-            mvex_temp(ii,u) = tbr(ib)
-            mvex_temp(ii,l) = tbr(ib)
+            mvextptr%temp(u) = tbr(ib)
+            mvextptr%temp(l) = tbr(ib)
             do k = 1, ns
                 ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
                 if (zzhvm(isys)/=0.0_eb) then

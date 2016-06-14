@@ -241,7 +241,7 @@ module cfast_types
         integer :: shape                    ! vent shape, 1 = circular, 2 = square
     
         real(eb) :: current_area
-        real(eb) :: v_mflow(2,2)            ! vent mass flow (top or bottom, upper or lower)
+        real(eb) :: v_mflow(2,2)            ! vent mass flow (top,bottom, u,l)
 
         ! These define a mechanical vent
         ! external connections to mv system(s)
@@ -250,7 +250,8 @@ module cfast_types
         integer :: orientation              ! orientation of each room connection in mv system (1 = V, 2 = H)
         real(eb) :: height                  ! center height of vent diffuser
         
-        real(eb), dimension(2) :: mv_mflow  ! vent mass flow at connection to compartment (u or l)
+        real(eb), dimension(2) :: mv_mflow  ! vent mass flow at compartment connection (u,l)
+        real(eb), dimension(2) :: temp      ! temperature at compartment connection (u,l)
 
         ! These are common to all vent types
 

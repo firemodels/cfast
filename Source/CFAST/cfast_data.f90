@@ -360,7 +360,7 @@ module vent_data
     type (vent_type), dimension(mxext), target :: mventexinfo
 
     real(eb), dimension(mxext,2) :: mvex_total_mass         ! total mass flow at each room connection into mv system (u,l)
-    real(eb), dimension(mxext,2) :: mvex_temp               ! temperature at each room connection in mv system (u,l)
+    !real(eb), dimension(mxext,2) :: mvex_temp               ! temperature at each room connection in mv system (u,l)
     real(eb), dimension(mxext,2) :: mvex_flowsplit          ! fraction of flow to or from each layer in mv system (<-> u, <-> l)
     real(eb), dimension(mxext,2) :: mvex_total_trace        ! total trace species mass through vent up to current time (u,l)
     real(eb), dimension(mxext,2) :: mvex_trace              ! trace species filtered out at vent at the current time step (u,l)

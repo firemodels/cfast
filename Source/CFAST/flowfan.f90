@@ -341,8 +341,8 @@ module mflow_routines
 
         ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
         fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
-        mvex_flowsplit(ii,u) = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
-        mvex_flowsplit(ii,l) = min(1.0_eb,max(fraction,0.0_eb))
+        mvextptr%flow_fraction(u) = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
+        mvextptr%flow_fraction(l) = min(1.0_eb,max(fraction,0.0_eb))
     end do
 
     ! this is the actual duct initialization
@@ -418,8 +418,8 @@ module mflow_routines
         mvextptr => mventexinfo(ii)
         j = mvextptr%exterior_node
         ib = icmv(j,1)
-        mvextptr%mv_mflow(u) = hvflow(j,1)*mvex_flowsplit(ii,u)
-        mvextptr%mv_mflow(l) = hvflow(j,1)*mvex_flowsplit(ii,l)
+        mvextptr%mv_mflow(u) = hvflow(j,1)*mvextptr%flow_fraction(u)
+        mvextptr%mv_mflow(l) = hvflow(j,1)*mvextptr%flow_fraction(l)
         isys = izhvsys(j)
         if (hvflow(j,1)<0.0_eb) then
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)

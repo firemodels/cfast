@@ -222,33 +222,37 @@ module cfast_types
     ! vent data structure
     type vent_type
         ! These define a wall vent
-        integer :: room1                    ! first compartment for connecting vent
-        integer :: room2                    ! second compartment for connecting vent
-        real(eb) :: sill                    ! height of vent bottom relative to compartment floor
-        real(eb) :: soffit                  ! height of vent top relative to compartment floor
-        real(eb) :: width                   ! width of sill
-        integer :: face                     ! wall where went is located, 1 = x(-), 2 = y(+), 3 = x(+), 4 = y(-)
-        real(eb) :: absolute_sill           ! absolute height of the sill
-        real(eb) :: absolute_soffit         ! absolute height of the soffit
-        real(eb), dimension(2) :: offset    ! vent offset from wall origin (1 = from room, 2 = to room)
+        integer :: room1                                ! first compartment for connecting vent
+        integer :: room2                                ! second compartment for connecting vent
+        real(eb) :: sill                                ! height of vent bottom relative to compartment floor
+        real(eb) :: soffit                              ! height of vent top relative to compartment floor
+        real(eb) :: width                               ! width of sill
+        integer :: face                                 ! wall where went is located, 1 = x(-), 2 = y(+), 3 = x(+), 4 = y(-)
+        real(eb) :: absolute_sill                       ! absolute height of the sill
+        real(eb) :: absolute_soffit                     ! absolute height of the soffit
+        real(eb), dimension(2) :: offset                ! vent offset from wall origin (1 = from room, 2 = to room)
         
-        real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
+        real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)    ! (1>2 or 2>1, u or l, in or out)
 
         ! These define a ceiling/floor vent
-        integer :: top                      ! top compartment for connecting vent
-        integer :: bottom                   ! bottom compartment for connecting vent
-        real(eb) :: area                    ! vent area
-        integer :: shape                    ! vent shape, 1 = circular, 2 = square
+        integer :: top                                  ! top compartment for connecting vent (from user input)
+        integer :: bottom                               ! bottom compartment for connecting vent (from user input)
+        real(eb) :: area                                ! vent area (from user input)
+        integer :: shape                                ! vent shape, 1 = circular, 2 = square (from user input)
     
-        real(eb) :: current_area
-        real(eb) :: v_mflow(2,2)            ! vent mass flow (top or bottom, upper or lower)
+        real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
+        real(eb) :: v_mflow(2,2)                        ! vent mass flow (top,bottom, u,l)
 
         ! These define a mechanical vent
         ! external connections to mv system(s)
-        integer :: room                     ! compartment connected to exterior node
-        integer :: exterior_node            ! node number connected to compartment above
-        integer :: orientation              ! orientation of each room connection in mv system (1 = V, 2 = H)
-        real(eb) :: height                  ! center height of vent diffuser
+        integer :: room                                 ! compartment connected to exterior node
+        integer :: exterior_node                        ! node number connected to compartment above
+        integer :: orientation                          ! orientation of each room connection in mv system (1 = V, 2 = H)
+        real(eb) :: height                              ! center height of vent diffuser
+        
+        real(eb), dimension(2) :: mv_mflow              ! vent mass flow at compartment connection (u,l)
+        real(eb), dimension(2) :: temp                  ! temperature at compartment connection (u,l)
+        real(eb), dimension(2) :: flow_fraction         ! fraction of flow to or from each layer (<-> u, <-> l)
 
         ! These are common to all vent types
 

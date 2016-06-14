@@ -176,15 +176,15 @@ module initialization_routines
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
-            mvex_temp(ii,u) = interior_temperature
-            mvex_temp(ii,l) = interior_temperature
+            mvextptr%temp(u) = interior_temperature
+            mvextptr%temp(l) = interior_temperature
             mv_relp(j) = roomptr%relp - grav_con*interior_rho*mvextptr%height
         else
-            mvex_temp(ii,u) = exterior_temperature
-            mvex_temp(ii,l) = exterior_temperature
+            mvextptr%temp(u) = exterior_temperature
+            mvextptr%temp(l) = exterior_temperature
             mv_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvextptr%height
         end if
-        tbr(ib) = mvex_temp(ii,u)
+        tbr(ib) = mvextptr%temp(u)
         s1 = s1 + mv_relp(j)
         s2 = s2 + tbr(ib)
         do lsp = 1, ns

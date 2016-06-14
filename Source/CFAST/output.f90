@@ -367,15 +367,17 @@ module output_routines
             if (ii==nr) cito = 'Outside'
 
             flow = 0.0_eb
-            if (mvex_mflow(i,u)>=0.0_eb) flow(1) = mvex_mflow(i,u)
-            if (mvex_mflow(i,u)<0.0_eb) flow(2) = -mvex_mflow(i,u)
-            if (mvex_mflow(i,l)>=0.0_eb) flow(3) = mvex_mflow(i,l)
-            if (mvex_mflow(i,l)<0.0_eb) flow(4) = -mvex_mflow(i,l)
+            mvextptr => mventexinfo(i)
+            if (mvextptr%mv_mflow(u)>=0.0_eb) flow(1) = mvextptr%mv_mflow(u)
+            if (mvextptr%mv_mflow(u)<0.0_eb) flow(2) = -mvextptr%mv_mflow(u)
+            if (mvextptr%mv_mflow(l)>=0.0_eb) flow(3) = mvextptr%mv_mflow(l)
+            if (mvextptr%mv_mflow(l)<0.0_eb) flow(4) = -mvextptr%mv_mflow(l)
 
-            if (mvex_mflow(i+1,u)>=0.0_eb) flow(5) = mvex_mflow(i+1,u)
-            if (mvex_mflow(i+1,u)<0.0_eb) flow(6) = -mvex_mflow(i+1,u)
-            if (mvex_mflow(i+1,l)>=0.0_eb) flow(7) = mvex_mflow(i+1,l)
-            if (mvex_mflow(i+1,l)<0.0_eb) flow(8) = -mvex_mflow(i+1,l)
+            mvextptr => mventexinfo(i+1)
+            if (mvextptr%mv_mflow(u)>=0.0_eb) flow(5) = mvextptr%mv_mflow(u)
+            if (mvextptr%mv_mflow(u)<0.0_eb) flow(6) = -mvextptr%mv_mflow(u)
+            if (mvextptr%mv_mflow(l)>=0.0_eb) flow(7) = mvextptr%mv_mflow(l)
+            if (mvextptr%mv_mflow(l)<0.0_eb) flow(8) = -mvextptr%mv_mflow(l)
 
             call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
             write (iofilo,5010) 'M', i, cifrom, cito, outbuf

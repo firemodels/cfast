@@ -134,7 +134,7 @@ module spreadsheet_routines
 
     real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
     integer :: position, i, ifrom, ito
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: ventptr, mvextptr
     logical :: firstc = .true.
     save firstc
 
@@ -190,11 +190,12 @@ module spreadsheet_routines
     ! finally, mechanical ventilation
     if (n_mvnodes/=0.and.n_mvext/=0) then
         do i = 1, n_mvext
+            mvextptr => mventexinfo(i)
             flow = 0.0_eb
-            if (mvex_mflow(i,u)>=0.0_eb) flow(1)=mvex_mflow(i,u)
-            if (mvex_mflow(i,u)<0.0_eb) flow(2)=-mvex_mflow(i,u)
-            if (mvex_mflow(i,l)>=0.0_eb) flow(3)=mvex_mflow(i,l)
-            if (mvex_mflow(i,l)<0.0_eb) flow(4)=-mvex_mflow(i,l)
+            if (mvextptr%mv_mflow(u)>=0.0_eb) flow(1)=mvextptr%mv_mflow(u)
+            if (mvextptr%mv_mflow(u)<0.0_eb) flow(2)=-mvextptr%mv_mflow(u)
+            if (mvextptr%mv_mflow(l)>=0.0_eb) flow(3)=mvextptr%mv_mflow(l)
+            if (mvextptr%mv_mflow(l)<0.0_eb) flow(4)=-mvextptr%mv_mflow(l)
             sumin = flow(1) + flow(3)
             sumout = flow(2) + flow(4)
             flow(5) =abs(mvex_total_trace(i,u))+abs(mvex_total_trace(i,l))

@@ -232,7 +232,7 @@ module cfast_types
         real(eb) :: absolute_soffit         ! absolute height of the soffit
         real(eb), dimension(2) :: offset    ! vent offset from wall origin (1 = from room, 2 = to room)
         
-        real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)  ! (1>2 or 2>1, upper or lower, in or out)
+        real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)  ! (1>2 or 2>1, u or l, in or out)
 
         ! These define a ceiling/floor vent
         integer :: top                      ! top compartment for connecting vent
@@ -249,6 +249,8 @@ module cfast_types
         integer :: exterior_node            ! node number connected to compartment above
         integer :: orientation              ! orientation of each room connection in mv system (1 = V, 2 = H)
         real(eb) :: height                  ! center height of vent diffuser
+        
+        real(eb), dimension(2) :: mv_mflow  ! vent mass flow at connection to compartment (u or l)
 
         ! These are common to all vent types
 

@@ -72,7 +72,7 @@ module mflow_routines
         layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(mvextptr%area)/2), vheight - sqrt(mvextptr%area)/2)
         do j = u, l
             mvextptr%temp_slab(j) = mvex_temp(ii,j)
-            mvextptr%flow_slab(j) = mvex_mflow(ii,j)
+            mvextptr%flow_slab(j) = mvextptr%mv_mflow(j)
             if (j == u) then
                 if (mvextptr%orientation==1) then
                     mvextptr%ybot_slab(j) = layer_height
@@ -97,26 +97,26 @@ module mflow_routines
         j = mvextptr%exterior_node
         isys = izhvsys(j)
         if (i<1.or.i>nrm1) cycle
-        flwmv(i,m,u) = flwmv(i,m,u) + mvex_mflow(ii,u)
-        flwmv(i,m,l) = flwmv(i,m,l) + mvex_mflow(ii,l)
-        flwmv(i,q,u) = flwmv(i,q,u) + mvex_mflow(ii,u)*cp*mvex_temp(ii,u)
-        flwmv(i,q,l) = flwmv(i,q,l) + mvex_mflow(ii,l)*cp*mvex_temp(ii,l)
+        flwmv(i,m,u) = flwmv(i,m,u) + mvextptr%mv_mflow(u)
+        flwmv(i,m,l) = flwmv(i,m,l) + mvextptr%mv_mflow(l)
+        flwmv(i,q,u) = flwmv(i,q,u) + mvextptr%mv_mflow(u)*cp*mvex_temp(ii,u)
+        flwmv(i,q,l) = flwmv(i,q,l) + mvextptr%mv_mflow(l)*cp*mvex_temp(ii,l)
         do k = 1, ns
-            flwmv(i,2+k,l) = flwmv(i,2+k,l) + mvex_species_fraction(ii,k,l)*mvex_mflow(ii,l)
-            flwmv(i,2+k,u) = flwmv(i,2+k,u) + mvex_species_fraction(ii,k,u)*mvex_mflow(ii,u)
+            flwmv(i,2+k,u) = flwmv(i,2+k,u) + mvex_species_fraction(ii,k,u)*mvextptr%mv_mflow(u)
+            flwmv(i,2+k,l) = flwmv(i,2+k,l) + mvex_species_fraction(ii,k,l)*mvextptr%mv_mflow(l)
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*mvex_species_fraction(ii,11,u)*mvex_mflow(ii,u))
-        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*mvex_species_fraction(ii,11,l)*mvex_mflow(ii,l))
-        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvex_mflow(ii,u))
-        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvex_mflow(ii,l))
+        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*mvex_species_fraction(ii,11,u)*mvextptr%mv_mflow(u))
+        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*mvex_species_fraction(ii,11,l)*mvextptr%mv_mflow(l))
+        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u))
+        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l))
         !   remove filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
-        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvex_mflow(ii,u))
-        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvex_mflow(ii,l))
-        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvex_mflow(ii,u)*cp*mvex_temp(ii,u))
-        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvex_mflow(ii,l)*cp*mvex_temp(ii,l))
+        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u))
+        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l))
+        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u)*cp*mvex_temp(ii,u))
+        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l)*cp*mvex_temp(ii,l))
     end do
 
     return
@@ -418,15 +418,15 @@ module mflow_routines
         mvextptr => mventexinfo(ii)
         j = mvextptr%exterior_node
         ib = icmv(j,1)
-        mvex_mflow(ii,u) = hvflow(j,1)*mvex_flowsplit(ii,u)
-        mvex_mflow(ii,l) = hvflow(j,1)*mvex_flowsplit(ii,l)
+        mvextptr%mv_mflow(u) = hvflow(j,1)*mvex_flowsplit(ii,u)
+        mvextptr%mv_mflow(l) = hvflow(j,1)*mvex_flowsplit(ii,l)
         isys = izhvsys(j)
         if (hvflow(j,1)<0.0_eb) then
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if (nprod/=0) then
                 do k = 1, ns
-                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(mvex_mflow(ii,u))*mvex_species_fraction(ii,k,u) + &
-                                       abs(mvex_mflow(ii,l))*mvex_species_fraction(ii,k,l)
+                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(mvextptr%mv_mflow(u))*mvex_species_fraction(ii,k,u) + &
+                                       abs(mvextptr%mv_mflow(l))*mvex_species_fraction(ii,k,l)
                 end do
             end if
         end if

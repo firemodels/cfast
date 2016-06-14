@@ -359,7 +359,6 @@ module vent_data
     integer :: n_mvext                                      ! number of external nodes (connected to a room) in mv system
     type (vent_type), dimension(mxext), target :: mventexinfo
 
-    real(eb), dimension(mxext,2) :: mvex_mflow              ! current mass flow at each room connection into mv system (u,l)
     real(eb), dimension(mxext,2) :: mvex_total_mass         ! total mass flow at each room connection into mv system (u,l)
     real(eb), dimension(mxext,2) :: mvex_temp               ! temperature at each room connection in mv system (u,l)
     real(eb), dimension(mxext,2) :: mvex_flowsplit          ! fraction of flow to or from each layer in mv system (<-> u, <-> l)

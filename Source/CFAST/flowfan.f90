@@ -115,8 +115,10 @@ module mflow_routines
         !   remove filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
         filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u))
         filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l))
-        filtered(i,q,u) = filtered(i,q,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u)*cp*mvextptr%temp(u))
-        filtered(i,q,l) = filtered(i,q,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l)*cp*mvextptr%temp(l))
+        filtered(i,q,u) = filtered(i,q,u) + &
+            max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u)*cp*mvextptr%temp(u))
+        filtered(i,q,l) = filtered(i,q,l) + &
+            max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l)*cp*mvextptr%temp(l))
     end do
 
     return

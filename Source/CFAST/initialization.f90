@@ -632,8 +632,10 @@ module initialization_routines
     n_mvext = 0
     mvcalc_on = .false.
     hvght(1:mxnode) = 0.0_eb
-    mvex_total_mass(1:mxext,u:l) = 0.0_eb
-    mvex_total_trace(1:mxext,u:l) = 0.0_eb
+    mventexinfo(1:mxext)%total_flow(u) = 0.0_eb
+    mventexinfo(1:mxext)%total_flow(l) = 0.0_eb
+    mventexinfo(1:mxext)%total_trace_flow(u) = 0.0_eb
+    mventexinfo(1:mxext)%total_trace_flow(l) = 0.0_eb
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since
     ! there is not "thing" associated with a filter, there is no (as of 11/21/2006)
     ! way to have an intial value other than 0 (no filtering).

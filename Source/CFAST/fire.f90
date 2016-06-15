@@ -608,8 +608,7 @@ module fire_routines
     end do
 
     ! sum the hvac flow
-    ! mvex_total_trace is the trace species which gets through the vent, mvex_trace is the mass stopped. Has to be calculated here since
-    ! there is no equivalent to 1-...
+    ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped. 
     do irm = 1, nr
         do ii = 1, n_mvext
             mvextptr => mventexinfo(ii)
@@ -618,12 +617,16 @@ module fire_routines
             isys = izhvsys(j)
             filter = (1.0_eb-qcifraction(qcvf,isys,time))
             if (irm==i) then
-                mvex_total_mass(ii,u) = mvex_total_mass(ii,u) + mvextptr%mv_mflow(u)*deltt
-                mvex_total_mass(ii,l) = mvex_total_mass(ii,l) + mvextptr%mv_mflow(l)*deltt
-                mvex_total_trace(ii,u)  = mvex_total_trace(ii,u) + mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*filter*deltt
-                mvex_total_trace(ii,l)  = mvex_total_trace(ii,l) + mvextptr%mv_mflow(l)*mvex_species_fraction(ii,11,l)*filter*deltt
-                mvex_trace(ii,u)  = mvex_trace(ii,u) + mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*(1.0_eb-filter)*deltt
-                mvex_trace(ii,l)  = mvex_trace(ii,l) + mvextptr%mv_mflow(l)*mvex_species_fraction(ii,11,l)*(1.0_eb-filter)*deltt
+                mvextptr%total_flow(u) = mvextptr%total_flow(u) + mvextptr%mv_mflow(u)*deltt
+                mvextptr%total_flow(l) = mvextptr%total_flow(l) + mvextptr%mv_mflow(l)*deltt
+                mvextptr%total_trace_flow(u)  = mvextptr%total_trace_flow(u) + &
+                    mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*filter*deltt
+                mvextptr%total_trace_flow(l)  = mvextptr%total_trace_flow(l) + &
+                    mvextptr%mv_mflow(l)*mvex_species_fraction(ii,11,l)*filter*deltt
+                mvextptr%total_trace_filtered(u)  = mvextptr%total_trace_filtered(u) + &
+                    mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*(1.0_eb-filter)*deltt
+                mvextptr%total_trace_filtered(l)  = mvextptr%total_trace_filtered(l) + &
+                    mvextptr%mv_mflow(l)*mvex_species_fraction(ii,11,l)*(1.0_eb-filter)*deltt
             end if
         end do
     end do

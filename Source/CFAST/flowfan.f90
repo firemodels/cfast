@@ -102,23 +102,23 @@ module mflow_routines
         flwmv(i,q,u) = flwmv(i,q,u) + mvextptr%mv_mflow(u)*cp*mvextptr%temp(u)
         flwmv(i,q,l) = flwmv(i,q,l) + mvextptr%mv_mflow(l)*cp*mvextptr%temp(l)
         do k = 1, ns
-            flwmv(i,2+k,u) = flwmv(i,2+k,u) + mvex_species_fraction(ii,k,u)*mvextptr%mv_mflow(u)
-            flwmv(i,2+k,l) = flwmv(i,2+k,l) + mvex_species_fraction(ii,k,l)*mvextptr%mv_mflow(l)
+            flwmv(i,2+k,u) = flwmv(i,2+k,u) + mvextptr%species_fraction(k,u)*mvextptr%mv_mflow(u)
+            flwmv(i,2+k,l) = flwmv(i,2+k,l) + mvextptr%species_fraction(k,l)*mvextptr%mv_mflow(l)
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*mvex_species_fraction(ii,11,u)*mvextptr%mv_mflow(u))
-        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*mvex_species_fraction(ii,11,l)*mvextptr%mv_mflow(l))
-        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u))
-        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l))
+        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*mvextptr%species_fraction(11,u)*mvextptr%mv_mflow(u))
+        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*mvextptr%species_fraction(11,l)*mvextptr%mv_mflow(l))
+        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*mvextptr%species_fraction(9,u)*mvextptr%mv_mflow(u))
+        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*mvextptr%species_fraction(9,l)*mvextptr%mv_mflow(l))
         !   remove filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
-        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u))
-        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l))
+        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvextptr%species_fraction(9,u)*mvextptr%mv_mflow(u))
+        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvextptr%species_fraction(9,l)*mvextptr%mv_mflow(l))
         filtered(i,q,u) = filtered(i,q,u) + &
-            max(0.0_eb,filter*mvex_species_fraction(ii,9,u)*mvextptr%mv_mflow(u)*cp*mvextptr%temp(u))
+            max(0.0_eb,filter*mvextptr%species_fraction(9,u)*mvextptr%mv_mflow(u)*cp*mvextptr%temp(u))
         filtered(i,q,l) = filtered(i,q,l) + &
-            max(0.0_eb,filter*mvex_species_fraction(ii,9,l)*mvextptr%mv_mflow(l)*cp*mvextptr%temp(l))
+            max(0.0_eb,filter*mvextptr%species_fraction(9,l)*mvextptr%mv_mflow(l)*cp*mvextptr%temp(l))
     end do
 
     return
@@ -369,12 +369,12 @@ module mflow_routines
         end if
         do lsp = 1, ns
             if (i<nr) then
-                mvex_species_fraction(ii,lsp,u) = roomptr%species_fraction(u,lsp)
-                mvex_species_fraction(ii,lsp,l) = roomptr%species_fraction(l,lsp)
+                mvextptr%species_fraction(lsp,u) = roomptr%species_fraction(u,lsp)
+                mvextptr%species_fraction(lsp,l) = roomptr%species_fraction(l,lsp)
             else
                 xxrho = initial_mass_fraction(lsp)*exterior_rho
-                mvex_species_fraction(ii,lsp,u) = xxrho
-                mvex_species_fraction(ii,lsp,l) = xxrho
+                mvextptr%species_fraction(lsp,u) = xxrho
+                mvextptr%species_fraction(lsp,l) = xxrho
             end if
         end do
     end do
@@ -394,7 +394,7 @@ module mflow_routines
     subroutine hvtoex(prprime,nprod)
 
     !     routine: hvfrex
-    !     purpose: assign results of hvac simulation to the transfer variables (temp, mvex_species_fraction)
+    !     purpose: assign results of hvac simulation to the transfer variables (...%temp, ...%species_fraction)
     !     arguments: tsec   current simulation time
     !                prprime
     !                nprod
@@ -427,8 +427,8 @@ module mflow_routines
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if (nprod/=0) then
                 do k = 1, ns
-                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(mvextptr%mv_mflow(u))*mvex_species_fraction(ii,k,u) + &
-                                       abs(mvextptr%mv_mflow(l))*mvex_species_fraction(ii,k,l)
+                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(mvextptr%mv_mflow(u))*mvextptr%species_fraction(k,u) + &
+                                       abs(mvextptr%mv_mflow(l))*mvextptr%species_fraction(k,l)
                 end do
             end if
         end if
@@ -489,16 +489,16 @@ module mflow_routines
             do k = 1, ns
                 ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
                 if (zzhvm(isys)/=0.0_eb) then
-                    mvex_species_fraction(ii,k,u) = zzhvspec(isys,k)/zzhvm(isys)
-                    mvex_species_fraction(ii,k,l) = mvex_species_fraction(ii,k,u)
+                    mvextptr%species_fraction(k,u) = zzhvspec(isys,k)/zzhvm(isys)
+                    mvextptr%species_fraction(k,l) = mvextptr%species_fraction(k,u)
                     ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
                     !         - see keywordcases to change this
                 else if (hvmfsys(isys)/=0.0_eb) then
-                    mvex_species_fraction(ii,k,u) = -(dhvprsys(isys,k)/hvmfsys(isys))
-                    mvex_species_fraction(ii,k,l) = mvex_species_fraction(ii,k,u)
+                    mvextptr%species_fraction(k,u) = -(dhvprsys(isys,k)/hvmfsys(isys))
+                    mvextptr%species_fraction(k,l) = mvextptr%species_fraction(k,u)
                 else
-                    mvex_species_fraction(ii,k,u) = 0.0_eb
-                    mvex_species_fraction(ii,k,l) = 0.0_eb
+                    mvextptr%species_fraction(k,u) = 0.0_eb
+                    mvextptr%species_fraction(k,l) = 0.0_eb
                 end if
             end do
         end if

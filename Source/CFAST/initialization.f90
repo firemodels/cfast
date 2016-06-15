@@ -190,14 +190,14 @@ module initialization_routines
         do lsp = 1, ns
             ! the outside is defined to be at the base of the structure for mv
             if (i<nr) then
-                mvex_species_fraction(ii,lsp,u) = initial_mass_fraction(lsp)*interior_rho
-                mvex_species_fraction(ii,lsp,l) = initial_mass_fraction(lsp)*interior_rho
+                mvextptr%species_fraction(lsp,u) = initial_mass_fraction(lsp)*interior_rho
+                mvextptr%species_fraction(lsp,l) = initial_mass_fraction(lsp)*interior_rho
             else
-                mvex_species_fraction(ii,lsp,u) = initial_mass_fraction(lsp)*exterior_rho
-                mvex_species_fraction(ii,lsp,l) = initial_mass_fraction(lsp)*exterior_rho
+                mvextptr%species_fraction(lsp,u) = initial_mass_fraction(lsp)*exterior_rho
+                mvextptr%species_fraction(lsp,l) = initial_mass_fraction(lsp)*exterior_rho
             end if
-            hvconc(j,lsp) = mvex_species_fraction(ii,lsp,u)
-            c3(lsp) = c3(lsp) + mvex_species_fraction(ii,lsp,u)
+            hvconc(j,lsp) = mvextptr%species_fraction(lsp,u)
+            c3(lsp) = c3(lsp) + mvextptr%species_fraction(lsp,u)
         end do
     end do
 

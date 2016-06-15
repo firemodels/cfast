@@ -406,8 +406,8 @@ module output_routines
                     if (mvextptr%total_flow(u)<0.0_eb) flow(2) = -mvextptr%total_flow(u)
                     if (mvextptr%total_flow(l)>=0.0_eb) flow(3) = mvextptr%total_flow(l)
                     if (mvextptr%total_flow(l)<0.0_eb) flow(4) = -mvextptr%total_flow(l)
-                    flow(5) = abs(mvex_total_trace(i,u)) + abs(mvex_total_trace(i,l))
-                    flow(6) = abs(mvex_trace(i,u)) + abs(mvex_trace(i,l))
+                    flow(5) = abs(mvextptr%total_trace_flow(u)) + abs(mvextptr%total_trace_flow(l))
+                    flow(6) = abs(mvextptr%total_trace_filtered(u)) + abs(mvextptr%total_trace_filtered(l))
                     call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
                     if (first) then
                         if (i/=1) write (iofilo,5040)

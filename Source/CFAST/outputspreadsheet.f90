@@ -198,8 +198,8 @@ module spreadsheet_routines
             if (mvextptr%mv_mflow(l)<0.0_eb) flow(4)=-mvextptr%mv_mflow(l)
             sumin = flow(1) + flow(3)
             sumout = flow(2) + flow(4)
-            flow(5) =abs(mvex_total_trace(i,u))+abs(mvex_total_trace(i,l))
-            flow(6) =abs(mvex_trace(i,u))+abs(mvex_trace(i,l))
+            flow(5) =abs(mvextptr%total_trace_flow(u))+abs(mvextptr%total_trace_flow(l))
+            flow(6) =abs(mvextptr%total_trace_filtered(u))+abs(mvextptr%total_trace_filtered(l))
             netflow = sumin - sumout
             call SSaddtolist (position, netflow, outarray)
             call SSaddtolist (position, flow(5), outarray)

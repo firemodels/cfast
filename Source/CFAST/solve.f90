@@ -165,7 +165,7 @@ module solve_routines
 
     real(eb), intent(in) :: tsec
 
-    real(eb) :: factor2, height, width, avent
+    real(eb) :: fraction, height, width, avent
     integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
 
@@ -187,10 +187,10 @@ module solve_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        factor2 = qchfraction(qcvh,i,tsec)
+        fraction = qchfraction(qcvh,i,tsec)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
-        avent = factor2*height*width
+        avent = fraction*height*width
         if (avent/=0.0_eb) then
             roomc(iroom1,iroom2) = 1
             roomc(iroom2,iroom1) = 1

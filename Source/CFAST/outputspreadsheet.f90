@@ -393,7 +393,7 @@ module spreadsheet_routines
     integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxhead), fheight, factor2, height, width, avent, slabs, vflow
+    real(eb) :: outarray(maxhead), fheight, fraction, height, width, avent, slabs, vflow
     logical :: firstc
     integer :: position
     integer :: i, j, iroom1, iroom2, ik, im, ix
@@ -451,10 +451,10 @@ module spreadsheet_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        factor2 = qchfraction (qcvh,i,time)
+        fraction = qchfraction (qcvh,i,time)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
-        avent = factor2*height*width
+        avent = fraction*height*width
         ! first column is just vent area ... it's for backwards compatibility with old vent flow visualization
         call SSaddtolist (position,avent,outarray)
         ! flow slabs for the vent

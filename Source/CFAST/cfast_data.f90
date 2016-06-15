@@ -359,7 +359,6 @@ module vent_data
     integer :: n_mvext                                      ! number of external nodes (connected to a room) in mv system
     type (vent_type), dimension(mxext), target :: mventexinfo
 
-    real(eb), dimension(mxext,2) :: mvex_total_mass         ! total mass flow at each room connection into mv system (u,l)
     real(eb), dimension(mxext,2) :: mvex_total_trace        ! total trace species mass through vent up to current time (u,l)
     real(eb), dimension(mxext,2) :: mvex_trace              ! trace species filtered out at vent at the current time step (u,l)
     real(eb), dimension(mxext,ns,2) :: mvex_species_fraction! species fraction to or from each layer in mv system (<-> u, <-> l)

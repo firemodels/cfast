@@ -618,8 +618,8 @@ module fire_routines
             isys = izhvsys(j)
             filter = (1.0_eb-qcifraction(qcvf,isys,time))
             if (irm==i) then
-                mvex_total_mass(ii,u) = mvex_total_mass(ii,u) + mvextptr%mv_mflow(u)*deltt
-                mvex_total_mass(ii,l) = mvex_total_mass(ii,l) + mvextptr%mv_mflow(l)*deltt
+                mvextptr%total_flow(u) = mvextptr%total_flow(u) + mvextptr%mv_mflow(u)*deltt
+                mvextptr%total_flow(l) = mvextptr%total_flow(l) + mvextptr%mv_mflow(l)*deltt
                 mvex_total_trace(ii,u)  = mvex_total_trace(ii,u) + mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*filter*deltt
                 mvex_total_trace(ii,l)  = mvex_total_trace(ii,l) + mvextptr%mv_mflow(l)*mvex_species_fraction(ii,11,l)*filter*deltt
                 mvex_trace(ii,u)  = mvex_trace(ii,u) + mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*(1.0_eb-filter)*deltt

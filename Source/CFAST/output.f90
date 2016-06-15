@@ -298,7 +298,7 @@ module output_routines
 
     !     Description:  Output the vent flow at the current time
 
-    integer :: i, ii, ifrom, ito, irm, inode
+    integer :: i, ii, ifrom, ito, irm
     character :: ciout*14, cjout*12
     logical first
     real(eb), dimension(8) :: flow
@@ -400,13 +400,12 @@ module output_routines
                 mvextptr => mventexinfo(i)
                 ii = mvextptr%room
                 if (ii==irm) then
-                    inode = mvextptr%exterior_node
-                    write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', INODE
-                    flow(1:4) = 0.0_eb
-                    if (mvex_total_mass(i,u)>=0.0_eb) flow(1) = mvex_total_mass(i,u)
-                    if (mvex_total_mass(i,u)<0.0_eb) flow(2) = -mvex_total_mass(i,u)
-                    if (mvex_total_mass(i,l)>=0.0_eb) flow(3) = mvex_total_mass(i,l)
-                    if (mvex_total_mass(i,l)<0.0_eb) flow(4) = -mvex_total_mass(i,l)
+                    write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', mvextptr%exterior_node
+                    flow = 0.0_eb
+                    if (mvextptr%total_flow(u)>=0.0_eb) flow(1) = mvextptr%total_flow(u)
+                    if (mvextptr%total_flow(u)<0.0_eb) flow(2) = -mvextptr%total_flow(u)
+                    if (mvextptr%total_flow(l)>=0.0_eb) flow(3) = mvextptr%total_flow(l)
+                    if (mvextptr%total_flow(l)<0.0_eb) flow(4) = -mvextptr%total_flow(l)
                     flow(5) = abs(mvex_total_trace(i,u)) + abs(mvex_total_trace(i,l))
                     flow(6) = abs(mvex_trace(i,u)) + abs(mvex_trace(i,l))
                     call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)

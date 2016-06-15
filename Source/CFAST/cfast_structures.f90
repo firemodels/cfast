@@ -253,6 +253,7 @@ module cfast_types
         real(eb), dimension(2) :: mv_mflow              ! vent mass flow at compartment connection (u,l)
         real(eb), dimension(2) :: temp                  ! temperature at compartment connection (u,l)
         real(eb), dimension(2) :: flow_fraction         ! fraction of flow to or from each layer (<-> u, <-> l)
+        real(eb), dimension(2) :: total_flow            ! total mass flow at compartment connection (<-> u, <-> l)
 
         ! These are common to all vent types
 

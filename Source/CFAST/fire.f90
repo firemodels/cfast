@@ -620,13 +620,13 @@ module fire_routines
                 mvextptr%total_flow(u) = mvextptr%total_flow(u) + mvextptr%mv_mflow(u)*deltt
                 mvextptr%total_flow(l) = mvextptr%total_flow(l) + mvextptr%mv_mflow(l)*deltt
                 mvextptr%total_trace_flow(u)  = mvextptr%total_trace_flow(u) + &
-                    mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*filter*deltt
+                    mvextptr%mv_mflow(u)*mvextptr%species_fraction(11,u)*filter*deltt
                 mvextptr%total_trace_flow(l)  = mvextptr%total_trace_flow(l) + &
-                    mvextptr%mv_mflow(l)*mvex_species_fraction(ii,11,l)*filter*deltt
+                    mvextptr%mv_mflow(l)*mvextptr%species_fraction(11,l)*filter*deltt
                 mvextptr%total_trace_filtered(u)  = mvextptr%total_trace_filtered(u) + &
-                    mvextptr%mv_mflow(u)*mvex_species_fraction(ii,11,u)*(1.0_eb-filter)*deltt
+                    mvextptr%mv_mflow(u)*mvextptr%species_fraction(11,u)*(1.0_eb-filter)*deltt
                 mvextptr%total_trace_filtered(l)  = mvextptr%total_trace_filtered(l) + &
-                    mvextptr%mv_mflow(l)*mvex_species_fraction(ii,11,l)*(1.0_eb-filter)*deltt
+                    mvextptr%mv_mflow(l)*mvextptr%species_fraction(11,l)*(1.0_eb-filter)*deltt
             end if
         end do
     end do

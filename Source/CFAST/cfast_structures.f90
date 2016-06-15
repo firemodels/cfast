@@ -256,6 +256,7 @@ module cfast_types
         real(eb), dimension(2) :: total_flow            ! total mass flow at compartment connection (<-> u, <-> l)
         real(eb), dimension(2) :: total_trace_flow      ! total trace species flow up to current time  (u,l)
         real(eb), dimension(2) :: total_trace_filtered  ! total trace species filtered out up to current time  (u,l)
+        real(eb), dimension(ns,2) :: species_fraction   ! species fraction at compartment connection (<-> u, <-> l)
 
         ! These are common to all vent types
 

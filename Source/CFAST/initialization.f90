@@ -165,9 +165,7 @@ module initialization_routines
 
     s1 = 0.0_eb
     s2 = 0.0_eb
-    do lsp = 1, ns
-        c3(lsp) = 0.0_eb
-    end do
+    c3(1:ns) = 0.0_eb
     do ii = 1, n_mvext
         mvextptr => mventexinfo(ii)
         i = mvextptr%room
@@ -187,18 +185,16 @@ module initialization_routines
         tbr(ib) = mvextptr%temp(u)
         s1 = s1 + mv_relp(j)
         s2 = s2 + tbr(ib)
-        do lsp = 1, ns
-            ! the outside is defined to be at the base of the structure for mv
-            if (i<nr) then
-                mvextptr%species_fraction(u,lsp) = initial_mass_fraction(lsp)*interior_rho
-                mvextptr%species_fraction(l,lsp) = initial_mass_fraction(lsp)*interior_rho
-            else
-                mvextptr%species_fraction(u,lsp) = initial_mass_fraction(lsp)*exterior_rho
-                mvextptr%species_fraction(l,lsp) = initial_mass_fraction(lsp)*exterior_rho
-            end if
-            hvconc(j,lsp) = mvextptr%species_fraction(u,lsp)
-            c3(lsp) = c3(lsp) + mvextptr%species_fraction(u,lsp)
-        end do
+        ! the outside is defined to be at the base of the structure for mv
+        if (i<nr) then
+            mvextptr%species_fraction(u,1:ns) = initial_mass_fraction(1:ns)*interior_rho
+            mvextptr%species_fraction(l,1:ns) = initial_mass_fraction(1:ns)*interior_rho
+        else
+            mvextptr%species_fraction(u,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
+            mvextptr%species_fraction(l,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
+        end if
+        hvconc(j,1:ns) = mvextptr%species_fraction(u,1:ns)
+        c3(1:ns) = c3(1:ns) + mvextptr%species_fraction(u,1:ns)
     end do
 
     ! this is to initialize the nodes and branches to something

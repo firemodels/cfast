@@ -487,7 +487,7 @@ module mflow_routines
                 mvextptr%species_fraction(l,1:ns) = mvextptr%species_fraction(u,1:ns)
             else if (hvmfsys(isys)/=0.0_eb) then
                 ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
-                mvextptr%species_fraction(u,1:ns) = -(dhvprsys(isys,k)/hvmfsys(isys))
+                mvextptr%species_fraction(u,1:ns) = -(dhvprsys(isys,1:ns)/hvmfsys(isys))
                 mvextptr%species_fraction(l,1:ns) = mvextptr%species_fraction(u,1:ns)
             else
                 ! case 3 - no volume and no flow = no species

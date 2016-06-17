@@ -318,8 +318,8 @@ module mflow_routines
 
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*)
 
-    real(eb) :: z, xxlower, xxlower_clamped, fraction, hl, hu, rhol, rhou, xxrho
-    integer :: i, ii, j, lsp
+    real(eb) :: z, xxlower, xxlower_clamped, fraction, hl, hu, rhol, rhou
+    integer :: i, ii, j
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: mvextptr
 
@@ -367,16 +367,13 @@ module mflow_routines
             mvextptr%temp(l) = exterior_temperature
             mv_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
         end if
-        do lsp = 1, ns
-            if (i<nr) then
-                mvextptr%species_fraction(u,lsp) = roomptr%species_fraction(u,lsp)
-                mvextptr%species_fraction(l,lsp) = roomptr%species_fraction(l,lsp)
-            else
-                xxrho = initial_mass_fraction(lsp)*exterior_rho
-                mvextptr%species_fraction(u,lsp) = xxrho
-                mvextptr%species_fraction(l,lsp) = xxrho
-            end if
-        end do
+        if (i<nr) then
+            mvextptr%species_fraction(u,1:ns) = roomptr%species_fraction(u,1:ns)
+            mvextptr%species_fraction(l,1:ns) = roomptr%species_fraction(l,1:ns)
+        else
+            mvextptr%species_fraction(u,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
+            mvextptr%species_fraction(l,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
+        end if
     end do
     do i = 1, nhvpvar
         ii = izhvmapi(i)
@@ -426,10 +423,8 @@ module mflow_routines
         if (hvflow(j,1)<0.0_eb) then
             hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
             if (nprod/=0) then
-                do k = 1, ns
-                    dhvprsys(isys,k) = dhvprsys(isys,k) + abs(mvextptr%mv_mflow(u))*mvextptr%species_fraction(u,k) + &
-                                       abs(mvextptr%mv_mflow(l))*mvextptr%species_fraction(l,k)
-                end do
+                dhvprsys(isys,1:ns) = dhvprsys(isys,1:ns) + abs(mvextptr%mv_mflow(u))*mvextptr%species_fraction(u,1:ns) + &
+                    abs(mvextptr%mv_mflow(l))*mvextptr%species_fraction(l,1:ns)
             end if
         end if
     end do
@@ -486,21 +481,19 @@ module mflow_routines
         if (hvflow(j,1)>0.0_eb) then
             mvextptr%temp(u) = tbr(ib)
             mvextptr%temp(l) = tbr(ib)
-            do k = 1, ns
+            if (zzhvm(isys)/=0.0_eb) then
                 ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
-                if (zzhvm(isys)/=0.0_eb) then
-                    mvextptr%species_fraction(u,k) = zzhvspec(isys,k)/zzhvm(isys)
-                    mvextptr%species_fraction(l,k) = mvextptr%species_fraction(u,k)
-                    ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
-                    !         - see keywordcases to change this
-                else if (hvmfsys(isys)/=0.0_eb) then
-                    mvextptr%species_fraction(u,k) = -(dhvprsys(isys,k)/hvmfsys(isys))
-                    mvextptr%species_fraction(l,k) = mvextptr%species_fraction(u,k)
-                else
-                    mvextptr%species_fraction(u,k) = 0.0_eb
-                    mvextptr%species_fraction(l,k) = 0.0_eb
-                end if
-            end do
+                mvextptr%species_fraction(u,1:ns) = zzhvspec(isys,1:ns)/zzhvm(isys)
+                mvextptr%species_fraction(l,1:ns) = mvextptr%species_fraction(u,1:ns)
+            else if (hvmfsys(isys)/=0.0_eb) then
+                ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
+                mvextptr%species_fraction(u,1:ns) = -(dhvprsys(isys,1:ns)/hvmfsys(isys))
+                mvextptr%species_fraction(l,1:ns) = mvextptr%species_fraction(u,1:ns)
+            else
+                ! case 3 - no volume and no flow = no species
+                mvextptr%species_fraction(u,1:ns) = 0.0_eb
+                mvextptr%species_fraction(l,1:ns) = 0.0_eb
+            end if
         end if
     end do
     return

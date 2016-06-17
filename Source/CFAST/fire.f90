@@ -42,7 +42,7 @@ module fire_routines
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
-    integer lsp, iroom, i, nfire
+    integer iroom, i, nfire
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -60,11 +60,8 @@ module fire_routines
 
         fireptr%mdot_pyrolysis = omasst
         fireptr%z_offset = ohight
-
-        do lsp = 1, ns
-            stmass(u,lsp) = roomptr%species_mass(u,lsp)
-            stmass(l,lsp) = roomptr%species_mass(l,lsp)
-        end do
+        stmass(u,1:ns) = roomptr%species_mass(u,1:ns)
+        stmass(l,1:ns) = roomptr%species_mass(l,1:ns)
 
         call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, y_co, &
             y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, fireptr%x_position, fireptr%y_position, &
@@ -85,10 +82,8 @@ module fire_routines
         q_entrained = cp*fireptr%mdot_entrained*xtl
         flwf(iroom,q,u) = flwf(iroom,q,u) + xqfc + q_firemass + q_entrained
         flwf(iroom,q,l) = flwf(iroom,q,l) - q_entrained
-        do lsp = 1, ns
-            flwf(iroom,lsp+2,u) = flwf(iroom,lsp+2,u) + xntms(u,lsp)
-            flwf(iroom,lsp+2,l) = flwf(iroom,lsp+2,l) + xntms(l,lsp)
-        end do
+        flwf(iroom,3:ns+2,u) = flwf(iroom,3:ns+2,u) + xntms(u,1:ns)
+        flwf(iroom,3:ns+2,l) = flwf(iroom,3:ns+2,l) + xntms(l,1:ns)
     end do
 
     return
@@ -133,8 +128,8 @@ module fire_routines
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc, xqfr, xqlp, xqup
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
-    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, xnet, uplmep, uplmes, uplmee, height
-    integer :: lsp, ipass, i
+    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, uplmep, uplmes, uplmee, height
+    integer :: ipass, lsp
     type(detector_type), pointer :: dtectptr
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -224,10 +219,8 @@ module fire_routines
     xqpyrl = xqpyrl/(1.0_eb-chirad)
     qheatl = xqpyrl
     xems = xemp + xeme
-
-    do  i = 1, ns
-        xntms(u,i) = xmass(i) + xntms(u,i)
-    end do
+    
+    xntms(u,1:ns) = xmass(1:ns) + xntms(u,1:ns)
 
     ! add the species flow entrained by the plume to normalize the yields to unity
     xtemp = 0.0_eb
@@ -235,11 +228,8 @@ module fire_routines
         xtemp = xtemp + stmass(l,lsp)
     end do
     if (xtemp==0.0_eb) xtemp = 1.0_eb
-    do lsp = 1, ns
-        xnet = xeme*stmass(l,lsp)/xtemp
-        xntms(u,lsp) = xntms(u,lsp) + xnet
-        xntms(l,lsp) = xntms(l,lsp) - xnet
-    end do
+    xntms(u,1:ns) = xntms(u,1:ns) + xeme*stmass(l,1:ns)/xtemp
+    xntms(l,1:ns) = xntms(l,1:ns) - xeme*stmass(l,1:ns)/xtemp
 
     ! add in the fuel. everything else is done by chemistry.
     xntms(u,7) = xntms(u,7) + xemp
@@ -271,9 +261,7 @@ module fire_routines
         xqfr = xqpyrl*chirad + xqfr
         xqfc = xqpyrl*(1.0_eb-chirad) + xqfc
         xqup = xqpyrl
-        do i = 1, ns
-            xntms(u,i) = xmass(i) + xntms(u,i)
-        end do
+        xntms(u,1:ns) = xmass(1:ns) + xntms(u,1:ns)
     end if
 
     return
@@ -657,7 +645,7 @@ module fire_routines
     real(eb), intent(out) :: flwdjf(mxrooms,ns+2,2)
 
     real(eb) :: xntms1(2,ns), xntms2(2,ns), flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
-    integer :: i, iroom1, iroom2, lsp
+    integer :: i, iroom1, iroom2
 
     logical :: dj1flag, dj2flag
     type(vent_type), pointer :: ventptr
@@ -718,15 +706,11 @@ module fire_routines
                 ! sum the flows for return to the source routine
                 if (dj1flag) then
                     flwdjf(iroom1,q,u) = flwdjf(iroom1,q,u) + qpyrol1
-                    do lsp = 1, ns
-                        flwdjf(iroom1,lsp+2,u) = flwdjf(iroom1,lsp+2,u) + xntms1(u,lsp)
-                    end do
+                    flwdjf(iroom1,3:ns+2,u) = flwdjf(iroom1,3:ns+2,u) + xntms1(u,1:ns)
                 end if
                 if (dj2flag) then
                     flwdjf(iroom2,q,u) = flwdjf(iroom2,q,u) + qpyrol2
-                    do lsp = 1, ns
-                        flwdjf(iroom2,lsp+2,u) = flwdjf(iroom2,lsp+2,u) + xntms2(u,lsp)
-                    end do
+                    flwdjf(iroom2,3:ns+2,u) = flwdjf(iroom2,3:ns+2,u) + xntms2(u,1:ns)
                 end if
         end do
 
@@ -1103,11 +1087,10 @@ module fire_routines
         end do
 
         ! calculate the mass density in kg/m^3
-        do lsp = 1, ns
-            do layer = u, l
-                roomptr%species_rho(layer,lsp) = roomptr%species_mass(layer,lsp)/v(layer)
-            end do
+        do layer = u, l
+            roomptr%species_rho(layer,1:ns) = roomptr%species_mass(layer,1:ns)/v(layer)
         end do
+
 
         ! calculate the molar fraction (actually in percent)
         do lsp = 1, 8

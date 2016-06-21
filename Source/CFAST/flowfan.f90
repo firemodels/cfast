@@ -291,6 +291,7 @@ module mflow_routines
     real(eb) :: hvfanl, openfraction, minimumopen, roh, f
     logical :: firstc = .true.
     save firstc, minimumopen
+    type(vent_type), pointer ::  mvfanptr
 
     roh = rohb(icmv(i,j))
 
@@ -298,10 +299,11 @@ module mflow_routines
         minimumopen = sqrt(d1mach(1))
         firstc = .false.
     end if
-
+    
     ! the hyperbolic tangent allows for smooth transition from full flow to no flow within the fan cuttoff pressure range
-    f = 0.5_eb - tanh(8.0_eb/(hmax(k)-hmin(k))*(dp-hmin(k))-4.0_eb)/2.0_eb
-    hvfanl = max(minimumopen, f*qmax(k)*roh)
+    mvfanptr => mventfaninfo(k)
+    f = 0.5_eb - tanh(8.0_eb/(mvfanptr%max_cutoff_relp-mvfanptr%min_cutoff_relp)*(dp-mvfanptr%min_cutoff_relp)-4.0_eb)/2.0_eb
+    hvfanl = max(minimumopen, f*mvfanptr%mv_maxflow*roh)
     openfraction = max (minimumopen, qcffraction (qcvm, k, tsec))
     hvfan = hvfanl*openfraction
     return

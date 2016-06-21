@@ -260,6 +260,9 @@ module cfast_types
         
         ! fans
         integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
+        real(eb) :: mv_maxflow                          ! specified fan flow in mv system (m^3/s)
+        real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
+        real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
 
         ! These are common to all vent types
 

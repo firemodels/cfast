@@ -90,22 +90,23 @@ module initialization_routines
         do j = 2, mvfanptr%n_coeffs
             xxjm1 = j - 1
             df = df + xxjm1*hvbco(k,j)*xx
-            xx = xx*hmin(k)
+            xx = xx*mvfanptr%min_cutoff_relp
             f = f + hvbco(k,j)*xx
         end do
     end do
     do k = 1, n_mvfan
+        mvfanptr => mventfaninfo(k)
         f = hvbco(k,1)
         df = 0.0_eb
         xx = 1.0_eb
         do j = 2, mvfanptr%n_coeffs
             xxjm1 = j - 1
             df = df + xxjm1*hvbco(k,j)*xx
-            xx = xx*hmax(k)
+            xx = xx*mvfanptr%max_cutoff_relp
             f = f + hvbco(k,j)*xx
         end do
         ! prevent negative flow
-        qmax(k) = max(0.0_eb,f)
+        mvfanptr%mv_maxflow = max(0.0_eb,f)
     end do
 
     ! if there are no connections between the hvac system and the

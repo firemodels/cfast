@@ -1158,8 +1158,8 @@ module input_routines
             
             mvfanptr => mventfaninfo(n_mvfan)
             mvfanptr%n_coeffs = 1
-            hmin(n_mvfan) = minpres
-            hmax(n_mvfan) = maxpres
+            mvfanptr%min_cutoff_relp = minpres
+            mvfanptr%max_cutoff_relp = maxpres
             hvbco(n_mvfan,1) = lrarray(10)
 
             nf(nbr) = n_mvfan

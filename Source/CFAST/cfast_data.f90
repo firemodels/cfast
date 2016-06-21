@@ -365,8 +365,6 @@ module vent_data
     integer :: n_mvfanfilters                               ! number of filters in fans in mv system
     type(vent_type), dimension(mxfan), target :: mventfaninfo
 
-    real, dimension (mxfan) :: qmax                         ! specified fan flow in mv system (m^3/s)
-    real, dimension (mxfan) :: hmin                         ! pressure at beginning of fan cutoff
     real, dimension (mxfan) :: hmax                         ! pressure and end of fan cutoff; flow is zero above this pressure
     real, dimension (mxfan,mxcoeff) :: hvbco                ! coefficients of fan curve flow vs pressure
     

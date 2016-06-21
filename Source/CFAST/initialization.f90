@@ -78,32 +78,32 @@ module initialization_routines
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr, mvfanptr
+    type(vent_type), pointer :: mvextptr, mvfanptr, mvductptr
 
     !    calculate min & max values for fan curve
 
     do k = 1, n_mvfan
         mvfanptr => mventfaninfo(k)
-        f = hvbco(k,1)
+        f = mvfanptr%coeff(1)
         df = 0.0_eb
         xx = 1.0_eb
         do j = 2, mvfanptr%n_coeffs
             xxjm1 = j - 1
-            df = df + xxjm1*hvbco(k,j)*xx
+            df = df + xxjm1*mvfanptr%coeff(j)*xx
             xx = xx*mvfanptr%min_cutoff_relp
-            f = f + hvbco(k,j)*xx
+            f = f + mvfanptr%coeff(j)*xx
         end do
     end do
     do k = 1, n_mvfan
         mvfanptr => mventfaninfo(k)
-        f = hvbco(k,1)
+        f = mvfanptr%coeff(1)
         df = 0.0_eb
         xx = 1.0_eb
         do j = 2, mvfanptr%n_coeffs
             xxjm1 = j - 1
-            df = df + xxjm1*hvbco(k,j)*xx
+            df = df + xxjm1*mvfanptr%coeff(j)*xx
             xx = xx*mvfanptr%max_cutoff_relp
-            f = f + hvbco(k,j)*xx
+            f = f + mvfanptr%coeff(j)*xx
         end do
         ! prevent negative flow
         mvfanptr%mv_maxflow = max(0.0_eb,f)
@@ -223,10 +223,11 @@ module initialization_routines
 
     ! calculate area, relative roughness, effective diameter and volume of ducts
     do id = 1, n_mvduct
-        duct_area(id) = (pi*eff_duct_diameter(id)**2)/4.0_eb
-        ib = ibrd(id)
-        hvdvol(ib) = hvdvol(ib) + duct_area(id)*duct_length(id)
-        hvdara(ib) = hvdara(ib) + pi*eff_duct_diameter(id)*duct_length(id)
+        mvductptr => mventductinfo(id)
+        mvductptr%area = (pi*mvductptr%diameter**2)/4.0_eb
+        ib = mvductptr%branch
+        hvdvol(ib) = hvdvol(ib) + mvductptr%area*mvductptr%length
+        hvdara(ib) = hvdara(ib) + pi*mvductptr%diameter*mvductptr%length
     end do
 
 

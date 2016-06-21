@@ -364,15 +364,9 @@ module vent_data
     integer :: n_mvfan                                      ! number of fans in mv system
     integer :: n_mvfanfilters                               ! number of filters in fans in mv system
     type(vent_type), dimension(mxfan), target :: mventfaninfo
-
-    real, dimension (mxfan) :: hmax                         ! pressure and end of fan cutoff; flow is zero above this pressure
-    real, dimension (mxfan,mxcoeff) :: hvbco                ! coefficients of fan curve flow vs pressure
     
     integer :: n_mvduct
-    real(eb), dimension(mxduct) :: ibrd
-    real(eb), dimension(mxduct) :: eff_duct_diameter
-    real(eb), dimension(mxduct) :: duct_area
-    real(eb), dimension(mxduct) :: duct_length
+    type (vent_type), dimension(mxduct), target :: mventductinfo
     
     integer :: n_mvnodes                                    ! number of nodes in mv system
     integer :: nhvpvar                                      ! number pressure variables solved by DASSL in mv system 
@@ -417,7 +411,6 @@ module vent_data
     logical :: mvcalc_on                                    ! true if initial analysis of mv systems is error free
 
 
-    type (vent_type), dimension(mxduct), target :: mventductinfo
     type (vent_type), dimension(mxnode), target :: mventnodeinfo
     type (vent_type), dimension(mxbranch), target :: mventbranchinfo
     type (vent_type), dimension(mxhvsys), target :: mventsysteminfo

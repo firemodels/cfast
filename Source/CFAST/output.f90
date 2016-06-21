@@ -759,11 +759,13 @@ module output_routines
                         end if
                         if (first) then
                             write (iofilo,5130) isys, 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), &
-                            nf(ibr), mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, (hvbco(nf(ibr),j),j = 1,mvfanptr%n_coeffs)
+                                nf(ibr), mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, &
+                                (mvfanptr%coeff(j),j = 1,mvfanptr%n_coeffs)
                             first = .false.
                         else
                             write (iofilo,5140) 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), nf(ibr), &
-                            mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, (hvbco(nf(ibr),j),j= 1,mvfanptr%n_coeffs)
+                                mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, &
+                                (mvfanptr%coeff(j),j= 1,mvfanptr%n_coeffs)
                         end if
                         call chkext(ne(ibr),irm,iext)
                         if (irm>=1.and.irm<=nr) then

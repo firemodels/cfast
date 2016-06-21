@@ -1140,6 +1140,7 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
+    type(vent_type), pointer :: mvnodeptr1, mvnodeptr2
 
     save bmap
 
@@ -1202,7 +1203,9 @@ module output_routines
             end do
             do idt = 1, nbr
                 if (izhvbsys(idt)==isys) then
-                    write (*,5080) na(idt), mv_relp(na(idt)), ne(idt),mv_relp(ne(idt)), hvflow(na(idt),bmap(idt)), tbr(idt)
+                    mvnodeptr1 => mventnodeinfo(na(idt))
+                    mvnodeptr2 => mventnodeinfo(ne(idt))
+                    write (*,5080) na(idt), mvnodeptr1%relp, ne(idt), mvnodeptr2%relp, hvflow(na(idt), bmap(idt)), tbr(idt)
                 end if
             end do
         end do
@@ -1238,8 +1241,10 @@ module output_routines
         if (n_mvnodes>0)write(*,6040)
         do i = 1, n_mvnodes
             do j = 1, ncnode(i)
-                dp = mv_relp(mvintnode(i,j)) - mv_relp(i) + dpz(i,j)
-                write(*,6050) i,mvintnode(i,j),dp,mv_relp(i),mv_relp(mvintnode(i,j)), hvght(i)
+                mvnodeptr2 => mventnodeinfo(mvintnode(i,j))
+                mvnodeptr1 => mventnodeinfo(i)
+                dp = mvnodeptr2%relp - mvnodeptr1%relp + dpz(i,j)
+                write(*,6050) i, mvintnode(i,j), dp, mvnodeptr1%relp, mvnodeptr2%relp, hvght(i)
             end do
         end do
         write(*,6070)

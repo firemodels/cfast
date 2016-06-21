@@ -268,6 +268,9 @@ module cfast_types
         integer :: branch                               ! branch number associated with this duct
         real(eb) :: diameter                            ! duct diameter
         real(eb) :: length                              ! duct length
+        
+        !nodes
+        real(eb) :: relp                                ! pressure at node
 
         ! These are common to more than one vent types
 

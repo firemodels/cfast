@@ -139,6 +139,7 @@ module mflow_routines
     real(eb) :: pav, xtemp, f, dp
 
     integer :: ib, niter, iter, i, ii, j, k
+    type(vent_type), pointer :: mvnodeptr1, mvnodeptr2
 
     ! calculate average temperatures and densities for each branch
     pav = pressure_offset
@@ -170,8 +171,10 @@ module mflow_routines
         ! find mass flow for each branch and mass residual at each node
         do i = 1, n_mvnodes
             f = 0.0_eb
+            mvnodeptr1 => mventnodeinfo(i)
             do j = 1, ncnode(i)
-                dp = mv_relp(mvintnode(i,j)) - mv_relp(i) + dpz(i,j)
+                mvnodeptr2 => mventnodeinfo(mvintnode(i,j))
+                dp = mvnodeptr2%relp - mvnodeptr1%relp + dpz(i,j)
                 if (nf(icmv(i,j))==0) then
 
                     ! resistive branch connection
@@ -323,7 +326,7 @@ module mflow_routines
     real(eb) :: z, xxlower, xxlower_clamped, fraction, hl, hu, rhol, rhou
     integer :: i, ii, j
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr
+    type(vent_type), pointer :: mvextptr, mvnodeptr
 
     do ii = 1, n_mvext
         mvextptr => mventexinfo(ii)
@@ -354,6 +357,7 @@ module mflow_routines
         mvextptr => mventexinfo(ii)
         i = mvextptr%room
         j = mvextptr%exterior_node
+        mvnodeptr => mventnodeinfo(j)
         if (i<nr) then
             roomptr => roominfo(i)
             z = roomptr%depth(l)
@@ -361,13 +365,14 @@ module mflow_routines
             hu = min(0.0_eb,mvextptr%height-hl)
             rhou = roomptr%rho(u)
             rhol = roomptr%rho(l)
-            mv_relp(j) = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
+            mvnodeptr => mventnodeinfo(j)
+            mvnodeptr%relp = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
             mvextptr%temp(u) = roomptr%temp(u)
             mvextptr%temp(l) = roomptr%temp(l)
         else
             mvextptr%temp(u) = exterior_temperature
             mvextptr%temp(l) = exterior_temperature
-            mv_relp(j) =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
+            mvnodeptr%relp =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
         end if
         if (i<nr) then
             mvextptr%species_fraction(u,1:ns) = roomptr%species_fraction(u,1:ns)
@@ -379,7 +384,8 @@ module mflow_routines
     end do
     do i = 1, nhvpvar
         ii = izhvmapi(i)
-        mv_relp(ii) = hvpsolv(i)
+        mvnodeptr => mventnodeinfo(ii)
+        mvnodeptr%relp = hvpsolv(i)
     end do
 
     tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)

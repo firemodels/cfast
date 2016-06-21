@@ -371,12 +371,14 @@ module vent_data
     integer :: n_mvnodes                                    ! number of nodes in mv system
     integer :: nhvpvar                                      ! number pressure variables solved by DASSL in mv system 
                                                             !   (equals the number of interior nodes)
-    real(eb), dimension(mxnode) :: mv_relp                  ! pressure at nodes in mv system
+    type (vent_type), dimension(mxnode), target :: mventnodeinfo
+    
+    integer, dimension(mxnode) :: izhvmapi                  ! maps all nodes to interior nodes (only ones solved by DASSL)
+    integer, dimension(mxnode) :: izhvmape                  ! maps all nodes to exterior nodes
+
     integer, dimension(mxnode) :: ncnode                    ! number of connections to nodes in mv system (must be 1 to mxcon)
     integer, dimension(mxnode,mxcon) :: mvintnode           ! map of nodes connected to each node in mv system
     integer, dimension(mxnode,mxcon) :: icmv                ! branch assigned to each node of mv system
-    integer, dimension(mxnode) :: izhvmapi                  ! maps all nodes to interior nodes (only ones solved by DASSL)
-    integer, dimension(mxnode) :: izhvmape                  ! maps all nodes to exterior nodes
     integer, dimension(mxnode) :: izhvie                    ! maps exterior nodes to complete node set
     integer, dimension(mxnode) :: izhvsys                   ! maps all nodes to separate mv systems
     real(eb), dimension(mxnode) :: hvght                    ! absolute height of nodes in mv systems
@@ -411,7 +413,6 @@ module vent_data
     logical :: mvcalc_on                                    ! true if initial analysis of mv systems is error free
 
 
-    type (vent_type), dimension(mxnode), target :: mventnodeinfo
     type (vent_type), dimension(mxbranch), target :: mventbranchinfo
     type (vent_type), dimension(mxhvsys), target :: mventsysteminfo
 

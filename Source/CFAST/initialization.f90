@@ -78,7 +78,7 @@ module initialization_routines
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr, mvfanptr, mvductptr
+    type(vent_type), pointer :: mvextptr, mvfanptr, mvductptr, mvnodeptr
 
     !    calculate min & max values for fan curve
 
@@ -155,9 +155,7 @@ module initialization_routines
     end do
 
     ! assign compartment pressure & temperature data to exterior nodes of the hvac network
-    do i = 1, n_mvnodes
-        mv_relp(i) = -1.0_eb
-    end do
+    mventnodeinfo(1:n_mvnodes)%relp = -1.0_eb
     do i = 1, nbr
         hvdara(i) = 0.0_eb
         hvdvol(i) = 0.0_eb
@@ -173,19 +171,20 @@ module initialization_routines
         i = mvextptr%room
         roomptr => roominfo(i)
         j = mvextptr%exterior_node
+        mvnodeptr => mventnodeinfo(j)
         ib = icmv(j,1)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
             mvextptr%temp(u) = interior_temperature
             mvextptr%temp(l) = interior_temperature
-            mv_relp(j) = roomptr%relp - grav_con*interior_rho*mvextptr%height
+            mvnodeptr%relp = roomptr%relp - grav_con*interior_rho*mvextptr%height
         else
             mvextptr%temp(u) = exterior_temperature
             mvextptr%temp(l) = exterior_temperature
-            mv_relp(j) = exterior_abs_pressure - grav_con*exterior_rho*mvextptr%height
+            mvnodeptr%relp = exterior_abs_pressure - grav_con*exterior_rho*mvextptr%height
         end if
         tbr(ib) = mvextptr%temp(u)
-        s1 = s1 + mv_relp(j)
+        s1 = s1 + mvnodeptr%relp
         s2 = s2 + tbr(ib)
         ! the outside is defined to be at the base of the structure for mv
         if (i<nr) then
@@ -208,9 +207,8 @@ module initialization_routines
         c3(lsp) = c3(lsp)/xnext
     end do
     do i = 1, n_mvnodes
-        if (mv_relp(i)<0.0_eb) then
-            mv_relp(i) = pav
-        end if
+        mvnodeptr => mventnodeinfo(i)
+        if (mvnodeptr%relp<0.0_eb) mvnodeptr%relp = pav
     end do
     do i = 1, nbr
         if (tbr(i)<=0.0_eb) tbr(i) = tav
@@ -270,7 +268,7 @@ module initialization_routines
     ! DASSL only solves interior nodes so zero out exterior nodes
     do ii = 1, n_mvext
         mvextptr => mventexinfo(ii)
-        i = mvextptr%room
+        i = mvextptr%exterior_node
         izhvmapi(i) = 0
     end do
 

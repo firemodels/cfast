@@ -688,7 +688,7 @@ module output_routines
     character :: ciout*8, cjout*14, csout*6
     logical :: first
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: ventptr, mvextptr
+    type(vent_type), pointer :: ventptr, mvextptr, mvfanptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
@@ -743,6 +743,7 @@ module output_routines
             do ibr = 1, nbr
                 if (izhvbsys(ibr)==isys) then
                     if (nf(ibr)/=0) then
+                        mvfanptr => mventfaninfo(nf(ibr))
                         call chkext(na(ibr),irm,iext)
                         if (irm>=1.and.irm<=nr) then
                             mvextptr => mventexinfo(iext)
@@ -758,11 +759,11 @@ module output_routines
                         end if
                         if (first) then
                             write (iofilo,5130) isys, 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), &
-                            nf(ibr), hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j = 1,nfc(nf(ibr)))
+                            nf(ibr), hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j = 1,mvfanptr%n_coeffs)
                             first = .false.
                         else
                             write (iofilo,5140) 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), nf(ibr), &
-                            hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j= 1,nfc(nf(ibr)))
+                            hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j= 1,mvfanptr%n_coeffs)
                         end if
                         call chkext(ne(ibr),irm,iext)
                         if (irm>=1.and.irm<=nr) then

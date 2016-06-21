@@ -466,7 +466,7 @@ module input_routines
     type(visual_type), pointer :: sliceptr
     type(thermal_type), pointer :: thrmpptr
     type(fire_type), pointer :: fireptr
-    type(vent_type), pointer :: ventptr, mvextptr
+    type(vent_type), pointer :: ventptr, mvextptr, mvfanptr
 
     !	Start with a clean slate
 
@@ -1155,17 +1155,19 @@ module input_routines
                 write (logerr,5195) mxfan
                 stop
             end if
+            
+            mvfanptr => mventfaninfo(n_mvfan)
+            mvfanptr%n_coeffs = 1
+            hmin(n_mvfan) = minpres
+            hmax(n_mvfan) = maxpres
+            hvbco(n_mvfan,1) = lrarray(10)
 
             nf(nbr) = n_mvfan
-            nfc(n_mvfan) = 1
             mvextptr => mventexinfo(n_mvext-1)
             na(nbr) = mvextptr%exterior_node
             mvextptr => mventexinfo(n_mvext)
             ne(nbr) = mvextptr%exterior_node
             hvdvol(nbr) = 0.0_eb
-            hmin(n_mvfan) = minpres
-            hmax(n_mvfan) = maxpres
-            hvbco(n_mvfan,1) = lrarray(10)
 
             ! add a simple duct to connect the two nodes/fan - this is artificial since we do not
             ! worry about the species within the system

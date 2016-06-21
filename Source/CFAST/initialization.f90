@@ -78,15 +78,16 @@ module initialization_routines
     real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
     integer :: i, ii, j, k, ib, id, isys, lsp
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr
+    type(vent_type), pointer :: mvextptr, mvfanptr
 
     !    calculate min & max values for fan curve
 
     do k = 1, n_mvfan
+        mvfanptr => mventfaninfo(k)
         f = hvbco(k,1)
         df = 0.0_eb
         xx = 1.0_eb
-        do j = 2, nfc(k)
+        do j = 2, mvfanptr%n_coeffs
             xxjm1 = j - 1
             df = df + xxjm1*hvbco(k,j)*xx
             xx = xx*hmin(k)
@@ -97,7 +98,7 @@ module initialization_routines
         f = hvbco(k,1)
         df = 0.0_eb
         xx = 1.0_eb
-        do j = 2, nfc(k)
+        do j = 2, mvfanptr%n_coeffs
             xxjm1 = j - 1
             df = df + xxjm1*hvbco(k,j)*xx
             xx = xx*hmax(k)

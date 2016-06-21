@@ -257,6 +257,9 @@ module cfast_types
         real(eb), dimension(2) :: total_trace_flow      ! total trace species flow up to current time  (u,l)
         real(eb), dimension(2) :: total_trace_filtered  ! total trace species filtered out up to current time  (u,l)
         real(eb), dimension(2,ns) :: species_fraction   ! species fraction at compartment connection (<-> u, <-> l)
+        
+        ! fans
+        integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
 
         ! These are common to all vent types
 

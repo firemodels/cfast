@@ -356,12 +356,15 @@ module vent_data
     type (vent_type), dimension(mxvvents), target :: vventinfo          ! structured vertical vent data
 
     ! hvac variables
+    ! external connections
     integer :: n_mvext                                      ! number of external nodes (connected to a room) in mv system
     type (vent_type), dimension(mxext), target :: mventexinfo
-    
+
+    ! fans
     integer :: n_mvfan                                      ! number of fans in mv system
     integer :: n_mvfanfilters                               ! number of filters in fans in mv system
-    integer, dimension(mxfan) :: nfc
+    type(vent_type), dimension(mxfan), target :: mventfaninfo
+
     real, dimension (mxfan) :: qmax                         ! specified fan flow in mv system (m^3/s)
     real, dimension (mxfan) :: hmin                         ! pressure at beginning of fan cutoff
     real, dimension (mxfan) :: hmax                         ! pressure and end of fan cutoff; flow is zero above this pressure
@@ -416,7 +419,6 @@ module vent_data
     logical :: mvcalc_on                                    ! true if initial analysis of mv systems is error free
 
 
-    type (vent_type), dimension(mxfan), target :: mventfaninfo
     type (vent_type), dimension(mxduct), target :: mventductinfo
     type (vent_type), dimension(mxnode), target :: mventnodeinfo
     type (vent_type), dimension(mxbranch), target :: mventbranchinfo

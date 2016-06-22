@@ -38,15 +38,15 @@ module hflow_routines
     !                uflw
 
     real(eb), intent(in) :: tsec, epsp
-    real(eb), intent(out) :: uflw(mxrooms,mxfprd+2,2)
+    real(eb), intent(out) :: uflw(mxrooms,ns+2,2)
     integer, intent(in) :: nprod
 
-    real(eb) :: conl(mxfprd,2), conu(mxfprd,2), pmix(mxfprd)
-    real(eb) :: uflw3(2,mxfprd+2,2), uflw2(2,mxfprd+2,2)
+    real(eb) :: conl(ns,2), conu(ns,2), pmix(ns)
+    real(eb) :: uflw3(2,ns+2,2), uflw2(2,ns+2,2)
     real(eb) :: zflor(2), zceil(2), zlay(2), pflor(2)
     real(eb) :: denl(2), denu(2), tu(2), tl(2)
     real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
-    real(eb) :: cslab(mxfslab,mxfprd),pslab(mxfslab,mxfprd)
+    real(eb) :: cslab(mxfslab,ns),pslab(mxfslab,ns)
     real(eb) :: fraction, height, width
     integer :: islab, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
@@ -100,7 +100,7 @@ module hflow_routines
         avent = height*width
 
         if (avent>=1.0e-10_eb) then
-            call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
+            call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfslab,&
                 epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
                 yvelev,xmslab,nslab)
 
@@ -114,12 +114,12 @@ module hflow_routines
 
             if (prnslab) call SpreadSheetfslabs(dbtime, iroom1, iroom2, ik, nslab, qslab, outarray, position)
 
-            call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,ventptr%h_mflow,uflw2)
+            call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,nprod,mxfslab,ventptr%h_mflow,uflw2)
 
             !  calculate entrainment type mixing at the vents
 
             if (option(fentrain)==on) then
-                call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,&
+                call spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,nprod,yvbot,yvtop,&
                     uflw3,vsas(1,i),vasa(1,i))
                 ventptr%h_mflow_mix(1,1:2) = uflw3(1,m,1:2)
                 ventptr%h_mflow_mix(2,1:2) = uflw3(2,m,1:2)
@@ -159,7 +159,7 @@ module hflow_routines
 
     ! --------------------------- spill_plume -------------------------------------------
 
-    subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,mxfprd,nprod,yvbot,yvtop,uflw3,vsas,vasa)
+    subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,nprod,yvbot,yvtop,uflw3,vsas,vasa)
 
     !     routine: spill_plume
     !     purpose:
@@ -178,9 +178,9 @@ module hflow_routines
     !                uflw3(i,2+k,j), i=1 or 2, k=1 to nprod, j=1 or 2 (output) - product k flow rate
     !                      to upper (j=2) or lower (j=1) layer of room i due entrainment
 
-    integer, intent(in) :: dirs12(10), nprod, nslab, mxfprd
-    real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(mxfprd,2), conu(mxfprd,2), yvbot, yvtop, width
-    real(eb), intent(out) :: uflw3(2,mxfprd+2,2), vsas(2), vasa(2), pmix(mxfprd)
+    integer, intent(in) :: dirs12(10), nprod, nslab
+    real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(ns,2), conu(ns,2), yvbot, yvtop, width
+    real(eb), intent(out) :: uflw3(2,ns+2,2), vsas(2), vasa(2), pmix(ns)
 
     integer :: iprod, nr , ifrom, ito
     real(eb) :: tmix, zd
@@ -296,7 +296,7 @@ module hflow_routines
 
     ! --------------------------- vent -------------------------------------------
 
-    subroutine ventw(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
+    subroutine ventw(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfslab,epsp,cslab,pslab,qslab, &
         vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
     !     routine: vent
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
@@ -317,7 +317,6 @@ module hflow_routines
     !                conl  - concentration of each product in lower layer [unit of product/(kg layer)]
     !                conu  - concentration of each product in upper layer [unit of product/(kg layer)]
     !                nprod - number of products in current scenario
-    !                mxfprd - maximum number of products currently available
     !                mxfslab- maximum number of slabs currently available
     !                epsp  - error tolerance for pressures at floor
     !                cslab (output) - concentration of other products in each slab [unit product/(kg slab)]
@@ -333,11 +332,11 @@ module hflow_routines
     !                n_velev - number of unique elevations delineating slabs
     !                nslab  - number of slabs between bottom and top of the vent
 
-    integer, intent(in) :: nprod, mxfprd, mxfslab
+    integer, intent(in) :: nprod, mxfslab
     integer, intent(out) :: nslab, dirs12(*)
 
     real(eb), intent(in) :: zflor(*), zlay(*), tu(*), tl(*), denl(*), denu(*), pflor(*)
-    real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(mxfprd,2), conu(mxfprd,2),  epsp
+    real(eb), intent(in) :: yvtop, yvbot, avent, cp, conl(ns,2), conu(ns,2),  epsp
 
     real(eb), intent(out) :: yvelev(*), dpv1m2(10)
     real(eb), intent(out) :: yslab(*), rslab(*), tslab(*), cslab(mxfslab,*), pslab(mxfslab,*), qslab(*), xmslab(*)
@@ -538,7 +537,7 @@ module hflow_routines
     !                tu      temperature of upper layer [k]
 
     integer, intent(in) :: from_room, to_room, nprod
-    real(eb), intent(out) :: conl(mxfprd,2), conu(mxfprd,2)
+    real(eb), intent(out) :: conl(ns,2), conu(ns,2)
     real(eb), intent(out) :: zflor(2), zceil(2), zlay(2), pflor(2), denl(2), denu(2), tl(2), tu(2)
 
     integer :: iprod, ip, room_index(2), iroom, i
@@ -571,7 +570,7 @@ module hflow_routines
 
     ! --------------------------- flogo -------------------------------------------
 
-    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfprd,nprod,mxfslab,mflows,uflw2)
+    subroutine flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,nprod,mxfslab,mflows,uflw2)
 
     !     routine: flogo
     !     purpose: deposition of mass, enthalpy, oxygen, and other product-of-combustion flows passing between two rooms
@@ -587,7 +586,6 @@ module hflow_routines
     !                zlay   - height of layer in each room above absolute reference elevation [m]
     !                qslab  - enthalpy flow rate in each slab [w]
     !                pslab  - flow rate of product in each slab [(unit of product/s]
-    !                mxfprd  - maximum number of products currently available.
     !                nprod  - number of products
     !                mxfslab - maximum number of slabs currently available.
     !                mflows(i,j), i=1 or 2, j=1 or 2 (output) - mass flows through vent with source and destination
@@ -602,9 +600,9 @@ module hflow_routines
     !                             or lower (j=1) layer of room i due to all slab flows of vent [(unit product k)/s]
 
     integer, intent(in) :: dirs12(*)
-    integer, intent(in) :: nprod, nslab, mxfprd, mxfslab
+    integer, intent(in) :: nprod, nslab, mxfslab
     real(eb), intent(in) :: yslab(*), xmslab(*), tslab(*), qslab(*), zlay(*), pslab(mxfslab,*), tu(*), tl(*)
-    real(eb), intent(out) :: mflows(2,2,2), uflw2(2,mxfprd+2,2)
+    real(eb), intent(out) :: mflows(2,2,2), uflw2(2,ns+2,2)
 
     integer :: iprod, nr, ifrom, ito, ilay
     real(eb) :: flow_fraction(2), flower, fupper, xmterm, qterm, temp_upper, temp_lower, temp_slab

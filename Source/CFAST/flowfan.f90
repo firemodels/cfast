@@ -23,7 +23,7 @@ module mflow_routines
 
 ! --------------------------- mechanical_flow -------------------------------------------
 
-    subroutine mechanical_flow (tsec, hvpsolv, hvtsolv, tprime, flwmv, deltpmv, delttmv, prprime, nprod, hvacflg, filtered)
+    subroutine mechanical_flow (tsec, hvpsolv, hvtsolv, tprime, flows_mvents, deltpmv, delttmv, prprime, nprod, hvacflg, filtered)
 
     !     routine: mechanical_flow
     !     purpose: physical interface routine to calculate flow through all forced vents (mechanical flow).
@@ -32,7 +32,7 @@ module mflow_routines
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
-    real(eb), intent(out) :: flwmv(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
+    real(eb), intent(out) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
 
     real(eb) :: filter, vheight, layer_height
     integer :: i, ii, j, k, isys, nprod, iroom
@@ -50,8 +50,8 @@ module mflow_routines
 
     chv(1:nbr) = ductcv
 
-    flwmv(1:nr,1:ns+2,u) = 0.0_eb
-    flwmv(1:nr,1:ns+2,l) = 0.0_eb
+    flows_mvents(1:nr,1:ns+2,u) = 0.0_eb
+    flows_mvents(1:nr,1:ns+2,l) = 0.0_eb
     filtered(1:nr,1:ns+2,u) = 0.0_eb
     filtered(1:nr,1:ns+2,l) = 0.0_eb
     deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
@@ -97,13 +97,13 @@ module mflow_routines
         j = mvextptr%exterior_node
         isys = izhvsys(j)
         if (i<1.or.i>nrm1) cycle
-        flwmv(i,m,u) = flwmv(i,m,u) + mvextptr%mv_mflow(u)
-        flwmv(i,m,l) = flwmv(i,m,l) + mvextptr%mv_mflow(l)
-        flwmv(i,q,u) = flwmv(i,q,u) + mvextptr%mv_mflow(u)*cp*mvextptr%temp(u)
-        flwmv(i,q,l) = flwmv(i,q,l) + mvextptr%mv_mflow(l)*cp*mvextptr%temp(l)
+        flows_mvents(i,m,u) = flows_mvents(i,m,u) + mvextptr%mv_mflow(u)
+        flows_mvents(i,m,l) = flows_mvents(i,m,l) + mvextptr%mv_mflow(l)
+        flows_mvents(i,q,u) = flows_mvents(i,q,u) + mvextptr%mv_mflow(u)*cp*mvextptr%temp(u)
+        flows_mvents(i,q,l) = flows_mvents(i,q,l) + mvextptr%mv_mflow(l)*cp*mvextptr%temp(l)
         do k = 1, ns
-            flwmv(i,2+k,u) = flwmv(i,2+k,u) + mvextptr%species_fraction(u,k)*mvextptr%mv_mflow(u)
-            flwmv(i,2+k,l) = flwmv(i,2+k,l) + mvextptr%species_fraction(l,k)*mvextptr%mv_mflow(l)
+            flows_mvents(i,2+k,u) = flows_mvents(i,2+k,u) + mvextptr%species_fraction(u,k)*mvextptr%mv_mflow(u)
+            flows_mvents(i,2+k,l) = flows_mvents(i,2+k,l) + mvextptr%species_fraction(l,k)*mvextptr%mv_mflow(l)
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative. same as agglomeration and settling

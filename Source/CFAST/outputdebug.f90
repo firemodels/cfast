@@ -90,28 +90,29 @@ module debug_routines
 
 ! --------------------------- output_spreadsheet_residuals -------------------------------------------
 
-    subroutine output_spreadsheet_residuals (time, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
+    subroutine output_spreadsheet_residuals (time, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
+        filtered, flows_doorjets, flows_convection, flows_radiation)
 
     real(eb), intent(in) :: time
     ! data structure for total flows and fluxes
-    real(eb), intent(in) :: flwtot(mxrooms,mxfprd+2,2)
+    real(eb), intent(in) :: flows_total(mxrooms,ns+2,2)
 
     ! data structures for flow through vents
-    real(eb), intent(in) :: flwnvnt(mxrooms,mxfprd+2,2)
-    real(eb), intent(in) :: flwhvnt(mxrooms,ns+2,2)
+    real(eb), intent(in) :: flows_hvents(mxrooms,ns+2,2)
+    real(eb), intent(in) :: flows_vvents(mxrooms,ns+2,2)
 
     ! data structures for fires
-    real(eb), intent(in) :: flwf(mxrooms,ns+2,2)
+    real(eb), intent(in) :: flows_fires(mxrooms,ns+2,2)
 
     ! data structures for convection and radiation
-    real(eb), intent(in) :: flwcv(mxrooms,2)
-    real(eb), intent(in) :: flwrad(mxrooms,2)
+    real(eb), intent(in) :: flows_convection(mxrooms,2)
+    real(eb), intent(in) :: flows_radiation(mxrooms,2)
 
     ! data structures for mechanical vents
-    real(eb), intent(in) :: flwmv(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
+    real(eb), intent(in) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
 
     ! data structures for door jet fires
-    real(eb), intent(in) :: flwdjf(mxrooms,ns+2,2)
+    real(eb), intent(in) :: flows_doorjets(mxrooms,ns+2,2)
 
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*mxrooms + 4*mxrooms
     real(eb) :: outarray(maxhead)
@@ -139,32 +140,32 @@ module debug_routines
         call SSaddtolist(position,roomptr%temp(l),outarray)
         do j = 1, 2
             do k = 1, 2
-                call SSaddtolist (position,flwtot(i,k,j),outarray)
-                call SSaddtolist (position,flwnvnt(i,k,j),outarray)
-                call SSaddtolist (position,flwf(i,k,j),outarray)
-                call SSaddtolist (position,flwhvnt(i,k,j),outarray)
-                call SSaddtolist (position,flwmv(i,k,j),outarray)
+                call SSaddtolist (position,flows_total(i,k,j),outarray)
+                call SSaddtolist (position,flows_hvents(i,k,j),outarray)
+                call SSaddtolist (position,flows_fires(i,k,j),outarray)
+                call SSaddtolist (position,flows_vvents(i,k,j),outarray)
+                call SSaddtolist (position,flows_mvents(i,k,j),outarray)
                 call SSaddtolist (position,filtered(i,k,j),outarray)
-                call SSaddtolist (position,flwdjf(i,k,j),outarray)
+                call SSaddtolist (position,flows_doorjets(i,k,j),outarray)
             end do
-            call SSaddtolist (position,flwcv(i,j),outarray)
-            call SSaddtolist (position,flwrad(i,j),outarray)
+            call SSaddtolist (position,flows_convection(i,j),outarray)
+            call SSaddtolist (position,flows_radiation(i,j),outarray)
         end do
     end do
     ! species mass flow
     do i = 1, nrm1
         do j = 1, 2
             do k = 1, 9
-                !call SSaddtolist (position,flwtot(i,k,j),outarray)
-                !call SSaddtolist (position,flwnvnt(i,k,j),outarray)
-                call SSaddtolist (position,flwf(i,k+2,j),outarray)
-                !call SSaddtolist (position,flwhvnt(i,k,j),outarray)
-                !call SSaddtolist (position,flwmv(i,k,j),outarray)
+                !call SSaddtolist (position,flows_total(i,k,j),outarray)
+                !call SSaddtolist (position,flows_hvents(i,k,j),outarray)
+                call SSaddtolist (position,flows_fires(i,k+2,j),outarray)
+                !call SSaddtolist (position,flows_vvents(i,k,j),outarray)
+                !call SSaddtolist (position,flows_mvents(i,k,j),outarray)
                 !call SSaddtolist (position,filtered(i,k,j),outarray)
-                !call SSaddtolist (position,flwdjf(i,k,j),outarray)
+                !call SSaddtolist (position,flows_doorjets(i,k,j),outarray)
             end do
-            !call SSaddtolist (position,flwcv(i,j),outarray)
-            !call SSaddtolist (position,flwrad(i,j),outarray)
+            !call SSaddtolist (position,flows_convection(i,j),outarray)
+            !call SSaddtolist (position,flows_radiation(i,j),outarray)
         end do
     end do
 

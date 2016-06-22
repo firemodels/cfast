@@ -24,7 +24,7 @@ module radiation_routines
 
     ! --------------------------- radiation -------------------------------------------
 
-    subroutine radiation(flwrad,flxrad)
+    subroutine radiation(flows_radiation,fluxes_radiation)
 
     !     routine: radiation
     !     purpose: Interface between calculate_residuals and RAD2 or RAD4.  Loops over
@@ -32,11 +32,11 @@ module radiation_routines
     !              are in a room calls RAD4 otherwise RAD2.
     !     Revision: $Revision$
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: flwrad      net enthalphy into each layer
-    !                flxrad      net enthalphy flux into surface
+    !     arguments: flows_radiation      net enthalphy into each layer
+    !                fluxes_radiation      net enthalphy flux into surface
 
-    real(eb), intent(out), dimension(mxrooms,2) :: flwrad
-    real(eb), intent(out), dimension(mxrooms,nwal) :: flxrad
+    real(eb), intent(out), dimension(mxrooms,2) :: flows_radiation
+    real(eb), intent(out), dimension(mxrooms,nwal) :: fluxes_radiation
 
     real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight, rabsorb(2)
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
@@ -50,8 +50,8 @@ module radiation_routines
     real(eb) :: taufl(mxfires,nwal), taufu(mxfires,nwal), firang(nwal,mxfires)
     real(eb) :: xrfire(mxfires), yrfire(mxfires), zrfire(mxfires), qrfire(mxfires)
 
-    flxrad(1:nrm1,1:nwal) = 0.0_eb
-    flwrad(1:nrm1,1:2) = 0.0_eb
+    fluxes_radiation(1:nrm1,1:nwal) = 0.0_eb
+    flows_radiation(1:nrm1,1:2) = 0.0_eb
 
     if (option(frad)==off) return
     black = .false.
@@ -108,11 +108,11 @@ module radiation_routines
             qrfire,xrfire,yrfire,zrfire,nrmfire, &
             qflxw,qlay,mxfires,taufl,taufu,firang,roomptr%rad_qout,black)
         do j = 1, nwal
-            flxrad(i,j) = qflxw(map(j))
+            fluxes_radiation(i,j) = qflxw(map(j))
         end do
 
-        flwrad(i,1) = qlay(1)
-        flwrad(i,2) = qlay(2)
+        flows_radiation(i,1) = qlay(1)
+        flows_radiation(i,2) = qlay(2)
     end do
 
     return

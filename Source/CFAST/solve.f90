@@ -1045,8 +1045,6 @@ module solve_routines
 
     subroutine calculate_residuals (tsec,y_vector,yprime_vector,f_vector,ires,rpar,ipar)
 
-
-    !     Routine: cfast calculate_residuals
     !     Purpose: Calculates the residual F(t,y,dy/dt) for CFAST
     !              differential and algebraic equations.  For the gas
     !              differential equations (pressure, layer volume,
@@ -1059,14 +1057,12 @@ module solve_routines
     !              where q'' is the flux striking the wall, K is the wall's
     !              thermal conductivity and dT/dx is the surface wall
     !              temperature gradient.
-    !     Revision: $Revision$
-    !     Revision Date: $Date$
-    !     Arguments: TSEC    Current simulation time (T above in s)
-    !                Y_VECTOR Current guess at solution vector (Y above)
-    !                YPRIME_VECTOR Current guess at derivative of solution
+    !     Arguments: tsec    Current simulation time (T above in s)
+    !                y_vector Current guess at solution vector (Y above)
+    !                yprime_vector Current guess at derivative of solution
     !                        vector (Y' above)
-    !                F_VECTOR Residual or value of F(t,y,dy/dt)
-    !                IRES    Outputs:  IRES    Integer flag which is always equal to
+    !                f_vector Residual or value of F(t,y,dy/dt)
+    !                ires    Outputs:  IRES    Integer flag which is always equal to
     !                        zero on input. calculate_residuals should alter IRES
     !                        only if it encounters an illegal value of Y or
     !                        a stop condition. Set IRES = -1 if an input
@@ -1074,8 +1070,8 @@ module solve_routines
     !                        the problem without getting IRES = -1. If
     !                        IRES = -2, DASSL return control to the calling
     !                        program with IDID = -11.
-    !                RPAR    real parameter arrays
-    !                IPAR    integer parameter arrays
+    !                rpar    real parameter arrays
+    !                ipar    integer parameter arrays
     !                        These are used for communication between solve_simulation and
     !                        calculate_residuals via DASSL. They are not altered by DASSL.
     !                        Currently, only IPAR is used in calculate_residuals to pass
@@ -1097,25 +1093,21 @@ module solve_routines
     type(room_type), pointer :: roomptr
 
     ! data structure for total flows and fluxes
-    real(eb) :: flwtot(mxrooms,mxfprd+2,2), flxtot(mxrooms,nwal)
+    real(eb) :: flows_total(mxrooms,ns+2,2), fluxes_total(mxrooms,nwal)
 
     ! data structures for flow through vents
-    real(eb) :: flwnvnt(mxrooms,mxfprd+2,2)
-    real(eb) :: flwhvnt(mxrooms,ns+2,2)
+    real(eb) :: flows_hvents(mxrooms,ns+2,2)
+    real(eb) :: flows_vvents(mxrooms,ns+2,2)
+    real(eb) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
 
     ! data structures for fires
-    real(eb) :: flwf(mxrooms,ns+2,2)
+    real(eb) :: flows_fires(mxrooms,ns+2,2)
+    real(eb) :: flows_doorjets(mxrooms,ns+2,2)
+    integer :: update
 
     ! data structures for convection, radiation, and ceiling jets
-    real(eb) :: flwcv(mxrooms,2), flxcv(mxrooms,nwal)
-    real(eb) :: flwrad(mxrooms,2), flxrad(mxrooms,nwal)
-
-    ! data structures for mechanical vents
-    real(eb) :: flwmv(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
-
-    ! data structures for door jet fires
-    real(eb) :: flwdjf(mxrooms,ns+2,2)
-    integer :: update
+    real(eb) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
+    real(eb) :: flows_radiation(mxrooms,2), fluxes_radiation(mxrooms,nwal)
 
     logical :: vflowflg, hvacflg, djetflg
     integer :: nprod, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
@@ -1153,19 +1145,19 @@ module solve_routines
 
     ! calculate flow due to unforced vents (horizontal_flow for doors/windows
     ! and vertical_flow for ceiling/floor vents
-    call horizontal_flow (tsec,epsp,nprod,flwnvnt)
-    call vertical_flow (tsec,flwhvnt,vflowflg)
-    call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flwmv,&
+    call horizontal_flow (tsec,epsp,nprod,flows_hvents)
+    call vertical_flow (tsec,flows_vvents,vflowflg)
+    call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flows_mvents,&
         f_vector(nofpmv+1),f_vector(noftmv+1),&
         yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)
 
     ! calculate heat and mass flows due to fires
-    call fire (tsec,flwf)
-    call door_jet (flwdjf,djetflg)
+    call fire (tsec,flows_fires)
+    call door_jet (flows_doorjets,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
-    call convection (flwcv,flxcv)
-    call radiation (flwrad,flxrad)
+    call convection (flows_convection,fluxes_convection)
+    call radiation (flows_radiation,fluxes_radiation)
 
     ! sum flow for inside rooms
     do iroom = 1, nrm1
@@ -1173,33 +1165,33 @@ module solve_routines
 
         do iprod = 1, nprod + 2
             ip = i_speciesmap(iprod)
-            flwtot(iroom,iprod,l) = flwnvnt(iroom,iprod,l) + flwf(iroom,ip,l)
-            flwtot(iroom,iprod,u) = flwnvnt(iroom,iprod,u) + flwf(iroom,ip,u)
+            flows_total(iroom,iprod,l) = flows_hvents(iroom,iprod,l) + flows_fires(iroom,ip,l)
+            flows_total(iroom,iprod,u) = flows_hvents(iroom,iprod,u) + flows_fires(iroom,ip,u)
         end do
         if (vflowflg) then
             do iprod = 1, nprod + 2
                 ip = i_speciesmap(iprod)
-                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwhvnt(iroom,ip,l)
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwhvnt(iroom,ip,u)
+                flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_vvents(iroom,ip,l)
+                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_vvents(iroom,ip,u)
             end do
         end if
         if (hvacflg) then
             do iprod = 1, nprod + 2
                 ip = i_speciesmap(iprod)
-                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwmv(iroom,ip,l) - filtered(iroom,iprod,l)
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwmv(iroom,ip,u) - filtered(iroom,iprod,u)
+                flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_mvents(iroom,ip,l) - filtered(iroom,iprod,l)
+                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_mvents(iroom,ip,u) - filtered(iroom,iprod,u)
             end do
         end if
         if (djetflg) then
             do iprod = 1, nprod + 2
                 ip = i_speciesmap(iprod)
-                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwdjf(iroom,ip,l)
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwdjf(iroom,ip,u)
+                flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_doorjets(iroom,ip,l)
+                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_doorjets(iroom,ip,u)
             end do
         end if
 
-        flwtot(iroom,q,l) = flwtot(iroom,q,l) + flwcv(iroom,l) + flwrad(iroom,l)
-        flwtot(iroom,q,u) = flwtot(iroom,q,u) + flwcv(iroom,u) + flwrad(iroom,u)
+        flows_total(iroom,q,l) = flows_total(iroom,q,l) + flows_convection(iroom,l) + flows_radiation(iroom,l)
+        flows_total(iroom,q,u) = flows_total(iroom,q,u) + flows_convection(iroom,u) + flows_radiation(iroom,u)
 
 
         ! if this room is a shaft then solve for only one zone.
@@ -1208,15 +1200,16 @@ module solve_routines
         ! zero.
         if (roomptr%shaft) then
             do iprod = 1, nprod + 2
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwtot(iroom,iprod,l)
-                flwtot(iroom,iprod,l) = 0.0_eb
+                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_total(iroom,iprod,l)
+                flows_total(iroom,iprod,l) = 0.0_eb
             end do
         end if
     end do
 
     if (update==all) then
         if (residprn) then
-            call output_spreadsheet_residuals (tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
+            call output_spreadsheet_residuals (tsec, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
+                filtered, flows_doorjets, flows_convection, flows_radiation)
         end if
     end if
     ! sum flux for inside rooms
@@ -1224,7 +1217,7 @@ module solve_routines
         roomptr => roominfo(iroom)
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
-                flxtot(iroom,iwall) = flxcv(iroom,iwall) + flxrad(iroom,iwall)
+                fluxes_total(iroom,iwall) = fluxes_convection(iroom,iwall) + fluxes_radiation(iroom,iwall)
             end if
         end do
     end do
@@ -1242,14 +1235,14 @@ module solve_routines
         hceil = roomptr%cheight
         pabs = roomptr%absp
         hinter = roomptr%depth(l)
-        ql = flwtot(iroom,q,l)
-        qu = flwtot(iroom,q,u)
-        tmu = flwtot(iroom,m,u)
-        tml = flwtot(iroom,m,l)
+        ql = flows_total(iroom,q,l)
+        qu = flows_total(iroom,q,u)
+        tmu = flows_total(iroom,m,u)
+        tml = flows_total(iroom,m,l)
 
         if (option(foxygen)==on) then
-            oxydu = flwtot(iroom,4,u)
-            oxydl = flwtot(iroom,4,l)
+            oxydu = flows_total(iroom,4,u)
+            oxydl = flows_total(iroom,4,l)
         end if
 
         ! pressure equation
@@ -1299,22 +1292,22 @@ module solve_routines
                 hinter = roomptr%depth(l)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
-                prodl = flwtot(iroom,iprod+2,l)
+                prodl = flows_total(iroom,iprod+2,l)
 
                 ! if this room is a hall and the jet has not reached the end
                 ! of the hall then don't solve for it using dassl
-                produ = flwtot(iroom,iprod+2,u)
+                produ = flows_total(iroom,iprod+2,u)
 
                 if (hinter<hceil) then
                     yhatprime_vector(iprodu) = produ
-                else if (hinter>=hceil.and.flwtot(iroom,m,u)<0.0_eb)  then
+                else if (hinter>=hceil.and.flows_total(iroom,m,u)<0.0_eb)  then
                     yhatprime_vector(iprodu) = produ
                 else
                     yhatprime_vector(iprodu) = 0.0_eb
                 end if
                 if (hinter>0.0_eb) then
                     yhatprime_vector(iprodl) = prodl
-                else if (hinter<=0.0_eb.and.flwtot(iroom,m,l)>0.0_eb) then
+                else if (hinter<=0.0_eb.and.flows_total(iroom,m,l)>0.0_eb) then
                     yhatprime_vector(iprodl) = prodl
                 else
                     yhatprime_vector(iprodl) = 0.0_eb
@@ -1342,7 +1335,7 @@ module solve_routines
     end if
 
     ! conduction residual
-    call conduction (update,dt,flxtot,f_vector)
+    call conduction (update,dt,fluxes_total,f_vector)
 
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then

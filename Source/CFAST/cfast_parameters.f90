@@ -28,9 +28,7 @@ module cparams
     ! ventilation parameters
     integer, parameter :: mxccv = 25                ! maximum number of vent connections between compartment pairs
     integer, parameter :: mxhvents = mxccv*mxrooms  ! maximum number of horizontal flow vents
-    integer, parameter :: mxfslab = 10              ! number of slabs in a horizontal flow calculation
-    integer, parameter :: mxfprd = ns               ! maximum number of products tracked in the horizontal flow calculation
-                                                    !   (should be the same as ns)
+    integer, parameter :: mxfslab = 10              ! maximum number of slabs in a horizontal flow calculation
 
     integer, parameter :: mxvvents=mxccv*mxrooms    ! maximum number of vertical flow vents
 

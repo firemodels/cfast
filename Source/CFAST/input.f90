@@ -466,7 +466,7 @@ module input_routines
     type(visual_type), pointer :: sliceptr
     type(thermal_type), pointer :: thrmpptr
     type(fire_type), pointer :: fireptr
-    type(vent_type), pointer :: ventptr, mvextptr
+    type(vent_type), pointer :: ventptr, mvextptr, mvfanptr, mvductptr
 
     !	Start with a clean slate
 
@@ -1155,28 +1155,32 @@ module input_routines
                 write (logerr,5195) mxfan
                 stop
             end if
+            
+            mvfanptr => mventfaninfo(n_mvfan)
+            mvfanptr%n_coeffs = 1
+            mvfanptr%min_cutoff_relp = minpres
+            mvfanptr%max_cutoff_relp = maxpres
+            mvfanptr%coeff = 0.0_eb
+            mvfanptr%coeff(1) = lrarray(10)
 
             nf(nbr) = n_mvfan
-            nfc(n_mvfan) = 1
             mvextptr => mventexinfo(n_mvext-1)
             na(nbr) = mvextptr%exterior_node
             mvextptr => mventexinfo(n_mvext)
             ne(nbr) = mvextptr%exterior_node
             hvdvol(nbr) = 0.0_eb
-            hmin(n_mvfan) = minpres
-            hmax(n_mvfan) = maxpres
-            hvbco(n_mvfan,1) = lrarray(10)
 
             ! add a simple duct to connect the two nodes/fan - this is artificial since we do not
             ! worry about the species within the system
             n_mvduct = n_mvduct + 1
+            mvductptr => mventductinfo(n_mvduct)
 
             ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
             ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation
             ! for flow through the external nodes
-            duct_length(n_mvduct) = 0.0_eb
-            eff_duct_diameter(n_mvduct) = lrarray(6)
-            ibrd(n_mvduct) = nbr
+            mvductptr%length = 0.0_eb
+            mvductptr%diameter = lrarray(6)
+            mvductptr%branch = nbr
 
             ! finally, we set the initial fraction opening
             qcvm(2,mid) = lrarray(13)

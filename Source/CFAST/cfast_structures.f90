@@ -1,7 +1,7 @@
 module cfast_types
 
     use precision_parameters
-    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxcross, mxslb, nnodes, mxrooms
+    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxcross, mxslb, nnodes, mxrooms, mxcoeff
 
     ! detector / sprinkler structure
     type detector_type
@@ -237,7 +237,6 @@ module cfast_types
         ! These define a ceiling/floor vent
         integer :: top                                  ! top compartment for connecting vent (from user input)
         integer :: bottom                               ! bottom compartment for connecting vent (from user input)
-        real(eb) :: area                                ! vent area (from user input)
         integer :: shape                                ! vent shape, 1 = circular, 2 = square (from user input)
     
         real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
@@ -257,8 +256,23 @@ module cfast_types
         real(eb), dimension(2) :: total_trace_flow      ! total trace species flow up to current time  (u,l)
         real(eb), dimension(2) :: total_trace_filtered  ! total trace species filtered out up to current time  (u,l)
         real(eb), dimension(2,ns) :: species_fraction   ! species fraction at compartment connection (<-> u, <-> l)
+        
+        ! fans
+        integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
+        real, dimension(mxcoeff) :: coeff               ! coefficients of fan curve, flow vs pressure
+        real(eb) :: mv_maxflow                          ! specified fan flow in mv system (m^3/s)
+        real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
+        real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
+        
+        !ducts
+        integer :: branch                               ! branch number associated with this duct
+        real(eb) :: diameter                            ! duct diameter
+        real(eb) :: length                              ! duct length
+        
+        !nodes
+        real(eb) :: relp                                ! pressure at node
 
-        ! These are common to all vent types
+        ! These are common to more than one vent types
 
         real(eb), dimension(4) :: opening   ! simple open and closing of vents
                                             ! 1 = initial fraction of vent opening
@@ -267,6 +281,7 @@ module cfast_types
                                             ! 4 = beginning time for final vent open fraction
                                             ! between initial and final, open fraction changes linearly
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
+        real(eb) :: area                    ! cross-sectional area of vent
 
         ! These are calculated results for the current time step
         integer :: n_slabs

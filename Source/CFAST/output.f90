@@ -688,7 +688,7 @@ module output_routines
     character :: ciout*8, cjout*14, csout*6
     logical :: first
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: ventptr, mvextptr
+    type(vent_type), pointer :: ventptr, mvextptr, mvfanptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
@@ -743,6 +743,7 @@ module output_routines
             do ibr = 1, nbr
                 if (izhvbsys(ibr)==isys) then
                     if (nf(ibr)/=0) then
+                        mvfanptr => mventfaninfo(nf(ibr))
                         call chkext(na(ibr),irm,iext)
                         if (irm>=1.and.irm<=nr) then
                             mvextptr => mventexinfo(iext)
@@ -758,11 +759,13 @@ module output_routines
                         end if
                         if (first) then
                             write (iofilo,5130) isys, 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), &
-                            nf(ibr), hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j = 1,nfc(nf(ibr)))
+                                nf(ibr), mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, &
+                                (mvfanptr%coeff(j),j = 1,mvfanptr%n_coeffs)
                             first = .false.
                         else
                             write (iofilo,5140) 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), nf(ibr), &
-                            hmin(nf(ibr)), hmax(nf(ibr)), (hvbco(nf(ibr),j),j= 1,nfc(nf(ibr)))
+                                mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, &
+                                (mvfanptr%coeff(j),j= 1,mvfanptr%n_coeffs)
                         end if
                         call chkext(ne(ibr),irm,iext)
                         if (irm>=1.and.irm<=nr) then
@@ -1137,6 +1140,7 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
+    type(vent_type), pointer :: mvnodeptr1, mvnodeptr2
 
     save bmap
 
@@ -1199,7 +1203,9 @@ module output_routines
             end do
             do idt = 1, nbr
                 if (izhvbsys(idt)==isys) then
-                    write (*,5080) na(idt), mv_relp(na(idt)), ne(idt),mv_relp(ne(idt)), hvflow(na(idt),bmap(idt)), tbr(idt)
+                    mvnodeptr1 => mventnodeinfo(na(idt))
+                    mvnodeptr2 => mventnodeinfo(ne(idt))
+                    write (*,5080) na(idt), mvnodeptr1%relp, ne(idt), mvnodeptr2%relp, hvflow(na(idt), bmap(idt)), tbr(idt)
                 end if
             end do
         end do
@@ -1235,8 +1241,10 @@ module output_routines
         if (n_mvnodes>0)write(*,6040)
         do i = 1, n_mvnodes
             do j = 1, ncnode(i)
-                dp = mv_relp(mvintnode(i,j)) - mv_relp(i) + dpz(i,j)
-                write(*,6050) i,mvintnode(i,j),dp,mv_relp(i),mv_relp(mvintnode(i,j)), hvght(i)
+                mvnodeptr2 => mventnodeinfo(mvintnode(i,j))
+                mvnodeptr1 => mventnodeinfo(i)
+                dp = mvnodeptr2%relp - mvnodeptr1%relp + dpz(i,j)
+                write(*,6050) i, mvintnode(i,j), dp, mvnodeptr1%relp, mvnodeptr2%relp, hvght(i)
             end do
         end do
         write(*,6070)

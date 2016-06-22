@@ -100,7 +100,7 @@ module hflow_routines
         avent = height*width
 
         if (avent>=1.0e-10_eb) then
-            call vent(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
+            call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,&
                 epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
                 yvelev,xmslab,nslab)
 
@@ -296,7 +296,7 @@ module hflow_routines
 
     ! --------------------------- vent -------------------------------------------
 
-    subroutine vent(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
+    subroutine ventw(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,nprod,mxfprd,mxfslab,epsp,cslab,pslab,qslab, &
         vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
     !     routine: vent
     !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
@@ -474,7 +474,7 @@ module hflow_routines
         end if
     end do
     return
-    end subroutine vent
+    end subroutine ventw
 
     ! --------------------------- getelev -------------------------------------------
 

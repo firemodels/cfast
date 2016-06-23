@@ -23,17 +23,15 @@ module vflow_routines
 
 ! --------------------------- vertical_flow -------------------------------------------
 
-    subroutine vertical_flow (tsec,flwvf,vflowflg)
+    subroutine vertical_flow (tsec,flwvf)
 
     !     routine: vertical_flow
     !     purpose: interface between cfast and the vertical vent physical routines.
     !     arguments: tsec: current simulation time
     !                flwvf: change in mass and energy for each layer of each compartment
-    !                vflowflg (output): true if vertical flow is included in the simulation
 
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flwvf(mxrooms,ns+2,2)
-    logical, intent(out) :: vflowflg
 
     real(eb) :: vvent(2), xmvent(2), tmvent(2), epscut, frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
@@ -45,10 +43,8 @@ module vflow_routines
 
     flwvf(1:nr,1:ns+2,u) = 0.0_eb
     flwvf(1:nr,1:ns+2,l) = 0.0_eb
-    vflowflg = .false.
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
-    vflowflg = .true.
 
     epscut = 0.0001_eb
 

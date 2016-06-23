@@ -1109,7 +1109,7 @@ module solve_routines
     real(eb) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
     real(eb) :: flows_radiation(mxrooms,2), fluxes_radiation(mxrooms,nwal)
 
-    logical :: vflowflg, hvacflg, djetflg
+    logical :: hvacflg, djetflg
     integer :: nprod, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
     real(eb) :: epsp, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ
@@ -1145,8 +1145,8 @@ module solve_routines
 
     ! calculate flow due to unforced vents (horizontal_flow for doors/windows
     ! and vertical_flow for ceiling/floor vents
-    call horizontal_flow (tsec,epsp,nprod,flows_hvents)
-    call vertical_flow (tsec,flows_vvents,vflowflg)
+    call horizontal_flow (tsec,epsp,flows_hvents)
+    call vertical_flow (tsec,flows_vvents)
     call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flows_mvents,&
         f_vector(nofpmv+1),f_vector(noftmv+1),&
         yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)
@@ -1168,13 +1168,11 @@ module solve_routines
             flows_total(iroom,iprod,l) = flows_hvents(iroom,iprod,l) + flows_fires(iroom,ip,l)
             flows_total(iroom,iprod,u) = flows_hvents(iroom,iprod,u) + flows_fires(iroom,ip,u)
         end do
-        if (vflowflg) then
-            do iprod = 1, nprod + 2
-                ip = i_speciesmap(iprod)
-                flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_vvents(iroom,ip,l)
-                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_vvents(iroom,ip,u)
-            end do
-        end if
+        do iprod = 1, nprod + 2
+            ip = i_speciesmap(iprod)
+            flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_vvents(iroom,ip,l)
+            flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_vvents(iroom,ip,u)
+        end do
         if (hvacflg) then
             do iprod = 1, nprod + 2
                 ip = i_speciesmap(iprod)

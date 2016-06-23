@@ -1146,7 +1146,7 @@ module solve_routines
     ! calculate flow due to unforced vents (horizontal_flow for doors/windows
     ! and vertical_flow for ceiling/floor vents
     call horizontal_flow (tsec,epsp,flows_hvents)
-    call vertical_flow (tsec,flows_vvents)
+    call vertical_flow (tsec,epsp,flows_vvents)
     call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flows_mvents,&
         f_vector(nofpmv+1),f_vector(noftmv+1),&
         yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)

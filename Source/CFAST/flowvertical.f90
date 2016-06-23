@@ -23,17 +23,17 @@ module vflow_routines
 
 ! --------------------------- vertical_flow -------------------------------------------
 
-    subroutine vertical_flow (tsec,flwvf)
+    subroutine vertical_flow (tsec,epsp,flwvf)
 
     !     routine: vertical_flow
     !     purpose: interface between cfast and the vertical vent physical routines.
     !     arguments: tsec: current simulation time
     !                flwvf: change in mass and energy for each layer of each compartment
 
-    real(eb), intent(in) :: tsec
+    real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: flwvf(mxrooms,ns+2,2)
 
-    real(eb) :: vvent(2), xmvent(2), tmvent(2), epscut, frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
+    real(eb) :: vvent(2), xmvent(2), tmvent(2), frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
     integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape
     real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
@@ -46,8 +46,6 @@ module vflow_routines
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
 
-    epscut = 0.0001_eb
-
     do i = 1, n_vvents
         ventptr => vventinfo(i)
         ventptr%v_mflow(1:2,1:2) = 0.0_eb
@@ -57,7 +55,7 @@ module vflow_routines
         area = fraction * ventptr%area
         ventptr%current_area = area
         ishape = ventptr%shape
-        call ventcf (itop, ibot, area, ishape, epscut, vvent, xmvent, tmvent)
+        call ventcf (itop, ibot, area, ishape, epsp, vvent, xmvent, tmvent)
 
         ventptr%n_slabs = 2
         do iflow = 1, 2

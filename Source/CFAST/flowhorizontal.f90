@@ -58,8 +58,8 @@ module hflow_routines
 
     uflw(1:nrm1,1:ns+2,l) = 0.0_eb
     uflw(1:nrm1,1:ns+2,u) = 0.0_eb
-
     if (option(fhflow)/=on) return
+    if (n_hvents==0) return
 
     do i = 1, n_hvents
         ventptr=>hventinfo(i)

@@ -89,7 +89,7 @@ The purpose of this document is to describe the policies and procedures for deve
 
 \begin{itemize}
     \item Relevant documentation for the model: Description of the theoretical basis of the model \cite{CFAST_Tech_Guide_7}\, instructions for its are contained in a separate user's guide \cite{CFAST_Users_Guide_7}, and model assessment information is contained in a separate verification and validation guide \cite{CFAST_Valid_Guide_7}.
-    
+
     \item Description of the development process for the model.
 
     \item Control and tracking of the source code using a centralized project repository on GitHub.
@@ -131,13 +131,9 @@ The idea for this document originated with Jason Floyd, a co-developer of FDS an
 
 \chapter{Overview}
 
-The Consolidate Model of Fire and Smoke Transport (CFAST) is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure. Each compartment is divided into an upper and lower gas layer. The fire drives combustion products from the lower to the upper layer via the plume. The temperature within each layer is uniform, and its evolution in time is described by a set of ordinary differential equations derived from the fundamental laws of mass and energy conservation. The transport of smoke and heat from zone to zone is dictated by empirical correlations. Because the governing equations are relatively simple, CFAST simulations typically require a few tens of seconds of CPU time on typical personal computers.
-
-The purpose of this document is to describe the policies and procedures for developing and maintaining CFAST. Such a document is commonly referred to as a {\em Configuration Management Plan}, known through the rest of this document as ``the Plan.'' This document will be updated as the necessity arises and will establish and provide the basis for a uniform and concise standard of practice for CFAST development. It is based in part on  ASTM~E1355~\cite{ASTM:E1355} and IEEE Standard 828~\cite{IEEE-828}.
-
-The volumes that make up the CFAST Technical Reference Guide are based in part on ASTM E 1355, {\em Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models}~\cite{ASTM:E1355}. ASTM~E~1355 outlines the process of assessing the accuracy of a fire model. Volumes~1 through 3 are the result of this evaluation process. The main purpose of the present volume is to describe the process by which the model software is developed and maintained. A model such as CFAST cannot remain static. As progress is made in fire science, the model needs to be updated and improved, but still shown to reliably predict the kinds of phenomena for which it was originally designed.
-
 This document describes the processes used during the development and deployment of the Consolidated Fire and Smoke Transport model (CFAST).  This software quality assurance (SQA) plan is intended to guide the planning for modifications to the model, provide required reviews for both software and associated documentation of the model, define testing to be conducted prior to the release of an updated model, describe problem reporting and resolution procedures, and ensure all records, source code, and released software is kept available for the life of the code.  While this report and many of our practices follow the ASTM International Standard 1355-05, ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models'' \cite{ASTM:E1355} which has been used extensively to guide the documentation, verification, and validation of the model, other standards have been followed as well.  Most notably, Institute of Electrical and Electronics Engineers (IEEE) standard for software quality assurance, IEEE 730-2002 \cite{IEEE:730} best practices in important areas of software quality assurance and guides the structure and content of this plan.
+
+The volumes that make up the CFAST documentation are based in part on ASTM E 1355, {\em Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models}~\cite{ASTM:E1355}. ASTM~E~1355 outlines the process of assessing the accuracy of a fire model. Volumes~1 through 3 are the result of this evaluation process. The main purpose of the present volume is to describe the process by which the model software is developed and maintained. A model such as CFAST cannot remain static. As progress is made in fire science, the model needs to be updated and improved, but still shown to reliably predict the kinds of phenomena for which it was originally designed.
 
 CFAST is intended for use only by those competent in the field of fire safety and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model which has limitations based on the way it is used, and the data used for calculations. All results should be evaluated by a qualified user.
 
@@ -145,67 +141,7 @@ The SQA process and requirements outlined in this document apply specifically to
 
 Documentation and configuration management for its companion visualization program Smokeview, is included in the documentation for the Fire Dynamics Simulator (FDS) and Smokeview \cite{FDS_Configuration_Guide_6}.
 
-\section{Type of Model}
-
-CFAST is a two-zone fire model that predicts the fire-induced environment as a function of time for single- or multi-compartment scenarios. CFAST subdivides each compartment into two zones (or volumes) in order to numerically solve differential equations, and the two volumes are assumed to be uniform in temperature and species concentration. The approximate solution of the conservation equations for each zone, together with the ideal gas law and the equation of heat conduction into the walls, attempts to simulate the environmental conditions generated by a fire.
-
-\section{Version History}
-
-CFAST has been in development at NIST for more than 30 years. As such, it is a fairly stable code with changes largely to address problems identified by users of the software.  Details of the revision history for the model is available online in the wiki pages at the CFAST development website at \href{https://github.com/firemodels/cfast/wiki/Version-History}{\textct{https://github.com/firemodels/cfast/wiki/Version-History}}.
-
-The predecessor to the CFAST model, FAST, was released in the late 1980s as part of a methodology for fire hazard analysis \cite{Models:HAZARDI, Models:HAZARDI_12}. Version 1 of CFAST was publicly released in May 1990, version 2 in August 1993, version 3 in January 1996, version 4 in March 2000, version 5 in May 2004, version 6 in June 2005 and version 7 in October 2015. Beginning with version 6, a formal revision management system was implemented to track changes to the CFAST source code. The open-source program development tools are provided by GitHub (https://github.com/).
-
-A Wiki file, located on the CFAST web site, maintained by the developers, details the changes made for each release: \href{https://github.com/firemodels/cfast/wiki/Release-Notes}{\textct{https://github.com/firemodels/cfast/wiki/Release-Notes}}.
-
-\section{Model Developers}
-
-CFAST is developed and maintained by the Engineering Laboratory (EL), NIST). The major developers are listed in the preface of this report.
-
-\section{Relevant Publications}
-
-To accompany the model and simplify its use, at the National Institute of Standards and Technology (NIST) has developed a Technical Reference Guide \cite{CFAST_Tech_Guide_7}, a User's Guide \cite{CFAST_Users_Guide_7}, a Verification and Validation Guide \cite{CFAST_Valid_Guide_7}, and this Software Quality Assurance Plan.  The Technical Reference Guide describes the underlying physical principles and summarizes sensitivity analysis, model validation, and model limitations consistent with ASTM E 1355 \cite{ASTM:E1355}.  The User's Guide describes how to use the model.  The Validation Guide documents sensitivity analyses, model verification, model validation, and model limitations consistent with ASTM~E1355~\cite{ASTM:E1355}.
-
-The U.S. Nuclear Regulatory Commission has published a verification and validation study of five selected fire models commonly used in support of risk-informed and performance-based fire protection at nuclear power plants \cite{NRCNUREG1824}. In addition to an extensive study of the CFAST model, the report compares the output of several other models ranging from simple hand calculations to more complex computational fluid dynamics codes such as FDS developed by NIST.
-
-While this document and many of our practices make extensive use of ASTM 1355, ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models'' \cite{ASTM:E1355} to guide the documentation, verification, and validation of the model, other standards have been followed as well.  Most notably, our software quality assurance processes were guided by the IEEE standard for software quality assurance, IEEE 730-2002 \cite{IEEE:730}.
-
-In addition, numerous related documents available at \href{http://cfast.nist.gov}{\textct{http://cfast.nist.gov}} provide a wealth of information concerning earlier versions of the model and its user interface. This software quality assurance (SQA) plan is intended to guide the planning for modifications to the model, provide required reviews for both software and associated documentation of the model, define testing to be conducted prior to the release of an updated model, describe problem reporting and resolution procedures, and ensure all records, source code, and released software is kept available for the life of the code.
-
-\section{Intended Uses}
-
-CFAST has been developed for use in solving practical fire problems in fire protection engineering, while also providing a tool to study fundamental fire dynamics and smoke spread. It is intended for use in system modeling of building and building components. It is not intended for detailed study of flow within a compartment, such as is needed for smoke detector siting. It includes the activation of sprinklers and fire suppression by water droplets.
-
-The most extensive use of the model is in fire and smoke spread in complex buildings. The efficiency and computational speed are inherent in the few computation cells needed for a zone model implementation. The use is for design and reconstruction of time-lines for fire and smoke spread in residential, commercial, and industrial fire applications. Some applications of the model have been for design of smoke control systems.
-
-\section{Input Data Required to Run the Model}
-
-All of the data required to run the CFAST model reside in a primary data file, which the user creates. In general, the data files contain the following information:
-
-\begin{itemize}
-\item material properties (e.g., thermal conductivity, specific heat, density, thickness, heat of combustion)
-\item compartment dimensions (height, width, length)
-\item construction materials of the compartment (e.g., concrete, gypsum)
-\item dimensions and positions of horizontal and vertical flow openings such as doors, windows, and vents
-\item mechanical ventilation specifications
-\item fire properties (e.g., heat release rate, lower oxygen limit, and species production rates as a function of time)
-\item sprinkler and detector specifications
-\item positions, sizes, and characteristics of targets
-\item specifications for visual output from the model
-\end{itemize}
-
-The CFAST User's Guide \cite{CFAST_Users_Guide_7} provides a complete description of the required input parameters. Some of these parameters have default values included in the model, which are intended to be representative for a range of fire scenarios.
-
-\section{Model Results}
-
-Once the simulation is complete, CFAST produces output files containing all of the solution variables. Typical outputs include (but are not limited to) the following:
-
-\begin{itemize}
-\item environmental conditions in the room (such as hot gas layer temperature; oxygen and smoke concentration; and ceiling, wall, and floor temperatures)
-\item heat transfer-related outputs to walls and targets (such as incident convective, radiated, and total heat fluxes)
-\item fire intensity and flame height
-\item flow velocities through vents and openings
-\item detector and sprinkler activation time
-\end{itemize}
+\IfFileExists{../Bibliography/model_description.tex}{\input{../Bibliography/model_description.tex}}{\typeout{Error: Missing file ../Bibliography/model_description.tex}}
 
 \chapter{Configuration Management}
 

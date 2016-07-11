@@ -23,7 +23,7 @@ module mflow_routines
 
 ! --------------------------- mechanical_flow -------------------------------------------
 
-    subroutine mechanical_flow (tsec, epsp, uflw_mf, filtered, hvpsolv, hvtsolv, tprime, deltpmv, delttmv, prprime, nprod, hvacflg)
+    subroutine mechanical_flow (tsec, epsp, uflw_mf, uflw_filtered, hvpsolv, hvtsolv, tprime, deltpmv, delttmv, prprime, nprod, hvacflg)
 
     !     routine: mechanical_flow
     !     purpose: physical interface routine to calculate flow through all forced vents (mechanical flow).
@@ -32,7 +32,7 @@ module mflow_routines
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec, epsp
-    real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
+    real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), uflw_filtered(mxrooms,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
 
     real(eb) :: filter, vheight, layer_height
     integer :: i, ii, j, k, isys, nprod, iroom
@@ -52,8 +52,8 @@ module mflow_routines
 
     uflw_mf(1:nr,1:ns+2,u) = 0.0_eb
     uflw_mf(1:nr,1:ns+2,l) = 0.0_eb
-    filtered(1:nr,1:ns+2,u) = 0.0_eb
-    filtered(1:nr,1:ns+2,l) = 0.0_eb
+    uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
+    uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
     deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
     delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
 
@@ -108,16 +108,16 @@ module mflow_routines
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
         !   filtering is always negative
         filter = qcifraction(qcvf,isys,tsec)
-        filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*mvextptr%species_fraction(u,11)*mvextptr%mv_mflow(u))
-        filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*mvextptr%species_fraction(l,11)*mvextptr%mv_mflow(l))
-        filtered(i,11,u) = filtered(i,11,u) + max(0.0_eb,filter*mvextptr%species_fraction(u,9)*mvextptr%mv_mflow(u))
-        filtered(i,11,l) = filtered(i,11,l) + max(0.0_eb,filter*mvextptr%species_fraction(l,9)*mvextptr%mv_mflow(l))
-        !   remove filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
-        filtered(i,m,u) = filtered(i,m,u) + max(0.0_eb,filter*mvextptr%species_fraction(u,9)*mvextptr%mv_mflow(u))
-        filtered(i,m,l) = filtered(i,m,l) + max(0.0_eb,filter*mvextptr%species_fraction(l,9)*mvextptr%mv_mflow(l))
-        filtered(i,q,u) = filtered(i,q,u) + &
+        uflw_filtered(i,13,u) = uflw_filtered(i,13,u) + max(0.0_eb,filter*mvextptr%species_fraction(u,11)*mvextptr%mv_mflow(u))
+        uflw_filtered(i,13,l) = uflw_filtered(i,13,l) + max(0.0_eb,filter*mvextptr%species_fraction(l,11)*mvextptr%mv_mflow(l))
+        uflw_filtered(i,11,u) = uflw_filtered(i,11,u) + max(0.0_eb,filter*mvextptr%species_fraction(u,9)*mvextptr%mv_mflow(u))
+        uflw_filtered(i,11,l) = uflw_filtered(i,11,l) + max(0.0_eb,filter*mvextptr%species_fraction(l,9)*mvextptr%mv_mflow(l))
+        !   remove uflw_filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
+        uflw_filtered(i,m,u) = uflw_filtered(i,m,u) + max(0.0_eb,filter*mvextptr%species_fraction(u,9)*mvextptr%mv_mflow(u))
+        uflw_filtered(i,m,l) = uflw_filtered(i,m,l) + max(0.0_eb,filter*mvextptr%species_fraction(l,9)*mvextptr%mv_mflow(l))
+        uflw_filtered(i,q,u) = uflw_filtered(i,q,u) + &
             max(0.0_eb,filter*mvextptr%species_fraction(u,9)*mvextptr%mv_mflow(u)*cp*mvextptr%temp(u))
-        filtered(i,q,l) = filtered(i,q,l) + &
+        uflw_filtered(i,q,l) = uflw_filtered(i,q,l) + &
             max(0.0_eb,filter*mvextptr%species_fraction(l,9)*mvextptr%mv_mflow(l)*cp*mvextptr%temp(l))
     end do
 

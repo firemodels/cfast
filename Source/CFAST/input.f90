@@ -453,11 +453,11 @@ module input_routines
 
     integer, intent(in) :: inumr, inumc
 
-    integer :: i1, i2, fannumber, iecfrom, iecto, mid, i, j, k, ir
+    integer :: i1, i2, fannumber, i, j, k, ir
     integer :: iijk, jmax, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
-    real(eb) :: initialopening, lrarray(ncol),minpres, maxpres, heightfrom, heightto, areafrom, areato
+    real(eb) :: initialopening, lrarray(ncol)
     real(eb) :: frac, tmpcond
-    character :: label*5, tcname*64, eqtype*3, venttype,orientypefrom*1, orientypeto*1
+    character :: label*5, tcname*64, eqtype*3, venttype
     character(128) :: lcarray(ncol)
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
@@ -466,7 +466,7 @@ module input_routines
     type(visual_type), pointer :: sliceptr
     type(thermal_type), pointer :: thrmpptr
     type(fire_type), pointer :: fireptr
-    type(vent_type), pointer :: ventptr, mvextptr, mvfanptr, mvductptr
+    type(vent_type), pointer :: ventptr
 
     !	Start with a clean slate
 
@@ -1071,120 +1071,51 @@ module input_routines
             ! (10-12) Flow Flow_Begin_Dropoff_Pressure Zero_Flow_Pressure
             ! (13) Initial fraction of the fan speed
         case ('MVENT')
-            if (countargs(lcarray)/=13) then
+            if (countargs(lcarray)>=13) then
+                i = lrarray(1)
+                j = lrarray(2)
+                k = lrarray(3)
+                if (i>nr.or.j>nr) then
+                    write(*,5191) i, j
+                    write(logerr,5191) i, j
+                    stop
+                end if
+                n_mvents = n_mvents + 1
+                ventptr => mventinfo(n_mvents)
+                ventptr%room1 = i
+                ventptr%room2 = j
+                ventptr%counter = k
+
+                if (lcarray(4)=='V') then
+                    ventptr%orientation(1) = 1
+                else
+                    ventptr%orientation(1) = 2
+                end if
+                ventptr%height(1) = lrarray(5)
+                ventptr%diffuser_area(1) = lrarray(6)
+
+                if (lcarray(7)=='V') then
+                    ventptr%orientation(1) = 1
+                else
+                    ventptr%orientation(1) = 2
+                end if
+                ventptr%height(2) = lrarray(8)
+                ventptr%diffuser_area(2) = lrarray(9)
+
+                ventptr%n_coeffs = 1
+                ventptr%coeff = 0.0_eb
+                ventptr%coeff(1) = lrarray(10)
+                ventptr%min_cutoff_relp = lrarray(11)
+                ventptr%max_cutoff_relp = lrarray(12)
+
+                ! finally, we set the initial fraction opening
+                qcvm(2,n_mvents) = lrarray(13)
+                qcvm(4,n_mvents) = lrarray(13)
+            else
                 write (*,*) '***Error: Bad MVENT input. 13 arguments required.'
                 write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'
                 stop
             end if
-            mid = lrarray(3)
-            iecfrom = lrarray(1)
-            iecto = lrarray(2)
-            if (iecfrom>nr.or.iecto>nr) then
-                write(*,5191) iecfrom, iecto
-                write(logerr,5191) iecfrom, iecto
-                stop
-            end if
-
-            orientypefrom = lcarray(4)
-            heightfrom = lrarray(5)
-            areafrom = lrarray(6)
-            orientypeto = lcarray(7)
-            heightto = lrarray(8)
-            areato = lrarray(9)
-            minpres = lrarray(11)
-            maxpres = lrarray(12)
-
-            ! We start with two new nodes for the openings into the compartments for connections to the fan
-
-            ! first compartment/node opening
-            n_mvext = n_mvext + 1
-            n_mvnodes = n_mvnodes + 1
-            if (n_mvext>mxext.or.n_mvnodes>mxnode) then
-                write (*,5192) n_mvext,n_mvnodes
-                write (logerr,5192) n_mvext,n_mvnodes
-                stop
-            end if
-            mvextptr => mventexinfo(n_mvext)
-            if (orientypefrom=='V') then
-                mvextptr%orientation = 1
-            else
-                mvextptr%orientation = 2
-            end if
-            mvextptr%room = iecfrom
-            mvextptr%exterior_node = n_mvnodes
-            mvextptr%height = heightfrom
-            mvextptr%area = areafrom
-
-            ! second compartment/node opening
-            n_mvext = n_mvext + 1
-            n_mvnodes = n_mvnodes + 1
-            if (n_mvext>mxext.or.n_mvnodes>mxnode) then
-                write (*,5192) n_mvext,n_mvnodes
-                write (logerr,5192) n_mvext,n_mvnodes
-                stop
-            end if
-            mvextptr => mventexinfo(n_mvext)
-            if (orientypeto=='V') then
-                mvextptr%orientation = 1
-            else
-                mvextptr%orientation = 2
-            end if
-            mvextptr%room = iecto
-            mvextptr%exterior_node = n_mvnodes
-            mvextptr%height = heightto
-            mvextptr%area = areato
-
-            ! now connect nodes 1 and 2 with a fan
-
-            if (minpres>maxpres) then
-                write (*,5194) minpres,maxpres
-                write (logerr,5194) minpres,maxpres
-                stop
-            end if
-
-            n_mvfan = n_mvfan + 1
-            if (mid/=n_mvfan) then
-                write(*,5193) mid,n_mvfan
-                write(logerr,5193) mid,n_mvfan
-                stop
-            end if
-
-            nbr = nbr + 1
-            if (n_mvfan>mxfan.or.nbr>mxbranch) then
-                write (*,5195) mxfan
-                write (logerr,5195) mxfan
-                stop
-            end if
-            
-            mvfanptr => mventfaninfo(n_mvfan)
-            mvfanptr%n_coeffs = 1
-            mvfanptr%min_cutoff_relp = minpres
-            mvfanptr%max_cutoff_relp = maxpres
-            mvfanptr%coeff = 0.0_eb
-            mvfanptr%coeff(1) = lrarray(10)
-
-            nf(nbr) = n_mvfan
-            mvextptr => mventexinfo(n_mvext-1)
-            na(nbr) = mvextptr%exterior_node
-            mvextptr => mventexinfo(n_mvext)
-            ne(nbr) = mvextptr%exterior_node
-            hvdvol(nbr) = 0.0_eb
-
-            ! add a simple duct to connect the two nodes/fan - this is artificial since we do not
-            ! worry about the species within the system
-            n_mvduct = n_mvduct + 1
-            mvductptr => mventductinfo(n_mvduct)
-
-            ! to change from the zero volume calculation to a finite volume, use 1.0d1 (1 meter duct)
-            ! the effect is in hvfrex. case 1 is the finite volume and case 2, the zero volume calculation
-            ! for flow through the external nodes
-            mvductptr%length = 0.0_eb
-            mvductptr%diameter = lrarray(6)
-            mvductptr%branch = nbr
-
-            ! finally, we set the initial fraction opening
-            qcvm(2,mid) = lrarray(13)
-            qcvm(4,mid) = lrarray(13)
             
             ! STPMAX # - set the maximum time step to #
         case ('STPMA')

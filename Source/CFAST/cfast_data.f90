@@ -352,10 +352,13 @@ module vent_data
     integer, dimension(mxfslab) ::  dirs12                              ! direction of flow in each slab
 
     ! vvent variables
-    integer :: n_vvents                                                 ! number of veritcal flow vents
+    integer :: n_vvents                                                 ! number of vertical flow vents
     type (vent_type), dimension(mxvvents), target :: vventinfo          ! structured vertical vent data
 
     ! hvac variables
+    integer :: n_mvents                                                 ! number of mechanical flow vents
+    type(vent_type), dimension(mxfan), target :: mventinfo              ! structured mechnical vent data
+    
     ! external connections
     integer :: n_mvext                                      ! number of external nodes (connected to a room) in mv system
     type (vent_type), dimension(mxext), target :: mventexinfo

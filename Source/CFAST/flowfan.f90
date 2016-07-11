@@ -23,7 +23,7 @@ module mflow_routines
 
 ! --------------------------- mechanical_flow -------------------------------------------
 
-    subroutine mechanical_flow (tsec, hvpsolv, hvtsolv, tprime, flows_mvents, deltpmv, delttmv, prprime, nprod, hvacflg, filtered)
+    subroutine mechanical_flow (tsec, epsp, uflw_mf, filtered, hvpsolv, hvtsolv, tprime, deltpmv, delttmv, prprime, nprod, hvacflg)
 
     !     routine: mechanical_flow
     !     purpose: physical interface routine to calculate flow through all forced vents (mechanical flow).
@@ -31,8 +31,8 @@ module mflow_routines
     !     revision: $revision: 461 $
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
 
-    real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec
-    real(eb), intent(out) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
+    real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec, epsp
+    real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
 
     real(eb) :: filter, vheight, layer_height
     integer :: i, ii, j, k, isys, nprod, iroom
@@ -50,8 +50,8 @@ module mflow_routines
 
     chv(1:nbr) = ductcv
 
-    flows_mvents(1:nr,1:ns+2,u) = 0.0_eb
-    flows_mvents(1:nr,1:ns+2,l) = 0.0_eb
+    uflw_mf(1:nr,1:ns+2,u) = 0.0_eb
+    uflw_mf(1:nr,1:ns+2,l) = 0.0_eb
     filtered(1:nr,1:ns+2,u) = 0.0_eb
     filtered(1:nr,1:ns+2,l) = 0.0_eb
     deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
@@ -97,16 +97,16 @@ module mflow_routines
         j = mvextptr%exterior_node
         isys = izhvsys(j)
         if (i<1.or.i>nrm1) cycle
-        flows_mvents(i,m,u) = flows_mvents(i,m,u) + mvextptr%mv_mflow(u)
-        flows_mvents(i,m,l) = flows_mvents(i,m,l) + mvextptr%mv_mflow(l)
-        flows_mvents(i,q,u) = flows_mvents(i,q,u) + mvextptr%mv_mflow(u)*cp*mvextptr%temp(u)
-        flows_mvents(i,q,l) = flows_mvents(i,q,l) + mvextptr%mv_mflow(l)*cp*mvextptr%temp(l)
+        uflw_mf(i,m,u) = uflw_mf(i,m,u) + mvextptr%mv_mflow(u)
+        uflw_mf(i,m,l) = uflw_mf(i,m,l) + mvextptr%mv_mflow(l)
+        uflw_mf(i,q,u) = uflw_mf(i,q,u) + mvextptr%mv_mflow(u)*cp*mvextptr%temp(u)
+        uflw_mf(i,q,l) = uflw_mf(i,q,l) + mvextptr%mv_mflow(l)*cp*mvextptr%temp(l)
         do k = 1, ns
-            flows_mvents(i,2+k,u) = flows_mvents(i,2+k,u) + mvextptr%species_fraction(u,k)*mvextptr%mv_mflow(u)
-            flows_mvents(i,2+k,l) = flows_mvents(i,2+k,l) + mvextptr%species_fraction(l,k)*mvextptr%mv_mflow(l)
+            uflw_mf(i,2+k,u) = uflw_mf(i,2+k,u) + mvextptr%species_fraction(u,k)*mvextptr%mv_mflow(u)
+            uflw_mf(i,2+k,l) = uflw_mf(i,2+k,l) + mvextptr%species_fraction(l,k)*mvextptr%mv_mflow(l)
         end do
         !	filter 9 and 11, (2+k)) = 11 and 13, smoke and radiological fraction. note that
-        !   filtering is always negative. same as agglomeration and settling
+        !   filtering is always negative
         filter = qcifraction(qcvf,isys,tsec)
         filtered(i,13,u) = filtered(i,13,u) + max(0.0_eb,filter*mvextptr%species_fraction(u,11)*mvextptr%mv_mflow(u))
         filtered(i,13,l) = filtered(i,13,l) + max(0.0_eb,filter*mvextptr%species_fraction(l,11)*mvextptr%mv_mflow(l))

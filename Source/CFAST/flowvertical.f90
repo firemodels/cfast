@@ -23,15 +23,16 @@ module vflow_routines
 
 ! --------------------------- vertical_flow -------------------------------------------
 
-    subroutine vertical_flow (tsec,epsp,flwvf)
+    subroutine vertical_flow (tsec,epsp,uflw_vf)
 
     !     routine: vertical_flow
     !     purpose: interface between cfast and the vertical vent physical routines.
-    !     arguments: tsec: current simulation time
-    !                flwvf: change in mass and energy for each layer of each compartment
+    !     arguments: tsec    current simulation time
+    !                epsp    pressure error tolerance
+    !                uflw_vf change in mass and energy for each layer of each compartment via flow through vertical vents
 
     real(eb), intent(in) :: tsec, epsp
-    real(eb), intent(out) :: flwvf(mxrooms,ns+2,2)
+    real(eb), intent(out) :: uflw_vf(mxrooms,ns+2,2)
 
     real(eb) :: vvent(2), xmvent(2), tmvent(2), frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
@@ -41,8 +42,8 @@ module vflow_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    flwvf(1:nr,1:ns+2,u) = 0.0_eb
-    flwvf(1:nr,1:ns+2,l) = 0.0_eb
+    uflw_vf(1:nr,1:ns+2,u) = 0.0_eb
+    uflw_vf(1:nr,1:ns+2,l) = 0.0_eb
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
 
@@ -119,10 +120,10 @@ module vflow_routines
 
             ! extract mass and enthalpy from "from" room (not from outside)
             if (ifrm<=nrm1) then
-                flwvf(ifrm,m,u) = flwvf(ifrm,m,u) - frommu
-                flwvf(ifrm,m,l) = flwvf(ifrm,m,l) - fromml
-                flwvf(ifrm,q,u) = flwvf(ifrm,q,u) - fromqu
-                flwvf(ifrm,q,l) = flwvf(ifrm,q,l) - fromql
+                uflw_vf(ifrm,m,u) = uflw_vf(ifrm,m,u) - frommu
+                uflw_vf(ifrm,m,l) = uflw_vf(ifrm,m,l) - fromml
+                uflw_vf(ifrm,q,u) = uflw_vf(ifrm,q,u) - fromqu
+                uflw_vf(ifrm,q,l) = uflw_vf(ifrm,q,l) - fromql
             end if
                 ventptr%v_mflow(iflow,u) = ventptr%v_mflow(iflow,u) - frommu
                 ventptr%v_mflow(iflow,l) = ventptr%v_mflow(iflow,l) - fromml
@@ -141,10 +142,10 @@ module vflow_routines
 
             ! deposit mass and enthalpy into "to" room varibles (not outside)
             if (ito<=nrm1) then
-                flwvf(ito,m,u) = flwvf(ito,m,u) + tomu
-                flwvf(ito,m,l) = flwvf(ito,m,l) + toml
-                flwvf(ito,q,u) = flwvf(ito,q,u) + toqu
-                flwvf(ito,q,l) = flwvf(ito,q,l) + toql
+                uflw_vf(ito,m,u) = uflw_vf(ito,m,u) + tomu
+                uflw_vf(ito,m,l) = uflw_vf(ito,m,l) + toml
+                uflw_vf(ito,q,u) = uflw_vf(ito,q,u) + toqu
+                uflw_vf(ito,q,l) = uflw_vf(ito,q,l) + toql
             end if
                 ventptr%v_mflow(3-iflow,u) = ventptr%v_mflow(3-iflow,u) + tomu
                 ventptr%v_mflow(3-iflow,l) = ventptr%v_mflow(3-iflow,l) + toml
@@ -158,16 +159,16 @@ module vflow_routines
 
                 ! extract mass and enthalpy from "from" room (not from the outside)
                 if (ifrm<=nrm1) then
-                    flwvf(ifrm,index,u) = flwvf(ifrm,index,u) - speciesu
-                    flwvf(ifrm,index,l) = flwvf(ifrm,index,l) - speciesl
+                    uflw_vf(ifrm,index,u) = uflw_vf(ifrm,index,u) - speciesu
+                    uflw_vf(ifrm,index,l) = uflw_vf(ifrm,index,l) - speciesl
                 end if
 
                 ! deposit mass and enthalphy into "to" room variables (not outside)
                 if (ito<=nrm1) then
                     pmtoup = (speciesu + speciesl)*fu
                     pmtolp = (speciesu + speciesl)*fl
-                    flwvf(ito,index,u) = flwvf(ito,index,u) + pmtoup
-                    flwvf(ito,index,l) = flwvf(ito,index,l) + pmtolp
+                    uflw_vf(ito,index,u) = uflw_vf(ito,index,u) + pmtoup
+                    uflw_vf(ito,index,l) = uflw_vf(ito,index,l) + pmtolp
                 end if
             end do
         end do

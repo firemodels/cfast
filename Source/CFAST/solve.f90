@@ -1147,9 +1147,9 @@ module solve_routines
     ! and vertical_flow for ceiling/floor vents
     call horizontal_flow (tsec,epsp,flows_hvents)
     call vertical_flow (tsec,epsp,flows_vvents)
-    call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flows_mvents,&
-        f_vector(nofpmv+1),f_vector(noftmv+1),&
-        yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)
+    call mechanical_flow (tsec,epsp,flows_mvents,filtered, &
+        y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),f_vector(nofpmv+1),f_vector(noftmv+1),&
+        yhatprime_vector(nofhvpr+1),nprod,hvacflg)
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flows_fires)

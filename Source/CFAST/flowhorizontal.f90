@@ -25,19 +25,19 @@ module hflow_routines
 
     ! --------------------------- horizontal_flow -------------------------------------------
 
-    subroutine horizontal_flow(tsec,epsp,uflw)
+    subroutine horizontal_flow(tsec,epsp,uflw_hf)
 
     !     routine: horizontal_flow
     !     purpose: physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
     !     it returns rates of mass and energy flows into the layers from all vents in the building.
     !     revision: $revision: 461 $
     !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: tsec  current simulation time (s)
-    !                epsp  pressure error tolerance
-    !                uflw
+    !     arguments: tsec    current simulation time (s)
+    !                epsp    pressure error tolerance
+    !                uflw_hf change in mass and energy for each layer of each compartment via flow through horizontal vents
 
     real(eb), intent(in) :: tsec, epsp
-    real(eb), intent(out) :: uflw(mxrooms,ns+2,2)
+    real(eb), intent(out) :: uflw_hf(mxrooms,ns+2,2)
 
     real(eb) :: conl(ns,2), conu(ns,2), pmix(ns)
     real(eb) :: uflw3(2,ns+2,2), uflw2(2,ns+2,2)
@@ -56,8 +56,8 @@ module hflow_routines
 
     position = 0
 
-    uflw(1:nrm1,1:ns+2,l) = 0.0_eb
-    uflw(1:nrm1,1:ns+2,u) = 0.0_eb
+    uflw_hf(1:nrm1,1:ns+2,l) = 0.0_eb
+    uflw_hf(1:nrm1,1:ns+2,u) = 0.0_eb
     if (option(fhflow)/=on) return
     if (n_hvents==0) return
 
@@ -130,19 +130,19 @@ module hflow_routines
             ! (but only if the room is an inside room)
 
             if (iroom1>=1.and.iroom1<=nrm1) then
-                uflw(iroom1,1:ns+2,l) = uflw(iroom1,1:ns+2,l) + uflw2(1,1:ns+2,l)
-                uflw(iroom1,1:ns+2,u) = uflw(iroom1,1:ns+2,u) + uflw2(1,1:ns+2,u)
+                uflw_hf(iroom1,1:ns+2,l) = uflw_hf(iroom1,1:ns+2,l) + uflw2(1,1:ns+2,l)
+                uflw_hf(iroom1,1:ns+2,u) = uflw_hf(iroom1,1:ns+2,u) + uflw2(1,1:ns+2,u)
                 if (option(fentrain)==on) then
-                    uflw(iroom1,1:ns+2,l) = uflw(iroom1,1:ns+2,l) + uflw3(1,1:ns+2,l)
-                    uflw(iroom1,1:ns+2,u) = uflw(iroom1,1:ns+2,u) + uflw3(1,1:ns+2,u)
+                    uflw_hf(iroom1,1:ns+2,l) = uflw_hf(iroom1,1:ns+2,l) + uflw3(1,1:ns+2,l)
+                    uflw_hf(iroom1,1:ns+2,u) = uflw_hf(iroom1,1:ns+2,u) + uflw3(1,1:ns+2,u)
                 end if
             end if
             if (iroom2>=1.and.iroom2<=nrm1) then
-                uflw(iroom2,1:ns+2,l) = uflw(iroom2,1:ns+2,l) + uflw2(2,1:ns+2,l)
-                uflw(iroom2,1:ns+2,u) = uflw(iroom2,1:ns+2,u) + uflw2(2,1:ns+2,u)
+                uflw_hf(iroom2,1:ns+2,l) = uflw_hf(iroom2,1:ns+2,l) + uflw2(2,1:ns+2,l)
+                uflw_hf(iroom2,1:ns+2,u) = uflw_hf(iroom2,1:ns+2,u) + uflw2(2,1:ns+2,u)
                 if (option(fentrain)==on) then
-                    uflw(iroom2,1:ns+2,l) = uflw(iroom2,1:ns+2,l) + uflw3(2,1:ns+2,l)
-                    uflw(iroom2,1:ns+2,u) = uflw(iroom2,1:ns+2,u) + uflw3(2,1:ns+2,u)
+                    uflw_hf(iroom2,1:ns+2,l) = uflw_hf(iroom2,1:ns+2,l) + uflw3(2,1:ns+2,l)
+                    uflw_hf(iroom2,1:ns+2,u) = uflw_hf(iroom2,1:ns+2,u) + uflw3(2,1:ns+2,u)
                 end if
             end if
         end if

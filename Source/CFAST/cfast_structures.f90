@@ -240,7 +240,7 @@ module cfast_types
         integer :: shape                                ! vent shape, 1 = circular, 2 = square (from user input)
     
         real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
-        real(eb) :: v_mflow(2,2)                        ! vent mass flow (top,bottom, u,l)
+        real(eb) :: mflow(2,2)                        ! vent mass flow (room1/top,room2/bottom, u,l)
 
         ! These define a mechanical vent
         integer :: orientation(2)                       ! orientation of vent diffusers (1 = V, 2 = H)
@@ -286,6 +286,10 @@ module cfast_types
         real(eb) :: area                    ! cross-sectional area of vent
 
         ! These are calculated results for the current time step
+    
+        real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
+        real(eb) :: mflow(2,2)                        ! vent mass flow (room1/top,room2/bottom, u,l)
+        
         integer :: n_slabs
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type

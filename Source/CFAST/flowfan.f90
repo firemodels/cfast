@@ -54,6 +54,14 @@ module mflow_routines
     uflw_mf(1:nr,1:ns+2,l) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
+    
+    do i = 1, n_mvents
+        ventptr => mventinfo(i)
+        ventptr%mflow(1:2,1:2) = 0.0_eb
+        
+    end do
+    
+    
     deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
     delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
 

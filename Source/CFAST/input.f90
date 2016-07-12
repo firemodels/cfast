@@ -975,10 +975,17 @@ module input_routines
                         end if
                     end do
                 case ('M')
-                    fannumber = lrarray(4)
-                    qcvm(1,fannumber) = lrarray(5)
-                    qcvm(3,fannumber) = lrarray(5) + lrarray(7)
-                    qcvm(4,fannumber) = lrarray(6)
+                    i = lrarray(2)
+                    j = lrarray(3)
+                    k = 1
+                    do iijk = 1, n_vvents
+                        ventptr => mventinfo(iijk)
+                        if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
+                            ventptr%opening(initial_time) = lrarray(5)
+                            ventptr%opening(final_time) = lrarray(5) + lrarray(7)
+                            ventptr%opening(final_fraction) = lrarray(6)
+                        end if
+                    end do
                 case ('F')
                     fannumber = lrarray(4)
                     if (fannumber>n_mvfan) then
@@ -1109,8 +1116,8 @@ module input_routines
                 ventptr%max_cutoff_relp = lrarray(12)
 
                 ! finally, we set the initial fraction opening
-                qcvm(2,n_mvents) = lrarray(13)
-                qcvm(4,n_mvents) = lrarray(13)
+                ventptr%opening(initial_fraction) = lrarray(13)
+                ventptr%opening(final_fraction) = lrarray(13)
             else
                 write (*,*) '***Error: Bad MVENT input. 13 arguments required.'
                 write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'

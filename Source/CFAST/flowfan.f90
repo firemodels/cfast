@@ -41,24 +41,17 @@ module mflow_routines
     type(vent_type), pointer :: mvextptr
     type(room_type), pointer :: roomptr
 
-    ! initialize convection coefficient for hvac ducts. ductcv is read in from solver.ini file by read_solver_ini.
-    ! chv should eventually be defined elsewhere.
-
-    hvacflg = .false.
-    if (.not.mvcalc_on.or.option(fmvent)/=on.or.(nhvpvar==0.and.nhvtvar==0)) return
-    hvacflg = .true.
-
-    chv(1:nbr) = ductcv
-
     uflw_mf(1:nr,1:ns+2,u) = 0.0_eb
     uflw_mf(1:nr,1:ns+2,l) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
+    if (n_mvents==0) return
     
     do i = 1, n_mvents
         ventptr => mventinfo(i)
         ventptr%mflow(1:2,1:2) = 0.0_eb
-        
+        call getventfraction ('M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
+        ventptr%relp = mvpressure(ventptr%room1,ventptr%height(1))
     end do
     
     
@@ -132,7 +125,31 @@ module mflow_routines
     return
     end subroutine mechanical_flow
 
-! --------------------------- hvmflo -------------------------------------------
+! --------------------------- mvpressure -------------------------------------------
+    
+    real(eb) function mvpressure(iroom, ventptr)
+    
+    integer, intent(in) :: iroom
+    type(vent_type), intent(in), pointer :: ventptr
+    
+    real(eb) :: z, hl, hu, rhol, rhou
+    
+            if (i<nr) then
+            roomptr => roominfo(i)
+            z = roomptr%depth(l)
+            hl = min(z,mvextptr%height)
+            hu = min(0.0_eb,mvextptr%height-hl)
+            rhou = roomptr%rho(u)
+            rhol = roomptr%rho(l)
+            mvnodeptr => mventnodeinfo(j)
+            mvnodeptr%relp = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
+            mvextptr%temp(u) = roomptr%temp(u)
+            mvextptr%temp(l) = roomptr%temp(l)
+        else
+            mvextptr%temp(u) = exterior_temperature
+            mvextptr%temp(l) = exterior_temperature
+            mvnodeptr%relp =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
+        end if
 
     subroutine hvmflo (tsec, deltpmv)
 

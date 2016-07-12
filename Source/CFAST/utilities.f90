@@ -1264,6 +1264,11 @@ module opening_fractions
         ventptr => vventinfo(vent_index)
         fraction = vfraction(ventptr%opening, time)
     end if
+    if (venttype=="M") then
+        fraction = 1.0_eb
+        ventptr => mventinfo(vent_index)
+        fraction = vfraction(ventptr%opening, time)
+    end if
 
     end subroutine getventfraction
 

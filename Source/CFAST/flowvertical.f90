@@ -61,7 +61,7 @@ module vflow_routines
         area = fraction * ventptr%area
         ventptr%current_area = area
         ishape = ventptr%shape
-        call ventcf (itop, ibot, area, ishape, epscut, vvent, xmvent, tmvent)
+        call ventcf (itop, ibot, area, ishape, epscut, xmvent, vvent, tmvent)
 
         ventptr%n_slabs = 2
         do iflow = 1, 2

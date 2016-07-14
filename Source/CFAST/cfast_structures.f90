@@ -246,14 +246,13 @@ module cfast_types
         integer :: orientation(2)                       ! orientation of vent diffusers (1 = V, 2 = H)
         real(eb) :: height(2)                           ! center height of vent diffusers
         real(eb) :: diffuser_area(2)                    ! cross-sectional area of vent diffusers
-
-        ! fans
         integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
         real, dimension(mxcoeff) :: coeff               ! coefficients of fan curve, flow vs pressure
         real(eb) :: mv_maxflow                          ! specified fan flow in mv system (m^3/s)
         real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
         real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
 
+        real(eb) :: relp                                ! pressure difference across vent (room2 - room1)
         real(eb), dimension(2) :: mv_mflow              ! vent mass flow at compartment connection (u,l)
         real(eb), dimension(2) :: temp                  ! temperature at compartment connection (u,l)
         real(eb), dimension(2) :: flow_fraction         ! fraction of flow to or from each layer (<-> u, <-> l)
@@ -261,18 +260,6 @@ module cfast_types
         real(eb), dimension(2) :: total_trace_flow      ! total trace species flow up to current time  (u,l)
         real(eb), dimension(2) :: total_trace_filtered  ! total trace species filtered out up to current time  (u,l)
         real(eb), dimension(2,ns) :: species_fraction   ! species fraction at compartment connection (<-> u, <-> l)
-        
-        ! external connections to mv system(s)
-        integer :: room                                 ! compartment connected to exterior node
-        integer :: exterior_node                        ! node number connected to compartment above
-        
-        !ducts
-        integer :: branch                               ! branch number associated with this duct
-        real(eb) :: diameter                            ! duct diameter
-        real(eb) :: length                              ! duct length
-        
-        !nodes
-        real(eb) :: relp                                ! pressure at node
 
         ! These are common to more than one vent types
 

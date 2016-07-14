@@ -25,21 +25,25 @@ module mflow_routines
 
     subroutine mechanical_flow (tsec, epsp, uflw_mf, uflw_filtered, hvpsolv, hvtsolv, tprime, deltpmv, delttmv, prprime, nprod, hvacflg)
 
-    !     routine: mechanical_flow
-    !     purpose: physical interface routine to calculate flow through all forced vents (mechanical flow).
-    !     it returns rates of mass and energy flows into the layers from all mechancial vents in the building.
-    !     revision: $revision: 461 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+    !     physical interface routine to calculate flow through all forced vents (mechanical flow).
+    !     it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
 
     real(eb), intent(in) :: hvpsolv(*), hvtsolv(*), tprime(*), tsec, epsp
     real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), uflw_filtered(mxrooms,ns+2,2), prprime(*), deltpmv(*), delttmv(*)
 
-    real(eb) :: filter, vheight, layer_height
+    real(eb) :: filter, vheight, layer_height, epscut, hvfan
     integer :: i, ii, j, k, isys, nprod, iroom
-    logical :: hvacflg
+    logical :: firstc, hvacflg
+    save firstc
 
     type(vent_type), pointer :: mvextptr
     type(room_type), pointer :: roomptr
+
+
+    if (firstc) then
+        minimumopen = sqrt(d1mach(1))
+        firstc = .false.
+    end if
 
     uflw_mf(1:nr,1:ns+2,u) = 0.0_eb
     uflw_mf(1:nr,1:ns+2,l) = 0.0_eb
@@ -50,18 +54,28 @@ module mflow_routines
     do i = 1, n_mvents
         ventptr => mventinfo(i)
         ventptr%mflow(1:2,1:2) = 0.0_eb
-        call getventfraction ('M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
-        ventptr%relp = mvpressure(ventptr%room1,ventptr%height(1))
-    end do
-    
-    
-    deltpmv(1:nhvpvar) = hvpsolv(1:nhvpvar)
-    delttmv(1:nhvtvar) = hvtsolv(1:nhvtvar)
 
-    call hvfrex (hvpsolv,hvtsolv)
-    call hvmflo (tsec, deltpmv)
-    call hvsflo (tprime,delttmv)
-    call hvtoex (prprime,nprod)
+        ! calculate volume flow through fan
+        call getventfraction ('M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
+        ventptr%relp = mv_pressure(ventptr%room2,ventptr%height(2)) - mv_pressure(ventptr%room1,ventptr%height(1))
+        epscut = fraction*(0.5_eb - tanh(8.0_eb/(ventptr%max_cutoff_relp-ventptr%min_cutoff_relp)*&
+            (ventptr%relp-ventptr%min_cutoff_relp)-4.0_eb)/2.0_eb)
+        hvfan = epscut*max(minimumopen,ventptr%mv_maxflow)
+
+        ! calculate mass and enthapy fractions for the from room
+        fu = mv_fraction(ventptr, 1, upper)
+        fl = 1.0_eb - fu
+        roomptr => roominfo(ventptr%room1)
+        ventptr%mflow(1,u) = -fu*hvfan*roomptr%rho(u)
+        ventptr%mflow(1,l) = -fl*hvfan*roomptr%rho(l)
+
+        ! calculate mass and enthapy fractions for the to room
+        fu = mv_fraction(ventptr, 2, upper)
+        fl = 1.0_eb - fu
+        flwtotal = -(ventptr%mflow(1,u)+ventptr%mflow(1,l))
+        ventptr%mflow(2,u) = -fu*flwtotal
+        ventptr%mflow(2,l) = -fl*flwtotal
+    end do
 
     do ii = 1, n_mvext
 
@@ -127,180 +141,31 @@ module mflow_routines
 
 ! --------------------------- mvpressure -------------------------------------------
     
-    real(eb) function mvpressure(iroom, ventptr)
+    real(eb) function mv_pressure(iroom, height)
     
     integer, intent(in) :: iroom
-    type(vent_type), intent(in), pointer :: ventptr
+    real(eb), intent(in) :: height
     
+    integer ifromto
     real(eb) :: z, hl, hu, rhol, rhou
-    
-            if (i<nr) then
-            roomptr => roominfo(i)
-            z = roomptr%depth(l)
-            hl = min(z,mvextptr%height)
-            hu = min(0.0_eb,mvextptr%height-hl)
-            rhou = roomptr%rho(u)
-            rhol = roomptr%rho(l)
-            mvnodeptr => mventnodeinfo(j)
-            mvnodeptr%relp = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
-            mvextptr%temp(u) = roomptr%temp(u)
-            mvextptr%temp(l) = roomptr%temp(l)
-        else
-            mvextptr%temp(u) = exterior_temperature
-            mvextptr%temp(l) = exterior_temperature
-            mvnodeptr%relp =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
-        end if
 
-    subroutine hvmflo (tsec, deltpmv)
+    if (iroom<nr) then
+        roomptr => roominfo(iroom)
+        z = roomptr%depth(l)
+        hl = min(z,height)
+        hu = min(0.0_eb,height-hl)
+        rhou = roomptr%rho(u)
+        rhol = roomptr%rho(l)
+        mv_pressure = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
+    else
+        mv_pressure =  exterior_abs_pressure - exterior_rho*grav_con*height
+    end if
 
-    !     routine: hvmflo
-    !     purpose: mass flow solution and calculation for mechanical vents
-    !     arguments: tsec
-    !                deltpmv
-
-    real(eb), intent(in) :: tsec
-    real(eb), intent(out) :: deltpmv(*)
-
-    real(eb) :: pav, xtemp, f, dp
-
-    integer :: ib, niter, iter, i, ii, j, k
-    type(vent_type), pointer :: mvnodeptr1, mvnodeptr2
-
-    ! calculate average temperatures and densities for each branch
-    pav = pressure_offset
-    rohb(1:nbr) = pav/(rgas*tbr(1:nbr))
-    bflo(nbr) = 1.0_eb
-
-    ! start the iteration cycle
-    niter = 2
-    do iter = 1, niter
-
-        ! initialize conductance
-        ce(1:nbr)=0.0_eb
-
-        ! convert from pressure to mass flow rate coefficients
-        do ib = 1, nbr
-            if (ce(ib)/=0.0_eb) then
-                xtemp = 1.0_eb/sqrt(abs(ce(ib)))
-                ce(ib) = sign(xtemp, ce(ib))
-            end if
-        end do
-
-        ! calculate hydrostatic pressure difference terms
-        do i = 1, n_mvnodes
-            do j = 1, ncnode(i)
-                dpz(i,j) = rohb(icmv(i,j))*grav_con*(hvght(mvintnode(i,j)) - hvght(i))
-            end do
-        end do
-
-        ! find mass flow for each branch and mass residual at each node
-        do i = 1, n_mvnodes
-            f = 0.0_eb
-            mvnodeptr1 => mventnodeinfo(i)
-            do j = 1, ncnode(i)
-                mvnodeptr2 => mventnodeinfo(mvintnode(i,j))
-                dp = mvnodeptr2%relp - mvnodeptr1%relp + dpz(i,j)
-                if (nf(icmv(i,j))==0) then
-
-                    ! resistive branch connection
-                    hvflow(i,j) = sign(ce(icmv(i,j))*sqrt(abs(dp)), dp)
-                    bflo(icmv(i,j)) = abs(hvflow(i,j))
-                else
-
-                    ! fan branch connection
-
-                    k = nf(icmv(i,j))
-                    if (ne(icmv(i,j)) /= i) then
-                        ! flow is at fan inlet
-                        hvflow(i,j) = -hvfan(tsec,i,j,k,dp)
-                    else
-                        ! flow is at fan exit
-                        dp = -dp
-                        hvflow(i,j) = hvfan(tsec,i,j,k,dp)
-                    end if
-                end if
-                f = f + hvflow(i,j)
-                ii = izhvie(mvintnode(i,j))
-                if (ii/=0)hvflow(mvintnode(i,j),1) = -hvflow(i,j)
-            end do
-            ii = izhvmape(i)
-            if (ii>0) deltpmv(ii) = f
-        end do
-    end do
-
-    return
-    end subroutine hvmflo
-
-! --------------------------- hvsflo -------------------------------------------
-
-    subroutine hvsflo (tprime, delttmv)
-
-    !     routine: hvsflo
-    !     purpose: species calculation for mechanical vents
-
-    real(eb), intent(in) :: tprime(*)
-    real(eb), intent(out) :: delttmv(*)
-
-    real(eb) :: hvta, flowin, hvtemp
-    integer ib, i, ii, j
-    type(vent_type), pointer :: mvextptr
-
-    delttmv(1:nbr) = rohb(1:nbr)*hvdvol(1:nbr)*tprime(1:nbr)/gamma
-
-    do i = 1, n_mvnodes
-
-        ! calculate temperatures & smoke flows in following loop at the connecting nodes
-        hvta = 0.0_eb
-        flowin = 0.0_eb
-        do j = 1, ncnode(i)
-            if (hvflow(i,j)>0.0_eb) then
-                flowin = flowin + hvflow(i,j)
-                ib = icmv(i,j)
-                hvtemp = hvflow(i,j)
-                hvta = hvta + hvtemp*tbr(ib)
-            end if
-        end do
-        if (flowin>0.0_eb) then
-            hvta = hvta/flowin
-        else
-
-            ! this is a bad situation.  we have no flow, yet must calculate the inflow concentrations.
-            hvta = tbr(1)
-            do ii = 1, n_mvext
-                mvextptr => mventexinfo(ii)
-                if (mvextptr%exterior_node==i) then
-                    hvta = mvextptr%temp(u)
-                    exit
-                end if
-            end do
-        end if
-
-        ! now calculate the resulting temperature and concentrations in the ducts and fans
-        do j = 1, ncnode(i)
-            if (hvflow(i,j)<0.0_eb) then
-                ib = icmv (i,j)
-                delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*abs(hvflow(i,j))
-                if (option(fhvloss)==on) then
-                    delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
-                end if
-            end if
-            ii = izhvie(mvintnode(i,j))
-            if (ii/=0.and.hvflow(i,j)>0.0_eb) then
-                ib = icmv(i,j)
-                hvta = mvextptr%temp(u)
-                delttmv(ib) = delttmv(ib) - (hvta-tbr(ib))*hvflow(i,j)
-                if (option(fhvloss)==on) then
-                    delttmv(ib) = delttmv(ib) + chv(ib)*(tbr(ib)-interior_temperature)*hvdara(ib)
-                end if
-            end if
-        end do
-    end do
-    return
-    end subroutine hvsflo
+    end function mv_pressure
 
 ! --------------------------- hvfan -------------------------------------------
 
-    real(eb) function hvfan(tsec,i,j,k,dp)
+    real(eb) function mvfan(tsec,i,dp)
 
     !     routine: hvfan
     !     purpose: calculates mass flow through a fan. this function has been modified to prevent negative flow.
@@ -308,20 +173,21 @@ module mflow_routines
     !              allowed to be negative (flow reversal) then this statement must be removed. !lso, there is now a flow
     !              restriction on the fan, using qcmfraction
     !     arguments: tsec   current simulation time
-    !                i      node number
-    !                j      jj'th connection to node ii
-    !                k      fan number
+    !                i      vent number
     !                dp     head pressure across the fan
 
     real(eb), intent(in) :: tsec, dp
-    integer, intent(in) :: i,j,k
+    integer, intent(in) :: i
 
-    real(eb) :: hvfanl, openfraction, minimumopen, roh, f
+    real(eb) :: hvfanl, openfraction, minimumopen, rho, f
+    integer :: iroom
     logical :: firstc = .true.
     save firstc, minimumopen
-    type(vent_type), pointer ::  mvfanptr
+    type(room_type), pointer :: roomptr
+    type(vent_type), pointer ::  ventptr
 
-    roh = rohb(icmv(i,j))
+    roomptr => roominfo(ventptr%iroom1)
+    rho =roomptr%
 
     if (firstc) then
         minimumopen = sqrt(d1mach(1))
@@ -329,208 +195,12 @@ module mflow_routines
     end if
     
     ! the hyperbolic tangent allows for smooth transition from full flow to no flow within the fan cuttoff pressure range
-    mvfanptr => mventfaninfo(k)
-    f = 0.5_eb - tanh(8.0_eb/(mvfanptr%max_cutoff_relp-mvfanptr%min_cutoff_relp)*(dp-mvfanptr%min_cutoff_relp)-4.0_eb)/2.0_eb
-    hvfanl = max(minimumopen, f*mvfanptr%mv_maxflow*roh)
-    openfraction = max (minimumopen, qcffraction (qcvm, k, tsec))
-    hvfan = hvfanl*openfraction
+    ventptr => mventinfo(i)
+    f = 0.5_eb - tanh(8.0_eb/(ventptr%max_cutoff_relp-ventptr%min_cutoff_relp)*(dp-ventptr%min_cutoff_relp)-4.0_eb)/2.0_eb
+    hvfan = max(minimumopen, f*ventptr%mv_maxflow*rho)
     return
 
-    end function hvfan
-
-! --------------------------- hvfrex -------------------------------------------
-
-    subroutine hvfrex (hvpsolv, hvtsolv)
-
-    !     routine: hvfrex
-    !     purpose: update arrays and assign compartment pressures, temperatures and concentrations to flow
-    !              into the system from exterior nodes
-
-    real(eb), intent(in) :: hvpsolv(*), hvtsolv(*)
-
-    real(eb) :: z, xxlower, xxlower_clamped, fraction, hl, hu, rhol, rhou
-    integer :: i, ii, j
-    type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr, mvnodeptr
-
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        i = mvextptr%room
-        roomptr => roominfo(i)
-        z = roomptr%depth(l)
-        j = mvextptr%exterior_node
-        if (mvextptr%orientation==1) then
-
-            ! we have an opening which is oriented vertically - use a smooth crossover. first, calculate
-            ! the scaling length of the duct
-            xxlower = sqrt(mvextptr%area)
-        else
-            xxlower = sqrt(mvextptr%area)/10.0_eb
-        end if
-
-        ! then the bottom of the vent (above the floor)
-        xxlower_clamped = max(0.0_eb,min((mvextptr%height - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
-
-        ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
-        fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
-        mvextptr%flow_fraction(u) = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
-        mvextptr%flow_fraction(l) = min(1.0_eb,max(fraction,0.0_eb))
-    end do
-
-    ! this is the actual duct initialization
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        i = mvextptr%room
-        j = mvextptr%exterior_node
-        mvnodeptr => mventnodeinfo(j)
-        if (i<nr) then
-            roomptr => roominfo(i)
-            z = roomptr%depth(l)
-            hl = min(z,mvextptr%height)
-            hu = min(0.0_eb,mvextptr%height-hl)
-            rhou = roomptr%rho(u)
-            rhol = roomptr%rho(l)
-            mvnodeptr => mventnodeinfo(j)
-            mvnodeptr%relp = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
-            mvextptr%temp(u) = roomptr%temp(u)
-            mvextptr%temp(l) = roomptr%temp(l)
-        else
-            mvextptr%temp(u) = exterior_temperature
-            mvextptr%temp(l) = exterior_temperature
-            mvnodeptr%relp =  exterior_abs_pressure - exterior_rho*grav_con*mvextptr%height
-        end if
-        if (i<nr) then
-            mvextptr%species_fraction(u,1:ns) = roomptr%species_fraction(u,1:ns)
-            mvextptr%species_fraction(l,1:ns) = roomptr%species_fraction(l,1:ns)
-        else
-            mvextptr%species_fraction(u,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
-            mvextptr%species_fraction(l,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
-        end if
-    end do
-    do i = 1, nhvpvar
-        ii = izhvmapi(i)
-        mvnodeptr => mventnodeinfo(ii)
-        mvnodeptr%relp = hvpsolv(i)
-    end do
-
-    tbr(1:nhvtvar) = hvtsolv(1:nhvtvar)
-    return
-
-    end subroutine hvfrex
-
-
-! --------------------------- hvtoex -------------------------------------------
-
-    subroutine hvtoex(prprime,nprod)
-
-    !     routine: hvfrex
-    !     purpose: assign results of hvac simulation to the transfer variables (...%temp, ...%species_fraction)
-    !     arguments: tsec   current simulation time
-    !                prprime
-    !                nprod
-
-    real(eb), intent(out) :: prprime(*)
-    integer, intent(in) :: nprod
-
-    integer ii, j, k, ib, isys, isof, nhvpr
-    type(vent_type), pointer :: mvextptr
-
-    ! sum product flows entering system
-    nhvpr = n_species*nhvsys
-    if (nprod/=0) then
-        prprime(1:nhvpr) = 0.0_eb
-    end if
-    if (ns>0) then
-        hvmfsys(1:nhvsys) = 0.0_eb
-        dhvprsys(1:nhvsys,1:ns) = 0.0_eb
-    end if
-
-    ! flow into the isys system
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        j = mvextptr%exterior_node
-        ib = icmv(j,1)
-        mvextptr%mv_mflow(u) = hvflow(j,1)*mvextptr%flow_fraction(u)
-        mvextptr%mv_mflow(l) = hvflow(j,1)*mvextptr%flow_fraction(l)
-        isys = izhvsys(j)
-        if (hvflow(j,1)<0.0_eb) then
-            hvmfsys(isys) = hvmfsys(isys) + hvflow(j,1)
-            if (nprod/=0) then
-                dhvprsys(isys,1:ns) = dhvprsys(isys,1:ns) + abs(mvextptr%mv_mflow(u))*mvextptr%species_fraction(u,1:ns) + &
-                    abs(mvextptr%mv_mflow(l))*mvextptr%species_fraction(l,1:ns)
-            end if
-        end if
-    end do
-
-    ! flow out of the isys system
-    if (nprod/=0) then
-        do k = 1, min(ns,9)
-            do isys = 1, nhvsys
-                if (zzhvm(isys)/=0.0_eb) then
-                    dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvspec(isys,k)/zzhvm(isys)
-                end if
-            end do
-        end do
-
-        ! do a special case for the non-reacting gas(es)
-        k = 11
-        do isys = 1, nhvsys
-            if (zzhvm(isys)/=0.0_eb) then
-                dhvprsys(isys,k) = dhvprsys(isys,k) - abs(hvmfsys(isys))*zzhvspec(isys,k)/zzhvm(isys)
-            end if
-        end do
-
-        ! pack the species change for dassl (actually calculate_residuals)
-        isof = 0
-        do k = 1, min(ns,9)
-            do isys = 1, nhvsys
-                isof = isof + 1
-                if (zzhvm(isys)/=0.0_eb) then
-                    prprime(isof) = dhvprsys(isys,k)
-                else
-                    prprime(isof) = 0.0_eb
-                end if
-            end do
-        end do
-        ! do a special case for the non-reacting gas(es)
-        k = 11
-        do isys = 1, nhvsys
-            isof = isof + 1
-            if (zzhvm(isys)/=0.0_eb) then
-                prprime(isof) = dhvprsys(isys,k)
-            else
-                prprime(isof) = 0.0_eb
-            end if
-        end do
-    end if
-
-    ! define flows or temperature leaving system
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        j = mvextptr%exterior_node
-        isys = izhvsys(j)
-        ! we allow only one connection from a node to an external duct
-        ib = icmv(j,1)
-        if (hvflow(j,1)>0.0_eb) then
-            mvextptr%temp(u) = tbr(ib)
-            mvextptr%temp(l) = tbr(ib)
-            if (zzhvm(isys)/=0.0_eb) then
-                ! case 1 - finite volume and finite mass in the isys mechanical ventilation system
-                mvextptr%species_fraction(u,1:ns) = zzhvspec(isys,1:ns)/zzhvm(isys)
-                mvextptr%species_fraction(l,1:ns) = mvextptr%species_fraction(u,1:ns)
-            else if (hvmfsys(isys)/=0.0_eb) then
-                ! case 2 - zero volume (no duct). flow through the system is mdot(product)/mdot(total mass)
-                mvextptr%species_fraction(u,1:ns) = -(dhvprsys(isys,1:ns)/hvmfsys(isys))
-                mvextptr%species_fraction(l,1:ns) = mvextptr%species_fraction(u,1:ns)
-            else
-                ! case 3 - no volume and no flow = no species
-                mvextptr%species_fraction(u,1:ns) = 0.0_eb
-                mvextptr%species_fraction(l,1:ns) = 0.0_eb
-            end if
-        end if
-    end do
-    return
-    end subroutine hvtoex
+    end function mvfan
 
     subroutine getmventinfo (i, iroom, xyz, vred, vgreen, vblue)
 

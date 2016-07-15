@@ -134,7 +134,7 @@ module spreadsheet_routines
 
     real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
     integer :: position, i, ifrom, ito
-    type(vent_type), pointer :: ventptr, mvextptr
+    type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
     save firstc
 
@@ -188,20 +188,31 @@ module spreadsheet_routines
     end do
 
     ! finally, mechanical ventilation
-    if (n_mvnodes/=0.and.n_mvext/=0) then
-        do i = 1, n_mvext
-            mvextptr => mventexinfo(i)
+    if (n_mvents/=0) then
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
             flow = 0.0_eb
-            if (mvextptr%mv_mflow(u)>=0.0_eb) flow(1)=mvextptr%mv_mflow(u)
-            if (mvextptr%mv_mflow(u)<0.0_eb) flow(2)=-mvextptr%mv_mflow(u)
-            if (mvextptr%mv_mflow(l)>=0.0_eb) flow(3)=mvextptr%mv_mflow(l)
-            if (mvextptr%mv_mflow(l)<0.0_eb) flow(4)=-mvextptr%mv_mflow(l)
+
+            flow = 0.0_eb
+            if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
+            if (ventptr%mflow(2,u)<0.0_eb) flow(6) = -ventptr%mflow(2,u)
+            if (ventptr%mflow(2,l)>=0.0_eb) flow(7) = ventptr%mflow(2,l)
+            if (ventptr%mflow(2,l)<0.0_eb) flow(8) = -ventptr%mflow(2,l)
+            if (ventptr%mflow(1,u)>=0.0_eb) flow(1) = ventptr%mflow(1,u)
+            if (ventptr%mflow(1,u)<0.0_eb) flow(2) = -ventptr%mflow(1,u)
+            if (ventptr%mflow(1,l)>=0.0_eb) flow(3) = ventptr%mflow(1,l)
+            if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
+
+            sumin = flow(5) + flow(7)
+            sumout = flow(6) + flow(8)
+            netflow = sumin - sumout
+            call SSaddtolist (position,netflow,outarray)
             sumin = flow(1) + flow(3)
             sumout = flow(2) + flow(4)
-            flow(5) =abs(mvextptr%total_trace_flow(u))+abs(mvextptr%total_trace_flow(l))
-            flow(6) =abs(mvextptr%total_trace_filtered(u))+abs(mvextptr%total_trace_filtered(l))
             netflow = sumin - sumout
-            call SSaddtolist (position, netflow, outarray)
+            call SSaddtolist (position,netflow,outarray)
+            flow(5) =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
+            flow(6) =abs(ventptr%total_trace_filtered(u))+abs(ventptr%total_trace_filtered(l))
             call SSaddtolist (position, flow(5), outarray)
             call SSaddtolist (position, flow(6), outarray)
         end do
@@ -487,20 +498,20 @@ module spreadsheet_routines
     end do
 
     ! mechanical vents (note sign of flow is different here to make it relative to compartment instead of hvac system
-    if (n_mvnodes/=0.and.n_mvext/=0) then
-        do i = 1, n_mvext
-            mvextptr => mventexinfo(i)
-            if (mvextptr%room<=nrm1) then
-                avent = mvextptr%area
+    if (n_mvents/=0) then
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            if (mvextptr%room1<=nrm1) then
+                avent = ventptr%diffuser_area(1)
                 call SSaddtolist (position,avent,outarray)
                 ! flow slabs for the vent
-                slabs = mvextptr%n_slabs
+                slabs = ventptr%n_slabs
                 call SSaddtolist (position,slabs,outarray)
                 do j = 1, 2
-                    call ssaddtolist(position,mvextptr%temp_slab(j),outarray)
-                    call ssaddtolist(position,-mvextptr%flow_slab(j),outarray)
-                    call ssaddtolist(position,mvextptr%ybot_slab(j),outarray)
-                    call ssaddtolist(position,mvextptr%ytop_slab(j),outarray)
+                    call ssaddtolist(position,ventptr%temp_slab(j),outarray)
+                    call ssaddtolist(position,-ventptr%flow_slab(j),outarray)
+                    call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
+                    call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
                 end do
             end if
         end do

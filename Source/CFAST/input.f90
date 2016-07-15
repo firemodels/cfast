@@ -3,7 +3,7 @@ module input_routines
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use initialization_routines, only : inittarg, initamb, offset, hvinit
+    use initialization_routines, only : inittarg, initamb, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
@@ -336,9 +336,6 @@ module input_routines
 
     ! initialize variables that will change when ambient conditions change
     call initamb(yinter,1)
-
-    ! initialize the mechanical ventilation
-    call hvinit
 
     ! check detectors
     do i = 1, n_detectors
@@ -978,7 +975,7 @@ module input_routines
                     i = lrarray(2)
                     j = lrarray(3)
                     k = 1
-                    do iijk = 1, n_vvents
+                    do iijk = 1, n_mvents
                         ventptr => mventinfo(iijk)
                         if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
                             ventptr%opening(initial_time) = lrarray(5)

@@ -577,10 +577,10 @@ module fire_routines
 
     real(eb), intent(in) :: time, deltt
 
-    integer ::i, j, irm, ii, isys
+    integer ::i
     real(eb) :: filter
     type(fire_type), pointer :: fireptr
-    type(vent_type), pointer :: mvextptr
+    type(vent_type), pointer :: ventptr
 
     do i = 1, n_fires
         fireptr => fireinfo(i)
@@ -596,27 +596,20 @@ module fire_routines
     end do
 
     ! sum the hvac flow
-    ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped. 
-    do irm = 1, nr
-        do ii = 1, n_mvext
-            mvextptr => mventexinfo(ii)
-            i = mvextptr%room
-            j = mvextptr%exterior_node
-            isys = izhvsys(j)
-            filter = (1.0_eb-qcifraction(qcvf,isys,time))
-            if (irm==i) then
-                mvextptr%total_flow(u) = mvextptr%total_flow(u) + mvextptr%mv_mflow(u)*deltt
-                mvextptr%total_flow(l) = mvextptr%total_flow(l) + mvextptr%mv_mflow(l)*deltt
-                mvextptr%total_trace_flow(u)  = mvextptr%total_trace_flow(u) + &
-                    mvextptr%mv_mflow(u)*mvextptr%species_fraction(u,11)*filter*deltt
-                mvextptr%total_trace_flow(l)  = mvextptr%total_trace_flow(l) + &
-                    mvextptr%mv_mflow(l)*mvextptr%species_fraction(l,11)*filter*deltt
-                mvextptr%total_trace_filtered(u)  = mvextptr%total_trace_filtered(u) + &
-                    mvextptr%mv_mflow(u)*mvextptr%species_fraction(u,11)*(1.0_eb-filter)*deltt
-                mvextptr%total_trace_filtered(l)  = mvextptr%total_trace_filtered(l) + &
-                    mvextptr%mv_mflow(l)*mvextptr%species_fraction(l,11)*(1.0_eb-filter)*deltt
-            end if
-        end do
+    ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped.
+    do i = 1, n_mvents
+        ventptr => mventinfo(i)
+        filter = (1.0_eb-qcifraction(qcvf,i,time))
+        ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mv_mflow(u)*deltt
+        ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mv_mflow(l)*deltt
+        ventptr%total_trace_flow(u)  = ventptr%total_trace_flow(u) + &
+            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*filter*deltt
+        ventptr%total_trace_flow(l)  = ventptr%total_trace_flow(l) + &
+            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*filter*deltt
+        ventptr%total_trace_filtered(u)  = ventptr%total_trace_filtered(u) + &
+            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*(1.0_eb-filter)*deltt
+        ventptr%total_trace_filtered(l)  = ventptr%total_trace_filtered(l) + &
+            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*(1.0_eb-filter)*deltt
     end do
 
     return

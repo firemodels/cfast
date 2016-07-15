@@ -1210,13 +1210,13 @@ module opening_fractions
 
     private
 
-    public getventfraction, qchfraction, qcffraction, qcifraction
+    public get_vent_opening, qchfraction, qcffraction, qcifraction
 
     contains
 
-! --------------------------- getventfraction-------------------------------------
+! --------------------------- get_vent_opening-------------------------------------
 
-    subroutine getventfraction (venttype,room1,room2,vent_number,vent_index,time,fraction)
+    subroutine get_vent_opening (venttype,room1,room2,vent_number,vent_index,time,fraction)
 
     character, intent(in) :: venttype
     integer, intent(in) :: room1, room2, vent_number, vent_index
@@ -1270,7 +1270,7 @@ module opening_fractions
         fraction = vfraction(ventptr%opening, time)
     end if
 
-    end subroutine getventfraction
+    end subroutine get_vent_opening
 
     ! --------------------------- vfraction -------------------------------------------
 

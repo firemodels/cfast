@@ -295,8 +295,8 @@ module spreadsheet_header_routines
 
     integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
     character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
-    integer :: position, i, ih, ii, inode, ifrom, ito
-    type(vent_type), pointer :: ventptr, mvextptr
+    integer :: position, i, ih, ii, ifrom, ito
+    type(vent_type), pointer :: ventptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
        'MVENT Trace Species Filtered' /
@@ -367,33 +367,24 @@ module spreadsheet_header_routines
     end do
 
     ! Mechanical ventilation
-    if (n_mvnodes/=0.and.n_mvext/=0) then
-        do i = 1, n_mvext
-            mvextptr => mventexinfo(i)
-            ii = mvextptr%room
-            inode = mvextptr%exterior_node
-            call toIntString(ii,ciFrom)
+    if (n_mvents/=0) then
+        do i = 1, n_mvents
+            ventptr => mventexinfo(i)
+            ii = ventptr%room1
+            call toIntString(ventptr%room1,ciFrom)
             if (ii==nr) cifrom = 'Outside'
-            call toIntString(inode,ciTo)
-            do ih = 1,3
-                position = position + 1
-                if (ih==1) then
-                    if (ciFrom=='Outside') then
-                        headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '_N' // trim(ciTo)
-                    else
-                        headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '_N' // trim(ciTo)
-                    end if
-                else
-                    headertext(1,position) = trim(LabelsShort(ih+3)) // 'Fan_N' // trim(ciTo)
-                end if
-                headertext(2,position) = Labels(ih+3)
-                if (ih==1) then
-                    headertext(3,position) = 'Vent from' // trim(ciFrom) // 'to Node ' // trim(ciTo)
-                else
-                    headertext(3,position) = 'Fan at Node ' // trim(ciTo)
-                end if
-                headertext(4,position) = LabelUnits(ih+3)
-            end do
+            ii = ventptr%room2
+            if (ii==nr) cito = 'Outside'
+            call toIntString(ii,ciTo)
+            position = position + 1
+            if (ciFrom=='Outside') then
+                headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '_N' // trim(ciTo)
+            else
+                headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '_N' // trim(ciTo)
+            end if
+            headertext(2,position) = Labels(ih+3)
+            headertext(3,position) = 'Fan from' // trim(ciFrom) // 'to ' // trim(ciTo)
+            headertext(4,position) = LabelUnits(ih+3)
         end do
     end if
 
@@ -419,7 +410,7 @@ module spreadsheet_header_routines
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr
+    type(vent_type), pointer :: ventptr
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
@@ -531,8 +522,8 @@ module spreadsheet_header_routines
     ! Mechanical vent variables
     iv = 0
     do j = 1, n_mvext
-        mvextptr => mventexinfo(j)
-        if (mvextptr%room<=nrm1) then
+        ventptr => mventexinfo(j)
+        if (ventptr%room1<=nrm1) then
             iv = iv + 1
             position = position + 1
             call toIntString(iv,cVent)

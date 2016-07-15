@@ -298,17 +298,14 @@ module output_routines
 
     !     Description:  Output the vent flow at the current time
 
-    integer :: i, ii, ifrom, ito, irm
-    character :: ciout*14, cjout*12
-    logical first
+    integer :: i, ifrom, ito
     real(eb), dimension(8) :: flow
 
     character outbuf*132, cifrom*12, cito*12
-    type(vent_type), pointer :: ventptr, mvextptr
+    type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
     write (iofilo,5000)
-
 
     ! horizontal flow natural vents
     do i = 1, n_hvents
@@ -352,73 +349,52 @@ module output_routines
     end do
 
     ! mechanical vents
-    if (n_mvnodes/=0.and.n_mvext/=0) then
-        do i = 1, n_mvext-1, 2
-            mvextptr => mventexinfo(i)
-            ii = mvextptr%room
-            roomptr => roominfo(ii)
-            write (cifrom,'(a12)') roomptr%name
-            if (ii==nr) cifrom = 'Outside'
+    do i = 1, n_mvents
+        ventptr => mventinfo(i)
+        ifrom = ventptr%room1
+        roomptr => roominfo(ifrom)
+        write (cifrom,'(a12)') roomptr%name
+        if (ifrom==nr) cifrom = 'Outside'
+        ito = ventptr%room2
+        roomptr => roominfo(ito)
+        write (cito,'(a12)') roomptr%name
+        if (ito==nr) cito = 'Outside'
+        flow = 0.0_eb
+        if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
+        if (ventptr%mflow(2,u)<0.0_eb) flow(6) = -ventptr%mflow(2,u)
+        if (ventptr%mflow(2,l)>=0.0_eb) flow(7) = ventptr%mflow(2,l)
+        if (ventptr%mflow(2,l)<0.0_eb) flow(8) = -ventptr%mflow(2,l)
+        if (ventptr%mflow(1,u)>=0.0_eb) flow(1) = ventptr%mflow(1,u)
+        if (ventptr%mflow(1,u)<0.0_eb) flow(2) = -ventptr%mflow(1,u)
+        if (ventptr%mflow(1,l)>=0.0_eb) flow(3) = ventptr%mflow(1,l)
+        if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
 
-            mvextptr => mventexinfo(i+1)
-            ii = mvextptr%room
-            roomptr => roominfo(ii)
-            write (cito,'(a12)') roomptr%name
-            if (ii==nr) cito = 'Outside'
-
-            flow = 0.0_eb
-            mvextptr => mventexinfo(i)
-            if (mvextptr%mv_mflow(u)>=0.0_eb) flow(1) = mvextptr%mv_mflow(u)
-            if (mvextptr%mv_mflow(u)<0.0_eb) flow(2) = -mvextptr%mv_mflow(u)
-            if (mvextptr%mv_mflow(l)>=0.0_eb) flow(3) = mvextptr%mv_mflow(l)
-            if (mvextptr%mv_mflow(l)<0.0_eb) flow(4) = -mvextptr%mv_mflow(l)
-
-            mvextptr => mventexinfo(i+1)
-            if (mvextptr%mv_mflow(u)>=0.0_eb) flow(5) = mvextptr%mv_mflow(u)
-            if (mvextptr%mv_mflow(u)<0.0_eb) flow(6) = -mvextptr%mv_mflow(u)
-            if (mvextptr%mv_mflow(l)>=0.0_eb) flow(7) = mvextptr%mv_mflow(l)
-            if (mvextptr%mv_mflow(l)<0.0_eb) flow(8) = -mvextptr%mv_mflow(l)
-
-            call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
-            write (iofilo,5010) 'M', i, cifrom, cito, outbuf
-        end do
-    end if
+        call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
+        write (iofilo,5010) 'M', i, cifrom, cito, outbuf
+    end do
 
     ! Total mass flowing through mechanical vents up to current time
-     write (iofilo,5030)
-
-    do irm = 1, nr
-        roomptr => roominfo(irm)
-        i = irm
-        first = .true.
-        write (ciout,'(a14)') roomptr%name
-        if (irm==nr) ciout = 'Outside'
-
-       ! mechanical vents
-        if (n_mvnodes/=0.and.n_mvext/=0) then
-            do i = 1, n_mvext
-                mvextptr => mventexinfo(i)
-                ii = mvextptr%room
-                if (ii==irm) then
-                    write (cjout,'(a1,1x,a4,i3)') 'M', 'Node', mvextptr%exterior_node
-                    flow = 0.0_eb
-                    if (mvextptr%total_flow(u)>=0.0_eb) flow(1) = mvextptr%total_flow(u)
-                    if (mvextptr%total_flow(u)<0.0_eb) flow(2) = -mvextptr%total_flow(u)
-                    if (mvextptr%total_flow(l)>=0.0_eb) flow(3) = mvextptr%total_flow(l)
-                    if (mvextptr%total_flow(l)<0.0_eb) flow(4) = -mvextptr%total_flow(l)
-                    flow(5) = abs(mvextptr%total_trace_flow(u)) + abs(mvextptr%total_trace_flow(l))
-                    flow(6) = abs(mvextptr%total_trace_filtered(u)) + abs(mvextptr%total_trace_filtered(l))
-                    call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
-                    if (first) then
-                        if (i/=1) write (iofilo,5040)
-                        write (iofilo,5050) ciout, cjout, outbuf
-                        first = .false.
-                    else
-                        write (iofilo,5050) ' ', cjout, outbuf
-                    end if
-                end if
-            end do
-        end if
+    write (iofilo,5030)
+    
+    do i = 1, n_mvents
+        ventptr => mventinfo(i)
+        ifrom = ventptr%room1
+        roomptr => roominfo(ifrom)
+        write (cifrom,'(a12)') roomptr%name
+        if (ifrom==nr) cifrom = 'Outside'
+        ito = ventptr%room2
+        roomptr => roominfo(ito)
+        write (cito,'(a12)') roomptr%name
+        if (ito==nr) cito = 'Outside'
+        flow = 0.0_eb
+        if (ventptr%total_flow(u)>=0.0_eb) flow(1) = ventptr%total_flow(u)
+        if (ventptr%total_flow(u)<0.0_eb) flow(2) = -ventptr%total_flow(u)
+        if (ventptr%total_flow(l)>=0.0_eb) flow(3) = ventptr%total_flow(l)
+        if (ventptr%total_flow(l)<0.0_eb) flow(4) = -ventptr%total_flow(l)
+        flow(5) = abs(ventptr%total_trace_flow(u)) + abs(ventptr%total_trace_flow(l))
+        flow(6) = abs(ventptr%total_trace_filtered(u)) + abs(ventptr%total_trace_filtered(l))
+        call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),0.0_eb,0.0_eb)
+        write (iofilo,5050) cifrom, cito, outbuf
     end do
 
 5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
@@ -683,12 +659,11 @@ module output_routines
 
     !     Description:  Output initial test case vent connections
 
-    integer :: i, j, isys, ibr, irm, iext
+    integer :: i, j
     real(eb) :: hrx, hrpx
     character :: ciout*8, cjout*14, csout*6
-    logical :: first
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: ventptr, mvextptr, mvfanptr
+    type(vent_type), pointer :: ventptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
@@ -732,58 +707,19 @@ module output_routines
     end if
 
     !     mechanical vents
-    if (n_mvnodes==0.and.n_mvext==0) then
+    if (n_mvents==0) then
         write (iofilo,5060)
     else
-
-        !     fans
         write (iofilo,5120)
-        do isys = 1, nhvsys
-            first = .true.
-            do ibr = 1, nbr
-                if (izhvbsys(ibr)==isys) then
-                    if (nf(ibr)/=0) then
-                        mvfanptr => mventfaninfo(nf(ibr))
-                        call chkext(na(ibr),irm,iext)
-                        if (irm>=1.and.irm<=nr) then
-                            mvextptr => mventexinfo(iext)
-                            write (ciout,'(a4,i3)') 'Comp', irm
-                            if (irm==nr) ciout = 'Outside'
-                            write (cjout,'(a4,i3)') 'Node', na(ibr)
-                            if (first) then
-                                write (iofilo,5100) isys, ciout, mvextptr%height, cjout, hvght(na(ibr)), mvextptr%area
-                                first = .false.
-                            else
-                                write (iofilo,5110) ciout, mvextptr%height, cjout, hvght(na(ibr)), mvextptr%area
-                            end if
-                        end if
-                        if (first) then
-                            write (iofilo,5130) isys, 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), &
-                                nf(ibr), mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, &
-                                (mvfanptr%coeff(j),j = 1,mvfanptr%n_coeffs)
-                            first = .false.
-                        else
-                            write (iofilo,5140) 'Node', na(ibr), hvght(na(ibr)), 'Node', ne(ibr), hvght(ne(ibr)), nf(ibr), &
-                                mvfanptr%min_cutoff_relp, mvfanptr%max_cutoff_relp, &
-                                (mvfanptr%coeff(j),j= 1,mvfanptr%n_coeffs)
-                        end if
-                        call chkext(ne(ibr),irm,iext)
-                        if (irm>=1.and.irm<=nr) then
-                            mvextptr => mventexinfo(iext)
-                            write (ciout,'(a4,i3)') 'Node', ne(ibr)
-                            write (cjout,'(a4,i3)') 'Comp', irm
-                            if (irm==nr) cjout = 'Outside'
-                            if (first) then
-                                write (iofilo,5100) isys, ciout, hvght(ne(ibr)), cjout, mvextptr%height, mvextptr%area
-                                first = .false.
-                            else
-                                write (iofilo,5110) ciout, hvght(ne(ibr)), cjout, mvextptr%height, mvextptr%area
-                            end if
-                        end if
-                    end if
-                end if
-            end do
-            if (isys/=nhvsys) write (*,'(a)') ' '
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            write (ciout,'(i5,3x)') ventptr%room1
+            if (ventptr%top==nr) ciout = 'Outside'
+            write (cjout,'(i5,3x)') ventptr%room2
+            if (ventptr%bottom==nr) cjout = 'Outside'
+            write (iofilo,5130) ventptr%counter, ciout, ventptr%height(1), cjout, ventptr%height(2), &
+                ventptr%min_cutoff_relp, ventptr%max_cutoff_relp, &
+                (ventptr%coeff(j),j = 1,ventptr%n_coeffs)
         end do
     end if
     return
@@ -984,34 +920,6 @@ module output_routines
     end do
     return
     end subroutine output_initial_detectors
-
-! --------------------------- chkext -------------------------------------------
-
-    subroutine chkext (ind,irm,iext)
-
-    !     description:  check if an hvac node is a connection to an external room
-    !     arguments: ind   node number to check
-    !                irm   room number if node is an external connection
-    !                iext  external node number is node is an external connection
-
-    integer, intent(in) :: ind
-    integer, intent(out) :: irm, iext
-    type(vent_type), pointer :: mvextptr
-
-    integer :: i
-
-    do i = 1, n_mvext
-        mvextptr => mventexinfo(i)
-        if (mvextptr%exterior_node==ind) then
-            iext = i
-            irm = mvextptr%room
-            return
-        end if
-    end do
-    irm = 0
-    iext = 0
-    return
-    end subroutine chkext
 
 ! --------------------------- flwout -------------------------------------------
 
@@ -1236,8 +1144,6 @@ module output_routines
             write(*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
                roomptr%species_fraction(l,2), roomptr%species_fraction(u,2)
         end do
-        if (nhvpvar>0)write(*,6010)(p(nofpmv+i),i=1,nhvpvar)
-        if (nhvtvar>0)write(*,6020)(p(noftmv+i),i=1,nhvtvar)
         if (n_mvnodes>0)write(*,6040)
         do i = 1, n_mvnodes
             do j = 1, ncnode(i)

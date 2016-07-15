@@ -3,7 +3,7 @@ module vflow_routines
     use precision_parameters
 
     use room_data
-    use opening_fractions, only: getventfraction
+    use opening_fractions, only: get_vent_opening
     use utility_routines, only: tanhsmooth
     
     use precision_parameters
@@ -52,11 +52,11 @@ module vflow_routines
         ventptr%mflow(1:2,1:2) = 0.0_eb
         itop = ventptr%top
         ibot = ventptr%bottom
-        call getventfraction ('V',itop,ibot,1,i,tsec,fraction)
+        call get_vent_opening ('V',itop,ibot,1,i,tsec,fraction)
         area = fraction * ventptr%area
         ventptr%current_area = area
         ishape = ventptr%shape
-        call ventcf (itop, ibot, area, ishape, epscut, xmvent, vvent, tmvent)
+        call ventcf (itop, ibot, area, ishape, epsp, xmvent, vvent, tmvent)
 
         ventptr%n_slabs = 2
         do iflow = 1, 2
@@ -125,8 +125,8 @@ module vflow_routines
                 uflw_vf(ifrm,q,u) = uflw_vf(ifrm,q,u) - fromqu
                 uflw_vf(ifrm,q,l) = uflw_vf(ifrm,q,l) - fromql
             end if
-                ventptr%mflow(iflow,u) = ventptr%mflow(iflow,u) - frommu
-                ventptr%mflow(iflow,l) = ventptr%mflow(iflow,l) - fromml
+            ventptr%mflow(iflow,u) = ventptr%mflow(iflow,u) - frommu
+            ventptr%mflow(iflow,l) = ventptr%mflow(iflow,l) - fromml
 
             ! determine mass and enthalpy fractions for the to room
             roomptr => roominfo(ito)

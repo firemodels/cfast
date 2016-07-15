@@ -26,7 +26,7 @@ module initialization_routines
 
     private
 
-    public get_thermal_property, inittarg, initamb, offset, hvinit, initialize_memory, initialize_fire_objects, &
+    public get_thermal_property, inittarg, initamb, offset, initialize_memory, initialize_fire_objects, &
         initialize_species, initialize_walls
 
     contains
@@ -59,287 +59,6 @@ module initialization_routines
     stop
 
     end subroutine get_thermal_property
-
-! --------------------------- hvinit -------------------------------------------
-
-    subroutine hvinit ()
-
-    !     routine: hvinit
-    !     purpose: this routine sets up the arrays needed to for hvac
-    !                 simulation and initializes temperatures and concentrations
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-
-    !     this function has been modified to prevent negative flow.  a max function
-    !     was inserted just after the calculation off, the flow to do this.  if
-    !     the flow is allowed to be negative (flow reversal) then this statement
-    !     must be removed.
-
-    real(eb) :: c3(ns), f, xxjm1, s1, s2, xnext, pav, tav, df, xx, rden
-    integer :: i, ii, j, k, ib, id, isys, lsp
-    type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr, mvfanptr, mvductptr, mvnodeptr
-
-    !    calculate min & max values for fan curve
-
-    do k = 1, n_mvfan
-        mvfanptr => mventfaninfo(k)
-        f = mvfanptr%coeff(1)
-        df = 0.0_eb
-        xx = 1.0_eb
-        do j = 2, mvfanptr%n_coeffs
-            xxjm1 = j - 1
-            df = df + xxjm1*mvfanptr%coeff(j)*xx
-            xx = xx*mvfanptr%min_cutoff_relp
-            f = f + mvfanptr%coeff(j)*xx
-        end do
-    end do
-    do k = 1, n_mvfan
-        mvfanptr => mventfaninfo(k)
-        f = mvfanptr%coeff(1)
-        df = 0.0_eb
-        xx = 1.0_eb
-        do j = 2, mvfanptr%n_coeffs
-            xxjm1 = j - 1
-            df = df + xxjm1*mvfanptr%coeff(j)*xx
-            xx = xx*mvfanptr%max_cutoff_relp
-            f = f + mvfanptr%coeff(j)*xx
-        end do
-        ! prevent negative flow
-        mvfanptr%mv_maxflow = max(0.0_eb,f)
-    end do
-
-    ! if there are no connections between the hvac system and the
-    ! outside world, we do not need to go any further
-    if (n_mvext<=0) return
-
-    ! arrange data on node basis
-    do i = 1, n_mvnodes
-        k = 0
-        do ib = 1, nbr
-            if (i==na(ib)) then
-                k = k + 1
-                icmv(i,k) = ib
-                mvintnode(i,k) = ne(ib)
-            else if (i==ne(ib)) then
-                k = k + 1
-                icmv(i,k) = ib
-                mvintnode(i,k) = na(ib)
-            end if
-        end do
-        ncnode(i) = k
-    end do
-
-    ! check interior nodes
-    do i = 1, n_mvnodes
-        if (ncnode(i)<1.or.ncnode(i)>mxcon) then
-            write (*,*) '***Error: HVINIT - interior node has too many or too few connections'
-            write (logerr,*) '***Error: HVINIT - interior node has too many or too few connections'
-            stop
-        end if
-    end do
-
-    ! limit the range of diffuser height and set the absolute height of the interior node
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        i = mvextptr%room
-        j = mvextptr%exterior_node
-        if (ncnode(j)>1) then
-            write (*,*) '***Error: HVINIT - exterior node has too many or too few connections'
-            write (logerr,*) '***Error: HVINIT - exterior node has too many or too few connections'
-            stop
-        end if
-        roomptr => roominfo(i)
-        mvextptr%height = min(roomptr%cheight,max(0.0_eb,mvextptr%height))
-        hvght(j) = mvextptr%height + roomptr%z0
-    end do
-
-    ! assign compartment pressure & temperature data to exterior nodes of the hvac network
-    mventnodeinfo(1:n_mvnodes)%relp = -1.0_eb
-    do i = 1, nbr
-        hvdara(i) = 0.0_eb
-        hvdvol(i) = 0.0_eb
-        hvconc(i,1) = -1.0_eb
-        tbr(i) = -1.0_eb
-    end do
-
-    s1 = 0.0_eb
-    s2 = 0.0_eb
-    c3(1:ns) = 0.0_eb
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        i = mvextptr%room
-        roomptr => roominfo(i)
-        j = mvextptr%exterior_node
-        mvnodeptr => mventnodeinfo(j)
-        ib = icmv(j,1)
-        ! the outside is defined to be at the base of the structure for mv
-        if (i<nr) then
-            mvextptr%temp(u) = interior_temperature
-            mvextptr%temp(l) = interior_temperature
-            mvnodeptr%relp = roomptr%relp - grav_con*interior_rho*mvextptr%height
-        else
-            mvextptr%temp(u) = exterior_temperature
-            mvextptr%temp(l) = exterior_temperature
-            mvnodeptr%relp = exterior_abs_pressure - grav_con*exterior_rho*mvextptr%height
-        end if
-        tbr(ib) = mvextptr%temp(u)
-        s1 = s1 + mvnodeptr%relp
-        s2 = s2 + tbr(ib)
-        ! the outside is defined to be at the base of the structure for mv
-        if (i<nr) then
-            mvextptr%species_fraction(u,1:ns) = initial_mass_fraction(1:ns)*interior_rho
-            mvextptr%species_fraction(l,1:ns) = initial_mass_fraction(1:ns)*interior_rho
-        else
-            mvextptr%species_fraction(u,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
-            mvextptr%species_fraction(l,1:ns) = initial_mass_fraction(1:ns)*exterior_rho
-        end if
-        hvconc(j,1:ns) = mvextptr%species_fraction(u,1:ns)
-        c3(1:ns) = c3(1:ns) + mvextptr%species_fraction(u,1:ns)
-    end do
-
-    ! this is to initialize the nodes and branches to something
-    ! we will then let the system equilibrate to give us the true answer
-    xnext = n_mvext
-    pav = s1/xnext
-    tav = s2/xnext
-    do lsp = 1, ns
-        c3(lsp) = c3(lsp)/xnext
-    end do
-    do i = 1, n_mvnodes
-        mvnodeptr => mventnodeinfo(i)
-        if (mvnodeptr%relp<0.0_eb) mvnodeptr%relp = pav
-    end do
-    do i = 1, nbr
-        if (tbr(i)<=0.0_eb) tbr(i) = tav
-        if (hvconc(i,1)<0.0_eb) then
-            do lsp = 1, ns
-                hvconc(i,lsp) = c3(lsp)
-            end do
-        end if
-    end do
-
-    ! calculate area, relative roughness, effective diameter and volume of ducts
-    do id = 1, n_mvduct
-        mvductptr => mventductinfo(id)
-        mvductptr%area = (pi*mvductptr%diameter**2)/4.0_eb
-        ib = mvductptr%branch
-        hvdvol(ib) = hvdvol(ib) + mvductptr%area*mvductptr%length
-        hvdara(ib) = hvdara(ib) + pi*mvductptr%diameter*mvductptr%length
-    end do
-
-
-    ! construct hvmap arrays
-    call hvmap
-
-    ! define total mass for each hvac system
-    do isys = 1, nhvsys
-        hvtm(isys) = 0.0_eb
-    end do
-    do ib = 1, nbr
-        isys = izhvbsys(ib)
-        rden = (pressure_offset+pav)/(rgas*tbr(ib))
-        hvtm(isys) = hvtm(isys) + rden*hvdvol(ib)
-    end do
-
-    ! now that everything is ok, we can turn on ventilation
-    mvcalc_on = .true.
-    return
-    end subroutine hvinit
-
-! --------------------------- hvmap -------------------------------------------
-
-    subroutine hvmap
-
-    !     routine: hvmap
-    !     purpose: this routine maps all the hvac nodes into a single mapping array for dassl and creates
-    !              a mapping from those to exterior ones
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments:
-
-
-    integer :: istack(100), i, ii, j, icursys, iptr, icurnod, nxtnode, isys, ib
-    type(vent_type), pointer :: mvextptr
-
-    ! construct the array that maps between interior nodes (nodes that dassl solves for) and the entire node array
-    izhvmapi(1:n_mvnodes) = (/ (i, i=1,n_mvnodes) /)
-    
-    ! DASSL only solves interior nodes so zero out exterior nodes
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        i = mvextptr%exterior_node
-        izhvmapi(i) = 0
-    end do
-
-    ! and fill in the holes vacated by the exterior nodes
-    ii = 0
-    do i = 1, n_mvnodes
-        if (izhvmapi(i)/=0) then
-            ii = ii + 1
-            izhvmapi(ii) = izhvmapi(i)
-        end if
-    end do
-
-    ! construct inverse of izhvmapi
-    izhvmape(1:n_mvnodes) = -1
-    do i = 1, n_mvnodes - n_mvext
-        izhvmape(izhvmapi(i)) = i
-    end do
-
-    ! construct array that maps between all nodes and exterior nodes
-    izhvie(1:n_mvnodes) = 0
-    do ii = 1, n_mvext
-        mvextptr => mventexinfo(ii)
-        i = mvextptr%exterior_node
-        izhvie(i) = ii
-    end do
-
-    ! construct array that maps between all nodes and hvac system number to which they belong
-    izhvsys(1:n_mvnodes) = 0
-    icursys = 0
-    iptr = 0
-90  continue
-    icurnod = 0
-    do i = 1, n_mvnodes
-        if (izhvsys(i)==0) then
-            icurnod = i
-            exit
-        end if
-    end do
-    if (icurnod/=0) then
-        icursys = icursys + 1
-        iptr = iptr + 1
-        istack(iptr) = icurnod
-120     continue
-        if (iptr==0) go to 90
-        icurnod = istack(iptr)
-        iptr = iptr - 1
-        izhvsys(icurnod) = icursys
-        do j = 1, ncnode(icurnod)
-            nxtnode = mvintnode(icurnod,j)
-            if (izhvsys(nxtnode)==0) then
-                iptr = iptr + 1
-                istack(iptr) = nxtnode
-            end if
-        end do
-        go to 120
-    end if
-    nhvsys = icursys
-
-    ! we have to update nequals.  nequals was originally defined in
-    ! offset but offset was called before nhvsys was defined.
-    nequals = nofhvpr + nhvsys*n_species
-
-    do i = 1, n_mvnodes
-        isys = izhvsys(i)
-        do j = 1, ncnode(i)
-            ib = icmv(i,j)
-            izhvbsys(ib) = isys
-        end do
-    end do
-    return
-    end subroutine hvmap
 
 ! --------------------------- initamb -------------------------------------------
 
@@ -413,15 +132,6 @@ module initialization_routines
         end if
         if (roomptr%shaft) p(i+nofvu) = roomptr%vmax
         p(i+noftl) = interior_temperature
-    end do
-
-    ! define hvac pressures and temperatures.  these values are later refined by
-    ! snsqe so that each hvac node conserves mass and energy
-    do i = 1, nhvpvar
-        p(i+nofpmv) = 0.0_eb
-    end do
-    do i = 1, nhvtvar
-        p(i+noftmv) = interior_temperature
     end do
 
     ! define interior surface wall temperatures
@@ -717,7 +427,7 @@ module initialization_routines
     !     Arguments: none
 
     real(eb) :: xt, xtemp, xh2o, totmass, initialmass(2,mxrooms,ns)
-    integer i, j, k, ip, iprod, isof, isys, lsp
+    integer i, j, k, ip, iprod, isof, lsp
     type(room_type), pointer :: roomptr
     
     initial_mass_fraction(1:ns) = 0.0_eb
@@ -763,17 +473,6 @@ module initialization_routines
             end do
         end do
     end do
-
-    ! hvinit define initial products for hvac systems (if any)
-    if (nhvsys/=0) then
-        isof = nofhvpr
-        do lsp = 1, min(ns,9)
-            do isys = 1, nhvsys
-                isof = isof + 1
-                p(isof) = initial_mass_fraction(lsp)*hvtm(isys)
-            end do
-        end do
-    end if
 
     ! define product map array
     i_speciesmap(1) = 1
@@ -1071,8 +770,6 @@ module initialization_routines
     ! the structure of the solver array is
 
     ! nofp = offset for the main pressure; the array of base pressures for each compartment
-    ! nofpmv = offset for hvac node pressuers
-    ! noftmv = offset for hvac branch temperatures
     ! noftu = upper layer temperature
     ! nofvu = upper layer volume
     ! noftl = lower layer temperature
@@ -1135,22 +832,14 @@ module initialization_routines
     nhvpvar = n_mvnodes - n_mvext
     nhvtvar = nbr
     nofp = 0
-    nofpmv = nofp + nrm1
-    noftmv = nofpmv + nhvpvar
-    noffsm = noftmv + nhvtvar
-    noftu = noffsm
+    noftu = nofp + nrm1
     nofvu = noftu + nrm1
     noftl = nofvu + nrm1
     nofoxyl = noftl + nrm1
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
     nofprd = nofwt + nhcons
-    nofhvpr = nofprd + 2*nrm1*n_species
-
-    ! if the hvac model is used then nequals needs to be redefined in hvmap since the variable nhvsys is not defined yet.
-    ! after nhvsys is defined the following statement can be used to define nequals
-    ! nequals = nofhvpr + nhvsys*n_species
-    nequals = nofhvpr
+    nequals = nofprd
 
     return
     end subroutine offset

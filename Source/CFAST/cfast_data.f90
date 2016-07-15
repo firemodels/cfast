@@ -276,8 +276,7 @@ module solver_data
     integer :: stpmin_cnt_max                   ! maximum number of time steps below stpmin before DASSL calls it quits
     
     ! solver variables
-    integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
-        nofhvpr, nequals, noffsm
+    integer :: nofp, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, nofhvpr, nequals
     real(eb), dimension(maxteq) :: p, pold, pdold
     real(eb) :: told, dt
 

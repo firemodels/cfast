@@ -823,7 +823,7 @@ module initialization_routines
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
     nofprd = nofwt + nhcons
-    nequals = nofprd
+    nequals = nofprd + 2*nrm1*n_species
 
     return
     end subroutine offset

@@ -2,7 +2,7 @@ module mflow_routines
 
     use precision_parameters
 
-    use opening_fractions, only : qcffraction, qcifraction
+    use opening_fractions, only : qcffraction, qcifraction, get_vent_opening
     use utility_routines, only: d1mach
 
     use precision_parameters
@@ -31,8 +31,8 @@ module mflow_routines
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), uflw_filtered(mxrooms,ns+2,2)
 
-    real(eb) :: filter, vheight, layer_height, epscut, hvfan, fraction, fu, fl, mv_fraction, uflw_totals(2+ns)
-    integer :: i, ii, j, k, iroom
+    real(eb) :: filter, vheight, layer_height, hvfan, fraction, fu, fl, uflw_totals(2+ns)
+    integer :: i, j, k, iroom
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -42,6 +42,10 @@ module mflow_routines
     uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
     if (n_mvents==0) return
+    
+    if (tsec>10._eb) then
+        continue
+    end if
 
     do i = 1, n_mvents
         ventptr => mventinfo(i)
@@ -49,12 +53,9 @@ module mflow_routines
         uflw_totals = 0.0_eb
 
         ! calculate volume flow through fan
-        iroom = ventptr%room1
-        call get_vent_opening ('M',iroom,ventptr%room2,ventptr%counter,i,tsec,fraction)
-        ventptr%relp = mv_pressure(ventptr%room2,ventptr%height(2)) - mv_pressure(iroom,ventptr%height(1))
-        epscut = fraction*(0.5_eb - tanh(8.0_eb/(ventptr%max_cutoff_relp-ventptr%min_cutoff_relp)* &
-            (ventptr%relp-ventptr%min_cutoff_relp)-4.0_eb)/2.0_eb)
-        hvfan = epscut*max(epsp,ventptr%mv_maxflow)
+        call get_vent_opening ('M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
+        ventptr%relp = mv_pressure(ventptr%room2,ventptr%height(2)) - mv_pressure(ventptr%room1,ventptr%height(1))
+        hvfan = mv_fan(ventptr, epsp, fraction)
 
         ! calculate mass and enthapy flows for the from room
         iroom = ventptr%room1
@@ -95,7 +96,7 @@ module mflow_routines
         end do
  
         ! amount filtered for smoke and trace species, (2+k) = 11 and 13
-        filter = qcifraction(qcvf,i,tsec)
+        call get_vent_opening ('F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
         uflw_filtered(iroom,11,u) = uflw_filtered(iroom,11,u) + max(0.0_eb,filter*fu*uflw_totals(11))
         uflw_filtered(iroom,11,l) = uflw_filtered(iroom,11,l) + max(0.0_eb,filter*fl*uflw_totals(11))
         uflw_filtered(iroom,13,u) = uflw_filtered(iroom,13,u) + max(0.0_eb,filter*fu*uflw_totals(13))
@@ -116,7 +117,7 @@ module mflow_routines
     do i = 1, n_mvents
 
         ! flow information for smokeview
-        ventptr => mventinfo(ii)
+        ventptr => mventinfo(i)
         iroom = ventptr%room1
         roomptr => roominfo(iroom)
         vheight = roomptr%z0 + ventptr%height(1)
@@ -149,7 +150,22 @@ module mflow_routines
     return
     end subroutine mechanical_flow
 
-! --------------------------- mvpressure -------------------------------------------
+! --------------------------- mv_fan -------------------------------------------
+
+    real(eb) function mv_fan (ventptr, epsp, fraction)
+
+    type(vent_type), intent(in) :: ventptr
+    real(eb), intent(in) :: epsp, fraction
+
+    real(eb) :: epscut
+    
+    epscut = fraction*(0.5_eb - tanh(8.0_eb/(ventptr%max_cutoff_relp-ventptr%min_cutoff_relp)* &
+        (ventptr%relp-ventptr%min_cutoff_relp)-4.0_eb)/2.0_eb)
+    mv_fan = epscut*max(epsp,ventptr%maxflow)
+
+    end function mv_fan
+
+! --------------------------- mv_pressure -------------------------------------------
     
     real(eb) function mv_pressure(iroom, height)
     
@@ -173,6 +189,46 @@ module mflow_routines
 
     end function mv_pressure
 
+! --------------------------- mv_fraction -------------------------------------------
+    
+    real(eb) function mv_fraction (ventptr, ifromto, layer)
+    
+    integer, intent(in) :: ifromto, layer
+    type(room_type), pointer :: roomptr
+    type(vent_type) :: ventptr
+    
+    integer :: iroom
+    real(eb) :: z, xxlower, xxlower_clamped, fraction
+    
+    if (ifromto==1) then
+        iroom = ventptr%room1
+    else
+        iroom = ventptr%room2
+    end if
+    
+    roomptr => roominfo(iroom)
+    z = roomptr%depth(l)
+    
+    if (ventptr%orientation(ifromto)==1) then
+        xxlower = sqrt(ventptr%diffuser_area(ifromto))
+    else
+        xxlower = sqrt(ventptr%diffuser_area(ifromto))/10.0_eb
+    end if
+    xxlower_clamped = max(0.0_eb,min((ventptr%height(ifromto) - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
+    
+    ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
+    fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
+    if (layer==u) then
+        mv_fraction = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
+    else
+        mv_fraction = min(1.0_eb,max(fraction,0.0_eb))
+    end if
+    return
+    
+    end function mv_fraction
+
+! --------------------------- getmventinfo -------------------------------------------
+
     subroutine getmventinfo (i, iroom, xyz, vred, vgreen, vblue)
 
     !       This is a routine to get the shape data for mechanical flow vent external connections
@@ -185,7 +241,7 @@ module mflow_routines
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
 
-    ventptr => mventexinfo(i)
+    ventptr => mventinfo(i)
     iroom = ventptr%room1
     roomptr => roominfo(iroom)
 

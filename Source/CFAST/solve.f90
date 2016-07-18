@@ -62,7 +62,7 @@ module solve_routines
     real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrwork = (3*mxalg**2+13*mxalg)/2
     real(eb) :: work(lrwork)
-    integer :: ires, iopt, nhvalg, nalg0, nalg1, nprint, i, info, nodes
+    integer :: ires, iopt, nalg1, nprint, i, info, nodes
     real(eb) :: tol
 
     type(room_type), pointer :: roomptr
@@ -79,9 +79,7 @@ module solve_routines
     call calculate_residuals(t,p,pdzero,pdold,ires,rpar2,ipar2)
     iopt = 2
     tol = algtol
-    nhvalg = nhvpvar + nhvtvar
-    nalg0 = nhvalg
-    nalg1 = nrm1 + nhvalg
+    nalg1 = nrm1
     nprint = -1
 
     ! room pressures
@@ -233,7 +231,7 @@ module solve_routines
     data pdzero /maxteq*0.0_eb/
 
     if (1.eq.2) iflag=-1 ! dummy statement to eliminate compiler warnings
-    nalg = nrm1 + nhvpvar + nhvtvar
+    nalg = nrm1
     do i = 1, nalg
         p2(i) = hvpsolv(i)
     end do
@@ -990,7 +988,7 @@ module solve_routines
     real(eb) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
     real(eb) :: flows_radiation(mxrooms,2), fluxes_radiation(mxrooms,nwal)
 
-    logical :: hvacflg, djetflg
+    logical :: djetflg
     integer :: nprod, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
     real(eb) :: epsp, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ
@@ -1052,13 +1050,11 @@ module solve_routines
             flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_vvents(iroom,ip,l)
             flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_vvents(iroom,ip,u)
         end do
-        if (hvacflg) then
-            do iprod = 1, nprod + 2
-                ip = i_speciesmap(iprod)
-                flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_mvents(iroom,ip,l) - filtered(iroom,iprod,l)
-                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_mvents(iroom,ip,u) - filtered(iroom,iprod,u)
-            end do
-        end if
+        do iprod = 1, nprod + 2
+            ip = i_speciesmap(iprod)
+            flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_mvents(iroom,ip,l) - filtered(iroom,iprod,l)
+            flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_mvents(iroom,ip,u) - filtered(iroom,iprod,u)
+        end do
         if (djetflg) then
             do iprod = 1, nprod + 2
                 ip = i_speciesmap(iprod)
@@ -1389,17 +1385,16 @@ module solve_routines
             ndisc = ndisc + 1
             discon(ndisc) = ventptr%opening(3)
         end do
-        do  i = 1, n_mvfan
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvm(1,i)
+            discon(ndisc) = ventptr%opening(1)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvm(3,i)
-        end do
-        do i = 1, n_mvfanfilters
+            discon(ndisc) = ventptr%opening(3)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvf(1,i)
+            discon(ndisc) = ventptr%filter(1)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvf(3,i)
+            discon(ndisc) = ventptr%filter(3)
         end do
 
         ! put the discontinuity array into order

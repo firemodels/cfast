@@ -245,9 +245,10 @@ module cfast_types
         real(eb) :: diffuser_area(2)                    ! cross-sectional area of vent diffusers
         integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
         real, dimension(mxcoeff) :: coeff               ! coefficients of fan curve, flow vs pressure
-        real(eb) :: mv_maxflow                          ! specified fan flow in mv system (m^3/s)
+        real(eb) :: maxflow                             ! peak specified fan flow in mv system (m^3/s)
         real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
         real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
+        real(eb) :: filter(4)                           ! simple filtering of vents ... same structure as open/close below
 
         real(eb) :: relp                                ! pressure difference across vent (room2 - room1)
         real(eb), dimension(2) :: mv_mflow              ! vent mass flow at compartment connection (u,l)

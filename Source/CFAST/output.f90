@@ -603,7 +603,7 @@ module output_routines
     !     description:  output initial test case overview
 
     write (iofilo,5000)
-    write (iofilo,5010) nrm1, n_hvents, n_vvents, n_mvext
+    write (iofilo,5010) nrm1, n_hvents, n_vvents, n_mvents
     write (iofilo,5020) time_end, print_out_interval, smv_out_interval, ss_out_interval
 
 5000 format (//,'OVERVIEW',/)
@@ -743,7 +743,7 @@ module output_routines
           '                         Elev.                    Elev.               Number',/, &
           '                         (m)                      (m)       ', &
           '(m^2)                 (Pa)          (Pa)       (m^3/s)',/,115('-'))
-5130 format (i4,6x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
+5130 format (i4,6x,a8,5x,f7.2,6x,a8,5x,f7.2,16x,2(1pg11.2,3x),5(1pg10.2))
 5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
 
     end  subroutine output_initial_vents
@@ -1038,8 +1038,8 @@ module output_routines
     integer, intent(in) :: ikey, ieqmax
     real(eb), intent(in) :: t, dt
 
-    real(eb) :: xqf, dp
-    integer :: bmap(mxbranch), i, j, iprod, il, isys, idt, iroom, iobj, itarg
+    real(eb) :: xqf
+    integer :: bmap(mxbranch), i, j, iprod, il, iroom, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
        '   OD', '   CT', '   TS'/), ccc*3
@@ -1048,7 +1048,6 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
-    type(vent_type), pointer :: mvnodeptr1, mvnodeptr2
 
     save bmap
 
@@ -1101,22 +1100,6 @@ module output_routines
             end if
         end do
         write (*,*) ' '
-        write (*,*) 'Hvac print by systems'
-        do isys = 1, nhvsys
-            write (*,*) 'For system ', isys
-            write (*,*) 'Mass flow of system ', hvmfsys(isys)
-            write (*,*) 'Mass of gas in system ', zzhvm(isys)
-            do iprod = 1, ns
-                write (*,*) 'Mass of ', spname(iprod), ' ',zzhvspec(isys,iprod)
-            end do
-            do idt = 1, nbr
-                if (izhvbsys(idt)==isys) then
-                    mvnodeptr1 => mventnodeinfo(na(idt))
-                    mvnodeptr2 => mventnodeinfo(ne(idt))
-                    write (*,5080) na(idt), mvnodeptr1%relp, ne(idt), mvnodeptr2%relp, hvflow(na(idt), bmap(idt)), tbr(idt)
-                end if
-            end do
-        end do
         if (n_detectors/=0) then
             write(*,*)'Detector info'
             write(*,100)
@@ -1143,15 +1126,6 @@ module output_routines
             roomptr => roominfo(iroom)
             write(*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
                roomptr%species_fraction(l,2), roomptr%species_fraction(u,2)
-        end do
-        if (n_mvnodes>0)write(*,6040)
-        do i = 1, n_mvnodes
-            do j = 1, ncnode(i)
-                mvnodeptr2 => mventnodeinfo(mvintnode(i,j))
-                mvnodeptr1 => mventnodeinfo(i)
-                dp = mvnodeptr2%relp - mvnodeptr1%relp + dpz(i,j)
-                write(*,6050) i, mvintnode(i,j), dp, mvnodeptr1%relp, mvnodeptr2%relp, hvght(i)
-            end do
         end do
         write(*,6070)
         do iroom = 1, nrm1

@@ -1189,8 +1189,7 @@ module opening_fractions
 
     !	The following functions implement the open/close function for vents.
     !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxhvents), qcvv(4), qcvm(4,mxfan),
-    !         and qcvi(4,mxfan).
+    !	The arrays to hold the open/close information are qcvh (4,mxhvents). Others are built into the vent structure
 
     !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
 
@@ -1269,6 +1268,12 @@ module opening_fractions
         ventptr => mventinfo(vent_index)
         fraction = vfraction(ventptr%opening, time)
     end if
+    if (venttype=="F") then
+        fraction = 1.0_eb
+        ventptr => mventinfo(vent_index)
+        fraction = vfraction(ventptr%filter, time)
+    end if
+        
 
     end subroutine get_vent_opening
 

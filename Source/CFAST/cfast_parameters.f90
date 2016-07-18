@@ -32,7 +32,7 @@ module cparams
 
     integer, parameter :: mxvvents=mxccv*mxrooms    ! maximum number of vertical flow vents
 
-    integer, parameter :: mxhvsys=2*mxrooms         ! maximum number of mechanical ventilation systems
+    integer, parameter :: mxmvents=2*mxrooms         ! maximum number of mechanical ventilation systems
     integer, parameter :: mxfan = mxrooms           ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 1               ! maximum order of fan curve (as a polynomial). at the moment,
                                                     !   the gui limits to constant flow
@@ -42,7 +42,7 @@ module cparams
     integer, parameter :: mxext = 2*mxrooms         ! maximum number of external connections in a mechanical ventilation system
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
-    integer, parameter :: mxramps = 8*mxfires+mxhvents+mxvvents+mxhvsys ! maximum number of possible time-based ramps
+    integer, parameter :: mxramps = 8*mxfires+mxhvents+mxvvents+mxmvents ! maximum number of possible time-based ramps
     integer, parameter :: initial_time = 1          ! indicies for simple vent opening data
     integer, parameter :: initial_fraction = 2
     integer, parameter :: final_time = 3
@@ -80,11 +80,11 @@ module cparams
     integer, parameter :: cylpde = 2                        ! cylindrical targets (cylindrical coordinates)
 
     ! parameters for equation solver
-    ! nt = 4*mxrooms(main equ) + 2*mxrooms*ns(species) + mxhvsys*ns(hvac species)
-    integer, parameter :: nt = 12*mxrooms + 2*mxrooms*ns + mxhvsys*ns ! total number of main equations for dae solver
+    ! nt = 4*mxrooms(main equ) + 2*mxrooms*ns(species)
+    integer, parameter :: nt = 12*mxrooms + 2*mxrooms*ns ! total number of main equations for dae solver
     integer, parameter :: maxjeq = 6*mxrooms + mxnode + mxbranch
     integer, parameter :: maxeq = maxjeq + nwal*mxrooms
-    integer, parameter :: maxteq = maxeq+2*mxrooms*ns+mxhvsys*ns+4*mxrooms*3
+    integer, parameter :: maxteq = maxeq+2*mxrooms*ns
     
     ! define indices for flow arrays
     integer, parameter :: l = 2     ! lower layer

@@ -985,16 +985,16 @@ module input_routines
                     end do
                 case ('F')
                     fannumber = lrarray(4)
-                    if (fannumber>n_mvfan) then
+                    if (fannumber>n_mvents) then
                         write(*,5196) fannumber
                         write(logerr,5196) fannumber
                         stop
                     end if
-                    n_mvfanfilters = n_mvfanfilters + 1
-                    qcvf(1,fannumber) = lrarray(5)
-                    qcvf(3,fannumber) = lrarray(5) + lrarray(7)
-                    qcvf(4,fannumber) = lrarray(6)
-                    case default
+                    ventptr => mventinfo(fannumber)
+                    ventptr%filter(initial_time) = lrarray(5)
+                    ventptr%filter(final_time) = lrarray(5) + lrarray(7)
+                    ventptr%filter(final_fraction) = lrarray(6)
+                case default
                     write (*,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
                     write (logerr,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
                     stop
@@ -1109,6 +1109,7 @@ module input_routines
                 ventptr%n_coeffs = 1
                 ventptr%coeff = 0.0_eb
                 ventptr%coeff(1) = lrarray(10)
+                ventptr%maxflow = lrarray(10)
                 ventptr%min_cutoff_relp = lrarray(11)
                 ventptr%max_cutoff_relp = lrarray(12)
 

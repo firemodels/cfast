@@ -410,7 +410,7 @@ module spreadsheet_routines
     integer :: i, j, iroom1, iroom2, ik, im, ix
 
 
-    type(vent_type), pointer :: ventptr, mvextptr
+    type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -501,7 +501,7 @@ module spreadsheet_routines
     if (n_mvents/=0) then
         do i = 1, n_mvents
             ventptr => mventinfo(i)
-            if (mvextptr%room1<=nrm1) then
+            if (ventptr%room1<=nrm1) then
                 avent = ventptr%diffuser_area(1)
                 call SSaddtolist (position,avent,outarray)
                 ! flow slabs for the vent

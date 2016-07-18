@@ -293,7 +293,7 @@ module spreadsheet_header_routines
     !	This is the header information for the flow spreadsheet and is called once
     !	The logic is identical to output_spreadsheet_flow so the output should be parallel
 
-    integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
+    integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxmvents
     character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
     integer :: position, i, ih, ii, ifrom, ito
     type(vent_type), pointer :: ventptr
@@ -369,7 +369,7 @@ module spreadsheet_header_routines
     ! Mechanical ventilation
     if (n_mvents/=0) then
         do i = 1, n_mvents
-            ventptr => mventexinfo(i)
+            ventptr => mventinfo(i)
             ii = ventptr%room1
             call toIntString(ventptr%room1,ciFrom)
             if (ii==nr) cifrom = 'Outside'
@@ -521,8 +521,8 @@ module spreadsheet_header_routines
 
     ! Mechanical vent variables
     iv = 0
-    do j = 1, n_mvext
-        ventptr => mventexinfo(j)
+    do j = 1, n_mvents
+        ventptr => mventinfo(j)
         if (ventptr%room1<=nrm1) then
             iv = iv + 1
             position = position + 1

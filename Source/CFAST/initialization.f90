@@ -332,28 +332,25 @@ module initialization_routines
     vventinfo(1:mxvvents)%opening(final_fraction) = 0.0_eb
 
     ! mechanical vents
-    n_mvnodes = 0
-    n_mvfan = 0
-    n_mvfanfilters = 0
+
     nbr = 0
-    n_mvext = 0
+    n_mvents = 0
     mvcalc_on = .false.
-    hvght(1:mxnode) = 0.0_eb
-    mventexinfo(1:mxext)%total_flow(u) = 0.0_eb
-    mventexinfo(1:mxext)%total_flow(l) = 0.0_eb
-    mventexinfo(1:mxext)%total_trace_flow(u) = 0.0_eb
-    mventexinfo(1:mxext)%total_trace_flow(l) = 0.0_eb
+    mventinfo(1:n_mvents)%total_flow(u) = 0.0_eb
+    mventinfo(1:n_mvents)%total_flow(l) = 0.0_eb
+    mventinfo(1:n_mvents)%total_trace_flow(u) = 0.0_eb
+    mventinfo(1:n_mvents)%total_trace_flow(l) = 0.0_eb
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since
     ! there is not "thing" associated with a filter, there is no (as of 11/21/2006)
     ! way to have an intial value other than 0 (no filtering).
-    qcvf(1,1:mxfan) = 0.0_eb
-    qcvf(2,1:mxfan) = 0.0_eb
-    qcvf(3,1:mxfan) = 0.0_eb
-    qcvf(4,1:mxfan) = 0.0_eb
-    qcvm(1,1:mxfan) = 0.0_eb
-    qcvm(2,1:mxfan) = 1.0_eb
-    qcvm(3,1:mxfan) = 0.0_eb
-    qcvm(4,1:mxfan) = 1.0_eb
+    mventinfo(1:mxmvents)%opening(initial_time) = 1.0_eb
+    mventinfo(1:mxmvents)%opening(initial_fraction) = 0.0_eb
+    mventinfo(1:mxmvents)%opening(final_time) = 1.0_eb
+    mventinfo(1:mxmvents)%opening(final_fraction) = 0.0_eb
+    mventinfo(1:mxmvents)%filter(initial_time) = 0.0_eb
+    mventinfo(1:mxmvents)%filter(initial_fraction) = 0.0_eb
+    mventinfo(1:mxmvents)%filter(final_time) = 0.0_eb
+    mventinfo(1:mxmvents)%filter(final_fraction) = 0.0_eb
 
     ! detectors
     n_detectors = 0
@@ -782,19 +779,8 @@ module initialization_routines
     ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the
     ! beginning of the species (-1) and the end of the array which is presently used by dassl
 
-    integer :: i, j, ib, noxygen
+    integer :: i, j, noxygen
     type(room_type), pointer :: roomptr
-
-    ! count the of nodes (largest of ns and ne)
-    n_mvnodes = max(na(1),ne(1))
-    do ib = 2, nbr
-        n_mvnodes = max(n_mvnodes,na(ib),ne(ib))
-    end do
-    if (n_mvnodes>mxnode) then
-        write (*,*) '***Error: offset - Too many nodes in hvac specification'
-        write (logerr,*) '***Error: offset - Too many nodes in hvac specification'
-        stop
-    end if
 
     ! set the number of compartments and offsets
     nrm1 = nr - 1
@@ -829,8 +815,6 @@ module initialization_routines
     end if
 
     ! now do all the equation offsets
-    nhvpvar = n_mvnodes - n_mvext
-    nhvtvar = nbr
     nofp = 0
     noftu = nofp + nrm1
     nofvu = noftu + nrm1

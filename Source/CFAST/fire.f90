@@ -2,7 +2,7 @@ module fire_routines
 
     use precision_parameters
 
-    use opening_fractions, only: qcifraction
+    use opening_fractions, only: get_vent_opening
     use utility_routines
 
     use cenviro
@@ -578,7 +578,7 @@ module fire_routines
     real(eb), intent(in) :: time, deltt
 
     integer ::i
-    real(eb) :: filter
+    real(eb) :: fraction
     type(fire_type), pointer :: fireptr
     type(vent_type), pointer :: ventptr
 
@@ -599,17 +599,18 @@ module fire_routines
     ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped.
     do i = 1, n_mvents
         ventptr => mventinfo(i)
-        filter = (1.0_eb-qcifraction(qcvf,i,time))
+        call get_vent_opening ('F',ventptr%room1,ventptr%room2,ventptr%counter,i,time,fraction)
+        fraction = (1.0_eb-fraction)
         ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mv_mflow(u)*deltt
         ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mv_mflow(l)*deltt
         ventptr%total_trace_flow(u)  = ventptr%total_trace_flow(u) + &
-            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*filter*deltt
+            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*fraction*deltt
         ventptr%total_trace_flow(l)  = ventptr%total_trace_flow(l) + &
-            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*filter*deltt
+            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*fraction*deltt
         ventptr%total_trace_filtered(u)  = ventptr%total_trace_filtered(u) + &
-            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*(1.0_eb-filter)*deltt
+            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*(1.0_eb-fraction)*deltt
         ventptr%total_trace_filtered(l)  = ventptr%total_trace_filtered(l) + &
-            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*(1.0_eb-filter)*deltt
+            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*(1.0_eb-fraction)*deltt
     end do
 
     return

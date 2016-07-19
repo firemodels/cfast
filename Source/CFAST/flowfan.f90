@@ -42,10 +42,6 @@ module mflow_routines
     uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
     if (n_mvents==0) return
-    
-    if (tsec>10._eb) then
-        continue
-    end if
 
     do i = 1, n_mvents
         ventptr => mventinfo(i)
@@ -62,22 +58,32 @@ module mflow_routines
         fu = mv_fraction(ventptr, 1, u)
         fl = 1.0_eb - fu
         roomptr => roominfo(iroom)
-        ventptr%mflow(1,u) = fu*hvfan*roomptr%rho(u)
-        ventptr%mflow(1,l) = fl*hvfan*roomptr%rho(l)
-        uflw_totals(m) = ventptr%mflow(1,u) + ventptr%mflow(1,l)
-        uflw_totals(q) = ventptr%mflow(1,u)*cp*roomptr%temp(u) + ventptr%mflow(1,l)*cp*roomptr%temp(l)
-
-        if (iroom<1.or.iroom>nrm1) cycle
-        uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) - ventptr%mflow(1,u)
-        uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) - ventptr%mflow(1,l)
-        uflw_mf(iroom,q,u) = uflw_mf(iroom,q,u) - ventptr%mflow(1,u)*cp*roomptr%temp(u)
-        uflw_mf(iroom,q,l) = uflw_mf(iroom,q,l) - ventptr%mflow(1,l)*cp*roomptr%temp(l)
+        ventptr%mflow(1,u) = -fu*hvfan*roomptr%rho(u)
+        ventptr%mflow(1,l) = -fl*hvfan*roomptr%rho(l)
+        uflw_totals(m) = -(ventptr%mflow(1,u) + ventptr%mflow(1,l))
+        uflw_totals(q) = -(ventptr%mflow(1,u)*cp*roomptr%temp(u) + ventptr%mflow(1,l)*cp*roomptr%temp(l))
         do k = 1, ns
-            uflw_mf(iroom,2+k,u) = uflw_mf(iroom,2+k,u) - roomptr%species_fraction(u,k)*ventptr%mflow(1,u)
-            uflw_mf(iroom,2+k,l) = uflw_mf(iroom,2+k,l) - roomptr%species_fraction(l,k)*ventptr%mflow(1,l)
-            uflw_totals(2+k) = roomptr%species_fraction(u,k)*ventptr%mflow(1,u) + roomptr%species_fraction(l,k)*ventptr%mflow(1,l)
+            uflw_totals(2+k) = roomptr%species_fraction(u,k)*ventptr%mflow(1,u) + &
+                roomptr%species_fraction(l,k)*ventptr%mflow(1,l)
         end do
-        
+        call get_vent_opening ('F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
+
+        if (iroom<=nrm1) then
+            uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + ventptr%mflow(1,u)
+            uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + ventptr%mflow(1,l)
+            uflw_mf(iroom,q,u) = uflw_mf(iroom,q,u) + ventptr%mflow(1,u)*cp*roomptr%temp(u)
+            uflw_mf(iroom,q,l) = uflw_mf(iroom,q,l) + ventptr%mflow(1,l)*cp*roomptr%temp(l)
+            do k = 1, ns
+                uflw_mf(iroom,2+k,u) = uflw_mf(iroom,2+k,u) + roomptr%species_fraction(u,k)*ventptr%mflow(1,u)
+                uflw_mf(iroom,2+k,l) = uflw_mf(iroom,2+k,l) + roomptr%species_fraction(l,k)*ventptr%mflow(1,l)
+            end do
+            ! amount filtered for smoke and trace species, (2+k) = 11 and 13
+            uflw_filtered(iroom,11,u) = uflw_filtered(iroom,11,u) + max(0.0_eb,filter*fu*uflw_totals(11))
+            uflw_filtered(iroom,11,l) = uflw_filtered(iroom,11,l) + max(0.0_eb,filter*fl*uflw_totals(11))
+            uflw_filtered(iroom,13,u) = uflw_filtered(iroom,13,u) + max(0.0_eb,filter*fu*uflw_totals(13))
+            uflw_filtered(iroom,13,l) = uflw_filtered(iroom,13,l) + max(0.0_eb,filter*fu*uflw_totals(13))
+        end if
+
         ! calculate mass and enthapy flows for the to room
         iroom = ventptr%room2
         fu = mv_fraction(ventptr, 2, u)
@@ -85,60 +91,51 @@ module mflow_routines
         ventptr%mflow(2,u) = fu*uflw_totals(m)
         ventptr%mflow(2,l) = fl*uflw_totals(m)
 
-        if (iroom<1.or.iroom>nrm1) cycle
-        uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + fu*uflw_totals(m)
-        uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + fl*uflw_totals(m)
-        uflw_mf(iroom,q,u) = uflw_mf(iroom,q,u) + fu*uflw_totals(q)
-        uflw_mf(iroom,q,l) = uflw_mf(iroom,q,l) + fl*uflw_totals(q)
-        do k = 1, ns
-            uflw_mf(iroom,2+k,u) = uflw_mf(iroom,2+k,u) + fu*uflw_totals(2+k)
-            uflw_mf(iroom,2+k,l) = uflw_mf(iroom,2+k,l) + fl*uflw_totals(2+k)
-        end do
- 
-        ! amount filtered for smoke and trace species, (2+k) = 11 and 13
-        call get_vent_opening ('F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
-        uflw_filtered(iroom,11,u) = uflw_filtered(iroom,11,u) + max(0.0_eb,filter*fu*uflw_totals(11))
-        uflw_filtered(iroom,11,l) = uflw_filtered(iroom,11,l) + max(0.0_eb,filter*fl*uflw_totals(11))
-        uflw_filtered(iroom,13,u) = uflw_filtered(iroom,13,u) + max(0.0_eb,filter*fu*uflw_totals(13))
-        uflw_filtered(iroom,13,l) = uflw_filtered(iroom,13,l) + max(0.0_eb,filter*fu*uflw_totals(13))
-        ! remove uflw_filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
-        uflw_filtered(iroom,m,u) = uflw_filtered(iroom,m,u) + max(0.0_eb,filter*fu*uflw_totals(11))
-        uflw_filtered(iroom,m,l) = uflw_filtered(iroom,m,l) + max(0.0_eb,filter*fl*uflw_totals(11))
-        uflw_filtered(iroom,q,u) = uflw_filtered(iroom,q,u) + max(0.0_eb,filter*fu* &
-            (roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
-            roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
-        uflw_filtered(iroom,q,l) = uflw_filtered(iroom,q,l) + max(0.0_eb,filter*fl* &
-            (roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
-            roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
+        if (iroom<=nrm1) then
+            uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + fu*uflw_totals(m)
+            uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + fl*uflw_totals(m)
+            uflw_mf(iroom,q,u) = uflw_mf(iroom,q,u) + fu*uflw_totals(q)
+            uflw_mf(iroom,q,l) = uflw_mf(iroom,q,l) + fl*uflw_totals(q)
+            do k = 1, ns
+                uflw_mf(iroom,2+k,u) = uflw_mf(iroom,2+k,u) + fu*uflw_totals(2+k)
+                uflw_mf(iroom,2+k,l) = uflw_mf(iroom,2+k,l) + fl*uflw_totals(2+k)
+            end do
 
-
-    end do
-
-    do i = 1, n_mvents
+            ! remove uflw_filtered smoke mass and energy from the total mass and energy added to the system (likely a small effect)
+            uflw_filtered(iroom,m,u) = uflw_filtered(iroom,m,u) + max(0.0_eb,filter*fu*uflw_totals(11))
+            uflw_filtered(iroom,m,l) = uflw_filtered(iroom,m,l) + max(0.0_eb,filter*fl*uflw_totals(11))
+            uflw_filtered(iroom,q,u) = uflw_filtered(iroom,q,u) + max(0.0_eb,filter*fu* &
+                (roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
+                roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
+            uflw_filtered(iroom,q,l) = uflw_filtered(iroom,q,l) + max(0.0_eb,filter*fl* &
+                (roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
+                roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
+        end if
 
         ! flow information for smokeview
-        ventptr => mventinfo(i)
+
         iroom = ventptr%room1
         roomptr => roominfo(iroom)
         vheight = roomptr%z0 + ventptr%height(1)
-        layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + sqrt(ventptr%area)/2), vheight - sqrt(ventptr%area)/2)
+        layer_height = max(min(roomptr%depth(l) + roomptr%z0, vheight + &
+            sqrt(ventptr%diffuser_area(1))/2), vheight - sqrt(ventptr%diffuser_area(1))/2)
         do j = u, l
             ventptr%temp_slab(j) = roomptr%temp(j)
             ventptr%flow_slab(j) = ventptr%mflow(1,j)
             if (j == u) then
                 if (ventptr%orientation(1)==1) then
                     ventptr%ybot_slab(j) = layer_height
-                    ventptr%ytop_slab(j) = vheight + sqrt(ventptr%area)/2
+                    ventptr%ytop_slab(j) = vheight + sqrt(ventptr%diffuser_area(1))/2
                 else
                     ventptr%ybot_slab(j) = vheight
-                    ventptr%ytop_slab(j) = vheight + sqrt(ventptr%area)/2
+                    ventptr%ytop_slab(j) = vheight + sqrt(ventptr%diffuser_area(1))/2
                 end if
             else
                 if (ventptr%orientation(1)==1) then
-                    ventptr%ybot_slab(j) = vheight - sqrt(ventptr%area)/2
+                    ventptr%ybot_slab(j) = vheight - sqrt(ventptr%diffuser_area(1))/2
                     ventptr%ytop_slab(j) = layer_height
                 else
-                    ventptr%ybot_slab(j) = vheight - sqrt(ventptr%area)/2
+                    ventptr%ybot_slab(j) = vheight - sqrt(ventptr%diffuser_area(1))/2
                     ventptr%ytop_slab(j) = vheight
                 end if
             end if

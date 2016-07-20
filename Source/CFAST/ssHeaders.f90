@@ -328,14 +328,14 @@ module spreadsheet_header_routines
         write (ctemp,'(6a)') trim(labelsshort(2)),trim(cifrom),'_',trim(cito),'_',trim(cvent)
         headertext(1,position) = ctemp
         headertext(2,position) = labels(2)
-        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),'from ', trim(cifrom),' to ',trim(cito)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ', trim(cifrom),' to ',trim(cito)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(2)
         position = position + 1
         write (ctemp,'(6a)') trim(labelsshort(2)),trim(cito),'_',trim(cifrom),'_',trim(cvent)
         headertext(1,position) = ctemp
         headertext(2,position) = labels(2)
-        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),'from ',trim(cito),' to ',trim(cifrom)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ',trim(cito),' to ',trim(cifrom)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(2)
     end do
@@ -354,7 +354,7 @@ module spreadsheet_header_routines
         write (ctemp,'(5a)') trim(labelsshort(3)),trim(cifrom),'_',trim(cito)
         headertext(1,position) = ctemp
         headertext(2,position) = labels(3)
-        write (ctemp,'(a,1x,3a)') 'Vent from',trim(cifrom),' to ',trim(cito)
+        write (ctemp,'(a,1x,3a)') 'Vent from ',trim(cifrom),' to ',trim(cito)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(3)
         position = position + 1
@@ -384,7 +384,7 @@ module spreadsheet_header_routines
                     headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '_' // trim(ciTo)
                 end if
                 headertext(2,position) = Labels(ih+3)
-                headertext(3,position) = 'Fan from' // trim(ciFrom) // 'to ' // trim(ciTo)
+                headertext(3,position) = 'Fan from ' // trim(ciFrom) // ' to ' // trim(ciTo)
                 headertext(4,position) = LabelUnits(ih+3)
             end do
         end do

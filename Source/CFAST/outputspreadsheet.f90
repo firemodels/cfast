@@ -501,19 +501,21 @@ module spreadsheet_routines
     if (n_mvents/=0) then
         do i = 1, n_mvents
             ventptr => mventinfo(i)
-            if (ventptr%room1<=nrm1) then
-                avent = ventptr%diffuser_area(1)
-                call SSaddtolist (position,avent,outarray)
-                ! flow slabs for the vent
-                slabs = ventptr%n_slabs
-                call SSaddtolist (position,slabs,outarray)
-                do j = 1, 2
-                    call ssaddtolist(position,ventptr%temp_slab(j),outarray)
-                    call ssaddtolist(position,-ventptr%flow_slab(j),outarray)
-                    call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
-                    call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
-                end do
-            end if
+            avent = ventptr%diffuser_area(1)
+            call SSaddtolist (position,avent,outarray)
+            ! flow slabs for the vent
+            slabs = ventptr%n_slabs
+            call SSaddtolist (position,slabs,outarray)
+            do j = 1, 2
+                call ssaddtolist(position,ventptr%temp_slab(j),outarray)
+                if (ventptr%room1<=nrm1) then
+                call ssaddtolist(position,-ventptr%flow_slab(j),outarray)
+                else
+                call ssaddtolist(position,ventptr%flow_slab(j),outarray)
+                end if
+                call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
+                call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
+            end do
         end do
     end if
     call ssprintresults (15, position, outarray)

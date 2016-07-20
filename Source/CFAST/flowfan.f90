@@ -42,6 +42,10 @@ module mflow_routines
     uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
     if (n_mvents==0) return
+    
+    if (tsec>1000._eb) then
+        continue
+    end if
 
     do i = 1, n_mvents
         ventptr => mventinfo(i)
@@ -63,8 +67,8 @@ module mflow_routines
         uflw_totals(m) = -(ventptr%mflow(1,u) + ventptr%mflow(1,l))
         uflw_totals(q) = -(ventptr%mflow(1,u)*cp*roomptr%temp(u) + ventptr%mflow(1,l)*cp*roomptr%temp(l))
         do k = 1, ns
-            uflw_totals(2+k) = roomptr%species_fraction(u,k)*ventptr%mflow(1,u) + &
-                roomptr%species_fraction(l,k)*ventptr%mflow(1,l)
+            uflw_totals(2+k) = -(roomptr%species_fraction(u,k)*ventptr%mflow(1,u) + &
+                roomptr%species_fraction(l,k)*ventptr%mflow(1,l))
         end do
         call get_vent_opening ('F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
 
@@ -176,10 +180,10 @@ module mflow_routines
         roomptr => roominfo(iroom)
         z = roomptr%depth(l)
         hl = min(z,height)
-        hu = min(0.0_eb,height-hl)
+        hu = max(0.0_eb,height-hl)
         rhou = roomptr%rho(u)
         rhol = roomptr%rho(l)
-        mv_pressure = roomptr%relp - (rhol*grav_con*hl + rhou*grav_con*hu)
+        mv_pressure = roomptr%relp -interior_rho*grav_con*roomptr%z0 - (rhol*grav_con*hl + rhou*grav_con*hu)
     else
         mv_pressure =  exterior_abs_pressure - exterior_rho*grav_con*height
     end if
@@ -230,8 +234,7 @@ module mflow_routines
 
     !       This is a routine to get the shape data for mechanical flow vent external connections
 
-    integer, intent(in) :: i
-    integer, intent(out) :: iroom
+    integer, intent(in) :: i, iroom
     real(eb), intent(out) :: xyz(6),vred,vgreen,vblue
 
     real(eb) :: vheight, varea
@@ -239,7 +242,6 @@ module mflow_routines
     type(vent_type), pointer :: ventptr
 
     ventptr => mventinfo(i)
-    iroom = ventptr%room1
     roomptr => roominfo(iroom)
 
     vheight = ventptr%height(1)

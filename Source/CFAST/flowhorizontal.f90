@@ -5,6 +5,7 @@ module hflow_routines
     use opening_fractions, only: qchfraction
     use debug_routines, only: ssprintslab, spreadsheetfslabs
     use room_data
+    use utility_routines, only: tanhsmooth
     
     use precision_parameters
     use cenviro
@@ -629,18 +630,8 @@ module hflow_routines
         temp_upper = tu(ito)
         temp_lower = tl(ito)
 
-        if (temp_slab>=temp_upper+deltatemp_min) then
-            ! if it's relatively hot, it goes to the upper layer
-            fupper = 1.0_eb
-        else if (temp_slab<=temp_lower-deltatemp_min) then
-            ! if it's really cold, it goes to the lower layer
-            fupper = 0.0_eb
-        else
-            ! if the layers are of distinctly different temperatures and the temperature of the incoming flow is in
-            ! between then mix the flow
-            fupper = (temp_slab - (temp_lower-deltatemp_min))/(temp_upper-temp_lower+2.0_eb*deltatemp_min)
-        end if
-
+        ! transition smoothly from all upper to all lower over the range Tu+dT to Tl-dt
+        fupper = tanhsmooth (temp_slab, temp_upper+deltatemp_min, temp_lower-deltatemp_min, 1._eb, 0._eb)
         flower = 1.0_eb - fupper
         flow_fraction(l) = flower
         flow_fraction(u) = fupper

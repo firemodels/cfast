@@ -91,7 +91,7 @@ module vflow_routines
                 end if
                 alpha = exp(-(froude(iflow)/2)**2)
                 if (ilay==u) then
-                    ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-exisitant layer
+                    ! the hyperbolic tangent allows for smooth transition to make sure we don't take from a non-existent layer
                     fu = min(tanhsmooth(roomptr%volume(u), 3.0_eb*roomptr%vmin, &
                         2.0_eb*roomptr%vmin, alpha, 0.0_eb), 1.0_eb)
                     fu = min(tanhsmooth(roomptr%volume(l), 3.0_eb*roomptr%vmin, &

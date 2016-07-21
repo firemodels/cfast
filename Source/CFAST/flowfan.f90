@@ -3,7 +3,7 @@ module mflow_routines
     use precision_parameters
 
     use opening_fractions, only : qcffraction, qcifraction, get_vent_opening
-    use utility_routines, only: d1mach
+    use utility_routines, only: d1mach, tanhsmooth
 
     use precision_parameters
     use ramp_data
@@ -154,6 +154,8 @@ module mflow_routines
 ! --------------------------- mv_fan -------------------------------------------
 
     real(eb) function mv_fan (ventptr, epsp, fraction)
+    
+    !   calculates the fan flow in m^3/s.  At the moment, it's just a constant flow fan
 
     type(vent_type), intent(in) :: ventptr
     real(eb), intent(in) :: epsp, fraction
@@ -170,6 +172,8 @@ module mflow_routines
     
     real(eb) function mv_pressure(iroom, height)
     
+    ! calculates the absolute pressure in the vented compartment at the specified height
+    
     integer, intent(in) :: iroom
     real(eb), intent(in) :: height
 
@@ -183,7 +187,7 @@ module mflow_routines
         hu = max(0.0_eb,height-hl)
         rhou = roomptr%rho(u)
         rhol = roomptr%rho(l)
-        mv_pressure = roomptr%relp -interior_rho*grav_con*roomptr%z0 - (rhol*grav_con*hl + rhou*grav_con*hu)
+        mv_pressure = roomptr%relp - interior_rho*grav_con*roomptr%z0 - (rhol*grav_con*hl + rhou*grav_con*hu)
     else
         mv_pressure =  exterior_abs_pressure - exterior_rho*grav_con*height
     end if
@@ -195,30 +199,32 @@ module mflow_routines
     real(eb) function mv_fraction (ventptr, ifromto, layer)
     
     integer, intent(in) :: ifromto, layer
-    type(room_type), pointer :: roomptr
-    type(vent_type) :: ventptr
+    type(vent_type), intent(in) :: ventptr
     
     integer :: iroom
-    real(eb) :: z, xxlower, xxlower_clamped, fraction
+    real(eb) :: z, zlower, zupper, fraction, diffuser_height
+    type(room_type), pointer :: roomptr
     
     if (ifromto==1) then
         iroom = ventptr%room1
     else
         iroom = ventptr%room2
     end if
-    
     roomptr => roominfo(iroom)
     z = roomptr%depth(l)
-    
     if (ventptr%orientation(ifromto)==1) then
-        xxlower = sqrt(ventptr%diffuser_area(ifromto))
+        diffuser_height = sqrt(ventptr%diffuser_area(ifromto))
     else
-        xxlower = sqrt(ventptr%diffuser_area(ifromto))/10.0_eb
+        diffuser_height = sqrt(ventptr%diffuser_area(ifromto))/10.0_eb
     end if
-    xxlower_clamped = max(0.0_eb,min((ventptr%height(ifromto) - 0.5_eb*xxlower),(roomptr%cheight-xxlower)))
     
-    ! these are the relative fraction of the upper and lower layer that the duct "sees" these parameters go from 0 to 1
-    fraction = max(0.0_eb,min(1.0_eb,max(0.0_eb,(z-xxlower_clamped)/xxlower)))
+    ! this is the distance over which the flow transistions from all lower to all upper
+    zlower = max(0.0_eb,ventptr%height(ifromto)-diffuser_height/2)
+    zupper = min(roomptr%cheight,ventptr%height(ifromto)+diffuser_height/2)
+    
+    ! transition smoothly from all lower (when to layer height is above the vent, zupper) 
+    ! to all upper (when to layer height is below the vent, zlower)
+    fraction = tanhsmooth (z, zupper, zlower, 1._eb, 0._eb)
     if (layer==u) then
         mv_fraction = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
     else

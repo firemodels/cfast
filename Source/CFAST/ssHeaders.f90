@@ -293,10 +293,10 @@ module spreadsheet_header_routines
     !	This is the header information for the flow spreadsheet and is called once
     !	The logic is identical to output_spreadsheet_flow so the output should be parallel
 
-    integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxhvsys+mxfan
+    integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxmvents
     character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
-    integer :: position, i, ih, ii, inode, ifrom, ito
-    type(vent_type), pointer :: ventptr, mvextptr
+    integer :: position, i, ii, ifrom, ito, ih
+    type(vent_type), pointer :: ventptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
        'MVENT Trace Species Filtered' /
@@ -328,14 +328,14 @@ module spreadsheet_header_routines
         write (ctemp,'(6a)') trim(labelsshort(2)),trim(cifrom),'_',trim(cito),'_',trim(cvent)
         headertext(1,position) = ctemp
         headertext(2,position) = labels(2)
-        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),'from ', trim(cifrom),' to ',trim(cito)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ', trim(cifrom),' to ',trim(cito)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(2)
         position = position + 1
         write (ctemp,'(6a)') trim(labelsshort(2)),trim(cito),'_',trim(cifrom),'_',trim(cvent)
         headertext(1,position) = ctemp
         headertext(2,position) = labels(2)
-        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),'from ',trim(cito),' to ',trim(cifrom)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ',trim(cito),' to ',trim(cifrom)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(2)
     end do
@@ -354,7 +354,7 @@ module spreadsheet_header_routines
         write (ctemp,'(5a)') trim(labelsshort(3)),trim(cifrom),'_',trim(cito)
         headertext(1,position) = ctemp
         headertext(2,position) = labels(3)
-        write (ctemp,'(a,1x,3a)') 'Vent from',trim(cifrom),' to ',trim(cito)
+        write (ctemp,'(a,1x,3a)') 'Vent from ',trim(cifrom),' to ',trim(cito)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(3)
         position = position + 1
@@ -367,31 +367,24 @@ module spreadsheet_header_routines
     end do
 
     ! Mechanical ventilation
-    if (n_mvnodes/=0.and.n_mvext/=0) then
-        do i = 1, n_mvext
-            mvextptr => mventexinfo(i)
-            ii = mvextptr%room
-            inode = mvextptr%exterior_node
+    if (n_mvents/=0) then
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            ii = ventptr%room1
             call toIntString(ii,ciFrom)
             if (ii==nr) cifrom = 'Outside'
-            call toIntString(inode,ciTo)
+            ii = ventptr%room2
+            call toIntString(ii,ciTo)
+            if (ii==nr) cito = 'Outside'
             do ih = 1,3
                 position = position + 1
-                if (ih==1) then
-                    if (ciFrom=='Outside') then
-                        headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '_N' // trim(ciTo)
-                    else
-                        headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '_N' // trim(ciTo)
-                    end if
+                if (ciFrom=='Outside') then
+                    headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '_' // trim(ciTo)
                 else
-                    headertext(1,position) = trim(LabelsShort(ih+3)) // 'Fan_N' // trim(ciTo)
+                    headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '_' // trim(ciTo)
                 end if
                 headertext(2,position) = Labels(ih+3)
-                if (ih==1) then
-                    headertext(3,position) = 'Vent from' // trim(ciFrom) // 'to Node ' // trim(ciTo)
-                else
-                    headertext(3,position) = 'Fan at Node ' // trim(ciTo)
-                end if
+                headertext(3,position) = 'Fan from ' // trim(ciFrom) // ' to ' // trim(ciTo)
                 headertext(4,position) = LabelUnits(ih+3)
             end do
         end do
@@ -419,7 +412,7 @@ module spreadsheet_header_routines
     character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr
+    type(vent_type), pointer :: ventptr
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
@@ -530,39 +523,37 @@ module spreadsheet_header_routines
 
     ! Mechanical vent variables
     iv = 0
-    do j = 1, n_mvext
-        mvextptr => mventexinfo(j)
-        if (mvextptr%room<=nrm1) then
-            iv = iv + 1
+    do j = 1, n_mvents
+        ventptr => mventinfo(j)
+        iv = iv + 1
+        position = position + 1
+        call toIntString(iv,cVent)
+        headertext(1,position) = LabelUnits(26)
+        headertext(2,position) = trim(LabelsShort(26))//trim(cVent)
+        call smvDeviceTag(headertext(2,position))
+        position = position + 1
+        headertext(1,position) = LabelUnits(27) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(27))//trim(cVent)
+        call smvDeviceTag(headertext(2,position))
+        do i = 1,2
+            call toIntString(i,cSlab)
             position = position + 1
-            call toIntString(iv,cVent)
-            headertext(1,position) = LabelUnits(26)
-            headertext(2,position) = trim(LabelsShort(26))//trim(cVent)
+            headertext(1,position) = LabelUnits(28) ! slab temperature
+            headertext(2,position) = trim(LabelsShort(28))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(27) ! number of slabs
-            headertext(2,position) = trim(LabelsShort(27))//trim(cVent)
+            headertext(1,position) = LabelUnits(29) ! slab flow
+            headertext(2,position) = trim(LabelsShort(29))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
-            do i = 1,2
-                call toIntString(i,cSlab)
-                position = position + 1
-                headertext(1,position) = LabelUnits(28) ! slab temperature
-                headertext(2,position) = trim(LabelsShort(28))//trim(cVent)//'_'//trim(cSlab)
-                call smvDeviceTag(headertext(2,position))
-                position = position + 1
-                headertext(1,position) = LabelUnits(29) ! slab flow
-                headertext(2,position) = trim(LabelsShort(29))//trim(cVent)//'_'//trim(cSlab)
-                call smvDeviceTag(headertext(2,position))
-                position = position + 1
-                headertext(1,position) = LabelUnits(30) ! slab bottom
-                headertext(2,position) = trim(LabelsShort(30))//trim(cVent)//'_'//trim(cSlab)
-                call smvDeviceTag(headertext(2,position))
-                position = position + 1
-                headertext(1,position) = LabelUnits(31) ! slab top
-                headertext(2,position) = trim(LabelsShort(31))//trim(cVent)//'_'//trim(cSlab)
-                call smvDeviceTag(headertext(2,position))
-            end do
-        end if
+            position = position + 1
+            headertext(1,position) = LabelUnits(30) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(30))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+            position = position + 1
+            headertext(1,position) = LabelUnits(31) ! slab top
+            headertext(2,position) = trim(LabelsShort(31))//trim(cVent)//'_'//trim(cSlab)
+            call smvDeviceTag(headertext(2,position))
+        end do
     end do
 
 

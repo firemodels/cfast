@@ -62,7 +62,7 @@ module solve_routines
     real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrwork = (3*mxalg**2+13*mxalg)/2
     real(eb) :: work(lrwork)
-    integer :: ires, iopt, nhvalg, nalg0, nalg1, nprint, i, info, nodes
+    integer :: ires, iopt, nalg1, nprint, i, info, nodes
     real(eb) :: tol
 
     type(room_type), pointer :: roomptr
@@ -79,24 +79,12 @@ module solve_routines
     call calculate_residuals(t,p,pdzero,pdold,ires,rpar2,ipar2)
     iopt = 2
     tol = algtol
-    nhvalg = nhvpvar + nhvtvar
-    nalg0 = nhvalg
-    nalg1 = nrm1 + nhvalg
+    nalg1 = nrm1
     nprint = -1
 
     ! room pressures
     do i = 1, nrm1
         hhvp(i) = p(i+nofp)
-    end do
-
-    ! hvac pressures
-    do i = 1, nhvpvar
-        hhvp(i+nrm1) = p(i+nofpmv)
-    end do
-
-    ! hvac temperatures
-    do i = 1, nhvtvar
-        hhvp(i+nrm1+nhvpvar) = p(i+noftmv)
     end do
 
     do i = 1, nequals
@@ -105,11 +93,7 @@ module solve_routines
     if (option(fpsteady)==1) then
         call snsqe(gres,gjac,iopt,nalg1,hhvp,deltamv,tol,nprint,info, work,lrwork)
     else
-        if (nhvalg>0) then
-            call snsqe(gres2,gjac,iopt,nalg0,hhvp(1+nrm1),deltamv(1+nrm1),tol,nprint,info,work,lrwork)
-        else
-            info = 1
-        end if
+        info = 1
     end if
 
     ! couldn't find a solution.  either try to recover or stop
@@ -129,24 +113,13 @@ module solve_routines
         roomptr => roominfo(i)
         if (roomptr%is_connection) p(i+nofp) = hhvp(i)
     end do
-    do i = 1, nhvpvar
-        p(i+nofpmv) = hhvp(i+nrm1)
-    end do
-    do i = 1, nhvtvar
-        p(i+noftmv) = hhvp(i+nrm1+nhvpvar)
-    end do
 
     call calculate_residuals(t,p,pdzero,pdold,ires,rpar,ipar)
 
     ! Added to synchronize_species_mass the species mass with the total mass of each layer at the new pressure
     nodes = nofprd+1
     call synchronize_species_mass (p,nodes)
-    do i = 1, nhvpvar
-        pdold(i+nofpmv) = 0.0_eb
-    end do
-    do i = 1, nhvtvar
-        pdold(i+noftmv) = 0.0_eb
-    end do
+
     do i = 1, nhcons
         pdold(i+nofwt) = 0.0_eb
     end do
@@ -258,7 +231,7 @@ module solve_routines
     data pdzero /maxteq*0.0_eb/
 
     if (1.eq.2) iflag=-1 ! dummy statement to eliminate compiler warnings
-    nalg = nrm1 + nhvpvar + nhvtvar
+    nalg = nrm1
     do i = 1, nalg
         p2(i) = hvpsolv(i)
     end do
@@ -269,14 +242,6 @@ module solve_routines
         write(iofilo,*) 'room pressures'
         do i = 1, nrm1
             write(iofilo,*) i,p2(i)
-        end do
-        if (nhvpvar>0) write (iofilo,*) 'hvac pressures'
-        do i = 1, nhvpvar
-            write(iofilo,*)i,p2(i+nofpmv)
-        end do
-        if (nhvtvar>0) write (iofilo,*) 'hvac temperatures'
-        do i = 1, nhvtvar
-            write(iofilo,*)i,p2(i+noftmv)
         end do
     end if
     t = stime
@@ -294,88 +259,12 @@ module solve_routines
         do i = 1, nrm1
             write(iofilo,*)i,delta(i)
         end do
-        if (nhvpvar>0)write (iofilo,*) 'hvac pressure residuals'
-        do i = 1, nhvpvar
-            write(iofilo,*)i,delta(i+nofpmv)
-        end do
-        if (nhvtvar>0)write (iofilo,*) 'hvac temperature residuals'
-        do i = 1, nhvtvar
-            write(iofilo,*)i,delta(i+noftmv)
-        end do
         write(iofilo,*)' '
         read (*,*)
     end if
     return
     end subroutine gres
-
-! --------------------------- gres2 -------------------------------------------
-
-    subroutine gres2 (nnn,hvsolv,deltamv,iflag)
-
-    !     routine: gres2
-    !     purpose: calculates residuals for initial solution by snsqe
-    !              (HVAC pressure and temperature)
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     Arguments: NNN
-    !                HVSOLV
-    !                DELTAMV
-    !                IFLAG
-
-    integer, intent(in) :: nnn
-    real(eb), intent(in) :: hvsolv(nnn)
-    integer, intent(out) :: iflag
-    real(eb), intent(out) :: deltamv(*)
-
-    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
-    integer :: i, ires
-    data pdzero /maxteq*0.0_eb/
-
-    if (1.eq.2)iflag=-1 ! dummy statement to eliminate compiler warnings
-    do i = 1, nequals
-        p2(i) = pinit(i)
-    end do
-    do i = 1, nhvpvar
-        p2(i+nofpmv) = hvsolv(i)
-    end do
-    do i = 1, nhvtvar
-        p2(i+noftmv) = hvsolv(nhvpvar+i)
-    end do
-    if (iprtalg/=0) then
-        if (nhvpvar>0)write (iofilo,*) 'hvac pressures'
-        do i = 1, nhvpvar
-            write (iofilo,*) i, hvsolv(i)
-        end do
-        if (nhvtvar>0)write (iofilo,*) 'hvac temperatures'
-        do i = 1, nhvtvar
-            write (iofilo,*) i, hvsolv(nhvpvar+i)
-        end do
-    end if
-    t = stime
-    ires = 0
-    call calculate_residuals(t,p2,pdzero,delta,ires,rpar2,ipar2)
-    do i = 1, nhvpvar
-        deltamv(i) = delta(i+nofpmv)
-    end do
-    do i = 1, nhvtvar
-        deltamv(i+nhvpvar) = delta(i+noftmv)
-    end do
-    if (iprtalg/=0) then
-        write (iofilo,*) ' '
-        if (nhvpvar>0)write (iofilo,*) 'hvac pressure residuals'
-        do i = 1, nhvpvar
-            write (iofilo,*) i, deltamv(i)
-        end do
-        if (nhvtvar>0)write (iofilo,*) 'hvac temperature residuals'
-        do i = 1, nhvtvar
-            write (iofilo,*) i, deltamv(i+nhvpvar)
-        end do
-        write(iofilo,*)' '
-        read(*,*)
-    end if
-    return
-    end subroutine gres2
-
+    
 ! --------------------------- solve_simulation -------------------------------------------
 
     subroutine solve_simulation (tstop)
@@ -400,8 +289,6 @@ module solve_routines
     !     The structure of the solver array is
 
     !     NOFP = offset for the main pressure; the array of base pressures for each compartment
-    !     NOFPMV = offset for HVAC node pressuers
-    !     NOFTMV = offset for HVAC branch temperatures
     !     NOFTU = upper layer temperature
     !     NOFVU = upper layer volume
     !     NOFTL = lower layer temperature
@@ -497,14 +384,6 @@ module solve_routines
             vatol(i+nofoxyl)=atol
             vrtol(i+nofoxyl)=rtol
         end if
-    end do
-    do i = 1, nhvpvar
-        vatol(i+nofpmv) = ahvptol
-        vrtol(i+nofpmv) = rhvptol
-    end do
-    do i = 1, nhvtvar
-        vatol(i+noftmv) = ahvttol
-        vrtol(i+noftmv) = rhvttol
     end do
     do i = 1, nhcons
         vatol(i+nofwt) = awtol
@@ -1045,8 +924,6 @@ module solve_routines
 
     subroutine calculate_residuals (tsec,y_vector,yprime_vector,f_vector,ires,rpar,ipar)
 
-
-    !     Routine: cfast calculate_residuals
     !     Purpose: Calculates the residual F(t,y,dy/dt) for CFAST
     !              differential and algebraic equations.  For the gas
     !              differential equations (pressure, layer volume,
@@ -1059,14 +936,12 @@ module solve_routines
     !              where q'' is the flux striking the wall, K is the wall's
     !              thermal conductivity and dT/dx is the surface wall
     !              temperature gradient.
-    !     Revision: $Revision$
-    !     Revision Date: $Date$
-    !     Arguments: TSEC    Current simulation time (T above in s)
-    !                Y_VECTOR Current guess at solution vector (Y above)
-    !                YPRIME_VECTOR Current guess at derivative of solution
+    !     Arguments: tsec    Current simulation time (T above in s)
+    !                y_vector Current guess at solution vector (Y above)
+    !                yprime_vector Current guess at derivative of solution
     !                        vector (Y' above)
-    !                F_VECTOR Residual or value of F(t,y,dy/dt)
-    !                IRES    Outputs:  IRES    Integer flag which is always equal to
+    !                f_vector Residual or value of F(t,y,dy/dt)
+    !                ires    Outputs:  IRES    Integer flag which is always equal to
     !                        zero on input. calculate_residuals should alter IRES
     !                        only if it encounters an illegal value of Y or
     !                        a stop condition. Set IRES = -1 if an input
@@ -1074,8 +949,8 @@ module solve_routines
     !                        the problem without getting IRES = -1. If
     !                        IRES = -2, DASSL return control to the calling
     !                        program with IDID = -11.
-    !                RPAR    real parameter arrays
-    !                IPAR    integer parameter arrays
+    !                rpar    real parameter arrays
+    !                ipar    integer parameter arrays
     !                        These are used for communication between solve_simulation and
     !                        calculate_residuals via DASSL. They are not altered by DASSL.
     !                        Currently, only IPAR is used in calculate_residuals to pass
@@ -1097,27 +972,23 @@ module solve_routines
     type(room_type), pointer :: roomptr
 
     ! data structure for total flows and fluxes
-    real(eb) :: flwtot(mxrooms,mxfprd+2,2), flxtot(mxrooms,nwal)
+    real(eb) :: flows_total(mxrooms,ns+2,2), fluxes_total(mxrooms,nwal)
 
     ! data structures for flow through vents
-    real(eb) :: flwnvnt(mxrooms,mxfprd+2,2)
-    real(eb) :: flwhvnt(mxrooms,ns+2,2)
+    real(eb) :: flows_hvents(mxrooms,ns+2,2)
+    real(eb) :: flows_vvents(mxrooms,ns+2,2)
+    real(eb) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
 
     ! data structures for fires
-    real(eb) :: flwf(mxrooms,ns+2,2)
-
-    ! data structures for convection, radiation, and ceiling jets
-    real(eb) :: flwcv(mxrooms,2), flxcv(mxrooms,nwal)
-    real(eb) :: flwrad(mxrooms,2), flxrad(mxrooms,nwal)
-
-    ! data structures for mechanical vents
-    real(eb) :: flwmv(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
-
-    ! data structures for door jet fires
-    real(eb) :: flwdjf(mxrooms,ns+2,2)
+    real(eb) :: flows_fires(mxrooms,ns+2,2)
+    real(eb) :: flows_doorjets(mxrooms,ns+2,2)
     integer :: update
 
-    logical :: vflowflg, hvacflg, djetflg
+    ! data structures for convection, radiation, and ceiling jets
+    real(eb) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
+    real(eb) :: flows_radiation(mxrooms,2), fluxes_radiation(mxrooms,nwal)
+
+    logical :: djetflg
     integer :: nprod, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
     real(eb) :: epsp, aroom, hceil, pabs, hinter, ql, qu, tmu, tml
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ
@@ -1153,19 +1024,17 @@ module solve_routines
 
     ! calculate flow due to unforced vents (horizontal_flow for doors/windows
     ! and vertical_flow for ceiling/floor vents
-    call horizontal_flow (tsec,epsp,nprod,flwnvnt)
-    call vertical_flow (tsec,flwhvnt,vflowflg)
-    call mechanical_flow (tsec,y_vector(nofpmv+1),y_vector(noftmv+1),yprime_vector(noftmv+1),flwmv,&
-        f_vector(nofpmv+1),f_vector(noftmv+1),&
-        yhatprime_vector(nofhvpr+1),nprod,hvacflg,filtered)
+    call horizontal_flow (tsec,epsp,flows_hvents)
+    call vertical_flow (tsec,epsp,flows_vvents)
+    call mechanical_flow (tsec,epsp,flows_mvents,filtered)
 
     ! calculate heat and mass flows due to fires
-    call fire (tsec,flwf)
-    call door_jet (flwdjf,djetflg)
+    call fire (tsec,flows_fires)
+    call door_jet (flows_doorjets,djetflg)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
-    call convection (flwcv,flxcv)
-    call radiation (flwrad,flxrad)
+    call convection (flows_convection,fluxes_convection)
+    call radiation (flows_radiation,fluxes_radiation)
 
     ! sum flow for inside rooms
     do iroom = 1, nrm1
@@ -1173,33 +1042,29 @@ module solve_routines
 
         do iprod = 1, nprod + 2
             ip = i_speciesmap(iprod)
-            flwtot(iroom,iprod,l) = flwnvnt(iroom,iprod,l) + flwf(iroom,ip,l)
-            flwtot(iroom,iprod,u) = flwnvnt(iroom,iprod,u) + flwf(iroom,ip,u)
+            flows_total(iroom,iprod,l) = flows_hvents(iroom,iprod,l) + flows_fires(iroom,ip,l)
+            flows_total(iroom,iprod,u) = flows_hvents(iroom,iprod,u) + flows_fires(iroom,ip,u)
         end do
-        if (vflowflg) then
-            do iprod = 1, nprod + 2
-                ip = i_speciesmap(iprod)
-                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwhvnt(iroom,ip,l)
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwhvnt(iroom,ip,u)
-            end do
-        end if
-        if (hvacflg) then
-            do iprod = 1, nprod + 2
-                ip = i_speciesmap(iprod)
-                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwmv(iroom,ip,l) - filtered(iroom,iprod,l)
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwmv(iroom,ip,u) - filtered(iroom,iprod,u)
-            end do
-        end if
+        do iprod = 1, nprod + 2
+            ip = i_speciesmap(iprod)
+            flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_vvents(iroom,ip,l)
+            flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_vvents(iroom,ip,u)
+        end do
+        do iprod = 1, nprod + 2
+            ip = i_speciesmap(iprod)
+            flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_mvents(iroom,ip,l) - filtered(iroom,iprod,l)
+            flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_mvents(iroom,ip,u) - filtered(iroom,iprod,u)
+        end do
         if (djetflg) then
             do iprod = 1, nprod + 2
                 ip = i_speciesmap(iprod)
-                flwtot(iroom,iprod,l) = flwtot(iroom,iprod,l) + flwdjf(iroom,ip,l)
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwdjf(iroom,ip,u)
+                flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_doorjets(iroom,ip,l)
+                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_doorjets(iroom,ip,u)
             end do
         end if
 
-        flwtot(iroom,q,l) = flwtot(iroom,q,l) + flwcv(iroom,l) + flwrad(iroom,l)
-        flwtot(iroom,q,u) = flwtot(iroom,q,u) + flwcv(iroom,u) + flwrad(iroom,u)
+        flows_total(iroom,q,l) = flows_total(iroom,q,l) + flows_convection(iroom,l) + flows_radiation(iroom,l)
+        flows_total(iroom,q,u) = flows_total(iroom,q,u) + flows_convection(iroom,u) + flows_radiation(iroom,u)
 
 
         ! if this room is a shaft then solve for only one zone.
@@ -1208,15 +1073,16 @@ module solve_routines
         ! zero.
         if (roomptr%shaft) then
             do iprod = 1, nprod + 2
-                flwtot(iroom,iprod,u) = flwtot(iroom,iprod,u) + flwtot(iroom,iprod,l)
-                flwtot(iroom,iprod,l) = 0.0_eb
+                flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_total(iroom,iprod,l)
+                flows_total(iroom,iprod,l) = 0.0_eb
             end do
         end if
     end do
 
     if (update==all) then
         if (residprn) then
-            call output_spreadsheet_residuals (tsec, flwtot, flwnvnt, flwf, flwhvnt, flwmv, filtered, flwdjf, flwcv, flwrad)
+            call output_spreadsheet_residuals (tsec, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
+                filtered, flows_doorjets, flows_convection, flows_radiation)
         end if
     end if
     ! sum flux for inside rooms
@@ -1224,7 +1090,7 @@ module solve_routines
         roomptr => roominfo(iroom)
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
-                flxtot(iroom,iwall) = flxcv(iroom,iwall) + flxrad(iroom,iwall)
+                fluxes_total(iroom,iwall) = fluxes_convection(iroom,iwall) + fluxes_radiation(iroom,iwall)
             end if
         end do
     end do
@@ -1242,14 +1108,14 @@ module solve_routines
         hceil = roomptr%cheight
         pabs = roomptr%absp
         hinter = roomptr%depth(l)
-        ql = flwtot(iroom,q,l)
-        qu = flwtot(iroom,q,u)
-        tmu = flwtot(iroom,m,u)
-        tml = flwtot(iroom,m,l)
+        ql = flows_total(iroom,q,l)
+        qu = flows_total(iroom,q,u)
+        tmu = flows_total(iroom,m,u)
+        tml = flows_total(iroom,m,l)
 
         if (option(foxygen)==on) then
-            oxydu = flwtot(iroom,4,u)
-            oxydl = flwtot(iroom,4,l)
+            oxydu = flows_total(iroom,4,u)
+            oxydl = flows_total(iroom,4,l)
         end if
 
         ! pressure equation
@@ -1299,22 +1165,22 @@ module solve_routines
                 hinter = roomptr%depth(l)
                 iprodu = iprodu + 2
                 iprodl = iprodu + 1
-                prodl = flwtot(iroom,iprod+2,l)
+                prodl = flows_total(iroom,iprod+2,l)
 
                 ! if this room is a hall and the jet has not reached the end
                 ! of the hall then don't solve for it using dassl
-                produ = flwtot(iroom,iprod+2,u)
+                produ = flows_total(iroom,iprod+2,u)
 
                 if (hinter<hceil) then
                     yhatprime_vector(iprodu) = produ
-                else if (hinter>=hceil.and.flwtot(iroom,m,u)<0.0_eb)  then
+                else if (hinter>=hceil.and.flows_total(iroom,m,u)<0.0_eb)  then
                     yhatprime_vector(iprodu) = produ
                 else
                     yhatprime_vector(iprodu) = 0.0_eb
                 end if
                 if (hinter>0.0_eb) then
                     yhatprime_vector(iprodl) = prodl
-                else if (hinter<=0.0_eb.and.flwtot(iroom,m,l)>0.0_eb) then
+                else if (hinter<=0.0_eb.and.flows_total(iroom,m,l)>0.0_eb) then
                     yhatprime_vector(iprodl) = prodl
                 else
                     yhatprime_vector(iprodl) = 0.0_eb
@@ -1342,18 +1208,12 @@ module solve_routines
     end if
 
     ! conduction residual
-    call conduction (update,dt,flxtot,f_vector)
+    call conduction (update,dt,fluxes_total,f_vector)
 
     ! residuals for stuff that is solved in solve_simulation itself, and not by dassl
     if (nprod/=0) then
-
         ! residuals for gas layer species
         do i = nofprd + 1, nofprd + 2*nprod*nrm1
-            f_vector(i) = yhatprime_vector(i) - yprime_vector(i)
-        end do
-
-        ! residual for hvac species
-        do i = nofhvpr+1, nofhvpr+n_species*nhvsys
             f_vector(i) = yhatprime_vector(i) - yprime_vector(i)
         end do
     end if
@@ -1388,16 +1248,16 @@ module solve_routines
 
     integer :: iroom, lsp, layer, i, itstop, ieq, iwall, ii
     integer :: iwfar, ifromr, ifromw, itor, itow, ieqfrom, ieqto, itarg
-    integer :: npts, iwalleq, iwalleq2, iinode, ilay, isys, isof
+    integer :: npts, iwalleq, iwalleq2, iinode, ilay, isof
     real(eb) :: wtemp
     real(eb) :: xdelt, tstop, zzu, zzl
-    real(eb) :: zlay, ztarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu, pphv
+    real(eb) :: zlay, ztarg, ppgas, totl, totu, rtotl, rtotu, oxyl, oxyu
     real(eb) :: xt, xtemp, xh2o, ptemp, epscut
     real(eb) :: xmax, xmid, ymax, ymid, zmax
 
     type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
-    type(vent_type), pointer ::ventptr, mvextptr
+    type(vent_type), pointer ::ventptr
 
     if (nfurn>0.and.iflag/=constvar) then
         call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
@@ -1525,17 +1385,16 @@ module solve_routines
             ndisc = ndisc + 1
             discon(ndisc) = ventptr%opening(3)
         end do
-        do  i = 1, n_mvfan
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvm(1,i)
+            discon(ndisc) = ventptr%opening(1)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvm(3,i)
-        end do
-        do i = 1, n_mvfanfilters
+            discon(ndisc) = ventptr%opening(3)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvf(1,i)
+            discon(ndisc) = ventptr%filter(1)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvf(3,i)
+            discon(ndisc) = ventptr%filter(3)
         end do
 
         ! put the discontinuity array into order
@@ -1589,17 +1448,20 @@ module solve_routines
             i_hconnections(ieqto,w_boundary_condition) = 1
         end do
 
-        jacn1 = nofpmv - nofp
-        jacn2 = nofwt - nofpmv
+
+        jacn2 = nofwt - nofp
         jacn3 = nofprd - nofwt
-        jacdim = jacn1 + jacn2 + jacn3
+        jacdim = jacn2 + jacn3
 
         ! indicate which rooms are connected to an hvac system
         roominfo(1:nrm1)%is_hvac = .false.
-        do ii = 1, n_mvext
-            mvextptr => mventexinfo(ii)
-            i = mvextptr%room
-            roomptr => roominfo(i)
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            ii = ventptr%room1
+            roomptr => roominfo(ii)
+            roomptr%is_hvac = .true.
+            ii = ventptr%room2
+            roomptr => roominfo(ii)
             roomptr%is_hvac = .true.
         end do
 
@@ -1817,25 +1679,6 @@ module solve_routines
                 roomptr%species_fraction(u,o2) = oxyu/roomptr%mass(u)
                 if (roomptr%shaft) roomptr%species_fraction(l,o2) = roomptr%species_fraction(u,2)
             end if
-        end do
-    end if
-
-    ! copy hvac product values for each hvac system
-    if (nhvsys/=0.and.ns/=0) then
-        isof = nofhvpr
-        zzhvm(1:nhvsys) = 0.0_eb
-
-        do lsp = 1, ns
-            do isys = 1, nhvsys
-                isof = isof + 1
-                if (iflag==odevarb) then
-                    pphv = max(0.0_eb,pold(isof)+dt*pdold(isof))
-                else
-                    pphv = max(0.0_eb,y_vector(isof))
-                end if
-                zzhvspec(isys,lsp) = pphv
-                zzhvm(isys) = zzhvm(isys) + zzhvspec(isys,lsp)
-            end do
         end do
     end if
     return

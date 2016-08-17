@@ -20,7 +20,7 @@ module conduction_routines
 
 ! --------------------------- conduction -------------------------------------------
 
-    subroutine conduction(update,dt,flxtot,delta)
+    subroutine conduction(update,dt,fluxes_total,delta)
 
     !     routine: conduction (main conduction routine)
     !     purpose: interface between calculate_residuals and the conduction calculation.
@@ -29,13 +29,13 @@ module conduction_routines
     !               q'' + k dt/dx, which when zero is simply fourier's
     !              law of heat conduction.
     !     arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then
-    !                        we don't calculate delta or use flxtot
+    !                        we don't calculate delta or use fluxes_total
     !                dt time step interval from last valid solution point
-    !                flxtot  total flux striking walls
+    !                fluxes_total  total flux striking walls
     !                delta   the residual of q'' + k dt/dx
 
     integer, intent(in) :: update
-    real(eb), intent(in) :: dt, flxtot(mxrooms,nwal)
+    real(eb), intent(in) :: dt, fluxes_total(mxrooms,nwal)
     real(eb), intent(out) :: delta(*)
 
     real(eb) :: tgrad(2), vtgrad(4*mxrooms), wtemps(nnodes), walldx(nnodes)
@@ -108,8 +108,8 @@ module conduction_routines
                                     fu = 0.0_eb
                                 end if
                             end if
-                            fluxu = fu*flxtot(j,3)
-                            fluxl = (1.0_eb-fu)*flxtot(j,4)
+                            fluxu = fu*fluxes_total(j,3)
+                            fluxl = (1.0_eb-fu)*fluxes_total(j,4)
                         else
                             fluxu = wfluxsave
                             fluxl = 0.0_eb
@@ -144,7 +144,7 @@ module conduction_routines
             iroom = i_hconnections(iw,w_from_room)
             roomptr => roominfo(iroom)
             iwall = i_hconnections(iw,w_from_wall)
-            delta(icond) = flxtot(iroom,iwall) + vtgrad(iw)*roomptr%k_w(1,iwall)
+            delta(icond) = fluxes_total(iroom,iwall) + vtgrad(iw)*roomptr%k_w(1,iwall)
         end do
     end if
 

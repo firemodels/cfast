@@ -130,7 +130,7 @@ module ramp_data
 
     ! ramping variables
     integer :: nramps = 0
-    real(eb) :: qcvh(4,mxhvents), qcvm(4,mxfan), qcvf(4,mxfan)
+    real(eb) :: qcvh(4,mxhvents)
     type(ramp_type), target :: rampinfo(mxramps)
 
 end module ramp_data
@@ -276,8 +276,7 @@ module solver_data
     integer :: stpmin_cnt_max                   ! maximum number of time steps below stpmin before DASSL calls it quits
     
     ! solver variables
-    integer :: nofp, nofpmv, noftmv, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, &
-        nofhvpr, nequals, noffsm
+    integer :: nofp, noftu, nofvu, noftl, nofoxyl, nofoxyu, nofwt, nofprd, nofhvpr, nequals
     real(eb), dimension(maxteq) :: p, pold, pdold
     real(eb) :: told, dt
 
@@ -352,26 +351,12 @@ module vent_data
     integer, dimension(mxfslab) ::  dirs12                              ! direction of flow in each slab
 
     ! vvent variables
-    integer :: n_vvents                                                 ! number of veritcal flow vents
+    integer :: n_vvents                                                 ! number of vertical flow vents
     type (vent_type), dimension(mxvvents), target :: vventinfo          ! structured vertical vent data
 
     ! hvac variables
-    ! external connections
-    integer :: n_mvext                                      ! number of external nodes (connected to a room) in mv system
-    type (vent_type), dimension(mxext), target :: mventexinfo
-
-    ! fans
-    integer :: n_mvfan                                      ! number of fans in mv system
-    integer :: n_mvfanfilters                               ! number of filters in fans in mv system
-    type(vent_type), dimension(mxfan), target :: mventfaninfo
-    
-    integer :: n_mvduct
-    type (vent_type), dimension(mxduct), target :: mventductinfo
-    
-    integer :: n_mvnodes                                    ! number of nodes in mv system
-    integer :: nhvpvar                                      ! number pressure variables solved by DASSL in mv system 
-                                                            !   (equals the number of interior nodes)
-    type (vent_type), dimension(mxnode), target :: mventnodeinfo
+    integer :: n_mvents                                                 ! number of mechanical flow vents
+    type(vent_type), dimension(mxmvents), target :: mventinfo 
     
     integer, dimension(mxnode) :: izhvmapi                  ! maps all nodes to interior nodes (only ones solved by DASSL)
     integer, dimension(mxnode) :: izhvmape                  ! maps all nodes to exterior nodes
@@ -403,17 +388,6 @@ module vent_data
     real(eb), dimension(mxbranch) :: chv                    ! convective heat transfer coefficient of ducts in branch of mv system
     real(eb), dimension(mxbranch,ns) :: hvconc              ! species fraction in branch of mv system
     
-    
-    integer :: nhvsys                                       ! number of independent vm systems
-    real(eb), dimension(mxhvsys) :: hvtm                    ! initial total mass in each mv system
-    real(eb), dimension(mxhvsys) :: hvmfsys                 ! current net mass flowing into each mv system
-    real(eb), dimension(mxhvsys) :: zzhvm                   ! current total mass of gas in hvac system
-    real(eb), dimension(mxhvsys,ns) :: zzhvspec             ! current mass of each species in each mv system
-    
     logical :: mvcalc_on                                    ! true if initial analysis of mv systems is error free
-
-
-    type (vent_type), dimension(mxbranch), target :: mventbranchinfo
-    type (vent_type), dimension(mxhvsys), target :: mventsysteminfo
 
 end module vent_data

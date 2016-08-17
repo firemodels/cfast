@@ -2,7 +2,7 @@ module fire_routines
 
     use precision_parameters
 
-    use opening_fractions, only: qcifraction
+    use opening_fractions, only: get_vent_opening
     use utility_routines
 
     use cenviro
@@ -24,7 +24,7 @@ module fire_routines
     contains
 ! --------------------------- fires -------------------------------------------
 
-    subroutine fire (tsec,flwf)
+    subroutine fire (tsec,flows_fires)
 
     !     routine: fire
     !     purpose: physical interface routine to calculate the current rates of mass and energy flows into the layers from
@@ -32,13 +32,13 @@ module fire_routines
     !     revision: $Revision$
     !     revision date: $Date$
     !     arguments: tsec   current simulation time (s)
-    !                flwf   mass and energy flows into layers due to fires.
+    !                flows_fires   mass and energy flows into layers due to fires.
     !                       standard source routine data structure.
     !                nfire  total number of fires
     !                ifroom room numbers for each of the fires
 
     real(eb), intent(in) :: tsec
-    real(eb), intent(out) :: flwf(mxrooms,ns+2,2)
+    real(eb), intent(out) :: flows_fires(mxrooms,ns+2,2)
 
     real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
     real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
@@ -46,8 +46,8 @@ module fire_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
-    flwf(1:nr,1:ns+2,u) = 0.0_eb
-    flwf(1:nr,1:ns+2,l) = 0.0_eb
+    flows_fires(1:nr,1:ns+2,u) = 0.0_eb
+    flows_fires(1:nr,1:ns+2,l) = 0.0_eb
     nfire = 0
 
     if (option(ffire)/=fcfast) return
@@ -76,14 +76,14 @@ module fire_routines
 
         ! sum the flows for return to the source routine
         xtl = roomptr%temp(l)
-        flwf(iroom,m,u) = flwf(iroom,m,u) + fireptr%mdot_plume
-        flwf(iroom,m,l) = flwf(iroom,m,l) - fireptr%mdot_entrained
+        flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume
+        flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_temperature
         q_entrained = cp*fireptr%mdot_entrained*xtl
-        flwf(iroom,q,u) = flwf(iroom,q,u) + xqfc + q_firemass + q_entrained
-        flwf(iroom,q,l) = flwf(iroom,q,l) - q_entrained
-        flwf(iroom,3:ns+2,u) = flwf(iroom,3:ns+2,u) + xntms(u,1:ns)
-        flwf(iroom,3:ns+2,l) = flwf(iroom,3:ns+2,l) + xntms(l,1:ns)
+        flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + xqfc + q_firemass + q_entrained
+        flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
+        flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + xntms(u,1:ns)
+        flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + xntms(l,1:ns)
     end do
 
     return
@@ -577,10 +577,10 @@ module fire_routines
 
     real(eb), intent(in) :: time, deltt
 
-    integer ::i, j, irm, ii, isys
-    real(eb) :: filter
+    integer ::i
+    real(eb) :: fraction
     type(fire_type), pointer :: fireptr
-    type(vent_type), pointer :: mvextptr
+    type(vent_type), pointer :: ventptr
 
     do i = 1, n_fires
         fireptr => fireinfo(i)
@@ -596,27 +596,21 @@ module fire_routines
     end do
 
     ! sum the hvac flow
-    ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped. 
-    do irm = 1, nr
-        do ii = 1, n_mvext
-            mvextptr => mventexinfo(ii)
-            i = mvextptr%room
-            j = mvextptr%exterior_node
-            isys = izhvsys(j)
-            filter = (1.0_eb-qcifraction(qcvf,isys,time))
-            if (irm==i) then
-                mvextptr%total_flow(u) = mvextptr%total_flow(u) + mvextptr%mv_mflow(u)*deltt
-                mvextptr%total_flow(l) = mvextptr%total_flow(l) + mvextptr%mv_mflow(l)*deltt
-                mvextptr%total_trace_flow(u)  = mvextptr%total_trace_flow(u) + &
-                    mvextptr%mv_mflow(u)*mvextptr%species_fraction(u,11)*filter*deltt
-                mvextptr%total_trace_flow(l)  = mvextptr%total_trace_flow(l) + &
-                    mvextptr%mv_mflow(l)*mvextptr%species_fraction(l,11)*filter*deltt
-                mvextptr%total_trace_filtered(u)  = mvextptr%total_trace_filtered(u) + &
-                    mvextptr%mv_mflow(u)*mvextptr%species_fraction(u,11)*(1.0_eb-filter)*deltt
-                mvextptr%total_trace_filtered(l)  = mvextptr%total_trace_filtered(l) + &
-                    mvextptr%mv_mflow(l)*mvextptr%species_fraction(l,11)*(1.0_eb-filter)*deltt
-            end if
-        end do
+    ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped.
+    do i = 1, n_mvents
+        ventptr => mventinfo(i)
+        call get_vent_opening ('F',ventptr%room1,ventptr%room2,ventptr%counter,i,time,fraction)
+        fraction = (1.0_eb-fraction)
+        ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mv_mflow(u)*deltt
+        ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mv_mflow(l)*deltt
+        ventptr%total_trace_flow(u)  = ventptr%total_trace_flow(u) + &
+            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*fraction*deltt
+        ventptr%total_trace_flow(l)  = ventptr%total_trace_flow(l) + &
+            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*fraction*deltt
+        ventptr%total_trace_filtered(u)  = ventptr%total_trace_filtered(u) + &
+            ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*(1.0_eb-fraction)*deltt
+        ventptr%total_trace_filtered(l)  = ventptr%total_trace_filtered(l) + &
+            ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*(1.0_eb-fraction)*deltt
     end do
 
     return
@@ -624,7 +618,7 @@ module fire_routines
 
 ! --------------------------- door_jet -------------------------------------------
 
-    subroutine door_jet (flwdjf,djetflg)
+    subroutine door_jet (flows_doorjets,djetflg)
 
     !     routine:  door_jet
     !     description: physical interface routine to calculate the current
@@ -638,11 +632,11 @@ module fire_routines
     !                  that of the main fire.
     !
     !     inputs:   nfire   total number of normal fires
-    !     outputs:  flwdjf  mass and energy flows into layers due to fires.
+    !     outputs:  flows_doorjets  mass and energy flows into layers due to fires.
     !                       standard source routine data structure.
 
     logical, intent(out) :: djetflg
-    real(eb), intent(out) :: flwdjf(mxrooms,ns+2,2)
+    real(eb), intent(out) :: flows_doorjets(mxrooms,ns+2,2)
 
     real(eb) :: xntms1(2,ns), xntms2(2,ns), flw1to2, flw2to1, hcombt, qpyrol1, qpyrol2
     integer :: i, iroom1, iroom2
@@ -684,8 +678,8 @@ module fire_routines
     end do
 
     if (.not.djetflg)return
-    flwdjf(1:nr,1:ns+2,l) = 0.0_eb
-    flwdjf(1:nr,1:ns+2,u) = 0.0_eb
+    flows_doorjets(1:nr,1:ns+2,l) = 0.0_eb
+    flows_doorjets(1:nr,1:ns+2,u) = 0.0_eb
     roominfo(1:nr)%qdot_doorjet = 0.0_eb
 
     hcombt = 5.005e7_eb
@@ -705,18 +699,18 @@ module fire_routines
 
                 ! sum the flows for return to the source routine
                 if (dj1flag) then
-                    flwdjf(iroom1,q,u) = flwdjf(iroom1,q,u) + qpyrol1
-                    flwdjf(iroom1,3:ns+2,u) = flwdjf(iroom1,3:ns+2,u) + xntms1(u,1:ns)
+                    flows_doorjets(iroom1,q,u) = flows_doorjets(iroom1,q,u) + qpyrol1
+                    flows_doorjets(iroom1,3:ns+2,u) = flows_doorjets(iroom1,3:ns+2,u) + xntms1(u,1:ns)
                 end if
                 if (dj2flag) then
-                    flwdjf(iroom2,q,u) = flwdjf(iroom2,q,u) + qpyrol2
-                    flwdjf(iroom2,3:ns+2,u) = flwdjf(iroom2,3:ns+2,u) + xntms2(u,1:ns)
+                    flows_doorjets(iroom2,q,u) = flows_doorjets(iroom2,q,u) + qpyrol2
+                    flows_doorjets(iroom2,3:ns+2,u) = flows_doorjets(iroom2,3:ns+2,u) + xntms2(u,1:ns)
                 end if
         end do
 
     do i = 1, nr
         roomptr => roominfo(i)
-        roomptr%qdot_doorjet = flwdjf(i,q,u) + flwdjf(i,q,l)
+        roomptr%qdot_doorjet = flows_doorjets(i,q,u) + flows_doorjets(i,q,l)
     end do
     return
     end subroutine door_jet

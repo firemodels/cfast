@@ -238,17 +238,19 @@ module cfast_types
         integer :: top                                  ! top compartment for connecting vent (from user input)
         integer :: bottom                               ! bottom compartment for connecting vent (from user input)
         integer :: shape                                ! vent shape, 1 = circular, 2 = square (from user input)
-    
-        real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
-        real(eb) :: v_mflow(2,2)                        ! vent mass flow (top,bottom, u,l)
 
         ! These define a mechanical vent
-        ! external connections to mv system(s)
-        integer :: room                                 ! compartment connected to exterior node
-        integer :: exterior_node                        ! node number connected to compartment above
-        integer :: orientation                          ! orientation of each room connection in mv system (1 = V, 2 = H)
-        real(eb) :: height                              ! center height of vent diffuser
-        
+        integer :: orientation(2)                       ! orientation of vent diffusers (1 = V, 2 = H)
+        real(eb) :: height(2)                           ! center height of vent diffusers
+        real(eb) :: diffuser_area(2)                    ! cross-sectional area of vent diffusers
+        integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
+        real, dimension(mxcoeff) :: coeff               ! coefficients of fan curve, flow vs pressure
+        real(eb) :: maxflow                             ! peak specified fan flow in mv system (m^3/s)
+        real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
+        real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
+        real(eb) :: filter(4)                           ! simple filtering of vents ... same structure as open/close below
+
+        real(eb) :: relp                                ! pressure difference across vent (room2 - room1)
         real(eb), dimension(2) :: mv_mflow              ! vent mass flow at compartment connection (u,l)
         real(eb), dimension(2) :: temp                  ! temperature at compartment connection (u,l)
         real(eb), dimension(2) :: flow_fraction         ! fraction of flow to or from each layer (<-> u, <-> l)
@@ -256,21 +258,6 @@ module cfast_types
         real(eb), dimension(2) :: total_trace_flow      ! total trace species flow up to current time  (u,l)
         real(eb), dimension(2) :: total_trace_filtered  ! total trace species filtered out up to current time  (u,l)
         real(eb), dimension(2,ns) :: species_fraction   ! species fraction at compartment connection (<-> u, <-> l)
-        
-        ! fans
-        integer :: n_coeffs                             ! number of fan coefficients for this fan (currently set to 1 in input.f90)
-        real, dimension(mxcoeff) :: coeff               ! coefficients of fan curve, flow vs pressure
-        real(eb) :: mv_maxflow                          ! specified fan flow in mv system (m^3/s)
-        real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
-        real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
-        
-        !ducts
-        integer :: branch                               ! branch number associated with this duct
-        real(eb) :: diameter                            ! duct diameter
-        real(eb) :: length                              ! duct length
-        
-        !nodes
-        real(eb) :: relp                                ! pressure at node
 
         ! These are common to more than one vent types
 
@@ -284,6 +271,10 @@ module cfast_types
         real(eb) :: area                    ! cross-sectional area of vent
 
         ! These are calculated results for the current time step
+    
+        real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
+        real(eb) :: mflow(2,2)                          ! vent mass flow (room1/top,room2/bottom, u,l)
+        
         integer :: n_slabs
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type

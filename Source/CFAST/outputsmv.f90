@@ -66,12 +66,12 @@
     character(128) :: dir
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
     integer(4) :: length, splitpathqq
-    integer :: ifrom, ito, iface, iroom
+    integer :: ifrom, ito, iface
 
     integer ibar, jbar, kbar
     integer :: j
     type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: mvextptr
+    type(vent_type), pointer :: ventptr
     type(detector_type), pointer :: dtectptr
     type(slice_type), pointer :: sf
     type(iso_type), pointer :: isoptr
@@ -185,13 +185,17 @@
     end do
 
     ! mechanical vents
-    if (n_mvnodes/=0.and.n_mvext/=0) then
-        do i = 1, n_mvext
-            mvextptr => mventexinfo(i)
-            if (mvextptr%room<=nrm1) then
-                call getmventinfo (i,iroom, xyz, vred, vgreen, vblue)
+    if (n_mvents/=0) then
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            if (ventptr%room1<=nrm1) then
+                call getmventinfo (i,ventptr%room1, xyz, vred, vgreen, vblue)
                 write (13,'(a)') "MVENTGEOM"
-                write (13,"(1x,i3,8(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
+                write (13,"(1x,i3,8(e11.4,1x),e11.4)") ventptr%room1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, R, B, G
+            else
+                call getmventinfo (i,ventptr%room2, xyz, vred, vgreen, vblue)
+                write (13,'(a)') "MVENTGEOM"
+                write (13,"(1x,i3,8(e11.4,1x),e11.4)") ventptr%room2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, R, B, G
             end if
         end do
     end if

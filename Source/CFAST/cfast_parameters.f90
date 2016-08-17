@@ -56,7 +56,7 @@ module cparams
     real(eb), parameter :: mx_hsep = 1.0e-3_eb      ! maximum horizontal distance below which fire is assumed to
                                                     ! be on a surface for entrainmnt
     real(eb), parameter :: xlrg = 1.0e+5_eb         ! sizes for outside room
-    real(eb), parameter :: deltatemp_min = 0.01_eb  ! minimum temperature difference for bouyancy to deposit all into a layer
+    real(eb), parameter :: deltatemp_min = 1.0_eb   ! minimum temperature difference for bouyancy to deposit all into a layer
     integer, parameter :: interior = 1              ! compartment interior
     integer, parameter :: exterior = 2              ! compartment exterior
 

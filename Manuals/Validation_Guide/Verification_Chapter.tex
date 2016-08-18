@@ -203,7 +203,7 @@ Figure~\ref{specmass2} shows the resulting product masses, which are consistent 
 \subsection{A Fire in a Four Compartment Assembly}
 \label{sec:specmass4}
 
-Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time. 
+Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
@@ -228,7 +228,7 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 
 \section{Ventilation}
 
-\subsection{Pressure Change as Air Flows Through a Single Compartment}
+\subsection{Air Flow Through a Single Compartment}
 The setup for this test case includes a 5~m by 5~m by 3~m compartment that contains a mechanical vent and a wall vent. Air is pumped into a single compartment through a 1~m by 1~m mechanical vent, at a rate of 0.01~m$^3$/s. The air is allowed to exit the compartment through a 1~cm by 1~cm vent located on the opposite side of the compartment. The governing equation for the change in pressure in the compartment is \cite{Emmons:SFPE}:
 \begin{equation}
 \Delta{P} = \frac{1}{2\rho}\brackets{\frac{\dot{m}}{CA}}^2
@@ -248,22 +248,22 @@ Figure~\ref{fig:vent1} shows how the pressure changes as air flows through the c
 
 
 
-\subsection{Temperature and Pressure Changes of Steady-State Air Flow}
+\subsection{Steady-State Air Flow}
 \label{sec:vent2}
 
-A similar setup to the one used in Section~\ref{sec:specmass4} is employed here. A fan blows air into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows how temperature and pressure change as the air flows through the fourth compartment.
+A similar setup to the one used in Section~\ref{sec:specmass4} is employed here. A fan blows air into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows  temperature and pressure as the air flows through the fourth compartment. As expected, the temperature remains at ambient conditions and flow in the lower compartment matches flow out the upper compartment
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/ventilation_2_temperature} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/ventilation_2_pressure}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/ventilation_2_flow}
 \end{tabular*}
-\caption[Results of the test case {\ct ventilation\_2.in}]{Expected and CFAST calculated values for pressure and temperature of the fourth compartment for the case {\ct ventilation\_2.in}.}
+\caption[Results of the test case {\ct ventilation\_2.in}]{Expected and CFAST calculated values for temperature and mass flow for the case {\ct ventilation\_2.in}.}
 \label{ventilation_2TP}
 \end{figure}
 
 
-\subsection{Temperature and Pressure Changes of Non Steady-State Air Flow}
+\subsection{Non Steady-State Air Flow}
 
 The same setup that was constructed in Section~\ref{sec:vent2} is used again in this scenario. All vents and fans are the same as in the previous case, except the fan in the fourth compartment has been converted to a round ceiling vent with an area of 4~m$^2$. Initially, all of the vents are closed and air is pumped into the first compartment at a rate of 1~m$^3$/s, for a period of 15~s. After 15~s pass, the fan is shut off. Then, at 200~s, the door between compartments one and two opens completely. Next, at 500~s, the vent between compartments two and three opens completely. At 700~s, the door between compartments three and four opens completely. Finally, at 1000~s, the ceiling vent in compartment four opens completely. Figure~\ref{ventilation_3TP} shows how temperature and pressure change as the air flows through the first compartment.
 
@@ -276,7 +276,7 @@ The same setup that was constructed in Section~\ref{sec:vent2} is used again in 
 \label{ventilation_3TP}
 \end{figure}
 
-\subsection{Determining the Velocity Profile of Air Flowing Through a Doorway}
+\subsection{Velocity Profile of Air Flowing Through a Doorway}
 
 A 200~kW natural gas (methane) fire burns in a 5~m by 5~m by 5~m compartment, where the walls are assumed to be adiabatic. The heat release rate ramps up linearly to 200~kW in 30~s, then remains steady for 5.5~min. The compartment contains a 4~m by 1.5~m door that remains completely open throughout the simulation. The mass flow though each vertical segment of the doorway is given by:
 \begin{equation}
@@ -300,7 +300,7 @@ where $\delta A$ represents the infinitesimal area of the door segment and $\rho
 \label{fig:vel}
 \end{figure}
 
-\subsection{Mass Flow Through Different Vent Types}
+\subsection{Flow Through Different Vent Types}
 
 A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12 kg/s). Vertical and horizontal natural flow vents connect this compartment to two other compartments stacked vertically.  Finally, the structure is vented to the outside by either a vertical or horizontal flow vent in the rooms removed from the one where air is supplied. Figure~\ref{fig:vvent} shows a sample of the mass flow through the vents.
 

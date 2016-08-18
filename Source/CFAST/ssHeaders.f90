@@ -70,7 +70,7 @@ module spreadsheet_header_routines
         position = position + 1
         call toIntString(i,cRoom)
         if (i==nr) then
-            headertext(1,position) = trim(LabelsShort(7)) // 'Out'
+            headertext(1,position) = trim(LabelsShort(7)) // 'Outside'
         else
             headertext(1,position) = trim(LabelsShort(7)) // trim(cRoom)
         end if
@@ -379,9 +379,11 @@ module spreadsheet_header_routines
             do ih = 1,3
                 position = position + 1
                 if (ciFrom=='Outside') then
-                    headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '_' // trim(ciTo)
+                    headertext(1,position) = trim(LabelsShort(ih+3)) // trim(ciFrom) // '_' // 'C' // trim(ciTo)
+                else if (cito=='Outside') then
+                    headertext(1,position) = trim(LabelsShort(ih+3)) // 'C' // trim(ciFrom) // '_' // trim(ciTo)
                 else
-                    headertext(1,position) = trim(LabelsShort(ih+3)) //'C' // trim(ciFrom) // '_' // trim(ciTo)
+                    headertext(1,position) = trim(LabelsShort(ih+3)) // 'C' // trim(ciFrom) // '_' //  'C' // trim(ciTo)
                 end if
                 headertext(2,position) = Labels(ih+3)
                 headertext(3,position) = 'Fan from ' // trim(ciFrom) // ' to ' // trim(ciTo)

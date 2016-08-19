@@ -25,18 +25,18 @@ module spreadsheet_header_routines
 
     ! This is the header information for the normal spreadsheet output
 
-    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfires
-    character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(16), LabelsShort(16), LabelUnits(16)
+    integer, parameter :: maxhead = 1+8*mxrooms+5+10*mxfires
+    character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(17), LabelsShort(17), LabelUnits(17)
     integer :: position, i, j
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
     data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
-    'HRR Door Jet Fires', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
+    'HRR Door Jet Fires', 'Ignition', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
        'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
-    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'DJET_', 'PLUM_', 'PYROL_', &
+    data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'DJET_', 'IGN_', 'PLUM_', 'PYROL_', &
        'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
-    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
+    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W', ' ', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
 
     !  spreadsheet header.  Add time first
 
@@ -86,7 +86,7 @@ module spreadsheet_header_routines
     ! Fire variables.
     do j = 1, n_fires
         fireptr => fireinfo(j)
-        do i = 1, 9
+        do i = 1, 10
             position = position + 1
             call toIntString(j,cFire)
             headertext(1,position) = trim(LabelsShort(i+7))//trim(cFire)

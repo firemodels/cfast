@@ -385,6 +385,28 @@ where $u_{\rm w}$ is the water spray density, expressed in units of mm/s. Figure
 \label{sprinkler1}
 \end{figure}
 
+\section{Fire Ignition}
+
+Two small fires are located in a single compartment some distance away from a larger initiating fire burning in the center of the compartment. The two smaller fires are set to ignite at an incident heat flux of 6~kW/m$^2$ and 200~\degc, respectively. Figures~\ref{fireigntion1} and \ref{fireignition2} show the heat release rate, incident heat flux, and surface temperature for the two fires overlayed with the calculated ignition time.
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/fire_ignition_HRR_1} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/fire_ignition_flux_1}
+\end{tabular*}
+\caption[Results of the test case {\ct Ignition\_Test.in}]{Heat release rate of the fire and incident heat flux to the fire location for the case {\ct Ignition\_Test.in}.}
+\label{fireigntion1}
+\end{figure}
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/fire_ignition_HRR_2} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/fire_ignition_temp_2}
+\end{tabular*}
+\caption[Results of the test case {\ct Ignition\_Test.in}]{Heat release rate of the fire and surface temperature at the fire location for the case {\ct Ignition\_Test.in}.}
+\label{fireignition2}
+\end{figure}
+
 \section{Summary of Verification Results}
 
 The tests included in this chapter test the energy and mass balance equations in CFAST and various heat transfer (through walls, targets, and fire detectors/sprinklers) and mass transfer (flow through vents) calculations included in the model with comparisons to analytical calculations. These comparisons are an integral part of a process known as regression testing, which aims to evaluate the accuracy of outputs predicted by a numerical software package. The results from this chapter can be compared to another version of CFAST as a way of measuring the quality of results between versions.  These results also help determine the impact of code additions and modifications on the overall accuracy of CFAST and can help identify errors in the CFAST source code. Appendix \ref{info:verification_statistics} presents the results of the verification tests for the current version of CFAST.

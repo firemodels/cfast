@@ -181,19 +181,25 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
+    ! user-specified fires
     write (iofilo,5000)
     if (n_fires/=0) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
-            call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
-            write (iofilo,5010) trim(fireptr%name), fireptr%mdot_plume, fireptr%mdot_pyrolysis, fireptr%qdot_actual, &
-                fheight, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
+            if (fireptr%ignited) then
+                call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+                write (iofilo,5010) trim(fireptr%name), 'Y', fireptr%mdot_plume, fireptr%mdot_pyrolysis, fireptr%qdot_actual, &
+                    fheight, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
+            else
+                write (iofilo,5010) trim(fireptr%name), 'N'
+            end if
         end do
     end if
+
+    ! door jet fires
     write (iofilo,'(a)') ' '
     do icomp = 1, nr
         roomptr => roominfo(icomp)
-
         if (icomp<nr) then
             xems = 0.0_eb
             xemp = 0.0_eb
@@ -221,12 +227,12 @@ module output_routines
     return
 
 5000 format (//,'FIRES',//,&
-         'Compartment    Fire      Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      ', &
+         'Compartment    Fire          Ign   Plume     Pyrol     Fire      Flame     Fire in   Fire in   Vent      ', &
          'Convec.   Radiat.    Pyrolysate  Trace',/, &
-         '                         Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
-         '                         (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)       ', &
-         '(W)       (W)        (kg)        (kg)' ,/,' ',138('-'))
-5010 format (14x,a8,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
+         '                                   Flow      Rate      Size      Height    Upper     Lower     Fire',/, &
+         '                                   (kg/s)    (kg/s)    (W)       (m)       (W)       (W)       (W)       ', &
+         '(W)       (W)        (kg)        (kg)' ,/,' ',146('-'))
+5010 format (14x,a12,4x,a,3x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5020 format (13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5030 format (a14,10x,3(1pg10.3),10x,3(1pg10.3))
 5040 format ('Outside',76x,1pg10.3)

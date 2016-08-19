@@ -50,7 +50,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfires
-    real(eb) :: outarray(maxhead), fheight
+    real(eb) :: outarray(maxhead), fheight, fire_ignition
     logical :: firstc = .true.
     integer :: position, i
     type(room_type), pointer :: roomptr
@@ -89,6 +89,12 @@ module spreadsheet_routines
         do i = 1, n_fires
             fireptr => fireinfo(i)
             call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+            if (fireptr%ignited) then
+                fire_ignition = 1
+            else
+                fire_ignition = 0
+            end if
+            call ssaddtolist (position,fire_ignition,outarray)
             call ssaddtolist (position,fireptr%mdot_plume,outarray)
             call ssaddtolist (position,fireptr%mdot_pyrolysis,outarray)
             call ssaddtolist (position,fireptr%qdot_actual,outarray)

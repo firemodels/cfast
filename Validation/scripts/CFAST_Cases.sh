@@ -367,8 +367,9 @@ $RUNCFAST -d ../Verification/Ventilation VVent_Tests.in
 
 $RUNCFAST -d ../Verification/Sprinkler sprinkler_1.in
 
-
 $RUNCFAST -d ../Verification/Radiation radiation_1.in
 $RUNCFAST -d ../Verification/Radiation radiation_2.in
+
+$RUNCFAST -d ../Verification/Fires Ignition_Test.in
 
 

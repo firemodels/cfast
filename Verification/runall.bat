@@ -51,6 +51,12 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_1 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_2 -V
 cd ..
 
+echo Running Fire Cases
+cd Fires
+call ..\..\Validation\cleancfast.bat
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast Ignition_Test -V
+cd ..
+
 echo Waiting for all CFAST runs to finish
 :loop1
 tasklist | find /i /c "CFAST" > temp.out

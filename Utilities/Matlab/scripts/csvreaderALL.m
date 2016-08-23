@@ -1,6 +1,6 @@
 function [Time,mCO2vectorFIN,mH2OvectorFIN,TotH2Omass,TotCO2mass,mCO2vector,mH2Ovector] = csvreaderALL(filename)
 
-Po = 101300;%Pa
+Po = 101325;%Pa
 R = 8.314;%kJ/(mol*K)
 MO2 = 32.00;%g/mol
 MCO2 = 44.01;%g/mol

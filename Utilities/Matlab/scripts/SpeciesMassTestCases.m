@@ -12,10 +12,10 @@ format long
 numC = 1;
 numH = 4;
 numO = 0;
-Po = 101300;
+Po = 101325;
 HeatOfComb = 50000;
 
-%Important Constans
+%Important Constants
 R = 8.314;%kJ/(mol*K)
 MO2 = 32.00;%g/mol
 MCO2 = 44.01;%g/mol

@@ -1045,7 +1045,7 @@ module output_routines
     real(eb), intent(in) :: t, dt
 
     real(eb) :: xqf
-    integer :: bmap(mxbranch), i, j, iprod, il, iroom, iobj, itarg
+    integer :: i, j, iprod, il, iroom, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
        '   OD', '   CT', '   TS'/), ccc*3
@@ -1055,22 +1055,7 @@ module output_routines
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
 
-    save bmap
-
     type(target_type), pointer :: targptr
-
-    !     debug printing
-    if (firstc) then
-        firstc = .false.
-        do i = 1, nbr
-            do j = 1, ncnode(na(i))
-                if (i==icmv(na(i),j)) then
-                    bmap(i) = j
-                    exit
-                end if
-        end do
-    end do
-    end if
 
     if (ikey==1) then
         write (*,*) 'Pause at time = ', T,',  Press any key to continue'

@@ -333,9 +333,7 @@ module initialization_routines
 
     ! mechanical vents
 
-    nbr = 0
     n_mvents = 0
-    mvcalc_on = .false.
     mventinfo(1:n_mvents)%total_flow(u) = 0.0_eb
     mventinfo(1:n_mvents)%total_flow(l) = 0.0_eb
     mventinfo(1:n_mvents)%total_trace_flow(u) = 0.0_eb

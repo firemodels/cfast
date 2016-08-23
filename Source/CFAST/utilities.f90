@@ -6,7 +6,6 @@ module utility_routines
     use setup_data
     use option_data
     use solver_data
-    use vent_data, only: ductcv
     use room_data, only: nwpts, wsplit, iwbound
 
     implicit none
@@ -907,7 +906,7 @@ module utility_routines
     write (iunit,11) stpmax, stpfirst
 
     write(iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
-    write(iunit,11) ductcv
+    write(iunit,11) 0.0_eb
 
     write(iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF,   SNSQE PRINT (1=ON)'
     write(iunit,'(1x,i3,1x,1pg11.4,i3)') jacchk, cutjac, iprtalg

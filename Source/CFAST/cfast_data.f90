@@ -345,7 +345,7 @@ module vent_data
     real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa   ! individual flows for door jet fires (u or l)
     
     ! horizontal vent flow slab data by elevation in vent
-    integer :: nvelev                                                  ! current number of slabs
+    integer :: nvelev                                                   ! current number of slabs
     real(eb), dimension(mxfslab) :: yvelev                              ! elevations of breakpoints in vent flow
     real(eb), dimension(mxfslab) :: dpv1m2                              ! pressure in room 1 - pressure in room 2 in each slab
     integer, dimension(mxfslab) ::  dirs12                              ! direction of flow in each slab
@@ -357,37 +357,5 @@ module vent_data
     ! hvac variables
     integer :: n_mvents                                                 ! number of mechanical flow vents
     type(vent_type), dimension(mxmvents), target :: mventinfo 
-    
-    integer, dimension(mxnode) :: izhvmapi                  ! maps all nodes to interior nodes (only ones solved by DASSL)
-    integer, dimension(mxnode) :: izhvmape                  ! maps all nodes to exterior nodes
-
-    integer, dimension(mxnode) :: ncnode                    ! number of connections to nodes in mv system (must be 1 to mxcon)
-    integer, dimension(mxnode,mxcon) :: mvintnode           ! map of nodes connected to each node in mv system
-    integer, dimension(mxnode,mxcon) :: icmv                ! branch assigned to each node of mv system
-    integer, dimension(mxnode) :: izhvie                    ! maps exterior nodes to complete node set
-    integer, dimension(mxnode) :: izhvsys                   ! maps all nodes to separate mv systems
-    real(eb), dimension(mxnode) :: hvght                    ! absolute height of nodes in mv systems
-    real(eb), dimension(mxnode,mxcon) :: dpz                ! pressure difference between connected nodes in mv system
-    real(eb), dimension(mxnode,mxcon) :: hvflow             ! mass flow between connected nodes in mv system
-    real(eb), dimension(mxnode,ns) :: dhvprsys              ! net species flow at each node in mv system
-    real(eb) :: ductcv                                      ! convective heat transfer coefficient for duct heat loss (currently 0)
-    
-    integer :: nbr                                          ! number of branches in mv system
-    integer :: nhvtvar                                      ! number of temperature variables in mv system solved by DASSL
-                                                            !   (equals the number of branches in mv system)
-    integer, dimension(mxbranch) :: na                      ! beginning node of a branch in mv system
-    integer, dimension(mxbranch) :: ne                      ! ending node of a branch in mv system
-    integer, dimension(mxbranch) :: nf                      ! non-zero if there's a fan in a branch in mv system
-    integer, dimension(mxbranch) :: izhvbsys                ! assigned mv system for each branch
-    real(eb), dimension(mxbranch) :: ce                     ! average conductance in branch of mv system
-    real(eb), dimension(mxbranch) :: hvdvol                 ! total volume in branch of mv system
-    real(eb), dimension(mxbranch) :: hvdara                 ! total surface area of ducts in branch of mv system
-    real(eb), dimension(mxbranch) :: tbr                    ! gas temperature in branch of mv system
-    real(eb), dimension(mxbranch) :: rohb                   ! density of gas in branch of mv system
-    real(eb), dimension(mxbranch) :: bflo                   ! mass flow in branch of mv system
-    real(eb), dimension(mxbranch) :: chv                    ! convective heat transfer coefficient of ducts in branch of mv system
-    real(eb), dimension(mxbranch,ns) :: hvconc              ! species fraction in branch of mv system
-    
-    logical :: mvcalc_on                                    ! true if initial analysis of mv systems is error free
 
 end module vent_data

@@ -1891,7 +1891,7 @@ module input_routines
     !     purpose: this routine initializes the solver variables from solver.ini if it exists
     !     arguments: none
 
-    real(eb) :: fract1, fract2, fract3, fsum
+    real(eb) :: fract1, fract2, fract3, fsum, ductcv
     integer :: nopt, i, j, ibeg, iend
     logical existed
 
@@ -1946,7 +1946,7 @@ module input_routines
     read (iofili,*)
     read (iofili,*) stpmax, stpfirst
 
-    ! read in hvac convection coefficient
+    ! read in hvac convection coefficient (not currently used)
     read(iofili,*)
     read(iofili,*) ductcv
 

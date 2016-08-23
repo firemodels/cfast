@@ -1045,11 +1045,10 @@ module output_routines
     real(eb), intent(in) :: t, dt
 
     real(eb) :: xqf
-    integer :: i, j, iprod, il, iroom, iobj, itarg
+    integer :: i, iprod, il, iroom, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
        '   OD', '   CT', '   TS'/), ccc*3
-    logical :: firstc = .true.
 
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr

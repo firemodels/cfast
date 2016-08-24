@@ -6,8 +6,7 @@ function [] = fire_ignition(data_dir)
 
 %first the normal output file with heat release rates and ignition times
 filename = [data_dir 'Ignition_Test_n.csv'];
-Qn = importdata(filename,',',4);
-Fn = strsplit(Qn.textdata{1,1},',');
+[Fn Qn] = dvcread(filename,1);
     
 %Find the locations of each of the data columns
 colT = find(strncmpi(Fn,'Time',4));
@@ -19,21 +18,20 @@ colhrr2 = find(strncmpi(Fn,'HRR_3',5));
 %then the target output file with heat flux and temperature for
 %targets associated with each fire ignition
 filename = [data_dir 'Ignition_Test_w.csv'];
-Qt = importdata(filename,',',4);
-Ft = strsplit(Qt.textdata{1,1},',');
+[Ft Qt] = dvcread(filename,1);
     
 %Find the locations of each of the data columns
 colflx1 = find(strncmpi(Ft,'TRGFLXI_1',9));
 coltemp2 = find(strncmpi(Ft,'TRGSURT_2',9));
 
 %Transfer the data from the csv file to this matlab script
-time = Qn.data(:,colT);
-ign1 = Qn.data(:,colign1);
-hrr1 = Qn.data(:,colhrr1);
-ign2 = Qn.data(:,colign2);
-hrr2 = Qn.data(:,colhrr2);
-flx1 = Qt.data(:,colflx1);
-temp2 = Qt.data(:,coltemp2);
+time = Qn(:,colT);
+ign1 = Qn(:,colign1);
+hrr1 = Qn(:,colhrr1);
+ign2 = Qn(:,colign2);
+hrr2 = Qn(:,colhrr2);
+flx1 = Qt(:,colflx1);
+temp2 = Qt(:,coltemp2);
 
 %calculate scaled ignition indicators
 scalehrr1 = ign1*max(hrr1)*2;

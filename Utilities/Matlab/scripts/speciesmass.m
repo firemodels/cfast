@@ -2,10 +2,8 @@ function [] = speciesmass(data_dir)
 
 %This script will calculate the experimental and theoretical yields of H2O
 %and CO2 for several test cases. The program functions by reading in
-%values from the specific .csv files. The program finds values of
-%Temperature, Pressure and Volume of the upper layer, as well as
-%the corresponding mole fractions of O2, CO2 and H2O in the upper layer,
-%which are then used to calculate the experimental masses of CO2 and H2O produced.
+%values from the specific .csv files. Experimental values are calculated by
+%adding upper and lower layer values of calculated layer species masses
 
 format long
 
@@ -51,12 +49,11 @@ MassCO2Prod(i) = 1/(((numC*MC)/(StoicCO2*MCO2))/MassC(i));%kg
 end
 TheoreticalMassH2O = MassH2OProd(length(MassH2OProd));
 TheoreticalMassCO2 = MassCO2Prod(length(MassCO2Prod));
-%Experimental Calculations
-findname = [data_dir 'species_mass_1'];
-[Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
-%Percent Error Calculations
-ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
-ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
+
+%Experimental Data
+filename = [data_dir 'species_mass_1_m.csv'];
+[Time,mCO2,mH2O] = csvreaderALL(filename,'_1');
+
 header = ['Time , mCO2 , mH2O'];
 data = [Time , mCO2, mH2O];
 outid = fopen([data_dir 'species_mass_1.csv'] , 'w+');
@@ -65,14 +62,16 @@ fclose(outid);
 dlmwrite ([data_dir 'species_mass_1.csv'],data,'roffset',1,'-append');
 
 %% Case 2: Two compartments of sizes 2m*5m*8m are placed side by side, with a door of height 6m and width 1m connecting them. There is a fire in the middle of the first compartment that has the same energy production as the fire in the first case study. The fuel is still methane.
-findname = [data_dir 'species_mass_2'];
+
 %Theoretical Mass calculations will be exactly the same as above. Same fire
 %and same fuel source, so the mass of CO2 and H2O produced should
 %theoretically still be the same.
-[Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
-%Percent Error Calculations
-ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
-ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
+filename = [data_dir 'species_mass_2_m.csv'];
+[Time,mCO21,mH2O1] = csvreaderALL(filename,'_1');
+[Time,mCO22,mH2O2] = csvreaderALL(filename,'_2');
+mCO2 = mCO21 + mCO22;
+mH2O = mH2O1 + mH2O2;
+
 header = ['Time , mCO2 , mH2O'];
 data = [Time , mCO2, mH2O];
 outid = fopen([data_dir 'species_mass_2.csv'] , 'w+');
@@ -81,14 +80,16 @@ fclose(outid);
 dlmwrite ([data_dir 'species_mass_2.csv'],data,'roffset',1,'-append');
 
 %% Case 3: Two compartments of sizes 9m*5m*4m and 9m*5m*2m are placed directly on top of each other with a 4m^2 ceiling vent in between the two. The same fire that is described in cases 1&2 is placed in the middle of compartment 1. 
-findname = [data_dir 'species_mass_3'];
+
 %Theoretical Mass calculations will be exactly the same as above. Same fire
 %and same fuel source, so the mass of CO2 and H2O produced should
 %theoretically still be the same.
-[Time,mCO2,mH2O,TotH2Omass,TotCO2mass] = csvreaderALL(findname);
-%Percent Error Calculations
-ErrorCO2 = 100*abs((TheoreticalMassCO2 - TotCO2mass)/(TheoreticalMassCO2));% %
-ErrorH2O = 100*abs((TheoreticalMassH2O - TotH2Omass)/(TheoreticalMassH2O));% %
+filename = [data_dir 'species_mass_3_m.csv'];
+[Time,mCO21,mH2O1] = csvreaderALL(filename,'_1');
+[Time,mCO22,mH2O2] = csvreaderALL(filename,'_2');
+mCO2 = mCO21 + mCO22;
+mH2O = mH2O1 + mH2O2;
+
 header = ['Time , mCO2 , mH2O'];
 data = [Time , mCO2, mH2O];
 outid = fopen([data_dir 'species_mass_3.csv'] , 'w+');
@@ -106,18 +107,14 @@ dlmwrite ([data_dir 'species_mass.csv'],data,'roffset',1,'-append');
 
 
 %% Case 4:
-findname = [data_dir 'species_mass_4'];
-[Time,mCO2,mH2O,TotH2Omass,TotCO2mass,mCO2comp,mH2Ocomp] = csvreaderALL(findname);
-MCO21 = mCO2comp(:,1);%we are examining the flow in compartment 1 only
-MH2O1 = mH2Ocomp(:,1);%we are examining the flow in compartment 1 only
-MCO22 = mCO2comp(:,2);%we are examining the flow in compartment 2 only
-MH2O2 = mH2Ocomp(:,2);%we are examining the flow in compartment 2 only
-MCO23 = mCO2comp(:,3);%we are examining the flow in compartment 3 only
-MH2O3 = mH2Ocomp(:,3);%we are examining the flow in compartment 3 only
-MCO24 = mCO2comp(:,4);%we are examining the flow in compartment 4 only
-MH2O4 = mH2Ocomp(:,4);%we are examining the flow in compartment 4 only
+filename = [data_dir 'species_mass_4_m.csv'];
+[Time,mCO21,mH2O1] = csvreaderALL(filename,'_1');
+[Time,mCO22,mH2O2] = csvreaderALL(filename,'_2');
+[Time,mCO23,mH2O3] = csvreaderALL(filename,'_3');
+[Time,mCO24,mH2O4] = csvreaderALL(filename,'_4');
+
 header = ['Time , MCO21 , MH2O1 , MCO22 , MH2O2 , MCO23 , MH2O3 , MCO24 , MH2O4'];
-data = [Time , MCO21, MH2O1 , MCO22 , MH2O2 , MCO23 , MH2O3 , MCO24 , MH2O4 ];
+data = [Time , mCO21, mH2O1 , mCO22 , mH2O2 , mCO23 , mH2O3 , mCO24 , mH2O4 ];
 outid = fopen([data_dir 'species_mass_4.csv'] , 'w+');
 fprintf(outid,'%s',header);
 fclose(outid);

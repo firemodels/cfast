@@ -41,7 +41,7 @@ module debug_routines
 
     if (nwline) then
         position = 0
-        call SSaddtolist(position, time, outarray)
+        call ssaddtolist(position, time, outarray)
         nwline = .false.
     end if
 
@@ -54,7 +54,7 @@ module debug_routines
     call ssaddtolist(position, v, outarray)
     call ssaddtolist(position, slab, outarray)
     do i = 1, mxfslab
-        call SSaddtolist(position, dirs12(i)*qslab(i), outarray)
+        call ssaddtolist(position, dirs12(i)*qslab(i), outarray)
     end do
     return
 
@@ -129,43 +129,43 @@ module debug_routines
     end if
 
     position = 0
-    call SSaddtolist (position,time,outarray)
+    call ssaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call SSaddtolist (position,roomptr%relp,outarray)
-        call SSaddtolist (position,roomptr%volume(u),outarray)
-        call SSaddtolist(position,roomptr%temp(u),outarray)
-        call SSaddtolist(position,roomptr%temp(l),outarray)
+        call ssaddtolist (position,roomptr%relp,outarray)
+        call ssaddtolist (position,roomptr%volume(u),outarray)
+        call ssaddtolist(position,roomptr%temp(u),outarray)
+        call ssaddtolist(position,roomptr%temp(l),outarray)
         do j = 1, 2
             do k = 1, 2
-                call SSaddtolist (position,flows_total(i,k,j),outarray)
-                call SSaddtolist (position,flows_hvents(i,k,j),outarray)
-                call SSaddtolist (position,flows_fires(i,k,j),outarray)
-                call SSaddtolist (position,flows_vvents(i,k,j),outarray)
-                call SSaddtolist (position,flows_mvents(i,k,j),outarray)
-                call SSaddtolist (position,filtered(i,k,j),outarray)
-                call SSaddtolist (position,flows_doorjets(i,k,j),outarray)
+                call ssaddtolist (position,flows_total(i,k,j),outarray)
+                call ssaddtolist (position,flows_hvents(i,k,j),outarray)
+                call ssaddtolist (position,flows_fires(i,k,j),outarray)
+                call ssaddtolist (position,flows_vvents(i,k,j),outarray)
+                call ssaddtolist (position,flows_mvents(i,k,j),outarray)
+                call ssaddtolist (position,filtered(i,k,j),outarray)
+                call ssaddtolist (position,flows_doorjets(i,k,j),outarray)
             end do
-            call SSaddtolist (position,flows_convection(i,j),outarray)
-            call SSaddtolist (position,flows_radiation(i,j),outarray)
+            call ssaddtolist (position,flows_convection(i,j),outarray)
+            call ssaddtolist (position,flows_radiation(i,j),outarray)
         end do
     end do
     ! species mass flow
     do i = 1, nrm1
         do j = 1, 2
             do k = 1, 9
-                !call SSaddtolist (position,flows_total(i,k,j),outarray)
-                !call SSaddtolist (position,flows_hvents(i,k,j),outarray)
-                call SSaddtolist (position,flows_fires(i,k+2,j),outarray)
-                !call SSaddtolist (position,flows_vvents(i,k,j),outarray)
-                !call SSaddtolist (position,flows_mvents(i,k,j),outarray)
-                !call SSaddtolist (position,filtered(i,k,j),outarray)
-                !call SSaddtolist (position,flows_doorjets(i,k,j),outarray)
+                !call ssaddtolist (position,flows_total(i,k,j),outarray)
+                !call ssaddtolist (position,flows_hvents(i,k,j),outarray)
+                call ssaddtolist (position,flows_fires(i,k+2,j),outarray)
+                !call ssaddtolist (position,flows_vvents(i,k,j),outarray)
+                !call ssaddtolist (position,flows_mvents(i,k,j),outarray)
+                !call ssaddtolist (position,filtered(i,k,j),outarray)
+                !call ssaddtolist (position,flows_doorjets(i,k,j),outarray)
             end do
-            !call SSaddtolist (position,flows_convection(i,j),outarray)
-            !call SSaddtolist (position,flows_radiation(i,j),outarray)
+            !call ssaddtolist (position,flows_convection(i,j),outarray)
+            !call ssaddtolist (position,flows_radiation(i,j),outarray)
         end do
     end do
 

@@ -28,7 +28,7 @@ addpath 'scripts'
 % Scripts that run prior to dataplot
 
 data_dir = '../../Verification/Mass_Balance/';
-SpeciesMassTestCases(data_dir);
+speciesmass(data_dir);
 
 data_dir = '../../Verification/Fires/';
 fire_ignition(data_dir);

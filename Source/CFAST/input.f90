@@ -1813,7 +1813,7 @@ module input_routines
     ! get the path and project names
     call exehandle (exepath, datapath, project)
 
-    ! form the file names for datafiles
+    ! form the file names for datafiles: inputfile, outputfile, smvhead, smvdata, smvcsv, ssflow, ssnormal, ssspecies, sswall
     testpath = trim (datapath)
     lp = len_trim (testpath)
     testproj = trim (project)
@@ -1826,7 +1826,6 @@ module input_routines
     ssflow = testpath(1:lp) // testproj(1:ld) // '_f.csv'
     ssnormal = testpath(1:lp) // testproj(1:ld) // '_n.csv'
     ssspecies = testpath(1:lp) // testproj(1:ld) // '_s.csv'
-    ssspeciesmass = testpath(1:lp) // testproj(1:ld) // '_m.csv'
     sswall = testpath(1:lp) // testproj(1:ld) // '_w.csv'
     gitfile = testpath(1:lp) // testproj(1:ld) // '_git.txt'
     errorlogging = testpath(1:lp) // testproj(1:ld) // '.log'
@@ -1873,7 +1872,6 @@ module input_routines
     call deleteoutputfiles (ssflow)
     call deleteoutputfiles (ssnormal)
     call deleteoutputfiles (ssspecies)
-    call deleteoutputfiles (ssspeciesmass)
     call deleteoutputfiles (sswall)
     call deleteoutputfiles (statusfile)
     call deleteoutputfiles (queryfile)

@@ -1205,9 +1205,8 @@ module output_routines
     !     15 smokeview spreadsheet output
     !     21 spreadsheet output (normal)
     !     22 spreadsheet output (flow field)
-    !     23 spreadsheet output (species molar %, etc.)
-    !     24 spreadsheet otuput (species mass)
-    !     25 spreadsheet output (walls and targets)
+    !     23 spreadsheet output (species)
+    !     24 spreadsheet output (walls and targets)
 
     !!!! Note that we assume that the default carriage control for formatted files is of type LIST (no fortran controls)
 
@@ -1232,8 +1231,7 @@ module output_routines
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')
         open (unit=23, file=ssspecies,form='formatted')
-        open (unit=24, file=ssspeciesmass,form='formatted')
-        open (unit=25, file=sswall,form='formatted')
+        open (unit=24, file=sswall,form='formatted')
     end if
 
     ! and finally we create a file to indicate that the model is running.

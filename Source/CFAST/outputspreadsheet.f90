@@ -34,7 +34,6 @@ module spreadsheet_routines
 
     call output_spreadsheet_normal (time)
     call output_spreadsheet_species (time)
-    call output_spreadsheet_species_mass (time)
     call output_spreadsheet_flow (time)
     call output_spreadsheet_flux (time)
 
@@ -153,7 +152,7 @@ module spreadsheet_routines
     position = 0
 
     ! first the time
-    call ssaddtolist (position,time,outarray)
+    call SSaddtolist (position,time,outarray)
 
     ! next the horizontal flow through vertical vents
     do i = 1, n_hvents
@@ -162,9 +161,9 @@ module spreadsheet_routines
         ifrom = ventptr%room1
         ito = ventptr%room2
         netflow = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
-        call ssaddtolist (position,netflow,outarray)
+        call SSaddtolist (position,netflow,outarray)
         netflow = ventptr%h_mflow(1,1,1) - ventptr%h_mflow(1,1,2) + ventptr%h_mflow(1,2,1) - ventptr%h_mflow(1,2,2)
-        call ssaddtolist (position,netflow,outarray)
+        call SSaddtolist (position,netflow,outarray)
     end do
 
     ! next natural flow through horizontal vents (vertical flow)
@@ -187,11 +186,11 @@ module spreadsheet_routines
         sumin = flow(5) + flow(7)
         sumout = flow(6) + flow(8)
         netflow = sumin - sumout
-        call ssaddtolist (position,netflow,outarray)
+        call SSaddtolist (position,netflow,outarray)
         sumin = flow(1) + flow(3)
         sumout = flow(2) + flow(4)
         netflow = sumin - sumout
-        call ssaddtolist (position,netflow,outarray)
+        call SSaddtolist (position,netflow,outarray)
     end do
 
     ! finally, mechanical ventilation
@@ -209,11 +208,11 @@ module spreadsheet_routines
             sumin = flow(5) + flow(7)
             sumout = flow(6) + flow(8)
             netflow = sumin - sumout
-            call ssaddtolist (position,netflow,outarray)
+            call SSaddtolist (position,netflow,outarray)
             flow(5) =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
             flow(6) =abs(ventptr%total_trace_filtered(u))+abs(ventptr%total_trace_filtered(l))
-            call ssaddtolist (position, flow(5), outarray)
-            call ssaddtolist (position, flow(6), outarray)
+            call SSaddtolist (position, flow(5), outarray)
+            call SSaddtolist (position, flow(6), outarray)
         end do
     end if
 
@@ -252,14 +251,14 @@ module spreadsheet_routines
 
     !	First the time
 
-    call ssaddtolist (position,time,outarray)
+    call SSaddtolist (position,time,outarray)
 
     !     First the surface temperatures for each compartment
 
     do i=1,nrm1
         roomptr => roominfo(i)
         do iw = 1, 4
-            call ssaddtolist (position,roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,outarray)
+            call SSaddtolist (position,roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,outarray)
         end do
     end do
 
@@ -272,37 +271,37 @@ module spreadsheet_routines
         tttemp = targptr%tfront
         tctemp = targptr%tinternal
 
-        call ssaddtolist (position, tgtemp-kelvin_c_offset, outarray)
-        call ssaddtolist (position, tttemp-kelvin_c_offset, outarray)
-        call ssaddtolist (position, tctemp-kelvin_c_offset, outarray)
+        call SSaddtolist (position, tgtemp-kelvin_c_offset, outarray)
+        call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
+        call SSaddtolist (position, tctemp-kelvin_c_offset, outarray)
         ! front surface
-        call ssaddtolist (position, targptr%flux_incident_front / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_surface(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_gas(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_target(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_net_gauge(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_radiation_gauge(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_convection_gauge(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_incident_front / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_surface(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_gas(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_target(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_net_gauge(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_radiation_gauge(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_convection_gauge(1) / 1000._eb, outarray)
+        call SSaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
         ! back surface
         if (validate) then
             tttemp = targptr%tback
-            call ssaddtolist (position, tttemp-kelvin_c_offset, outarray)
-            call ssaddtolist (position, targptr%flux_net(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_radiation(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_convection(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_fire(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_surface(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_gas(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_target(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_net_gauge(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_radiation_gauge(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_convection_gauge(2) / 1000._eb, outarray)
-            call ssaddtolist (position, targptr%flux_target_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, tttemp-kelvin_c_offset, outarray)
+            call SSaddtolist (position, targptr%flux_net(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_radiation(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_convection(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_fire(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_surface(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_gas(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_target(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_net_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_radiation_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_convection_gauge(2) / 1000._eb, outarray)
+            call SSaddtolist (position, targptr%flux_target_gauge(2) / 1000._eb, outarray)
         end if
     end do
 
@@ -326,13 +325,13 @@ module spreadsheet_routines
         tjet = max(dtectptr%temp_gas,tlay)
         vel = max(dtectptr%velocity,cjetmin)
         tlink =  dtectptr%value
-        call ssaddtolist(position, tlink-kelvin_c_offset, outarray)
-        call ssaddtolist(position, xact, outarray)
-        call ssaddtolist(position, tjet-kelvin_c_offset, outarray)
-        call ssaddtolist(position, vel, outarray)
+        call SSaddtolist(position, tlink-kelvin_c_offset, outarray)
+        call SSaddtolist(position, xact, outarray)
+        call SSaddtolist(position, tjet-kelvin_c_offset, outarray)
+        call SSaddtolist(position, vel, outarray)
     end do
 
-    call ssprintresults (25, position, outarray)
+    call ssprintresults (24, position, outarray)
     return
 
     end subroutine output_spreadsheet_flux
@@ -368,7 +367,7 @@ module spreadsheet_routines
 
     ! From now on, just the data, please
     position = 0
-    call ssaddtolist (position,time,outarray)
+    call SSaddtolist (position,time,outarray)
 
     do i = 1, nrm1
         roomptr => roominfo(i)
@@ -379,7 +378,7 @@ module spreadsheet_routines
                         ssvalue = roomptr%species_output(layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
                         if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
-                        call ssaddtolist (position,ssvalue,outarray)
+                        call SSaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90
                     end if
@@ -393,59 +392,6 @@ module spreadsheet_routines
     return
 
     end subroutine output_spreadsheet_species
-
-! --------------------------- output_spreadsheet_species_mass -------------------------------------------
-
-    subroutine output_spreadsheet_species_mass (time)
-
-    !	Write out the species mass to the spread sheet file
-
-    integer, parameter :: maxhead = 1+22*mxrooms
-    real(eb), intent(in) :: time
-
-    real(eb) :: outarray(maxhead), ssvalue
-    integer :: position, i, lsp, layer
-    logical, dimension(ns), parameter :: tooutput(ns) = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
-    logical :: firstc = .true.
-    type(room_type), pointer :: roomptr
-
-    save outarray, firstc
-
-    ! If there are no species, then don't do the output
-    if (n_species==0) return
-
-    ! Set up the headings
-    if (firstc) then
-        call ssheadersspeciesmass
-        firstc = .false.
-    end if
-
-    ! From now on, just the data, please
-    position = 0
-    call ssaddtolist (position,time,outarray)
-
-    do i = 1, nrm1
-        roomptr => roominfo(i)
-        do layer = u, l
-            do lsp = 1, ns
-                if (layer==u.or..not.roomptr%shaft) then
-                    if (tooutput(lsp)) then
-                        ssvalue = roomptr%species_mass(layer,lsp)
-                        call ssaddtolist (position,ssvalue,outarray)
-                        ! we can only output to the maximum array size; this is not deemed to be a fatal error!
-                        if (position>=maxhead) go to 90
-                    end if
-                end if
-            end do
-        end do
-    end do
-
-90  call SSprintresults (24,position, outarray)
-
-    return
-
-    end subroutine output_spreadsheet_species_mass
 
 ! --------------------------- output_spreadsheet_smokeview -------------------------------------------
 
@@ -476,21 +422,21 @@ module spreadsheet_routines
     end if
 
     position = 0
-    call ssaddtolist (position,time,outarray)
+    call SSaddtolist (position,time,outarray)
 
     ! compartment information
     do i = 1, nrm1
         roomptr => roominfo(i)
-        call ssaddtolist(position,roomptr%temp(u)-kelvin_c_offset,outarray)
+        call SSaddtolist(position,roomptr%temp(u)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
-            call ssaddtolist(position,roomptr%temp(l)-kelvin_c_offset,outarray)
-            call ssaddtolist(position,roomptr%depth(l),outarray)
+            call SSaddtolist(position,roomptr%temp(l)-kelvin_c_offset,outarray)
+            call SSaddtolist(position,roomptr%depth(l),outarray)
         end if
-        call ssaddtolist(position,roomptr%relp,outarray)
-        call ssaddtolist(position,roomptr%rho(u),outarray)
-        if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%rho(l),outarray)
-        call ssaddtolist(position,roomptr%species_output(u,9),outarray)
-        if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,9),outarray)
+        call SSaddtolist(position,roomptr%relp,outarray)
+        call SSaddtolist(position,roomptr%rho(u),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%rho(l),outarray)
+        call SSaddtolist(position,roomptr%species_output(u,9),outarray)
+        if (.not.roomptr%shaft) call SSaddtolist(position,roomptr%species_output(l,9),outarray)
     end do
 
     ! fires
@@ -498,10 +444,10 @@ module spreadsheet_routines
         do i = 1, n_fires
             fireptr => fireinfo(i)
             call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
-            call ssaddtolist (position,fireptr%qdot_actual/1000.,outarray)
-            call ssaddtolist (position,fheight,outarray)
-            call ssaddtolist (position,fireptr%z_position+fireptr%z_offset,outarray)
-            call ssaddtolist (position,fireptr%firearea,outarray)
+            call SSaddtolist (position,fireptr%qdot_actual/1000.,outarray)
+            call SSaddtolist (position,fheight,outarray)
+            call SSaddtolist (position,fireptr%z_position+fireptr%z_offset,outarray)
+            call SSaddtolist (position,fireptr%firearea,outarray)
         end do
     end if
 
@@ -519,10 +465,10 @@ module spreadsheet_routines
         width = ventptr%width
         avent = fraction*height*width
         ! first column is just vent area ... it's for backwards compatibility with old vent flow visualization
-        call ssaddtolist (position,avent,outarray)
+        call SSaddtolist (position,avent,outarray)
         ! flow slabs for the vent
         slabs = ventptr%n_slabs
-        call ssaddtolist (position,slabs,outarray)
+        call SSaddtolist (position,slabs,outarray)
         do j = 1, mxfslab
             call ssaddtolist(position,ventptr%temp_slab(j),outarray)
             call ssaddtolist(position,ventptr%flow_slab(j),outarray)
@@ -535,10 +481,10 @@ module spreadsheet_routines
     do i = 1, n_vvents
         ventptr => vventinfo(i)
         avent = ventptr%area
-        call ssaddtolist (position,avent,outarray)
+        call SSaddtolist (position,avent,outarray)
         ! flow slabs for the vent
         slabs = ventptr%n_slabs
-        call ssaddtolist (position,slabs,outarray)
+        call SSaddtolist (position,slabs,outarray)
         do j = 2, 1, -1
             vflow = ventptr%flow_slab(j)
             if (ventptr%top<=nrm1.and.j==1) vflow = -vflow
@@ -554,10 +500,10 @@ module spreadsheet_routines
         do i = 1, n_mvents
             ventptr => mventinfo(i)
             avent = ventptr%diffuser_area(1)
-            call ssaddtolist (position,avent,outarray)
+            call SSaddtolist (position,avent,outarray)
             ! flow slabs for the vent
             slabs = ventptr%n_slabs
-            call ssaddtolist (position,slabs,outarray)
+            call SSaddtolist (position,slabs,outarray)
             do j = 1, 2
                 call ssaddtolist(position,ventptr%temp_slab(j),outarray)
                 if (ventptr%room1<=nrm1) then

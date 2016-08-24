@@ -17,7 +17,7 @@ module utility_routines
 
     contains
 
-! --------------------------- ssaddtolist -------------------------------------------
+! --------------------------- SSaddtolist -------------------------------------------
 
     subroutine ssaddtolist (ic, valu, array)
 

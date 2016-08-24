@@ -15,7 +15,8 @@ module spreadsheet_header_routines
 
     private
 
-    public ssheadersnormal, ssheadersspecies, ssheadersflow, ssheadersflux, ssheaderssmv, ssHeadersResid, ssHeadersFSlabs
+    public ssheadersnormal, ssheadersspecies, ssheadersspeciesmass, ssheadersflow, ssheadersflux, ssheaderssmv, &
+        ssHeadersResid, ssHeadersFSlabs
 
     contains
 
@@ -166,6 +167,65 @@ module spreadsheet_header_routines
 
     end subroutine ssHeadersSpecies
 
+! --------------------------- ssHeadersSpeciesMass -------------------------------------------
+
+    subroutine ssHeadersSpeciesMass
+
+    ! This is the header information for the spreadsheet output
+
+    ! local variables
+    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
+    character(35) :: headertext(4,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
+    logical tooutput(ns)
+    data tooutput /9*.true.,.false.,.true./
+    integer position, i, j, lsp
+    type(room_type), pointer :: roomptr
+
+    data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
+       'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
+       'C-T Product Upper Layer', 'Trace Species Upper Layer',&
+    'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
+       'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
+       'C-T Product Lower Layer', 'Trace Species Lower Layer' /
+    data LabelsShort / 'Time', 'ULN2', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_',&
+       'ULCT_', 'ULTS_', 'LLN2', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
+    data LabelUnits / 's', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', &
+       'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg' /
+
+    !  spreadsheet header.  Add time first
+    headertext(1,1) = LabelsShort(1)
+    headertext(2,1) = Labels(1)
+    headertext(3,1) = ' '
+    headertext(4,1) = LabelUnits(1)
+    position = 1
+
+    ! Species by compartment, then layer, then species type
+    do i = 1, nrm1
+        roomptr => roominfo(i)
+        do j = u, l
+            if (j==u.or..not.roomptr%shaft) then
+                do lsp = 1, ns
+                    if (tooutput(lsp)) then
+                        position = position + 1
+                        call toIntString(i,cRoom)
+                        headertext(1,position) = trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
+                        headertext(2,position) = Labels((j-1)*11+lsp+1)
+                        headertext(3,position) = roomptr%name
+                        headertext(4,position) = LabelUnits((j-1)*11+lsp+1)
+                    end if
+                end do
+            end if
+        end do
+    end do
+
+    ! write out header
+    write(24,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(24,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write(24,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(24,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
+
+    end subroutine ssHeadersSpeciesMass
+
 ! --------------------------- ssHeadersFlux -------------------------------------------
 
     subroutine ssHeadersFlux
@@ -278,10 +338,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write(24,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(24,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(24,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
-    write(24,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
+    write(25,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write(25,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write(25,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write(25,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     return
     end subroutine ssHeadersFlux

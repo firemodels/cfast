@@ -136,6 +136,7 @@ Friend Module Data
     Friend Enum vventNum
         firstcompartment = 2
         secondcompartment
+        vent
         area
         shape
         intialfraction

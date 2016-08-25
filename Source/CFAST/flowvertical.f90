@@ -36,7 +36,7 @@ module vflow_routines
 
     real(eb) :: vvent(2), xmvent(2), tmvent(2), frommu, fromml, fromqu, fromql, from_temp, fromtq, fl, fu
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
-    integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape
+    integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape, icount
     real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
 
     type(vent_type), pointer :: ventptr
@@ -52,7 +52,8 @@ module vflow_routines
         ventptr%mflow(1:2,1:2) = 0.0_eb
         itop = ventptr%top
         ibot = ventptr%bottom
-        call get_vent_opening ('V',itop,ibot,1,i,tsec,fraction)
+        icount = ventptr%counter
+        call get_vent_opening ('V',itop,ibot,icount,i,tsec,fraction)
         area = fraction * ventptr%area
         ventptr%current_area = area
         ishape = ventptr%shape

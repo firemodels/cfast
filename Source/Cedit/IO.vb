@@ -390,16 +390,29 @@ Module IO
                         myVHeats.Add(vheat)
                     Case "VVENT"
                         Dim vvent As New Vent
-                        If csv.num(i, vventNum.firstcompartment) > myCompartments.Count Then _
-                            csv.num(i, vventNum.firstcompartment) = 0
-                        If csv.num(i, vventNum.secondcompartment) > myCompartments.Count Then _
-                            csv.num(i, vventNum.secondcompartment) = 0
-                        vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1, _
-                            csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
-                        vvent.InitialOpening = csv.num(i, vventNum.intialfraction)
-                        vvent.FinalOpening = csv.num(i, vventNum.intialfraction) ' This is the default; it may be changed by an EVENT specification
-                        vvent.Changed = False
-                        myVVents.Add(vvent)
+                        If csv.num(i, 0) > 6 Then ' New format that allows more than one VVENT per compartment pair
+                            If csv.num(i, vventNum.firstcompartment) > myCompartments.Count Then _
+                                csv.num(i, vventNum.firstcompartment) = 0
+                            If csv.num(i, vventNum.secondcompartment) > myCompartments.Count Then _
+                                csv.num(i, vventNum.secondcompartment) = 0
+                            vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
+                                csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
+                            vvent.InitialOpening = csv.num(i, vventNum.intialfraction)
+                            vvent.FinalOpening = csv.num(i, vventNum.intialfraction) ' This is the default; it may be changed by an EVENT specification
+                            vvent.Changed = False
+                            myVVents.Add(vvent)
+                        Else ' Old format that does not include vent number and thus only one per compartment pair
+                            If csv.num(i, vventNum.firstcompartment) > myCompartments.Count Then _
+                                csv.num(i, vventNum.firstcompartment) = 0
+                            If csv.num(i, vventNum.secondcompartment) > myCompartments.Count Then _
+                                csv.num(i, vventNum.secondcompartment) = 0
+                            vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
+                                csv.num(i, vventNum.area - 1), csv.num(i, vventNum.shape - 1))
+                            vvent.InitialOpening = csv.num(i, vventNum.intialfraction - 1)
+                            vvent.FinalOpening = csv.num(i, vventNum.intialfraction - 1) ' This is the default; it may be changed by an EVENT specification
+                            vvent.Changed = False
+                            myVVents.Add(vvent)
+                        End If
                     Case "WIND"
                         myEnvironment.ExtWindSpeed = csv.num(i, windNum.velocity)
                         myEnvironment.ExtScaleHeight = csv.num(i, windNum.refHeight)
@@ -944,6 +957,7 @@ Module IO
                 csv.num(i, vventNum.firstcompartment) = myCompartments.Count + 1
             If csv.num(i, vventNum.secondcompartment) = 0 Then _
                 csv.num(i, vventNum.secondcompartment) = myCompartments.Count + 1
+            csv.num(i, vventNum.vent) = myVVents.VentNumber(j)
             aVent.Changed = False
             i += 1
         Next

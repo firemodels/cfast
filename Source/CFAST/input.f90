@@ -450,7 +450,7 @@ module input_routines
 
     integer, intent(in) :: inumr, inumc
 
-    integer :: i1, i2, fannumber, i, j, k, ir
+    integer :: i1, i2, fannumber, i, j, k, ir, icarea, icshape, icfraction
     integer :: iijk, jmax, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol)
     real(eb) :: frac, tmpcond
@@ -1039,7 +1039,17 @@ module input_routines
             if (countargs(lcarray)>=5) then
                 i = lrarray(1)
                 j = lrarray(2)
-                k = 1
+                if (countargs(lcarray)==5) then
+                    k = 1
+                    icarea = 3
+                    icshape = 4
+                    icfraction = 5
+                else
+                    k = lrarray(3)
+                    icarea = 4
+                    icshape = 5
+                    icfraction = 6
+                end if
                 ! check for outside of compartment space; self pointers are covered in read_input_file
                 if (i>mxrooms.or.j>mxrooms) then
                     write (logerr,5070) i, j
@@ -1052,15 +1062,15 @@ module input_routines
                 ventptr%bottom = j
                 ventptr%counter = k
                 ! read_input_file will verify the orientation (i is on top of j)
-                ventptr%area = lrarray(3)
+                ventptr%area = lrarray(icarea)
                 ! check the shape parameter. the default (1) is a circle)
-                if (lrarray(4)<1.or.lrarray(4)>2) then
+                if (lrarray(icshape)<1.or.lrarray(icshape)>2) then
                     ventptr%shape = 1
                 else
-                    ventptr%shape = lrarray(4)
+                    ventptr%shape = lrarray(icshape)
                 end if
-                ventptr%opening(initial_fraction) = lrarray(5)
-                ventptr%opening(final_fraction) = lrarray(5)
+                ventptr%opening(initial_fraction) = lrarray(icfraction)
+                ventptr%opening(final_fraction) = lrarray(icfraction)
             else
                 write (*,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'

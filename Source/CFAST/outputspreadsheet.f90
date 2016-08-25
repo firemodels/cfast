@@ -358,7 +358,7 @@ module spreadsheet_routines
     save outarray, firstc
 
     ! If there are no species, then don't do the output
-    if (n_species==0) return
+    if (ns==0) return
 
     ! Set up the headings
     if (firstc) then
@@ -413,7 +413,7 @@ module spreadsheet_routines
     save outarray, firstc
 
     ! If there are no species, then don't do the output
-    if (n_species==0) return
+    if (ns==0) return
 
     ! Set up the headings
     if (firstc) then

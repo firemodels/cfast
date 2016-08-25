@@ -146,7 +146,7 @@ module room_data
     save
 
     ! compartment variables
-    integer nr, nrm1, n_species
+    integer nr, nrm1
 
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
         initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature

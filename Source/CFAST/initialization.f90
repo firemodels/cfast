@@ -253,7 +253,6 @@ module initialization_routines
     relative_humidity = 0.5_eb
 
     ! rooms
-    n_species = 0
     nr = 0
     roominfo(1:mxrooms)%cwidth = xlrg
     roominfo(1:mxrooms)%cdepth = xlrg
@@ -783,16 +782,6 @@ module initialization_routines
     ! set the number of compartments and offsets
     nrm1 = nr - 1
 
-    ! count the species
-    n_species = 0
-
-    do i = 1, ns
-        if  (i/=7) then
-            n_species = n_species + 1
-        end if
-    end do
-    n_species = n_species + 1
-
     ! count the number of walls
     nhcons = 0
     do i = 1, nrm1
@@ -804,7 +793,7 @@ module initialization_routines
             if (nwpts/=0) roomptr%nodes_w(1,j) = nwpts
         end do
     end do
-
+    
     ! set number of implicit oxygen variables
     if (option(foxygen)==on) then
         noxygen = nrm1
@@ -821,7 +810,7 @@ module initialization_routines
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
     nofprd = nofwt + nhcons
-    nequals = nofprd + 2*nrm1*n_species
+    nequals = nofprd + 2*nrm1*ns
 
     return
     end subroutine offset

@@ -627,7 +627,7 @@ module solve_routines
 
         ipar(2) = all
         call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
-        call update_solution (nodes, nequals, n_species, t, told, p, pold, pdnew, pdold)
+        call update_solution (nodes, nequals, t, told, p, pold, pdnew, pdold)
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
@@ -715,7 +715,7 @@ module solve_routines
                 ! to save fire release rates in room where detector has
                 ! activated.  (this happens because idset /= 0)
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                call update_solution (nodes, nequals, n_species, t, told, p, pold, pdnew, pdold)
+                call update_solution (nodes, nequals, t, told, p, pold, pdnew, pdold)
                 call set_info_flags (info,rwork)
             else if (td==t) then
                 call set_info_flags (info,rwork)
@@ -757,12 +757,12 @@ module solve_routines
 
 ! --------------------------- update_solution -------------------------------------------
 
-    subroutine update_solution(nodes, nequals, n_species,  t, told, p, pold, pdnew, pdold)
+    subroutine update_solution(nodes, nequals,  t, told, p, pold, pdnew, pdold)
 
     !     routine: update_solution
     !     purpose: update solution returned by dassl
 
-    integer, intent(in) :: nodes, nequals, n_species
+    integer, intent(in) :: nodes, nequals
     real(eb), intent(in) :: t, told, pdnew(*)
 
     real(eb), intent(inout) :: p(*), pdold(*)
@@ -784,7 +784,7 @@ module solve_routines
     call target (1,dt)
 
     ! make sure species mass adds up to total mass
-    if (n_species>0) call synchronize_species_mass (p,nodes+1)
+    if (ns>0) call synchronize_species_mass (p,nodes+1)
 
     pold(1:nequals) = p(1:nequals)
 
@@ -994,7 +994,7 @@ module solve_routines
     real(eb) :: oxydu, oxydl, pdot, tlaydu, tlaydl, vlayd, prodl, produ
 
     ires = ires ! just to get rid of a warning message
-    nprod = n_species
+    nprod = ns
     dt = tsec - told
     numresd = numresd + 1
     stime = tsec

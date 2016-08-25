@@ -253,7 +253,7 @@ module output_routines
     integer :: i, icomp, layer, ic, lsp
     type(room_type), pointer :: roomptr
 
-    if (n_species/=0) then
+    if (ns/=0) then
 
         do layer = u, l
             write (iofilo,5050) lnames(layer)
@@ -1071,7 +1071,7 @@ module output_routines
             write (*,5020) '   Lower temp(K)', roomptr%temp(l)
             write (*,5020) ' Interface ht(m)', roomptr%depth(l)
             write (*,5020) '   Pressure (pa)', roomptr%relp
-            if (n_species>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
+            if (ns>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
             do iprod = 1, ns
                 write (*,5030) spname(iprod), (roomptr%species_fraction(il,iprod),il= u,l)
             end do

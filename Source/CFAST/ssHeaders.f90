@@ -648,7 +648,7 @@ module spreadsheet_header_routines
 
     integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*mxrooms + 4*mxrooms
     character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2), Species(9)
-    integer position, i, j, k, l, nprod
+    integer position, i, j, k, l
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow',&
@@ -662,7 +662,6 @@ module spreadsheet_header_routines
     headertext(1,1) = Labels(1)
     headertext(2,1) = ' '
     headertext(3,1) = LabelUnits(1)
-    nprod = n_species
 
     position = 1
 

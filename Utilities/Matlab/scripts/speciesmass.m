@@ -108,7 +108,7 @@ filename = [data_dir 'species_mass_4_m.csv'];
 mCO2 = mCO21 + mCO22 + mCO23 + mCO24;
 mH2O = mH2O1 + mH2O2 + mH2O3 + mH2O4;
 
-header = ['Time , MCO2 , MH2O , MCO21 , MH2O1 , MCO22 , MH2O2 , MCO23 , MH2O3 , MCO24 , MH2O4'];
+header = ['Time , mCO2 , mH2O , mCO21 , mH2O1 , mCO22 , mH2O2 , mCO23 , mH2O3 , mCO24 , mH2O4'];
 data = [Time , mCO2, mH2O, mCO21, mH2O1 , mCO22 , mH2O2 , mCO23 , mH2O3 , mCO24 , mH2O4 ];
 outid = fopen([data_dir 'species_mass_4.csv'] , 'w+');
 fprintf(outid,'%s',header);

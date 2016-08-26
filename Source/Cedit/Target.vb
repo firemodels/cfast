@@ -220,7 +220,7 @@ Public Class Target
         End Get
         Set(ByVal Value As String)
             If Value <> aMaterial Then
-                Me.aMaterial = myThermalProperties.ValidThermalProperty(Value, "Target")
+                aMaterial = myThermalProperties.ValidThermalProperty(Value, "Target")
                 If myTargets.DoChange Then aChanged = True
             End If
         End Set
@@ -231,7 +231,7 @@ Public Class Target
         End Get
         Set(ByVal Value As Integer)
             If Value <> aSolutionType Then
-                Me.aSolutionType = Value
+                aSolutionType = Value
                 aChanged = True
             End If
         End Set
@@ -345,17 +345,17 @@ Public Class Target
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
             aCompartment = myCompartments.Item(index)
-            Me.Compartment = index
-            Me.DetectorType = TypeTarget
+            Compartment = index
+            DetectorType = TypeTarget
             Me.Material = Material
             If SolutionType = Cylindrical Then
                 Me.SolutionType = Cylindrical
             Else
                 Me.SolutionType = ThermallyThick
             End If
-            If Me.XPosition = -1 Then Me.XPosition = aCompartment.RoomWidth / 2
-            If Me.YPosition = -1 Then Me.YPosition = aCompartment.RoomDepth / 2
-            If Me.ZPosition = -1 Then Me.ZPosition = 0.0
+            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
+            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
+            If ZPosition = -1 Then ZPosition = 0.0
         End If
     End Sub
     Public Sub SetTarget(ByVal index As Integer)
@@ -363,13 +363,13 @@ Public Class Target
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
             aCompartment = myCompartments.Item(Compartment)
-            Me.Compartment = index
-            Me.DetectorType = TypeSmokeDetector
-            Me.ActivationTemperature = SmokeDetectorActivationTemperature
-            Me.RTI = SmokeDetectorRTI
-            If Me.XPosition = -1 Then Me.XPosition = aCompartment.RoomWidth / 2
-            If Me.YPosition = -1 Then Me.YPosition = aCompartment.RoomDepth / 2
-            If Me.ZPosition = -1 Then Me.ZPosition = aCompartment.RoomHeight
+            Compartment = index
+            DetectorType = TypeSmokeDetector
+            ActivationTemperature = SmokeDetectorActivationTemperature
+            RTI = SmokeDetectorRTI
+            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
+            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
+            If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
         End If
     End Sub
     Public Sub SetTarget(ByVal index As Integer, ByVal ActivationTemperature As Single)
@@ -377,12 +377,12 @@ Public Class Target
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
             aCompartment = myCompartments.Item(Compartment)
-            Me.Compartment = index
-            Me.DetectorType = TypeHeatDetector
+            Compartment = index
+            DetectorType = TypeHeatDetector
             Me.ActivationTemperature = ActivationTemperature
-            If Me.XPosition = -1 Then Me.XPosition = aCompartment.RoomWidth / 2
-            If Me.YPosition = -1 Then Me.YPosition = aCompartment.RoomDepth / 2
-            If Me.ZPosition = -1 Then Me.ZPosition = aCompartment.RoomHeight
+            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
+            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
+            If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
         End If
     End Sub
     Public Sub SetTarget(ByVal index As Integer, ByVal DetectorType As Integer, ByVal ActivationTemperature As Single, ByVal RTI As Single, ByVal SprayDensity As Single)
@@ -390,14 +390,14 @@ Public Class Target
         Dim aCompartment As Compartment
         If index <= myCompartments.Count - 1 Then
             aCompartment = myCompartments.Item(Compartment)
-            Me.Compartment = index
+            Compartment = index
             Me.DetectorType = TypeSprinkler
             Me.ActivationTemperature = ActivationTemperature
             Me.RTI = RTI
             Me.SprayDensity = SprayDensity
-            If Me.XPosition = -1 Then Me.XPosition = aCompartment.RoomWidth / 2
-            If Me.YPosition = -1 Then Me.YPosition = aCompartment.RoomDepth / 2
-            If Me.ZPosition = -1 Then Me.ZPosition = aCompartment.RoomHeight
+            If XPosition = -1 Then XPosition = aCompartment.RoomWidth / 2
+            If YPosition = -1 Then YPosition = aCompartment.RoomDepth / 2
+            If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
         End If
     End Sub
     Public ReadOnly Property IsValid(ByVal TargetNumber As Integer) As Integer
@@ -565,8 +565,8 @@ Public Class TargetCollection
     Public ReadOnly Property GetIndex(ByVal Name As String) As Integer
         Get
             If Count > 0 Then
-                For i = 0 To Me.Count - 1
-                    If Me.Item(i).Name = Name Then
+                For i = 0 To Count - 1
+                    If Item(i).Name = Name Then
                         Return i
                         Exit Property
                     End If

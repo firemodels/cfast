@@ -39,7 +39,7 @@ Public Class ThermalProperty
         Me.Emissivity = Emissivity
         Dim i As Integer
         For i = 0 To HClDim
-            Me.HClDeposition(i) = 0.0
+            HClDeposition(i) = 0.0
         Next
         aChanged = True
     End Sub
@@ -153,14 +153,14 @@ Public Class ThermalProperty
         Dim i As Integer
         ReDim HClCoefficients(HClDim)
         For i = 0 To HClDim
-            HClCoefficients(i) = Me.HClDeposition(i)
+            HClCoefficients(i) = HClDeposition(i)
         Next
     End Sub
     Public Sub SetHCl(ByVal HClCoefficients() As Single)
         Dim i As Integer
         If HClCoefficients.GetUpperBound(0) = HClDim Then
             For i = 0 To HClDim
-                Me.HClDeposition(i) = HClCoefficients(i)
+                HClDeposition(i) = HClCoefficients(i)
             Next
         End If
         aChanged = True
@@ -209,21 +209,21 @@ Public Class ThermalPropertiesCollection
     Private aFileChanged As Boolean = False
     Property FileName() As String
         Get
-            Return System.IO.Path.GetFileNameWithoutExtension(Me.aFileName)
+            Return System.IO.Path.GetFileNameWithoutExtension(aFileName)
         End Get
         Set(ByVal Value As String)
-            If Value <> Me.aFileName Then
-                Me.aFileName = System.IO.Path.GetFileNameWithoutExtension(Value) + ".csv"
-                Me.aFileChanged = True
+            If Value <> aFileName Then
+                aFileName = System.IO.Path.GetFileNameWithoutExtension(Value) + ".csv"
+                aFileChanged = True
             End If
         End Set
     End Property
     Property FileChanged() As Boolean
         Get
-            Return Me.aFileChanged
+            Return aFileChanged
         End Get
         Set(ByVal Value As Boolean)
-            Me.aFileChanged = Value
+            aFileChanged = Value
         End Set
     End Property
     Public ReadOnly Property Changed() As Boolean
@@ -235,14 +235,14 @@ Public Class ThermalPropertiesCollection
                     If aThermal.Changed Then Return True
                 Next
             End If
-            If Me.FileChanged = True Then Return True
+            If FileChanged = True Then Return True
             Return False
         End Get
     End Property
     Public ReadOnly Property ValidThermalProperty(ByVal Name As String, ByVal Location As String) As String
         Get
             Dim index As Integer, aThermalProperty As New ThermalProperty
-            index = Me.GetIndex(Name)
+            index = GetIndex(Name)
             If index <= -1 Then
                 Dim TempThermalProperties As New ThermalPropertiesCollection
                 ReadThermalProperties(Application.StartupPath.ToString + "\" + "thermal.csv", TempThermalProperties)
@@ -263,7 +263,7 @@ Public Class ThermalPropertiesCollection
         Dim i As Integer
         If Count > 0 Then
             For i = 0 To Count - 1
-                If aThermal.ShortName = Me.Item(i).ShortName Then
+                If aThermal.ShortName = Item(i).ShortName Then
                     Exit Sub
                 End If
             Next
@@ -315,9 +315,9 @@ Public Class ThermalPropertiesCollection
     Public ReadOnly Property GetLongName(ByVal Shortname As String) As String
         Get
             If Count > 0 Then
-                For i = 0 To Me.Count - 1
-                    If Me.Item(i).ShortName = Shortname Then
-                        Return Me.Item(i).Name
+                For i = 0 To Count - 1
+                    If Item(i).ShortName = Shortname Then
+                        Return Item(i).Name
                         Exit Property
                     End If
                 Next
@@ -344,8 +344,8 @@ Public Class ThermalPropertiesCollection
     Public ReadOnly Property GetIndex(ByVal Shortname As String) As Integer
         Get
             If Count > 0 Then
-                For i = 0 To Me.Count - 1
-                    If Me.Item(i).ShortName = Shortname Then
+                For i = 0 To Count - 1
+                    If Item(i).ShortName = Shortname Then
                         Return i
                         Exit Property
                     End If

@@ -14,35 +14,35 @@
     Public Sub SetupData(ByVal Type As Integer)
         Select Case Type
             Case InsertDataType.Fire
-                Me.Text = "Insert Fires"
-                Me.InsertDataSummary(0, InsertFireNum.Fire) = "Fire"
-                Me.InsertDataSummary(0, InsertFireNum.Formula) = "Formula"
-                Me.InsertDataSummary(0, InsertFireNum.Height) = "Height"
-                Me.InsertDataSummary(0, InsertFireNum.Area) = "Area"
-                Me.InsertDataSummary(0, InsertFireNum.QDot) = "HRR"
-                Me.InsertDataSummary(0, InsertFireNum.Soot) = "Soot"
-                Me.InsertDataSummary(0, InsertFireNum.CO) = "CO"
-                Me.InsertDataSummary(0, InsertFireNum.HoC) = "HoC"
+                Text = "Insert Fires"
+                InsertDataSummary(0, InsertFireNum.Fire) = "Fire"
+                InsertDataSummary(0, InsertFireNum.Formula) = "Formula"
+                InsertDataSummary(0, InsertFireNum.Height) = "Height"
+                InsertDataSummary(0, InsertFireNum.Area) = "Area"
+                InsertDataSummary(0, InsertFireNum.QDot) = "HRR"
+                InsertDataSummary(0, InsertFireNum.Soot) = "Soot"
+                InsertDataSummary(0, InsertFireNum.CO) = "CO"
+                InsertDataSummary(0, InsertFireNum.HoC) = "HoC"
 
-                Me.InsertDataSummary.Location = New System.Drawing.Point(12, 12)
-                Me.InsertDataSummary.Size = New System.Drawing.Size(890, 156)
+                InsertDataSummary.Location = New System.Drawing.Point(12, 12)
+                InsertDataSummary.Size = New System.Drawing.Size(890, 156)
 
-                Me.SelectedFires.Clear()
+                SelectedFires.Clear()
                 MainWin.UpdateGUI.InitEditGrid(InsertDataSummary)
                 MainWin.UpdateGUI.ClearGrid(InsertDataSummary)
             Case InsertDataType.ThermalProperty
-                Me.Text = "Insert Thermal Properties"
-                Me.InsertDataSummary(0, InsertThermalNum.Material) = "Material"
-                Me.InsertDataSummary(0, InsertThermalNum.Conductivity) = "Conductivity"
-                Me.InsertDataSummary(0, InsertThermalNum.SpecificHeat) = "Specific Heat"
-                Me.InsertDataSummary(0, InsertThermalNum.Density) = "Density"
-                Me.InsertDataSummary(0, InsertThermalNum.Thickness) = "Thickness"
-                Me.InsertDataSummary(0, InsertThermalNum.Emissivity) = "Emissivity"
+                Text = "Insert Thermal Properties"
+                InsertDataSummary(0, InsertThermalNum.Material) = "Material"
+                InsertDataSummary(0, InsertThermalNum.Conductivity) = "Conductivity"
+                InsertDataSummary(0, InsertThermalNum.SpecificHeat) = "Specific Heat"
+                InsertDataSummary(0, InsertThermalNum.Density) = "Density"
+                InsertDataSummary(0, InsertThermalNum.Thickness) = "Thickness"
+                InsertDataSummary(0, InsertThermalNum.Emissivity) = "Emissivity"
 
-                Me.InsertDataSummary.Location = New System.Drawing.Point(115, 12)
-                Me.InsertDataSummary.Size = New System.Drawing.Size(700, 156)
+                InsertDataSummary.Location = New System.Drawing.Point(115, 12)
+                InsertDataSummary.Size = New System.Drawing.Size(700, 156)
 
-                Me.SelectedThermalProperties.Clear()
+                SelectedThermalProperties.Clear()
                 MainWin.UpdateGUI.InitEditGrid(InsertDataSummary)
                 MainWin.UpdateGUI.ClearGrid(InsertDataSummary)
         End Select
@@ -64,18 +64,18 @@
                     IO.FindFires(InsertDataType.EmbeddedFire, csv)
                 End If
                 myUnits.SI = False
-                If TempFires.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempFires.Count + 1
+                If TempFires.Count > InsertDataSummary.Rows.Count Then InsertDataSummary.Rows.Count = TempFires.Count + 1
                 If TempFires.Count > 0 Then
                     For i = 1 To TempFires.Count
                         aFire = TempFires.Item(i - 1)
-                        Me.InsertDataSummary(i, InsertFireNum.Fire) = aFire.Name
-                        Me.InsertDataSummary(i, InsertFireNum.Formula) = aFire.ChemicalFormula
-                        Me.InsertDataSummary(i, InsertFireNum.Height) = aFire.Peak(Fire.FireHeight).ToString
-                        Me.InsertDataSummary(i, InsertFireNum.Area) = aFire.Peak(Fire.FireArea).ToString
-                        Me.InsertDataSummary(i, InsertFireNum.QDot) = aFire.Peak(Fire.FireHRR).ToString
-                        Me.InsertDataSummary(i, InsertFireNum.Soot) = aFire.Peak(Fire.FireSoot)
-                        Me.InsertDataSummary(i, InsertFireNum.CO) = aFire.Peak(Fire.FireCO).ToString
-                        Me.InsertDataSummary(i, InsertFireNum.HoC) = aFire.HeatofCombustion.ToString
+                        InsertDataSummary(i, InsertFireNum.Fire) = aFire.Name
+                        InsertDataSummary(i, InsertFireNum.Formula) = aFire.ChemicalFormula
+                        InsertDataSummary(i, InsertFireNum.Height) = aFire.Peak(Fire.FireHeight).ToString
+                        InsertDataSummary(i, InsertFireNum.Area) = aFire.Peak(Fire.FireArea).ToString
+                        InsertDataSummary(i, InsertFireNum.QDot) = aFire.Peak(Fire.FireHRR).ToString
+                        InsertDataSummary(i, InsertFireNum.Soot) = aFire.Peak(Fire.FireSoot)
+                        InsertDataSummary(i, InsertFireNum.CO) = aFire.Peak(Fire.FireCO).ToString
+                        InsertDataSummary(i, InsertFireNum.HoC) = aFire.HeatofCombustion.ToString
                     Next
                     NumAdded = TempFires.Count
                 End If
@@ -85,16 +85,16 @@
                 myUnits.SI = True
                 IO.FindThermalProperties(csv, TempThermalProperties)
                 myUnits.SI = False
-                If TempThermalProperties.Count > Me.InsertDataSummary.Rows.Count Then Me.InsertDataSummary.Rows.Count = TempThermalProperties.Count + 1
+                If TempThermalProperties.Count > InsertDataSummary.Rows.Count Then InsertDataSummary.Rows.Count = TempThermalProperties.Count + 1
                 If TempThermalProperties.Count > 0 Then
                     For i = 1 To TempThermalProperties.Count
                         aThermalProperty = TempThermalProperties.Item(i - 1)
-                        Me.InsertDataSummary(i, InsertThermalNum.Material) = aThermalProperty.Name
-                        Me.InsertDataSummary(i, InsertThermalNum.Conductivity) = aThermalProperty.Conductivity.ToString
-                        Me.InsertDataSummary(i, InsertThermalNum.SpecificHeat) = aThermalProperty.SpecificHeat.ToString
-                        Me.InsertDataSummary(i, InsertThermalNum.Density) = aThermalProperty.Density.ToString
-                        Me.InsertDataSummary(i, InsertThermalNum.Thickness) = aThermalProperty.Thickness.ToString
-                        Me.InsertDataSummary(i, InsertThermalNum.Emissivity) = aThermalProperty.Emissivity.ToString
+                        InsertDataSummary(i, InsertThermalNum.Material) = aThermalProperty.Name
+                        InsertDataSummary(i, InsertThermalNum.Conductivity) = aThermalProperty.Conductivity.ToString
+                        InsertDataSummary(i, InsertThermalNum.SpecificHeat) = aThermalProperty.SpecificHeat.ToString
+                        InsertDataSummary(i, InsertThermalNum.Density) = aThermalProperty.Density.ToString
+                        InsertDataSummary(i, InsertThermalNum.Thickness) = aThermalProperty.Thickness.ToString
+                        InsertDataSummary(i, InsertThermalNum.Emissivity) = aThermalProperty.Emissivity.ToString
                     Next
                     NumAdded = TempThermalProperties.Count
                 End If
@@ -104,10 +104,10 @@
         Dim i As Integer
         If NumAdded > 0 Then
             For i = 1 To NumAdded
-                If sender Is InsertSelect And Me.InsertDataSummary(i, 1) <> "" Then
-                    Me.InsertDataSummary(i, 0) = True
+                If sender Is InsertSelect And InsertDataSummary(i, 1) <> "" Then
+                    InsertDataSummary(i, 0) = True
                 Else
-                    Me.InsertDataSummary(i, 0) = False
+                    InsertDataSummary(i, 0) = False
                 End If
             Next
         End If
@@ -115,7 +115,7 @@
     Public ReadOnly Property Selected(ByVal item As Integer) As Boolean
         Get
             If item <= NumAdded And item > 0 Then
-                Selected = Me.InsertDataSummary(item, 0)
+                Selected = InsertDataSummary(item, 0)
             Else
                 Selected = False
             End If

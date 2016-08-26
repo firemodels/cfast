@@ -142,7 +142,7 @@ Public Class Fire
         FireTimeSeries(FireMdot, 22) = 0.0
         FireTimeSeries(FireHRR, 22) = 0
         myUnits.SI = True
-        Me.SetFireData(FireTimeSeries)
+        SetFireData(FireTimeSeries)
         myUnits.SI = False
     End Sub
     Public Sub PeakFireValues(ByRef PeakHeight As Single, ByRef PeakArea As Single, ByRef PeakHRR As Single, ByRef PeakCO As Single, ByRef PeakC As Single, ByRef PeakHCN As Single, ByRef PeakHCl As Single)
@@ -459,7 +459,7 @@ Public Class Fire
     End Sub
     Public Sub SetPosition(ByVal index As Integer, ByVal XPosition As Single, ByVal YPosition As Single, ByVal ZPosition As Single)
         If index <= myCompartments.Count - 1 Then
-            Me.Compartment = index
+            Compartment = index
             Me.XPosition = XPosition
             Me.YPosition = YPosition
             Me.ZPosition = ZPosition
@@ -734,9 +734,9 @@ Public Class FireCollection
     End Sub
     Public ReadOnly Property GetFireIndex(ByVal Shortname As String) As Integer
         Get
-            If Me.Count > 0 Then
-                For i = 0 To Me.Count - 1
-                    If Me.Item(i).Name = Shortname Then
+            If Count > 0 Then
+                For i = 0 To Count - 1
+                    If Item(i).Name = Shortname Then
                         Return i
                         Exit Property
                     End If

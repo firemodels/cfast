@@ -8,17 +8,17 @@ Public Class RecentFiles
         aAppTitle = AppTitle
         RegistryFiles = GetAllSettings(AppTitle, "RecentFiles")
         Try
-            Me.Count = RegistryFiles.GetUpperBound(0) + 1
-            For i = 0 To Me.Count - 1
+            Count = RegistryFiles.GetUpperBound(0) + 1
+            For i = 0 To Count - 1
                 Filenames(i) = RegistryFiles(i, 1)
             Next
         Catch ex As Exception
-            Me.Count = 0
+            Count = 0
         End Try
     End Sub
     Public Sub Save()
-        If Me.Count > 0 Then
-            For i = 0 To Me.Count - 1
+        If Count > 0 Then
+            For i = 0 To Count - 1
                 SaveSetting(aAppTitle, "RecentFiles", "File" + i.ToString, Filenames(i))
             Next
         End If

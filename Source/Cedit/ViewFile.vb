@@ -9,9 +9,9 @@ Public Class ViewFile
             Dim ln As String
             If System.IO.File.Exists(value) Then
                 _fileName = value
-                Me.Text = _fileName
-                Me.PreviewDocument.Body.Children.Clear()
-                Me.PreviewDocument.PageLayouts.Default.Document.PageLayout.PageSettings.Landscape = True
+                Text = _fileName
+                PreviewDocument.Body.Children.Clear()
+                PreviewDocument.PageLayouts.Default.Document.PageLayout.PageSettings.Landscape = True
                 FileOpen(io, _fileName, OpenMode.Input, OpenAccess.Read, OpenShare.Shared)
                 Do Until EOF(io)
                     ln = LineInput(io)
@@ -22,7 +22,7 @@ Public Class ViewFile
                     End If
                 Loop
                 FileClose(io)
-                Me.PreviewDocument.Generate()
+                PreviewDocument.Generate()
             End If
         End Set
     End Property

@@ -51,201 +51,201 @@ Public Class User_Units
     Friend WithEvents UnitsCancel As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(User_Units))
-        Me.Time = New System.Windows.Forms.Label()
-        Me.UnitsTime = New System.Windows.Forms.ComboBox()
-        Me.UnitsTemperature = New System.Windows.Forms.ComboBox()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.UnitsPressure = New System.Windows.Forms.ComboBox()
-        Me.Label9 = New System.Windows.Forms.Label()
-        Me.UnitsEnergy = New System.Windows.Forms.ComboBox()
-        Me.Label18 = New System.Windows.Forms.Label()
-        Me.UnitsMass = New System.Windows.Forms.ComboBox()
-        Me.Label3 = New System.Windows.Forms.Label()
-        Me.UnitsOK = New System.Windows.Forms.Button()
-        Me.UnitsDefault = New System.Windows.Forms.Button()
-        Me.UnitsCancel = New System.Windows.Forms.Button()
-        Me.UnitsLength = New System.Windows.Forms.ComboBox()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.Label2 = New System.Windows.Forms.Label()
-        Me.UnitsSmoke = New System.Windows.Forms.ComboBox()
-        Me.SuspendLayout()
+        Time = New System.Windows.Forms.Label()
+        UnitsTime = New System.Windows.Forms.ComboBox()
+        UnitsTemperature = New System.Windows.Forms.ComboBox()
+        Label1 = New System.Windows.Forms.Label()
+        UnitsPressure = New System.Windows.Forms.ComboBox()
+        Label9 = New System.Windows.Forms.Label()
+        UnitsEnergy = New System.Windows.Forms.ComboBox()
+        Label18 = New System.Windows.Forms.Label()
+        UnitsMass = New System.Windows.Forms.ComboBox()
+        Label3 = New System.Windows.Forms.Label()
+        UnitsOK = New System.Windows.Forms.Button()
+        UnitsDefault = New System.Windows.Forms.Button()
+        UnitsCancel = New System.Windows.Forms.Button()
+        UnitsLength = New System.Windows.Forms.ComboBox()
+        Label4 = New System.Windows.Forms.Label()
+        Label2 = New System.Windows.Forms.Label()
+        UnitsSmoke = New System.Windows.Forms.ComboBox()
+        SuspendLayout()
         '
         'Time
         '
-        Me.Time.AutoSize = True
-        Me.Time.Location = New System.Drawing.Point(128, 89)
-        Me.Time.Name = "Time"
-        Me.Time.Size = New System.Drawing.Size(33, 13)
-        Me.Time.TabIndex = 0
-        Me.Time.Text = "Time:"
-        Me.Time.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Time.AutoSize = True
+        Time.Location = New System.Drawing.Point(128, 89)
+        Time.Name = "Time"
+        Time.Size = New System.Drawing.Size(33, 13)
+        Time.TabIndex = 0
+        Time.Text = "Time:"
+        Time.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'UnitsTime
         '
-        Me.UnitsTime.Location = New System.Drawing.Point(171, 85)
-        Me.UnitsTime.Name = "UnitsTime"
-        Me.UnitsTime.Size = New System.Drawing.Size(96, 21)
-        Me.UnitsTime.TabIndex = 2
+        UnitsTime.Location = New System.Drawing.Point(171, 85)
+        UnitsTime.Name = "UnitsTime"
+        UnitsTime.Size = New System.Drawing.Size(96, 21)
+        UnitsTime.TabIndex = 2
         '
         'UnitsTemperature
         '
-        Me.UnitsTemperature.Location = New System.Drawing.Point(171, 117)
-        Me.UnitsTemperature.Name = "UnitsTemperature"
-        Me.UnitsTemperature.Size = New System.Drawing.Size(96, 21)
-        Me.UnitsTemperature.TabIndex = 3
+        UnitsTemperature.Location = New System.Drawing.Point(171, 117)
+        UnitsTemperature.Name = "UnitsTemperature"
+        UnitsTemperature.Size = New System.Drawing.Size(96, 21)
+        UnitsTemperature.TabIndex = 3
         '
         'Label1
         '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(91, 121)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(70, 13)
-        Me.Label1.TabIndex = 2
-        Me.Label1.Text = "Temperature:"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Label1.AutoSize = True
+        Label1.Location = New System.Drawing.Point(91, 121)
+        Label1.Name = "Label1"
+        Label1.Size = New System.Drawing.Size(70, 13)
+        Label1.TabIndex = 2
+        Label1.Text = "Temperature:"
+        Label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'UnitsPressure
         '
-        Me.UnitsPressure.Location = New System.Drawing.Point(171, 149)
-        Me.UnitsPressure.Name = "UnitsPressure"
-        Me.UnitsPressure.Size = New System.Drawing.Size(96, 21)
-        Me.UnitsPressure.TabIndex = 4
+        UnitsPressure.Location = New System.Drawing.Point(171, 149)
+        UnitsPressure.Name = "UnitsPressure"
+        UnitsPressure.Size = New System.Drawing.Size(96, 21)
+        UnitsPressure.TabIndex = 4
         '
         'Label9
         '
-        Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(110, 153)
-        Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(51, 13)
-        Me.Label9.TabIndex = 18
-        Me.Label9.Text = "Pressure:"
-        Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Label9.AutoSize = True
+        Label9.Location = New System.Drawing.Point(110, 153)
+        Label9.Name = "Label9"
+        Label9.Size = New System.Drawing.Size(51, 13)
+        Label9.TabIndex = 18
+        Label9.Text = "Pressure:"
+        Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'UnitsEnergy
         '
-        Me.UnitsEnergy.Location = New System.Drawing.Point(171, 181)
-        Me.UnitsEnergy.Name = "UnitsEnergy"
-        Me.UnitsEnergy.Size = New System.Drawing.Size(96, 21)
-        Me.UnitsEnergy.TabIndex = 6
+        UnitsEnergy.Location = New System.Drawing.Point(171, 181)
+        UnitsEnergy.Name = "UnitsEnergy"
+        UnitsEnergy.Size = New System.Drawing.Size(96, 21)
+        UnitsEnergy.TabIndex = 6
         '
         'Label18
         '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(35, 185)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(126, 13)
-        Me.Label18.TabIndex = 36
-        Me.Label18.Text = "Energy, Quantity of Heat:"
-        Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Label18.AutoSize = True
+        Label18.Location = New System.Drawing.Point(35, 185)
+        Label18.Name = "Label18"
+        Label18.Size = New System.Drawing.Size(126, 13)
+        Label18.TabIndex = 36
+        Label18.Text = "Energy, Quantity of Heat:"
+        Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'UnitsMass
         '
-        Me.UnitsMass.Location = New System.Drawing.Point(171, 53)
-        Me.UnitsMass.Name = "UnitsMass"
-        Me.UnitsMass.Size = New System.Drawing.Size(96, 21)
-        Me.UnitsMass.TabIndex = 1
+        UnitsMass.Location = New System.Drawing.Point(171, 53)
+        UnitsMass.Name = "UnitsMass"
+        UnitsMass.Size = New System.Drawing.Size(96, 21)
+        UnitsMass.TabIndex = 1
         '
         'Label3
         '
-        Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(126, 57)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(35, 13)
-        Me.Label3.TabIndex = 42
-        Me.Label3.Text = "Mass:"
-        Me.Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Label3.AutoSize = True
+        Label3.Location = New System.Drawing.Point(126, 57)
+        Label3.Name = "Label3"
+        Label3.Size = New System.Drawing.Size(35, 13)
+        Label3.TabIndex = 42
+        Label3.Text = "Mass:"
+        Label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'UnitsOK
         '
-        Me.UnitsOK.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.UnitsOK.Location = New System.Drawing.Point(18, 258)
-        Me.UnitsOK.Name = "UnitsOK"
-        Me.UnitsOK.Size = New System.Drawing.Size(75, 23)
-        Me.UnitsOK.TabIndex = 7
-        Me.UnitsOK.Text = "OK"
+        UnitsOK.DialogResult = System.Windows.Forms.DialogResult.OK
+        UnitsOK.Location = New System.Drawing.Point(18, 258)
+        UnitsOK.Name = "UnitsOK"
+        UnitsOK.Size = New System.Drawing.Size(75, 23)
+        UnitsOK.TabIndex = 7
+        UnitsOK.Text = "OK"
         '
         'UnitsDefault
         '
-        Me.UnitsDefault.Location = New System.Drawing.Point(210, 258)
-        Me.UnitsDefault.Name = "UnitsDefault"
-        Me.UnitsDefault.Size = New System.Drawing.Size(75, 23)
-        Me.UnitsDefault.TabIndex = 9
-        Me.UnitsDefault.Text = "Reset"
+        UnitsDefault.Location = New System.Drawing.Point(210, 258)
+        UnitsDefault.Name = "UnitsDefault"
+        UnitsDefault.Size = New System.Drawing.Size(75, 23)
+        UnitsDefault.TabIndex = 9
+        UnitsDefault.Text = "Reset"
         '
         'UnitsCancel
         '
-        Me.UnitsCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.UnitsCancel.Location = New System.Drawing.Point(114, 258)
-        Me.UnitsCancel.Name = "UnitsCancel"
-        Me.UnitsCancel.Size = New System.Drawing.Size(75, 23)
-        Me.UnitsCancel.TabIndex = 8
-        Me.UnitsCancel.Text = "Cancel"
+        UnitsCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        UnitsCancel.Location = New System.Drawing.Point(114, 258)
+        UnitsCancel.Name = "UnitsCancel"
+        UnitsCancel.Size = New System.Drawing.Size(75, 23)
+        UnitsCancel.TabIndex = 8
+        UnitsCancel.Text = "Cancel"
         '
         'UnitsLength
         '
-        Me.UnitsLength.Location = New System.Drawing.Point(171, 21)
-        Me.UnitsLength.Name = "UnitsLength"
-        Me.UnitsLength.Size = New System.Drawing.Size(96, 21)
-        Me.UnitsLength.TabIndex = 0
+        UnitsLength.Location = New System.Drawing.Point(171, 21)
+        UnitsLength.Name = "UnitsLength"
+        UnitsLength.Size = New System.Drawing.Size(96, 21)
+        UnitsLength.TabIndex = 0
         '
         'Label4
         '
-        Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(118, 25)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(43, 13)
-        Me.Label4.TabIndex = 4
-        Me.Label4.Text = "Length:"
-        Me.Label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Label4.AutoSize = True
+        Label4.Location = New System.Drawing.Point(118, 25)
+        Label4.Name = "Label4"
+        Label4.Size = New System.Drawing.Size(43, 13)
+        Label4.TabIndex = 4
+        Label4.Text = "Length:"
+        Label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'Label2
         '
-        Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(58, 217)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(103, 13)
-        Me.Label2.TabIndex = 44
-        Me.Label2.Text = "Smoke Obscuration:"
-        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Label2.AutoSize = True
+        Label2.Location = New System.Drawing.Point(58, 217)
+        Label2.Name = "Label2"
+        Label2.Size = New System.Drawing.Size(103, 13)
+        Label2.TabIndex = 44
+        Label2.Text = "Smoke Obscuration:"
+        Label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'UnitsSmoke
         '
-        Me.UnitsSmoke.Location = New System.Drawing.Point(171, 213)
-        Me.UnitsSmoke.Name = "UnitsSmoke"
-        Me.UnitsSmoke.Size = New System.Drawing.Size(96, 21)
-        Me.UnitsSmoke.TabIndex = 43
+        UnitsSmoke.Location = New System.Drawing.Point(171, 213)
+        UnitsSmoke.Name = "UnitsSmoke"
+        UnitsSmoke.Size = New System.Drawing.Size(96, 21)
+        UnitsSmoke.TabIndex = 43
         '
         'User_Units
         '
-        Me.AcceptButton = Me.UnitsOK
-        Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        Me.CancelButton = Me.UnitsCancel
-        Me.ClientSize = New System.Drawing.Size(302, 302)
-        Me.Controls.Add(Me.Label2)
-        Me.Controls.Add(Me.UnitsSmoke)
-        Me.Controls.Add(Me.UnitsCancel)
-        Me.Controls.Add(Me.UnitsDefault)
-        Me.Controls.Add(Me.UnitsOK)
-        Me.Controls.Add(Me.UnitsMass)
-        Me.Controls.Add(Me.Label3)
-        Me.Controls.Add(Me.Label18)
-        Me.Controls.Add(Me.Label9)
-        Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.Time)
-        Me.Controls.Add(Me.Label4)
-        Me.Controls.Add(Me.UnitsEnergy)
-        Me.Controls.Add(Me.UnitsPressure)
-        Me.Controls.Add(Me.UnitsTemperature)
-        Me.Controls.Add(Me.UnitsTime)
-        Me.Controls.Add(Me.UnitsLength)
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.Name = "User_Units"
-        Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "User Units"
-        Me.ResumeLayout(False)
-        Me.PerformLayout()
+        AcceptButton = UnitsOK
+        AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+        CancelButton = UnitsCancel
+        ClientSize = New System.Drawing.Size(302, 302)
+        Controls.Add(Label2)
+        Controls.Add(UnitsSmoke)
+        Controls.Add(UnitsCancel)
+        Controls.Add(UnitsDefault)
+        Controls.Add(UnitsOK)
+        Controls.Add(UnitsMass)
+        Controls.Add(Label3)
+        Controls.Add(Label18)
+        Controls.Add(Label9)
+        Controls.Add(Label1)
+        Controls.Add(Time)
+        Controls.Add(Label4)
+        Controls.Add(UnitsEnergy)
+        Controls.Add(UnitsPressure)
+        Controls.Add(UnitsTemperature)
+        Controls.Add(UnitsTime)
+        Controls.Add(UnitsLength)
+        FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D
+        Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Name = "User_Units"
+        ShowInTaskbar = False
+        StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
+        Text = "User Units"
+        ResumeLayout(False)
+        PerformLayout()
 
     End Sub
 
@@ -256,13 +256,13 @@ Public Class User_Units
         ' This is called by the New method for the form, usually hidden in the design-generated code
 
         ' Define an array of the base units
-        cArray(0) = Me.UnitsLength
-        cArray(1) = Me.UnitsMass
-        cArray(2) = Me.UnitsTime
-        cArray(3) = Me.UnitsTemperature
-        cArray(4) = Me.UnitsPressure
-        cArray(5) = Me.UnitsEnergy
-        cArray(6) = Me.UnitsSmoke
+        cArray(0) = UnitsLength
+        cArray(1) = UnitsMass
+        cArray(2) = UnitsTime
+        cArray(3) = UnitsTemperature
+        cArray(4) = UnitsPressure
+        cArray(5) = UnitsEnergy
+        cArray(6) = UnitsSmoke
         ' Fill the combo boxes with base unit labels
         For i = 0 To BaseUnitsDimension
             myUnits.BaseUnits(i).GetAllUnits(Labels)
@@ -649,7 +649,7 @@ Public Class Conversions
     Public Sub GetAllUnits(ByRef Labels() As String)
         Dim i As Integer
         ReDim Labels(aLabels.GetUpperBound(0))
-        For i = 0 To Me.aLabels.GetUpperBound(0)
+        For i = 0 To aLabels.GetUpperBound(0)
             Labels(i) = aLabels(i)
         Next
     End Sub

@@ -32,21 +32,21 @@ Public Class Compartment
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
     Private i As Integer
     Public Sub New()
-        Me.aName = ""
-        Me.aRoomHeight = 2.4
-        Me.aRoomDepth = 2.4
-        Me.aRoomWidth = 3.6
-        Me.aRoomOriginX = 0.0
-        Me.aRoomOriginY = 0.0
-        Me.aRoomOriginZ = 0.0
-        Me.aCeilingMaterial = "Off"
-        Me.aWallMaterial = "Off"
-        Me.aFloorMaterial = "Off"
-        Me.aAreaPoints(0) = Me.aRoomDepth * Me.aRoomWidth
-        Me.aHeightPoints(0) = Me.aRoomHeight
-        Me.aShaft = False
-        Me.aHall = False
-        Me.aGridCells = {50, 50, 50, 50}
+        aName = ""
+        aRoomHeight = 2.4
+        aRoomDepth = 2.4
+        aRoomWidth = 3.6
+        aRoomOriginX = 0.0
+        aRoomOriginY = 0.0
+        aRoomOriginZ = 0.0
+        aCeilingMaterial = "Off"
+        aWallMaterial = "Off"
+        aFloorMaterial = "Off"
+        aAreaPoints(0) = aRoomDepth * aRoomWidth
+        aHeightPoints(0) = aRoomHeight
+        aShaft = False
+        aHall = False
+        aGridCells = {50, 50, 50, 50}
     End Sub
     Public Property Name() As String
         Get
@@ -166,7 +166,7 @@ Public Class Compartment
             If Value <> aShaft Then
                 aChanged = True
                 aShaft = Value
-                If Me.aHall Then Me.aHall = False
+                If aHall Then aHall = False
             End If
         End Set
     End Property
@@ -178,7 +178,7 @@ Public Class Compartment
             If Value <> aHall Then
                 aChanged = True
                 aHall = Value
-                If Me.aShaft Then Me.aShaft = False
+                If aShaft Then aShaft = False
             End If
         End Set
     End Property
@@ -216,14 +216,14 @@ Public Class Compartment
         End Set
     End Property
     Public Sub GetGrid(ByRef axGrid As Integer, ByRef ayGrid As Integer, ByRef azGrid As Integer)
-        axGrid = Me.xGrid
-        ayGrid = Me.yGrid
-        azGrid = Me.zGrid
+        axGrid = xGrid
+        ayGrid = yGrid
+        azGrid = zGrid
     End Sub
     Public Sub SetGrid(ByVal axGrid As Integer, ByVal ayGrid As Integer, ByVal azGrid As Integer)
-        Me.xGrid = axGrid
-        Me.yGrid = ayGrid
-        Me.zGrid = azGrid
+        xGrid = axGrid
+        yGrid = ayGrid
+        zGrid = azGrid
     End Sub
     Public Property Changed() As Boolean
         Get
@@ -234,87 +234,87 @@ Public Class Compartment
         End Set
     End Property
     Public Sub GetSize(ByRef aRoomWidth As Single, ByRef aRoomDepth As Single, ByRef aRoomHeight As Single)
-        aRoomWidth = Me.RoomWidth
-        aRoomDepth = Me.RoomDepth
-        aRoomHeight = Me.RoomHeight
+        aRoomWidth = RoomWidth
+        aRoomDepth = RoomDepth
+        aRoomHeight = RoomHeight
     End Sub
     Public Sub SetSize(ByVal aRoomWidth As Single, ByVal aRoomDepth As Single, ByVal aRoomHeight As Single)
-        Me.RoomWidth = aRoomWidth
-        Me.RoomDepth = aRoomDepth
-        Me.RoomHeight = aRoomHeight
+        RoomWidth = aRoomWidth
+        RoomDepth = aRoomDepth
+        RoomHeight = aRoomHeight
         aChanged = True
     End Sub
     Public Sub GetPosition(ByRef aRoomOriginX As Single, ByRef aRoomOriginY As Single, ByRef aRoomOriginZ As Single)
-        aRoomOriginX = Me.RoomOriginX
-        aRoomOriginY = Me.RoomOriginY
-        aRoomOriginZ = Me.RoomOriginZ
+        aRoomOriginX = RoomOriginX
+        aRoomOriginY = RoomOriginY
+        aRoomOriginZ = RoomOriginZ
     End Sub
     Public Sub SetPosition(ByVal aRoomOriginX As Single, ByVal aRoomOriginY As Single, ByVal aRoomOriginZ As Single)
-        Me.RoomOriginX = aRoomOriginX
-        Me.RoomOriginY = aRoomOriginY
-        Me.RoomOriginZ = aRoomOriginZ
+        RoomOriginX = aRoomOriginX
+        RoomOriginY = aRoomOriginY
+        RoomOriginZ = aRoomOriginZ
         aChanged = True
     End Sub
     Public Sub GetMaterial(ByRef aCeilingMaterial As String, ByRef aWallMaterial As String, ByRef aFloorMaterial As String)
-        aCeilingMaterial = Me.CeilingMaterial
-        aWallMaterial = Me.WallMaterial
-        aFloorMaterial = Me.FloorMaterial
+        aCeilingMaterial = CeilingMaterial
+        aWallMaterial = WallMaterial
+        aFloorMaterial = FloorMaterial
     End Sub
     Public Sub SetMaterial(ByVal aCeilingMaterial As String, ByVal aWallMaterial As String, ByVal aFloorMaterial As String)
-        Me.CeilingMaterial = aCeilingMaterial
-        Me.WallMaterial = aWallMaterial
-        Me.FloorMaterial = aFloorMaterial
+        CeilingMaterial = aCeilingMaterial
+        WallMaterial = aWallMaterial
+        FloorMaterial = aFloorMaterial
         aChanged = True
     End Sub
     Public Sub GetVariableArea(ByRef AreaPoints() As Single, ByRef HeightPoints() As Single, ByRef NumAreaPoints As Integer)
         Dim i As Integer
-        If Me.aAreaPoints.GetLength(0) = Me.aHeightPoints.GetLength(0) Then
-            ReDim AreaPoints(Me.aAreaPoints.GetUpperBound(0)), HeightPoints(Me.aHeightPoints.GetUpperBound(0))
-            For i = 0 To Me.aAreaPoints.GetUpperBound(0)
-                AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(Me.aAreaPoints(i))
-                HeightPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(Me.aHeightPoints(i))
-                NumAreaPoints = Me.aAreaPoints.GetUpperBound(0)
+        If aAreaPoints.GetLength(0) = aHeightPoints.GetLength(0) Then
+            ReDim AreaPoints(aAreaPoints.GetUpperBound(0)), HeightPoints(aHeightPoints.GetUpperBound(0))
+            For i = 0 To aAreaPoints.GetUpperBound(0)
+                AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aAreaPoints(i))
+                HeightPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aHeightPoints(i))
+                NumAreaPoints = aAreaPoints.GetUpperBound(0)
             Next
         End If
     End Sub
     Public Sub SetVariableArea(ByVal AreaPoints() As Single, ByVal HeightPoints() As Single)
         Dim i As Integer
         If AreaPoints.GetLength(0) = HeightPoints.GetLength(0) Then
-            ReDim Me.aAreaPoints(AreaPoints.GetUpperBound(0)), Me.aHeightPoints(HeightPoints.GetUpperBound(0))
+            ReDim aAreaPoints(AreaPoints.GetUpperBound(0)), aHeightPoints(HeightPoints.GetUpperBound(0))
             For i = 0 To AreaPoints.GetUpperBound(0)
-                Me.aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
-                Me.aHeightPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i))
+                aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
+                aHeightPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i))
             Next
             aChanged = True
         End If
     End Sub
     Public Sub GetVariableAreasHeight(ByRef HeightPoints() As Single)
         Dim i As Integer
-        ReDim HeightPoints(Me.aHeightPoints.GetUpperBound(0))
+        ReDim HeightPoints(aHeightPoints.GetUpperBound(0))
         For i = 0 To HeightPoints.GetUpperBound(0)
-            HeightPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(Me.aHeightPoints(i))
+            HeightPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aHeightPoints(i))
         Next
     End Sub
     Public Sub GetVariableAreaPoints(ByRef AreaPoints() As Single)
         Dim i As Integer
-        ReDim AreaPoints(Me.aAreaPoints.GetUpperBound(0))
+        ReDim AreaPoints(aAreaPoints.GetUpperBound(0))
         For i = 0 To AreaPoints.GetUpperBound(0)
-            AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(Me.aAreaPoints(i))
+            AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aAreaPoints(i))
         Next
     End Sub
     Public Sub SetVariableAreasHeight(ByVal HeightPoints() As Single)
         Dim i As Integer
-        ReDim Me.aHeightPoints(HeightPoints.GetUpperBound(0))
+        ReDim aHeightPoints(HeightPoints.GetUpperBound(0))
         For i = 0 To HeightPoints.GetUpperBound(0)
-            Me.aHeightPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(HeightPoints(i))
+            aHeightPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(HeightPoints(i))
         Next
         aChanged = True
     End Sub
     Public Sub SetVariableAreaPoints(ByVal AreaPoints() As Single)
         Dim i As Integer
-        ReDim Me.aAreaPoints(AreaPoints.GetUpperBound(0))
+        ReDim aAreaPoints(AreaPoints.GetUpperBound(0))
         For i = 0 To AreaPoints.GetUpperBound(0)
-            Me.aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
+            aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
         Next
         aChanged = True
     End Sub
@@ -340,7 +340,7 @@ Public Class Compartment
                 HasErrors += 1
             End If
             ' Compartment area is limited to the square of the minimum and maximum size. Height is limited to the compartment size
-            If Me.aAreaPoints.GetUpperBound(0) > 0 Then
+            If aAreaPoints.GetUpperBound(0) > 0 Then
                 For i = 0 To aAreaPoints.GetUpperBound(0)
                     If aAreaPoints(i) < 0.0 Or aAreaPoints(i) > MaxSize ^ 2 Then
                         myErrors.Add(aName + " has an area point that is in error. Cross-sectional area should be greater than " + (MinSize ^ 2).ToString + " m and less than " + (MaxSize ^ 2).ToString + " m?", ErrorMessages.TypeWarning)

@@ -437,14 +437,14 @@ Public Class Vent
         aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(BeginFlowDropoff)
         aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(ZeroFlow)
     End Sub
-    Public Sub GetRamp(ByRef TimePoints() As Single, ByRef FractionPoints() As Single, ByRef NumAreaPoints As Integer)
+    Public Sub GetRamp(ByRef TimePoints() As Single, ByRef FractionPoints() As Single, ByRef NumPoints As Integer)
         Dim i As Integer
         If aRampTimePoints.GetLength(0) = aRampFractionPoints.GetLength(0) Then
             ReDim TimePoints(aRampTimePoints.GetUpperBound(0)), FractionPoints(aRampFractionPoints.GetUpperBound(0))
             For i = 0 To aRampTimePoints.GetUpperBound(0)
                 TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
                 FractionPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aRampFractionPoints(i))
-                NumAreaPoints = aRampTimePoints.GetUpperBound(0)
+                NumPoints = aRampTimePoints.GetUpperBound(0)
             Next
         End If
     End Sub
@@ -459,21 +459,21 @@ Public Class Vent
             aChanged = True
         End If
     End Sub
-    Public Sub GetRampTimes(ByRef FractionPoints() As Single)
+    Public Sub GetRampFractions(ByRef FractionPoints() As Single)
         Dim i As Integer
         ReDim FractionPoints(aRampFractionPoints.GetUpperBound(0))
         For i = 0 To FractionPoints.GetUpperBound(0)
             FractionPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampFractionPoints(i))
         Next
     End Sub
-    Public Sub GetRampFractions(ByRef TimePoints() As Single)
+    Public Sub GetRampTimes(ByRef TimePoints() As Single)
         Dim i As Integer
         ReDim TimePoints(aRampTimePoints.GetUpperBound(0))
         For i = 0 To TimePoints.GetUpperBound(0)
             TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
         Next
     End Sub
-    Public Sub SetRampTimes(ByVal FractionPoints() As Single)
+    Public Sub SetRampFractions(ByVal FractionPoints() As Single)
         Dim i As Integer
         ReDim aRampFractionPoints(FractionPoints.GetUpperBound(0))
         For i = 0 To FractionPoints.GetUpperBound(0)
@@ -481,7 +481,7 @@ Public Class Vent
         Next
         aChanged = True
     End Sub
-    Public Sub SetRampFractions(ByVal TimePoints() As Single)
+    Public Sub SetRampTimes(ByVal TimePoints() As Single)
         Dim i As Integer
         ReDim aRampTimePoints(TimePoints.GetUpperBound(0))
         For i = 0 To TimePoints.GetUpperBound(0)

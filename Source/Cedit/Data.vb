@@ -115,9 +115,9 @@ Friend Module Data
     End Enum
 
     Friend Enum hventNum
-        firstcomp = 2
-        secondcomp
-        vent
+        firstcompartment = 2
+        secondcompartment
+        ventnumber
         width
         soffit
         sill
@@ -136,7 +136,7 @@ Friend Module Data
     Friend Enum vventNum
         firstcompartment = 2
         secondcompartment
-        vent
+        ventnumber
         area
         shape
         intialfraction
@@ -314,6 +314,17 @@ Friend Module Data
         decaytime
         filterEfficiency = 7
     End Enum
+
+    Friend Enum rampNum
+        ventType = 2
+        firstcompartment
+        secondcompartment
+        ventnumber
+        numpoints
+        time
+        fraction
+    End Enum
+
     Friend Enum visualNum
         sliceType = 2
         slice2DAxis
@@ -323,6 +334,7 @@ Friend Module Data
         isoValue = 2
         isoCompartment
     End Enum
+
     Friend Enum InsertFireNum
         Fire = 1
         Formula
@@ -334,6 +346,7 @@ Friend Module Data
         HoC
         Material
     End Enum
+
     Friend Enum InsertThermalNum
         Material = 1
         Conductivity
@@ -342,6 +355,7 @@ Friend Module Data
         Thickness
         Emissivity
     End Enum
+
     Friend Enum InsertDataType
         Fire = 1
         ThermalProperty

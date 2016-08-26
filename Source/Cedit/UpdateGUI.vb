@@ -75,7 +75,7 @@ Public Class UpdateGUI
     End Sub
 #Region "Tab Updates "
     Public Sub Environment()
-        Me.General()
+        General()
         MainWin.EnvTitle.Text = myEnvironment.Title
         MainWin.EnvSimTime.Text = myEnvironment.SimulationTime.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvTextOutInterval.Text = myEnvironment.OutputInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
@@ -107,7 +107,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Thermals(ByVal index As Integer)
-        Me.General()
+        General()
         If myThermalProperties.Count = 0 Then
             ClearGrid(MainWin.ThermalSummary)
             MainWin.GroupThermal.Enabled = False
@@ -159,7 +159,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Visuals(ByVal indexVisual As Integer, ByVal indexCompartment As Integer)
-        Me.General()
+        General()
         If indexVisual < 0 Or myVisuals.Count = 0 Then
             ClearGrid(MainWin.VisualSummary)
             ClearGrid(MainWin.VisualResolutionSummary)
@@ -227,7 +227,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Geometry(ByVal index As Integer)
-        Me.General()
+        General()
         If index < 0 Or myCompartments.Count = 0 Then
             ClearGrid(MainWin.CompSummary)
             MainWin.TabHorizontalFlow.Enabled = False
@@ -370,7 +370,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub HVents(ByVal index As Integer)
-        Me.General()
+        General()
         If index < 0 Or index >= myHVents.Count Then
             ClearGrid(MainWin.HVentSummary)
             MainWin.GroupHVentGeometry.Enabled = False
@@ -426,7 +426,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub VVents(ByVal index As Integer)
-        Me.General()
+        General()
         If index < 0 Or index >= myVVents.Count Then
             ClearGrid(MainWin.VVentSummary)
             MainWin.GroupVVents.Enabled = False
@@ -474,7 +474,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub MVents(ByVal index As Integer)
-        Me.General()
+        General()
         If index < 0 Or index >= myMVents.Count Then
             ClearGrid(MainWin.MVentSummary)
             MainWin.GroupMVents.Enabled = False
@@ -543,7 +543,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Targets(ByVal index As Integer)
-        Me.General()
+        General()
         If index < 0 Or index >= myTargets.Count Then
             ClearGrid(MainWin.TargetSummary)
             MainWin.GroupTargets.Enabled = False
@@ -616,7 +616,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Detectors(ByVal index As Integer)
-        Me.General()
+        General()
         If index < 0 Or index >= myDetectors.Count Then
             ClearGrid(MainWin.DetectorSummary)
             MainWin.GroupDetectors.Enabled = False
@@ -685,7 +685,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Heats(ByVal Hindex As Integer, ByVal Vindex As Integer)
-        Me.General()
+        General()
         ' Horizontal heat transfer first
         If Hindex < 0 Or Hindex >= myHHeats.Count Then
             ClearGrid(MainWin.HHeatSummary)
@@ -770,7 +770,7 @@ Public Class UpdateGUI
         End If
     End Sub
     Public Sub Fires(ByVal index As Integer)
-        Me.General()
+        General()
         Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
         Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single
         Dim IgnitionTypeLabel As String = ""
@@ -1017,8 +1017,8 @@ Public Class UpdateGUI
                 If Not ln.StartsWith("Write to the history") Then myErrors.Add(ln, ErrorMessages.TypeCFastLog)
             Loop
             FileClose(IO)
-            Me.Menu()
-            Me.Environment()
+            Menu()
+            Environment()
         End If
     End Sub
 #End Region

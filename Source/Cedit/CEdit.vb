@@ -4831,25 +4831,25 @@ Public Class CeditMain
 #Region " Simulation Tab "
     ' This section of code handles events related to the environment tab
     Private Sub Environment_Changed(sender As Object, e As EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, EnvAdiabatic.CheckedChanged
-        If sender Is Me.EnvTitle Then myEnvironment.Title = Me.EnvTitle.Text
-        If sender Is Me.EnvSimTime Then myEnvironment.SimulationTime = Val(Me.EnvSimTime.Text)
-        If sender Is Me.EnvTextOutInterval Then myEnvironment.OutputInterval = Val(Me.EnvTextOutInterval.Text)
-        If sender Is Me.EnvSpreadOutInterval Then myEnvironment.SpreadsheetInterval = Val(Me.EnvSpreadOutInterval.Text)
-        If sender Is Me.EnvSmokeviewInterval Then myEnvironment.SmokeviewInterval = Val(Me.EnvSmokeviewInterval.Text)
-        If sender Is Me.EnvIntAmbTemp Then myEnvironment.IntAmbTemperature = Val(Me.EnvIntAmbTemp.Text)
-        If sender Is Me.EnvIntAmbElevation Then myEnvironment.IntAmbElevation = Val(Me.EnvIntAmbElevation.Text)
-        If sender Is Me.EnvIntAmbPress Then myEnvironment.IntAmbPressure = Val(Me.EnvIntAmbPress.Text)
-        If sender Is Me.EnvIntAmbRH Then myEnvironment.IntAmbRH = Val(Me.EnvIntAmbRH.Text)
-        If sender Is Me.EnvExtAmbTemp Then myEnvironment.ExtAmbTemperature = Val(Me.EnvExtAmbTemp.Text)
-        If sender Is Me.EnvExtAmbElevation Then myEnvironment.ExtAmbElevation = Val(Me.EnvExtAmbElevation.Text)
-        If sender Is Me.EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(Me.EnvExtAmbPress.Text)
-        If sender Is Me.EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
-        If sender Is Me.EnvAdiabatic Then
-            myEnvironment.AdiabaticWalls = Me.EnvAdiabatic.Checked
+        If sender Is EnvTitle Then myEnvironment.Title = EnvTitle.Text
+        If sender Is EnvSimTime Then myEnvironment.SimulationTime = Val(EnvSimTime.Text)
+        If sender Is EnvTextOutInterval Then myEnvironment.OutputInterval = Val(EnvTextOutInterval.Text)
+        If sender Is EnvSpreadOutInterval Then myEnvironment.SpreadsheetInterval = Val(EnvSpreadOutInterval.Text)
+        If sender Is EnvSmokeviewInterval Then myEnvironment.SmokeviewInterval = Val(EnvSmokeviewInterval.Text)
+        If sender Is EnvIntAmbTemp Then myEnvironment.IntAmbTemperature = Val(EnvIntAmbTemp.Text)
+        If sender Is EnvIntAmbElevation Then myEnvironment.IntAmbElevation = Val(EnvIntAmbElevation.Text)
+        If sender Is EnvIntAmbPress Then myEnvironment.IntAmbPressure = Val(EnvIntAmbPress.Text)
+        If sender Is EnvIntAmbRH Then myEnvironment.IntAmbRH = Val(EnvIntAmbRH.Text)
+        If sender Is EnvExtAmbTemp Then myEnvironment.ExtAmbTemperature = Val(EnvExtAmbTemp.Text)
+        If sender Is EnvExtAmbElevation Then myEnvironment.ExtAmbElevation = Val(EnvExtAmbElevation.Text)
+        If sender Is EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(EnvExtAmbPress.Text)
+        If sender Is EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
+        If sender Is EnvAdiabatic Then
+            myEnvironment.AdiabaticWalls = EnvAdiabatic.Checked
             Dim ir As Integer, aCompartment As New Compartment, SavedCompartment As Integer
             SavedCompartment = CurrentCompartment
             For ir = 0 To myCompartments.Count - 1
-                If Me.EnvAdiabatic.Checked Then
+                If EnvAdiabatic.Checked Then
                     CurrentCompartment = ir
                     aCompartment = myCompartments.Item(ir)
                     aCompartment.SetMaterial("OFF", "OFF", "OFF")
@@ -4870,20 +4870,20 @@ Public Class CeditMain
         If CurrentThermalProperty >= 0 And CurrentThermalProperty < myThermalProperties.Count Then
             Dim aProperty As New ThermalProperty
             aProperty = myThermalProperties(CurrentThermalProperty)
-            If sender Is Me.ThermalLongName Then aProperty.Name = Me.ThermalLongName.Text
-            If sender Is Me.ThermalShortName Then aProperty.ShortName = Me.ThermalShortName.Text
-            If sender Is Me.ThermalConductivity Then aProperty.Conductivity = Val(Me.ThermalConductivity.Text)
-            If sender Is Me.ThermalSpecificHeat Then aProperty.SpecificHeat = Val(Me.ThermalSpecificHeat.Text)
-            If sender Is Me.ThermalDensity Then aProperty.Density = Val(Me.ThermalDensity.Text)
-            If sender Is Me.ThermalThickness Then aProperty.Thickness = Val(Me.ThermalThickness.Text)
-            If sender Is Me.ThermalEmissivity Then aProperty.Emissivity = Val(Me.ThermalEmissivity.Text)
+            If sender Is ThermalLongName Then aProperty.Name = ThermalLongName.Text
+            If sender Is ThermalShortName Then aProperty.ShortName = ThermalShortName.Text
+            If sender Is ThermalConductivity Then aProperty.Conductivity = Val(ThermalConductivity.Text)
+            If sender Is ThermalSpecificHeat Then aProperty.SpecificHeat = Val(ThermalSpecificHeat.Text)
+            If sender Is ThermalDensity Then aProperty.Density = Val(ThermalDensity.Text)
+            If sender Is ThermalThickness Then aProperty.Thickness = Val(ThermalThickness.Text)
+            If sender Is ThermalEmissivity Then aProperty.Emissivity = Val(ThermalEmissivity.Text)
             UpdateGUI.Thermals(CurrentThermalProperty)
         End If
     End Sub
     Private Sub ThermalSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalSummary.Click
         ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
-        index = Me.ThermalSummary.RowSel - 1
+        index = ThermalSummary.RowSel - 1
         If index >= 0 And index <= myThermalProperties.Count - 1 Then
             CurrentThermalProperty = index
             UpdateGUI.Thermals(CurrentThermalProperty)
@@ -4892,7 +4892,7 @@ Public Class CeditMain
     Private Sub ThermalSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles ThermalSummary.AfterSelChange
         ' The currently selected ThermalProperties has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
-        index = Me.ThermalSummary.RowSel - 1
+        index = ThermalSummary.RowSel - 1
         If index >= 0 And index <= myThermalProperties.Count - 1 Then
             CurrentThermalProperty = index
             UpdateGUI.Thermals(CurrentThermalProperty)
@@ -4908,7 +4908,7 @@ Public Class CeditMain
             CurrentThermalProperty = myThermalProperties.Count - 1
             UpdateGUI.Thermals(CurrentThermalProperty)
         Else
-            MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub ThermalDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalDup.Click
@@ -4921,7 +4921,7 @@ Public Class CeditMain
             myThermalProperties(myThermalProperties.Count - 1).ShortName = "NM " + (myThermalProperties.Count).ToString
             UpdateGUI.Thermals(CurrentThermalProperty)
         ElseIf CurrentThermalProperty + 1 >= myThermalProperties.Maximum Then
-            MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub ThermalRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalRemove.Click
@@ -4931,8 +4931,8 @@ Public Class CeditMain
             aProperty = myThermalProperties.Item(CurrentThermalProperty)
             TotalConnections = myThermalProperties.NumberofConnections(aProperty.ShortName)
             If TotalConnections > 0 Then
-                ReturnedButton = MessageBox.Show(aProperty.Name + " is used " + TotalConnections.ToString + _
-                " times to define materials in the current simulation. These will be changed to Off.", Me.Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
+                ReturnedButton = MessageBox.Show(aProperty.Name + " is used " + TotalConnections.ToString +
+                " times to define materials in the current simulation. These will be changed to Off.", Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
                 If ReturnedButton = OK Then
                     myThermalProperties.Remove(CurrentThermalProperty)
                     If CurrentThermalProperty > 0 Then CurrentThermalProperty -= 1
@@ -4959,7 +4959,7 @@ Public Class CeditMain
             CurrentCompartment = myCompartments.Count - 1
             UpdateGUI.Geometry(CurrentCompartment)
         Else
-            MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub CompDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompDup.Click
@@ -4971,7 +4971,7 @@ Public Class CeditMain
             myCompartments(myCompartments.Count - 1).Name = "Comp " + myCompartments.Count.ToString
             UpdateGUI.Geometry(CurrentCompartment)
         ElseIf CurrentCompartment + 1 >= Compartment.MaximumCompartments Then
-            MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub CompMoveUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompMoveUp.Click
@@ -4996,12 +4996,12 @@ Public Class CeditMain
         ' Remove the current compartment from the list of compartments
         Dim ReturnedButton As Integer, TotalConnections As Integer
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
-            TotalConnections = myHVents.NumberofConnections(CurrentCompartment) + myVVents.NumberofConnections(CurrentCompartment) + myMVents.NumberofConnections(CurrentCompartment) + _
-            myDetectors.NumberofConnections(CurrentCompartment) + myTargets.NumberofConnections(CurrentCompartment) + myHHeats.NumberofConnections(CurrentCompartment) + _
+            TotalConnections = myHVents.NumberofConnections(CurrentCompartment) + myVVents.NumberofConnections(CurrentCompartment) + myMVents.NumberofConnections(CurrentCompartment) +
+            myDetectors.NumberofConnections(CurrentCompartment) + myTargets.NumberofConnections(CurrentCompartment) + myHHeats.NumberofConnections(CurrentCompartment) +
             myVHeats.NumberofConnections(CurrentCompartment) + myFires.NumberofConnections(CurrentCompartment) + myVisuals.NumberofConnections(CurrentCompartment)
             If TotalConnections > 0 Then
-                ReturnedButton = MessageBox.Show("Compartment " + (CurrentCompartment + 1).ToString + " has " + TotalConnections.ToString + _
-                " connection(s) that will be removed.", Me.Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
+                ReturnedButton = MessageBox.Show("Compartment " + (CurrentCompartment + 1).ToString + " has " + TotalConnections.ToString +
+                " connection(s) that will be removed.", Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
                 If ReturnedButton = OK Then
                     myHVents.RemoveAll(CurrentCompartment) : CurrentHVent = 0
                     myVVents.RemoveAll(CurrentCompartment) : CurrentVVent = 0
@@ -5027,7 +5027,7 @@ Public Class CeditMain
     Private Sub CompSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompSummary.Click, CompSummary.AfterSelChange
         ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
-        index = Me.CompSummary.RowSel - 1
+        index = CompSummary.RowSel - 1
         If index >= 0 And index <= myCompartments.Count - 1 Then
             CurrentCompartment = index
             UpdateGUI.Geometry(CurrentCompartment)
@@ -5038,13 +5038,13 @@ Public Class CeditMain
         Dim aCompartment As New Compartment
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             aCompartment = myCompartments.Item(CurrentCompartment)
-            If sender Is Me.CompName Then aCompartment.Name = Me.CompName.Text
-            If sender Is Me.CompWidth Then aCompartment.RoomWidth = Val(Me.CompWidth.Text)
-            If sender Is Me.CompDepth Then aCompartment.RoomDepth = Val(Me.CompDepth.Text)
-            If sender Is Me.CompHeight Then aCompartment.RoomHeight = Val(Me.CompHeight.Text)
-            If sender Is Me.CompXPosition Then aCompartment.RoomOriginX = Val(Me.CompXPosition.Text)
-            If sender Is Me.CompYPosition Then aCompartment.RoomOriginY = Val(Me.CompYPosition.Text)
-            If sender Is Me.CompZPosition Then aCompartment.RoomOriginZ = Val(Me.CompZPosition.Text)
+            If sender Is CompName Then aCompartment.Name = CompName.Text
+            If sender Is CompWidth Then aCompartment.RoomWidth = Val(CompWidth.Text)
+            If sender Is CompDepth Then aCompartment.RoomDepth = Val(CompDepth.Text)
+            If sender Is CompHeight Then aCompartment.RoomHeight = Val(CompHeight.Text)
+            If sender Is CompXPosition Then aCompartment.RoomOriginX = Val(CompXPosition.Text)
+            If sender Is CompYPosition Then aCompartment.RoomOriginY = Val(CompYPosition.Text)
+            If sender Is CompZPosition Then aCompartment.RoomOriginZ = Val(CompZPosition.Text)
             myCompartments.Item(CurrentCompartment) = aCompartment
             UpdateGUI.Geometry(CurrentCompartment)
         End If
@@ -5053,11 +5053,11 @@ Public Class CeditMain
         Dim aCompartment As New Compartment
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             aCompartment = myCompartments.Item(CurrentCompartment)
-            If sender Is Me.CompCeiling Then
+            If sender Is CompCeiling Then
                 aCompartment.CeilingMaterial = myThermalProperties.GetShortName(sender.text)
-            ElseIf sender Is Me.CompWalls Then
+            ElseIf sender Is CompWalls Then
                 aCompartment.WallMaterial = myThermalProperties.GetShortName(sender.text)
-            ElseIf sender Is Me.CompFloor Then
+            ElseIf sender Is CompFloor Then
                 aCompartment.FloorMaterial = myThermalProperties.GetShortName(sender.text)
             End If
             myCompartments.Item(CurrentCompartment) = aCompartment
@@ -5068,15 +5068,15 @@ Public Class CeditMain
         If CurrentCompartment >= 0 And CurrentCompartment <= myCompartments.Count - 1 Then
             Dim aCompartment As New Compartment
             aCompartment = myCompartments.Item(CurrentCompartment)
-            If sender Is Me.CompShaft And Me.CompShaft.Checked = True Then
+            If sender Is CompShaft And CompShaft.Checked = True Then
                 aCompartment.Shaft = True
                 aCompartment.Hall = False
                 myCompartments.Item(CurrentCompartment) = aCompartment
-            ElseIf sender Is Me.CompCorridor And Me.CompCorridor.Checked = True Then
+            ElseIf sender Is CompCorridor And CompCorridor.Checked = True Then
                 aCompartment.Hall = True
                 aCompartment.Shaft = False
                 myCompartments.Item(CurrentCompartment) = aCompartment
-            ElseIf sender Is Me.CompNormal And Me.CompNormal.Checked = True Then
+            ElseIf sender Is CompNormal And CompNormal.Checked = True Then
                 aCompartment.Hall = False
                 aCompartment.Shaft = False
                 myCompartments.Item(CurrentCompartment) = aCompartment
@@ -5087,17 +5087,17 @@ Public Class CeditMain
         Dim aCompartment As New Compartment
         Dim numPoints As Integer, ir As Integer
         Dim aArea As Single
-        numPoints = UpdateGUI.CountGridPoints(Me.CompVariableArea)
+        numPoints = UpdateGUI.CountGridPoints(CompVariableArea)
         For ir = 1 To numPoints
-            If CType(Me.CompVariableArea(ir, 0), String) + " " = " " Then
-                Me.CompVariableArea(ir, 0) = Nothing
-                Me.CompVariableArea(ir, 1) = Nothing
+            If CType(CompVariableArea(ir, 0), String) + " " = " " Then
+                CompVariableArea(ir, 0) = Nothing
+                CompVariableArea(ir, 1) = Nothing
             End If
         Next
         ' Copy the values from the spreadsheet to the two vectors for height and area, then put them in the compartment data structure
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             aCompartment = myCompartments.Item(CurrentCompartment)
-            numPoints = UpdateGUI.CountGridPoints(Me.CompVariableArea)
+            numPoints = UpdateGUI.CountGridPoints(CompVariableArea)
             If numPoints = 0 Then
                 Dim AreaPoints(0) As Single, HeightPoints(0) As Single
                 aCompartment.SetVariableArea(AreaPoints, HeightPoints)
@@ -5106,8 +5106,8 @@ Public Class CeditMain
             ElseIf numPoints > 0 Then
                 Dim AreaPoints(numPoints) As Single, HeightPoints(numPoints) As Single
                 For ir = 1 To numPoints
-                    HeightPoints(ir) = Val(Me.CompVariableArea(ir, 0))
-                    AreaPoints(ir) = Val(Me.CompVariableArea(ir, 1))
+                    HeightPoints(ir) = Val(CompVariableArea(ir, 0))
+                    AreaPoints(ir) = Val(CompVariableArea(ir, 1))
                     If AreaPoints(ir) <= 0 Then
                         myUnits.SI = True
                         aArea = aCompartment.RoomWidth * aCompartment.RoomDepth
@@ -5133,7 +5133,7 @@ Public Class CeditMain
             CurrentHVent = myHVents.Count - 1
             UpdateGUI.HVents(CurrentHVent)
         Else
-            MessageBox.Show("A maximum of " + Vent.MaximumHVents.ToString + " vents are allowed. New vent was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + Vent.MaximumHVents.ToString + " vents are allowed. New vent was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub HVentDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentDup.Click
@@ -5144,7 +5144,7 @@ Public Class CeditMain
             CurrentHVent = myHVents.Count - 1
             UpdateGUI.HVents(CurrentHVent)
         Else
-            MessageBox.Show("A maximum of " + myHVents.Maximum.ToString + " vents are allowed. New vent not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myHVents.Maximum.ToString + " vents are allowed. New vent not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub HVentMoveUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentMoveUp.Click
@@ -5183,7 +5183,7 @@ Public Class CeditMain
     Private Sub HVentSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentSummary.Click
         ' The currently selected hvent has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
-        index = Me.HVentSummary.RowSel - 1
+        index = HVentSummary.RowSel - 1
         If index >= 0 And index <= myHVents.Count - 1 Then
             CurrentHVent = index
             UpdateGUI.HVents(CurrentHVent)
@@ -5192,7 +5192,7 @@ Public Class CeditMain
     Private Sub HVentSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles HVentSummary.AfterSelChange
         ' The currently selected hvent has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
-        index = Me.HVentSummary.RowSel - 1
+        index = HVentSummary.RowSel - 1
         If index >= 0 And index <= myHVents.Count - 1 Then
             CurrentHVent = index
             UpdateGUI.HVents(CurrentHVent)
@@ -5202,16 +5202,16 @@ Public Class CeditMain
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
-            If sender Is Me.HVentOffset Then aVent.Offset = Val(Me.HVentOffset.Text)
-            If sender Is Me.HVentSill Then aVent.Sill = Val(Me.HVentSill.Text)
-            If sender Is Me.HVentSoffit Then aVent.Soffit = Val(Me.HVentSoffit.Text)
-            If sender Is Me.HVentWidth Then aVent.Width = Val(Me.HVentWidth.Text)
-            If sender Is Me.HVentInitialFraction Then aVent.InitialOpening = Val(Me.HVentInitialFraction.Text)
-            If sender Is Me.HVentFractionTime Then aVent.FinalOpeningTime = Val(Me.HVentFractionTime.Text)
-            If sender Is Me.HVentFinalFraction Then aVent.FinalOpening = Val(Me.HVentFinalFraction.Text)
-            If sender Is Me.HVentFace Then aVent.Face = Me.HVentFace.SelectedIndex + 1
-            If sender Is Me.HVentComp1 Then aVent.FirstCompartment = Me.HVentComp1.SelectedIndex - 1
-            If sender Is Me.HVentComp2 Then aVent.SecondCompartment = Me.HVentComp2.SelectedIndex - 1
+            If sender Is HVentOffset Then aVent.Offset = Val(HVentOffset.Text)
+            If sender Is HVentSill Then aVent.Sill = Val(HVentSill.Text)
+            If sender Is HVentSoffit Then aVent.Soffit = Val(HVentSoffit.Text)
+            If sender Is HVentWidth Then aVent.Width = Val(HVentWidth.Text)
+            If sender Is HVentInitialFraction Then aVent.InitialOpening = Val(HVentInitialFraction.Text)
+            If sender Is HVentFractionTime Then aVent.FinalOpeningTime = Val(HVentFractionTime.Text)
+            If sender Is HVentFinalFraction Then aVent.FinalOpening = Val(HVentFinalFraction.Text)
+            If sender Is HVentFace Then aVent.Face = HVentFace.SelectedIndex + 1
+            If sender Is HVentComp1 Then aVent.FirstCompartment = HVentComp1.SelectedIndex - 1
+            If sender Is HVentComp2 Then aVent.SecondCompartment = HVentComp2.SelectedIndex - 1
             ' CFast expects the from compartment to be the lower number of the pair and the outside to be the to compartment
             myHVents(CurrentHVent) = aVent
             UpdateGUI.HVents(CurrentHVent)
@@ -5230,7 +5230,7 @@ Public Class CeditMain
             CurrentVVent = myVVents.Count - 1
             UpdateGUI.VVents(CurrentVVent)
         Else
-            MessageBox.Show("A maximum of " + myVVents.Maximum.ToString + " vents are allowed. New vent was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myVVents.Maximum.ToString + " vents are allowed. New vent was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub VVentDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentDup.Click
@@ -5241,7 +5241,7 @@ Public Class CeditMain
             CurrentVVent = myVVents.Count - 1
             UpdateGUI.VVents(CurrentVVent)
         Else
-            MessageBox.Show("A maximum of " + myVVents.Maximum.ToString + " vents are allowed. New vent not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myVVents.Maximum.ToString + " vents are allowed. New vent not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub VVentRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentRemove.Click
@@ -5256,7 +5256,7 @@ Public Class CeditMain
     Private Sub VVentSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentSummary.Click
         ' The currently selected vvent has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
-        index = Me.VVentSummary.RowSel - 1
+        index = VVentSummary.RowSel - 1
         If index >= 0 And index <= myVVents.Count - 1 Then
             CurrentVVent = index
             UpdateGUI.VVents(CurrentVVent)
@@ -5265,7 +5265,7 @@ Public Class CeditMain
     Private Sub VVentSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles VVentSummary.AfterSelChange
         ' The currently selected vvent has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
-        index = Me.VVentSummary.RowSel - 1
+        index = VVentSummary.RowSel - 1
         If index >= 0 And index <= myVVents.Count - 1 Then
             CurrentVVent = index
             UpdateGUI.VVents(CurrentVVent)
@@ -5275,13 +5275,13 @@ Public Class CeditMain
         Dim aVent As New Vent
         If CurrentVVent >= 0 And myVVents.Count > 0 Then
             aVent = myVVents.Item(CurrentVVent)
-            If sender Is Me.VVentArea Then aVent.Area = Val(Me.VVentArea.Text)
-            If sender Is Me.VVentShape Then aVent.Shape = Me.VVentShape.SelectedIndex + 1
-            If sender Is Me.VVentCompTop Then aVent.FirstCompartment = Me.VVentCompTop.SelectedIndex - 1
-            If sender Is Me.VVentCompBottom Then aVent.SecondCompartment = Me.VVentCompBottom.SelectedIndex - 1
-            If sender Is Me.VVentInitialFraction Then aVent.InitialOpening = Val(Me.VVentInitialFraction.Text)
-            If sender Is Me.VVentFractionTime Then aVent.FinalOpeningTime = Val(Me.VVentFractionTime.Text)
-            If sender Is Me.VVentFinalFraction Then aVent.FinalOpening = Val(Me.VVentFinalFraction.Text)
+            If sender Is VVentArea Then aVent.Area = Val(VVentArea.Text)
+            If sender Is VVentShape Then aVent.Shape = VVentShape.SelectedIndex + 1
+            If sender Is VVentCompTop Then aVent.FirstCompartment = VVentCompTop.SelectedIndex - 1
+            If sender Is VVentCompBottom Then aVent.SecondCompartment = VVentCompBottom.SelectedIndex - 1
+            If sender Is VVentInitialFraction Then aVent.InitialOpening = Val(VVentInitialFraction.Text)
+            If sender Is VVentFractionTime Then aVent.FinalOpeningTime = Val(VVentFractionTime.Text)
+            If sender Is VVentFinalFraction Then aVent.FinalOpening = Val(VVentFinalFraction.Text)
             myVVents(CurrentVVent) = aVent
             UpdateGUI.VVents(CurrentVVent)
         End If
@@ -5299,7 +5299,7 @@ Public Class CeditMain
             CurrentMVent = myMVents.Count - 1
             UpdateGUI.MVents(CurrentMVent)
         Else
-            MessageBox.Show("A maximum of " + myMVents.Maximum.ToString + " vents are allowed. New vent was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myMVents.Maximum.ToString + " vents are allowed. New vent was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub MVentDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentDup.Click
@@ -5310,7 +5310,7 @@ Public Class CeditMain
             CurrentMVent = myMVents.Count - 1
             UpdateGUI.MVents(CurrentMVent)
         Else
-            MessageBox.Show("A maximum of " + myMVents.Maximum.ToString + " vents are allowed. New vent not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myMVents.Maximum.ToString + " vents are allowed. New vent not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub MVentRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentRemove.Click
@@ -5325,7 +5325,7 @@ Public Class CeditMain
     Private Sub MVentSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentSummary.Click
         ' The currently selected mvent has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
-        index = Me.MVentSummary.RowSel - 1
+        index = MVentSummary.RowSel - 1
         If index >= 0 And index <= myMVents.Count - 1 Then
             CurrentMVent = index
             UpdateGUI.MVents(CurrentMVent)
@@ -5334,7 +5334,7 @@ Public Class CeditMain
     Private Sub mVentSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles MVentSummary.AfterSelChange
         ' The currently selected mvent has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
-        index = Me.MVentSummary.RowSel - 1
+        index = MVentSummary.RowSel - 1
         If index >= 0 And index <= myMVents.Count - 1 Then
             CurrentMVent = index
             UpdateGUI.MVents(CurrentMVent)
@@ -5344,25 +5344,25 @@ Public Class CeditMain
         Dim aVent As New Vent
         If CurrentMVent >= 0 And myMVents.Count > 0 Then
             aVent = myMVents.Item(CurrentMVent)
-            If sender Is Me.MVentFromComp Then aVent.FirstCompartment = Me.MVentFromComp.SelectedIndex - 1
-            If sender Is Me.MVentFromArea Then aVent.FirstArea = Val(Me.MVentFromArea.Text)
-            If sender Is Me.MVentFromHeight Then aVent.FirstCenterHeight = Val(Me.MVentFromHeight.Text)
-            If sender Is Me.MVentFromOrientation Then aVent.FirstOrientation = Me.MVentFromOrientation.SelectedIndex + 1
+            If sender Is MVentFromComp Then aVent.FirstCompartment = MVentFromComp.SelectedIndex - 1
+            If sender Is MVentFromArea Then aVent.FirstArea = Val(MVentFromArea.Text)
+            If sender Is MVentFromHeight Then aVent.FirstCenterHeight = Val(MVentFromHeight.Text)
+            If sender Is MVentFromOrientation Then aVent.FirstOrientation = MVentFromOrientation.SelectedIndex + 1
 
-            If sender Is Me.MventToComp Then aVent.SecondCompartment = Me.MventToComp.SelectedIndex - 1
-            If sender Is Me.MVentToArea Then aVent.SecondArea = Val(Me.MVentToArea.Text)
-            If sender Is Me.MVentToHeight Then aVent.SecondCenterHeight = Val(Me.MVentToHeight.Text)
-            If sender Is Me.MVentToOrientation Then aVent.SecondOrientation = Me.MVentToOrientation.SelectedIndex + 1
+            If sender Is MventToComp Then aVent.SecondCompartment = MventToComp.SelectedIndex - 1
+            If sender Is MVentToArea Then aVent.SecondArea = Val(MVentToArea.Text)
+            If sender Is MVentToHeight Then aVent.SecondCenterHeight = Val(MVentToHeight.Text)
+            If sender Is MVentToOrientation Then aVent.SecondOrientation = MVentToOrientation.SelectedIndex + 1
 
-            If sender Is Me.MVentFlow Then aVent.FlowRate = Val(Me.MVentFlow.Text)
-            If sender Is Me.MVentDropoff Then aVent.BeginFlowDropoff = Val(Me.MVentDropoff.Text)
-            If sender Is Me.MVentZero Then aVent.ZeroFlow = Val(Me.MVentZero.Text)
+            If sender Is MVentFlow Then aVent.FlowRate = Val(MVentFlow.Text)
+            If sender Is MVentDropoff Then aVent.BeginFlowDropoff = Val(MVentDropoff.Text)
+            If sender Is MVentZero Then aVent.ZeroFlow = Val(MVentZero.Text)
 
-            If sender Is Me.MVentInitialFraction Then aVent.InitialOpening = Val(Me.MVentInitialFraction.Text)
-            If sender Is Me.MVentFractionTime Then aVent.FinalOpeningTime = Val(Me.MVentFractionTime.Text)
-            If sender Is Me.MVentFinalFraction Then aVent.FinalOpening = Val(Me.MVentFinalFraction.Text)
-            If sender Is Me.MVentFilterEfficiency Then aVent.FilterEfficiency = Val(Me.MVentFilterEfficiency.Text)
-            If sender Is Me.MVentFilterTime Then aVent.FilterTime = Val(Me.MVentFilterTime.Text)
+            If sender Is MVentInitialFraction Then aVent.InitialOpening = Val(MVentInitialFraction.Text)
+            If sender Is MVentFractionTime Then aVent.FinalOpeningTime = Val(MVentFractionTime.Text)
+            If sender Is MVentFinalFraction Then aVent.FinalOpening = Val(MVentFinalFraction.Text)
+            If sender Is MVentFilterEfficiency Then aVent.FilterEfficiency = Val(MVentFilterEfficiency.Text)
+            If sender Is MVentFilterTime Then aVent.FilterTime = Val(MVentFilterTime.Text)
 
             myMVents(CurrentMVent) = aVent
             UpdateGUI.MVents(CurrentMVent)
@@ -5398,7 +5398,7 @@ Public Class CeditMain
             CurrentFire = myFires.Count - 1
             UpdateGUI.Fires(CurrentFire)
         ElseIf CurrentFire + 1 > myFires.Maximum Then
-            MessageBox.Show("A maximum of " + myFires.Maximum.ToString + " Fires are allowed. New fire not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myFires.Maximum.ToString + " Fires are allowed. New fire not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub FireRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireRemove.Click
@@ -5415,7 +5415,7 @@ Public Class CeditMain
     Private Sub FireSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireSummary.Click
         ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
-        index = Me.FireSummary.RowSel - 1
+        index = FireSummary.RowSel - 1
         If index >= 0 And index <= myFires.Count - 1 Then
             CurrentFire = index
             UpdateGUI.Fires(CurrentFire)
@@ -5424,7 +5424,7 @@ Public Class CeditMain
     Private Sub FireSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireSummary.AfterSelChange
         ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
-        index = Me.FireSummary.RowSel - 1
+        index = FireSummary.RowSel - 1
         If index >= 0 And index <= myFires.Count - 1 Then
             CurrentFire = index
             UpdateGUI.Fires(CurrentFire)
@@ -5436,84 +5436,84 @@ Public Class CeditMain
         Dim ir As Integer
         If CurrentFire >= 0 And myFires.Count > 0 Then
             aFire = myFires(CurrentFire)
-            If sender Is Me.FireComp Then
-                aFire.Compartment = Me.FireComp.SelectedIndex
-                If Val(Me.FireXPosition.Text) = -1 Then aFire.XPosition = Val(Me.FireXPosition.Text)
-                If Val(Me.FireYPosition.Text) = -1 Then aFire.YPosition = Val(Me.FireYPosition.Text)
-                If Val(Me.FireZPosition.Text) = -1 Then aFire.ZPosition = Val(Me.FireZPosition.Text)
+            If sender Is FireComp Then
+                aFire.Compartment = FireComp.SelectedIndex
+                If Val(FireXPosition.Text) = -1 Then aFire.XPosition = Val(FireXPosition.Text)
+                If Val(FireYPosition.Text) = -1 Then aFire.YPosition = Val(FireYPosition.Text)
+                If Val(FireZPosition.Text) = -1 Then aFire.ZPosition = Val(FireZPosition.Text)
             End If
-            If sender Is Me.FireXPosition Then aFire.XPosition = Val(Me.FireXPosition.Text)
-            If sender Is Me.FireYPosition Then aFire.YPosition = Val(Me.FireYPosition.Text)
-            If sender Is Me.FireZPosition Then aFire.ZPosition = Val(Me.FireZPosition.Text)
-            If sender Is Me.FireIgnitionCriteria Then
-                If aFire.IgnitionType <> Me.FireIgnitionCriteria.SelectedIndex Then
-                    aFire.IgnitionType = Me.FireIgnitionCriteria.SelectedIndex
+            If sender Is FireXPosition Then aFire.XPosition = Val(FireXPosition.Text)
+            If sender Is FireYPosition Then aFire.YPosition = Val(FireYPosition.Text)
+            If sender Is FireZPosition Then aFire.ZPosition = Val(FireZPosition.Text)
+            If sender Is FireIgnitionCriteria Then
+                If aFire.IgnitionType <> FireIgnitionCriteria.SelectedIndex Then
+                    aFire.IgnitionType = FireIgnitionCriteria.SelectedIndex
                     If aFire.IgnitionType = Fire.FireIgnitionbyTime Then aFire.IgnitionValue = 0.0
                     If aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then aFire.IgnitionValue = myEnvironment.IntAmbTemperature
                     If aFire.IgnitionType = Fire.FireIgnitionbyFlux Then aFire.IgnitionValue = 0.0
                 End If
             End If
-            If sender Is Me.FireIgnitionValue Then aFire.IgnitionValue = Val(Me.FireIgnitionValue.Text)
-            If sender Is Me.FireTarget Then
+            If sender Is FireIgnitionValue Then aFire.IgnitionValue = Val(FireIgnitionValue.Text)
+            If sender Is FireTarget Then
                 aFire.Target = myTargets.Item(FireTarget.SelectedIndex).Name
             End If
-            If sender Is Me.FireRadiativeFraction Then aFire.RadiativeFraction = Val(Me.FireRadiativeFraction.Text)
-            If sender Is Me.FireName Then
-                aFire.Name = Me.FireName.Text
+            If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
+            If sender Is FireName Then
+                aFire.Name = FireName.Text
             End If
-            If sender Is Me.FireC Then
-                If Val(Me.FireC.Text) > 0 Then
-                    aFire.ChemicalFormula(formula.C) = Val(Me.FireC.Text)
+            If sender Is FireC Then
+                If Val(FireC.Text) > 0 Then
+                    aFire.ChemicalFormula(formula.C) = Val(FireC.Text)
                 Else
                     aFire.ChemicalFormula(formula.C) = 1
                 End If
             End If
-            If sender Is Me.FireH Then aFire.ChemicalFormula(formula.H) = Val(Me.FireH.Text)
-            If sender Is Me.FireO Then aFire.ChemicalFormula(formula.O) = Val(Me.FireO.Text)
-            If sender Is Me.FireN Then aFire.ChemicalFormula(formula.N) = Val(Me.FireN.Text)
-            If sender Is Me.FireCl Then aFire.ChemicalFormula(formula.Cl) = Val(Me.FireCl.Text)
-            If sender Is Me.FireC Or sender Is Me.FireH Or sender Is Me.FireO Or sender Is Me.FireN Or sender Is Me.FireCl Then
-                numPoints = CountGridPoints(Me.FireDataSS)
+            If sender Is FireH Then aFire.ChemicalFormula(formula.H) = Val(FireH.Text)
+            If sender Is FireO Then aFire.ChemicalFormula(formula.O) = Val(FireO.Text)
+            If sender Is FireN Then aFire.ChemicalFormula(formula.N) = Val(FireN.Text)
+            If sender Is FireCl Then aFire.ChemicalFormula(formula.Cl) = Val(FireCl.Text)
+            If sender Is FireC Or sender Is FireH Or sender Is FireO Or sender Is FireN Or sender Is FireCl Then
+                numPoints = CountGridPoints(FireDataSS)
                 For ir = 1 To numPoints
                     ' Note that though these are calculated, they are actually hidden from the user since they only support the older format CFAST input
-                    Me.FireDataSS(ir, Fire.FireHC) = aFire.ChemicalFormula(formula.H) * 1.00794 / (aFire.ChemicalFormula(formula.C) * 12.0107)
-                    Me.FireDataSS(ir, Fire.FireHCN) = (1.00794 + 12.0107 + 14.01) / 1000.0 / aFire.MolarMass * aFire.ChemicalFormula(formula.N)
-                    Me.FireDataSS(ir, Fire.FireHCl) = (1.00794 + 35.453) / 1000.0 / aFire.MolarMass * aFire.ChemicalFormula(formula.Cl)
+                    FireDataSS(ir, Fire.FireHC) = aFire.ChemicalFormula(formula.H) * 1.00794 / (aFire.ChemicalFormula(formula.C) * 12.0107)
+                    FireDataSS(ir, Fire.FireHCN) = (1.00794 + 12.0107 + 14.01) / 1000.0 / aFire.MolarMass * aFire.ChemicalFormula(formula.N)
+                    FireDataSS(ir, Fire.FireHCl) = (1.00794 + 35.453) / 1000.0 / aFire.MolarMass * aFire.ChemicalFormula(formula.Cl)
                 Next
                 CopyFireData(aFire)
             End If
-            If sender Is Me.FireHoC Then
-                If Val(Me.FireHoC.Text) <> aFire.HeatofCombustion Then
-                    aFire.HeatofCombustion = Val(Me.FireHoC.Text)
-                    numPoints = CountGridPoints(Me.FireDataSS)
+            If sender Is FireHoC Then
+                If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
+                    aFire.HeatofCombustion = Val(FireHoC.Text)
+                    numPoints = CountGridPoints(FireDataSS)
                     For ir = 1 To numPoints
-                        Me.FireDataSS(ir, Fire.FireMdot) = Me.FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
+                        FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
                     Next
                 End If
                 CopyFireData(aFire)
             End If
-            If sender Is Me.FireSootYield Then
-                numPoints = CountGridPoints(Me.FireDataSS)
+            If sender Is FireSootYield Then
+                numPoints = CountGridPoints(FireDataSS)
                 For ir = 1 To numPoints
-                    Me.FireDataSS(ir, Fire.FireSoot) = Val(Me.FireSootYield.Text)
+                    FireDataSS(ir, Fire.FireSoot) = Val(FireSootYield.Text)
                 Next
                 CopyFireData(aFire)
             End If
-            If sender Is Me.FireCOYield Then
-                numPoints = CountGridPoints(Me.FireDataSS)
+            If sender Is FireCOYield Then
+                numPoints = CountGridPoints(FireDataSS)
                 For ir = 1 To numPoints
-                    If Me.FireCOYield.Text <> "" Then
-                        Me.FireDataSS(ir, Fire.FireCO) = Val(Me.FireCOYield.Text)
+                    If FireCOYield.Text <> "" Then
+                        FireDataSS(ir, Fire.FireCO) = Val(FireCOYield.Text)
                     Else
-                        Me.FireDataSS(ir, Fire.FireCO) = (0.012 * Val(Me.FireC.Text) / aFire.MolarMass * 0.0014 + 0.37 * Me.FireDataSS(ir, Fire.FireSoot))
+                        FireDataSS(ir, Fire.FireCO) = (0.012 * Val(FireC.Text) / aFire.MolarMass * 0.0014 + 0.37 * FireDataSS(ir, Fire.FireSoot))
                     End If
                 Next
                 CopyFireData(aFire)
             End If
-            If sender Is Me.FireTSYield Then
-                numPoints = CountGridPoints(Me.FireDataSS)
+            If sender Is FireTSYield Then
+                numPoints = CountGridPoints(FireDataSS)
                 For ir = 1 To numPoints
-                    Me.FireDataSS(ir, Fire.FireTS) = Val(Me.FireTSYield.Text)
+                    FireDataSS(ir, Fire.FireTS) = Val(FireTSYield.Text)
                 Next
                 CopyFireData(aFire)
             End If
@@ -5527,10 +5527,10 @@ Public Class CeditMain
         Dim numPoints As Integer
         If CurrentFire >= 0 And myFires.Count > 0 Then
             aFire = myFires(CurrentFire)
-            numPoints = CountGridPoints(Me.FireDataSS)
+            numPoints = CountGridPoints(FireDataSS)
             ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
-            If Me.FireDataSS.ColSel = Fire.FireHRR Then
-                Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireMdot) = Me.FireDataSS(Me.FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
+            If FireDataSS.ColSel = Fire.FireHRR Then
+                FireDataSS(FireDataSS.RowSel, Fire.FireMdot) = FireDataSS(FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
             End If
             CopyFireData(aFire)
             myFires(CurrentFire) = aFire
@@ -5555,7 +5555,7 @@ Public Class CeditMain
                 If FireDataSS.Row > 0 And FireDataSS.Col >= 0 Then
                     If CurrentFire >= 0 And CurrentFire < myFires.Count Then
                         Dim numPoints As Integer, i As Integer, j As Integer
-                        numPoints = CountGridPoints(Me.FireDataSS)
+                        numPoints = CountGridPoints(FireDataSS)
                         If numPoints > FireDataSS.Row Then
                             For i = FireDataSS.Row To numPoints
                                 For j = 0 To FireDataSS.Cols.Count - 1
@@ -5577,7 +5577,7 @@ Public Class CeditMain
             If aChar = "Insert" Then
                 If FireDataSS.Row > 0 Then
                     Dim numPoints As Integer, i As Integer, j As Integer
-                    numPoints = Me.CountGridPoints(Me.FireDataSS)
+                    numPoints = CountGridPoints(FireDataSS)
                     If numPoints > FireDataSS.Row Then
                         For i = numPoints To FireDataSS.Row Step -1
                             For j = 0 To FireDataSS.Cols.Count - 1
@@ -5611,12 +5611,12 @@ Public Class CeditMain
     Private Sub CopyFireData(ByVal aFire As Fire)
         ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
         Dim numPoints As Integer, ir As Integer, ic As Integer
-        numPoints = CountGridPoints(Me.FireDataSS)
+        numPoints = CountGridPoints(FireDataSS)
         If numPoints > 0 Then
             Dim aFireTimeSeries(12, numPoints - 1) As Single
             For ir = 0 To numPoints - 1
                 For ic = 0 To 12
-                    aFireTimeSeries(ic, ir) = Val(Me.FireDataSS(ir + 1, ic))
+                    aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
                 Next
             Next
             aFire.SetFireData(aFireTimeSeries)
@@ -5635,7 +5635,7 @@ Public Class CeditMain
             CurrentTarget = myTargets.Count - 1
             UpdateGUI.Targets(CurrentTarget)
         Else
-            MessageBox.Show("A maximum of " + myTargets.Maximum.ToString + " targets are allowed. New target was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myTargets.Maximum.ToString + " targets are allowed. New target was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub TargetDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetDup.Click
@@ -5647,7 +5647,7 @@ Public Class CeditMain
             myTargets(myTargets.Count - 1).Name = "Targ " + myTargets.Count.ToString
             UpdateGUI.Targets(CurrentTarget)
         Else
-            MessageBox.Show("A maximum of " + myTargets.Maximum.ToString + " Targets are allowed. New Target not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myTargets.Maximum.ToString + " Targets are allowed. New Target not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub TargetRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetRemove.Click
@@ -5662,7 +5662,7 @@ Public Class CeditMain
     Private Sub TargetSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetSummary.Click
         ' The currently selected Target has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
-        index = Me.TargetSummary.RowSel - 1
+        index = TargetSummary.RowSel - 1
         If index >= 0 And index <= myTargets.Count - 1 Then
             CurrentTarget = index
             UpdateGUI.Targets(CurrentTarget)
@@ -5671,7 +5671,7 @@ Public Class CeditMain
     Private Sub TargetSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles TargetSummary.AfterSelChange
         ' The currently selected Target has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
-        index = Me.TargetSummary.RowSel - 1
+        index = TargetSummary.RowSel - 1
         If index >= 0 And index <= myTargets.Count - 1 Then
             CurrentTarget = index
             UpdateGUI.Targets(CurrentTarget)
@@ -5681,56 +5681,56 @@ Public Class CeditMain
         Dim aTarget As New Target, numFires As Integer, i As Integer
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
-            If sender Is Me.TargetName Then aTarget.Name = Me.TargetName.Text
-            If sender Is Me.TargetComp Then
-                aTarget.Compartment = Me.TargetComp.SelectedIndex
-                If Val(Me.TargetXPosition.Text) = -1 Then aTarget.XPosition = Val(Me.TargetXPosition.Text)
-                If Val(Me.TargetYPosition.Text) = -1 Then aTarget.YPosition = Val(Me.TargetYPosition.Text)
-                If Val(Me.TargetZPosition.Text) = -1 Then aTarget.ZPosition = Val(Me.TargetZPosition.Text)
+            If sender Is TargetName Then aTarget.Name = TargetName.Text
+            If sender Is TargetComp Then
+                aTarget.Compartment = TargetComp.SelectedIndex
+                If Val(TargetXPosition.Text) = -1 Then aTarget.XPosition = Val(TargetXPosition.Text)
+                If Val(TargetYPosition.Text) = -1 Then aTarget.YPosition = Val(TargetYPosition.Text)
+                If Val(TargetZPosition.Text) = -1 Then aTarget.ZPosition = Val(TargetZPosition.Text)
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
-            If sender Is Me.TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
-            If sender Is Me.TargetSolutionType Then
-                aTarget.SolutionType = Me.TargetSolutionType.SelectedIndex
+            If sender Is TargetMaterial Then aTarget.Material = myThermalProperties.GetShortName(sender.text)
+            If sender Is TargetSolutionType Then
+                aTarget.SolutionType = TargetSolutionType.SelectedIndex
             End If
-            If sender Is Me.TargetInternalLocation Then aTarget.InternalLocation = Val(Me.TargetInternalLocation.Text)
-            If sender Is Me.TargetXPosition Then
-                aTarget.XPosition = Val(Me.TargetXPosition.Text)
+            If sender Is TargetInternalLocation Then aTarget.InternalLocation = Val(TargetInternalLocation.Text)
+            If sender Is TargetXPosition Then
+                aTarget.XPosition = Val(TargetXPosition.Text)
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
-            If sender Is Me.TargetYPosition Then
-                aTarget.YPosition = Val(Me.TargetYPosition.Text)
+            If sender Is TargetYPosition Then
+                aTarget.YPosition = Val(TargetYPosition.Text)
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
-            If sender Is Me.TargetZPosition Then
-                aTarget.ZPosition = Val(Me.TargetZPosition.Text)
+            If sender Is TargetZPosition Then
+                aTarget.ZPosition = Val(TargetZPosition.Text)
                 UpdateGUI.InitTargetNormalList(CurrentTarget)
             End If
-            If sender Is Me.TargetXNormal Then aTarget.XNormal = Val(Me.TargetXNormal.Text)
-            If sender Is Me.TargetYNormal Then aTarget.YNormal = Val(Me.TargetYNormal.Text)
-            If sender Is Me.TargetZNormal Then aTarget.ZNormal = Val(Me.TargetZNormal.Text)
-            If sender Is Me.TargetNormalCalc Then
-                If Me.TargetNormalCalc.Text = "Right Wall" Then
+            If sender Is TargetXNormal Then aTarget.XNormal = Val(TargetXNormal.Text)
+            If sender Is TargetYNormal Then aTarget.YNormal = Val(TargetYNormal.Text)
+            If sender Is TargetZNormal Then aTarget.ZNormal = Val(TargetZNormal.Text)
+            If sender Is TargetNormalCalc Then
+                If TargetNormalCalc.Text = "Right Wall" Then
                     aTarget.XNormal = 1
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 0
-                ElseIf Me.TargetNormalCalc.Text = "Left Wall" Then
+                ElseIf TargetNormalCalc.Text = "Left Wall" Then
                     aTarget.XNormal = -1
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 0
-                ElseIf Me.TargetNormalCalc.Text = "Rear Wall" Then
+                ElseIf TargetNormalCalc.Text = "Rear Wall" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = 1
                     aTarget.ZNormal = 0
-                ElseIf Me.TargetNormalCalc.Text = "Front Wall" Then
+                ElseIf TargetNormalCalc.Text = "Front Wall" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = -1
                     aTarget.ZNormal = 0
-                ElseIf Me.TargetNormalCalc.Text = "Floor" Then
+                ElseIf TargetNormalCalc.Text = "Floor" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = 0
                     aTarget.ZNormal = -1
-                ElseIf Me.TargetNormalCalc.Text = "Ceiling" Then
+                ElseIf TargetNormalCalc.Text = "Ceiling" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 1
@@ -5741,7 +5741,7 @@ Public Class CeditMain
                         For i = 1 To numFires
                             aFire = myFires(i - 1)
                             If aTarget.Compartment = aFire.Compartment Then
-                                If Me.TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFire.Name Then
+                                If TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFire.Name Then
                                     Dim Hypotenuse As Single
                                     Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (aFire.ZPosition - aTarget.ZPosition) ^ 2)
                                     If Hypotenuse <> 0 Then
@@ -5771,7 +5771,7 @@ Public Class CeditMain
             CurrentDetector = myDetectors.Count - 1
             UpdateGUI.Detectors(CurrentDetector)
         Else
-            MessageBox.Show("A maximum of " + myDetectors.Maximum.ToString + " Detectors are allowed. New Detector was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myDetectors.Maximum.ToString + " Detectors are allowed. New Detector was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub DetectorDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorDup.Click
@@ -5782,7 +5782,7 @@ Public Class CeditMain
             CurrentDetector = myDetectors.Count - 1
             UpdateGUI.Detectors(CurrentDetector)
         Else
-            MessageBox.Show("A maximum of " + myDetectors.Maximum.ToString + " Detectors are allowed. New Detector not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myDetectors.Maximum.ToString + " Detectors are allowed. New Detector not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub DetectorRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorRemove.Click
@@ -5821,7 +5821,7 @@ Public Class CeditMain
     Private Sub DetectorSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorSummary.Click
         ' The currently selected Detector has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
-        index = Me.DetectorSummary.RowSel - 1
+        index = DetectorSummary.RowSel - 1
         If index >= 0 And index <= myDetectors.Count - 1 Then
             CurrentDetector = index
             UpdateGUI.Detectors(CurrentDetector)
@@ -5830,7 +5830,7 @@ Public Class CeditMain
     Private Sub DetectorSummary_AfterSelChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles DetectorSummary.AfterSelChange
         ' The currently selected Detector has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
-        index = Me.DetectorSummary.RowSel - 1
+        index = DetectorSummary.RowSel - 1
         If index >= 0 And index <= myDetectors.Count - 1 Then
             CurrentDetector = index
             UpdateGUI.Detectors(CurrentDetector)
@@ -5840,20 +5840,20 @@ Public Class CeditMain
         Dim aDetector As New Target
         If CurrentDetector >= 0 And myDetectors.Count > 0 Then
             aDetector = myDetectors(CurrentDetector)
-            If sender Is Me.DetectorType Then aDetector.DetectorType = Me.DetectorType.SelectedIndex
-            If sender Is Me.DetectorComp Then
-                aDetector.Compartment = Me.DetectorComp.SelectedIndex
-                If Val(Me.DetectorXPosition.Text) = -1 Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)
-                If Val(Me.DetectorYPosition.Text) = -1 Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)
-                If Val(Me.DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)
+            If sender Is DetectorType Then aDetector.DetectorType = DetectorType.SelectedIndex
+            If sender Is DetectorComp Then
+                aDetector.Compartment = DetectorComp.SelectedIndex
+                If Val(DetectorXPosition.Text) = -1 Then aDetector.XPosition = Val(DetectorXPosition.Text)
+                If Val(DetectorYPosition.Text) = -1 Then aDetector.YPosition = Val(DetectorYPosition.Text)
+                If Val(DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(DetectorZPosition.Text)
             End If
-            If sender Is Me.DetectorActivationTemperature Then aDetector.ActivationTemperature = Val(Me.DetectorActivationTemperature.Text)
-            If sender Is Me.DetectorActivationObscuration Then aDetector.ActivationObscuration = Val(Me.DetectorActivationObscuration.Text)
-            If sender Is Me.DetectorXPosition Then aDetector.XPosition = Val(Me.DetectorXPosition.Text)
-            If sender Is Me.DetectorYPosition Then aDetector.YPosition = Val(Me.DetectorYPosition.Text)
-            If sender Is Me.DetectorZPosition Then aDetector.ZPosition = Val(Me.DetectorZPosition.Text)
-            If sender Is Me.DetectorRTI Then aDetector.RTI = Val(Me.DetectorRTI.Text)
-            If sender Is Me.DetectorSprayDensity Then aDetector.SprayDensity = Val(Me.DetectorSprayDensity.Text)
+            If sender Is DetectorActivationTemperature Then aDetector.ActivationTemperature = Val(DetectorActivationTemperature.Text)
+            If sender Is DetectorActivationObscuration Then aDetector.ActivationObscuration = Val(DetectorActivationObscuration.Text)
+            If sender Is DetectorXPosition Then aDetector.XPosition = Val(DetectorXPosition.Text)
+            If sender Is DetectorYPosition Then aDetector.YPosition = Val(DetectorYPosition.Text)
+            If sender Is DetectorZPosition Then aDetector.ZPosition = Val(DetectorZPosition.Text)
+            If sender Is DetectorRTI Then aDetector.RTI = Val(DetectorRTI.Text)
+            If sender Is DetectorSprayDensity Then aDetector.SprayDensity = Val(DetectorSprayDensity.Text)
             myDetectors(CurrentDetector) = aDetector
             UpdateGUI.Detectors(CurrentDetector)
         End If
@@ -5872,7 +5872,7 @@ Public Class CeditMain
                 CurrentHHeat = myHHeats.Count - 1
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             Else
-                MessageBox.Show("A maximum of " + myHHeats.Maximum.ToString + " heat transfer connections are allowed. New connection was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                MessageBox.Show("A maximum of " + myHHeats.Maximum.ToString + " heat transfer connections are allowed. New connection was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
         ElseIf sender Is VHeatAdd Then
             If myVHeats.Count + 1 <= Vent.MaximumVHeats Then
@@ -5882,7 +5882,7 @@ Public Class CeditMain
                 CurrentVHeat = myVHeats.Count - 1
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             Else
-                MessageBox.Show("A maximum of " + myVHeats.Maximum.ToString + " heat transfer connections are allowed. New connection was not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                MessageBox.Show("A maximum of " + myVHeats.Maximum.ToString + " heat transfer connections are allowed. New connection was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
         End If
     End Sub
@@ -5895,7 +5895,7 @@ Public Class CeditMain
                 CurrentHHeat = myHHeats.Count - 1
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             Else
-                MessageBox.Show("A maximum of " + myHHeats.Maximum.ToString + " heat transfer connections are allowed. New connection not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                MessageBox.Show("A maximum of " + myHHeats.Maximum.ToString + " heat transfer connections are allowed. New connection not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
         ElseIf sender Is VHeatDup Then
             If CurrentVHeat >= 0 And myVHeats.Count > 0 And CurrentVHeat + 1 <= myVHeats.Maximum And myVHeats.Count + 1 <= Vent.MaximumHHeats Then
@@ -5904,7 +5904,7 @@ Public Class CeditMain
                 CurrentVHeat = myVHeats.Count - 1
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             Else
-                MessageBox.Show("A maximum of " + myVHeats.Maximum.ToString + " heat transfer connections are allowed. New connection not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                MessageBox.Show("A maximum of " + myVHeats.Maximum.ToString + " heat transfer connections are allowed. New connection not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
         End If
     End Sub
@@ -5930,13 +5930,13 @@ Public Class CeditMain
         ' The currently selected Heat has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
         If sender Is HHeatSummary Then
-            index = Me.HHeatSummary.RowSel - 1
+            index = HHeatSummary.RowSel - 1
             If index >= 0 And index <= myHHeats.Count - 1 Then
                 CurrentHHeat = index
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             End If
         ElseIf sender Is VHeatSummary Then
-            index = Me.VHeatSummary.RowSel - 1
+            index = VHeatSummary.RowSel - 1
             If index >= 0 And index <= myVHeats.Count - 1 Then
                 CurrentVHeat = index
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
@@ -5947,13 +5947,13 @@ Public Class CeditMain
         ' The currently selected Heat has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
         If sender Is HHeatSummary Then
-            index = Me.HHeatSummary.RowSel - 1
+            index = HHeatSummary.RowSel - 1
             If index >= 0 And index <= myHHeats.Count - 1 Then
                 CurrentHHeat = index
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             End If
         ElseIf sender Is VHeatSummary Then
-            index = Me.VHeatSummary.RowSel - 1
+            index = VHeatSummary.RowSel - 1
             If index >= 0 And index <= myVHeats.Count - 1 Then
                 CurrentVHeat = index
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
@@ -5965,10 +5965,10 @@ Public Class CeditMain
         If sender Is HHeatComp1 Or sender Is HHeatComp2 Or sender Is HHeatFraction Then
             If CurrentHHeat >= 0 And myHHeats.Count > 0 Then
                 aVent = myHHeats.Item(CurrentHHeat)
-                If sender Is Me.HHeatFraction Then aVent.InitialOpening = Val(Me.HHeatFraction.Text)
+                If sender Is HHeatFraction Then aVent.InitialOpening = Val(HHeatFraction.Text)
                 aVent.VentType = Vent.TypeHHeat
-                If sender Is Me.HHeatComp1 Then aVent.FirstCompartment = Me.HHeatComp1.SelectedIndex - 1
-                If sender Is Me.HHeatComp2 Then aVent.SecondCompartment = Me.HHeatComp2.SelectedIndex - 1
+                If sender Is HHeatComp1 Then aVent.FirstCompartment = HHeatComp1.SelectedIndex - 1
+                If sender Is HHeatComp2 Then aVent.SecondCompartment = HHeatComp2.SelectedIndex - 1
                 myHHeats(CurrentHHeat) = aVent
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             End If
@@ -5976,8 +5976,8 @@ Public Class CeditMain
             If CurrentVHeat >= 0 And myVHeats.Count > 0 Then
                 aVent = myVHeats.Item(CurrentVHeat)
                 aVent.VentType = Vent.TypeVHeat
-                If sender Is Me.VHeatComp1 Then aVent.FirstCompartment = Me.VHeatComp1.SelectedIndex - 1
-                If sender Is Me.VHeatComp2 Then aVent.SecondCompartment = Me.VHeatComp2.SelectedIndex - 1
+                If sender Is VHeatComp1 Then aVent.FirstCompartment = VHeatComp1.SelectedIndex - 1
+                If sender Is VHeatComp2 Then aVent.SecondCompartment = VHeatComp2.SelectedIndex - 1
                 myVHeats(CurrentVHeat) = aVent
                 UpdateGUI.Heats(CurrentHHeat, CurrentVHeat)
             End If
@@ -5995,7 +5995,7 @@ Public Class CeditMain
             CurrentVisual = myVisuals.Count - 1
             UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         Else
-            MessageBox.Show("A maximum of " + Visual.MaximumVisuals.ToString + " visulaizations are allowed. New visual not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + Visual.MaximumVisuals.ToString + " visulaizations are allowed. New visual not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub VisualizationDup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualizationDup.Click
@@ -6006,7 +6006,7 @@ Public Class CeditMain
             CurrentVisual = myVisuals.Count - 1
             UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
         Else
-            MessageBox.Show("A maximum of " + myVisuals.Maximum.ToString + " Visuals are allowed. New Visual not added.", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("A maximum of " + myVisuals.Maximum.ToString + " Visuals are allowed. New Visual not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
     Private Sub VisualizationRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VisualizationRemove.Click
@@ -6044,15 +6044,15 @@ Public Class CeditMain
             If sender Is VisualizationValue Then
                 Dim aVisual As New Visual
                 aVisual = myVisuals.Item(CurrentVisual)
-                aVisual.Value = Val(Me.VisualizationValue.Text)
+                aVisual.Value = Val(VisualizationValue.Text)
                 myVisuals.Item(CurrentVisual) = aVisual
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
             Else
                 Dim aCompartment As New Compartment
                 aCompartment = myCompartments.Item(CurrentCompartment)
-                If sender Is VisualizationX Then aCompartment.xGrid = Val(Me.VisualizationX.Text)
-                If sender Is VisualizationY Then aCompartment.yGrid = Val(Me.VisualizationY.Text)
-                If sender Is VisualizationZ Then aCompartment.zGrid = Val(Me.VisualizationZ.Text)
+                If sender Is VisualizationX Then aCompartment.xGrid = Val(VisualizationX.Text)
+                If sender Is VisualizationY Then aCompartment.yGrid = Val(VisualizationY.Text)
+                If sender Is VisualizationZ Then aCompartment.zGrid = Val(VisualizationZ.Text)
                 myCompartments.Item(CurrentCompartment) = aCompartment
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
                 UpdateGUI.Geometry(CurrentCompartment)
@@ -6064,29 +6064,29 @@ Public Class CeditMain
             Dim aVisual As New Visual
             aVisual = myVisuals.Item(CurrentVisual)
             If sender Is VisualizationType Then
-                aVisual.Type = Me.VisualizationType.SelectedIndex
-                If Me.VisualizationType.SelectedIndex = 0 Then
-                    Me.VisualizationValueLabel.Text = "Position:"
-                    Me.VisualizationValueLabel.Visible = True
-                    Me.VisualizationValue.Visible = True
-                    Me.VisualizationAxis.Visible = True
-                    Me.VisualizationAxisLabel.Visible = True
-                ElseIf Me.VisualizationType.SelectedIndex = 2 Then
-                    Me.VisualizationValueLabel.Text = "Temperature:"
-                    Me.VisualizationValueLabel.Visible = True
-                    Me.VisualizationValue.Visible = True
-                    Me.VisualizationAxis.Visible = False
-                    Me.VisualizationAxisLabel.Visible = False
+                aVisual.Type = VisualizationType.SelectedIndex
+                If VisualizationType.SelectedIndex = 0 Then
+                    VisualizationValueLabel.Text = "Position:"
+                    VisualizationValueLabel.Visible = True
+                    VisualizationValue.Visible = True
+                    VisualizationAxis.Visible = True
+                    VisualizationAxisLabel.Visible = True
+                ElseIf VisualizationType.SelectedIndex = 2 Then
+                    VisualizationValueLabel.Text = "Temperature:"
+                    VisualizationValueLabel.Visible = True
+                    VisualizationValue.Visible = True
+                    VisualizationAxis.Visible = False
+                    VisualizationAxisLabel.Visible = False
                 Else
-                    Me.VisualizationValueLabel.Visible = False
-                    Me.VisualizationValue.Visible = False
-                    Me.VisualizationAxis.Visible = False
-                    Me.VisualizationAxisLabel.Visible = False
+                    VisualizationValueLabel.Visible = False
+                    VisualizationValue.Visible = False
+                    VisualizationAxis.Visible = False
+                    VisualizationAxisLabel.Visible = False
                 End If
             ElseIf sender Is VisualizationComp Then
-                aVisual.Compartment = Me.VisualizationComp.SelectedIndex - 1
+                aVisual.Compartment = VisualizationComp.SelectedIndex - 1
             ElseIf sender Is VisualizationAxis Then
-                aVisual.Axis = Me.VisualizationAxis.SelectedIndex
+                aVisual.Axis = VisualizationAxis.SelectedIndex
             End If
             myVisuals.Item(CurrentVisual) = aVisual
             UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
@@ -6096,13 +6096,13 @@ Public Class CeditMain
         ' The currently selected compartment has been changed by selecting a row of the summary spreadsheet
         Dim index As Integer
         If sender Is VisualSummary Then
-            index = Me.VisualSummary.RowSel - 1
+            index = VisualSummary.RowSel - 1
             If index >= 0 And index <= myVisuals.Count - 1 Then
                 CurrentVisual = index
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
             End If
         ElseIf sender Is VisualResolutionSummary Then
-            index = Me.VisualResolutionSummary.RowSel - 1
+            index = VisualResolutionSummary.RowSel - 1
             If index >= 0 And index <= myCompartments.Count - 1 Then
                 CurrentCompartment = index
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
@@ -6139,8 +6139,8 @@ Public Class CeditMain
         RunSmokeView()
     End Sub
     Private Sub MainOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainOpen.Click
-        Me.OpenDataFileDialog.FilterIndex = 1
-        Me.OpenDataFileDialog.ShowDialog()
+        OpenDataFileDialog.FilterIndex = 1
+        OpenDataFileDialog.ShowDialog()
         If OpenDataFileDialog.FileNames.Length > 0 Then
             Dim FileName As String
             For Each FileName In OpenDataFileDialog.FileNames
@@ -6161,8 +6161,8 @@ Public Class CeditMain
         UpdateAll()
     End Sub
     Private Sub MenuOpen_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuOpen.Click
-        Me.OpenDataFileDialog.FilterIndex = 1
-        Me.OpenDataFileDialog.ShowDialog()
+        OpenDataFileDialog.FilterIndex = 1
+        OpenDataFileDialog.ShowDialog()
         If OpenDataFileDialog.FileNames.Length > 0 Then
             Dim FileName As String
             For Each FileName In OpenDataFileDialog.FileNames
@@ -6178,19 +6178,19 @@ Public Class CeditMain
     Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
         Dim PathName As String
         myUnits.SI = True
-        Me.SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
-        Me.SaveDataFileDialog.Title = "Save As"
-        Me.SaveDataFileDialog.OverwritePrompt = True
+        SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
+        SaveDataFileDialog.Title = "Save As"
+        SaveDataFileDialog.OverwritePrompt = True
         If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            If Me.SaveDataFileDialog.FileName <> " " Then
+            If SaveDataFileDialog.FileName <> " " Then
                 ' Write out the data file since it has been changed
-                WriteInputFile(Me.SaveDataFileDialog.FileName)
-                myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
-                myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
-                Me.Text = "CEdit (" + System.IO.Path.GetFileName(Me.SaveDataFileDialog.FileName) + ")"
+                WriteInputFile(SaveDataFileDialog.FileName)
+                myEnvironment.InputFileName = SaveDataFileDialog.FileName
+                myEnvironment.InputFilePath = SaveDataFileDialog.FileName
+                Text = "CEdit (" + System.IO.Path.GetFileName(SaveDataFileDialog.FileName) + ")"
                 myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
             End If
-            PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
+            PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
             ChDir(PathName)
         End If
         myUnits.SI = False
@@ -6205,17 +6205,17 @@ Public Class CeditMain
     End Sub
     Private Sub MenuRecent_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuRecent1.Click, MenuRecent2.Click, MenuRecent3.Click, MenuRecent4.Click
         Dim i As Integer
-        If sender Is Me.MenuRecent1 Then i = 0
-        If sender Is Me.MenuRecent2 Then i = 1
-        If sender Is Me.MenuRecent3 Then i = 2
-        If sender Is Me.MenuRecent4 Then i = 3
+        If sender Is MenuRecent1 Then i = 0
+        If sender Is MenuRecent2 Then i = 1
+        If sender Is MenuRecent3 Then i = 2
+        If sender Is MenuRecent4 Then i = 3
         OpenDataFile(myRecentFiles.Filenames(i))
         UpdateAll()
     End Sub
     Private Sub MenuHelpUpdate_Click(sender As Object, e As EventArgs) Handles MenuHelpUpdate.Click
-        Me.OpenDataFileDialog.FilterIndex = 1
-        Me.OpenDataFileDialog.Multiselect = True
-        Me.OpenDataFileDialog.ShowDialog()
+        OpenDataFileDialog.FilterIndex = 1
+        OpenDataFileDialog.Multiselect = True
+        OpenDataFileDialog.ShowDialog()
         If OpenDataFileDialog.FileNames.Length > 0 Then
             Dim myInputFiles As New UpdateInputFiles
             Dim FileName As String
@@ -6233,7 +6233,7 @@ Public Class CeditMain
             Next
             myInputFiles.ShowDialog()
         End If
-        Me.OpenDataFileDialog.Multiselect = False
+        OpenDataFileDialog.Multiselect = False
         InitNew()
     End Sub
     Private Sub MenuHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuShowHelp.Click
@@ -6253,7 +6253,7 @@ Public Class CeditMain
         End If
     End Sub
     Private Sub ValidationOutput_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputValidation.CheckedChanged
-        If Me.OutputValidation.Checked Then
+        If OutputValidation.Checked Then
             ValidationOutput = True
         Else
             ValidationOutput = False
@@ -6262,7 +6262,7 @@ Public Class CeditMain
         UpdateGUI.General()
     End Sub
     Private Sub DebugOutput_Click(sender As System.Object, e As System.EventArgs) Handles OutputDebug.CheckedChanged
-        If Me.OutputDebug.Checked Then
+        If OutputDebug.Checked Then
             DebugOutput = True
         Else
             DebugOutput = False
@@ -6270,7 +6270,7 @@ Public Class CeditMain
         UpdateGUI.General()
     End Sub
     Private Sub ShowCFAST_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OutputShowCFAST.CheckedChanged
-        If Me.OutputShowCFAST.Checked Then
+        If OutputShowCFAST.Checked Then
             CommandWindowVisible = True
         Else
             CommandWindowVisible = False
@@ -6280,7 +6280,7 @@ Public Class CeditMain
     End Sub
     Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalFromFile.Click, FireFromFile.Click
         Dim iReturn As Integer
-        Me.OpenDataFileDialog.FilterIndex = 1
+        OpenDataFileDialog.FilterIndex = 1
         iReturn = OpenDataFileDialog.ShowDialog()
         If iReturn = Windows.Forms.DialogResult.OK And OpenDataFileDialog.FileNames.Length > 0 Then
             Dim FileName As String, Type As Integer, AddFiresList As New FireCollection, InsertDialog As New InsertData(Me)
@@ -6341,16 +6341,16 @@ Public Class CeditMain
         myUnits.SI = True
         If myEnvironment.FileChanged() Or ForceWrite Then
             If Prompt Or myEnvironment.InputFileName = Nothing Or myEnvironment.InputFileName = "" Then
-                Me.SaveDataFileDialog.Title = "Save"
-                Me.SaveDataFileDialog.OverwritePrompt = True
+                SaveDataFileDialog.Title = "Save"
+                SaveDataFileDialog.OverwritePrompt = True
                 If SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-                    If Me.SaveDataFileDialog.FileName <> " " Then
-                        PathName = System.IO.Path.GetDirectoryName(Me.SaveDataFileDialog.FileName) & "\"
+                    If SaveDataFileDialog.FileName <> " " Then
+                        PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
                         ChDir(PathName)
                         ' Write out the data file since it has been changed
-                        WriteInputFile(Me.SaveDataFileDialog.FileName)
-                        myEnvironment.InputFileName = Me.SaveDataFileDialog.FileName
-                        myEnvironment.InputFilePath = Me.SaveDataFileDialog.FileName
+                        WriteInputFile(SaveDataFileDialog.FileName)
+                        myEnvironment.InputFileName = SaveDataFileDialog.FileName
+                        myEnvironment.InputFilePath = SaveDataFileDialog.FileName
                         myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
                     End If
                 End If
@@ -6393,7 +6393,7 @@ Public Class CeditMain
             End If
         Catch ex As Exception
         End Try
-        UpdateGUI.UpdateLogFile(Me.EnvErrors)
+        UpdateGUI.UpdateLogFile(EnvErrors)
     End Sub
     Private Sub RunSmokeView()
         Dim CommandString As String, found As Integer, ProcessID As Integer
@@ -6429,7 +6429,7 @@ Public Class CeditMain
     Private Sub InitNew()
         ' Start with a clean slate and a default set of inputs
         myEnvironment = New Environment
-        Me.Text = "CEdit"
+        Text = "CEdit"
         myCompartments.Clear()
         myEnvironment.AdiabaticWalls = False
         myHVents.Clear()
@@ -6467,35 +6467,35 @@ Public Class CeditMain
         CurrentVHeat = 0
         CurrentFire = 0
 
-        UpdateGUI.InitThermalPropertyList(Me.CompCeiling)
-        UpdateGUI.InitThermalPropertyList(Me.CompWalls)
-        UpdateGUI.InitThermalPropertyList(Me.CompFloor)
-        UpdateGUI.InitThermalPropertyList(Me.TargetMaterial)
+        UpdateGUI.InitThermalPropertyList(CompCeiling)
+        UpdateGUI.InitThermalPropertyList(CompWalls)
+        UpdateGUI.InitThermalPropertyList(CompFloor)
+        UpdateGUI.InitThermalPropertyList(TargetMaterial)
 
         ' Initialize spreadsheets for input or no input (summary tables) as appropriate
-        UpdateGUI.InitSummaryGrid(Me.ThermalSummary)
-        UpdateGUI.InitSummaryGrid(Me.CompSummary)
-        UpdateGUI.InitSummaryGrid(Me.HVentSummary)
-        UpdateGUI.InitSummaryGrid(Me.VVentSummary)
-        UpdateGUI.InitSummaryGrid(Me.MVentSummary)
-        UpdateGUI.InitSummaryGrid(Me.TargetSummary)
-        UpdateGUI.InitSummaryGrid(Me.DetectorSummary)
-        UpdateGUI.InitSummaryGrid(Me.FireSummary)
+        UpdateGUI.InitSummaryGrid(ThermalSummary)
+        UpdateGUI.InitSummaryGrid(CompSummary)
+        UpdateGUI.InitSummaryGrid(HVentSummary)
+        UpdateGUI.InitSummaryGrid(VVentSummary)
+        UpdateGUI.InitSummaryGrid(MVentSummary)
+        UpdateGUI.InitSummaryGrid(TargetSummary)
+        UpdateGUI.InitSummaryGrid(DetectorSummary)
+        UpdateGUI.InitSummaryGrid(FireSummary)
 
-        UpdateGUI.InitEditGrid(Me.CompVariableArea)
+        UpdateGUI.InitEditGrid(CompVariableArea)
 
         ' Turn off all input except the simulation environment and compartment add since all others stuff depends on have a compartment
-        Me.TabHorizontalFlow.Enabled = False
-        Me.TabVerticalFlow.Enabled = False
-        Me.TabMechanicalFlow.Enabled = False
-        Me.TabTargets.Enabled = False
-        Me.TabDetection.Enabled = False
-        Me.TabHeatTransfer.Enabled = False
-        Me.TabFires.Enabled = False
-        Me.GroupCompartments.Enabled = False
-        Me.MenuViewInput.Enabled = False
-        Me.MenuViewOutput.Enabled = False
-        Me.MenuViewLog.Enabled = False
+        TabHorizontalFlow.Enabled = False
+        TabVerticalFlow.Enabled = False
+        TabMechanicalFlow.Enabled = False
+        TabTargets.Enabled = False
+        TabDetection.Enabled = False
+        TabHeatTransfer.Enabled = False
+        TabFires.Enabled = False
+        GroupCompartments.Enabled = False
+        MenuViewInput.Enabled = False
+        MenuViewOutput.Enabled = False
+        MenuViewLog.Enabled = False
         UpdateAll()
     End Sub
 #End Region

@@ -48,24 +48,24 @@ Public Class t2Fire
     Private Sub t2_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles t2GrowthTime.Leave, t2SteadyTime.Leave, _
                         t2PeakHRR.Leave, t2DecayTime.Leave, t2GrowthType.SelectedIndexChanged
         Dim iType As Integer
-        If sender Is Me.t2GrowthTime Then
-            GrowthTime = Val(Me.t2GrowthTime.Text)
-            Me.t2GrowthType.SelectedIndex = 0
+        If sender Is t2GrowthTime Then
+            GrowthTime = Val(t2GrowthTime.Text)
+            t2GrowthType.SelectedIndex = 0
         End If
-        If sender Is Me.t2SteadyTime Then
-            SteadyTime = Val(Me.t2SteadyTime.Text)
-            Me.t2GrowthType.SelectedIndex = 0
+        If sender Is t2SteadyTime Then
+            SteadyTime = Val(t2SteadyTime.Text)
+            t2GrowthType.SelectedIndex = 0
         End If
-        If sender Is Me.t2PeakHRR Then
-            PeakHRR = Val(Me.t2PeakHRR.Text)
-            Me.t2GrowthType.SelectedIndex = 0
+        If sender Is t2PeakHRR Then
+            PeakHRR = Val(t2PeakHRR.Text)
+            t2GrowthType.SelectedIndex = 0
         End If
-        If sender Is Me.t2DecayTime Then
-            DecayTime = Val(Me.t2DecayTime.Text)
-            Me.t2GrowthType.SelectedIndex = 0
+        If sender Is t2DecayTime Then
+            DecayTime = Val(t2DecayTime.Text)
+            t2GrowthType.SelectedIndex = 0
         End If
-        If sender Is Me.t2GrowthType Then
-            iType = Me.t2GrowthType.SelectedIndex
+        If sender Is t2GrowthType Then
+            iType = t2GrowthType.SelectedIndex
             If iType >= 1 And iType <= 4 Then
                 myUnits.SI = True
                 GrowthTime = t2Constants(iType, 0)
@@ -78,10 +78,10 @@ Public Class t2Fire
         Updatet2Fire()
     End Sub
     Private Sub Updatet2Fire()
-        Me.t2GrowthTime.Text = GrowthTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
-        Me.t2SteadyTime.Text = SteadyTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
-        Me.t2PeakHRR.Text = PeakHRR.ToString + myUnits.ConvertFireData(UnitsNum.FireQdot).Units
-        Me.t2DecayTime.Text = DecayTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
+        t2GrowthTime.Text = GrowthTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
+        t2SteadyTime.Text = SteadyTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
+        t2PeakHRR.Text = PeakHRR.ToString + myUnits.ConvertFireData(UnitsNum.FireQdot).Units
+        t2DecayTime.Text = DecayTime.ToString + myUnits.ConvertFireData(UnitsNum.FireTime).Units
         Updatet2Plot()
     End Sub
     Private Sub Updatet2Plot()
@@ -89,7 +89,7 @@ Public Class t2Fire
         Dim aFireData(12, 0) As Single, numPoints As Integer
         Dim x() As Single, y() As Single, j As Integer, iSelectedColumn As Integer
         aFireObject = New Fire(GrowthTime, PeakHRR, SteadyTime, DecayTime)
-        Me.FireObjectPlot.Clear()
+        FireObjectPlot.Clear()
         aFireObject.GetFireData(aFireData, numPoints)
         ReDim x(numPoints), y(numPoints)
         iSelectedColumn = Fire.FireHRR
@@ -98,15 +98,15 @@ Public Class t2Fire
             y(j) = aFireData(iSelectedColumn, j)
         Next
         Dim lp As New NPlot.LinePlot(y, x)
-        Me.FireObjectPlot.Add(lp)
-        Me.FireObjectPlot.Title = aFireObject.Name
-        Me.FireObjectPlot.Refresh()
+        FireObjectPlot.Add(lp)
+        FireObjectPlot.Title = aFireObject.Name
+        FireObjectPlot.Refresh()
         If GrowthTime > 0 And PeakHRR > 0 And SteadyTime > 0 And DecayTime > 0 Then
-            Me.t2OK.Enabled = True
-            Me.t2StripStatusLabel.Text = ""
+            t2OK.Enabled = True
+            t2StripStatusLabel.Text = ""
         Else
-            Me.t2OK.Enabled = False
-            Me.t2StripStatusLabel.Text = "Constants must all be greater than zero"
+            t2OK.Enabled = False
+            t2StripStatusLabel.Text = "Constants must all be greater than zero"
         End If
     End Sub
 End Class

@@ -19,21 +19,21 @@ Public Class ErrorMessages
         Else
             Text = ErrorText
         End If
-        Me.Queue.Enqueue(Text)
-        While Me.Queue.Count > 200
-            Me.Queue.Dequeue()
+        Queue.Enqueue(Text)
+        While Queue.Count > 200
+            Queue.Dequeue()
         End While
     End Sub
     Friend Sub Break(ByVal FileName As String)
         If FileName = Nothing Or FileName = "" Then FileName = "New File"
-        If Me.Queue.Count > 0 Then Me.Add("-------------------- Input File Syntax Check " + ErrorScans.ToString + " (" + FileName + ")", TypeNothing)
+        If Queue.Count > 0 Then Add("-------------------- Input File Syntax Check " + ErrorScans.ToString + " (" + FileName + ")", TypeNothing)
         ErrorScans += 1
     End Sub
     Friend ReadOnly Property TopError() As String
         Get
             Dim ErrorText(200) As String
-            Me.Queue.CopyTo(ErrorText, 0)
-            iTop = Me.Count - 1
+            Queue.CopyTo(ErrorText, 0)
+            iTop = Count - 1
             While (ErrorText(iTop) + " ").Substring(0, 1) = "-" And iTop > 0
                 iTop -= 1
             End While
@@ -42,7 +42,7 @@ Public Class ErrorMessages
     End Property
     Friend ReadOnly Property Count() As Integer
         Get
-            Return Me.Queue.Count
+            Return Queue.Count
         End Get
     End Property
 End Class

@@ -865,6 +865,7 @@ Module IO
         Dim csv As New CSVsheet
         Dim i As Integer = 1
         Dim j, k, l As Integer
+        Dim x() As Single = {0}, y() As Single = {0}
 
         ' write header line
         csv.str(i, CFASTlnNum.keyWord) = "VERSN"
@@ -960,7 +961,6 @@ Module IO
             End If
         Next
         'RoomA and RoomH
-        Dim x() As Single = {0}
         For j = 0 To myCompartments.Count - 1
             aCompartment = myCompartments.Item(j)
             aCompartment.GetVariableAreaPoints(x)
@@ -1026,9 +1026,9 @@ Module IO
         For j = 0 To myMVents.Count - 1
             csv.str(i, CFASTlnNum.keyWord) = "MVENT"
             aVent = myMVents.Item(j)
-            aVent.GetVent(csv.num(i, mventNum.fromCompartment), csv.num(i, mventNum.fromArea), _
-                csv.num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien), csv.num(i, mventNum.toCompartment), _
-                csv.num(i, mventNum.toArea), csv.num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), _
+            aVent.GetVent(csv.num(i, mventNum.fromCompartment), csv.num(i, mventNum.fromArea),
+                csv.num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien), csv.num(i, mventNum.toCompartment),
+                csv.num(i, mventNum.toArea), csv.num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien),
                 csv.num(i, mventNum.flow), csv.num(i, mventNum.beginFlowDrop), csv.num(i, mventNum.flowZero))
             csv.num(i, mventNum.fromCompartment) += 1
             If csv.num(i, mventNum.fromCompartment) = 0 Then _
@@ -1039,6 +1039,73 @@ Module IO
             csv.num(i, mventNum.initialfraction) = aVent.InitialOpening
             aVent.Changed = False
             i += 1
+        Next
+        'ramps
+        For j = 0 To myHVents.Count - 1
+            aVent = myHVents.Item(j)
+            aVent.GetRampTimes(x)
+            If x.GetUpperBound(0) > 0 Then
+                aVent.GetRampFractions(y)
+                csv.str(i, CFASTlnNum.keyWord) = "RAMP"
+                csv.str(i, rampNum.ventType) = "H"
+                csv.num(i, rampNum.firstcompartment) = aVent.FirstCompartment + 1
+                csv.num(i, rampNum.secondcompartment) = aVent.SecondCompartment + 1
+                If csv.num(i, rampNum.firstcompartment) = 0 Then _
+                csv.num(i, rampNum.firstcompartment) = myCompartments.Count + 1
+                If csv.num(i, rampNum.secondcompartment) = 0 Then _
+                csv.num(i, rampNum.secondcompartment) = myCompartments.Count + 1
+                csv.num(i, rampNum.ventnumber) = myHVents.VentNumber(j)
+                csv.num(i, rampNum.numpoints) = x.GetUpperBound(0)
+                For k = 1 To x.GetUpperBound(0)
+                    csv.num(i, 2 * k + rampNum.numpoints - 1) = x(k)
+                    csv.num(i, 2 * k + rampNum.numpoints) = y(k)
+                Next
+                i += 1
+            End If
+        Next
+        For j = 0 To myVVents.Count - 1
+            aVent = myVVents.Item(j)
+            aVent.GetRampTimes(x)
+            If x.GetUpperBound(0) > 0 Then
+                aVent.GetRampFractions(y)
+                csv.str(i, CFASTlnNum.keyWord) = "RAMP"
+                csv.str(i, rampNum.ventType) = "V"
+                csv.num(i, rampNum.firstcompartment) = aVent.FirstCompartment + 1
+                csv.num(i, rampNum.secondcompartment) = aVent.SecondCompartment + 1
+                If csv.num(i, rampNum.firstcompartment) = 0 Then _
+                csv.num(i, rampNum.firstcompartment) = myCompartments.Count + 1
+                If csv.num(i, rampNum.secondcompartment) = 0 Then _
+                csv.num(i, rampNum.secondcompartment) = myCompartments.Count + 1
+                csv.num(i, rampNum.ventnumber) = myVVents.VentNumber(j)
+                csv.num(i, rampNum.numpoints) = x.GetUpperBound(0)
+                For k = 1 To x.GetUpperBound(0)
+                    csv.num(i, 2 * k + rampNum.numpoints - 1) = x(k)
+                    csv.num(i, 2 * k + rampNum.numpoints) = y(k)
+                Next
+                i += 1
+            End If
+        Next
+        For j = 0 To myMVents.Count - 1
+            aVent = myMVents.Item(j)
+            aVent.GetRampTimes(x)
+            If x.GetUpperBound(0) > 0 Then
+                aVent.GetRampFractions(y)
+                csv.str(i, CFASTlnNum.keyWord) = "RAMP"
+                csv.str(i, rampNum.ventType) = "M"
+                csv.num(i, rampNum.firstcompartment) = aVent.FirstCompartment + 1
+                csv.num(i, rampNum.secondcompartment) = aVent.SecondCompartment + 1
+                If csv.num(i, rampNum.firstcompartment) = 0 Then _
+                csv.num(i, rampNum.firstcompartment) = myCompartments.Count + 1
+                If csv.num(i, rampNum.secondcompartment) = 0 Then _
+                csv.num(i, rampNum.secondcompartment) = myCompartments.Count + 1
+                csv.num(i, rampNum.ventnumber) = myMVents.VentNumber(j)
+                csv.num(i, rampNum.numpoints) = x.GetUpperBound(0)
+                For k = 1 To x.GetUpperBound(0)
+                    csv.num(i, 2 * k + rampNum.numpoints - 1) = x(k)
+                    csv.num(i, 2 * k + rampNum.numpoints) = y(k)
+                Next
+                i += 1
+            End If
         Next
         'events
         For j = 0 To myHVents.Count - 1

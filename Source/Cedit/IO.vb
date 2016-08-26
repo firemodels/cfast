@@ -190,11 +190,11 @@ Module IO
                         End If
                     Case "HVENT"
                         Dim hvent As New Vent
-                        If csv.num(i, hventNum.firstcomp) > myCompartments.Count Then _
-                            csv.num(i, hventNum.firstcomp) = 0
-                        If csv.num(i, hventNum.secondcomp) > myCompartments.Count Then _
-                            csv.num(i, hventNum.secondcomp) = 0
-                        hvent.SetVent(csv.num(i, hventNum.firstcomp) - 1, csv.num(i, hventNum.secondcomp) - 1, _
+                        If csv.num(i, hventNum.firstcompartment) > myCompartments.Count Then _
+                            csv.num(i, hventNum.firstcompartment) = 0
+                        If csv.num(i, hventNum.secondcompartment) > myCompartments.Count Then _
+                            csv.num(i, hventNum.secondcompartment) = 0
+                        hvent.SetVent(csv.num(i, hventNum.firstcompartment) - 1, csv.num(i, hventNum.secondcompartment) - 1,
                             csv.num(i, hventNum.width), csv.num(i, hventNum.soffit), csv.num(i, hventNum.sill))
                         If csv.num(i, 0) = 12 Then
                             ' This is the old format that had wind input (after sill) and second compartment offset (after hall1). This shifts the actually used inputs
@@ -254,10 +254,10 @@ Module IO
                             csv.num(i, mventNum.fromCompartment) = 0
                         If csv.num(i, mventNum.toCompartment) > myCompartments.Count Then _
                             csv.num(i, mventNum.toCompartment) = 0
-                        mvent.SetVent(csv.num(i, mventNum.fromCompartment) - 1, csv.num(i, mventNum.fromArea), _
-                            csv.num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien), _
-                            csv.num(i, mventNum.toCompartment) - 1, csv.num(i, mventNum.toArea), _
-                            csv.num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), csv.num(i, mventNum.flow), _
+                        mvent.SetVent(csv.num(i, mventNum.fromCompartment) - 1, csv.num(i, mventNum.fromArea),
+                            csv.num(i, mventNum.fromHeight), csv.str(i, mventNum.fromOpenOrien),
+                            csv.num(i, mventNum.toCompartment) - 1, csv.num(i, mventNum.toArea),
+                            csv.num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), csv.num(i, mventNum.flow),
                             csv.num(i, mventNum.beginFlowDrop), csv.num(i, mventNum.flowZero))
                         mvent.InitialOpening = csv.num(i, mventNum.initialfraction)
                         mvent.FinalOpening = csv.num(i, mventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
@@ -278,7 +278,7 @@ Module IO
                         If myFires.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
                             Dim aFire As New Fire
                             aFire.Name = csv.str(i, objfireNum.name)
-                            aFire.SetPosition(csv.num(i, objfireNum.compartment) - 1, csv.num(i, objfireNum.xPosition), _
+                            aFire.SetPosition(csv.num(i, objfireNum.compartment) - 1, csv.num(i, objfireNum.xPosition),
                                 csv.num(i, objfireNum.yPosition), csv.num(i, objfireNum.zposition))
                             aFire.PlumeType = csv.num(i, objfireNum.plumeType) - 1
                             aFire.IgnitionType = csv.num(i, objfireNum.ignType) - 1
@@ -430,7 +430,7 @@ Module IO
             End If
             i += 1
         Loop
-        ' do EVENT Keyword
+        ' do EVENT Keyword. All vents need to be defined before we look at open/close or filter events
         i = 1
         Do Until i > csv.MaxRow
             If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
@@ -438,7 +438,7 @@ Module IO
                     If csv.str(i, eventNum.ventType).Trim = "H" Then
                         If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
                         If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myHVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                        Dim index As Integer = myHVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1,
                             csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myHVents.Item(index)
@@ -452,7 +452,7 @@ Module IO
                     ElseIf csv.str(i, eventNum.ventType).Trim = "V" Then
                         If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
                         If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myVVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                        Dim index As Integer = myVVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1,
                             csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myVVents.Item(index)
@@ -466,7 +466,7 @@ Module IO
                     ElseIf csv.str(i, eventNum.ventType).Trim = "M" Then
                         If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
                         If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myMVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                        Dim index As Integer = myMVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1,
                             csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myMVents.Item(index)
@@ -480,7 +480,7 @@ Module IO
                     ElseIf csv.str(i, eventNum.ventType).Trim = "F" Then
                         If csv.num(i, eventNum.firstCompartment) > myCompartments.Count Then csv.num(i, eventNum.firstCompartment) = 0
                         If csv.num(i, eventNum.secondCompartment) > myCompartments.Count Then csv.num(i, eventNum.secondCompartment) = 0
-                        Dim index As Integer = myMVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1, _
+                        Dim index As Integer = myMVents.GetIndex(csv.num(i, eventNum.firstCompartment) - 1,
                             csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myMVents.Item(index)
@@ -499,6 +499,67 @@ Module IO
             End If
             i += 1
         Loop
+        ' do RAMP Keyword
+        i = 1
+        Do Until i > csv.MaxRow
+            If Not SkipLine(csv.str(i, CFASTlnNum.keyWord)) Then
+                If csv.str(i, CFASTlnNum.keyWord).Trim = "RAMP" Then
+                    If csv.num(i, rampNum.firstcompartment) > myCompartments.Count Then _
+                        csv.num(i, rampNum.firstcompartment) = 0
+                    If csv.num(i, rampNum.secondcompartment) > myCompartments.Count Then _
+                        csv.num(i, rampNum.secondcompartment) = 0
+                    Dim aVentIndex As Integer
+                    If csv.str(i, rampNum.ventType) = "H" Then
+                        aVentIndex = myHVents.GetIndex(csv.num(i, rampNum.firstcompartment) - 1, csv.num(i, rampNum.secondcompartment) - 1, csv.num(i, rampNum.ventnumber))
+                        If aVentIndex > -1 And aVentIndex < myHVents.Count Then
+                            Dim avent As Vent = myHVents(aVentIndex)
+                            Dim VentTime(csv.num(i, rampNum.numpoints)), VentFraction(csv.num(i, rampNum.numpoints)) As Single
+                            For j = 1 To csv.num(i, rampNum.numpoints)
+                                VentTime(j) = csv.num(i, 2 * j + rampNum.numpoints - 1)
+                                VentFraction(j) = csv.num(i, 2 * j + rampNum.numpoints)
+                            Next
+                            avent.SetRamp(VentTime, VentFraction)
+                            avent.Changed = False
+                        Else
+                            myErrors.Add("Keyword RAMP Hvent " + csv.str(i, rampNum.ventnumber) + " between compartments " + csv.str(i, rampNum.firstcompartment) + " and " + csv.str(i, rampNum.secondcompartment) + " does not exist", ErrorMessages.TypeError)
+                        End If
+                    ElseIf csv.str(i, rampNum.ventType) = "V" Then
+                        aVentIndex = myVVents.GetIndex(csv.num(i, rampNum.firstcompartment) - 1, csv.num(i, rampNum.secondcompartment) - 1, csv.num(i, rampNum.ventnumber))
+                        If aVentIndex > -1 And aVentIndex < myVVents.Count Then
+                            Dim avent As Vent = myVVents(aVentIndex)
+                            Dim VentTime(csv.num(i, rampNum.numpoints)), VentFraction(csv.num(i, rampNum.numpoints)) As Single
+                            For j = 1 To csv.num(i, rampNum.numpoints)
+                                VentTime(j) = csv.num(i, 2 * j + rampNum.numpoints - 1)
+                                VentFraction(j) = csv.num(i, 2 * j + rampNum.numpoints)
+                            Next
+                            avent.SetRamp(VentTime, VentFraction)
+                            avent.Changed = False
+                        Else
+                            myErrors.Add("Keyword RAMP Vvent " + csv.str(i, rampNum.ventnumber) + " between compartments " + csv.str(i, rampNum.firstcompartment) + " and " + csv.str(i, rampNum.secondcompartment) + " does not exist", ErrorMessages.TypeError)
+                        End If
+                    ElseIf csv.str(i, rampNum.ventType) = "M" Then
+                        aVentIndex = myMVents.GetIndex(csv.num(i, rampNum.firstcompartment) - 1, csv.num(i, rampNum.secondcompartment) - 1, csv.num(i, rampNum.ventnumber))
+                        If aVentIndex > -1 And aVentIndex < myMVents.Count Then
+                            Dim avent As Vent = myMVents(aVentIndex)
+                            Dim VentTime(csv.num(i, rampNum.numpoints)), VentFraction(csv.num(i, rampNum.numpoints)) As Single
+                            For j = 1 To csv.num(i, rampNum.numpoints)
+                                VentTime(j) = csv.num(i, 2 * j + rampNum.numpoints - 1)
+                                VentFraction(j) = csv.num(i, 2 * j + rampNum.numpoints)
+                            Next
+                            avent.SetRamp(VentTime, VentFraction)
+                            avent.Changed = False
+                        Else
+                            myErrors.Add("Keyword RAMP Mvent " + csv.str(i, rampNum.ventnumber) + " between compartments " + csv.str(i, rampNum.firstcompartment) + " and " + csv.str(i, rampNum.secondcompartment) + " does not exist", ErrorMessages.TypeError)
+                        End If
+                    Else
+                        'error handling wrong vent types
+                        myErrors.Add("Keyword RAMP vent type " + csv.str(i, rampNum.ventType) + " is not recognized", ErrorMessages.TypeError)
+                    End If
+                End If
+            End If
+            i += 1
+        Loop
+
     End Sub
     Public Sub ReadThermalProperties(ByVal FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
         'Simple read of only thermal properties from a file. 
@@ -530,9 +591,9 @@ Module IO
                                 End If
                             End If
                         End If
-                        SomeThermalProperties.Add(New ThermalProperty(csv.str(i, MaterialNum.shortName), _
-                            csv.str(i, MaterialNum.longName), csv.num(i, MaterialNum.Conductivity), _
-                            csv.num(i, MaterialNum.specificHeat), csv.num(i, MaterialNum.density), csv.num(i, MaterialNum.thickness), _
+                        SomeThermalProperties.Add(New ThermalProperty(csv.str(i, MaterialNum.shortName),
+                            csv.str(i, MaterialNum.longName), csv.num(i, MaterialNum.Conductivity),
+                            csv.num(i, MaterialNum.specificHeat), csv.num(i, MaterialNum.density), csv.num(i, MaterialNum.thickness),
                             csv.num(i, MaterialNum.emissivity)))
                         SomeThermalProperties.Item(SomeThermalProperties.Count - 1).SetHCl(hcl)
                         SomeThermalProperties.Item(SomeThermalProperties.Count - 1).Changed = False
@@ -752,7 +813,7 @@ Module IO
 
                         aFireObject.RadiativeFraction = csv.num(iChemie, chemieNum.chiR)
                         aFireObject.Name = csv.str(iFire, fireNum.name)
-                        aFireObject.SetPosition(csv.num(iFire, fireNum.compartment) - 1, csv.num(iFire, fireNum.xPosition), _
+                        aFireObject.SetPosition(csv.num(iFire, fireNum.compartment) - 1, csv.num(iFire, fireNum.xPosition),
                             csv.num(iFire, fireNum.yPosition), csv.num(iFire, fireNum.zposition))
                         aFireObject.PlumeType = csv.num(iFire, fireNum.plumeType) - 1
                         If csv.str(iFire, fireNum.ignType) = "TIME" Or csv.str(iFire, fireNum.ignType) = "TEMP" Or csv.str(iFire, fireNum.ignType) = "FLUX" Then
@@ -869,9 +930,9 @@ Module IO
             csv.str(i, CFASTlnNum.keyWord) = "COMPA"
             csv.str(i, compaNum.Name) = aCompartment.Name
             aCompartment.GetSize(csv.num(i, compaNum.Width), csv.num(i, compaNum.Depth), csv.num(i, compaNum.Height))
-            aCompartment.GetPosition(csv.num(i, compaNum.AbsXPos), csv.num(i, compaNum.AbsYPos), _
+            aCompartment.GetPosition(csv.num(i, compaNum.AbsXPos), csv.num(i, compaNum.AbsYPos),
                     csv.num(i, compaNum.FlrHeight))
-            aCompartment.GetMaterial(csv.str(i, compaNum.CeilingMat), csv.str(i, compaNum.WallMat), _
+            aCompartment.GetMaterial(csv.str(i, compaNum.CeilingMat), csv.str(i, compaNum.WallMat),
                     csv.str(i, compaNum.FloorMat))
             If csv.str(i, compaNum.CeilingMat) = "Off" Then csv.str(i, compaNum.CeilingMat) = "OFF"
             If csv.str(i, compaNum.WallMat) = "Off" Then csv.str(i, compaNum.WallMat) = "OFF"
@@ -928,19 +989,19 @@ Module IO
         For j = 0 To myHVents.Count - 1
             csv.str(i, CFASTlnNum.keyWord) = "HVENT"
             aVent = myHVents.Item(j)
-            csv.num(i, hventNum.firstcomp) = aVent.FirstCompartment + 1
-            csv.num(i, hventNum.secondcomp) = aVent.SecondCompartment + 1
-            If csv.num(i, hventNum.firstcomp) = 0 Then _
-                csv.num(i, hventNum.firstcomp) = myCompartments.Count + 1
-            If csv.num(i, hventNum.secondcomp) = 0 Then _
-                csv.num(i, hventNum.secondcomp) = myCompartments.Count + 1
+            csv.num(i, hventNum.firstcompartment) = aVent.FirstCompartment + 1
+            csv.num(i, hventNum.secondcompartment) = aVent.SecondCompartment + 1
+            If csv.num(i, hventNum.firstcompartment) = 0 Then _
+                csv.num(i, hventNum.firstcompartment) = myCompartments.Count + 1
+            If csv.num(i, hventNum.secondcompartment) = 0 Then _
+                csv.num(i, hventNum.secondcompartment) = myCompartments.Count + 1
             csv.num(i, hventNum.width) = aVent.Width
             csv.num(i, hventNum.sill) = aVent.Sill
             csv.num(i, hventNum.soffit) = aVent.Soffit
             csv.num(i, hventNum.hall1) = aVent.Offset
             csv.str(i, hventNum.face) = aVent.Face
             csv.num(i, hventNum.initialfraction) = aVent.InitialOpening
-            csv.num(i, hventNum.vent) = myHVents.VentNumber(j)
+            csv.num(i, hventNum.ventnumber) = myHVents.VentNumber(j)
             aVent.Changed = False
             i += 1
         Next
@@ -957,7 +1018,7 @@ Module IO
                 csv.num(i, vventNum.firstcompartment) = myCompartments.Count + 1
             If csv.num(i, vventNum.secondcompartment) = 0 Then _
                 csv.num(i, vventNum.secondcompartment) = myCompartments.Count + 1
-            csv.num(i, vventNum.vent) = myVVents.VentNumber(j)
+            csv.num(i, vventNum.ventnumber) = myVVents.VentNumber(j)
             aVent.Changed = False
             i += 1
         Next

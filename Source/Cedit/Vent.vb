@@ -25,6 +25,8 @@ Public Class Vent
     Private aFace As Integer                    ' Defines which wall on which to display vent in Smokeview, 1 for front, 2 for left, 3 for back, 4 for right
     Private aFinalOpening As Single             ' EVENT vent opening fraction or HHEAT connected fraction
     Private aFinalOpeningTime As Single         ' EVENT vent opening times
+    Private aRampTimePoints(0) As Single        ' Vent opening times from RAMP input
+    Private aRampFractionPoints(0) As Single    ' Vent open fractions from RAMP input
     Private aArea As Single                     ' Cross-sectional area of vent for vertical flow vents
     Private aShape As Integer                   ' Vertical flow vent shape, 1 for circular and 2 for square
     Private aFirstArea As Single                ' Mechanical vent opening size in first compartment
@@ -74,7 +76,7 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aFirstCompartment Then
                 aFirstCompartment = Value
-                Me.Offset = -1
+                Offset = -1
                 aChanged = True
             End If
         End Set
@@ -185,7 +187,7 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aFace Then
                 aFace = Value
-                Me.Offset = -1
+                Offset = -1
                 aChanged = True
             End If
         End Set
@@ -376,34 +378,34 @@ Public Class Vent
     End Sub
     Public Sub GetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
         ' Vertical flow vent connection
-        TopCompartment = Me.FirstCompartment
-        BottomCompartment = Me.SecondCompartment
+        TopCompartment = FirstCompartment
+        BottomCompartment = SecondCompartment
         Area = Me.Area
         Shape = Me.Shape
     End Sub
     Public Sub SetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
         ' Vertical flow vent connection
-        Me.VentType = TypeVVent
-        Me.FirstCompartment = TopCompartment
-        Me.SecondCompartment = BottomCompartment
+        VentType = TypeVVent
+        FirstCompartment = TopCompartment
+        SecondCompartment = BottomCompartment
         Me.Area = Area
         Me.Shape = Shape
     End Sub
     Public Sub GetVent(ByRef FromCompartment As Integer, ByRef FromArea As Single, ByRef FromCenterHeight As Single, ByRef FromOrientation As String, ByRef ToCompartment As Integer, ByRef ToArea As Single, ByRef ToCenterHeight As Single, ByRef ToOrientation As String, ByRef FlowRate As Single, ByRef BeginFlowDropoff As Single, ByRef ZeroFlow As Single)
         ' Mechanical flow vent connection
-        Me.aVentType = TypeMVent
-        FromCompartment = Me.FirstCompartment
-        FromArea = Me.FirstArea
-        FromCenterHeight = Me.FirstCenterHeight
-        If Me.aFirstOrientation = 2 Then
+        aVentType = TypeMVent
+        FromCompartment = FirstCompartment
+        FromArea = FirstArea
+        FromCenterHeight = FirstCenterHeight
+        If aFirstOrientation = 2 Then
             FromOrientation = "H"
         Else
             FromOrientation = "V"
         End If
-        ToCompartment = Me.aSecondCompartment
-        ToArea = Me.SecondArea
-        ToCenterHeight = Me.SecondCenterHeight
-        If Me.aSecondOrientation = 2 Then
+        ToCompartment = aSecondCompartment
+        ToArea = SecondArea
+        ToCenterHeight = SecondCenterHeight
+        If aSecondOrientation = 2 Then
             ToOrientation = "H"
         Else
             ToOrientation = "V"
@@ -414,26 +416,78 @@ Public Class Vent
     End Sub
     Public Sub SetVent(ByVal FromCompartment As Integer, ByVal FromArea As Single, ByVal FromCenterHeight As Single, ByVal FromOrientation As String, ByVal ToCompartment As Integer, ByVal ToArea As Single, ByVal ToCenterHeight As Single, ByVal ToOrientation As String, ByVal FlowRate As Single, ByVal BeginFlowDropoff As Single, ByVal ZeroFlow As Single)
         ' Mechanical flow vent connection
-        Me.aVentType = TypeMVent
-        Me.aFirstCompartment = FromCompartment
-        Me.aFirstArea = myUnits.Convert(UnitsNum.Area).ToSI(FromArea)
-        Me.aFirstCenterHeight = myUnits.Convert(UnitsNum.Length).ToSI(FromCenterHeight)
+        aVentType = TypeMVent
+        aFirstCompartment = FromCompartment
+        aFirstArea = myUnits.Convert(UnitsNum.Area).ToSI(FromArea)
+        aFirstCenterHeight = myUnits.Convert(UnitsNum.Length).ToSI(FromCenterHeight)
         If FromOrientation = "H" Then
-            Me.aFirstOrientation = 2
+            aFirstOrientation = 2
         Else
-            Me.aFirstOrientation = 1
+            aFirstOrientation = 1
         End If
-        Me.aSecondCompartment = ToCompartment
-        Me.aSecondArea = myUnits.Convert(UnitsNum.Area).ToSI(ToArea)
-        Me.aSecondCenterHeight = myUnits.Convert(UnitsNum.Length).ToSI(ToCenterHeight)
+        aSecondCompartment = ToCompartment
+        aSecondArea = myUnits.Convert(UnitsNum.Area).ToSI(ToArea)
+        aSecondCenterHeight = myUnits.Convert(UnitsNum.Length).ToSI(ToCenterHeight)
         If ToOrientation = "H" Then
-            Me.aSecondOrientation = 2
+            aSecondOrientation = 2
         Else
-            Me.aSecondOrientation = 1
+            aSecondOrientation = 1
         End If
-        Me.aFlowRate = FlowRate
-        Me.aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(BeginFlowDropoff)
-        Me.aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(ZeroFlow)
+        aFlowRate = FlowRate
+        aBeginFlowDropoff = myUnits.Convert(UnitsNum.Pressure).ToSI(BeginFlowDropoff)
+        aZeroFlow = myUnits.Convert(UnitsNum.Pressure).ToSI(ZeroFlow)
+    End Sub
+    Public Sub GetRamp(ByRef TimePoints() As Single, ByRef FractionPoints() As Single, ByRef NumAreaPoints As Integer)
+        Dim i As Integer
+        If aRampTimePoints.GetLength(0) = aRampFractionPoints.GetLength(0) Then
+            ReDim TimePoints(aRampTimePoints.GetUpperBound(0)), FractionPoints(aRampFractionPoints.GetUpperBound(0))
+            For i = 0 To aRampTimePoints.GetUpperBound(0)
+                TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
+                FractionPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aRampFractionPoints(i))
+                NumAreaPoints = aRampTimePoints.GetUpperBound(0)
+            Next
+        End If
+    End Sub
+    Public Sub SetRamp(ByVal TimePoints() As Single, ByVal FractionPoints() As Single)
+        Dim i As Integer
+        If TimePoints.GetLength(0) = FractionPoints.GetLength(0) Then
+            ReDim aRampTimePoints(TimePoints.GetUpperBound(0)), aRampFractionPoints(FractionPoints.GetUpperBound(0))
+            For i = 0 To TimePoints.GetUpperBound(0)
+                aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
+                aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(FractionPoints(i))
+            Next
+            aChanged = True
+        End If
+    End Sub
+    Public Sub GetRampTimes(ByRef FractionPoints() As Single)
+        Dim i As Integer
+        ReDim FractionPoints(aRampFractionPoints.GetUpperBound(0))
+        For i = 0 To FractionPoints.GetUpperBound(0)
+            FractionPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampFractionPoints(i))
+        Next
+    End Sub
+    Public Sub GetRampFractions(ByRef TimePoints() As Single)
+        Dim i As Integer
+        ReDim TimePoints(aRampTimePoints.GetUpperBound(0))
+        For i = 0 To TimePoints.GetUpperBound(0)
+            TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
+        Next
+    End Sub
+    Public Sub SetRampTimes(ByVal FractionPoints() As Single)
+        Dim i As Integer
+        ReDim aRampFractionPoints(FractionPoints.GetUpperBound(0))
+        For i = 0 To FractionPoints.GetUpperBound(0)
+            aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i))
+        Next
+        aChanged = True
+    End Sub
+    Public Sub SetRampFractions(ByVal TimePoints() As Single)
+        Dim i As Integer
+        ReDim aRampTimePoints(TimePoints.GetUpperBound(0))
+        For i = 0 To TimePoints.GetUpperBound(0)
+            aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
+        Next
+        aChanged = True
     End Sub
     Public ReadOnly Property IsValid(ByVal VentNumber As Integer) As Integer
         Get

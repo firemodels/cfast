@@ -443,9 +443,16 @@ Public Class UpdateGUI
             End If
             MainWin.VVentArea.Text = aVent.Area.ToString + myUnits.Convert(UnitsNum.Area).Units
             MainWin.VVentShape.SelectedIndex = aVent.Shape - 1
-            MainWin.VVentInitialFraction.Text = aVent.InitialOpening.ToString
-            MainWin.VVentFinalFraction.Text = aVent.FinalOpening.ToString
-            MainWin.VVentFractionTime.Text = aVent.FinalOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
+
+            aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
+            ClearGrid(MainWin.VVentFractions)
+            If NumPoints > 0 Then
+                For i = 1 To NumPoints
+                    MainWin.VVentFractions(i, 0) = OpeningTimes(i).ToString + myUnits.Convert(UnitsNum.Time).Units
+                    MainWin.VVentFractions(i, 1) = OpeningFractions(i).ToString
+                Next
+            End If
+
             numVVents = myVVents.Count
             ClearGrid(MainWin.VVentSummary)
             If numVVents > 0 Then

@@ -4,7 +4,7 @@ module spreadsheet_routines
 
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
-    use opening_fractions, only : qchfraction
+    use opening_fractions, only : get_vent_opening
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
 
@@ -514,7 +514,7 @@ module spreadsheet_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        fraction = qchfraction (qcvh,i,time)
+        call get_vent_opening ('H',im,ix,ik,i,time,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = fraction*height*width

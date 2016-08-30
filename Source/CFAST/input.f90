@@ -913,8 +913,8 @@ module input_routines
                 stop
             end if
 
-            qcvh(2,n_hvents) = initialopening
-            qcvh(4,n_hvents) = initialopening
+            ventptr%opening(initial_fraction) = initialopening
+            ventptr%opening(final_fraction) = initialopening
 
             roomptr => roominfo(ventptr%room1)
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
@@ -954,15 +954,15 @@ module input_routines
                     do iijk = 1, n_hvents
                         ventptr => hventinfo(iijk)
                         if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
-                            qcvh(1,iijk) = lrarray(5)
-                            qcvh(3,iijk) = lrarray(5) + lrarray(7)
-                            qcvh(4,iijk) = lrarray(6)
+                            ventptr%opening(initial_time) = lrarray(5)
+                            ventptr%opening(final_time) = lrarray(5) + lrarray(7)
+                            ventptr%opening(final_fraction) = lrarray(6)
                         end if
                     end do
                 case ('V')
                     i = lrarray(2)
                     j = lrarray(3)
-                    k = 1
+                    k = lrarray(4)
                     do iijk = 1, n_vvents
                         ventptr => vventinfo(iijk)
                         if (ventptr%top==i.and.ventptr%bottom==j.and.ventptr%counter==k) then
@@ -974,7 +974,7 @@ module input_routines
                 case ('M')
                     i = lrarray(2)
                     j = lrarray(3)
-                    k = 1
+                    k = lrarray(4)
                     do iijk = 1, n_mvents
                         ventptr => mventinfo(iijk)
                         if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then

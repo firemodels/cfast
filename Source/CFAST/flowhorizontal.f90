@@ -2,7 +2,7 @@ module hflow_routines
 
     use precision_parameters
 
-    use opening_fractions, only: qchfraction
+    use opening_fractions, only: get_vent_opening
     use debug_routines, only: ssprintslab, spreadsheetfslabs
     use room_data
     use utility_routines, only: tanhsmooth
@@ -93,7 +93,7 @@ module hflow_routines
         !  use new interpolator to find vent opening fraction
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        fraction = qchfraction (qcvh, i, tsec)
+        call get_vent_opening ('H',im,ix,ik,i,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width*fraction
         avent = height*width

@@ -883,8 +883,8 @@ module input_routines
                 
                 n_hvents = n_hvents + 1
                 ventptr => hventinfo(n_hvents)
-                ventptr%room1 = lrarray(1)
-                ventptr%room2 = lrarray(2)
+                ventptr%room1 = imin
+                ventptr%room2 = jmax
                 ventptr%counter = lrarray(3)
                 
                 if (n_hvents>mxhvents) then

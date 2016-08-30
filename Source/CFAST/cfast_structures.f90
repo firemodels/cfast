@@ -261,6 +261,10 @@ module cfast_types
 
         ! These are common to more than one vent types
 
+        integer :: opening_target           ! target number associated with vent (user input)
+        integer :: opening_type             ! open/close type for fire (user input)
+                                            ! (1 = time, 2 = temperature, 3 = heat flux)
+        real(eb) :: opening_criterion       ! open/close criteria for fire. Units depend on ignition type (user input)
         real(eb), dimension(4) :: opening   ! simple open and closing of vents
                                             ! 1 = initial fraction of vent opening
                                             ! 2 = end time for initial open fraction

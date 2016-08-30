@@ -1186,19 +1186,15 @@ end module utility_routines
 
 module opening_fractions
 
-    !	The following functions implement the open/close function for vents.
-    !	This is done with a simple, linear interpolation
-    !	The arrays to hold the open/close information are qcvh (4,mxhvents). Others are built into the vent structure
+    !	The following functions implement the simple open/close function for vents.
+    !	This is done with a simple, linear interpolation.
+    !   The opening arrays are built into the vent data structures and are of the form
+    !		(1) Is start of time to change
+    !		(2) Is the initial fraction (set in HVENT, VVENT and MVENT)
+    !		(3) Is the time to complete the change, Time+Decay_time, and
+    !		(4) Is the final fraction
 
-    !	h is for horizontal flow, v for vertical flow, m for mechanical ventilation and i for filtering at mechanical vents
-
-    !   The qcv{x} arrays are of the form
-    !		(1,...) Is start of time to change
-    !		(2,...) Is the initial fraction (set in HVENT, VVENT and MVENT)
-    !		(3,...) Is the time to complete the change, Time+Decay_time, and
-    !		(4,...) Is the final fraction
-
-    !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and hvfan
+    !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
 
     use precision_parameters
     use ramp_data
@@ -1208,7 +1204,7 @@ module opening_fractions
 
     private
 
-    public get_vent_opening, qchfraction, qcffraction, qcifraction
+    public get_vent_opening
 
     contains
 
@@ -1257,23 +1253,22 @@ module opening_fractions
     end if
 
     ! This is for backwards compatibility with the older EVENT format for single vent changes
-    if (venttype=="V") then
-        fraction = 1.0_eb
+    fraction = 1.0_eb
+    if (venttype=="H") then
+        ventptr => hventinfo(vent_index)
+        fraction = vfraction(ventptr%opening, time)
+    else if (venttype=="V") then
         ventptr => vventinfo(vent_index)
         fraction = vfraction(ventptr%opening, time)
-    end if
-    if (venttype=="M") then
-        fraction = 1.0_eb
+    else if (venttype=="M") then
         ventptr => mventinfo(vent_index)
         fraction = vfraction(ventptr%opening, time)
-    end if
-    if (venttype=="F") then
-        fraction = 1.0_eb
+    else if (venttype=="F") then
         ventptr => mventinfo(vent_index)
         fraction = vfraction(ventptr%filter, time)
     end if
+    return
         
-
     end subroutine get_vent_opening
 
     ! --------------------------- vfraction -------------------------------------------
@@ -1300,83 +1295,5 @@ module opening_fractions
     end if
     return
     end function vfraction
-
-    ! --------------------------- qchfraction -------------------------------------------
-
-    real(eb) function qchfraction (points, index, time)
-
-    !	This is the open/close function for buoyancy driven horizontal flow
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
-    real(eb) :: deltat
-
-    if (time<points(1,index)) then
-        qchfraction = points(2,index)
-    else if (time>points(3,index)) then
-        qchfraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index), mintime)
-        deltat = max(time - points(1,index), mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qchfraction = points(2,index) + dydt*deltat
-    end if
-    return
-    end function qchfraction
-
-    ! --------------------------- qcffraction -------------------------------------------
-
-    real(eb) function qcffraction (points, index, time)
-
-    !	This is the open/close function for mechanical ventilation
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
-    real(eb) :: deltat
-
-    if (time<points(1,index)) then
-        qcffraction = points(2,index)
-    else if (time>points(3,index)) then
-        qcffraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index), mintime)
-        deltat = max(time - points(1,index), mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qcffraction = points(2,index) + dydt*deltat
-    end if
-    return
-    end function qcffraction
-
-    ! --------------------------- qcifraction -------------------------------------------
-
-    real(eb) function qcifraction (points, index, time)
-
-    !	This is the open/close function for filtering
-
-    integer, intent(in) :: index
-    real(eb), intent(in) :: points(4,*), time
-
-    real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
-    real(eb) :: deltat
-
-    if (time<points(1,index)) then
-        qcifraction = points(2,index)
-    else if (time>points(3,index)) then
-        qcifraction = points(4,index)
-    else
-        dt = max(points(3,index) - points(1,index), mintime)
-        deltat = max(time - points(1,index), mintime)
-        dy = points(4,index) - points(2,index)
-        dydt = dy/dt
-        qcifraction = points(2,index) + dydt*deltat
-    end if
-    return
-    end function qcifraction
-
-    end module opening_fractions
+    
+end module opening_fractions

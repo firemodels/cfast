@@ -3,7 +3,6 @@ module initialization_routines
     use precision_parameters
 
     use numerics_routines, only: dnrm2, dscal
-    use opening_fractions, only : qchfraction
     use output_routines, only : deleteoutputfiles
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror
@@ -315,11 +314,6 @@ module initialization_routines
     hventinfo(1:mxhvents)%opening(initial_fraction) = 0.0_eb
     hventinfo(1:mxhvents)%opening(final_time) = 1.0_eb
     hventinfo(1:mxhvents)%opening(final_fraction) = 0.0_eb
-    
-    qcvh(1,1:mxhvents) = 0.0_eb
-    qcvh(2,1:mxhvents) = 1.0_eb
-    qcvh(3,1:mxhvents) = 0.0_eb
-    qcvh(4,1:mxhvents) = 1.0_eb
 
     ! vertical vents
     vventinfo(1:mxvvents)%shape = 1

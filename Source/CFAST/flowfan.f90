@@ -2,7 +2,7 @@ module mflow_routines
 
     use precision_parameters
 
-    use opening_fractions, only : qcffraction, qcifraction, get_vent_opening
+    use opening_fractions, only : get_vent_opening
     use utility_routines, only: d1mach, tanhsmooth
 
     use precision_parameters

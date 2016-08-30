@@ -10,7 +10,7 @@ module solve_routines
     use hflow_routines, only: horizontal_flow
     use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
-    use opening_fractions, only : qchfraction
+    use opening_fractions, only : get_vent_opening
     use output_routines, only: output_results, output_status, output_debug, deleteoutputfiles, find_error_component
     use radiation_routines, only: radiation
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
@@ -160,7 +160,7 @@ module solve_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        fraction = qchfraction(qcvh,i,tsec)
+        call get_vent_opening ('H',im,ix,ik,i,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = fraction*height*width
@@ -1373,10 +1373,11 @@ module solve_routines
 
         ! add each of the change arrays to the discontinuity list
         do  i = 1, n_hvents
+            ventptr => hventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvh(1,i)
+            discon(ndisc) = ventptr%opening(1)
             ndisc = ndisc + 1
-            discon(ndisc) = qcvh(3,i)
+            discon(ndisc) = ventptr%opening(3)
         end do
         do  i = 1, n_vvents
             ventptr => vventinfo(i)

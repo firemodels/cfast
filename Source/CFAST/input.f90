@@ -1084,7 +1084,7 @@ module input_routines
                         ventptr%opening_criterion = lrarray(7)
                         do i = 1,n_targets
                             targptr => targetinfo(i)
-                            if (targptr%name==lcarray(8)) fireptr%ignition_target = i
+                            if (targptr%name==lcarray(8)) ventptr%opening_target = i
                         end do
                         ventptr%opening_initial_fraction = lrarray(10)
                         ventptr%opening_final_fraction = lrarray(12)

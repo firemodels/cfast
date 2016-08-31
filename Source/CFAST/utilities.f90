@@ -1300,6 +1300,7 @@ module opening_fractions
             vfraction = ventptr%filter_initial_fraction + dydt*deltat
         end if
     else
+        vfraction = ventptr%opening_initial_fraction
         ! check normal vent triggering by time
         if (ventptr%opening_type==trigger_by_time) then
             if (time<ventptr%opening_initial_time) then
@@ -1320,7 +1321,6 @@ module opening_fractions
                 ventptr%opening_initial_time = time
                 ventptr%opening_final_time = time + 1.0_eb
                 ventptr%opening_type = trigger_by_time
-                vfraction = ventptr%opening_initial_time
             end if
         ! check vent triggering by flux. if tripped, turn it into a time-based change
         else if (ventptr%opening_type==trigger_by_flux) then
@@ -1329,7 +1329,6 @@ module opening_fractions
                 ventptr%opening_initial_time = time
                 ventptr%opening_final_time = time + 1.0_eb
                 ventptr%opening_type = trigger_by_time
-                vfraction = ventptr%opening_initial_time
             end if
         end if
     end if

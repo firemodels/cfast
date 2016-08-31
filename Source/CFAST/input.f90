@@ -1071,8 +1071,28 @@ module input_routines
                 else
                     ventptr%shape = lrarray(icshape)
                 end if
-                ventptr%opening_initial_fraction = lrarray(icfraction)
-                ventptr%opening_final_fraction = lrarray(icfraction)
+                if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
+                    if (lcarray(6)=='TIME') then
+                        ventptr%opening_type = trigger_by_time
+                        ventptr%opening_initial_time = lrarray(9)
+                        ventptr%opening_initial_fraction = lrarray(10)
+                        ventptr%opening_final_time = lrarray(11)
+                        ventptr%opening_final_fraction = lrarray(12)
+                    else 
+                        if (lcarray(6)=='TEMP') ventptr%opening_type = trigger_by_temp
+                        if (lcarray(6)=='FLUX') ventptr%opening_type = trigger_by_flux
+                        ventptr%opening_criterion = lrarray(7)
+                        do i = 1,n_targets
+                            targptr => targetinfo(i)
+                            if (targptr%name==lcarray(8)) ventptr%opening_target = i
+                        end do
+                        ventptr%opening_initial_fraction = lrarray(10)
+                        ventptr%opening_final_fraction = lrarray(12)
+                    end if
+                else
+                    ventptr%opening_initial_fraction = lrarray(icfraction)
+                    ventptr%opening_final_fraction = lrarray(icfraction)
+                end if
             else
                 write (*,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'

@@ -315,7 +315,7 @@ module solve_routines
     real(eb) :: pprime(maxteq), pdnew(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
     logical :: iprint, ismv, exists, ispread,firstpassforsmokeview
-    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj, isensor
+    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
         ostptime, tdtect, tobj
     integer :: first_time
@@ -632,14 +632,13 @@ module solve_routines
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
         call get_detector_temp_and_velocity
-        call update_detectors (check_detector_state,told,dt,n_detectors,idset,ifdtect,tdtect)
-        call update_fire_objects (check_detector_state,told,dt,ifobj,tobj)
+        call update_detectors (check_state,told,dt,n_detectors,idset,ifdtect,tdtect)
+        call update_fire_objects (check_state,told,dt,ifobj,tobj)
         td = min(tdtect,tobj)
 
         ! a detector is the first one that went off
         if (ifdtect>0.and.tdtect<=td) then
-            isensor = ifdtect
-            call update_detectors (set_detector_state,told,dt,n_detectors,idset,ifdtect,tdtect)
+            call update_detectors (set_state,told,dt,n_detectors,idset,ifdtect,tdtect)
             ! check to see if we are backing up for detectors going off
             if (option(fbtdtect)==on) then
                 idsave = idset
@@ -650,13 +649,13 @@ module solve_routines
                 idset = 0
             end if
         else
-            call update_detectors (update_detector_state,told,dt,n_detectors,idset,ifdtect,tdtect)
+            call update_detectors (update_state,told,dt,n_detectors,idset,ifdtect,tdtect)
         end if
 
         ! object ignition is the first thing to happen
         if (ifobj>0.and.tobj<=td) then
             fireptr => fireinfo(ifobj)
-            call update_fire_objects (set_detector_state,told,dt,ifobj,tobj)
+            call update_fire_objects (set_state,told,dt,ifobj,tobj)
             write(iofilo,'(/,a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
             write(*,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
@@ -675,7 +674,7 @@ module solve_routines
                 ifobj = 0
             end if
         else
-            call update_fire_objects (update_detector_state,told,dt,ifobj,tobj)
+            call update_fire_objects (update_state,told,dt,ifobj,tobj)
         end if
 
         if (idsave/=0) then

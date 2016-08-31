@@ -1195,8 +1195,9 @@ module opening_fractions
     !		(4) Is the final fraction
 
     !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
-
+   
     use precision_parameters
+    use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux 
     use ramp_data
     use vent_data
 
@@ -1212,7 +1213,7 @@ module opening_fractions
 
     subroutine get_vent_opening (venttype,room1,room2,vent_number,vent_index,time,fraction)
 
-    character, intent(in) :: venttype
+    character(len=1), intent(in) :: venttype
     integer, intent(in) :: room1, room2, vent_number, vent_index
     real(eb), intent(in) :: time
     real(eb), intent(out) :: fraction
@@ -1256,16 +1257,16 @@ module opening_fractions
     fraction = 1.0_eb
     if (venttype=="H") then
         ventptr => hventinfo(vent_index)
-        fraction = vfraction(ventptr%opening, time)
+        fraction = vfraction(venttype,ventptr, time)
     else if (venttype=="V") then
         ventptr => vventinfo(vent_index)
-        fraction = vfraction(ventptr%opening, time)
+        fraction = vfraction(venttype,ventptr, time)
     else if (venttype=="M") then
         ventptr => mventinfo(vent_index)
-        fraction = vfraction(ventptr%opening, time)
+        fraction = vfraction(venttype,ventptr, time)
     else if (venttype=="F") then
         ventptr => mventinfo(vent_index)
-        fraction = vfraction(ventptr%filter, time)
+        fraction = vfraction(venttype,ventptr, time)
     end if
     return
         
@@ -1273,27 +1274,46 @@ module opening_fractions
 
     ! --------------------------- vfraction -------------------------------------------
 
-    real(eb) function vfraction (points, time)
+    real(eb) function vfraction (vtype, ventptr, time)
 
     !	This is the open/close function for vent flow
 
-    real(eb), intent(in) :: points(4), time
+    type(vent_type) :: ventptr
+    real(eb), intent(in) :: time
+    character(len=1), intent(in) :: vtype
 
     real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
 
-    if (time<points(initial_time)) then
-        vfraction = points(initial_fraction)
-    else if (time>points(final_time)) then
-        vfraction = points(final_fraction)
+    if (vtype=="F") then
+        if (time<ventptr%filter_initial_time) then
+            vfraction = ventptr%filter_initial_fraction
+        else if (time>ventptr%filter_final_time) then
+            vfraction = ventptr%filter_final_fraction
+        else
+            dt = max(ventptr%filter_final_time - ventptr%filter_initial_time, mintime)
+            deltat = max(time - ventptr%filter_initial_time, mintime)
+            dy = ventptr%filter_final_fraction - ventptr%filter_initial_fraction
+            dydt = dy/dt
+            vfraction = ventptr%filter_initial_fraction + dydt*deltat
+        end if
     else
-        dt = max(points(final_time) - points(initial_time), mintime)
-        deltat = max(time - points(initial_time), mintime)
-        dy = points(final_fraction) - points(initial_fraction)
-        dydt = dy/dt
-        vfraction = points(initial_fraction) + dydt*deltat
+        if (ventptr%opening_type==trigger_by_time) then
+            if (time<ventptr%opening_initial_time) then
+                vfraction = ventptr%opening_initial_fraction
+            else if (time>ventptr%opening_final_time) then
+                vfraction = ventptr%opening_final_fraction
+            else
+                dt = max(ventptr%opening_final_time - ventptr%opening_initial_time, mintime)
+                deltat = max(time - ventptr%opening_initial_time, mintime)
+                dy = ventptr%opening_final_fraction - ventptr%opening_initial_fraction
+                dydt = dy/dt
+                vfraction = ventptr%opening_initial_fraction + dydt*deltat
+            end if
+        end if
     end if
     return
+
     end function vfraction
     
 end module opening_fractions

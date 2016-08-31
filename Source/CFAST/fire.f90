@@ -1178,13 +1178,12 @@ module fire_routines
     tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
-    ! note that ignition type 1 = time, type 2 = temperature and 3 = incident flux
     do i = 1, n_fires
         fireptr => fireinfo(i)
         if (.not.fireptr%ignited) then
             ignflg = fireptr%ignition_type
             itarg = fireptr%ignition_target
-            if (ignflg==1) then
+            if (ignflg==trigger_by_time) then
                 if (fireptr%ignition_time<=tnobj) then
                     tobj = min(fireptr%ignition_time,tobj)
                     ifobj = i
@@ -1194,11 +1193,11 @@ module fire_routines
                     tmpob(1,i) = 0.0_eb
                     tmpob(2,i) = tnobj + dt
                 end if
-            else if (ignflg==2) then
+            else if (ignflg==trigger_by_temp) then
                 targptr => targetinfo(itarg)
                 call check_object_ignition (told,dt,targptr%temperature(idx_tempf_trg),fireptr%ignition_criterion, &
                     fireptr%temperature,i,ifobj,tobj,tmpob(1,i))
-            else if (ignflg==3) then
+            else if (ignflg==trigger_by_flux) then
                 targptr => targetinfo(itarg)
                 call check_object_ignition (told,dt,targptr%flux_incident_front,fireptr%ignition_criterion, &
                     fireptr%incident_flux,i,ifobj,tobj,tmpob(1,i))
@@ -1214,7 +1213,7 @@ module fire_routines
             fireptr => fireinfo(i)
             if (.not.fireptr%ignited) then
                 itarg = fireptr%ignition_target
-                if (ignflg>1) then
+                if (ignflg/=trigger_by_time) then
                     targptr => targetinfo(itarg)
                     fireptr%temperature = targptr%temperature(idx_tempf_trg)
                     fireptr%incident_flux = targptr%flux_incident_front

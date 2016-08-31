@@ -730,9 +730,9 @@ module input_routines
 
             if (lcarray(6)=='TIME' .or. lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                 ! it's a new format fire line that point to an existing target rather than to one created for the fire
-                if (lcarray(6)=='TIME') fireptr%ignition_type = 1
-                if (lcarray(6)=='TEMP') fireptr%ignition_type = 2
-                if (lcarray(6)=='FLUX') fireptr%ignition_type = 3
+                if (lcarray(6)=='TIME') fireptr%ignition_type = trigger_by_time
+                if (lcarray(6)=='TEMP') fireptr%ignition_type = trigger_by_temp
+                if (lcarray(6)=='FLUX') fireptr%ignition_type = trigger_by_flux
                 tmpcond = lrarray(7)
                 fireptr%ignition_target = 0
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
@@ -756,10 +756,10 @@ module input_routines
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
             if (tmpcond>0.0_eb) then
                 fireptr%ignited = .false.
-                if (fireptr%ignition_type==1) then
+                if (fireptr%ignition_type==trigger_by_time) then
                     fireptr%ignition_time = tmpcond
                     fireptr%ignition_criterion = 1.0e30_eb
-                else if (fireptr%ignition_type==2.or.fireptr%ignition_type==3) then
+                else if (fireptr%ignition_type==trigger_by_temp.or.fireptr%ignition_type==trigger_by_flux) then
                     fireptr%ignition_time = 1.0e30_eb
                     fireptr%ignition_criterion = tmpcond
                 else
@@ -772,7 +772,7 @@ module input_routines
             end if
 
             ! If fire ignition backtracking is on, make sure time step is small enough to work
-            if (option(fbtobj)==off.and.fireptr%ignition_type/=1) then
+            if (option(fbtobj)==off.and.fireptr%ignition_type/=trigger_by_time) then
                 if (stpmax>0.0_eb) then
                     stpmax = min(stpmax,1.0_eb)
                 else
@@ -913,8 +913,8 @@ module input_routines
                 stop
             end if
 
-            ventptr%opening(initial_fraction) = initialopening
-            ventptr%opening(final_fraction) = initialopening
+            ventptr%opening_initial_fraction = initialopening
+            ventptr%opening_final_fraction = initialopening
 
             roomptr => roominfo(ventptr%room1)
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
@@ -954,9 +954,9 @@ module input_routines
                     do iijk = 1, n_hvents
                         ventptr => hventinfo(iijk)
                         if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
-                            ventptr%opening(initial_time) = lrarray(5)
-                            ventptr%opening(final_time) = lrarray(5) + lrarray(7)
-                            ventptr%opening(final_fraction) = lrarray(6)
+                            ventptr%opening_initial_time = lrarray(5)
+                            ventptr%opening_final_time = lrarray(5) + lrarray(7)
+                            ventptr%opening_final_fraction = lrarray(6)
                         end if
                     end do
                 case ('V')
@@ -966,9 +966,9 @@ module input_routines
                     do iijk = 1, n_vvents
                         ventptr => vventinfo(iijk)
                         if (ventptr%top==i.and.ventptr%bottom==j.and.ventptr%counter==k) then
-                            ventptr%opening(initial_time) = lrarray(5)
-                            ventptr%opening(final_time) = lrarray(5) + lrarray(7)
-                            ventptr%opening(final_fraction) = lrarray(6)
+                            ventptr%opening_initial_time = lrarray(5)
+                            ventptr%opening_final_time = lrarray(5) + lrarray(7)
+                            ventptr%opening_final_fraction = lrarray(6)
                         end if
                     end do
                 case ('M')
@@ -978,9 +978,9 @@ module input_routines
                     do iijk = 1, n_mvents
                         ventptr => mventinfo(iijk)
                         if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
-                            ventptr%opening(initial_time) = lrarray(5)
-                            ventptr%opening(final_time) = lrarray(5) + lrarray(7)
-                            ventptr%opening(final_fraction) = lrarray(6)
+                            ventptr%opening_initial_time = lrarray(5)
+                            ventptr%opening_final_time = lrarray(5) + lrarray(7)
+                            ventptr%opening_final_fraction = lrarray(6)
                         end if
                     end do
                 case ('F')
@@ -991,9 +991,9 @@ module input_routines
                         stop
                     end if
                     ventptr => mventinfo(fannumber)
-                    ventptr%filter(initial_time) = lrarray(5)
-                    ventptr%filter(final_time) = lrarray(5) + lrarray(7)
-                    ventptr%filter(final_fraction) = lrarray(6)
+                    ventptr%filter_initial_time = lrarray(5)
+                    ventptr%filter_final_time = lrarray(5) + lrarray(7)
+                    ventptr%filter_final_fraction = lrarray(6)
                 case default
                     write (*,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
                     write (logerr,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
@@ -1040,11 +1040,13 @@ module input_routines
                 i = lrarray(1)
                 j = lrarray(2)
                 if (countargs(lcarray)==5) then
+                    ! oldest format that only allows one vent per compartment pair
                     k = 1
                     icarea = 3
                     icshape = 4
                     icfraction = 5
                 else
+                    ! newer format that allows more than one vent per compartment pair
                     k = lrarray(3)
                     icarea = 4
                     icshape = 5
@@ -1069,8 +1071,8 @@ module input_routines
                 else
                     ventptr%shape = lrarray(icshape)
                 end if
-                ventptr%opening(initial_fraction) = lrarray(icfraction)
-                ventptr%opening(final_fraction) = lrarray(icfraction)
+                ventptr%opening_initial_fraction = lrarray(icfraction)
+                ventptr%opening_final_fraction = lrarray(icfraction)
             else
                 write (*,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 write (logerr,*) '***Error: Bad VVENT input. At least 5 arguments required.'
@@ -1124,8 +1126,8 @@ module input_routines
                 ventptr%max_cutoff_relp = lrarray(12)
 
                 ! finally, we set the initial fraction opening
-                ventptr%opening(initial_fraction) = lrarray(13)
-                ventptr%opening(final_fraction) = lrarray(13)
+                ventptr%opening_initial_fraction = lrarray(13)
+                ventptr%opening_final_fraction = lrarray(13)
             else
                 write (*,*) '***Error: Bad MVENT input. 13 arguments required.'
                 write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'

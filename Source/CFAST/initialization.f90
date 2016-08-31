@@ -310,19 +310,21 @@ module initialization_routines
     hventinfo(1:mxhvents)%absolute_sill = 0.0_eb
     hventinfo(1:mxhvents)%face = 1
     ! start with vents open
-    hventinfo(1:mxhvents)%opening(initial_time) = 1.0_eb
-    hventinfo(1:mxhvents)%opening(initial_fraction) = 0.0_eb
-    hventinfo(1:mxhvents)%opening(final_time) = 1.0_eb
-    hventinfo(1:mxhvents)%opening(final_fraction) = 0.0_eb
+    hventinfo(1:mxhvents)%opening_type = trigger_by_time
+    hventinfo(1:mxhvents)%opening_initial_time = 1.0_eb
+    hventinfo(1:mxhvents)%opening_initial_fraction = 0.0_eb
+    hventinfo(1:mxhvents)%opening_final_time = 1.0_eb
+    hventinfo(1:mxhvents)%opening_final_fraction = 0.0_eb
 
     ! vertical vents
     vventinfo(1:mxvvents)%shape = 1
     vventinfo(1:mxvvents)%area = 0.0_eb
     ! start with vents open
-    vventinfo(1:mxvvents)%opening(initial_time) = 1.0_eb
-    vventinfo(1:mxvvents)%opening(initial_fraction) = 0.0_eb
-    vventinfo(1:mxvvents)%opening(final_time) = 1.0_eb
-    vventinfo(1:mxvvents)%opening(final_fraction) = 0.0_eb
+    vventinfo(1:mxvvents)%opening_type = trigger_by_time
+    vventinfo(1:mxvvents)%opening_initial_time = 1.0_eb
+    vventinfo(1:mxvvents)%opening_initial_fraction = 0.0_eb
+    vventinfo(1:mxvvents)%opening_final_time = 1.0_eb
+    vventinfo(1:mxvvents)%opening_final_fraction = 0.0_eb
 
     ! mechanical vents
 
@@ -334,14 +336,15 @@ module initialization_routines
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering since
     ! there is not "thing" associated with a filter, there is no (as of 11/21/2006)
     ! way to have an intial value other than 0 (no filtering).
-    mventinfo(1:mxmvents)%opening(initial_time) = 1.0_eb
-    mventinfo(1:mxmvents)%opening(initial_fraction) = 0.0_eb
-    mventinfo(1:mxmvents)%opening(final_time) = 1.0_eb
-    mventinfo(1:mxmvents)%opening(final_fraction) = 0.0_eb
-    mventinfo(1:mxmvents)%filter(initial_time) = 0.0_eb
-    mventinfo(1:mxmvents)%filter(initial_fraction) = 0.0_eb
-    mventinfo(1:mxmvents)%filter(final_time) = 0.0_eb
-    mventinfo(1:mxmvents)%filter(final_fraction) = 0.0_eb
+    mventinfo(1:mxmvents)%opening_type = trigger_by_time
+    mventinfo(1:mxmvents)%opening_initial_time = 1.0_eb
+    mventinfo(1:mxmvents)%opening_initial_fraction = 0.0_eb
+    mventinfo(1:mxmvents)%opening_final_time = 1.0_eb
+    mventinfo(1:mxmvents)%opening_final_fraction = 0.0_eb
+    mventinfo(1:mxmvents)%filter_initial_time = 0.0_eb
+    mventinfo(1:mxmvents)%filter_initial_fraction = 0.0_eb
+    mventinfo(1:mxmvents)%filter_final_time = 0.0_eb
+    mventinfo(1:mxmvents)%filter_final_fraction = 0.0_eb
 
     ! detectors
     n_detectors = 0
@@ -385,7 +388,7 @@ module initialization_routines
     fireinfo(1:mxfires)%room = 0
     fireinfo(1:mxfires)%name = ' '
     fireinfo(1:mxfires)%chemistry_type = 2
-    fireinfo(1:mxfires)%ignition_type = 1
+    fireinfo(1:mxfires)%ignition_type = trigger_by_time
     fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
     fireinfo(1:mxfires)%ignition_time = 0.0_eb
     fireinfo(1:mxfires)%ignited = .false.

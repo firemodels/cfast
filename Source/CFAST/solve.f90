@@ -1375,27 +1375,27 @@ module solve_routines
         do  i = 1, n_hvents
             ventptr => hventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening(initial_time)
+            discon(ndisc) = ventptr%opening_initial_time
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening(final_time)
+            discon(ndisc) = ventptr%opening_final_time
         end do
         do  i = 1, n_vvents
             ventptr => vventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening(initial_time)
+            discon(ndisc) = ventptr%opening_initial_time
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening(final_time)
+            discon(ndisc) = ventptr%opening_final_time
         end do
         do i = 1, n_mvents
             ventptr => mventinfo(i)
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening(initial_time)
+            discon(ndisc) = ventptr%opening_initial_time
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening(final_time)
+            discon(ndisc) = ventptr%opening_final_time
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%filter(initial_time)
+            discon(ndisc) = ventptr%filter_initial_time
             ndisc = ndisc + 1
-            discon(ndisc) = ventptr%filter(final_time)
+            discon(ndisc) = ventptr%filter_final_time
         end do
 
         ! put the discontinuity array into order

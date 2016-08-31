@@ -249,6 +249,10 @@ module cfast_types
         real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
         real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
         real(eb) :: filter(4)                           ! simple filtering of vents ... same structure as open/close below
+        real(eb) :: filter_initial_time                 ! beginning time for filter fraction change
+        real(eb) :: filter_initial_fraction             ! beginning fraction for filter (filter fraction up to initial time)
+        real(eb) :: filter_final_time                   ! ending time for filter fraction change
+        real(eb) :: filter_final_fraction               ! final fraction for filter (filter fraction after final time)
 
         real(eb) :: relp                                ! pressure difference across vent (room2 - room1)
         real(eb), dimension(2) :: mv_mflow              ! vent mass flow at compartment connection (u,l)
@@ -264,12 +268,11 @@ module cfast_types
         integer :: opening_target           ! target number associated with vent (user input)
         integer :: opening_type             ! open/close type for fire (user input)
                                             ! (1 = time, 2 = temperature, 3 = heat flux)
-        real(eb) :: opening_criterion       ! open/close criteria for fire. Units depend on ignition type (user input)
-        real(eb), dimension(4) :: opening   ! simple open and closing of vents
-                                            ! 1 = beginning time of vent opening
-                                            ! 2 = beginning fraction for initial open fraction
-                                            ! 3 = ending time for vent opening
-                                            ! 4 = ending fraction vent open fraction
+        real(eb) :: opening_criterion       ! open/close criteria for vent change based on temperature or flux
+        real(eb) :: opening_initial_time    ! beginning time of vent opening fraction change
+        real(eb) :: opening_initial_fraction! beginning fraction for vent opening (vent fraction up to initial time)
+        real(eb) :: opening_final_time      ! ending time for vent opening fraction change
+        real(eb) :: opening_final_fraction  ! final fraction for vent opening (vent fraction after final time)
                                             ! between initial and final, open fraction changes linearly
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
         real(eb) :: area                    ! cross-sectional area of vent

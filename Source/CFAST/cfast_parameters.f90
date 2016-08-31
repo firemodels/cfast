@@ -24,6 +24,10 @@ module cparams
 
     integer, parameter :: mxthrmp = 125         ! maximum number of thermal properties
     integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names
+    
+    integer, parameter :: trigger_by_time = 1   ! indicies for fire ignition type (also used by vents)
+    integer, parameter :: trigger_by_temp = 2
+    integer, parameter :: trigger_by_flux = 3
 
     ! ventilation parameters
     integer, parameter :: mxccv = 25                ! maximum number of vent connections between compartment pairs

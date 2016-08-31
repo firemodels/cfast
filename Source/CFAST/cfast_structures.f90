@@ -266,10 +266,10 @@ module cfast_types
                                             ! (1 = time, 2 = temperature, 3 = heat flux)
         real(eb) :: opening_criterion       ! open/close criteria for fire. Units depend on ignition type (user input)
         real(eb), dimension(4) :: opening   ! simple open and closing of vents
-                                            ! 1 = initial fraction of vent opening
-                                            ! 2 = end time for initial open fraction
-                                            ! 3 = final fraction of vent opening
-                                            ! 4 = beginning time for final vent open fraction
+                                            ! 1 = beginning time of vent opening
+                                            ! 2 = beginning fraction for initial open fraction
+                                            ! 3 = ending time for vent opening
+                                            ! 4 = ending fraction vent open fraction
                                             ! between initial and final, open fraction changes linearly
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
         real(eb) :: area                    ! cross-sectional area of vent

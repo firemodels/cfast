@@ -75,9 +75,9 @@ module cparams
 
     integer, parameter :: mxdtect=10*mxrooms                ! maximum number of detectors
 
-    integer, parameter :: check_detector_state = 0          ! index to check state of detectors and targets
-    integer, parameter :: set_detector_state = 1            ! index to calculate full state of detectors and targets
-    integer, parameter :: update_detector_state = 2         ! index to update state of detectors and targets on
+    integer, parameter :: check_state = 0                   ! index to check state of detectors and targets
+    integer, parameter :: set_state = 1                     ! index to calculate full state of detectors and targets
+    integer, parameter :: update_state = 2                  ! index to update state of detectors and targets on 
                                                             ! successful equation set solution
     
     integer, parameter :: pde = 1                           ! plate targets (cartesian coordinates)

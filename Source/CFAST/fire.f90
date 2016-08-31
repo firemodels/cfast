@@ -1208,7 +1208,7 @@ module fire_routines
         end if
     end do
 
-    if (iflag/=check_detector_state) then
+    if (iflag/=check_state) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
             if (.not.fireptr%ignited) then
@@ -1218,7 +1218,7 @@ module fire_routines
                     fireptr%temperature = targptr%temperature(idx_tempf_trg)
                     fireptr%incident_flux = targptr%flux_incident_front
                 end if
-                if (iflag==set_detector_state.and.tmpob(1,i)>0.0_eb) then
+                if (iflag==set_state.and.tmpob(1,i)>0.0_eb) then
                     if (tmpob(2,i)<=tobj) then
                         fireptr%ignited = .true.
                         if (option(fbtobj)==on) then

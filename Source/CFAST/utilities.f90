@@ -1200,6 +1200,7 @@ module opening_fractions
     use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux 
     use ramp_data
     use vent_data
+    use target_data, only: targetinfo
 
     implicit none
 
@@ -1279,6 +1280,7 @@ module opening_fractions
     !	This is the open/close function for vent flow
 
     type(vent_type) :: ventptr
+    type(target_type), pointer :: targptr
     real(eb), intent(in) :: time
     character(len=1), intent(in) :: vtype
 
@@ -1298,6 +1300,7 @@ module opening_fractions
             vfraction = ventptr%filter_initial_fraction + dydt*deltat
         end if
     else
+        ! check normal vent triggering by time
         if (ventptr%opening_type==trigger_by_time) then
             if (time<ventptr%opening_initial_time) then
                 vfraction = ventptr%opening_initial_fraction
@@ -1309,6 +1312,24 @@ module opening_fractions
                 dy = ventptr%opening_final_fraction - ventptr%opening_initial_fraction
                 dydt = dy/dt
                 vfraction = ventptr%opening_initial_fraction + dydt*deltat
+            end if
+        ! check vent triggering by temperature. if tripped, turn it into a time-based change
+        else if (ventptr%opening_type==trigger_by_temp) then
+            targptr => targetinfo(ventptr%opening_target)
+            if (targptr%temperature(idx_tempf_trg)>ventptr%opening_criterion) then
+                ventptr%opening_initial_time = time
+                ventptr%opening_final_time = time + 1.0_eb
+                ventptr%opening_type = trigger_by_time
+                vfraction = ventptr%opening_initial_time
+            end if
+        ! check vent triggering by flux. if tripped, turn it into a time-based change
+        else if (ventptr%opening_type==trigger_by_flux) then
+            targptr => targetinfo(ventptr%opening_target)
+            if (targptr%flux_incident_front>ventptr%opening_criterion) then
+                ventptr%opening_initial_time = time
+                ventptr%opening_final_time = time + 1.0_eb
+                ventptr%opening_type = trigger_by_time
+                vfraction = ventptr%opening_initial_time
             end if
         end if
     end if

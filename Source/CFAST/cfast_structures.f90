@@ -269,6 +269,9 @@ module cfast_types
         integer :: opening_type             ! open/close type for fire (user input)
                                             ! (1 = time, 2 = temperature, 3 = heat flux)
         real(eb) :: opening_criterion       ! open/close criteria for vent change based on temperature or flux
+        logical :: opening_triggered        ! true if opening_criterion has been met
+        real(eb) :: opening_temperature     ! current temeprature of target associate with vent
+        real(eb) :: opening_flux            ! current incident flux of target associate with vent
         real(eb) :: opening_initial_time    ! beginning time of vent opening fraction change
         real(eb) :: opening_initial_fraction! beginning fraction for vent opening (vent fraction up to initial time)
         real(eb) :: opening_final_time      ! ending time for vent opening fraction change

@@ -20,7 +20,7 @@ module hflow_routines
 
     private
 
-    public horizontal_flow, gethventinfo
+    public horizontal_flow
 
     contains
 
@@ -732,33 +732,5 @@ module hflow_routines
     end do
     return
     end subroutine delp
-
-    ! --------------------------- getventinfo -------------------------------------------
-
-    subroutine gethventinfo (i,ifrom, ito, iface, vwidth, vbottom, vtop, voffset, vred, vgreen, vblue)
-
-    !       This is a routine to get the shape data for horizontal flow vents
-
-    integer, intent(in) :: i
-    integer, intent(out) :: ifrom,ito,iface
-    real(eb), intent(out) :: vwidth, voffset,vbottom,vtop,vred,vgreen,vblue
-    type(vent_type), pointer :: ventptr
-
-    ventptr=>hventinfo(i)
-
-    ifrom =ventptr%room1
-    ito = ventptr%room2
-    iface = ventptr%face
-    vwidth = ventptr%width
-    voffset = ventptr%offset(1)
-    vbottom = ventptr%sill
-    vtop = ventptr%soffit
-    vred = 1.0_eb
-    vgreen = 0.0_eb
-    vblue = 1.0_eb
-
-    return
-
-    end subroutine gethventinfo
-
+    
 end module hflow_routines

@@ -279,6 +279,8 @@ module cfast_types
                                             ! between initial and final, open fraction changes linearly
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
         real(eb) :: area                    ! cross-sectional area of vent
+        real(eb) :: xoffset                 ! offset from origin to vent center in width (x) direction
+        real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction
 
         ! These are calculated results for the current time step
     

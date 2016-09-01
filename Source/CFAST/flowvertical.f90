@@ -351,7 +351,7 @@ module vflow_routines
     ventptr => vventinfo(ivent)
     itop = ventptr%top
     ibot = ventptr%bottom
-    harea = ventptr%current_area
+    harea = ventptr%area
     hshape = ventptr%shape
     if (itop>nrm1) then
         hface = 6

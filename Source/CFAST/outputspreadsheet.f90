@@ -534,7 +534,7 @@ module spreadsheet_routines
     ! vertical vents
     do i = 1, n_vvents
         ventptr => vventinfo(i)
-        avent = ventptr%area
+        avent = ventptr%current_area
         call ssaddtolist (position,avent,outarray)
         ! flow slabs for the vent
         slabs = ventptr%n_slabs

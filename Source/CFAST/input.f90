@@ -897,25 +897,48 @@ module input_routines
                 ventptr%soffit = lrarray(5)
                 ventptr%sill = lrarray(6)
             end if
-            if (countargs(lcarray)>=11) then
+            if (lcarray(7)=='TIME' .or. lcarray(7)=='TEMP' .or. lcarray(7)=='FLUX') then
+                ventptr%offset(1) = lrarray(7)
+                ventptr%offset(2) = lrarray(8)
+                ventptr%face = lrarray(9)
+                if (lcarray(10)=='TIME') then
+                    ventptr%opening_type = trigger_by_time
+                    ventptr%opening_initial_time = lrarray(13)
+                    ventptr%opening_initial_fraction = lrarray(14)
+                    ventptr%opening_final_time = lrarray(15)
+                    ventptr%opening_final_fraction = lrarray(16)
+                else
+                    if (lcarray(10)=='TEMP') ventptr%opening_type = trigger_by_temp
+                    if (lcarray(10)=='FLUX') ventptr%opening_type = trigger_by_flux
+                    ventptr%opening_criterion = lrarray(11)
+                    do i = 1,n_targets
+                        targptr => targetinfo(i)
+                        if (targptr%name==lcarray(12)) ventptr%opening_target = i
+                    end do
+                    ventptr%opening_initial_fraction = lrarray(14)
+                    ventptr%opening_final_fraction = lrarray(16)
+                end if
+            else if (countargs(lcarray)>=11) then
                 ventptr%offset(1) = lrarray(8)
                 ventptr%offset(2) = lrarray(9)
                 ventptr%face = lrarray(10)
                 initialopening = lrarray(11)
+                ventptr%opening_type = trigger_by_time
+                ventptr%opening_initial_fraction = initialopening
+                ventptr%opening_final_fraction = initialopening
             else if (countargs(lcarray)>=9) then
                 ventptr%offset(1) = lrarray(7)
                 ventptr%offset(2) = 0.0_eb
+                ventptr%opening_type = trigger_by_time
                 ventptr%face = lrarray(8)
                 initialopening = lrarray(9)
+                ventptr%opening_initial_fraction = initialopening
+                ventptr%opening_final_fraction = initialopening
             else
                 write (*,*) '***Error: Bad HVENT input. At least 7 arguments required.'
                 write (logerr,*) '***Error: Bad HVENT input. At least 7 arguments required.'
                 stop
             end if
-
-            ventptr%opening_initial_fraction = initialopening
-            ventptr%opening_final_fraction = initialopening
-
             roomptr => roominfo(ventptr%room1)
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
             ventptr%absolute_sill = ventptr%sill + roomptr%z0
@@ -1092,6 +1115,7 @@ module input_routines
                     ventptr%xoffset = lrarray(13)
                     ventptr%yoffset = lrarray(14)
                 else
+                    ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_fraction = lrarray(icfraction)
                     ventptr%opening_final_fraction = lrarray(icfraction)
                     if (ventptr%top<=nrm1) then
@@ -1157,15 +1181,37 @@ module input_routines
                 ventptr%min_cutoff_relp = lrarray(11)
                 ventptr%max_cutoff_relp = lrarray(12)
 
-                ! finally, we set the initial fraction opening
-                ventptr%opening_initial_fraction = lrarray(13)
-                ventptr%opening_final_fraction = lrarray(13)
+                if (lcarray(13)=='TIME' .or. lcarray(13)=='TEMP' .or. lcarray(13)=='FLUX') then
+                    if (lcarray(13)=='TIME') then
+                        ventptr%opening_type = trigger_by_time
+                        ventptr%opening_initial_time = lrarray(16)
+                        ventptr%opening_initial_fraction = lrarray(17)
+                        ventptr%opening_final_time = lrarray(18)
+                        ventptr%opening_final_fraction = lrarray(19)
+                    else
+                        if (lcarray(13)=='TEMP') ventptr%opening_type = trigger_by_temp
+                        if (lcarray(13)=='FLUX') ventptr%opening_type = trigger_by_flux
+                        ventptr%opening_criterion = lrarray(14)
+                        do i = 1,n_targets
+                            targptr => targetinfo(i)
+                            if (targptr%name==lcarray(15)) ventptr%opening_target = i
+                        end do
+                        ventptr%opening_initial_fraction = lrarray(17)
+                        ventptr%opening_final_fraction = lrarray(19)
+                    end if
+                    ventptr%xoffset = lrarray(20)
+                    ventptr%yoffset = lrarray(21)
+                else
+                    ventptr%opening_type = trigger_by_time
+                    ventptr%opening_initial_fraction = lrarray(13)
+                    ventptr%opening_final_fraction = lrarray(13)
+                end if
             else
                 write (*,*) '***Error: Bad MVENT input. 13 arguments required.'
                 write (logerr,*) '***Error: Bad MVENT input. 13 arguments required.'
                 stop
             end if
-            
+
             ! STPMAX # - set the maximum time step to #
         case ('STPMA')
             if (countargs(lcarray)>=1) then

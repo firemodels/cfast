@@ -308,7 +308,7 @@ module initialization_routines
     hventinfo(1:mxhvents)%sill = 0.0_eb
     hventinfo(1:mxhvents)%absolute_soffit = 0.0_eb
     hventinfo(1:mxhvents)%absolute_sill = 0.0_eb
-    hventinfo(1:mxhvents)%face = 1
+    hventinfo(1:mxhvents)%face = face_front
     ! start with vents open
     hventinfo(1:mxhvents)%opening_type = trigger_by_time
     hventinfo(1:mxhvents)%opening_triggered = .false.

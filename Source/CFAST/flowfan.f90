@@ -17,7 +17,7 @@ module mflow_routines
 
     private
 
-    public mechanical_flow, getmventinfo
+    public mechanical_flow
 
     contains
 
@@ -233,47 +233,5 @@ module mflow_routines
     return
     
     end function mv_fraction
-
-! --------------------------- getmventinfo -------------------------------------------
-
-    subroutine getmventinfo (i, iroom, xyz, vred, vgreen, vblue)
-
-    !       This is a routine to get the shape data for mechanical flow vent external connections
-
-    integer, intent(in) :: i, iroom
-    real(eb), intent(out) :: xyz(6),vred,vgreen,vblue
-
-    real(eb) :: vheight, varea
-    type(room_type), pointer :: roomptr
-    type(vent_type), pointer :: ventptr
-
-    ventptr => mventinfo(i)
-    roomptr => roominfo(iroom)
-
-    vheight = ventptr%height(1)
-    varea = ventptr%diffuser_area(1)
-    if (ventptr%orientation(1)==1) then
-        xyz(1) = 0.0_eb
-        xyz(2) = 0.0_eb
-        xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2
-        xyz(4) = roomptr%cdepth/2 + sqrt(varea)/2
-        xyz(5) = vheight - sqrt(varea)/2
-        xyz(6) = vheight + sqrt(varea)/2
-    else
-        xyz(1) = roomptr%cwidth/2 - sqrt(varea)/2
-        xyz(2) = roomptr%cwidth/2 + sqrt(varea)/2
-        xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2
-        xyz(4) = roomptr%cdepth/2 + sqrt(varea)/2
-        xyz(5) = vheight
-        xyz(6) = vheight
-    end if
-
-    vred = 1.0_eb
-    vgreen = 1.0_eb
-    vblue = 1.0_eb
-
-    return
-
-    end subroutine getmventinfo
 
 end module mflow_routines

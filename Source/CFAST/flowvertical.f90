@@ -17,7 +17,7 @@ module vflow_routines
 
     private
 
-    public vertical_flow, getvventinfo
+    public vertical_flow
 
     contains
 
@@ -332,35 +332,5 @@ module vflow_routines
     end do
     return
     end subroutine ventcf
-
-! --------------------------- getvventinfo -------------------------------------------
-
-    subroutine getvventinfo (ivent,itop,ibot,harea,hshape,hface)
-
-    !       this is a routine to get the shape data for vertical flow (horizontal) vents
-
-    use precision_parameters
-    implicit none
-
-    integer, intent(in) :: ivent
-    integer, intent(out) :: itop, ibot, hshape, hface
-    real(eb), intent(out) :: harea
-
-    type(vent_type), pointer :: ventptr
-
-    ventptr => vventinfo(ivent)
-    itop = ventptr%top
-    ibot = ventptr%bottom
-    harea = ventptr%area
-    hshape = ventptr%shape
-    if (itop>nrm1) then
-        hface = 6
-    else
-        hface = 5
-    end if
-
-    return
-    end subroutine getvventinfo
-
 
 end module vflow_routines

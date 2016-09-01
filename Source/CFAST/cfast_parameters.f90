@@ -51,6 +51,10 @@ module cparams
     integer, parameter :: initial_fraction = 2
     integer, parameter :: final_time = 3
     integer, parameter :: final_fraction = 4
+    integer, parameter :: face_front = 1            ! indicates wall face where a wall vent is located
+    integer, parameter :: face_left = 2
+    integer, parameter :: face_back = 3
+    integer, parameter :: face_right = 4
 
     ! room related parameters
     real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume

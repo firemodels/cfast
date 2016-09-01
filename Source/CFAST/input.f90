@@ -1089,9 +1089,21 @@ module input_routines
                         ventptr%opening_initial_fraction = lrarray(10)
                         ventptr%opening_final_fraction = lrarray(12)
                     end if
+                    ventptr%xoffset = lrarray(13)
+                    ventptr%yoffset = lrarray(14)
                 else
                     ventptr%opening_initial_fraction = lrarray(icfraction)
                     ventptr%opening_final_fraction = lrarray(icfraction)
+                    if (ventptr%top<=nrm1) then
+                        roomptr => roominfo(ventptr%top)
+                        ventptr%xoffset = roomptr%cwidth/2
+                        ventptr%yoffset = roomptr%cdepth/2
+                    else
+                        roomptr => roominfo(ventptr%bottom)
+                        ventptr%xoffset = roomptr%cwidth/2
+                        ventptr%yoffset = roomptr%cdepth/2
+                    end if
+                        
                 end if
             else
                 write (*,*) '***Error: Bad VVENT input. At least 5 arguments required.'

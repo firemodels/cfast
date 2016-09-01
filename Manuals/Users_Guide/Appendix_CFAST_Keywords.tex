@@ -297,7 +297,7 @@ specifies that compartment one has one connection to compartment two and the fra
 \section{HVENT}
 
 \begin{lstlisting}
-HVENT FIRST_COMPARTMENT SECOND_COMPARTMENT VENT_NUMBER WIDTH SOFFIT SILL WIND_COEFFICIENT FIRST_COMPARTMENT_OFFSET SECOND_COMPARTMENT_OFFSET FACE INITIAL_OPENING_FRACTION
+HVENT, FIRST_COMPARTMENT, SECOND_COMPARTMENT, VENT_NUMBER, WIDTH, SOFFIT, SILL, FIRST_COMPARTMENT_OFFSET, SECOND_COMPARTMENT_OFFSET, FACE, OPENING_TRIGGER_TYPE, OPENING_TRIGGER_CRITERION, ASSOCIATED_OPENING_TRIGGER_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION
 \end{lstlisting}
 
 Vent which allows horizontal flow of gases through vents such as doors and windows. Compartment offsets are triplets from the compartment origin.  FACE is an integer from 1 to 4 counterclockwise from the origin defining which wall face to place the vent on when visualizing with Smokeview. It doesn't affect the dynamics of the calculation, just the way it looks. The size of the opening can be modified by EVENT. This changes the Opening\_Fraction from the initial value (set above) to some other value. Typical use is to start with the door open (Initial\_Opening\_Fraction~=~1) and use EVENT to close the door (Final\_Fraction~=~0).
@@ -305,7 +305,7 @@ Vent which allows horizontal flow of gases through vents such as doors and windo
 Example:
 
 \begin{lstlisting}
-HVENT,1,2,1,2.4,1.0,0.,0.,0.,0.,1,0.9
+HVENT,1,2,1,1,2,0,2.5,0,1,TIME,,,0,1,0,1
 \end{lstlisting}
 
 \section{INTER}
@@ -363,15 +363,15 @@ MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
 \section{MVENT}
 
 \begin{lstlisting}
-MVENT, FROM_COMPARTMENT, TO_COMPARTMENT, ID_NUMBER, FROM_OPENING_ORIENTATION, FROM_CENTER_HEIGHT, FROM_OPENING_AREA, TO_OPENINGORIENTATION, TO_CENTER_HEIGHT, TO_OPENING_AREA, FLOW, BEGIN_DROPOFF_PRESSURE, ZERO_FLOW_PRESSURE, INITIAL_FRACTION
+MVENT, FROM_COMPARTMENT, TO_COMPARTMENT, ID_NUMBER, FROM_OPENING_ORIENTATION, FROM_CENTER_HEIGHT, FROM_OPENING_AREA, TO_OPENINGORIENTATION, TO_CENTER_HEIGHT, TO_OPENING_AREA, FLOW, BEGIN_DROPOFF_PRESSURE, ZERO_FLOW_PRESSURE, OPENING_TRIGGER_TYPE, OPENING_TRIGGER_CRITERION, ASSOCIATED_OPENING_TRIGGER_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION, X_OFFSET, Y_OFFSET
 \end{lstlisting}
 
-This replaces the more complex mechanical ventilation commands with a constant flow fan connection.  The original commands MVOPN MVFAN MVDCT and INELV are not supported in this version. The command specifies a pair of openings connected by a constant volume flow fan. The fan flow can be modified with the EVENT key word.
+This replaces the more complex mechanical ventilation commands with a constant flow fan connection.  The original commands MVOPN MVFAN MVDCT and INELV are not supported in this version. The command specifies a pair of openings connected by a constant volume flow fan. 
 
 Example:
 
 \begin{lstlisting}
-MVENT,5,7,1,V,0.50,1.00,H,2.40,1.10,2.00,200.,300.,1.0
+MVENT,2,1,1,V,1,0.25,V,1,0.25,0.02,200,300,FLUX,6,Targ1,,0,,1,2,2
 \end{lstlisting}
 
 \section{ONEZ}
@@ -513,10 +513,10 @@ The floor properties of the top compartment (1 in this case) and the ceiling pro
 \section{VVENT}
 
 \begin{lstlisting}
-VVENT, TOP_COMPARTMENT, BOTTOM_COMPARTMENT, VENT_NUMBER, AREA, SHAPE, IGNITION_TYPE, IGNITION_CRITERION, ASSOCIATED_IGNITION_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION, X_OFFSET, Y_OFFSET
+VVENT, TOP_COMPARTMENT, BOTTOM_COMPARTMENT, VENT_NUMBER, AREA, SHAPE, OPENING_TRIGGER_TYPE, OPENING_TRIGGER_CRITERION, ASSOCIATED_OPENING_TRIGGER_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION, X_OFFSET, Y_OFFSET
 \end{lstlisting}
 
-This key word describes horizontal openings between compartments connected with a vent in the floor/ceiling between the compartments. Each VVENT line in the input file describes one floor/ceiling vent.  
+This key word describes horizontal openings between compartments connected with a vent in the floor/ceiling between the compartments. Each VVENT line in the input file describes one floor/ceiling vent.
 
 Example:
 

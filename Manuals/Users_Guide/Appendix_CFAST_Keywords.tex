@@ -513,15 +513,16 @@ The floor properties of the top compartment (1 in this case) and the ceiling pro
 \section{VVENT}
 
 \begin{lstlisting}
-VVENT, FROM_COMPARTMENT, TO_COMPARTMENT, AREA, SHAPE, INITIAL_FRACTION
+VVENT, TOP_COMPARTMENT, BOTTOM_COMPARTMENT, VENT_NUMBER, AREA, SHAPE, IGNITION_TYPE, IGNITION_CRITERION, ASSOCIATED_IGNITION_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION, X_OFFSET, Y_OFFSET
 \end{lstlisting}
 
-This key word describes horizontal openings between compartments connected with a vent in the floor/ceiling between the compartments. Each VVENT line in the input file describes one horizontal vent.  There are four parameters, the connected compartments, the shape of the opening, and the effective area of the vent.
+This key word describes horizontal openings between compartments connected with a vent in the floor/ceiling between the compartments. Each VVENT line in the input file describes one floor/ceiling vent.  
 
 Example:
 
 \begin{lstlisting}
-VVENT,1,2,4.0,2,0.9
+VVENT,2,1,1,0.5,2,TEMP,573.15,Targ1,,0,,1,2.5,2.5
+VVENT,2,1,1,0.5,2,TIME,,,0,1,0,1,2,2
 \end{lstlisting}
 
 

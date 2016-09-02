@@ -25,6 +25,7 @@ Friend Module Data
     Friend Const FaceNames As String = "FrontRightRear Left "
     Friend Const ShapeNames As String = "Round Square"
     Friend Const OrientationNames As String = "Vertical  Horizontal"
+    Friend Const OpenTypes As String = "TIMETEMPFLUX"
 
     Friend myTargets As New TargetCollection
     Friend myDetectors As New TargetCollection
@@ -140,6 +141,15 @@ Friend Module Data
         area
         shape
         intialfraction
+        openingtype = 7
+        opencriterion
+        opentarget
+        openinitialtime
+        openinitialfraction
+        openfinaltime
+        openfinalfraction
+        xoffset
+        yoffset
     End Enum
 
     Friend Enum vheatNum

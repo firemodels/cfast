@@ -33,6 +33,7 @@ Public Class Vent
     Private aOpenValue As Single                ' Vent opening criterion if by temperature or flux
     Private aOpenTarget As String               ' Associated target for vent opening by temperature or flux
     Private aInitialOpening As Single           ' Fraction vent is open at t=0 for flow vents
+    Private aInitialOpeningTime As Single       ' Last time vent is open at initial opening fraction
     Private aFinalOpening As Single             ' EVENT vent opening fraction or HHEAT connected fraction
     Private aFinalOpeningTime As Single         ' EVENT vent opening times
     Private aRampTimePoints(0) As Single        ' Vent opening times from RAMP input
@@ -243,6 +244,17 @@ Public Class Vent
         Set(ByVal Value As String)
             If Value <> aOpenTarget Then
                 aOpenTarget = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property InitialOpeningTime() As Single
+        Get
+            Return myUnits.Convert(UnitsNum.Time).FromSI(aInitialOpeningTime)
+        End Get
+        Set(ByVal Value As Single)
+            If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aInitialOpeningTime Then
+                aInitialOpeningTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
                 aChanged = True
             End If
         End Set

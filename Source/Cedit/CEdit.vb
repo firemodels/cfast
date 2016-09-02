@@ -62,7 +62,7 @@ Public Class CeditMain
     Friend WithEvents MVentOpenCriterion As ComboBox
     Friend WithEvents Label97 As Label
     Friend WithEvents MVentFractions As C1.Win.C1FlexGrid.C1FlexGrid
-    Friend WithEvents VVentTriggerValue As TextBox
+    Friend WithEvents VVentOpenValue As TextBox
     Friend WithEvents VVentFractions As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents VVentTarget As ComboBox
     Friend WithEvents Label66 As Label
@@ -546,7 +546,7 @@ Public Class CeditMain
         Me.VVentXOffset = New System.Windows.Forms.TextBox()
         Me.Label55 = New System.Windows.Forms.Label()
         Me.Label18 = New System.Windows.Forms.Label()
-        Me.VVentTriggerValue = New System.Windows.Forms.TextBox()
+        Me.VVentOpenValue = New System.Windows.Forms.TextBox()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.VVentCompBottom = New System.Windows.Forms.ComboBox()
         Me.VVentTarget = New System.Windows.Forms.ComboBox()
@@ -1747,7 +1747,7 @@ Public Class CeditMain
         Me.GroupVVents.Controls.Add(Me.VVentXOffset)
         Me.GroupVVents.Controls.Add(Me.Label55)
         Me.GroupVVents.Controls.Add(Me.Label18)
-        Me.GroupVVents.Controls.Add(Me.VVentTriggerValue)
+        Me.GroupVVents.Controls.Add(Me.VVentOpenValue)
         Me.GroupVVents.Controls.Add(Me.GroupBox4)
         Me.GroupVVents.Controls.Add(Me.VVentTarget)
         Me.GroupVVents.Controls.Add(Me.Label66)
@@ -1812,13 +1812,13 @@ Public Class CeditMain
         Me.Label18.Text = "SetPoint:"
         Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'VVentTriggerValue
+        'VVentOpenValue
         '
-        Me.VVentTriggerValue.Location = New System.Drawing.Point(573, 65)
-        Me.VVentTriggerValue.Name = "VVentTriggerValue"
-        Me.VVentTriggerValue.Size = New System.Drawing.Size(96, 20)
-        Me.VVentTriggerValue.TabIndex = 737
-        Me.VVentTriggerValue.Text = "1 m"
+        Me.VVentOpenValue.Location = New System.Drawing.Point(573, 65)
+        Me.VVentOpenValue.Name = "VVentOpenValue"
+        Me.VVentOpenValue.Size = New System.Drawing.Size(96, 20)
+        Me.VVentOpenValue.TabIndex = 737
+        Me.VVentOpenValue.Text = "1 m"
         '
         'GroupBox4
         '
@@ -5451,14 +5451,28 @@ Public Class CeditMain
             UpdateGUI.VVents(CurrentVVent)
         End If
     End Sub
-    Private Sub VVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentCompTop.SelectedIndexChanged, VVentCompBottom.SelectedIndexChanged, VVentArea.Leave, VVentShape.SelectedIndexChanged
+    Private Sub VVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentCompTop.SelectedIndexChanged, VVentCompBottom.SelectedIndexChanged, VVentArea.Leave, VVentShape.SelectedIndexChanged, VVentXOffset.Leave, VVentYOffset.Leave, VVentOpenCriterion.SelectedIndexChanged, VVentOpenValue.Leave, VVentTarget.SelectedIndexChanged
         Dim aVent As New Vent
         If CurrentVVent >= 0 And myVVents.Count > 0 Then
             aVent = myVVents.Item(CurrentVVent)
             If sender Is VVentArea Then aVent.Area = Val(VVentArea.Text)
+            If sender Is VVentXOffset Then aVent.OffsetX = Val(VVentXOffset.Text)
+            If sender Is VVentYOffset Then aVent.OffsetY = Val(VVentYOffset.Text)
             If sender Is VVentShape Then aVent.Shape = VVentShape.SelectedIndex + 1
             If sender Is VVentCompTop Then aVent.FirstCompartment = VVentCompTop.SelectedIndex - 1
             If sender Is VVentCompBottom Then aVent.SecondCompartment = VVentCompBottom.SelectedIndex - 1
+            If sender Is VVentOpenCriterion Then
+                If aVent.OpenType <> VVentOpenCriterion.SelectedIndex Then
+                    aVent.OpenType = FireIgnitionCriteria.SelectedIndex
+                    If aVent.OpenType = Fire.FireIgnitionbyTime Then aVent.OpenValue = 0.0
+                    If aVent.OpenType = Fire.FireIgnitionbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    If aVent.OpenType = Fire.FireIgnitionbyFlux Then aVent.OpenValue = 0.0
+                End If
+                If sender Is VVentOpenValue Then aVent.OpenValue = Val(VVentOpenValue.Text)
+                If sender Is VVentTarget Then
+                    aVent.Target = myTargets.Item(VVentTarget.SelectedIndex).Name
+                End If
+            End If
             myVVents(CurrentVVent) = aVent
             UpdateGUI.VVents(CurrentVVent)
         End If

@@ -5469,10 +5469,10 @@ Public Class CeditMain
                     If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
                     If aVent.OpenType = Vent.OpenbyFlux Then aVent.OpenValue = 0.0
                 End If
-                If sender Is VVentOpenValue Then aVent.OpenValue = Val(VVentOpenValue.Text)
-                If sender Is VVentTarget Then
-                    aVent.Target = myTargets.Item(VVentTarget.SelectedIndex).Name
-                End If
+            End If
+            If sender Is VVentOpenValue Then aVent.OpenValue = Val(VVentOpenValue.Text)
+            If sender Is VVentTarget Then
+                aVent.Target = myTargets.Item(VVentTarget.SelectedIndex).Name
             End If
             myVVents(CurrentVVent) = aVent
             UpdateGUI.VVents(CurrentVVent)

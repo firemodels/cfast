@@ -639,6 +639,9 @@ Public Class UpdateGUI
                 MainWin.TargetSummary.Select(index + 1, 0, index + 1, MainWin.TargetSummary.Cols.Count - 1, True)
             End If
             InitTargetList(MainWin.FireTarget)
+            InitTargetList(MainWin.HVentTarget)
+            InitTargetList(MainWin.VVentTarget)
+            InitTargetList(MainWin.MVentTarget)
         End If
     End Sub
     Public Sub Detectors(ByVal index As Integer)

@@ -49,12 +49,12 @@ Public Class Fire
     Private aCompartment As Integer                 ' COmpartment where the fire is located
     Private aXPosition As Single                    ' X (width) position of the fire in the COmpartment
     Private aYPosition As Single                    ' Y (depth) position of the fire in the COmpartment
-    Private aZPosition As Single                     ' Z Component of normal vector from chosen surface of target
+    Private aZPosition As Single                    ' Z Component of normal vector from chosen surface of target
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
     Private Const minValueIgnType As Integer = 0
     Private Const maxValueIgnType As Integer = 2
     Private aIgnitionValue As Single                ' Value at ignition for chosen igntion criterion
-    Private aIgnitionTarget As String                   ' Target assigned for ignition by temperature or flux
+    Private aIgnitionTarget As String               ' Target assigned for ignition by temperature or flux
     Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1

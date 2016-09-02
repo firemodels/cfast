@@ -10,19 +10,29 @@ Public Class Vent
     Friend Const MaximumMVents As Integer = 2 * Compartment.MaximumCompartments
     Friend Const MaximumVHeats As Integer = Compartment.MaximumCompartments
     Friend Const MaximumHHeats As Integer = 2 * Compartment.MaximumCompartments
+    Friend Const OpenbyTime As Integer = 0
+    Friend Const OpenbyTemperature As Integer = 1
+    Friend Const OpenbyFlux As Integer = 2
+    Private Const minValueOpenType As Integer = 0
+    Private Const maxValueOpenType As Integer = 2
 
     Public Const MaxPressure As Single = 8000.0
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aVentType As Integer                ' Type of vent; 0 = horizontal flow, 1 = vertical flow, 2 = mechanical flow
     Private aFirstCompartment As Integer        ' First of compartments connected by vent
-    Private aSecondCompartment As Integer       ' Vent position along wall from end of second compartment for horizontal flow vents
+    Private aSecondCompartment As Integer       ' Second of compartments connected by vent
     Private aOffset As Single                   ' vent position along wall from end of first compartment for horizontal flow vents
+    Private aOffsetX As Single                  ' Placement of vent for Smokeview visualization in X (width) direction for vertical and mechanical vents
+    Private aOffsetY As Single                  ' Placement of vent for Smokeview visualization in Y (depth) direction for vertical and mechanical vents
     Private aWidth As Single                    ' Width of the horizontal flow vent
     Private aSoffit As Single                   ' Soffit (top of vent) height from floor of first compartment for horizontal flow vents
-    Private aSill As Single                     ' Sill (bottom of vent) height from floor of first comparment for horizontal flow vents               ' Wind coefficient (cosine of angle of wind vector and vent opening) for horizontal flow vents
-    Private aInitialOpening As Single           ' Fraction vent is open at t=0 for horizontal flow vents
+    Private aSill As Single                     ' Sill (bottom of vent) height from floor of first comparment for horizontal flow vents
     Private aFace As Integer                    ' Defines which wall on which to display vent in Smokeview, 1 for front, 2 for left, 3 for back, 4 for right
+    Private aOpenType As Integer                ' Vent opening by time, temperature, or incident heat flux
+    Private aOpenValue As Single                ' Vent opening criterion if by temperature or flux
+    Private aOpenTarget As String               ' Associated target for vent opening by temperature or flux
+    Private aInitialOpening As Single           ' Fraction vent is open at t=0 for flow vents
     Private aFinalOpening As Single             ' EVENT vent opening fraction or HHEAT connected fraction
     Private aFinalOpeningTime As Single         ' EVENT vent opening times
     Private aRampTimePoints(0) As Single        ' Vent opening times from RAMP input
@@ -81,6 +91,17 @@ Public Class Vent
             End If
         End Set
     End Property
+    Public Property SecondCompartment() As Integer
+        Get
+            Return aSecondCompartment
+        End Get
+        Set(ByVal Value As Integer)
+            If Value <> aSecondCompartment Then
+                aSecondCompartment = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
     Public Property Offset() As Single
         Get
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffset)
@@ -103,13 +124,36 @@ Public Class Vent
             End If
         End Set
     End Property
-    Public Property SecondCompartment() As Integer
+    Public Property OffsetX() As Single
         Get
-            Return aSecondCompartment
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetX)
         End Get
-        Set(ByVal Value As Integer)
-            If Value <> aSecondCompartment Then
-                aSecondCompartment = Value
+        Set(ByVal Value As Single)
+            If Value = -1 Then
+                If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
+                    Dim aCompartment As New Compartment
+                    aCompartment = myCompartments.Item(aFirstCompartment)
+                    aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2 - aWidth / 2
+                End If
+            ElseIf myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffsetX Then
+                aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property OffsetY() As Single
+        Get
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetY)
+        End Get
+        Set(ByVal Value As Single)
+            If Value = -1 Then
+                If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
+                    Dim aCompartment As New Compartment
+                    aCompartment = myCompartments.Item(aFirstCompartment)
+                    aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2 - aWidth / 2
+                End If
+            ElseIf myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aOffsetY Then
+                aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
@@ -143,6 +187,62 @@ Public Class Vent
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aSoffit Then
                 aSoffit = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property OpenType() As Integer
+        Get
+            Return aOpenType
+        End Get
+        Set(ByVal Value As Integer)
+            If Value >= Vent.minValueOpenType And Value <= Vent.maxValueOpenType Then
+                If aOpenType <> Value Then
+                    aOpenType = Value
+                    aChanged = True
+                End If
+            End If
+        End Set
+    End Property
+    Property OpenValue() As Single
+        Get
+            If aOpenType = OpenbyTime Then
+                Return myUnits.Convert(UnitsNum.Time).FromSI(aOpenValue)
+            ElseIf aOpenType = OpenbyTemperature Then
+                Return myUnits.Convert(UnitsNum.Temperature).FromSI(aOpenValue)
+            ElseIf aOpenType = OpenbyFlux Then
+                Return myUnits.Convert(UnitsNum.HeatFlux).FromSI(aOpenValue)
+            Else
+                Return 0.0
+            End If
+        End Get
+        Set(ByVal Value As Single)
+            If aOpenType = OpenbyTime Then
+                If aOpenValue <> myUnits.Convert(UnitsNum.Time).ToSI(Value) And Value >= 0.0 Then
+                    aOpenValue = myUnits.Convert(UnitsNum.Time).ToSI(Value)
+                    aChanged = True
+                End If
+            ElseIf aOpenType = OpenbyTemperature Then
+                If aOpenValue <> myUnits.Convert(UnitsNum.Temperature).ToSI(Value) Then
+                    aOpenValue = myUnits.Convert(UnitsNum.Temperature).ToSI(Value)
+                    aChanged = True
+                End If
+            ElseIf aOpenType = OpenbyFlux Then
+                If aOpenValue <> myUnits.Convert(UnitsNum.HeatFlux).ToSI(Value) And Value >= 0.0 Then
+                    aOpenValue = myUnits.Convert(UnitsNum.HeatFlux).ToSI(Value)
+                    aChanged = True
+                End If
+            End If
+
+        End Set
+    End Property
+    Public Property Target() As String
+        Get
+            Return aOpenTarget
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aOpenTarget Then
+                aOpenTarget = Value
                 aChanged = True
             End If
         End Set

@@ -1880,6 +1880,7 @@ Public Class CeditMain
         '
         'VVentFractions
         '
+        Me.VVentFractions.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
         Me.VVentFractions.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
         Me.VVentFractions.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
         Me.VVentFractions.AutoClipboard = True
@@ -5463,10 +5464,10 @@ Public Class CeditMain
             If sender Is VVentCompBottom Then aVent.SecondCompartment = VVentCompBottom.SelectedIndex - 1
             If sender Is VVentOpenCriterion Then
                 If aVent.OpenType <> VVentOpenCriterion.SelectedIndex Then
-                    aVent.OpenType = FireIgnitionCriteria.SelectedIndex
-                    If aVent.OpenType = Fire.FireIgnitionbyTime Then aVent.OpenValue = 0.0
-                    If aVent.OpenType = Fire.FireIgnitionbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
-                    If aVent.OpenType = Fire.FireIgnitionbyFlux Then aVent.OpenValue = 0.0
+                    aVent.OpenType = VVentOpenCriterion.SelectedIndex
+                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = 0.0
+                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    If aVent.OpenType = Vent.OpenbyFlux Then aVent.OpenValue = 0.0
                 End If
                 If sender Is VVentOpenValue Then aVent.OpenValue = Val(VVentOpenValue.Text)
                 If sender Is VVentTarget Then
@@ -6671,6 +6672,9 @@ Public Class CeditMain
         UpdateGUI.InitSummaryGrid(FireSummary)
 
         UpdateGUI.InitEditGrid(CompVariableArea)
+        UpdateGUI.InitEditGrid(HVentFractions)
+        UpdateGUI.InitEditGrid(VVentFractions)
+        UpdateGUI.InitEditGrid(MVentFractions)
 
         ' Turn off all input except the simulation environment and compartment add since all others stuff depends on have a compartment
         TabHorizontalFlow.Enabled = False

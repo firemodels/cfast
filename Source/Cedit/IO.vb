@@ -391,16 +391,34 @@ Module IO
                     Case "VVENT"
                         Dim vvent As New Vent
                         If csv.num(i, 0) > 6 Then ' New format that allows more than one VVENT per compartment pair
-                            If csv.num(i, vventNum.firstcompartment) > myCompartments.Count Then _
-                                csv.num(i, vventNum.firstcompartment) = 0
-                            If csv.num(i, vventNum.secondcompartment) > myCompartments.Count Then _
-                                csv.num(i, vventNum.secondcompartment) = 0
-                            vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
-                                csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
-                            vvent.InitialOpening = csv.num(i, vventNum.intialfraction)
-                            vvent.FinalOpening = csv.num(i, vventNum.intialfraction) ' This is the default; it may be changed by an EVENT specification
-                            vvent.Changed = False
-                            myVVents.Add(vvent)
+                            If InStr(OpenTypes, csv.str(i, vventNum.openingtype), CompareMethod.Text) > 0 Then
+                                vvent.OpenType = InStr(OpenTypes, csv.str(i, vventNum.openingtype), CompareMethod.Text) / 4
+                                If vvent.OpenType = Vent.OpenbyTemperature Then
+                                    vvent.InitialOpeningTime = csv.num(i, vventNum.openinitialtime)
+                                    vvent.InitialOpening = csv.num(i, vventNum.openinitialfraction)
+                                    vvent.FinalOpeningTime = csv.num(i, vventNum.openfinaltime)
+                                    vvent.FinalOpening = csv.num(i, vventNum.openfinalfraction)
+                                Else
+                                    vvent.OpenValue = csv.num(i, vventNum.opencriterion)
+                                    vvent.Target = csv.str(i, vventNum.opentarget)
+                                    vvent.InitialOpening = csv.num(i, vventNum.openinitialfraction)
+                                    vvent.FinalOpening = csv.num(i, vventNum.openfinalfraction)
+                                End If
+                                vvent.OffsetX = csv.num(i, vventNum.xoffset)
+                                vvent.OffsetY = csv.num(i, vventNum.yoffset)
+                            Else
+                                If csv.num(i, vventNum.firstcompartment) > myCompartments.Count Then _
+                                    csv.num(i, vventNum.firstcompartment) = 0
+                                If csv.num(i, vventNum.secondcompartment) > myCompartments.Count Then _
+                                    csv.num(i, vventNum.secondcompartment) = 0
+                                vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
+                                    csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
+                                vvent.OpenType = Vent.OpenbyTime
+                                vvent.InitialOpeningTime = 0    ' This is the default; it may be changed by an EVENT specification
+                                vvent.InitialOpening = csv.num(i, vventNum.intialfraction)
+                                vvent.FinalOpeningTime = 0
+                                vvent.FinalOpening = csv.num(i, vventNum.intialfraction)
+                            End If
                         Else ' Old format that does not include vent number and thus only one per compartment pair
                             If csv.num(i, vventNum.firstcompartment) > myCompartments.Count Then _
                                 csv.num(i, vventNum.firstcompartment) = 0
@@ -408,11 +426,13 @@ Module IO
                                 csv.num(i, vventNum.secondcompartment) = 0
                             vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
                                 csv.num(i, vventNum.area - 1), csv.num(i, vventNum.shape - 1))
+                            vvent.InitialOpeningTime = 0    ' This is the default; it may be changed by an EVENT specification
                             vvent.InitialOpening = csv.num(i, vventNum.intialfraction - 1)
-                            vvent.FinalOpening = csv.num(i, vventNum.intialfraction - 1) ' This is the default; it may be changed by an EVENT specification
-                            vvent.Changed = False
-                            myVVents.Add(vvent)
+                            vvent.FinalOpeningTime = 0
+                            vvent.FinalOpening = csv.num(i, vventNum.intialfraction - 1)
                         End If
+                        vvent.Changed = False
+                        myVVents.Add(vvent)
                     Case "WIND"
                         myEnvironment.ExtWindSpeed = csv.num(i, windNum.velocity)
                         myEnvironment.ExtScaleHeight = csv.num(i, windNum.refHeight)
@@ -816,7 +836,7 @@ Module IO
                         aFireObject.SetPosition(csv.num(iFire, fireNum.compartment) - 1, csv.num(iFire, fireNum.xPosition),
                             csv.num(iFire, fireNum.yPosition), csv.num(iFire, fireNum.zposition))
                         aFireObject.PlumeType = csv.num(iFire, fireNum.plumeType) - 1
-                        If csv.str(iFire, fireNum.ignType) = "TIME" Or csv.str(iFire, fireNum.ignType) = "TEMP" Or csv.str(iFire, fireNum.ignType) = "FLUX" Then
+                        If InStr(IgnitionTypes, csv.str(iFire, fireNum.ignType), CompareMethod.Text) > 0 Then
                             ' if it's the new format, ignition is just linked to an existing target
                             aFireObject.IgnitionType = InStr(IgnitionTypes, csv.str(iFire, fireNum.ignType), CompareMethod.Text) / 4
                             aFireObject.Target = csv.str(iFire, fireNum.ignTarget)
@@ -1010,15 +1030,28 @@ Module IO
             aVent = myVVents.Item(j)
             csv.str(i, CFASTlnNum.keyWord) = "VVENT"
             csv.num(i, vventNum.firstcompartment) = aVent.FirstCompartment + 1
-            csv.num(i, vventNum.secondcompartment) = aVent.SecondCompartment + 1
-            csv.num(i, vventNum.area) = aVent.Area
-            csv.num(i, vventNum.shape) = aVent.Shape
-            csv.num(i, vventNum.intialfraction) = aVent.InitialOpening
             If csv.num(i, vventNum.firstcompartment) = 0 Then _
                 csv.num(i, vventNum.firstcompartment) = myCompartments.Count + 1
+            csv.num(i, vventNum.secondcompartment) = aVent.SecondCompartment + 1
             If csv.num(i, vventNum.secondcompartment) = 0 Then _
                 csv.num(i, vventNum.secondcompartment) = myCompartments.Count + 1
             csv.num(i, vventNum.ventnumber) = myVVents.VentNumber(j)
+            csv.num(i, vventNum.area) = aVent.Area
+            csv.num(i, vventNum.shape) = aVent.Shape
+            csv.str(i, vventNum.openingtype) = OpenTypes.Substring(aVent.OpenType * 4, 4)
+            If aVent.OpenType = Vent.OpenbyTime Then
+                csv.num(i, vventNum.openinitialtime) = aVent.InitialOpeningTime
+                csv.num(i, vventNum.openinitialfraction) = aVent.InitialOpening
+                csv.num(i, vventNum.openfinaltime) = aVent.FinalOpeningTime
+                csv.num(i, vventNum.openfinalfraction) = aVent.FinalOpening
+            Else
+                csv.num(i, vventNum.opencriterion) = aVent.OpenValue
+                csv.str(i, vventNum.opentarget) = aVent.Target
+                csv.num(i, vventNum.openinitialfraction) = aVent.InitialOpening
+                csv.num(i, vventNum.openfinalfraction) = aVent.FinalOpening
+            End If
+            csv.num(i, vventNum.xoffset) = aVent.OffsetX
+            csv.num(i, vventNum.yoffset) = aVent.OffsetY
             aVent.Changed = False
             i += 1
         Next

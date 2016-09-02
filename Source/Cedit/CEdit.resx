@@ -126,6 +126,12 @@
   <data name="HVentSummary.StyleInfo" xml:space="preserve">
     <value>Normal{Font:Microsoft Sans Serif, 8.25pt;Margins:1, 1, 1, 1;}	Alternate{}	Fixed{BackColor:236, 233, 216;ForeColor:ControlText;Border:Flat,1,ControlDark,Both;BackgroundImageLayout:Hide;}	Highlight{BackColor:Highlight;ForeColor:HighlightText;}	Focus{}	Editor{}	Search{BackColor:Highlight;ForeColor:HighlightText;}	Frozen{BackColor:Beige;}	FrozenAlternate{}	NewRow{ForeColor:GrayText;}	EmptyArea{BackColor:AppWorkspace;Border:Flat,1,ControlDarkDark,Both;}	SelectedColumnHeader{}	SelectedRowHeader{}	GrandTotal{BackColor:Black;ForeColor:White;}	Subtotal0{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal1{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal2{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal3{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal4{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal5{BackColor:ControlDarkDark;ForeColor:White;}	FilterEditor{}	FirstCustomStyle{}	</value>
   </data>
+  <data name="HVentFractions.ColumnInfo" xml:space="preserve">
+    <value>2,1,0,0,0,85,Columns:0{Width:60;Caption:"Time";Style:"DataType:System.String;TextAlign:LeftCenter;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:60;Caption:"Fraction";Style:"DataType:System.String;TextAlign:LeftCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
+  </data>
+  <data name="HVentFractions.StyleInfo" xml:space="preserve">
+    <value>Normal{Font:Microsoft Sans Serif, 8.25pt;Margins:1, 1, 1, 1;}	Alternate{}	Fixed{BackColor:236, 233, 216;ForeColor:ControlText;Border:Flat,1,ControlDark,Both;BackgroundImageLayout:Hide;}	Highlight{BackColor:Highlight;ForeColor:HighlightText;}	Focus{}	Editor{}	Search{BackColor:Highlight;ForeColor:HighlightText;}	Frozen{BackColor:Beige;}	FrozenAlternate{}	NewRow{ForeColor:GrayText;}	EmptyArea{BackColor:AppWorkspace;Border:Flat,1,ControlDarkDark,Both;}	SelectedColumnHeader{}	SelectedRowHeader{}	GrandTotal{BackColor:Black;ForeColor:White;}	Subtotal0{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal1{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal2{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal3{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal4{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal5{BackColor:ControlDarkDark;ForeColor:White;}	FilterEditor{}	FirstCustomStyle{}	</value>
+  </data>
   <data name="VVentSummary.ColumnInfo" xml:space="preserve">
     <value>5,1,0,0,0,85,Columns:0{Width:40;Caption:"Num";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:120;Caption:"Top";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	2{Width:120;Caption:"Bottom";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	3{Width:60;Caption:"Area";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	4{Width:60;Caption:"Shape";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
   </data>
@@ -154,6 +160,12 @@
     <value>12,1,0,0,0,85,Columns:0{Width:40;Caption:"Num";Style:"TextAlign:CenterTop;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:120;Caption:"From Compartment";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	2{Width:60;Caption:"From Area";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	3{Width:70;Caption:"From Height";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	4{Width:60;Caption:"From Type";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	5{Width:120;Caption:"To Compartment";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	6{Width:60;Caption:"To Area";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	7{Width:70;Caption:"To Height";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	8{Width:60;Caption:"To Type";}	9{Width:60;Caption:"Flow";}	10{Width:60;Caption:"Dropoff";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	11{Width:60;Caption:"Zero Flow";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
   </data>
   <data name="MVentSummary.StyleInfo" xml:space="preserve">
+    <value>Normal{Font:Microsoft Sans Serif, 8.25pt;Margins:1, 1, 1, 1;}	Alternate{}	Fixed{BackColor:236, 233, 216;ForeColor:ControlText;Border:Flat,1,ControlDark,Both;BackgroundImageLayout:Hide;}	Highlight{BackColor:Highlight;ForeColor:HighlightText;}	Focus{}	Editor{}	Search{BackColor:Highlight;ForeColor:HighlightText;}	Frozen{BackColor:Beige;}	FrozenAlternate{}	NewRow{ForeColor:GrayText;}	EmptyArea{BackColor:AppWorkspace;Border:Flat,1,ControlDarkDark,Both;}	SelectedColumnHeader{}	SelectedRowHeader{}	GrandTotal{BackColor:Black;ForeColor:White;}	Subtotal0{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal1{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal2{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal3{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal4{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal5{BackColor:ControlDarkDark;ForeColor:White;}	FilterEditor{}	FirstCustomStyle{}	</value>
+  </data>
+  <data name="MVentFractions.ColumnInfo" xml:space="preserve">
+    <value>2,1,0,0,0,85,Columns:0{Width:60;Caption:"Time";Style:"DataType:System.String;TextAlign:LeftCenter;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:60;Caption:"Fraction";Style:"DataType:System.String;TextAlign:LeftCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
+  </data>
+  <data name="MVentFractions.StyleInfo" xml:space="preserve">
     <value>Normal{Font:Microsoft Sans Serif, 8.25pt;Margins:1, 1, 1, 1;}	Alternate{}	Fixed{BackColor:236, 233, 216;ForeColor:ControlText;Border:Flat,1,ControlDark,Both;BackgroundImageLayout:Hide;}	Highlight{BackColor:Highlight;ForeColor:HighlightText;}	Focus{}	Editor{}	Search{BackColor:Highlight;ForeColor:HighlightText;}	Frozen{BackColor:Beige;}	FrozenAlternate{}	NewRow{ForeColor:GrayText;}	EmptyArea{BackColor:AppWorkspace;Border:Flat,1,ControlDarkDark,Both;}	SelectedColumnHeader{}	SelectedRowHeader{}	GrandTotal{BackColor:Black;ForeColor:White;}	Subtotal0{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal1{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal2{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal3{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal4{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal5{BackColor:ControlDarkDark;ForeColor:White;}	FilterEditor{}	FirstCustomStyle{}	</value>
   </data>
   <data name="FireSummary.ColumnInfo" xml:space="preserve">
@@ -217,7 +229,7 @@
     <value>530, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>28</value>
+    <value>25</value>
   </metadata>
   <metadata name="C1SizerLight1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>660, 17</value>

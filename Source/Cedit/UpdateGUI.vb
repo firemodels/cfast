@@ -389,9 +389,6 @@ Public Class UpdateGUI
             MainWin.HVentSill.Text = aVent.Sill.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentSoffit.Text = aVent.Soffit.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentWidth.Text = aVent.Width.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.HVentInitialFraction.Text = aVent.InitialOpening.ToString
-            MainWin.HVentFinalFraction.Text = aVent.FinalOpening.ToString
-            MainWin.HVentFractionTime.Text = aVent.FinalOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
             MainWin.HVentFace.SelectedIndex = aVent.Face - 1
             NumHVents = myHVents.Count
             ClearGrid(MainWin.HVentSummary)
@@ -507,10 +504,6 @@ Public Class UpdateGUI
             MainWin.MVentFlow.Text = aVent.FlowRate.ToString + myUnits.Convert(UnitsNum.Flowrate).Units
             MainWin.MVentDropoff.Text = aVent.BeginFlowDropoff.ToString + myUnits.Convert(UnitsNum.Pressure).Units
             MainWin.MVentZero.Text = aVent.ZeroFlow.ToString + myUnits.Convert(UnitsNum.Pressure).Units
-
-            MainWin.MVentInitialFraction.Text = aVent.InitialOpening.ToString
-            MainWin.MVentFinalFraction.Text = aVent.FinalOpening.ToString
-            MainWin.MVentFractionTime.Text = aVent.FinalOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
 
             MainWin.MVentFilterEfficiency.Text = aVent.FilterEfficiency.ToString + " %"
             MainWin.MVentFilterTime.Text = aVent.FilterTime.ToString + myUnits.Convert(UnitsNum.Time).Units

@@ -6507,6 +6507,58 @@ Public Class CeditMain
 
 #Region " Support Routines "
 
+    Private Sub Vent_Fraction_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles HVentFractions.BeforeRowColChange, VVentFractions.BeforeRowColChange, MVentFractions.BeforeRowColChange
+        Dim NumPoints As Integer, ir As Integer
+        Dim aVent As New Vent
+        If sender Is HVentFractions Then
+            If CurrentHVent >= 0 And myHVents.Count > 0 Then
+                aVent = myHVents.Item(CurrentHVent)
+                NumPoints = UpdateGUI.CountGridPoints(HVentFractions)
+            End If
+        ElseIf sender Is VVentFractions Then
+            If CurrentVVent >= 0 And myVVents.Count > 0 Then
+                aVent = myVVents.Item(CurrentVVent)
+                NumPoints = UpdateGUI.CountGridPoints(VVentFractions)
+                If NumPoints = 0 Then
+                    Dim TimePoints(0) As Single, FractionPoints(0) As Single
+                    aVent.SetRamp(TimePoints, FractionPoints)
+                    myVVents.Item(CurrentVVent) = aVent
+                    UpdateGUI.Geometry(CurrentCompartment)
+                ElseIf NumPoints = 1 Then
+                    If VVentFractions(1, 0) <> "Initial" Then
+                        aVent.InitialOpeningTime = Val(VVentFractions(1, 0))
+                    End If
+                    aVent.InitialOpening = Val(VVentFractions(1, 1))
+                ElseIf NumPoints = 2 Then
+                    Dim TimePoints(2) As Single, FractionPoints(2) As Single
+                    If VVentFractions(1, 0) <> "Initial" Then
+                        aVent.InitialOpeningTime = Val(VVentFractions(1, 0))
+                    End If
+                    If VVentFractions(2, 0) <> "Final" Then
+                        aVent.FinalOpeningTime = Val(VVentFractions(2, 0))
+                    End If
+                    aVent.InitialOpening = Val(VVentFractions(1, 1))
+                    aVent.FinalOpening = Val(VVentFractions(2, 1))
+                ElseIf NumPoints > 2 Then
+                    Dim TimePoints(NumPoints) As Single, FractionPoints(NumPoints) As Single
+                    For ir = 1 To NumPoints
+                        TimePoints(ir) = Val(VVentFractions(ir, 0))
+                        FractionPoints(ir) = Val(VVentFractions(ir, 1))
+                        If FractionPoints(ir) <= 0 Then FractionPoints(ir) = 0
+                    Next
+                    aVent.SetRamp(TimePoints, FractionPoints)
+                    myVVents.Item(CurrentVVent) = aVent
+                    UpdateGUI.Geometry(CurrentCompartment)
+                End If
+            End If
+            UpdateGUI.VVents(CurrentVVent)
+        ElseIf sender Is MVentFractions Then
+            If CurrentMVent >= 0 And myMVents.Count > 0 Then
+                aVent = myMVents.Item(CurrentMVent)
+                NumPoints = UpdateGUI.CountGridPoints(MVentFractions)
+            End If
+        End If
+    End Sub
     Private Sub OpenDataFile(ByVal FileName As String)
         Dim PathName As String
         If My.Computer.FileSystem.FileExists(FileName) Then

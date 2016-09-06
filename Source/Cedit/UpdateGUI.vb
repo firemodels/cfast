@@ -458,9 +458,13 @@ Public Class UpdateGUI
                 MainWin.VVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
             End If
             MainWin.VVentOpenValue.Text = " "
+            ClearGrid(MainWin.VVentFractions)
             If aVent.OpenType = Vent.OpenbyTime Then
+                MainWin.VVentFractions(1, 0) = aVent.InitialOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
+                MainWin.VVentFractions(1, 1) = aVent.InitialOpening.ToString
+                MainWin.VVentFractions(2, 0) = aVent.FinalOpeningTime.ToString + myUnits.Convert(UnitsNum.Time).Units
+                MainWin.VVentFractions(2, 1) = aVent.FinalOpening.ToString
                 aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
-                ClearGrid(MainWin.VVentFractions)
                 If NumPoints > 0 Then
                     For i = 1 To NumPoints
                         MainWin.VVentFractions(i, 0) = OpeningTimes(i).ToString + myUnits.Convert(UnitsNum.Time).Units

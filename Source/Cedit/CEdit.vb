@@ -45,7 +45,7 @@ Public Class CeditMain
     Friend WithEvents Label55 As Label
     Friend WithEvents Label18 As Label
     Friend WithEvents Label36 As Label
-    Friend WithEvents HVentTriggerValue As TextBox
+    Friend WithEvents HVentOpenValue As TextBox
     Friend WithEvents HVentTarget As ComboBox
     Friend WithEvents Label67 As Label
     Friend WithEvents HVentOpenCriterion As ComboBox
@@ -56,7 +56,7 @@ Public Class CeditMain
     Friend WithEvents MVentXOffset As TextBox
     Friend WithEvents Label99 As Label
     Friend WithEvents Label95 As Label
-    Friend WithEvents MVentTriggerValue As TextBox
+    Friend WithEvents MVentOpenValue As TextBox
     Friend WithEvents MVentTarget As ComboBox
     Friend WithEvents Label96 As Label
     Friend WithEvents MVentOpenCriterion As ComboBox
@@ -510,7 +510,7 @@ Public Class CeditMain
         Me.HVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox()
         Me.Label36 = New System.Windows.Forms.Label()
-        Me.HVentTriggerValue = New System.Windows.Forms.TextBox()
+        Me.HVentOpenValue = New System.Windows.Forms.TextBox()
         Me.HVentTarget = New System.Windows.Forms.ComboBox()
         Me.Label67 = New System.Windows.Forms.Label()
         Me.HVentOpenCriterion = New System.Windows.Forms.ComboBox()
@@ -621,7 +621,7 @@ Public Class CeditMain
         Me.MVentXOffset = New System.Windows.Forms.TextBox()
         Me.Label99 = New System.Windows.Forms.Label()
         Me.Label95 = New System.Windows.Forms.Label()
-        Me.MVentTriggerValue = New System.Windows.Forms.TextBox()
+        Me.MVentOpenValue = New System.Windows.Forms.TextBox()
         Me.MVentTarget = New System.Windows.Forms.ComboBox()
         Me.Label96 = New System.Windows.Forms.Label()
         Me.MVentOpenCriterion = New System.Windows.Forms.ComboBox()
@@ -1425,7 +1425,7 @@ Public Class CeditMain
         'GroupHVentGeometry
         '
         Me.GroupHVentGeometry.Controls.Add(Me.Label36)
-        Me.GroupHVentGeometry.Controls.Add(Me.HVentTriggerValue)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentOpenValue)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentTarget)
         Me.GroupHVentGeometry.Controls.Add(Me.Label67)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentOpenCriterion)
@@ -1460,13 +1460,13 @@ Public Class CeditMain
         Me.Label36.Text = "SetPoint:"
         Me.Label36.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'HVentTriggerValue
+        'HVentOpenValue
         '
-        Me.HVentTriggerValue.Location = New System.Drawing.Point(646, 62)
-        Me.HVentTriggerValue.Name = "HVentTriggerValue"
-        Me.HVentTriggerValue.Size = New System.Drawing.Size(96, 20)
-        Me.HVentTriggerValue.TabIndex = 744
-        Me.HVentTriggerValue.Text = "1 m"
+        Me.HVentOpenValue.Location = New System.Drawing.Point(646, 62)
+        Me.HVentOpenValue.Name = "HVentOpenValue"
+        Me.HVentOpenValue.Size = New System.Drawing.Size(96, 20)
+        Me.HVentOpenValue.TabIndex = 744
+        Me.HVentOpenValue.Text = "1 m"
         '
         'HVentTarget
         '
@@ -2530,7 +2530,7 @@ Public Class CeditMain
         Me.GroupMVents.Controls.Add(Me.MVentXOffset)
         Me.GroupMVents.Controls.Add(Me.Label99)
         Me.GroupMVents.Controls.Add(Me.Label95)
-        Me.GroupMVents.Controls.Add(Me.MVentTriggerValue)
+        Me.GroupMVents.Controls.Add(Me.MVentOpenValue)
         Me.GroupMVents.Controls.Add(Me.MVentTarget)
         Me.GroupMVents.Controls.Add(Me.Label96)
         Me.GroupMVents.Controls.Add(Me.MVentOpenCriterion)
@@ -2602,13 +2602,13 @@ Public Class CeditMain
         Me.Label95.Text = "SetPoint:"
         Me.Label95.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'MVentTriggerValue
+        'MVentOpenValue
         '
-        Me.MVentTriggerValue.Location = New System.Drawing.Point(578, 94)
-        Me.MVentTriggerValue.Name = "MVentTriggerValue"
-        Me.MVentTriggerValue.Size = New System.Drawing.Size(96, 20)
-        Me.MVentTriggerValue.TabIndex = 744
-        Me.MVentTriggerValue.Text = "1 m"
+        Me.MVentOpenValue.Location = New System.Drawing.Point(578, 94)
+        Me.MVentOpenValue.Name = "MVentOpenValue"
+        Me.MVentOpenValue.Size = New System.Drawing.Size(96, 20)
+        Me.MVentOpenValue.TabIndex = 744
+        Me.MVentOpenValue.Text = "1 m"
         '
         'MVentTarget
         '
@@ -5382,7 +5382,7 @@ Public Class CeditMain
             UpdateGUI.HVents(CurrentHVent)
         End If
     End Sub
-    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged
+    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentOpenCriterion.SelectedIndexChanged, HVentOpenValue.Leave, HVentTarget.SelectedIndexChanged
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
@@ -5394,6 +5394,18 @@ Public Class CeditMain
             If sender Is HVentComp1 Then aVent.FirstCompartment = HVentComp1.SelectedIndex - 1
             If sender Is HVentComp2 Then aVent.SecondCompartment = HVentComp2.SelectedIndex - 1
             ' CFast expects the from compartment to be the lower number of the pair and the outside to be the to compartment
+            If sender Is HVentOpenCriterion Then
+                If aVent.OpenType <> HVentOpenCriterion.SelectedIndex Then
+                    aVent.OpenType = HVentOpenCriterion.SelectedIndex
+                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = 0.0
+                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    If aVent.OpenType = Vent.OpenbyFlux Then aVent.OpenValue = 0.0
+                End If
+            End If
+            If sender Is HVentOpenValue Then aVent.OpenValue = Val(HVentOpenValue.Text)
+            If sender Is HVentTarget Then
+                aVent.Target = myTargets.Item(HVentTarget.SelectedIndex).Name
+            End If
             myHVents(CurrentHVent) = aVent
             UpdateGUI.HVents(CurrentHVent)
         End If
@@ -5532,7 +5544,7 @@ Public Class CeditMain
             UpdateGUI.MVents(CurrentMVent)
         End If
     End Sub
-    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentFilterEfficiency.Leave, MVentFilterTime.Leave
+    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentFilterEfficiency.Leave, MVentFilterTime.Leave, MVentOpenCriterion.SelectedIndexChanged, MVentOpenValue.Leave, MVentTarget.SelectedIndexChanged
         Dim aVent As New Vent
         If CurrentMVent >= 0 And myMVents.Count > 0 Then
             aVent = myMVents.Item(CurrentMVent)
@@ -5553,6 +5565,18 @@ Public Class CeditMain
             If sender Is MVentFilterEfficiency Then aVent.FilterEfficiency = Val(MVentFilterEfficiency.Text)
             If sender Is MVentFilterTime Then aVent.FilterTime = Val(MVentFilterTime.Text)
 
+            If sender Is MVentOpenCriterion Then
+                If aVent.OpenType <> MVentOpenCriterion.SelectedIndex Then
+                    aVent.OpenType = MVentOpenCriterion.SelectedIndex
+                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = 0.0
+                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    If aVent.OpenType = Vent.OpenbyFlux Then aVent.OpenValue = 0.0
+                End If
+            End If
+            If sender Is MVentOpenValue Then aVent.OpenValue = Val(MVentOpenValue.Text)
+            If sender Is MVentTarget Then
+                aVent.Target = myTargets.Item(MVentTarget.SelectedIndex).Name
+            End If
             myMVents(CurrentMVent) = aVent
             UpdateGUI.MVents(CurrentMVent)
         End If
@@ -5728,88 +5752,6 @@ Public Class CeditMain
     End Sub
     Private Sub FireData_AfterRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.AfterRowColChange
         UpdateGUI.Fires(CurrentFire)
-    End Sub
-    Private Sub FireData_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireDataSS.KeyDown
-        Dim aChar As String
-        aChar = e.KeyCode.ToString
-        If e.Control Then
-            If aChar = "Delete" Then
-                If FireDataSS.Row > 0 And FireDataSS.Col >= 0 Then
-                    FireDataSS(FireDataSS.Row, FireDataSS.Col) = " "
-                End If
-            End If
-        End If
-        If e.Alt Then
-            If aChar = "Delete" Then
-                If FireDataSS.Row > 0 And FireDataSS.Col >= 0 Then
-                    If CurrentFire >= 0 And CurrentFire < myFires.Count Then
-                        Dim numPoints As Integer, i As Integer, j As Integer
-                        numPoints = CountGridPoints(FireDataSS)
-                        If numPoints > FireDataSS.Row Then
-                            For i = FireDataSS.Row To numPoints
-                                For j = 0 To FireDataSS.Cols.Count - 1
-                                    FireDataSS(i, j) = FireDataSS(i + 1, j)
-                                Next
-                            Next
-                        End If
-                        For j = 0 To FireDataSS.Cols.Count - 1
-                            FireDataSS(numPoints, j) = Nothing
-                        Next
-                        Dim aFire As New Fire
-                        aFire = myFires(CurrentFire)
-                        CopyFireData(aFire)
-                        myFires(CurrentFire) = aFire
-                        UpdateGUI.Fires(CurrentFire)
-                    End If
-                End If
-            End If
-            If aChar = "Insert" Then
-                If FireDataSS.Row > 0 Then
-                    Dim numPoints As Integer, i As Integer, j As Integer
-                    numPoints = CountGridPoints(FireDataSS)
-                    If numPoints > FireDataSS.Row Then
-                        For i = numPoints To FireDataSS.Row Step -1
-                            For j = 0 To FireDataSS.Cols.Count - 1
-                                FireDataSS(i + 1, j) = FireDataSS(i, j)
-                            Next
-                        Next
-                        For j = 0 To FireDataSS.Cols.Count - 1
-                            FireDataSS(FireDataSS.Row, j) = 0
-                        Next
-                    End If
-
-                End If
-            End If
-        End If
-    End Sub
-    Private ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer
-        ' Find the last non-blank row of a grid on the GUI
-        Get
-            Dim LastRow As Integer, ir As Integer
-            Dim s As String
-            LastRow = -1
-            ir = obj.Rows.Count
-            Do
-                ir = ir - 1
-                s = CType(obj(ir, 0), String) + " "
-            Loop Until s <> " " Or ir < 0
-            If LastRow < ir Then LastRow = ir
-            Return LastRow
-        End Get
-    End Property
-    Private Sub CopyFireData(ByVal aFire As Fire)
-        ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
-        Dim numPoints As Integer, ir As Integer, ic As Integer
-        numPoints = CountGridPoints(FireDataSS)
-        If numPoints > 0 Then
-            Dim aFireTimeSeries(12, numPoints - 1) As Single
-            For ir = 0 To numPoints - 1
-                For ic = 0 To 12
-                    aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
-                Next
-            Next
-            aFire.SetFireData(aFireTimeSeries)
-        End If
     End Sub
 #End Region
 
@@ -6507,56 +6449,180 @@ Public Class CeditMain
 
 #Region " Support Routines "
 
+    Private Sub Data_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireDataSS.KeyDown, VVentFractions.KeyDown
+        Dim aChar As String
+        aChar = e.KeyCode.ToString
+        If e.Control Then
+            If aChar = "Delete" Then
+                If sender.Row > 0 And sender.Col >= 0 Then
+                    sender(sender.Row, sender.Col) = " "
+                End If
+            End If
+        End If
+        If e.Alt Then
+            If aChar = "Delete" Then
+                Dim Current As Integer, Count As Integer
+                If sender Is FireDataSS Then
+                    Current = CurrentFire
+                    Count = myFires.Count
+                ElseIf sender Is HVentFractions Then
+                    Current = CurrentHVent
+                    Count = myHVents.Count
+                ElseIf sender Is VVentFractions Then
+                    Current = CurrentVVent
+                    Count = myVVents.Count
+                ElseIf sender Is MVentFractions Then
+                    Current = CurrentMVent
+                    Count = myMVents.Count
+                End If
+                If sender.Row > 0 And sender.Col >= 0 Then
+                    If Current >= 0 And Current < Count Then
+                        Dim numPoints As Integer, i As Integer, j As Integer
+                        numPoints = CountGridPoints(sender)
+                        If numPoints > sender.Row Then
+                            For i = sender.Row To numPoints
+                                For j = 0 To sender.Cols.Count - 1
+                                    sender(i, j) = sender(i + 1, j)
+                                Next
+                            Next
+                        End If
+                        For j = 0 To sender.Cols.Count - 1
+                            sender(numPoints, j) = Nothing
+                        Next
+                        If sender Is FireDataSS Then
+                            Dim aFire As New Fire
+                            aFire = myFires(CurrentFire)
+                            CopyFireData(aFire)
+                            myFires(CurrentFire) = aFire
+                            UpdateGUI.Fires(CurrentFire)
+                        ElseIf sender Is VVentFractions Then
+                            Dim aVent As New Vent
+                            aVent = myVVents(CurrentVVent)
+                            CopyVentData(aVent, sender)
+                            myVVents(CurrentVVent) = aVent
+                            UpdateGUI.VVents(CurrentVVent)
+                        End If
+                    End If
+                End If
+            End If
+            If aChar = "Insert" Then
+                If sender.Row > 0 Then
+                    Dim numPoints As Integer, i As Integer, j As Integer
+                    numPoints = CountGridPoints(sender)
+                    If numPoints > sender.Row Then
+                        For i = numPoints To sender.Row Step -1
+                            For j = 0 To sender.Cols.Count - 1
+                                sender(i + 1, j) = sender(i, j)
+                            Next
+                        Next
+                        For j = 0 To sender.Cols.Count - 1
+                            sender(sender.Row, j) = 0
+                        Next
+                    End If
+
+                End If
+            End If
+        End If
+    End Sub
+    Private ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer
+        ' Find the last non-blank row of a grid on the GUI
+        Get
+            Dim LastRow As Integer, ir As Integer
+            Dim s As String
+            LastRow = -1
+            ir = obj.Rows.Count
+            Do
+                ir = ir - 1
+                s = CType(obj(ir, 0), String) + " "
+            Loop Until s <> " " Or ir < 0
+            If LastRow < ir Then LastRow = ir
+            Return LastRow
+        End Get
+    End Property
+    Private Sub CopyFireData(ByVal aFire As Fire)
+        ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
+        Dim numPoints As Integer, ir As Integer, ic As Integer
+        numPoints = CountGridPoints(FireDataSS)
+        If numPoints > 0 Then
+            Dim aFireTimeSeries(12, numPoints - 1) As Single
+            For ir = 0 To numPoints - 1
+                For ic = 0 To 12
+                    aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
+                Next
+            Next
+            aFire.SetFireData(aFireTimeSeries)
+        End If
+    End Sub
+    Private Sub CopyVentData(ByVal aVent As Vent, ByVal ss As C1.Win.C1FlexGrid.C1FlexGrid)
+        ' Copies time dependent data from the display spreadsheet to the appropriate vent object data array
+        Dim NumPoints As Integer, ir As Integer, ic As Integer
+        NumPoints = CountGridPoints(ss)
+        If NumPoints = 0 Then
+            Dim TimePoints(0) As Single, FractionPoints(0) As Single
+            aVent.SetRamp(TimePoints, FractionPoints)
+        ElseIf NumPoints = 1 Then
+            If ss(1, 0) = "Initial" Then
+                aVent.InitialOpeningTime = 0.0
+            Else
+                aVent.InitialOpeningTime = Val(ss(1, 0))
+            End If
+            aVent.InitialOpening = Val(ss(1, 1))
+        ElseIf NumPoints = 2 Then
+            Dim TimePoints(2) As Single, FractionPoints(2) As Single
+            If ss(1, 0) = "Initial" Then
+                aVent.InitialOpeningTime = 0.0
+            Else
+                aVent.InitialOpeningTime = Val(ss(1, 0))
+            End If
+            If ss(2, 0) = "Final" Then
+                aVent.FinalOpeningTime = 0.0
+            Else
+                aVent.FinalOpeningTime = Val(ss(2, 0))
+            End If
+            aVent.InitialOpening = Val(ss(1, 1))
+            aVent.FinalOpening = Val(ss(2, 1))
+        ElseIf NumPoints > 2 Then
+            Dim TimePoints(NumPoints) As Single, FractionPoints(NumPoints) As Single
+            For ir = 1 To NumPoints
+                TimePoints(ir) = Val(VVentFractions(ir, 0))
+                FractionPoints(ir) = Val(VVentFractions(ir, 1))
+                If FractionPoints(ir) <= 0 Then FractionPoints(ir) = 0
+            Next
+            aVent.SetRamp(TimePoints, FractionPoints)
+        End If
+    End Sub
     Private Sub Vent_Fraction_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles HVentFractions.BeforeRowColChange, VVentFractions.BeforeRowColChange, MVentFractions.BeforeRowColChange
-        Dim NumPoints As Integer, ir As Integer
         Dim aVent As New Vent
         If sender Is HVentFractions Then
             If CurrentHVent >= 0 And myHVents.Count > 0 Then
                 aVent = myHVents.Item(CurrentHVent)
-                NumPoints = UpdateGUI.CountGridPoints(HVentFractions)
+                CopyVentData(aVent, HVentFractions)
+                myHVents.Item(CurrentHVent) = aVent
+                UpdateGUI.HVents(CurrentHVent)
             End If
         ElseIf sender Is VVentFractions Then
             If CurrentVVent >= 0 And myVVents.Count > 0 Then
                 aVent = myVVents.Item(CurrentVVent)
-                NumPoints = UpdateGUI.CountGridPoints(VVentFractions)
-                If NumPoints = 0 Then
-                    Dim TimePoints(0) As Single, FractionPoints(0) As Single
-                    aVent.SetRamp(TimePoints, FractionPoints)
-                    myVVents.Item(CurrentVVent) = aVent
-                    UpdateGUI.Geometry(CurrentCompartment)
-                ElseIf NumPoints = 1 Then
-                    If VVentFractions(1, 0) <> "Initial" Then
-                        aVent.InitialOpeningTime = Val(VVentFractions(1, 0))
-                    End If
-                    aVent.InitialOpening = Val(VVentFractions(1, 1))
-                ElseIf NumPoints = 2 Then
-                    Dim TimePoints(2) As Single, FractionPoints(2) As Single
-                    If VVentFractions(1, 0) <> "Initial" Then
-                        aVent.InitialOpeningTime = Val(VVentFractions(1, 0))
-                    End If
-                    If VVentFractions(2, 0) <> "Final" Then
-                        aVent.FinalOpeningTime = Val(VVentFractions(2, 0))
-                    End If
-                    aVent.InitialOpening = Val(VVentFractions(1, 1))
-                    aVent.FinalOpening = Val(VVentFractions(2, 1))
-                ElseIf NumPoints > 2 Then
-                    Dim TimePoints(NumPoints) As Single, FractionPoints(NumPoints) As Single
-                    For ir = 1 To NumPoints
-                        TimePoints(ir) = Val(VVentFractions(ir, 0))
-                        FractionPoints(ir) = Val(VVentFractions(ir, 1))
-                        If FractionPoints(ir) <= 0 Then FractionPoints(ir) = 0
-                    Next
-                    aVent.SetRamp(TimePoints, FractionPoints)
-                    myVVents.Item(CurrentVVent) = aVent
-                    UpdateGUI.Geometry(CurrentCompartment)
-                End If
+                CopyVentData(aVent, VVentFractions)
+                myVVents.Item(CurrentVVent) = aVent
+                UpdateGUI.VVents(CurrentVVent)
             End If
-            UpdateGUI.VVents(CurrentVVent)
         ElseIf sender Is MVentFractions Then
             If CurrentMVent >= 0 And myMVents.Count > 0 Then
                 aVent = myMVents.Item(CurrentMVent)
-                NumPoints = UpdateGUI.CountGridPoints(MVentFractions)
+                CopyVentData(aVent, MVentFractions)
+                myMVents.Item(CurrentMVent) = aVent
+                UpdateGUI.MVents(CurrentMVent)
             End If
+        End If
+    End Sub
+    Private Sub Vent_Fraction_AfterRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles HVentFractions.AfterRowColChange, VVentFractions.AfterRowColChange, MVentFractions.AfterRowColChange
+        If sender Is HVentFractions Then
+            UpdateGUI.HVents(CurrentHVent)
+        ElseIf sender Is VVentFractions Then
+            UpdateGUI.VVents(CurrentVVent)
+        ElseIf sender Is MVentFractions Then
+            UpdateGUI.MVents(CurrentMVent)
         End If
     End Sub
     Private Sub OpenDataFile(ByVal FileName As String)

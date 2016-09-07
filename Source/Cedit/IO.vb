@@ -462,7 +462,8 @@ Module IO
                             csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myHVents.Item(index)
-                            aVent.FinalOpeningTime = csv.num(i, eventNum.time)
+                            aVent.InitialOpeningTime = csv.num(i, eventNum.time)
+                            aVent.FinalOpeningTime = csv.num(i, eventNum.time) + csv.num(i, eventNum.decaytime)
                             aVent.FinalOpening = csv.num(i, eventNum.finalFraction)
                             aVent.Changed = False
                         Else
@@ -476,7 +477,8 @@ Module IO
                             csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myVVents.Item(index)
-                            aVent.FinalOpeningTime = csv.num(i, eventNum.time)
+                            aVent.InitialOpeningTime = csv.num(i, eventNum.time)
+                            aVent.FinalOpeningTime = csv.num(i, eventNum.time) + csv.num(i, eventNum.decaytime)
                             aVent.FinalOpening = csv.num(i, eventNum.finalFraction)
                             aVent.Changed = False
                         Else
@@ -490,7 +492,8 @@ Module IO
                             csv.num(i, eventNum.secondCompartment) - 1, csv.num(i, eventNum.ventNumber))
                         If index > -1 Then
                             Dim aVent As Vent = myMVents.Item(index)
-                            aVent.FinalOpeningTime = csv.num(i, eventNum.time)
+                            aVent.InitialOpeningTime = csv.num(i, eventNum.time)
+                            aVent.FinalOpeningTime = csv.num(i, eventNum.time) + csv.num(i, eventNum.decaytime)
                             aVent.FinalOpening = csv.num(i, eventNum.finalFraction)
                             aVent.Changed = False
                         Else
@@ -1015,13 +1018,27 @@ Module IO
                 csv.num(i, hventNum.firstcompartment) = myCompartments.Count + 1
             If csv.num(i, hventNum.secondcompartment) = 0 Then _
                 csv.num(i, hventNum.secondcompartment) = myCompartments.Count + 1
+            csv.num(i, hventNum.ventnumber) = myHVents.VentNumber(j)
             csv.num(i, hventNum.width) = aVent.Width
             csv.num(i, hventNum.sill) = aVent.Sill
             csv.num(i, hventNum.soffit) = aVent.Soffit
             csv.num(i, hventNum.hall1) = aVent.Offset
             csv.str(i, hventNum.face) = aVent.Face
             csv.num(i, hventNum.initialfraction) = aVent.InitialOpening
-            csv.num(i, hventNum.ventnumber) = myHVents.VentNumber(j)
+            csv.str(i, hventNum.openingtype) = OpenTypes.Substring(aVent.OpenType * 4, 4)
+            If aVent.OpenType = Vent.OpenbyTime Then
+                csv.num(i, hventNum.openinitialtime) = aVent.InitialOpeningTime
+                csv.num(i, hventNum.openinitialfraction) = aVent.InitialOpening
+                csv.num(i, hventNum.openfinaltime) = aVent.FinalOpeningTime
+                csv.num(i, hventNum.openfinalfraction) = aVent.FinalOpening
+            Else
+                csv.num(i, hventNum.opencriterion) = aVent.OpenValue
+                csv.str(i, hventNum.opentarget) = aVent.Target
+                csv.num(i, hventNum.openinitialfraction) = aVent.InitialOpening
+                csv.num(i, hventNum.openfinalfraction) = aVent.FinalOpening
+            End If
+            csv.num(i, hventNum.xoffset) = aVent.OffsetX
+            csv.num(i, hventNum.yoffset) = aVent.OffsetY
             aVent.Changed = False
             i += 1
         Next
@@ -1070,6 +1087,20 @@ Module IO
             If csv.num(i, mventNum.toCompartment) = 0 Then csv.num(i, mventNum.toCompartment) = myCompartments.Count + 1
             csv.num(i, mventNum.IDNumber) = j + 1
             csv.num(i, mventNum.initialfraction) = aVent.InitialOpening
+            csv.str(i, mventNum.openingtype) = OpenTypes.Substring(aVent.OpenType * 4, 4)
+            If aVent.OpenType = Vent.OpenbyTime Then
+                csv.num(i, mventNum.openinitialtime) = aVent.InitialOpeningTime
+                csv.num(i, mventNum.openinitialfraction) = aVent.InitialOpening
+                csv.num(i, mventNum.openfinaltime) = aVent.FinalOpeningTime
+                csv.num(i, mventNum.openfinalfraction) = aVent.FinalOpening
+            Else
+                csv.num(i, mventNum.opencriterion) = aVent.OpenValue
+                csv.str(i, mventNum.opentarget) = aVent.Target
+                csv.num(i, mventNum.openinitialfraction) = aVent.InitialOpening
+                csv.num(i, mventNum.openfinalfraction) = aVent.FinalOpening
+            End If
+            csv.num(i, mventNum.xoffset) = aVent.OffsetX
+            csv.num(i, mventNum.yoffset) = aVent.OffsetY
             aVent.Changed = False
             i += 1
         Next
@@ -1140,61 +1171,9 @@ Module IO
                 i += 1
             End If
         Next
-        'events
-        For j = 0 To myHVents.Count - 1
-            aVent = myHVents.Item(j)
-            If aVent.FinalOpeningTime > 0 Then
-                csv.str(i, CFASTlnNum.keyWord) = "EVENT"
-                csv.str(i, eventNum.ventType) = "H"
-                csv.num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
-                If csv.num(i, eventNum.firstCompartment) = 0 Then _
-                    csv.num(i, eventNum.firstCompartment) = myCompartments.Count + 1
-                csv.num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
-                If csv.num(i, eventNum.secondCompartment) = 0 Then _
-                    csv.num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.num(i, eventNum.ventNumber) = myHVents.VentNumber(j)
-                csv.num(i, eventNum.time) = aVent.FinalOpeningTime
-                csv.num(i, eventNum.finalFraction) = aVent.FinalOpening
-                csv.num(i, eventNum.decaytime) = 1.0
-                i += 1
-            End If
-        Next
-        For j = 0 To myVVents.Count - 1
-            aVent = myVVents.Item(j)
-            If aVent.FinalOpeningTime > 0 Then
-                csv.str(i, CFASTlnNum.keyWord) = "EVENT"
-                csv.str(i, eventNum.ventType) = "V"
-                csv.num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
-                If csv.num(i, eventNum.firstCompartment) = 0 Then _
-                    csv.num(i, eventNum.firstCompartment) = myCompartments.Count + 1
-                csv.num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
-                If csv.num(i, eventNum.secondCompartment) = 0 Then _
-                    csv.num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.num(i, eventNum.ventNumber) = myVVents.VentNumber(j)
-                csv.num(i, eventNum.time) = aVent.FinalOpeningTime
-                csv.num(i, eventNum.finalFraction) = aVent.FinalOpening
-                csv.num(i, eventNum.decaytime) = 1.0
-                i += 1
-            End If
-        Next
+        'events (at this point, only filtering is writen out as an EVENT
         For j = 0 To myMVents.Count - 1
             aVent = myMVents.Item(j)
-            ' Mechanical ventilation vent opening fraction and time
-            If aVent.FinalOpeningTime > 0 Then
-                csv.str(i, CFASTlnNum.keyWord) = "EVENT"
-                csv.str(i, eventNum.ventType) = "M"
-                csv.num(i, eventNum.firstCompartment) = aVent.FirstCompartment + 1
-                If csv.num(i, eventNum.firstCompartment) = 0 Then _
-                    csv.num(i, eventNum.firstCompartment) = myCompartments.Count + 1
-                csv.num(i, eventNum.secondCompartment) = aVent.SecondCompartment + 1
-                If csv.num(i, eventNum.secondCompartment) = 0 Then _
-                    csv.num(i, eventNum.secondCompartment) = myCompartments.Count + 1
-                csv.num(i, eventNum.ventNumber) = j + 1
-                csv.num(i, eventNum.time) = aVent.FinalOpeningTime
-                csv.num(i, eventNum.finalFraction) = aVent.FinalOpening
-                csv.num(i, eventNum.decaytime) = 1.0
-                i += 1
-            End If
             ' Mechanical ventilation filtering fraction and time
             If aVent.FilterEfficiency <> 0 Then
                 csv.str(i, CFASTlnNum.keyWord) = "EVENT"

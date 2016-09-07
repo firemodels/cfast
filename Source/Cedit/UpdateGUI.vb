@@ -371,6 +371,7 @@ Public Class UpdateGUI
     End Sub
     Public Sub HVents(ByVal index As Integer)
         General()
+        Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myHVents.Count Then
             ClearGrid(MainWin.HVentSummary)
             MainWin.GroupHVentGeometry.Enabled = False
@@ -390,6 +391,46 @@ Public Class UpdateGUI
             MainWin.HVentSoffit.Text = aVent.Soffit.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentWidth.Text = aVent.Width.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.HVentFace.SelectedIndex = aVent.Face - 1
+
+            MainWin.HVentOpenCriterion.SelectedIndex = aVent.OpenType
+            If aVent.OpenType = Vent.OpenbyTime Then
+                MainWin.HVentOpenValue.Enabled = False
+                MainWin.HVentTarget.Enabled = False
+            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
+                OpenTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
+                MainWin.HVentOpenValue.Enabled = True
+                MainWin.HVentTarget.Enabled = True
+                MainWin.HVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
+            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                OpenTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
+                MainWin.HVentOpenValue.Enabled = True
+                MainWin.HVentTarget.Enabled = True
+                MainWin.HVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
+            End If
+            MainWin.HVentOpenValue.Text = " "
+            ClearGrid(MainWin.HVentFractions)
+            If aVent.OpenType = Vent.OpenbyTime Then
+                aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
+                If NumPoints <= 2 Then
+                    MainWin.HVentFractions(1, 0) = aVent.InitialOpeningTime
+                    MainWin.HVentFractions(1, 1) = aVent.InitialOpening
+                    MainWin.HVentFractions(2, 0) = aVent.FinalOpeningTime
+                    MainWin.HVentFractions(2, 1) = aVent.FinalOpening
+                Else
+                    For i = 1 To NumPoints
+                        MainWin.HVentFractions(i, 0) = OpeningTimes(i)
+                        MainWin.HVentFractions(i, 1) = OpeningFractions(i)
+                    Next
+                End If
+            Else
+                ClearGrid(MainWin.HVentFractions)
+                MainWin.HVentFractions(1, 0) = "Initial"
+                MainWin.HVentFractions(1, 1) = aVent.InitialOpening.ToString
+                MainWin.HVentFractions(2, 0) = "Final"
+                MainWin.HVentFractions(2, 1) = aVent.FinalOpening.ToString
+                MainWin.HVentOpenValue.Text = aVent.OpenValue.ToString + OpenTypeLabel
+            End If
+
             NumHVents = myHVents.Count
             ClearGrid(MainWin.HVentSummary)
             If NumHVents > 0 Then
@@ -458,13 +499,18 @@ Public Class UpdateGUI
                 MainWin.VVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
             End If
             MainWin.VVentOpenValue.Text = " "
+            ClearGrid(MainWin.VVentFractions)
             If aVent.OpenType = Vent.OpenbyTime Then
                 aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
-                ClearGrid(MainWin.VVentFractions)
-                If NumPoints > 0 Then
+                If NumPoints <= 2 Then
+                    MainWin.VVentFractions(1, 0) = aVent.InitialOpeningTime
+                    MainWin.VVentFractions(1, 1) = aVent.InitialOpening
+                    MainWin.VVentFractions(2, 0) = aVent.FinalOpeningTime
+                    MainWin.VVentFractions(2, 1) = aVent.FinalOpening
+                Else
                     For i = 1 To NumPoints
-                        MainWin.VVentFractions(i, 0) = OpeningTimes(i).ToString + myUnits.Convert(UnitsNum.Time).Units
-                        MainWin.VVentFractions(i, 1) = OpeningFractions(i).ToString
+                        MainWin.VVentFractions(i, 0) = OpeningTimes(i)
+                        MainWin.VVentFractions(i, 1) = OpeningFractions(i)
                     Next
                 End If
             Else
@@ -505,6 +551,7 @@ Public Class UpdateGUI
     End Sub
     Public Sub MVents(ByVal index As Integer)
         General()
+        Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myMVents.Count Then
             ClearGrid(MainWin.MVentSummary)
             MainWin.GroupMVents.Enabled = False
@@ -533,6 +580,45 @@ Public Class UpdateGUI
 
             MainWin.MVentFilterEfficiency.Text = aVent.FilterEfficiency.ToString + " %"
             MainWin.MVentFilterTime.Text = aVent.FilterTime.ToString + myUnits.Convert(UnitsNum.Time).Units
+
+            MainWin.MVentOpenCriterion.SelectedIndex = aVent.OpenType
+            If aVent.OpenType = Vent.OpenbyTime Then
+                MainWin.MVentOpenValue.Enabled = False
+                MainWin.MVentTarget.Enabled = False
+            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
+                OpenTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
+                MainWin.MVentOpenValue.Enabled = True
+                MainWin.MVentTarget.Enabled = True
+                MainWin.MVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
+            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                OpenTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
+                MainWin.MVentOpenValue.Enabled = True
+                MainWin.MVentTarget.Enabled = True
+                MainWin.MVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
+            End If
+            MainWin.MVentOpenValue.Text = " "
+            ClearGrid(MainWin.MVentFractions)
+            If aVent.OpenType = Vent.OpenbyTime Then
+                aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
+                If NumPoints <= 2 Then
+                    MainWin.MVentFractions(1, 0) = aVent.InitialOpeningTime
+                    MainWin.MVentFractions(1, 1) = aVent.InitialOpening
+                    MainWin.MVentFractions(2, 0) = aVent.FinalOpeningTime
+                    MainWin.MVentFractions(2, 1) = aVent.FinalOpening
+                Else
+                    For i = 1 To NumPoints
+                        MainWin.MVentFractions(i, 0) = OpeningTimes(i)
+                        MainWin.MVentFractions(i, 1) = OpeningFractions(i)
+                    Next
+                End If
+            Else
+                ClearGrid(MainWin.MVentFractions)
+                MainWin.MVentFractions(1, 0) = "Initial"
+                MainWin.MVentFractions(1, 1) = aVent.InitialOpening.ToString
+                MainWin.MVentFractions(2, 0) = "Final"
+                MainWin.MVentFractions(2, 1) = aVent.FinalOpening.ToString
+                MainWin.MVentOpenValue.Text = aVent.OpenValue.ToString + OpenTypeLabel
+            End If
 
             numMVents = myMVents.Count
             ClearGrid(MainWin.MVentSummary)

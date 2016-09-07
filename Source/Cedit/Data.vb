@@ -125,6 +125,15 @@ Friend Module Data
         hall1
         face
         initialfraction
+        openingtype = 11
+        opencriterion
+        opentarget
+        openinitialtime
+        openinitialfraction
+        openfinaltime
+        openfinalfraction
+        xoffset
+        yoffset
     End Enum
 
     Friend Enum hallNum
@@ -171,6 +180,15 @@ Friend Module Data
         beginFlowDrop
         flowZero
         initialfraction
+        openingtype = 14
+        opencriterion
+        opentarget
+        openinitialtime
+        openinitialfraction
+        openfinaltime
+        openfinalfraction
+        xoffset
+        yoffset
     End Enum
 
     Friend Enum fireNum

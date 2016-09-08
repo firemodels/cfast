@@ -822,6 +822,21 @@ Public Class VentCollection
         ToVent.FlowRate = FromVent.FlowRate
         ToVent.BeginFlowDropoff = FromVent.BeginFlowDropoff
         ToVent.ZeroFlow = FromVent.ZeroFlow
+        ToVent.FilterEfficiency = FromVent.FilterEfficiency
+        ToVent.FilterTime = FromVent.FilterTime
+        ToVent.FinalOpening = FromVent.FinalOpening
+        ToVent.FinalOpeningTime = FromVent.FinalOpeningTime
+        ToVent.InitialOpeningTime = FromVent.InitialOpeningTime
+        ToVent.OffsetX = FromVent.OffsetX
+        ToVent.OffsetY = FromVent.OffsetY
+        ToVent.OpenType = FromVent.OpenType
+        ToVent.OpenValue = FromVent.OpenValue
+        ToVent.Target = FromVent.Target
+        ToVent.VentType = FromVent.VentType
+        Dim Vector1() As Single = {0}, Vector2() As Single = {0}, aNum As Integer
+        FromVent.GetRamp(Vector1, Vector2, aNum)
+        ToVent.SetRamp(Vector1, Vector2)
+
         List.Item(indexTo) = ToVent
     End Sub
     Public Sub Swap(ByVal index1 As Integer, ByVal index2 As Integer)

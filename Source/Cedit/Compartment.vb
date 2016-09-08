@@ -406,6 +406,7 @@ Public Class CompartmentCollection
         ToCompartment.SetVariableArea(Vector1, Vector2)
         ToCompartment.Shaft = FromCompartment.Shaft
         ToCompartment.Hall = FromCompartment.Hall
+
         List.Item(indexTo) = ToCompartment
     End Sub
     Public Sub Swap(ByVal index1 As Integer, ByVal index2 As Integer)

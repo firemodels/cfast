@@ -39,6 +39,18 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents HVentFinalLabel As Label
+    Friend WithEvents HVentFinalFraction As TextBox
+    Friend WithEvents HVentInitialLabel As Label
+    Friend WithEvents HVentInitialFraction As TextBox
+    Friend WithEvents MventFinalLabel As Label
+    Friend WithEvents MVentFinalFraction As TextBox
+    Friend WithEvents MVentInitialLabel As Label
+    Friend WithEvents MVentInitialFraction As TextBox
+    Friend WithEvents VVentFinalLabel As Label
+    Friend WithEvents VVentFinalFraction As TextBox
+    Friend WithEvents VVentInitialLabel As Label
+    Friend WithEvents VVentInitialFraction As TextBox
     Friend WithEvents VVentYOffset As TextBox
     Friend WithEvents Label68 As Label
     Friend WithEvents VVentXOffset As TextBox
@@ -509,6 +521,10 @@ Public Class CeditMain
         Me.TabHorizontalFlow = New System.Windows.Forms.TabPage()
         Me.HVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox()
+        Me.HVentFinalLabel = New System.Windows.Forms.Label()
+        Me.HVentFinalFraction = New System.Windows.Forms.TextBox()
+        Me.HVentInitialLabel = New System.Windows.Forms.Label()
+        Me.HVentInitialFraction = New System.Windows.Forms.TextBox()
         Me.Label36 = New System.Windows.Forms.Label()
         Me.HVentOpenValue = New System.Windows.Forms.TextBox()
         Me.HVentTarget = New System.Windows.Forms.ComboBox()
@@ -541,6 +557,11 @@ Public Class CeditMain
         Me.VVentAdd = New System.Windows.Forms.Button()
         Me.VVentDup = New System.Windows.Forms.Button()
         Me.GroupVVents = New System.Windows.Forms.GroupBox()
+        Me.VVentFinalLabel = New System.Windows.Forms.Label()
+        Me.VVentFractions = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.VVentFinalFraction = New System.Windows.Forms.TextBox()
+        Me.VVentInitialLabel = New System.Windows.Forms.Label()
+        Me.VVentInitialFraction = New System.Windows.Forms.TextBox()
         Me.VVentYOffset = New System.Windows.Forms.TextBox()
         Me.Label68 = New System.Windows.Forms.Label()
         Me.VVentXOffset = New System.Windows.Forms.TextBox()
@@ -553,7 +574,6 @@ Public Class CeditMain
         Me.Label66 = New System.Windows.Forms.Label()
         Me.VVentOpenCriterion = New System.Windows.Forms.ComboBox()
         Me.Label80 = New System.Windows.Forms.Label()
-        Me.VVentFractions = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.VVentShape = New System.Windows.Forms.ComboBox()
         Me.Label40 = New System.Windows.Forms.Label()
         Me.GroupBox18 = New System.Windows.Forms.GroupBox()
@@ -616,6 +636,10 @@ Public Class CeditMain
         Me.MVentAdd = New System.Windows.Forms.Button()
         Me.MVentDup = New System.Windows.Forms.Button()
         Me.GroupMVents = New System.Windows.Forms.GroupBox()
+        Me.MventFinalLabel = New System.Windows.Forms.Label()
+        Me.MVentFinalFraction = New System.Windows.Forms.TextBox()
+        Me.MVentInitialLabel = New System.Windows.Forms.Label()
+        Me.MVentInitialFraction = New System.Windows.Forms.TextBox()
         Me.MVentYOffset = New System.Windows.Forms.TextBox()
         Me.Label98 = New System.Windows.Forms.Label()
         Me.MVentXOffset = New System.Windows.Forms.TextBox()
@@ -864,8 +888,8 @@ Public Class CeditMain
         Me.TabVerticalFlow.SuspendLayout()
         CType(Me.VVentSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupVVents.SuspendLayout()
-        Me.GroupBox4.SuspendLayout()
         CType(Me.VVentFractions, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox4.SuspendLayout()
         Me.GroupBox18.SuspendLayout()
         Me.TabGeometry.SuspendLayout()
         CType(Me.CompSummary, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1424,6 +1448,10 @@ Public Class CeditMain
         '
         'GroupHVentGeometry
         '
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentFinalLabel)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentFinalFraction)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentInitialLabel)
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentInitialFraction)
         Me.GroupHVentGeometry.Controls.Add(Me.Label36)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentOpenValue)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentTarget)
@@ -1449,6 +1477,46 @@ Public Class CeditMain
         Me.GroupHVentGeometry.TabIndex = 7
         Me.GroupHVentGeometry.TabStop = False
         Me.GroupHVentGeometry.Text = "Vent 1 Geometry"
+        '
+        'HVentFinalLabel
+        '
+        Me.HVentFinalLabel.AutoSize = True
+        Me.HVentFinalLabel.Location = New System.Drawing.Point(514, 144)
+        Me.HVentFinalLabel.Name = "HVentFinalLabel"
+        Me.HVentFinalLabel.Size = New System.Drawing.Size(122, 13)
+        Me.HVentFinalLabel.TabIndex = 750
+        Me.HVentFinalLabel.Text = "Post-Activation Fraction:"
+        Me.HVentFinalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.HVentFinalLabel.Visible = False
+        '
+        'HVentFinalFraction
+        '
+        Me.HVentFinalFraction.Location = New System.Drawing.Point(644, 141)
+        Me.HVentFinalFraction.Name = "HVentFinalFraction"
+        Me.HVentFinalFraction.Size = New System.Drawing.Size(96, 20)
+        Me.HVentFinalFraction.TabIndex = 749
+        Me.HVentFinalFraction.Text = "1 m"
+        Me.HVentFinalFraction.Visible = False
+        '
+        'HVentInitialLabel
+        '
+        Me.HVentInitialLabel.AutoSize = True
+        Me.HVentInitialLabel.Location = New System.Drawing.Point(519, 117)
+        Me.HVentInitialLabel.Name = "HVentInitialLabel"
+        Me.HVentInitialLabel.Size = New System.Drawing.Size(117, 13)
+        Me.HVentInitialLabel.TabIndex = 748
+        Me.HVentInitialLabel.Text = "Pre-Activation Fraction:"
+        Me.HVentInitialLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.HVentInitialLabel.Visible = False
+        '
+        'HVentInitialFraction
+        '
+        Me.HVentInitialFraction.Location = New System.Drawing.Point(644, 115)
+        Me.HVentInitialFraction.Name = "HVentInitialFraction"
+        Me.HVentInitialFraction.Size = New System.Drawing.Size(96, 20)
+        Me.HVentInitialFraction.TabIndex = 747
+        Me.HVentInitialFraction.Text = "1 m"
+        Me.HVentInitialFraction.Visible = False
         '
         'Label36
         '
@@ -1515,7 +1583,7 @@ Public Class CeditMain
         Me.HVentFractions.ColumnInfo = resources.GetString("HVentFractions.ColumnInfo")
         Me.HVentFractions.ExtendLastCol = True
         Me.HVentFractions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.HVentFractions.Location = New System.Drawing.Point(552, 115)
+        Me.HVentFractions.Location = New System.Drawing.Point(569, 133)
         Me.HVentFractions.Name = "HVentFractions"
         Me.HVentFractions.Rows.DefaultSize = 19
         Me.HVentFractions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -1742,6 +1810,11 @@ Public Class CeditMain
         '
         'GroupVVents
         '
+        Me.GroupVVents.Controls.Add(Me.VVentFinalLabel)
+        Me.GroupVVents.Controls.Add(Me.VVentFractions)
+        Me.GroupVVents.Controls.Add(Me.VVentFinalFraction)
+        Me.GroupVVents.Controls.Add(Me.VVentInitialLabel)
+        Me.GroupVVents.Controls.Add(Me.VVentInitialFraction)
         Me.GroupVVents.Controls.Add(Me.VVentYOffset)
         Me.GroupVVents.Controls.Add(Me.Label68)
         Me.GroupVVents.Controls.Add(Me.VVentXOffset)
@@ -1753,7 +1826,6 @@ Public Class CeditMain
         Me.GroupVVents.Controls.Add(Me.Label66)
         Me.GroupVVents.Controls.Add(Me.VVentOpenCriterion)
         Me.GroupVVents.Controls.Add(Me.Label80)
-        Me.GroupVVents.Controls.Add(Me.VVentFractions)
         Me.GroupVVents.Controls.Add(Me.VVentShape)
         Me.GroupVVents.Controls.Add(Me.Label40)
         Me.GroupVVents.Controls.Add(Me.GroupBox18)
@@ -1765,6 +1837,64 @@ Public Class CeditMain
         Me.GroupVVents.TabIndex = 5
         Me.GroupVVents.TabStop = False
         Me.GroupVVents.Text = "Vent 1 Geometry"
+        '
+        'VVentFinalLabel
+        '
+        Me.VVentFinalLabel.AutoSize = True
+        Me.VVentFinalLabel.Location = New System.Drawing.Point(443, 147)
+        Me.VVentFinalLabel.Name = "VVentFinalLabel"
+        Me.VVentFinalLabel.Size = New System.Drawing.Size(122, 13)
+        Me.VVentFinalLabel.TabIndex = 746
+        Me.VVentFinalLabel.Text = "Post-Activation Fraction:"
+        Me.VVentFinalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.VVentFinalLabel.Visible = False
+        '
+        'VVentFractions
+        '
+        Me.VVentFractions.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
+        Me.VVentFractions.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.VVentFractions.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.VVentFractions.AutoClipboard = True
+        Me.VVentFractions.ColumnInfo = resources.GetString("VVentFractions.ColumnInfo")
+        Me.VVentFractions.ExtendLastCol = True
+        Me.VVentFractions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
+        Me.VVentFractions.Location = New System.Drawing.Point(496, 136)
+        Me.VVentFractions.Name = "VVentFractions"
+        Me.VVentFractions.Rows.DefaultSize = 19
+        Me.VVentFractions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.VVentFractions.Size = New System.Drawing.Size(190, 176)
+        Me.VVentFractions.StyleInfo = resources.GetString("VVentFractions.StyleInfo")
+        Me.VVentFractions.TabIndex = 509
+        Me.VVentFractions.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
+        '
+        'VVentFinalFraction
+        '
+        Me.VVentFinalFraction.Location = New System.Drawing.Point(573, 144)
+        Me.VVentFinalFraction.Name = "VVentFinalFraction"
+        Me.VVentFinalFraction.Size = New System.Drawing.Size(96, 20)
+        Me.VVentFinalFraction.TabIndex = 745
+        Me.VVentFinalFraction.Text = "1 m"
+        Me.VVentFinalFraction.Visible = False
+        '
+        'VVentInitialLabel
+        '
+        Me.VVentInitialLabel.AutoSize = True
+        Me.VVentInitialLabel.Location = New System.Drawing.Point(448, 120)
+        Me.VVentInitialLabel.Name = "VVentInitialLabel"
+        Me.VVentInitialLabel.Size = New System.Drawing.Size(117, 13)
+        Me.VVentInitialLabel.TabIndex = 744
+        Me.VVentInitialLabel.Text = "Pre-Activation Fraction:"
+        Me.VVentInitialLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.VVentInitialLabel.Visible = False
+        '
+        'VVentInitialFraction
+        '
+        Me.VVentInitialFraction.Location = New System.Drawing.Point(573, 118)
+        Me.VVentInitialFraction.Name = "VVentInitialFraction"
+        Me.VVentInitialFraction.Size = New System.Drawing.Size(96, 20)
+        Me.VVentInitialFraction.TabIndex = 743
+        Me.VVentInitialFraction.Text = "1 m"
+        Me.VVentInitialFraction.Visible = False
         '
         'VVentYOffset
         '
@@ -1851,11 +1981,11 @@ Public Class CeditMain
         'Label66
         '
         Me.Label66.AutoSize = True
-        Me.Label66.Location = New System.Drawing.Point(488, 94)
+        Me.Label66.Location = New System.Drawing.Point(474, 94)
         Me.Label66.Name = "Label66"
-        Me.Label66.Size = New System.Drawing.Size(77, 13)
+        Me.Label66.Size = New System.Drawing.Size(91, 13)
         Me.Label66.TabIndex = 732
-        Me.Label66.Text = "Trigger Target:"
+        Me.Label66.Text = "Activation Target:"
         Me.Label66.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'VVentOpenCriterion
@@ -1877,24 +2007,6 @@ Public Class CeditMain
         Me.Label80.TabIndex = 730
         Me.Label80.Text = "Open/Close Criterion:"
         Me.Label80.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'VVentFractions
-        '
-        Me.VVentFractions.AllowDragging = C1.Win.C1FlexGrid.AllowDraggingEnum.None
-        Me.VVentFractions.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
-        Me.VVentFractions.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.VVentFractions.AutoClipboard = True
-        Me.VVentFractions.ColumnInfo = resources.GetString("VVentFractions.ColumnInfo")
-        Me.VVentFractions.ExtendLastCol = True
-        Me.VVentFractions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.VVentFractions.Location = New System.Drawing.Point(479, 118)
-        Me.VVentFractions.Name = "VVentFractions"
-        Me.VVentFractions.Rows.DefaultSize = 19
-        Me.VVentFractions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.VVentFractions.Size = New System.Drawing.Size(190, 176)
-        Me.VVentFractions.StyleInfo = resources.GetString("VVentFractions.StyleInfo")
-        Me.VVentFractions.TabIndex = 509
-        Me.VVentFractions.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'VVentShape
         '
@@ -2525,6 +2637,10 @@ Public Class CeditMain
         '
         'GroupMVents
         '
+        Me.GroupMVents.Controls.Add(Me.MventFinalLabel)
+        Me.GroupMVents.Controls.Add(Me.MVentFinalFraction)
+        Me.GroupMVents.Controls.Add(Me.MVentInitialLabel)
+        Me.GroupMVents.Controls.Add(Me.MVentInitialFraction)
         Me.GroupMVents.Controls.Add(Me.MVentYOffset)
         Me.GroupMVents.Controls.Add(Me.Label98)
         Me.GroupMVents.Controls.Add(Me.MVentXOffset)
@@ -2555,6 +2671,46 @@ Public Class CeditMain
         Me.GroupMVents.TabIndex = 5
         Me.GroupMVents.TabStop = False
         Me.GroupMVents.Text = "Vent 1 Geometry"
+        '
+        'MventFinalLabel
+        '
+        Me.MventFinalLabel.AutoSize = True
+        Me.MventFinalLabel.Location = New System.Drawing.Point(448, 176)
+        Me.MventFinalLabel.Name = "MventFinalLabel"
+        Me.MventFinalLabel.Size = New System.Drawing.Size(122, 13)
+        Me.MventFinalLabel.TabIndex = 753
+        Me.MventFinalLabel.Text = "Post-Activation Fraction:"
+        Me.MventFinalLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.MventFinalLabel.Visible = False
+        '
+        'MVentFinalFraction
+        '
+        Me.MVentFinalFraction.Location = New System.Drawing.Point(578, 173)
+        Me.MVentFinalFraction.Name = "MVentFinalFraction"
+        Me.MVentFinalFraction.Size = New System.Drawing.Size(96, 20)
+        Me.MVentFinalFraction.TabIndex = 752
+        Me.MVentFinalFraction.Text = "1 m"
+        Me.MVentFinalFraction.Visible = False
+        '
+        'MVentInitialLabel
+        '
+        Me.MVentInitialLabel.AutoSize = True
+        Me.MVentInitialLabel.Location = New System.Drawing.Point(453, 149)
+        Me.MVentInitialLabel.Name = "MVentInitialLabel"
+        Me.MVentInitialLabel.Size = New System.Drawing.Size(117, 13)
+        Me.MVentInitialLabel.TabIndex = 751
+        Me.MVentInitialLabel.Text = "Pre-Activation Fraction:"
+        Me.MVentInitialLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.MVentInitialLabel.Visible = False
+        '
+        'MVentInitialFraction
+        '
+        Me.MVentInitialFraction.Location = New System.Drawing.Point(578, 147)
+        Me.MVentInitialFraction.Name = "MVentInitialFraction"
+        Me.MVentInitialFraction.Size = New System.Drawing.Size(96, 20)
+        Me.MVentInitialFraction.TabIndex = 750
+        Me.MVentInitialFraction.Text = "1 m"
+        Me.MVentInitialFraction.Visible = False
         '
         'MVentYOffset
         '
@@ -2657,7 +2813,7 @@ Public Class CeditMain
         Me.MVentFractions.ColumnInfo = resources.GetString("MVentFractions.ColumnInfo")
         Me.MVentFractions.ExtendLastCol = True
         Me.MVentFractions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.MVentFractions.Location = New System.Drawing.Point(484, 147)
+        Me.MVentFractions.Location = New System.Drawing.Point(501, 165)
         Me.MVentFractions.Name = "MVentFractions"
         Me.MVentFractions.Rows.DefaultSize = 19
         Me.MVentFractions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -4901,8 +5057,8 @@ Public Class CeditMain
         CType(Me.VVentSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupVVents.ResumeLayout(False)
         Me.GroupVVents.PerformLayout()
-        Me.GroupBox4.ResumeLayout(False)
         CType(Me.VVentFractions, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox18.ResumeLayout(False)
         Me.TabGeometry.ResumeLayout(False)
         CType(Me.CompSummary, System.ComponentModel.ISupportInitialize).EndInit()
@@ -5382,7 +5538,7 @@ Public Class CeditMain
             UpdateGUI.HVents(CurrentHVent)
         End If
     End Sub
-    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentOpenCriterion.SelectedIndexChanged, HVentOpenValue.Leave, HVentTarget.SelectedIndexChanged
+    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentOpenCriterion.SelectedIndexChanged, HVentOpenValue.Leave, HVentTarget.SelectedIndexChanged, HVentInitialFraction.Leave, HVentFinalFraction.Leave
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
@@ -5397,15 +5553,19 @@ Public Class CeditMain
             If sender Is HVentOpenCriterion Then
                 If aVent.OpenType <> HVentOpenCriterion.SelectedIndex Then
                     aVent.OpenType = HVentOpenCriterion.SelectedIndex
-                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = 0.0
-                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
-                    If aVent.OpenType = Vent.OpenbyFlux Then aVent.OpenValue = 0.0
+                    If aVent.OpenType = Vent.OpenbyTemperature Then
+                        aVent.OpenValue = 0.0
+                        aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                        aVent.OpenValue = 0.0
+                    End If
                 End If
             End If
             If sender Is HVentOpenValue Then aVent.OpenValue = Val(HVentOpenValue.Text)
-            If sender Is HVentTarget Then
-                aVent.Target = myTargets.Item(HVentTarget.SelectedIndex).Name
-            End If
+            If sender Is HVentTarget Then aVent.Target = myTargets.Item(HVentTarget.SelectedIndex).Name
+            If sender Is HVentInitialFraction Then aVent.InitialOpening = Val(HVentInitialFraction.Text)
+            If sender Is HVentFinalFraction Then aVent.FinalOpening = Val(HVentFinalFraction.Text)
+
             myHVents(CurrentHVent) = aVent
             UpdateGUI.HVents(CurrentHVent)
         End If
@@ -5464,7 +5624,7 @@ Public Class CeditMain
             UpdateGUI.VVents(CurrentVVent)
         End If
     End Sub
-    Private Sub VVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentCompTop.SelectedIndexChanged, VVentCompBottom.SelectedIndexChanged, VVentArea.Leave, VVentShape.SelectedIndexChanged, VVentXOffset.Leave, VVentYOffset.Leave, VVentOpenCriterion.SelectedIndexChanged, VVentOpenValue.Leave, VVentTarget.SelectedIndexChanged
+    Private Sub VVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentCompTop.SelectedIndexChanged, VVentCompBottom.SelectedIndexChanged, VVentArea.Leave, VVentShape.SelectedIndexChanged, VVentXOffset.Leave, VVentYOffset.Leave, VVentInitialFraction.Leave, VVentFinalFraction.Leave, VVentOpenCriterion.SelectedIndexChanged, VVentOpenValue.Leave, VVentTarget.SelectedIndexChanged
         Dim aVent As New Vent
         If CurrentVVent >= 0 And myVVents.Count > 0 Then
             aVent = myVVents.Item(CurrentVVent)
@@ -5477,15 +5637,18 @@ Public Class CeditMain
             If sender Is VVentOpenCriterion Then
                 If aVent.OpenType <> VVentOpenCriterion.SelectedIndex Then
                     aVent.OpenType = VVentOpenCriterion.SelectedIndex
-                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = 0.0
-                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
-                    If aVent.OpenType = Vent.OpenbyFlux Then aVent.OpenValue = 0.0
+                    If aVent.OpenType = Vent.OpenbyTemperature Then
+                        aVent.OpenValue = 0.0
+                        aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                        aVent.OpenValue = 0.0
+                    End If
                 End If
             End If
             If sender Is VVentOpenValue Then aVent.OpenValue = Val(VVentOpenValue.Text)
-            If sender Is VVentTarget Then
-                aVent.Target = myTargets.Item(VVentTarget.SelectedIndex).Name
-            End If
+            If sender Is VVentTarget Then aVent.Target = myTargets.Item(VVentTarget.SelectedIndex).Name
+            If sender Is VVentInitialFraction Then aVent.InitialOpening = Val(VVentInitialFraction.Text)
+            If sender Is VVentFinalFraction Then aVent.FinalOpening = Val(VVentFinalFraction.Text)
             myVVents(CurrentVVent) = aVent
             UpdateGUI.VVents(CurrentVVent)
         End If
@@ -5544,7 +5707,7 @@ Public Class CeditMain
             UpdateGUI.MVents(CurrentMVent)
         End If
     End Sub
-    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentFilterEfficiency.Leave, MVentFilterTime.Leave, MVentOpenCriterion.SelectedIndexChanged, MVentOpenValue.Leave, MVentTarget.SelectedIndexChanged
+    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentFilterEfficiency.Leave, MVentFilterTime.Leave, MVentOpenCriterion.SelectedIndexChanged, MVentOpenValue.Leave, MVentTarget.SelectedIndexChanged, MVentInitialFraction.Leave, MVentFinalFraction.Leave
         Dim aVent As New Vent
         If CurrentMVent >= 0 And myMVents.Count > 0 Then
             aVent = myMVents.Item(CurrentMVent)
@@ -5568,15 +5731,19 @@ Public Class CeditMain
             If sender Is MVentOpenCriterion Then
                 If aVent.OpenType <> MVentOpenCriterion.SelectedIndex Then
                     aVent.OpenType = MVentOpenCriterion.SelectedIndex
-                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = 0.0
-                    If aVent.OpenType = Vent.OpenbyTemperature Then aVent.OpenValue = myEnvironment.IntAmbTemperature
-                    If aVent.OpenType = Vent.OpenbyFlux Then aVent.OpenValue = 0.0
+                    If aVent.OpenType = Vent.OpenbyTemperature Then
+                        aVent.OpenValue = 0.0
+                        aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                        aVent.OpenValue = 0.0
+                    End If
                 End If
             End If
             If sender Is MVentOpenValue Then aVent.OpenValue = Val(MVentOpenValue.Text)
-            If sender Is MVentTarget Then
-                aVent.Target = myTargets.Item(MVentTarget.SelectedIndex).Name
-            End If
+            If sender Is MVentTarget Then aVent.Target = myTargets.Item(MVentTarget.SelectedIndex).Name
+            If sender Is MVentInitialFraction Then aVent.InitialOpening = Val(MVentInitialFraction.Text)
+            If sender Is MVentFinalFraction Then aVent.FinalOpening = Val(MVentFinalFraction.Text)
+
             myMVents(CurrentMVent) = aVent
             UpdateGUI.MVents(CurrentMVent)
         End If
@@ -6539,6 +6706,7 @@ Public Class CeditMain
             Return LastRow
         End Get
     End Property
+
     Private Sub CopyFireData(ByVal aFire As Fire)
         ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
         Dim numPoints As Integer, ir As Integer, ic As Integer
@@ -6561,24 +6729,12 @@ Public Class CeditMain
             Dim TimePoints(0) As Single, FractionPoints(0) As Single
             aVent.SetRamp(TimePoints, FractionPoints)
         ElseIf NumPoints = 1 Then
-            If ss(1, 0) = "Initial" Then
-                aVent.InitialOpeningTime = 0.0
-            Else
-                aVent.InitialOpeningTime = Val(ss(1, 0))
-            End If
+            aVent.InitialOpeningTime = Val(ss(1, 0))
             aVent.InitialOpening = Val(ss(1, 1))
         ElseIf NumPoints = 2 Then
             Dim TimePoints(2) As Single, FractionPoints(2) As Single
-            If ss(1, 0) = "Initial" Then
-                aVent.InitialOpeningTime = 0.0
-            Else
-                aVent.InitialOpeningTime = Val(ss(1, 0))
-            End If
-            If ss(2, 0) = "Final" Then
-                aVent.FinalOpeningTime = 0.0
-            Else
-                aVent.FinalOpeningTime = Val(ss(2, 0))
-            End If
+            aVent.InitialOpeningTime = Val(ss(1, 0))
+            aVent.FinalOpeningTime = Val(ss(2, 0))
             aVent.InitialOpening = Val(ss(1, 1))
             aVent.FinalOpening = Val(ss(2, 1))
         ElseIf NumPoints > 2 Then

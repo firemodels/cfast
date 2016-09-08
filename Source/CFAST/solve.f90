@@ -239,9 +239,9 @@ module solve_routines
         p2(i) = pinit(i)
     end do
     if (iprtalg/=0) then
-        write(iofilo,*) 'room pressures'
+        write (iofilo,*) 'room pressures'
         do i = 1, nrm1
-            write(iofilo,*) i,p2(i)
+            write (iofilo,*) i,p2(i)
         end do
     end if
     t = stime
@@ -255,11 +255,11 @@ module solve_routines
         if (.not.roomptr%is_connection) deltamv(i) = 0.0_eb
     end do
     if (iprtalg/=0) then
-        write(iofilo,*)'room pressure residuals'
+        write (iofilo,*)'room pressure residuals'
         do i = 1, nrm1
-            write(iofilo,*)i,delta(i)
+            write (iofilo,*)i,delta(i)
         end do
-        write(iofilo,*)' '
+        write (iofilo,*)' '
         read (*,*)
     end if
     return
@@ -427,7 +427,7 @@ module solve_routines
              n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, 0.0_eb, 1)
         icode = 0
         write (*, '(a)') 'Initialize only'
-        write (logerr, '(a)') 'Initialize only'
+        write (iofill, '(a)') 'Initialize only'
         return
     end if
 
@@ -459,7 +459,7 @@ module solve_routines
     if (icode==1.and.stopiter.eq.0) then
         call deleteoutputfiles (stopfile)
         write (*,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
-        write (logerr,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
+        write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
         return
     end if
 
@@ -601,7 +601,7 @@ module solve_routines
         if (idid<0) then
             call find_error_component (ieqmax)
             write (*,'(a,i0)') '***Error, dassl - idid = ', idid
-            write (logerr,'(a,i0)') '***Error, dassl - idid = ', idid
+            write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
             call cfastexit ('CFAST', idid)
             stop
         end if
@@ -612,9 +612,9 @@ module solve_routines
                 stpmin_cnt = stpmin_cnt + 1
                 if (stpmin_cnt>stpmin_cnt_max) then
                     ! model has hung (stpmin_cnt_max consective time step sizes were below stpmin)
-                    write(*,'(i0,a,e11.4,a,e11.4)') &
+                    write (*,'(i0,a,e11.4,a,e11.4)') &
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
-                    write(logerr,'(i0,a,e11.4,a,e11.4)') &
+                    write (iofill,'(i0,a,e11.4,a,e11.4)') &
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
                     call cfastexit ('CFAST',1)
                     stop
@@ -656,11 +656,9 @@ module solve_routines
         if (ifobj>0.and.tobj<=td) then
             fireptr => fireinfo(ifobj)
             call update_fire_objects (set_state,told,dt,ifobj,tobj)
-            write(iofilo,'(/,a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
+            write (iofilo,'(/,a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
-            write(*,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
-                int(max(tobj+0.5_eb,0.0_eb)),' seconds'
-            write(logerr,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
+            write (iofill,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
             ! check to see if we are backing up objects igniting
             if (option(fbtobj)==on) then
@@ -698,8 +696,8 @@ module solve_routines
                     call find_error_component (ipar(3))
                     write (*,'(a,i0)') '***Error, dassl - idid = ', idid
                     write (*,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
-                    write (logerr,'(a,i0)') '***Error, dassl - idid = ', idid
-                    write (logerr,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
+                    write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
+                    write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     call cfastexit ('CFAST', idid)
                     stop
                 end if
@@ -721,9 +719,9 @@ module solve_routines
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
             else
                 ! update_detectors said that a sprinkler has gone off but the time is wrong!!
-                write(*,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
+                write (*,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
-                write(logerr,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
+                write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
                 call cfastexit ('CFAST', idid)
                 stop
@@ -744,7 +742,7 @@ module solve_routines
         total_steps = total_steps + 1
         if (stopiter>=0.and.total_steps>stopiter) then
             call deleteoutputfiles (stopfile)
-            write (logerr,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
+            write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
             call cfastexit ('CFAST', 0)
         end if
         go to 10

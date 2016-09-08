@@ -53,8 +53,8 @@ module initialization_routines
         end if
     end do
     missingtpp = name
-    write(*,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
-    write(logerr,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    write (*,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    write (iofill,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
     stop
 
     end subroutine get_thermal_property
@@ -500,8 +500,8 @@ module initialization_routines
         targptr => targetinfo(itarg)
         iroom = targptr%room
         if (iroom<1.or.iroom>nrm1) then
-            write(*,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
-            write(logerr,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
+            write (*,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
+            write (iofill,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
         end if
         roomptr => roominfo(iroom)
@@ -576,8 +576,8 @@ module initialization_routines
 
         ! center coordinates need to be within room
         if (xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize) then
-            write(*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
-            write(logerr,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
+            write (*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
+            write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             stop
         end if
     end do

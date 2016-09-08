@@ -762,7 +762,7 @@ module target_routines
                 if (.not.dtectptr%reported) then
                     dtectptr%reported = .true.
                     call device_activated (i, tdtect, 1)
-                    write(messg,'(2a,i0,a,i0,a,i0)') trim(detector_names(dtectptr%dtype)),' (Sensor ',i, ') has activated at ', &
+                    write (messg,'(2a,i0,a,i0,a,i0)') trim(detector_names(dtectptr%dtype)),' (Sensor ',i, ') has activated at ', &
                         int(tdtect+0.5_eb), ' s in compartment ',dtectptr%room
                     call xerror(messg,0,1,-3)
                 end if

@@ -7,7 +7,7 @@ module radiation_routines
 
     use precision_parameters
     use cenviro
-    use setup_data, only: logerr
+    use setup_data, only: iofill
     use cparams
     use room_data
     use fire_data, only: n_fires, fireinfo
@@ -283,7 +283,7 @@ module radiation_routines
     call dgefa(a,4,4,ipvt,info)
     if (info/=0) then
         write (*,*) '***Error: RAD4 - singular matrix'
-        write (logerr,*) '***Error: RAD4 - singular matrix'
+        write (iofill,*) '***Error: RAD4 - singular matrix'
         do k = 1, 4
             rhs(k) = 0.0_eb
         end do

@@ -12,9 +12,9 @@
     implicit none
     character(len=256), intent(out) :: revision, revision_date, compile_date
 
-    write(revision,'(A)')      TRIM(GITHASH_PP)
-    write(revision_date,'(A)') TRIM(GITDATE_PP)
-    write(compile_date,'(A)')  TRIM(BUILDDATE_PP)
+    write (revision,'(A)')      TRIM(GITHASH_PP)
+    write (revision_date,'(A)') TRIM(GITDATE_PP)
+    write (compile_date,'(A)')  TRIM(BUILDDATE_PP)
 
     return
 

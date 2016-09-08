@@ -200,7 +200,7 @@ module setup_data
     character(32) :: mpsdatc
     
     !File descriptors for cfast
-    integer :: iofili=1, iofilo=6, logerr=3
+    integer :: iofili=1, iofilo=6, iofill=3
     character(6), parameter :: heading="VERSN"
     character(64) :: project
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &

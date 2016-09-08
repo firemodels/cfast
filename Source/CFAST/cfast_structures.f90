@@ -244,7 +244,6 @@ module cfast_types
         real(eb) :: maxflow                             ! peak specified fan flow in mv system (m^3/s)
         real(eb) :: min_cutoff_relp                     ! pressure at beginning of fan cutoff; full flow below this pressure
         real(eb) :: max_cutoff_relp                     ! pressure and end of fan cutoff; flow is zero above this pressure
-        real(eb) :: filter(4)                           ! simple filtering of vents ... same structure as open/close below
         real(eb) :: filter_initial_time                 ! beginning time for filter fraction change
         real(eb) :: filter_initial_fraction             ! beginning fraction for filter (filter fraction up to initial time)
         real(eb) :: filter_final_time                   ! ending time for filter fraction change
@@ -263,6 +262,7 @@ module cfast_types
 
         integer :: room1                    ! first or top compartment for connecting vent
         integer :: room2                    ! second or bottom compartment for connecting vent
+        integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
         integer :: opening_target           ! target number associated with vent (user input)
         integer :: opening_type             ! open/close type for fire (user input)
                                             ! (1 = time, 2 = temperature, 3 = heat flux)
@@ -275,7 +275,6 @@ module cfast_types
         real(eb) :: opening_final_time      ! ending time for vent opening fraction change
         real(eb) :: opening_final_fraction  ! final fraction for vent opening (vent fraction after final time)
                                             ! between initial and final, open fraction changes linearly
-        integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
         real(eb) :: area                    ! cross-sectional area of vent
         real(eb) :: xoffset                 ! offset from origin to vent center in width (x) direction
         real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction

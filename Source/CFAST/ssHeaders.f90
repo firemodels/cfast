@@ -98,10 +98,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write(21,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(21,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(21,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
-    write(21,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
+    write (21,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write (21,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write (21,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write (21,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     end subroutine ssHeadersNormal
 
@@ -160,10 +160,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write(23,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(23,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(23,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
-    write(23,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
+    write (23,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write (23,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write (23,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write (23,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     end subroutine ssHeadersSpecies
 
@@ -219,10 +219,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write(24,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(24,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(24,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
-    write(24,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
+    write (24,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write (24,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write (24,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write (24,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     end subroutine ssHeadersSpeciesMass
 
@@ -338,10 +338,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write(25,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(25,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(25,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
-    write(25,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
+    write (25,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write (25,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write (25,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write (25,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     return
     end subroutine ssHeadersFlux
@@ -453,10 +453,10 @@ module spreadsheet_header_routines
     end if
 
     ! write out header
-    write(22,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(22,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(22,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
-    write(22,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
+    write (22,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write (22,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write (22,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write (22,"(16384(a,','))") (trim(headertext(4,i)),i=1,position)
 
     return
 
@@ -622,8 +622,8 @@ module spreadsheet_header_routines
     ! write out header if called from outputspreadsheet
     ! (this is only one once, but smokeview device tags are done each time)
     if (lMode) then
-        write(15,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-        write(15,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+        write (15,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+        write (15,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
     end if
 
     end subroutine ssHeadersSMV
@@ -718,9 +718,9 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write(ioresid,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(ioresid,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(ioresid,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write (ioresid,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write (ioresid,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write (ioresid,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
  end subroutine ssHeadersResid
 
@@ -760,9 +760,9 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write(ioslab,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
-    write(ioslab,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
-    write(ioslab,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
+    write (ioslab,"(16384(a,','))") (trim(headertext(1,i)),i=1,position)
+    write (ioslab,"(16384(a,','))") (trim(headertext(2,i)),i=1,position)
+    write (ioslab,"(16384(a,','))") (trim(headertext(3,i)),i=1,position)
 
     end subroutine ssHeadersFSlabs
 

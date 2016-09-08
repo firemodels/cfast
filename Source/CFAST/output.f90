@@ -43,14 +43,14 @@ module output_routines
 
     call splitversion(version,imajor,iminor,iminorrev)
 
-    write(iunit,'(/A/)')                    'CFAST'
+    write (iunit,'(/A/)')                    'CFAST'
 #ifndef VERSION_PP
 #define VERSION_PP "Test Version     :"
 #endif
-    write(iunit,'(a,a,i0,".",i0,".",i0)')     TRIM(VERSION_PP),' CFAST ',imajor, iminor, iminorrev
-    write(iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
-    write(iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
-    write(iunit,'(A,A/)')                   'Compilation Date : ',TRIM(compile_date)
+    write (iunit,'(a,a,i0,".",i0,".",i0)')     TRIM(VERSION_PP),' CFAST ',imajor, iminor, iminorrev
+    write (iunit,'(A,A)')                    'Revision         : ',TRIM(revision)
+    write (iunit,'(A,A)')                    'Revision Date    : ',TRIM(revision_date)
+    write (iunit,'(A,A/)')                   'Compilation Date : ',TRIM(compile_date)
     return
 
     end subroutine output_version
@@ -332,11 +332,11 @@ module output_routines
     ! vertical flow natural vents
     do i = 1, n_vvents
         ventptr => vventinfo(i)
-        ifrom = ventptr%bottom
+        ifrom = ventptr%room2
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%name
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ventptr%top
+        ito = ventptr%room1
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'
@@ -521,13 +521,13 @@ module output_routines
                 if (abs(gtotal)<=1.0e-10_eb) gtotal = 0.0_eb
                 if (abs(ctotal)<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
-                    write(iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                    write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
                         tctemp-kelvin_c_offset, itotal, total, ftotal, wtotal, gtotal, ctotal
                 elseif (itotal/=0.0_eb) then
-                    write(iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                    write (iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
                         itotal
                 else
-                    write(iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                    write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
                 end if
             end if
         end do
@@ -560,7 +560,7 @@ module output_routines
     type(detector_type), pointer :: dtectptr
 
     if (n_detectors==0)return
-    write(iofilo,5000)
+    write (iofilo,5000)
     cjetmin = 0.10_eb
     do i = 1, n_detectors
         dtectptr => detectorinfo(i)
@@ -584,11 +584,11 @@ module output_routines
 
         itype = dtectptr%dtype
         if (itype==smoked) then
-            write(iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
+            write (iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
         else if (itype==heatd) then
-            write(iofilo,5020) i, roomptr%name, 'HEAT  ', tlink, tjet, cact
+            write (iofilo,5020) i, roomptr%name, 'HEAT  ', tlink, tjet, cact
         else
-            write(iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
+            write (iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
         end if
 
 5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/, &
@@ -694,14 +694,14 @@ module output_routines
         write (iofilo,5040)
         do i = 1, n_vvents
             ventptr => vventinfo(i)
-            write (ciout,'(i5,3x)') ventptr%top
-            if (ventptr%top==nr) ciout = 'Outside'
-            write (cjout,'(i5,3x)') ventptr%bottom
-            if (ventptr%bottom==nr) cjout = 'Outside'
+            write (ciout,'(i5,3x)') ventptr%room1
+            if (ventptr%room1==nr) ciout = 'Outside'
+            write (cjout,'(i5,3x)') ventptr%room2
+            if (ventptr%room2==nr) cjout = 'Outside'
             csout = 'Round'
             if (ventptr%shape==2) csout = 'Square'
-            roomptr => roominfo(ventptr%bottom)
-            if (ventptr%bottom<nr) then
+            roomptr => roominfo(ventptr%room2)
+            if (ventptr%room2<nr) then
                 hrx = roomptr%cheight
                 hrpx = roomptr%z1
             else
@@ -720,9 +720,9 @@ module output_routines
         do i = 1, n_mvents
             ventptr => mventinfo(i)
             write (ciout,'(i5,3x)') ventptr%room1
-            if (ventptr%top==nr) ciout = 'Outside'
+            if (ventptr%room1==nr) ciout = 'Outside'
             write (cjout,'(i5,3x)') ventptr%room2
-            if (ventptr%bottom==nr) cjout = 'Outside'
+            if (ventptr%room2==nr) cjout = 'Outside'
             write (iofilo,5130) ventptr%counter, ciout, ventptr%height(1), cjout, ventptr%height(2), &
                 ventptr%min_cutoff_relp, ventptr%max_cutoff_relp, &
                 (ventptr%coeff(j),j = 1,ventptr%n_coeffs)
@@ -871,14 +871,14 @@ module output_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    if (n_targets/=0) write(iofilo,5000)
+    if (n_targets/=0) write (iofilo,5000)
 5000 format(//,'TARGETS',//,'Target',T29,'Compartment',T44,'Position (x, y, z)',T71,&
          'Direction (x, y, z)',T96,'Material',/,102('-'))
 
     do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         roomptr => roominfo(targptr%room)
-        write(iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), &
+        write (iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), &
             (targptr%normal(j),j=1,3), trim(targptr%material)
 5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
     end do
@@ -897,7 +897,7 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
-    if (n_detectors/=0) write(iofilo,5000)
+    if (n_detectors/=0) write (iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
          ,'Target  Compartment        Type           Position (x, y, z)            Activation',/ &
          ,'                                                                        Obscuration    ', &
@@ -912,11 +912,11 @@ module output_routines
         roomptr => roominfo(iroom)
         itype = dtectptr%dtype
         if (itype==smoked) then
-            write(outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
+            write (outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
         else if (itype==heatd) then
-            write(outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-273.15, dtectptr%rti
+            write (outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-273.15, dtectptr%rti
         else
-            write(outbuf,5020) idtect, roomptr%name, 'SPRINK', dtectptr%center(1:3), &
+            write (outbuf,5020) idtect, roomptr%name, 'SPRINK', dtectptr%center(1:3), &
                 dtectptr%trigger-273.15, dtectptr%rti, dtectptr%spray_density
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)
@@ -990,29 +990,29 @@ module output_routines
 
     integer :: itmp, irm, iw
 
-    write(lbuf,*)'Solution component with the greatest error is'
+    write (lbuf,*)'Solution component with the greatest error is'
     call xerror(lbuf,0,1,0)
     if (icomp<=nofp+nrm1) then
-        write(lbuf,'(a,i2)')' pressure in room ',icomp
+        write (lbuf,'(a,i2)')' pressure in room ',icomp
         call xerror(lbuf,0,1,0)
     else if (icomp<=noftu) then
-        write(lbuf,'(a,i2)')' either hvac or fsm ',icomp-nrm1
+        write (lbuf,'(a,i2)')' either hvac or fsm ',icomp-nrm1
         call xerror(lbuf,0,1,0)
     else if (icomp<=nofvu) then
-        write(lbuf,'(a,i2)')' upper layer temp in room ',icomp-noftu
+        write (lbuf,'(a,i2)')' upper layer temp in room ',icomp-noftu
         call xerror(lbuf,0,1,0)
     else if (icomp<=noftl) then
-        write(lbuf,'(a,i2)')' upper layer vol in room ',icomp-nofvu
+        write (lbuf,'(a,i2)')' upper layer vol in room ',icomp-nofvu
         call xerror(lbuf,0,1,0)
     else if (icomp<=noftl+nrm1) then
-        write(lbuf,'(a,i2)')' lower layer temp in room ',icomp-noftl
+        write (lbuf,'(a,i2)')' lower layer temp in room ',icomp-noftl
         call xerror(lbuf,0,1,0)
     else if (icomp<=nofwt) then
         if (option(foxygen)==on) then
-            write(lbuf,'(a,i2)')' oxygen component ',icomp-nofoxyl
+            write (lbuf,'(a,i2)')' oxygen component ',icomp-nofoxyl
             call xerror(lbuf,0,1,0)
         else
-            write(lbuf,'(a,i2)')' target number ',icomp
+            write (lbuf,'(a,i2)')' target number ',icomp
             call xerror(lbuf,0,1,0)
         end if
     else if (icomp<=nofprd) then
@@ -1020,16 +1020,16 @@ module output_routines
         irm = i_hconnections(itmp,w_from_room)
         iw = i_hconnections(itmp,w_from_wall)
         if (iw==1) then
-            write(lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
+            write (lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
             call xerror(lbuf,0,1,0)
         else if (iw==2) then
-            write(lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' floor   '
+            write (lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' floor   '
             call xerror(lbuf,0,1,0)
         else if (iw==3) then
-            write(lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' upper wall '
+            write (lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' upper wall '
             call xerror(lbuf,0,1,0)
         else if (iw==4) then
-            write(lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
+            write (lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
             call xerror(lbuf,0,1,0)
         end if
     end if
@@ -1091,8 +1091,8 @@ module output_routines
         end do
         write (*,*) ' '
         if (n_detectors/=0) then
-            write(*,*)'Detector info'
-            write(*,100)
+            write (*,*)'Detector info'
+            write (*,100)
 100         format('  nr ',3X,'D temp',6X,'J temp',6X,' Act')
             do i = 1, n_detectors
                 dtectptr => detectorinfo(i)
@@ -1103,7 +1103,7 @@ module output_routines
                 else
                     ccc = '   '
                 end if
-                write(*,102)i,dtectptr%value,dtectptr%temp_gas,dtectptr%velocity,dtectptr%activation_time,ccc
+                write (*,102)i,dtectptr%value,dtectptr%temp_gas,dtectptr%velocity,dtectptr%activation_time,ccc
 102             format(1x,i2,1x,4(e11.4,1x),a3)
             end do
         end if
@@ -1111,13 +1111,13 @@ module output_routines
     else if (ikey==3) then
         write (*,5090) t, dt
         call find_error_component (ieqmax)
-        write(*,6030)
+        write (*,6030)
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
-            write(*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
+            write (*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
                roomptr%species_fraction(l,2), roomptr%species_fraction(u,2)
         end do
-        write(*,6070)
+        write (*,6070)
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
             xqf = 0.
@@ -1126,21 +1126,21 @@ module output_routines
                 if (iroom==fireptr%room) xqf = xqf + fireptr%qdot_actual
             end do
             xqf = xqf + roomptr%qdot_doorjet
-            write(*,6060) iroom, roomptr%t_surfaces(interior,1), roomptr%t_surfaces(interior,3), &
+            write (*,6060) iroom, roomptr%t_surfaces(interior,1), roomptr%t_surfaces(interior,3), &
                 roomptr%t_surfaces(interior,4), roomptr%t_surfaces(interior,2), xqf
         end do
         if (n_fires>0) then
-            write(*,6080)
+            write (*,6080)
             do iobj = 1, n_fires
                 fireptr => fireinfo(iobj)
-                write(*,6085) iobj, fireptr%qdot_layers(l), fireptr%qdot_layers(u)
+                write (*,6085) iobj, fireptr%qdot_layers(l), fireptr%qdot_layers(u)
             end do
         end if
         if (n_targets>0) then
-            write(*,6090)
+            write (*,6090)
             do itarg = 1, n_targets
                 targptr => targetinfo(itarg)
-                write(*,6095) itarg, targptr%temperature(idx_tempf_trg)
+                write (*,6095) itarg, targptr%temperature(idx_tempf_trg)
             end do
         end if
     end if
@@ -1178,7 +1178,7 @@ module output_routines
     real(eb), intent(in) :: T, dT
 
     rewind (12)
-    write(12,5001) t, dt
+    write (12,5001) t, dt
     call results_compressed (12)
     return
 
@@ -1195,7 +1195,7 @@ module output_routines
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
-    !      3 is for the log file  (LOGERR)
+    !      3 is for the log file  (iofill)
     !	   4 is for the indicator that the model is running (kernelisrunning)
     !      6 is output (IOFILO)
     !     11 is the history file
@@ -1246,12 +1246,12 @@ module output_routines
     ! error processing
 
     !	smokeview file
-11  write(*,5040) mod(ios,256),trim(smvhead),trim(smvdata)
-    write(logerr,5040) mod(ios,256),trim(smvhead),trim(smvdata)
+11  write (*,5040) mod(ios,256),trim(smvhead),trim(smvdata)
+    write (iofill,5040) mod(ios,256),trim(smvhead),trim(smvdata)
     stop
     !	this one comes from writing to the status file
-81  write(*,*) '***Fatal error writing to the status file ',ios
-    write(logerr,*) '***Fatal error writing to the status file ',ios
+81  write (*,*) '***Fatal error writing to the status file ',ios
+    write (iofill,*) '***Fatal error writing to the status file ',ios
     stop
 
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
@@ -1271,7 +1271,7 @@ module output_routines
         if (ios==0) then
             close(fileunit, status='delete', iostat=ios)
             if (ios/=0) then
-                write (logerr,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
+                write (iofill,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
                     '. File may be in use by another application.'
                 write (*,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
                     '. File may be in use by another application.'

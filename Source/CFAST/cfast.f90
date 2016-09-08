@@ -58,7 +58,7 @@
     call read_command_options
     call open_files
 
-    call output_version (logerr)
+    call output_version (iofill)
 
     call read_solver_ini
     call read_input_file
@@ -91,8 +91,8 @@
 
     if (.not.validate) write (*,5000) tend - tbeg
     if (.not.validate) write (*,5010) total_steps
-    write (logerr,5000) tend - tbeg
-    write (logerr,5010) total_steps
+    write (iofill,5000) tend - tbeg
+    write (iofill,5010) total_steps
     call cfastexit ('CFAST', 0)
 
 5000 format ('Total execution time = ',1pg10.3,' seconds')
@@ -116,11 +116,11 @@
     integer, intent(in) :: errorcode
 
     if (errorcode==0) then
-        if (.not.validate) write(*, '(''Normal exit from '',a)') trim(name)
-        write(logerr, '(''Normal exit from '',a)') trim(name)
+        if (.not.validate) write (*, '(''Normal exit from '',a)') trim(name)
+        write (iofill, '(''Normal exit from '',a)') trim(name)
     else
-        write(*,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
-        write(logerr,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
+        write (*,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
+        write (iofill,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
     end if
 
     close (unit=4, status='delete')

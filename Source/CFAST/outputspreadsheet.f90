@@ -171,8 +171,8 @@ module spreadsheet_routines
     do i = 1, n_vvents
 
         ventptr => vventinfo(i)
-        ifrom = ventptr%bottom
-        ito = ventptr%top
+        ifrom = ventptr%room2
+        ito = ventptr%room1
 
         flow = 0.0_eb
         if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
@@ -541,7 +541,7 @@ module spreadsheet_routines
         call ssaddtolist (position,slabs,outarray)
         do j = 2, 1, -1
             vflow = ventptr%flow_slab(j)
-            if (ventptr%top<=nrm1.and.j==1) vflow = -vflow
+            if (ventptr%room1<=nrm1.and.j==1) vflow = -vflow
             call ssaddtolist(position,ventptr%temp_slab(j),outarray)
             call ssaddtolist(position,vflow,outarray)
             call ssaddtolist(position,ventptr%ybot_slab(j),outarray)

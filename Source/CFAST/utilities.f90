@@ -166,7 +166,7 @@ module utility_routines
 
     ! define message print flag and logical unit number
     mesflg = 1
-    lunit = logerr
+    lunit = iofill
     if (mesflg/=0) then
 
         ! write the message
@@ -267,14 +267,14 @@ module utility_routines
     lm = len_trim(mesg)
 
     ! write the message
-    write(*,5000) mesg(1:lm)
-    write(logerr,5000) mesg(1:lm)
+    write (*,5000) mesg(1:lm)
+    write (iofill,5000) mesg(1:lm)
     if (nnr==1) then
-        write(*,5001) nerr,r1
-        write(logerr,5001) nerr,r1
+        write (*,5001) nerr,r1
+        write (iofill,5001) nerr,r1
     else if (nnr==2) then
-        write(*,5002) nerr,r1,r2
-        write(logerr,5002) nerr,r1,r2
+        write (*,5002) nerr,r1,r2
+        write (iofill,5002) nerr,r1,r2
     end if
     return
 
@@ -783,7 +783,7 @@ module utility_routines
     ! unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (iofili)
-    !      3 is for the log file  (logerr)
+    !      3 is for the log file  (iofill)
     !      6 is output (iofilo)
     !     11 is the history file
     !     12 is used to write the status file (project.status)
@@ -824,7 +824,7 @@ module utility_routines
     if (cmdflag('D',iopt)/=0) debugging = .true.
     if (cmdflag('V',iopt)/=0) validate = .true.
     if (cmdflag('N',iopt)/=0) netheatflux = .true.
-    logerr = 3
+    iofill = 3
 
     if (cmdflag('F',iopt)/=0.and.cmdflag('C',iopt)/=0) then
         write (*,*) 'Both compact (/c) and full (/f) output specified. Only one may be included on command line.'
@@ -868,48 +868,48 @@ module utility_routines
     iunit = funit(70)
     open(unit=iunit,file=file)
 
-    write(iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL'
+    write (iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL'
     write (iunit,11) aptol, rptol, atol, rtol
 11  format(1x,5(1pg11.4,1x))
 
-    write(iunit,'(a)') ' ABS WALL TOL, REL WALL TOL, INITIALIZATION TOLERANCE'
+    write (iunit,'(a)') ' ABS WALL TOL, REL WALL TOL, INITIALIZATION TOLERANCE'
     write (iunit,11) awtol, rwtol, algtol
 
-    write(iunit,'(a)') ' ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP'
+    write (iunit,'(a)') ' ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP'
     write (iunit,11) ahvptol, rhvptol, ahvttol, rhvttol
 
-    write(iunit,'(a)') ' NUMBER OF PHYSICAL OPTION FLAGS'
+    write (iunit,'(a)') ' NUMBER OF PHYSICAL OPTION FLAGS'
     write (iunit,*) nnnopt
 
-    write(iunit,'(a)') ' FIRE,      HFLOW,  ENTRAIN, VFLOW,       CJET'
+    write (iunit,'(a)') ' FIRE,      HFLOW,  ENTRAIN, VFLOW,       CJET'
     write (iunit,*) (option(j),j = 1,5)
 
-    write(iunit,'(a)') ' DOOR-FIRE, CONVEC, RAD,     CONDUCT, DEBUG PRINT  '
+    write (iunit,'(a)') ' DOOR-FIRE, CONVEC, RAD,     CONDUCT, DEBUG PRINT  '
     write (iunit,*) (option(j),j = 6,10)
 
-    write(iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, TYPE OF INITIALIZATION'
+    write (iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, TYPE OF INITIALIZATION'
     write (iunit,*) (option(j),j = 11,15)
 
-    write(iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE    DETECTORS'
+    write (iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE    DETECTORS'
     write (iunit,*) (option(j),j = 16,20)
 
-    write(iunit,'(a)') ' OBJECT BACKTRACKING'
+    write (iunit,'(a)') ' OBJECT BACKTRACKING'
     write (iunit,*) (option(j),j = 21,21)
 
-    write(iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB'
+    write (iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB'
     write (iunit,'(1x,i3,1x,3(1pg11.4,1x))') nwpts, (wsplit(i),i=1,3)
 
-    write(iunit,'(a)') ' BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE,   2=INSULATED 3=FLUX)'
+    write (iunit,'(a)') ' BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE,   2=INSULATED 3=FLUX)'
     write (iunit,*) iwbound
 
-    write(iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP -  IF EITHER <0 THEN SOLVER DECIDES'
+    write (iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP -  IF EITHER <0 THEN SOLVER DECIDES'
     write (iunit,11) stpmax, stpfirst
 
-    write(iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
-    write(iunit,11) 0.0_eb
+    write (iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
+    write (iunit,11) 0.0_eb
 
-    write(iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF,   SNSQE PRINT (1=ON)'
-    write(iunit,'(1x,i3,1x,1pg11.4,i3)') jacchk, cutjac, iprtalg
+    write (iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF,   SNSQE PRINT (1=ON)'
+    write (iunit,'(1x,i3,1x,1pg11.4,i3)') jacchk, cutjac, iprtalg
 
     if (1==1) stop
     return
@@ -1081,9 +1081,9 @@ module utility_routines
     itmp = 0
 30  continue
     itmp = itmp + 1
-    write(fmt,10) ilen
+    write (fmt,10) ilen
 10  format('(a',i2.2,',','','.','',',i3.3)')
-    write(workfil,fmt) namefil, itmp
+    write (workfil,fmt) namefil, itmp
     inquire (file = workfil, exist = existed)
     if (existed) go to 30
     open (unit = iounit, file = workfil,recl=255)
@@ -1200,7 +1200,9 @@ module opening_fractions
     use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux 
     use ramp_data
     use vent_data
+    use room_data, only: roominfo, nrm1
     use target_data, only: targetinfo
+    use setup_data, only: iofilo, iofill
 
     implicit none
 
@@ -1283,6 +1285,7 @@ module opening_fractions
     type(target_type), pointer :: targptr
     real(eb), intent(in) :: time
     character(len=1), intent(in) :: vtype
+    character(len=128) room1c, room2c
 
     real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
@@ -1315,20 +1318,42 @@ module opening_fractions
                 vfraction = ventptr%opening_initial_fraction + dydt*deltat
             end if
         ! check vent triggering by temperature. if tripped, turn it into a time-based change
-        else if (ventptr%opening_type==trigger_by_temp) then
+        else if (ventptr%opening_type==trigger_by_temp.and..not.ventptr%opening_triggered) then
             targptr => targetinfo(ventptr%opening_target)
             if (targptr%temperature(idx_tempf_trg)>ventptr%opening_criterion) then
                 ventptr%opening_initial_time = time
                 ventptr%opening_final_time = time + 1.0_eb
                 ventptr%opening_type = trigger_by_time
+                ventptr%opening_triggered = .true.
+                room1c = roominfo(ventptr%room1)%name
+                if (ventptr%room1>nrm1) room1c = 'Outside'
+                room2c = roominfo(ventptr%room2)%name
+                if (ventptr%room2>nrm1) room2c = 'Outside'
+                write (iofilo,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
+                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                    '), opening change triggered by temperature at ',time,' s'
+                write (iofill,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
+                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                    '), opening change triggered by temperature at ',time,' s'
             end if
         ! check vent triggering by flux. if tripped, turn it into a time-based change
-        else if (ventptr%opening_type==trigger_by_flux) then
+        else if (ventptr%opening_type==trigger_by_flux.and..not.ventptr%opening_triggered) then
             targptr => targetinfo(ventptr%opening_target)
             if (targptr%flux_incident_front>ventptr%opening_criterion) then
                 ventptr%opening_initial_time = time
                 ventptr%opening_final_time = time + 1.0_eb
                 ventptr%opening_type = trigger_by_time
+                ventptr%opening_triggered = .true.
+                room1c = roominfo(ventptr%room1)%name
+                if (ventptr%room1>nrm1) room1c = 'Outside'
+                room2c = roominfo(ventptr%room2)%name
+                if (ventptr%room2>nrm1) room2c = 'Outside'
+                write (iofilo,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
+                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                    '), opening change triggered by heat flux at ',time,' s'
+                write (iofill,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
+                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                    '), opening change triggered by heat flux at ',time,' s'
             end if
         end if
     end if

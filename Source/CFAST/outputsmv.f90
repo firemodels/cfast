@@ -277,13 +277,13 @@
         xyz(6) = ventptr%sill
     else if (venttype=='V') then
         ventptr => vventinfo(ivent)
-        if (ventptr%top<=nrm1) then
-            iroom = ventptr%top
+        if (ventptr%room1<=nrm1) then
+            iroom = ventptr%room1
             roomptr => roominfo(iroom)
             xyz(5) = 0.0_eb
             xyz(6) = 0.0_eb
         else
-            iroom = ventptr%bottom
+            iroom = ventptr%room2
             roomptr => roominfo(iroom)
             xyz(5) = roomptr%cheight
             xyz(6) = roomptr%cheight

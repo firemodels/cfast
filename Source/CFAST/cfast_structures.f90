@@ -222,8 +222,6 @@ module cfast_types
     ! vent data structure
     type vent_type
         ! These define a wall vent
-        integer :: room1                                ! first compartment for connecting vent
-        integer :: room2                                ! second compartment for connecting vent
         real(eb) :: sill                                ! height of vent bottom relative to compartment floor
         real(eb) :: soffit                              ! height of vent top relative to compartment floor
         real(eb) :: width                               ! width of sill
@@ -235,8 +233,6 @@ module cfast_types
         real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)    ! (1>2 or 2>1, u or l, in or out)
 
         ! These define a ceiling/floor vent
-        integer :: top                                  ! top compartment for connecting vent (from user input)
-        integer :: bottom                               ! bottom compartment for connecting vent (from user input)
         integer :: shape                                ! vent shape, 1 = circular, 2 = square (from user input)
 
         ! These define a mechanical vent
@@ -265,6 +261,8 @@ module cfast_types
 
         ! These are common to more than one vent types
 
+        integer :: room1                    ! first or top compartment for connecting vent
+        integer :: room2                    ! second or bottom compartment for connecting vent
         integer :: opening_target           ! target number associated with vent (user input)
         integer :: opening_type             ! open/close type for fire (user input)
                                             ! (1 = time, 2 = temperature, 3 = heat flux)

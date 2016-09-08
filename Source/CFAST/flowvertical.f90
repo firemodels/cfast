@@ -50,8 +50,8 @@ module vflow_routines
     do i = 1, n_vvents
         ventptr => vventinfo(i)
         ventptr%mflow(1:2,1:2) = 0.0_eb
-        itop = ventptr%top
-        ibot = ventptr%bottom
+        itop = ventptr%room1
+        ibot = ventptr%room2
         icount = ventptr%counter
         call get_vent_opening ('V',itop,ibot,icount,i,tsec,fraction)
         area = fraction * ventptr%area

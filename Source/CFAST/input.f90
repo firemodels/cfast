@@ -166,13 +166,13 @@ module input_routines
     ! above
     do i = 1, n_vvents
         ventptr => vventinfo(i)
-        if (ventptr%top==ventptr%bottom) then
+        if (ventptr%room1==ventptr%room2) then
             write (*,*) '***Error: A room can not be connected to itself with a vertical vent'
             write (logerr,*) '***Error: A room can not be connected to itself with a vertical vent'
             stop
         end if
-        itop = ventptr%top
-        ibot = ventptr%bottom
+        itop = ventptr%room1
+        ibot = ventptr%room2
         deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
         if (itop/=nr.and.ibot/=nr.and.abs(deps1)>=mx_vsep) then
             write (*,*) '***Error: Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
@@ -988,7 +988,7 @@ module input_routines
                     k = lrarray(4)
                     do iijk = 1, n_vvents
                         ventptr => vventinfo(iijk)
-                        if (ventptr%top==i.and.ventptr%bottom==j.and.ventptr%counter==k) then
+                        if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
                             ventptr%opening_initial_time = lrarray(5)
                             ventptr%opening_final_time = lrarray(5) + lrarray(7)
                             ventptr%opening_final_fraction = lrarray(6)
@@ -1083,8 +1083,8 @@ module input_routines
                 end if
                 n_vvents = n_vvents + 1
                 ventptr => vventinfo(n_vvents)
-                ventptr%top = i
-                ventptr%bottom = j
+                ventptr%room1 = i
+                ventptr%room2 = j
                 ventptr%counter = k
                 ! read_input_file will verify the orientation (i is on top of j)
                 ventptr%area = lrarray(icarea)
@@ -1118,12 +1118,12 @@ module input_routines
                     ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_fraction = lrarray(icfraction)
                     ventptr%opening_final_fraction = lrarray(icfraction)
-                    if (ventptr%top<=nrm1) then
-                        roomptr => roominfo(ventptr%top)
+                    if (ventptr%room1<=nrm1) then
+                        roomptr => roominfo(ventptr%room1)
                         ventptr%xoffset = roomptr%cwidth/2
                         ventptr%yoffset = roomptr%cdepth/2
                     else
-                        roomptr => roominfo(ventptr%bottom)
+                        roomptr => roominfo(ventptr%room2)
                         ventptr%xoffset = roomptr%cwidth/2
                         ventptr%yoffset = roomptr%cdepth/2
                     end if

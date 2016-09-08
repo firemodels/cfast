@@ -404,10 +404,10 @@ module spreadsheet_header_routines
     do i = 1,n_vvents
 
         ventptr => vventinfo(i)
-        ifrom = ventptr%bottom
+        ifrom = ventptr%room2
         call tointstring(ifrom,ciFrom)
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ventptr%top
+        ito = ventptr%room1
         call tointstring(ito,cito)
         if (ito==nr) cito = 'Outside'
         position = position + 1

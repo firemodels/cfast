@@ -332,11 +332,11 @@ module output_routines
     ! vertical flow natural vents
     do i = 1, n_vvents
         ventptr => vventinfo(i)
-        ifrom = ventptr%bottom
+        ifrom = ventptr%room2
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%name
         if (ifrom==nr) cifrom = 'Outside'
-        ito = ventptr%top
+        ito = ventptr%room1
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%name
         if (ito==nr) cito = 'Outside'
@@ -694,14 +694,14 @@ module output_routines
         write (iofilo,5040)
         do i = 1, n_vvents
             ventptr => vventinfo(i)
-            write (ciout,'(i5,3x)') ventptr%top
-            if (ventptr%top==nr) ciout = 'Outside'
-            write (cjout,'(i5,3x)') ventptr%bottom
-            if (ventptr%bottom==nr) cjout = 'Outside'
+            write (ciout,'(i5,3x)') ventptr%room1
+            if (ventptr%room1==nr) ciout = 'Outside'
+            write (cjout,'(i5,3x)') ventptr%room2
+            if (ventptr%room2==nr) cjout = 'Outside'
             csout = 'Round'
             if (ventptr%shape==2) csout = 'Square'
-            roomptr => roominfo(ventptr%bottom)
-            if (ventptr%bottom<nr) then
+            roomptr => roominfo(ventptr%room2)
+            if (ventptr%room2<nr) then
                 hrx = roomptr%cheight
                 hrpx = roomptr%z1
             else
@@ -720,9 +720,9 @@ module output_routines
         do i = 1, n_mvents
             ventptr => mventinfo(i)
             write (ciout,'(i5,3x)') ventptr%room1
-            if (ventptr%top==nr) ciout = 'Outside'
+            if (ventptr%room1==nr) ciout = 'Outside'
             write (cjout,'(i5,3x)') ventptr%room2
-            if (ventptr%bottom==nr) cjout = 'Outside'
+            if (ventptr%room2==nr) cjout = 'Outside'
             write (iofilo,5130) ventptr%counter, ciout, ventptr%height(1), cjout, ventptr%height(2), &
                 ventptr%min_cutoff_relp, ventptr%max_cutoff_relp, &
                 (ventptr%coeff(j),j = 1,ventptr%n_coeffs)

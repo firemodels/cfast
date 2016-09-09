@@ -900,7 +900,7 @@ module input_routines
             if (lcarray(10)=='TIME' .or. lcarray(10)=='TEMP' .or. lcarray(10)=='FLUX') then
                 if (lcarray(10)=='TIME') then
                     ventptr%offset(1) = lrarray(7)
-                    ventptr%offset(2) = lrarray(8)
+                    ventptr%offset(2) = 0.0_eb
                     ventptr%face = lrarray(9)
                     ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_time = lrarray(13)

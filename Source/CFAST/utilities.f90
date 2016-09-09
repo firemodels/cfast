@@ -1285,7 +1285,7 @@ module opening_fractions
     type(target_type), pointer :: targptr
     real(eb), intent(in) :: time
     character(len=1), intent(in) :: vtype
-    character(len=128) room1c, room2c
+    character(len=128) room1c, room2c, vtypec
 
     real(eb) :: dt, dy, dydt, mintime = 1.0e-6_eb
     real(eb) :: deltat
@@ -1329,11 +1329,15 @@ module opening_fractions
                 if (ventptr%room1>nrm1) room1c = 'Outside'
                 room2c = roominfo(ventptr%room2)%name
                 if (ventptr%room2>nrm1) room2c = 'Outside'
-                write (iofilo,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
-                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                vtypec = 'Unknown '
+                if (vtype=='H') vtypec = 'Wall'
+                if (vtype=='V') vtypec = 'Ceiling/Floor'
+                if (vtype=='M') vtypec = 'Mechanical'
+                write (iofilo,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
                     '), opening change triggered by temperature at ',time,' s'
-                write (iofill,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
-                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                write (iofill,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
                     '), opening change triggered by temperature at ',time,' s'
             end if
         ! check vent triggering by flux. if tripped, turn it into a time-based change
@@ -1348,11 +1352,15 @@ module opening_fractions
                 if (ventptr%room1>nrm1) room1c = 'Outside'
                 room2c = roominfo(ventptr%room2)%name
                 if (ventptr%room2>nrm1) room2c = 'Outside'
-                write (iofilo,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
-                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                vtypec = 'Unknown '
+                if (vtype=='H') vtypec = 'Wall'
+                if (vtype=='V') vtypec = 'Ceiling/Floor'
+                if (vtype=='M') vtypec = 'Mechanical'
+                write (iofilo,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
                     '), opening change triggered by heat flux at ',time,' s'
-                write (iofill,'(2(a,i0),3a,i0,3a,f0.0,a)') 'Vent #',ventptr%counter,' from compartment ',ventptr%room1, &
-                    ' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
+                write (iofill,'(a,2(a,i0),3a,i0,3a,f0.0,a)') trim(vtypec),' vent #',ventptr%counter,' from compartment ', &
+                    ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
                     '), opening change triggered by heat flux at ',time,' s'
             end if
         end if

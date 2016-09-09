@@ -199,6 +199,8 @@ Module IO
 
                         If csv.num(i, 0) > 12 Then
                             ' This is the new format that includes trigger by flux or temperature
+                            hvent.Face = csv.str(i, hventNum.face)
+                            hvent.Offset = csv.num(i, hventNum.hall1)
                             If InStr(OpenTypes, csv.str(i, hventNum.openingtype), CompareMethod.Text) > 0 Then
                                 hvent.OpenType = InStr(OpenTypes, csv.str(i, hventNum.openingtype), CompareMethod.Text) / 4
                                 If hvent.OpenType = Vent.OpenbyTime Then
@@ -217,7 +219,7 @@ Module IO
                             End If
                         ElseIf csv.num(i, 0) = 12 Then
                             ' This is the old format that had wind input (after sill) and second compartment offset (after hall1). This shifts the actually used inputs
-                            hvent.Face = csv.str(i, hventNum.face + 2)
+                            hvent.Face = csv.str(i, hventNum.face + 1)
                             hvent.Offset = csv.num(i, hventNum.hall1 + 1)
                             hvent.InitialOpening = csv.num(i, hventNum.initialfraction + 2)
                             hvent.FinalOpening = csv.num(i, hventNum.initialfraction + 2)
@@ -278,8 +280,27 @@ Module IO
                             csv.num(i, mventNum.toCompartment) - 1, csv.num(i, mventNum.toArea),
                             csv.num(i, mventNum.toHeight), csv.str(i, mventNum.toOpenOrien), csv.num(i, mventNum.flow),
                             csv.num(i, mventNum.beginFlowDrop), csv.num(i, mventNum.flowZero))
-                        mvent.InitialOpening = csv.num(i, mventNum.initialfraction)
-                        mvent.FinalOpening = csv.num(i, mventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
+                        ' This is the new open format to open by TIME, TEMP, or FLUX
+                        If InStr(OpenTypes, csv.str(i, mventNum.openingtype), CompareMethod.Text) > 0 Then
+                            mvent.OpenType = InStr(OpenTypes, csv.str(i, mventNum.openingtype), CompareMethod.Text) / 4
+                            If mvent.OpenType = Vent.OpenbyTime Then
+                                mvent.InitialOpeningTime = csv.num(i, mventNum.openinitialtime)
+                                mvent.InitialOpening = csv.num(i, mventNum.openinitialfraction)
+                                mvent.FinalOpeningTime = csv.num(i, mventNum.openfinaltime)
+                                mvent.FinalOpening = csv.num(i, mventNum.openfinalfraction)
+                            Else
+                                mvent.OpenValue = csv.num(i, mventNum.opencriterion)
+                                mvent.Target = csv.str(i, mventNum.opentarget)
+                                mvent.InitialOpening = csv.num(i, mventNum.openinitialfraction)
+                                mvent.FinalOpening = csv.num(i, mventNum.openfinalfraction)
+                            End If
+                            mvent.OffsetX = csv.num(i, mventNum.xoffset)
+                            mvent.OffsetY = csv.num(i, mventNum.yoffset)
+                        Else
+                            ' This is the old format that is just time and partially implemented in EVENT keyword
+                            mvent.InitialOpening = csv.num(i, mventNum.initialfraction)
+                            mvent.FinalOpening = csv.num(i, mventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
+                        End If
                         mvent.Changed = False
                         myMVents.Add(mvent)
                     Case "OBJECT"
@@ -418,7 +439,7 @@ Module IO
                         If csv.num(i, 0) > 6 Then ' New format that allows more than one VVENT per compartment pair
                             If InStr(OpenTypes, csv.str(i, vventNum.openingtype), CompareMethod.Text) > 0 Then
                                 vvent.OpenType = InStr(OpenTypes, csv.str(i, vventNum.openingtype), CompareMethod.Text) / 4
-                                If vvent.OpenType = Vent.OpenbyTemperature Then
+                                If vvent.OpenType = Vent.OpenbyTime Then
                                     vvent.InitialOpeningTime = csv.num(i, vventNum.openinitialtime)
                                     vvent.InitialOpening = csv.num(i, vventNum.openinitialfraction)
                                     vvent.FinalOpeningTime = csv.num(i, vventNum.openfinaltime)

@@ -123,6 +123,7 @@ Friend Module Data
         soffit
         sill
         hall1
+        hall2
         face
         initialfraction
         openingtype = 11

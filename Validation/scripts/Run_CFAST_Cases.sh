@@ -30,10 +30,10 @@ use_installed=
 CURDIR=`pwd`
 cd ..
 export SVNROOT=`pwd`/..
-fdsrepo=
+smvrepo=
 compiler=intel
 
-while getopts 'dF:hI:j:m:p:q:su' OPTION
+while getopts 'dhI:j:m:p:q:sS:u' OPTION
 do
 case $OPTION in
   d)
@@ -42,9 +42,6 @@ case $OPTION in
   h)
   usage;
   exit
-  ;;
-  F)
-  fdsrepo="$OPTARG"
   ;;
   I)
   compiler="$OPTARG"
@@ -64,6 +61,9 @@ case $OPTION in
   s)
    export STOPFDS=1
    ;;
+  S)
+  smvrepo="$OPTARG"
+  ;;
   u)
    use_installed="1"
    ;;
@@ -84,7 +84,7 @@ PLATFORM=$PLATFORM$DEBUG
 if [ "$use_installed" == "1" ] ; then
   BACKGROUND=background
 else
-  BACKGROUND=$fdsrepo/SMV/Build/background/$compiler$underscore$PLATFORM2/background
+  BACKGROUND=$smvrepo/Build/background/$compiler$underscore$PLATFORM2/background
 fi
 export BACKGROUND
 

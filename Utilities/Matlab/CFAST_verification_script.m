@@ -35,10 +35,10 @@ fire_ignition(data_dir);
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
-Dataplot_Inputs_File = [pwd,'/CFAST_verification_dataplot_inputs.csv'];
-Working_Dir = [pwd, '/../../Verification/'];
-Manuals_Dir = [pwd, '/../../Manuals/Validation_Guide/'];
-Scatterplot_Inputs_File = [pwd, '/CFAST_verification_scatterplot_inputs.csv'];
+Dataplot_Inputs_File = '/CFAST_verification_dataplot_inputs.csv';
+Working_Dir = '../../Verification/';
+Manuals_Dir = '../../Manuals/Validation_Guide/';
+Scatterplot_Inputs_File = '/CFAST_verification_scatterplot_inputs.csv';
 
 % Statistics output options
 
@@ -53,7 +53,7 @@ Append_To_Scatterplot_Title = '';
 
 % Run dataplot and scatplot scripts
 
-[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir);
+[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Working_Dir, Manuals_Dir);
 scatplot(saved_data, drange, ...
          'Scatterplot_Inputs_File', Scatterplot_Inputs_File, ...
          'Manuals_Dir', Manuals_Dir, ...

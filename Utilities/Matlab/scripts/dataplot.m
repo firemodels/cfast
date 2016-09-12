@@ -2,9 +2,10 @@
 % 6-06-2012
 % dataplot.m
 %
-% [saved_data, drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir, [drange])
+% [saved_data, drange] = dataplot(Dataplot_Inputs_File, EXP_Dir, OUT_Dir, Manuals_Dir, [drange])
 %
 % Output:
+%
 %    saved_data - cell array containing data needed in scatplot.m
 %
 %    drange - data range needed for scatplot.m, must be commensurate with
@@ -14,7 +15,9 @@
 %
 %    Dataplot_Inputs_File - base configuration file
 %
-%    Working_Dir - base input file directory
+%    EXP_Dir - location of experimental data repository
+%
+%    OUT_Dir - location of output file repository
 %
 %    Manuals_Dir - base plot directory
 %
@@ -28,27 +31,39 @@
 %    configuration file to "o" in those that you want to be processed only.
 %
 % Dependencies:
+%
 %    ../scripts/define_drow_variables.m
 %    dvcread.m
 %    parsepipe.m
 %    parseplus.m
 %
-% Example: From the command line within the Matlab/functions/ directory,
+% Example: From the command line within the Matlab/scripts/ directory,
 %    type
 %
-%    >> [saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir, [2:4,6:8]);
+%    >> [saved_data,drange] = dataplot(Dataplot_Inputs_File, EXP_Dir, OUT_Dir, Manuals_Dir, [2:4,6:8]);
 %
-%    >> [saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Manuals_Dir, 'WTC');
+%    >> [saved_data,drange] = dataplot(Dataplot_Inputs_File, EXP_Dir, OUT_Dir, Manuals_Dir, 'WTC');
+%
+% Special switch_id tags:
+%
+%    'd' -- Proscess this data line as usual (exception: see 'o' below)
+%
+%    's' -- Skip this line
+%
+%    'o' -- Add 'o' in the switch_id column (first column) of FDS_validation_dataplot_inputs.csv to process "only" these lines.
+%
+%    'f' -- Follow the previous line and "hold on" the figure window, adding this line to the current plot.
 
 function [saved_data,drange] = dataplot(varargin)
 
-if nargin<3||nargin>4; 
+if nargin<4||nargin>5; 
     display('Error in argument list')
 end
-if nargin>=3
+if nargin>=4
     Dataplot_Inputs_File = varargin{1};
-    Working_Dir = varargin{2};
-    Manuals_Dir = varargin{3};
+    EXP_Dir = varargin{2};
+    OUT_Dir = varargin{3};
+    Manuals_Dir = varargin{4};
 end
 
 % Read in global plot options
@@ -68,8 +83,8 @@ headers = H{:}'; clear H
 
 n_plots = length(A);
 
-if nargin==4
-    drange = varargin{4};
+if nargin==5
+    drange = varargin{5};
 else
     drange = 2:n_plots;
 end
@@ -132,10 +147,25 @@ for i=2:n_plots
     % Check to see if o line has been activated in configuration file
     otest = strcmp(parameters(strcmp(headers,'switch_id')),'o');
     
-    if itest && (dtest || otest)
+    % Check to see if f line has been activated in configuration file
+    ftest = strcmp(parameters(strcmp(headers,'switch_id')),'f'); % used for multiple lines on same plot
 
-        close all
-        figure
+    if itest && (dtest || otest || ftest)
+
+        if ~ftest
+            if exist('K')
+                clear K
+            end
+            if exist('d2_Key')
+                clear d2_Key
+            end
+            close all
+            figure
+        else
+            hold on
+            K_save = K;
+            d2_Key_save = d2_Key;
+        end
         
         define_drow_variables
         
@@ -166,6 +196,7 @@ for i=2:n_plots
             for j=1:length(S1)
                 d1_Ind_Col = find(strcmp(H,R1(min(j,length(R1)))));
                 d1_Dep_Col = find(strcmp(H,S1(j)));
+                Save_Measured_Quantity(i,j) = S1(j);
                 clear indices
                 % Clear flag for stat_x_y metric
                 using_stat_x_y = 0;
@@ -232,14 +263,16 @@ for i=2:n_plots
                     X = M(indices,d1_Dep_Col)/Scale_Dep;
                     Y = M(indices,d1_Ind_Col)/Scale_Ind;
                 end
-                if strcmp(Plot_Type,'linear')
-                    K(j) = plot(X,Y,char(style(j))); hold on
-                elseif strcmp(Plot_Type,'loglog')
-                    K(j) = loglog(X,Y,char(style(j))); hold on
-                elseif strcmp(Plot_Type,'semilogx')
-                    K(j) = semilogx(X,Y,char(style(j))); hold on
-                elseif strcmp(Plot_Type,'semilogy')
-                    K(j) = semilogy(X,Y,char(style(j))); hold on
+                if ~ftest
+                    if strcmp(Plot_Type,'linear')
+                        K(j) = plot(X,Y,char(style(j))); hold on
+                    elseif strcmp(Plot_Type,'loglog')
+                        K(j) = loglog(X,Y,char(style(j))); hold on
+                    elseif strcmp(Plot_Type,'semilogx')
+                        K(j) = semilogx(X,Y,char(style(j))); hold on
+                    elseif strcmp(Plot_Type,'semilogy')
+                        K(j) = semilogy(X,Y,char(style(j))); hold on
+                    end
                 end
             end
         catch
@@ -261,10 +294,14 @@ for i=2:n_plots
         % Skips case upon any Matlab error
         try
             for j=1:length(S2)
-                
-                % check for "+" operator on columns 
-                SP = parseplus(S2(j));
 
+                if strcmp(char(style(j)),'none')
+                    continue
+                end
+                
+                % check for "+" operator on columns (see hrrpuv_reac for examples)
+                SP = parseplus(S2(j));
+                Save_Predicted_Quantity(i,j) = S2(j);
                 d2_Ind_Col = find(strcmp(H,R2(min(j,length(R2)))));
                 for jj=1:length(SP)
                     d2_Dep_Col(jj) = find(strcmp(H,SP(jj)));
@@ -345,14 +382,26 @@ for i=2:n_plots
                     X = M_Dep/Scale_Dep;
                     Y = M_Ind/Scale_Ind;
                 end
-                if strcmp(Plot_Type,'linear')
-                    K(length(S1)+j) = plot(X,Y,char(style(j)));
-                elseif strcmp(Plot_Type,'loglog')
-                    K(length(S1)+j) = loglog(X,Y,char(style(j)));
-                elseif strcmp(Plot_Type,'semilogx')
-                    K(length(S1)+j) = semilogx(X,Y,char(style(j)));
-                elseif strcmp(Plot_Type,'semilogy')
-                    K(length(S1)+j) = semilogy(X,Y,char(style(j)));
+                if ~ftest
+                    if strcmp(Plot_Type,'linear')
+                        K(length(S1)+j) = plot(X,Y,char(style(j)));
+                    elseif strcmp(Plot_Type,'loglog')
+                        K(length(S1)+j) = loglog(X,Y,char(style(j)));
+                    elseif strcmp(Plot_Type,'semilogx')
+                        K(length(S1)+j) = semilogx(X,Y,char(style(j)));
+                    elseif strcmp(Plot_Type,'semilogy')
+                        K(length(S1)+j) = semilogy(X,Y,char(style(j)));
+                    end
+                else
+                    if strcmp(Plot_Type,'linear')
+                        K(length(K_save)+j) = plot(X,Y,char(style(j)));
+                    elseif strcmp(Plot_Type,'loglog')
+                        K(length(K_save)+j) = loglog(X,Y,char(style(j)));
+                    elseif strcmp(Plot_Type,'semilogx')
+                        K(length(K_save)+j) = semilogx(X,Y,char(style(j)));
+                    elseif strcmp(Plot_Type,'semilogy')
+                        K(length(K_save)+j) = semilogy(X,Y,char(style(j)));
+                    end
                 end
 
             end
@@ -361,7 +410,6 @@ for i=2:n_plots
                 '); check syntax of FDS/model results (d2) columns. Skipping case.'])
             continue
         end
-        hold off
         
         % Wrap entire plot/save routine in try loop
         % Skips case upon any Matlab error
@@ -393,24 +441,33 @@ for i=2:n_plots
             end
 
             set(gca,'FontName',Font_Name)
-            set(gca,'FontSize',Label_Font_Size) 
-
-            if strcmp(Flip_Axis,'no')
-                xlabel(Ind_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-                ylabel(Dep_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-                axis([Min_Ind Max_Ind Min_Dep Max_Dep])
-                text(X_Title_Position,Y_Title_Position,...
-                    Plot_Title,'FontSize',Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
-            else
-                xlabel(Dep_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-                ylabel(Ind_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
-                axis([Min_Dep Max_Dep Min_Ind Max_Ind])
-                text(X_Title_Position,Y_Title_Position,...
-                    Plot_Title,'FontSize',Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+            set(gca,'FontSize',Label_Font_Size)
+            
+            % Inserts title, skips if 'f' switch (avoids overplotting)
+            if ~ftest
+                if strcmp(Flip_Axis,'no')
+                    xlabel(Ind_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
+                    ylabel(Dep_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
+                    axis([Min_Ind Max_Ind Min_Dep Max_Dep])
+                    text(X_Title_Position,Y_Title_Position,...
+                        Plot_Title,'FontSize',Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+                else
+                    xlabel(Dep_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
+                    ylabel(Ind_Title,'Interpreter',Font_Interpreter,'FontSize',Label_Font_Size)
+                    axis([Min_Dep Max_Dep Min_Ind Max_Ind])
+                    text(X_Title_Position,Y_Title_Position,...
+                        Plot_Title,'FontSize',Title_Font_Size,'FontName',Font_Name,'Interpreter',Font_Interpreter)
+                end
             end
 
             if size(Key_Position)>0
-                legend_handle = legend(K,[parsepipe(d1_Key),parsepipe(d2_Key)],'Location',Key_Position);
+                if ~ftest
+                    legend_handle = legend(K,[parsepipe(d1_Key),parsepipe(d2_Key)],'Location',Key_Position);
+                else
+                    % this allows us to handle multiple lines on the same plot
+                    legend_handle = legend(K,[parsepipe(d1_Key),parsepipe(d2_Key_save),parsepipe(d2_Key)],'Location',Key_Position);
+                    d2_Key = [d2_Key_save,'|',d2_Key];
+                end
                 % % The latest version of Matlab (R2015b) apparently get this correct, but I will
                 % % leave this commented code for a bit until we are sure this is working on blaze.
                 % if strcmp(Key_Position,'EastOutside')
@@ -440,8 +497,10 @@ for i=2:n_plots
                 end
             end
 
-            % Add version string if file is available
-            addverstr(gca,VerStr_Filename,Plot_Type)
+            % Add version string if file is available, skips if 'f' switch (avoids overplotting)
+            if ~ftest
+                addverstr(gca,VerStr_Filename,Plot_Type)
+            end
 
             % Save plot file
             PDF_Paper_Width = Paper_Width_Factor*Paper_Width;
@@ -459,8 +518,7 @@ for i=2:n_plots
         end    
         
     end
-    clear S1 S2 K style H M X Y P parameters
-    close all
+    clear S1 S2 style H M X Y P parameters
 end
 
 clear A
@@ -476,7 +534,9 @@ saved_data = [{Save_Quantity'},...
               {Save_Plot_Filename'},...
               {Save_Dep_Title'},...
               {Save_Error_Tolerance'},...
-              {Save_Metric_Type'}];
+              {Save_Metric_Type'},...
+              {Save_Measured_Quantity},...
+              {Save_Predicted_Quantity}];
 
 display('dataplot completed successfully!')
 

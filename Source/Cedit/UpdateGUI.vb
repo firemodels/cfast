@@ -495,6 +495,8 @@ Public Class UpdateGUI
             End If
             MainWin.VVentArea.Text = aVent.Area.ToString + myUnits.Convert(UnitsNum.Area).Units
             MainWin.VVentShape.SelectedIndex = aVent.Shape - 1
+            MainWin.VVentXOffset.Text = aVent.OffsetX.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.VVentYOffset.Text = aVent.OffsetY.ToString + myUnits.Convert(UnitsNum.Length).Units
 
             MainWin.VVentOpenCriterion.SelectedIndex = aVent.OpenType
             If aVent.OpenType = Vent.OpenbyTime Then
@@ -606,6 +608,9 @@ Public Class UpdateGUI
 
             MainWin.MVentFilterEfficiency.Text = aVent.FilterEfficiency.ToString + " %"
             MainWin.MVentFilterTime.Text = aVent.FilterTime.ToString + myUnits.Convert(UnitsNum.Time).Units
+
+            MainWin.MVentXOffset.Text = aVent.OffsetX.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.MVentYOffset.Text = aVent.OffsetY.ToString + myUnits.Convert(UnitsNum.Length).Units
 
             MainWin.MVentOpenCriterion.SelectedIndex = aVent.OpenType
             If aVent.OpenType = Vent.OpenbyTime Then

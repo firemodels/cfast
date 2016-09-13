@@ -21,6 +21,7 @@ A series of verification test cases follow, examining the energy balance, mass b
 For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment.
 
 \subsection{Temperature Equilibrium via Heat Conduction}
+\label{basic_tempequilib}
 
 As a simple test of the energy balance, raising the external temperature of the base case compartment from an initial condition of 20~\degc to 25~\degc allows the internal temperature to equilibrate to the exterior. From the ideal gas law, the pressure inside the compartment is expected to rise to
 \begin{equation}
@@ -38,6 +39,7 @@ or a final pressure rise of 1728 Pa.  Figure \ref{fig:Temperature_Equilibrium} s
 \end{figure}
 
 \subsection{Temperature Equilibrium via a Window}
+\label{basic_tempequilib_window}
 
 Now an open window is added to the compartment, with an exterior temperature of 25~\degc. Figure~\ref{fig:Temperature_Equilibrium_With_Window} shows the interior conditions coming into equilibrium with the exterior, which are consistent with the expected results..
 
@@ -51,6 +53,7 @@ Now an open window is added to the compartment, with an exterior temperature of 
 \end{figure}
 
 \subsection{Temperature Equilibrium via a Window at a High Elevation}
+\label{basic_tempequilib_window_elevation}
 
 With the exterior temperature still set to 25~\degc, the elevation is raised to 1500~m, approximately the average elevation of Idaho.  Since CFAST calculations are relative to the exterior ambient, conditions are expected to be identical to the previous examples and equilibrate to those of the exterior. Figure \ref{fig:Temperature_Equilibrium_Elevation} shows the simulated conditions for the test case, which are consistent with the expected results..
 
@@ -120,6 +123,7 @@ in Eqs.~(\ref{eq:soleq1}) and (\ref{eq:soleq2}).
 \end{figure}
 
 \subsection{A Fire in a Single, Sealed Compartment with Two Zones}
+\label{sealed_test_2_layers}
 
 Consider now the same case as in Section~\ref{sealed_test}, but now with two zones rather than one. The compartment pressure ought to be the same as before, and the upper layer temperature ought to converge to the single layer temperature as seen in Fig.~\ref{fig:Analytical_Closed_Compartment2}.
 \begin{figure}[!ht]
@@ -135,10 +139,12 @@ Consider now the same case as in Section~\ref{sealed_test}, but now with two zon
 
 
 \section{Mass Balance}
-
 \label{mass_conservation}
+
 \subsection{A Fire in a Single, Sealed Compartment}
 \label{sec:spec1}
+\label{species_mass_1}
+
 A methane fire burns in a sealed compartment of dimension 5~m by 6~m by 3~m. The heat release rate ramps up linearly to 1~kW in 30~s, then remains steady for 5~min, and then ramps down linearly to 0 in 30~s. The total energy released is 330~kJ, and the total mass of fuel consumed is
 \begin{equation}
   \frac{ 330 \; {\rm kJ} }{ 50000 \; {\rm kJ/kg} } = 0.00660 \; {\rm kg}
@@ -180,6 +186,7 @@ Figure~\ref{specmass1} shows the resulting product masses, which are consistent 
 
 \subsection{A Fire in a Compartment Connected to Another via a Door}
 \label{sec:spec2}
+\label{species_mass_2}
 
 The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 2~m by 5~m by 8~m which is connected to another compartment of dimension 5~m by 3~m by 8~m. A doorway connects the compartments, which has a width of 1~m and a height of 6~m. Because the fire and the fuel source have not changed, the theoretical calculations for the mass of CO$_2$ and H$_2$O produced will remain the same. The remaining portion of the problem is approached in the same manner, but since there are two compartments, the mass of CO$_2$ and H$_2$O produced in each layer of each compartment must be individually calculated and then summed together to produce the net yields of CO$_2$ and H$_2$O. Figure~\ref{specmass2} shows the resulting product masses, which are consistent with the expected results.
 \begin{figure}[!ht]
@@ -190,6 +197,7 @@ The same natural gas fire described in Section~\ref{sec:spec1} burns in a compar
 \end{figure}
 
 \subsection{A Fire in a Compartment Connected to Another via a Ceiling Vent}
+\label{species_mass_3}
 
 The same natural gas fire described in Section~\ref{sec:spec1} burns in a compartment of dimension 9~m by 5~m by 4~m which is connected to another compartment of dimension 9~m by 5~m by 2~m. The compartments are placed such that the second one is located directly above the first one. There is a square ceiling vent between the compartments that has an area of 4~m$^2$. This problem is approached in the same exact manner as in Section~\ref{sec:spec2} because the only difference between the two scenarios is the specific alignment of the compartments.
 Figure~\ref{specmass2} shows the resulting product masses, which are consistent with the expected results.
@@ -202,6 +210,9 @@ Figure~\ref{specmass2} shows the resulting product masses, which are consistent 
 
 \subsection{A Fire in a Four Compartment Assembly}
 \label{sec:specmass4}
+\label{species_mass_4}
+\label{species_mass_4_theoretical}
+\label{species_mass_4_TP}
 
 Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are placed adjacent to one another and the following two compartments are placed directly on top of the first two. The same natural gas fire described in Section~\ref{sec:spec1} burns in the first compartment of this setup. After 2500~s, the wall between compartments one and two is removed, forcing the gases in the two rooms to mix. Next, at 5000~s, the wall between compartments three and four is removed. Lastly, at 7500~s, the ceiling of compartment four is removed, allowing the system to slowly return to ambient conditions. Figure~\ref{fig:specmass4} shows the resulting product masses in the structure before the outside vent is opened, which are consistent with the expected results.  Figure~\ref{fig:specmass4ab} and Figure~\ref{fig:specmass4cd} show how the masses of CO$_2$ and H$_2$O in each compartment change with respect to time.
 \begin{figure}[!ht]
@@ -235,6 +246,8 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \section{Ventilation}
 
 \subsection{Air Flow Through a Single Compartment}
+\label{ventilation_1}
+
 The setup for this test case includes a 5~m by 5~m by 3~m compartment that contains a mechanical vent and a wall vent. Air is pumped into a single compartment through a 1~m by 1~m mechanical vent, at a rate of 0.01~m$^3$/s. The air is allowed to exit the compartment through a 1~cm by 1~cm vent located on the opposite side of the compartment. The governing equation for the change in pressure in the compartment is \cite{Emmons:SFPE}:
 \begin{equation}
 \Delta{P} = \frac{1}{2\rho}\brackets{\frac{\dot{m}}{CA}}^2
@@ -256,6 +269,7 @@ Figure~\ref{fig:vent1} shows how the pressure changes as air flows through the c
 
 \subsection{Steady-State Air Flow}
 \label{sec:vent2}
+\label{ventilation_2}
 
 A similar setup to the one used in Section~\ref{sec:specmass4} is employed here. A fan blows air into the first compartment, on the ground floor, at a rate of 1~m$^3$/s and then continues to the second compartment after passing through a doorway. The air then travels to the third compartment by passing through a ceiling vent with an area of 3~m$^2$ and continues to compartment four through another doorway. Air is finally extracted from compartment four at a rate of 1~m$^3$/s. Figure~\ref{ventilation_2TP} shows  temperature and pressure as the air flows through the fourth compartment. As expected, the temperature remains at ambient conditions and flow in the lower compartment matches flow out the upper compartment
 
@@ -270,6 +284,7 @@ A similar setup to the one used in Section~\ref{sec:specmass4} is employed here.
 
 
 \subsection{Non Steady-State Air Flow}
+\label{ventilation_3}
 
 The same setup that was constructed in Section~\ref{sec:vent2} is used again in this scenario. All vents and fans are the same as in the previous case, except the fan in the fourth compartment has been converted to a round ceiling vent with an area of 4~m$^2$. Initially, all of the vents are closed and air is pumped into the first compartment at a rate of 1~m$^3$/s, for a period of 15~s. After 15~s pass, the fan is shut off. Then, at 200~s, the door between compartments one and two opens completely. Next, at 500~s, the vent between compartments two and three opens completely. At 700~s, the door between compartments three and four opens completely. Finally, at 1000~s, the ceiling vent in compartment four opens completely. Figure~\ref{ventilation_3TP} shows how temperature and pressure change as the air flows through the first compartment.
 
@@ -283,6 +298,7 @@ The same setup that was constructed in Section~\ref{sec:vent2} is used again in 
 \end{figure}
 
 \subsection{Velocity Profile of Air Flowing Through a Doorway}
+\label{ventilation_4}
 
 A 200~kW natural gas (methane) fire burns in a 5~m by 5~m by 5~m compartment, where the walls are assumed to be adiabatic. The heat release rate ramps up linearly to 200~kW in 30~s, then remains steady for 5.5~min. The compartment contains a 4~m by 1.5~m door that remains completely open throughout the simulation. The mass flow though each vertical segment of the doorway is given by:
 \begin{equation}
@@ -307,6 +323,7 @@ where $\delta A$ represents the infinitesimal area of the door segment and $\rho
 \end{figure}
 
 \subsection{Flow Through Different Vent Types}
+\label{VVent_Tests}
 
 A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12 kg/s). Vertical and horizontal natural flow vents connect this compartment to two other compartments stacked vertically.  Finally, the structure is vented to the outside by either a vertical or horizontal flow vent in the rooms removed from the one where air is supplied. Figure~\ref{fig:vvent} shows a sample of the mass flow through the vents.
 
@@ -322,6 +339,7 @@ A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12
 \section{Heat Transfer}
 
 \subsection{Measuring the Temperature Change of a Thermally Thin Target}
+\label{radiation_1}
 
 A constant 10~kW natural gas (methane) fire burns in the center of a 15~m by 15~m by 15~m compartment. Because the purpose of this case is to test the point source radiation model and the heating of a thermally-thin target, there is a 20~m$^2$ vent located in the center of the ceiling to exhaust the smoke from the fire and maintain an ambient temperature lower layer. A 1.5~mm thick sheet of plain carbon steel is placed 2~m to the right of the fire. It is oriented directly at the fire. The target is heated by the thermal radiation from the fire, and it is cooled via convective and radiative loss. The net radiative heat transfer to the target is given by:
 \begin{equation}
@@ -345,6 +363,7 @@ where $\delta$, $\rho$ and $C_{\rm p}$ are the thickness, density and specific h
 \end{figure}
 
 \subsection{Measuring the Temperature Change of a Cylindrical Target}
+\label{radiation_2}
 
 A 0.15~cm thick steel plate, a 2.5~cm thick steel plate and a 2.5~cm diameter steel rod are placed in a furnace\footnote{CFAST has an option to create a uniform temperature environment for diagnostic purposes. The option must be invoked by adding a special comment to the input file.} with uniform temperature of 500~$^\circ$C. The heat conduction equations normal to the surface of each plate and the rod, respectively, are:
 \begin{equation}
@@ -371,6 +390,7 @@ where $\epsilon$ is the emissivity of the target (taken here to be 1), $\sigma$ 
 \section{Sprinklers}
 
 \subsection{Utilizing a Sprinkler to Detect and Suppress a Fire}
+\label{sprinkler_1}
 
 A constant 10~kW natural gas (methane) fire burns in the center of a 4~m by 4~m by 4~m compartment. The compartment is sealed and a sprinkler is located at the center of the ceiling, with an activation temperature of 40~$^\circ$C and a spray density of 0.07~mm/s. The sprinkler link temperature can be calculated by integrating the following equation \cite{Schifiliti:2002}:
 \begin{equation}

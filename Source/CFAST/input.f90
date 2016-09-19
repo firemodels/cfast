@@ -1,4 +1,4 @@
-module input_routines
+    module input_routines
 
     use precision_parameters
 
@@ -25,7 +25,7 @@ module input_routines
     use room_data
 
     implicit none
-    
+
     logical :: exset = .false.
 
     private
@@ -34,7 +34,7 @@ module input_routines
 
     contains
 
-! --------------------------- read_input_file -------------------------------------------
+    ! --------------------------- read_input_file -------------------------------------------
 
     subroutine read_input_file ()
 
@@ -437,7 +437,7 @@ module input_routines
 
     end subroutine read_input_file
 
-! --------------------------- keywordcases -------------------------------------------
+    ! --------------------------- keywordcases -------------------------------------------
 
     subroutine keywordcases(inumr,inumc)
 
@@ -476,7 +476,28 @@ module input_routines
     end do
     ncomp = 0
 
-    ! Read in thermal properties first
+    ! First check for a maximum time step. This may be modified by fires, vents, or detectors
+    do ir = 2, inumr
+        label = carray(ir,1)
+        if (label==' ') cycle
+        lrarray = 0.0_eb
+        lcarray = ' '
+        do i = 2, inumc
+            lcarray(i-1) = carray(ir,i)
+            lrarray(i-1) = rarray(ir,i)
+        end do
+        if (label=='STPMA') then
+            if (countargs(lcarray)>=1) then
+                stpmax = lrarray(1)
+            else
+                write (*,*) '***Error: Bad STPMA input. At least 1 argument required.'
+                write (iofill,*) '***Error: Bad STPMA input. At least 1 argument required.'
+                stop
+            end if
+        end if
+    end do
+
+    ! Then do thermal properties
     do ir = 2, inumr
         label = carray(ir,1)
         if (label==' ') cycle
@@ -762,6 +783,11 @@ module input_routines
                 else if (fireptr%ignition_type==trigger_by_temp.or.fireptr%ignition_type==trigger_by_flux) then
                     fireptr%ignition_time = 1.0e30_eb
                     fireptr%ignition_criterion = tmpcond
+                    if (stpmax>0) then
+                        stpmax = min(stpmax,1.0_eb)
+                    else
+                        stpmax = 1.0_eb
+                    end if
                 else
                     write (*,5358) fireptr%ignition_type
                     write (iofill,5358) fireptr%ignition_type
@@ -769,15 +795,7 @@ module input_routines
                 end if
             else
                 fireptr%ignited = .true.
-            end if
-
-            ! If fire ignition backtracking is on, make sure time step is small enough to work
-            if (option(fbtobj)==off.and.fireptr%ignition_type/=trigger_by_time) then
-                if (stpmax>0.0_eb) then
-                    stpmax = min(stpmax,1.0_eb)
-                else
-                    stpmax = 1.0_eb
-                end if
+                fireptr%reported = .true.
             end if
 
             ! read and set the other stuff for this fire
@@ -852,7 +870,7 @@ module input_routines
             exterior_abs_pressure = lrarray(2)
             exset = .true.
 
-            ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction, 
+            ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction,
             !           width, soffit, sill
             !		    absolute height of the soffit, absolute height of the sill,
             !           floor_height = absolute height of the floor (not set here)
@@ -880,19 +898,19 @@ module input_routines
                     write (iofill,5080) i, j, k
                     stop
                 end if
-                
+
                 n_hvents = n_hvents + 1
                 ventptr => hventinfo(n_hvents)
                 ventptr%room1 = imin
                 ventptr%room2 = jmax
                 ventptr%counter = lrarray(3)
-                
+
                 if (n_hvents>mxhvents) then
                     write (*,5081) i,j,k
                     write (iofill,5081) i,j,k
                     stop
                 end if
-                
+
                 ventptr%width = lrarray(4)
                 ventptr%soffit = lrarray(5)
                 ventptr%sill = lrarray(6)
@@ -917,6 +935,11 @@ module input_routines
                     end do
                     ventptr%opening_initial_fraction = lrarray(14)
                     ventptr%opening_final_fraction = lrarray(16)
+                    if (stpmax>0) then
+                        stpmax = min(stpmax,1.0_eb)
+                    else
+                        stpmax = 1.0_eb
+                    end if
                 end if
             else if (countargs(lcarray)>=11) then
                 ventptr%offset(1) = lrarray(8)
@@ -1017,7 +1040,7 @@ module input_routines
                     ventptr%filter_initial_time = lrarray(5)
                     ventptr%filter_final_time = lrarray(5) + lrarray(7)
                     ventptr%filter_final_fraction = lrarray(6)
-                case default
+                    case default
                     write (*,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
                     write (iofill,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
                     stop
@@ -1101,7 +1124,7 @@ module input_routines
                         ventptr%opening_initial_fraction = lrarray(10)
                         ventptr%opening_final_time = lrarray(11)
                         ventptr%opening_final_fraction = lrarray(12)
-                    else 
+                    else
                         if (lcarray(6)=='TEMP') ventptr%opening_type = trigger_by_temp
                         if (lcarray(6)=='FLUX') ventptr%opening_type = trigger_by_flux
                         ventptr%opening_criterion = lrarray(7)
@@ -1111,6 +1134,11 @@ module input_routines
                         end do
                         ventptr%opening_initial_fraction = lrarray(10)
                         ventptr%opening_final_fraction = lrarray(12)
+                        if (stpmax>0) then
+                            stpmax = min(stpmax,1.0_eb)
+                        else
+                            stpmax = 1.0_eb
+                        end if
                     end if
                     ventptr%xoffset = lrarray(13)
                     ventptr%yoffset = lrarray(14)
@@ -1127,7 +1155,7 @@ module input_routines
                         ventptr%xoffset = roomptr%cwidth/2
                         ventptr%yoffset = roomptr%cdepth/2
                     end if
-                        
+
                 end if
             else
                 write (*,*) '***Error: Bad VVENT input. At least 5 arguments required.'
@@ -1201,6 +1229,11 @@ module input_routines
                     end if
                     ventptr%xoffset = lrarray(20)
                     ventptr%yoffset = lrarray(21)
+                    if (stpmax>0) then
+                        stpmax = min(stpmax,1.0_eb)
+                    else
+                        stpmax = 1.0_eb
+                    end if
                 else
                     ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_fraction = lrarray(13)
@@ -1209,16 +1242,6 @@ module input_routines
             else
                 write (*,*) '***Error: Bad MVENT input. 13 arguments required.'
                 write (iofill,*) '***Error: Bad MVENT input. 13 arguments required.'
-                stop
-            end if
-
-            ! STPMAX # - set the maximum time step to #
-        case ('STPMA')
-            if (countargs(lcarray)>=1) then
-                stpmax = lrarray(1)
-            else
-                write (*,*) '***Error: Bad STPMA input. At least 1 argument required.'
-                write (iofill,*) '***Error: Bad STPMA input. At least 1 argument required.'
                 stop
             end if
 
@@ -1271,7 +1294,8 @@ module input_routines
                 if (dtectptr%spray_density==0.0_eb) then
                     dtectptr%quench = .false.
                 end if
-                if (option(fbtdtect)==off.and.dtectptr%quench) then
+                ! if there's a sprinkler that can go off, then make sure the time step is small enough to report ir accurately
+                if (dtectptr%quench) then
                     if (stpmax>0) then
                         stpmax = min(stpmax,1.0_eb)
                     else
@@ -1287,9 +1311,9 @@ module input_routines
 
                 if (dtectptr%center(1)>roomptr%cwidth.or. &
                     dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
-                    write (*,5339) n_detectors,roomptr%name
-                    write (iofill,5339) n_detectors,roomptr%name
-                    stop
+                write (*,5339) n_detectors,roomptr%name
+                write (iofill,5339) n_detectors,roomptr%name
+                stop
                 end if
 
             else
@@ -1647,12 +1671,12 @@ module input_routines
             write (iofill,5405) label
             stop
         case ('MATL','COMPA','TARGE','HEIGH','AREA','TRACE','CO','SOOT',&
-              'HRR','TIME','CHEMI','FIRE') ! these are already handled above
+            'HRR','TIME','CHEMI','FIRE','STPMA') ! these are already handled above
 
-            case default
-            write (*, 5051) label
-            write (iofill, 5051) label
-            stop
+        case default
+        write (*, 5051) label
+        write (iofill, 5051) label
+        stop
         end select
     end do
 
@@ -1701,7 +1725,7 @@ module input_routines
 
     end subroutine keywordcases
 
-! --------------------------- inputembeddedfire -------------------------------------------
+    ! --------------------------- inputembeddedfire -------------------------------------------
 
     subroutine inputembeddedfire(fireptr, lrowcount, inumc)
 
@@ -1736,7 +1760,7 @@ module input_routines
         select case (label)
 
             ! The new CHEMIE line defines chemistry for the current fire object.  This includes chemical formula,
-           !  radiative fraction, heat of combustion, and material
+            !  radiative fraction, heat of combustion, and material
         case ('CHEMI')
             if (countargs(lcarray)>=7) then
                 ! define chemical formula
@@ -1809,7 +1833,7 @@ module input_routines
             do i = 1, nret
                 fireptr%height(i) = max(lrarray(i),0.0_eb)
             end do
-        case default
+            case default
             write (*, 5000) label
             write (iofill, 5000) label
             stop
@@ -1855,7 +1879,7 @@ module input_routines
 
     end subroutine inputembeddedfire
 
-! --------------------------- set_heat_of_combustion -------------------------------------------
+    ! --------------------------- set_heat_of_combustion -------------------------------------------
 
     subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
 
@@ -1886,7 +1910,7 @@ module input_routines
     end subroutine set_heat_of_combustion
 
 
-! --------------------------- open_files -------------------------------------------
+    ! --------------------------- open_files -------------------------------------------
 
     subroutine open_files ()
 
@@ -1975,7 +1999,7 @@ module input_routines
 
     end subroutine open_files
 
-! --------------------------- read_solver_ini -------------------------------------------
+    ! --------------------------- read_solver_ini -------------------------------------------
 
     subroutine read_solver_ini
 
@@ -2050,7 +2074,7 @@ module input_routines
     return
     end subroutine read_solver_ini
 
-! --------------------------- positionobject -------------------------------------------
+    ! --------------------------- positionobject -------------------------------------------
 
     subroutine positionobject (xyorz,pos_max,defaultposition,minimumseparation)
 
@@ -2071,7 +2095,7 @@ module input_routines
             xyorz = pos_max / 2.0_eb
         case (2)
             xyorz = minimumseparation
-        case default
+            case default
             write (*,*) 'Fire objects positioned specified outside compartment bounds.'
             write (iofill,*) 'Fire objects positioned specified outside compartment bounds.'
             stop
@@ -2086,7 +2110,7 @@ module input_routines
 
     end subroutine positionobject
 
-! --------------------------- readcsvformat -------------------------------------------
+    ! --------------------------- readcsvformat -------------------------------------------
 
     subroutine readcsvformat (iunit, x, c, numr, numc, nstart, maxrow, maxcol, iofill)
 
@@ -2181,243 +2205,243 @@ module input_routines
 100 continue
 
     return
-   end subroutine readcsvformat
+    end subroutine readcsvformat
 
-! --------------------------- setup_slice_iso -------------------------------------------
+    ! --------------------------- setup_slice_iso -------------------------------------------
 
-   subroutine setup_slice_iso
+    subroutine setup_slice_iso
 
-   integer :: nrm
+    integer :: nrm
 
-   integer :: i,j,k,iroom,islice
-   type(slice_type), pointer :: sliceptr
-   type(room_type), pointer :: roomptr
-   real(eb) :: xb(6)
-   character(256) :: slicefilename
-   integer :: ijkslice(6)
-   real(eb), parameter :: dxyz=0.01_eb
-   character(60) :: menu_label, colorbar_label, unit_label
-   integer :: i_iso
-   type(iso_type), pointer :: isoptr
-   character(256) :: isofilename
-   real(eb) :: ceiljet_depth
-   type(visual_type), pointer :: vptr
-   integer :: ntypes, ir, ibeg, iend
-   real(eb) :: position_offset
-   integer skipslice
+    integer :: i,j,k,iroom,islice
+    type(slice_type), pointer :: sliceptr
+    type(room_type), pointer :: roomptr
+    real(eb) :: xb(6)
+    character(256) :: slicefilename
+    integer :: ijkslice(6)
+    real(eb), parameter :: dxyz=0.01_eb
+    character(60) :: menu_label, colorbar_label, unit_label
+    integer :: i_iso
+    type(iso_type), pointer :: isoptr
+    character(256) :: isofilename
+    real(eb) :: ceiljet_depth
+    type(visual_type), pointer :: vptr
+    integer :: ntypes, ir, ibeg, iend
+    real(eb) :: position_offset
+    integer skipslice
 
 
-   nsliceinfo = 0
-   nisoinfo = 0
-   if (nvisualinfo.eq.0)return
+    nsliceinfo = 0
+    nisoinfo = 0
+    if (nvisualinfo.eq.0)return
 
-   nrm = nrm1
+    nrm = nrm1
 
-   ! count number of isosurfaces and slices
+    ! count number of isosurfaces and slices
 
-   do i = 1, nvisualinfo
-       vptr=>visualinfo(i)
-       if (vptr%roomnum.eq.0) then
-           ntypes=nrm
-       else
-           ntypes=1
-       end if
-       if (vptr%vtype.eq.1.or.vptr%vtype.eq.2) then
-           nsliceinfo = nsliceinfo + ntypes
-       else
-           nisoinfo = nisoinfo + ntypes
-       end if
-   end do
-   nsliceinfo = 5*nsliceinfo
-   allocate(sliceinfo(nsliceinfo))
-   allocate(isoinfo(nisoinfo))
+    do i = 1, nvisualinfo
+        vptr=>visualinfo(i)
+        if (vptr%roomnum.eq.0) then
+            ntypes=nrm
+        else
+            ntypes=1
+        end if
+        if (vptr%vtype.eq.1.or.vptr%vtype.eq.2) then
+            nsliceinfo = nsliceinfo + ntypes
+        else
+            nisoinfo = nisoinfo + ntypes
+        end if
+    end do
+    nsliceinfo = 5*nsliceinfo
+    allocate(sliceinfo(nsliceinfo))
+    allocate(isoinfo(nisoinfo))
 
-   ! setup grid locations for each compartment
+    ! setup grid locations for each compartment
 
-   do iroom = 1, nrm
-       roomptr=>roominfo(iroom)
-       roomptr%ibar = min(max(2,int(roomptr%cwidth/dxyz)),roomptr%ibar)
+    do iroom = 1, nrm
+        roomptr=>roominfo(iroom)
+        roomptr%ibar = min(max(2,int(roomptr%cwidth/dxyz)),roomptr%ibar)
 
-       ceiljet_depth = 0.2_eb * roomptr%z1 ! placeholder now, change to a calculation
+        ceiljet_depth = 0.2_eb * roomptr%z1 ! placeholder now, change to a calculation
 
-       roomptr%ibar = min(max(2,int(roomptr%cwidth/dxyz)),roomptr%ibar)
-       allocate(roomptr%xplt(0:roomptr%ibar))
-       allocate(roomptr%xpltf(0:roomptr%ibar))
-       call set_grid(roomptr%xplt,roomptr%ibar+1,roomptr%x0,roomptr%x1,roomptr%x1,0)
-       do i = 0, roomptr%ibar
-           roomptr%xpltf(i) = real(roomptr%xplt(i),fb)
-       end do
+        roomptr%ibar = min(max(2,int(roomptr%cwidth/dxyz)),roomptr%ibar)
+        allocate(roomptr%xplt(0:roomptr%ibar))
+        allocate(roomptr%xpltf(0:roomptr%ibar))
+        call set_grid(roomptr%xplt,roomptr%ibar+1,roomptr%x0,roomptr%x1,roomptr%x1,0)
+        do i = 0, roomptr%ibar
+            roomptr%xpltf(i) = real(roomptr%xplt(i),fb)
+        end do
 
-       roomptr%jbar = min(max(2,int(roomptr%cdepth/dxyz)),roomptr%jbar)
-       allocate(roomptr%yplt(0:roomptr%jbar))
-       allocate(roomptr%ypltf(0:roomptr%jbar))
-       call set_grid(roomptr%yplt,roomptr%jbar+1,roomptr%y0,roomptr%y1,roomptr%y1,0)
-       do j = 0, roomptr%jbar
-           roomptr%ypltf(j) = real(roomptr%yplt(j),fb)
-       end do
+        roomptr%jbar = min(max(2,int(roomptr%cdepth/dxyz)),roomptr%jbar)
+        allocate(roomptr%yplt(0:roomptr%jbar))
+        allocate(roomptr%ypltf(0:roomptr%jbar))
+        call set_grid(roomptr%yplt,roomptr%jbar+1,roomptr%y0,roomptr%y1,roomptr%y1,0)
+        do j = 0, roomptr%jbar
+            roomptr%ypltf(j) = real(roomptr%yplt(j),fb)
+        end do
 
-       roomptr%kbar = min(max(2,int(roomptr%cheight/dxyz)),roomptr%kbar)
-       allocate(roomptr%zplt(0:roomptr%kbar))
-       allocate(roomptr%zpltf(0:roomptr%kbar))
-       call set_grid(roomptr%zplt,roomptr%kbar+1,roomptr%z0,roomptr%z1-ceiljet_depth,roomptr%z1,roomptr%kbar/3)
-       do k = 0, roomptr%kbar
-           roomptr%zpltf(k) = real(roomptr%zplt(k),fb)
-       end do
-   end do
+        roomptr%kbar = min(max(2,int(roomptr%cheight/dxyz)),roomptr%kbar)
+        allocate(roomptr%zplt(0:roomptr%kbar))
+        allocate(roomptr%zpltf(0:roomptr%kbar))
+        call set_grid(roomptr%zplt,roomptr%kbar+1,roomptr%z0,roomptr%z1-ceiljet_depth,roomptr%z1,roomptr%kbar/3)
+        do k = 0, roomptr%kbar
+            roomptr%zpltf(k) = real(roomptr%zplt(k),fb)
+        end do
+    end do
 
-   ! setup slice file data structures
+    ! setup slice file data structures
 
-   islice = 1
+    islice = 1
 
-   do i = 1, nvisualinfo
-       vptr=>visualinfo(i)
-       if (vptr%vtype.eq.3)cycle
-       ir = vptr%roomnum
-       if (ir.eq.0) then
-           ibeg=1
-           iend=nrm
-       else
-           ibeg=ir
-           iend=ir
-       end if
-       do iroom=ibeg,iend
-           roomptr=>roominfo(iroom)
-           xb(1) = roomptr%x0
-           xb(2) = roomptr%x1
-           xb(3) = roomptr%y0
-           xb(4) = roomptr%y1
-           xb(5) = roomptr%z0
-           xb(6) = roomptr%z1
-           ijkslice(1) = 0
-           ijkslice(2) = roomptr%ibar
-           ijkslice(3) = 0
-           ijkslice(4) = roomptr%jbar
-           ijkslice(5) = 0
-           ijkslice(6) = roomptr%kbar
-           skipslice=0
-           if (vptr%vtype.eq.1) then
-               position_offset = 0.0_eb
-               if (vptr%axis.eq.1) then
-                   if (ir/=0) position_offset = roomptr%x0
-                   xb(1) = vptr%position + position_offset
-                   xb(2) = vptr%position + position_offset
-                   ijkslice(1) = get_igrid(xb(1),roomptr%xplt,roomptr%ibar)
-                   if (ijkslice(1)<0)skipslice=1
-                   ijkslice(2) = ijkslice(1)
-               else if (vptr%axis.eq.2) then
-                   if (ir/=0) position_offset = roomptr%y0
-                   xb(3) = vptr%position + position_offset
-                   xb(4) = vptr%position + position_offset
-                   ijkslice(3) = get_igrid(xb(3),roomptr%yplt,roomptr%jbar)
-                   if (ijkslice(3)<0)skipslice=1
-                   ijkslice(4) = ijkslice(3)
-               else if (vptr%axis.eq.3) then
-                   if (ir/=0) position_offset = roomptr%z0
-                   xb(5) = vptr%position + position_offset
-                   xb(6) = vptr%position + position_offset
-                   ijkslice(5) = get_igrid(xb(5),roomptr%zplt,roomptr%kbar)
-                   if (ijkslice(5)<0)skipslice=1
-                   ijkslice(6) = ijkslice(5)
-               end if
-           end if
-           do j = 1, 5
-               sliceptr => sliceinfo(islice)
+    do i = 1, nvisualinfo
+        vptr=>visualinfo(i)
+        if (vptr%vtype.eq.3)cycle
+        ir = vptr%roomnum
+        if (ir.eq.0) then
+            ibeg=1
+            iend=nrm
+        else
+            ibeg=ir
+            iend=ir
+        end if
+        do iroom=ibeg,iend
+            roomptr=>roominfo(iroom)
+            xb(1) = roomptr%x0
+            xb(2) = roomptr%x1
+            xb(3) = roomptr%y0
+            xb(4) = roomptr%y1
+            xb(5) = roomptr%z0
+            xb(6) = roomptr%z1
+            ijkslice(1) = 0
+            ijkslice(2) = roomptr%ibar
+            ijkslice(3) = 0
+            ijkslice(4) = roomptr%jbar
+            ijkslice(5) = 0
+            ijkslice(6) = roomptr%kbar
+            skipslice=0
+            if (vptr%vtype.eq.1) then
+                position_offset = 0.0_eb
+                if (vptr%axis.eq.1) then
+                    if (ir/=0) position_offset = roomptr%x0
+                    xb(1) = vptr%position + position_offset
+                    xb(2) = vptr%position + position_offset
+                    ijkslice(1) = get_igrid(xb(1),roomptr%xplt,roomptr%ibar)
+                    if (ijkslice(1)<0)skipslice=1
+                    ijkslice(2) = ijkslice(1)
+                else if (vptr%axis.eq.2) then
+                    if (ir/=0) position_offset = roomptr%y0
+                    xb(3) = vptr%position + position_offset
+                    xb(4) = vptr%position + position_offset
+                    ijkslice(3) = get_igrid(xb(3),roomptr%yplt,roomptr%jbar)
+                    if (ijkslice(3)<0)skipslice=1
+                    ijkslice(4) = ijkslice(3)
+                else if (vptr%axis.eq.3) then
+                    if (ir/=0) position_offset = roomptr%z0
+                    xb(5) = vptr%position + position_offset
+                    xb(6) = vptr%position + position_offset
+                    ijkslice(5) = get_igrid(xb(5),roomptr%zplt,roomptr%kbar)
+                    if (ijkslice(5)<0)skipslice=1
+                    ijkslice(6) = ijkslice(5)
+                end if
+            end if
+            do j = 1, 5
+                sliceptr => sliceinfo(islice)
 
-               sliceptr%skip=skipslice
-               write (slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
-               if (j.eq.1) then
-                   menu_label="Temperature"
-                   colorbar_label="TEMP"
-                   unit_label="C"
-               else if (j.eq.2) then
-                   menu_label="U-VELOCITY"
-                   colorbar_label="U-VEL"
-                   unit_label="m/s"
-               else if (j.eq.3) then
-                   menu_label="V-VELOCITY"
-                   colorbar_label="V-VEL"
-                   unit_label="m/s"
-               else if (j.eq.4) then
-                   menu_label="W-VELOCITY"
-                   colorbar_label="W-VEL"
-                   unit_label="m/s"
-               else
-                   menu_label="Speed"
-                   colorbar_label="Speed"
-                   unit_label="m/s"
-               end if
+                sliceptr%skip=skipslice
+                write (slicefilename,'(A,A,I4.4,A)') trim(project),'_',islice,'.sf'
+                if (j.eq.1) then
+                    menu_label="Temperature"
+                    colorbar_label="TEMP"
+                    unit_label="C"
+                else if (j.eq.2) then
+                    menu_label="U-VELOCITY"
+                    colorbar_label="U-VEL"
+                    unit_label="m/s"
+                else if (j.eq.3) then
+                    menu_label="V-VELOCITY"
+                    colorbar_label="V-VEL"
+                    unit_label="m/s"
+                else if (j.eq.4) then
+                    menu_label="W-VELOCITY"
+                    colorbar_label="W-VEL"
+                    unit_label="m/s"
+                else
+                    menu_label="Speed"
+                    colorbar_label="Speed"
+                    unit_label="m/s"
+                end if
 
-               sliceptr%filename = trim(slicefilename)
-               sliceptr%roomnum = iroom
-               sliceptr%menu_label = trim(menu_label)
-               sliceptr%colorbar_label = trim(colorbar_label)
-               sliceptr%unit_label = trim(unit_label)
-               sliceptr%xb = xb
-               sliceptr%ijk = ijkslice
-               islice = islice + 1
-           end do
-       end do
-   end do
+                sliceptr%filename = trim(slicefilename)
+                sliceptr%roomnum = iroom
+                sliceptr%menu_label = trim(menu_label)
+                sliceptr%colorbar_label = trim(colorbar_label)
+                sliceptr%unit_label = trim(unit_label)
+                sliceptr%xb = xb
+                sliceptr%ijk = ijkslice
+                islice = islice + 1
+            end do
+        end do
+    end do
 
-   ! setup isosurface data structures
+    ! setup isosurface data structures
 
-   i_iso = 1
-   do i = 1, nvisualinfo
-       vptr=>visualinfo(i)
-       if (vptr%vtype.ne.3)cycle
-       ir = vptr%roomnum
-       if (ir.eq.0) then
-           ibeg=1
-           iend=nrm
-       else
-           ibeg=ir
-           iend=ir
-       end if
-       do iroom=ibeg,iend
-           roomptr=>roominfo(iroom)
-           isoptr => isoinfo(i_iso)
+    i_iso = 1
+    do i = 1, nvisualinfo
+        vptr=>visualinfo(i)
+        if (vptr%vtype.ne.3)cycle
+        ir = vptr%roomnum
+        if (ir.eq.0) then
+            ibeg=1
+            iend=nrm
+        else
+            ibeg=ir
+            iend=ir
+        end if
+        do iroom=ibeg,iend
+            roomptr=>roominfo(iroom)
+            isoptr => isoinfo(i_iso)
 
-           write (isofilename,'(A,A,I4.4,A)') trim(project),'_',i_iso,'.iso'
-           menu_label="Temperature"
-           colorbar_label="TEMP"
-           unit_label="C"
+            write (isofilename,'(A,A,I4.4,A)') trim(project),'_',i_iso,'.iso'
+            menu_label="Temperature"
+            colorbar_label="TEMP"
+            unit_label="C"
 
-           isoptr%filename = trim(isofilename)
-           isoptr%roomnum = iroom
-           isoptr%value = vptr%value
-           isoptr%menu_label = trim(menu_label)
-           isoptr%colorbar_label = trim(colorbar_label)
-           isoptr%unit_label = trim(unit_label)
-           i_iso = i_iso + 1
-       end do
-   end do
+            isoptr%filename = trim(isofilename)
+            isoptr%roomnum = iroom
+            isoptr%value = vptr%value
+            isoptr%menu_label = trim(menu_label)
+            isoptr%colorbar_label = trim(colorbar_label)
+            isoptr%unit_label = trim(unit_label)
+            i_iso = i_iso + 1
+        end do
+    end do
 
-   end subroutine setup_slice_iso
+    end subroutine setup_slice_iso
 
-   ! --------------------------- set_grid -------------------------------------------
+    ! --------------------------- set_grid -------------------------------------------
 
-   subroutine set_grid (xgrid,nr,xmin,xsplit,xmax,nsplit)
+    subroutine set_grid (xgrid,nr,xmin,xsplit,xmax,nsplit)
 
-   integer, intent(in) :: nr, nsplit
-   real(eb), dimension(nr), intent(out) :: xgrid
-   real(eb), intent(in) :: xmin, xsplit, xmax
+    integer, intent(in) :: nr, nsplit
+    real(eb), dimension(nr), intent(out) :: xgrid
+    real(eb), intent(in) :: xmin, xsplit, xmax
 
-   real(eb) :: factor
-   integer :: i
+    real(eb) :: factor
+    integer :: i
 
-!   1            nr-nsplit          nr
-!  xmin          xsplit          xmax
+    !   1            nr-nsplit          nr
+    !  xmin          xsplit          xmax
 
-   do i = 1, nr-nsplit
-      factor = real(i-1,eb)/real(nr-nsplit-1,eb)
-      xgrid(i) = emix(factor,xmin,xsplit)
-   end do
+    do i = 1, nr-nsplit
+        factor = real(i-1,eb)/real(nr-nsplit-1,eb)
+        xgrid(i) = emix(factor,xmin,xsplit)
+    end do
 
-   do i = nr-nsplit+1, nr
-      factor = real(i-(nr-nsplit),eb)/real(nsplit,eb)
-      xgrid(i) = emix(factor,xsplit,xmax)
-   end do
+    do i = nr-nsplit+1, nr
+        factor = real(i-(nr-nsplit),eb)/real(nsplit,eb)
+        xgrid(i) = emix(factor,xsplit,xmax)
+    end do
 
-   end subroutine set_grid
+    end subroutine set_grid
 
-end module input_routines
+    end module input_routines

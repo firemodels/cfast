@@ -639,15 +639,10 @@ module solve_routines
         ! a detector is the first one that went off
         if (ifdtect>0.and.tdtect<=td) then
             call update_detectors (set_state,told,dt,n_detectors,idset,ifdtect,tdtect)
-            ! check to see if we are backing up for detectors going off
-            if (option(fbtdtect)==on) then
-                idsave = idset
-            else
-                idsave = ifobj
-                td = tobj
-                call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                idset = 0
-            end if
+            idsave = ifobj
+            td = tobj
+            call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
+            idset = 0
         else
             call update_detectors (update_state,told,dt,n_detectors,idset,ifdtect,tdtect)
         end if
@@ -660,17 +655,11 @@ module solve_routines
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
             write (iofill,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
                 int(max(tobj+0.5_eb,0.0_eb)),' seconds'
-            ! check to see if we are backing up objects igniting
-            if (option(fbtobj)==on) then
-                idsave = ifobj
-            else
-                idsave = idset
-                td = tdtect
-                fireptr%ignited = .true.
-                fireptr%backtrack = .false.
-                call set_info_flags(info,rwork)
-                ifobj = 0
-            end if
+            idsave = idset
+            td = tdtect
+            fireptr%ignited = .true.
+            call set_info_flags(info,rwork)
+            ifobj = 0
         else
             call update_fire_objects (update_state,told,dt,ifobj,tobj)
         end if
@@ -726,7 +715,6 @@ module solve_routines
                 call cfastexit ('CFAST', idid)
                 stop
             end if
-            fireinfo(1:mxfires)%backtrack = .false.
         end if
 
         ! calculate the mass of objects that have been pyrolized

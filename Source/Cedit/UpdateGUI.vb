@@ -394,8 +394,10 @@ Public Class UpdateGUI
 
             MainWin.HVentOpenCriterion.SelectedIndex = aVent.OpenType
             If aVent.OpenType = Vent.OpenbyTime Then
-                MainWin.HVentOpenValue.Enabled = False
-                MainWin.HVentTarget.Enabled = False
+                MainWin.HVentOpenValue.Visible = False
+                MainWin.HVentOpenValueLabel.Visible = False
+                MainWin.HVentTarget.Visible = False
+                MainWin.HVentTargetLabel.Visible = False
                 MainWin.HVentFinalFraction.Visible = False
                 MainWin.HVentFinalLabel.Visible = False
                 MainWin.HVentInitialFraction.Visible = False
@@ -403,8 +405,10 @@ Public Class UpdateGUI
                 MainWin.HVentFractions.Visible = True
             ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                 OpenTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
-                MainWin.HVentOpenValue.Enabled = True
-                MainWin.HVentTarget.Enabled = True
+                MainWin.HVentOpenValue.Visible = True
+                MainWin.HVentOpenValueLabel.Visible = True
+                MainWin.HVentTarget.Visible = True
+                MainWin.HVentTargetLabel.Visible = True
                 MainWin.HVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
                 MainWin.HVentFinalFraction.Visible = True
                 MainWin.HVentFinalLabel.Visible = True
@@ -413,8 +417,10 @@ Public Class UpdateGUI
                 MainWin.HVentFractions.Visible = False
             ElseIf aVent.OpenType = Vent.OpenbyFlux Then
                 OpenTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
-                MainWin.HVentOpenValue.Enabled = True
-                MainWin.HVentTarget.Enabled = True
+                MainWin.HVentOpenValue.Visible = True
+                MainWin.HVentOpenValueLabel.Visible = True
+                MainWin.HVentTarget.Visible = True
+                MainWin.HVentTargetLabel.Visible = True
                 MainWin.HVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
                 MainWin.HVentFinalFraction.Visible = True
                 MainWin.HVentFinalLabel.Visible = True
@@ -495,11 +501,15 @@ Public Class UpdateGUI
             End If
             MainWin.VVentArea.Text = aVent.Area.ToString + myUnits.Convert(UnitsNum.Area).Units
             MainWin.VVentShape.SelectedIndex = aVent.Shape - 1
+            MainWin.VVentXOffset.Text = aVent.OffsetX.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.VVentYOffset.Text = aVent.OffsetY.ToString + myUnits.Convert(UnitsNum.Length).Units
 
             MainWin.VVentOpenCriterion.SelectedIndex = aVent.OpenType
             If aVent.OpenType = Vent.OpenbyTime Then
-                MainWin.VVentOpenValue.Enabled = False
-                MainWin.VVentTarget.Enabled = False
+                MainWin.VVentOpenValue.Visible = False
+                MainWin.VVentOpenValueLabel.Visible = False
+                MainWin.VVentTarget.Visible = False
+                MainWin.VVentTargetLabel.Visible = False
                 MainWin.VVentFinalFraction.Visible = False
                 MainWin.VVentFinalLabel.Visible = False
                 MainWin.VVentInitialFraction.Visible = False
@@ -507,8 +517,10 @@ Public Class UpdateGUI
                 MainWin.VVentFractions.Visible = True
             ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                 OpenTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
-                MainWin.VVentOpenValue.Enabled = True
-                MainWin.VVentTarget.Enabled = True
+                MainWin.VVentOpenValue.Visible = True
+                MainWin.VVentOpenValueLabel.Visible = True
+                MainWin.VVentTarget.Visible = True
+                MainWin.VVentTargetLabel.Visible = True
                 MainWin.VVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
                 MainWin.VVentFinalFraction.Visible = True
                 MainWin.VVentFinalLabel.Visible = True
@@ -518,7 +530,9 @@ Public Class UpdateGUI
             ElseIf aVent.OpenType = Vent.OpenbyFlux Then
                 OpenTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
                 MainWin.VVentOpenValue.Enabled = True
+                MainWin.VVentOpenValueLabel.Visible = True
                 MainWin.VVentTarget.Enabled = True
+                MainWin.VVentTargetLabel.Visible = True
                 MainWin.VVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
                 MainWin.VVentFinalFraction.Visible = True
                 MainWin.VVentFinalLabel.Visible = True
@@ -607,10 +621,15 @@ Public Class UpdateGUI
             MainWin.MVentFilterEfficiency.Text = aVent.FilterEfficiency.ToString + " %"
             MainWin.MVentFilterTime.Text = aVent.FilterTime.ToString + myUnits.Convert(UnitsNum.Time).Units
 
+            MainWin.MVentXOffset.Text = aVent.OffsetX.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.MVentYOffset.Text = aVent.OffsetY.ToString + myUnits.Convert(UnitsNum.Length).Units
+
             MainWin.MVentOpenCriterion.SelectedIndex = aVent.OpenType
             If aVent.OpenType = Vent.OpenbyTime Then
-                MainWin.MVentOpenValue.Enabled = False
-                MainWin.MVentTarget.Enabled = False
+                MainWin.MVentOpenValue.Visible = False
+                MainWin.MVentOpenValueLabel.Visible = False
+                MainWin.MVentTarget.Visible = False
+                MainWin.MVentTargetLabel.Visible = False
                 MainWin.MVentFinalFraction.Visible = False
                 MainWin.MventFinalLabel.Visible = False
                 MainWin.MVentInitialFraction.Visible = False
@@ -618,8 +637,10 @@ Public Class UpdateGUI
                 MainWin.MVentFractions.Visible = True
             ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                 OpenTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
-                MainWin.MVentOpenValue.Enabled = True
-                MainWin.MVentTarget.Enabled = True
+                MainWin.MVentOpenValue.Visible = True
+                MainWin.MVentOpenValueLabel.Visible = True
+                MainWin.MVentTarget.Visible = True
+                MainWin.MVentTargetLabel.Visible = True
                 MainWin.MVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
                 MainWin.MVentFinalFraction.Visible = True
                 MainWin.MventFinalLabel.Visible = True
@@ -628,8 +649,10 @@ Public Class UpdateGUI
                 MainWin.MVentFractions.Visible = False
             ElseIf aVent.OpenType = Vent.OpenbyFlux Then
                 OpenTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
-                MainWin.MVentOpenValue.Enabled = True
-                MainWin.MVentTarget.Enabled = True
+                MainWin.MVentOpenValue.Visible = True
+                MainWin.MVentOpenValueLabel.Visible = True
+                MainWin.MVentTarget.Visible = True
+                MainWin.MVentTargetLabel.Visible = True
                 MainWin.MVentTarget.SelectedIndex = myTargets.GetIndex(aVent.Target)
                 MainWin.MVentFinalFraction.Visible = True
                 MainWin.MventFinalLabel.Visible = True

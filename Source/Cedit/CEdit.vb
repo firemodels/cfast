@@ -6735,7 +6735,7 @@ Public Class CeditMain
     End Sub
     Private Sub CopyVentData(ByVal aVent As Vent, ByVal ss As C1.Win.C1FlexGrid.C1FlexGrid)
         ' Copies time dependent data from the display spreadsheet to the appropriate vent object data array
-        Dim NumPoints As Integer, ir As Integer, ic As Integer
+        Dim NumPoints As Integer, ir As Integer
         NumPoints = CountGridPoints(ss)
         If NumPoints = 0 Then
             Dim TimePoints(0) As Single, FractionPoints(0) As Single

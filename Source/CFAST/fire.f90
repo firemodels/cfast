@@ -1222,6 +1222,13 @@ module fire_routines
                     if (tmpob(2,i)<=tobj) then
                         fireptr%ignited = .true.
                         fireptr%ignition_time = tmpob(2,i)
+                        if (.not.fireptr%reported) then
+                            write (iofilo,'(/,a,i0,3a,i0,a)') 'Object #',i,' (',trim(fireptr%name),') ignited at ', &
+                                int(max(fireptr%ignition_time+0.5_eb,0.0_eb)),' seconds'
+                            write (iofill,'(a,i0,3a,i0,a)') 'Object #',i,' (',trim(fireptr%name),') ignited at ', &
+                                int(max(fireptr%ignition_time+0.5_eb,0.0_eb)),' seconds'
+                            fireptr%reported = .true.
+                        end if
                     end if
                 end if
             end if

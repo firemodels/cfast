@@ -651,10 +651,6 @@ module solve_routines
         if (ifobj>0.and.tobj<=td) then
             fireptr => fireinfo(ifobj)
             call update_fire_objects (set_state,told,dt,ifobj,tobj)
-            write (iofilo,'(/,a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
-                int(max(tobj+0.5_eb,0.0_eb)),' seconds'
-            write (iofill,'(a,i0,3a,i0,a)') 'Object #',ifobj,' (',trim(fireptr%name),') ignited at ', &
-                int(max(tobj+0.5_eb,0.0_eb)),' seconds'
             idsave = idset
             td = tdtect
             fireptr%ignited = .true.

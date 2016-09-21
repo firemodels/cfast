@@ -59,7 +59,7 @@
     real(eb) :: vred, vgreen, vblue
     real(eb) :: targetvector(6)
     real(eb) :: xyz(6)
-    integer ::i, iroom
+    integer ::i, iroom1, iroom2
     character(128) :: dir
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
     integer(4) :: length, splitpathqq
@@ -168,27 +168,27 @@
     ! horizontal vents
     if (n_hvents/=0) then
         do i = 1, n_hvents
-            write (13,"(a)") "HVENTGEOM"
-            call get_vent_info ("H",i,iroom, xyz, vred, vgreen, vblue)
-            write (13,"(1x,i3,1x,6(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
+            write (13,"(a)") "HVENTPOS"
+            call get_vent_info ("H", i, iroom1, iroom2, xyz, vred, vgreen, vblue)
+            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
         end do
     end if
 
     ! vertical vents
     if (n_vvents/=0) then
         do i = 1, n_vvents
-            write (13,"(a)") "VVENTGEOM"
-            call get_vent_info ("V",i,iroom, xyz, vred, vgreen, vblue)
-            write (13,"(1x,i3,1x,6(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
+            write (13,"(a)") "VVENTPOS"
+            call get_vent_info ("V",i , iroom1, iroom2, xyz, vred, vgreen, vblue)
+            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
         end do
     end if
 
     ! mechanical vents
     if (n_mvents/=0) then
         do i = 1, n_mvents
-            write (13,'(a)') "MVENTGEOM"
-            call get_vent_info ("M",i,iroom, xyz, vred, vgreen, vblue)
-            write (13,"(1x,i3,1x,6(e11.4,1x),e11.4)") iroom, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
+            write (13,'(a)') "MVENTPOS"
+            call get_vent_info ("M", i, iroom1, iroom2, xyz, vred, vgreen, vblue)
+            write (13,"(1x,i3,1x,6(e11.4,1x),e11.4)") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
         end do
     end if
 
@@ -229,13 +229,13 @@
 
     ! ---------------------------------- get_vent_info -------------------------------------------------
         
-    subroutine get_vent_info(venttype, ivent, iroom, xyz, vred, vgreen, vblue)
+    subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vred, vgreen, vblue)
     
     !       This is a routine to get the shape data for mechanical flow vent external connections
 
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: ivent
-    integer, intent(out) :: iroom
+    integer, intent(out) :: iroom1, iroom2
     real(eb), intent(out) :: xyz(6),vred,vgreen,vblue
 
     real(eb) :: vheight, varea, voffset
@@ -245,13 +245,15 @@
     if (venttype=='H') then
         ventptr=>hventinfo(ivent)
         if (ventptr%room1<=nrm1) then
-            iroom =ventptr%room1
+            iroom1 =ventptr%room1
+            iroom2 = ventptr%room2
             voffset = ventptr%offset(1)
         else
-            iroom =ventptr%room2
+            iroom1 =ventptr%room2
+            iroom2 = ventptr%room1
             voffset = ventptr%offset(2)
         end if
-        roomptr => roominfo(iroom)
+        roomptr => roominfo(iroom1)
         if (ventptr%face==face_front) then
             xyz(1) = voffset
             xyz(2) = voffset + ventptr%width
@@ -278,13 +280,15 @@
     else if (venttype=='V') then
         ventptr => vventinfo(ivent)
         if (ventptr%room1<=nrm1) then
-            iroom = ventptr%room1
-            roomptr => roominfo(iroom)
+            iroom1 = ventptr%room1
+            iroom2 = ventptr%room2
+            roomptr => roominfo(iroom1)
             xyz(5) = 0.0_eb
             xyz(6) = 0.0_eb
         else
-            iroom = ventptr%room2
-            roomptr => roominfo(iroom)
+            iroom1 = ventptr%room2
+            iroom2 = ventptr%room1
+            roomptr => roominfo(iroom1)
             xyz(5) = roomptr%cheight
             xyz(6) = roomptr%cheight
         end if
@@ -296,11 +300,12 @@
     else if (venttype=='M') then
         ventptr => mventinfo(ivent)
         if (ventptr%room1<=nrm1) then
-            iroom =ventptr%room1
+            iroom1 =ventptr%room1
+            roomptr => roominfo(iroom1)
         else
-            iroom =ventptr%room2
+            iroom2 =ventptr%room2
+            roomptr => roominfo(iroom2)
         end if
-        roomptr => roominfo(iroom)
 
         vheight = ventptr%height(1)
         varea = ventptr%diffuser_area(1)

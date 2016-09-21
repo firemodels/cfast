@@ -132,7 +132,7 @@ Public Class Vent
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetX)
         End Get
         Set(ByVal Value As Single)
-            If Value <= 0 Then
+            If Value < 0 Then
                 If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
                     Dim aCompartment As New Compartment
                     aCompartment = myCompartments.Item(aFirstCompartment)
@@ -140,7 +140,7 @@ Public Class Vent
                     aChanged = True
                 ElseIf aFirstCompartment = -1 And aSecondCompartment >= 0 And aSecondCompartment <= myCompartments.Count Then
                     Dim aCompartment As New Compartment
-                        aCompartment = myCompartments.Item(aSecondCompartment)
+                    aCompartment = myCompartments.Item(aSecondCompartment)
                     aOffsetX = myUnits.Convert(UnitsNum.Length).ToSI(aCompartment.RoomWidth) / 2
                     aChanged = True
                 End If
@@ -155,7 +155,7 @@ Public Class Vent
             Return myUnits.Convert(UnitsNum.Length).FromSI(aOffsetY)
         End Get
         Set(ByVal Value As Single)
-            If Value <= 0 Then
+            If Value < 0 Then
                 If aFirstCompartment >= 0 And aFirstCompartment <= myCompartments.Count Then
                     Dim aCompartment As New Compartment
                     aCompartment = myCompartments.Item(aFirstCompartment)

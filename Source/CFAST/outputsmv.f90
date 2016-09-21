@@ -170,7 +170,7 @@
         do i = 1, n_hvents
             write (13,"(a)") "HVENTPOS"
             call get_vent_info ("H", i, iroom1, iroom2, xyz, vred, vgreen, vblue)
-            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
+            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
@@ -179,7 +179,7 @@
         do i = 1, n_vvents
             write (13,"(a)") "VVENTPOS"
             call get_vent_info ("V",i , iroom1, iroom2, xyz, vred, vgreen, vblue)
-            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
+            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
@@ -188,7 +188,7 @@
         do i = 1, n_mvents
             write (13,'(a)') "MVENTPOS"
             call get_vent_info ("M", i, iroom1, iroom2, xyz, vred, vgreen, vblue)
-            write (13,"(1x,i3,1x,6(e11.4,1x),e11.4)") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)!, vred, vgreen, vblue
+            write (13,"(1x,i3,1x,6(e11.4,1x),e11.4)") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
@@ -301,9 +301,11 @@
         ventptr => mventinfo(ivent)
         if (ventptr%room1<=nrm1) then
             iroom1 =ventptr%room1
+            iroom2 = ventptr%room2
             roomptr => roominfo(iroom1)
         else
-            iroom2 =ventptr%room2
+            iroom1 = ventptr%room2
+            iroom2 = ventptr%room1
             roomptr => roominfo(iroom2)
         end if
 

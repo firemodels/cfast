@@ -30,7 +30,7 @@ addpath 'scripts'
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
-Dataplot_Inputs_File = [pwd,'/CFAST_validation_dataplot_inputs.csv'];
+Dataplot_Inputs_File = [pwd, '/CFAST_validation_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Validation/'];
 Manuals_Dir = [pwd, '/../../Manuals/Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];

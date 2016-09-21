@@ -310,17 +310,29 @@
         vheight = ventptr%height(1)
         varea = ventptr%diffuser_area(1)
         if (ventptr%orientation(1)==1) then
-            xyz(1) = 0.0_eb
-            xyz(2) = 0.0_eb
-            xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2
-            xyz(4) = roomptr%cdepth/2 + sqrt(varea)/2
+            if (ventptr%xoffset==0.0_eb.or.ventptr%xoffset==roomptr%cwidth) then
+                xyz(1) = ventptr%xoffset
+                xyz(2) = ventptr%xoffset
+                xyz(3) = ventptr%yoffset - sqrt(varea)/2
+                xyz(4) = ventptr%yoffset + sqrt(varea)/2
+            else if (ventptr%yoffset==0.0_eb.or.ventptr%yoffset==roomptr%cdepth) then
+                xyz(1) = ventptr%xoffset - sqrt(varea)/2
+                xyz(2) = ventptr%xoffset + sqrt(varea)/2
+                xyz(3) = ventptr%yoffset
+                xyz(4) = ventptr%yoffset
+            else
+                xyz(1) = ventptr%xoffset
+                xyz(2) = ventptr%xoffset
+                xyz(3) = ventptr%yoffset - sqrt(varea)/2
+                xyz(4) = ventptr%yoffset + sqrt(varea)/2
+            end if
             xyz(5) = vheight - sqrt(varea)/2
             xyz(6) = vheight + sqrt(varea)/2
         else
-            xyz(1) = roomptr%cwidth/2 - sqrt(varea)/2
-            xyz(2) = roomptr%cwidth/2 + sqrt(varea)/2
-            xyz(3) = roomptr%cdepth/2 - sqrt(varea)/2
-            xyz(4) = roomptr%cdepth/2 + sqrt(varea)/2
+            xyz(1) = ventptr%xoffset - sqrt(varea)/2
+            xyz(2) = ventptr%xoffset + sqrt(varea)/2
+            xyz(3) = ventptr%yoffset - sqrt(varea)/2
+            xyz(4) = ventptr%yoffset + sqrt(varea)/2
             xyz(5) = vheight
             xyz(6) = vheight
         end if

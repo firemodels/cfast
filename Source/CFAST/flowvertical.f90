@@ -115,7 +115,7 @@ module vflow_routines
                 fromml = xmvent(iflow)
                 fromqu = 0.0_eb
                 fromql = cp*fromml*exterior_temperature
-                from_temp = roomptr%temp(l)
+                from_temp = exterior_temperature
             end if
             fromtq = fromqu + fromql
 

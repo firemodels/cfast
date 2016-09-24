@@ -59,6 +59,14 @@ module hflow_routines
 
     uflw_hf(1:nrm1,1:ns+2,l) = 0.0_eb
     uflw_hf(1:nrm1,1:ns+2,u) = 0.0_eb
+    
+    vss(1:2,1:mxhvents) = 0.0_eb
+    vsa(1:2,1:mxhvents) = 0.0_eb
+    vas(1:2,1:mxhvents) = 0.0_eb
+    vaa(1:2,1:mxhvents) = 0.0_eb
+    vsas(1:2,1:mxhvents) = 0.0_eb
+    vasa(1:2,1:mxhvents) = 0.0_eb
+    
     if (option(fhflow)/=on) return
     if (n_hvents==0) return
 

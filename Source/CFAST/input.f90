@@ -1146,7 +1146,7 @@
                     ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_fraction = lrarray(icfraction)
                     ventptr%opening_final_fraction = lrarray(icfraction)
-                    if (ventptr%room1<=nrm1) then
+                    if (ventptr%room1<=nr-1) then
                         roomptr => roominfo(ventptr%room1)
                         ventptr%xoffset = roomptr%cwidth/2
                         ventptr%yoffset = roomptr%cdepth/2
@@ -1238,6 +1238,15 @@
                     ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_fraction = lrarray(13)
                     ventptr%opening_final_fraction = lrarray(13)
+                    if (ventptr%room1<=nr-1) then
+                        roomptr => roominfo(ventptr%room1)
+                        ventptr%xoffset = 0.0_eb
+                        ventptr%yoffset = roomptr%cdepth/2
+                    else
+                        roomptr => roominfo(ventptr%room2)
+                    end if
+                    ventptr%xoffset = 0.0_eb
+                    ventptr%yoffset = roomptr%cdepth/2
                 end if
             else
                 write (*,*) '***Error: Bad MVENT input. 13 arguments required.'

@@ -1,6 +1,6 @@
 VERSN,7,Users Guide Example Case
 !!
-!!Scenario Configuration Keywords
+!!Scenario Configuration
 !!
 TIMES,3600,50,50,50
 EAMB,293.15,101325,0
@@ -10,22 +10,22 @@ TAMB,293.15,101325,0,50
 !!
 MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
 !!
-!!Compartment keywords
+!!Compartments
 !!
 COMPA,Comp 1,5,5,3,0,0,0,CONCRETE,CONCRETE,CONCRETE,50,50,50
 COMPA,Comp 2,5,5,3,5,0,0,CONCRETE,CONCRETE,CONCRETE,50,50,50
 COMPA,Comp 3,5,5,3,5,0,3,CONCRETE,CONCRETE,CONCRETE,50,50,50
 !!
-!!Vent keywords
+!!Vents
 !!
-HVENT,1,4,1,1,2,0,2,1,1
-HVENT,1,2,1,1,2,0,2,2,1
-HVENT,3,4,1,1,2,1,2,2,1
-VVENT,3,2,0.25,1,1
-MVENT,4,1,1,V,2.75,0.25,V,2.75,0.25,0.02,200,300,1
-MVENT,2,4,2,V,2.75,0.25,V,2.75,0.25,0.02,200,300,1
+HVENT,1,4,1,1,2,0,2,,1,TIME,,,0,1,0,1,0,0
+HVENT,1,2,1,1,2,0,2,,2,TIME,,,0,1,0,1,0,0
+HVENT,3,4,1,1,2,1,2,,2,TIME,,,0,1,0,1,0,0
+VVENT,3,2,1,1,1,TIME,,,0,1,0,1,2.5,2.5
+MVENT,4,1,1,V,2.75,0.25,V,2.75,0.25,0.02,200,300,TIME,,,0,1,0,1,0,2.5
+MVENT,2,4,2,V,2.75,0.25,V,2.75,0.25,0.02,200,300,TIME,,,0,1,0,1,5,2.5
 !!
-!!Fire keywords
+!!Fires
 !!
 !!Cushion
 FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,Cushion
@@ -48,18 +48,18 @@ TRACE,0,0
 AREA,0.05,9
 HEIGH,0,3
 !!
-!!Target and detector keywords
+!!Targets and detectors
 !!
 DETECT,SPRINKLER,1,347.0389,3,3,2.97,100,1,7E-05
 DETECT,SMOKE,1,23.93346,2,2,2.97,404,0,7E-05
 DETECT,HEAT,1,303.15,2,2,2.97,5,0,7E-05
 TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,EXPLICIT,PDE,0.5,Targ 1
 !!
-!!Heat flow keywords
+!!Intercompartment heat transfer
 !!
 VHEAT,3,2
 !!
-!!visualizations
+!!Visualizations
 !!
 SLCF,2-D,X,2.5
 SLCF,2-D,Y,2.5

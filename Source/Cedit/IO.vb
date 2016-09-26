@@ -225,10 +225,10 @@ Module IO
                             hvent.FinalOpening = csv.num(i, hventNum.initialfraction + 2)
                         Else
                             ' This is the not quite as old format input without the wind or second offset
-                            hvent.Face = csv.str(i, hventNum.face)
+                            hvent.Face = csv.str(i, hventNum.face - 1)
                             hvent.Offset = csv.num(i, hventNum.hall1)
-                            hvent.InitialOpening = csv.num(i, hventNum.initialfraction)
-                            hvent.FinalOpening = csv.num(i, hventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
+                            hvent.InitialOpening = csv.num(i, hventNum.initialfraction - 1)
+                            hvent.FinalOpening = csv.num(i, hventNum.initialfraction - 1) ' This is the default; it may be changed by an EVENT specification
                         End If
                         hvent.Changed = False
                         myHVents.Add(hvent)
@@ -296,12 +296,15 @@ Module IO
                             End If
                             mvent.OffsetX = csv.num(i, mventNum.xoffset)
                             mvent.OffsetY = csv.num(i, mventNum.yoffset)
+                            mvent.Changed = False
                         Else
                             ' This is the old format that is just time and partially implemented in EVENT keyword
                             mvent.InitialOpening = csv.num(i, mventNum.initialfraction)
                             mvent.FinalOpening = csv.num(i, mventNum.initialfraction) ' This is the default; it may be changed by an EVENT specification
+                            mvent.OffsetX = 0.0
+                            mvent.OffsetY = -1
+                            mvent.Changed = True
                         End If
-                        mvent.Changed = False
                         myMVents.Add(mvent)
                     Case "OBJECT"
                         Dim FireFile As String
@@ -459,13 +462,16 @@ Module IO
                                 vvent.FinalOpeningTime = 0
                                 vvent.FinalOpening = csv.num(i, vventNum.intialfraction)
                             End If
+                            vvent.Changed = False
                         Else ' Old format that does not include vent number and thus only one per compartment pair
                             vvent.InitialOpeningTime = 0    ' This is the default; it may be changed by an EVENT specification
                             vvent.InitialOpening = csv.num(i, vventNum.intialfraction - 1)
                             vvent.FinalOpeningTime = 0
                             vvent.FinalOpening = csv.num(i, vventNum.intialfraction - 1)
+                            vvent.OffsetX = -1
+                            vvent.OffsetY = -1
+                            vvent.Changed = True
                         End If
-                        vvent.Changed = False
                         myVVents.Add(vvent)
                     Case "WIND"
                         myEnvironment.ExtWindSpeed = csv.num(i, windNum.velocity)

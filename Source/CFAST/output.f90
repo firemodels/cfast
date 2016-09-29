@@ -17,6 +17,7 @@ module output_routines
     use vent_data
     use wallptrs
     use room_data
+    use ramp_data
 
     implicit none
 
@@ -671,6 +672,7 @@ module output_routines
     character :: ciout*8, cjout*14, csout*6
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
+    type(ramp_type), pointer :: rampptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
@@ -691,7 +693,12 @@ module output_routines
                         ventptr%opening_final_time, ventptr%opening_final_fraction
                 else
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                        'Time', 'See RAMP specification below'
+                        'RAMP'
+                    rampptr => rampinfo(iramp)
+                    write (iofilo,5021) 'Time      ', (int(rampptr%time(j)),j=1,rampptr%npoints)
+                    write (iofilo,5022) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
+5021 format (89x,a,8(i6,4x),/,84x,20(8(i6,2x),/))
+5022 format (89x,a,8(f8.2,2x),/,84x,20(8f8.2,/))
                 end if
             end if
         end do
@@ -745,8 +752,7 @@ module output_routines
     'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
     'Compartment    Compartment     Number                Height      Height      Type        Value       Target      Time        Fraction    Time        Fraction',/, &
     41X,4('(m)         '),24x,2('(s)         (C)'),/,157('-'))
-5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a4,27x,4(f9.2,3x))
-5021 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a4,27x,a)
+5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,27x,4(f9.2,3x))
 5030 format (//,'There are no vertical natural flow connections')
 5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Shape', &
         '     Area      ','Relative  Absolute',/, &

@@ -6628,7 +6628,7 @@ Public Class CeditMain
 
 #Region " Support Routines "
 
-    Private Sub Data_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireDataSS.KeyDown, VVentFractions.KeyDown
+    Private Sub Data_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles FireDataSS.KeyDown, VVentFractions.KeyDown, HVentFractions.KeyDown, MVentFractions.KeyDown
         Dim aChar As String
         aChar = e.KeyCode.ToString
         If e.Control Then
@@ -6752,8 +6752,8 @@ Public Class CeditMain
         ElseIf NumPoints > 2 Then
             Dim TimePoints(NumPoints) As Single, FractionPoints(NumPoints) As Single
             For ir = 1 To NumPoints
-                TimePoints(ir) = Val(VVentFractions(ir, 0))
-                FractionPoints(ir) = Val(VVentFractions(ir, 1))
+                TimePoints(ir) = Val(ss(ir, 0))
+                FractionPoints(ir) = Val(ss(ir, 1))
                 If FractionPoints(ir) <= 0 Then FractionPoints(ir) = 0
             Next
             aVent.SetRamp(TimePoints, FractionPoints)

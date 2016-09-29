@@ -3,6 +3,7 @@ module output_routines
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use utility_routines, only: xerror, doesthefileexist, funit
+    use opening_fractions, only: find_vent_opening_ramp
 
     use cenviro
     use setup_data
@@ -665,7 +666,7 @@ module output_routines
 
     !     Description:  Output initial test case vent connections
 
-    integer :: i, j
+    integer :: i, j, iramp
     real(eb) :: hrx, hrpx
     character :: ciout*8, cjout*14, csout*6
     type(room_type), pointer :: roomptr
@@ -682,8 +683,17 @@ module output_routines
             write (cjout,'(a14)') roomptr%name
             if (ventptr%room2==nr) cjout = 'Outside'
             roomptr => roominfo(i)
-            write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                ventptr%absolute_sill, ventptr%absolute_soffit
+            if (ventptr%opening_type==trigger_by_time) then
+                iramp = find_vent_opening_ramp('H',ventptr%room1,ventptr%room2,ventptr%counter)
+                if (iramp==0) then
+                    write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                        'Time', ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
+                        ventptr%opening_final_time, ventptr%opening_final_fraction
+                else
+                    write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                        'Time', 'See RAMP specification below'
+                end if
+            end if
         end do
     end if
 
@@ -732,14 +742,15 @@ module output_routines
 
 5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
 5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
-    'From           To             Vent       Width       Sill        Soffit      Abs.        Abs.      ',/, &
-    'Compartment    Compartment    Number                 Height      Height      Sill        Soffit',/, &
-    41X,5('(m)         '),/,100('-'))
-5020 format (a14,1X,A14,I3,5X,5(F9.2,3X))
+    'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
+    'Compartment    Compartment     Number                Height      Height      Type        Value       Target      Time        Fraction    Time        Fraction',/, &
+    41X,4('(m)         '),24x,2('(s)         (C)'),/,157('-'))
+5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a4,27x,4(f9.2,3x))
+5021 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a4,27x,a)
 5030 format (//,'There are no vertical natural flow connections')
-     5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Shape',&
-          '     Area      ','Relative  Absolute',/, &
-    'Compartment    Compartment                        Height    Height',/,40X,'(m^2)     ',2('(m)       '),/,72('-'))
+5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Shape', &
+        '     Area      ','Relative  Absolute',/, &
+        'Compartment    Compartment                        Height    Height',/,40X,'(m^2)     ',2('(m)       '),/,72('-'))
 5050 format (a8,7x,a8,7x,a6,2x,3(f7.2,3x))
 5060 formaT (//,'There are no mechanical flow connections')
 5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)

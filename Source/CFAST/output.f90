@@ -669,10 +669,11 @@ module output_routines
 
     integer :: i, j, iramp
     real(eb) :: hrx, hrpx
-    character :: ciout*8, cjout*14, csout*6, crout*10
+    character :: ciout*8, cjout*14, csout*6, crout*10, ctrigger*4
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
+    type(target_type), pointer :: targptr
 
     !     horizontal flow vents
     if (n_hvents==0) then
@@ -686,16 +687,23 @@ module output_routines
             if (ventptr%room2==nr) cjout = 'Outside'
             roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
+                ctrigger = 'Time'
                 iramp = find_vent_opening_ramp('H',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                        'Time', ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
+                        ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
                         ventptr%opening_final_time, ventptr%opening_final_fraction
                 else
                     write (crout,'(a6,1x,i0)') 'RAMP #',iramp
-                    write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                        crout
+                    write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, crout
                 end if
+            else
+                ctrigger = 'Temp'
+                if (ventptr%opening_type==trigger_by_flux) ctrigger = 'Flux'
+                targptr => targetinfo(ventptr%opening_target)
+                write (iofilo,5025) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
+                    ventptr%opening_final_time, ventptr%opening_final_fraction
             end if
         end do
     end if
@@ -767,6 +775,7 @@ module output_routines
     '     Target      Time        Fraction    Time        Fraction',/, &
     41X,4('(m)         '),24x,2('(s)         (C)'),/,157('-'))
 5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,27x,4(f9.2,3x))
+5025 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,6x,f9.2,3x,a10,2x,4(f9.2,3x))
 5030 format (//,'There are no vertical natural flow connections')
 5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Shape', &
         '     Area      ','Relative  Absolute',/, &

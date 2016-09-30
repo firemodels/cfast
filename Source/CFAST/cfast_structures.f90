@@ -87,7 +87,7 @@ module cfast_types
     ! ramp data structure
     type ramp_type
         character :: type
-        integer :: from_room, to_room, vent_number, npoints
+        integer :: room1, room2, counter, npoints
         real(eb) :: time(mxpts), value(mxpts)
     end type ramp_type
 

@@ -669,7 +669,7 @@ module output_routines
 
     integer :: i, j, iramp
     real(eb) :: hrx, hrpx
-    character :: ciout*8, cjout*14, csout*6
+    character :: ciout*8, cjout*14, csout*6, crout*10
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
@@ -684,7 +684,7 @@ module output_routines
             roomptr => roominfo(ventptr%room2)
             write (cjout,'(a14)') roomptr%name
             if (ventptr%room2==nr) cjout = 'Outside'
-            roomptr => roominfo(i)
+            roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
                 iramp = find_vent_opening_ramp('H',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
@@ -692,13 +692,9 @@ module output_routines
                         'Time', ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
                         ventptr%opening_final_time, ventptr%opening_final_fraction
                 else
+                    write (crout,'(a6,1x,i0)') 'RAMP #',iramp
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                        'RAMP'
-                    rampptr => rampinfo(iramp)
-                    write (iofilo,5021) 'Time      ', (int(rampptr%time(j)),j=1,rampptr%npoints)
-                    write (iofilo,5022) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
-5021 format (89x,a,8(i6,4x),/,84x,20(8(i6,2x),/))
-5022 format (89x,a,8(f8.2,2x),/,84x,20(8f8.2,/))
+                        crout
                 end if
             end if
         end do
@@ -745,12 +741,30 @@ module output_routines
                 (ventptr%coeff(j),j = 1,ventptr%n_coeffs)
         end do
     end if
+    
+    ! ramps
+    if (nramps==0) then
+        write (iofilo,5150)
+    else
+        write (iofilo,5160)
+        do i = 1, nramps
+            rampptr => rampinfo(iramp)
+            roomptr => roominfo(rampptr%room2)
+            write (cjout,'(a14)') roomptr%name
+            if (rampptr%room2==nr) cjout = 'Outside'
+            roomptr => roominfo(rampptr%room1)
+            write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', (int(rampptr%time(j)),j=1,rampptr%npoints)
+            write (iofilo,5180) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
+        end do
+    end if
     return
 
 5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
-5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
-    'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
-    'Compartment    Compartment     Number                Height      Height      Type        Value       Target      Time        Fraction    Time        Fraction',/, &
+     5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
+    'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger', &
+    '                 Initial     Initial     Final       Final',/, &
+    'Compartment    Compartment     Number                Height      Height      Type        Value  ', &
+    '     Target      Time        Fraction    Time        Fraction',/, &
     41X,4('(m)         '),24x,2('(s)         (C)'),/,157('-'))
 5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,27x,4(f9.2,3x))
 5030 format (//,'There are no vertical natural flow connections')
@@ -767,7 +781,14 @@ module output_routines
           '                         (m)                      (m)       ', &
           '(m^2)                 (Pa)          (Pa)       (m^3/s)',/,115('-'))
 5130 format (i4,6x,a8,5x,f7.2,6x,a8,5x,f7.2,16x,2(1pg11.2,3x),5(1pg10.2))
-5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))
+5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))    
+5150 format (//,'VENT RAMPS',//,'There are no vent opening ramp specifications')
+5160 format (//,'VENT RAMPS',//, &
+    'Type  From           To              Vent      ',/, &
+    '      Compartment    Compartment     Number    ',/, &
+    58x,10('(s)       '),/,151('-'))
+5170 format (a1,5x,a14,1x,a14,i3,7x,a,10(i6,4x),/,58x,20(10(i6,4x),/))
+5180 format (45x,a,10(f8.2,2x),/,58x,20(10(f8.2,2x),/))
 
     end  subroutine output_initial_vents
 

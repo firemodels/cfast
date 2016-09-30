@@ -1070,9 +1070,9 @@
                 nramps = nramps + 1
                 rampptr=>rampinfo(nramps)
                 rampptr%type = lcarray(1)
-                rampptr%from_room = lrarray(2)
-                rampptr%to_room = lrarray(3)
-                rampptr%vent_number = lrarray(4)
+                rampptr%room1 = lrarray(2)
+                rampptr%room2 = lrarray(3)
+                rampptr%counter = lrarray(4)
                 rampptr%npoints = lrarray(5)
                 do iramp = 1,rampptr%npoints
                     rampptr%time(iramp) = lrarray(4+2*iramp)

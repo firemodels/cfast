@@ -1214,10 +1214,10 @@ module opening_fractions
     
 ! --------------------------- find_vent_opening_ramp ------------------------------
     
-    integer function find_vent_opening_ramp (venttype,room1,room2,vent_number)
+    integer function find_vent_opening_ramp (venttype,room1,room2,counter)
     
     character(len=1), intent(in) :: venttype
-    integer, intent(in) :: room1, room2, vent_number
+    integer, intent(in) :: room1, room2, counter
     
     integer iramp, vent_index
     type(ramp_type), pointer :: rampptr
@@ -1225,8 +1225,8 @@ module opening_fractions
     if (nramps>0) then
         do iramp = 1, nramps
             rampptr=>rampinfo(iramp)
-            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and. &
-                rampptr%vent_number==vent_number) then
+            if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
+                rampptr%counter==counter) then
                 vent_index = iramp
                 find_vent_opening_ramp = iramp
                 return
@@ -1240,10 +1240,10 @@ module opening_fractions
 
 ! --------------------------- get_vent_opening-------------------------------------
 
-    subroutine get_vent_opening (venttype,room1,room2,vent_number,vent_index,time,fraction)
+    subroutine get_vent_opening (venttype,room1,room2,counter,vent_index,time,fraction)
 
     character(len=1), intent(in) :: venttype
-    integer, intent(in) :: room1, room2, vent_number, vent_index
+    integer, intent(in) :: room1, room2, counter, vent_index
     real(eb), intent(in) :: time
     real(eb), intent(out) :: fraction
 
@@ -1256,7 +1256,7 @@ module opening_fractions
     fraction = 1.0_eb
 
     if (nramps>0) then
-        iramp = find_vent_opening_ramp (venttype,room1,room2,vent_number)
+        iramp = find_vent_opening_ramp (venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)
             if (time<=rampptr%time(1)) then

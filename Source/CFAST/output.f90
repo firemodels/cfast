@@ -702,8 +702,8 @@ module output_routines
                 if (ventptr%opening_type==trigger_by_flux) ctrigger = 'Flux'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5025) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
-                    ventptr%opening_final_time, ventptr%opening_final_fraction
+                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_time, &
+                    ventptr%opening_initial_fraction, ventptr%opening_final_time, ventptr%opening_final_fraction
             end if
         end do
     end if
@@ -756,12 +756,13 @@ module output_routines
     else
         write (iofilo,5160)
         do i = 1, nramps
-            rampptr => rampinfo(iramp)
+            rampptr => rampinfo(i)
             roomptr => roominfo(rampptr%room2)
             write (cjout,'(a14)') roomptr%name
             if (rampptr%room2==nr) cjout = 'Outside'
             roomptr => roominfo(rampptr%room1)
-            write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', (int(rampptr%time(j)),j=1,rampptr%npoints)
+            write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
+                (int(rampptr%time(j)),j=1,rampptr%npoints)
             write (iofilo,5180) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
         end do
     end if
@@ -796,8 +797,8 @@ module output_routines
     'Type  From           To              Vent      ',/, &
     '      Compartment    Compartment     Number    ',/, &
     58x,10('(s)       '),/,151('-'))
-5170 format (a1,5x,a14,1x,a14,i3,7x,a,10(i6,4x),/,58x,20(10(i6,4x),/))
-5180 format (45x,a,10(f8.2,2x),/,58x,20(10(f8.2,2x),/))
+5170 format (a1,5x,a14,1x,a14,i3,7x,a,10(i6,4x),/,55x,20(10(i6,4x),/))
+5180 format (45x,a,10(f8.2,2x),/,53x,20(10(f8.2,2x),/))
 
     end  subroutine output_initial_vents
 

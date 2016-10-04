@@ -769,8 +769,8 @@ module output_routines
         'Compartment    Compartment    Number                      Type        Value       Target      Time        ',&
         'Fraction    Time        Fraction',/, &
         48X,'(m^2)',17x,'(C/W/m^2)',15x,'(s)',21x,'(s)',/,138('-'))
-5050 format (a14,1x,a14,i3,6x,a6,1x,f5.2,8x,a,27x,4(f9.2,3x))
-5055 format (a14,1x,a14,i3,6x,a6,1x,f5.2,8x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))
+5050 format (a14,1x,a14,i3,6x,a6,3x,f5.2,6x,a,27x,4(f9.2,3x))
+5055 format (a14,1x,a14,i3,6x,a6,3x,f5.2,6x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))
 
     !     mechanical vents
     if (n_mvents==0) then
@@ -816,7 +816,7 @@ module output_routines
 5120 format (//,'FANS',//,&
         'From           To              Fan        Area      Flowrate     Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
         'Compartment    Compartment     Number                            Type        Value       Target      Time        Fraction    Time        Fraction',/, &
-        '                                          (m^2)     (m^3/s)                  (C/W/m^2)               (s)                     (s)',/,135('-'))
+        '                                          (m^2)     (m^3/s)                  (C/W/m^2)               (s)                     (s)',/,145('-'))
 5130 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,27x,4(f9.2,3x))
 5135 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))  
     

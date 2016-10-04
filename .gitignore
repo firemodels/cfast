@@ -3,6 +3,7 @@
 ._*
 
 # visual studio files
+*.sln
 *.suo
 *.u2d
 *.vfproj*

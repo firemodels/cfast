@@ -1208,16 +1208,42 @@ module opening_fractions
 
     private
 
-    public get_vent_opening
+    public get_vent_opening, find_vent_opening_ramp
 
     contains
+    
+! --------------------------- find_vent_opening_ramp ------------------------------
+    
+    integer function find_vent_opening_ramp (venttype,room1,room2,counter)
+    
+    character(len=1), intent(in) :: venttype
+    integer, intent(in) :: room1, room2, counter
+    
+    integer iramp, vent_index
+    type(ramp_type), pointer :: rampptr
+
+    if (nramps>0) then
+        do iramp = 1, nramps
+            rampptr=>rampinfo(iramp)
+            if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
+                rampptr%counter==counter) then
+                vent_index = iramp
+                find_vent_opening_ramp = iramp
+                return
+            end if
+        end do
+    end if
+    find_vent_opening_ramp = 0
+    return
+
+    end function find_vent_opening_ramp
 
 ! --------------------------- get_vent_opening-------------------------------------
 
-    subroutine get_vent_opening (venttype,room1,room2,vent_number,vent_index,time,fraction)
+    subroutine get_vent_opening (venttype,room1,room2,counter,vent_index,time,fraction)
 
     character(len=1), intent(in) :: venttype
-    integer, intent(in) :: room1, room2, vent_number, vent_index
+    integer, intent(in) :: room1, room2, counter, vent_index
     real(eb), intent(in) :: time
     real(eb), intent(out) :: fraction
 
@@ -1230,30 +1256,28 @@ module opening_fractions
     fraction = 1.0_eb
 
     if (nramps>0) then
-        do iramp = 1, nramps
+        iramp = find_vent_opening_ramp (venttype,room1,room2,counter)
+        if (iramp>0) then
             rampptr=>rampinfo(iramp)
-            if (rampptr%type==venttype.and.rampptr%from_room==room1.and.rampptr%to_room==room2.and.&
-               rampptr%vent_number==vent_number) then
-                if (time<=rampptr%time(1)) then
-                    fraction = rampptr%value(1)
-                    return
-                else if (time>=rampptr%time(rampptr%npoints)) then
-                    fraction = rampptr%value(rampptr%npoints)
-                    return
-                else
-                    do i=2,rampptr%npoints
-                        if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
-                            dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
-                            dtfull = max(time-rampptr%time(i-1),mintime)
-                            dy = rampptr%value(i)-rampptr%value(i-1)
-                            dydt = dy / dt
-                            fraction = rampptr%value(i-1)+dydt * dtfull
-                            return
-                        end if
-                    end do
-                end if
+            if (time<=rampptr%time(1)) then
+                fraction = rampptr%value(1)
+                return
+            else if (time>=rampptr%time(rampptr%npoints)) then
+                fraction = rampptr%value(rampptr%npoints)
+                return
+            else
+                do i=2,rampptr%npoints
+                    if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
+                        dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
+                        dtfull = max(time-rampptr%time(i-1),mintime)
+                        dy = rampptr%value(i)-rampptr%value(i-1)
+                        dydt = dy / dt
+                        fraction = rampptr%value(i-1)+dydt * dtfull
+                        return
+                    end if
+                end do
             end if
-        end do
+        end if
     end if
 
     ! This is for backwards compatibility with the older EVENT format for single vent changes

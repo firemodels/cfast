@@ -61,7 +61,7 @@ module cfast_types
         real(eb) :: molar_mass                          ! molar mass calculated from fuel composition
         real(eb) :: ignition_time                       ! time at ignition of fire, default is 0
         logical :: ignited                              ! true if fire has ignited
-        logical :: backtrack                            ! true if fire has ignited and we need to backtrack to find ignition time
+        logical :: reported                             ! true if fire has ignited and has already been reported (calculated)
         integer :: modified_plume                       ! fire plume flag, 1 = center, 2 = wall, 3 = corner
 
         ! These are calculated results for the current time step
@@ -87,7 +87,7 @@ module cfast_types
     ! ramp data structure
     type ramp_type
         character :: type
-        integer :: from_room, to_room, vent_number, npoints
+        integer :: room1, room2, counter, npoints
         real(eb) :: time(mxpts), value(mxpts)
     end type ramp_type
 

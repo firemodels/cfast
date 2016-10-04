@@ -348,22 +348,20 @@ module target_routines
 
         real(eb), intent(out) :: x_node(nnodes_trg)
 
-        integer :: i, nnn
+        integer :: i
         real(eb) :: sum
 
-        nnn = nnodes_trg - 1
-        x_node(1) = 1.0_eb
-        x_node(nnn) = 1.0_eb
-        do i = 2, nnn/2
+        x_node(1:nnodes_trg) = 1.0_eb
+        do i = 2, (nnodes_trg-1)/2
             x_node(i) = x_node(i-1)*1.50_eb
-            x_node(nnn+1-i) = x_node(i)
+            x_node(nnodes_trg-i) = x_node(i)
         end do
-        if (mod(nnn,2)==1) x_node(nnn/2+1)=x_node(nnn/2)*1.50_eb
+        if (mod((nnodes_trg-1),2)==1) x_node((nnodes_trg-1)/2+1) = x_node((nnodes_trg-1)/2)*1.50_eb
         sum = 0.0_eb
-        do i = 1, nnn
+        do i = 1, nnodes_trg-1
             sum = sum + x_node(i)
         end do
-        do i = 1, nnn
+        do i = 1, nnodes_trg-1
             x_node(i) = x_node(i)/sum
         end do
 

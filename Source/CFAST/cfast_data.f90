@@ -70,7 +70,7 @@ module option_data
     save
 
     integer, parameter :: mxdebug = 19
-    integer, parameter :: mxopt = 21
+    integer, parameter :: mxopt = 19
 
     integer, parameter :: off = 0
     integer, parameter :: on = 1
@@ -97,8 +97,6 @@ module option_data
     integer, parameter :: fmodjac=17
     integer, parameter :: fpdassl=18
     integer, parameter :: foxygen=19
-    integer, parameter :: fbtdtect=20
-    integer, parameter :: fbtobj=21
 
     integer, dimension(mxopt) :: option = &
         !   fire,       hflow,      entrain,    vflow,      cjet
@@ -109,8 +107,8 @@ module option_data
             1,          1,          2,          1,          0,  &
         !   exact ode,  hcl,        h_mflow,      keyboard,   type of initialization
             1,          0,          1,          1,          0,  &
-        !   mv heat loss,   mod jac,    dassl debug,    oxygen dassl solve,     back track on dtect,    back track on objects
-            0,              0,          0,              0,                      0,                      0/)
+        !   mv heat loss,   mod jac,    dassl debug,    oxygen dassl solve
+            0,              0,          0,              0/)
 
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
 

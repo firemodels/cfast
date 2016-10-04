@@ -14,8 +14,8 @@ Carbon Monoxide Concentration,Measured Change in Volume Fraction,Predicted Chang
 Smoke Concentration,Measured Density (mg/m^3),Predicted Density (mg/m^3),0,600,0,600,0.03 0.95,SouthEast,1,19,yes,linear,SCRIPT_FIGURES/ScatterPlots/Smoke_Concentration
 Compartment Over-Pressure,Measured Pressure Rise (Pa),Predicted Pressure Rise (Pa),1,1500,1,1500,0.03 0.95,SouthEast,1,23,yes,loglog,SCRIPT_FIGURES/ScatterPlots/Compartment_Pressure
 Open Compartment Over-Pressure,Measured Pressure Drop (Pa),Predicted Pressure Drop (Pa),0,30,0,30,0.03 0.95,SouthEast,1,23,yes,linear,SCRIPT_FIGURES/ScatterPlots/Open_Compartment_Pressure
-Target Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,20,1000,0.03 0.95,SouthEast,1,7,yes,linear,SCRIPT_FIGURES/ScatterPlots/Target_Temperature
-Surface Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),0,1000,20,1000,0.03 0.95,SouthEast,1,7,yes,linear,SCRIPT_FIGURES/ScatterPlots/Surface_Temperature
+Target Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),20,1000,20,1000,0.03 0.95,SouthEast,1,7,yes,linear,SCRIPT_FIGURES/ScatterPlots/Target_Temperature
+Surface Temperature,Measured Temperature Rise (\circC),Predicted Temperature Rise (\circC),20,1000,20,1000,0.03 0.95,SouthEast,1,7,yes,linear,SCRIPT_FIGURES/ScatterPlots/Surface_Temperature
 Target Heat Flux,Measured Heat Flux (kW/m^2),Predicted Heat Flux (kW/m^2),0,120,0,120,0.03 0.95,SouthEast,1,11,yes,linear,SCRIPT_FIGURES/ScatterPlots/Target_Heat_Flux
 Surface Heat Flux,Measured Heat Flux (kW/m^2),Predicted Heat Flux (kW/m^2),0,120,0,120,0.03 0.95,SouthEast,1,11,yes,linear,SCRIPT_FIGURES/ScatterPlots/Surface_Heat_Flux
 Smoke Alarm Activation Time (Temperature Surrogate),Measured Time to Activation (s),Predicted Time to Activation (s),0,300,0,300,0.03 0.95,SouthEast,1,34,yes,linear,SCRIPT_FIGURES/ScatterPlots/Smoke_Alarm_Activation_Time

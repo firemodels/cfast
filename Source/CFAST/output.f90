@@ -769,8 +769,8 @@ module output_routines
         'Compartment    Compartment    Number                      Type        Value       Target      Time        ',&
         'Fraction    Time        Fraction',/, &
         48X,'(m^2)',17x,'(C/W/m^2)',15x,'(s)',21x,'(s)',/,138('-'))
-5050 format (a14,1x,a14,i3,6x,a6,1x,f7.2,8x,a,27x,4(f9.2,3x))
-5055 format (a14,1x,a14,i3,6x,a6,1x,f7.2,8x,a,3x,f9.2,6x,a10,9x,2(f9.2,15x))
+5050 format (a14,1x,a14,i3,6x,a6,1x,f5.2,8x,a,27x,4(f9.2,3x))
+5055 format (a14,1x,a14,i3,6x,a6,1x,f5.2,8x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))
 
     !     mechanical vents
     if (n_mvents==0) then
@@ -779,15 +779,46 @@ module output_routines
         write (iofilo,5120)
         do i = 1, n_mvents
             ventptr => mventinfo(i)
-            write (ciout,'(i5,3x)') ventptr%room1
+            roomptr => roominfo(ventptr%room1)
+            write (ciout,'(a14)') roomptr%name
             if (ventptr%room1==nr) ciout = 'Outside'
-            write (cjout,'(i5,3x)') ventptr%room2
+            roomptr => roominfo(ventptr%room2)
+            write (cjout,'(a14)') roomptr%name
             if (ventptr%room2==nr) cjout = 'Outside'
-            write (iofilo,5130) ventptr%counter, ciout, ventptr%height(1), cjout, ventptr%height(2), &
-                ventptr%min_cutoff_relp, ventptr%max_cutoff_relp, &
-                (ventptr%coeff(j),j = 1,ventptr%n_coeffs)
+            if (ventptr%opening_type==trigger_by_time) then
+                ctrigger = 'Time'
+                iramp = find_vent_opening_ramp('M',ventptr%room1,ventptr%room2,ventptr%counter)
+                if (iramp==0) then
+                    write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
+                        ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
+                        ventptr%opening_final_time, ventptr%opening_final_fraction
+                else
+                    write (crout,'(a6,1x,i0)') 'RAMP #',iramp
+                    write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%coeff(1), ventptr%area, crout
+                end if
+            else if (ventptr%opening_type==trigger_by_temp) then
+                ctrigger = 'Temp'
+                targptr => targetinfo(ventptr%opening_target)
+                write (iofilo,5135) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
+                    ctrigger, ventptr%opening_criterion-273.15, targptr%name, ventptr%opening_initial_fraction, &
+                    ventptr%opening_final_fraction
+            else 
+                ctrigger = 'Flux'
+                targptr => targetinfo(ventptr%opening_target)
+                write (iofilo,5135) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
+                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_fraction, &
+                    ventptr%opening_final_fraction
+            end if
+            write (iofilo,5130) ciout, cjout, ventptr%counter, (ventptr%coeff(j),j = 1,ventptr%n_coeffs)
         end do
     end if
+5060 format (//,'There are no mechanical flow connections')
+5120 format (//,'FANS',//,&
+        'From           To              Fan        Area      Flowrate     Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
+        'Compartment    Compartment     Number                            Type        Value       Target      Time        Fraction    Time        Fraction',/, &
+        '                                          (m^2)     (m^3/s)                  (C/W/m^2)               (s)                     (s)',/,135('-'))
+5130 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,27x,4(f9.2,3x))
+5135 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))  
     
     ! ramps
     if (nramps==0) then
@@ -806,17 +837,7 @@ module output_routines
         end do
     end if
     return
-
-5060 formaT (//,'There are no mechanical flow connections')
-5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
-5110 format (10x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
-5120 format (//,'FANS',//,'System    From           From      To             To        ', &
-          'Area      Fan         Minimum       Maximum    Flowrate',/, &
-          '                         Elev.                    Elev.               Number',/, &
-          '                         (m)                      (m)       ', &
-          '(m^2)                 (Pa)          (Pa)       (m^3/s)',/,115('-'))
-5130 format (i4,6x,a8,5x,f7.2,6x,a8,5x,f7.2,16x,2(1pg11.2,3x),5(1pg10.2))
-5140 format (10x,a4,i3,5x,f7.2,6x,a4,i3,5x,f7.2,16x,i3,6x,2(1pg11.2,3x),5(1pg10.2))    
+  
 5150 format (//,'VENT RAMPS',//,'There are no vent opening ramp specifications')
 5160 format (//,'VENT RAMPS',//, &
     'Type  From           To              Vent      ',/, &

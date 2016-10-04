@@ -668,8 +668,7 @@ module output_routines
     !     Description:  Output initial test case vent connections
 
     integer :: i, j, iramp
-    real(eb) :: hrx, hrpx
-    character :: ciout*8, cjout*14, csout*6, crout*10, ctrigger*4
+    character :: ciout*14, cjout*14, csout*6, crout*10, ctrigger*4
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
@@ -697,17 +696,31 @@ module output_routines
                     write (crout,'(a6,1x,i0)') 'RAMP #',iramp
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, crout
                 end if
-            else
+            else if (ventptr%opening_type==trigger_by_temp) then
                 ctrigger = 'Temp'
-                if (ventptr%opening_type==trigger_by_flux) ctrigger = 'Flux'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5025) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_time, &
-                    ventptr%opening_initial_fraction, ventptr%opening_final_time, ventptr%opening_final_fraction
+                    ctrigger, ventptr%opening_criterion-273.15, targptr%name, ventptr%opening_initial_fraction, &
+                    ventptr%opening_final_fraction
+            else
+                ctrigger = 'Flux'
+                targptr => targetinfo(ventptr%opening_target)
+                write (iofilo,5025) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_fraction, &
+                    ventptr%opening_final_fraction
             end if
         end do
     end if
-
+5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
+     5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
+    'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger', &
+    '                 Initial     Initial     Final       Final',/, &
+    'Compartment    Compartment     Number                Height      Height      Type        Value  ', &
+    '     Target      Time        Fraction    Time        Fraction',/, &
+    41X,4('(m)         '),'(C/W/m^2)',15x,'(s)',21x,'(s)',/,157('-'))
+5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,27x,4(f9.2,3x))
+5025 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))
+     
     !     vertical flow vents
     if (n_vvents==0) then
         write (iofilo,5030)
@@ -715,23 +728,49 @@ module output_routines
         write (iofilo,5040)
         do i = 1, n_vvents
             ventptr => vventinfo(i)
-            write (ciout,'(i5,3x)') ventptr%room1
+            roomptr => roominfo(ventptr%room1)
+            write (ciout,'(a14)') roomptr%name
             if (ventptr%room1==nr) ciout = 'Outside'
-            write (cjout,'(i5,3x)') ventptr%room2
+            roomptr => roominfo(ventptr%room2)
+            write (cjout,'(a14)') roomptr%name
             if (ventptr%room2==nr) cjout = 'Outside'
             csout = 'Round'
             if (ventptr%shape==2) csout = 'Square'
             roomptr => roominfo(ventptr%room2)
-            if (ventptr%room2<nr) then
-                hrx = roomptr%cheight
-                hrpx = roomptr%z1
-            else
-                hrx = roomptr%z0
-                hrpx = roomptr%z0
+            if (ventptr%opening_type==trigger_by_time) then
+                ctrigger = 'Time'
+                iramp = find_vent_opening_ramp('V',ventptr%room1,ventptr%room2,ventptr%counter)
+                if (iramp==0) then
+                    write (iofilo,5050) ciout, cjout, ventptr%counter, csout, ventptr%area, &
+                        ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
+                        ventptr%opening_final_time, ventptr%opening_final_fraction
+                else
+                    write (crout,'(a6,1x,i0)') 'RAMP #',iramp
+                    write (iofilo,5050) ciout, cjout, ventptr%counter, csout, ventptr%area, crout
+                end if
+            else if (ventptr%opening_type==trigger_by_temp) then
+                ctrigger = 'Temp'
+                targptr => targetinfo(ventptr%opening_target)
+                write (iofilo,5055) ciout, cjout, ventptr%counter, csout, ventptr%area, &
+                    ctrigger, ventptr%opening_criterion-273.15, targptr%name, ventptr%opening_initial_fraction, &
+                    ventptr%opening_final_fraction
+            else 
+                ctrigger = 'Flux'
+                targptr => targetinfo(ventptr%opening_target)
+                write (iofilo,5055) ciout, cjout, ventptr%counter, csout, ventptr%area, &
+                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_fraction, &
+                    ventptr%opening_final_fraction
             end if
-            write (iofilo,5050) ciout, cjout, csout, ventptr%area, hrx, hrpx
         end do
     end if
+5030 format (//,'There are no vertical natural flow connections')
+5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Vent    Shape     Area      ', &
+        'Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
+        'Compartment    Compartment    Number                      Type        Value       Target      Time        ',&
+        'Fraction    Time        Fraction',/, &
+        48X,'(m^2)',17x,'(C/W/m^2)',15x,'(s)',21x,'(s)',/,138('-'))
+5050 format (a14,1x,a14,i3,6x,a6,1x,f7.2,8x,a,27x,4(f9.2,3x))
+5055 format (a14,1x,a14,i3,6x,a6,1x,f7.2,8x,a,3x,f9.2,6x,a10,9x,2(f9.2,15x))
 
     !     mechanical vents
     if (n_mvents==0) then
@@ -768,20 +807,6 @@ module output_routines
     end if
     return
 
-5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
-     5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
-    'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger', &
-    '                 Initial     Initial     Final       Final',/, &
-    'Compartment    Compartment     Number                Height      Height      Type        Value  ', &
-    '     Target      Time        Fraction    Time        Fraction',/, &
-    41X,4('(m)         '),24x,2('(s)         (C)'),/,157('-'))
-5020 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,27x,4(f9.2,3x))
-5025 format (a14,1x,a14,i3,4x,3(f9.2,3x),5x,a,6x,f9.2,3x,a10,2x,4(f9.2,3x))
-5030 format (//,'There are no vertical natural flow connections')
-5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Shape', &
-        '     Area      ','Relative  Absolute',/, &
-        'Compartment    Compartment                        Height    Height',/,40X,'(m^2)     ',2('(m)       '),/,72('-'))
-5050 format (a8,7x,a8,7x,a6,2x,3(f7.2,3x))
 5060 formaT (//,'There are no mechanical flow connections')
 5100 format (i4,6x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)
 5110 format (10x,a7,5x,f7.2,6x,a7,5x,f7.2,3x,f7.2)

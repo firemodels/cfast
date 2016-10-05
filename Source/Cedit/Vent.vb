@@ -633,6 +633,66 @@ Public Class Vent
         Get
             myUnits.SI = True
             HasErrors = 0
+
+            Dim cVentType As String = ""
+            If aVentType = TypeHVent Then cVentType = "Horizontal"
+            If aVentType = TypeVVent Then cVentType = "Vertical"
+            If aVentType = TypeMVent Then cVentType = "Mechanical"
+            ' check opening and closing specifications
+            If aVentType = TypeHVent Or aVentType = TypeVVent Or aVentType = TypeMVent Then
+                Select Case aOpenType
+                    Case OpenbyTime
+                        If aInitialOpeningTime < 0 Or aInitialOpeningTime > myEnvironment.SimulationTime Then
+                            myErrors.Add(cVentType + " flow vent " + VentNumber.ToString + " initial opening time is less than zero or greater than simulation time.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
+                        If aFinalOpeningTime < 0 Or aFinalOpeningTime > myEnvironment.SimulationTime Then
+                            myErrors.Add(cVentType + " flow vent " + VentNumber.ToString + " final opening time is less than zero or greater than simulation time.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
+                        If aFinalOpeningTime < aInitialOpeningTime Then
+                            myErrors.Add(cVentType + " flow vent " + VentNumber.ToString + " final opening time is less than initial opening time.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
+                    Case OpenbyTemperature
+                        If aOpenValue < myEnvironment.IntAmbTemperature Or aOpenValue > 1273.15 Then
+                            myErrors.Add(cVentType + " flow vent " + VentNumber.ToString + " opening temperature is less than ambient temperature or greater than 1000 C", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
+                    Case OpenbyFlux
+                        If aOpenValue < 0 Or aOpenValue > 150000 Then
+                            myErrors.Add(cVentType + " flow vent " + VentNumber.ToString + " opening incident flux is less than 0 or greater than 150 kW/m^2", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
+                    Case Else
+                        If aVentType < 0 Or aVentType > 2 Then
+                            myErrors.Add(cVentType + " flow vent " + VentNumber.ToString + " opening type must be Time, Temp, or Flux.", ErrorMessages.TypeError)
+                            HasErrors += 1
+                        End If
+                End Select
+                If aInitialOpening < 0 Or aInitialOpening > 1 Or aFinalOpening < 0 Or aFinalOpening > 1 Then
+                    myErrors.Add(cVentType + " flow vent" + VentNumber.ToString + " opening fraction is less than 0 or greater than 1", ErrorMessages.TypeFatal)
+                    HasErrors += 1
+                End If
+                If aRampTimePoints.GetUpperBound(0) > 0 Then
+                    If aRampFractionPoints(0) < 0 Or aRampFractionPoints(0) > 1 Then
+                        myErrors.Add(cVentType + " flow vent" + VentNumber.ToString + " opening fraction is less than 0 or greater than 1", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
+                    Dim i As Integer
+                    For i = 1 To aRampTimePoints.GetUpperBound(0)
+                        If aRampTimePoints(i) < aRampTimePoints(i - 1) Then
+                            myErrors.Add(cVentType + " flow vent" + VentNumber.ToString + " time points must increase with time", ErrorMessages.TypeFatal)
+                            HasErrors += 1
+                        End If
+                        If aRampFractionPoints(i) < 0 Or aRampFractionPoints(i) > 1 Then
+                            myErrors.Add(cVentType + " flow vent" + VentNumber.ToString + " opening fraction is less than 0 or greater than 1", ErrorMessages.TypeFatal)
+                            HasErrors += 1
+                        End If
+                    Next
+                End If
+            End If
+            ' check vent size, position, and parameters specific to each vent type
             Select Case aVentType
                 Case TypeHVent
                     If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
@@ -689,6 +749,14 @@ Public Class Vent
                     If aFirstCompartment >= 0 And aFirstCompartment < myCompartments.Count Then
                         Dim aComp1 As New Compartment
                         aComp1 = myCompartments(aFirstCompartment)
+                        If aOffsetX < 0 Or aOffsetX > aComp1.RoomWidth Then
+                            myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Width (X) offset is less than 0 or greater than compartment width.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
+                        If aOffsetY < 0 Or aOffsetY > aComp1.RoomDepth Then
+                            myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Depth (Y) offset is less than 0 or greater than compartment depth.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
                         If aArea <= 0 Or aArea > aComp1.RoomWidth * aComp1.RoomDepth Then
                             myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Cross-sectional area is less than 0 or greater than compartment floor area.", ErrorMessages.TypeFatal)
                             HasErrors += 1
@@ -736,6 +804,14 @@ Public Class Vent
                         myUnits.SI = True
                         Dim aComp1 As New Compartment
                         aComp1 = myCompartments(aFirstCompartment)
+                        If aOffsetX < 0 Or aOffsetX > aComp1.RoomWidth Then
+                            myErrors.Add("Mechnical flow vent " + VentNumber.ToString + ". Width (X) offset is less than 0 or greater than compartment width.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
+                        If aOffsetY < 0 Or aOffsetY > aComp1.RoomDepth Then
+                            myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Depth (Y) offset is less than 0 or greater than compartment depth.", ErrorMessages.TypeWarning)
+                            HasErrors += 1
+                        End If
                         If aFirstOrientation = 1 Then
                             If aFirstCenterHeight - Math.Sqrt(aFirstArea) / 2 < 0.0 Or Math.Sqrt(aFirstArea) / 2 + aFirstCenterHeight > aComp1.RoomHeight Then
                                 myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is below floor level or above ceiling level in from compartment.", ErrorMessages.TypeWarning)
@@ -754,7 +830,7 @@ Public Class Vent
                         aComp2 = myCompartments(aSecondCompartment)
                         If aSecondOrientation = 1 Then
                             If aSecondCenterHeight - Math.Sqrt(aSecondArea) / 2 < 0.0 Or Math.Sqrt(aSecondArea) / 2 + aSecondCenterHeight > aComp2.RoomHeight Then
-                                myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is below floor level or above ceiling level in to compartment.", ErrorMessages.TypeWarning)
+                                myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser is below floor level or above ceiling level in to compartment.", ErrorMessages.TypeWarning)
                                 HasErrors += 1
                             End If
                         End If

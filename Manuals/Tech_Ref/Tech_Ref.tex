@@ -265,9 +265,6 @@ The unknown wall surface temperatures, $T_{\rm w}$ are iterated until the $\dq''
 
 \noindent where $\rho$, $c$ and $k$ are the density, specific heat and thermal conductivity of the wall material.
 
-
-
-
 As discussed in Refs.~\cite{Forney:1994} and \cite{Rehm:1992}, these equations are stiff because the compartment pressure reacts to changing conditions much more rapidly than other solution variables. Stiff problems require special solution techniques since methods such as Runge-Kutta or Adams-Bashforth require prohibitively small time steps in order to track the short time scale phenomena (pressure in our case) found in fire modeling scenarios. Methods that use the Jacobian on the other hand have a much larger stability region for stiff problems and are, thus, more efficient, stable and accurate (see, for example, Ref.~\cite{Numerical_Recipes}).
 
 
@@ -420,6 +417,51 @@ Equations~(\ref{plume_temperature_upper}) and (\ref{virtual_origin_modified}) ar
 
 The mass entrainment correlation, Eq.~(\ref{mdot_e}), is modified the same way above the layer interface.
 
+\section{Ceiling Jet}
+\label{sec:Ceiling_Jet}
+
+The temperature and velocity just below the ceiling is typically greater than that of the upper layer due to the presence of a ceiling jet. From the work of Alpert and Heskestad~\cite{Alpert:SFPE}, the temperature of an unconfined ceiling jet is given by:
+
+\be
+   T_{\rm cj}(r) - T_\infty = T_\infty \, \dQ^{* \, 2/3}_H \, \left\{ \begin{array}{l@{\quad}l}
+   6.3                                       & ; \quad r/H\le 0.2 \\[0.1in]
+   \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & ; \quad 0.2 < r/H < 4.0
+    \end{array} \right.
+\ee
+To be consistent with the calculated plume temperature, this is adjusted so that the calculated plume and ceiling jet temperatures are the same for $r/H \le 0.2$:
+\be
+   T_{\rm cj}(r) - T_\infty = \left\{ \begin{array}{l@{\quad}l}
+   \Delta T_0(H)                                                       & ; \quad r/H\le 0.2 \\[0.1in]
+   0.182 \; \Delta T_0(H) \, \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & ; \quad 0.2 < r/H < 4.0
+    \end{array} \right. \label{Tcj}
+\ee
+where $\Delta T_0(H)$ is the calculated centerline plume temperature rise at the compartment ceiling from  Eq.~(\ref{plume_temperature}) and the constant 0.182 is $\left({0.225 + 0.27 \cdot 0.2} \right)^{4/3}$.
+
+The radial velocity is given by:
+\be
+   v_{\rm cj}(r) = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
+   3.61                               & ; \quad r/H \le 0.17 \\[0.1in]
+   1.06 \, \left( r/H \right)^{-0.69} & ; \quad 0.17 < r/H < 4.0 \end{array} \right. \label{Ucj}
+\ee
+where the heat release rate of the fire is contained within the non-dimensional expression:
+\be
+\dQ^*_H = \frac{\dQ}{\rho_\infty \, \cp \, T_\infty \, \sqrt{g} \, H^{5/2}}  \label{QsH}
+\ee
+To account for the presence of an upper layer, the background temperature, $T_\infty$, in Eq.~(\ref{Tcj}) is replaced with the upper layer temperature, $\Tu$. No adjustment need be made to Eq.~(\ref{QsH}) because $\rho_\infty \, T_\infty$ is assumed constant.
+
+An estimate of the ceiling jet thickness, $\delta$, where the excess temperature drops to 1/e of its maximum value, is given by Motevalli and Marks~\cite{Alpert:SFPE}:
+\be
+   \frac{\delta}{H} = 0.112 \, \left[ 1-\exp\left( -2.24 \, \frac{r}{H} \right) \right] \quad ; \quad 0.26 \le \frac{r}{H} \le 2.0
+\ee
+
+In a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
+\begin{eqnarray}
+   \frac{\Delta T_{\rm cj}(x)}{\Delta \Tp} &=& 0.37 \, \left( \frac{H}{W} \right)^{1/3} \, \exp \left[ -0.16 \, \left( \frac{x}{H} \right) \left( \frac{W}{H} \right)^{1/3} \right]  \\[0.1in]
+   v_{\rm cj}(x) &=& 0.114 \, \sqrt{H \, \Delta T_{\rm cj}(x) } \, \left( \frac{H}{W} \right)^{1/6}
+\end{eqnarray}
+where $\Delta \Tp$ is the excess plume temperature at the ceiling. This correlation is applicable once the plume has reached the full width of the corridor and the ceiling jet flow is parallel to the corridor walls so that $x>W/2$. For $x<W/2$, the normal correlations apply.
+
+
 %
 % -------------------  Ventilation ------------------------
 %
@@ -532,7 +574,7 @@ Figure~\ref{correlation} displays the FDS results and correlation.
 \begin{figure}[!ht]
 \label{correlation}
 \centering
-\includegraphics[width=3.0in]{FIGURES/Vent_Mass_Fraction}
+\includegraphics[width=5.0in]{FIGURES/Vent_Mass_Fraction}
 \caption[Relative fraction of upper layer gases extracted via a ceiling vent]{Relative fraction of upper layer gases extracted via a ceiling vent.}
 \end{figure}
 
@@ -929,48 +971,7 @@ where $\TL$ and $\Tg$ are the link and gas temperatures, $v$ is the gas speed, a
 \ee
 where the superscript $n$ denotes the value at the current time, and $\Delta t$ is the time step.
 
-The temperature and velocity just below the ceiling is typically greater than that of the upper layer due to the presence of a ceiling jet. From the work of Alpert and Heskestad~\cite{Alpert:SFPE}, the temperature of an unconfined ceiling jet is given by:
-
-\be
-   T_{\rm cj}(r) - T_\infty = T_\infty \, \dQ^{* \, 2/3}_H \, \left\{ \begin{array}{l@{\quad}l}
-   6.3                                       & ; \quad r/H\le 0.2 \\[0.1in]
-   \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & ; \quad 0.2 < r/H < 4.0
-    \end{array} \right.
-\ee
-To be consistent with the calculated plume temperature, this is adjusted so that the calculated plume and ceiling jet temperatures are the same for $r/H \le 0.2$:
-\be
-   T_{\rm cj}(r) - T_\infty = \left\{ \begin{array}{l@{\quad}l}
-   \Delta T_0(H)                                                       & ; \quad r/H\le 0.2 \\[0.1in]
-   0.182 \; \Delta T_0(H) \, \left( 0.225 + 0.27 \, r/H \right)^{-4/3} & ; \quad 0.2 < r/H < 4.0
-    \end{array} \right. \label{Tcj}
-\ee
-where $\Delta T_0(H)$ is the calculated centerline plume temperature rise at the compartment ceiling from  Eq.~(\ref{plume_temperature}) and the constant 0.182 is $\left({0.225 + 0.27 \cdot 0.2} \right)^{4/3}$.
-
-The radial velocity is given by:
-\be
-   v_{\rm cj}(r) = \sqrt{g \, H} \, \dQ^{* \, 1/3}_H \left\{ \begin{array}{l@{\quad}l}
-   3.61                               & ; \quad r/H \le 0.17 \\[0.1in]
-   1.06 \, \left( r/H \right)^{-0.69} & ; \quad 0.17 < r/H < 4.0 \end{array} \right. \label{Ucj}
-\ee
-where the heat release rate of the fire is contained within the non-dimensional expression:
-\be
-\dQ^*_H = \frac{\dQ}{\rho_\infty \, \cp \, T_\infty \, \sqrt{g} \, H^{5/2}}  \label{QsH}
-\ee
-To account for the presence of an upper layer, the background temperature, $T_\infty$, in Eq.~(\ref{Tcj}) is replaced with the upper layer temperature, $\Tu$. No adjustment need be made to Eq.~(\ref{QsH}) because $\rho_\infty \, T_\infty$ is assumed constant.
-
-An estimate of the ceiling jet thickness, $\delta$, where the excess temperature drops to 1/e of its maximum value, is given by Motevalli and Marks~\cite{Alpert:SFPE}:
-\be
-   \frac{\delta}{H} = 0.112 \, \left[ 1-\exp\left( -2.24 \, \frac{r}{H} \right) \right] \quad ; \quad 0.26 \le \frac{r}{H} \le 2.0
-\ee
-If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the gas temperature is taken to be upper layer temperature with a default speed of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
-
-If the sprinkler or detector is in a corridor of width, $W$, Delichatsios~\cite{Alpert:SFPE} suggests the following alternative to the ceiling jet correlation, Eqs.~(\ref{Tcj}) and (\ref{Ucj}). For a given distance down the corridor, $x$, from the plume centerline, the excess temperature and velocity are estimated as:
-\begin{eqnarray}
-   \frac{\Delta T_{\rm cj}(x)}{\Delta \Tp} &=& 0.37 \, \left( \frac{H}{W} \right)^{1/3} \, \exp \left[ -0.16 \, \left( \frac{x}{H} \right) \left( \frac{W}{H} \right)^{1/3} \right]  \\[0.1in]
-   v_{\rm cj}(x) &=& 0.114 \, \sqrt{H \, \Delta T_{\rm cj}(x) } \, \left( \frac{H}{W} \right)^{1/6}
-\end{eqnarray}
-where $\Delta \Tp$ is the excess plume temperature at the ceiling. This correlation is applicable once the plume has reached the full width of the corridor and the ceiling jet flow is parallel to the corridor walls so that $x>W/2$. For $x<W/2$, the normal correlations apply.
-
+The gas temperature is estimated at the detector or sprinkler location. If the detector or sprinkler is located within the plume, the gas temperature and velocity are estimated from section \ref{sec:Plume_Temp_Velocity}. If the detector or sprinkler is located within the ceiling jet, the gas temperature and velocity are estimated from section \ref{sec:Ceiling_Jet}.  If the detector or sprinkler is below the ceiling jet layer or in a compartment without a fire, the gas temperature is taken to be the appropriate layer temperature with a default speed of 0.1~m/s. The basis of this last value is simply an order of magnitude estimate.
 
 \section{Visibility}
 \label{Visibility}
@@ -1287,9 +1288,6 @@ computed in step \ref{step:rhs}.
 \item Are the residuals computed in steps \ref{step:residode} and \ref{step:residfourier} sufficiently small according to a specified error tolerance?
 If yes, advance $n$ and go to step \ref{step:first} to compute a solution at the next time step.  If no, go to step \ref{step:second} and iterate again.
 \end{enumerate}
-
-
-
 
 
 \label{last_page}

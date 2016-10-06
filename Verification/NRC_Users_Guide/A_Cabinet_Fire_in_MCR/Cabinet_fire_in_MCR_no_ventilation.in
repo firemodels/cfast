@@ -1,6 +1,6 @@
 VERSN,7,MCR with no ventilation
 !!
-!!Scenario Configuration Keywords
+!!Scenario Configuration
 !!
 TIMES,3600,600,10,10
 EAMB,293.15,101300,0
@@ -13,15 +13,15 @@ MATL,MCRConcrete,1.6,750,2400,0.5,0.9,MCR Concrete Floor (user's guide)
 MATL,MCRConcreteW,1.6,750,2400,0.9,0.9,MCR Concrete Wall (user's guide)
 MATL,MCRGypsum,0.17,1100,960,0.015875,0.9,MCR Gypsum Walls (user's guide)
 !!
-!!Compartment keywords
+!!Compartments
 !!
 COMPA,MCR,27.1,13.8,5.2,0,0,0,MCRConcreteW,MCRConcrete,MCRGypsum,50,50,50
 !!
-!!Vent keywords
+!!Vents
 !!
-HVENT,1,2,1,0.91,0.013,0,7,4,1
+HVENT,1,2,1,0.91,0.013,0,7,,4,TIME,,,0,1,0,1,0,0
 !!
-!!Fire keywords
+!!Fires
 !!
 !!XPE_Neoprene 702 kW
 FIRE,1,2,4,2,1,TIME,0,0,0,0,XPE_Neoprene 702 kW
@@ -34,6 +34,6 @@ TRACE,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 AREA,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12
 HEIGH,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 !!
-!!Target and detector keywords
+!!Targets and detectors
 !!
-TARGET,1,11.2,5.5,1.524,0,0,1,MCROperator,IMPLICIT,PDE,0.5,Targ 1
+TARGET,1,11.2,5.5,1.524,0,0,1,MCROperator,EXPLICIT,PDE,0.5,Targ 1

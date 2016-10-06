@@ -433,12 +433,14 @@ Public Class UpdateGUI
             If aVent.OpenType = Vent.OpenbyTime Then
                 aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
                 If NumPoints <= 2 Then
-                    MainWin.HVentFractions(1, 0) = aVent.InitialOpeningTime
-                    MainWin.HVentFractions(1, 1) = aVent.InitialOpening
-                    MainWin.HVentFractions(2, 0) = aVent.FinalOpeningTime
-                    MainWin.HVentFractions(2, 1) = aVent.FinalOpening
+                    If aVent.InitialOpeningTime <> 0 Or aVent.InitialOpening <> 1 Or aVent.FinalOpeningTime <> 0 Or aVent.FinalOpening <> 1 Then
+                        MainWin.HVentFractions(1, 0) = aVent.InitialOpeningTime
+                        MainWin.HVentFractions(1, 1) = aVent.InitialOpening
+                        MainWin.HVentFractions(2, 0) = aVent.FinalOpeningTime
+                        MainWin.HVentFractions(2, 1) = aVent.FinalOpening
+                    End If
                 Else
-                    For i = 1 To NumPoints
+                        For i = 1 To NumPoints
                         MainWin.HVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.HVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -545,12 +547,14 @@ Public Class UpdateGUI
             If aVent.OpenType = Vent.OpenbyTime Then
                 aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
                 If NumPoints <= 2 Then
-                    MainWin.VVentFractions(1, 0) = aVent.InitialOpeningTime
-                    MainWin.VVentFractions(1, 1) = aVent.InitialOpening
-                    MainWin.VVentFractions(2, 0) = aVent.FinalOpeningTime
-                    MainWin.VVentFractions(2, 1) = aVent.FinalOpening
+                    If aVent.InitialOpeningTime <> 0 Or aVent.InitialOpening <> 1 Or aVent.FinalOpeningTime <> 0 Or aVent.FinalOpening <> 1 Then
+                        MainWin.VVentFractions(1, 0) = aVent.InitialOpeningTime
+                        MainWin.VVentFractions(1, 1) = aVent.InitialOpening
+                        MainWin.VVentFractions(2, 0) = aVent.FinalOpeningTime
+                        MainWin.VVentFractions(2, 1) = aVent.FinalOpening
+                    End If
                 Else
-                    For i = 1 To NumPoints
+                        For i = 1 To NumPoints
                         MainWin.VVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.VVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -665,12 +669,14 @@ Public Class UpdateGUI
             If aVent.OpenType = Vent.OpenbyTime Then
                 aVent.GetRamp(OpeningTimes, OpeningFractions, NumPoints)
                 If NumPoints <= 2 Then
-                    MainWin.MVentFractions(1, 0) = aVent.InitialOpeningTime
-                    MainWin.MVentFractions(1, 1) = aVent.InitialOpening
-                    MainWin.MVentFractions(2, 0) = aVent.FinalOpeningTime
-                    MainWin.MVentFractions(2, 1) = aVent.FinalOpening
+                    If aVent.InitialOpeningTime <> 0 Or aVent.InitialOpening <> 1 Or aVent.FinalOpeningTime <> 0 Or aVent.FinalOpening <> 1 Then
+                        MainWin.MVentFractions(1, 0) = aVent.InitialOpeningTime
+                        MainWin.MVentFractions(1, 1) = aVent.InitialOpening
+                        MainWin.MVentFractions(2, 0) = aVent.FinalOpeningTime
+                        MainWin.MVentFractions(2, 1) = aVent.FinalOpening
+                    End If
                 Else
-                    For i = 1 To NumPoints
+                        For i = 1 To NumPoints
                         MainWin.MVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.MVentFractions(i, 1) = OpeningFractions(i)
                     Next

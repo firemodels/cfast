@@ -102,6 +102,13 @@ intel_win_64_db : setup_win $(objwin)
 # ------------- Linux -------------------
 # gnu linux_32
 
+gnu_linux_32_db : FFLAGS = -O0 -Og -finit-local-zero -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
+gnu_linux_32_db : FCOMPL = gfortran
+gnu_linux_32_db : LFLAGS = 
+gnu_linux_32_db : obj = cfast7_linux_32_db
+gnu_linux_32_db : $(objfgnu)
+	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
+
 gnu_linux_32 : FFLAGS = -O2 -finit-local-zero -ffree-line-length-160 -ffpe-trap=invalid,zero,overflow -fbacktrace $(GITINFOGNU)
 gnu_linux_32 : FCOMPL = gfortran
 gnu_linux_32 : LFLAGS = 

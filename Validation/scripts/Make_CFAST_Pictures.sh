@@ -77,6 +77,14 @@ esac
 done
 shift $(($OPTIND-1))
 
+firemodels=../../..
+cd $firemodels
+firemodels=`pwd`
+
+fdsrepo=$firemodels/fds
+cfastrepo=$firemodels/cfast
+
+cd $CURDIR
 export SVNROOT=$fdsrepo
 if [ "$SMV_PATH" == "" ]; then
   SMV_PATH=$SVNROOT/SMV/Build/smokeview/$COMPILER_${PLATFORM}_${SIZE}

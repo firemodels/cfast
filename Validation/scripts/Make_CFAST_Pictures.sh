@@ -8,6 +8,7 @@ echo "Make_FDS_Pictures.sh [-d -h -r -s size -X ]"
 echo "Generates Smokeview figures from FDS verification suite"
 echo ""
 echo "Options"
+echo "-3 - make pictures using 32 bit apps"
 echo "-d - use debug version of smokeview"
 echo "-h - display this message"
 echo "-I - compiler (intel or gnu)"
@@ -31,7 +32,7 @@ else
 fi
 
 use_installed=
-SIZE=_64
+SIZE=64
 DEBUG=
 TEST=
 SMV_PATH=""
@@ -39,9 +40,12 @@ START_X=yes
 SSH=
 COMPILER=intel
 
-while getopts 'dhiI:p:rS:tX' OPTION
+while getopts '3dhiI:p:rS:tX' OPTION
 do
 case $OPTION  in
+  3)
+   SIZE=32
+   ;;
   d)
    DEBUG=_db
    ;;
@@ -75,12 +79,12 @@ shift $(($OPTIND-1))
 
 export SVNROOT=$fdsrepo
 if [ "$SMV_PATH" == "" ]; then
-  SMV_PATH=$SVNROOT/SMV/Build/smokeview/$COMPILER_$PLATFORM$SIZE
+  SMV_PATH=$SVNROOT/SMV/Build/smokeview/$COMPILER_${PLATFORM}_${SIZE}
 fi
 if [ "$use_installed" == "1" ] ; then
   export SMV=smokeview
 else
-  export SMV=$SMV_PATH/smokeview_$PLATFORM$TEST$SIZE$DEBUG
+  export SMV=$SMV_PATH/smokeview_$PLATFORM${TEST}_${SIZE}$DEBUG
 fi
 
 export RUNSMV=$SVNROOT/Utilities/Scripts/runsmv.sh

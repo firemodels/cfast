@@ -215,12 +215,27 @@ Wall vents are doors or windows that connect compartments that physically overla
 \item[Sill] (default units: m): Height of the bottom of the opening relative to the floor of the first compartment.
 \item[Soffit] (default units: m): Height of the top of the opening relative to the floor of the first compartment.
 \item[Width] (default units: m): The width of the opening.
-\item[Initial Opening Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the door or window is partially open at the start of the simulation.
-\item[Change Opening Fraction At Time]  (default units: s)  Time during the simulation at which to change the opening fraction.
-\item[Final Opening Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation.
 \item[Vent Offset] (default units: m, Default value: 0 m): For visualization only, the horizontal distance between the near edge of the vent and the origin of the axis defined by the selected face (below) in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis).
 \item[Face] The wall on which the vent is positioned.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane.
 \end{description}
+
+Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
+
+\begin{description}
+\item[Time] (default units: s, default values: 0): Time during the simulation at which to begin or end a change in the open fraction.
+\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open as the associated time point. 
+\end{description}
+
+For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
+
+\begin{description}
+\item[Set Point] The critical value at which the vent opening change will occur. If it is less than or equal to zero, the default value of zero is taken.
+\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target is placement is specified by the user as part of the associated target definition.
+\item[Pre-Activation Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is partially open at the start of the simulation.
+\item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation value is assumed to occur over one second beginning when the specified set point value is reached.
+\end{description}
+
+\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the the is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
 
 
 
@@ -237,13 +252,30 @@ Examples of these openings are scuddles in a ship, or a hole in the roof of a re
 \item[Bottom Compartment] The vent is located on the ceiling of this compartment.
 \item[Cross-sectional Area] (default units: m$^2$)
 \item[Shape] The shape factor changes the calculation of the effective diameter of the vent and flow coefficients for flow through the vent.
-\item[Initial Opening Fraction] By default, the vent is fully open. You may specify a fraction between 0 and 1 that allows the vent to be partially or fully closed at the beginning of the simulation.
-\item[Change Opening Fraction At Time] (default units: s): Time during the simulation at which to change the opening fraction.
-\item[Final Opening Fraction] Fractional area of the vent following the specified time.
+\item[Vent Offset] (default units: m, Default value: 0 m): For visualization only, the horizontal distances between the center of the vent and the origin of the X and Y axes in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis). See figure \ref{fig:compartment_positioning} for axis position conventions in CFAST.
 \end{description}
+
+Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
+
+\begin{description}
+\item[Time] (default units: s, default values: 0): Time during the simulation at which to begin or end a change in the open fraction.
+\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open as the associated time point.
+\end{description}
+
+For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
+
+\begin{description}
+\item[Set Point] The critical value at which the vent opening change will occur. If it is less than or equal to zero, the default value of zero is taken.
+\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target is placement is specified by the user as part of the associated target definition.
+\item[Pre-Activation Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is partially open at the start of the simulation.
+\item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation fraction is assumed to occur over one second beginning when the specified set point value is reached.
+\end{description}
+
+\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the the is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.
+
 CFAST allows only a single connection between any pair of compartments included in a simulation because the empirical correlation governing the flow was developed using only a single opening between connected compartments.
 
-Vertical connections can only be created between compartments that could be physically stacked based on specified floor and ceiling elevations for the compartments.  Some overlap between the absolute floor height of one compartment and the absolute ceiling height of another compartment is allowed.  However, whether the compartments are stacked or overlap somewhat, the ceiling/floor absolute elevations must be within 0.01 m of each other. The check is not done when the connection is to the outside.
+Vertical connections can only be created between compartments that could be physically stacked based on specified floor and ceiling elevations for the compartments.  Some overlap between the absolute floor height of one compartment and the absolute ceiling height of another compartment is allowed.  However, whether the compartments are stacked or overlap somewhat, the ceiling/floor absolute elevations must be within 0.01 m of each other. The check is not done when the connection is to the outside.}
 
 
 \chapter{Mechanical Ventilation}
@@ -267,6 +299,7 @@ The model for mechanical ventilation is based on the theory of networks and is b
 \item[Area] (default units: m$^2$): Cross-sectional area of the opening.
 \item[Center Height] (default units: m): Height of the midpoint of the duct opening above the floor.
 \item[Orientation] A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
+\item[Vent Offset] (default units: m, Default value: 0 m): For visualization only, the horizontal distances between the center of the vent and the origin of the X and Y axes in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis). See figure \ref{fig:compartment_positioning} for axis position conventions in CFAST.
 \end{description}
 
 \section{Fans}
@@ -276,10 +309,25 @@ CFAST does not include provisions for reverse flow through a fan, or a fan curve
 \item[Flow Rate] (default units: m$^3$/s): Constant flow rate of the fan.
 \item[Begin Drop Off Pressure] (default units: Pa, default value: 200 Pa): Above this pressure, the flow begins a drop-off to zero. A hyperbolic tangent function is used to ensure a smooth transition from full flow at the ``Begin Drop Off Pressure'' to zero flow at the ``Zero Flow Pressure''.
 \item[Zero Flow Pressure] (default units: Pa, default value: 300 Pa): The pressure above which the flow is zero.
-\item[Initial Opening Fraction] Value from 0 to 1 denoting the initial opening area.
-\item[Change Opening Fraction At Time] (default units: s): Time during the simulation at which to change the opening fraction.
-\item[Final Opening Fraction] following the specified time.
 \end{description}
+
+Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
+
+\begin{description}
+\item[Time] (default units: s, default values: 0): Time during the simulation at which to begin or end a change in the open fraction.
+\item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open as the associated time point.
+\end{description}
+
+For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
+
+\begin{description}
+\item[Set Point] The critical value at which the vent opening change will occur. If it is less than or equal to zero, the default value of zero is taken.
+\item[Trigger Target] User-specified target used to calculate surface temperature or incident heat flux to trigger a vent opening change. Target is placement is specified by the user as part of the associated target definition.
+\item[Pre-Activation Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is partially open at the start of the simulation.
+\item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation fraction is assumed to occur over one second beginning when the specified set point value is reached.
+\end{description}
+
+\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the the is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
 
 
 \section{Filtering}
@@ -289,7 +337,8 @@ For mechanical vents, there are two species that can be filtered out of the gas 
 \item[Filter Efficiency] (default units:~\%): Flow through mechanical vents may include filtering that removes a user-specified portion of soot and trace species mass from the flow through the vent.  By default, there is no filtering applied; that is, all of the soot and trace species mass in the vent flow is passed through the vent. Within the user interface, this is specified as a filter efficiency of 0~\%.  If desired, you may specify the fraction of the soot and trace species mass to be removed as a percentage.
 \item[Begin Filtering At Time] (default units: s): Time during the simulation at which the mechanical vent filtering begins.
 \end{description}
-If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate since the filtering removes mass from the system.  This will better allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.
+
+\graybox{If the simulation includes mechanical ventilation filtering, care should be taken in choosing trace species production rates to insure the production rate is small compared to the total pyrolysis rate since the filtering removes mass from the system.  This will better allow appropriate conservation of mass in the solution of the system of differential equation.  For large production rates of trace species, scaling factors can be used (e.g., divide by 1000) for the trace species production rate to reduce the relative magnitude compared to the pyrolysis rate.  For analysis, the resulting trace species in compartments and filters can be converted back to original units multiplying by the scaling factor used.}
 
 
 

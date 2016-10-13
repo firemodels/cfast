@@ -23,7 +23,7 @@ exit
 }
 STOPFDS=
 queue=
-size=_64
+size=64
 DEBUG=
 JOBPREFIX=
 use_installed=
@@ -71,12 +71,11 @@ esac
 #shift
 done
 
-underscore="_"
 OS=`uname`
 if [ "$OS" == "Darwin" ]; then
-  PLATFORM=osx$size
+  PLATFORM=osx_${size}
 else
-  PLATFORM=linux$size
+  PLATFORM=linux_${size}
 fi
 PLATFORM2=$PLATFORM
 PLATFORM=$PLATFORM$DEBUG
@@ -84,11 +83,11 @@ PLATFORM=$PLATFORM$DEBUG
 if [ "$use_installed" == "1" ] ; then
   BACKGROUND=background
 else
-  BACKGROUND=$smvrepo/Build/background/$compiler$underscore$PLATFORM2/background
+  BACKGROUND=$smvrepo/Build/background/${compiler}_${PLATFORM2}/background
 fi
 export BACKGROUND
 
-export CFAST="$SVNROOT/Build/CFAST/$compiler$underscore$PLATFORM/cfast7_$PLATFORM"
+export CFAST="$SVNROOT/Build/CFAST/${compiler}_${PLATFORM}/cfast7_$PLATFORM"
 
 if [ "$queue" != "" ]; then
    queue="-q $queue"

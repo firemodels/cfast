@@ -813,10 +813,13 @@ module output_routines
         end do
     end if
 5060 format (//,'There are no mechanical flow connections')
-5120 format (//,'FANS',//,&
-        'From           To              Fan        Area      Flowrate     Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
-        'Compartment    Compartment     Number                            Type        Value       Target      Time        Fraction    Time        Fraction',/, &
-        '                                          (m^2)     (m^3/s)                  (C/W/m^2)               (s)                     (s)',/,145('-'))
+     5120 format (//,'FANS',//,&
+        'From           To              Fan        Area      Flowrate     Open/Close  Trigger                 ', &
+        'Initial     Initial     Final       Final',/, &
+        'Compartment    Compartment     Number                            Type        Value       Target      ', &
+        'Time        Fraction    Time        Fraction',/, &
+        '                                          (m^2)     (m^3/s)                  (C/W/m^2)               ', &
+        '(s)                     (s)',/,145('-'))
 5130 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,27x,4(f9.2,3x))
 5135 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))  
     

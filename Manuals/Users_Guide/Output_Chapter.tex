@@ -32,7 +32,7 @@ The overview gives a general description of the case.  The output is fairly self
 \begin{lstlisting}[basicstyle=\tiny]
 CFAST
 
-Version          : CFAST 7.1.0
+Version          : CFAST 7.2.0
 Revision         : Gitv7.0.1-132-gf03a791
 Revision Date    : Tue Feb 2 12:54:53 2016 -0500
 Compilation Date : Tue 02/02/2016  12:55 PM
@@ -46,7 +46,7 @@ OVERVIEW
 
 Compartments    Doors, ...    Ceil. Vents, ...    MV Connects
 -------------------------------------------------------------
-   3               3             1                    4
+   3               3             1                    2
 
 Simulation     Output         Smokeview      Spreadsheet
 Time           Interval       Interval       Interval
@@ -94,47 +94,58 @@ VENT CONNECTIONS
 
 Horizontal Natural Flow Connections (Doors, Windows, ...)
 
-From           To             Vent       Width       Sill        Soffit      Abs.        Abs.
-Compartment    Compartment    Number                 Height      Height      Sill        Soffit
-                                         (m)         (m)         (m)         (m)         (m)
-----------------------------------------------------------------------------------------------------
-Comp 1         Comp 2          1          1.00        0.00        2.00        0.00        2.00
-Comp 1         Outside         1          1.00        0.00        2.00        0.00        2.00
-Comp 3         Outside         1          1.00        1.00        2.00        4.00        5.00
+From         To           Vent    Width  Sill    Soffit  Open/Close  Trigger           Initial  Initial   Final  Final
+Compartment  Compartment  Number         Height  Height  Type        Value     Target  Time     Fraction  Time   Fraction
+                                  (m)    (m)     (m)     (m)         (C/W/m^2)         (s)                (s)
+-------------------------------------------------------------------------------------------------------------------------
+Comp 1       Outside      1       1.00   0.00    2.00    Time                          0.00     1.00      0.00   1.00
+Comp 1       Comp 2       1       1.00   0.00    2.00    Time                          0.00     1.00      0.00   1.00
+Comp 3       Outside      1       1.00   1.00    2.00    Time                          0.00     1.00      0.00   1.00
 \end{lstlisting}
-From compartment, to compartment, vent number, width, sill height, and soffit height all come directly from the HVENT specifications in the input data file. Absolute sill height is the station elevation + compartment floor height + sill height. Absolute soffit height is the station elevation + compartment floor height + soffit height.
+From compartment, to compartment, vent number, width, sill height, and soffit height all come directly from the HVENT specifications in the input data file. Vent opening and closing information can be specified by time, by an associated time / fraction history by a RAMP input or by an associated target to trigger a change in the vent opening by temperature or heat flux.
 
 \subsubsection{Vertical Natural Ventilation}
 
-The first column is the upper compartment.  The upper compartment is the compartment where the vent opens into the floor.  The second column is the lower compartment where the vent is in the ceiling.  The third column describes the shape of the vent, which can be either round or square.  The fourth column gives the area of the vent.  The last two columns are the height of the vent, relative to the floor of the lower room and relative to the station height respectively.
+The first column is the upper compartment.  The upper compartment is the compartment where the vent opens into the floor.  The second column is the lower compartment where the vent is in the ceiling. Each vent connection between compartment pairs is also identified by a vent number index beginning with 1. The fourth column describes the shape of the vent, which can be either round or square.  The fifth column gives the area of the vent. Vent opening and closing information can be specified by time, by an associated time / fraction history by a RAMP input or by an associated target to trigger a change in the vent opening by temperature or heat flux.
 \begin{lstlisting}[basicstyle=\tiny]
 Vertical Natural Flow Connections (Ceiling, ...)
 
-Top            Bottom         Shape     Area      Relative  Absolute
-Compartment    Compartment                        Height    Height
-                                        (m^2)     (m)       (m)
-------------------------------------------------------------------------
-    3              2          Round      0.25      3.00      3.00
+Top           Bottom        Vent    Shape    Area     Open/Close  Trigger               Initial    Initial     Final    Final
+Compartment   Compartment   Number                    Type        Value      Target     Time       Fraction    Time     Fraction
+                                             (m^2)                (C/W/m^2)             (s)                    (s)
+--------------------------------------------------------------------------------------------------------------------------------
+Comp 3        Comp 2         1      Round    1.00     RAMP # 1  
 \end{lstlisting}
 Top compartment, bottom compartment, shape, and area come from the VVENT specifications in the input data file. Relative height is the height of the vent above the floor of the bottom compartment and absolute height is the height of the vent above the station elevation.
 
 \subsubsection{Mechanical Flow Connections}
 
-This section lists all connections to compartments and fans that connect between compartments. The table lists, in order, the number of the system the fan is a part, the ``from'' node and its height, the ``to'' node and its height.  A fan actually draws air from the first or ``from'' node and pushes it to the second or ``to'' node. The sixth column is the cross-sectional area of the duct connection to the chosen compartment. The seventh column is the fan number as defined in CEdit.  The next two columns are the minimum and maximum pressures at which the fan curve is defined.  The rest of the row is made up of the one to five fan curve coefficients in the input file.
+This section lists all connections to compartments and fans that connect between compartments. The table lists, in order, the compartments connected by the fan, a numeric index assigned to the fan beginning with 1.  A fan actually draws air from the first or ``from'' compartment and pushes it to the second or ``to'' compartment. The fourth column is the cross-sectional area of the duct connection to the chosen compartment. Vent opening and closing information can be specified by time, by an associated time / fraction history by a RAMP input or by an associated target to trigger a change in the vent opening by temperature or heat flux.
 
 \begin{lstlisting}[basicstyle=\tiny]
 FANS
 
-System    From           From      To             To        Area      Fan         Minimum       Maximum    Flowrate
-                         Elev.                    Elev.               Number
-                         (m)                      (m)       (m^2)                 (Pa)          (Pa)       (m^3/s)
--------------------------------------------------------------------------------------------------------------------
-   1      Outside        2.75      Node  1        2.75      0.25
-          Node  1        2.75      Node  2        2.75                  1         2.00E+02      3.00E+02     2.00E-02
-          Node  2        2.75      Comp  1        2.75      0.25
-   2      Comp  2        2.75      Node  3        2.75      0.25
-          Node  3        2.75      Node  4        2.75                  2         2.00E+02      3.00E+02     2.00E-02
-          Node  4        2.75      Outside        2.75      0.25
+From          To            Fan      Area    Flowrate   Open/Close  Trigger             Initial   Initial    Final   Final
+Compartment   Compartment   Number                      Type        Value     Target    Time      Fraction   Time    Fraction
+                                     (m^2)   (m^3/s)                (C/W/m^2)           (s)                  (s)
+-----------------------------------------------------------------------------------------------------------------------------
+Outside       Comp 1        1        0.00    0.02       Time                            0.00      1.00       0.00    1.00
+Comp 2        Outside       2        0.00    0.02       Time                            0.00      1.00       0.00    1.00
+\end{lstlisting}
+
+\subsubsection{Ventilation Opening Ramp Specifications}
+
+Opening and closing of vents in CFAST can be specified by a series of times and opening fractions for a specified vent. By default, all vents are open at the beginning of a simulation and remain open throughout the simulation.  With the RAMP input, the opening of a vent can change of time. 
+
+\begin{lstlisting}[basicstyle=\tiny]
+VENT RAMPS
+
+Type  From         To            Vent
+      Compartment  Compartment   Number
+                                                    (s)    (s)    (s)    (s)    (s)    (s)    (s)    (s)    (s)    (s)
+----------------------------------------------------------------------------------------------------------------------
+V     Comp 3       Comp 2        1       Time         0    100    500
+                                         Fraction  0.00   0.50   1.00
 \end{lstlisting}
 
 \subsubsection{Thermal Properties}

@@ -809,7 +809,6 @@ module output_routines
                     ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             end if
-            write (iofilo,5130) ciout, cjout, ventptr%counter, (ventptr%coeff(j),j = 1,ventptr%n_coeffs)
         end do
     end if
 5060 format (//,'There are no mechanical flow connections')

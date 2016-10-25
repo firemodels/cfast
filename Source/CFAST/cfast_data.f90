@@ -26,7 +26,6 @@ module  debug_data
 
     logical :: residprn, jacprn
     logical :: residfirst = .true.
-    logical :: jacfirst = .true.
     logical :: nwline=.true.
     logical :: prnslab
     integer :: ioresid, ioslab

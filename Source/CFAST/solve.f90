@@ -484,20 +484,8 @@ module solve_routines
             ioslab = funit(150)
             open(unit = ioslab, file=slabcsv)
         end if
-        inquire (file=jacfile,exist=exists)
-        if (exists) then
-            if (jacfirst) then
-                jacfirst = .false.
-                iojac = funit(150)
-                open(unit=iojac,file=jaccsv)
-            end if
-            jacprn = .true.
-        else
-            jacprn = .false.
-        end if
     else
         residprn = .false.
-        jacprn = .false.
     end if
 
     ! now do normal output (printout, spreadsheets, ...)

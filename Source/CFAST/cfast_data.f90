@@ -26,7 +26,6 @@ module  debug_data
 
     logical :: residprn, jacprn
     logical :: residfirst = .true.
-    logical :: jacfirst = .true.
     logical :: nwline=.true.
     logical :: prnslab
     integer :: ioresid, ioslab
@@ -281,7 +280,7 @@ module solver_data
     integer, dimension(mxrooms,4) :: i_wallmap  ! maps wall surface temperatures to corresponding DASSL equations
     
     integer :: jaccol
-    integer :: jacn1, jacn2, jacn3, jacdim
+    integer :: jacdim
                              
     integer :: ndisc                            ! number of discontinuities fed to DASSL
     real(eb), dimension(0:mxpts+1) :: discon    ! list of discontinuities fed to DASSL to ease solution

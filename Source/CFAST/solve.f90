@@ -1418,10 +1418,7 @@ module solve_routines
             i_hconnections(ieqto,w_boundary_condition) = 1
         end do
 
-
-        jacn2 = nofwt - nofp
-        jacn3 = nofprd - nofwt
-        jacdim = jacn2 + jacn3
+        jacdim = nofprd - nofp
 
         ! indicate which rooms are connected to an hvac system
         roominfo(1:nrm1)%is_hvac = .false.

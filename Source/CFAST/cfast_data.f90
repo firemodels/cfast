@@ -29,9 +29,9 @@ module  debug_data
     logical :: jacfirst = .true.
     logical :: nwline=.true.
     logical :: prnslab
-    integer :: ioresid, iojac, ioslab
+    integer :: ioresid, ioslab
     real(eb) ::   dbtime
-    character(256) :: residfile, jacfile, residcsv, jaccsv, slabcsv
+    character(256) :: residfile, residcsv, slabcsv
 
 end module debug_data
 

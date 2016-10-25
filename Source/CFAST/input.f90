@@ -1956,8 +1956,6 @@
     stopfile = testpath(1:lp) // testproj(1:ld) // '.stop'
     residfile = testpath(1:lp) // testproj(1:ld) // '.debug'
     residcsv = testpath(1:lp) // testproj(1:ld) // '_resid.csv'
-    jacfile = testpath(1:lp) // testproj(1:ld) // '.jac'
-    jaccsv = testpath(1:lp) // testproj(1:ld) // '_jac.csv'
     queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
     statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
     kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'

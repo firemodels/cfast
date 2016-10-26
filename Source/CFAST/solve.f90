@@ -273,19 +273,6 @@ module solve_routines
     !     Purpose: main solution loop for the model
     !     Arguments: TSTOP   The final time to which CFAST should run
 
-    !     Offset in the following context is the beginning of the vector for
-    !     that particular variable minus one.  Thus, the actual pressure array
-    !     goes from NOFP+1 to NOFP+nrm1.  The total number of equations to be
-    !     considered is NEQUALS, and is the last element in the last vector.
-    !     Each physical interface routine is responsible for the COUNT of the
-    !     number of elements in the vector for which it is resonsible.
-
-    !     This set of parameters is set by NPUTP and is kept in the environment
-    !     common block CFAST.INC.  To index a variable, the list is something
-    !     like (for temperature in this case)
-
-    !     NOFTU+1, NOFTU+nrm1
-
     !     The structure of the solver array is
 
     !     NOFP = offset for the main pressure; the array of base pressures for each compartment
@@ -301,7 +288,7 @@ module solve_routines
     !     An important note - solve sets the last variable to be solved to NOFPRD
     !     which is the beginning of the species (-1) and the end of the array which
     !     is presently used by DASSL. The important point is that NODES is set to
-    !     NOFPRD which is the equivalent to NOFWT+nhcons
+    !     NOFPRD
 
     real(eb), intent(in) :: tstop
 
@@ -402,15 +389,11 @@ module solve_routines
     idset = 0
 
     ! construct initial solution
-    do i = 1, nequals
-        pdold(i) = 0.0_eb
-        pold(i) = p(i)
-    end do
+    pdold(1:nequals) = 0.0_eb
+    pold(1:nequals) = p(1:nequals)
     call initial_solution(t,pdold,pdzero,rpar,ipar)
-    do i = 1, nequals
-        pprime(i) = pdold(i)
-        pold(i) = p(i)
-    end do
+    pprime(1:nequals) = pdold(1:nequals)
+    pold(1:nequals) = p(1:nequals)
 
     ! Calculate the mass of objects that have been pyrolized
     ! at the moment we do only the total and the radiological species

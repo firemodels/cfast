@@ -162,9 +162,8 @@ module mflow_routines
 
     real(eb) :: epscut
     
-    epscut = fraction*(0.5_eb - tanh(8.0_eb/(ventptr%max_cutoff_relp-ventptr%min_cutoff_relp)* &
-        (ventptr%relp-ventptr%min_cutoff_relp)-4.0_eb)/2.0_eb)
-    mv_fan = epscut*max(epsp,ventptr%maxflow)
+    epscut = tanhsmooth(ventptr%relp,ventptr%min_cutoff_relp,ventptr%max_cutoff_relp,1.0_eb,0.0_eb)
+    mv_fan = epscut*fraction*max(epsp,ventptr%maxflow)
 
     end function mv_fan
 
@@ -224,7 +223,7 @@ module mflow_routines
     
     ! transition smoothly from all lower (when to layer height is above the vent, zupper) 
     ! to all upper (when to layer height is below the vent, zlower)
-    fraction = tanhsmooth (z, zupper, zlower, 1._eb, 0._eb)
+    fraction = tanhsmooth (z, zupper, zlower, 1.0_eb, 0.0_eb)
     if (layer==u) then
         mv_fraction = min(1.0_eb,max(1.0_eb-fraction,0.0_eb))
     else

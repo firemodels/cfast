@@ -3,7 +3,7 @@ module fire_routines
     use precision_parameters
 
     use opening_fractions, only: get_vent_opening
-    use utility_routines
+    use utility_routines, only: tanhsmooth, xerror, interp
 
     use cenviro
     use ramp_data
@@ -12,6 +12,7 @@ module fire_routines
     use cparams
     use fire_data
     use option_data
+    use setup_data
     use smkview_data
     use vent_data
 
@@ -323,7 +324,7 @@ module fire_routines
     ! ~o2range.  the remainder of the function scales the result
     ! to 0-1
     o2_entrained = entrainment_rate*source_o2
-    o2_factor = tanh(800.0_eb*(source_o2-lower_o2_limit)-4.0_eb)*0.5_eb + 0.5_eb
+    o2_factor = tanhsmooth(source_o2, lower_o2_limit+0.01_eb, lower_o2_limit, 1.0_eb, 0.0_eb)
     o2_available = o2_entrained*o2_factor
     hrr_constrained = max(0.0_eb,min(pyrolysis_rate*h_c,o2_available*o2f))
     pyrolysis_rate_constrained = hrr_constrained/h_c

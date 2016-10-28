@@ -10,6 +10,8 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents Label18 As Label
+    Friend WithEvents EnvLOI As TextBox
 
 #Region " Windows Form Designer generated code "
 
@@ -871,6 +873,8 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.EnvLOI = New System.Windows.Forms.TextBox()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1135,12 +1139,14 @@ Public Class CeditMain
         '
         'GroupBox8
         '
+        Me.GroupBox8.Controls.Add(Me.Label18)
+        Me.GroupBox8.Controls.Add(Me.EnvLOI)
         Me.GroupBox8.Controls.Add(Me.EnvAdiabatic)
         Me.GroupBox8.Controls.Add(Me.GroupBox12)
         Me.GroupBox8.Controls.Add(Me.GroupBox11)
         Me.GroupBox8.Location = New System.Drawing.Point(496, 58)
         Me.GroupBox8.Name = "GroupBox8"
-        Me.GroupBox8.Size = New System.Drawing.Size(392, 227)
+        Me.GroupBox8.Size = New System.Drawing.Size(392, 257)
         Me.GroupBox8.TabIndex = 11
         Me.GroupBox8.TabStop = False
         Me.GroupBox8.Text = "Simulation Conditions"
@@ -1148,7 +1154,7 @@ Public Class CeditMain
         'EnvAdiabatic
         '
         Me.EnvAdiabatic.AutoSize = True
-        Me.EnvAdiabatic.Location = New System.Drawing.Point(27, 204)
+        Me.EnvAdiabatic.Location = New System.Drawing.Point(97, 204)
         Me.EnvAdiabatic.Name = "EnvAdiabatic"
         Me.EnvAdiabatic.Size = New System.Drawing.Size(180, 17)
         Me.EnvAdiabatic.TabIndex = 114
@@ -5020,6 +5026,24 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
         '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(94, 229)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(102, 13)
+        Me.Label18.TabIndex = 115
+        Me.Label18.Text = "Lower Oxygen Limit:"
+        Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'EnvLOI
+        '
+        Me.EnvLOI.Location = New System.Drawing.Point(202, 226)
+        Me.EnvLOI.Name = "EnvLOI"
+        Me.EnvLOI.Size = New System.Drawing.Size(96, 20)
+        Me.EnvLOI.TabIndex = 116
+        Me.EnvLOI.Text = "0.15"
+        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -5179,7 +5203,7 @@ Public Class CeditMain
 
 #Region " Simulation Tab "
     ' This section of code handles events related to the environment tab
-    Private Sub Environment_Changed(sender As Object, e As EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, EnvAdiabatic.CheckedChanged
+    Private Sub Environment_Changed(sender As Object, e As EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvLOI.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, EnvAdiabatic.CheckedChanged
         If sender Is EnvTitle Then myEnvironment.Title = EnvTitle.Text
         If sender Is EnvSimTime Then myEnvironment.SimulationTime = Val(EnvSimTime.Text)
         If sender Is EnvTextOutInterval Then myEnvironment.OutputInterval = Val(EnvTextOutInterval.Text)
@@ -5192,6 +5216,7 @@ Public Class CeditMain
         If sender Is EnvExtAmbTemp Then myEnvironment.ExtAmbTemperature = Val(EnvExtAmbTemp.Text)
         If sender Is EnvExtAmbElevation Then myEnvironment.ExtAmbElevation = Val(EnvExtAmbElevation.Text)
         If sender Is EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(EnvExtAmbPress.Text)
+        If sender Is EnvLOI Then myEnvironment.LowerOxygenLimit = Val(EnvLOI.Text)
         If sender Is EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)
         If sender Is EnvAdiabatic Then
             myEnvironment.AdiabaticWalls = EnvAdiabatic.Checked

@@ -205,6 +205,7 @@ Friend Module Data
         zNormal
         name
         ignTarget = 9
+        limo2 = 2
     End Enum
 
     Friend Enum formula

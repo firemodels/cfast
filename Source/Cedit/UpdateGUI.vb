@@ -89,6 +89,7 @@ Public Class UpdateGUI
         MainWin.EnvExtAmbPress.Text = myEnvironment.ExtAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
         MainWin.EnvExtAmbElevation.Text = myEnvironment.ExtAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units
         MainWin.EnvAdiabatic.Checked = myEnvironment.AdiabaticWalls
+        MainWin.EnvLOI.Text = myEnvironment.LowerOxygenLimit.ToString
 
         Dim value As Single
         value = Val(MainWin.EnvTimeStep.Text)

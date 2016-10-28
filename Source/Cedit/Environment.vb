@@ -1,7 +1,8 @@
 Public Class Environment
 
-    Public Const MinTemp As Single = 223.15                   ' Minimum ambient temperature limit
-    Public Const MaxTemp As Single = 373.15                   ' Maximum ambient temperature limit
+    Public Const MinTemp As Single = 223.15          ' Minimum ambient temperature limit
+    Public Const MaxTemp As Single = 373.15          ' Maximum ambient temperature limit
+    Public Const DefaultLOI As Single = 0.15         ' Default limiting oxygen index. This needs to be consistent with CFAST
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aTitle As String                        ' Title for the simulation
@@ -44,7 +45,7 @@ Public Class Environment
         aExtWindSpeed = 0.0
         aExtScaleHeight = 10.0
         aExtPowerLawCoefficient = 0.16
-        aLowerOxygenLimit = 15.0
+        aLowerOxygenLimit = 0.15
         aIgnitionTemp = aIntAmbTemperature + 100.0
         aMaximumTimeStep = -1.0
         aAdiabaticWalls = False
@@ -294,6 +295,10 @@ Public Class Environment
             End If
             If aExtAmbTemperature <= MinTemp Or aExtAmbTemperature > MaxTemp Then
                 myErrors.Add("External ambient temperature is should be greater than " + (MinTemp - 273.15).ToString + " °C and less than " + (MaxTemp - 273.15).ToString + " °C", ErrorMessages.TypeWarning)
+                HasErrors += 1
+            End If
+            If myEnvironment.LowerOxygenLimit < 0.0 Or myEnvironment.LowerOxygenLimit > 0.23 Then
+                myErrors.Add("Lower oxygen limit is less than 0 or greater than ambient.", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
         End Get

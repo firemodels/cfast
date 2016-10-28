@@ -152,7 +152,7 @@
     ! now calculate the offsets - the order is important
     call offset
 
-    ! check and/or set position of fire objects
+    ! check fire objects
     do i = 1, n_fires
         fireptr => fireinfo(i)
         roomptr => roominfo(fireptr%room)
@@ -160,6 +160,11 @@
         if ((fireptr%y_position<0.0_eb).or.(fireptr%y_position>roomptr%cdepth)) fireptr%y_position = roomptr%cdepth/2.0_eb
         if ((fireptr%z_position<0.0_eb).or.(fireptr%z_position>roomptr%cheight)) fireptr%z_position = 0.0_eb
     end do
+    if (lower_o2_limit<0.0_eb.or.lower_o2_limit>0.230_eb) then
+        write (*,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0..15 used'
+        write (iofill,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0..15 used'
+        lower_o2_limit = 0.15_eb
+    end if
 
     ! make sure ceiling/floor vent specifications are correct -  we have to do this
     ! here rather than right after keywordcases because floor_height and ceiling_height were just defined
@@ -869,6 +874,15 @@
             exterior_temperature = lrarray(1)
             exterior_abs_pressure = lrarray(2)
             exset = .true.
+            
+            ! LIMO2 lower oxygen limit for combustion. This is a global value
+        case ("LIMO2")
+            if (countargs(lcarray)/=1) then
+                write (*,*) '***Error: Bad LIMO2 input. Only 1 argument allowed.'
+                write (iofill,*) '***Error: Bad LIMO2 input. Only 1 argument allowed.'
+                stop
+            end if
+            lower_o2_limit = lrarray(1)
 
             ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction,
             !           width, soffit, sill
@@ -1672,7 +1686,7 @@
             end if
 
             ! Outdated keywords
-        case ('CJET','WIND','LIMO2','GLOBA','DJIGN') ! Just ignore these inputs ... they shouldn't be fatal
+        case ('CJET','WIND','GLOBA','DJIGN') ! Just ignore these inputs ... they shouldn't be fatal
             write (*,5407) label
             write (iofill,5407) label
         case ('OBJFL','MVOPN','MVFAN','MAINF','INTER','SETP','THRMF','OBJEC') ! these are clearly outdated and produce errors

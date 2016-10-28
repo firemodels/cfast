@@ -82,10 +82,10 @@ module radiation_routines
                 yrfire(nrmfire) = fireptr%y_position
                 fheight = 0.0_eb ! This is fire radiation at base of the fire
                 ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
-                !call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
-                !if (fheight+(fireptr%z_position+fireptr%z_offset)>roomptr%cheight) then
-                !    fheight = roomptr%cheight-(fireptr%z_position+fireptr%z_offset)
-                !end if
+                call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+                if (fheight+(fireptr%z_position+fireptr%z_offset)>roomptr%cheight) then
+                    fheight = roomptr%cheight-(fireptr%z_position+fireptr%z_offset)
+                end if
                 zrfire(nrmfire) = fireptr%z_position + fireptr%z_offset + fheight/3.0_eb
                 qrfire(nrmfire) = fireptr%qdot_radiative
             end if

@@ -427,8 +427,8 @@ module initialization_routines
     initial_mass_fraction(1:ns) = 0.0_eb
 
     ! normal air
-    initial_mass_fraction(1) = 0.77_eb
-    initial_mass_fraction(2) = 0.23_eb
+    initial_mass_fraction(1) = 0.770_eb
+    initial_mass_fraction(2) = 0.230_eb
     
     do i = 1, nrm1
         roomptr => roominfo(i)

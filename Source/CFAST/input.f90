@@ -2177,8 +2177,8 @@
     nrcurrent = 0
 20  read (iunit,'(A)',end=100) in
 
-    ! Skip comments
-    if (in(1:1)=='!'.or.in(1:1)=='#') then
+    ! Skip comments and blank lines
+    if (in(1:1)=='!'.or.in(1:1)=='#'.or.in==' ') then
         go to 20
     end if
 

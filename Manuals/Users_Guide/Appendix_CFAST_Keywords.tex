@@ -69,80 +69,86 @@ SLCF,2-D,Z,4.554,1
 
 \section{COMPA}
 
-\begin{lstlisting}
-COMPA, NAME, WIDTH, DEPTH, INTERNAL_HEIGHT, ABSOLUTE_X_POSITION, ABSOLUTE_Y_POSITION, FLOOR_HEIGHT, CEILING_MATERIAL_NAME,  FLOOR_MATERIAL_NAME, WALL_MATERIAL_NAME, X_GRID_SPACING, Y_GRID_SPACING, Z_GRID_SPACING
-\end{lstlisting}
-The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands. Example:
+The COMPA keyword defines the size and location of all compartments in a simulation. The compartments are numbered internally as they are read in. The other key words which refer to compartment numbers then refer to these ordinals. Compartments must be defined before they are referenced by other commands.   The arguments are
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[NAME] Short description of the compartment.
+  \item[WIDTH, DEPTH, HEIGHT] size of the compartment.
+  \item[X0, Y0, Z0] location of the lower left/front corner of the compartment.
+   \item[CEILING, FLOOR, WALL] compartment surface materials which must match a SHORT NAME for one of the defined material properties.
+   \item[XGRID, YGRID, ZGRID] grid spacing for slice and isosurface files for the compartment. These may be different for each compartment.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 \begin{lstlisting}
 COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE,50,50,50
 \end{lstlisting}
 
 \section{DEADROOM}
 
+The DEADROOM command specifies a dead-end compartment, i.e., a compartment that is only connected to another compartment that in turn is not connected to the outside.  Compartment pressure is not calculated for the dead-end room. Pressure for this room is assumed to be the same as that of the connected room.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[COMPARTMENT] compartment number of the dead-end room.
+  \item[CONNECTED] compartment number of the connected compartment.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 \begin{lstlisting}
-DEADROOM, DEAD_ROOM_NUMBER, CONNECTED_ROOM_NUMBER
+DEADROOM,2,1
 \end{lstlisting}
-The DEADROOM command specifies a compartment that is only connected to another compartment that in turn is not connected to the outside.  Compartment pressure is not calculated for the ``dead'' room. Pressure for this room is assumed to be the same as that of the connected room.
 
 \section{DETEC}
 
-\begin{lstlisting}
-DETEC, TYPE, COMPARTMENT, ACTIVATION_TEMPERATURE,E DEPTH, WIDTH, HEIGHT, RTI, SUPPRESSION, SPRAY_DENSITY
-\end{lstlisting}
-The DETEC keyword is used for both detectors and sprinklers. Sprinklers and detectors are both considered detection devices and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated.
+The DETEC keyword is used for both detectors and sprinklers. Sprinklers and detectors are both considered detection devices and are handled using the same input keywords.  Detection is based upon heat transfer to the detector. Fire suppression by a user-specified water spray begins once the associated detection device is activated. For the type of detector, use 1 for smoke detector and 2 for heat detector or sprinklers. If suppression is set to a value of 1, a sprinkler will quench the fire with the specified spray density of water. If turned off (a value of 0), the device is handled as a heat or smoke detector only - values entered for activation temperature, RTI, and spray density are ignored. The spray density is the amount of water dispersed by a water sprinkler.  The units for spray density are length/time.  These units are derived by dividing the volumetric rate of water flow by the area protected by the water spray. The suppression calculation is based upon an experimental correlation by Evans, and depends upon the RTI, activation temperature, and spray density to determine the behavior of the sprinkler.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TYPE] detector type.
+  \item[COMPARTMENT] compartment number where the detector is located.
+  \item[TRIGGER] activation value for the detector. For smoke detectors, this is obscuration; for heat detectors or sprinklers, this is temperature.
+  \item[X, Y, Z] detector location relative to the lower, left, front corner of the compartment.
+  \item[RTI] response time index (RTI) value for a sprinkler
+  \item[SUPPRESSION] set to 1 if suppression is activated
+  \item[SPRAY DENSITY] amount of water dispersed by the sprinkler
+\end{description}
+\end{adjustwidth}
 
-For the type of detector, use 1 for smoke detector and 2 for heat detector or sprinklers. If suppression is set to a value of 1, a sprinkler will quench the fire with the specified spray density of water. If turned off (a value of 0), the device is handled as a heat or smoke detector only - values entered for activation temperature, RTI, and spray density are ignored.
-
-The spray density is the amount of water dispersed by a water sprinkler.  The units for spray density are length/time.  These units are derived by dividing the volumetric rate of water flow by the area protected by the water spray. The suppression calculation is based upon an experimental correlation by Evans, and depends upon the RTI, activation temperature, and spray density to determine the behavior of the sprinkler.
-
-Example:
-
+\noindent Example:
 \begin{lstlisting}
 DETECT,2,1,344.2,1.5,1.5,2.29,98,1,7.00E-05
 \end{lstlisting}
 
-\section{DJIGN}
-
-\begin{lstlisting}
-DJIGN, 373.15
-\end{lstlisting}
-This entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning and implication of modifying these two parameters \cite{CFAST_Tech_Guide_6}.
-
-This entry is superseded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
-
-Example:
-
-\begin{lstlisting}
-DJIGN,488
-\end{lstlisting}
-
 \section{DTCHE}
 
-\begin{lstlisting}
-DTCHE, MINIMUM_TIME, COUNT
-\end{lstlisting}
-The purpose of DTCHE is to prevent excessive computation with a very small time step. This often appears to users as though the program has frozen, when it is simply the set of equations has reached a point that requires very small time steps for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm. A positive value for the minimum time input sets the software for a maximum number of iterations (COUNT) below a minimum time step (MINIMUN\_TIME) before producing an error and stopping.
+The purpose of the DTCHE keyword is to prevent excessive computation with a very small time step. This often appears to users as though the program has frozen, when it is simply the set of equations has reached a point that requires very small time steps for the solver to converge. A negative entry on DTCHE turns off the time step checking algorithm. A positive value for the minimum time input sets the software for a maximum number of iterations below a minimum time step before producing an error and stopping.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TIME] minimum time step for equation solver.
+  \item[COUNT] maximum number of iterations below minimum time step before program stops in error.
+\end{description}
+\end{adjustwidth}
 
-Example:
-
+\noindent Example:
 \begin{lstlisting}
 DTCHECK,1.E-9,100
 \end{lstlisting}
 
-\section{EAMB and TAMB}
+\section{EAMB}
+
+This keyword sets ambient conditions for the outside of the building. Temperatures are in Kelvin and pressure in Pascals. Default values for temperature and pressure are 20~\degc, 101325~Pa, respectively.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TEMPERATURE] ambient temperature outside the building.  This is a constant throughout a simulation.
+  \item[PRESSURE] ambient pressure outside the building. This is a constant throughout a simulation.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
-TAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, STATION_ELEVATION, RELATIVE_HUMIDITY
-EAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, STATION_ELEVATION, RELATIVE_HUMIDITY
-\end{lstlisting}
-
-This keyword sets ambient conditions, TAMB for the internal and EAMB for outside the building. For the internal ambient, relative humidity sets the initial water concentration in the ambient air.  For the external ambient, it sets the water content for air flowing into compartments through vents connecting to the exterior. Temperatures are in Kelvin, pressure in Pascals, and relative humidity in percent. Default values for temperature, pressure, and relative humidity are 20~\degc, 101300~Pa, and 50~\%, respectively.
-
-Example:
-
-\begin{lstlisting}
-EAMB,300,101300,0,50
-TAMB,300,101300,0,50
+EAMB,300,101325
 \end{lstlisting}
 
 \section{EVENT}
@@ -366,7 +372,7 @@ MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
 MVENT, FROM_COMPARTMENT, TO_COMPARTMENT, ID_NUMBER, FROM_OPENING_ORIENTATION, FROM_CENTER_HEIGHT, FROM_OPENING_AREA, TO_OPENINGORIENTATION, TO_CENTER_HEIGHT, TO_OPENING_AREA, FLOW, BEGIN_DROPOFF_PRESSURE, ZERO_FLOW_PRESSURE, OPENING_TRIGGER_TYPE, OPENING_TRIGGER_CRITERION, ASSOCIATED_OPENING_TRIGGER_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION, X_OFFSET, Y_OFFSET
 \end{lstlisting}
 
-This replaces the more complex mechanical ventilation commands with a constant flow fan connection.  The original commands MVOPN MVFAN MVDCT and INELV are not supported in this version. The command specifies a pair of openings connected by a constant volume flow fan. 
+This replaces the more complex mechanical ventilation commands with a constant flow fan connection.  The original commands MVOPN MVFAN MVDCT and INELV are not supported in this version. The command specifies a pair of openings connected by a constant volume flow fan.
 
 Example:
 
@@ -436,6 +442,20 @@ Example:
 
 \begin{lstlisting}
 STPMAX,0.2
+\end{lstlisting}
+
+\section{ TAMB}
+
+\begin{lstlisting}
+TAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, RELATIVE_HUMIDITY
+\end{lstlisting}
+
+This keyword sets ambient conditions for the inside of the building. For the internal ambient, relative humidity sets the initial water concentration in the ambient air.  Temperatures are in Kelvin, pressure in Pascals, and relative humidity in percent. Default values for temperature, pressure, and relative humidity are 20~\degc, 101325~Pa, and 50~\%, respectively.
+
+Example:
+
+\begin{lstlisting}
+EAMB,300,101300,50
 \end{lstlisting}
 
 \section{TARGE}

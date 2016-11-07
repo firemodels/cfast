@@ -87,7 +87,7 @@ COMPA,hallway,9.1,5.0,4.6,0.,0.,0.,CONCRETE,CONCRETE,CONCRETE,50,50,50
 
 \section{DEADROOM}
 
-The DEADROOM command specifies a dead-end compartment, i.e., a compartment that is only connected to another compartment that in turn is not connected to the outside.  Compartment pressure is not calculated for the dead-end room. Pressure for this room is assumed to be the same as that of the connected room.
+The DEADROOM keyword specifies a dead-end compartment, i.e., a compartment that is only connected to another compartment that in turn is not connected to the outside.  Compartment pressure is not calculated for the dead-end room. Pressure for this room is assumed to be the same as that of the connected room.
 \begin{adjustwidth}{1cm}{0cm}
 \begin{description}
   \item[COMPARTMENT] compartment number of the dead-end room.
@@ -153,26 +153,21 @@ EAMB,300,101325
 
 \section{EVENT}
 
-\begin{lstlisting}
-EVENT, TYPE, FIRST_COMPARTMENT, SECOND_COMPARTMENT, VENT_NUMBER, TIME, FINAL_FRACTION
-\end{lstlisting}
+EVENT is used to open or close a vent or to change filtering. This replaces the earlier CVENT and applies to all vents for vertical flow (V), horizontal flow (H) mechanical flow (M), and filtering of mechanical ventilation (F). Except for filtering, this has been replaced with inputs on the appropriate vent command or by the RAMP command beginning in CFAST version 7.1.2.
 
-Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.  Final\_Fraction is the percent of the full opening width expressed as a fraction for vents and fraction of trace species and soot removed for filters.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TYPE] Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.
+  \item[FIRST] compartment number of lower numbered (for wall vents), top (for ceiling/floor vents) or from compartment (for mechanical vents).
+  \item[SECOND] compartment number of higher numbered (for wall vents), bottom (for ceiling/floor vents) or to compartment (for mechanical vents).
+  \item[VentID] vent number associated with the vent consistent with appropriate vent command.
+  \item[TIME] beginning time of vent opening or filter fraction change.
+  \item[FRACTION] final vent opening fraction or filter fraction.
+  \item[DECAY] time over which opening or filter transitions from its initial fraction to its final fraction.
+\end{description}
+\end{adjustwidth}
 
-EVENT is used to open or close a vent or to change filtering. This replaces the earlier CVENT and applies to all vents for vertical flow (V), horizontal flow (H) mechanical flow (M), and filtering of mechanical ventilation (F). The intent is to allow these events to be triggered by time, temperature or flux as is done with detectors. However, at the moment, time is the only option.
-
-The form for EVENT is
-
-\begin{lstlisting}
-EVENT, H, FIRST_COMPARTMENT, SECOND_COMPARTMENT, VENT_NUMBER, TIME, FINAL_FRACTION, DECAY_TIME
-EVENT, V, FIRST_COMPARTMENT, SECOND_COMPARTMENT, V_ID, TIME, FINAL_FRACTION, DECAY_TIME
-EVENT, M, FIRST_COMPARTMENT, SECOND_COMPARTMENT, MVENT_ID, TIME, FINAL_FRACTION, DECAY_TIME
-EVENT, F, FIRST_COMPARTMENT, SECOND_COMPARTMENT, MVENT_ID, TIME, FINAL_FRACTION, DECAY_TIME
-\end{lstlisting}
-
-Decay time is the duration of the event and the units are seconds.
-
-Example:
+\noindent Example:
 
 \begin{lstlisting}
 EVENT,H,1,2,1,10.,0.3,1
@@ -182,13 +177,22 @@ The convention for vent fractions is the 1 is 100 \% open, and 0 is closed. Filt
 
 \section{FIRE}
 
-\begin{lstlisting}
-FIRE, COMPARTMENT, X_POSITION, Y_POSITION, Z_POSITION, 1, IGNITION_TYPE, IGNITION_CRITERION, ASSOCIATED_IGNITION_TARGET, 0, 0, NAME
-\end{lstlisting}
+The FIRE keyword places a fire into a compartment. The associated keywords CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH completely specify time-dependent properties the fire for the current fire. They must be included, in order, directly after the associated FIRE keyword input line
 
-This key word places a fire into a compartment. The associated keywords CHEMI, TIME, HRR, SOOT, CO, TRACE, AREA, and HEIGH completely specify the fire for the current simulation. IGNITION\_TYPE can be TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the ASSOCIATED\_IGNITION\_TARGET field is used to determine the ignition time.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[COMPARTMENT] the compartment in which the fire is located.
+  \item[X, Y, Z] the width, depth, and height of the center of the base of the fire relative to the selected compartment.
+  \item[TYPE] fires can be initiated as a specific time, temperature or incident heat flux. Corresponding inputs are TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the TARGET field is used to determine the ignition time.
+  \item [1] a ``1'' as the sixth argument is required to maintain compatibility with older versions of the model.
+  \item[CRITERION] is the initialing value for the current fire, either a time, temperature or incident heat flux as chosen above.
+  \item[TARGET] user-specified target associated with this fire and used to judge ignition by temperature or incident heat flux.
+  \item[0,0] zeros are required in the ninth and tenth arguments to maintain compatibility with older versions of the model.
+  \item[NAME] user-specified name for the fire
+\end{description}
+\end{adjustwidth}
 
-Example:
+\noindent Example:
 
 \begin{lstlisting}
 !!bunsen
@@ -205,19 +209,25 @@ HEIGH,0,0,0,0,0,0,0,0,0,0,0
 
 \subsection{CHEMI}
 
-\begin{lstlisting}
-CHEMI, FORMULA_C, FORMULA_H, FORMULA_O, FORMULA_N, FORMULA_Cl,  RADIATIVE_FRACTION, HEAT_OF_COMBUSTION
-\end{lstlisting}
+The CHEMI input defines the chemical formula of the burning material, the fraction of its heat given off by radiation, and its heat of combustion.
 
-The CHEMI input defines the chemical formula of the burning material (FORMULA\_C, \_H, \_O, \_N, and \_Cl), its heat of combustion, and fraction of its head given off by radiation.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[C,H,O,N,Cl] defines the stoichiometry of the fuel as carbon, hydrogen, oxygen, nitrogen, and chlorine atoms.
+  \item[CHIR] radiative fraction for the fuel.
+  \item[HOC] heat of combustion of the fuel.
+\end{description}
+\end{adjustwidth}
 
 \subsection{TIME}
 
-\begin{lstlisting}
-TIME, T_1, T_2, T_3, ... , T_N-1, T_N
-\end{lstlisting}
-
 The TIME input defines a series of time points which correspond to entries on the other fire inputs HRR, SOOT, CO, TRACE, AREA, and HEIGH.  These define the time-based variation of the fire size, fire area, and species yields for the specified fire.
+
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[T\_1, T\_2, T\_3, ... , T\_N-1, T\_N] time points
+\end{description}
+\end{adjustwidth}
 
 \subsection{HRR}
 

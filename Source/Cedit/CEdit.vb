@@ -492,6 +492,8 @@ Public Class CeditMain
         Me.EnvTitle = New System.Windows.Forms.TextBox()
         Me.Label28 = New System.Windows.Forms.Label()
         Me.GroupBox8 = New System.Windows.Forms.GroupBox()
+        Me.Label18 = New System.Windows.Forms.Label()
+        Me.EnvLOI = New System.Windows.Forms.TextBox()
         Me.EnvAdiabatic = New System.Windows.Forms.CheckBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
         Me.Label24 = New System.Windows.Forms.Label()
@@ -873,8 +875,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.Label18 = New System.Windows.Forms.Label()
-        Me.EnvLOI = New System.Windows.Forms.TextBox()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1150,6 +1150,24 @@ Public Class CeditMain
         Me.GroupBox8.TabIndex = 11
         Me.GroupBox8.TabStop = False
         Me.GroupBox8.Text = "Simulation Conditions"
+        '
+        'Label18
+        '
+        Me.Label18.AutoSize = True
+        Me.Label18.Location = New System.Drawing.Point(94, 229)
+        Me.Label18.Name = "Label18"
+        Me.Label18.Size = New System.Drawing.Size(102, 13)
+        Me.Label18.TabIndex = 115
+        Me.Label18.Text = "Lower Oxygen Limit:"
+        Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'EnvLOI
+        '
+        Me.EnvLOI.Location = New System.Drawing.Point(202, 226)
+        Me.EnvLOI.Name = "EnvLOI"
+        Me.EnvLOI.Size = New System.Drawing.Size(96, 20)
+        Me.EnvLOI.TabIndex = 116
+        Me.EnvLOI.Text = "0.15"
         '
         'EnvAdiabatic
         '
@@ -5025,24 +5043,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
-        '
-        'Label18
-        '
-        Me.Label18.AutoSize = True
-        Me.Label18.Location = New System.Drawing.Point(94, 229)
-        Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(102, 13)
-        Me.Label18.TabIndex = 115
-        Me.Label18.Text = "Lower Oxygen Limit:"
-        Me.Label18.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'EnvLOI
-        '
-        Me.EnvLOI.Location = New System.Drawing.Point(202, 226)
-        Me.EnvLOI.Name = "EnvLOI"
-        Me.EnvLOI.Size = New System.Drawing.Size(96, 20)
-        Me.EnvLOI.TabIndex = 116
-        Me.EnvLOI.Text = "0.15"
         '
         'CeditMain
         '

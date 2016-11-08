@@ -9,44 +9,50 @@ Each line of the input file consists of a label followed by one or more alphanum
 Inputs are in standard SI units.  The maximum line length is 1024 characters, so all data for each keyword must fit in this number of characters.
 
 \begin{lstlisting}
-VERSN,7,Default example fire for user guide
+VERSN,7,Users Guide Example Case
 !!
-!!Scenario Configuration Keywords
+!!Scenario Configuration
 !!
-TIMES,1800,-120,10,30
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
+TIMES,3600,50,50,50
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
 !!
 !!Material Properties
 !!
 MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
-MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
 !!
-!!Compartment keywords
+!!Compartments
 !!
-COMPA,Comp 1,9.1,5,4.6,0,0,0,GLASSFB3,CONCRETE,CONCRETE,50,50,50
+COMPA,Comp 1,5,5,3,0,0,0,CONCRETE,CONCRETE,CONCRETE,50,50,50
+COMPA,Comp 2,5,5,3,5,0,0,CONCRETE,CONCRETE,CONCRETE,50,50,50
+COMPA,Comp 3,5,5,3,5,0,3,CONCRETE,CONCRETE,CONCRETE,50,50,50
 !!
-!!Vent keywords
+!!Vents
 !!
-HVENT,1,2,1,1,2.4,0,0,1,1
+HVENT,1,4,1,1,2,0,2,,1,TIME,,,0,1,0,1,0,0
+HVENT,1,2,1,1,2,0,0.5,,2,TIME,,,0,1,0,1,0,0
+HVENT,3,4,1,1,2,1,0.5,,2,TIME,,,0,1,0,1,0,0
+VVENT,3,2,1,1,1,TIME,,,0,0,100,0.5,2.5,1
+MVENT,4,1,1,V,2.75,0.25,V,2.75,0.25,0.02,200,300,TIME,,,0,1,0,1,0,4
+MVENT,2,4,2,V,2.75,0.25,V,2.75,0.25,0.02,200,300,TIME,,,0,1,0,1,5,4
+RAMP,V,3,2,1,3,0,0,100,0.5,500,1
 !!
-!!Fire keywords
+!!Fires
 !!
-GLOBA,10,393.15
-!!burner
-FIRE,1,4.55,2.5,0,1,1,0,0,0,1,burner
-CHEMI,1,4,0,0,0,0.33,5E+07,METHANE
+LIMO2,0.1
+!!Cushion
+FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,Cushion
+CHEMI,9,6,2,2,0,0.33,5E+07
 TIME,0,60,120,180,240,300,360,420,480,540,1800
 HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000
-SOOT,0,0,0,0,0,0,0,0,0,0,0
-CO,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001
+SOOT,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227
+CO,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557
 TRACE,0,0,0,0,0,0,0,0,0,0,0
-AREA,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2
+AREA,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1
 HEIGH,0,0,0,0,0,0,0,0,0,0,0
-MATL,METHANE,0.07,1090,930,0.0127,0.04,"Methane, a transparent gas (CH4)"
-!!wood_wall
-FIRE,1,9.1,2.5,0,1,1,0,0,0,1,wood_wall
-CHEMI,6,10,5,0,0,0.33,1.81E+07,HARDWOOD
+!!Wood_Wall
+FIRE,2,2.5,5,0,1,TIME,0,0,0,0,Wood_Wall
+CHEMI,6,10,5,0,0,0.33,1.81E+07
 TIME,0,8000
 HRR,0,1000000
 SOOT,0.015,0.015
@@ -54,16 +60,24 @@ CO,0.006171682,0.006171682
 TRACE,0,0
 AREA,0.05,9
 HEIGH,0,3
-MATL,HARDWOOD,0.16,1255,720,0.019,0.9,"Wood, Hardwoods (oak, maple) (3/4 in)"
 !!
-!!Target and detector keywords
+!!Targets and detectors
 !!
-TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,IMPLICIT,PDE,0.5
+DETECT,SPRINKLER,1,347.0389,3,3,2.97,100,1,7E-05
+DETECT,SMOKE,1,23.93346,2,2,2.97,404,0,7E-05
+DETECT,HEAT,1,303.15,2,2,2.97,5,0,7E-05
+TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,EXPLICIT,PDE,0.5,Targ 1
 !!
-!!visualizations
+!!Intercompartment heat transfer
 !!
-SLCF,2-D,Y,2.5,1
-SLCF,2-D,Z,4.554,1
+VHEAT,3,2
+!!
+!!Visualizations
+!!
+SLCF,2-D,X,2.5
+SLCF,2-D,Y,2.5
+SLCF,2-D,Z,2.95
+
 \end{lstlisting}
 
 
@@ -183,8 +197,8 @@ The FIRE keyword places a fire into a compartment. The associated keywords CHEMI
 \begin{description}
   \item[COMPARTMENT] the compartment in which the fire is located.
   \item[X, Y, Z] the width, depth, and height of the center of the base of the fire relative to the selected compartment.
+  \item [PLUME] a ``1'' as the fifth argument is required to maintain compatibility with older versions of the model. It is ignored by the current of the model.
   \item[TYPE] fires can be initiated as a specific time, temperature or incident heat flux. Corresponding inputs are TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the TARGET field is used to determine the ignition time.
-  \item [1] a ``1'' as the sixth argument is required to maintain compatibility with older versions of the model.
   \item[CRITERION] is the initialing value for the current fire, either a time, temperature or incident heat flux as chosen above.
   \item[TARGET] user-specified target associated with this fire and used to judge ignition by temperature or incident heat flux.
   \item[0,0] zeros are required in the ninth and tenth arguments to maintain compatibility with older versions of the model.
@@ -195,13 +209,13 @@ The FIRE keyword places a fire into a compartment. The associated keywords CHEMI
 \noindent Example:
 
 \begin{lstlisting}
-!!bunsen
-FIRE,1,4.55,2.5,0,1,TIME,0,0,0,0,burner
-CHEMI,1,4,0,0,0,0.33,5E+07
+!!Cushion
+FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,Cushion
+CHEMI,9,6,2,2,0,0.33,5E+07
 TIME,0,60,120,180,240,300,360,420,480,540,1800
 HRR,0,100000,150000,200000,150000,125000,100000,90000,80000,75000,75000
-SOOT,0,0,0,0,0,0,0,0,0,0,0
-CO,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221,0.001047221
+SOOT,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227,0.227
+CO,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557,0.0845557
 TRACE,0,0,0,0,0,0,0,0,0,0,0
 AREA,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1
 HEIGH,0,0,0,0,0,0,0,0,0,0,0
@@ -231,65 +245,57 @@ The TIME input defines a series of time points which correspond to entries on th
 
 \subsection{HRR}
 
-\begin{lstlisting}
-HRR, Q_1, Q_2, Q_3, ... , Q_N-1, Q_N
-\end{lstlisting}
-
 The HRR input defines a series of heat release rates which correspond to entries on the TIME input.  These define the time-based variation of the fire size for the specified fire.
+
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[Q\_1, Q\_2, Q\_3, ... , Q\_N-1, Q\_N] time history of fire heat release rate at time points specified by the TIME keyword
+\end{description}
+\end{adjustwidth}
 
 \subsection{SOOT, CO, TRACE}
 
-\begin{lstlisting}
-SOOT, S_1, S_2, S_3, ... , S_N-1, S_N
-CO, C_1, C_2, C_3, ... , C_N-1, C_N
-TRACE, TR_1, TR_2, TR_3, ... , TR_N-1, TR_N
-\end{lstlisting}
-
 These three inputs define a series of species yields which correspond to entries on the TIME input.  These define the time-based variation of the soot, carbon monoxide, and trace species yields for the specified fire.
+
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[S\_1, S\_2, S\_3, ... , S\_N-1, S\_N] time history of soot yields (kg of soot/kg fuel burned) at time points specified by the TIME keyword
+  \item[CO\_1, CO\_2, CO\_3, ... , CO\_N-1, CO\_N] time history of carbon monoxide yields (kg of CO/kg fuel burned) at time points specified by the TIME keyword
+  \item[TR\_1, TR\_2, TR\_3, ... , TR\_N-1, TR\_N] time history of trace species yields (kg of trace species/kg fuel burned) at time points specified by the TIME keyword
+\end{description}
+\end{adjustwidth}
 
 \subsection{AREA}
 
-\begin{lstlisting}
-AREA, A_1, A_2, A_3, ... , A_N-1, A_N
-\end{lstlisting}
-
 The AREA input defines a series of areas which correspond to entries on the TIME input.  These define the time-based variation of the cross-sectional area of the base of the fire for the specified fire.
+
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[A\_1, A\_2, A\_3, ... , A\_N-1, A\_N] time history of the cross-sectional area of the base of the fire at time points specified by the TIME keyword
+\end{description}
+\end{adjustwidth}
 
 \subsection{HEIGH}
 
-\begin{lstlisting}
-HEIGH, H_1, H_2, H_3, ... , H_N-1, H_N
-\end{lstlisting}
+The HEIGH input defines a series of height values which correspond to entries on the TIME input.  These define the time-based variation of the vertical position of the base of the fire (measured from the floor of the current compartment) for the specified fire. The height used at any time point during a simulation is taken to be the sum of the height (Z) input in the FIRE keyword and the interpolated value of the HEIGH curve at the current time.
 
-The HEIGH input defines a series of height values which correspond to entries on the TIME input.  These define the time-based variation of the vertical position of the base of the fire (measured from the floor of the current compartment) for the specified fire.
-
-\section{GLOBA}
-
-\begin{lstlisting}
-GLOBA, LOWER_OXYGEN_LIMIT,  IGNITION_TEMPERATURE
-\end{lstlisting}
-
-This parameter is global and applies to all fires. Here, with two parameters, the command sets the lower oxygen limit and the ignition temperature for door jet fires. The first entry sets the lower oxygen limit for combustion in a layer. The second entry sets the ignition temperature for door jet fires. Please read the technical reference manual for the meaning and implication of modifying these two parameters \cite{CFAST_Tech_Guide_7}.
-
-This two-entry key word replaces LIMO2 and DJIGN.
-
-Example:
-
-\begin{lstlisting}
-GLOBA,10,488
-\end{lstlisting}
-
-This sets the limiting oxygen index to 10 \% and the ignition temperature to 488 K. These are the default values.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[H\_1, H\_2, H\_3, ... , H\_N-1, H\_N] time history of the cross-sectional area of the base of the fire at time points specified by the TIME keyword
+\end{description}
+\end{adjustwidth}
 
 \section{HALL}
 
-\begin{lstlisting}
-HALL, COMPARTMENT
-\end{lstlisting}
+This command invokes the corridor flow ceiling jet algorithm for the chosen compartment. More than one HALL keywoard can be included in a simulation.
 
-This command invokes the corridor flow ceiling jet algorithm for the chosen compartment.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[COMPARTMENT] compartment number of compartment assigned as a hall.
+\end{description}
+\end{adjustwidth}
 
-Example:
+\noindent Example:
 
 \begin{lstlisting}
 HALL, 3
@@ -301,14 +307,22 @@ HALL, 3
 HHEAT, FIRST_COMPARTMENT, NUMBER_OF_PARTS, N PAIRS OF {SECOND_COMPARTMENT, FRACTION}
 \end{lstlisting}
 
-Used to allow heat conduction between pairs of compartments which have a contiguous vertical partition between them.  There are two forms of this command. The first form is to use only a compartment number. In this case, CFAST will calculate the conductive heat transfer to all compartments connected to this compartment by horizontal convective flow. The second form specifies the compartments to be connected and what fraction of the compartment is connected to an adjacent compartment. This latter is particularly useful for rooms which are connected to adjacent rooms as well as hallways. The user of the model is responsible for the consistency of these pairings.  The model does not check to insure that the specified compartment pairs are located next to one another.
+Used to allow heat conduction between pairs of compartments which have a contiguous vertical partition between them.  There are two forms of this command. The first form is to use only a compartment number. In this case, CFAST will calculate the conductive heat transfer to all compartments connected to this compartment by wall vents. The second form specifies the compartments to be connected and what fraction of the compartment is connected to an adjacent compartment. This latter is particularly useful for rooms which are connected to adjacent rooms as well as hallways. The user of the model is responsible for the consistency of these pairings.  The model does not check to insure that the specified compartment pairs are physically located next to one another.
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[FIRST] first compartment of pairs connected for horizontal heat transfer
+  \item[N] number of compartments connected to first compartment
+  \item[SECOND\_1, FRAC\_1, SECOND\_2, FRAC\_2, ... ,  SECOND\_N, FRAC\_N] N pairs of compartments and wall surface fraction of the first compartment connected to that compartment. Fractions should add to unity.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
 HHEAT,1,1,2,0.5
 \end{lstlisting}
-specifies that compartment one has one connection to compartment two and the fraction of wall surface through which heat is transferred is one half of the wall surface of compartment one.
+specifies that compartment one has one connection to compartment two and the fraction of wall surface through which heat is transferred is one half of the wall surface of compartment one. The rest of compartment one is assumed connected to exterior ambient conditions.
 
 \section{HVENT}
 
@@ -322,20 +336,6 @@ Example:
 
 \begin{lstlisting}
 HVENT,1,2,1,1,2,0,2.5,0,1,TIME,,,0,1,0,1
-\end{lstlisting}
-
-\section{INTER}
-
-\begin{lstlisting}
-INTER INITIAL_INTERFACE_HEIGHT_1 INITIAL_INTERFACE_HEIGHT_2 ... INITIAL_INTERFACE_HEIGHT_N
-\end{lstlisting}
-
-This is used to set the initial interface height below the top of the compartment. A great deal of care is needed to use this, as the model has only rudimentary checks for the limits imposed (for example, the initial value must specify a height not greater than the compartment height. This does change the nature of a zone in the context of a zone model.
-
-Example:
-
-\begin{lstlisting}
-INTER 2   1.2     3   2.0
 \end{lstlisting}
 
 \section{ISOF}
@@ -355,11 +355,19 @@ The first example specifies a 300 \degc temperature isosurface in compartments 1
 
 \section{LIMO2}
 
-\begin{lstlisting}
-LIMO2, LOWER_OXYGEN_INDEX
-\end{lstlisting}
+This parameter is global and applies to all fires. The keyword sets the lower oxygen limit for combustion. See the technical reference manual for the meaning and implication of modifying this parameter. \cite{CFAST_Tech_Guide_7}.
 
-This parameter is global and applies to all fires. The single entry sets the lower oxygen limit for combustion.  Please read the technical reference manual for the meaning and implication of modifying these parameters \cite{CFAST_Tech_Guide_7}.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[O2INDEX] lower oxygen limit for combustion
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
+
+\begin{lstlisting}
+LIMO2,0.1
+\end{lstlisting}
 
 This entry is superceded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
 

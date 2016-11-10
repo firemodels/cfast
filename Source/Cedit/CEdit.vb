@@ -1460,7 +1460,7 @@ Public Class CeditMain
         Me.HVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.HVentSummary.Location = New System.Drawing.Point(157, 30)
         Me.HVentSummary.Name = "HVentSummary"
-        Me.HVentSummary.Rows.Count = 401
+        Me.HVentSummary.Rows.Count = 2501
         Me.HVentSummary.Rows.DefaultSize = 19
         Me.HVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.HVentSummary.SelectionMode = C1.Win.C1FlexGrid.SelectionModeEnum.Row
@@ -1803,7 +1803,7 @@ Public Class CeditMain
         Me.VVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.VVentSummary.Location = New System.Drawing.Point(278, 25)
         Me.VVentSummary.Name = "VVentSummary"
-        Me.VVentSummary.Rows.Count = 401
+        Me.VVentSummary.Rows.Count = 2501
         Me.VVentSummary.Rows.DefaultSize = 19
         Me.VVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VVentSummary.Size = New System.Drawing.Size(421, 154)
@@ -2634,7 +2634,7 @@ Public Class CeditMain
         Me.MVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.MVentSummary.Location = New System.Drawing.Point(53, 25)
         Me.MVentSummary.Name = "MVentSummary"
-        Me.MVentSummary.Rows.Count = 401
+        Me.MVentSummary.Rows.Count = 2501
         Me.MVentSummary.Rows.DefaultSize = 19
         Me.MVentSummary.Size = New System.Drawing.Size(862, 120)
         Me.MVentSummary.StyleInfo = resources.GetString("MVentSummary.StyleInfo")

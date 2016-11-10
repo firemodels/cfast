@@ -54,172 +54,173 @@ Public Class RunModel
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents RunUpdate As System.Windows.Forms.Button
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        components = New System.ComponentModel.Container()
+        Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(RunModel))
-        RunSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
-        RunOK = New System.Windows.Forms.Button()
-        Label1 = New System.Windows.Forms.Label()
-        Label2 = New System.Windows.Forms.Label()
-        RunTime = New System.Windows.Forms.TextBox()
-        RunDT = New System.Windows.Forms.TextBox()
-        RunTimer = New System.Windows.Forms.Timer(components)
-        RunStop = New System.Windows.Forms.Button()
-        RunProgress = New System.Windows.Forms.ProgressBar()
-        Label3 = New System.Windows.Forms.Label()
-        RunUpdate = New System.Windows.Forms.Button()
-        RunOptions = New System.Windows.Forms.Label()
-        RunJac = New System.Windows.Forms.Button()
-        RunErrors = New System.Windows.Forms.TextBox()
-        CType(RunSummary, System.ComponentModel.ISupportInitialize).BeginInit()
-        SuspendLayout()
+        Me.RunSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.RunOK = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.RunTime = New System.Windows.Forms.TextBox()
+        Me.RunDT = New System.Windows.Forms.TextBox()
+        Me.RunTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.RunStop = New System.Windows.Forms.Button()
+        Me.RunProgress = New System.Windows.Forms.ProgressBar()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.RunUpdate = New System.Windows.Forms.Button()
+        Me.RunOptions = New System.Windows.Forms.Label()
+        Me.RunJac = New System.Windows.Forms.Button()
+        Me.RunErrors = New System.Windows.Forms.TextBox()
+        CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SuspendLayout()
         '
         'RunSummary
         '
-        RunSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        RunSummary.ColumnInfo = resources.GetString("RunSummary.ColumnInfo")
-        RunSummary.ExtendLastCol = True
-        RunSummary.Location = New System.Drawing.Point(82, 80)
-        RunSummary.Name = "RunSummary"
-        RunSummary.Rows.DefaultSize = 17
-        RunSummary.Size = New System.Drawing.Size(821, 265)
-        RunSummary.TabIndex = 3
-        RunSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
+        Me.RunSummary.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.RunSummary.ColumnInfo = resources.GetString("RunSummary.ColumnInfo")
+        Me.RunSummary.ExtendLastCol = True
+        Me.RunSummary.Location = New System.Drawing.Point(82, 80)
+        Me.RunSummary.Name = "RunSummary"
+        Me.RunSummary.Rows.Count = 150
+        Me.RunSummary.Rows.DefaultSize = 17
+        Me.RunSummary.Size = New System.Drawing.Size(821, 265)
+        Me.RunSummary.TabIndex = 3
+        Me.RunSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'RunOK
         '
-        RunOK.Location = New System.Drawing.Point(212, 520)
-        RunOK.Name = "RunOK"
-        RunOK.Size = New System.Drawing.Size(100, 23)
-        RunOK.TabIndex = 4
-        RunOK.Text = "Close"
+        Me.RunOK.Location = New System.Drawing.Point(212, 520)
+        Me.RunOK.Name = "RunOK"
+        Me.RunOK.Size = New System.Drawing.Size(100, 23)
+        Me.RunOK.TabIndex = 4
+        Me.RunOK.Text = "Close"
         '
         'Label1
         '
-        Label1.AutoSize = True
-        Label1.Location = New System.Drawing.Point(296, 34)
-        Label1.Name = "Label1"
-        Label1.Size = New System.Drawing.Size(84, 13)
-        Label1.TabIndex = 3
-        Label1.Text = "Simulation Time:"
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(296, 34)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(84, 13)
+        Me.Label1.TabIndex = 3
+        Me.Label1.Text = "Simulation Time:"
         '
         'Label2
         '
-        Label2.AutoSize = True
-        Label2.Location = New System.Drawing.Point(32, 34)
-        Label2.Name = "Label2"
-        Label2.Size = New System.Drawing.Size(95, 13)
-        Label2.TabIndex = 4
-        Label2.Text = "Current Time Step:"
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(32, 34)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(95, 13)
+        Me.Label2.TabIndex = 4
+        Me.Label2.Text = "Current Time Step:"
         '
         'RunTime
         '
-        RunTime.Location = New System.Drawing.Point(400, 32)
-        RunTime.Name = "RunTime"
-        RunTime.Size = New System.Drawing.Size(100, 20)
-        RunTime.TabIndex = 2
-        RunTime.Text = "0 s"
+        Me.RunTime.Location = New System.Drawing.Point(400, 32)
+        Me.RunTime.Name = "RunTime"
+        Me.RunTime.Size = New System.Drawing.Size(100, 20)
+        Me.RunTime.TabIndex = 2
+        Me.RunTime.Text = "0 s"
         '
         'RunDT
         '
-        RunDT.Location = New System.Drawing.Point(144, 32)
-        RunDT.Name = "RunDT"
-        RunDT.Size = New System.Drawing.Size(100, 20)
-        RunDT.TabIndex = 1
-        RunDT.Text = "0.1 s"
+        Me.RunDT.Location = New System.Drawing.Point(144, 32)
+        Me.RunDT.Name = "RunDT"
+        Me.RunDT.Size = New System.Drawing.Size(100, 20)
+        Me.RunDT.TabIndex = 1
+        Me.RunDT.Text = "0.1 s"
         '
         'RunTimer
         '
-        RunTimer.Interval = 250
+        Me.RunTimer.Interval = 250
         '
         'RunStop
         '
-        RunStop.Location = New System.Drawing.Point(364, 520)
-        RunStop.Name = "RunStop"
-        RunStop.Size = New System.Drawing.Size(100, 23)
-        RunStop.TabIndex = 5
-        RunStop.Text = "Stop"
+        Me.RunStop.Location = New System.Drawing.Point(364, 520)
+        Me.RunStop.Name = "RunStop"
+        Me.RunStop.Size = New System.Drawing.Size(100, 23)
+        Me.RunStop.TabIndex = 5
+        Me.RunStop.Text = "Stop"
         '
         'RunProgress
         '
-        RunProgress.Location = New System.Drawing.Point(616, 34)
-        RunProgress.Name = "RunProgress"
-        RunProgress.Size = New System.Drawing.Size(344, 16)
-        RunProgress.Step = 5
-        RunProgress.TabIndex = 8
+        Me.RunProgress.Location = New System.Drawing.Point(616, 34)
+        Me.RunProgress.Name = "RunProgress"
+        Me.RunProgress.Size = New System.Drawing.Size(344, 16)
+        Me.RunProgress.Step = 5
+        Me.RunProgress.TabIndex = 8
         '
         'Label3
         '
-        Label3.AutoSize = True
-        Label3.Location = New System.Drawing.Point(536, 34)
-        Label3.Name = "Label3"
-        Label3.Size = New System.Drawing.Size(51, 13)
-        Label3.TabIndex = 9
-        Label3.Text = "Progress:"
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(536, 34)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(51, 13)
+        Me.Label3.TabIndex = 9
+        Me.Label3.Text = "Progress:"
         '
         'RunUpdate
         '
-        RunUpdate.Location = New System.Drawing.Point(516, 520)
-        RunUpdate.Name = "RunUpdate"
-        RunUpdate.Size = New System.Drawing.Size(100, 23)
-        RunUpdate.TabIndex = 6
-        RunUpdate.Text = "Update"
+        Me.RunUpdate.Location = New System.Drawing.Point(516, 520)
+        Me.RunUpdate.Name = "RunUpdate"
+        Me.RunUpdate.Size = New System.Drawing.Size(100, 23)
+        Me.RunUpdate.TabIndex = 6
+        Me.RunUpdate.Text = "Update"
         '
         'RunOptions
         '
-        RunOptions.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        RunOptions.AutoSize = True
-        RunOptions.Location = New System.Drawing.Point(12, 530)
-        RunOptions.Name = "RunOptions"
-        RunOptions.Size = New System.Drawing.Size(0, 13)
-        RunOptions.TabIndex = 10
+        Me.RunOptions.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.RunOptions.AutoSize = True
+        Me.RunOptions.Location = New System.Drawing.Point(12, 530)
+        Me.RunOptions.Name = "RunOptions"
+        Me.RunOptions.Size = New System.Drawing.Size(0, 13)
+        Me.RunOptions.TabIndex = 10
         '
         'RunJac
         '
-        RunJac.Location = New System.Drawing.Point(672, 520)
-        RunJac.Name = "RunJac"
-        RunJac.Size = New System.Drawing.Size(100, 23)
-        RunJac.TabIndex = 11
-        RunJac.Text = "Jacobian Off"
-        RunJac.Visible = False
+        Me.RunJac.Location = New System.Drawing.Point(672, 520)
+        Me.RunJac.Name = "RunJac"
+        Me.RunJac.Size = New System.Drawing.Size(100, 23)
+        Me.RunJac.TabIndex = 11
+        Me.RunJac.Text = "Jacobian Off"
+        Me.RunJac.Visible = False
         '
         'RunErrors
         '
-        RunErrors.Location = New System.Drawing.Point(82, 351)
-        RunErrors.Multiline = True
-        RunErrors.Name = "RunErrors"
-        RunErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        RunErrors.Size = New System.Drawing.Size(821, 149)
-        RunErrors.TabIndex = 20
-        RunErrors.TabStop = False
-        RunErrors.Text = "No Errors"
+        Me.RunErrors.Location = New System.Drawing.Point(82, 351)
+        Me.RunErrors.Multiline = True
+        Me.RunErrors.Name = "RunErrors"
+        Me.RunErrors.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.RunErrors.Size = New System.Drawing.Size(821, 149)
+        Me.RunErrors.TabIndex = 20
+        Me.RunErrors.TabStop = False
+        Me.RunErrors.Text = "No Errors"
         '
         'RunModel
         '
-        AcceptButton = RunOK
-        AutoScaleBaseSize = New System.Drawing.Size(5, 13)
-        ClientSize = New System.Drawing.Size(984, 562)
-        Controls.Add(RunErrors)
-        Controls.Add(RunJac)
-        Controls.Add(RunOptions)
-        Controls.Add(RunUpdate)
-        Controls.Add(Label3)
-        Controls.Add(RunProgress)
-        Controls.Add(RunStop)
-        Controls.Add(RunDT)
-        Controls.Add(RunTime)
-        Controls.Add(Label2)
-        Controls.Add(Label1)
-        Controls.Add(RunSummary)
-        Controls.Add(RunOK)
-        Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        MaximumSize = New System.Drawing.Size(1000, 800)
-        Name = "RunModel"
-        ShowInTaskbar = False
-        StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Text = "RunModel"
-        CType(RunSummary, System.ComponentModel.ISupportInitialize).EndInit()
-        ResumeLayout(False)
-        PerformLayout()
+        Me.AcceptButton = Me.RunOK
+        Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+        Me.ClientSize = New System.Drawing.Size(984, 562)
+        Me.Controls.Add(Me.RunErrors)
+        Me.Controls.Add(Me.RunJac)
+        Me.Controls.Add(Me.RunOptions)
+        Me.Controls.Add(Me.RunUpdate)
+        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.RunProgress)
+        Me.Controls.Add(Me.RunStop)
+        Me.Controls.Add(Me.RunDT)
+        Me.Controls.Add(Me.RunTime)
+        Me.Controls.Add(Me.Label2)
+        Me.Controls.Add(Me.Label1)
+        Me.Controls.Add(Me.RunSummary)
+        Me.Controls.Add(Me.RunOK)
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.MaximumSize = New System.Drawing.Size(1000, 800)
+        Me.Name = "RunModel"
+        Me.ShowInTaskbar = False
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
+        Me.Text = "RunModel"
+        CType(Me.RunSummary, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 

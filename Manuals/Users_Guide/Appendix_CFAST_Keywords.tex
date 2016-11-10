@@ -174,7 +174,7 @@ EVENT is used to open or close a vent or to change filtering. This replaces the 
   \item[TYPE] Type indicates the vent type associated with this EVENT action. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, ``M'' a mechanical flow event, and ``F'' for filtering of mechanical ventilation flow.
   \item[FIRST] compartment number of lower numbered (for wall vents), top (for ceiling/floor vents) or from compartment (for mechanical vents).
   \item[SECOND] compartment number of higher numbered (for wall vents), bottom (for ceiling/floor vents) or to compartment (for mechanical vents).
-  \item[VentID] vent number associated with the vent consistent with appropriate vent command.
+  \item[ID] vent number associated with the vent consistent with appropriate vent command.
   \item[TIME] beginning time of vent opening or filter fraction change.
   \item[FRACTION] final vent opening fraction or filter fraction.
   \item[DECAY] time over which opening or filter transitions from its initial fraction to its final fraction.
@@ -326,13 +326,30 @@ specifies that compartment one has one connection to compartment two and the fra
 
 \section{HVENT}
 
-\begin{lstlisting}
-HVENT, FIRST_COMPARTMENT, SECOND_COMPARTMENT, VENT_NUMBER, WIDTH, SOFFIT, SILL, FIRST_COMPARTMENT_OFFSET, SECOND_COMPARTMENT_OFFSET, FACE, OPENING_TRIGGER_TYPE, OPENING_TRIGGER_CRITERION, ASSOCIATED_OPENING_TRIGGER_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION
-\end{lstlisting}
+The HVENT keyword specifies a vent which allows horizontal flow of gases through wall vents such as doors and windows.
 
-Vent which allows horizontal flow of gases through vents such as doors and windows. Compartment offsets are triplets from the compartment origin.  FACE is an integer from 1 to 4 counterclockwise from the origin defining which wall face to place the vent on when visualizing with Smokeview. It doesn't affect the dynamics of the calculation, just the way it looks. The size of the opening can be modified by EVENT. This changes the Opening\_Fraction from the initial value (set above) to some other value. Typical use is to start with the door open (Initial\_Opening\_Fraction~=~1) and use EVENT to close the door (Final\_Fraction~=~0).
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[FIRST]
+  \item[SECOND]
+  \item[ID]
+  \item[WIDTH]
+  \item[SOFFIT]
+  \item[SILL]
+  \item[OFFSET1]
+  \item[OFFSET2]
+  \item[FACE]
+  \item[TYPE]
+  \item[CRITERION]
+  \item[TARGET]
+  \item[INITIALTIME]
+  \item[INITIALFRACTION]
+  \item[FINALTIME]
+  \item[FINALFRACTION]
+\end{description}
+\end{adjustwidth}
 
-Example:
+\noindent Example:
 
 \begin{lstlisting}
 HVENT,1,2,1,1,2,0,2.5,0,1,TIME,,,0,1,0,1

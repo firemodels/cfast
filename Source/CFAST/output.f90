@@ -764,11 +764,12 @@ module output_routines
         end do
     end if
 5030 format (//,'There are no vertical natural flow connections')
-5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,'Top            Bottom         Vent    Shape     Area      ', &
-        'Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
-        'Compartment    Compartment    Number                      Type        Value       Target      Time        ',&
-        'Fraction    Time        Fraction',/, &
-        48X,'(m^2)',17x,'(C/W/m^2)',15x,'(s)',21x,'(s)',/,138('-'))
+5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,&
+         'Top            Bottom         Vent    Shape     Area      ', &
+         'Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
+         'Compartment    Compartment    Number                      Type        Value       Target      Time        ',&
+         'Fraction    Time        Fraction',/, &
+         48X,'(m^2)',17x,'(C/W/m^2)',15x,'(s)',21x,'(s)',/,138('-'))
 5050 format (a14,1x,a14,i3,6x,a6,3x,f5.2,6x,a,27x,4(f9.2,3x))
 5055 format (a14,1x,a14,i3,6x,a6,3x,f5.2,6x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))
 

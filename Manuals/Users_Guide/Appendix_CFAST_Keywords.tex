@@ -198,7 +198,7 @@ The FIRE keyword places a fire into a compartment. The associated keywords CHEMI
   \item[COMPARTMENT] the compartment in which the fire is located.
   \item[X, Y, Z] the width, depth, and height of the center of the base of the fire relative to the selected compartment.
   \item [PLUME] a ``1'' as the fifth argument is required to maintain compatibility with older versions of the model. It is ignored by the current of the model.
-  \item[TYPE] fires can be initiated as a specific time, temperature or incident heat flux. Corresponding inputs are TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the TARGET field is used to determine the ignition time.
+  \item[TYPE] fires can be initiated at a specific time, temperature or incident heat flux. Corresponding inputs are TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the TARGET field is used to determine the ignition time.
   \item[CRITERION] is the initialing value for the current fire, either a time, temperature or incident heat flux as chosen above.
   \item[TARGET] user-specified target associated with this fire and used to judge ignition by temperature or incident heat flux.
   \item[0,0] zeros are required in the ninth and tenth arguments to maintain compatibility with older versions of the model.
@@ -330,22 +330,22 @@ The HVENT keyword specifies a vent which allows horizontal flow of gases through
 
 \begin{adjustwidth}{1cm}{0cm}
 \begin{description}
-  \item[FIRST]
-  \item[SECOND]
-  \item[ID]
-  \item[WIDTH]
-  \item[SOFFIT]
-  \item[SILL]
-  \item[OFFSET1]
-  \item[OFFSET2]
-  \item[FACE]
-  \item[TYPE]
-  \item[CRITERION]
-  \item[TARGET]
-  \item[INITIALTIME]
-  \item[INITIALFRACTION]
-  \item[FINALTIME]
-  \item[FINALFRACTION]
+  \item[FIRST] first compartment of pairs connected by a wall vent. First compartment must be a lower number than second compartment. Outside is indicated by the number of compartments plus one.
+  \item[SECOND] second compartment of pairs connected by a wall vent. First compartment must be a lower number than second compartment. Outside is indicated by the number of compartments plus one.
+  \item[ID] vent number associated with this vent. Vents connecting the same compartment pair are numbered beginning with 1.
+  \item[WIDTH] vent width.
+  \item[SOFFIT] top of the vent from compartment floor.
+  \item[SILL] bottom of the vent from compartment floor.
+  \item[OFFSET1] horizontal location of vent on selected face in first compartment.
+  \item[OFFSET2] not used
+  \item[FACE] wall within first compartment containing the vent. Numbered 1, 2, 3, or 4 for front, right side, back side, or left side, respectively.
+  \item[TYPE] vent openings can change at a specific time, temperature or incident heat flux. Corresponding inputs are TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the TARGET field is used to determine the ignition time.
+  \item[CRITERION] is the initialing value for the current vent, either a time, temperature or incident heat flux as chosen above.
+  \item[TARGET] user-specified target associated with this vent and used to judge vent opening or closing based on temperature or incident heat flux.
+  \item[INITIALTIME] for time-based vent opening change, the time that the change in vent opening begins. For times less than or equal to this time, the vent is open at the specified INITIALFRACTION.
+  \item[INITIALFRACTION] fraction from 0 to 1 that vent is open up to the time specified in INITIALTIME
+  \item[FINALTIME] for time-based vent opening change, the time that the change in vent opening ends. For times greater than or equal to this time, the vent is open at the specified FINALFRACTION.
+  \item[FINALFRACTION] fraction from 0 to 1 that vent is open beginning at the time specified in FINALTIME
 \end{description}
 \end{adjustwidth}
 
@@ -357,11 +357,16 @@ HVENT,1,2,1,1,2,0,2.5,0,1,TIME,,,0,1,0,1
 
 \section{ISOF}
 
-\begin{lstlisting}
-ISOF, VALUE, COMPARTMENT(S)
-\end{lstlisting}
-
 The ISOF command creates 3-dimensional animated contours of gas temperature in one or more compartments.  For example, a 300 \degc temperature isosurface is a 3-D surface on which the gas temperature is 300 \degc. The output frequency of the slice files is controlled by the SMOKEVIEW\_OUTPUT\_INTERVAL input on the TIMES input line. Note that 3-D isosurface files can be quite large if the output interval is small. Computational time can also increase significantly with specification of isosurface files.
+
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[VALUE] gas temperature to be displayed as an isosurface
+  \item[COMP\_1, COMP\_2, ... , COMP\_N] one or more compartment numbers. If no compartment number is included, all compartments in the simulation are assumed.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
 ISOF, 300, 1, 2
@@ -386,15 +391,23 @@ This parameter is global and applies to all fires. The keyword sets the lower ox
 LIMO2,0.1
 \end{lstlisting}
 
-This entry is superceded by the two-entry key word GLOBA which replaces both LIMO2 and DJIGN.
-
 \section{MATL}
 
-\begin{lstlisting}
-MATL, SHORT_NAME, CONDUCTIVITY, SPECIFIC_HEAT, DENSITY, THICKNESS, EMISSIVITY, LONG_NAME
-\end{lstlisting}
+This keyword defines the thickness and thermal properties for a single material that may be referenced as a compartment surface material, target material, or fire object. Each name must be unique within a single input file.
 
-This command defines the thickness and thermal properties for a single material that may be referenced as a compartment surface material, target material, or fire object. Each name must be unique within a single input file.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[SHORT] single word name for the material.
+  \item[K] thermal conductivity of the material.
+  \item[C] specific heat of the material.
+  \item[RHO] density of the material.
+  \item[THICKNESS] thickness of the material.
+  \item[EMISS] surface emissivity of the material.
+  \item[LONG] descriptive name for the material.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
 MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
@@ -403,41 +416,91 @@ MATL,GLASSFB3,0.036,795,105,0.013,0.9,"Glass Fiber, Organic Bonded (1/2 in)"
 
 \section{MVENT}
 
-\begin{lstlisting}
-MVENT, FROM_COMPARTMENT, TO_COMPARTMENT, ID_NUMBER, FROM_OPENING_ORIENTATION, FROM_CENTER_HEIGHT, FROM_OPENING_AREA, TO_OPENINGORIENTATION, TO_CENTER_HEIGHT, TO_OPENING_AREA, FLOW, BEGIN_DROPOFF_PRESSURE, ZERO_FLOW_PRESSURE, OPENING_TRIGGER_TYPE, OPENING_TRIGGER_CRITERION, ASSOCIATED_OPENING_TRIGGER_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION, X_OFFSET, Y_OFFSET
-\end{lstlisting}
-
 This replaces the more complex mechanical ventilation commands with a constant flow fan connection.  The original commands MVOPN MVFAN MVDCT and INELV are not supported in this version. The command specifies a pair of openings connected by a constant volume flow fan.
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[FIRST] first compartment of pairs connected by a wall vent. First compartment must be a lower number than second compartment. Outside is indicated by the number of compartments plus one.
+  \item[SECOND] second compartment of pairs connected by a wall vent. First compartment must be a lower number than second compartment. Outside is indicated by the number of compartments plus one.
+  \item[ID] vent number associated with this vent. Vents connecting the same compartment pair are numbered beginning with 1.
+  \item[ORIENTATION] orientation of the diffuser grill for the vent in the first compartment. Vents may horizontal (H) or vertical (V). This effects the partitioning of flow between the layers in the compartment and the mechanical vent.
+  \item[HEIGHT] height of the center of the vent relative to the floor in the first compartment.
+  \item[AREA] cross-sectional area of the vent connection in the first compartment.
+  \item[ORIENTATION2] orientation of the diffuser grill for the vent in the second compartment. Vents may horizontal (H) or vertical (V). This effects the partitioning of flow between the layers in the compartment and the mechanical vent.
+  \item[HEIGHT2] height of the center of the vent relative to the floor in the second compartment.
+  \item[AREA2] cross-sectional area of the vent connection in the second compartment.
+  \item[FLOW] fan flowrate from first compartment to second compartment.
+  \item[PLOWER] fan flow can reduce to zero if the back pressure on the system is too great. At pressures less than or equal to PLOWER, full flow specified is used.
+  \item[PUPPER] At pressures greater than or equal to PUPPER, flow is zero. Between PLOWER and PUPPER, flow transitions from full flow to zero flow.
+  \item[TYPE] vent openings can change at a specific time, temperature or incident heat flux. Corresponding inputs are TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the TARGET field is used to determine the ignition time.
+  \item[CRITERION] is the initialing value for the current vent, either a time, temperature or incident heat flux as chosen above.
+  \item[TARGET] user-specified target associated with this vent and used to judge vent opening or closing based on temperature or incident heat flux.
+  \item[INITIALTIME] for time-based vent opening change, the time that the change in vent opening begins. For times less than or equal to this time, the vent is open at the specified INITIALFRACTION.
+  \item[INITIALFRACTION] fraction from 0 to 1 that vent is open up to the time specified in INITIALTIME
+  \item[FINALTIME] for time-based vent opening change, the time that the change in vent opening ends. For times greater than or equal to this time, the vent is open at the specified FINALFRACTION.
+  \item[FINALFRACTION] fraction from 0 to 1 that vent is open beginning at the time specified in FINALTIME
+  \item[OFFSETX] distance in the x (width) direction to the center of the vent relative to the lower left front corner of the compartment
+  \item[OFFSETY] distance in the y (depth) direction to the center of the vent relative to the lower left front corner of the compartment
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
-MVENT,2,1,1,V,1,0.25,V,1,0.25,0.02,200,300,FLUX,6,Targ1,,0,,1,2,2
+MVENT,2,4,2,V,2.75,0.25,V,2.75,0.25,0.02,200,300,TIME,,,0,1,0,1,5,4
 \end{lstlisting}
 
 \section{ONEZ}
 
-\begin{lstlisting}
-ONEZ, COMPARTMENT
-\end{lstlisting}
+For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source where the two-zone layer stratification is less pronounced than in compartments near the fire. This is used in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, and compartments far from the fire. More than one compartment may be specified by including multiple ONEZ keywords.
 
-For tall compartments or those removed from the room of fire origin, the compartment may be modeled as a single, well-mixed zone rather than the default two-zone assumption. A single zone approximation is appropriate for smoke flow far from a fire source where the two-zone layer stratification is less pronounced than in compartments near the fire. This is used in situations where the stratification does not occur. Examples are elevators, shafts, complex stairwells, and compartments far from the fire.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[COMPARTMENT] compartment number to be modeled as a single well-mixed zone.
+\end{description}
+\end{adjustwidth}
 
-Example:
+\noindent Example:
 
 \begin{lstlisting}
 ONEZ,2
 \end{lstlisting}
 
-\section{ROOMA and ROOMH}
+\section{RAMP}
+
+The RAMP keyword specifies a time-varying opening for a wall, ceiling/floor, or mechanical vent.
+
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TYPE] Type indicates the vent type associated with this RAMP. ``H'' indicates a horizontal flow event that changes the vent opening, ``V'' a vertical flow event, and ``M'' a mechanical flow event.
+  \item[FIRST] compartment number of lower numbered (for wall vents), top (for ceiling/floor vents) or from compartment (for mechanical vents).
+  \item[SECOND] compartment number of higher numbered (for wall vents), bottom (for ceiling/floor vents) or to compartment (for mechanical vents).
+  \item[ID] vent number associated with the vent consistent with appropriate vent command.
+  \item[N] number of compartments connected to first compartment
+  \item[TIME\_1, FRAC\_1, TIME\_2, FRAC\_2, ... ,  TIME\_N, FRAC\_N] N pairs of time and opening fraction of the first compartment connected to that compartment. Fractions must be between 0 and 1.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
-ROOMA AND ROOMH, COMPARTMENT, NUMBER_OF_VALUES, AREA(OR HEIGHT) VALUES
+RAMP,V,3,2,1,3,0,0,100,0.5,500,1
 \end{lstlisting}
+
+\section{ROOMA and ROOMH}
 
 These key words allow the user to define non-rectangular rooms by specifying cross-sectional area as a function of height. One set of values is included for each compartment that has a variable cross-sectional area. The format in both cases is the key followed by an index of the number of values. These key words must be used in pairs.
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[COMPARTMENT] compartment number to be modeled with variable cross-sectional area.
+  \item[NUMBER] number of area or height inputs.
+  \item[AREA\_1, AREA\_2, ... , AREA\_N] horizontal cross-sectional area at heights specified by the corresponding ROOMH keyword.
+  \item[HEIGHT\_1, HEIGHT\_2, ... , HEIGHT\_N] height of corresponding horizontal cross-sectional specified by the corresponding ROOMA keyword.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
 ROOMA 1    3     10.0  5.0  3.0
@@ -448,13 +511,18 @@ The example specifies that compartment 1 has a cross-sectional area of 10 m$^2$,
 
 \section{SLCF}
 
-\begin{lstlisting}
-SLCF, DOMAIN, LOCATION, COMPARTMENT(S)
-\end{lstlisting}
+With Smokeview, CFAST can display animations of various gas phase quantities in a plane or volume in one or more compartments, depending on the inputs. For 2-D slices, the DOMAIN input is 2-D, followed by the selected plane (either X, Y, or Z), and a position within the compartment along the respective axis. For 3-D slices, the DOMAIN input 3-D is selected. One, several, or all compartments can be specified. As many SLCF commands as needed can be used in a CFAST input file.  The output frequency of the slice files is controlled by the SMOKEVIEW\_OUTPUT\_INTERVAL input on the TIMES input line. Note that 3-D slice files can be quite large if the output interval is small. Computational time can also increase significantly with specification of detailed 3-D slice files.
 
-With Smokeview, CFAST can display animations of various gas phase quantities in a plane or volume in one or more compartments, depending on the inputs. For 2-D slices, the DOMAIN input is 2-D, followed by the selected plane (either X, Y, or Z), and a position within the compartment along the respective axis. For 3-D slices, the DOMAIN input 3-D is selected. One, several, or all compartments can be specified. As many SLCF commands as needed can be used in a CFAST input file.  The output frequency of the slice files is controlled by the SMOKEVIEW\_OUTPUT\_INTERVAL input on the TIMES input line. Note that 3-D slice files can be quite large if the output interval is small. Computational time can also increase significantly with specification of 3-D slice files.
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[DOMAIN] either 2-D for a single slice of temperature data or 3-D for all three dimensions.
+  \item[PLANE] for 2-D slices, either X, Y, or Z specifying a slice perpendicular to the chosen plane.
+  \item[POSITION] distance along the selected axis relative to the compartment origin.
+  \item[COMP\_1, COMP\_2, ... , COMP\_N] one or more compartment numbers. If no compartment number is included, all compartments in the simulation are assumed.
+\end{description}
+\end{adjustwidth}
 
-Example:
+\noindent Example:
 
 \begin{lstlisting}
 SLCF, 3-D, 1, 2, 3
@@ -467,13 +535,15 @@ The first SLCF example specifies a 3-D slice file output for compartments 1, 2, 
 
 \section{STPMAX}
 
-\begin{lstlisting}
-STPMAX, MAXIMUM_TIME_STEP
-\end{lstlisting}
-
 This specifies the largest time step that the model will take. The default value is one second. In most cases, the numerical routines adjust the time step appropriately; however, for long simulation times and slowly varying conditions, a larger value is appropriate. In cases where the fire height and vent soffits interact, the time step may need to be smaller.
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[STEP] maximum time step.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
 STPMAX,0.2
@@ -481,58 +551,61 @@ STPMAX,0.2
 
 \section{ TAMB}
 
-\begin{lstlisting}
-TAMB, AMBIENT_TEMPERATURE, AMBIENT_PRESSURE, RELATIVE_HUMIDITY
-\end{lstlisting}
-
 This keyword sets ambient conditions for the inside of the building. For the internal ambient, relative humidity sets the initial water concentration in the ambient air.  Temperatures are in Kelvin, pressure in Pascals, and relative humidity in percent. Default values for temperature, pressure, and relative humidity are 20~\degc, 101325~Pa, and 50~\%, respectively.
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TEMPERATURE] ambient temperature. Default is 20 \degc.
+  \item[PRESSURE] ambient pressure. Default is 101325 Pa.
+  \item[RH] ambient relative humidity. Default value is 50 %.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
-EAMB,300,101300,50
+TAMB,300,101300,50
 \end{lstlisting}
 
 \section{TARGE}
 
+CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets. 
+
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[COMPARTMENT] compartment number where the detector is located.
+  \item[X,Y,Z] location relative to the lower, left, front corner of the compartment.
+  \item[NORMALX, NORMALY, NORMALZ] normal vector from front surface of target.
+  \item[MATERIAL] material which must match a SHORT NAME for one of the defined material properties.
+  \item[METHOD] must be EXPLICIT.
+  \item[EQUATIONTYPE] PDE for cartesian coordinates or CYL for cylindrical coordinates.
+  \item[INTERNALLOCATION] fraction of depth into material at which internal temperature is reported. For center of material, a value of 0.5 is specified.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
+
 \begin{lstlisting}
-TARGE, COMPARTMENT, WIDTH, DEPTH, HEIGHT, NORMAL_DEPTH, NORMAL_BREADTH, NORMAL_HEIGHT, MATERIAL, METHOD, EQUATION_TYPE, INTERNAL_LOCATION
-\end{lstlisting}
-
-CFAST can track and report calculations of the net heat flux striking arbitrarily positioned and oriented targets and the temperature of these targets. A non-zero normal vector must be specified as must a material from the thermophysical database. METHOD can be set to STEADY for steady state solution, XPLICIT for explicit solution, and MPLICIT for an implicit solution. Equation\_Type can be PDE for cartesian coordinates or CYL for cylindrical coordinates.
-
-Example:
-
-\begin{lstlisting}
-TARGE,1,2.20,1.88,2.34,0.00,0.00,1.00,CONCRETE,IMPLICIT,PDE
+TARGET,1,2.2,1.88,2.34,0,0,1,CONCRETE,EXPLICIT,PDE,0.5,Targ 1
 \end{lstlisting}
 
 \section{TIMES}
 
-\begin{lstlisting}
-TIMES, SIMULATION_TIME, PRINT_INTERVAL, SPREADSHEET_OUTPUT_INTERVAL, SMOKEVIEW_OUTPUT_INTERVAL
-\end{lstlisting}
+Printed output will be on the screen or in a file named project.out. Five spreadsheet files are produced (project\_n.csv, project\_w.csv, project\_f.csv, and project\_s.csv, and project\_m.csv). 
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[SIMULATION] total simulation time.
+  \item[PRINT] time interval for printed output.
+  \item[SPREADSHEET] time interval for spreadsheet output.
+  \item[SMOKEVIEW] time interval for smokeview output.
+\end{description}
+\end{adjustwidth}
 
-\begin{lstlisting}
-TIMES,360,-120,130,140,150,
-\end{lstlisting}
-
-Printed output will be on the screen or in a file named project.out. The four spreadsheet listings are in project.(project\_n.csv, project\_w.csv, project\_f.csv and project\_s.csv). The Smokeview output interval are for graphical output using the companion program Smokeview.
-
-\section{THRMF}
-
-\begin{lstlisting}
-THRMF, THERMOPHYSICAL_PROPERTIES_FILE
-\end{lstlisting}
-
-By default, thermophysical properties are obtained from the thermal.csv which is located in the directory where the model executables reside. This allows for another file to be used.
-
-Example:
+\noindent Example:
 
 \begin{lstlisting}
-THRMF,NEWTHERMALFILE
+TIMES,360,120,130,140,150,
 \end{lstlisting}
 
 \section{VERSN}
@@ -541,9 +614,16 @@ THRMF,NEWTHERMALFILE
 VERSN,version number, Title
 \end{lstlisting}
 
-This input must be the first line in a CFAST input and largely specifies a title for the simulation. The major version number from the file must match the major version number kept internally (7 at the moment).
+This input must be the first line in a CFAST input and largely specifies a title for the simulation. 
 
-Example
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[VERSION] version of the model for this input file.  Should be 7 for the current version.
+  \item[TITLE] short descriptive title for the simulation
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
 VERSN,6,"Simple test of the object file input"
@@ -557,7 +637,14 @@ VHEAT, FIRST_COMPARTMENT, SECOND_COMPARTMENT
 
 Heat transfer between the ceiling and floor of specified compartments can be incorporated with the VHEAT key word. Ceiling to floor heat transfer occurs between interior compartments of the structure or between an interior compartment and the outdoors. The model checks to make sure that the ceiling and floor are reasonably contiguous (within 0.01 m), and the assumption is made that this is true for the entire ceiling and floor.
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TOP] compartment number of top compartment connected for ceiling/floor heat transfer.
+  \item[BOTTOM] compartment number of bottom compartment connected for ceiling/floor heat transfer.
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
 VHEAT,1,2
@@ -567,17 +654,31 @@ The floor properties of the top compartment (1 in this case) and the ceiling pro
 
 \section{VVENT}
 
-\begin{lstlisting}
-VVENT, TOP_COMPARTMENT, BOTTOM_COMPARTMENT, VENT_NUMBER, AREA, SHAPE, OPENING_TRIGGER_TYPE, OPENING_TRIGGER_CRITERION, ASSOCIATED_OPENING_TRIGGER_TARGET, INITIAL_TIME, INITIAL_FRACTION, FINAL_TIME, FINAL_FRACTION, X_OFFSET, Y_OFFSET
-\end{lstlisting}
-
 This key word describes horizontal openings between compartments connected with a vent in the floor/ceiling between the compartments. Each VVENT line in the input file describes one floor/ceiling vent.
 
-Example:
+\begin{adjustwidth}{1cm}{0cm}
+\begin{description}
+  \item[TOP] top compartment of pairs connected by a ceiling/floor vent. Outside is indicated by the number of compartments plus one.
+  \item[BOTTOM] bottom compartment of pairs connected by a wall vent. ceiling/floor vent. Outside is indicated by the number of compartments plus one.
+  \item[ID] vent number associated with this vent. Vents connecting the same compartment pair are numbered beginning with 1.
+  \item[area] cross-sectional area of the vent.
+  \item[SHAPE] numerical input specifies either a circular (1) or square (2) vent.
+  \item[TYPE] vent openings can change at a specific time, temperature or incident heat flux. Corresponding inputs are TIME, FLUX, or TEMP.  IF FLUX or TEMP is specified, an existing, user-specified target specified in the TARGET field is used to determine the ignition time.
+  \item[CRITERION] is the initialing value for the current vent, either a time, temperature or incident heat flux as chosen above.
+  \item[TARGET] user-specified target associated with this vent and used to judge vent opening or closing based on temperature or incident heat flux.
+  \item[INITIALTIME] for time-based vent opening change, the time that the change in vent opening begins. For times less than or equal to this time, the vent is open at the specified INITIALFRACTION.
+  \item[INITIALFRACTION] fraction from 0 to 1 that vent is open up to the time specified in INITIALTIME
+  \item[FINALTIME] for time-based vent opening change, the time that the change in vent opening ends. For times greater than or equal to this time, the vent is open at the specified FINALFRACTION.
+  \item[FINALFRACTION] fraction from 0 to 1 that vent is open beginning at the time specified in FINALTIME
+  \item[OFFSETX] distance in the x (width) direction to the center of the vent relative to the lower left front corner of the compartment
+  \item[OFFSETY] distance in the y (depth) direction to the center of the vent relative to the lower left front corner of the compartment
+\end{description}
+\end{adjustwidth}
+
+\noindent Example:
 
 \begin{lstlisting}
-VVENT,2,1,1,0.5,2,TEMP,573.15,Targ1,,0,,1,2.5,2.5
-VVENT,2,1,1,0.5,2,TIME,,,0,1,0,1,2,2
+VVENT,3,2,1,1,1,TIME,,,0,0,100,0.5,2.5,1
 \end{lstlisting}
 
 

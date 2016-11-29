@@ -1317,7 +1317,7 @@
                 if (dtectptr%spray_density==0.0_eb) then
                     dtectptr%quench = .false.
                 end if
-                ! if there's a sprinkler that can go off, then make sure the time step is small enough to report ir accurately
+                ! if there's a sprinkler that can go off, then make sure the time step is small enough to report it accurately
                 if (dtectptr%quench) then
                     if (stpmax>0) then
                         stpmax = min(stpmax,1.0_eb)
@@ -1325,7 +1325,7 @@
                         stpmax = 1.0_eb
                     end if
                 end if
-                roomptr => roominfo(ir)
+                roomptr => roominfo(iroom)
                 if (roomptr%name==' ') then
                     write (*,5344) i2
                     write (iofill,5344) i2

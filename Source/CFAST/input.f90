@@ -43,7 +43,7 @@
     implicit none
 
     real(eb) :: yinter(mxrooms), temparea(mxcross), temphgt(mxcross), deps1, dwall1, dwall2, rti
-    real(eb) :: xloc, yloc, zloc, pyramid_height, dheight, xx, sum
+    real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ios, iversion, i, ii, j, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, ivers
     character :: aversion*5
@@ -165,6 +165,20 @@
         write (iofill,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0..15 used'
         lower_o2_limit = 0.15_eb
     end if
+    
+    !make sure wall vent specifications are correct
+    do i = 1,n_hvents
+        ventptr => hventinfo(i)
+        roomptr => roominfo(ventptr%room1)
+        zbot = ventptr%sill
+        ztop = ventptr%soffit
+        if (zbot<0.0_eb.or.zbot>roomptr%cheight.or.ztop<0.0_eb.or.ztop>roomptr%cheight.or.ztop<zbot) then
+            write (*,203) zbot, ztop
+            write (iofill,203) zbot, ztop
+203         format('***Error: Invalid HVENT specification. sill and/or soffit height =',2e11.4,' out of bounds')
+            stop
+        end if
+    end do
 
     ! make sure ceiling/floor vent specifications are correct -  we have to do this
     ! here rather than right after keywordcases because floor_height and ceiling_height were just defined

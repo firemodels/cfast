@@ -437,9 +437,9 @@ Module IO
                                     csv.num(i, vventNum.firstcompartment) = 0
                         If csv.num(i, vventNum.secondcompartment) > myCompartments.Count Then _
                                     csv.num(i, vventNum.secondcompartment) = 0
-                        vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
-                                    csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
                         If csv.num(i, 0) > 6 Then ' New format that allows more than one VVENT per compartment pair
+                            vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
+                                        csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
                             If InStr(OpenTypes, csv.str(i, vventNum.openingtype), CompareMethod.Text) > 0 Then
                                 vvent.OpenType = InStr(OpenTypes, csv.str(i, vventNum.openingtype), CompareMethod.Text) / 4
                                 If vvent.OpenType = Vent.OpenbyTime Then
@@ -456,6 +456,8 @@ Module IO
                                 vvent.OffsetX = csv.num(i, vventNum.xoffset)
                                 vvent.OffsetY = csv.num(i, vventNum.yoffset)
                             Else
+                                vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
+                                            csv.num(i, vventNum.area), csv.num(i, vventNum.shape))
                                 vvent.OpenType = Vent.OpenbyTime
                                 vvent.InitialOpeningTime = 0    ' This is the default; it may be changed by an EVENT specification
                                 vvent.InitialOpening = csv.num(i, vventNum.intialfraction)
@@ -464,6 +466,8 @@ Module IO
                             End If
                             vvent.Changed = False
                         Else ' Old format that does not include vent number and thus only one per compartment pair
+                            vvent.SetVent(csv.num(i, vventNum.firstcompartment) - 1, csv.num(i, vventNum.secondcompartment) - 1,
+                                        csv.num(i, vventNum.area - 1), csv.num(i, vventNum.shape - 1))
                             vvent.InitialOpeningTime = 0    ' This is the default; it may be changed by an EVENT specification
                             vvent.InitialOpening = csv.num(i, vventNum.intialfraction - 1)
                             vvent.FinalOpeningTime = 0

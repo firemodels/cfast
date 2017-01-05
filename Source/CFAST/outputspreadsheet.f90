@@ -119,12 +119,18 @@ module spreadsheet_routines
     integer, intent(in) :: iounit, ic
 
     integer i
-
-    if (validate) then
-        write (iounit,"(16384(e19.12,','))" ) (array(i),i=1,ic)
-    else
-        write (iounit,"(16384(e13.6,','))" ) (array(i),i=1,ic)
-    end if
+    character(35), dimension(16384) :: out
+    
+    out = ' '
+    do i = 1, ic
+        if (validate) then
+            write (out(i),"(e19.12)" ) array(i)
+        else
+            write (out(i),"(e13.6)" ) array(i)
+        end if
+    end do
+    write (iounit,"(16384a)") (trim(out(i)) // ',',i=1,ic-1),out(ic)
+    
     return
 
     end subroutine ssprintresults

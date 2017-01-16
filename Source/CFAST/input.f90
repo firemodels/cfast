@@ -1996,7 +1996,7 @@
 
     open (unit=1, file=inputfile, action='read', status='old', iostat=ios)
 
-    ! output the revision for later identification of validaiton plots
+    ! output the revision for later identification of validation plots
     if (validate) then
         call deleteoutputfiles (gitfile)
         open (unit=3, file=gitfile, action='write', iostat=ios, status='new')
@@ -2098,12 +2098,12 @@
     read (iofili,*) stpmax, stpfirst
 
     ! read in hvac convection coefficient (not currently used)
-    read(iofili,*)
-    read(iofili,*) ductcv
+    read (iofili,*)
+    read (iofili,*) ductcv
 
     ! read in jacobian and snsqe print flags
-    read(iofili,*)
-    read(iofili,*) jacchk, cutjac, iprtalg
+    read (iofili,*)
+    read (iofili,*) jacchk, cutjac, iprtalg
     close (iofili)
 
     return

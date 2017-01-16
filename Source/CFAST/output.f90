@@ -1314,17 +1314,18 @@ module output_routines
     open (unit=iofilo,file=outputfile,status='new')
     if (outputformat==0) outputformat = 2
 
-    ! n_mvext create the status file
+    ! the status files
     open (12,file=statusfile,access='append',err=81,iostat=ios)
+    open (unit=4, file=kernelisrunning)
 
-    ! now the smokeview files
+    ! the smokeview files
     if (smv_out_interval>0) then
         open (unit=13,file=smvhead,form='formatted',err=11,iostat=ios)
         open (unit=14,file=smvdata,form="unformatted",err=11,iostat=ios)
         open (unit=15, file=smvcsv,form='formatted')
     end if
 
-    ! n_mvext the spread sheet files
+    ! the spread sheet files
     if (ss_out_interval>0) then
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')
@@ -1332,11 +1333,6 @@ module output_routines
         open (unit=24, file=ssspeciesmass,form='formatted')
         open (unit=25, file=sswall,form='formatted')
     end if
-
-    ! and finally we create a file to indicate that the model is running.
-
-    !open (unit=4, file=kernelisrunning, dispose='delete')
-    open (unit=4, file=kernelisrunning)
 
     return
 

@@ -56,12 +56,14 @@
     call initialize_memory
     call initialize_fire_objects
     call read_command_options
-    call open_files
-
-    call output_version (iofill)
+    call parse_filepath (exepath, datapath, project)
+    call open_input_files
 
     call read_solver_ini
     call read_input_file
+
+    call open_output_files
+    call output_version (iofill)
 
     call initialize_species
 

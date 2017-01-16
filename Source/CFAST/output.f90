@@ -25,7 +25,7 @@ module output_routines
 
     private
 
-    public output_version, output_initial_conditions, output_results, deleteoutputfiles, openoutputfiles, &
+    public output_version, output_initial_conditions, output_results, deleteoutputfiles, open_output_files, &
         output_status, output_debug, find_error_component
 
     contains
@@ -1281,15 +1281,15 @@ module output_routines
 
 5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)
     end subroutine output_status
+    
+! --------------------------- open_output_files -------------------------------------------
 
-! --------------------------- openoutputfiles -------------------------------------------
-
-    subroutine openoutputfiles
+    subroutine open_output_files
 
     !	Now that we know what output is needed, open the appropriate files
     !	Unit numbers defined here and readinputfiles
 
-    !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
+    !	Unit numbers defined in read_command_options, open_output_files, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
     !      3 is for the log file  (iofill)
@@ -1309,7 +1309,51 @@ module output_routines
     !!!! Note that we assume that the default carriage control for formatted files is of type LIST (no fortran controls)
 
     integer :: ios
+   
+    outputfile = trim(datapath) // trim(project) // '.out'
+    smvhead = trim(datapath) // trim(project) // '.smv'
+    smvdata = trim(datapath) // trim(project) // '.plt'
+    smvcsv = trim(datapath) // trim(project) // '_zone.csv'
+    ssflow = trim(datapath) // trim(project) // '_f.csv'
+    ssnormal = trim(datapath) // trim(project) // '_n.csv'
+    ssspecies = trim(datapath) // trim(project) // '_s.csv'
+    ssspeciesmass = trim(datapath) // trim(project) // '_m.csv'
+    sswall = trim(datapath) // trim(project) // '_w.csv'
+    gitfile = trim(datapath) // trim(project) // '_git.txt'
+    stopfile = trim(datapath) // trim(project) // '.stop'
+    residfile = trim(datapath) // trim(project) // '.debug'
+    residcsv = trim(datapath) // trim(project) // '_resid.csv'
+    queryfile = trim(datapath) // trim(project) // '.query'
+    statusfile = trim(datapath) // trim(project) // '.status'
+    kernelisrunning = trim(datapath) // trim(project) // '.kernelisrunning'
 
+    slabcsv = trim(datapath) // trim(project) // '_slab.csv'
+    
+    
+    call deleteoutputfiles (outputfile)
+    call deleteoutputfiles (smvhead)
+    call deleteoutputfiles (smvdata)
+    call deleteoutputfiles (smvcsv)
+    call deleteoutputfiles (ssflow)
+    call deleteoutputfiles (ssnormal)
+    call deleteoutputfiles (ssspecies)
+    call deleteoutputfiles (ssspeciesmass)
+    call deleteoutputfiles (sswall)
+    call deleteoutputfiles (statusfile)
+    call deleteoutputfiles (queryfile)
+    call deleteoutputfiles (kernelisrunning)
+    
+    ! output the revision for later identification of validation plots
+    if (validate) then
+        call deleteoutputfiles (gitfile)
+        open (unit=3, file=gitfile, action='write', iostat=ios, status='new')
+        if (ios==0) then
+            call get_info(revision, revision_date, compile_date)
+            write (3,'(a)') revision
+            close (unit=3)
+        end if
+    end if
+    
     ! first the file for "printed" output
     open (unit=iofilo,file=outputfile,status='new')
     if (outputformat==0) outputformat = 2
@@ -1349,20 +1393,20 @@ module output_routines
 
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
 
-    end subroutine openoutputfiles
+    end subroutine open_output_files
 
 ! --------------------------- deleteoutputfiles -------------------------------------------
 
-    subroutine deleteoutputfiles (outputfile)
+    subroutine deleteoutputfiles (file)
 
-    character(*), intent(in) :: outputfile
+    character(*), intent(in) :: file
     integer fileunit,ios
 
-    if (doesthefileexist(outputfile)) then
+    if (doesthefileexist(file)) then
         fileunit=funit(14)
-        open(unit=fileunit, iostat=ios, file=outputfile, status='old')
+        open (unit=fileunit, iostat=ios, file=file, status='old')
         if (ios==0) then
-            close(fileunit, status='delete', iostat=ios)
+            close (fileunit, status='delete', iostat=ios)
             if (ios/=0) then
                 write (iofill,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
                     '. File may be in use by another application.'

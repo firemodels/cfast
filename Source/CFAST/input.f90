@@ -5,8 +5,8 @@
     use fire_routines, only: flame_height
     use initialization_routines, only : inittarg, initamb, offset
     use numerics_routines, only : dnrm2
-    use output_routines, only: openoutputfiles, deleteoutputfiles
-    use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
+    use output_routines, only: open_output_files, deleteoutputfiles
+    use utility_routines, only: countargs, get_igrid, upperall, parse_filepath, emix
 
     use wallptrs
     use cenviro
@@ -30,7 +30,7 @@
 
     private
 
-    public read_input_file, open_files, read_solver_ini
+    public read_input_file, open_input_files, read_solver_ini
 
     contains
 
@@ -52,7 +52,7 @@
     type(detector_type), pointer :: dtectptr
     type(vent_type), pointer :: ventptr
 
-    !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
+    !	Unit numbers defined in read_command_options, open_output_files, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
     !      3 is for the log file  (iofill)
@@ -139,9 +139,6 @@
         roomptr%y1 = roomptr%y0 + roomptr%cdepth
         roomptr%z1 = roomptr%z0 + roomptr%cheight
     end do
-
-    ! We now know what output is going to be generated, so create the files
-    call openoutputfiles
 
     interior_rho = interior_abs_pressure/interior_temperature/rgas
     exterior_rho = exterior_abs_pressure/exterior_temperature/rgas
@@ -1947,11 +1944,11 @@
     end subroutine set_heat_of_combustion
 
 
-    ! --------------------------- open_files -------------------------------------------
+    ! --------------------------- open_input_files -------------------------------------------
 
-    subroutine open_files ()
+    subroutine open_input_files ()
 
-    !     routine: open_files
+    !     routine: open_input_files
     !     purpose: get the paths and project base name open the input file for reading (1)
     ! 	         delete the output files
     ! 	         open the log file (3)
@@ -1961,78 +1958,26 @@
     integer :: lp, ld, ios
     character(256) :: testpath, testproj, revision, revision_date, compile_date
 
-    ! get the path and project names
-    call exehandle (exepath, datapath, project)
 
-    ! form the file names for datafiles
-    testpath = trim (datapath)
-    lp = len_trim (testpath)
-    testproj = trim (project)
-    ld = len_trim (testproj)
-    inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
-    outputfile = testpath(1:lp) // testproj(1:ld) // '.out'
-    smvhead = testpath(1:lp) // testproj(1:ld) // '.smv'
-    smvdata = testpath(1:lp) // testproj(1:ld) // '.plt'
-    smvcsv = testpath(1:lp) // testproj(1:ld) // '_zone.csv'
-    ssflow = testpath(1:lp) // testproj(1:ld) // '_f.csv'
-    ssnormal = testpath(1:lp) // testproj(1:ld) // '_n.csv'
-    ssspecies = testpath(1:lp) // testproj(1:ld) // '_s.csv'
-    ssspeciesmass = testpath(1:lp) // testproj(1:ld) // '_m.csv'
-    sswall = testpath(1:lp) // testproj(1:ld) // '_w.csv'
-    gitfile = testpath(1:lp) // testproj(1:ld) // '_git.txt'
-    errorlogging = testpath(1:lp) // testproj(1:ld) // '.log'
-    stopfile = testpath(1:lp) // testproj(1:ld) // '.stop'
-    residfile = testpath(1:lp) // testproj(1:ld) // '.debug'
-    residcsv = testpath(1:lp) // testproj(1:ld) // '_resid.csv'
-    queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
-    statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
-    kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'
-
-    slabcsv = testpath(1:lp) // testproj(1:ld) // '_slab.csv'
-
-    testpath = trim (exepath)
-    lp = len_trim (testpath)
-    solverini = testpath(1:lp) // 'solver.ini'
-
-    open (unit=1, file=inputfile, action='read', status='old', iostat=ios)
-
-    ! output the revision for later identification of validation plots
-    if (validate) then
-        call deleteoutputfiles (gitfile)
-        open (unit=3, file=gitfile, action='write', iostat=ios, status='new')
-        if (ios==0) then
-            call get_info(revision, revision_date, compile_date)
-            write (3,'(a)') revision
-            close (unit=3)
-        end if
-    end if
+    ! have to have an input file
+    inputfile = trim(datapath) // trim(project) // '.in'
+    call open_file (inputfile,iofili,existingfile)
+    
+    ! opening of solver.ini is delayed since it's an optional file
+    solverini = trim(datapath) // 'solver.ini'
 
     ! open the log file to write error messages and such
-    call deleteoutputfiles (errorlogging)
-    open (unit=3, file=errorlogging, action='write', iostat=ios, status='new')
+    errorlogging = trim(datapath) // trim(project) // '.log'
+    call open_file (errorlogging,iofill,newfile)
     if (ios/=0) then
         write (*,'(a,i0,a)') 'Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
         stop
     end if
 
-    call deleteoutputfiles (outputfile)
-    call deleteoutputfiles (smvhead)
-    call deleteoutputfiles (smvdata)
-    call deleteoutputfiles (smvcsv)
-    call deleteoutputfiles (ssflow)
-    call deleteoutputfiles (ssnormal)
-    call deleteoutputfiles (ssspecies)
-    call deleteoutputfiles (ssspeciesmass)
-    call deleteoutputfiles (sswall)
-    call deleteoutputfiles (statusfile)
-    call deleteoutputfiles (queryfile)
-    call deleteoutputfiles (kernelisrunning)
-
-    ! since we have reached this point, the output files are available and stop has been turned off.
     project = testproj (1:ld)
     return
 
-    end subroutine open_files
+    end subroutine open_input_files
 
     ! --------------------------- read_solver_ini -------------------------------------------
 

@@ -432,10 +432,10 @@ module solve_routines
     stopiter=-1
     if (exists) then
        stopunit=funit(14)
-       open(unit=stopunit,file=stopfile)
+       open (unit=stopunit,file=stopfile)
        read (stopunit,*,iostat=ios) stopiter
        if (ios.ne.0) stopiter=0
-       close(unit=stopunit)
+       close (unit=stopunit)
        icode = 1
     end if
     ! If the stop file exists or the esc key has been pressed, then quit
@@ -463,9 +463,9 @@ module solve_routines
         if (residfirst) then
             residfirst = .false.
             ioresid = funit(150)
-            open(unit=ioresid,file=residcsv)
+            open (unit=ioresid,file=residcsv)
             ioslab = funit(150)
-            open(unit = ioslab, file=slabcsv)
+            open (unit = ioslab, file=slabcsv)
         end if
     else
         residprn = .false.

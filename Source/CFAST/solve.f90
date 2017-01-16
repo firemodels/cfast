@@ -433,7 +433,7 @@ module solve_routines
     if (exists) then
        stopunit=funit(14)
        open(unit=stopunit,file=stopfile)
-       read(stopunit,*,iostat=ios) stopiter
+       read (stopunit,*,iostat=ios) stopiter
        if (ios.ne.0) stopiter=0
        close(unit=stopunit)
        icode = 1

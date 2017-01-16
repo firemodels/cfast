@@ -204,8 +204,7 @@ module setup_data
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning
 
-! Work arrays for the csv input routines
-
+    ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100
     real(eb) :: rarray(nrow,ncol)
     character(128) :: carray(nrow,ncol)

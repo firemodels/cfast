@@ -7,3 +7,4 @@ source $IFORT_COMPILER/bin/compilervars.sh $platform
 
 echo Building $target
 make -f ../makefile $target
+..\..\..\md5hash.sh cfast7_osx_64

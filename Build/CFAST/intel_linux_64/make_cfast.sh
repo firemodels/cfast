@@ -7,5 +7,5 @@ source $IFORT_COMPILER/bin/compilervars.sh $platform
 
 echo Building $target
 make -f ../makefile $target
-..\..\..\Utilities\scripts\md5hash.sh cfast7_linux_64
+../../../Utilities/scripts/md5hash.sh cfast7_linux_64
 

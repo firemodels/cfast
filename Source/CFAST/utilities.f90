@@ -511,11 +511,11 @@ module utility_routines
 
     end function doesthefileexist
 
-! --------------------------- parse_filepath -------------------------------------------
+! --------------------------- exehandle -------------------------------------------
 
-    subroutine parse_filepath (exepath, datapath, project)
+    subroutine exehandle (exepath, datapath, project)
 
-    !     routine: parse_filepath
+    !     routine: exehandle
     !     purpose: get the arguments used to call the main program
     !     arguments: exepath - path (without the name) to the folder where the executable resides
     !                datapath - path (without a file name) to the folder where the project data file resides
@@ -605,7 +605,7 @@ module utility_routines
     end if
     return
 
-    end subroutine parse_filepath
+    end subroutine exehandle
 
 ! --------------------------- mat2mult -------------------------------------------
 
@@ -780,7 +780,7 @@ module utility_routines
     !     purpose:  retrieve and process command line options and date
     !     arguments: none
 
-    ! unit numbers defined in read_command_options, open_output_files, readinputfiles
+    ! unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (iofili)
     !      3 is for the log file  (iofill)
@@ -866,7 +866,7 @@ module utility_routines
     nnnopt = 21
 
     iunit = funit(70)
-    open (unit=iunit,file=file)
+    open(unit=iunit,file=file)
 
     write (iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL'
     write (iunit,11) aptol, rptol, atol, rtol

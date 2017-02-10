@@ -441,82 +441,82 @@
 
         unit=funit(14)
         if (first_time.eq.1) then
-            open (unit,file=sf%filename,form='unformatted',status='replace')
+            open(unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((tslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(tslicedata)
-        close (unit)
+        close(unit)
 
         unit=funit(14)
         sf => sliceinfo(i+1)
         if (first_time.eq.1) then
-            open (unit,file=sf%filename,form='unformatted',status='replace')
+            open(unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((uslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(uslicedata)
-        close (unit)
+        close(unit)
 
         unit=funit(14)
         sf => sliceinfo(i+2)
         if (first_time.eq.1) then
-            open (unit,file=sf%filename,form='unformatted',status='replace')
+            open(unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((vslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(vslicedata)
-        close (unit)
+        close(unit)
 
         unit=funit(14)
         sf => sliceinfo(i+3)
         if (first_time.eq.1) then
-            open (unit,file=sf%filename,form='unformatted',status='replace')
+            open(unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((wslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(wslicedata)
-        close (unit)
+        close(unit)
 
         unit=funit(14)
         sf => sliceinfo(i+4)
         if (first_time.eq.1) then
-            open (unit,file=sf%filename,form='unformatted',status='replace')
+            open(unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open (unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((sslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(sslicedata)
-        close (unit)
+        close(unit)
     end do
 
 
@@ -662,15 +662,15 @@ module isosurface
         end do
         unit=funit(14)
         if (first_time.eq.1) then
-            open (unit,file=isoptr%filename,form='unformatted',status='replace')
+            open(unit,file=isoptr%filename,form='unformatted',status='replace')
             unit=-unit
         else
-            open (unit,FILE=isoptr%filename,form='unformatted',status='old',position='append')
+            open(unit,FILE=isoptr%filename,form='unformatted',status='old',position='append')
         end if
         call iso_to_file(unit,timef,isodataf,levelsf, nlevels, roomptr%xpltf, ibar+1, roomptr%ypltf, jbar+1, roomptr%zpltf, kbar+1)
 
         deallocate(isodataf)
-        close (unit)
+        close(unit)
     end do
 
     end subroutine output_isodata

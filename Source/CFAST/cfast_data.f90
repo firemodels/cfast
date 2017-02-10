@@ -197,7 +197,6 @@ module setup_data
     character(32) :: mpsdatc
     
     !File descriptors for cfast
-    integer, parameter :: existingfile = 1, newfile = 2
     integer :: iofili=1, iofilo=6, iofill=3
     character(6), parameter :: heading="VERSN"
     character(64) :: project

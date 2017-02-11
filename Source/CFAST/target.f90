@@ -726,9 +726,6 @@ module target_routines
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = dtectptr%value
             tlink = dtectptr%obscuration
-            if (tcur>350._eb) then
-                continue
-            end if
         else if (dtectptr%dtype>=heatd) then
             rti = dtectptr%rti
             trig = dtectptr%trigger

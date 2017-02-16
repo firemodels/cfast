@@ -114,7 +114,7 @@ Top           Bottom        Vent    Shape    Area     Open/Close  Trigger       
 Compartment   Compartment   Number                    Type        Value      Target     Time       Fraction    Time     Fraction
                                              (m^2)                (C/W/m^2)             (s)                    (s)
 --------------------------------------------------------------------------------------------------------------------------------
-Comp 3        Comp 2         1      Round    1.00     RAMP # 1  
+Comp 3        Comp 2         1      Round    1.00     RAMP # 1
 \end{lstlisting}
 Top compartment, bottom compartment, shape, and area come from the VVENT specifications in the input data file. Relative height is the height of the vent above the floor of the bottom compartment and absolute height is the height of the vent above the station elevation.
 
@@ -135,7 +135,7 @@ Comp 2        Outside       2        0.00    0.02       Time                    
 
 \subsubsection{Ventilation Opening Ramp Specifications}
 
-Opening and closing of vents in CFAST can be specified by a series of times and opening fractions for a specified vent. By default, all vents are open at the beginning of a simulation and remain open throughout the simulation.  With the RAMP input, the opening of a vent can change of time. 
+Opening and closing of vents in CFAST can be specified by a series of times and opening fractions for a specified vent. By default, all vents are open at the beginning of a simulation and remain open throughout the simulation.  With the RAMP input, the opening of a vent can change of time.
 
 \begin{lstlisting}[basicstyle=\tiny]
 VENT RAMPS
@@ -326,7 +326,7 @@ In all cases, the flux to/from a target is net radiation or net convection. That
 
 \subsection{Output for Gas Species}
 
-The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume fractions for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked.  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``TS'' is trace species.
+The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume fractions for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked (Elemental nitrogen, oxygen, carbon dioxide, carbon monoxide, hydrogen cyanide, hydrochloric acid, and water).  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``TS'' is trace species.
 
 \begin{lstlisting}[basicstyle=\tiny]
 UPPER LAYER SPECIES
@@ -348,7 +348,7 @@ Comp 1         78.3       20.4      7.400E-02  1.526E-03   0.00       0.00      
 Comp 2         78.3       20.4      8.491E-02  1.751E-03   0.00       0.00       0.00       1.24      7.108E-02   0.00
 Comp 3         78.4       20.5      4.208E-10  8.678E-12   0.00       0.00       0.00       1.16      3.726E-10   0.00
 \end{lstlisting}
-The report by species for nitrogen, oxygen, hydrogen chloride and the total unburned hydrocarbons (fuel vapor in the layer) are percent by volume. Carbon dioxide, carbon monoxide and hydrogen cyanide are in parts per million, which is proportional to the volume fraction.  Optical depth per meter is a measure of the visibility in the smoke. This is covered in detail in the comment on visibility in the section on fires and species specification. The concentration-time (CT) calculation is an integration of the species input for type CT (See section \ref{sec:fire_inputs} for the input of CT) and is intended to represent a relative dose of toxic gas species. Trace species (TS) is the total kilograms of the trace species that is present in the compartment. It is an absolute measure and not percent or density.
+The report by species for  are percent by volume. Optical depth per meter is a measure of the visibility in the smoke. This is covered in detail in the comment on visibility in the section on fires and species specification. Trace species (TS) is the total mass of the trace species that is present in the layer in kilograms. It is an absolute measure and not percent or density.
 
 
 \subsection{Output for Vent Flows}
@@ -425,6 +425,7 @@ The second set of information is for fires. There are seven entries per fire.  T
 At present, there are nine outputs in this file: oxygen (O2), carbon dioxide (CO2), carbon monoxide (CO),  hydrogen cyanide (HCN), hydrogen chloride (HCL), water vapor (H2O), optical depth (OD), concentration-time dose (CT) and trace species (TS). This set of nine is enumerated for the upper and lower layer, and are done sequentially by compartment.
 \begin{description}
 \item[Time] (s)
+\item[N2 Upper/Lower Layer] (mol \%): nitrogen concentration in the upper (or lower) layer in the current compartment
 \item[O2 Upper/Lower Layer] (mol \%): oxygen concentration in the upper (or lower) layer in the current compartment
 \item[CO2 Upper/Lower Layer] (mol \%):  carbon dioxide concentration in the upper (or lower) layer in the current compartment
 \item[CO Upper/Lower Layer] (mol \%):  carbon monoxide concentration in the upper (or lower) layer in the current compartment (multiply by 10\,000 to convert to ppm)

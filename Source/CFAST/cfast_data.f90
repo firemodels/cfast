@@ -282,7 +282,7 @@ module solver_data
     integer :: jacdim
                              
     integer :: ndisc                            ! number of discontinuities fed to DASSL
-    real(eb), dimension(0:mxpts+1) :: discon    ! list of discontinuities fed to DASSL to ease solution
+    real(eb), dimension(0:mxdiscon) :: discon    ! list of discontinuities fed to DASSL to ease solution
 
 end module solver_data
 

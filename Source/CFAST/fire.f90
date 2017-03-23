@@ -1098,7 +1098,7 @@ module fire_routines
         ! note: this value was changed 2/15/2 from 3500 to 3778 to reflect the new value as reported by
         ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
         ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
-        lsp = 9
+        lsp = soot
         do layer = u, l
             roomptr%species_output(layer,lsp) = roomptr%species_rho(layer,lsp)*3778.0_eb
         end do

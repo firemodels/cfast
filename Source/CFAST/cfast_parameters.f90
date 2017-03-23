@@ -47,6 +47,7 @@ module cparams
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
     integer, parameter :: mxramps = 8*mxfires+mxhvents+mxvvents+mxmvents ! maximum number of possible time-based ramps
+    integer, parameter :: mxdiscon = (mxpts+1)*(mxfires+mxhvents+mxvvents+mxmvents) ! maximum number of DASSL discontinuities
     integer, parameter :: initial_time = 1          ! indicies for simple vent opening data
     integer, parameter :: initial_fraction = 2
     integer, parameter :: final_time = 3

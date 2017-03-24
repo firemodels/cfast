@@ -1321,34 +1321,35 @@ module solve_routines
 
         discon(0) = 0.0_eb
         discon(1) = tstop
-        ndisc = 1
+        ndisc = 2
 
         ! add each of the change arrays to the discontinuity list
-        do  i = 1, n_hvents
-            ventptr => hventinfo(i)
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening_initial_time
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening_final_time
-        end do
-        do  i = 1, n_vvents
-            ventptr => vventinfo(i)
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening_initial_time
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening_final_time
-        end do
-        do i = 1, n_mvents
-            ventptr => mventinfo(i)
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening_initial_time
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%opening_final_time
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%filter_initial_time
-            ndisc = ndisc + 1
-            discon(ndisc) = ventptr%filter_final_time
-        end do
+        if (ndisc+2*n_hvents+2*n_vvents+4*n_mvents<=mxdiscon) then
+            do  i = 1, n_hvents
+                ventptr => hventinfo(i)
+                discon(ndisc) = ventptr%opening_initial_time
+                discon(ndisc+1) = ventptr%opening_final_time
+                ndisc = ndisc + 2
+            end do
+            do  i = 1, n_vvents
+                ventptr => vventinfo(i)
+                discon(ndisc) = ventptr%opening_initial_time
+                discon(ndisc+1) = ventptr%opening_final_time
+                ndisc = ndisc + 2
+            end do
+            do i = 1, n_mvents
+                ventptr => mventinfo(i)
+                discon(ndisc) = ventptr%opening_initial_time
+                discon(ndisc+1) = ventptr%opening_final_time
+                discon(ndisc+2) = ventptr%filter_initial_time
+                discon(ndisc+3) = ventptr%filter_final_time
+                ndisc = ndisc + 4
+            end do
+        else
+            write (*,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
+            write (iofill,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
+10          format('***Error: Insufficient space in discontinuity array. Required: ',i0,'. Allocated: ',i0)
+        end if
 
         ! put the discontinuity array into order
         call shellsort (discon(0), ndisc+1)

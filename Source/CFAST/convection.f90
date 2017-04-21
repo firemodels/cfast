@@ -30,7 +30,7 @@
 
     real(eb), intent(out) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
 
-    real(eb) :: qconv, qconv_avg
+    real(eb) :: qconv, qconv_avg, lw_eff
 
     integer i, iwall, iw, ilay, ifire
     type(room_type), pointer :: roomptr
@@ -64,7 +64,8 @@
                     qconv = max(qconv,fireptr%qdot_convective)
                 end if
             end do
-            qconv_avg = 0.27_eb*qconv/((roomptr%cwidth*roomptr%cdepth)**0.68_eb*roomptr%cheight**0.64_eb)
+            lw_eff = min((4.0_eb*roomptr%cheight)**2*pi,roomptr%cwidth*roomptr%cdepth)
+            qconv_avg = 0.27_eb*qconv/((lw_eff)**0.68_eb*roomptr%cheight**0.64_eb)
             if (qconv_avg>fluxes_convection(i,iwall)) fluxes_convection(i,iwall) = qconv_avg
         end if
         flows_convection(i,ilay) = flows_convection(i,ilay) - roomptr%wall_area4(iwall)*fluxes_convection(i,iwall)

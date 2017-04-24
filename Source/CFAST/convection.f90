@@ -56,6 +56,8 @@
         ! assume no fires in this room.  just use regular convection
         call convective_flux(iwall,roomptr%temp(ilay),roomptr%t_surfaces(1,iwall),fluxes_convection(i,iwall))
         ! if there's a fire, we may need to modify the convection to account for the ceiling jet
+        qconv_avg = 0.0_eb
+        lw_eff = roomptr%cwidth*roomptr%cdepth
         if (iwall==1.and.n_fires>0) then
             qconv = 0.0_eb
             do ifire = 1, n_fires
@@ -64,11 +66,17 @@
                     qconv = max(qconv,fireptr%qdot_convective)
                 end if
             end do
-            lw_eff = min((4.0_eb*roomptr%cheight)**2*pi,roomptr%cwidth*roomptr%cdepth)
-            qconv_avg = 0.27_eb*qconv/((lw_eff)**0.68_eb*roomptr%cheight**0.64_eb)
-            if (qconv_avg>fluxes_convection(i,iwall)) fluxes_convection(i,iwall) = qconv_avg
+            lw_eff = min(pi*(4.0_eb*roomptr%cheight)**2,roomptr%cwidth*roomptr%cdepth)
+            qconv_avg = 0.27_eb*qconv/(lw_eff**0.68_eb*roomptr%cheight**0.64_eb)
         end if
-        flows_convection(i,ilay) = flows_convection(i,ilay) - roomptr%wall_area4(iwall)*fluxes_convection(i,iwall)
+        
+        if (qconv_avg>fluxes_convection(i,iwall)) then
+            fluxes_convection(i,iwall) = qconv_avg
+            flows_convection(i,ilay) = flows_convection(i,ilay) - lw_eff*fluxes_convection(i,iwall)
+        else
+            flows_convection(i,ilay) = flows_convection(i,ilay) - roomptr%wall_area4(iwall)*fluxes_convection(i,iwall)
+        end if
+        
 
     end do
 

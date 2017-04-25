@@ -30,7 +30,7 @@
 
     real(eb), intent(out) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
 
-    real(eb) :: qconv, qconv_avg, lw_eff
+    real(eb) :: qconv, qconv_avg, lw_eff, w_area
 
     integer i, iwall, iw, ilay, ifire
     type(room_type), pointer :: roomptr
@@ -55,28 +55,27 @@
         end if
         ! assume no fires in this room.  just use regular convection
         call convective_flux(iwall,roomptr%temp(ilay),roomptr%t_surfaces(1,iwall),fluxes_convection(i,iwall))
+        w_area = roomptr%wall_area4(iwall)
         ! if there's a fire, we may need to modify the convection to account for the ceiling jet
-        qconv_avg = 0.0_eb
-        lw_eff = roomptr%cwidth*roomptr%cdepth
         if (iwall==1.and.n_fires>0) then
             qconv = 0.0_eb
+            ! use thermal_data largest fire in the room as the source for the correlation
             do ifire = 1, n_fires
                 fireptr => fireinfo(ifire)
                 if (fireptr%room==i) then
                     qconv = max(qconv,fireptr%qdot_convective)
                 end if
             end do
+            ! limit the heat transfer area to the valid limit of the correlation (r/H<4)
             lw_eff = min(pi*(4.0_eb*roomptr%cheight)**2,roomptr%cwidth*roomptr%cdepth)
             qconv_avg = 0.27_eb*qconv/(lw_eff**0.68_eb*roomptr%cheight**0.64_eb)
+            if (qconv_avg>fluxes_convection(i,iwall)) then
+                fluxes_convection(i,iwall) = qconv_avg
+                w_area = lw_eff
+            end if
         end if
         
-        if (qconv_avg>fluxes_convection(i,iwall)) then
-            fluxes_convection(i,iwall) = qconv_avg
-            flows_convection(i,ilay) = flows_convection(i,ilay) - lw_eff*fluxes_convection(i,iwall)
-        else
-            flows_convection(i,ilay) = flows_convection(i,ilay) - roomptr%wall_area4(iwall)*fluxes_convection(i,iwall)
-        end if
-        
+        flows_convection(i,ilay) = flows_convection(i,ilay) - w_area*fluxes_convection(i,iwall)
 
     end do
 

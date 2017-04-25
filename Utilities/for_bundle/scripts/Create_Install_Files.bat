@@ -1,7 +1,8 @@
 @echo off
 
-set bindir=%git_root%\Utilities\for_bundle\Bin
-set docdir=%git_root%\Manuals
+set bindir=%cfast_root%\Utilities\for_bundle\Bin
+set docdir=%cfast_root%\Manuals
+set CURDIR2=%CD%
 
 echo.
 echo ***making directories
@@ -60,6 +61,14 @@ call :COPY  %bindir%\tv_set.o                 %DISTDIR%\
 call :COPY  %bindir%\upholstered_chair.o      %DISTDIR%\
 call :COPY  %bindir%\wardrobe.o               %DISTDIR%\
 call :COPY  %bindir%\wood_wall.o              %DISTDIR%\
+
+echo.
+echo ***Building set_path
+echo.
+
+cd "%smv_root%\Build\set_path\ms_win_64
+call make_set_path
+cd %CURDIR2%
 
 echo.
 echo ***Copying CFAST example files

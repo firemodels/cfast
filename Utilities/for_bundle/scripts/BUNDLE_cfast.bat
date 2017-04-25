@@ -10,21 +10,37 @@ set distname=cfast7
 :: VVVVVVVVVVVVVVVVV shouldn't need to change anything below VVVVVVVVVVVVVVV
 
 set CURDIR=%CD%
-cd ..\..\..
-set git_root=%CD%
-cd %CURDIR%
-set git_drive=c:
 
+:: define cfast_root
+
+cd ..\..\..
+set cfast_root=%CD%
+
+:: define smv_root
+
+cd ..\smv
+set smv_root=%CD%
+cd %CURDIR%
+
+set git_drive=c:
 %git_drive%
 
-set DISTDIR=%git_root%\Utilities\for_bundle\scripts\BUNDLEDIR\%installerbase%
-set bundleinfo=%git_root%\Utilities\for_bundle\scripts\bundleinfo
+set DISTDIR=%cfast_root%\Utilities\for_bundle\scripts\BUNDLEDIR\%installerbase%
+set bundleinfo=%cfast_root%\Utilities\for_bundle\scripts\bundleinfo
 
 call Create_Install_Files.bat
 
-copy "%bundleinfo%\wrapup_cfast_install.bat" "%DISTDIR%\wrapup_cfast_install.bat"
-copy "%userprofile%\FIRE-LOCAL\repo_exes\Shortcut.exe"                 "%DISTDIR%\Shortcut.exe"
-copy "%userprofile%\FIRE-LOCAL\repo_exes\set_path.exe"                 "%DISTDIR%\set_path.exe"
+copy "%bundleinfo%\wrapup_cfast_install.bat"           "%DISTDIR%\wrapup_cfast_install.bat"
+
+:: copy Short_cut
+
+::copy "%bundleinfo%\Shortcut.exe"                    "%DISTDIR%\Shortcut.exe"
+copy "%userprofile%\FIRE-LOCAL\repo_exes\Shortcut.exe" "%DISTDIR%\Shortcut.exe"
+
+:: copy set_path
+
+cd "%smv_root%\Build\set_path\ms_win_64
+copy set_path64.exe"                                   "%DISTDIR%\set_path.exe"
 
 cd %DISTDIR%
 wzzip -a -r -P ..\%installerbase%.zip * ..\SMV6 > Nul
@@ -41,8 +57,8 @@ echo Press Setup to begin installation. > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
 wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\firemodels\%distname%" -c wrapup_cfast_install.bat
 
-echo copying %installerbase%.exe to %git_root%\Utilities\uploads\cftest.exe"
-copy %installerbase%.exe %git_root%\Utilities\uploads\cftest.exe"
+echo copying %installerbase%.exe to %cfast_root%\Utilities\uploads\cftest.exe"
+copy %installerbase%.exe %cfast_root%\Utilities\uploads\cftest.exe"
 
 
 echo.

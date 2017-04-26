@@ -957,10 +957,16 @@
                     if (lcarray(10)=='TEMP') ventptr%opening_type = trigger_by_temp
                     if (lcarray(10)=='FLUX') ventptr%opening_type = trigger_by_flux
                     ventptr%opening_criterion = lrarray(11)
+                    ventptr%opening_target = 0
                     do i = 1,n_targets
                         targptr => targetinfo(i)
                         if (targptr%name==lcarray(12)) ventptr%opening_target = i
                     end do
+                    if (ventptr%opening_target==0) then
+                        write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
+                        write (iofill,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
+                        stop
+                    end if   
                     ventptr%opening_initial_fraction = lrarray(14)
                     ventptr%opening_final_fraction = lrarray(16)
                     if (stpmax>0) then
@@ -1156,10 +1162,16 @@
                         if (lcarray(6)=='TEMP') ventptr%opening_type = trigger_by_temp
                         if (lcarray(6)=='FLUX') ventptr%opening_type = trigger_by_flux
                         ventptr%opening_criterion = lrarray(7)
+                        ventptr%opening_target = 0
                         do i = 1,n_targets
                             targptr => targetinfo(i)
                             if (targptr%name==lcarray(8)) ventptr%opening_target = i
                         end do
+                        if (ventptr%opening_target==0) then
+                            write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
+                            write (iofill,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
+                            stop
+                        end if  
                         ventptr%opening_initial_fraction = lrarray(10)
                         ventptr%opening_final_fraction = lrarray(12)
                         if (stpmax>0) then
@@ -1248,10 +1260,16 @@
                         if (lcarray(13)=='TEMP') ventptr%opening_type = trigger_by_temp
                         if (lcarray(13)=='FLUX') ventptr%opening_type = trigger_by_flux
                         ventptr%opening_criterion = lrarray(14)
+                        ventptr%opening_target = 0
                         do i = 1,n_targets
                             targptr => targetinfo(i)
                             if (targptr%name==lcarray(15)) ventptr%opening_target = i
                         end do
+                        if (ventptr%opening_target==0) then
+                            write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
+                            write (iofill,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
+                            stop
+                        end if  
                         ventptr%opening_initial_fraction = lrarray(17)
                         ventptr%opening_final_fraction = lrarray(19)
                     end if

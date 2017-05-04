@@ -113,7 +113,12 @@ call :COPY  %bundleinfo%\uninstall_cfast2.bat %DISTDIR%\Uninstall\uninstall_base
 
 where set_path.exe > set_path.txt
 set /p setpath=<set_path.txt
-call :COPY  %setpath% %DISTDIR%\Uninstall\set_path.exe
+call :COPY  %setpath% %DISTDIR%\set_path.exe
+
+where Shortcut.exe > Shortcut.txt
+set /p Shortcut=<Shortcut.txt.txt
+call :COPY  %Shortcut% %DISTDIR%\Shortcut.exe
+
 cd %CURDIR%
 
 GOTO :EOF

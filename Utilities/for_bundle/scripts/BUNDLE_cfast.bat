@@ -32,16 +32,6 @@ call Create_Install_Files.bat
 
 copy "%bundleinfo%\wrapup_cfast_install.bat"           "%DISTDIR%\wrapup_cfast_install.bat"
 
-:: copy Short_cut
-
-::copy "%bundleinfo%\Shortcut.exe"                    "%DISTDIR%\Shortcut.exe"
-copy "%userprofile%\FIRE-LOCAL\repo_exes\Shortcut.exe" "%DISTDIR%\Shortcut.exe"
-
-:: copy set_path
-
-cd "%smv_root%\Build\set_path\ms_win_64
-copy set_path64.exe"                                   "%DISTDIR%\set_path.exe"
-
 cd %DISTDIR%
 wzzip -a -r -P ..\%installerbase%.zip * ..\SMV6 > Nul
 

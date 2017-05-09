@@ -63,14 +63,6 @@ call :COPY  %bindir%\wardrobe.o               %DISTDIR%\
 call :COPY  %bindir%\wood_wall.o              %DISTDIR%\
 
 echo.
-echo ***Building set_path
-echo.
-
-cd "%smv_root%\Build\set_path\ms_win_64
-call make_set_path
-cd %CURDIR2%
-
-echo.
 echo ***Copying CFAST example files
 echo.
 
@@ -113,7 +105,12 @@ call :COPY  %bundleinfo%\uninstall_cfast2.bat %DISTDIR%\Uninstall\uninstall_base
 
 where set_path.exe > set_path.txt
 set /p setpath=<set_path.txt
-call :COPY  %setpath% %DISTDIR%\Uninstall\set_path.exe
+call :COPY  %setpath% %bindir%\set_path.exe
+
+where Shortcut.exe > Shortcut.txt
+set /p Shortcut=<Shortcut.txt.txt
+call :COPY  %Shortcut% %bindir%\Shortcut.exe
+
 cd %CURDIR%
 
 GOTO :EOF

@@ -1,31 +1,36 @@
 :: @echo off
 
-set cfastroot=c:\Users\rpeacoc\firemodels\cfast
+set CURDIR=%CD%
+
+:: define cfast_root
+
+cd ..\..\..
+set cfast_root=%CD%
 
 @echo *** Create CFAST executables
 
-call %cfastroot%\Build\scripts\setup_intel_compilers.bat intel64
+call %cfast_root%\Build\scripts\setup_intel_compilers.bat intel64
 
-cd %cfastroot%\Build\CFAST\intel_win_64
+cd %cfast_root%\Build\CFAST\intel_win_64
 call make_cfast.bat bot release
-copy cfast7_win_64.exe %cfastroot%\Utilities\for_bundle\Bin\cfast.exe /Y
-cd %cfastroot%\Build\Cedit
+copy cfast7_win_64.exe %cfast_root%\Utilities\for_bundle\Bin\cfast.exe /Y
+cd %cfast_root%\Build\Cedit
 call make_cedit.bat bot
-cd %cfastroot%\Utilities\for_bundle\scripts
+cd %cfast_root%\Utilities\for_bundle\scripts
 
-copy %cfastroot%\..\Extras\Bin\*.* %cfastroot%\Utilities\for_bundle\Bin\ /Y
+copy %cfast_root%\..\Extras\Bin\*.* %cfast_root%\Utilities\for_bundle\Bin\ /Y
 
 @echo *** Copying Smokeview executables
 
-if NOT exist %cfastroot%\Utilities\for_bundle\SMV6 (
-   mkdir %cfastroot%\Utilities\for_bundle\SMV6
+if NOT exist %cfast_root%\Utilities\for_bundle\SMV6 (
+   mkdir %cfast_root%\Utilities\for_bundle\SMV6
 )
-copy %cfastroot%\..\Extras\SMV6\*.* %cfastroot%\Utilities\for_bundle\SMV6\ /Y
-if NOT exist %cfastroot%\Utilities\for_bundle\SMV6\textures (
-   mkdir %cfastroot%\Utilities\for_bundle\SMV6\textures
+copy %cfast_root%\..\Extras\SMV6\*.* %cfast_root%\Utilities\for_bundle\SMV6\ /Y
+if NOT exist %cfast_root%\Utilities\for_bundle\SMV6\textures (
+   mkdir %cfast_root%\Utilities\for_bundle\SMV6\textures
 )
-copy %cfastroot%\..\Extras\SMV6\textures\*.* %cfastroot%\Utilities\for_bundle\SMV6\textures\ /Y
+copy %cfast_root%\..\Extras\SMV6\textures\*.* %cfast_root%\Utilities\for_bundle\SMV6\textures\ /Y
 
 @echo *** copy install utilities
-copy %cfastroot%\..\..\bin\set_path.exe %cfastroot%\Utilities\for_bundle\bin\ /Y
-copy %cfastroot%\..\..\bin\Shortcut.exe %cfastroot%\Utilities\for_bundle\bin\ /Y
+copy %cfast_root%\..\..\bin\set_path.exe %cfast_root%\Utilities\for_bundle\bin\ /Y
+copy %cfast_root%\..\..\bin\Shortcut.exe %cfast_root%\Utilities\for_bundle\bin\ /Y

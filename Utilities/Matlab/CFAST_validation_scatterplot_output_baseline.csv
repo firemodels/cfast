@@ -13,7 +13,7 @@
 "Carbon Monoxide Concentration",2,24,"0.19","0.76","1.79"
 "Smoke Concentration",1,15,"0.19","0.67","3.45"
 "Compartment Over-Pressure",4,67,"0.23","0.58","1.37"
-"Target Temperature",4,414,"0.07","0.48","1.26"
+"Target Temperature",4,414,"0.07","0.48","1.25"
 "Surface Temperature",6,375,"0.07","0.22","1.02"
 "Target Heat Flux",3,244,"0.11","0.61","1.00"
 "Surface Heat Flux",7,241,"0.11","0.26","0.93"

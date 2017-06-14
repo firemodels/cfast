@@ -385,6 +385,7 @@ module target_routines
     real(eb), pointer, dimension(:) :: v1, v2, v3
     real(eb) :: factor, d1, d2, d3, t1(3), t2(3), t3(3), v0(3)
     real(eb) :: sum_front, sum_back, solid_angle, zlay
+    real(eb) :: x0,x1,y0,y1,z0,z1
 
     integer :: nsolid_front_verts, nsolid_back_verts
     integer, parameter :: front=1, back=2
@@ -432,19 +433,26 @@ module target_routines
 
     !define vertex locations
 
-    zlay = roomi%z0 + roomi%depth(l)
-    room_verts(1:3,1)  = (/roomi%x0, roomi%y0, roomi%z1/)
-    room_verts(1:3,2)  = (/roomi%x1, roomi%y0, roomi%z1/)
-    room_verts(1:3,3)  = (/roomi%x0, roomi%y1, roomi%z1/)
-    room_verts(1:3,4)  = (/roomi%x1, roomi%y1, roomi%z1/)
-    room_verts(1:3,5)  = (/roomi%x0, roomi%y0, zlay/)
-    room_verts(1:3,6)  = (/roomi%x1, roomi%y0, zlay/)
-    room_verts(1:3,7)  = (/roomi%x0, roomi%y1, zlay/)
-    room_verts(1:3,8)  = (/roomi%x1, roomi%y1, zlay/)
-    room_verts(1:3,9)  = (/roomi%x0, roomi%y0, roomi%z0/)
-    room_verts(1:3,10) = (/roomi%x1, roomi%y0, roomi%z0/)
-    room_verts(1:3,11) = (/roomi%x0, roomi%y1, roomi%z0/)
-    room_verts(1:3,12) = (/roomi%x1, roomi%y1, roomi%z0/)
+    x0 = 0.0_eb
+    y0 = 0.0_eb
+    z0 = 0.0_eb
+    x1 = roomi%cwidth
+    y1 = roomi%cdepth
+    z1 = roomi%cheight
+    zlay = roomi%depth(l)
+    
+    room_verts(1:3,1)  = (/x0, y0, z1/)
+    room_verts(1:3,2)  = (/x1, y0, z1/)
+    room_verts(1:3,3)  = (/x0, y1, z1/)
+    room_verts(1:3,4)  = (/x1, y1, z1/)
+    room_verts(1:3,5)  = (/x0, y0, zlay/)
+    room_verts(1:3,6)  = (/x1, y0, zlay/)
+    room_verts(1:3,7)  = (/x0, y1, zlay/)
+    room_verts(1:3,8)  = (/x1, y1, zlay/)
+    room_verts(1:3,9)  = (/x0, y0, z0/)
+    room_verts(1:3,10) = (/x1, y0, z0/)
+    room_verts(1:3,11) = (/x0, y1, z0/)
+    room_verts(1:3,12) = (/x1, y1, z0/)
 
 ! vert_distance = target_normal_xyz .dot. (vertex_xyz - target_origin_xyz)
 

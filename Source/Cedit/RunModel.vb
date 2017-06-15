@@ -243,10 +243,14 @@ Public Class RunModel
             RunStop.Location = New Point(364, 520)
             RunUpdate.Location = New Point(516, 520)
             RunJac.Location = New Point(672, 520)
-            RunUpdate.Text = "Debug is Off"
-            RunJac.Text = "Jacobian is Off"
+            RunUpdate.Text = "Debug is On"
+            RunJac.Text = "Jacobian is On"
             RunJac.Visible = True
-            RunJac.Enabled = False
+            DebugOn = True
+            RunJac.Enabled = True
+            FileName = CFastInputFile
+            FileOpen(IO, FileName + ".debug", OpenMode.Output)
+            FileClose(IO)
         Else
             RunOK.Location = New Point(290, 520)
             RunStop.Location = New Point(442, 520)
@@ -385,6 +389,7 @@ Public Class RunModel
 
     Private Sub RunOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles RunOK.Click
         RunTimer.Enabled = False
+        FileName = CFastInputFile
         If System.IO.File.Exists(FileName + ".debug") Then System.IO.File.Delete(FileName + ".debug")
         If System.IO.File.Exists(FileName + ".jacobian") Then System.IO.File.Delete(FileName + ".jacobian")
         Close()

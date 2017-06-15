@@ -2004,9 +2004,8 @@
     residcsv = testpath(1:lp) // testproj(1:ld) // '_resid.csv'
     queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
     statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
-    kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'
-
     slabcsv = testpath(1:lp) // testproj(1:ld) // '_slab.csv'
+    kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'
 
     testpath = trim (exepath)
     lp = len_trim (testpath)
@@ -2044,6 +2043,8 @@
     call deleteoutputfiles (sswall)
     call deleteoutputfiles (statusfile)
     call deleteoutputfiles (queryfile)
+    call deleteoutputfiles (residcsv)
+    call deleteoutputfiles (slabcsv)
     call deleteoutputfiles (kernelisrunning)
 
     ! since we have reached this point, the output files are available and stop has been turned off.

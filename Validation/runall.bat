@@ -14,6 +14,7 @@ if %1==LLNL_Enclosure goto LLNL_Enclosure
 if %1==NBS goto NBS
 if %1==NBS_1Room goto NBS_1Room
 if %1==NIST_NRC goto NIST_NRC
+if %1==NIST_Vent_Study goto NIST_Vent_Study
 if %1==PLAZA goto PLAZA
 if %1==PRISME goto PRISME
 if %1==SP_AST goto SP_AST
@@ -287,6 +288,16 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe NIST_NRC_T17 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe NIST_NRC_T18 -V
 cd ..\
 if %1==NIST_NRC goto end
+
+:NIST_Vent_Study
+echo Running NIST Vent Study
+cd NIST_Vent_Study
+call ..\cleancfast.bat
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_1 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_2 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_3a -V
+cd ..
+if %1==NIST_Vent_Study goto end
 
 :PRISME
 echo Running PRISME

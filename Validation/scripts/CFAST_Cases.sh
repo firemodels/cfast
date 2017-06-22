@@ -180,7 +180,7 @@ $RUNCFAST -d NIST_NRC NIST_NRC_T18.in
 
 $RUNCFAST -d NIST_Vent_Study Test1.in
 $RUNCFAST -d NIST_Vent_Study Test2.in
-$RUNCFAST -d NIST_Vent_Study Test3a.in
+$RUNCFAST -d NIST_Vent_Study Test3.in
 
 $RUNCFAST -d PRISME PRS_D1.in
 $RUNCFAST -d PRISME PRS_D2.in

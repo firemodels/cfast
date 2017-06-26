@@ -1,8 +1,8 @@
-VERSN,7,Test_3a
+VERSN,7,Test_3
 !!
 !!Scenario Configuration
 !!
-TIMES,6100,1,1,1
+TIMES,6000,1,1,1
 EAMB,293.15,101325,0
 TAMB,291.15,101325,0,50
 !!

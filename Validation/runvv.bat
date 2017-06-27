@@ -1,6 +1,6 @@
 @echo off
 
-set vv=..\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe
+set vv=..\Build\VandV_Calcs\intel_win_64\VandV_Calcs_win_64.exe
 
 %vv% CFAST_Pressure_Correction_Inputs.csv
 Rem copy pressures.csv ..\Valiidation\LLNL_Enclosure\LLNL_pressures.csv /Y

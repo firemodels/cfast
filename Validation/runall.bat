@@ -1,6 +1,6 @@
 @echo off
 echo.| time
-echo Running CFAST simulations. $Rev$
+echo Running CFAST simulations
 if "%1"=="" goto Help
 if %1==ALL goto ALL
 if %1==ATF goto ATF
@@ -33,7 +33,7 @@ goto end
 call cleanall.bat
 
 :ATF
-echo Running ATF Corridor Tests
+echo ATF Corridor Tests
 cd ATF_Corridors
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe ATF_Corridors_050_kW -V
@@ -46,7 +46,7 @@ cd ..
 if %1==ATF goto end
 
 :Fleury_Heat_Flux
-echo Running Fleury Heat Flux Tests
+echo Fleury Heat Flux Tests
 cd Fleury_Heat_Flux
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Fleury_1t1_100_kW -V
@@ -290,7 +290,7 @@ cd ..\
 if %1==NIST_NRC goto end
 
 :NIST_Vent_Study
-echo Running NIST Vent Study
+echo NIST Vent Study
 cd NIST_Vent_Study
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_1 -V
@@ -304,7 +304,7 @@ cd ..
 if %1==NIST_Vent_Study goto end
 
 :PRISME
-echo Running PRISME
+echo PRISME
 cd PRISME
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe PRS_D1 -V
@@ -317,7 +317,7 @@ cd ..
 if %1==PRISME goto end
 
 :SP_AST
-echo Running SP_AST Tests
+echo SP_AST Tests
 cd SP_AST
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe SP_AST_Test_1 -V
@@ -392,7 +392,7 @@ cd ..\
 if %1==Steckler_Compartment goto end
 
 :UL_NFPRF
-echo Running UL_NFPRF Series I
+echo UL_NFPRF Series I
 cd UL_NFPRF
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_1_01 -V
@@ -418,7 +418,7 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_1_20 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_1_21 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_1_22 -V
 
-echo Running UL_NFPRF Series II
+echo UL_NFPRF Series II
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_2_01 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_2_02 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_2_03 -V
@@ -435,7 +435,7 @@ cd ..
 if %1==UL_NFPRF goto end
 
 :UL_NIST_Vents
-echo Running UL_NIST_Vents
+echo UL_NIST_Vents
 cd UL_NIST_Vents
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NIST_Vents_Test_1 -V
@@ -446,7 +446,7 @@ cd ..
 if %1==UL_NIST_Vents goto end
 
 :Vettori_Flat
-echo Running Vettori Flat Simulations
+echo Vettori Flat Simulations
 cd Vettori_Flat
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_1 -V
@@ -508,7 +508,7 @@ cd ..\
 if %1==VTT goto end
 
 :WTC
-echo Running WTC Spray Burner Tests
+echo WTC Spray Burner Tests
 cd WTC
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe WTC_01 -V

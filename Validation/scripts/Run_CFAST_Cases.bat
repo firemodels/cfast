@@ -2,6 +2,11 @@
 
 set rundebug=%1
 set bgexe=%2
+set SH2BAT=%3
+
+if "%SH2BAT%" == "" (
+  set SH2BAT=sh2bat.exe
+)
 
 if "%rundebug%" == "1" (
 set DEBUG=_db
@@ -19,7 +24,6 @@ set BASEDIR=%CD%
 cd %BASEDIR%\..
 set SVNROOT=%CD%
 
-set SH2BAT=sh2bat.exe
 set bg=%bgexe% -u 85 -d 0.1
 set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
 set CFAST=%bg% %CFASTEXE%

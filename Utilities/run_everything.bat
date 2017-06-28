@@ -1,17 +1,10 @@
 @echo off
 echo.| time
-echo Compiling CFAST
-call ..\Build\scripts\setup_intel_compilers.bat intel64
-cd ..\Build\CFAST\intel_win_64%1
-del *.obj *.mod *.exe /q
-call make_cfast.bat bot
-copy /Y cfast7_win_64%1.exe ..\..\..\Utilities\for_Bundle\bin\cfast.exe
-cd ..\..\..\Utilities
 echo Running validation cases
 Title Running Validation Cases
 cd ..\Validation
 call runall.bat ALL
-call runadjustments.bat
+call runvv.bat
 echo Running verification cases
 Title Running Verification Cases
 cd ..\Verification

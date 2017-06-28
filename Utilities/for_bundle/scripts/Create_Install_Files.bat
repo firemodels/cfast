@@ -81,16 +81,23 @@ echo.
 echo ***Copying Smokeview files
 echo.
 
-call :COPY %bindir%\..\SMV6\glew32_x64.dll			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\pthreadVC2_x64.dll			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\background.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\get_time.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\sh2bat.exe				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokediff.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokeview.exe			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\smokeview.ini			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokezip.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
+
+:: these two dlls probably are not needed
+
+call :COPY %bindir%\..\SMV6\glew32_x64.dll			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\pthreadVC2_x64.dll		%SMVDISTDIR%\
+
+call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\smokeview.ini			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\textures				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\volrender.ssf			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
 copy %bindir%\..\SMV6\textures\*.jpg				%SMVDISTDIR%\textures\
 copy %bindir%\..\SMV6\textures\*.png				%SMVDISTDIR%\textures\
 

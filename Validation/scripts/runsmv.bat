@@ -2,7 +2,7 @@
 
 call %cfastrepo%\Validation\Scripts\getopts.bat %*
 
-set fulldir=%BASEDIR%/%dir%
+set fulldir=%BASEDIR%\%dir%
 
 cd %fulldir%
 echo fulldir=%fulldir%

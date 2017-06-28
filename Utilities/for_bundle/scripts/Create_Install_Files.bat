@@ -1,6 +1,7 @@
 @echo off
 
 set bindir=%cfast_root%\Utilities\for_bundle\Bin
+set vandvdir=%cfast_root%\Build\VandV_Calcs\intel_win_64
 set docdir=%cfast_root%\Manuals
 set CURDIR2=%CD%
 
@@ -25,6 +26,7 @@ echo.
 
 call :COPY  %bindir%\CEdit.exe %DISTDIR%\
 call :COPY  %bindir%\CFAST.exe %DISTDIR%\
+call :COPY  %vandvdir%\VandV_Calcs_win_64.exe %DISTDIR%\VandV_Calcs.exe
 
 echo.
 echo ***Copying CFAST DLLs

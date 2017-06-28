@@ -2,7 +2,7 @@
 
 call %SVNROOT%\Validation\Scripts\getopts.bat %*
 
-set fulldir=%BASEDIR%/%dir%
+set fulldir=%BASEDIR%\%dir%
 
 
 set in=%infile%

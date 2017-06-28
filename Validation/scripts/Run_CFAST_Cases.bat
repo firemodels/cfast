@@ -1,8 +1,9 @@
 @echo off
 
 set rundebug=%1
-set bgexe=%2
-set SH2BAT=%3
+set CFASTEXE=%2
+set bgexe=%3
+set SH2BAT=%4
 
 if "%bgexe%" == "" (
   set bgexe=background.exe
@@ -19,6 +20,10 @@ set DEBUG=
 )
 
 set size=_64
+
+if "%CFASTEXE" == "" (
+  set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
+)
 
 set SCRIPT_DIR=%CD%
 

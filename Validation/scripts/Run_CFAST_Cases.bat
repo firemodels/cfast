@@ -4,6 +4,10 @@ set rundebug=%1
 set bgexe=%2
 set SH2BAT=%3
 
+if "%bgexe%" == "" (
+  set bgexe=background.exe
+)
+
 if "%SH2BAT%" == "" (
   set SH2BAT=sh2bat.exe
 )

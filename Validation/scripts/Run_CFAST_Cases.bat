@@ -1,8 +1,9 @@
 @echo off
 
 set rundebug=%1
-set bgexe=%2
-set SH2BAT=%3
+set CFASTEXE=%2
+set bgexe=%3
+set SH2BAT=%4
 
 if "%bgexe%" == "" (
   set bgexe=background.exe
@@ -18,8 +19,6 @@ set DEBUG=_db
 set DEBUG=
 )
 
-set size=_64
-
 set SCRIPT_DIR=%CD%
 
 cd %CD%\..
@@ -28,8 +27,13 @@ set BASEDIR=%CD%
 cd %BASEDIR%\..
 set SVNROOT=%CD%
 
+set size=_64
+
+if "%CFASTEXE%" == "" (
+  set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
+)
+
 set bg=%bgexe% -u 85 -d 0.1
-set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
 set CFAST=%bg% %CFASTEXE%
 
 set RUNCFAST_R=call %SCRIPT_DIR%\runcfast.bat

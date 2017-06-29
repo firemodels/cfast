@@ -1,6 +1,7 @@
 @echo off
 
 set bindir=%cfast_root%\Utilities\for_bundle\Bin
+set vandvdir=%cfast_root%\Build\VandV_Calcs\intel_win_64
 set docdir=%cfast_root%\Manuals
 set CURDIR2=%CD%
 
@@ -25,6 +26,7 @@ echo.
 
 call :COPY  %bindir%\CEdit.exe %DISTDIR%\
 call :COPY  %bindir%\CFAST.exe %DISTDIR%\
+call :COPY  %vandvdir%\VandV_Calcs_win_64.exe %DISTDIR%\VandV_Calcs.exe
 
 echo.
 echo ***Copying CFAST DLLs
@@ -81,16 +83,23 @@ echo.
 echo ***Copying Smokeview files
 echo.
 
-call :COPY %bindir%\..\SMV6\glew32_x64.dll			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\pthreadVC2_x64.dll			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\background.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\get_time.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\sh2bat.exe				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokediff.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokeview.exe			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\smokeview.ini			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokezip.exe			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
+
+:: these two dll's probably are not needed
+
+call :COPY %bindir%\..\SMV6\glew32_x64.dll			%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\pthreadVC2_x64.dll		%SMVDISTDIR%\
+
+call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
+call :COPY %bindir%\..\SMV6\smokeview.ini			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\textures				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\volrender.ssf			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
 copy %bindir%\..\SMV6\textures\*.jpg				%SMVDISTDIR%\textures\
 copy %bindir%\..\SMV6\textures\*.png				%SMVDISTDIR%\textures\
 

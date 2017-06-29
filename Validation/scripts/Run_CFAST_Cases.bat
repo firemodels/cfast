@@ -29,12 +29,11 @@ set SVNROOT=%CD%
 
 set size=_64
 
-if "%CFASTEXE" == "" (
+if "%CFASTEXE%" == "" (
   set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
 )
 
 set bg=%bgexe% -u 85 -d 0.1
-set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
 set CFAST=%bg% %CFASTEXE%
 
 set RUNCFAST_R=call %SCRIPT_DIR%\runcfast.bat

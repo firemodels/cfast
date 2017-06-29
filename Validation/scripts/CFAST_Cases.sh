@@ -185,6 +185,8 @@ $RUNCFAST -d NIST_Vent_Study Test_4.in
 $RUNCFAST -d NIST_Vent_Study Test_5.in
 $RUNCFAST -d NIST_Vent_Study Test_6.in
 $RUNCFAST -d NIST_Vent_Study Test_7.in
+$RUNCFAST -d NIST_Vent_Study Test_8.in
+$RUNCFAST -d NIST_Vent_Study Test_9.in
 
 $RUNCFAST -d PRISME PRS_D1.in
 $RUNCFAST -d PRISME PRS_D2.in

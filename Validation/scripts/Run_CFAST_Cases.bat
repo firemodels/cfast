@@ -23,21 +23,20 @@ set BASEDIR=%CD%
 
 cd %BASEDIR%\..
 set SVNROOT=%CD%
-echo SVNROOT=%SVNROOT%
 
 cd ..\smv
 set SMVROOT=%CD%
 
-:: use installed programs
+::*** use installed programs
 
 cd %SCRIPT_DIR%
-if "%installed_cfast%" == "1" (
-   set CFASTEXE=cfast.exe
-   call :is_file_installed %CFASTEXE% || exit /b 1
-   echo %CFASTEXE% found
-)
+if "%installed_cfast%" == "0" goto not_installed_cfast
+   set CFAST_EXE=cfast.exe
+   call :is_file_installed %CFAST_EXE% || exit /b 1
+   echo %CFAST_EXE% found
+:not_installed_cfast
 
-if "%installed_smokeview%" == "1" (
+if "%installed_smokeview%" == "0" goto skip_not_installed_smokeview
    set bgexe=background.exe
    call :is_file_installed %bgexe% || exit /b 1
    echo %bgexe% found
@@ -45,32 +44,32 @@ if "%installed_smokeview%" == "1" (
    set SH2BAT=sh2bat.exe
    call :is_file_installed %SH2BAT% || exit /b 1
    echo %SH2BAT% found
-)
+:skip_not_installed_smokeview
 
-:: use programs from repo
+::*** use programs from repo
 
-if "%installed_cfast%" == "0" (
+if "%installed_cfast%" == "1" goto skip_installed_cfast
   cd %SCRIPT_DIR%
-  
-  set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%.exe
-  call :does_file_exist %CFASTEXE% || exit /b 1
-  echo %CFASTEXE% found
-)
 
-if "%installed_smokeview%" == "0" (
+  set CFAST_EXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%.exe
+  call :does_fortfile_exist %CFAST_EXE% || exit /b 1
+  echo %CFAST_EXE% found
+:skip_installed_cfast
+
+if "%installed_smokeview%" == "1" goto skip_installed_smokeview
   cd %SCRIPT_DIR%
 
   set bgexe=%SMVROOT%\Build\background\intel_win%size%\background.exe
-  call :does_file_exist %bgexe% || exit /b 1
+  call :does_cfile_exist %bgexe% || exit /b 1
   echo %bgexe% found
 
   set SH2BAT=%SMVROOT%\Build\sh2bat\intel_win%size%\sh2bat_win%size%.exe
-  call :does_file_exist %SH2BAT% || exit /b 1
+  call :does_cfile_exist %SH2BAT% || exit /b 1
   echo %SH2BAT% found
-)
+:skip_installed_smokeview
 
 set bg=%bgexe% -u 85 -d 0.1
-set CFAST=%bg% %CFASTEXE%
+set CFAST=%bg% %CFAST_EXE%
 
 set RUNCFAST_R=call %SCRIPT_DIR%\runcfast.bat
 set RUNCFAST_M=call %SCRIPT_DIR%\make_stop.bat
@@ -104,6 +103,7 @@ Timeout /t 30 >nul
 goto loop1
 
 :finished
+cd %SCRIPT_DIR%
 
 goto eof
 
@@ -112,8 +112,8 @@ goto eof
 :: -------------------------------------------------------------
 
   set program=%1
-  %program% -help 1> installed_error.txt 2>&1
-  type installed_error.txt | find /i /c "not recognized" > installed_error_count.txt
+  where %program% 1> installed_error.txt 2>&1
+  type installed_error.txt | find /i /c "Could not find" > installed_error_count.txt
   set /p nothave=<installed_error_count.txt
   erase installed_error_count.txt installed_error.txt
   if %nothave% == 1 (
@@ -123,13 +123,29 @@ goto eof
   exit /b 0
 
 :: -------------------------------------------------------------
-  :does_file_exist
+  :does_fortfile_exist
 :: -------------------------------------------------------------
 
 set file=%1
 
 if NOT exist %file% (
-  echo ***Fatal error: %file% does not exist. Aborting
+  echo ***Fatal error: The Fortran program %file% does not exist.
+  echo Either build this program or rerun Run_CFAST_Cases.bat using
+  echo the -cfast option
+  exit /b 1
+)
+exit /b 0
+
+:: -------------------------------------------------------------
+  :does_cfile_exist
+:: -------------------------------------------------------------
+
+set file=%1
+
+if NOT exist %file% (
+  echo ***Fatal error: The C/C++ program %file% does not exist.
+  echo Either build this program or rerun Run_CFAST_Cases.bat using the
+  echo -smokeview option
   exit /b 1
 )
 exit /b 0

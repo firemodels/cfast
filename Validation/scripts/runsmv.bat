@@ -1,6 +1,6 @@
 @echo off
 
-call %cfastrepo%\Validation\Scripts\getopts.bat %*
+call %SVNROOT%\Validation\Scripts\getopts.bat %*
 
 set fulldir=%BASEDIR%\%dir%
 

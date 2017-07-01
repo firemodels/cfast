@@ -1,12 +1,13 @@
 @echo off
 
 if exist .valscriptdir goto in_right_dir
-   echo ***error: this script must be run in the Validation\scripts directory
+   echo ***Error: this script must be run in the Validation\scripts directory
    exit /b
 :in_right_dir
 
 set rundebug=0
-set cfast=0
+set installed_cfast=0
+set installed_smokeview=0
 set size=_64
 set DEBUG=
 
@@ -30,11 +31,13 @@ set SMVROOT=%CD%
 :: use installed programs
 
 cd %SCRIPT_DIR%
-if "%cfast%" == "1" (
+if "%installed_cfast%" == "1" (
    set CFASTEXE=cfast.exe
    call :is_file_installed %CFASTEXE% || exit /b 1
    echo %CFASTEXE% found
+)
 
+if "%installed_smokeview%" == "1" (
    set bgexe=background.exe
    call :is_file_installed %bgexe% || exit /b 1
    echo %bgexe% found
@@ -46,12 +49,16 @@ if "%cfast%" == "1" (
 
 :: use programs from repo
 
-if "%cfast%" == "0" (
+if "%installed_cfast%" == "0" (
   cd %SCRIPT_DIR%
   
   set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%.exe
   call :does_file_exist %CFASTEXE% || exit /b 1
   echo %CFASTEXE% found
+)
+
+if "%installed_smokeview%" == "0" (
+  cd %SCRIPT_DIR%
 
   set bgexe=%SMVROOT%\Build\background\intel_win%size%\background.exe
   call :does_file_exist %bgexe% || exit /b 1
@@ -145,7 +152,16 @@ exit /b 0
  )
  if /I "%1" EQU "-cfast" (
    set valid=1
-   set cfast=1
+   set installed_cfast=1
+ )
+ if /I "%1" EQU "-smokeview" (
+   set valid=1
+   set installed_smokeview=1
+ )
+ if /I "%1" EQU "-installed" (
+   set valid=1
+   set installed_smokeview=1
+   set installed_cfast=1
  )
  shift
  if %valid% == 0 (
@@ -161,11 +177,14 @@ if not (%1)==() goto getopts
 exit /b
 
 :usage  
-echo run_cfastbot [options]
+echo Run_CFAST_Cases [options]
 echo. 
 echo -cfast          - use installed cfast
 echo -debug          - use debug version of cfast
 echo -help           - display this message
+echo -installed      - same as -cfast -smokeview
+echo -smokeview      - use installed smokeview utilities 
+echo                   (background and sh2bat)
 exit /b
 
 :eof

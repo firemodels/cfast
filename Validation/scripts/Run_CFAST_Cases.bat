@@ -1,22 +1,18 @@
 @echo off
 
-set rundebug=%1
-set CFASTEXE=%2
-set bgexe=%3
-set SH2BAT=%4
+if exist .valscriptdir goto in_right_dir
+   echo ***error: this script must be run in the Validation\scripts directory
+   exit /b
+:in_right_dir
 
-if "%bgexe%" == "" (
-  set bgexe=background.exe
-)
-
-if "%SH2BAT%" == "" (
-  set SH2BAT=sh2bat.exe
-)
-
-if "%rundebug%" == "1" (
-set DEBUG=_db
-) else (
+set rundebug=0
+set cfast=0
+set size=_64
 set DEBUG=
+
+call :getopts %*
+if %stopscript% == 1 (
+  exit /b
 )
 
 set SCRIPT_DIR=%CD%
@@ -26,11 +22,44 @@ set BASEDIR=%CD%
 
 cd %BASEDIR%\..
 set SVNROOT=%CD%
+echo SVNROOT=%SVNROOT%
 
-set size=_64
+cd ..\smv
+set SMVROOT=%CD%
 
-if "%CFASTEXE%" == "" (
-  set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%
+:: use installed programs
+
+cd %SCRIPT_DIR%
+if "%cfast%" == "1" (
+   set CFASTEXE=cfast.exe
+   call :is_file_installed %CFASTEXE% || exit /b 1
+   echo %CFASTEXE% found
+
+   set bgexe=background.exe
+   call :is_file_installed %bgexe% || exit /b 1
+   echo %bgexe% found
+
+   set SH2BAT=sh2bat.exe
+   call :is_file_installed %SH2BAT% || exit /b 1
+   echo %SH2BAT% found
+)
+
+:: use programs from repo
+
+if "%cfast%" == "0" (
+  cd %SCRIPT_DIR%
+  
+  set CFASTEXE=%SVNROOT%\Build\CFAST\intel_win%size%%DEBUG%\cfast7_win%size%%DEBUG%.exe
+  call :does_file_exist %CFASTEXE% || exit /b 1
+  echo %CFASTEXE% found
+
+  set bgexe=%SMVROOT%\Build\background\intel_win%size%\background.exe
+  call :does_file_exist %bgexe% || exit /b 1
+  echo %bgexe% found
+
+  set SH2BAT=%SMVROOT%\Build\sh2bat\intel_win%size%\sh2bat_win%size%.exe
+  call :does_file_exist %SH2BAT% || exit /b 1
+  echo %SH2BAT% found
 )
 
 set bg=%bgexe% -u 85 -d 0.1
@@ -62,8 +91,81 @@ call Scripts\CFAST_Cases.bat
 :loop1
 tasklist | find /i /c "CFAST" > temp.out
 set /p numexe=<temp.out
+echo waiting for %numexe% jobs to finish
 if %numexe% == 0 goto finished
 Timeout /t 30 >nul 
 goto loop1
 
 :finished
+
+goto eof
+
+:: -------------------------------------------------------------
+:is_file_installed
+:: -------------------------------------------------------------
+
+  set program=%1
+  %program% -help 1> installed_error.txt 2>&1
+  type installed_error.txt | find /i /c "not recognized" > installed_error_count.txt
+  set /p nothave=<installed_error_count.txt
+  erase installed_error_count.txt installed_error.txt
+  if %nothave% == 1 (
+    echo "***Fatal error: %program% not present"
+    exit /b 1
+  )
+  exit /b 0
+
+:: -------------------------------------------------------------
+  :does_file_exist
+:: -------------------------------------------------------------
+
+set file=%1
+
+if NOT exist %file% (
+  echo ***Fatal error: %file% does not exist. Aborting
+  exit /b 1
+)
+exit /b 0
+
+:getopts
+ set stopscript=0
+ if (%1)==() exit /b
+ set valid=0
+ set arg=%1
+ if /I "%1" EQU "-debug" (
+   set valid=1
+   set rundebug=1
+   set DEBUG=_db
+   exit /b
+ )
+ if /I "%1" EQU "-help" (
+   call :usage
+   set stopscript=1
+   exit /b
+ )
+ if /I "%1" EQU "-cfast" (
+   set valid=1
+   set cfast=1
+ )
+ shift
+ if %valid% == 0 (
+   echo.
+   echo ***Error: the input argument %arg% is invalid
+   echo.
+   echo Usage:
+   call :usage
+   set stopscript=1
+   exit /b
+ )
+if not (%1)==() goto getopts
+exit /b
+
+:usage  
+echo run_cfastbot [options]
+echo. 
+echo -cfast          - use installed cfast
+echo -debug          - use debug version of cfast
+echo -help           - display this message
+exit /b
+
+:eof

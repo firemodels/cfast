@@ -17,9 +17,11 @@ set SVNROOT=%CD%
 cd ..\smv
 set SMVROOT=%CD%
 
+cd %SCRIPT_DIR%
+
 set RUNSMV=call %SVNROOT%\Validation\scripts\runsmv.bat
 
-if "%installed_smokeview%" == "1" (
+if "%installed_smokeview%" == "0" goto skip_installed_smokeview
    set SMOKEVIEW=smokeview.exe
    call :is_file_installed %SMOKEVIEW% || exit /b 1
    echo %SMOKEVIEW% found
@@ -27,19 +29,19 @@ if "%installed_smokeview%" == "1" (
    set SH2BAT=sh2bat.exe
    call :is_file_installed %SH2BAT% || exit /b 1
    echo %SH2BAT% found
-)
+:skip_installed_smokeview
 
-if "%installed_smokeview%" == "0" (
+if "%installed_smokeview%" == "1" goto installed_smokeview
   cd %SCRIPT_DIR%
 
   set SMOKEVIEW=%SMVROOT%\Build\smokeview\intel_win_64\smokeview_win_64.exe
-  call :does_file_exist %SMOKEVIEW% || exit /b 1
+  call :does_cfile_exist %SMOKEVIEW% || exit /b 1
   echo %SMOKEVIEW% found
 
   set SH2BAT=%SMVROOT%\Build\sh2bat\intel_win_64\sh2bat_win_64.exe
-  call :does_file_exist %SH2BAT% || exit /b 1
+  call :does_cfile_exist %SH2BAT% || exit /b 1
   echo %SH2BAT% found
-)
+:installed_smokeview
 
 cd %SCRIPT_DIR%
 %SH2BAT% CFAST_Pictures.sh CFAST_Pictures.bat
@@ -68,13 +70,15 @@ goto eof
   exit /b 0
 
 :: -------------------------------------------------------------
-  :does_file_exist
+  :does_cfile_exist
 :: -------------------------------------------------------------
 
 set file=%1
 
 if NOT exist %file% (
-  echo ***Fatal error: %file% does not exist. Aborting
+  echo ***Fatal error: The C/C++ program %file% does not exist.
+  echo Either build this program or rerun Make_CFAST_Pictures.bat using the
+  echo -smokeview option
   exit /b 1
 )
 exit /b 0

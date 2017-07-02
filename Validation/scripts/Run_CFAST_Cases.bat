@@ -24,9 +24,6 @@ set BASEDIR=%CD%
 cd %BASEDIR%\..
 set SVNROOT=%CD%
 
-cd ..\smv
-set SMVROOT=%CD%
-
 ::*** use installed programs
 
 cd %SCRIPT_DIR%
@@ -57,6 +54,12 @@ if "%installed_cfast%" == "1" goto skip_installed_cfast
 :skip_installed_cfast
 
 if "%installed_smokeview%" == "1" goto skip_installed_smokeview
+  cd %SCRIPT_DIR%
+
+  if NOT EXIST ..\..\..\smv goto abort_smv
+  cd ..\..\..\smv
+  set SMVROOT=%CD%
+
   cd %SCRIPT_DIR%
 
   set bgexe=%SMVROOT%\Build\background\intel_win%size%\background.exe
@@ -202,5 +205,13 @@ echo -installed      - same as -cfast -smokeview
 echo -smokeview      - use installed smokeview utilities 
 echo                   (background and sh2bat)
 exit /b
+
+:abort_smv
+echo ***Fatal error: the smv repo does not exist
+echo clone the smv repo at the same level as the cfast repo
+echo or rerun Run_CFAST_cases.bat using the -smokeview option
+exit /b
+goto eof
+
 
 :eof

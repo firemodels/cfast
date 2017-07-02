@@ -14,8 +14,6 @@ cd ..
 set BASEDIR=%CD%
 cd ..
 set SVNROOT=%CD%
-cd ..\smv
-set SMVROOT=%CD%
 
 cd %SCRIPT_DIR%
 
@@ -32,6 +30,12 @@ if "%installed_smokeview%" == "0" goto skip_installed_smokeview
 :skip_installed_smokeview
 
 if "%installed_smokeview%" == "1" goto installed_smokeview
+  cd %SCRIPT_DIR%
+
+  if NOT EXIST ..\..\..\smv goto abort_smv
+  cd ..\..\..\smv
+  set SMVROOT=%CD%
+
   cd %SCRIPT_DIR%
 
   set SMOKEVIEW=%SMVROOT%\Build\smokeview\intel_win_64\smokeview_win_64.exe
@@ -59,8 +63,8 @@ goto eof
 :: -------------------------------------------------------------
 
   set program=%1
-  %program% -help 1> installed_error.txt 2>&1
-  type installed_error.txt | find /i /c "not recognized" > installed_error_count.txt
+  where %program% 1> installed_error.txt 2>&1
+  type installed_error.txt | find /i /c "Could not find" > installed_error_count.txt
   set /p nothave=<installed_error_count.txt
   erase installed_error_count.txt installed_error.txt
   if %nothave% == 1 (
@@ -120,5 +124,12 @@ echo.
 echo -help           - display this message
 echo -smokeview      - use installed smokeview and utilities 
 exit /b
+
+:abort_smv
+echo ***Fatal error: the smv repo does not exist
+echo clone the smv repo at the same level as the cfast repo
+echo or rerun Make_CFAST_pictures.bat using the -smokeview option
+exit /b
+goto eof
 
 :eof

@@ -998,7 +998,7 @@ module radiation_routines
     else if (xval > x(xdim)) then
         xerr = hierr
         xval = x(xdim)
-        i = xdim
+        i = xdim-1
 
         ! check the cases where x(1) <= xval < x(xdim)
 
@@ -1011,7 +1011,7 @@ module radiation_routines
             end if
         end do
         ! then xval = x(xdim)
-        i = xdim
+        i = xdim-1
 20      continue
     end if
 
@@ -1027,7 +1027,7 @@ module radiation_routines
     else if (yval > y(ydim)) then
         yerr = hierr
         yval = y(ydim)
-        j = ydim
+        j = ydim-1
 
         ! check the cases of y(1) <= yval < y(ydim)
 
@@ -1042,7 +1042,7 @@ module radiation_routines
 
         ! then yval = y(ydim)
 
-        j = ydim
+        j = ydim-1
 40      continue
     end if
 

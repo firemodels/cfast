@@ -304,6 +304,7 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_8 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_9 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_10 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_11 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_12 -V
 cd ..
 if %1==NIST_Vent_Study goto end
 

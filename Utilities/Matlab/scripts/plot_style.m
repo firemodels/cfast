@@ -35,7 +35,7 @@ switch style
 
         % Font properties
         Font_Name = 'Times';
-        Font_Interpreter = 'TeX';
+        Font_Interpreter = 'LaTeX';
         Key_Font_Size   = 12;
         Title_Font_Size = 16;
         Label_Font_Size = 16;
@@ -77,7 +77,7 @@ switch style
 
         % Font properties
         Font_Name = 'Helvetica'; %get(gca,'fontname')
-        Font_Interpreter = 'TeX';
+        Font_Interpreter = 'LaTeX';
         Key_Font_Size   = 16;
         Title_Font_Size = 20;
         Label_Font_Size = 20;

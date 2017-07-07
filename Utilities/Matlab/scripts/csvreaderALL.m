@@ -1,5 +1,5 @@
 function [Time,mCO2,mH2O] = csvreaderALL(filename,Comp)
-[H D] = dvcread(filename,1);
+[H D] = dvcread(filename,1,5);
 
 colTime = find(strncmpi(H,'Time',4));
 colO2u = find(strncmpi(H,strcat('ULO2',Comp),6));

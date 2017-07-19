@@ -7,6 +7,8 @@
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
+    use namelist_routines
+    use conversion_routines
 
     use wallptrs
     use cenviro
@@ -23,6 +25,7 @@
     use thermal_data
     use vent_data
     use room_data
+    use namelist_data
 
     implicit none
 
@@ -51,7 +54,8 @@
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
     type(vent_type), pointer :: ventptr
-
+    
+    
     !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
@@ -84,31 +88,34 @@
         stop
     end if
 
-    ! read in the entire input file as a spreadsheet array of numbers and/or character strings
-    call readcsvformat (iofili, rarray, carray, nrow, ncol, 1, numr, numc, iofill)
-
-    close (iofili)
-
-    ! aversion is the header name, ivers is the major version number read in, iversion is the major version number
-    ! from the internal version data. these need to be compatible
-    aversion = carray(1,1)
-    ivers = rarray(1,2)
-    ! new version numbering 600->6000, so current version is 7000
-    if (version>=1000) then
-        iversion = version/1000
-    else
-        iversion = version/100
+    if (.not. nmlflag) then
+        ! read in the entire input file as a spreadsheet array of numbers and/or character strings
+        call readcsvformat (iofili, rarray, carray, nrow, ncol, 1, numr, numc, iofill)
+    
+        close (iofili)
+    
+        ! aversion is the header name, ivers is the major version number read in, iversion is the major version number
+        ! from the internal version data. these need to be compatible
+        aversion = carray(1,1)
+        ivers = rarray(1,2)
+        ! new version numbering 600->6000, so current version is 7000
+        if (version>=1000) then
+            iversion = version/1000
+        else
+            iversion = version/100
+        end if
+    
+        if (aversion==heading.and.ivers==iversion-1) then
+            write (*,5004) ivers, iversion
+            write (iofill,5004) ivers, iversion
+        else if (aversion/=heading.or.ivers/=iversion) then
+            write (*,5002) aversion,heading,ivers,iversion
+            write (iofill,5002) aversion,heading,ivers,iversion
+            stop
+        end if
+        title = carray(1,3)
+        versnflag=.true.
     end if
-
-    if (aversion==heading.and.ivers==iversion-1) then
-        write (*,5004) ivers, iversion
-        write (iofill,5004) ivers, iversion
-    else if (aversion/=heading.or.ivers/=iversion) then
-        write (*,5002) aversion,heading,ivers,iversion
-        write (iofill,5002) aversion,heading,ivers,iversion
-        stop
-    end if
-    title = carray(1,3)
 
     do i = 1, mxrooms
         yinter(i) = -1.0_eb
@@ -116,8 +123,13 @@
 
     n_thrmp = 0
 
-    ! read in data file
-    call keywordcases (numr, numc)
+    if (nmlflag) then
+        call namelist_input
+    else
+        ! read in data file
+        call keywordcases (numr, numc)
+        call namelist_conversion(aversion,ivers)
+    end if
 
     !	wait until the input file is parsed before we die on temperature outside reasonable limits
     if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
@@ -513,6 +525,7 @@
                 write (iofill,*) '***Error: Bad STPMA input. At least 1 argument required.'
                 stop
             end if
+            stpmaflag=.true.
         end if
     end do
 
@@ -550,6 +563,7 @@
                 write (iofill,*) '***Error: Bad MATL input. At least 7 arguments required.'
                 stop
             end if
+            matrlflag=.true.
         end if
     end do
 
@@ -625,6 +639,7 @@
                 write (iofill,*) '***Error: Bad COMPA input. At least 10 arguments required.'
                 stop
             end if
+            compaflag=.true.
         end if
     end do
 
@@ -706,6 +721,7 @@
                 write (iofill,*) '***Error: Bad TARGE input. At least 10 arguments required.'
                 stop
             end if
+            targeflag=.true.
         end if
     end do
 
@@ -816,6 +832,7 @@
                 fireptr%ignited = .true.
                 fireptr%reported = .true.
             end if
+            cfireflag=.true.
 
             ! read and set the other stuff for this fire
             call inputembeddedfire (fireptr, ir, inumc)
@@ -855,6 +872,7 @@
                 write (iofill,*) '***Error: Bad TIMES input. At least 4 arguments required.'
                 stop
             end if
+            ctimeflag=.true.
 
             ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
         case ("TAMB")
@@ -877,6 +895,7 @@
                 exterior_rho = interior_rho
             end if
             tgignt = interior_temperature + 200.0_eb
+            tambiflag=.true.
 
             ! EAMB reference external ambient temperature (c), reference external ambient pressure
         case ("EAMB")
@@ -888,6 +907,7 @@
             exterior_temperature = lrarray(1)
             exterior_abs_pressure = lrarray(2)
             exset = .true.
+            eambiflag=.true.
             
             ! LIMO2 lower oxygen limit for combustion. This is a global value
         case ("LIMO2")
@@ -897,6 +917,7 @@
                 stop
             end if
             lower_o2_limit = lrarray(1)
+            limo2flag=.true.
 
             ! HVENT 1st, 2nd, which_vent, width, soffit, sill, wind_coef, hall_1, hall_2, face, opening_fraction,
             !           width, soffit, sill
@@ -999,6 +1020,8 @@
             roomptr => roominfo(ventptr%room1)
             ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
             ventptr%absolute_sill = ventptr%sill + roomptr%z0
+            
+            hventflag=.true.
 
             ! DEADROOM dead_room_num connected_room_num
             ! pressure in dead_room_num is not solved.  pressure for this room
@@ -1010,6 +1033,8 @@
                 roomptr => roominfo(i)
                 roomptr%deadroom = j
             end if
+            
+            deadrflag=.true.
 
             ! EVENT keyword, the four possible formats are:
             ! EVENT   H     First_Compartment   Second_Compartment	 Vent_Number    Time   Final_Fraction   decay_time
@@ -1084,6 +1109,8 @@
                 write (iofill,*) '***Error: Bad EVENT input. At least 7 arguments required.'
                 stop
             end if
+            eventflag=.true.
+            eventtype=venttype
 
             ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
         case ('RAMP')
@@ -1113,6 +1140,7 @@
                     rampptr%value(iramp) = lrarray(5+2*iramp)
                 end do
             end if
+            crampflag=.true.
 
             ! VVENT - from_compartment to_compartment area shape initial_fraction
         case ('VVENT')
@@ -1202,6 +1230,7 @@
                 write (iofill,*) '***Error: Bad VVENT input. At least 5 arguments required.'
                 stop
             end if
+            vventflag=.true.
 
             ! MVENT - simplified mechanical ventilation
 
@@ -1235,9 +1264,9 @@
                 ventptr%diffuser_area(1) = lrarray(6)
 
                 if (lcarray(7)=='V') then
-                    ventptr%orientation(1) = 1
+                    ventptr%orientation(2) = 1
                 else
-                    ventptr%orientation(1) = 2
+                    ventptr%orientation(2) = 2
                 end if
                 ventptr%height(2) = lrarray(8)
                 ventptr%diffuser_area(2) = lrarray(9)
@@ -1299,6 +1328,7 @@
                 write (iofill,*) '***Error: Bad MVENT input. 13 arguments required.'
                 stop
             end if
+            mventflag=.true.
 
             ! DETECT Type Compartment Activation_Value Width Depth Height RTI Suppression Spray_Density
         case ('DETEC')
@@ -1376,6 +1406,7 @@
                 write (iofill,*) '***Error: Bad DETEC input. At least 9 arguments required.'
                 stop
             end if
+            detecflag=.true.
 
             !  VHEAT top_compartment bottom_compartment
         case ('VHEAT')
@@ -1398,6 +1429,7 @@
                 write (iofill,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
                 stop
             end if
+            vheatflag=.true.
 
             ! ONEZ compartment number - This turns the compartment into a single zone
         case ('ONEZ')
@@ -1415,6 +1447,7 @@
                 write (iofill,*) '***Error: Bad ONEZ input. At least 1 compartment must be specified.'
                 stop
             end if
+            conezflag=.true.
 
             ! HALL Compartment Velocity Depth Decay_Distance
         case ('HALL')
@@ -1439,6 +1472,7 @@
                 write (iofill,*) '***Error: Bad HALL input. At least 1 compartment must be specified.'
                 stop
             end if
+            challflag=.true.
 
             ! ROOMA Compartment Number_of_Area_Values Area_Values
             ! This provides for variable compartment floor areas; this should be accompanied by the roomh command
@@ -1482,6 +1516,7 @@
                 write (iofill,*) '***Error: Bad ROOMA input. At least 2 arguments must be specified.'
                 stop
             end if
+            roomaflag=.true.
 
             ! ROOMH Compartment Number_of_Height_Values Height_Values
             ! This companion to ROOMA, provides for variable compartment floor areas; this should be accompanied by the ROOMA command
@@ -1526,6 +1561,7 @@
                 write (iofill,*) '***Error: Bad ROOMH input. At least 2 arguments must be specified.'
                 stop
             end if
+            roomhflag=.true.
 
             ! DTCHE Minimum_Time_Step Maximum_Iteration_Count
         case ('DTCHE')
@@ -1539,6 +1575,7 @@
                 write (iofill,*) '***Error: Bad DTCHE input. At least 2 arguments must be specified.'
                 stop
             end if
+            dtcheflag=.true.
 
             ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts nr pairs of {Second_Compartment, Fraction}
 
@@ -1581,6 +1618,7 @@
                             stop
                         end if
                         roomptr%heat_frac(ito) = frac
+                        hheat_comp(i)=ito
                     end do
                 else
                     write (*,5355) ifrom, nto
@@ -1592,6 +1630,8 @@
                 write (iofill,*) '***Error: Bad HHEAT input. At least 1 arguments must be specified.'
                 stop
             end if
+            hheatflag=.true.
+            hheatnto=nto
 
             ! FURN - no fire, heat walls according to a prescribed time temperature curve
         case ('FURN')
@@ -1600,10 +1640,14 @@
                 furn_time(i)=lrarray(2*i)
                 furn_temp(i)=lrarray(2*i+1)
             end do
+            furncflag=.true.
+            nfurncount=nfurn
 
             ! ADIAB - all surfaces are adiabatic so that dT/dx at the surface = 0
         case ('ADIAB')
             adiabatic_walls = .true.
+            
+            adiabflag=.true.
 
             ! SLCF 2-D and 3-D slice files
         case ('SLCF')
@@ -1693,6 +1737,7 @@
                 write (iofill,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
                 stop
             end if
+            cslcfflag=.true.
 
             ! ISOF isosurface of specified temperature in one or all compartments
         case ('ISOF')
@@ -1716,6 +1761,7 @@
                 write (iofill,*) '***Error: Bad SLCF input. At least 1 arguments must be specified.'
                 stop
             end if
+            cisofflag=.true.
 
             ! Outdated keywords
         case ('CJET','WIND','GLOBA','DJIGN') ! Just ignore these inputs ... they shouldn't be fatal
@@ -1838,6 +1884,7 @@
                 write (iofill,*) '***Error: At least 7 arguments required on CHEMI input'
                 stop
             end if
+            chemiflag=.true.
         case ('TIME')
             nret = countargs(lcarray)
             fireptr%npoints = nret
@@ -1968,6 +2015,8 @@
     ! --------------------------- open_files -------------------------------------------
 
     subroutine open_files ()
+    
+    use namelist_data
 
     !     routine: open_files
     !     purpose: get the paths and project base name open the input file for reading (1)
@@ -1978,16 +2027,25 @@
 
     integer :: lp, ld, ios
     character(256) :: testpath, testproj, revision, revision_date, compile_date
-
+    
     ! get the path and project names
     call exehandle (exepath, datapath, project)
-
+    
     ! form the file names for datafiles
     testpath = trim (datapath)
     lp = len_trim (testpath)
     testproj = trim (project)
     ld = len_trim (testproj)
-    inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
+    if (nmlflag) then
+        inputfile = testpath(1:lp) // testproj(1:ld) // '.cfast'
+    else
+        inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
+        nmlconfile = testpath(1:lp) // testproj(1:ld) // '.cfast'
+        ! the input format conversion files
+        if (dotinflag) then
+            open (unit=31,file=nmlconfile,delim='apostrophe')
+        end if
+    end if
     outputfile = testpath(1:lp) // testproj(1:ld) // '.out'
     smvhead = testpath(1:lp) // testproj(1:ld) // '.smv'
     smvdata = testpath(1:lp) // testproj(1:ld) // '.plt'

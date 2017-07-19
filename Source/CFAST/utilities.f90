@@ -7,6 +7,8 @@ module utility_routines
     use option_data
     use solver_data
     use room_data, only: nwpts, wsplit, iwbound
+    
+    use namelist_data
 
     implicit none
 
@@ -576,18 +578,35 @@ module utility_routines
         end if
     end do
 
-    ! Now check that the project.in file exists - this is the data file
+    ! Now check that the project.cfast/project.in file exists = this is the data file
     buf = ' '
     if (le(2)/=0) then
-        if (ext(2)(1:le(2))=='.in') then
-            buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+        if (ext(2)(1:le(2))=='.cfast') then
+             buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+             nmlflag=.true.
+        else if (ext(2)(1:le(2))=='.in') then
+             buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+             dotinflag=.true.
         else
-            write (*,*) ' Input file does not exist: ', trim(buf)
-            stop
+             write (*,*) ' Input file extension not appropriate (name.cfast or name.in needed).'
+             stop
         end if
-    else
-        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
-    end if
+     else
+        write (*,*) ' Input file extension not recognized (name.cfast or name.in needed).'
+     end if
+ 
+    ! Now check that the project.in file exists - this is the data file
+!   buf = ' '
+!   if (le(2)/=0) then
+!       if (ext(2)(1:le(2))=='.in') then
+!           buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+!       else
+!           write (*,*) ' Input file does not exist: ', trim(buf)
+!           stop
+!       end if
+!   else
+!       buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
+!   end if
 
     lb = len_trim(buf)
 

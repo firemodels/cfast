@@ -35,9 +35,6 @@ module namelist_routines
 
       ios = 1
 
-      open (unit=99,file='input.out')
-      open (unit=98,file='namelist.out')
-
       close (iofili)
       open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
       if (ios/=0) then
@@ -65,10 +62,10 @@ module namelist_routines
       call read_limo2(iofili)
       call read_hvent(iofili)
       call read_deadr(iofili)
-      call read_event(iofili)
       call read_cramp(iofili)
       call read_vvent(iofili)
       call read_mvent(iofili)
+      call read_event(iofili)
       call read_detec(iofili)
       call read_vheat(iofili)
       call read_conez(iofili)
@@ -109,27 +106,16 @@ module namelist_routines
       ios = 1
       iversion = 0
 
-      write(99, '(/, "Entering read_versn")')
-
       rewind(LU)
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'VERSN'
-      write(99, '(/, "Entering versn_loop")')
       versn_loop: do
          call checkread ('VERSN', LU, ios)
          if (ios==0) versnflag=.true.
-
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving versn_loop")')
              exit versn_loop
          end if 
-         write(99, '(/, "Found VERSN, trying to read it")')
          read(LU,VERSN,err=34,iostat=ios)
 34       if (ios>0) then
             write(99, '(a,i4)') 'Error: Problem with VERSN input, line number', input_file_line_number
@@ -144,21 +130,13 @@ module namelist_routines
       end if
 
       versn_flag: if (versnflag) then
-        write(99, '(/, "on the way")')
   
         rewind (LU) 
         input_file_line_number = 0
-        write(99, '(/, "  ios = ", i3, &
-                    /, "  input_file_line_number = ", i3)') &
-                    ios, input_file_line_number
 
         call checkread('VERSN',LU,ios)
         call set_versn_defaults
-        write(99, '(/)')
-        write(99,VERSN)
-    
         read(LU,VERSN)
-        write(99,VERSN)
   
         if (version>=1000) then
           iversion = version/1000
@@ -169,15 +147,6 @@ module namelist_routines
         title=pgrm_name
 
       end if versn_flag
-
-      write(99, '(/, "  versnflag = ", L3, &
-                  /, "  head = ", A, &
-                  /, "  heading = ", A, &
-                  /, "  ivers = ", i3, &
-                  /, "  iversion = ", i3, &
-                  /, "  pgrm_name = ", A, &
-                  /, "  title = ", A)') &
-                  versnflag,head,heading,ivers,iversion,pgrm_name,title
   
       if (head==heading.and.ivers==iversion-1) then
           write (*,5004) ivers, iversion
@@ -187,8 +156,6 @@ module namelist_routines
           write (99,5002) head,heading,ivers,iversion
           stop
       end if
-      
-      write(99, '(/, "Leaving read_versn (Done)")')
 
 5002  format ('***Error: Not a compatible version ',2a8,2x,2i10)
 5004  format ('Opening a version ',i2,' file with version ',i2,'. Fire inputs may need to be updated.')
@@ -220,10 +187,6 @@ module namelist_routines
       CHARACTER(80) TEXT
       IOS = 1
 
-      write(99, '(/, "Enter checkread", &
-                  /, "input_file_line_number = ", i3)') &
-                  INPUT_FILE_LINE_NUMBER
-
       READLOOP: DO
          READ(LU,'(A)',END=10) TEXT
          INPUT_FILE_LINE_NUMBER = INPUT_FILE_LINE_NUMBER + 1
@@ -233,26 +196,15 @@ module namelist_routines
                IF (TEXT(II+1:II+5)==NAME) THEN
                   BACKSPACE(LU)
                   IOS = 0
-                  write(99, '(/, "Found object", &
-                              /, "input_file_line_number = ", i3, &
-                              /, "target = ", A, &
-                              /, "text found = ", A)') &
-                              input_file_line_number, NAME, TEXT(II+1:II+5)
                   EXIT READLOOP
                ELSE
-                  write(99, '(/, "Not matching, cycling checkread", &
-                              /, "input_file_line_number = ", i3, &
-                              /, "target = ", A, &
-                              /, "text found = ", A)') &
-                              input_file_line_number, NAME, TEXT(II+1:II+5)
                   CYCLE READLOOP
                ENDIF
             ENDIF
          ENDDO TLOOP
       ENDDO READLOOP
   
-10    write(99, '(/, "Leaving checkread")')
-      RETURN
+10    RETURN
   
       END SUBROUTINE CHECKREAD
 
@@ -268,25 +220,15 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering read_stpmax")')
-
       rewind(LU) ; input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'STPMA'
       stpma_loop: do
          call checkread ('STPMA',LU,ios)
          if (ios==0) stpmaflag=.true.
-
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving stpma_loop")')
              exit stpma_loop
          end if 
-         write(99, '(/, "Found STPMA, trying to read it")')
          read(LU,STPMA,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(a,i5)') 'Error: Problem with STPMA input, line number', input_file_line_number
@@ -295,38 +237,23 @@ module namelist_routines
       end do stpma_loop
 
       stpma_flag: if (stpmaflag) then
-        write(99, '(/, "on the way")')
 
         rewind (LU) 
         input_file_line_number = 0
-        write(99, '(/, "  ios = ", i3, &
-                    /, "  input_file_line_number = ", i3)') &
-                    ios, input_file_line_number
   
         call checkread('STPMA',LU,ios)
-        call set_stpma_defaults
-        write(99, '(/)')
-        write(99,STPMA)
-       
+        call set_stpma_defaults       
         read(LU,STPMA)
-        write(99, '(/)')
-        write(99,STPMA)
   
         stpmax=stepmax
 
-        write(99, '(/, "  stepmax = ", f10.4, &
-                    /, "  stpmax = ", f10.4)') &
-                    stepmax,stpmax
-
       end if stpma_flag
-      
-      write(99, '(/, "Leaving read_stpmax (Done)")')
 
       contains
 
       subroutine set_stpma_defaults
 
-      stepmax       = 1.0          ! s
+      stepmax       = 1.0_eb          ! s
 
       end subroutine set_stpma_defaults
 
@@ -348,29 +275,19 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering read_matrl")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'MATRL'
       n_thrmp = 0 
       matrl_loop: do
          call checkread ('MATRL',LU,ios)
          if (ios==0) matrlflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving matrl_loop")')
              exit matrl_loop
          end if 
-         write(99, '(/, "Found MATRL, trying to read it")')
          read(LU,MATRL,err=34,iostat=ios)
          n_thrmp = n_thrmp + 1
-         write(99, '(/, "  n_thrmp = ", i3)') n_thrmp
 34       if (ios>0) then
             write(99, '(a,i3,a,i5)') 'Error: Problem with MATRL number ', n_thrmp+1, ', line number ', input_file_line_number
             stop
@@ -382,36 +299,26 @@ module namelist_routines
          write (99, '(/, "Inputs for MATRL are required.")')
          stop
       end if
+  
+      if (n_thrmp>mxthrmp) then
+         write (*,'(a,i3)') '***Error: Bad MATRL input. Too many thermal properties in input data file. limit is ', mxthrmp
+         write (99,'(a,i3)') '***Error: Bad MATRL input. Too many thermal properties in input data file. limit is ', mxthrmp
+         stop
+      end if
 
       matrl_flag: if (matrlflag) then
-        write(99, '(/, "on the way")')
-  
-        if (n_thrmp>mxthrmp) then
-           write (*,'(a,i3)') '***Error: Bad MATRL input. Too many thermal properties in input data file. limit is ', mxthrmp
-           write (99,'(a,i3)') '***Error: Bad MATRL input. Too many thermal properties in input data file. limit is ', mxthrmp
-           stop
-        end if
 
         rewind (LU) 
         input_file_line_number = 0
   
-        write(99, '(/, "Entering read_matrl_loop")')
         ! Assign value to CFAST variables for further calculations
         read_matrl_loop: do ii=1,n_thrmp
 
          thrmpptr => thermalinfo(ii)
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_thrmp = ", i3)') &
-                     ii, n_thrmp
 
          call checkread('MATRL',LU,ios)
-         call set_matrl_defaults
-         write(99, '(/)')
-         write(99,MATRL)
-        
+         call set_matrl_defaults        
          read(LU,MATRL)
-         write(99, '(/)')
-         write(99,MATRL)
 
          thrmpptr%name          = matrl_id
          thrmpptr%nslab         = nslab
@@ -421,37 +328,22 @@ module namelist_routines
          thrmpptr%thickness(1)  = thickness
          thrmpptr%eps           = eps
 
-         write(99, '(/, "  matrlflag = ", L3, &
-                     /, "  thrmpptr%name = ", A, &
-                     /, "  thrmpptr%nslab = ", i3, &
-                     /, "  thrmpptr%k(1) = ", f10.4, &
-                     /, "  thrmpptr%c(1) = ", f10.4, &
-                     /, "  thrmpptr%rho(1) = ", f10.4, &
-                     /, "  thrmpptr%thickness(1) = ", f10.4, &
-                     /, "  thrmpptr%eps = ", f10.4)') &
-                     matrlflag,thrmpptr%name,thrmpptr%nslab,thrmpptr%k(1),thrmpptr%c(1), &
-                     thrmpptr%rho(1),thrmpptr%thickness(1),thrmpptr%eps
-
         end do read_matrl_loop
-
-        write(99, '(/, "Left read_matrl_loop")')
       
       end if matrl_flag
-
-      write(99, '(/, "leaving read_matrl (Done)")')
 
 
       contains
 
       subroutine set_matrl_defaults
 
-      c                      = 0.0        !j/kg-k
-      eps                    = 1.0
-      k                      = 0.0        !w/m-k
+      c                      = 0.0_eb        !j/kg-k
+      eps                    = 1.0_eb
+      k                      = 0.0_eb        !w/m-k
       matrl_id               = 'null'     
       nslab                  = 1          
-      rho                    = 0.0        !kg/m3
-      thickness              = 0.0        !m
+      rho                    = 0.0_eb        !kg/m3
+      thickness              = 0.0_eb        !m
 
       end subroutine set_matrl_defaults
 
@@ -474,28 +366,18 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering read_compa")')
-
       rewind(LU)
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
         
       ! Scan entire file to look for 'COMPA'          
       compa_loop: do
          call checkread('COMPA',LU,ios)
          if (ios==0) compaflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving compa_loop")')
              exit compa_loop
          end if 
-         write(99, '(/, "Found COMPA, trying to read it")')
          read(LU,COMPA,err=34,iostat=ios)
          ncomp = ncomp + 1
-         write(99, '(/, "  ncomp = ", i3)') ncomp
 34       if (ios>0) then
             write(99, '(a,i3,a,i5)') 'Error: Problem with COMPA number ', ncomp+1, ', line number ', input_file_line_number
             stop
@@ -515,7 +397,6 @@ module namelist_routines
       end if
 
       compa_flag: if (compaflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU)
       input_file_line_number = 0
@@ -525,18 +406,10 @@ module namelist_routines
       read_compa_loop: do ii=1,ncomp
 
          roomptr => roominfo(ii)
-         write(99, '(/, "  n = ", i3, &
-                     /, "  ncomp = ", i3)') &
-                     ii, ncomp
 
          call checkread('COMPA',LU,ios)
          call set_compa_defaults
-         write(99, '(/)')
-         write(99,COMPA)
-
          read(LU,COMPA)
-         write(99, '(/)')
-         write(99,COMPA)
 
          roomptr%name    = compa_id
          roomptr%cwidth  = width
@@ -575,32 +448,10 @@ module namelist_routines
 
          ! reset this each time in case this is the last entry
          nr = ncomp + 1
-         
-         write(99, '(/, "  compaflag = ", L3, &
-                     /, "  nr = ", i3, &
-                     /, "  roomptr%name = ", A12, &
-                     /, "  roomptr%cwidth = ", f10.4, &
-                     /, "  roomptr%cdepth = ", f10.4, &
-                     /, "  roomptr%cheight = ", f10.4, &
-                     /, "  roomptr%x0 = ", f10.4, &
-                     /, "  roomptr%y0 = ", f10.4, &
-                     /, "  roomptr%z0 = ", f10.4, &
-                     /, "  roomptr%ibar = ", i3, &
-                     /, "  roomptr%jbar = ", i3, &
-                     /, "  roomptr%kbar = ", i3, &
-                     /, "  roomptr%surface_on(1-4) = ", 4L4, &
-                     /, "  roomptr%matl(1-4) = ", 4A12)') &
-                     compaflag,nr,roomptr%name,roomptr%cwidth,roomptr%cdepth,roomptr%cheight, &
-                     roomptr%x0,roomptr%y0,roomptr%z0,roomptr%ibar,roomptr%jbar, &
-                     roomptr%kbar,roomptr%surface_on(1:4),roomptr%matl(1:4)
 
       end do read_compa_loop
-      
-      write(99, '(/, "Left read_compa_loop")')
 
       end if compa_flag
-      
-      write(99, '(/, "leaving read_compa (Done)")')
 
 
       contains
@@ -609,16 +460,16 @@ module namelist_routines
 
       ceiling                 = 'off'
       compa_id                = 'null'
-      depth                   = 0.0
+      depth                   = 0.0_eb
       floor                   = 'off'
-      height                  = 0.0
+      height                  = 0.0_eb
       wall                    = 'off'
-      width                   = 0.0
-      x0                      = 0.0
+      width                   = 0.0_eb
+      x0                      = 0.0_eb
       xgrid                   = 50
-      y0                      = 0.0
+      y0                      = 0.0_eb
       ygrid                   = 50
-      z0                      = 0.0
+      z0                      = 0.0_eb
       zgrid                   = 50
 
       end subroutine set_compa_defaults
@@ -643,26 +494,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering read_targe")')
-
       rewind(LU)
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
         
       ! Scan entire file to look for 'TARGE'  
       n_targets = 0
       targe_loop: do
          call checkread ('TARGE',LU,ios)
          if (ios==0) targeflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving targe_loop")')
              exit targe_loop
          end if 
-         write(99, '(/, "Found TARGE, trying to read it")')
          read(LU,TARGE,err=34,iostat=ios)
          n_targets =n_targets + 1
 34          if (ios>0) then
@@ -678,28 +520,18 @@ module namelist_routines
       end if
 
       targe_flag: if (targeflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU)
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_matrl_loop")')
       ! Assign value to CFAST variables for further calculations
       read_targe_loop: do ii=1,n_targets
 
          targptr => targetinfo(ii)
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_targets = ", i3)') &
-                     ii, n_targets
 
          call checkread('TARGE',LU,ios)
          call set_targe_defaults 
-         write(99, '(/)')
-         write(99,TARGE)
-
          read(LU,TARGE)
-         write(99, '(/)')
-         write(99,TARGE) 
 
          iroom = compartment
 
@@ -749,32 +581,10 @@ module namelist_routines
                stop
             end if
          end if
-         
-         write(99, '(/, "  targeflag = ", L3, &
-                     /, "  targptr%room = ", i3, &
-                     /, "  targptr%center(1) = ", f10.4, &
-                     /, "  targptr%center(2) = ", f10.4, &
-                     /, "  targptr%center(3) = ", f10.4, &
-                     /, "  targptr%normal(1) = ", f10.4, &
-                     /, "  targptr%normal(2) = ", f10.4, &
-                     /, "  targptr%normal(3) = ", f10.4, &
-                     /, "  targptr%depth_loc = ", f10.4, &
-                     /, "  targptr%name = ", A, &
-                     /, "  targptr%material = ", A, &
-                     /, "  targptr%equaton_type = ", i3, &
-                     /, "  targptr%wall = ", i3)') &
-                     targeflag,targptr%room,targptr%center(1),targptr%center(2), &
-                     targptr%center(3), targptr%normal(1),targptr%normal(2), &
-                     targptr%normal(3),targptr%depth_loc,targptr%name, &
-                     targptr%material,targptr%equaton_type,targptr%wall
 
       end do read_targe_loop
-      
-      write(99, '(/, "Left read_targe_loop")')
 
       end if targe_flag
-      
-      write(99, '(/, "leaving read_targe (Done)")')
 
 913   format('***',A,': BAD TARGE input. Invalid equation type:',A3,' Valid choices are: PDE or CYL')
 5003  format ('***Error: BAD TARGE input. The compartment specified by TARGET does not exist ',i0)
@@ -786,21 +596,19 @@ module namelist_routines
       subroutine set_targe_defaults
 
       compartment                     = 0
-      x                               = 0.0
-      y                               = 0.0
-      z                               = 0.0
-      normalx                         = 0.0
-      normaly                         = 0.0
-      normalz                         = 0.0
+      x                               = 0.0_eb
+      y                               = 0.0_eb
+      z                               = 0.0_eb
+      normalx                         = 0.0_eb
+      normaly                         = 0.0_eb
+      normalz                         = 0.0_eb
       material                        = ' '
       method                          = 'EXPLICIT'
       equationtype                    = ' '
-      internallocation                = 0.5
+      internallocation                = 0.5_eb
       targe_id                        = 'null'
 
       end subroutine set_targe_defaults
-
-
 
 
       end subroutine read_targe
@@ -826,26 +634,17 @@ module namelist_routines
       ios = 1
       tmpcond = 0.0
 
-      write(99, '(/, "Entering read_cfire")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'CFIRE'
       n_fires = 0
       fire_loop: do
          call checkread ('CFIRE', LU, ios)
          if (ios==0) cfireflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving fire_loop")')
              exit fire_loop
          end if 
-         write(99, '(/, "Found CFIRE, trying to read it")')
          read(LU,CFIRE,err=34,iostat=ios)
          n_fires =n_fires + 1
 34       if (ios>0) then
@@ -861,7 +660,6 @@ module namelist_routines
       end if
 
       cfire_flag: if (cfireflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
@@ -871,18 +669,10 @@ module namelist_routines
       read_fire_loop: do ii=1,n_fires
 
          fireptr => fireinfo(ii)
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_fires = ", i3)') &
-                     ii, n_fires
 
          call checkread('CFIRE',LU,ios)
          call set_fire_defaults
-         write(99, '(/)')
-         write(99,CFIRE)
-        
          read(LU,CFIRE)
-         write(99, '(/)')
-         write(99,CFIRE)
 
          iroom = compartment
          if (iroom<1.or.iroom>nr-1) then
@@ -965,32 +755,10 @@ module namelist_routines
             fireptr%ignited  = .true.
             fireptr%reported = .true.
          end if
-         
-         write(99, '(/, "  cfireflag = ", L3, &
-                     /, "  fireptr%name = ", A12, &
-                     /, "  fireptr%room = ", i3, &
-                     /, "  fireptr%chemistry_type = ", i3, &
-                     /, "  fireptr%x_position = ", f10.4, &
-                     /, "  fireptr%y_position = ", f10.4, &
-                     /, "  fireptr%z_position = ", f10.4, &
-                     /, "  fireptr%modified_plume = ", i3, &
-                     /, "  fireptr%ignition_type = ", i3, &
-                     /, "  fireptr%ignition_target = ", i3, &
-                     /, "  fireptr%ignited = ", L3, &
-                     /, "  fireptr%reported = ", L3, &
-                     /, "  fireptr%ignition_criterion = ", e10.4)') &
-                     cfireflag,fireptr%name,fireptr%room,fireptr%chemistry_type,fireptr%x_position, &
-                     fireptr%y_position,fireptr%z_position,fireptr%modified_plume,fireptr%ignition_type, &
-                     fireptr%ignition_target,fireptr%ignited,fireptr%reported, &
-                     fireptr%ignition_criterion
 
       end do read_fire_loop
-      
-      write(99, '(/, "Left read_fire_loop")')
 
       end if cfire_flag
-      
-      write(99, '(/, "leaving read_cfire (Done)")')
       
 5320  format ('***Error: Bad FIRE input. Fire specification error, room ',i0,' out of range')
 5321  format ('***Error: Bad FIRE input. Fire specification error, not an allowed fire type',i0)
@@ -1005,12 +773,12 @@ module namelist_routines
       subroutine set_fire_defaults
 
       compartment                     = 0
-      x                               = 0.0
-      y                               = 0.0
-      z                               = 0.0
-      plume                           = 0
+      x                               = 0.0_eb
+      y                               = 0.0_eb
+      z                               = 0.0_eb
+      plume                           = 1
       type                            = 'null'
-      criterion                       = 0
+      criterion                       = 0.0_eb
       target                          = 'null'
       dummy1                          = 0
       dummy2                          = 0
@@ -1028,7 +796,6 @@ module namelist_routines
       integer :: LU
       real(eb) :: ohcomb,max_hrr,max_area,flamelength,hrrpm3
       integer :: midpoint = 1, base = 2
-      character(len=30) :: myfmt
 
       type(fire_type), pointer :: fireptr
       type(room_type), pointer :: roomptr
@@ -1043,26 +810,17 @@ module namelist_routines
       nret = 0
       ohcomb = 0.0
 
-      write(99, '(/, "Entering read_chemi")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'CHEMI'
       n_chemi = 0
       chemi_loop: do
          call checkread ('CHEMI',LU,ios)
          if (ios==0) chemiflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving chemi_loop")')
              exit chemi_loop
          end if 
-         write(99, '(/, "Found CHEMI, trying to read it")')
          n_chemi =n_chemi + 1
          read(LU,CHEMI,err=34,iostat=ios)
 34       if (ios>0) then
@@ -1080,7 +838,6 @@ module namelist_routines
       end if
 
       chemi_flag: if (chemiflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
@@ -1089,28 +846,18 @@ module namelist_routines
       ! Assign value to CFAST variables for further calculations
       read_chemi_loop: do ii=1,n_chemi
 
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_chemi = ", i3)') &
-                     ii, n_chemi
-
          call checkread('CHEMI',LU,ios)
          call set_chemi_defaults
-         write(99, '(/)')
-         write(99,CHEMI)
-        
          read(LU,CHEMI)
-         write(99, '(/)')
-         write(99,CHEMI)
 
          match_loop: do j=1,n_fires
 
             fireptr => fireinfo(j)
 
             if (chemi_id==fireptr%name) then 
-                write (99, '(/, "Chemi_id and Fire_id match and procced")')
                 exit match_loop
             else
-                write (99, '(/, "Still matching")')
+                continue
             end if
          end do match_loop   
 
@@ -1126,8 +873,8 @@ module namelist_routines
          fireptr%n_o  = o
          fireptr%n_n  = n
          fireptr%n_cl = cl
-         fireptr%molar_mass = (12.01*fireptr%n_c + 1.008*fireptr%n_h + 16.0*fireptr%n_o + &
-                         14.01*fireptr%n_n + 35.45*fireptr%n_cl)/1000.0
+         fireptr%molar_mass = (12.01_eb*fireptr%n_c + 1.008_eb*fireptr%n_h + 16.0_eb*fireptr%n_o + &
+                               14.01_eb*fireptr%n_n + 35.45_eb*fireptr%n_cl)/1000.0_eb
          fireptr%chirad = chir
          ohcomb = hoc
          if (ohcomb<=0.0_eb) then
@@ -1180,32 +927,12 @@ module namelist_routines
             end if
             fireptr%area(i) = max(area(i),pio4*0.2_eb**2)
             max_area = max(max_area,fireptr%area(i))
-
-            ! calculate a characteristic length of an object (we assume the diameter).
-            ! this is used for point source radiation fire to target calculation as a minimum effective
-            ! distance between the fire and the target which only impact very small fire to target distances
-            fireptr%characteristic_length = sqrt(max_area/pio4)
-
-            ! Diagnostic - check for the maximum heat release per unit volume.
-            ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
-            call flame_height(max_hrr, max_area, flamelength)
-            flamelength = max (0.0_eb, flamelength)
-            
-            ! Now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
-            hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
-            if (hrrpm3>4.0e6_eb) then
-                write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (*, 5108)
-                write (99,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (99, 5108)
-                stop
-            else if (hrrpm3>2.0e6_eb) then
-                write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (*, 5108)
-                write (99,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (99, 5108)
-            end if
          end do
+
+         ! calculate a characteristic length of an object (we assume the diameter).
+         ! this is used for point source radiation fire to target calculation as a minimum effective
+         ! distance between the fire and the target which only impact very small fire to target distances
+         fireptr%characteristic_length = sqrt(max_area/pio4)
         
          ! define heigh
          do i = 1, nret
@@ -1220,46 +947,30 @@ module namelist_routines
          call positionobject(fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
          call positionobject(fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
          call positionobject(fireptr%z_position,roomptr%cheight,base,mx_hsep)
-         
-         write(myfmt, '("("i3,"(f10.4))")')  nret
 
-         write(99, '(/, "  cfireflag = ", L3, &
-                     /, "  chemiflag = ", L3, &
-                     /, "  fireptr%n_c = ", f10.4, &
-                     /, "  fireptr%n_h = ", f10.4, &
-                     /, "  fireptr%n_o = ", f10.4, &
-                     /, "  fireptr%n_n = ", f10.4, &
-                     /, "  fireptr%n_cl = ", f10.4, &
-                     /, "  fireptr%molar_mass = ", f10.4, &
-                     /, "  fireptr%chirad = ", f10.4, &
-                     /, "  fireptr%npoints = ", i3)') &
-                     cfireflag,chemiflag,fireptr%n_c,fireptr%n_h,fireptr%n_o,fireptr%n_n, &
-                     fireptr%n_cl,fireptr%molar_mass,fireptr%chirad,fireptr%npoints
-
-         write(99, '(/, "  fireptr%time = ")')
-         write(99, fmt=myfmt) fireptr%time(1:nret)
-         write(99, '(/, "  fireptr%qdot = ")')
-         write(99, fmt=myfmt) fireptr%qdot(1:nret)
-         write(99, '(/, "  fireptr%mdot = ")')
-         write(99, fmt=myfmt) fireptr%mdot(1:nret)
-         write(99, '(/, "  fireptr%y_soot = ")')
-         write(99, fmt=myfmt) fireptr%y_soot(1:nret)
-         write(99, '(/, "  fireptr%y_co = ")')
-         write(99, fmt=myfmt) fireptr%y_co(1:nret)
-         write(99, '(/, "  fireptr%y_trace = ")')
-         write(99, fmt=myfmt) fireptr%y_trace(1:nret)
-         write(99, '(/, "  fireptr%area = ")')
-         write(99, fmt=myfmt) fireptr%area(1:nret)
-         write(99, '(/, "  fireptr%height = ")')
-         write(99, fmt=myfmt) fireptr%height(1:nret)
+         ! Diagnostic - check for the maximum heat release per unit volume.
+         ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
+         call flame_height(max_hrr, max_area, flamelength)
+         flamelength = max (0.0_eb, flamelength)
+            
+         ! Now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
+         hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
+         if (hrrpm3>4.0e6_eb) then
+             write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+             write (*, 5108)
+             write (99,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+             write (99, 5108)
+             stop
+         else if (hrrpm3>2.0e6_eb) then
+             write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+             write (*, 5108)
+             write (99,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+             write (99, 5108)
+         end if
 
       end do read_chemi_loop
 
-      write(99, '(/, "Left read_chemi_loop")')
-
       end if chemi_flag
-      
-      write(99, '(/, "leaving read_chemi (Done)")')
 
 5001  format ('***Error: invalid heat of combustion, must be greater than zero, ',1pg12.3)
 5002  format ('***Error: invalid fire area. all input values must be greater than zero')
@@ -1273,21 +984,21 @@ module namelist_routines
       subroutine set_chemi_defaults
 
       chemi_id          = 'null'
-      c                 = 0.0
-      h                 = 0.0
-      o                 = 0.0
-      n                 = 0.0
-      cl                = 0.0
+      c                 = 0.0_eb
+      h                 = 0.0_eb
+      o                 = 0.0_eb
+      n                 = 0.0_eb
+      cl                = 0.0_eb
       chir              = 0.35_eb
-      hoc               = 0.0
+      hoc               = 0.0_eb
       nret              = 0
-      time(1:mxpts)     = 0.0
-      c_hrr(1:mxpts)    = 0.0
-      fv(1:mxpts)       = 0.0
-      c_co(1:mxpts)     = 0.0
-      trace(1:mxpts)    = 0.0
-      area(1:mxpts)     = 0.0
-      height(1:mxpts)   = 0.0
+      time(1:mxpts)     = 0.0_eb
+      c_hrr(1:mxpts)    = 0.0_eb
+      fv(1:mxpts)       = 0.0_eb
+      c_co(1:mxpts)     = 0.0_eb
+      trace(1:mxpts)    = 0.0_eb
+      area(1:mxpts)     = 0.0_eb
+      height(1:mxpts)   = 0.0_eb
 
       end subroutine set_chemi_defaults
 
@@ -1376,26 +1087,17 @@ module namelist_routines
       namelist /CTIME/simulation,print,spreadsheet,smokeview
 
       ios = 1
-
-      write(99, '(/, "Entering read_ctime")')
-
+      
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'CTIME'
       time_loop: do
          call checkread ('CTIME',LU,ios)
          if (ios==0) ctimeflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving time_loop")')
              exit time_loop
          end if 
-         write(99, '(/, "Found CTIME, trying to read it")')
          read(LU,CTIME,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(a,i5)') 'Error: Problem with CTIME input, line number', input_file_line_number
@@ -1410,34 +1112,20 @@ module namelist_routines
       end if
 
       ctime_flag: if (ctimeflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('CTIME',LU,ios)
       call set_time_defaults
-      write(99, '(/)')
-      write(99,CTIME)
-        
       read(LU,CTIME)
-      write(99, '(/)')
-      write(99,CTIME)
 
       time_end=simulation
       print_out_interval=print
       smv_out_interval=smokeview
       ss_out_interval=spreadsheet
 
-      write(99, '(/, "  time_end = ", i10, &
-                  /, "  print_out_interval = ", i3, &
-                  /, "  smv_out_interval = ", i3, &
-                  /, "  ss_out_interval = ", i3)') &
-                  time_end,print_out_interval,smv_out_interval,ss_out_interval
-
       end if ctime_flag
-
-      write(99, '(/, "leaving read_ctime (Done)")')
 
 
 
@@ -1445,10 +1133,10 @@ module namelist_routines
       
       subroutine set_time_defaults
       
-      simulation             = 0          ! s
-      print                  = 50         ! s
-      smokeview              = 10         ! s
-      spreadsheet            = 10         ! s
+      simulation             = 0_eb          ! s
+      print                  = 50_eb         ! s
+      smokeview              = 10_eb         ! s
+      spreadsheet            = 10_eb         ! s
       
       end subroutine set_time_defaults
       
@@ -1467,25 +1155,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering read_tambi")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'TAMBI'
       tamb_loop: do
          call checkread ('TAMBI',LU,ios)
          if (ios==0) tambiflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving tamb_loop")')
              exit tamb_loop
          end if 
-         write(99, '(/, "Found TAMBI, trying to read it")')
          read(LU,TAMBI,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(a,i5)') 'Error: Problem with TAMBI number, line number', input_file_line_number
@@ -1494,21 +1173,13 @@ module namelist_routines
       end do tamb_loop
 
       tambi_flag: if (tambiflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('TAMBI',LU,ios)
       call set_tamb_defaults
-      write(99, '(/)')
-      write(99,TAMBI)
-        
       read(LU,TAMBI)
-      write(98, '(/)')
-      write(98,TAMBI)
-      write(99, '(/)')
-      write(99,TAMBI)
       
       interior_temperature  = temp
       interior_abs_pressure = pres
@@ -1521,24 +1192,15 @@ module namelist_routines
 
       tgignt = interior_temperature + 200.0_eb
 
-      write(99, '(/, "  interior_temperature = ", f10.4, &
-                  /, "  interior_abs_pressure = ", f15.4, &
-                  /, "  tgignt = ", f10.4, &
-                  /, "  relative_humidity = ", f10.4)') &
-                  interior_temperature,interior_abs_pressure,tgignt,relative_humidity
-
       end if tambi_flag
-
-
-      write(99, '(/, "leaving read_tambi (Done)")')
       
       contains
       
       subroutine set_tamb_defaults
       
-      temp                     = 293.17        !K
-      pres                     = 101325.0      !Pa
-      rh                       = 50            !Percentage
+      temp                     = 293.15_eb        !K
+      pres                     = 101325.0_eb      !Pa
+      rh                       = 50_eb            !Percentage
       
       end subroutine set_tamb_defaults
       
@@ -1557,25 +1219,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering read_eambi")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'EAMBI'
       eamb_loop: do
          call checkread ('EAMBI',LU,ios)
          if (ios==0) eambiflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving eamb_loop")')
              exit eamb_loop
          end if 
-         write(99, '(/, "Found EAMBI, trying to read it")')
          read(LU,EAMBI,err=34,iostat=ios)
          34 if (ios>0) then
          write(99, '(a,i5)') 'Error: Problem with EAMBI number, line number', input_file_line_number
@@ -1584,41 +1237,27 @@ module namelist_routines
       end do eamb_loop
 
       eambi_flag: if (eambiflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('EAMBI',LU,ios)
       call set_eamb_defaults
-      write(99, '(/)')
-      write(99,EAMBI)
-        
       read(LU,EAMBI)
-      write(98, '(/)')
-      write(98,EAMBI)
-      write(99, '(/)')
-      write(99,EAMBI)
       
       exterior_temperature  = temp
       exterior_abs_pressure = pres
       exsets = .true.
 
-      write(99, '(/, "  exterior_temperature = ", f10.4, &
-                  /, "  exterior_abs_pressure = ", f15.4)') &
-                  exterior_temperature,exterior_abs_pressure
-
       end if eambi_flag
-
-      write(99, '(/, "leaving read_eambi (Done)")')
       
            
       contains
       
       subroutine set_eamb_defaults
       
-      temp                        = 293.17        !K
-      pres                        = 101325.0      !Pa
+      temp                        = 293.15_eb        !K
+      pres                        = 101325.0_eb      !Pa
       
       end subroutine set_eamb_defaults
       
@@ -1634,25 +1273,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering read_limo2")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'LIMO2'
       limo2_loop: do
          call checkread ('LIMO2',LU,ios)
          if (ios==0) limo2flag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving limo2_loop")')
              exit limo2_loop
          end if 
-         write(99, '(/, "Found LIMO2, trying to read it")')
          read(LU,LIMO2,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(a,i5)') 'Error: Problem with LIMO2 number, line number', input_file_line_number
@@ -1661,29 +1291,17 @@ module namelist_routines
       end do limo2_loop
 
       limo2_flag: if (limo2flag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('LIMO2',LU,ios)
       call set_limo2_defaults
-      write(99, '(/)')
-      write(99,LIMO2)
-        
       read(LU,LIMO2)
-      write(99, '(/)')
-      write(99,LIMO2)
       
       lower_o2_limit  = o2index
 
-      write(99, '(/, "  limo2flag = ", L3, &
-                  /, "  lower_o2_limit = ", f10.4)') &
-                  limo2flag,lower_o2_limit
-
       end if limo2_flag
-      
-      write(99, '(/, "leaving read_limo2 (Done)")')
       
       contains
       
@@ -1714,26 +1332,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering HVENT")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'HVENT'
       n_hvents = 0
       hvent_loop: do
          call checkread ('HVENT',LU,ios)
          if (ios==0) hventflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving hvent_loop")')
              exit hvent_loop
          end if 
-         write(99, '(/, "Found HVENT, trying to read it")')
          read(LU,HVENT,err=34,iostat=ios)
          n_hvents =n_hvents + 1
          34 if (ios>0) then
@@ -1743,7 +1352,6 @@ module namelist_routines
       end do hvent_loop
 
       hvent_flag: if (hventflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
@@ -1757,19 +1365,10 @@ module namelist_routines
       write(99, '(/, "Entering read_hvent_loop")')
       ! Assign value to CFAST variables for further calculations
       read_hvent_loop: do ii=1,n_hvents
-      
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_fires = ", i3)') &
-                     ii, n_fires
 
          call checkread('HVENT',LU,ios)
          call set_hvent_defaults
-         write(99, '(/)')
-         write(99,HVENT)
-        
          read(LU,HVENT)
-         write(99, '(/)')
-         write(99,HVENT)
     
          i = first
          j = second
@@ -1805,7 +1404,7 @@ module namelist_routines
       
          if  (type=='TIME' .or. type=='TEMP' .or. type=='FLUX') then
              ventptr%offset(1) = offset1
-             ventptr%offset(2) = 0.0_eb
+             ventptr%offset(2) = offset2
              ventptr%face = face
              if (type=='TIME') then
                 ventptr%opening_type = trigger_by_time
@@ -1844,39 +1443,10 @@ module namelist_routines
          roomptr => roominfo(ventptr%room1)
          ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
          ventptr%absolute_sill = ventptr%sill + roomptr%z0
-         
-         write(99, '(/, "  ventptr%room1 = ", i3, &
-                     /, "  ventptr%room2 = ", i3, &
-                     /, "  ventptr%counter = ", i3, &
-                     /, "  ventptr%width = ", f10.4, &
-                     /, "  ventptr%soffit = ", f10.4, &
-                     /, "  ventptr%sill = ", f10.4, &
-                     /, "  ventptr%offset(1) = ", f10.4, &
-                     /, "  ventptr%offset(2) = ", f10.4, &
-                     /, "  ventptr%face = ", i3, &
-                     /, "  ventptr%opening_type = ", i3, &
-                     /, "  ventptr%opening_initial_time = ", f10.4, &
-                     /, "  ventptr%opening_initial_fraction = ", f10.4, &
-                     /, "  ventptr%opening_final_time = ", f10.4, &
-                     /, "  ventptr%opening_final_fraction = ", f10.4, &
-                     /, "  ventptr%opening_criterion = ", f10.4, &
-                     /, "  ventptr%opening_target = ", i3, &
-                     /, "  ventptr%absolute_soffit = ", f10.4, &
-                     /, "  ventptr%absolute_sill = ", f10.4)') &
-                     ventptr%room1,ventptr%room2,ventptr%counter,ventptr%width, &
-                     ventptr%soffit,ventptr%sill,ventptr%offset(1),ventptr%offset(2), &
-                     ventptr%face,ventptr%opening_type,ventptr%opening_initial_time, &
-                     ventptr%opening_initial_fraction,ventptr%opening_final_time, &
-                     ventptr%opening_final_fraction, ventptr%opening_criterion, &
-                     ventptr%opening_target,ventptr%absolute_soffit,ventptr%absolute_sill
 
       end do read_hvent_loop
-      
-      write(99, '(/, "Left read_hvent_loop")')
 
       end if hvent_flag
-      
-      write(99, '(/, "leaving read_hvent (Done)")')
 
 5070  format ('***Error: Bad VENT input. Parameter(s) outside of allowable range',2I4)
 5080  format ('***Error: Bad HVENT input. Too many pairwise horizontal connections',3I5)
@@ -1889,19 +1459,19 @@ module namelist_routines
       first                   = 0
       second                  = 0
       hvent_id                = 0
-      width                   = 0.0
-      soffit                  = 0.0
-      sill                    = 0.0
-      offset1                 = 0.0
-      offset2                 = 0.0
+      width                   = 0.0_eb
+      soffit                  = 0.0_eb
+      sill                    = 0.0_eb
+      offset1                 = 0.0_eb
+      offset2                 = 0.0_eb
       face                    = 0
       type                    = 'null'
-      criterion               = 0.0
+      criterion               = 0.0_eb
       target                  = 'null'
       initialtime             = 1.0_eb
-      initialfraction         = 0.0
+      initialfraction         = 0.0_eb
       finaltime               = 1.0_eb
-      finalfraction           = 0.0
+      finalfraction           = 0.0_eb
       
       end subroutine set_hvent_defaults
       
@@ -1921,25 +1491,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering DEADR")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'DEADR'
       deadr_loop: do
          call checkread ('DEADR',LU,ios)
          if (ios==0) deadrflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving deadr_loop")')
              exit deadr_loop
          end if 
-         write(99, '(/, "Found DEADR, trying to read it")')
          read(LU,DEADR,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(a,i5)') 'Error: Problem with deadr number, line number', input_file_line_number
@@ -1948,19 +1509,13 @@ module namelist_routines
       end do deadr_loop
 
       deadr_flag: if (deadrflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('DEADR',LU,ios)
       call set_deadr_defaults
-      write(99, '(/)')
-      write(99,DEADR)
-        
       read(LU,DEADR)
-      write(99, '(/)')
-      write(99,DEADR)
       
       i = compartment
       j = connected
@@ -1970,13 +1525,7 @@ module namelist_routines
          roomptr%deadroom = j
       end if
 
-      write(99, '(/, "  i = ", i4, &
-                  /, "  roomptr%deadroom = ", i4)') &
-                  i,roomptr%deadroom
-
       end if deadr_flag                  
-
-      write(99, '(/, "leaving read_deadr (Done)")')
 
 
       contains
@@ -2007,25 +1556,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering EVENT")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'EVENT'
       event_loop: do
          call checkread ('EVENT',LU,ios)
          if (ios==0) eventflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving event_loop")')
              exit event_loop
          end if 
-         write(99, '(/, "Found EVENT, trying to read it")')
          read(LU,EVENT,err=34,iostat=ios)
 34       if (ios>0) then
             write(99, '(a,i5)') 'Error: Problem with EVENT number, line number', input_file_line_number
@@ -2034,19 +1574,13 @@ module namelist_routines
       end do event_loop
 
       event_flag: if (eventflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('EVENT',LU,ios)
       call set_event_defaults
-      write(99, '(/)')
-      write(99,EVENT)
-        
       read(LU,EVENT)
-      write(99, '(/)')
-      write(99,EVENT)
       
       venttype = type
       
@@ -2054,11 +1588,6 @@ module namelist_routines
          write (99,*) '****Error: Bad event input. Final_fraction must be between 0 and 1 inclusive.'
          stop
       end if
-
-      write(99, '(/, "  n_hvents = ", i3, &
-                  /, "  n_vvents = ", i3, &
-                  /, "  n_mvents = ", i3)') &
-                  n_hvents,n_vvents,n_mvents
       
       select case (venttype)
       case ('H')
@@ -2067,31 +1596,11 @@ module namelist_routines
          k = event_id
          do iijk = 1, n_hvents
             ventptr => hventinfo(iijk)
-         write(99, '(/, "BEFORE")')
-         write(99, '(/, "  ventptr%room1 = ", i3, &
-                     /, "  ventptr%room2 = ", i3, &
-                     /, "  ventptr%counter = ", i3, &
-                     /, "  ventptr%opening_initial_time = ", f10.4, &
-                     /, "  ventptr%opening_final_time = ", f10.4, &
-                     /, "  ventptr%opening_final_fraction = ", f10.4)') &
-                     ventptr%room1,ventptr%room2,ventptr%counter,ventptr%opening_initial_time, &
-                     ventptr%opening_final_time,ventptr%opening_final_fraction
-
             if (ventptr%room1==i.and.ventptr%room2==j.and.ventptr%counter==k) then
                ventptr%opening_initial_time = time
                ventptr%opening_final_time = time + decay
                ventptr%opening_final_fraction = fraction
             end if
-
-         write(99, '(/, "AFTER")')
-         write(99, '(/, "  ventptr%room1 = ", i3, &
-                     /, "  ventptr%room2 = ", i3, &
-                     /, "  ventptr%counter = ", i3, &
-                     /, "  ventptr%opening_initial_time = ", f10.4, &
-                     /, "  ventptr%opening_final_time = ", f10.4, &
-                     /, "  ventptr%opening_final_fraction = ", f10.4)') &
-                     ventptr%room1,ventptr%room2,ventptr%counter,ventptr%opening_initial_time, &
-                     ventptr%opening_final_time,ventptr%opening_final_fraction
          end do
       case ('V')
          i = first
@@ -2125,9 +1634,9 @@ module namelist_routines
             stop
          end if
          ventptr => mventinfo(fannumber)
-         ventptr%opening_initial_time = time
-         ventptr%opening_final_time = time + decay
-         ventptr%opening_final_fraction = fraction
+         ventptr%filter_initial_time = time
+         ventptr%filter_final_time = time + decay
+         ventptr%filter_final_fraction = fraction
       case default
          write (*,*) '***Error: Bad event input. Type must be H, V, M, or F.'
          write (99,*) '***Error: Bad event input. Type must be H, V, M, or F.'
@@ -2136,7 +1645,6 @@ module namelist_routines
 
       end if event_flag
 
-      write(99, '(/, "leaving read_event (Done)")')
 5196  format ('***Error: Bad EVENT input. Fan has not been defined for this filter ',i0)
       
       contains
@@ -2147,9 +1655,9 @@ module namelist_routines
       second                  = 0
       event_id                = 0
       type                    = 'null'
-      time                    = 0.0
-      fraction                = 0.0
-      decay                   = 0.0
+      time                    = 0.0_eb
+      fraction                = 0.0_eb
+      decay                   = 0.0_eb
       
       end subroutine set_event_defaults
       
@@ -2161,7 +1669,6 @@ module namelist_routines
            
       integer :: ios,ii,iramp
       integer :: LU
-      character(64) :: myfmt
 
       type(ramp_type), pointer :: rampptr
       
@@ -2172,26 +1679,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering CRAMP")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'CRAMP'
       nramps = 0
       ramp_loop: do
          call checkread ('CRAMP',LU,ios)
          if (ios==0) crampflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving ramp_loop")')
              exit ramp_loop
          end if 
-         write(99, '(/, "Found CRAMP, trying to read it")')
          read(LU,CRAMP,err=34,iostat=ios)
          nramps =nramps + 1
 34       if (ios>0) then
@@ -2207,27 +1705,16 @@ module namelist_routines
       end if
 
       cramp_flag: if (crampflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_ramp_loop")')
       ! Assign value to CFAST variables for further calculations      
       read_ramp_loop: do ii=1,nramps
       
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  nramps = ", i3)') &
-                     ii, nramps
-      
          call checkread('CRAMP',LU,ios)
          call set_ramp_defaults
-         write(99, '(/)')
-         write(99,CRAMP)
-        
          read(LU,CRAMP)
-         write(99, '(/)')
-         write(99,CRAMP)
       
          rampptr=>rampinfo(ii)
          rampptr%type    = type
@@ -2239,29 +1726,10 @@ module namelist_routines
             rampptr%time(iramp)  = time(iramp)
             rampptr%value(iramp) = fraction(iramp)
          end do
-
-         write(myfmt, '("("i3,"(f10.4))")')  rampptr%npoints
-
-         write(99, '(/, "  rampptr%type = ", A12, &
-                     /, "  rampptr%room1 = ", i3, &
-                     /, "  rampptr%room2 = ", i3, &
-                     /, "  rampptr%counter = ", i3, &
-                     /, "  rampptr%npoints = ", i3)') &
-                     rampptr%type,rampptr%room1,rampptr%room2,rampptr%counter, &
-                     rampptr%npoints
-
-         write(99, '(/, "  rampptr%time = ")')
-         write(99, fmt=myfmt) rampptr%time(1:rampptr%npoints)
-         write(99, '(/, "  rampptr%value = ")')
-         write(99, fmt=myfmt) rampptr%value(1:rampptr%npoints)
       
       end do read_ramp_loop
 
-      write(99, '(/, "Left read_ramp_loop")')
-
       end if cramp_flag
-      
-      write(99, '(/, "leaving read_ramp (Done)")')
       
       
       contains
@@ -2273,8 +1741,8 @@ module namelist_routines
       second                          = 0 
       ramp_id                         = 0
       ramp_n                          = 0 
-      time                            = 0.0
-      fraction                        = 0.0
+      time                            = 0.0_eb
+      fraction                        = 0.0_eb
       
       end subroutine set_ramp_defaults
       
@@ -2299,26 +1767,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering VVENT")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'VVENT'
-      n_vvents = 0 ! has to be declared in data
+      n_vvents = 0
       vvent_loop: do
          call checkread ('VVENT',LU,ios)
          if (ios==0) vventflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving vvent_loop")')
              exit vvent_loop
          end if 
-         write(99, '(/, "Found VVENT, trying to read it")')
          read(LU,VVENT,err=34,iostat=ios)
          n_vvents =n_vvents + 1
 34       if (ios>0) then
@@ -2334,27 +1793,16 @@ module namelist_routines
       end if
 
       vvent_flag: if (vventflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_vvent_loop")')
       ! Assign value to CFAST variables for further calculations
       read_vvent_loop: do ii=1,n_vvents
       
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_vvents = ", i3)') &
-                     ii, n_vvents
-      
          call checkread('VVENT',LU,ios)
          call set_vvent_defaults
-         write(99, '(/)')
-         write(99,VVENT)
-        
          read(LU,VVENT)
-         write(99, '(/)')
-         write(99,VVENT)
       
          i = top
          j = bottom
@@ -2415,33 +1863,11 @@ module namelist_routines
             write (99,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
             stop
          end if
-         
-         write(99, '(/, "  ventptr%room1 = ", i3, &
-                     /, "  ventptr%room2 = ", i3, &
-                     /, "  ventptr%counter = ", i3, &
-                     /, "  ventptr%area = ", f10.4, &
-                     /, "  ventptr%shape = ", i3, &
-                     /, "  ventptr%opening_type = ", i3, &
-                     /, "  ventptr%opening_initial_time = ", f10.4, &
-                     /, "  ventptr%opening_initial_fraction = ", f10.4, &
-                     /, "  ventptr%opening_final_time = ", f10.4, &
-                     /, "  ventptr%opening_final_fraction = ", f10.4, &
-                     /, "  ventptr%opening_criterion = ", f10.4, &
-                     /, "  ventptr%opening_target = ", i3, &
-                     /, "  ventptr%xoffset = ", f10.4, &
-                     /, "  ventptr%yoffset = ", f10.4)') &
-                     ventptr%room1,ventptr%room2,ventptr%counter,ventptr%area, &
-                     ventptr%shape,ventptr%opening_type,ventptr%opening_initial_time, &
-                     ventptr%opening_initial_fraction,ventptr%opening_final_time, &
-                     ventptr%opening_final_fraction, ventptr%opening_criterion, &
-                     ventptr%opening_target,ventptr%xoffset,ventptr%yoffset
       
       end do read_vvent_loop
-      
-      write(99, '(/, "Left read_vvent_loop")')
 
       end if vvent_flag
-      write(99, '(/, "leaving read_vvent (Done)")')
+      
 5070  format ('***Error: Bad VENT input. Parameter(s) outside of allowable range',2I4)
 
       
@@ -2452,17 +1878,17 @@ module namelist_routines
       top                     = 0
       bottom                  = 0
       vvent_id                = 0
-      area                    = 0.0
+      area                    = 0.0_eb
       shape                   = 1
       type                    = 'null'
-      criterion               = 0
+      criterion               = 0.0_eb
       target                  = 'null'
       initialtime             = 1.0_eb
-      initialfraction         = 0.0
+      initialfraction         = 0.0_eb
       finaltime               = 1.0_eb
-      finalfraction           = 0.0
-      offsetx                 = 0.0
-      offsety                 = 0.0
+      finalfraction           = 0.0_eb
+      offsetx                 = 0.0_eb
+      offsety                 = 0.0_eb
       
       end subroutine set_vvent_defaults
       
@@ -2490,26 +1916,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering MVENT")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'MVENT'
       n_mvents = 0
       mvent_loop: do
          call checkread ('MVENT',LU,ios)
          if (ios==0) mventflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving mvent_loop")')
              exit mvent_loop
          end if 
-         write(99, '(/, "Found MVENT, trying to read it")')
          read(LU,MVENT,err=34,iostat=ios)
          n_mvents =n_mvents + 1
 34       if (ios>0) then
@@ -2525,27 +1942,16 @@ module namelist_routines
       end if
 
       mvent_flag: if (mventflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
       
-      write(99, '(/, "Entering read_mvent_loop")')
       ! Assign value to CFAST variables for further calculations
       read_mvent_loop: do ii=1,n_mvents
       
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_mvents = ", i3)') &
-                     ii, n_mvents
-      
          call checkread('MVENT',LU,ios)
          call set_mvent_defaults
-         write(99, '(/)')
-         write(99,MVENT)
-        
          read(LU,MVENT)
-         write(99, '(/)')
-         write(99,MVENT)
       
          i = first
          j = second
@@ -2620,45 +2026,10 @@ module namelist_routines
             write (99,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
             stop
          end if
-         
-         write(99, '(/, "  ventptr%room1 = ", i3, &
-                     /, "  ventptr%room2 = ", i3, &
-                     /, "  ventptr%counter = ", i3, &
-                     /, "  ventptr%orientation(1) = ", i3, &
-                     /, "  ventptr%height(1) = ", f10.4, &
-                     /, "  ventptr%diffuser_area(1) = ", f10.4, &
-                     /, "  ventptr%orientation(1) = ", i3, &
-                     /, "  ventptr%height(2) = ", f10.4, &
-                     /, "  ventptr%diffuser_area(2) = ", f10.4, &
-                     /, "  ventptr%coeff(1) = ", f10.4, &
-                     /, "  ventptr%maxflow = ", f10.4, &
-                     /, "  ventptr%min_cutoff_relp = ", f10.4, &
-                     /, "  ventptr%max_cutoff_relp = ", f10.4, &
-                     /, "  ventptr%opening_type = ", i3, &
-                     /, "  ventptr%opening_initial_time = ", f10.4, &
-                     /, "  ventptr%opening_initial_fraction = ", f10.4, &
-                     /, "  ventptr%opening_final_time = ", f10.4, &
-                     /, "  ventptr%opening_final_fraction = ", f10.4, &
-                     /, "  ventptr%opening_criterion = ", f10.4, &
-                     /, "  ventptr%opening_target = ", i3, &
-                     /, "  ventptr%xoffset = ", f10.4, &
-                     /, "  ventptr%yoffset = ", f10.4)') &
-                     ventptr%room1,ventptr%room2,ventptr%counter,ventptr%orientation(1), &
-                     ventptr%height(1),ventptr%diffuser_area(1),ventptr%orientation(1),ventptr%height(2), &
-                     ventptr%diffuser_area(2),ventptr%coeff(1),ventptr%maxflow, &
-                     ventptr%min_cutoff_relp,ventptr%max_cutoff_relp, &
-                     ventptr%opening_type, ventptr%opening_initial_time, &
-                     ventptr%opening_initial_fraction,ventptr%opening_final_time,ventptr%opening_final_fraction, &
-                     ventptr%opening_criterion,ventptr%opening_target,ventptr%xoffset, &
-                     ventptr%yoffset
       
       end do read_mvent_loop
 
-      write(99, '(/, "Left read_mvent_loop")')
-
       end if mvent_flag
-      
-      write(99, '(/, "leaving read_mvent (Done)")')
       
 5191  format ('***Error: Bad MVENT input. Compartments specified in MVENT have not been defined ',2i3)
       
@@ -2671,23 +2042,23 @@ module namelist_routines
       second                  = 0
       mvent_id                = 0
       orientation1            = ''
-      height1                 = 0.0
-      area1                   = 0.0
+      height1                 = 0.0_eb
+      area1                   = 0.0_eb
       orientation2            = ''
-      height2                 = 0.0
-      area2                   = 0.0
-      flow                    = 0.0
-      plower                  = 0.0
-      pupper                  = 0.0
+      height2                 = 0.0_eb
+      area2                   = 0.0_eb
+      flow                    = 0.0_eb
+      plower                  = 0.0_eb
+      pupper                  = 0.0_eb
       type                    = 'null'
-      criterion               = 0
+      criterion               = 0.0_eb
       target                  = 'null'
       initialtime             = 1.0_eb
-      initialfraction         = 0.0
+      initialfraction         = 0.0_eb
       finaltime               = 1.0_eb
-      finalfraction           = 0.0
-      offsetx                 = 0.0
-      offsety                 = 0.0
+      finalfraction           = 0.0_eb
+      offsetx                 = 0.0_eb
+      offsety                 = 0.0_eb
       
       end subroutine set_mvent_defaults
       
@@ -2709,26 +2080,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering DETEC")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'DETEC'
       n_detectors = 0
       detec_loop: do
          call checkread ('DETEC', LU, ios)
          if (ios==0) detecflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving detec_loop")')
              exit detec_loop
          end if 
-         write(99, '(/, "Found DETEC, trying to read it")')
          if (ios==1) exit detec_loop
          read(LU,detec,err=34,iostat=ios)
          n_detectors =n_detectors + 1
@@ -2745,27 +2107,16 @@ module namelist_routines
         end if
 
         detec_flag: if (detecflag) then
-        write(99, '(/, "on the way")')
 
         rewind (LU) 
         input_file_line_number = 0
 
-        write(99, '(/, "Entering read_detec_loop")')
         ! Assign value to CFAST variables for further calculations
         read_detec_loop: do ii=1,n_detectors
-      
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  n_detectors = ", i3)') &
-                     ii, n_detectors
         
            call checkread('DETEC',LU,ios)
            call set_detec_defaults
-           write(99, '(/)')
-           write(99,DETEC)
-        
            read(LU,DETEC)
-           write(99, '(/)')
-           write(99,DETEC)
         
            dtectptr => detectorinfo(ii)
         
@@ -2823,27 +2174,10 @@ module namelist_routines
               write (99,5339) n_detectors,roomptr%name
               stop
            end if
-         
-           write(99, '(/, "  dtectptr%dtype = ", i3, &
-                       /, "  dtectptr%room = ", i3, &
-                       /, "  dtectptr%trigger = ", f10.4, &
-                       /, "  dtectptr%center(1) = ", f10.4, &
-                       /, "  dtectptr%center(2) = ", f10.4, &
-                       /, "  dtectptr%center(3) = ", f10.4, &
-                       /, "  dtectptr%rti = ", f10.4, &
-                       /, "  dtectptr%quench = ", L3, &
-                       /, "  dtectptr%spray_density = ", f15.4)') &
-                       dtectptr%dtype,dtectptr%room,dtectptr%trigger,dtectptr%center(1), &
-                       dtectptr%center(2),dtectptr%center(3),dtectptr%rti,dtectptr%quench, &
-                       dtectptr%spray_density
         
         end do read_detec_loop
-      
-        write(99, '(/, "Left read_detec_loop")')
 
         end if detec_flag
-
-        write(99, '(/, "leaving read_detec (Done)")')
         
 5339    format ('***Error: Bad DETEC input. Detector ',i0,' is outside of compartment ',a)
 5342    format ('***Error: Bad DETEC input. Invalid DETECTOR specification - room ',i0)
@@ -2880,26 +2214,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering VHEAT")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'VHEAT'
       nvcons=0
       vheat_loop: do
       call checkread ('VHEAT',LU,ios)
          if (ios==0) vheatflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving vheat_loop")')
              exit vheat_loop
          end if 
-         write(99, '(/, "Found VHEAT, trying to read it")')
          read(LU,VHEAT,err=34,iostat=ios)
          nvcons = nvcons + 1
 34       if (ios>0) then
@@ -2909,23 +2234,16 @@ module namelist_routines
       end do vheat_loop
 
       vheat_flag: if (vheatflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_detec_loop")')
       ! Assign value to CFAST variables for further calculations
       read_vheat_loop: do ii=1,nvcons
       
          call checkread('VHEAT',LU,ios)
          call set_vheat_defaults
-         write(99, '(/)')
-         write(99,VHEAT)
-        
          read(LU,VHEAT)
-         write(99, '(/)')
-         write(99,VHEAT)
       
          i1 = top
          i2 = bottom
@@ -2939,24 +2257,10 @@ module namelist_routines
          i_vconnections(ii,w_from_wall) = 2
          i_vconnections(ii,w_to_room) = i2
          i_vconnections(ii,w_to_wall) = 1
-         
-         write(99, '(/, "  vheatflag = ", L3, &
-                     /, "  ii = ", i3, &
-                     /, "  i_vconnections(ii,w_from_room) = ", i3, &
-                     /, "  i_vconnections(ii,w_from_wall) = ", i3, &
-                     /, "  i_vconnections(ii,w_to_room) = ", i3, &
-                     /, "  i_vconnections(ii,w_to_wall) = ", i3)') &
-                     vheatflag,ii,i_vconnections(ii,w_from_room), &
-                     i_vconnections(ii,w_from_wall),i_vconnections(ii,w_to_room), &
-                     i_vconnections(ii,w_to_wall)
       
       end do read_vheat_loop
-      
-      write(99, '(/, "Left read_vheat_loop")')   
 
       end if vheat_flag
-
-      write(99, '(/, "leaving vheat_flag (Done)")')
       
 5345  format ('***Error: Bad VHEAT input. A referenced compartment does not exist')
       
@@ -2986,25 +2290,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering CONEZ")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'CONEZ'
       onez_loop: do
          call checkread ('CONEZ',LU,ios)
          if (ios==0) conezflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving onez_loop")')
              exit onez_loop
          end if 
-         write(99, '(/, "Found CONEZ, trying to read it")')
          read(LU,CONEZ,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(A,i5)') 'Error: Problem with fire number, line number', input_file_line_number
@@ -3013,19 +2308,13 @@ module namelist_routines
       end do onez_loop
 
       conez_flag: if (conezflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('CONEZ',LU,ios)
       call set_onez_defaults
-      write(99, '(/)')
-      write(99,CONEZ)
-        
       read(LU,CONEZ)
-      write(99, '(/)')
-      write(99,CONEZ)
       
       iroom = compartment
       if (iroom<1.or.iroom>nr) then
@@ -3035,13 +2324,8 @@ module namelist_routines
       end if
       roomptr => roominfo(iroom)
       roomptr%shaft = .true.
-         
-      write(99, '(/, "  roomptr%shaft%dtype = ", L3)') &
-                  roomptr%shaft
 
       end if conez_flag
-
-      write(99, '(/, "leaving read_onez (Done)")')
       
 5001  format ('***Error: Bad ONEZ input. Referenced compartment is not defined ',i0)
       
@@ -3069,25 +2353,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering CHALL")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'CHALL'
       hall_loop: do
          call checkread ('CHALL',LU,ios)
          if (ios==0) challflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving hall_loop")')
              exit hall_loop
          end if 
-         write(99, '(/, "Found CHALL, trying to read it")')
          read(LU,CHALL,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(A,i5)') 'Error: Problem with CHALL number, line number', input_file_line_number
@@ -3096,19 +2371,13 @@ module namelist_routines
       end do hall_loop
 
       chall_flag: if (challflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('CHALL',LU,ios)
       call set_hall_defaults
-      write(99, '(/)')
-      write(99,CHALL)
-        
       read(LU,CHALL)
-      write(99, '(/)')
-      write(99,CHALL)
       
       iroom = compartment
       if (iroom<1.or.iroom>nr) then
@@ -3118,13 +2387,8 @@ module namelist_routines
       end if
       roomptr => roominfo(iroom)
       roomptr%hall = .true.
-         
-      write(99, '(/, "  roomptr%shaft%dtype = ", L3)') &
-                  roomptr%shaft
 
       end if chall_flag
-
-      write(99, '(/, "leaving read_chall (Done)")')
       
 5346  format ('***Error: Bad HALL input. A referenced compartment does not exist ',i0)
 
@@ -3144,7 +2408,6 @@ module namelist_routines
       
       integer :: ios,iroom,i,npts
       integer :: LU
-      character(48) :: myfmt
       
       type(room_type), pointer :: roomptr
 
@@ -3154,25 +2417,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering CHROOMAALL")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'ROOMA'
       rooma_loop: do
          call checkread ('ROOMA',LU,ios)
          if (ios==0) roomaflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving rooma_loop")')
              exit rooma_loop
          end if 
-         write(99, '(/, "Found ROOMA, trying to read it")')
          read(LU,ROOMA,err=34,iostat=ios)
 34       if (ios>0) then
                write(99, '(A,i5)') 'Error: Problem with ROOMA number, line number', input_file_line_number
@@ -3181,19 +2435,13 @@ module namelist_routines
       end do rooma_loop
 
       rooma_flag: if (roomaflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('ROOMA',LU,ios)
       call set_rooma_defaults
-      write(99, '(/)')
-      write(99,ROOMA)
-        
       read(LU,ROOMA)
-      write(99, '(/)')
-      write(99,ROOMA)
       
       iroom = compartment
       roomptr => roominfo(iroom)
@@ -3228,15 +2476,8 @@ module namelist_routines
       do i = 1, npts
          roomptr%var_area(i) = area(i)
       end do
-                  
-      write(myfmt, '("("i3,"(f10.4))")')  npts
-
-      write(99, '(/, "  roomptr%shaft%var_area = ")')
-      write(99, fmt=myfmt) roomptr%var_area(1:npts)
 
       end if rooma_flag
-
-      write(99, '(/, "leaving read_rooma (Done)")')
       
 5347  format ('***Error: Bad ROOMA input. Compartment specified by ROOMA does not exist ',i0)
 5348  format ('***Error: Bad ROOMA or ROOMH input. Data on the ROOMA (or H) line must be positive ',1pg12.3)
@@ -3247,7 +2488,7 @@ module namelist_routines
       
       compartment                     = 0 
       number                          = 0 
-      area(1:mxpts)                   = 0.0
+      area(1:mxpts)                   = 0.0_eb
       
       end subroutine set_rooma_defaults
       
@@ -3259,7 +2500,6 @@ module namelist_routines
 
       integer :: ios,iroom,i,npts
       integer :: LU
-      character(48) :: myfmt
       
       type(room_type), pointer :: roomptr
       integer :: compartment,number
@@ -3268,25 +2508,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering ROOMH")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'ROOMH'
       roomh_loop: do
          call checkread ('ROOMH',LU,ios)
          if (ios==0) roomhflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving roomh_loop")')
              exit roomh_loop
          end if 
-         write(99, '(/, "Found ROOMH, trying to read it")')
          read(LU,ROOMH,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(A,i5)') 'Error: Problem with ROOMH number, line number', input_file_line_number
@@ -3295,19 +2526,13 @@ module namelist_routines
       end do roomh_loop
 
       roomh_flag: if (roomhflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('ROOMH',LU,ios)
       call set_roomh_defaults
-      write(99, '(/)')
-      write(99,ROOMH)
-        
       read(LU,ROOMH)
-      write(99, '(/)')
-      write(99,ROOMH)
       
       iroom = compartment
       roomptr => roominfo(iroom)
@@ -3342,15 +2567,8 @@ module namelist_routines
       do i = 1, npts
          roomptr%var_height(i) = height(i)
       end do
-                        
-      write(myfmt, '("("i3,"(f10.4))")')  npts
-
-      write(99, '(/, "  roomptr%shaft%var_height = ")')
-      write(99, fmt=myfmt) roomptr%var_height(1:npts)
 
       end if roomh_flag
-
-      write(99, '(/, "leaving read_roomh (Done)")')
 
 5348  format ('***Error: Bad ROOMA or ROOMH input. Data on the ROOMA (or H) line must be positive ',1pg12.3)
 5349  format ('***Error: Bad ROOMH input. Compartment specified by ROOMH is not defined ',i0)
@@ -3364,7 +2582,7 @@ module namelist_routines
       
       compartment                     = 0 
       number                          = 0 
-      height(1:mxpts)                 = 0.0
+      height(1:mxpts)                 = 0.0_eb
       
       end subroutine set_roomh_defaults
       
@@ -3377,7 +2595,6 @@ module namelist_routines
       integer :: ios,nto,ifrom,ito,i
       integer :: LU
       real(eb) :: frac
-      character(64) :: myfmt
       
       type(room_type), pointer :: roomptr
 
@@ -3386,8 +2603,6 @@ module namelist_routines
       namelist/HHEAT/first,nop,npos_comp,npos_frac
 
       ios = 1
-
-      write(99, '(/, "Entering HHEAT")')
 
       rewind(LU) 
       input_file_line_number = 0
@@ -3398,14 +2613,9 @@ module namelist_routines
       hheat_loop: do
          call checkread ('HHEAT', LU, ios)
          if (ios==0) hheatflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving hheat_loop")')
              exit hheat_loop
          end if 
-         write(99, '(/, "Found HHEAT, trying to read it")')
          read(LU,HHEAT,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(A,i5)') 'Error: Problem with HHEAT number, line number', input_file_line_number
@@ -3414,19 +2624,13 @@ module namelist_routines
       end do hheat_loop
 
       hheat_flag: if (hheatflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('HHEAT',LU,ios)
       call set_hheat_defaults
-      write(99, '(/)')
-      write(99,HHEAT)
-        
       read(LU,HHEAT)
-      write(99, '(/)')
-      write(99,HHEAT)
 
       nto = 0
       
@@ -3450,15 +2654,8 @@ module namelist_routines
          end if
          roomptr%heat_frac(ito) = frac
       end do
-                        
-      write(myfmt, '("("i3,"(f10.4))")')  nto
-
-      write(99, '(/, "  roomptr%heat_frac = ")')
-      write(99, fmt=myfmt) roomptr%heat_frac(1:nto)
 
       end if hheat_flag
-
-      write(99, '(/, "leaving read_hheat (Done)")')
 
 5356  format ('***Error: Bad HHEAT input. HHEAT specification error in compartment pairs: ',2i3)
 5357  format ('***Error: Bad HHEAT input. Error in fraction for HHEAT:',2i3,f6.3)
@@ -3471,8 +2668,8 @@ module namelist_routines
       
       first                     = 0 
       nop                       = 0 
-      npos_comp(1:mxpts)        = 0.0
-      npos_frac(1:mxpts)        = 0.0
+      npos_comp(1:mxpts)        = 0.0_eb
+      npos_frac(1:mxpts)        = 0.0_eb
       
       end subroutine set_hheat_defaults
 
@@ -3491,25 +2688,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering DTCHE")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'DTCHE'
       dtche_loop: do
          call checkread ('DTCHE',LU,ios)
          if (ios==0) dtcheflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving dtche_loop")')
              exit dtche_loop
          end if 
-         write(99, '(/, "Found DTCHE, trying to read it")')
          read(LU,DTCHE,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(A,i5)') 'Error: Problem with DTCHE number, line number', input_file_line_number
@@ -3518,33 +2706,20 @@ module namelist_routines
       end do dtche_loop
 
       dtche_flag: if (dtcheflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('DTCHE',LU,ios)
       call set_dtche_defaults
-      write(99, '(/)')
-      write(99,DTCHE)
-        
       read(LU,DTCHE)
-      write(99, '(/)')
-      write(99,DTCHE)
 
       stpmin = abs(time)
       stpmin_cnt_max = abs(count)
       ! a negative turns off the check
       if (count<=0) stpminflag = .false.
-         
-      write(99, '(/, "  stpmin = ", e10.4, &
-                  /, "  stpmin_cnt_max = ", i3, &
-                  /, "  stpminflag = ", L3)') &
-                  stpmin,stpmin_cnt_max,stpminflag
 
       end if dtche_flag
-
-      write(99, '(/, "leaving read_dtche (Done)")')
 
 
 
@@ -3552,7 +2727,7 @@ module namelist_routines
       
       subroutine set_dtche_defaults
       
-      time                     = 0.0
+      time                     = 0.0_eb
       count                    = 0
       
       end subroutine set_dtche_defaults
@@ -3566,33 +2741,22 @@ module namelist_routines
       integer :: ios,i
       integer :: LU
 
-      character(64) :: myfmt
-
       integer :: number
       real(eb), dimension(mxpts) :: time,temp
       namelist/FURNC/number,time,temp
 
       ios = 1
 
-      write(99, '(/, "Entering FURNC")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'FURNC'
       furn_loop: do
          call checkread ('FURNC',LU,ios)
          if (ios==0) furncflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving furn_loop")')
              exit furn_loop
          end if 
-         write(99, '(/, "Found FURNC, trying to read it")')
          read(LU,FURNC,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(A,i5)') 'Error: Problem with FURNC number, line number', input_file_line_number
@@ -3601,37 +2765,21 @@ module namelist_routines
       end do furn_loop
 
       furnc_flag: if (furncflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('FURNC',LU,ios)
       call set_furn_defaults
-      write(99, '(/)')
-      write(99,FURNC)
-        
       read(LU,FURNC)
-      write(99, '(/)')
-      write(99,FURNC)
 
       nfurn=number+0.5 !why adding 0.5
       do i = 1, nfurn
          furn_time(i)=time(i)
          furn_temp(i)=temp(i)
       end do
-                        
-      write(myfmt, '("("i3,"(f10.4))")')  nfurn
-
-      write(99, '(/, "  furn_time = ")')
-      write(99, fmt=myfmt) time(1:nfurn)
-
-      write(99, '(/, "  rfurn_temp = ")')
-      write(99, fmt=myfmt) temp(1:nfurn)
 
       end if furnc_flag
-
-      write(99, '(/, "leaving read_furnc (Done)")')
 
 
 
@@ -3657,25 +2805,16 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering ADIAB")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'ADIAB'
       adiab_loop: do
          call checkread ('ADIAB',LU,ios)
          if (ios==0) adiabflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving adiab_loop")')
              exit adiab_loop
          end if 
-         write(99, '(/, "Found ADIAB, trying to read it")')
          read(LU,ADIAB,err=34,iostat=ios)
 34       if (ios>0) then
              write(99, '(A,i5)') 'Error: Problem with ADIAB number, line number', input_file_line_number
@@ -3684,30 +2823,19 @@ module namelist_routines
       end do adiab_loop
 
       adiab_flag: if (adiabflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
       call checkread('ADIAB',LU,ios)
       call set_adiab_defaults
-      write(99, '(/)')
-      write(99,ADIAB)
-        
       read(LU,ADIAB)
-      write(99, '(/)')
-      write(99,ADIAB)
 
       adiabatic_walls=.false.
 
       if (adiab_walls=='TRUE') adiabatic_walls=.true.
-         
-      write(99, '(/, "  adiabatic_walls = ", L3)') &
-                  adiabatic_walls
 
       end if adiab_flag
-
-      write(99, '(/, "leaving read_adiab (Done)")')
 
 
 
@@ -3739,26 +2867,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering CSLCF")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'CSLCF'
       nvisualinfo=0
       slcf_loop: do
          call checkread ('CSLCF',LU,ios)
          if (ios==0) cslcfflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving slcf_loop")')
              exit slcf_loop
          end if 
-         write(99, '(/, "Found CSLCF, trying to read it")')
          read(LU,CSLCF,err=34,iostat=ios)
          nvisualinfo=nvisualinfo+1
 34       if (ios>0) then
@@ -3768,27 +2887,16 @@ module namelist_routines
       end do slcf_loop
 
       cslcf_flag: if (cslcfflag) then
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_slcf_loop")')
       ! Assign value to CFAST variables for further calculations
       read_slcf_loop: do ii=1,nvisualinfo
-      
-        write(99, '(/, "  ii = ", i3, &
-                    /, "  nvisualinfo = ", i3)') &
-                    ii, nvisualinfo
 
         call checkread('CSLCF',LU,ios)
         call set_slcf_defaults
-        write(99, '(/)')
-        write(99,CSLCF)
-        
         read(LU,CSLCF)
-        write(99, '(/)')
-        write(99,CSLCF)
 
         sliceptr => visualinfo(ii)
         if (domain=='2-D') then
@@ -3861,20 +2969,10 @@ module namelist_routines
               stop
            end if
         end if
-         
-        write(99, '(/, "  sliceptr%vtype = ", i3, &
-                    /, "  sliceptr%position = ", f10.4, &
-                    /, "  number = ", i3, &
-                    /, "  sliceptr%roomnum = ", i3)') &
-                    sliceptr%vtype,sliceptr%position,number,sliceptr%roomnum
 
       end do read_slcf_loop
-      
-      write(99, '(/, "Left read_slcf_loop")')
 
       end if cslcf_flag
-
-      write(99, '(/, "leaving read_cslcf (Done)")')
 
 5403  format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)
 
@@ -3885,7 +2983,7 @@ module namelist_routines
 
       domain                  = 'null'
       plane                   = 'null'
-      position                = 0.0
+      position                = 0.0_eb
       comp                    = 0
       number                  = 0
 
@@ -3908,26 +3006,17 @@ module namelist_routines
 
       ios = 1
 
-      write(99, '(/, "Entering SISOF")')
-
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'SISOF'
       nvisualinfo=0
       isof_loop: do
          call checkread ('CISOF',LU,ios)
          if (ios==0) cisofflag=.true.
-         write(99, '(/, "  ios = ", i3, &
-                     /, "  input_file_line_number = ", i3)') &
-                     ios, input_file_line_number
          if (ios==1) then
-             write(99, '(/, "End of file, leaving isof_loop")')
              exit isof_loop
          end if 
-         write(99, '(/, "Found CISOF, trying to read it")')
          read(LU,CISOF,err=34,iostat=ios)
          nvisualinfo=nvisualinfo+1
 34       if (ios>0) then
@@ -3937,27 +3026,16 @@ module namelist_routines
       end do isof_loop
 
       cisof_flag: if (cisofflag) then 
-      write(99, '(/, "on the way")')
 
       rewind (LU) 
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_isof_loop")')
       ! Assign value to CFAST variables for further calculations
       read_isof_loop: do ii=1,nvisualinfo 
-      
-         write(99, '(/, "  ii = ", i3, &
-                     /, "  nvisualinfo = ", i3)') &
-                     ii, nvisualinfo
 
          call checkread('CISOF',LU,ios)
          call set_isof_defaults
-         write(99, '(/)')
-         write(99,CISOF)
-        
          read(LU,CISOF)
-         write(99, '(/)')
-         write(99,CISOF)
 
          sliceptr => visualinfo(ii)
          sliceptr%vtype = 3
@@ -3969,19 +3047,10 @@ module namelist_routines
             write (99, 5404) nvisualinfo
             stop
          end if
-         
-      write(99, '(/, "  sliceptr%vtype = ", i3, &
-                  /, "  sliceptr%value = ", f10.4, &
-                  /, "  sliceptr%roomnum = ", i3)') &
-                  sliceptr%vtype,sliceptr%value,sliceptr%roomnum
 
       end do read_isof_loop
-      
-      write(99, '(/, "Left read_isof_loop")')
 
       end if cisof_flag
-
-      write(99, '(/, "leaving read_sisof (Done)")')
 
 5404  format ('***Error: Bad ISOF input. Invalid ISOF specification in visualization input ',i0)
 
@@ -3991,7 +3060,7 @@ module namelist_routines
 
       subroutine set_isof_defaults
 
-      value                   = 0.0
+      value                   = 0.0_eb
       comp                    = 0
 
       end subroutine set_isof_defaults

@@ -16,8 +16,6 @@ module namelist_data
     integer :: n_chemi,hheatnto,nfurncount
     
     real(eb), dimension(mxrooms) :: hheat_comp
-
-    character(64) :: eventtype
     
     ! Diagnositic output
     character(256) :: nmlconfile
@@ -35,5 +33,13 @@ module namelist_data
                roomhflag=.false.,hheatflag=.false.,dtcheflag=.false., &
                furncflag=.false.,adiabflag=.false.,cslcfflag=.false., &
                cisofflag=.false.,vheatflag=.false.
+    
+    logical :: event_hflag=.false.,event_vflag=.false.,event_mflag=.false., &
+               event_fflag=.false.
+    
+    logical, dimension(50,50,10,mxhvents) :: &
+               hflag=.false.,vflag=.false.,mflag=.false.
+    
+    logical, dimension(50,50,mxhvents) :: fflag=.false.
 
 end module namelist_data

@@ -1062,8 +1062,10 @@
                             ventptr%opening_initial_time = lrarray(5)
                             ventptr%opening_final_time = lrarray(5) + lrarray(7)
                             ventptr%opening_final_fraction = lrarray(6)
+                            hflag(i,j,k,iijk)=.true.
                         end if
                     end do
+                    event_hflag=.true.
                 case ('V')
                     i = lrarray(2)
                     j = lrarray(3)
@@ -1074,8 +1076,10 @@
                             ventptr%opening_initial_time = lrarray(5)
                             ventptr%opening_final_time = lrarray(5) + lrarray(7)
                             ventptr%opening_final_fraction = lrarray(6)
+                            vflag(i,j,k,iijk)=.true.
                         end if
                     end do
+                    event_vflag=.true.
                 case ('M')
                     i = lrarray(2)
                     j = lrarray(3)
@@ -1086,9 +1090,13 @@
                             ventptr%opening_initial_time = lrarray(5)
                             ventptr%opening_final_time = lrarray(5) + lrarray(7)
                             ventptr%opening_final_fraction = lrarray(6)
+                            mflag(i,j,k,iijk)=.true.
                         end if
                     end do
+                    event_mflag=.true.
                 case ('F')
+                    i = lrarray(2)
+                    j = lrarray(3)
                     fannumber = lrarray(4)
                     if (fannumber>n_mvents) then
                         write (*,5196) fannumber
@@ -1099,6 +1107,8 @@
                     ventptr%filter_initial_time = lrarray(5)
                     ventptr%filter_final_time = lrarray(5) + lrarray(7)
                     ventptr%filter_final_fraction = lrarray(6)
+                    fflag(i,j,fannumber)=.true.
+                    event_fflag=.true.
                     case default
                     write (*,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
                     write (iofill,*) '***Error: Bad EVENT input. Type (1st arguement) must be H, V, M, or F.'
@@ -1109,8 +1119,6 @@
                 write (iofill,*) '***Error: Bad EVENT input. At least 7 arguments required.'
                 stop
             end if
-            eventflag=.true.
-            eventtype=venttype
 
             ! RAMP - from_compartment (or 0) to_compartment (or 0) vent_or_fire_number number_of_xy_pairs x1 y1 x2 y2 ... xn yn
         case ('RAMP')

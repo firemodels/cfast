@@ -26,15 +26,6 @@ module conversion_routines
       
     implicit none
     
-    type(room_type), pointer :: roomptr
-    type(target_type), pointer :: targptr
-    type(detector_type), pointer :: dtectptr
-    type(ramp_type), pointer :: rampptr
-    type(visual_type), pointer :: sliceptr
-    type(thermal_type), pointer :: thrmpptr
-    type(fire_type), pointer :: fireptr
-    type(vent_type), pointer :: ventptr
-    
     integer :: ivers
     character :: aversion*5
     integer :: i
@@ -75,7 +66,6 @@ module conversion_routines
             call deadrcon(i)
         end do
     end if
-!    if (eventflag) call eventcon
     if (crampflag) then
         do i=1,nramps
             call crampcon(i)
@@ -91,6 +81,7 @@ module conversion_routines
             call mventcon(i)
         end do
     end if
+    if (event_hflag .or. event_vflag .or. event_mflag .or. event_fflag) call eventcon
     if (detecflag) then 
         do i=1,n_detectors
             call deteccon(i)
@@ -390,7 +381,8 @@ module conversion_routines
     z=fireptr%z_position
     plume=fireptr%modified_plume
     type=tcname
-    criterion=fireptr%ignition_criterion
+    if (type=='TIME') criterion=fireptr%ignition_time
+    if (type=='TEMP' .or. type=='FLUX') criterion=fireptr%ignition_criterion
     if (fireptr%ignition_target /= 0) then
         targptr => targetinfo(fireptr%ignition_target)
         target=targptr%name
@@ -646,34 +638,97 @@ module conversion_routines
 
     
     ! --------------------------- eventcon --------------------------------------
-!    subroutine eventcon(i)
-!    
-!    integer :: i
-!    
-!    ventptr => hventinfo(i)
-!    
-!    c1=len_trim(eventtype)
-!    
-!    call eventprint(i)
-! 
-!    contains  
-!    subroutine eventprint(i)    
-! 
-!    type(vent_type), pointer :: ventptr
-! 
-!    integer :: first,second,event_id
-!    real(eb) :: fraction,decay,time
-!    character(48) :: type
-!    namelist /EVENT/first,second,event_id,type,time,fraction,decay
-!    
-!    ventptr => hventinfo(i)
-!
-!    write (31,'(/)')
-!    write (31,EVENT)
-!         
-!    end subroutine eventprint
-!    end subroutine eventcon
+    subroutine eventcon
+    
+    integer :: i,j,k,iijk
+    
+    do i=1,nr !first max 50
+        do j=1,nr !second max 50
+            do k=1,10 !id with max 10
+                do iijk=1,n_hvents
+                    if (hflag(i,j,k,iijk)) call vent_print (1,iijk,i,j,k)
+                end do
+                do iijk=1,n_vvents
+                    if (vflag(i,j,k,iijk)) call vent_print (2,iijk,i,j,k)
+                end do
+                do iijk=1,n_mvents
+                    if (mflag(i,j,k,iijk)) call vent_print (3,iijk,i,j,k)
+                end do
+            end do
+        end do
+    end do
+    
+    do i=1,nr !first max 50
+        do j=1,nr !second max 50
+            do k=1,n_mvents
+                if (fflag(i,j,k)) call fan_print (i,j,k)
+            end do
+        end do
+    end do
+ 
+    contains  
+    subroutine vent_print (n,iijk,i,j,k)
+    
+    integer :: i,j,k,iijk,n
+ 
+    type(vent_type), pointer :: ventptr
+ 
+    integer :: first,second,event_id
+    real(eb) :: fraction,decay,time
+    character(1) :: type
+    namelist /EVENT/first,second,event_id,type,time,fraction,decay
+    
+    first=i
+    second=j
+    event_id=k
+    if (n==1) then
+        ventptr => hventinfo(iijk)
+        type='H'
+    end if
+    if (n==2) then
+        ventptr => vventinfo(iijk)
+        type='V'
+    end if
+    if (n==3) then
+        ventptr => mventinfo(iijk)
+        type='M'
+    end if
+    time=ventptr%opening_initial_time
+    fraction=ventptr%opening_final_fraction
+    decay=ventptr%opening_final_time-ventptr%opening_initial_time
 
+    write (31,'(/)')
+    write (31,EVENT)
+         
+    end subroutine vent_print
+    
+    
+    subroutine fan_print (i,j,k)
+    
+    integer :: i,j,k
+ 
+    type(vent_type), pointer :: ventptr
+ 
+    integer :: first,second,event_id
+    real(eb) :: fraction,decay,time
+    character(1) :: type
+    namelist /EVENT/first,second,event_id,type,time,fraction,decay
+    
+    first=i
+    second=j
+    event_id=k
+    ventptr => mventinfo(k)
+    type='F'
+    time=ventptr%filter_initial_time
+    fraction=ventptr%filter_final_fraction
+    decay=ventptr%filter_final_time-ventptr%filter_initial_time
+
+    write (31,'(/)')
+    write (31,EVENT)
+         
+    end subroutine fan_print
+    
+    end subroutine eventcon
     
     ! --------------------------- crampcon --------------------------------------
     subroutine crampcon(i)

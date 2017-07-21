@@ -1,0 +1,511 @@
+ &VERSN
+ HEAD    = 'VERSN',
+ IVERS   =           7,
+ PGRM_NAME       = 'Trash Fire in Cable Spreading Room'
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'CSRConcrete',
+ K       =   1.60000000000000     ,
+ C       =   750.000000000000     ,
+ EPS     =  0.900000000000000     ,
+ NSLAB   =           1,
+ RHO     =   2400.00000000000     ,
+ THICKNESS       =  0.500000000000000     
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'THIEF',
+ K       =  0.200000000000000     ,
+ C       =   1500.00000000000     ,
+ EPS     =  0.800000000000000     ,
+ NSLAB   =           1,
+ RHO     =   2264.00000000000     ,
+ THICKNESS       =  1.500000000000000E-002
+ /
+
+
+ &COMPA
+ CEILING = 'CSRConcrete',
+ COMPA_ID        = 'Cable Spreading Room',
+ DEPTH   =   18.5000000000000     ,
+ FLOOR   = 'CSRConcrete',
+ HEIGHT  =   4.00000000000000     ,
+ WALL    = 'CSRConcrete',
+ WIDTH   =   40.0000000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =   33.0000000000000     ,
+ Y       =   16.3000000000000     ,
+ Z       =   1.80000000000000     ,
+ NORMALX =  0.000000000000000E+000,
+ NORMALY =  0.000000000000000E+000,
+ NORMALZ =   1.00000000000000     ,
+ MATERIAL        = 'THIEF',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'CYL',
+ INTERNALLOCATION        =  0.200000000000000     ,
+ TARGE_ID        = 'Targ 1'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =   33.0000000000000     ,
+ Y       =   16.3000000000000     ,
+ Z       =   2.30000000000000     ,
+ NORMALX =  0.000000000000000E+000,
+ NORMALY =  0.000000000000000E+000,
+ NORMALZ =   1.00000000000000     ,
+ MATERIAL        = 'THIEF',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'CYL',
+ INTERNALLOCATION        =  0.200000000000000     ,
+ TARGE_ID        = 'Targ 2'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =   33.0000000000000     ,
+ Y       =   16.3000000000000     ,
+ Z       =   3.10000000000000     ,
+ NORMALX =  0.000000000000000E+000,
+ NORMALY =  0.000000000000000E+000,
+ NORMALZ =   1.00000000000000     ,
+ MATERIAL        = 'THIEF',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'CYL',
+ INTERNALLOCATION        =  0.200000000000000     ,
+ TARGE_ID        = 'Targ 3'
+ /
+
+
+ &CFIRE
+ COMPARTMENT     =           1,
+ X       =   33.0000000000000     ,
+ Y       =   16.3000000000000     ,
+ Z       =  0.800000000000000     ,
+ PLUME   =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ DUMMY1  =           0,
+ DUMMY2  =           0,
+ FIRE_ID = 'Transient Combustibles'
+ /
+
+
+ &CHEMI
+ CHEMI_ID        = 'Transient Combustibles',
+ C       =   4.00000000000000     ,
+ H       =   7.00000000000000     ,
+ O       =   2.50000000000000     ,
+ N       =  0.000000000000000E+000,
+ CL      =  0.000000000000000E+000,
+ CHIR    =  0.400000000000000     ,
+ HOC     =   30400000.0000000     ,
+ NRET    =          14,
+ TIME    =  0.000000000000000E+000,   48.0000000000000     ,   96.0000000000000     ,   144.000000000000     ,
+    192.000000000000     ,   240.000000000000     ,   288.000000000000     ,   336.000000000000     ,   384.000000000000     ,
+    432.000000000000     ,   480.000000000000     ,   799.000000000000     ,   800.000000000000     ,   3600.00000000000     ,
+ C_HRR   =  0.000000000000000E+000,   3170.00000000000     ,   12680.0000000000     ,   28530.0000000000     ,
+    50720.0000000000     ,   79250.0000000000     ,   114120.000000000     ,   155330.000000000     ,   202880.000000000     ,
+    256770.000000000     , 2*317000.000000000        , 2*0.000000000000000E+000  ,
+ FV      = 14*3.800000000000000E-002  ,
+ C_CO    = 14*1.400000000000000E-002  ,
+ TRACE   = 14*0.000000000000000E+000  ,
+ AREA    = 14*0.282743000000000       ,
+ HEIGHT  = 14*0.000000000000000E+000  
+ /
+
+
+ &CTIME
+ SIMULATION      =        3600,
+ PRINT   =          10,
+ SPREADSHEET     =          10,
+ SMOKEVIEW       =          10
+ /
+
+
+ &TAMBI
+ TEMP    =   293.150000000000     ,
+ PRES    =   101300.000000000     ,
+ RH      =   50.0000000000000     
+ /
+
+
+ &EAMBI
+ TEMP    =   293.150000000000     ,
+ PRES    =   101300.000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           1,
+ SECOND  =           2,
+ HVENT_ID        =           1,
+ WIDTH   =   2.00000000000000     ,
+ SOFFIT  =  1.000000000000000E-002,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =   5.00000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =  0.000000000000000E+000,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =  0.000000000000000E+000,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           1,
+ SECOND  =           2,
+ HVENT_ID        =           2,
+ WIDTH   =   2.00000000000000     ,
+ SOFFIT  =  1.000000000000000E-002,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =   33.0000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =  0.000000000000000E+000,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =  0.000000000000000E+000,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           1,
+ SECOND  =           2,
+ HVENT_ID        =           3,
+ WIDTH   =   2.00000000000000     ,
+ SOFFIT  =   2.00000000000000     ,
+ SILL    =  1.000000000000000E-002,
+ OFFSET1 =   33.0000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   770.000000000000     ,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =   771.000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &MVENT
+ FIRST   =           2,
+ SECOND  =           1,
+ MVENT_ID        =           1,
+ ORIENTATION1    = 'H',
+ HEIGHT1 =   2.43000000000000     ,
+ AREA1   =  0.250000000000000     ,
+ ORIENTATION2    = 'H',
+ HEIGHT2 =   2.43000000000000     ,
+ AREA2   =  0.250000000000000     ,
+ FLOW    =  0.700000000000000     ,
+ PLOWER  =   200.000000000000     ,
+ PUPPER  =   300.000000000000     ,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   170.000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   171.000000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000,
+ OFFSETX =   10.3000000000000     ,
+ OFFSETY =   3.20000000000000     
+ /
+
+
+ &MVENT
+ FIRST   =           2,
+ SECOND  =           1,
+ MVENT_ID        =           2,
+ ORIENTATION1    = 'H',
+ HEIGHT1 =   2.43000000000000     ,
+ AREA1   =  0.250000000000000     ,
+ ORIENTATION2    = 'H',
+ HEIGHT2 =   2.43000000000000     ,
+ AREA2   =  0.250000000000000     ,
+ FLOW    =  0.700000000000000     ,
+ PLOWER  =   200.000000000000     ,
+ PUPPER  =   300.000000000000     ,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   280.100000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   281.100000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000,
+ OFFSETX =   29.7000000000000     ,
+ OFFSETY =   3.20000000000000     
+ /
+
+
+ &MVENT
+ FIRST   =           1,
+ SECOND  =           2,
+ MVENT_ID        =           3,
+ ORIENTATION1    = 'H',
+ HEIGHT1 =   2.43000000000000     ,
+ AREA1   =  0.250000000000000     ,
+ ORIENTATION2    = 'H',
+ HEIGHT2 =   2.43000000000000     ,
+ AREA2   =  0.250000000000000     ,
+ FLOW    =  0.700000000000000     ,
+ PLOWER  =   200.000000000000     ,
+ PUPPER  =   300.000000000000     ,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   280.100000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   281.100000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000,
+ OFFSETX =   10.3000000000000     ,
+ OFFSETY =   15.2000000000000     
+ /
+
+
+ &MVENT
+ FIRST   =           1,
+ SECOND  =           2,
+ MVENT_ID        =           4,
+ ORIENTATION1    = 'H',
+ HEIGHT1 =   2.43000000000000     ,
+ AREA1   =  0.250000000000000     ,
+ ORIENTATION2    = 'H',
+ HEIGHT2 =   2.43000000000000     ,
+ AREA2   =  0.250000000000000     ,
+ FLOW    =  0.700000000000000     ,
+ PLOWER  =   200.000000000000     ,
+ PUPPER  =   300.000000000000     ,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   280.100000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   281.100000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000,
+ OFFSETX =   29.7000000000000     ,
+ OFFSETY =   15.3000000000000     
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   4.00000000000000     ,
+ Y       =   15.5000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   11.9000000000000     ,
+ Y       =   15.5000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   19.8000000000000     ,
+ Y       =   15.5000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   27.7000000000000     ,
+ Y       =   15.5000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   35.7000000000000     ,
+ Y       =   15.5000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   4.00000000000000     ,
+ Y       =   9.40000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   11.9000000000000     ,
+ Y       =   9.40000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   27.7000000000000     ,
+ Y       =   9.40000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   35.7000000000000     ,
+ Y       =   9.40000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   4.00000000000000     ,
+ Y       =   3.30000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   11.9000000000000     ,
+ Y       =   3.30000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   19.8000000000000     ,
+ Y       =   3.30000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   27.7000000000000     ,
+ Y       =   3.30000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &DETEC
+ TYPE    =           2,
+ COMPARTMENT     =           1,
+ TRIGGER =   303.150000000000     ,
+ X       =   35.7000000000000     ,
+ Y       =   3.30000000000000     ,
+ Z       =   3.96000000000000     ,
+ RTI     =   5.00000000000000     ,
+ SUPPRESSION     =           0,
+ SPRAY_DENSITY   =  6.999999999999999E-005
+ /
+
+
+ &ROOMA
+ COMPARTMENT     =           1,
+ NUMBER  =          14,
+ AREA    = 2*700.040000000000        , 2*635.740000000000        , 2*483.740000000000        , 2*514.890000000000        ,
+  2*634.740000000000        , 2*699.040000000000        , 2*291.460000000000        
+ /
+
+
+ &ROOMH
+ COMPARTMENT     =           1,
+ NUMBER  =          14,
+ HEIGHT  =  0.000000000000000E+000,   1.79900000000000     ,   1.80000000000000     ,   2.19900000000000     ,
+    2.20000000000000     ,   2.39900000000000     ,   2.40000000000000     ,   2.79900000000000     ,   2.80000000000000     ,
+    3.19900000000000     ,   3.20000000000000     ,   3.59900000000000     ,   3.60000000000000     ,   4.00000000000000     
+ /

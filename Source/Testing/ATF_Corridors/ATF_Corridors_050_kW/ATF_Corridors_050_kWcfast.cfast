@@ -1,0 +1,343 @@
+ &VERSN
+ HEAD    = 'VERSN',
+ IVERS   =           7,
+ PGRM_NAME       = 'CFAST Simulation'
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'GYPSUM',
+ K       =  0.130000000000000     ,
+ C       =   1090.00000000000     ,
+ EPS     =  0.900000000000000     ,
+ NSLAB   =           1,
+ RHO     =   930.000000000000     ,
+ THICKNESS       =  1.700000000000000E-002
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'STEELSHT',
+ K       =   48.0000000000000     ,
+ C       =   559.000000000000     ,
+ EPS     =  0.900000000000000     ,
+ NSLAB   =           1,
+ RHO     =   7854.00000000000     ,
+ THICKNESS       =  1.500000000000000E-003
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'TC',
+ K       =   54.0000000000000     ,
+ C       =   425.000000000000     ,
+ EPS     =  0.950000000000000     ,
+ NSLAB   =           1,
+ RHO     =   7850.00000000000     ,
+ THICKNESS       =  1.000000000000000E-003
+ /
+
+
+ &COMPA
+ CEILING = 'GYPSUM',
+ COMPA_ID        = 'Lower Corridor',
+ DEPTH   =   1.80000000000000     ,
+ FLOOR   = 'OFF',
+ HEIGHT  =   2.50000000000000     ,
+ WALL    = 'GYPSUM',
+ WIDTH   =   17.0000000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'GYPSUM',
+ COMPA_ID        = 'Stairwell',
+ DEPTH   =   3.20000000000000     ,
+ FLOOR   = 'OFF',
+ HEIGHT  =   5.00000000000000     ,
+ WALL    = 'GYPSUM',
+ WIDTH   =   2.60000000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =   1.80000000000000     ,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'GYPSUM',
+ COMPA_ID        = 'Upper Corridor',
+ DEPTH   =   1.80000000000000     ,
+ FLOOR   = 'OFF',
+ HEIGHT  =   2.50000000000000     ,
+ WALL    = 'GYPSUM',
+ WIDTH   =   17.0000000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =   2.50000000000000     ,
+ ZGRID   =          50
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =   13.0000000000000     ,
+ Y       =  0.800000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.717300000000000     ,
+ NORMALY =  3.590000000000000E-002,
+ NORMALZ = -0.695800000000000     ,
+ MATERIAL        = 'STEELSHT',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 1'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =   6.00000000000000     ,
+ Y       =   1.00000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.973900000000000     ,
+ NORMALY =  8.660000000000000E-002,
+ NORMALZ = -0.209900000000000     ,
+ MATERIAL        = 'STEELSHT',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 2'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =  0.500000000000000     ,
+ Y       =  0.500000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.990800000000000     ,
+ NORMALY =  2.730000000000000E-002,
+ NORMALZ = -0.132600000000000     ,
+ MATERIAL        = 'STEELSHT',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 3'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           2,
+ X       =  0.500000000000000     ,
+ Y       =  0.100000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.988900000000000     ,
+ NORMALY = -6.820000000000000E-002,
+ NORMALZ = -0.132300000000000     ,
+ MATERIAL        = 'STEELSHT',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 4'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =   13.0000000000000     ,
+ Y       =  0.800000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.000000000000000E+000,
+ NORMALY =  0.000000000000000E+000,
+ NORMALZ =  -1.00000000000000     ,
+ MATERIAL        = 'TC',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 5'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =   6.00000000000000     ,
+ Y       =   1.00000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.000000000000000E+000,
+ NORMALY =  0.000000000000000E+000,
+ NORMALZ =  -1.00000000000000     ,
+ MATERIAL        = 'TC',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 6'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           1,
+ X       =  0.500000000000000     ,
+ Y       =  0.500000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.000000000000000E+000,
+ NORMALY =  0.000000000000000E+000,
+ NORMALZ =  -1.00000000000000     ,
+ MATERIAL        = 'TC',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 7'
+ /
+
+
+ &TARGE
+ COMPARTMENT     =           2,
+ X       =  0.500000000000000     ,
+ Y       =  0.100000000000000     ,
+ Z       =   2.34000000000000     ,
+ NORMALX =  0.000000000000000E+000,
+ NORMALY =  0.000000000000000E+000,
+ NORMALZ =  -1.00000000000000     ,
+ MATERIAL        = 'TC',
+ METHOD  = 'EXPLICIT',
+ EQUATIONTYPE    = 'PDE',
+ INTERNALLOCATION        =  0.500000000000000     ,
+ TARGE_ID        = 'Targ 8'
+ /
+
+
+ &CFIRE
+ COMPARTMENT     =           1,
+ X       =   15.0000000000000     ,
+ Y       =  0.900000000000000     ,
+ Z       =  0.400000000000000     ,
+ PLUME   =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ DUMMY1  =           0,
+ DUMMY2  =           0,
+ FIRE_ID = 'ATF 48 kW'
+ /
+
+
+ &CHEMI
+ CHEMI_ID        = 'ATF 48 kW',
+ C       =   1.00000000000000     ,
+ H       =   4.00000000000000     ,
+ O       =  0.000000000000000E+000,
+ N       =  0.000000000000000E+000,
+ CL      =  0.000000000000000E+000,
+ CHIR    =  0.200000000000000     ,
+ HOC     =   50000000.0000000     ,
+ NRET    =           3,
+ TIME    =  0.000000000000000E+000,   60.0000000000000     ,   900.000000000000     ,
+ C_HRR   =   11520.0000000000     , 2*48000.0000000000        ,
+ FV      = 3*1.000000000000000E-002  ,
+ C_CO    = 2*4.747221000000000E-003  ,  4.700000000000000E-003,
+ TRACE   = 3*0.000000000000000E+000  ,
+ AREA    = 3*0.160000000000000       ,
+ HEIGHT  = 3*0.000000000000000E+000  
+ /
+
+
+ &CTIME
+ SIMULATION      =         900,
+ PRINT   =          50,
+ SPREADSHEET     =          10,
+ SMOKEVIEW       =          10
+ /
+
+
+ &TAMBI
+ TEMP    =   293.150000000000     ,
+ PRES    =   101325.000000000     ,
+ RH      =   50.0000000000000     
+ /
+
+
+ &EAMBI
+ TEMP    =   293.150000000000     ,
+ PRES    =   101325.000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           1,
+ SECOND  =           2,
+ HVENT_ID        =           1,
+ WIDTH   =   2.60000000000000     ,
+ SOFFIT  =   2.50000000000000     ,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =  0.000000000000000E+000,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           3,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           2,
+ SECOND  =           3,
+ HVENT_ID        =           1,
+ WIDTH   =   2.60000000000000     ,
+ SOFFIT  =   5.00000000000000     ,
+ SILL    =   2.50000000000000     ,
+ OFFSET1 =  0.000000000000000E+000,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           3,
+ SECOND  =           4,
+ HVENT_ID        =           1,
+ WIDTH   =   1.80000000000000     ,
+ SOFFIT  =   2.00000000000000     ,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =  0.000000000000000E+000,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           2,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &CHALL
+ COMPARTMENT     =           1
+ /
+
+
+ &CHALL
+ COMPARTMENT     =           3
+ /

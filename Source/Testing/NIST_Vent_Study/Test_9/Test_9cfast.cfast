@@ -1,0 +1,289 @@
+ &VERSN
+ HEAD    = 'VERSN',
+ IVERS   =           7,
+ PGRM_NAME       = 'Test_9'
+ /
+
+
+ &STPMA
+ STEPMAX =   1.00000000000000     
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'Gypboard',
+ K       =  0.160000000000000     ,
+ C       =   1000.00000000000     ,
+ EPS     =  0.900000000000000     ,
+ NSLAB   =           1,
+ RHO     =   480.000000000000     ,
+ THICKNESS       =  1.587500000000000E-002
+ /
+
+
+ &COMPA
+ CEILING = 'Gypboard',
+ COMPA_ID        = 'Comp 1',
+ DEPTH   =   1.21920000000000     ,
+ FLOOR   = 'Gypboard',
+ HEIGHT  =  0.587375000000000     ,
+ WALL    = 'Gypboard',
+ WIDTH   =   1.19380000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'Gypboard',
+ COMPA_ID        = 'Comp 2',
+ DEPTH   =   1.21920000000000     ,
+ FLOOR   = 'Gypboard',
+ HEIGHT  =  0.609600000000000     ,
+ WALL    = 'Gypboard',
+ WIDTH   =   1.19380000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =  0.587375000000000     ,
+ ZGRID   =          50
+ /
+
+
+ &CFIRE
+ COMPARTMENT     =           1,
+ X       =  0.304800000000000     ,
+ Y       =  0.304800000000000     ,
+ Z       =  5.080000000000000E-002,
+ PLUME   =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ DUMMY1  =           0,
+ DUMMY2  =           0,
+ FIRE_ID = 'New Fire'
+ /
+
+
+ &CHEMI
+ CHEMI_ID        = 'New Fire',
+ C       =   3.00000000000000     ,
+ H       =   8.00000000000000     ,
+ O       =  0.000000000000000E+000,
+ N       =  0.000000000000000E+000,
+ CL      =  0.000000000000000E+000,
+ CHIR    =  0.300000000000000     ,
+ HOC     =   46300000.0000000     ,
+ NRET    =           4,
+ TIME    =  0.000000000000000E+000,   130.000000000000     ,   5998.00000000000     ,   6000.00000000000     ,
+ C_HRR   = 3*2500.00000000000        ,  0.000000000000000E+000,
+ FV      = 4*1.500000000000000E-002  ,
+ C_CO    = 4*0.000000000000000E+000  ,
+ TRACE   = 4*0.000000000000000E+000  ,
+ AREA    = 4*3.141592653589793E-002  ,
+ HEIGHT  = 4*0.000000000000000E+000  
+ /
+
+
+ &CTIME
+ SIMULATION      =        6000,
+ PRINT   =           1,
+ SPREADSHEET     =           1,
+ SMOKEVIEW       =           1
+ /
+
+
+ &TAMBI
+ TEMP    =   291.150000000000     ,
+ PRES    =   101325.000000000     ,
+ RH      =   50.0000000000000     
+ /
+
+
+ &EAMBI
+ TEMP    =   293.150000000000     ,
+ PRES    =   101325.000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           1,
+ SECOND  =           3,
+ HVENT_ID        =           1,
+ WIDTH   =  0.200000000000000     ,
+ SOFFIT  =  0.322224400000000     ,
+ SILL    =  2.222500000000000E-002,
+ OFFSET1 =  0.496900000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =  0.000000000000000E+000,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =  0.000000000000000E+000,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           2,
+ SECOND  =           3,
+ HVENT_ID        =           1,
+ WIDTH   =  9.999999000000000E-002,
+ SOFFIT  =  0.403200100000000     ,
+ SILL    =  0.203200000000000     ,
+ OFFSET1 =  0.546900000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =  0.000000000000000E+000,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =   3599.00000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000
+ /
+
+
+ &HVENT
+ FIRST   =           2,
+ SECOND  =           3,
+ HVENT_ID        =           2,
+ WIDTH   =  0.100000000000000     ,
+ SOFFIT  =  0.403200100000000     ,
+ SILL    =  0.203200000000000     ,
+ OFFSET1 =  0.736600000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           4,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =  0.000000000000000E+000,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =   2399.00000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           2,
+ SECOND  =           3,
+ HVENT_ID        =           3,
+ WIDTH   =  0.100000000000000     ,
+ SOFFIT  =  0.403200100000000     ,
+ SILL    =  0.203200000000000     ,
+ OFFSET1 =  0.736600000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           2,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =  0.000000000000000E+000,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =   2400.00000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000
+ /
+
+
+ &CRAMP
+ TYPE    = 'H',
+ FIRST   =           2,
+ SECOND  =           3,
+ RAMP_ID =           1,
+ RAMP_N  =           4,
+ TIME    =  0.000000000000000E+000,   4799.00000000000     ,   4800.00000000000     ,   6000.00000000000     ,
+ FRACTION        = 2*0.000000000000000E+000  , 2*1.00000000000000        
+ /
+
+
+ &CRAMP
+ TYPE    = 'H',
+ FIRST   =           2,
+ SECOND  =           3,
+ RAMP_ID =           2,
+ RAMP_N  =           5,
+ TIME    =  0.000000000000000E+000,   1500.00000000000     ,   3599.00000000000     ,   3600.00000000000     ,
+    6000.00000000000     ,
+ FRACTION        = 3*0.000000000000000E+000  , 2*1.00000000000000        
+ /
+
+
+ &CRAMP
+ TYPE    = 'H',
+ FIRST   =           2,
+ SECOND  =           3,
+ RAMP_ID =           3,
+ RAMP_N  =           3,
+ TIME    =  0.000000000000000E+000,   2400.00000000000     ,   6000.00000000000     ,
+ FRACTION        = 3*0.000000000000000E+000  
+ /
+
+
+ &CRAMP
+ TYPE    = 'V',
+ FIRST   =           2,
+ SECOND  =           1,
+ RAMP_ID =           1,
+ RAMP_N  =           4,
+ TIME    =  0.000000000000000E+000,   2399.00000000000     ,   2400.00000000000     ,   6000.00000000000     ,
+ FRACTION        = 2*0.000000000000000E+000  , 2*1.00000000000000        
+ /
+
+
+ &CRAMP
+ TYPE    = 'V',
+ FIRST   =           2,
+ SECOND  =           1,
+ RAMP_ID =           2,
+ RAMP_N  =           4,
+ TIME    =  0.000000000000000E+000,   1199.00000000000     ,   1200.00000000000     ,   6000.00000000000     ,
+ FRACTION        = 2*0.000000000000000E+000  , 2*1.00000000000000        
+ /
+
+
+ &VVENT
+ TOP     =           2,
+ BOTTOM  =           1,
+ VVENT_ID        =           1,
+ AREA    =  4.000000000000000E-002,
+ SHAPE   =           2,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =           0,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =        1800,
+ FINALFRACTION   =  0.000000000000000E+000,
+ OFFSETX =  0.843800700000000     ,
+ OFFSETY =  0.869200700000000     
+ /
+
+
+ &VVENT
+ TOP     =           2,
+ BOTTOM  =           1,
+ VVENT_ID        =           2,
+ AREA    =  1.000000000000000E-002,
+ SHAPE   =           2,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =           0,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =        1800,
+ FINALFRACTION   =  0.000000000000000E+000,
+ OFFSETX =  0.297500000000000     ,
+ OFFSETY =  0.869200700000000     
+ /
+
+
+ &VHEAT
+ TOP     =           2,
+ BOTTOM  =           1
+ /

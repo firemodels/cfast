@@ -1,0 +1,197 @@
+ &VERSN
+ HEAD    = 'VERSN',
+ IVERS   =           7,
+ PGRM_NAME       = '59_PHXE_200kW'
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'LLNL Walls',
+ K       =  0.390000000000000     ,
+ C       =   1000.00000000000     ,
+ EPS     =  0.940000000000000     ,
+ NSLAB   =           1,
+ RHO     =   1440.00000000000     ,
+ THICKNESS       =  0.100000000000000     
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'LLNL Ceil',
+ K       =  0.630000000000000     ,
+ C       =   1000.00000000000     ,
+ EPS     =  0.940000000000000     ,
+ NSLAB   =           1,
+ RHO     =   1920.00000000000     ,
+ THICKNESS       =  0.100000000000000     
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'LLNL Marinite',
+ K       =  0.120000000000000     ,
+ C       =   1120.00000000000     ,
+ EPS     =  0.940000000000000     ,
+ NSLAB   =           1,
+ RHO     =   700.000000000000     ,
+ THICKNESS       =  1.900000000000000E-002
+ /
+
+
+ &COMPA
+ CEILING = 'LLNL Marinite',
+ COMPA_ID        = 'Lower Test Cell',
+ DEPTH   =   6.00000000000000     ,
+ FLOOR   = 'LLNL Ceil',
+ HEIGHT  =   3.00000000000000     ,
+ WALL    = 'LLNL Walls',
+ WIDTH   =   4.00000000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'LLNL Ceil',
+ COMPA_ID        = 'Plenum',
+ DEPTH   =   6.00000000000000     ,
+ FLOOR   = 'LLNL Marinite',
+ HEIGHT  =   1.50000000000000     ,
+ WALL    = 'LLNL Walls',
+ WIDTH   =   4.00000000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =   3.00000000000000     ,
+ ZGRID   =          50
+ /
+
+
+ &CFIRE
+ COMPARTMENT     =           1,
+ X       =   2.00000000000000     ,
+ Y       =   3.00000000000000     ,
+ Z       =  0.900000000000000     ,
+ PLUME   =           1,
+ TYPE    = 'TIME',
+ CRITERION       =   30.0000000000000     ,
+ TARGET  = '',
+ DUMMY1  =           0,
+ DUMMY2  =           0,
+ FIRE_ID = '200kW'
+ /
+
+
+ &CHEMI
+ CHEMI_ID        = '200kW',
+ C       =   1.00000000000000     ,
+ H       =   4.00000000000000     ,
+ O       =  0.000000000000000E+000,
+ N       =  0.000000000000000E+000,
+ CL      =  0.000000000000000E+000,
+ CHIR    =  0.200000000000000     ,
+ HOC     =   50050000.0000000     ,
+ NRET    =           4,
+ TIME    =  0.000000000000000E+000,   10.0000000000000     ,   4000.00000000000     ,   4001.00000000000     ,
+ C_HRR   =  0.000000000000000E+000, 2*200000.000000000        ,  0.000000000000000E+000,
+ FV      = 4*0.000000000000000E+000  ,
+ C_CO    = 4*3.819650000000000E-004  ,
+ TRACE   = 4*0.000000000000000E+000  ,
+ AREA    = 4*0.250000000000000       ,
+ HEIGHT  = 4*0.200000000000000       
+ /
+
+
+ &CTIME
+ SIMULATION      =        4000,
+ PRINT   =          50,
+ SPREADSHEET     =          10,
+ SMOKEVIEW       =          10
+ /
+
+
+ &TAMBI
+ TEMP    =   315.150000000000     ,
+ PRES    =   101325.000000000     ,
+ RH      =   50.0000000000000     
+ /
+
+
+ &EAMBI
+ TEMP    =   315.150000000000     ,
+ PRES    =   101325.000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           1,
+ SECOND  =           3,
+ HVENT_ID        =           1,
+ WIDTH   =  0.175000000000000     ,
+ SOFFIT  =   2.10000000000000     ,
+ SILL    =   1.96600000000000     ,
+ OFFSET1 =   1.00000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &VVENT
+ TOP     =           2,
+ BOTTOM  =           1,
+ VVENT_ID        =           1,
+ AREA    =  0.180000000000000     ,
+ SHAPE   =           2,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =           1,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =           1,
+ FINALFRACTION   =   1.00000000000000     ,
+ OFFSETX =   2.00000000000000     ,
+ OFFSETY =   3.00000000000000     
+ /
+
+
+ &MVENT
+ FIRST   =           2,
+ SECOND  =           3,
+ MVENT_ID        =           1,
+ ORIENTATION1    = 'H',
+ HEIGHT1 =  0.600000000000000     ,
+ AREA1   =  0.422500000000000     ,
+ ORIENTATION2    = 'V',
+ HEIGHT2 =  0.750000000000000     ,
+ AREA2   =  7.310000000000000E-002,
+ FLOW    =  0.174000000000000     ,
+ PLOWER  =   2000.00000000000     ,
+ PUPPER  =   3000.00000000000     ,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     ,
+ OFFSETX =  0.000000000000000E+000,
+ OFFSETY =   3.00000000000000     
+ /
+
+
+ &VHEAT
+ TOP     =           2,
+ BOTTOM  =           1
+ /

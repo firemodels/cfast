@@ -1,0 +1,306 @@
+ &VERSN
+ HEAD    = 'VERSN',
+ IVERS   =           7,
+ PGRM_NAME       = '"NBS Test MV100A'
+ /
+
+
+ &CTIME
+ SIMULATION      =        1500,
+ PRINT   =          10,
+ SPREADSHEET     =           1,
+ SMOKEVIEW       =          10
+ /
+
+
+ &TAMBI
+ TEMP    =   296.150000000000     ,
+ PRES    =   101325.000000000     ,
+ RH      =   45.0000000000000     
+ /
+
+
+ &EAMBI
+ TEMP    =   296.150000000000     ,
+ PRES    =   101325.000000000     
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'FireBrickNBS',
+ K       =  0.360000000000000     ,
+ C       =   1040.00000000000     ,
+ EPS     =  0.800000000000000     ,
+ NSLAB   =           1,
+ RHO     =   750.000000000000     ,
+ THICKNESS       =  0.113000000000000     
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'CeramicNBS',
+ K       =  9.000000000000000E-002,
+ C       =   1040.00000000000     ,
+ EPS     =  0.970000000000000     ,
+ NSLAB   =           1,
+ RHO     =   128.000000000000     ,
+ THICKNESS       =  5.000000000000000E-002
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'MariniteNBS',
+ K       =  0.120000000000000     ,
+ C       =   1250.00000000000     ,
+ EPS     =  0.830000000000000     ,
+ NSLAB   =           1,
+ RHO     =   720.000000000000     ,
+ THICKNESS       =  1.270000000000000E-002
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'GypsumNBS',
+ K       =  0.170000000000000     ,
+ C       =   1090.00000000000     ,
+ EPS     =  0.950000000000000     ,
+ NSLAB   =           1,
+ RHO     =   930.000000000000     ,
+ THICKNESS       =  1.270000000000000E-002
+ /
+
+
+ &MATRL
+ MATRL_ID        = 'ConcreteNBS',
+ K       =   1.80000000000000     ,
+ C       =   1040.00000000000     ,
+ EPS     =  0.950000000000000     ,
+ NSLAB   =           1,
+ RHO     =   2280.00000000000     ,
+ THICKNESS       =  0.102000000000000     
+ /
+
+
+ &COMPA
+ CEILING = 'CeramicNBS',
+ COMPA_ID        = 'Fire Room',
+ DEPTH   =   2.34000000000000     ,
+ FLOOR   = 'FireBrickNBS',
+ HEIGHT  =   2.16000000000000     ,
+ WALL    = 'CeramicNBS',
+ WIDTH   =   2.34000000000000     ,
+ X0      =   9.85000000000000     ,
+ XGRID   =          50,
+ Y0      =  0.000000000000000E+000,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'MariniteNBS',
+ COMPA_ID        = 'Entry to Fire Room',
+ DEPTH   =   1.02000000000000     ,
+ FLOOR   = 'GypsumNBS',
+ HEIGHT  =   2.00000000000000     ,
+ WALL    = 'MariniteNBS',
+ WIDTH   =   1.03000000000000     ,
+ X0      =   11.1600000000000     ,
+ XGRID   =          50,
+ Y0      =   2.34000000000000     ,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'MariniteNBS',
+ COMPA_ID        = 'Corridor',
+ DEPTH   =   2.44000000000000     ,
+ FLOOR   = 'GypsumNBS',
+ HEIGHT  =   2.44000000000000     ,
+ WALL    = 'MariniteNBS',
+ WIDTH   =   12.1900000000000     ,
+ X0      =  0.000000000000000E+000,
+ XGRID   =          50,
+ Y0      =   3.36000000000000     ,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'GypsumNBS',
+ COMPA_ID        = 'Target Room',
+ DEPTH   =   2.24000000000000     ,
+ FLOOR   = 'ConcreteNBS',
+ HEIGHT  =   2.43000000000000     ,
+ WALL    = 'GypsumNBS',
+ WIDTH   =   2.22000000000000     ,
+ X0      =   2.07000000000000     ,
+ XGRID   =          50,
+ Y0      =  0.330000000000000     ,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &COMPA
+ CEILING = 'GypsumNBS',
+ COMPA_ID        = 'Entry to Target Room',
+ DEPTH   =  0.790000000000000     ,
+ FLOOR   = 'ConcreteNBS',
+ HEIGHT  =   2.04000000000000     ,
+ WALL    = 'GypsumNBS',
+ WIDTH   =  0.940000000000000     ,
+ X0      =   2.07000000000000     ,
+ XGRID   =          50,
+ Y0      =   2.57000000000000     ,
+ YGRID   =          50,
+ Z0      =  0.000000000000000E+000,
+ ZGRID   =          50
+ /
+
+
+ &CFIRE
+ COMPARTMENT     =           1,
+ X       =   1.17000000000000     ,
+ Y       =  0.100000000000000     ,
+ Z       =  1.000000000000000E-003,
+ PLUME   =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ DUMMY1  =           0,
+ DUMMY2  =           0,
+ FIRE_ID = 'MV100A'
+ /
+
+
+ &CHEMI
+ CHEMI_ID        = 'MV100A',
+ C       =   1.00000000000000     ,
+ H       =   4.00000000000000     ,
+ O       =  0.000000000000000E+000,
+ N       =  0.000000000000000E+000,
+ CL      =  0.000000000000000E+000,
+ CHIR    =  0.200000000000000     ,
+ HOC     =   50000000.0000000     ,
+ NRET    =           4,
+ TIME    =  0.000000000000000E+000,   10.0000000000000     ,   890.000000000000     ,   900.000000000000     ,
+ C_HRR   =  0.000000000000000E+000, 2*110000.000000000        ,  0.000000000000000E+000,
+ FV      = 4*5.000000000000000E-003  ,
+ C_CO    = 4*2.897221000000000E-003  ,
+ TRACE   = 4*0.000000000000000E+000  ,
+ AREA    = 4*0.115600000000000       ,
+ HEIGHT  = 4*0.000000000000000E+000  
+ /
+
+
+ &HVENT
+ FIRST   =           1,
+ SECOND  =           2,
+ HVENT_ID        =           1,
+ WIDTH   =  0.810000000000000     ,
+ SOFFIT  =   1.60000000000000     ,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =   1.42000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           3,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           2,
+ SECOND  =           3,
+ HVENT_ID        =           1,
+ WIDTH   =  0.810000000000000     ,
+ SOFFIT  =   1.60000000000000     ,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =  0.110000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           3,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           3,
+ SECOND  =           6,
+ HVENT_ID        =           1,
+ WIDTH   =  0.760000000000000     ,
+ SOFFIT  =   2.03000000000000     ,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =  0.840000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           4,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =   1.00000000000000     ,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =   1.00000000000000     
+ /
+
+
+ &HVENT
+ FIRST   =           3,
+ SECOND  =           5,
+ HVENT_ID        =           1,
+ WIDTH   =  0.790000000000000     ,
+ SOFFIT  =   2.04000000000000     ,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =   2.14000000000000     ,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           1,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000
+ /
+
+
+ &HVENT
+ FIRST   =           4,
+ SECOND  =           5,
+ HVENT_ID        =           1,
+ WIDTH   =  0.790000000000000     ,
+ SOFFIT  =   2.04000000000000     ,
+ SILL    =  0.000000000000000E+000,
+ OFFSET1 =  7.500000000000000E-002,
+ OFFSET2 =  0.000000000000000E+000,
+ FACE    =           3,
+ TYPE    = 'TIME',
+ CRITERION       =  0.000000000000000E+000,
+ TARGET  = '',
+ INITIALTIME     =   1.00000000000000     ,
+ INITIALFRACTION =  0.000000000000000E+000,
+ FINALTIME       =   1.00000000000000     ,
+ FINALFRACTION   =  0.000000000000000E+000
+ /
+
+
+ &CHALL
+ COMPARTMENT     =           3
+ /

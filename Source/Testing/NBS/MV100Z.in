@@ -1,0 +1,45 @@
+VERSN,7,"NBS Test MV100Z, Open Corridor Door, Open Target Room"
+!!
+!!Scenario Configuration Keywords
+!!
+TIMES,1500,10,10,1
+EAMB,295.15,101325,0
+TAMB,295.15,101325,0,62
+!!
+!!Material Properties
+!!
+MATL,FireBrickNBS,0.36,1040,750,0.113,0.8,Fire Brick NBS
+MATL,CeramicNBS,0.09,1040,128,0.05,0.97,Ceramic Fiber NBS
+MATL,MariniteNBS,0.12,1250,720,0.0127,0.83,Marinite NBS
+MATL,GypsumNBS,0.17,1090,930,0.0127,0.95,Gypsum NBS
+MATL,ConcreteNBS,1.8,1040,2280,0.102,0.95,Concrete NBS
+!!
+!!Compartment keywords
+!!
+COMPA,Fire Room,2.34,2.34,2.16,9.85,0,0,CeramicNBS,FireBrickNBS,CeramicNBS,50,50,50
+COMPA,Entry to Fire Room,1.03,1.02,2,11.16,2.34,0,MariniteNBS,GypsumNBS,MariniteNBS,50,50,50
+COMPA,Corridor,12.19,2.44,2.44,0,3.36,0,MariniteNBS,GypsumNBS,MariniteNBS,50,50,50
+COMPA,Target Room,2.22,2.24,2.43,2.07,0.33,0,GypsumNBS,ConcreteNBS,GypsumNBS,50,50,50
+COMPA,Entry to Target Room,0.94,0.79,2.04,2.07,2.57,0,GypsumNBS,ConcreteNBS,GypsumNBS,50,50,50
+HALL,3
+!!
+!!Vent keywords
+!!
+HVENT,1,2,1,0.81,1.6,0,1.42,3,1
+HVENT,2,3,1,0.81,1.6,0,0.11,3,1
+HVENT,3,6,1,0.76,2.03,0,0.84,4,1
+HVENT,3,5,1,0.79,2.04,0,2.14,1,1
+HVENT,4,5,1,0.79,2.04,0,0.075,3,1
+!!
+!!Fire keywords
+!!
+!!MV100Z
+FIRE,1,1.17,0.1,0,1,TIME,0,0,0,0,MV100Z
+CHEMI,1,4,0,0,0,0.3,5E+07
+TIME,0,10,890,900
+HRR,0,110000,110000,0
+SOOT,0.01,0.01,0.01,0.01
+CO,0.004747221,0.004747221,0.004747221,0.004747221
+TRACE,0,0,0,0
+AREA,0.1156,0.1156,0.1156,0.1156
+HEIGH,0,0,0,0

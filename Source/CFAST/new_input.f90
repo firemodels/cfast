@@ -79,11 +79,6 @@ module namelist_routines
       call read_cslcf(iofili)
       call read_cisof(iofili)
       
-      ! For trouble-shooting
-!      call testing(ncomp)
-  
-      close (98)
-      close (99)
       close (iofili)
 
       ! read format list
@@ -118,14 +113,14 @@ module namelist_routines
          end if 
          read(LU,VERSN,err=34,iostat=ios)
 34       if (ios>0) then
-            write(99, '(a,i4)') 'Error: Problem with VERSN input, line number', input_file_line_number
+            write(iofill, '(a,i4)') 'Error: Problem with VERSN input, line number', input_file_line_number
             stop
          end if
       end do versn_loop
 
       if (.not.versnflag) then
          write (*, '(/, "Inputs for VERSN are required.")')
-         write (99, '(/, "Inputs for VERSN are required.")')
+         write (iofill, '(/, "Inputs for VERSN are required.")')
          stop
       end if
 
@@ -150,10 +145,10 @@ module namelist_routines
   
       if (head==heading.and.ivers==iversion-1) then
           write (*,5004) ivers, iversion
-          write (99,5004) ivers, iversion
+          write (iofill,5004) ivers, iversion
       else if (head/=heading.or.ivers/=iversion) then
           write (*,5002) head,heading,ivers,iversion
-          write (99,5002) head,heading,ivers,iversion
+          write (iofill,5002) head,heading,ivers,iversion
           stop
       end if
 
@@ -231,7 +226,7 @@ module namelist_routines
          end if 
          read(LU,STPMA,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(a,i5)') 'Error: Problem with STPMA input, line number', input_file_line_number
+             write(iofill, '(a,i5)') 'Error: Problem with STPMA input, line number', input_file_line_number
              stop
          end if
       end do stpma_loop
@@ -289,20 +284,20 @@ module namelist_routines
          read(LU,MATRL,err=34,iostat=ios)
          n_thrmp = n_thrmp + 1
 34       if (ios>0) then
-            write(99, '(a,i3,a,i5)') 'Error: Problem with MATRL number ', n_thrmp+1, ', line number ', input_file_line_number
+            write(iofill, '(a,i3,a,i5)') 'Error: Problem with MATRL number ', n_thrmp+1, ', line number ', input_file_line_number
             stop
          end if
       end do matrl_loop
 
       if (.not.matrlflag) then
          write (*, '(/, "Inputs for MATRL are required.")')
-         write (99, '(/, "Inputs for MATRL are required.")')
+         write (iofill, '(/, "Inputs for MATRL are required.")')
          stop
       end if
   
       if (n_thrmp>mxthrmp) then
          write (*,'(a,i3)') '***Error: Bad MATRL input. Too many thermal properties in input data file. limit is ', mxthrmp
-         write (99,'(a,i3)') '***Error: Bad MATRL input. Too many thermal properties in input data file. limit is ', mxthrmp
+         write (iofill,'(a,i3)') '***Error: Bad MATRL input. Too many thermal properties in input data file. limit is ', mxthrmp
          stop
       end if
 
@@ -379,20 +374,20 @@ module namelist_routines
          read(LU,COMPA,err=34,iostat=ios)
          ncomp = ncomp + 1
 34       if (ios>0) then
-            write(99, '(a,i3,a,i5)') 'Error: Problem with COMPA number ', ncomp+1, ', line number ', input_file_line_number
+            write(iofill, '(a,i3,a,i5)') 'Error: Problem with COMPA number ', ncomp+1, ', line number ', input_file_line_number
             stop
          end if
       end do compa_loop
 
       if (ncomp>mxrooms) then
          write (*,'(a,i3)') '***Error: Bad COMPA input. Too many compartments in input data file. limit is ', mxrooms
-         write (99,'(a,i3)') '***Error: Bad COMPA input. Too many compartments in input data file. limit is ', mxrooms
+         write (iofill,'(a,i3)') '***Error: Bad COMPA input. Too many compartments in input data file. limit is ', mxrooms
          stop
       end if
 
       if (.not.compaflag) then
          write (*, '(/, "Inputs for COMPA are required.")')
-         write (99, '(/, "Inputs for COMPA are required.")')
+         write (iofill, '(/, "Inputs for COMPA are required.")')
          stop
       end if
 
@@ -401,7 +396,6 @@ module namelist_routines
       rewind (LU)
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_matrl_loop")')
       ! Assign value to CFAST variables for further calculations
       read_compa_loop: do ii=1,ncomp
 
@@ -508,14 +502,14 @@ module namelist_routines
          read(LU,TARGE,err=34,iostat=ios)
          n_targets =n_targets + 1
 34          if (ios>0) then
-               write(99, '(a,i3,a,i5)') 'Error: Problem with TARGE number ', n_targets+1, ', line number ', input_file_line_number
+               write(iofill, '(a,i3,a,i5)') 'Error: Problem with TARGE number ', n_targets+1, ', line number ', input_file_line_number
                stop
             end if
       end do targe_loop
 
       if (n_targets>mxtarg) then
          write (*,'(a,i3)') '***Error: Bad TARGE input. Too many targets in input data file. limit is ', mxtarg
-         write (99,'(a,i3)') '***Error: Bad TARGE input. Too many targets in input data file. limit is ', mxtarg
+         write (iofill,'(a,i3)') '***Error: Bad TARGE input. Too many targets in input data file. limit is ', mxtarg
          stop
       end if
 
@@ -537,7 +531,7 @@ module namelist_routines
 
          if (iroom<1.or.iroom>nr) then
             write (*,5003) iroom 
-            write (99,5003) iroom
+            write (iofill,5003) iroom
             stop
          end if
 
@@ -570,14 +564,14 @@ module namelist_routines
             if (eqtype(1:3)=='ODE') then
                targptr%equaton_type = pde
                write (*,913) 'Warning', eqtype
-               write (99,913) 'Warning', eqtype
+               write (iofill,913) 'Warning', eqtype
             else if (eqtype(1:3)=='PDE') then
                targptr%equaton_type = pde
             else if (eqtype(1:3)=='CYL') then
                targptr%equaton_type = cylpde
             else
                write (*,913) 'Error',eqtype
-               write (99,913) 'Error',eqtype
+               write (iofill,913) 'Error',eqtype
                stop
             end if
          end if
@@ -648,14 +642,14 @@ module namelist_routines
          read(LU,CFIRE,err=34,iostat=ios)
          n_fires =n_fires + 1
 34       if (ios>0) then
-            write(99, '(a,i3,a,i5)') 'Error: Problem with CFIRE number ', n_fires+1, ', line number ', input_file_line_number
+            write(iofill, '(a,i3,a,i5)') 'Error: Problem with CFIRE number ', n_fires+1, ', line number ', input_file_line_number
             stop
          end if
       end do fire_loop
 
       if (n_fires>mxfires) then
          write (*,'(a,i3)') '***Error: Bad CFIRE input. Too many CFIRE in input data file. limit is ', mxfires
-         write (99,'(a,i3)') '***Error: Bad CFIRE input. Too many CFIRE in input data file. limit is ', mxfires
+         write (iofill,'(a,i3)') '***Error: Bad CFIRE input. Too many CFIRE in input data file. limit is ', mxfires
          stop
       end if
 
@@ -664,7 +658,6 @@ module namelist_routines
       rewind (LU) 
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_fire_loop")')
       ! Assign value to CFAST variables for further calculations
       read_fire_loop: do ii=1,n_fires
 
@@ -677,7 +670,7 @@ module namelist_routines
          iroom = compartment
          if (iroom<1.or.iroom>nr-1) then
             write (*,5320) iroom
-            write (99,5320) iroom
+            write (iofill,5320) iroom
             stop
          end if
          roomptr => roominfo(iroom)
@@ -686,7 +679,7 @@ module namelist_routines
          fireptr%chemistry_type = 2
          if (fireptr%chemistry_type>2) then
             write (*,5321) fireptr%chemistry_type
-            write (99,5321) fireptr%chemistry_type
+            write (iofill,5321) fireptr%chemistry_type
             stop
          end if
 
@@ -695,7 +688,7 @@ module namelist_routines
          fireptr%z_position = z
          if (fireptr%x_position>roomptr%cwidth.or.fireptr%y_position>roomptr%cdepth.or.fireptr%z_position>roomptr%cheight) then
             write (*,5323) n_fires
-            write (99,5323) n_fires
+            write (iofill,5323) n_fires
             stop
          end if
 
@@ -719,13 +712,13 @@ module namelist_routines
                end do
                if (fireptr%ignition_target==0) then
                   write (*,5324) n_fires
-                  write (99,5324) n_fires
+                  write (iofill,5324) n_fires
                   stop
                end if
             end if
          else
             write (*,5322)
-            write (99,5322)
+            write (iofill,5322)
             stop
          end if
 
@@ -748,7 +741,7 @@ module namelist_routines
                end if
             else
                write (*,5358) fireptr%ignition_type
-               write (99,5358) fireptr%ignition_type
+               write (iofill,5358) fireptr%ignition_type
                stop
             end if
          else
@@ -824,7 +817,7 @@ module namelist_routines
          n_chemi =n_chemi + 1
          read(LU,CHEMI,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(a,i3,a,i5)') 'Error: Problem with CHEMI number ', n_chemi+1, ', line number ', input_file_line_number
+             write(iofill, '(a,i3,a,i5)') 'Error: Problem with CHEMI number ', n_chemi+1, ', line number ', input_file_line_number
              stop
          end if
       end do chemi_loop
@@ -832,7 +825,7 @@ module namelist_routines
       if (cfireflag) then
          if (.not.chemiflag) then
             write (*, '(/, "CFIRE detected. Missing CHEMI")')
-            write (99, '(/, "CFIRE detected. Missing CHEMI")')
+            write (iofill, '(/, "CFIRE detected. Missing CHEMI")')
             stop
          end if
       end if
@@ -842,7 +835,6 @@ module namelist_routines
       rewind (LU) 
       input_file_line_number = 0
 
-      write(99, '(/, "Entering read_chemi_loop")')
       ! Assign value to CFAST variables for further calculations
       read_chemi_loop: do ii=1,n_chemi
 
@@ -863,7 +855,7 @@ module namelist_routines
 
          if (j==n_fires+1) then
              write (*, '(/, "Chemi_id and Fire_id do not match")')
-             write (99, '(/, "Chemi_id and Fire_id do not match")')
+             write (iofill, '(/, "Chemi_id and Fire_id do not match")')
              stop
          end if
 
@@ -879,7 +871,7 @@ module namelist_routines
          ohcomb = hoc
          if (ohcomb<=0.0_eb) then
             write (*,5001) ohcomb
-            write (99,5001) ohcomb
+            write (iofill,5001) ohcomb
             stop
          end if
 
@@ -922,7 +914,7 @@ module namelist_routines
             ! (from sfpe handbook chapter)
             if (area(i)==0.0_eb) then
                write (*,5002)
-               write (99,5002)
+               write (iofill,5002)
                stop
             end if
             fireptr%area(i) = max(area(i),pio4*0.2_eb**2)
@@ -958,14 +950,14 @@ module namelist_routines
          if (hrrpm3>4.0e6_eb) then
              write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
              write (*, 5108)
-             write (99,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-             write (99, 5108)
+             write (iofill,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+             write (iofill, 5108)
              stop
          else if (hrrpm3>2.0e6_eb) then
              write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
              write (*, 5108)
-             write (99,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-             write (99, 5108)
+             write (iofill,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+             write (iofill, 5108)
          end if
 
       end do read_chemi_loop
@@ -1059,7 +1051,7 @@ module namelist_routines
                 xyorz = minimumseparation
             case default
               write (*,*) 'Fire objects positioned specified outside compartment bounds.'
-              write (99,*) 'Fire objects positioned specified outside compartment bounds.'
+              write (iofill,*) 'Fire objects positioned specified outside compartment bounds.'
               stop
           end select
       else if (xyorz==0.0_eb) then
@@ -1100,14 +1092,14 @@ module namelist_routines
          end if 
          read(LU,CTIME,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(a,i5)') 'Error: Problem with CTIME input, line number', input_file_line_number
+             write(iofill, '(a,i5)') 'Error: Problem with CTIME input, line number', input_file_line_number
              stop
          end if
       end do time_loop
 
       if (.not.ctimeflag) then
          write (*, '(/, "Inputs for CTIME are required.")')
-         write (99, '(/, "Inputs for CTIME are required.")')
+         write (iofill, '(/, "Inputs for CTIME are required.")')
          stop
       end if
 
@@ -1167,7 +1159,7 @@ module namelist_routines
          end if 
          read(LU,TAMBI,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(a,i5)') 'Error: Problem with TAMBI number, line number', input_file_line_number
+             write(iofill, '(a,i5)') 'Error: Problem with TAMBI number, line number', input_file_line_number
              stop
           end if
       end do tamb_loop
@@ -1231,7 +1223,7 @@ module namelist_routines
          end if 
          read(LU,EAMBI,err=34,iostat=ios)
          34 if (ios>0) then
-         write(99, '(a,i5)') 'Error: Problem with EAMBI number, line number', input_file_line_number
+         write(iofill, '(a,i5)') 'Error: Problem with EAMBI number, line number', input_file_line_number
          stop
       end if
       end do eamb_loop
@@ -1285,7 +1277,7 @@ module namelist_routines
          end if 
          read(LU,LIMO2,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(a,i5)') 'Error: Problem with LIMO2 number, line number', input_file_line_number
+             write(iofill, '(a,i5)') 'Error: Problem with LIMO2 number, line number', input_file_line_number
              stop
          end if
       end do limo2_loop
@@ -1346,23 +1338,22 @@ module namelist_routines
          read(LU,HVENT,err=34,iostat=ios)
          n_hvents =n_hvents + 1
          34 if (ios>0) then
-               write(99, '(a,i3,a,i5)') 'Error: Problem with fire number ', n_hvents+1, ', line number ', input_file_line_number
+               write(iofill, '(a,i3,a,i5)') 'Error: Problem with fire number ', n_hvents+1, ', line number ', input_file_line_number
                stop
             end if
       end do hvent_loop
+
+      if (n_hvents>mxhvents) then
+         write (*,'(a,i3)') '***Error: Bad hvent input. Too many hvent in input data file. limit is ', mxhvents
+         write (iofill,'(a,i3)') '***Error: Bad hvent input. Too many hvent in input data file. limit is ', mxhvents
+         stop
+      end if
 
       hvent_flag: if (hventflag) then
 
       rewind (LU) 
       input_file_line_number = 0
 
-      if (n_hvents>mxhvents) then
-         write (*,'(a,i3)') '***Error: Bad hvent input. Too many hvent in input data file. limit is ', mxhvents
-         write (99,'(a,i3)') '***Error: Bad hvent input. Too many hvent in input data file. limit is ', mxhvents
-         stop
-      end if
-
-      write(99, '(/, "Entering read_hvent_loop")')
       ! Assign value to CFAST variables for further calculations
       read_hvent_loop: do ii=1,n_hvents
 
@@ -1378,12 +1369,12 @@ module namelist_routines
       
          if (imin>mxrooms-1.or.jmax>mxrooms.or.imin==jmax) then
             write (*,5070) i, j
-            write (99,5070) i, j
+            write (iofill,5070) i, j
             stop
          end if
          if (k>mxccv) then
             write (*,5080) i, j, k
-            write (99,5080) i, j, k
+            write (iofill,5080) i, j, k
             stop
          end if
       
@@ -1394,7 +1385,7 @@ module namelist_routines
       
          if (n_hvents>mxhvents) then
             write (*,5081) i,j,k
-            write (99,5081) i,j,k
+            write (iofill,5081) i,j,k
             stop
          end if
       
@@ -1423,7 +1414,7 @@ module namelist_routines
                 end do
                 if (ventptr%opening_target==0) then
                    write (*,*) '***Error: Bad hvent input. Vent opening specification requires an associated target.'
-                   write (99,*) '***Error: Bad hvent input. Vent opening specification requires an associated target.'
+                   write (iofill,*) '***Error: Bad hvent input. Vent opening specification requires an associated target.'
                    stop
                 end if   
                 ventptr%opening_initial_fraction = initialfraction
@@ -1436,7 +1427,7 @@ module namelist_routines
              end if
          else
             write (*,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
-            write (99,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
+            write (iofill,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
             stop
          end if
 
@@ -1481,7 +1472,7 @@ module namelist_routines
       ! --------------------------- DEADR -------------------------------------------
       subroutine read_deadr(LU)
       
-      integer :: ios,i,j
+      integer :: ios,i,j,k
       integer :: LU
 
       type(room_type), pointer :: roomptr
@@ -1495,6 +1486,7 @@ module namelist_routines
       input_file_line_number = 0
 
       ! Scan entire file to look for 'DEADR'
+      nmlcount=0
       deadr_loop: do
          call checkread ('DEADR',LU,ios)
          if (ios==0) deadrflag=.true.
@@ -1502,16 +1494,19 @@ module namelist_routines
              exit deadr_loop
          end if 
          read(LU,DEADR,err=34,iostat=ios)
+         nmlcount=nmlcount+1
 34       if (ios>0) then
-             write(99, '(a,i5)') 'Error: Problem with deadr number, line number', input_file_line_number
+             write(iofill, '(a,i5)') 'Error: Problem with deadr number, line number', input_file_line_number
              stop
          end if
       end do deadr_loop
 
-      deadr_flag: if (deadrflag) then
+      deadr_flag: if (deadrflag) then  
 
       rewind (LU) 
-      input_file_line_number = 0
+      input_file_line_number = 0      
+      
+      countloop: do k=1,nmlcount
 
       call checkread('DEADR',LU,ios)
       call set_deadr_defaults
@@ -1524,7 +1519,9 @@ module namelist_routines
          roomptr => roominfo(i)
          roomptr%deadroom = j
       end if
-
+      
+      end do countloop
+      
       end if deadr_flag                  
 
 
@@ -1543,7 +1540,7 @@ module namelist_routines
       ! --------------------------- EVENT -------------------------------------------
       subroutine read_event(LU)
 
-      integer :: ios,i,j,k,iijk,fannumber
+      integer :: ios,i,j,k,iijk,fannumber,kk
       integer :: LU
       character(48) :: venttype
 
@@ -1560,6 +1557,7 @@ module namelist_routines
       input_file_line_number = 0
 
       ! Scan entire file to look for 'EVENT'
+      nmlcount=0
       event_loop: do
          call checkread ('EVENT',LU,ios)
          if (ios==0) eventflag=.true.
@@ -1567,8 +1565,9 @@ module namelist_routines
              exit event_loop
          end if 
          read(LU,EVENT,err=34,iostat=ios)
+         nmlcount=nmlcount+1
 34       if (ios>0) then
-            write(99, '(a,i5)') 'Error: Problem with EVENT number, line number', input_file_line_number
+            write(iofill, '(a,i5)') 'Error: Problem with EVENT number, line number', input_file_line_number
             stop
          end if
       end do event_loop
@@ -1577,6 +1576,8 @@ module namelist_routines
 
       rewind (LU) 
       input_file_line_number = 0
+      
+      countloop: do kk=1,nmlcount
 
       call checkread('EVENT',LU,ios)
       call set_event_defaults
@@ -1585,7 +1586,7 @@ module namelist_routines
       venttype = type
       
       if (fraction<0.0_eb.or.fraction>1.0_eb) then
-         write (99,*) '****Error: Bad event input. Final_fraction must be between 0 and 1 inclusive.'
+         write (iofill,*) '****Error: Bad event input. Final_fraction must be between 0 and 1 inclusive.'
          stop
       end if
       
@@ -1630,7 +1631,7 @@ module namelist_routines
          fannumber = event_id
          if (fannumber>n_mvents) then
             write (*,5196) fannumber
-            write (99,5196) fannumber
+            write (iofill,5196) fannumber
             stop
          end if
          ventptr => mventinfo(fannumber)
@@ -1639,10 +1640,11 @@ module namelist_routines
          ventptr%filter_final_fraction = fraction
       case default
          write (*,*) '***Error: Bad event input. Type must be H, V, M, or F.'
-         write (99,*) '***Error: Bad event input. Type must be H, V, M, or F.'
+         write (iofill,*) '***Error: Bad event input. Type must be H, V, M, or F.'
          stop
       end select
 
+      end do countloop
       end if event_flag
 
 5196  format ('***Error: Bad EVENT input. Fan has not been defined for this filter ',i0)
@@ -1693,14 +1695,14 @@ module namelist_routines
          read(LU,CRAMP,err=34,iostat=ios)
          nramps =nramps + 1
 34       if (ios>0) then
-             write(99, '(a,i3,a,i5)') 'Error: Problem with CRAMP number ', nramps+1, ', line number ', input_file_line_number
+             write(iofill, '(a,i3,a,i5)') 'Error: Problem with CRAMP number ', nramps+1, ', line number ', input_file_line_number
              stop
          end if
       end do ramp_loop
 
       if (nramps>mxramps) then
          write (*,'(a,i3)') '***Error: Bad ramp input. Too many ramp in input data file. limit is ', mxramps
-         write (99,'(a,i3)') '***Error: Bad ramp input. Too many ramp in input data file. limit is ', mxramps
+         write (iofill,'(a,i3)') '***Error: Bad ramp input. Too many ramp in input data file. limit is ', mxramps
          stop
       end if
 
@@ -1755,7 +1757,6 @@ module namelist_routines
       integer :: ios,ii,i,j,k
       integer :: LU
       
-!      type(room_type), pointer :: roomptr
       type(target_type), pointer :: targptr
       type(vent_type), pointer :: ventptr
       
@@ -1781,14 +1782,14 @@ module namelist_routines
          read(LU,VVENT,err=34,iostat=ios)
          n_vvents =n_vvents + 1
 34       if (ios>0) then
-             write(99, '(a,i3,a,i5)') 'Error: Problem with VVENT number ', n_vvents+1, ', line number ', input_file_line_number
+             write(iofill, '(a,i3,a,i5)') 'Error: Problem with VVENT number ', n_vvents+1, ', line number ', input_file_line_number
              stop
          end if
       end do vvent_loop
 
       if (n_vvents>mxvvents) then
          write (*,'(a,i3)') '***Error: Bad VVENT input. Too many vvent in input data file. limit is ', mxvvents
-         write (99,'(a,i3)') '***Error: Bad VVENT input. Too many vvent in input data file. limit is ', mxvvents
+         write (iofill,'(a,i3)') '***Error: Bad VVENT input. Too many vvent in input data file. limit is ', mxvvents
          stop
       end if
 
@@ -1811,7 +1812,7 @@ module namelist_routines
          ! check for outside of compartment space; self pointers are covered in read_input_file
          if (i>mxrooms.or.j>mxrooms) then
             write (*,5070) i, j
-            write (99,5070) i, j
+            write (iofill,5070) i, j
             stop
          end if
       
@@ -1845,7 +1846,7 @@ module namelist_routines
                end do
                if (ventptr%opening_target==0) then
                   write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
-                  write (99,*) '***Error: Bad hvent input. Vent opening specification requires an associated target.'
+                  write (iofill,*) '***Error: Bad hvent input. Vent opening specification requires an associated target.'
                   stop
                end if  
                ventptr%opening_initial_fraction = initialfraction
@@ -1860,7 +1861,7 @@ module namelist_routines
             ventptr%yoffset = offsety
          else
             write (*,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
-            write (99,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
+            write (iofill,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
             stop
          end if
       
@@ -1902,7 +1903,6 @@ module namelist_routines
       integer :: LU
       
       type(vent_type), pointer :: ventptr
-!      type(room_type), pointer :: roomptr
       type(target_type), pointer :: targptr
 
       integer :: first,second,mvent_id
@@ -1930,14 +1930,14 @@ module namelist_routines
          read(LU,MVENT,err=34,iostat=ios)
          n_mvents =n_mvents + 1
 34       if (ios>0) then
-             write(99, '(a,i3,a,i5)') 'Error: Problem with fire number ', n_mvents+1, ', line number ', input_file_line_number
+             write(iofill, '(a,i3,a,i5)') 'Error: Problem with fire number ', n_mvents+1, ', line number ', input_file_line_number
              stop
           end if
       end do mvent_loop
 
       if (n_mvents>mxmvents) then
          write (*,'(a,i3)') '***Error: Bad MVENT input. Too many mvent in input data file. limit is ', mxmvents 
-         write (99,'(a,i3)') '***Error: Bad MVENT input. Too many mvent in input data file. limit is ', mxmvents
+         write (iofill,'(a,i3)') '***Error: Bad MVENT input. Too many mvent in input data file. limit is ', mxmvents
          stop
       end if
 
@@ -1958,7 +1958,7 @@ module namelist_routines
          k = mvent_id
          if (i>nr.or.j>nr) then
             write (*,5191) i, j
-            write (99,5191) i, j
+            write (iofill,5191) i, j
             stop
          end if
       
@@ -2008,7 +2008,7 @@ module namelist_routines
                end do
                if (ventptr%opening_target==0) then
                   write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
-                  write (99,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
+                  write (iofill,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
                   stop
                end if  
                ventptr%opening_initial_fraction = initialfraction
@@ -2023,7 +2023,7 @@ module namelist_routines
             end if
          else
             write (*,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
-            write (99,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
+            write (iofill,*) 'Type has to be "TIME", "TEMP", or "FLUX".'
             stop
          end if
       
@@ -2095,14 +2095,14 @@ module namelist_routines
          read(LU,detec,err=34,iostat=ios)
          n_detectors =n_detectors + 1
 34       if (ios>0) then
-             write(99, '(a,i3,a,i5)') 'Error: Problem with fire number ', n_detectors+1, ', line number ', input_file_line_number
+             write(iofill, '(a,i3,a,i5)') 'Error: Problem with fire number ', n_detectors+1, ', line number ', input_file_line_number
              stop
           end if
         end do detec_loop
 
         if (n_detectors>mxdtect) then 
            write (*,'(a,i3)') '***Error: Bad DETEC input. Too many mvent in input data file. limit is ', mxdtect 
-           write (99,'(a,i3)') '***Error: Bad DETEC input. Too many mvent in input data file. limit is ', mxdtect
+           write (iofill,'(a,i3)') '***Error: Bad DETEC input. Too many mvent in input data file. limit is ', mxdtect
            stop
         end if
 
@@ -2131,7 +2131,7 @@ module namelist_routines
            dtectptr%room = iroom
            if (iroom<1.or.iroom>mxrooms) then
               write (*,5342) i2
-              write (99,5342) i2
+              write (iofill,5342) i2
               stop
            end if
         
@@ -2164,14 +2164,14 @@ module namelist_routines
            roomptr => roominfo(iroom)
            if (roomptr%name==' ') then !check consistency
               write (*,5344) i2
-              write (99,5344) i2
+              write (iofill,5344) i2
               stop
            end if
         
            if (dtectptr%center(1)>roomptr%cwidth.or. &
                dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
               write (*,5339) n_detectors,roomptr%name
-              write (99,5339) n_detectors,roomptr%name
+              write (iofill,5339) n_detectors,roomptr%name
               stop
            end if
         
@@ -2228,7 +2228,7 @@ module namelist_routines
          read(LU,VHEAT,err=34,iostat=ios)
          nvcons = nvcons + 1
 34       if (ios>0) then
-               write(99, '(a,i5)') 'Error: Problem with VHEAT number, line number', input_file_line_number
+               write(iofill, '(a,i5)') 'Error: Problem with VHEAT number, line number', input_file_line_number
                stop
             end if
       end do vheat_loop
@@ -2249,7 +2249,7 @@ module namelist_routines
          i2 = bottom
          if (i1<1.or.i2<1.or.i1>nr.or.i2>nr) then
             write (*,5345) i1, i2
-            write (99,5345) i1, i2
+            write (iofill,5345) i1, i2
             stop
          end if
       
@@ -2280,7 +2280,7 @@ module namelist_routines
       ! --------------------------- CONEZ -------------------------------------------
       subroutine read_conez(LU)
       
-      integer :: ios,iroom
+      integer :: ios,iroom,i
       integer :: LU
       
       type(room_type), pointer :: roomptr
@@ -2294,6 +2294,7 @@ module namelist_routines
       input_file_line_number = 0
 
       ! Scan entire file to look for 'CONEZ'
+      nmlcount=0
       onez_loop: do
          call checkread ('CONEZ',LU,ios)
          if (ios==0) conezflag=.true.
@@ -2301,8 +2302,9 @@ module namelist_routines
              exit onez_loop
          end if 
          read(LU,CONEZ,err=34,iostat=ios)
+         nmlcount= nmlcount + 1
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with fire number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with fire number, line number', input_file_line_number
              stop
          end if
       end do onez_loop
@@ -2312,18 +2314,21 @@ module namelist_routines
       rewind (LU) 
       input_file_line_number = 0
 
-      call checkread('CONEZ',LU,ios)
-      call set_onez_defaults
-      read(LU,CONEZ)
+      do i=1,nmlcount
+         call checkread('CONEZ',LU,ios)
+         call set_onez_defaults
+         read(LU,CONEZ)
       
-      iroom = compartment
-      if (iroom<1.or.iroom>nr) then
-         write (*, 5001) iroom ! why i1 (bug)
-         write (99, 5001) iroom
-         stop
-      end if
-      roomptr => roominfo(iroom)
-      roomptr%shaft = .true.
+         iroom = compartment
+         if (iroom<1.or.iroom>nr) then
+            write (*, 5001) iroom
+            write (iofill, 5001) iroom
+            stop
+         end if
+         roomptr => roominfo(iroom)
+         roomptr%shaft = .true.
+      
+      end do
 
       end if conez_flag
       
@@ -2343,7 +2348,7 @@ module namelist_routines
       ! --------------------------- CHALL -------------------------------------------
       subroutine read_chall(LU)
       
-      integer :: ios,iroom
+      integer :: ios,iroom,i
       integer :: LU
       
       type(room_type), pointer :: roomptr
@@ -2357,6 +2362,7 @@ module namelist_routines
       input_file_line_number = 0
 
       ! Scan entire file to look for 'CHALL'
+      nmlcount=0
       hall_loop: do
          call checkread ('CHALL',LU,ios)
          if (ios==0) challflag=.true.
@@ -2364,8 +2370,9 @@ module namelist_routines
              exit hall_loop
          end if 
          read(LU,CHALL,err=34,iostat=ios)
+         nmlcount=nmlcount+1
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with CHALL number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with CHALL number, line number', input_file_line_number
              stop
          end if
       end do hall_loop
@@ -2375,6 +2382,8 @@ module namelist_routines
       rewind (LU) 
       input_file_line_number = 0
 
+      countloop : do i=1,nmlcount
+          
       call checkread('CHALL',LU,ios)
       call set_hall_defaults
       read(LU,CHALL)
@@ -2382,12 +2391,14 @@ module namelist_routines
       iroom = compartment
       if (iroom<1.or.iroom>nr) then
          write (*, 5346) iroom
-         write (99, 5346) iroom
+         write (iofill, 5346) iroom
          stop
       end if
       roomptr => roominfo(iroom)
       roomptr%hall = .true.
 
+      end do countloop
+      
       end if chall_flag
       
 5346  format ('***Error: Bad HALL input. A referenced compartment does not exist ',i0)
@@ -2406,7 +2417,7 @@ module namelist_routines
       ! --------------------------- ROOMA -------------------------------------------
       subroutine read_rooma(LU)
       
-      integer :: ios,iroom,i,npts
+      integer :: ios,iroom,i,npts,k
       integer :: LU
       
       type(room_type), pointer :: roomptr
@@ -2421,6 +2432,7 @@ module namelist_routines
       input_file_line_number = 0
 
       ! Scan entire file to look for 'ROOMA'
+      nmlcount=0
       rooma_loop: do
          call checkread ('ROOMA',LU,ios)
          if (ios==0) roomaflag=.true.
@@ -2428,8 +2440,9 @@ module namelist_routines
              exit rooma_loop
          end if 
          read(LU,ROOMA,err=34,iostat=ios)
+         nmlcount=nmlcount+1
 34       if (ios>0) then
-               write(99, '(A,i5)') 'Error: Problem with ROOMA number, line number', input_file_line_number
+               write(iofill, '(A,i5)') 'Error: Problem with ROOMA number, line number', input_file_line_number
                stop
          end if
       end do rooma_loop
@@ -2438,6 +2451,8 @@ module namelist_routines
 
       rewind (LU) 
       input_file_line_number = 0
+      
+      countloop : do k=1,nmlcount
 
       call checkread('ROOMA',LU,ios)
       call set_rooma_defaults
@@ -2449,7 +2464,7 @@ module namelist_routines
       ! make sure the room number is valid
       if (iroom<1.or.iroom>nr) then
          write (*,5347) iroom
-         write (99,5347) iroom
+         write (iofill,5347) iroom
          stop
       end if
       
@@ -2457,7 +2472,7 @@ module namelist_routines
       npts = number
       if (npts>mxcross.or.npts<=0) then
          write (*,5347) npts
-         write (99,5347) npts
+         write (iofill,5347) npts
          stop
       end if
       if (roomptr%nvars/=0) npts = min(roomptr%nvars,npts)
@@ -2467,7 +2482,7 @@ module namelist_routines
       do  i = 1, npts
          if (area(i)<0.0_eb) then
             write (*,5348) area(i)
-            write (99,5348) area(i)
+            write (iofill,5348) area(i)
             stop
          end if
       end do
@@ -2476,6 +2491,8 @@ module namelist_routines
       do i = 1, npts
          roomptr%var_area(i) = area(i)
       end do
+      
+      end do countloop
 
       end if rooma_flag
       
@@ -2498,7 +2515,7 @@ module namelist_routines
       ! --------------------------- ROOMH -------------------------------------------
       subroutine read_roomh(LU)
 
-      integer :: ios,iroom,i,npts
+      integer :: ios,iroom,i,npts,k
       integer :: LU
       
       type(room_type), pointer :: roomptr
@@ -2512,6 +2529,7 @@ module namelist_routines
       input_file_line_number = 0
 
       ! Scan entire file to look for 'ROOMH'
+      nmlcount=0
       roomh_loop: do
          call checkread ('ROOMH',LU,ios)
          if (ios==0) roomhflag=.true.
@@ -2519,8 +2537,9 @@ module namelist_routines
              exit roomh_loop
          end if 
          read(LU,ROOMH,err=34,iostat=ios)
+         nmlcount=nmlcount+1
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with ROOMH number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with ROOMH number, line number', input_file_line_number
              stop
          end if
       end do roomh_loop
@@ -2529,6 +2548,8 @@ module namelist_routines
 
       rewind (LU) 
       input_file_line_number = 0
+      
+      countloop : do k=1,nmlcount
 
       call checkread('ROOMH',LU,ios)
       call set_roomh_defaults
@@ -2540,7 +2561,7 @@ module namelist_routines
       ! make sure the room number is valid
       if (iroom<1.or.iroom>nr) then
          write (*,5349) iroom
-         write (99,5349) iroom
+         write (iofill,5349) iroom
          stop
       end if
       
@@ -2548,7 +2569,7 @@ module namelist_routines
       npts = number
       if (npts>mxcross.or.npts<=0) then
          write (*,5350) npts
-         write (99,5350) npts
+         write (iofill,5350) npts
          stop
       end if
       if (roomptr%nvars/=0) npts = min(roomptr%nvars,npts)
@@ -2558,7 +2579,7 @@ module namelist_routines
       do  i = 1, npts
          if (height(i)<0.0_eb) then
             write (*,5348) height(i)
-            write (99,5348) height(i)
+            write (iofill,5348) height(i)
             stop
          end if
       end do
@@ -2567,6 +2588,8 @@ module namelist_routines
       do i = 1, npts
          roomptr%var_height(i) = height(i)
       end do
+      
+      end do countloop
 
       end if roomh_flag
 
@@ -2592,7 +2615,7 @@ module namelist_routines
       ! --------------------------- HHEAT -------------------------------------------
       subroutine read_hheat(LU)
       
-      integer :: ios,nto,ifrom,ito,i
+      integer :: ios,nto,ifrom,ito,i,k
       integer :: LU
       real(eb) :: frac
       
@@ -2606,10 +2629,9 @@ module namelist_routines
 
       rewind(LU) 
       input_file_line_number = 0
-      write(99, '(/, "input_file_line_number = ", i3)') &
-                  input_file_line_number
 
       ! Scan entire file to look for 'HHEAT'
+      nmlcount=0
       hheat_loop: do
          call checkread ('HHEAT', LU, ios)
          if (ios==0) hheatflag=.true.
@@ -2617,8 +2639,9 @@ module namelist_routines
              exit hheat_loop
          end if 
          read(LU,HHEAT,err=34,iostat=ios)
+         nmlcount=nmlcount+1
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with HHEAT number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with HHEAT number, line number', input_file_line_number
              stop
          end if
       end do hheat_loop
@@ -2627,6 +2650,8 @@ module namelist_routines
 
       rewind (LU) 
       input_file_line_number = 0
+      
+      countloop : do k=1,nmlcount
 
       call checkread('HHEAT',LU,ios)
       call set_hheat_defaults
@@ -2640,20 +2665,22 @@ module namelist_routines
       roomptr%iheat = 2
       
       do i = 1, nto
-         ito = npos_comp(i) ! if all = 2, will pass to same ito
+         ito = npos_comp(i) ! bug: if all = 2, will pass to same ito
          frac = npos_frac(i)
          if (ito<1.or.ito==ifrom.or.ito>nr) then
             write (*, 5356) ifrom,ito
-            write (99, 5356) ifrom,ito
+            write (iofill, 5356) ifrom,ito
             stop
          end if
          if (frac<0.0_eb.or.frac>1.0_eb) then
             write (*, 5357) ifrom,ito,frac
-            write (99, 5357) ifrom,ito,frac
+            write (iofill, 5357) ifrom,ito,frac
             stop
          end if
          roomptr%heat_frac(ito) = frac
       end do
+      
+      end do countloop
 
       end if hheat_flag
 
@@ -2700,7 +2727,7 @@ module namelist_routines
          end if 
          read(LU,DTCHE,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with DTCHE number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with DTCHE number, line number', input_file_line_number
              stop
          end if
       end do dtche_loop
@@ -2718,7 +2745,7 @@ module namelist_routines
       stpmin_cnt_max = abs(count)
       ! a negative turns off the check
       if (count<=0) stpminflag = .false.
-
+      
       end if dtche_flag
 
 
@@ -2759,7 +2786,7 @@ module namelist_routines
          end if 
          read(LU,FURNC,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with FURNC number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with FURNC number, line number', input_file_line_number
              stop
          end if
       end do furn_loop
@@ -2817,7 +2844,7 @@ module namelist_routines
          end if 
          read(LU,ADIAB,err=34,iostat=ios)
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with ADIAB number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with ADIAB number, line number', input_file_line_number
              stop
          end if
       end do adiab_loop
@@ -2881,7 +2908,7 @@ module namelist_routines
          read(LU,CSLCF,err=34,iostat=ios)
          nvisualinfo=nvisualinfo+1
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with CSLCF number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with CSLCF number, line number', input_file_line_number
              stop
          end if
       end do slcf_loop
@@ -2905,7 +2932,7 @@ module namelist_routines
            sliceptr%vtype = 2
         else
            write (*, 5403) nvisualinfo
-           write (99, 5403) nvisualinfo
+           write (iofill, 5403) nvisualinfo
            stop
         end if
        
@@ -2914,10 +2941,10 @@ module namelist_routines
            ! get position (required) and compartment (optional) first so we can check to make sure
            ! desired position is within the compartment(s)
            sliceptr%position = position
-           sliceptr%roomnum  = comp(1)  !it is buggy here, only taking 1 value
+           sliceptr%roomnum  = comp(1)  !it is buggy here, only taking one value
            if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
               write (*, 5403) nvisualinfo
-              write (99, 5403) nvisualinfo
+              write (iofill, 5403) nvisualinfo
               stop
            end if
            if (plane =='X') then
@@ -2926,7 +2953,7 @@ module namelist_routines
                  roomptr => roominfo(sliceptr%roomnum)
                  if (sliceptr%position>roomptr%cwidth.or.sliceptr%position<0.0_eb) then
                     write (*, 5403) nvisualinfo
-                    write (99, 5403) nvisualinfo
+                    write (iofill, 5403) nvisualinfo
                     stop
                  end if
               end if
@@ -2936,7 +2963,7 @@ module namelist_routines
                  roomptr => roominfo(sliceptr%roomnum)
                  if (sliceptr%position>roomptr%cdepth.or.sliceptr%position<0.0_eb) then
                     write (*, 5403) nvisualinfo
-                    write (99, 5403) nvisualinfo
+                    write (iofill, 5403) nvisualinfo
                     stop
                  end if
               end if
@@ -2946,13 +2973,13 @@ module namelist_routines
                  roomptr => roominfo(sliceptr%roomnum)
                  if (sliceptr%position>roomptr%cheight.or.sliceptr%position<0.0_eb) then
                     write (*, 5403) nvisualinfo
-                    write (99, 5403) nvisualinfo
+                    write (iofill, 5403) nvisualinfo
                     stop
                  end if
               end if
            else
               write (*, 5403) nvisualinfo
-              write (99, 5403) nvisualinfo
+              write (iofill, 5403) nvisualinfo
               stop
            end if
 
@@ -2965,7 +2992,7 @@ module namelist_routines
            end if
            if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
               write (*, 5403) nvisualinfo
-              write (99, 5403) nvisualinfo
+              write (iofill, 5403) nvisualinfo
               stop
            end if
         end if
@@ -3020,7 +3047,7 @@ module namelist_routines
          read(LU,CISOF,err=34,iostat=ios)
          nvisualinfo=nvisualinfo+1
 34       if (ios>0) then
-             write(99, '(A,i5)') 'Error: Problem with CISOF number, line number', input_file_line_number
+             write(iofill, '(A,i5)') 'Error: Problem with CISOF number, line number', input_file_line_number
              stop
          end if
       end do isof_loop
@@ -3044,7 +3071,7 @@ module namelist_routines
 
          if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
             write (*, 5404) nvisualinfo
-            write (99, 5404) nvisualinfo
+            write (iofill, 5404) nvisualinfo
             stop
          end if
 
@@ -3067,195 +3094,5 @@ module namelist_routines
 
       end subroutine read_cisof
       
-
-      ! --------------------------- Testing printout ----------------------------------
-      subroutine testing(ncomp)
-      
-      integer :: i,ncomp
-      character(20) :: myfmt
-      
-      type(room_type), pointer :: roomptr!,roomptr2
-      type(thermal_type), pointer :: thrmpptr
-      type(target_type), pointer :: targptr
-      type(fire_type), pointer :: fireptr
-      type(vent_type), pointer :: ventptr
-!      type(detector_type), pointer :: dtectptr
-          
-      
-      write(98, '(/, "  stpmaflag = ", L3, &
-                  /, "  stpmax = ", f10.4)') &
-                  stpmaflag,stpmax
-      
-      do i=1,n_thrmp
-         thrmpptr => thermalinfo(i)
-         write(98, '(/, "  matrlflag = ", L3, &
-                     /, "  thrmpptr%name = ", A, &
-                     /, "  thrmpptr%nslab = ", i3, &
-                     /, "  thrmpptr%k(1) = ", f10.4, &
-                     /, "  thrmpptr%c(1) = ", f10.4, &
-                     /, "  thrmpptr%rho(1) = ", f10.4, &
-                     /, "  thrmpptr%thickness(1) = ", f10.4, &
-                     /, "  thrmpptr%eps = ", f10.4)') &
-                     matrlflag,thrmpptr%name,thrmpptr%nslab,thrmpptr%k(1),thrmpptr%c(1), &
-                     thrmpptr%rho(1),thrmpptr%thickness(1),thrmpptr%eps
-      end do
-      
-      do i=1,ncomp
-         roomptr => roominfo(i)
-         
-         write(98, '(/, "  compaflag = ", L3, &
-                     /, "  nr = ", i3, &
-                     /, "  roomptr%name = ", A12, &
-                     /, "  roomptr%cwidth = ", f10.4, &
-                     /, "  roomptr%cdepth = ", f10.4, &
-                     /, "  roomptr%cheight = ", f10.4, &
-                     /, "  roomptr%x0 = ", f10.4, &
-                     /, "  roomptr%y0 = ", f10.4, &
-                     /, "  roomptr%z0 = ", f10.4, &
-                     /, "  roomptr%ibar = ", i3, &
-                     /, "  roomptr%jbar = ", i3, &
-                     /, "  roomptr%kbar = ", i3, &
-                     /, "  roomptr%surface_on(1-4) = ", 4L4, &
-                     /, "  roomptr%matl(1-4) = ", 4A12)') &
-                     compaflag,nr,roomptr%name,roomptr%cwidth,roomptr%cdepth,roomptr%cheight, &
-                     roomptr%x0,roomptr%y0,roomptr%z0,roomptr%ibar,roomptr%jbar, &
-                     roomptr%kbar,roomptr%surface_on(1:4),roomptr%matl(1:4)
-      end do
-      
-      do i=1,n_targets
-         targptr => targetinfo(i)
-         
-         write(98, '(/, "  targeflag = ", L3, &
-                     /, "  targptr%room = ", i3, &
-                     /, "  targptr%center(1) = ", f10.4, &
-                     /, "  targptr%center(2) = ", f10.4, &
-                     /, "  targptr%center(3) = ", f10.4, &
-                     /, "  targptr%normal(1) = ", f10.4, &
-                     /, "  targptr%normal(2) = ", f10.4, &
-                     /, "  targptr%normal(3) = ", f10.4, &
-                     /, "  targptr%depth_loc = ", f10.4, &
-                     /, "  targptr%name = ", A, &
-                     /, "  targptr%material = ", A, &
-                     /, "  targptr%equaton_type = ", i3, &
-                     /, "  targptr%wall = ", i3)') &
-                     targeflag,targptr%room,targptr%center(1),targptr%center(2), &
-                     targptr%center(3), targptr%normal(1),targptr%normal(2), &
-                     targptr%normal(3),targptr%depth_loc,targptr%name, &
-                     targptr%material,targptr%equaton_type,targptr%wall
-      end do
-      
-      do i=1,n_fires
-         fireptr => fireinfo(i)
-         
-         write(98, '(/, "  cfireflag = ", L3, &
-                     /, "  fireptr%name = ", A12, &
-                     /, "  fireptr%room = ", i3, &
-                     /, "  fireptr%chemistry_type = ", i3, &
-                     /, "  fireptr%x_position = ", f10.4, &
-                     /, "  fireptr%y_position = ", f10.4, &
-                     /, "  fireptr%z_position = ", f10.4, &
-                     /, "  fireptr%modified_plume = ", i3, &
-                     /, "  fireptr%ignition_type = ", i3, &
-                     /, "  fireptr%ignition_target = ", i3, &
-                     /, "  fireptr%ignited = ", L3, &
-                     /, "  fireptr%reported = ", L3, &
-                     /, "  fireptr%ignition_criterion = ", e10.4)') &
-                     cfireflag,fireptr%name,fireptr%room,fireptr%chemistry_type,fireptr%x_position, &
-                     fireptr%y_position,fireptr%z_position,fireptr%modified_plume,fireptr%ignition_type, &
-                     fireptr%ignition_target,fireptr%ignited,fireptr%reported, &
-                     fireptr%ignition_criterion
-      end do
-      
-      do i=1,n_chemi
-         fireptr => fireinfo(i)
-
-         write(98, '(/, "  cfireflag = ", L3, &
-                     /, "  chemiflag = ", L3, &
-                     /, "  fireptr%n_c = ", f10.4, &
-                     /, "  fireptr%n_h = ", f10.4, &
-                     /, "  fireptr%n_o = ", f10.4, &
-                     /, "  fireptr%n_n = ", f10.4, &
-                     /, "  fireptr%n_cl = ", f10.4, &
-                     /, "  fireptr%molar_mass = ", f10.4, &
-                     /, "  fireptr%chirad = ", f10.4, &
-                     /, "  fireptr%npoints = ", i3)') &
-                     cfireflag,chemiflag,fireptr%n_c,fireptr%n_h,fireptr%n_o,fireptr%n_n, &
-                     fireptr%n_cl,fireptr%molar_mass,fireptr%chirad,fireptr%npoints
-      
-         write(myfmt, '("("i3,"(f10.4))")')  fireptr%npoints  
-
-         write(98, '(/, "  fireptr%time = ")')
-         write(98, fmt=myfmt) fireptr%time(1:fireptr%npoints)
-         write(98, '(/, "  fireptr%qdot = ")')
-         write(98, fmt=myfmt) fireptr%qdot(1:fireptr%npoints)
-         write(98, '(/, "  fireptr%mdot = ")')
-         write(98, fmt=myfmt) fireptr%mdot(1:fireptr%npoints)
-         write(98, '(/, "  fireptr%y_soot = ")')
-         write(98, fmt=myfmt) fireptr%y_soot(1:fireptr%npoints)
-         write(98, '(/, "  fireptr%y_co = ")')
-         write(98, fmt=myfmt) fireptr%y_co(1:fireptr%npoints)
-         write(98, '(/, "  fireptr%y_trace = ")')
-         write(98, fmt=myfmt) fireptr%y_trace(1:fireptr%npoints)
-         write(98, '(/, "  fireptr%area = ")')
-         write(98, fmt=myfmt) fireptr%area(1:fireptr%npoints)
-         write(98, '(/, "  fireptr%height = ")')
-         write(98, fmt=myfmt) fireptr%height(1:fireptr%npoints)
-      end do
-      
-      write(98, '(/, "  ctimeflag = ", L3, &
-                  /, "  time_end = ", i8, &
-                  /, "  print_out_interval = ", i3, &
-                  /, "  smv_out_interval = ", i3, &
-                  /, "  ss_out_interval = ", i3)') &
-                  ctimeflag,time_end,print_out_interval,smv_out_interval,ss_out_interval
-
-      write(98, '(/, "  eambiflag = ", L3, &
-                  /, "  exterior_temperature = ", f10.4, &
-                  /, "  exterior_abs_pressure = ", f15.4)') &
-                  eambiflag,exterior_temperature,exterior_abs_pressure
-
-      write(98, '(/, "  tambiflag = ", L3, &
-                  /, "  interior_temperature = ", f10.4, &
-                  /, "  interior_abs_pressure = ", f15.4, &
-                  /, "  tgignt = ", f10.4, &
-                  /, "  relative_humidity = ", f10.4)') &
-                  tambiflag,interior_temperature,interior_abs_pressure,tgignt,relative_humidity
-
-      write(98, '(/, "  limo2flag = ", L3, &
-                  /, "  lower_o2_limit = ", f10.4)') &
-                  limo2flag,lower_o2_limit
-      
-      do i=1,n_hvents
-         ventptr => hventinfo(i)
-
-         write(98, '(/, "  ventptr%room1 = ", i3, &
-                     /, "  ventptr%room2 = ", i3, &
-                     /, "  ventptr%counter = ", i3, &
-                     /, "  ventptr%width = ", f10.4, &
-                     /, "  ventptr%soffit = ", f10.4, &
-                     /, "  ventptr%sill = ", f10.4, &
-                     /, "  ventptr%offset(1) = ", f10.4, &
-                     /, "  ventptr%offset(2) = ", f10.4, &
-                     /, "  ventptr%face = ", i3, &
-                     /, "  ventptr%opening_type = ", i3, &
-                     /, "  ventptr%opening_initial_time = ", f10.4, &
-                     /, "  ventptr%opening_initial_fraction = ", f10.4, &
-                     /, "  ventptr%opening_final_time = ", f10.4, &
-                     /, "  ventptr%opening_final_fraction = ", f10.4, &
-                     /, "  ventptr%opening_criterion = ", f10.4, &
-                     /, "  ventptr%opening_target = ", i3, &
-                     /, "  ventptr%absolute_soffit = ", f10.4, &
-                     /, "  ventptr%absolute_sill = ", f10.4)') &
-                     ventptr%room1,ventptr%room2,ventptr%counter,ventptr%width, &
-                     ventptr%soffit,ventptr%sill,ventptr%offset(1),ventptr%offset(2), &
-                     ventptr%face,ventptr%opening_type,ventptr%opening_initial_time, &
-                     ventptr%opening_initial_fraction,ventptr%opening_final_time, &
-                     ventptr%opening_final_fraction, ventptr%opening_criterion, &
-                     ventptr%opening_target,ventptr%absolute_soffit,ventptr%absolute_sill
-      end do
-      
-      end subroutine testing
-      
-            
 
 end module namelist_routines

@@ -13,7 +13,7 @@ module namelist_data
     integer :: c1,c2,c3,c4,c5
     
     ! For namelist input and conversion routines
-    integer :: n_chemi,hheatnto,nfurncount
+    integer :: n_chemi,hheatnto,nfurncount,nmlcount
     
     real(eb), dimension(mxrooms) :: hheat_comp
     

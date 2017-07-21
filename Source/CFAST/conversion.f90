@@ -32,6 +32,13 @@ module conversion_routines
 
     if (versnflag) call versncon(aversion,ivers)
     if (stpmaflag) call stpmacon
+    if (ctimeflag) call ctimecon
+    if (tambiflag) call tambicon
+    if (eambiflag) call eambicon
+    if (limo2flag) call limo2con
+    if (furncflag) call furnccon
+    if (dtcheflag) call dtchecon
+    if (adiabflag) call adiabcon
     if (matrlflag) then
         do i=1,n_thrmp
             call matrlcon(i)
@@ -52,23 +59,9 @@ module conversion_routines
             call cfirecon(i)
         end do
     end if
-    if (ctimeflag) call ctimecon
-    if (tambiflag) call tambicon
-    if (eambiflag) call eambicon
-    if (limo2flag) call limo2con
     if (hventflag) then
         do i=1,n_hvents
             call hventcon(i)
-        end do
-    end if
-    if (deadrflag) then
-        do i=1,nr-1
-            call deadrcon(i)
-        end do
-    end if
-    if (crampflag) then
-        do i=1,nramps
-            call crampcon(i)
         end do
     end if
     if (vventflag) then
@@ -81,10 +74,20 @@ module conversion_routines
             call mventcon(i)
         end do
     end if
+    if (crampflag) then
+        do i=1,nramps
+            call crampcon(i)
+        end do
+    end if
     if (event_hflag .or. event_vflag .or. event_mflag .or. event_fflag) call eventcon
     if (detecflag) then 
         do i=1,n_detectors
             call deteccon(i)
+        end do
+    end if
+    if (hheatflag) then 
+        do i=1,nr-1
+            call hheatcon(i)
         end do
     end if
     if (vheatflag) then 
@@ -102,6 +105,11 @@ module conversion_routines
             call challcon(i)
         end do
     end if
+    if (deadrflag) then
+        do i=1,nr-1
+            call deadrcon(i)
+        end do
+    end if
     if (roomaflag) then 
         do i=1,nr-1
             call roomacon(i)
@@ -112,14 +120,6 @@ module conversion_routines
             call roomhcon(i)
         end do
     end if
-    if (furncflag) call furnccon
-    if (dtcheflag) call dtchecon
-    if (hheatflag) then 
-        do i=1,nr-1
-            call hheatcon(i)
-        end do
-    end if
-    if (adiabflag) call adiabcon
     if (cslcfflag)then 
         do i=1,nvisualinfo
             call cslcfcon(i)
@@ -235,7 +235,6 @@ module conversion_routines
     c2=len_trim(roomptr%matl(1))
     c3=len_trim(roomptr%matl(2))
     c4=len_trim(roomptr%matl(3))
-!    c5=len_trim(roomptr%matl(4))
    
     call compaprint(i)
 
@@ -729,6 +728,7 @@ module conversion_routines
     end subroutine fan_print
     
     end subroutine eventcon
+    
     
     ! --------------------------- crampcon --------------------------------------
     subroutine crampcon(i)
@@ -1346,6 +1346,4 @@ module conversion_routines
 
     
 
-    
-            
 end module conversion_routines

@@ -44,7 +44,7 @@ module cfast_types
         real(eb) :: x_position                          ! initial X position of the base of fire (user input)
         real(eb) :: y_position                          ! initial Y position of the base of fire (user input)
         real(eb) :: z_position                          ! initial Z position of the base of fire (user input)
-        
+
         integer :: npoints                              ! actual number of time points for fire (user input)
         real(eb), dimension(mxpts) :: time              ! time points for fire inputs (user input)
         real(eb), dimension(mxpts) :: mdot              ! pyrolysis rate as a function of time (user input)
@@ -117,13 +117,13 @@ module cfast_types
         logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
                                                         ! connects to the outside (perhaps through other intermediate rooms)
         logical :: is_hvac                              ! true if there is an HVAC vent connection in the room
-        
+
         ! cross-sectional area variables
         integer :: nvars                                ! number of data points for variable cross-secitonal area
         real(eb), dimension(mxcross) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
         real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
         real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
-        
+
         ! compartment surfaces
         real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface
         real(eb), dimension(nwal) :: total_thick_w      ! total thickness of wall
@@ -141,7 +141,7 @@ module cfast_types
                                                         !   2 = only user specified vents
         integer, dimension(mxrooms) :: hheat_connections! list of connected compartments for horizontal heat transfer
         real(eb), dimension(mxrooms) :: heat_frac       ! fractions of wall surface of this room connected to other rooms in list
-        
+
 
         ! These are calculated results for the current time step
         real(eb) :: relp                                ! pressure at floor level relative to exterior
@@ -153,23 +153,23 @@ module cfast_types
         real(eb), dimension(2) :: mass                  ! total mass of each layer
         real(eb), dimension(2) :: abs_length            ! characteristic length for absorbtivity in each layer
         real(eb), dimension(2) :: absorb                ! layer absorbtivity
-        
+
         integer :: sprinkler_activated                  ! sprinkler number that fist activated in compartment
-        
+
         real(eb), dimension(2,ns) :: species_mass       ! mass of species in each layer
         real(eb), dimension(2,ns) :: species_fraction   ! mass fraction of species in each layer
         real(eb), dimension(2,ns) :: species_rho        ! density of species in each layer
         real(eb), dimension(2,ns) :: species_output     ! species converted to output units
-        
+
         real(eb), dimension(4) :: wall_area4            ! area of 4 compartment surfaces (ceiling, upper wall, lower wall, floor)
         real(eb), dimension(10) :: wall_area10          ! area of 10 wall surfaces (ceiling, 4 upper walls, 4 lower walls, floor)
         real(eb), dimension(nnodes,nwal) :: t_profile   ! temperature profile within compartment surfaces
         real(eb), dimension(2,nwal) :: t_surfaces       ! compartment surface temperatures (interior, exterior)
         real(eb), dimension(nwal) :: rad_qout           ! flux radiated from compartment surfaces
         real(eb) :: qdot_doorjet                        ! HRR of door jet fires at the current time
-        
+
     end type room_type
-    
+
     ! target data structure
     type target_type
         character(128) :: name          ! user selected name for the target
@@ -207,7 +207,7 @@ module cfast_types
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
 
     end type target_type
-    
+
     ! thermal properties structure
     type thermal_type
         character(mxthrmplen) :: name                   ! user selected name for the material
@@ -229,7 +229,7 @@ module cfast_types
         real(eb) :: absolute_sill                       ! absolute height of the sill
         real(eb) :: absolute_soffit                     ! absolute height of the soffit
         real(eb), dimension(2) :: offset                ! vent offset from wall origin (1 = from room, 2 = to room)
-        
+
         real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)    ! (1>2 or 2>1, u or l, in or out)
 
         ! These define a ceiling/floor vent
@@ -280,10 +280,10 @@ module cfast_types
         real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction
 
         ! These are calculated results for the current time step
-    
+
         real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
         real(eb) :: mflow(2,2)                          ! vent mass flow (room1/top,room2/bottom, u,l)
-        
+
         integer :: n_slabs
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type

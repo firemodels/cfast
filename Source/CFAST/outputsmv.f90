@@ -63,6 +63,7 @@
     character(128) :: dir
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
     integer(4) :: length, splitpathqq
+    integer :: vtype
 
     integer ibar, jbar, kbar
     integer :: j
@@ -169,8 +170,8 @@
     if (n_hvents/=0) then
         do i = 1, n_hvents
             write (13,"(a)") "HVENTPOS"
-            call get_vent_info ("H", i, iroom1, iroom2, xyz, vred, vgreen, vblue)
-            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
+            call get_vent_info ("H", i, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+            write (13,"(2(1x,i3),1x,6(e11.4,1x))") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
@@ -178,8 +179,8 @@
     if (n_vvents/=0) then
         do i = 1, n_vvents
             write (13,"(a)") "VVENTPOS"
-            call get_vent_info ("V",i , iroom1, iroom2, xyz, vred, vgreen, vblue)
-            write (13,"(2(1x,i3),1x,6(e11.4,1x),e11.4)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
+            call get_vent_info ("V",i , iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+            write (13,"(2(1x,i3),1x,6(e11.4,1x),1x,i3)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6), vtype
         end do
     end if
 
@@ -187,8 +188,8 @@
     if (n_mvents/=0) then
         do i = 1, n_mvents
             write (13,'(a)') "MVENTPOS"
-            call get_vent_info ("M", i, iroom1, iroom2, xyz, vred, vgreen, vblue)
-            write (13,"(1x,i3,1x,6(e11.4,1x),e11.4)") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
+            call get_vent_info ("M", i, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+            write (13,"(1x,i3,1x,6(e11.4,1x))") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
@@ -228,20 +229,22 @@
     end subroutine output_smokeview
 
     ! ---------------------------------- get_vent_info -------------------------------------------------
-        
-    subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vred, vgreen, vblue)
-    
+
+    subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
+
     !       This is a routine to get the shape data for mechanical flow vent external connections
 
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: ivent
     integer, intent(out) :: iroom1, iroom2
     real(eb), intent(out) :: xyz(6),vred,vgreen,vblue
+    integer, intent(out) :: vtype
 
     real(eb) :: vheight, varea, voffset
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
 
+    vtype = 2
     if (venttype=='H') then
         ventptr=>hventinfo(ivent)
         if (ventptr%room1<=nrm1) then
@@ -297,6 +300,7 @@
         xyz(2) = ventptr%xoffset + sqrt(varea)/2
         xyz(3) = ventptr%yoffset - sqrt(varea)/2
         xyz(4) = ventptr%yoffset + sqrt(varea)/2
+        vtype = ventptr%shape
     else if (venttype=='M') then
         ventptr => mventinfo(ivent)
         if (ventptr%room1<=nrm1) then

@@ -810,7 +810,7 @@ module fire_routines
     real(eb), intent(out) :: tg, vg(4)
 
     real(eb) :: qdot, chirad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
-    real(eb) :: xdistance, ydistance, distance, hall_width
+    real(eb) :: xdistance, ydistance, distance, hall_width, xf, xfx, xfy
     integer :: i
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -828,7 +828,16 @@ module fire_routines
     do i = 1,n_fires
         fireptr => fireinfo(i)
         if (fireptr%room==iroom) then
-            qdot = fireptr%qdot_actual
+            ! determine which entrainment factor to use by fire position.  if we're on the wall or in the corner, entrainment is modified.
+            ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger;
+            !                            in a corner, 1/4 the entrainment of a fire 4 times larger
+
+            xfx = min(fireptr%x_position, roomptr%cwidth-fireptr%x_position)
+            xfy = min(fireptr%y_position, roomptr%cdepth-fireptr%y_position)
+            xf = 1.0_eb
+            if (xfx<=mx_hsep.or.xfy<=mx_hsep) xf = 2.0_eb
+            if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
+            qdot = xf*fireptr%qdot_actual
             chirad = fireptr%chirad
             area = fireptr%firearea
             tu = roomptr%temp(u)

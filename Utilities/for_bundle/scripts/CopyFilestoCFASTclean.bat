@@ -9,13 +9,16 @@ set cfast_root=%CD%
 
 @echo *** Create CFAST executables
 
-call %cfast_root%\Build\scripts\setup_intel_compilers.bat intel64
+@echo ***     Create CEdit
+cd %cfast_root%\Build\Cedit
+call make_cedit.bat bot
 
+@echo ***     Create CFAST
+call %cfast_root%\Build\scripts\setup_intel_compilers.bat intel64
 cd %cfast_root%\Build\CFAST\intel_win_64
 call make_cfast.bat bot release
 copy cfast7_win_64.exe %cfast_root%\Utilities\for_bundle\Bin\cfast.exe /Y
-cd %cfast_root%\Build\Cedit
-call make_cedit.bat bot
+
 cd %cfast_root%\Utilities\for_bundle\scripts
 
 copy %cfast_root%\..\Extras\Bin\*.* %cfast_root%\Utilities\for_bundle\Bin\ /Y

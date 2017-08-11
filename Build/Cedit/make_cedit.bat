@@ -16,12 +16,11 @@ Title Building CEdit for 64 bit Windows
 call %KWDIR%\expand_file.bat %SDIR% %SDIR%About.vb
 
 @echo Compile code
-%MSBUILD% CEdit.vbproj /p:Configuration=Release
-
-@echo Copy executable to bin directory for bundle
-copy obj\Release\CEdit.exe ..\..\Utilities\for_bundle\Bin /Y
+cd ..\..
+%MSBUILD% CFAST.sln /target:CEdit /p:Configuration=Release
 
 @echo Remove repository info from CEdit source
+cd Source\CEdit
 call %KWDIR%\contract_file.bat %SDIR%\About.vb
 
 if x%arg1% == xbot goto skip2

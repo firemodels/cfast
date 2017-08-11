@@ -1381,7 +1381,7 @@ Public Class CeditMain
         Me.EnvSmokeviewInterval.Name = "EnvSmokeviewInterval"
         Me.EnvSmokeviewInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSmokeviewInterval.TabIndex = 105
-        Me.EnvSmokeviewInterval.Text = "10 s"
+        Me.EnvSmokeviewInterval.Text = "15 s"
         '
         'Label4
         '
@@ -1398,7 +1398,7 @@ Public Class CeditMain
         Me.EnvSpreadOutInterval.Name = "EnvSpreadOutInterval"
         Me.EnvSpreadOutInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSpreadOutInterval.TabIndex = 104
-        Me.EnvSpreadOutInterval.Text = "10 s"
+        Me.EnvSpreadOutInterval.Text = "15 s"
         '
         'Label2
         '
@@ -1415,7 +1415,7 @@ Public Class CeditMain
         Me.EnvTextOutInterval.Name = "EnvTextOutInterval"
         Me.EnvTextOutInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvTextOutInterval.TabIndex = 103
-        Me.EnvTextOutInterval.Text = "50 s"
+        Me.EnvTextOutInterval.Text = "60 s"
         '
         'Label1
         '
@@ -4277,7 +4277,7 @@ Public Class CeditMain
         Me.GroupBox2.Size = New System.Drawing.Size(441, 474)
         Me.GroupBox2.TabIndex = 7
         Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "Vertical Connections"
+        Me.GroupBox2.Text = "Ceiling/Floor Connections"
         '
         'VHeatSummary
         '
@@ -4381,7 +4381,7 @@ Public Class CeditMain
         Me.GroupBox1.Size = New System.Drawing.Size(441, 474)
         Me.GroupBox1.TabIndex = 6
         Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "Horizontal Connections"
+        Me.GroupBox1.Text = "Wall Connections"
         '
         'HHeatSummary
         '

@@ -32,5 +32,5 @@ if NOT exist %cfast_root%\Utilities\for_bundle\SMV6\textures (
 copy %cfast_root%\..\Extras\SMV6\textures\*.* %cfast_root%\Utilities\for_bundle\SMV6\textures\ /Y
 
 @echo *** copy install utilities
-copy %cfast_root%\..\..\bin\set_path.exe %cfast_root%\Utilities\for_bundle\bin\ /Y
-copy %cfast_root%\..\..\bin\Shortcut.exe %cfast_root%\Utilities\for_bundle\bin\ /Y
+copy %cfast_root%\..\Extras\SMV6\set_path.exe %cfast_root%\Utilities\for_bundle\bin\ /Y
+copy %cfast_root%\..\Extras\Bin\Shortcut.exe %cfast_root%\Utilities\for_bundle\bin\ /Y

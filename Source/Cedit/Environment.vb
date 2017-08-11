@@ -32,9 +32,9 @@ Public Class Environment
     Public Sub New()
         aTitle = "CFAST Simulation"
         aSimulationTime = 900
-        aOutputInterval = 50
-        aSpreadsheetInterval = 10
-        aSmokeviewInterval = 10
+        aOutputInterval = 60
+        aSpreadsheetInterval = 15
+        aSmokeviewInterval = 15
         aIntAmbTemperature = 293.15
         aIntAmbPressure = 101325.0
         aIntAmbElevation = 0.0

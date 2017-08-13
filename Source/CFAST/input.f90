@@ -1235,9 +1235,9 @@
                 ventptr%diffuser_area(1) = lrarray(6)
 
                 if (lcarray(7)=='V') then
-                    ventptr%orientation(1) = 1
+                    ventptr%orientation(2) = 1
                 else
-                    ventptr%orientation(1) = 2
+                    ventptr%orientation(2) = 2
                 end if
                 ventptr%height(2) = lrarray(8)
                 ventptr%diffuser_area(2) = lrarray(9)

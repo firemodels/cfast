@@ -985,6 +985,7 @@ where $m_{\rm s}'''$ is the mass of soot per unit volume and $K_m$ is the specif
     D_u = \frac{1}{d}log_{10}\brackets{\frac{I_0}{I}}, O_u = 100 \brackets{1-\brackets{\frac{I}{I_0}}^{{\frac{1}{d}}}} \implies O_u = 100 \frac{10^{D_u}-1}{10^{D_u}}
 \ee
 which is used to determine smoke detector activation, below.
+
 \section{Smoke Detection}
 
 CFAST estimates the activation of smoke detectors based on either the smoke concentration or temperature at the detector location.
@@ -1005,6 +1006,22 @@ Fire suppression by water is predicted using a simple empirical model developed 
 where $u_{\rm w}$ is the water spray density, expressed in units\footnote{Note the CFAST graphical interface might use other units, but the program does convert the user-specified value into mm/s.} of mm/s.  The product species mass production rates are reduced by the same amount as the heat release rate.
 
 There are assumptions and limitations in this approach. Its main deficiency is that it assumes that sufficient water is applied to the fire to cause a decrease in the rate of heat release. This suppression model cannot handle the case when the fire overwhelms the sprinkler.  The suppression model as implemented does not include the effect of a second sprinkler. Detection of all sprinklers are noted but their activation does not make the fire go out any faster. Further, multiple fires in a room imply multiple ceiling jets. It is not clear how the two ceiling jets should interact. When there is more than one fire, the detection algorithm uses the fire that results in the highest ceiling jet temperature in order to calculate the sprinkler link temperature.
+
+\section{Tenability} \label{sec:Tenability}
+
+The International Organization for Standardization (ISO) standard 13571 \cite{ISO:13571} provides methods to estimate the time to untenable conditions that may result from a fire.  This includes effects from asphyxiant gases, radiant heat, and convected heat. CFAST includes tenability estimates as part of its target calculations so that tenability is determined for user-selected locations within one or more compartments. All of these are expressed as a fractional effective dose (FED) which is an integrated area under a time-concentration curve for the chosen quantity. The time at which the FED exceeds a chosen threshold value represents the time to compromised tenability \cite{ISO:13571}
+
+For asphyxiant gases, this is a function of the CO and HCN concentration,
+\be
+    \chi_{\FED} = \sum\limits_{t_1}^{t_2} \frac{\varphi_{\CO} \cdot \nu_{\COTWO}}{35 000} \, \Delta t + \sum\limits_{t_1}^{t_2} \frac{{\brackets{\varphi_{\HCN} \cdot \nu_{\COTWO}}}^{2.36}}{1.2 \times 10^6} \, \Delta t
+\ee
+where $\varphi_{\rm CO}$ is the average concentration of CO over the time increment $\Delta t$ in $\SI{}{\micro\liter/\liter}$, $\varphi_{\rm HCN}$ is the average concentration of CO over the time increment $\Delta t$ in $\SI{}{\micro\liter/\liter}$, and $\nu_{\rm CO_2} = e^{\varphi_{\rm CO_2} \, / \, 5}$ is used to account for an increased rate of asphyxiant gases due to hyperventilation where $\varphi_{\rm CO_2}$ is the average molar concentration of $\rm CO_2$ over the time increment $\Delta t$.
+
+For radiant and convected heat, the FED is given by
+\be
+    \chi_{\FED} = \sum\limits_{t_1}^{t_2} \frac{1}{{4.2 \, \dq''}^{-1.9}} \, \Delta t + \frac{1}{4.1 \times 10^8 \, T^{-3.61}} \, \Delta t
+\ee
+where $\dq''$ ia the radiant heat flux in kW/m$^2$ and $T$ is the temperature in \degc. For target locations where the radiant flux is less than 2.5 kW/m$^2$, the radiant heat term is taken to be zero consistent with ISO 13571.
 
 \bibliography{../Bibliography/CFAST_refs}
 

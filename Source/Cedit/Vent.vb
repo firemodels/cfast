@@ -5,11 +5,11 @@ Public Class Vent
     Friend Const TypeMVent As Integer = 2
     Friend Const TypeVHeat As Integer = 3
     Friend Const TypeHHeat As Integer = 4
-    Friend Const MaximumHVents As Integer = 25 * Compartment.MaximumCompartments
-    Friend Const MaximumVVents As Integer = 2 * Compartment.MaximumCompartments
-    Friend Const MaximumMVents As Integer = 2 * Compartment.MaximumCompartments
-    Friend Const MaximumVHeats As Integer = Compartment.MaximumCompartments
-    Friend Const MaximumHHeats As Integer = 2 * Compartment.MaximumCompartments
+    Friend Const MaximumHVents As Integer = 10 * Compartment.MaximumCompartments
+    Friend Const MaximumVVents As Integer = 10 * Compartment.MaximumCompartments
+    Friend Const MaximumMVents As Integer = 10 * Compartment.MaximumCompartments
+    Friend Const MaximumVHeats As Integer = 10 * Compartment.MaximumCompartments
+    Friend Const MaximumHHeats As Integer = 10 * Compartment.MaximumCompartments
     Friend Const OpenbyTime As Integer = 0
     Friend Const OpenbyTemperature As Integer = 1
     Friend Const OpenbyFlux As Integer = 2

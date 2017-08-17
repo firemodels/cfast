@@ -921,7 +921,7 @@
                     write (iofill,5070) i, j
                     stop
                 end if
-                if (k>mxccv) then
+                if (k>mxperrm) then
                     write (*,5080) i, j, k
                     write (iofill,5080) i, j, k
                     stop

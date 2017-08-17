@@ -30,20 +30,20 @@ module cparams
     integer, parameter :: trigger_by_flux = 3
 
     ! ventilation parameters
-    integer, parameter :: mxccv = 25                ! maximum number of vent connections between compartment pairs
-    integer, parameter :: mxhvents = mxccv*mxrooms  ! maximum number of horizontal flow vents
+    integer, parameter :: mxperrm = 10              ! maximum number of connections per compartment (for vents, targets, etc)
+    integer, parameter :: mxhvents = mxperrm*mxrooms! maximum number of horizontal flow vents
     integer, parameter :: mxfslab = 10              ! maximum number of slabs in a horizontal flow calculation
 
-    integer, parameter :: mxvvents=mxccv*mxrooms    ! maximum number of vertical flow vents
+    integer, parameter :: mxvvents=mxperrm*mxrooms  ! maximum number of vertical flow vents
 
-    integer, parameter :: mxmvents=2*mxrooms         ! maximum number of mechanical ventilation systems
-    integer, parameter :: mxfan = mxrooms           ! maximum number of fans in a mechanical ventilation system
+    integer, parameter :: mxmvents=mxperrm*mxrooms  ! maximum number of mechanical ventilation systems
+    integer, parameter :: mxfan = mxmvents/2        ! maximum number of fans in a mechanical ventilation system
     integer, parameter :: mxcoeff = 1               ! maximum order of fan curve (as a polynomial). at the moment,
                                                     !   the gui limits to constant flow
     integer, parameter :: mxcon = 3                 ! maximum number of connections to a node in a mechanical ventilation system
-    integer, parameter :: mxduct = mxrooms+2        ! maximum number of ducts in a mechanical ventilation system
+    integer, parameter :: mxduct = mxfan+2          ! maximum number of ducts in a mechanical ventilation system
     integer, parameter :: mxnode = 2*mxduct         ! maximum number of nodes in a mechanical ventilation system
-    integer, parameter :: mxext = 2*mxrooms         ! maximum number of external connections in a mechanical ventilation system
+    integer, parameter :: mxext = mxperrm*mxrooms   ! maximum number of external connections in a mechanical ventilation system
     integer, parameter :: mxbranch = mxfan+mxduct   ! maximum number of branches in a mechanical ventilation system
 
     integer, parameter :: mxramps = 8*mxfires+mxhvents+mxvvents+mxmvents ! maximum number of possible time-based ramps
@@ -70,7 +70,7 @@ module cparams
     integer, parameter :: exterior = 2              ! compartment exterior
 
     ! target parameters
-    integer, parameter :: mxtarg = 10*mxrooms               ! maximum number of targets
+    integer, parameter :: mxtarg = mxperrm*(mxrooms-1)      ! maximum number of targets
     integer, parameter :: nnodes_trg = nnodes-1             ! number of interior nodes in a target for conduction calculation
     integer, parameter :: idx_tempf_trg = 1                 ! position of front temperature of target (front surface temperature)
     integer, parameter :: idx_tempb_trg = idx_tempf_trg+nnodes_trg-1 ! position of back temperature of target
@@ -78,7 +78,7 @@ module cparams
     integer, parameter :: mxr_trg = idx_tempb_trg           ! upper bound of real target array
     integer, parameter :: mxi_trg = 7                       ! upper bound of integer target array
 
-    integer, parameter :: mxdtect=10*mxrooms                ! maximum number of detectors
+    integer, parameter :: mxdtect=mxperrm*(mxrooms-1)       ! maximum number of detectors
 
     integer, parameter :: check_state = 0                   ! index to check state of detectors and targets
     integer, parameter :: set_state = 1                     ! index to calculate full state of detectors and targets

@@ -41,5 +41,8 @@ module namelist_data
                hflag=.false.,vflag=.false.,mflag=.false.
     
     logical, dimension(50,50,mxhvents) :: fflag=.false.
+    
+    ! For diagnosis
+    logical :: diagnflag=.false.,diradflag=.false.
 
 end module namelist_data

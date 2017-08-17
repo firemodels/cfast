@@ -78,6 +78,7 @@ module namelist_routines
       call read_adiab(iofili)
       call read_cslcf(iofili)
       call read_cisof(iofili)
+      call read_diagn(iofili)
       
       close (iofili)
 
@@ -3093,6 +3094,78 @@ module namelist_routines
       end subroutine set_isof_defaults
 
       end subroutine read_cisof
+      
+      
+      ! --------------------------- DIAGN -------------------------------------------
+      subroutine read_diagn(LU)
+      
+      integer :: ios
+      integer :: LU
+      
+      type(room_type), pointer :: roomptr
+
+      character(64) :: htmode
+      real(eb) :: T1,T2,T3,T4,TU
+      integer :: compa
+      namelist/DIAGN/htmode,compa,T1,T2,T3,T4,TU
+
+      ios = 1
+
+      rewind(LU) 
+      input_file_line_number = 0
+
+      ! Scan entire file to look for 'DTCHE'
+      diagn_loop: do
+         call checkread ('DIAGN',LU,ios)
+         if (ios==0) diagnflag=.true.
+         if (ios==1) then
+             exit diagn_loop
+         end if 
+         read(LU,DIAGN,err=34,iostat=ios)
+34       if (ios>0) then
+             write(iofill, '(A,i5)') 'Error: Problem with DIAGN number, line number', input_file_line_number
+             stop
+         end if
+      end do diagn_loop
+
+      diagn_flag: if (diagnflag) then
+
+      rewind (LU) 
+      input_file_line_number = 0
+
+      call checkread('DIAGN',LU,ios)
+      call set_diagn_defaults
+      read(LU,DIAGN)
+      
+      ! 1,2,3,4 denotes ceiling, upper wall, lower wall and floor, respectively.
+      if (htmode == 'RAD') diradflag = .true.
+      
+      roomptr => roominfo(compa)
+      roomptr%temp(1) = TU
+      roomptr%t_surfaces(1,1) = T1
+      roomptr%t_surfaces(1,2) = T2
+      roomptr%t_surfaces(1,3) = T3
+      roomptr%t_surfaces(1,4) = T4
+            
+      end if diagn_flag
+
+
+
+      contains
+      
+      subroutine set_diagn_defaults
+      
+      htmode                   = 'RAD'
+      compa                    = 0
+      T1                       = 273.15_eb
+      T2                       = 273.15_eb
+      T3                       = 273.15_eb
+      T4                       = 273.15_eb
+      TU                       = 273.15_eb
+      
+      end subroutine set_diagn_defaults
+
+      end subroutine read_diagn
       
 
 end module namelist_routines

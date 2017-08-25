@@ -370,6 +370,8 @@ $RUNCFAST -d ../Verification/Mass_Balance species_mass_2.in
 $RUNCFAST -d ../Verification/Mass_Balance species_mass_3.in
 $RUNCFAST -d ../Verification/Mass_Balance species_mass_4.in
 
+$RUNCFAST -d ../Verification/Species gas_tenability.in
+
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib.in
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window.in
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window_elevation.in

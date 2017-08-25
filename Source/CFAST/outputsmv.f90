@@ -3,7 +3,7 @@
     use precision_parameters
 
     use fire_routines, only: get_gas_temp_velocity
-    use spreadsheet_header_routines, only: ssheaderssmv
+    use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: funit
 
     use cenviro
@@ -223,7 +223,7 @@
     write (13,"(1x,i6,1x,f11.0)") nscount, stime
 
     ! zone model devices
-    call ssheaderssmv(.false.)
+    call ssheaders_smv(.false.)
 
     return
     end subroutine output_smokeview

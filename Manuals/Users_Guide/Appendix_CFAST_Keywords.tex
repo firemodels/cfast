@@ -24,6 +24,7 @@ Group Name  & Namelist Group Description& Reference Section & Parameter Table  \
 \end{center}
 \end{table}
 
+Examples of each of the inputs are included in the sections that follow.  All examples are taken from the sample input file {\ct Users\_Guide\_Example.in} included with the CFAST distribution.
 
 \graybox{Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
 
@@ -52,12 +53,6 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 {\ct TITLE}           & Character   & Section \ref{info:HEAD}                 &           &                 \\ \hline
 \end{longtable}
 
-\noindent Example:
-\begin{lstlisting}
-&HEAD
-	VERSION = 7300, TITLE = 'Example input file in NAMELIST format' /
-\end{lstlisting}
-
 
 
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -78,11 +73,6 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 {\ct SPREADSHEET}       & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
 \end{longtable}
 
-\noindent Examples:
-\begin{lstlisting}
-&TIME
-	SIMULATION = 1800 /
-\end{lstlisting}
 
 
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -102,11 +92,6 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 {\ct TEMPERATURES(1:2)}     & Real   & Section \ref{info:INIT}                 & $^\circ$C &    20, 20          \\ \hline
 \end{longtable}
 
-\noindent Example:
-\begin{lstlisting}
-&INIT
-	PRESSURE = 101325, RELATIVE_HUMIDITY = 50, TEMPERATURE = 20., 20. /
-\end{lstlisting}
 
 
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -126,10 +111,15 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 {\ct LOWER\_OXYGEN\_LIMIT} & Real        & Section \ref{info:MISC}                 &           &   0.15          \\ \hline
 \end{longtable}
 
-\noindent Examples:
+\noindent Example:
 \begin{lstlisting}
-&MISC
-	MAX_TIME_STEP = 1.0, LOWER_OXYGEN_LIMIT = 0.10 /
+&HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
+!!
+!!Scenario Configuration
+!!
+&TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
+&INIT  PRESSURE = 101325., RELATIVE_HUMIDITY = 50., TEMPERATURE = 20., 20. /
+&MISC  LOWER_OXYGEN_LIMIT = 0.10 /
 \end{lstlisting}
 
 
@@ -161,9 +151,12 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 
 \noindent Example:
 \begin{lstlisting}
+!!
+!!Material Properties
+!!
 &MATL
-	ID='CONCRETE', CONDUCTIVITY=1.75, SPECIFIC_HEAT=1., DENSITY=2200.,
-	EMISSIVITY=0.94, THICKNESS=0.15 /
+ID = 'CONCRETE', CONDUCTIVITY = 1.75, SPECIFIC_HEAT = 1., DENSITY = 2200.,
+EMISSIVITY = 0.94, THICKNESS = 0.15 / 
 \end{lstlisting}
 
 
@@ -202,13 +195,13 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 
 \noindent Example:
 \begin{lstlisting}
-&COMP
-	ID = 'Comp 1',
-	WIDTH = 5., DEPTH = 5., HEIGHT = 3., ORIGIN = 0., 0., 0.,
-	ROOM_AREA_RAMP='ATTIC',
-	CEILING_MATL_ID = 'CONCRETE', WALL_MATL_ID = 'CONCRETE',
-	FLOOR_MATL_ID = 'CONCRETE',
-	GRID = 50, 50, 50 /
+!!
+!!Compartments
+!!
+&COMP  ID = 'Comp 1',
+WIDTH = 5., DEPTH = 5., HEIGHT = 3., ORIGIN(1:3) = 0., 0., 0.,
+CEILING_MATL_ID = 'CONCRETE', WALL_MATL_ID = 'CONCRETE', FLOOR_MATL_ID = 'CONCRETE',
+GRID(1:3) = 50, 50, 50 /
 \end{lstlisting}
 
 
@@ -268,27 +261,28 @@ All vent inputs can optionally include {\ct CRITERION}, {\ct DEVC\_ID}, {\ct OPE
 \clearpage
 \noindent Examples:
 \begin{lstlisting}
-Wall vent
-&VENT
-	ID = 'Door Outside', TYPE = 'WALL', COMP_IDS = 'Comp 1', 'OUTSIDE',
-	BOTTOM = 0., TOP = 2., WIDTH = 1.,
-	FACE = 'FRONT',
-	OFFSETS = 2.5, 0. /  Vent is fully opened at time = 0s.
+&VENT  TYPE = 'WALL', ID = 'HVENT 1', 
+COMP_IDS(1:2) = 'Comp 1', 'OUTSIDE',
+WIDTH = 1., TOP = 2., BOTTOM = 0., OFFSETS(1:2) = 2., 0.,
+FACE = 'FRONT',
+CRITERION = 'TIME' /
 
-Floor vent
-&VENT
-	ID = 'Floor Hole', TYPE = 'FLOOR', COMP_IDS = 'Comp 3', 'Comp 2',
-	AREA = 1., SHAPE = 'ROUND',
-	DEVC_ID = 'Targ 1', CRITERION= 'TEMPERATURE', SETPOINT = 300.,
-	OFFSETS = 2.5, 2.5 /
+&VENT  TYPE = 'CEILING', ID = 'VVENT 1',  
+COMP_IDS(1:2) = 'Comp 3', 'Comp 2',
+AREA = 1., SHAPE = 'ROUND',
+CRITERION= 'TIME', OPENING_RAMP_ID = 'RAMP_VVENT_1'/
 
-Mechanical vent
-&VENT
-	ID = 'HVAC', TYPE = 'MECHANICAL', COMP_IDS = 'Comp 2', 'OUTSIDE',
-	AREAS = 0.25, 0.25, HEIGHTS = 2.75, 2.75,
-	CRITERION = 'TIME', OPENING_RAMP_ID = 'Fire Exhaust',
-	FLOW = 0.02, CUTOFFS = 150., 200., FILTERING_RAMP_ID = 'Filter 1',
-	OFFSETS = 0.,4. /
+&RAMP  ID = 'RAMP_VVENT_1', TYPE = 'FRACTION',
+T = 0., 100., 500.,
+F = 0., 0.5, 1. /
+
+&VENT   TYPE = 'MECHANICAL', ID = 'MVENT_1',
+COMP_IDS(1:2) = 'OUTSIDE', 'Comp 1',
+AREAS(1:2) = 0.25, 0.25, HEIGHTS(1:2) = 2.75, 2.75,
+CRITERION = 'TIME',
+FLOW = 0.02, CUTOFFS(1:2) = 200., 300.,
+OFFSETS = 0., 4. /
+
 \end{lstlisting}
 
 
@@ -338,14 +332,24 @@ Mechanical vent
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
+!!
+!!Fires
+!!
+!!Cushion
 &FIRE
-	ID = 'Cushion', COMP_ID = 'Comp 1',
-	LOCATION = '2.5, 2.5, 0., AREA = 0.05, HEIGHT = 0,
-	CARBON = 9, HYDROGEN = 6, OXYGEN = 2, NITROGEN = 2,
-	HEAT_OF_COMBUSTION = 50000, RADIATIVE_FRACTION = 0.33,
-	SOOT_YIELD = 0.227, CO_YIELD = 0.0846,
-	HRR_RAMP_ID = 'Cushion Fire',
-	IGNITION_CRITERION = 'TIME', SETPOINT = 60 /
+ID = 'Cushion', COMP_ID = 'Comp 1',
+LOCATION(1:3) = 2.5, 2.5, 0.,
+CARBON = 9, HYDROGEN = 6, OXYGEN = 2, NITROGEN = 2,
+IGNITION_CRITERION = 'TIME',
+HEAT_OF_COMBUSTION = 50000., RADIATIVE_FRACTION = 0.33,
+SOOT_YIELD = 0.227, CO_YIELD = 0.0845557,
+AREA = 0.1, HEIGHT = 0.,
+HRR_RAMP_ID = 'Cushion Fire' /
+
+&RAMP
+ID = 'Cushion Fire', TYPE = 'HEAT_RELEASE_RATE',
+T = 0., 60., 120., 180., 240., 300., 360., 420., 480., 540., 1800.
+HRR = 0., 100000., 150000., 200000., 150000., 125000., 100000., 90000., 80000., 75000., 75000.  /
 \end{lstlisting}
 
 
@@ -392,19 +396,20 @@ Input for {\ct SETPOINT} for smoke detectors is obscuration; for heat detectors 
 \vspace{\baselineskip}
 \noindent Examples:
 \begin{lstlisting}
-Defining a target
+!!
+!!Targets and detectors
+!!
 &DEVC
-	ID = 'Targ 1', COMP_ID = 'Comp 1',
-	DEVC_TYPE = 'PLATE',
-	LOCATION = 2.5, 2.5, 0., NORMAL = 0., 0., 1.,
-	MATERIAL_ID = 'CONCRETE', INTERNAL_TEMPERATURE_LOCATION = 0.5 /
+ID = 'Targ 1', COMP_ID = 'Comp 1',
+DEVC_TYPE = 'PLATE',
+LOCATION(1:3) = 2.2, 1.88, 2.34., NORMAL(1:3) = 0., 0., 1.,
+MATERIAL_ID = 'CONCRETE', INTERNAL_TEMPERATURE_LOCATION = 0.5 /
 
-Defining a sprinkler
 &DEVC
-	ID = 'Sprinkler 1', COMP_ID = 'Comp 1',
-	DEVC_TYPE = 'SPRINKLER',
-	LOCATION = 3., 3., 2.97,
-	SETPOINT = 73.88892, RTI = 100., SPRAY_DENSITY = 7.E-5 /
+ID = 'Sprinkler 1', COMP_ID = 'Comp 1',
+DEVC_TYPE = 'SPRINKLER',
+LOCATION(1:3) = 3., 3., 2.97,
+SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 \end{lstlisting}
 
 
@@ -435,16 +440,10 @@ Defining a sprinkler
 \vspace{\baselineskip}
 \noindent Examples:
 \begin{lstlisting}
-Ceiling surface connection
-&CONN
-	TYPE = 'CEILING', COMP_ID = 'Comp 1',
-	COMP_IDS = 'Comp 2' /
-
-Wall surface connection
-&CONN
-	TYPE = 'WALL', COMP_ID = 'Comp 1',
-	COMP_IDS = 'Comp 2', 'Comp 3',
-	F = 0.5, 0.5 /
+!!
+!!Intercompartment heat transfer
+!!
+&CONN  TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
 \end{lstlisting}
 
 
@@ -501,9 +500,10 @@ Wall surface connection
 
 \noindent Example:
 \begin{lstlisting}
-&SLCF
-	COMP_ID = 'Comp 1',
-	DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
+!!
+!!Visualizations
+!!
+&SLCF  DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
 \end{lstlisting}
 
 
@@ -548,20 +548,6 @@ Compartment area in XY-plane is specified as  function of compartment height wit
 Heat release rate of a fire is specified as  function of time using {\ct T} abd {\ct HRR}. Refer to Section~\ref{info:FIRE2}.
 }
 
-\clearpage
-\begin{lstlisting}
-&RAMP
-	TYPE = 'AREA',
-	ID='ATTIC',
-	T = 3., 4., 5,
-	A = 5., 2.5, 0 /
-
-&RAMP
-	TYPE = 'HEAT_RELEASE_RATE',
-	ID='Cushion Fire',
-	T  =0.,60.,120.,180.,240.,300.,360.,
-	HRR=0.,100000.,150000.,200000.,150000.,125000.,100000. /
-\end{lstlisting}
 
 
 

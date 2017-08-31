@@ -20,10 +20,11 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast species_mass_3 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast species_mass_4 -V
 cd ..
 
-echo Running Tenability cases
+echo Running Species cases
 cd Species
 call ..\..\Validation\cleancfast.bat
-background -u 98 ..\..\Utilities\for_bundle\Bin\cfast gas_tenability_verification -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast gas_tenability -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast methane_flame_simple -V
 cd ..
 
 echo Running Thermal Equilibrium cases

@@ -371,6 +371,10 @@ module initialization_routines
     targetinfo(1:mxtarg)%equaton_type = pde
     targetinfo(1:mxtarg)%back = interior
     targetinfo(1:mxtarg)%material = 'DEFAULT'
+    targetinfo(1:mxtarg)%fed_gas = 0.0_eb
+    targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
+    targetinfo(1:mxtarg)%fed_heat = 0.0_eb
+    targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
 
     return
     end subroutine initialize_memory

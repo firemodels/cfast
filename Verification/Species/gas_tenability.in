@@ -1,0 +1,33 @@
+VERSN,7,CFAST Simulation
+!!
+!!Scenario Configuration
+!!
+TIMES,900,60,15,1
+EAMB,293.15,101325,0
+TAMB,293.15,101325,0,50
+!!
+!!Material Properties
+!!
+MATL,Steel,54,465,7850,0.0015,0.9,Steel
+!!
+!!Compartments
+!!
+COMPA,Comp 1,5,5,5,0,0,0,Steel,Steel,Steel,50,50,50
+ONEZ,1
+!!
+!!Fires
+!!
+!!CO
+FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,CO
+CHEMI,2,6,0,0,0,0.35,2E+07
+TIME,0,1,100,101
+HRR,0,10000,10000,0
+SOOT,0,0,0,0
+CO,0.1,0.1,0.1,0.1
+TRACE,0,0,0,0
+AREA,0.36,0.36,0.36,0.36
+HEIGH,0,0,0,0
+!!
+!!Targets and detectors
+!!
+TARGET,1,2.5,2.5,4.9,0,0,1,Steel,EXPLICIT,PDE,0.5,Targ 1

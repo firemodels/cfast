@@ -199,6 +199,10 @@ module cfast_types
         integer :: layer                ! layer (within the compartment) where the target is located (calculated)
         real(eb) :: tgas                ! gas temperature near target
         real(eb) :: tinternal           ! target temperature at depth_loc
+        real(eb) :: fed_gas             ! accumulated gas tenability at target location
+        real(eb) :: dfed_gas            ! current accumulated increment (since last ss output) of gas tenability at target location
+        real(eb) :: fed_heat            ! accumulated heat tenability at target location
+        real(eb) :: dfed_heat           ! current accumulated increment (since last ss output) of heat tenability at target location
         real(eb) :: tfront              ! target front surface temperature (= ...%temperature(1) for plate,
                                         !                                   = ...%temperature(nnodes_trg) for cylinder)
         real(eb) :: tback               ! target back surface temperature  (= ...%temperature(nnodes_trg) for plate,

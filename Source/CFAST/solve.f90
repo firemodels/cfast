@@ -517,6 +517,10 @@ module solve_routines
             i_time_step = tspread
             tspread =tspread + dspread
             call output_status (t, dt)
+            
+            ! reset incremental FED data
+            targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
+            targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
         end if
 
         ! diagnostic output

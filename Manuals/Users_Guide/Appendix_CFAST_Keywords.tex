@@ -1,5 +1,7 @@
 \chapter{CFAST Text-based Input File}
 
+CFAST is a Fortran program that reads a text-based input file that uses Fortran {\em namelist} records. The graphical user interface, CEdit, writes this file, but you can manually write this file as well. This appendix lists the names of the parameters, which are organized into groups that roughly coincide with the tabs in the graphical user interface. The namelist group names are listed in Table~\ref{tbl:namelistgroups}.
+
 \begin{table}[ht]
 \begin{center}
 \caption{CFAST Input File Keywords}
@@ -24,20 +26,21 @@ Group Name  & Namelist Group Description& Reference Section & Parameter Table  \
 \end{center}
 \end{table}
 
-Examples of each of the inputs are included in the sections that follow.  All examples are taken from the sample input file {\ct Users\_Guide\_Example.in} included with the CFAST distribution.
+Examples of each of the inputs are included in the sections that follow.  All examples are taken from the sample input file {\ct Users\_Guide\_Example.cfast} included with the CFAST distribution. Note that the namelist formatted input file has the suffix {\ct .cfast} as opposed to the older {\ct .in} files. Following are some general rules about the CFAST input file:
+\begin{itemize}
+\item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
+\item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying {\ct ADIABATIC} to be {\ct TRUE} triggers the code to treat all compartment surfaces to be perfectly insulated.
+\item Multple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the {\ct TEMPERATURES} input in the {\ct INIT} keyword requires that two temperatures are required (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users for trouble-shooting.
+\item Default values to inputs are assigned to some of the keywords to facilitate the set up of an input file. For instance, Table \ref{tbl:MISC} shows that the {\ct LOWER\_OXYGEN\_LIMIT} has a default value of {\ct 0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} for general use and it implies that the burning rate will be limited/reduced when the oxygen level is reaches 15\%. Users should review the applicability of any default values for their simulation.
+\end{itemize}
 
-\graybox{Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
-
-Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying {\ct ADIABATIC} to be {\ct TRUE} triggers the code to treat all compartment surfaces to be perfectly insulated.
-
-Multple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the {\ct TEMPERATURES} input in the {\ct INIT} keyword requires that two temperatures are required (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users for trouble-shooting.
-
-Default values to inputs are assigned to some of the keywords to facilitate the set up of an input file. For instance, Table \ref{tbl:MISC} shows that the {\ct LOWER\_OXYGEN\_LIMIT} has a default value of {\ct 0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} for general use and it implies that the burning rate will be limited/reduced when the oxygen level is reaches 15\%. Users should review the applicability of any default values for their simulation.}
 
 \clearpage
+
 \section{Simulation Environment, Namelist Groups \texorpdfstring{{\tt HEAD}}{HEAD}, \texorpdfstring{{\tt TIME}}{TIME}, \texorpdfstring{{\tt INIT}}{INIT}, \texorpdfstring{{\tt MISC}}{MISC}}
 
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\renewcommand{\tabcolsep}{.1in}
+\begin{longtable}{|l|l|l|l|l|}
 \caption[Header Parameters ({\ct HEAD} namelist group)]{For more information see Section~\ref{info:HEAD}.}
 \label{tbl:HEAD} \\
 \hline
@@ -49,6 +52,7 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 \multicolumn{5}{|c|}{{\ct HEAD} (Header Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct VERSION}         & Integer     & Section \ref{info:HEAD}                 &           &                 \\ \hline
 {\ct TITLE}           & Character   & Section \ref{info:HEAD}                 &           &                 \\ \hline
 \end{longtable}
@@ -67,6 +71,7 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 \multicolumn{5}{|c|}{{\ct TIME} (Time Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct PRINT}             & Integer   & Section \ref{info:TIME}                 & s         & 60              \\ \hline
 {\ct SIMULATION}        & Integer   & Section \ref{info:TIME}                 & s         &                 \\ \hline
 {\ct SMOKEVIEW}         & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
@@ -87,6 +92,7 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 \multicolumn{5}{|c|}{{\ct INIT} (Initial Conditions)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct PRESSURE}        & Real   & Section \ref{info:INIT}                 & Pa        & 101325         \\ \hline
 {\ct RELATIVE\_HUMIDITY}   & Real   & Section \ref{info:INIT}                 & \%        &   50          \\ \hline
 {\ct TEMPERATURES(1:2)}     & Real   & Section \ref{info:INIT}                 & $^\circ$C &    20, 20          \\ \hline
@@ -106,26 +112,23 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 \multicolumn{5}{|c|}{{\ct MISC} (Miscellaneous Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct ADIABATIC}            & Logical     & Section \ref{info:MISC}                 &           & {\ct .FALSE.}  \\ \hline
 {\ct MAX\_TIME\_STEP}      & Real        & Section \ref{info:MISC}                 & s         &   2            \\ \hline
 {\ct LOWER\_OXYGEN\_LIMIT} & Real        & Section \ref{info:MISC}                 &           &   0.15          \\ \hline
 \end{longtable}
 
-\noindent Example:
+\noindent Examples:
 \begin{lstlisting}
 &HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
-!!
-!!Scenario Configuration
-!!
 &TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
 &INIT  PRESSURE = 101325., RELATIVE_HUMIDITY = 50., TEMPERATURE = 20., 20. /
 &MISC  LOWER_OXYGEN_LIMIT = 0.10 /
 \end{lstlisting}
 
 
-
-
 \clearpage
+
 \section{Thermal Properties, Namelist Group \texorpdfstring{{\tt MATL}}{MATL}}
 
 
@@ -141,31 +144,28 @@ Default values to inputs are assigned to some of the keywords to facilitate the 
 \multicolumn{5}{|c|}{{\ct MATL} (Material Properties)} \\
 \hline \hline
 \endhead
-{\ct CONDUCTIVITY}        & Real 	 & Section \ref{info:MATL}                 & kW/(m-K)  &                 \\ \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct CONDUCTIVITY}        & Real 	 & Section \ref{info:MATL}                 & kW/(m$\cdot$K)  &                 \\ \hline
 {\ct DENSITY}             & Real 	 & Section \ref{info:MATL}                 & kg/m$^3$  &                 \\ \hline
 {\ct EMISSIVITY}          & Real	 & Section \ref{info:MATL}                 &           &   0.9          \\ \hline
-{\ct SPECIFIC\_HEAT}      & Real	 & Section \ref{info:MATL}                 & kJ/(kg-K) &                 \\ \hline
+{\ct SPECIFIC\_HEAT}      & Real	 & Section \ref{info:MATL}                 & kJ/(kg$\cdot$K) &                 \\ \hline
 {\ct ID}                  & Character    & Section \ref{info:MATL}                 &           &                 \\ \hline
 {\ct THICKNESS}           & Real  	 & Section \ref{info:MATL}                 & m         &                 \\ \hline
 \end{longtable}
 
 \noindent Example:
 \begin{lstlisting}
-!!
-!!Material Properties
-!!
-&MATL
-ID = 'CONCRETE', CONDUCTIVITY = 1.75, SPECIFIC_HEAT = 1., DENSITY = 2200.,
-EMISSIVITY = 0.94, THICKNESS = 0.15 / 
+&MATL ID = 'CONCRETE', CONDUCTIVITY = 1.75, SPECIFIC_HEAT = 1., 
+      DENSITY = 2200., EMISSIVITY = 0.94, THICKNESS = 0.15 /
 \end{lstlisting}
-
-
 
 
 \clearpage
 \section{Compartments, Namelist Group \texorpdfstring{{\tt COMP}}{COMP}}
 
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\begin{minipage}{6.5in}
+%\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\begin{longtable}{|l|l|l|l|l@{\extracolsep{\fill}}|}
 \caption[Compartment parameters ({\ct COMP} namelist group)]{For more information see Section~\ref{info:COMP}.}
 \label{tbl:COMP} \\
 \hline
@@ -177,6 +177,7 @@ EMISSIVITY = 0.94, THICKNESS = 0.15 /
 \multicolumn{5}{|c|}{{\ct COMP} (Compartment Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct CEILING\_MATL\_ID}     & Character & Section \ref{info:COMP2}                 &           &                 \\ \hline
 {\ct DEPTH}                 & Real      & Section \ref{info:COMP}                 & m         &  		\\ \hline
 {\ct FLOOR\_MATL\_ID}       & Character & Section \ref{info:COMP2}                 &           &                 \\ \hline
@@ -185,23 +186,22 @@ EMISSIVITY = 0.94, THICKNESS = 0.15 /
 {\ct HEIGHT}                & Real      & Section \ref{info:COMP}     & m         &                 \\ \hline
 {\ct ID}                    & Character & Section \ref{info:COMP}     &           &                 \\ \hline
 {\ct ORIGIN(1:3)}           & Real Array     & Section \ref{info:COMP}                 & m         &                 \\ \hline
-{\ct ROOM\_AREA\_RAMP}      & Character & Section \ref{info:COMP4}                 &           &                 \\ \hline
+{\ct ROOM\_AREA\_RAMP}
+\footnote{For compartments where the cross-sectional area varies with height, the namelist group, {\ct RAMP} can be used. Keywords associated with this feature can be found in Section~\ref{tbl:RAMP}.}  
+                            & Character & Section \ref{info:COMP4}                 &           &                 \\ \hline
 {\ct SHAFT}                 & Logical   & Section \ref{info:COMP3}                 &           & {\ct .FALSE.}   \\ \hline
 {\ct WALL\_MATL\_ID}        & Character & Section \ref{info:COMP2}                 &           &                 \\ \hline
 {\ct WIDTH}                 & Real      & Section \ref{info:COMP}     & m         &                 \\ \hline
 \end{longtable}
+\end{minipage}
 
-\graybox{For compartments where the cross-sectional area varies with height, the namelist group, {\ct RAMP} can be used. Keywords associated with this feature can be found in Section~\ref{tbl:RAMP}}
-
+\vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-!!
-!!Compartments
-!!
-&COMP  ID = 'Comp 1',
-WIDTH = 5., DEPTH = 5., HEIGHT = 3., ORIGIN(1:3) = 0., 0., 0.,
-CEILING_MATL_ID = 'CONCRETE', WALL_MATL_ID = 'CONCRETE', FLOOR_MATL_ID = 'CONCRETE',
-GRID(1:3) = 50, 50, 50 /
+&COMP ID = 'Comp 1', WIDTH = 5., DEPTH = 5., HEIGHT = 3., 
+      ORIGIN(1:3) = 0., 0., 0., CEILING_MATL_ID = 'CONCRETE', 
+      WALL_MATL_ID = 'CONCRETE', FLOOR_MATL_ID = 'CONCRETE',
+      GRID(1:3) = 50, 50, 50 /
 \end{lstlisting}
 
 
@@ -209,6 +209,8 @@ GRID(1:3) = 50, 50, 50 /
 
 \clearpage
 \section{Vents, Namelist Group \texorpdfstring{{\tt VENT}}{VENT}}
+
+\begin{minipage}{6.5in}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Vent Parameters ({\ct VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
 \label{tbl:VENT} \\
@@ -221,14 +223,16 @@ GRID(1:3) = 50, 50, 50 /
 \multicolumn{5}{|c|}{{\ct VENT} (Vent Parameters)} \\
 \hline \hline
 \endhead
-{\ct AREA}      	  & Real  	& Section \ref{info:VENT2}                 & m$^2$                       &                 \\ \hline
-{\ct AREAS(1:2)}      	  & Real Array 	& Section \ref{info:VENT3}                 & m$^2$                       &                 \\ \hline
-{\ct BOTTOM}       	  & Real  	& Section \ref{info:VENT}                 & m                           &                 \\ \hline
-{\ct COMP\_IDS(1:2)}     	  & Character Array   & Section \ref{info:VENT}                 &                             &                 \\ \hline
-{\ct CRITERION}           & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct AREA}\footnote{Appropriate for ceiling/floor vent}      	             & Real  	               & Section \ref{info:VENT2}     & m$^2$                    &                                 \\ \hline
+{\ct AREAS(1:2)}\footnote{Appropriate for mechanical vent}      	         & Real Array 	           & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
+{\ct BOTTOM}\footnote{Appropriate for wall vent}       	             & Real                    & Section \ref{info:VENT}      & m                        &                 \\ \hline
+{\ct COMP\_IDS(1:2)}     	     & Character Array         & Section \ref{info:VENT}                 &                             &                 \\ \hline
+{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}           
+                                 & Character               & Section \ref{info:VENT}                 &                             &                 \\ \hline
 {\ct CUTOFFS(1:2)}         & Real Array 	& Section \ref{info:VENT4}                 & Pa                          &     200, 300     \\ \hline
 {\ct DEVC\_ID}            & Character   & Section \ref{info:VENT}                 &                             &                 \\ \hline
-{\ct FACE}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
+{\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}.}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
 {\ct FILTERING\_RAMP\_ID}    	  & Character   & Section \ref{info:RAMP}                 &                             &                 \\ \hline
 {\ct FLOW}      	  & Real  	& Section \ref{info:VENT4}                 & m$^3$/s                     &                 \\ \hline
 {\ct HEIGHTS(1:2)}         & Real Array 	& Section \ref{info:VENT3}                 & m                           &                 \\ \hline
@@ -236,52 +240,32 @@ GRID(1:3) = 50, 50, 50 /
 {\ct OFFSETS(1:2)}         & Real Array 	& Section \ref{info:VENT}                 & m                           &      0, 0        \\ \hline
 {\ct OPENING\_RAMP\_ID}   & Character  	& Section \ref{info:RAMP}                 &                             &                 \\ \hline
 {\ct SETPOINT}            & Real  	& Section \ref{info:VENT}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
-{\ct SHAPE}     	  & Selection List   & Section \ref{info:VENT2}                 &                             &                 \\ \hline
-{\ct TOP}                 & Real  	& Section \ref{info:VENT}                 & m                           &                 \\ \hline
-{\ct TYPE}                & Selection List    & Section \ref{info:VENT6}                 &                             &                 \\ \hline
+{\ct SHAPE}\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}     	  & Selection List   & Section \ref{info:VENT2}                 &                             &                 \\ \hline
+{\ct TOP}\footnote{Appropriate for wall vent}                 & Real  	& Section \ref{info:VENT}                 & m                           &                 \\ \hline
+{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING}, {\ct FLOOR}, {\ct MECHANICAL}, or {\ct WALL}. }                & Selection List    & Section \ref{info:VENT6}                 &                             &                 \\ \hline
 {\ct WIDTH}               & Real  	& Section \ref{info:VENT}                 & m                           &                 \\ \hline
 \end{longtable}
+\end{minipage}
 
-\graybox{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}. \\
-
-Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}. \\
-
-Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}. \\
-
-Input for {\ct TYPE} must be {\ct CEILING}, {\ct FLOOR}, {\ct MECHANICAL}, or {\ct WALL}.  \\
-
-A ceiling/floor vent takes {\ct AREA}, {\ct COMP\_IDS}, {\ct ID}, and {\ct OFFSETS}  as keyword parameters. \\
-
-A mechanical vent  takes {\ct AREAS}, {\ct COMP\_IDS}, {\ct CUTOFFS}, {\ct FILTERING\_RAMP\_ID}, {\ct FLOW}, {\ct HEIGHTS}, {\ct ID}, {\ct OFFSETS} as keyword parameters.
-
-A wall vent takes {\ct BOTTOM}, {\ct COMP\_IDS}, {\ct ID}, {\ct OFFSETS}, {\ct TOP}, and {\ct WIDTH} as keyword parameters. \\
-
-All vent inputs can optionally include {\ct CRITERION}, {\ct DEVC\_ID}, {\ct OPENING\_RAMP\_ID}, and {\ct SETPOINT} to specify opening and closing of the vent as a function of time.}
 
 \clearpage
 \noindent Examples:
 \begin{lstlisting}
-&VENT  TYPE = 'WALL', ID = 'HVENT 1', 
-COMP_IDS(1:2) = 'Comp 1', 'OUTSIDE',
-WIDTH = 1., TOP = 2., BOTTOM = 0., OFFSETS(1:2) = 2., 0.,
-FACE = 'FRONT',
-CRITERION = 'TIME' /
+&VENT TYPE = 'WALL', ID = 'HVENT 1', COMP_IDS(1:2) = 'Comp 1', 'OUTSIDE',
+      WIDTH = 1., TOP = 2., BOTTOM = 0., OFFSETS(1:2) = 2., 0., 
+      FACE = 'FRONT', CRITERION = 'TIME' /
 
-&VENT  TYPE = 'CEILING', ID = 'VVENT 1',  
-COMP_IDS(1:2) = 'Comp 3', 'Comp 2',
-AREA = 1., SHAPE = 'ROUND',
-CRITERION= 'TIME', OPENING_RAMP_ID = 'RAMP_VVENT_1'/
+&VENT TYPE = 'CEILING', ID = 'VVENT 1', COMP_IDS(1:2) = 'Comp 3', 'Comp 2',
+      AREA = 1., SHAPE = 'ROUND', CRITERION= 'TIME', 
+      OPENING_RAMP_ID = 'RAMP_VVENT_1'/
+&RAMP ID = 'RAMP_VVENT_1', TYPE = 'FRACTION',
+      T = 0., 100., 500.,
+      F = 0., 0.5, 1. /
 
-&RAMP  ID = 'RAMP_VVENT_1', TYPE = 'FRACTION',
-T = 0., 100., 500.,
-F = 0., 0.5, 1. /
-
-&VENT   TYPE = 'MECHANICAL', ID = 'MVENT_1',
-COMP_IDS(1:2) = 'OUTSIDE', 'Comp 1',
-AREAS(1:2) = 0.25, 0.25, HEIGHTS(1:2) = 2.75, 2.75,
-CRITERION = 'TIME',
-FLOW = 0.02, CUTOFFS(1:2) = 200., 300.,
-OFFSETS = 0., 4. /
+&VENT TYPE = 'MECHANICAL', ID = 'MVENT_1', 
+      COMP_IDS(1:2) = 'OUTSIDE', 'Comp 1', AREAS(1:2) = 0.25, 0.25, 
+      HEIGHTS(1:2) = 2.75, 2.75, CRITERION = 'TIME', FLOW = 0.02, 
+      CUTOFFS(1:2) = 200., 300., OFFSETS = 0., 4. /
 
 \end{lstlisting}
 
@@ -291,6 +275,8 @@ OFFSETS = 0., 4. /
 \clearpage
 \section{Fires, Namelist Group \texorpdfstring{{\tt FIRE}}{FIRE}}
 \label{info:FIRE3}
+
+\begin{minipage}{6.5in}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
 \label{tbl:FIRE} \\
@@ -303,6 +289,7 @@ OFFSETS = 0., 4. /
 \multicolumn{5}{|c|}{{\ct FIRE} (Fire Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct AREA}                 & Real        & Section \ref{info:FIRE}     & m$^2$                       &      0.3       \\ \hline
 {\ct CARBON}               & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct CHLORINE}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
@@ -310,11 +297,12 @@ OFFSETS = 0., 4. /
 {\ct CO\_YIELD}            & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000    \\ \hline
-{\ct HRR\_RAMP\_ID}           & Character   &  Section \ref{info:RAMP}                 &                             &                 \\ \hline
+{\ct HRR\_RAMP\_ID}        & Character   &  Section \ref{info:RAMP}                &                             &                 \\ \hline
 {\ct HYDROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct ID}                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct IGNITION\_CRITERION}  & Selection List         & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct LOCATION}        & Real        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
+{\ct IGNITION\_CRITERION}\footnote{Must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
+                           & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct LOCATION}             & Real        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
 {\ct NITROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct OXYGEN}               & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct PF\_CO\_YIELD}        & Real        & Section \ref{}                 &                             &                 \\ \hline
@@ -326,30 +314,23 @@ OFFSETS = 0., 4. /
 {\ct SOOT\_YIELD}          & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct TRACE\_YIELD}         & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 \end{longtable}
+\end{minipage}
 
-\graybox{Input for {\ct IGNITION CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-!!
-!!Fires
-!!
-!!Cushion
-&FIRE
-ID = 'Cushion', COMP_ID = 'Comp 1',
-LOCATION(1:3) = 2.5, 2.5, 0.,
-CARBON = 9, HYDROGEN = 6, OXYGEN = 2, NITROGEN = 2,
-IGNITION_CRITERION = 'TIME',
-HEAT_OF_COMBUSTION = 50000., RADIATIVE_FRACTION = 0.33,
-SOOT_YIELD = 0.227, CO_YIELD = 0.0845557,
-AREA = 0.1, HEIGHT = 0.,
-HRR_RAMP_ID = 'Cushion Fire' /
+&FIRE ID = 'Cushion', COMP_ID = 'Comp 1',
+      LOCATION(1:3) = 2.5, 2.5, 0.,
+      CARBON = 9, HYDROGEN = 6, OXYGEN = 2, NITROGEN = 2,
+      IGNITION_CRITERION = 'TIME',
+      HEAT_OF_COMBUSTION = 50000., RADIATIVE_FRACTION = 0.33,
+      SOOT_YIELD = 0.227, CO_YIELD = 0.0845557,
+      AREA = 0.1, HEIGHT = 0., HRR_RAMP_ID = 'Cushion Fire' /
 
-&RAMP
-ID = 'Cushion Fire', TYPE = 'HEAT_RELEASE_RATE',
-T = 0., 60., 120., 180., 240., 300., 360., 420., 480., 540., 1800.
-HRR = 0., 100000., 150000., 200000., 150000., 125000., 100000., 90000., 80000., 75000., 75000.  /
+&RAMP ID = 'Cushion Fire', TYPE = 'HEAT_RELEASE_RATE',
+      T = 0., 60., 120., 180., 240., 300.,
+      HRR = 0., 100000., 150000., 200000., 150000., 125000. /
 \end{lstlisting}
 
 
@@ -359,6 +340,8 @@ HRR = 0., 100000., 150000., 200000., 150000., 125000., 100000., 90000., 80000., 
 \section{Devices, Namelist Group \texorpdfstring{{\tt DEVC}}{DEVC}}
 
 \label{info:DEVC3}
+
+\begin{minipage}{6.5in}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Device Parameters ({\ct DEVC} namelist group)]{For more information see Section~\ref{info:DEVC}.}
 \label{tbl:DEVC} \\
@@ -371,21 +354,22 @@ HRR = 0., 100000., 150000., 200000., 150000., 125000., 100000., 90000., 80000., 
 \multicolumn{5}{|c|}{{\ct DEVC} (Device Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
-{\ct DEVC\_TYPE}      & Selection List   & Section \ref{info:DEVC3}     &                   &                 \\ \hline
+{\ct TYPE}\footnote{{\ct PLATE}, {\ct CYLINDER}, {\ct SPRINKLER}, {\ct HEAT\_DETECTOR}, or {\ct SMOKE\_DETECTOR}}      
+                          & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct ID}      		      & Character   & Section \ref{info:DEVC}                 &                   &                 \\ \hline
-{\ct INTERNAL\_TEMPERATURE\_LOCATION}     & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
-{\ct LOCATION}       & Real        & Section \ref{info:DEVC}                 & m                 &                 \\ \hline
-{\ct MATERIAL\_ID}            & Character   & Section \ref{info:DEVC}                 &                   &                 \\ \hline
-{\ct NORMAL}         & Real        & Section \ref{info:DEVC}                 &                   &                 \\ \hline
-{\ct RTI}                 & Real        & Section \ref{info:DEVC2}                 & m-s$^{0.5}$       &                 \\ \hline
-{\ct SETPOINT}            & Real        & Section \ref{info:DEVC}     & $^\circ$C $\mid$ \%/m  &     23.93\%/m      \\ \hline
+{\ct INTERNAL\_LOCATION}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
+{\ct LOCATION(1:3)}       & Real Array  & Section \ref{info:DEVC}                 & m                 &                 \\ \hline
+{\ct MATL\_ID}            & Character   & Section \ref{info:DEVC}                 &                   &                 \\ \hline
+{\ct NORMAL(1:3)}         & Real Array  & Section \ref{info:DEVC}                 &                   &                 \\ \hline
+{\ct RTI}                 & Real        & Section \ref{info:DEVC2}                 & $\sqrt{\hbox{m}\cdot\hbox{s}}$       &                 \\ \hline
+{\ct SETPOINT}            & Real        & Section \ref{info:DEVC}     & $^\circ$C or \%/m  &     23.93 \%/m      \\ \hline
 {\ct SPRAY\_DENSITY}      & Real        & Section \ref{info:DEVC2}     & m/s               &                 \\ \hline
 \end{longtable}
+\end{minipage}
 
-\graybox{Input for {\ct DEVC\_TYPE} must be {\ct PLATE}, {\ct CYLINDER}, {\ct SPRINKLER}, {\ct HEAT\_DETECTOR}, or {\ct SMOKE\_DETECTOR}.  \\
-
-{\ct PLATE} and {\ct CYLINDER} targets are defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct LOCATION}, {\ct INTERNAL\_TEMPERATURE\_LOCATION}, and {\ct NORMAL}. \\
+\graybox{{\ct PLATE} and {\ct CYLINDER} targets are defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct LOCATION}, {\ct INTERNAL\_TEMPERATURE\_LOCATION}, and {\ct NORMAL}. \\
 
 A sprinkler is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, {\ct SETPOINT}, and {\ct SPRAY\_DENSITY}.  \\
 
@@ -396,20 +380,14 @@ Input for {\ct SETPOINT} for smoke detectors is obscuration; for heat detectors 
 \vspace{\baselineskip}
 \noindent Examples:
 \begin{lstlisting}
-!!
-!!Targets and detectors
-!!
-&DEVC
-ID = 'Targ 1', COMP_ID = 'Comp 1',
-DEVC_TYPE = 'PLATE',
-LOCATION(1:3) = 2.2, 1.88, 2.34., NORMAL(1:3) = 0., 0., 1.,
-MATERIAL_ID = 'CONCRETE', INTERNAL_TEMPERATURE_LOCATION = 0.5 /
+&DEVC ID = 'Targ 1', COMP_ID = 'Comp 1', TYPE = 'PLATE',
+      LOCATION(1:3) = 2.2, 1.88, 2.34., NORMAL(1:3) = 0., 0., 1.,
+      MATL_ID = 'CONCRETE', INTERNAL_LOCATION = 0.5 /
 
-&DEVC
-ID = 'Sprinkler 1', COMP_ID = 'Comp 1',
-DEVC_TYPE = 'SPRINKLER',
-LOCATION(1:3) = 3., 3., 2.97,
-SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
+&DEVC ID = 'Sprinkler 1', COMP_ID = 'Comp 1',
+      TYPE = 'SPRINKLER',
+      LOCATION(1:3) = 3., 3., 2.97,
+      SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 \end{lstlisting}
 
 
@@ -417,6 +395,7 @@ SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 \clearpage
 \section{Compartment Connections, Namelist Group \texorpdfstring{{\tt CONN}}{CONN}}
 
+\begin{minipage}{6.5in}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Connection Parameters ({\ct CONN} namelist group)]{For more information see Section~\ref{info:CONN}.}
 \label{tbl:CONN} \\
@@ -429,21 +408,18 @@ SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 \multicolumn{5}{|c|}{{\ct CONN} (Connection Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}              & Character & Section \ref{info:CONN}                 &           &  		\\ \hline
 {\ct COMP\_IDS}              & Character & Section \ref{info:CONN}                 &           &  		\\ \hline
 {\ct F}             & Real      & Section \ref{info:CONN}     &           &                 \\ \hline
-{\ct TYPE}        	    & Selection List     & Section \ref{info:CONN2}                 &           &                 \\ \hline
+{\ct TYPE}\footnote{{\ct 'CEILING'}, {\ct 'FLOOR'}, or {\ct 'WALL'}}        	    & Character     & Section \ref{info:CONN}                 &           &                 \\ \hline
 \end{longtable}
-
-\graybox{Input for {\ct TYPE} must be {\ct CEILING}, {\ct FLOOR}, or {\ct WALL}. See Section \label{info:CONN2} for details.}
+\end{minipage}
 
 \vspace{\baselineskip}
-\noindent Examples:
+\noindent Example:
 \begin{lstlisting}
-!!
-!!Intercompartment heat transfer
-!!
-&CONN  TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
+&CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
 \end{lstlisting}
 
 
@@ -466,20 +442,21 @@ SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 \multicolumn{5}{|c|}{{\ct ISOF} (Isosurface Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}        & Character   & Section \ref{info:ISOF}                 &           &                 \\ \hline
 {\ct VALUE}             & Real        & Section \ref{info:ISOF}                 & $^\circ$C &                 \\ \hline
 \end{longtable}
 
 \noindent Example:
 \begin{lstlisting}
-&INIT
-	COMP\_ID = 'COMP_ID', VALUE = 100. /
+&ISOF COMP_ID = 'COMP_ID', VALUE = 100. /
 \end{lstlisting}
 
 
 
 
 \subsection{\texorpdfstring{{\tt SLCF}}{SLCF} (Slice File Parameters)}
+
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Slice File parameters ({\ct SLCF} namelist group)]{For more information see Section~\ref{info:SLCF}.}
 \label{tbl:SLCF} \\
@@ -492,6 +469,7 @@ SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 \multicolumn{5}{|c|}{{\ct SLCF} (Slice File Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}        & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct DOMAIN}            & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct PLANE}             & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
@@ -500,9 +478,6 @@ SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 
 \noindent Example:
 \begin{lstlisting}
-!!
-!!Visualizations
-!!
 &SLCF  DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
 \end{lstlisting}
 
@@ -527,6 +502,7 @@ SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 \multicolumn{5}{|c|}{{\ct RAMP} (Ramp Function Parameters)} \\
 \hline \hline
 \endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct F}               & Real        & Section \ref{info:RAMP2}                 &           &                 \\ \hline
 {\ct A}               & Real        & Section \ref{info:RAMP2}                 &  m$^2$         &                 \\ \hline
 {\ct H}               & Real        & Section \ref{info:RAMP2}                 &  m         &                 \\ \hline

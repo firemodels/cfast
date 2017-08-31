@@ -36,7 +36,7 @@ module spreadsheet_routines
     call output_spreadsheet_species (time)
     call output_spreadsheet_species_mass (time)
     call output_spreadsheet_flow (time)
-    call output_spreadsheet_flux (time)
+    call output_spreadsheet_target (time)
 
     return
 
@@ -61,7 +61,7 @@ module spreadsheet_routines
 
     ! headers
     if (firstc) then
-        call ssHeadersNormal
+        call ssheaders_normal
         firstc = .false.
     end if
 
@@ -152,7 +152,7 @@ module spreadsheet_routines
     save firstc
 
     if (firstc) then
-        call ssheadersflow
+        call ssheaders_flow
         firstc = .false.
     end if
 
@@ -228,9 +228,9 @@ module spreadsheet_routines
 
     end subroutine output_spreadsheet_flow
 
-! --------------------------- output_spreadsheet_flux -------------------------------------------
+! --------------------------- output_spreadsheet_target -------------------------------------------
 
-    subroutine output_spreadsheet_flux (time)
+    subroutine output_spreadsheet_target (time)
 
     !     Output the temperatures and fluxes on surfaces and targets at the current time
 
@@ -250,7 +250,7 @@ module spreadsheet_routines
     save firstc
 
     if (firstc) then
-        call ssHeadersFlux
+        call ssheaders_target
         firstc = .false.
     end if
 
@@ -284,18 +284,20 @@ module spreadsheet_routines
         ! front surface
         call ssaddtolist (position, targptr%flux_incident_front / 1000._eb, outarray)
         call ssaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_surface(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_gas(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_target(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_net_gauge(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_radiation_gauge(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_convection_gauge(1) / 1000._eb, outarray)
-        call ssaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
-        ! back surface
+        
+        !much more detailed output for validate option
         if (validate) then
+            call ssaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_surface(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_gas(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_target(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_net_gauge(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_radiation_gauge(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_convection_gauge(1) / 1000._eb, outarray)
+            call ssaddtolist (position, targptr%flux_target_gauge(1) / 1000._eb, outarray)
+            ! back surface
             tttemp = targptr%tback
             call ssaddtolist (position, tttemp-kelvin_c_offset, outarray)
             call ssaddtolist (position, targptr%flux_net(2) / 1000._eb, outarray)
@@ -310,6 +312,12 @@ module spreadsheet_routines
             call ssaddtolist (position, targptr%flux_convection_gauge(2) / 1000._eb, outarray)
             call ssaddtolist (position, targptr%flux_target_gauge(2) / 1000._eb, outarray)
         end if
+        
+        ! tenability at target location
+        call ssaddtolist (position, targptr%fed_gas, outarray)
+        call ssaddtolist (position, targptr%dfed_gas, outarray)
+        call ssaddtolist (position, targptr%fed_heat, outarray)
+        call ssaddtolist (position, targptr%dfed_heat, outarray)
     end do
 
     ! detectors (including sprinklers)
@@ -341,7 +349,7 @@ module spreadsheet_routines
     call ssprintresults (25, position, outarray)
     return
 
-    end subroutine output_spreadsheet_flux
+    end subroutine output_spreadsheet_target
 
 ! --------------------------- output_spreadsheet_species -------------------------------------------
 
@@ -368,7 +376,7 @@ module spreadsheet_routines
 
     ! Set up the headings
     if (firstc) then
-        call ssHeadersSpecies
+        call ssheaders_species
         firstc = .false.
     end if
 
@@ -423,7 +431,7 @@ module spreadsheet_routines
 
     ! Set up the headings
     if (firstc) then
-        call ssheadersspeciesmass
+        call ssheaders_speciesmass
         firstc = .false.
     end if
 
@@ -477,7 +485,7 @@ module spreadsheet_routines
 
     ! Headers
     if (firstc) then
-        call ssHeadersSMV(.true.)
+        call ssheaders_smv(.true.)
         firstc = .false.
     end if
 

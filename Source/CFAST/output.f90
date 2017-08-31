@@ -480,7 +480,7 @@ module output_routines
     integer, intent(in) :: itprt
 
     integer :: i, iw, itarg
-    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, itotal, tgtemp, tttemp, tctemp
+    real(eb) :: itotal, total, tgtemp, tttemp, tctemp, gasfed, heatfed
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -502,34 +502,25 @@ module output_routines
                 tgtemp = targptr%tgas
                 tttemp = targptr%tfront
                 tctemp = targptr%tinternal
+                gasfed = targptr%fed_gas
+                heatfed = targptr%fed_heat
                 if (validate.or.netheatflux) then
+                    itotal = targptr%flux_incident_front
                     total = targptr%flux_net_gauge(1)
-                    ftotal = targptr%flux_fire(1)
-                    wtotal = targptr%flux_surface(1)
-                    gtotal = targptr%flux_gas(1)
-                    ctotal = targptr%flux_convection_gauge(1)
-                    itotal = targptr%flux_incident_front
                 else
-                    total = targptr%flux_net(1)
-                    ftotal = targptr%flux_fire(1)
-                    wtotal = targptr%flux_surface(1)
-                    gtotal = targptr%flux_gas(1)
-                    ctotal = targptr%flux_convection(1)
                     itotal = targptr%flux_incident_front
+                    total = targptr%flux_net(1)
                 end if
+                if (abs(itotal)<=1.0e-10_eb) itotal = 0.0_eb
                 if (abs(total)<=1.0e-10_eb) total = 0.0_eb
-                if (abs(ftotal)<=1.0e-10_eb) ftotal = 0.0_eb
-                if (abs(wtotal)<=1.0e-10_eb) wtotal = 0.0_eb
-                if (abs(gtotal)<=1.0e-10_eb) gtotal = 0.0_eb
-                if (abs(ctotal)<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
                     write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
-                        tctemp-kelvin_c_offset, itotal, total, ftotal, wtotal, gtotal, ctotal
+                        tctemp-kelvin_c_offset, itotal, total, gasfed, heatfed
                 elseif (itotal/=0.0_eb) then
                     write (iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
-                        itotal
+                        itotal, gasfed,heatfed
                 else
-                    write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                    write (iofilo,5040) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, gasfed, heatfed
                 end if
             end if
         end do
@@ -537,15 +528,13 @@ module output_routines
     end do
     return
 5000 format (//,'SURFACES AND TARGETS',//, &
-    'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       ', &
-    'Surface   Interior Incident     Net          Fire         Surface      Gas',/, &
-    '               Temp.     Temp.     Temp.     Temp.                  Temp.     ', &
-    'Temp.     Temp.    Flux         Flux         Rad.         Rad.         Rad.         Convect.',/, &
-    '               (C)       (C)       (C)       (C)                    (C)       ', &
-         '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)',/,172('-'))
+    'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       Surface   Interior Incident     Net          Gas         Heat',/, &
+    '               Temp.     Temp.     Temp.     Temp.                  Temp.     Temp.     Temp.    Flux         Flux         FED         FED',/, &
+    '               (C)       (C)       (C)       (C)                    (C)       (C)       (C)      (W/m^2)      (W/m^2)',/,172('-'))
 5010 format (a14,4(1pg10.3))
 5020 format (54x,a8,4x,3(1pg10.3),1x,6(1pg10.3,3x))
-5030 format (54x,a8,4x,3(1pg10.3),66x,1pg10.3)
+5030 format (54x,a8,4x,3(1pg10.3),15x,3(1pg10.3,3x))
+5040 format (54x,a8,4x,3(1pg10.3),25x,2(1pg10.3,3x))  
     end subroutine results_targets
 
 ! --------------------------- results_detectors -------------------------------------------

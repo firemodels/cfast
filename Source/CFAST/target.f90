@@ -45,7 +45,8 @@ module target_routines
     real(eb) :: x_node(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
     real(eb) :: flux(2), dflux(2), ttarg(2), t_inf, t_max = 900._eb
-    integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom
+    real(eb) :: nu_co2, fed_gas_increment, fed_heat_increment
+    integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom, ilayer
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -112,6 +113,17 @@ module target_routines
         do i = idx_tempf_trg,idx_tempb_trg
             targptr%temperature(i) = min(targptr%temperature(i),t_inf+t_max)
         end do
+        
+        ! calculate tenability for this time step
+        ilayer = u
+        if (targptr%center(3)<roomptr%depth(l)) ilayer = l
+        nu_co2 = exp(roomptr%species_output(ilayer,co2)/5._eb)
+        fed_gas_increment = (dt/60._eb)*nu_co2*((roomptr%species_output(ilayer,co)*1000)/35000._eb+(roomptr%species_output(ilayer,hcn)*1000)**2.36_eb/1.2e6_eb)
+        targptr%dfed_gas = targptr%dfed_gas + fed_gas_increment
+        targptr%fed_gas = targptr%fed_gas + fed_gas_increment
+        fed_heat_increment = (dt/60._eb)*((targptr%flux_incident_front/1000._eb)**1.9/4.2+((targptr%tgas-273.15)**3.61/4.1e8_eb))
+        targptr%dfed_heat = targptr%dfed_heat + fed_heat_increment
+        targptr%fed_heat = targptr%fed_heat + fed_heat_increment
     end do
     return
     end subroutine target

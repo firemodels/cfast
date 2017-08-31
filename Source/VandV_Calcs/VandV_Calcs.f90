@@ -12,7 +12,7 @@
     integer, parameter :: do_flux_profile = 5           ! if calculating radiative heat flux at a number of distances from a fire
 
 
-    integer, parameter :: ntests = 200, nrow = 1000, ncol = 7100, list_nrow = 1000, list_ncol = 100
+    integer, parameter :: ntests = 200, nrow = 1000, ncol = 8000, list_nrow = 1000, list_ncol = 100
 
     character :: base_folder*128, comparelist_file*128, partial_filename*128, filename*128, old_filename*128
     character :: list_carray(list_nrow, list_ncol)*128, model_carray(nrow,ncol)*50, switch_id*3

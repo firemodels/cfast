@@ -15,14 +15,14 @@ module spreadsheet_header_routines
 
     private
 
-    public ssheadersnormal, ssheadersspecies, ssheadersspeciesmass, ssheadersflow, ssheadersflux, ssheaderssmv, &
-        ssHeadersResid, ssHeadersFSlabs
+    public ssheaders_normal, ssheaders_species, ssheaders_speciesmass, ssheaders_flow, ssheaders_target, ssheaders_smv, &
+        ssHeaders_resid, ssHeaders_fslabs
 
     contains
 
-! --------------------------- ssHeadersNormal -------------------------------------------
+! --------------------------- ssheaders_normal -------------------------------------------
 
-    subroutine ssHeadersNormal
+    subroutine ssheaders_normal
 
     ! This is the header information for the normal spreadsheet output
 
@@ -102,11 +102,11 @@ module spreadsheet_header_routines
     write (21,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
     write (21,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
-    end subroutine ssHeadersNormal
+    end subroutine ssheaders_normal
 
-! --------------------------- ssHeadersSpecies -------------------------------------------
+! --------------------------- ssheaders_species -------------------------------------------
 
-    subroutine ssHeadersSpecies
+    subroutine ssheaders_species
 
     ! This is the header information for the spreadsheet output
 
@@ -164,11 +164,11 @@ module spreadsheet_header_routines
     write (23,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
     write (23,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
-    end subroutine ssHeadersSpecies
+    end subroutine ssheaders_species
 
-! --------------------------- ssHeadersSpeciesMass -------------------------------------------
+! --------------------------- ssheaders_speciesMass -------------------------------------------
 
-    subroutine ssHeadersSpeciesMass
+    subroutine ssheaders_speciesMass
 
     ! This is the header information for the spreadsheet output
 
@@ -223,11 +223,11 @@ module spreadsheet_header_routines
     write (24,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
     write (24,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
-    end subroutine ssHeadersSpeciesMass
+    end subroutine ssheaders_speciesMass
 
-! --------------------------- ssHeadersFlux -------------------------------------------
+! --------------------------- ssheaders_target -------------------------------------------
 
-    subroutine ssHeadersFlux
+    subroutine ssheaders_target
 
     ! This routine spools the headers for the surface temperature and flux results.
 
@@ -247,7 +247,7 @@ module spreadsheet_header_routines
     !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
 
     integer, parameter :: maxhead = 1+9*mxrooms+15*mxtarg+4*mxdtect
-    character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(24), LabelsShort(24), LabelUnits(24), frontorback(2)
+    character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(28), LabelsShort(28), LabelUnits(28), frontorback(2)
     integer position, i, j, itarg, itype
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
@@ -259,14 +259,16 @@ module spreadsheet_header_routines
         'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', &
         'Target Radiative Loss Flux', 'Target Total Gauge Flux', 'Target Radiative Gauge Flux', 'Target Convective Gauge Flux', &
         'Target Radiative Loss Gauge Flux',  &
-        'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity' /
+        'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity', &
+        'Target Gas FED','Target GasFED Increment','Target Heat FED','Target Heat FED Increment'/
 
     data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', &
         'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXI_', 'TRGFLXT_', 'TRGFLXR_', &
         'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG_', 'TRGFLXREG_',  &
-        'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_' /
+        'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_', &
+        'TRGFEDG_','TRGDFEDG_','TRGFEDH_','TRGDFEDH_' /
 
-    data LabelUnits / 's', 7*'C', 12*'KW/m^2', 'C', '1=yes', 'C', 'm/s' /
+    data LabelUnits / 's', 7*'C', 12*'KW/m^2', 'C', '1=yes', 'C', 'm/s', 4*' ' /
     data frontorback / '','B_'/
 
     !  spreadsheet header.  Add time first
@@ -295,11 +297,13 @@ module spreadsheet_header_routines
         targptr => targetinfo(itarg)
         ! front surface
         do j = 1, 15
-            position = position + 1
-            headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
-            headertext(2,position) = Labels(j+5)
-            headertext(3,position) = targptr%name
-            headertext(4,position) = LabelUnits(j+5)
+            if (j<6.or.validate) then
+                position = position + 1
+                headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
+                headertext(2,position) = Labels(j+5)
+                headertext(3,position) = targptr%name
+                headertext(4,position) = LabelUnits(j+5)
+            end if
         end do
         ! back surface
         if (validate) then
@@ -312,6 +316,13 @@ module spreadsheet_header_routines
                 headertext(4,position) = LabelUnits(j+5)
             end do
         end if
+            do j = 1, 4
+                position = position + 1
+                headertext(1,position) = trim(LabelsShort(j+24)) // trim(cDet)
+                headertext(2,position) = Labels(j+24)
+                headertext(3,position) = targptr%name
+                headertext(4,position) = LabelUnits(j+24)
+            end do
     end do
 
     ! Detectors
@@ -343,11 +354,11 @@ module spreadsheet_header_routines
     write (25,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     return
-    end subroutine ssHeadersFlux
+    end subroutine ssheaders_target
 
-! --------------------------- ssHeadersFlow -------------------------------------------
+! --------------------------- ssheaders_flow -------------------------------------------
 
-    subroutine ssHeadersFlow
+    subroutine ssheaders_flow
 
     !	This is the header information for the flow spreadsheet and is called once
     !	The logic is identical to output_spreadsheet_flow so the output should be parallel
@@ -459,11 +470,11 @@ module spreadsheet_header_routines
 
     return
 
-    end subroutine ssHeadersFlow
+    end subroutine ssheaders_flow
 
-! --------------------------- ssHeadersSMV -------------------------------------------
+! --------------------------- ssheaders_smv -------------------------------------------
 
-    subroutine ssHeadersSMV(lMode)
+    subroutine ssheaders_smv(lMode)
 
     ! This is the header information for the smokeview spreadsheet output
 
@@ -625,7 +636,7 @@ module spreadsheet_header_routines
         write (15,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
     end if
 
-    end subroutine ssHeadersSMV
+    end subroutine ssheaders_smv
 
 ! --------------------------- smvDeviceTag -------------------------------------------
 
@@ -639,9 +650,9 @@ module spreadsheet_header_routines
     return
     end subroutine smvDeviceTag
 
-! --------------------------- ssHeadersResid -------------------------------------------
+! --------------------------- ssHeaders_resid -------------------------------------------
 
- subroutine ssHeadersResid
+ subroutine ssHeaders_resid
 
     ! This is the header information for the calculate_residuals spreadsheet output
 
@@ -721,11 +732,11 @@ module spreadsheet_header_routines
     write (ioresid,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
     write (ioresid,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
 
- end subroutine ssHeadersResid
+ end subroutine ssHeaders_resid
 
-! --------------------------- ssHeadersFSlabs -------------------------------------------
+! --------------------------- ssHeaders_fslabs -------------------------------------------
 
-  subroutine ssHeadersFSlabs
+  subroutine ssHeaders_fslabs
 
     ! This is the header information for the normal spreadsheet output
 
@@ -763,6 +774,6 @@ module spreadsheet_header_routines
     write (ioslab,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
     write (ioslab,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
 
-    end subroutine ssHeadersFSlabs
+    end subroutine ssHeaders_fslabs
 
 end module spreadsheet_header_routines

@@ -53,8 +53,8 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct VERSION}     	         & Integer                 & Section \ref{info:HEAD}      &         		     &              		       \\ \hline
-{\ct TITLE}                      & Character               & Section \ref{info:HEAD}      &       		     &                 		       \\ \hline
+{\ct VERSION}         & Integer                 & Section \ref{info:HEAD}      &         	     &                   \\ \hline
+{\ct TITLE}           & Character               & Section \ref{info:HEAD}      &       		     &                 	 \\ \hline
 \end{longtable}
 
 
@@ -95,7 +95,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct PRESSURE}                   & Real   		   & Section \ref{info:INIT}      & Pa       		     & 101325     		       \\ \hline
 {\ct RELATIVE\_HUMIDITY}         & Real   		   & Section \ref{info:INIT}      & \%      		     & 50       		       \\ \hline
-{\ct TEMPERATURES(1:2)}          & Real Array  		   & Section \ref{info:INIT}      & $^\circ$C		     & 20, 20  		               \\ \hline
+{\ct TEMPERATURES(1:2)}          & Real Array  	           & Section \ref{info:INIT}      & $^\circ$C		     & 20, 20  		               \\ \hline
 \end{longtable}
 
 
@@ -149,7 +149,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct DENSITY}             & Real 	 & Section \ref{info:MATL}                 & kg/m$^3$ 		&                 \\ \hline
 {\ct EMISSIVITY}          & Real	 & Section \ref{info:MATL}                 &         		&   0.9           \\ \hline
 {\ct SPECIFIC\_HEAT}      & Real	 & Section \ref{info:MATL}                 & kJ/(kg$\cdot$K)    &                 \\ \hline
-{\ct ID}                  & Character    & Section \ref{info:MATL}                 &       	        &                 \\ \hline
+{\ct ID}                  & Character    & Section \ref{info:MATL}                 &                    &                 \\ \hline
 {\ct THICKNESS}           & Real  	 & Section \ref{info:MATL}                 & m     	        &                 \\ \hline
 \end{longtable}
 
@@ -188,10 +188,10 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct ORIGIN(1:3)}           & Real Array         & Section \ref{info:COMP}                & m         &                 \\ \hline
 {\ct ROOM\_AREA\_RAMP}
 \footnote{For compartments where the cross-sectional area varies with height, the namelist group, {\ct RAMP} can be used. Keywords associated with this feature can be found in Section~\ref{tbl:RAMP}.}  
-                            & Character  	 & Section \ref{info:COMP4}                 &           &                 \\ \hline
+                            & Character          & Section \ref{info:COMP4}                 &           &                 \\ \hline
 {\ct SHAFT}                 & Logical  		 & Section \ref{info:COMP3}                 &           & {\ct .FALSE.}   \\ \hline
 {\ct WALL\_MATL\_ID}        & Character		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
-{\ct WIDTH}                 & Real     		 & Section \ref{info:COMP}    	            & m         &                 \\ \hline
+{\ct WIDTH}                 & Real               & Section \ref{info:COMP}                  & m         &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -227,7 +227,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct AREA}\footnote{Appropriate for ceiling/floor vent}      	 & Real  	          & Section \ref{info:VENT2}     & m$^2$                    &                                 \\ \hline
 {\ct AREAS(1:2)}\footnote{Appropriate for mechanical vent}       & Real Array 	          & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
-{\ct BOTTOM}\footnote{Appropriate for wall vent}       	         & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
+{\ct BOTTOM}\footnote{Appropriate for wall vent}                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
 {\ct COMP\_IDS(1:2)}     	   			         & Character Array        & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}           
                             				         & Character              & Section \ref{info:VENT}      &                             &                 \\ \hline
@@ -237,15 +237,16 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct FILTERING\_RAMP\_ID}    					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct FLOW}      	 					 & Real  		  & Section \ref{info:VENT4}     & m$^3$/s                     &                 \\ \hline
 {\ct HEIGHTS(1:2)}      					 & Real Array 		  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
-{\ct ID}       							 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct ID}                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS(1:2)}       					 & Real Array 		  & Section \ref{info:VENT}      & m                           &      0, 0        \\ \hline
 {\ct OPENING\_RAMP\_ID}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
-{\ct SHAPE}\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}          & Selection List   & Section \ref{info:VENT2}                 &                             &                 \\ \hline
+{\ct SHAPE}\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}          
+                                                                 & Selection List         & Section \ref{info:VENT2}     &                             &                 \\ \hline
 {\ct TOP}\footnote{Appropriate for wall vent}                    & Real  	  	  & Section \ref{info:VENT}      & m                           &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING}, {\ct FLOOR}, {\ct MECHANICAL}, or {\ct WALL}. }          
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
-{\ct WIDTH}            						 & Real  	          & Section \ref{info:VENT}      & m                           &                 \\ \hline
+{\ct WIDTH}                                                      & Real                   & Section \ref{info:VENT}      & m                           &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -411,11 +412,11 @@ A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct 
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct COMP\_ID}             & Character     & Section \ref{info:CONN}                 &           &  		\\ \hline
-{\ct COMP\_IDS}            & Character Array     & Section \ref{info:CONN}                 &           &  		\\ \hline
-{\ct F}                    & Real          & Section \ref{info:CONN}                 &           &              \\ \hline
+{\ct COMP\_ID}             & Character           & Section \ref{info:CONN}                 &           &  	      \\ \hline
+{\ct COMP\_IDS}            & Character Array     & Section \ref{info:CONN}                 &           &  	      \\ \hline
+{\ct F}                    & Real                & Section \ref{info:CONN}                 &           &              \\ \hline
 {\ct TYPE}\footnote{{\ct CEILING}, {\ct 'FLOOR}, or {\ct WALL}}        	    
-		           & Character      & Section \ref{info:CONN}                 &           &              \\ \hline
+                           & Character           & Section \ref{info:CONN}                 &           &              \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -510,10 +511,10 @@ A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct 
 {\ct A}               & Real Array            & Section \ref{info:RAMP2}                 &  m$^2$   &                 \\ \hline
 {\ct H}               & Real Array            & Section \ref{info:RAMP2}                 &  m       &                 \\ \hline
 {\ct HRR}             & Real Array            & Section \ref{info:RAMP2}                 &  kW      &                 \\ \hline
-{\ct ID}      	      & Character             & Section \ref{info:RAMP2}                 &          &                 \\ \hline
+{\ct ID}              & Character             & Section \ref{info:RAMP2}                 &          &                 \\ \hline
 {\ct T}               & Real Array            & Section \ref{info:RAMP2}                 &  s       &                 \\ \hline
 {\ct TYPE}\footnote{{\ct AREA}, {\ct EFFICIENCY}, {\ct FRACTION}, or {\ct HEAT\_RELEASE\_RATE}}
-	              & Selection List        & Section \ref{info:RAMP2}                 &          &                 \\ \hline
+                      & Selection List        & Section \ref{info:RAMP2}                 &          &                 \\ \hline
 \end{longtable}
 
 \graybox{

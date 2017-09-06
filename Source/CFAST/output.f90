@@ -520,17 +520,21 @@ module output_routines
                     write (iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
                         itotal, gasfed,heatfed
                 else
-                    write (iofilo,5040) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, gasfed, heatfed
+                    write (iofilo,5040) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                        gasfed, heatfed
                 end if
             end if
         end do
 
     end do
     return
-5000 format (//,'SURFACES AND TARGETS',//, &
-    'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       Surface   Interior Incident     Net          Gas         Heat',/, &
-    '               Temp.     Temp.     Temp.     Temp.                  Temp.     Temp.     Temp.    Flux         Flux         FED         FED',/, &
-    '               (C)       (C)       (C)       (C)                    (C)       (C)       (C)      (W/m^2)      (W/m^2)',/,172('-'))
+    5000 format (//,'SURFACES AND TARGETS',//, &
+    'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       Surface   Interior Incident     ', &
+    'Net          Gas         Heat',/, &
+    '               Temp.     Temp.     Temp.     Temp.                  Temp.     Temp.     Temp.    Flux         Flux', &
+    '         FED         FED',/, &
+    '               (C)       (C)       (C)       (C)                    (C)       (C)       (C)      (W/m^2)      (W/m^2)' &
+    ,/,172('-'))
 5010 format (a14,4(1pg10.3))
 5020 format (54x,a8,4x,3(1pg10.3),1x,6(1pg10.3,3x))
 5030 format (54x,a8,4x,3(1pg10.3),15x,3(1pg10.3,3x))

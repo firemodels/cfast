@@ -31,7 +31,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{itemize}
 \item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
 \item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying {\ct ADIABATIC} to be {\ct TRUE} triggers the code to treat all compartment surfaces to be perfectly insulated.
-\item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, {\ct TEMPERATURES}, within the namelist group, {\ct INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users for trouble-shooting.
+\item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, {\ct TEMPERATURES}, within the namelist group, {\ct INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users in troubleshooting any errors.
 \item Default values to inputs are assigned to some of the keywords to facilitate the set up of an input file. For instance, Table \ref{tbl:MISC} shows that the {\ct LOWER\_OXYGEN\_LIMIT} has a default value of {\ct 0.15}. This value is taken from the SFPE handbook \cite{SFPE:2003} and implies that the burning rate will be reduced when the oxygen level is below 15\%. Users should review the applicability of any default values for their simulation.
 \end{itemize}
 
@@ -300,11 +300,13 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct COMP\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct CO\_YIELD}            & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct HCL\_YIELD}           & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct HCN\_YIELD}           & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
 {\ct HRR\_RAMP\_ID}        & Character   &  Section \ref{info:RAMP}                &                             &                 \\ \hline
 {\ct HYDROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct ID}                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct IGNITION\_CRITERION}\footnote{Must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
+{\ct IGNITION\_CRITERION}\footnote{Input for {\ct IGNITION\_CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                            & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct LOCATION}             & Real        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
 {\ct NITROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
@@ -331,7 +333,6 @@ Examples of each of the inputs are included in the sections that follow.  All ex
       HEAT_OF_COMBUSTION = 50000., RADIATIVE_FRACTION = 0.33,
       SOOT_YIELD = 0.227, CO_YIELD = 0.0845557,
       AREA = 0.1, HEIGHT = 0., HRR_RAMP_ID = 'Cushion Fire' /
-
 &RAMP ID = 'Cushion Fire', TYPE = 'HEAT_RELEASE_RATE',
       T = 0., 60., 120., 180., 240., 300.,
       HRR = 0., 100000., 150000., 200000., 150000., 125000. /
@@ -360,7 +361,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
-{\ct TYPE}\footnote{{\ct PLATE}, {\ct CYLINDER}, {\ct SPRINKLER}, {\ct HEAT\_DETECTOR}, or {\ct SMOKE\_DETECTOR}}
+{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct PLATE}, {\ct CYLINDER}, {\ct SPRINKLER}, {\ct HEAT\_DETECTOR}, or {\ct SMOKE\_DETECTOR}}
                           & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct ID}      		  & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct INTERNAL\_LOCATION}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
@@ -416,7 +417,7 @@ A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct 
 {\ct COMP\_ID}             & Character           & Section \ref{info:CONN}                 &           &  	      \\ \hline
 {\ct COMP\_IDS}            & Character Array     & Section \ref{info:CONN}                 &           &  	      \\ \hline
 {\ct F}                    & Real Array          & Section \ref{info:CONN}                 &           &              \\ \hline
-{\ct TYPE}\footnote{{\ct CEILING}, {\ct 'FLOOR}, or {\ct WALL}}        	
+{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING}, {\ct FLOOR}, or {\ct WALL}}        	
                            & Character           & Section \ref{info:CONN}                 &           &              \\ \hline
 \end{longtable}
 \end{minipage}

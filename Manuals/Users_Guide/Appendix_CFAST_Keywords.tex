@@ -368,9 +368,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct LOCATION(1:3)}       & Real Triplet  & Section \ref{info:DEVC}     & m                 &                 \\ \hline
 {\ct MATL\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct NORMAL(1:3)}         & Real Triplet  & Section \ref{info:DEVC}     &                   &                 \\ \hline
-{\ct RTI}                 & Real        & Section \ref{info:DEVC2}    & $\sqrt{\hbox{m}\cdot\hbox{s}}$   &  \\ \hline
-{\ct SETPOINT}\footnote{For smoke detectors, this is obscuration; for heat detectors or sprinklers, the input is temperature.}
-	                  & Real        & Section \ref{info:DEVC}     & $^\circ$C or \%/m &     23.93 \%/m  \\ \hline
+{\ct RTI}                 & Real        & Section \ref{info:DEVC2}    & $\sqrt{\hbox{m}\cdot\hbox{s}}$   & 130  \\ \hline
+{\ct SETPOINT}
+	                  & Real        & Section \ref{info:DEVC}     & \degc or \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}  \\ \hline
 {\ct SPRAY\_DENSITY}      & Real        & Section \ref{info:DEVC2}    & m/s               &                 \\ \hline
 \end{longtable}
 \end{minipage}

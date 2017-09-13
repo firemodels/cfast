@@ -33,10 +33,12 @@
     use output_routines, only: output_version, output_initial_conditions
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
+    use radiation_routines, only : radiation
 
     use setup_data
     use thermal_data
     use option_data, only: total_steps
+    use namelist_data
 
     implicit none
 

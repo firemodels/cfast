@@ -38,6 +38,8 @@ module vflow_routines
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
     integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape, icount
     real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
+    
+    character(64) :: ventid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -53,7 +55,8 @@ module vflow_routines
         itop = ventptr%room1
         ibot = ventptr%room2
         icount = ventptr%counter
-        call get_vent_opening ('V',itop,ibot,icount,i,tsec,fraction)
+        ventid = ventptr%ramp_id
+        call get_vent_opening (ventid,'V',itop,ibot,icount,i,tsec,fraction)
         area = fraction * ventptr%area
         ventptr%current_area = area
         ishape = ventptr%shape

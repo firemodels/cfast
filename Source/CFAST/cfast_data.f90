@@ -57,8 +57,63 @@ module fire_data
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
-end module fire_data
+    end module fire_data
+    
+! --------------------------- namelist_data -------------------------------------------
 
+    module namelist_data
+
+    use precision_parameters
+    use cparams
+
+    implicit none
+    save
+
+    ! For namelist input
+    integer :: input_file_line_number
+    
+    ! For conversion routines
+!    integer :: c1,c2,c3,c4,c5
+    
+    ! For namelist input routines
+!    integer :: n_chemi,hheatnto,nfurncount,nmlcount
+    integer :: nmlcount
+    
+    ! Diagnositic output
+    character(256) :: nmlconfile
+    
+    ! For type of input files
+!    logical :: nmlflag=.false.,dotinflag=.false.
+    logical :: nmlflag=.false.
+    
+!    logical :: headflag=.false.,miscflag=.false.,matlflag=.false., &
+!               compflag=.false.,targeflag=.false.,fireflag=.false., &
+!               chemiflag=.false.,timeflag=.false.,initflag=.false., &
+!               eambiflag=.false.,limo2flag=.false.,ventflag=.false., &
+!               deadrflag=.false.,eventflag=.false.,rampflag=.false., &
+!               vventflag=.false.,mventflag=.false.,detecflag=.false., &
+!               conezflag=.false.,challflag=.false.,roomaflag=.false., &
+!               roomhflag=.false.,connflag=.false.,dtcheflag=.false., &
+!               furncflag=.false.,adiabflag=.false.,slcfflag=.false., &
+!               isofflag=.false.,vheatflag=.false.
+    
+    logical :: compflag=.false.,connflag=.false.,devcflag=.false.,fireflag=.false.,headflag=.false.,initflag=.false.,isofflag=.false., &
+               matlflag=.false.,miscflag=.false.,rampflag=.false.,slcfflag=.false.,timeflag=.false.,ventflag=.false. 
+               
+    
+!    logical :: event_hflag=.false.,event_vflag=.false.,event_mflag=.false., &
+!               event_fflag=.false.
+    
+!    logical, dimension(50,50,10,mxhvents) :: &
+!               hflag=.false.,vflag=.false.,mflag=.false.
+    
+!    logical, dimension(50,50,mxhvents) :: fflag=.false.
+    
+    ! For diagnosis
+    logical :: diagnflag=.false.,diradflag=.false.
+
+    end module namelist_data
+    
 ! --------------------------- option_data -------------------------------------------
 
 module option_data

@@ -7,6 +7,7 @@
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
+    use namelist_routines
 
     use wallptrs
     use cenviro
@@ -23,6 +24,7 @@
     use thermal_data
     use vent_data
     use room_data
+    use namelist_data !andy
 
     implicit none
 
@@ -84,31 +86,33 @@
         stop
     end if
 
-    ! read in the entire input file as a spreadsheet array of numbers and/or character strings
-    call readcsvformat (iofili, rarray, carray, nrow, ncol, 1, numr, numc, iofill)
-
-    close (iofili)
-
-    ! aversion is the header name, ivers is the major version number read in, iversion is the major version number
-    ! from the internal version data. these need to be compatible
-    aversion = carray(1,1)
-    ivers = rarray(1,2)
-    ! new version numbering 600->6000, so current version is 7000
-    if (version>=1000) then
-        iversion = version/1000
-    else
-        iversion = version/100
+    if (.not. nmlflag) then
+        ! read in the entire input file as a spreadsheet array of numbers and/or character strings
+        call readcsvformat (iofili, rarray, carray, nrow, ncol, 1, numr, numc, iofill)
+    
+        close (iofili)
+    
+        ! aversion is the header name, ivers is the major version number read in, iversion is the major version number
+        ! from the internal version data. these need to be compatible
+        aversion = carray(1,1)
+        ivers = rarray(1,2)
+        ! new version numbering 600->6000, so current version is 7000
+        if (version>=1000) then
+            iversion = version/1000
+        else
+            iversion = version/100
+        end if
+    
+        if (aversion==heading.and.ivers==iversion-1) then
+            write (*,5004) ivers, iversion
+            write (iofill,5004) ivers, iversion
+        else if (aversion/=heading.or.ivers/=iversion) then
+            write (*,5002) aversion,heading,ivers,iversion
+            write (iofill,5002) aversion,heading,ivers,iversion
+            stop
+        end if
+        title = carray(1,3)
     end if
-
-    if (aversion==heading.and.ivers==iversion-1) then
-        write (*,5004) ivers, iversion
-        write (iofill,5004) ivers, iversion
-    else if (aversion/=heading.or.ivers/=iversion) then
-        write (*,5002) aversion,heading,ivers,iversion
-        write (iofill,5002) aversion,heading,ivers,iversion
-        stop
-    end if
-    title = carray(1,3)
 
     do i = 1, mxrooms
         yinter(i) = -1.0_eb
@@ -116,8 +120,12 @@
 
     n_thrmp = 0
 
-    ! read in data file
-    call keywordcases (numr, numc)
+    if (nmlflag) then !andy
+        call namelist_input
+    else
+        ! read in data file
+        call keywordcases (numr, numc)
+    end if
 
     !	wait until the input file is parsed before we die on temperature outside reasonable limits
     if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
@@ -1064,6 +1072,8 @@
                         end if
                     end do
                 case ('F')
+                    i = lrarray(2)
+                    j = lrarray(3)
                     fannumber = lrarray(4)
                     if (fannumber>n_mvents) then
                         write (*,5196) fannumber
@@ -1968,6 +1978,8 @@
     ! --------------------------- open_files -------------------------------------------
 
     subroutine open_files ()
+    
+    use namelist_data
 
     !     routine: open_files
     !     purpose: get the paths and project base name open the input file for reading (1)
@@ -1978,16 +1990,21 @@
 
     integer :: lp, ld, ios
     character(256) :: testpath, testproj, revision, revision_date, compile_date
-
+    
     ! get the path and project names
     call exehandle (exepath, datapath, project)
-
+    
     ! form the file names for datafiles
     testpath = trim (datapath)
     lp = len_trim (testpath)
     testproj = trim (project)
     ld = len_trim (testproj)
-    inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
+    if (nmlflag) then !andy
+        inputfile = testpath(1:lp) // testproj(1:ld) // '.cfast'
+    else
+        inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
+        nmlconfile = testpath(1:lp) // testproj(1:ld) // '.cfast'
+    end if
     outputfile = testpath(1:lp) // testproj(1:ld) // '.out'
     smvhead = testpath(1:lp) // testproj(1:ld) // '.smv'
     smvdata = testpath(1:lp) // testproj(1:ld) // '.plt'

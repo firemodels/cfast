@@ -33,6 +33,7 @@ module mflow_routines
 
     real(eb) :: filter, vheight, layer_height, hvfan, fraction, fu, fl, uflw_totals(2+ns)
     integer :: i, j, k, iroom
+    character(64) :: ventid, filterid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -51,9 +52,11 @@ module mflow_routines
         ventptr => mventinfo(i)
         ventptr%mflow(1:2,1:2) = 0.0_eb
         uflw_totals = 0.0_eb
+        ventid = ventptr%ramp_id
+        filterid = ventptr%filter_id
 
         ! calculate volume flow through fan
-        call get_vent_opening ('M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
+        call get_vent_opening (ventid,'M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
         ventptr%relp = mv_pressure(ventptr%room2,ventptr%height(2)) - mv_pressure(ventptr%room1,ventptr%height(1))
         hvfan = mv_fan(ventptr, epsp, fraction)
 
@@ -70,7 +73,7 @@ module mflow_routines
             uflw_totals(2+k) = -(roomptr%species_fraction(u,k)*ventptr%mflow(1,u) + &
                 roomptr%species_fraction(l,k)*ventptr%mflow(1,l))
         end do
-        call get_vent_opening ('F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
+        call get_vent_opening (filterid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
 
         if (iroom<=nrm1) then
             uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + ventptr%mflow(1,u)

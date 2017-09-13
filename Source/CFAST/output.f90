@@ -18,6 +18,7 @@ module output_routines
     use wallptrs
     use room_data
     use ramp_data
+    use namelist_data
 
     implicit none
 
@@ -662,6 +663,7 @@ module output_routines
 
     integer :: i, j, iramp
     character :: ciout*14, cjout*14, csout*6, crout*10, ctrigger*4
+    character(64) :: ventid
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
@@ -680,7 +682,8 @@ module output_routines
             roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                iramp = find_vent_opening_ramp('H',ventptr%room1,ventptr%room2,ventptr%counter)
+                ventid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(ventid,'H',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -732,7 +735,8 @@ module output_routines
             roomptr => roominfo(ventptr%room2)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                iramp = find_vent_opening_ramp('V',ventptr%room1,ventptr%room2,ventptr%counter)
+                ventid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(ventid,'V',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5050) ciout, cjout, ventptr%counter, csout, ventptr%area, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -781,7 +785,8 @@ module output_routines
             if (ventptr%room2==nr) cjout = 'Outside'
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                iramp = find_vent_opening_ramp('M',ventptr%room1,ventptr%room2,ventptr%counter)
+                ventid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(ventid,'M',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -823,13 +828,18 @@ module output_routines
         write (iofilo,5160)
         do i = 1, nramps
             rampptr => rampinfo(i)
-            roomptr => roominfo(rampptr%room2)
-            write (cjout,'(a14)') roomptr%name
-            if (rampptr%room2==nr) cjout = 'Outside'
-            roomptr => roominfo(rampptr%room1)
-            write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
-                (int(rampptr%time(j)),j=1,rampptr%npoints)
-            write (iofilo,5180) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
+            if (.not. nmlflag) goto 222
+            if (trim(rampptr%type) == 'FRACTION') then
+222            roomptr => roominfo(rampptr%room2)
+               write (cjout,'(a14)') roomptr%name
+               if (rampptr%room2==nr) cjout = 'Outside'
+               roomptr => roominfo(rampptr%room1)
+               write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
+                   (int(rampptr%time(j)),j=1,rampptr%npoints)
+               write (iofilo,5180) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
+               goto 223
+            end if
+223         continue
         end do
     end if
     return

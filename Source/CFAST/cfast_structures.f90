@@ -5,6 +5,7 @@ module cfast_types
 
     ! detector / sprinkler structure
     type detector_type
+        character(64) :: name           ! user selected name for the detector (user input)
         real(eb) :: center(3)           ! position of detector center (user input)
         real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
         real(eb) :: rti                 ! rti value for heat detector or sprinkler (user input)
@@ -32,7 +33,7 @@ module cfast_types
     ! fire data structure
     type fire_type
         ! These are the fire definitions from the input
-        character(128) :: name                          ! user selected name for the fire (user input)
+        character(64) :: name                           ! user selected name for the fire (user input)
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
         integer :: ignition_type                        ! ignition type for fire (user input)
@@ -86,7 +87,8 @@ module cfast_types
 
     ! ramp data structure
     type ramp_type
-        character :: type
+        character(64) :: id  
+        character(64) :: type  
         integer :: room1, room2, counter, npoints
         real(eb) :: time(mxpts), value(mxpts)
     end type ramp_type
@@ -94,9 +96,10 @@ module cfast_types
     ! room data structure
     type room_type
         ! These are room definitions from or calculated from user input
-        character(128) :: name                          ! user selected name for the compartment
-        character(mxthrmplen), dimension(nwal) :: matl  ! surface materials for ceiling, floor, upper wall, lower wall
+        character(64) :: name                           ! user selected name for the compartment
+        character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
 
+        integer :: compartment !andy
         integer :: ibar, jbar, kbar                     ! number of grids in x, y, and z direction in compartment
         integer :: deadroom                             ! if compartment is only connected to a single other compartment
                                                         ! pressure of other compartment is used for the dead compartment
@@ -172,8 +175,8 @@ module cfast_types
 
     ! target data structure
     type target_type
-        character(128) :: name          ! user selected name for the target
-        character(mxthrmplen) :: material ! material for the target (used to match materials properties)
+        character(64) :: name           ! user selected name for the target
+        character(64) :: material       ! material for the target (used to match materials properties)
 
         real(eb) :: center(3)           ! position of target center
         real(eb) :: normal(3)           ! target normal vector
@@ -214,7 +217,7 @@ module cfast_types
 
     ! thermal properties structure
     type thermal_type
-        character(mxthrmplen) :: name                   ! user selected name for the material
+        character(64) :: name                           ! user selected name for the material
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
         real(eb), dimension(mxslb) :: rho               ! density of each slab
@@ -264,6 +267,8 @@ module cfast_types
 
         ! These are common to more than one vent types
 
+        character(64) :: ramp_id            ! ramp id assocated with vent
+        character(64) :: filter_id            ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent
         integer :: room2                    ! second or bottom compartment for connecting vent
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...

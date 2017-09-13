@@ -7,6 +7,8 @@ module utility_routines
     use option_data
     use solver_data
     use room_data, only: nwpts, wsplit, iwbound
+    
+    use namelist_data
 
     implicit none
 
@@ -576,18 +578,22 @@ module utility_routines
         end if
     end do
 
-    ! Now check that the project.in file exists - this is the data file
+    ! Now check that the project.cfast/project.in file exists = this is the data file
     buf = ' '
     if (le(2)/=0) then
-        if (ext(2)(1:le(2))=='.in') then
-            buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+        if (ext(2)(1:le(2))=='.cfast') then
+             buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+             nmlflag=.true.
+        else if (ext(2)(1:le(2))=='.in') then
+             buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+!             dotinflag=.true.
         else
-            write (*,*) ' Input file does not exist: ', trim(buf)
-            stop
+             write (*,*) ' Input file extension not appropriate (name.cfast or name.in needed).'
+             stop
         end if
-    else
-        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
-    end if
+     else
+        write (*,*) ' Input file extension not recognized (name.cfast or name.in needed).'
+     end if
 
     lb = len_trim(buf)
 
@@ -1203,6 +1209,7 @@ module opening_fractions
     use room_data, only: roominfo, nrm1
     use target_data, only: targetinfo
     use setup_data, only: iofilo, iofill
+    use namelist_data
 
     implicit none
 
@@ -1214,22 +1221,35 @@ module opening_fractions
     
 ! --------------------------- find_vent_opening_ramp ------------------------------
     
-    integer function find_vent_opening_ramp (venttype,room1,room2,counter)
+    integer function find_vent_opening_ramp (ventname,venttype,room1,room2,counter)
     
+    character(64) :: ventname
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: room1, room2, counter
+    character(64) :: ventid
     
     integer iramp, vent_index
     type(ramp_type), pointer :: rampptr
-
+    type(vent_type), pointer :: ventptr
+    
+    ventptr=>vventinfo(counter)
+    
     if (nramps>0) then
         do iramp = 1, nramps
             rampptr=>rampinfo(iramp)
-            if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
-                rampptr%counter==counter) then
-                vent_index = iramp
-                find_vent_opening_ramp = iramp
-                return
+            if (nmlflag) then
+                if (ventptr%ramp_id==trim(ventname)) then
+                    vent_index = iramp
+                    find_vent_opening_ramp = iramp
+                    return
+                end if
+            else
+                if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
+                   rampptr%counter==counter) then
+                    vent_index = iramp
+                    find_vent_opening_ramp = iramp
+                    return
+                end if
             end if
         end do
     end if
@@ -1240,8 +1260,9 @@ module opening_fractions
 
 ! --------------------------- get_vent_opening-------------------------------------
 
-    subroutine get_vent_opening (venttype,room1,room2,counter,vent_index,time,fraction)
+    subroutine get_vent_opening (ventname,venttype,room1,room2,counter,vent_index,time,fraction)
 
+    character(64) :: ventname
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: room1, room2, counter, vent_index
     real(eb), intent(in) :: time
@@ -1256,7 +1277,7 @@ module opening_fractions
     fraction = 1.0_eb
 
     if (nramps>0) then
-        iramp = find_vent_opening_ramp (venttype,room1,room2,counter)
+        iramp = find_vent_opening_ramp (ventname,venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)
             if (time<=rampptr%time(1)) then

@@ -141,6 +141,7 @@ module solve_routines
     real(eb) :: fraction, height, width, avent
     integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
+    character(64) :: ventid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -160,7 +161,8 @@ module solve_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        call get_vent_opening ('H',im,ix,ik,i,tsec,fraction)
+        ventid = ventptr%ramp_id
+        call get_vent_opening (ventid,'H',im,ix,ik,i,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = fraction*height*width

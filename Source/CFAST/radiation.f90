@@ -167,7 +167,6 @@ module radiation_routines
     f14(iroom) = rdparfig(xroom,yroom,zroom)
 
     ! define areas
-
     area(1) = xroom*yroom
     area(2) = 2.0_eb*(zroom-hlay)*(xroom+yroom)
     area(3) = 2.0_eb*hlay*(xroom+yroom)

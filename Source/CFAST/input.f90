@@ -7,7 +7,7 @@
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
-    use namelist_routines
+    use namelist_routines, only: namelist_input
 
     use wallptrs
     use cenviro
@@ -24,7 +24,7 @@
     use thermal_data
     use vent_data
     use room_data
-    use namelist_data !andy
+    use namelist_data
 
     implicit none
 

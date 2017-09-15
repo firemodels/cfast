@@ -12,5 +12,6 @@ if not (%1)==() goto GETOPTS
 
 :: strip extension
 for %%f in (%infile%) do (
+    set infile_full=%%f
     set infile=%%~nf
 )

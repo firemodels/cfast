@@ -5,7 +5,7 @@ call %SVNROOT%\Validation\Scripts\getopts.bat %*
 set fulldir=%BASEDIR%\%dir%
 
 
-set in=%infile%
+set in=%infile_full%
 set out=%infile%.err
 set stopfile=%infile%.stop
 

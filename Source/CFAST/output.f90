@@ -828,8 +828,7 @@ module output_routines
         write (iofilo,5160)
         do i = 1, nramps
             rampptr => rampinfo(i)
-            if (.not. nmlflag) goto 222
-            if (trim(rampptr%type) == 'FRACTION') then
+            if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
 222            roomptr => roominfo(rampptr%room2)
                write (cjout,'(a14)') roomptr%name
                if (rampptr%room2==nr) cjout = 'Outside'

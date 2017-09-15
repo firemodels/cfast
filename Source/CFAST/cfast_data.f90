@@ -68,49 +68,22 @@ module fire_data
 
     implicit none
     save
-
-    ! For namelist input
-    integer :: input_file_line_number
     
-    ! For conversion routines
-!    integer :: c1,c2,c3,c4,c5
-    
-    ! For namelist input routines
-!    integer :: n_chemi,hheatnto,nfurncount,nmlcount
-    integer :: nmlcount
-    
-    ! Diagnositic output
-    character(256) :: nmlconfile
-    
-    ! For type of input files
-!    logical :: nmlflag=.false.,dotinflag=.false.
-    logical :: nmlflag=.false.
-    
-!    logical :: headflag=.false.,miscflag=.false.,matlflag=.false., &
-!               compflag=.false.,targeflag=.false.,fireflag=.false., &
-!               chemiflag=.false.,timeflag=.false.,initflag=.false., &
-!               eambiflag=.false.,limo2flag=.false.,ventflag=.false., &
-!               deadrflag=.false.,eventflag=.false.,rampflag=.false., &
-!               vventflag=.false.,mventflag=.false.,detecflag=.false., &
-!               conezflag=.false.,challflag=.false.,roomaflag=.false., &
-!               roomhflag=.false.,connflag=.false.,dtcheflag=.false., &
-!               furncflag=.false.,adiabflag=.false.,slcfflag=.false., &
-!               isofflag=.false.,vheatflag=.false.
-    
-    logical :: compflag=.false.,connflag=.false.,devcflag=.false.,fireflag=.false.,headflag=.false.,initflag=.false.,isofflag=.false., &
-               matlflag=.false.,miscflag=.false.,rampflag=.false.,slcfflag=.false.,timeflag=.false.,ventflag=.false. 
-               
-    
-!    logical :: event_hflag=.false.,event_vflag=.false.,event_mflag=.false., &
-!               event_fflag=.false.
-    
-!    logical, dimension(50,50,10,mxhvents) :: &
-!               hflag=.false.,vflag=.false.,mflag=.false.
-    
-!    logical, dimension(50,50,mxhvents) :: fflag=.false.
-    
-    ! For diagnosis
-    logical :: diagnflag=.false.,diradflag=.false.
+    logical :: nmlflag = .false.                    ! true if input file is in namelist format
+    integer :: input_file_line_number               ! current line read in a namelist-format input file
+    logical :: compflag=.false.                     ! true if each namelist type has been read in
+    logical :: connflag=.false.
+    logical :: devcflag=.false.
+    logical :: fireflag=.false.
+    logical :: headflag=.false.
+    logical :: initflag=.false.
+    logical :: isofflag=.false.
+    logical :: matlflag=.false.
+    logical :: miscflag=.false.
+    logical :: rampflag=.false.
+    logical :: slcfflag=.false.
+    logical :: timeflag=.false.
+    logical :: ventflag=.false. 
 
     end module namelist_data
     
@@ -254,7 +227,7 @@ module setup_data
     !File descriptors for cfast
     integer :: iofili=1, iofilo=6, iofill=3
     character(6), parameter :: heading="VERSN"
-    character(64) :: project
+    character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning

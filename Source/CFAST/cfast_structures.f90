@@ -99,7 +99,7 @@ module cfast_types
         character(64) :: name                           ! user selected name for the compartment
         character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
 
-        integer :: compartment !andy
+        integer :: compartment                          ! compartment number assigned automatically for namelist inputs
         integer :: ibar, jbar, kbar                     ! number of grids in x, y, and z direction in compartment
         integer :: deadroom                             ! if compartment is only connected to a single other compartment
                                                         ! pressure of other compartment is used for the dead compartment

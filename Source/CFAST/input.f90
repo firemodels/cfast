@@ -44,7 +44,7 @@
 
     implicit none
 
-    real(eb) :: yinter(mxrooms), temparea(mxcross), temphgt(mxcross), deps1, dwall1, dwall2, rti
+    real(eb) :: temparea(mxcross), temphgt(mxcross), deps1, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx, sum
     integer :: numr, numc, ios, iversion, i, ii, j, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2, ivers
@@ -86,10 +86,13 @@
         stop
     end if
 
-    if (.not. nmlflag) then
+    n_thrmp = 0
+    
+    if (nmlflag) then
+        call namelist_input
+    else
         ! read in the entire input file as a spreadsheet array of numbers and/or character strings
         call readcsvformat (iofili, rarray, carray, nrow, ncol, 1, numr, numc, iofill)
-    
         close (iofili)
     
         ! aversion is the header name, ivers is the major version number read in, iversion is the major version number
@@ -112,22 +115,14 @@
             stop
         end if
         title = carray(1,3)
-    end if
-
-    do i = 1, mxrooms
-        yinter(i) = -1.0_eb
-    end do
-
-    n_thrmp = 0
-
-    if (nmlflag) then !andy
-        call namelist_input
-    else
+        
         ! read in data file
         call keywordcases (numr, numc)
     end if
+    
+    ! now we can check the input data for consistency
 
-    !	wait until the input file is parsed before we die on temperature outside reasonable limits
+    ! check for temperature outside reasonable limits
     if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
         write (*,5022) exterior_temperature
         write (iofill,5022) exterior_temperature
@@ -139,7 +134,7 @@
         stop
     end if
 
-    ! Compartment geometry related data
+    ! compartment geometry related data
     nrm1 = nr - 1
     do i = 1, nrm1
         roomptr => roominfo(i)
@@ -148,7 +143,7 @@
         roomptr%z1 = roomptr%z0 + roomptr%cheight
     end do
 
-    ! We now know what output is going to be generated, so create the files
+    ! we now know what output is going to be generated, so create the files
     call openoutputfiles
 
     interior_rho = interior_abs_pressure/interior_temperature/rgas
@@ -362,7 +357,7 @@
     end do
 
     ! initialize variables that will change when ambient conditions change
-    call initamb(yinter,1)
+    call initamb
 
     ! check detectors
     do i = 1, n_detectors
@@ -1981,55 +1976,56 @@
     
     use namelist_data
 
-    !     routine: open_files
-    !     purpose: get the paths and project base name open the input file for reading (1)
+    !     get the paths and project base name open the input file for reading
     ! 	         delete the output files
-    ! 	         open the log file (3)
+    ! 	         open the log file
     ! 	         call the input routines
-    !     arguments: errorcode: return error indication if non-zero
 
-    integer :: lp, ld, ios
-    character(256) :: testpath, testproj, revision, revision_date, compile_date
+    integer :: lp, ld, le, ios
+    character(len=256) :: revision, revision_date, compile_date, buf
     
-    ! get the path and project names
-    call exehandle (exepath, datapath, project)
+    ! get the input file parts
+    call exehandle (exepath, datapath, project, extension)
     
     ! form the file names for datafiles
-    testpath = trim (datapath)
-    lp = len_trim (testpath)
-    testproj = trim (project)
-    ld = len_trim (testproj)
-    if (nmlflag) then !andy
-        inputfile = testpath(1:lp) // testproj(1:ld) // '.cfast'
-    else
-        inputfile = testpath(1:lp) // testproj(1:ld) // '.in'
-        nmlconfile = testpath(1:lp) // testproj(1:ld) // '.cfast'
-    end if
-    outputfile = testpath(1:lp) // testproj(1:ld) // '.out'
-    smvhead = testpath(1:lp) // testproj(1:ld) // '.smv'
-    smvdata = testpath(1:lp) // testproj(1:ld) // '.plt'
-    smvcsv = testpath(1:lp) // testproj(1:ld) // '_zone.csv'
-    ssflow = testpath(1:lp) // testproj(1:ld) // '_f.csv'
-    ssnormal = testpath(1:lp) // testproj(1:ld) // '_n.csv'
-    ssspecies = testpath(1:lp) // testproj(1:ld) // '_s.csv'
-    ssspeciesmass = testpath(1:lp) // testproj(1:ld) // '_m.csv'
-    sswall = testpath(1:lp) // testproj(1:ld) // '_w.csv'
-    gitfile = testpath(1:lp) // testproj(1:ld) // '_git.txt'
-    errorlogging = testpath(1:lp) // testproj(1:ld) // '.log'
-    stopfile = testpath(1:lp) // testproj(1:ld) // '.stop'
-    residfile = testpath(1:lp) // testproj(1:ld) // '.debug'
-    residcsv = testpath(1:lp) // testproj(1:ld) // '_resid.csv'
-    queryfile = testpath(1:lp) // testproj(1:ld) // '.query'
-    statusfile = testpath(1:lp) // testproj(1:ld) // '.status'
-    slabcsv = testpath(1:lp) // testproj(1:ld) // '_slab.csv'
-    kernelisrunning = testpath(1:lp) // testproj(1:ld) // '.kernelisrunning'
+    lp = len_trim (datapath)
+    ld = len_trim (project)
+    le = len_trim (extension)
+    inputfile = datapath(1:lp) // project(1:ld) // extension(1:le)
+    outputfile = datapath(1:lp) // project(1:ld) // '.out'
+    smvhead = datapath(1:lp) // project(1:ld) // '.smv'
+    smvdata = datapath(1:lp) // project(1:ld) // '.plt'
+    smvcsv = datapath(1:lp) // project(1:ld) // '_zone.csv'
+    ssflow = datapath(1:lp) // project(1:ld) // '_f.csv'
+    ssnormal = datapath(1:lp) // project(1:ld) // '_n.csv'
+    ssspecies = datapath(1:lp) // project(1:ld) // '_s.csv'
+    ssspeciesmass = datapath(1:lp) // project(1:ld) // '_m.csv'
+    sswall = datapath(1:lp) // project(1:ld) // '_w.csv'
+    gitfile = datapath(1:lp) // project(1:ld) // '_git.txt'
+    errorlogging = datapath(1:lp) // project(1:ld) // '.log'
+    stopfile = datapath(1:lp) // project(1:ld) // '.stop'
+    residfile = datapath(1:lp) // project(1:ld) // '.debug'
+    residcsv = datapath(1:lp) // project(1:ld) // '_resid.csv'
+    queryfile = datapath(1:lp) // project(1:ld) // '.query'
+    statusfile = datapath(1:lp) // project(1:ld) // '.status'
+    slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
+    kernelisrunning = datapath(1:lp) // project(1:ld) // '.kernelisrunning'
 
-    testpath = trim (exepath)
-    lp = len_trim (testpath)
-    solverini = testpath(1:lp) // 'solver.ini'
+    lp = len_trim (exepath)
+    solverini = datapath(1:lp) // 'solver.ini'
 
+    ! open input file and check to see if it's a new (namelist) format file
     open (unit=1, file=inputfile, action='read', status='old', iostat=ios)
-
+    read (unit=1,fmt='(a)') buf
+    rewind (unit=1)
+    if (buf(1:5)==heading) then
+        nmlflag = .false.
+    else if (buf(1:1)=='&') then
+        nmlflag = .true.
+    else
+        write (*,*) ' Input file format not recognized. Check first line of input file.'
+    end if
+ 
     ! output the revision for later identification of validation plots
     if (validate) then
         call deleteoutputfiles (gitfile)
@@ -2064,8 +2060,6 @@
     call deleteoutputfiles (slabcsv)
     call deleteoutputfiles (kernelisrunning)
 
-    ! since we have reached this point, the output files are available and stop has been turned off.
-    project = testproj (1:ld)
     return
 
     end subroutine open_files

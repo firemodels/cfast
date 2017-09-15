@@ -31,21 +31,7 @@
 
     implicit none
 
-    integer :: ios,ncomp
-
-    ios = 1
-
-    close (iofili)
-    open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
-    if (ios/=0) then
-        if (iofill>0) then
-            write (*,5050) mod(ios,256)
-            write (iofill,5050) mod(ios,256)
-        else
-            write (*,5050) mod(ios,256)
-        end if
-        stop
-    end if
+    integer :: ncomp
 
     ncomp = 0
     nvisualinfo=0
@@ -74,27 +60,27 @@
 
 
     ! --------------------------- HEAD --------------------------------------
-    subroutine read_head(LU)
+    subroutine read_head(lu)
 
     integer :: ios,iversion
-    integer :: LU
+    integer :: lu
 
     namelist /HEAD/ iversion,title
 
     ios = 1
     iversion = 0
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'VERSN'
     head_loop: do
-        call checkread ('HEAD', LU, ios)
+        call checkread ('HEAD', lu, ios)
         if (ios==0) headflag=.true.
         if (ios==1) then
             exit head_loop
         end if
-        read(LU,HEAD,err=34,iostat=ios)
+        read(lu,HEAD,err=34,iostat=ios)
 34      if (ios>0) then
             write(iofill, '(a)') '***Error in &HEAD: Invalid specification for inputs.'
             stop
@@ -109,12 +95,12 @@
 
     head_flag: if (headflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
-        call checkread('HEAD',LU,ios)
+        call checkread('HEAD',lu,ios)
         call set_head_defaults
-        read(LU,HEAD)
+        read(lu,HEAD)
 
         iversion = iversion/1000
 
@@ -142,61 +128,61 @@
 
 
     ! --------------------------- CHECKREAD ---------------------------------------
-    SUBROUTINE CHECKREAD(NAME,LU,IOS)
+    subroutine checkread(name,lu,ios)
 
-    ! Look for the namelist variable NAME and then stop at that line.
+    ! look for the namelist variable name and then stop at that line.
 
-    INTEGER :: II
-    INTEGER, INTENT(OUT) :: IOS
-    INTEGER, INTENT(IN) :: LU
-    CHARACTER(4), INTENT(IN) :: NAME
-    CHARACTER(80) TEXT
-    IOS = 1
+    integer :: ii
+    integer, intent(out) :: ios
+    integer, intent(in) :: lu
+    character(4), intent(in) :: name
+    character(80) text
+    ios = 1
 
-    READLOOP: DO
-        READ(LU,'(A)',END=10) TEXT
-        INPUT_FILE_LINE_NUMBER = INPUT_FILE_LINE_NUMBER + 1
-        TLOOP: DO II=1,72
-            IF (TEXT(II:II)/='&' .AND. TEXT(II:II)/=' ') EXIT TLOOP
-            IF (TEXT(II:II)=='&') THEN
-                IF (TEXT(II+1:II+4)==NAME) THEN
-                    BACKSPACE(LU)
-                    IOS = 0
-                    EXIT READLOOP
-                ELSE
-                    CYCLE READLOOP
-                ENDIF
-            ENDIF
-        ENDDO TLOOP
-    ENDDO READLOOP
+    readloop: do
+        read(lu,'(a)',end=10) text
+        input_file_line_number = input_file_line_number + 1
+        tloop: do ii=1,72
+            if (text(ii:ii)/='&' .and. text(ii:ii)/=' ') exit tloop
+            if (text(ii:ii)=='&') then
+                if (text(ii+1:ii+4)==name) then
+                    backspace(lu)
+                    ios = 0
+                    exit readloop
+                else
+                    cycle readloop
+                endif
+            endif
+        enddo tloop
+    enddo readloop
 
-10  RETURN
+10  return
 
-    END SUBROUTINE CHECKREAD
+    end subroutine checkread
 
 
     ! --------------------------- TIME -------------------------------------------
-    subroutine read_time(LU)
+    subroutine read_time(lu)
 
     integer :: ios
-    integer :: LU
+    integer :: lu
 
     integer :: simulation,print,spreadsheet,smokeview
     namelist /TIME/print,simulation,spreadsheet,smokeview
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'TIME'
     time_loop: do
-        call checkread ('TIME',LU,ios)
+        call checkread ('TIME',lu,ios)
         if (ios==0) timeflag=.true.
         if (ios==1) then
             exit time_loop
         end if
-        read(LU,TIME,err=34,iostat=ios)
+        read(lu,TIME,err=34,iostat=ios)
 34      if (ios>0) then
             write(iofill, '(a)') '***Error in &TIME: Invalid specification for inputs.'
             stop
@@ -211,12 +197,12 @@
 
     time_flag: if (timeflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
-        call checkread('TIME',LU,ios)
+        call checkread('TIME',lu,ios)
         call set_time_defaults
-        read(LU,TIME)
+        read(lu,TIME)
 
         time_end=simulation
         print_out_interval=print
@@ -242,10 +228,10 @@
 
 
     ! --------------------------- INIT -------------------------------------------
-    subroutine read_init(LU)
+    subroutine read_init(lu)
 
     integer :: ios
-    integer :: LU
+    integer :: lu
 
     real(eb) :: pressure
     real(eb),dimension(2) :: temperatures
@@ -253,17 +239,17 @@
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'INIT'
     init_loop: do
-        call checkread ('INIT',LU,ios)
+        call checkread ('INIT',lu,ios)
         if (ios==0) initflag=.true.
         if (ios==1) then
             exit init_loop
         end if
-        read(LU,INIT,err=34,iostat=ios)
+        read(lu,INIT,err=34,iostat=ios)
 34      if (ios>0) then
             write(iofill, '(a)') '***Error in &INIT: Invalid specification for inputs.'
             stop
@@ -272,12 +258,12 @@
 
     init_flag: if (initflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
-        call checkread('INIT',LU,ios)
+        call checkread('INIT',lu,ios)
         call set_init_defaults
-        read(LU,INIT)
+        read(lu,INIT)
 
         exterior_temperature  = temperatures(1) + kelvin_c_offset
         interior_temperature  = temperatures(2) + kelvin_c_offset
@@ -303,10 +289,10 @@
 
 
     ! --------------------------- MISC -------------------------------------------
-    subroutine read_misc(LU)
+    subroutine read_misc(lu)
 
     integer :: ios
-    integer :: LU
+    integer :: lu
 
     real(eb) :: max_time_step,lower_oxygen_limit
     character(64) :: adiabatic
@@ -314,16 +300,16 @@
 
     ios = 1
 
-    rewind(LU) ; input_file_line_number = 0
+    rewind (unit=lu) ; input_file_line_number = 0
 
     ! Scan entire file to look for 'MISC'
     misc_loop: do
-        call checkread ('MISC',LU,ios)
+        call checkread ('MISC',lu,ios)
         if (ios==0) miscflag=.true.
         if (ios==1) then
             exit misc_loop
         end if
-        read(LU,MISC,err=34,iostat=ios)
+        read(lu,MISC,err=34,iostat=ios)
 34      if (ios>0) then
             write(iofill, '(a)') '***Error in &MISC: Invalid specification inputs.'
             stop
@@ -332,12 +318,12 @@
 
     misc_flag: if (miscflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
-        call checkread('MISC',LU,ios)
+        call checkread('MISC',lu,ios)
         call set_misc_defaults
-        read(LU,MISC)
+        read(lu,MISC)
 
         adiabatic_walls=.false.
         if (adiabatic == '.TRUE.') adiabatic_walls=.true.
@@ -360,11 +346,11 @@
 
 
     ! --------------------------- MATL -------------------------------------------
-    subroutine read_matl(LU)
+    subroutine read_matl(lu)
 
 
     integer :: ios,ii
-    integer :: LU
+    integer :: lu
     type(thermal_type), pointer :: thrmpptr
 
     real(eb) :: conductivity,density,emissivity,specific_heat,thickness
@@ -373,18 +359,18 @@
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'MATL'
     n_thrmp = 0
     matl_loop: do
-        call checkread ('MATL',LU,ios)
+        call checkread ('MATL',lu,ios)
         if (ios==0) matlflag=.true.
         if (ios==1) then
             exit matl_loop
         end if
-        read(LU,MATL,err=34,iostat=ios)
+        read(lu,MATL,err=34,iostat=ios)
         n_thrmp = n_thrmp + 1
 34      if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_thrmp
@@ -400,7 +386,7 @@
 
     matl_flag: if (matlflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
@@ -408,9 +394,9 @@
 
             thrmpptr => thermalinfo(ii)
 
-            call checkread('MATL',LU,ios)
+            call checkread('MATL',lu,ios)
             call set_matl_defaults
-            read(LU,MATL)
+            read(lu,MATL)
 
             thrmpptr%name          = id
             thrmpptr%nslab         = 1
@@ -442,39 +428,40 @@
 
 
     ! --------------------------- COMP -------------------------------------------
-    subroutine read_comp(LU,ncomp)
+    subroutine read_comp(lu,ncomp)
 
     integer :: ios,ii,i,kk
-    integer :: LU,ncomp
+    integer :: lu,ncomp
     type(ramp_type), pointer :: rampptr
     type(room_type), pointer :: roomptr
     character :: tcname*64
 
     integer,dimension(3) :: grid
-    real(eb) :: depth,height,width
+    real(eb) :: depth, height ,width
     real(eb),dimension(3) :: origin
-    character(64) :: hall,shaft
-    character(64) :: id,room_area_ramp,ceiling_matl_id,floor_matl_id,wall_matl_id
-    namelist /COMP/ depth,grid,hall,height,id,ceiling_matl_id,floor_matl_id,wall_matl_id,origin,room_area_ramp,shaft,width
+    character(64) :: hall, shaft
+    character(64) :: id, room_area_ramp, ceiling_matl_id, floor_matl_id, wall_matl_id
+    namelist /COMP/ depth, grid, hall, height, id, ceiling_matl_id, floor_matl_id, wall_matl_id, origin, &
+        room_area_ramp, shaft, width
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
-    ! Scan entire file to look for 'COMP'
+    ! Scan entire file to look for 'COMP' to make sure there is at least one compartment and not too many for the software
     comp_loop: do
-        call checkread('COMP',LU,ios)
+        call checkread('COMP',lu,ios)
         if (ios==0) compflag=.true.
         if (ios==1) then
             exit comp_loop
         end if
-        read(LU,COMP,err=34,iostat=ios)
-        ncomp = ncomp + 1
-34      if (ios>0) then
+        read(lu,COMP,iostat=ios)
+        if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , ncomp
             stop
         end if
+        ncomp = ncomp + 1
     end do comp_loop
 
     if (ncomp>mxrooms) then
@@ -491,7 +478,7 @@
 
     comp_flag: if (compflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
@@ -499,9 +486,9 @@
 
             roomptr => roominfo(ii)
 
-            call checkread('COMP',LU,ios)
+            call checkread('COMP',lu,ios)
             call set_comp_defaults
-            read(LU,COMP)
+            read(lu,COMP)
 
             if (trim(room_area_ramp) /= 'NULL') then
                 ramp_search: do kk=1,nramps
@@ -572,7 +559,6 @@
 
     end if comp_flag
 
-
     contains
 
     subroutine set_comp_defaults
@@ -596,9 +582,9 @@
 
 
     ! --------------------------- DEVC -------------------------------------------
-    subroutine read_devc(LU)
+    subroutine read_devc(lu)
 
-    integer :: LU,ios
+    integer :: lu,ios
     integer :: iroom,ii,jj,i1,counter1,counter2
     character(64) :: compartment_id
     character :: tcname*64
@@ -612,23 +598,23 @@
     real(eb),dimension(3) :: location,normal
     character(64) :: comp_id,id,matl_id
     character(64) :: type
-    namelist /DEVC/comp_id,type,id,internal_location,location,matl_id,normal,rti,setpoint,spray_density
+    namelist /DEVC/ comp_id, type, id, internal_location, location, matl_id, normal, rti, setpoint, spray_density
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'DEVC'
     n_targets = 0
     n_detectors= 0
     devc_loop: do
-        call checkread ('DEVC',LU,ios)
+        call checkread ('DEVC',lu,ios)
         if (ios==0) devcflag=.true.
         if (ios==1) then
             exit devc_loop
         end if
-        read(LU,DEVC,err=34,iostat=ios)
+        read(lu,DEVC,err=34,iostat=ios)
         if (type == 'PLATE' .or. type == 'CYLINDER') n_targets =n_targets + 1
         if (type == 'SPRINKLER' .or. type == 'HEAT'.or. type == 'SMOKE') n_detectors =n_detectors + 1
 34      if (ios>0) then
@@ -652,7 +638,7 @@
 
     devc_detec_flag: if (devcflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         counter1=0
@@ -660,9 +646,9 @@
         ! Assign value to CFAST variables for further calculations
         read_devc_loop: do ii=1,n_targets+n_detectors
 
-            call checkread('DEVC',LU,ios)
+            call checkread('DEVC',lu,ios)
             call set_devc_defaults
-            read(LU,DEVC)
+            read(lu,DEVC)
 
             if (trim(type) == 'PLATE' .or. trim(type) == 'CYLINDER') then
                 counter1=counter1+1
@@ -848,10 +834,10 @@
 
 
     ! --------------------------- RAMP -------------------------------------------
-    subroutine read_ramp(LU)
+    subroutine read_ramp(lu)
 
     integer :: ii,iramp
-    integer :: ios,LU
+    integer :: ios,lu
 
     type(ramp_type), pointer :: rampptr
 
@@ -862,18 +848,18 @@
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'RAMP'
     nramps = 0
     ramp_loop: do
-        call checkread ('RAMP',LU,ios)
+        call checkread ('RAMP',lu,ios)
         if (ios==0) rampflag=.true.
         if (ios==1) then
             exit ramp_loop
         end if
-        read(LU,RAMP,err=34,iostat=ios)
+        read(lu,RAMP,err=34,iostat=ios)
         nramps =nramps + 1
 34      if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &RAMP: Invalid specification for inputs. Check &RAMP input, ', nramps
@@ -889,15 +875,15 @@
 
     ramp_flag: if (rampflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
         read_ramp_loop: do ii=1,nramps
 
-            call checkread('RAMP',LU,ios)
+            call checkread('RAMP',lu,ios)
             call set_ramp_defaults
-            read(LU,RAMP)
+            read(lu,RAMP)
 
             rampptr=>rampinfo(ii)
             rampptr%id=id
@@ -949,10 +935,10 @@
 
 
     ! --------------------------- FIRE -------------------------------------------
-    subroutine read_fire(LU)
+    subroutine read_fire(lu)
 
     integer :: ios,i,ii,jj,kk,iroom
-    integer :: LU,base,midpoint
+    integer :: lu,base,midpoint
     real(eb) :: tmpcond,max_hrr,flamelength,hrrpm3,max_area,ohcomb
     character(64) :: compartment_id
 
@@ -973,23 +959,23 @@
     ios = 1
     tmpcond = 0.0
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'FIRE'
     n_fires = 0
     fire_loop: do
-        call checkread ('FIRE', LU, ios)
+        call checkread ('FIRE', lu, ios)
         if (ios==0) fireflag=.true.
         if (ios==1) then
             exit fire_loop
         end if
-        read(LU,FIRE,err=34,iostat=ios)
-        n_fires =n_fires + 1
-34      if (ios>0) then
+        read(lu,FIRE,iostat=ios)
+        if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_fires+1
             stop
         end if
+        n_fires =n_fires + 1
     end do fire_loop
 
     if (n_fires>mxfires) then
@@ -1000,7 +986,7 @@
 
     fire_flag: if (fireflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
@@ -1008,9 +994,9 @@
 
             fireptr => fireinfo(ii)
 
-            call checkread('FIRE',LU,ios)
+            call checkread('FIRE',lu,ios)
             call set_fire_defaults
-            read(LU,FIRE)
+            read(lu,FIRE)
 
             iroom=0
             compartment_id=' '
@@ -1290,8 +1276,7 @@
 
     subroutine positionobject (xyorz,pos_max,defaultposition,minimumseparation)
 
-    !     routine: positionobject
-    !     purpose: Position an object in a compartment
+    !     Position an object in a compartment
     !     arguments: xyorz: object position in the x, y, or z direction
     !		         pos_max: the maximum extent
     !		         defaultposition: to set to zero (base)(2) or midpoint(1)
@@ -1326,10 +1311,10 @@
 
 
     ! --------------------------- VENT -------------------------------------------
-    subroutine read_vent(LU)
+    subroutine read_vent(lu)
 
     integer :: i,ii,j,jj,k,kk,mm,imin,jmax,counter1,counter2,counter3,iroom
-    integer :: ios,LU
+    integer :: ios,lu
     character(64) :: compartment_id
     real(eb) :: initialtime,initialfraction,finaltime,finalfraction
 
@@ -1347,7 +1332,7 @@
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'VENT'
@@ -1355,12 +1340,12 @@
     n_mvents = 0
     n_vvents = 0
     vent_loop: do
-        call checkread ('VENT',LU,ios)
+        call checkread ('VENT',lu,ios)
         if (ios==0) ventflag=.true.
         if (ios==1) then
             exit vent_loop
         end if
-        read(LU,VENT,err=34,iostat=ios)
+        read(lu,VENT,err=34,iostat=ios)
         if (trim(type) == 'WALL') n_hvents =n_hvents + 1
         if (trim(type) == 'MECHANICAL') n_mvents =n_mvents + 1
         if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') n_vvents =n_vvents + 1
@@ -1391,7 +1376,7 @@
 
     vent_flag: if (ventflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         counter1=0
@@ -1401,9 +1386,9 @@
         ! Assign value to CFAST variables for further calculations
         read_vent_loop: do ii=1,n_hvents+n_mvents+n_vvents
 
-            call checkread('VENT',LU,ios)
+            call checkread('VENT',lu,ios)
             call set_vent_defaults
-            read(LU,VENT)
+            read(lu,VENT)
 
             ! Wall vent
             if (trim(type) == 'WALL') then
@@ -1837,10 +1822,10 @@
 
 
     ! --------------------------- CONN -------------------------------------------
-    subroutine read_conn(LU)
+    subroutine read_conn(lu)
 
     integer :: ios,ifrom,ito,i,k,jj,i1,i2,counter1
-    integer :: LU
+    integer :: lu
     real(eb), dimension(mxpts) :: frac
     character(64) :: compartment_id
 
@@ -1855,18 +1840,18 @@
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'CONN'
     nmlcount=0
     conn_loop: do
-        call checkread ('CONN', LU, ios)
+        call checkread ('CONN', lu, ios)
         if (ios==0) connflag=.true.
         if (ios==1) then
             exit conn_loop
         end if
-        read(LU,CONN,err=34,iostat=ios)
+        read(lu,CONN,err=34,iostat=ios)
         if (trim(type) == trim('CEILING') .or. trim(type) == trim('FLOOR')) nvcons = nvcons + 1
         if (trim(type) == trim('WALL')) nmlcount  =nmlcount + 1
 34      if (ios>0) then
@@ -1877,16 +1862,16 @@
 
     conn_flag: if (connflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         counter1=0
 
         countloop : do k=1,nmlcount+nvcons
 
-            call checkread('CONN',LU,ios)
+            call checkread('CONN',lu,ios)
             call set_conn_defaults
-            read(LU,CONN)
+            read(lu,CONN)
 
             if (trim(type) == 'WALL') then
                 frac(:)=-101
@@ -2022,10 +2007,10 @@
 
 
     ! --------------------------- ISOF --------------------------------------------
-    subroutine read_isof(LU)
+    subroutine read_isof(lu)
 
     integer :: ios,ii,icomp,jj,counter
-    integer :: LU
+    integer :: lu
     character(64) :: compartment_id
 
     type(visual_type), pointer :: sliceptr
@@ -2037,17 +2022,17 @@
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'ISOF'
     isof_loop: do
-        call checkread ('ISOF',LU,ios)
+        call checkread ('ISOF',lu,ios)
         if (ios==0) isofflag=.true.
         if (ios==1) then
             exit isof_loop
         end if
-        read(LU,ISOF,err=34,iostat=ios)
+        read(lu,ISOF,err=34,iostat=ios)
         counter=counter+1
 34      if (ios>0) then
             write(iofill, '(a,i3)') 'Error: Invalid specification in &ISOF inputs. Check &ISOF input, ' , counter
@@ -2059,15 +2044,15 @@
 
     isof_flag: if (isofflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
         read_isof_loop: do ii=1,counter
 
-            call checkread('ISOF',LU,ios)
+            call checkread('ISOF',lu,ios)
             call set_isof_defaults
-            read(LU,ISOF)
+            read(lu,ISOF)
 
             compartment_id=' '
             compartment_id=comp_id
@@ -2113,10 +2098,10 @@
 
 
     ! --------------------------- SLCF --------------------------------------------
-    subroutine read_slcf(LU)
+    subroutine read_slcf(lu)
 
     integer :: ios,ii,jj,icomp,counter
-    integer :: LU
+    integer :: lu
     character(64) :: compartment_id
 
     type(room_type), pointer :: roomptr
@@ -2129,17 +2114,17 @@
 
     ios = 1
 
-    rewind(LU)
+    rewind (unit=lu)
     input_file_line_number = 0
 
     ! Scan entire file to look for 'SLCF'
     slcf_loop: do
-        call checkread ('SLCF',LU,ios)
+        call checkread ('SLCF',lu,ios)
         if (ios==0) slcfflag=.true.
         if (ios==1) then
             exit slcf_loop
         end if
-        read(LU,SLCF,err=34,iostat=ios)
+        read(lu,SLCF,err=34,iostat=ios)
         counter=counter+1
 34      if (ios>0) then
             write(iofill, '(a,i3)') 'Error: Invalid specification in &SLCF inputs. Check &SLCF input, ' , counter
@@ -2151,15 +2136,15 @@
 
     slcf_flag: if (slcfflag) then
 
-        rewind (LU)
+        rewind (lu)
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
         read_slcf_loop: do ii=1,counter
 
-            call checkread('SLCF',LU,ios)
+            call checkread('SLCF',lu,ios)
             call set_slcf_defaults
-            read(LU,SLCF)
+            read(lu,SLCF)
 
             sliceptr => visualinfo(ii)
             if (trim(domain)=='2-D') then

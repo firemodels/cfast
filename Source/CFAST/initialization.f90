@@ -35,8 +35,7 @@ module initialization_routines
 
     subroutine get_thermal_property (name, tp)
 
-    !     Routine: get_thermal_Property
-    !     Purpose: check for and return index to a thermal property
+    ! check for and return index to a thermal property
     
     implicit none
     character, intent(in) :: name*(*)
@@ -61,17 +60,9 @@ module initialization_routines
 
 ! --------------------------- initamb -------------------------------------------
 
-    subroutine initamb (yinter,iflag)
+    subroutine initamb ()
 
-    !     purpose: this routine computes initializations for varialbes
-    !     related to ambient conditions.  when iflag=1 the array
-    !     yinter is used to compute upper layer volumes.  otherwise,
-    !     upper layer volumes are not computed.  if iflag is set to 1
-    !     then yinter must be a floating point array of at least size mxrooms
-    !     (mxrooms = number of rooms) in the calling routine.
-
-    integer, intent(in) :: iflag
-    real(eb), intent(out) :: yinter(*)
+    ! this routine computes initializations for varialbes related to ambient conditions.  
 
     real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale
     integer i, ii, iwall, iroom, itarg
@@ -119,16 +110,7 @@ module initialization_routines
         roomptr => roominfo(i)
         p(i) = roomptr%interior_relp_initial
         p(i+noftu) = interior_temperature
-
-        ! check for a special setting of the interface height
-        if (iflag==1) then
-            if (yinter(i)<0.0_eb) then
-                p(i+nofvu) = roomptr%vmin
-            else
-                p(i+nofvu) = min(roomptr%vmax,max(roomptr%vmin,yinter(i)*roomptr%floor_area))
-            end if
-            yinter(i) = 0.0_eb
-        end if
+        p(i+nofvu) = roomptr%vmin
         if (roomptr%shaft) p(i+nofvu) = roomptr%vmax
         p(i+noftl) = interior_temperature
     end do

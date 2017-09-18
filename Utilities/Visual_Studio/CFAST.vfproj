@@ -81,8 +81,9 @@
 		<File RelativePath=".\flowhorizontal.f90"/>
 		<File RelativePath=".\flowvertical.f90"/>
 		<File RelativePath=".\initialization.f90"/>
-		<File RelativePath=".\input_namelist.f90"/>
 		<File RelativePath=".\input.f90"/>
+		<File RelativePath=".\input_namelist.f90"/>
+		<File RelativePath=".\input_spreadsheet.f90"/>
 		<File RelativePath=".\keyboard_int.f90"/>
 		<File RelativePath=".\numerics.f90"/>
 		<File RelativePath=".\output.f90"/>

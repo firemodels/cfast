@@ -1,9 +1,9 @@
-    module namelist_routines
+    module namelist_input_routines
 
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use utility_routines, only: upperall
+    use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
     use wallptrs
     use cenviro
@@ -22,8 +22,11 @@
 
     implicit none
 
-    logical :: exsets=.false.
+    logical :: exsets=.false. 
+    
+    private
 
+    public namelist_input
 
     contains
     ! --------------------------- namelist_input ----------------------------------
@@ -51,6 +54,8 @@
     call read_slcf(iofili)
 
     close (iofili)
+    
+    return
 
     ! read format list
 5050 format ('***Error: Error opening the input file = ',I6)
@@ -1167,9 +1172,9 @@
 
             ! Position the object
             roomptr => roominfo(fireptr%room)
-            call positionobject(fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-            call positionobject(fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-            call positionobject(fireptr%z_position,roomptr%cheight,base,mx_hsep)
+            call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
+            call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
+            call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
             ! Diagnostic - check for the maximum heat release per unit volume.
             ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -1237,75 +1242,6 @@
     trace_yield               =0_eb
 
     end subroutine set_fire_defaults
-
-
-
-    ! --------------------------- set_heat_of_combustion -------------------------------------------
-
-    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
-
-    !	Routine to implement the algorithm to set the heat of combustion for all fires
-
-    integer, intent(in) :: maxint
-    real(eb), intent(in) :: qdot(maxint), hinitial
-    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
-
-    integer :: i
-    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
-
-    do i = 1, maxint
-        if (i>1) then
-            if (mdot(i)*qdot(i)<=0.0_eb) then
-                hdot(i) = hinitial
-            else
-                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
-                mdot(i) = qdot(i)/hdot(i)
-            end if
-        else
-            hdot(1) = hinitial
-        end if
-    end do
-
-    return
-
-    end subroutine set_heat_of_combustion
-
-
-
-    ! --------------------------- positionobject -------------------------------------------
-
-    subroutine positionobject (xyorz,pos_max,defaultposition,minimumseparation)
-
-    !     Position an object in a compartment
-    !     arguments: xyorz: object position in the x, y, or z direction
-    !		         pos_max: the maximum extent
-    !		         defaultposition: to set to zero (base)(2) or midpoint(1)
-    !		         minimumseparation: the closest the object can be to a wall
-
-    integer, intent(in) :: defaultposition
-    real(eb), intent(in) :: minimumseparation, pos_max
-    real(eb), intent(inout) :: xyorz
-
-    if ((xyorz<0.0_eb).or.(xyorz>pos_max)) then
-        select case (defaultposition)
-        case (1)
-            xyorz = pos_max / 2.0_eb
-        case (2)
-            xyorz = minimumseparation
-            case default
-            write (*,*) 'Fire objects positioned specified outside compartment bounds.'
-            write (iofill,*) 'Fire objects positioned specified outside compartment bounds.'
-            stop
-        end select
-    else if (xyorz==0.0_eb) then
-        xyorz = minimumseparation
-    else if (xyorz==pos_max) then
-        xyorz = pos_max - minimumseparation
-    end if
-
-    return
-
-    end subroutine positionobject
 
     end subroutine read_fire
 
@@ -2250,4 +2186,4 @@
 
 
 
-    end module namelist_routines
+    end module namelist_input_routines

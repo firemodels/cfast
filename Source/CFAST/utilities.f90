@@ -18,6 +18,74 @@
     ! used by other routines
 
     contains
+    
+
+    ! --------------------------- set_heat_of_combustion -------------------------------------------
+
+    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
+
+    !	Routine to implement the algorithm to set the heat of combustion for all fires
+
+    integer, intent(in) :: maxint
+    real(eb), intent(in) :: qdot(maxint), hinitial
+    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
+
+    integer :: i
+    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
+
+    do i = 1, maxint
+        if (i>1) then
+            if (mdot(i)*qdot(i)<=0.0_eb) then
+                hdot(i) = hinitial
+            else
+                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
+                mdot(i) = qdot(i)/hdot(i)
+            end if
+        else
+            hdot(1) = hinitial
+        end if
+    end do
+
+    return
+
+    end subroutine set_heat_of_combustion
+
+
+
+    ! --------------------------- position_object -------------------------------------------
+
+    subroutine position_object (xyorz,pos_max,defaultposition,minimumseparation)
+
+    !     Position an object in a compartment
+    !     arguments: xyorz: object position in the x, y, or z direction
+    !		         pos_max: the maximum extent
+    !		         defaultposition: to set to zero (base)(2) or midpoint(1)
+    !		         minimumseparation: the closest the object can be to a wall
+
+    integer, intent(in) :: defaultposition
+    real(eb), intent(in) :: minimumseparation, pos_max
+    real(eb), intent(inout) :: xyorz
+
+    if ((xyorz<0.0_eb).or.(xyorz>pos_max)) then
+        select case (defaultposition)
+        case (1)
+            xyorz = pos_max / 2.0_eb
+        case (2)
+            xyorz = minimumseparation
+            case default
+            write (*,*) 'Fire objects positioned specified outside compartment bounds.'
+            write (iofill,*) 'Fire objects positioned specified outside compartment bounds.'
+            stop
+        end select
+    else if (xyorz==0.0_eb) then
+        xyorz = minimumseparation
+    else if (xyorz==pos_max) then
+        xyorz = pos_max - minimumseparation
+    end if
+
+    return
+
+    end subroutine position_object
 
     ! --------------------------- ssaddtolist -------------------------------------------
 

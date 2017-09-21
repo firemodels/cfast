@@ -10,6 +10,7 @@ module initialization_routines
     use cenviro
     use ramp_data
     use cparams
+    use defaults
     use setup_data
     use solver_data
     use fire_data
@@ -25,7 +26,7 @@ module initialization_routines
 
     private
 
-    public get_thermal_property, inittarg, initamb, offset, initialize_memory, initialize_fire_objects, &
+    public get_thermal_property, inittarg, initialize_ambient, offset, initialize_memory, initialize_fire_objects, &
         initialize_species, initialize_walls
 
     contains
@@ -58,11 +59,12 @@ module initialization_routines
 
     end subroutine get_thermal_property
 
-! --------------------------- initamb -------------------------------------------
+! --------------------------- initialize_ambient -------------------------------------------
 
-    subroutine initamb ()
+    subroutine initialize_ambient ()
 
-    ! this routine computes initializations for varialbes related to ambient conditions.  
+    ! this routine computes initializations for variables related to ambient conditions.  
+    ! this initialization is done after we read in the input file
 
     real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale
     integer i, ii, iwall, iroom, itarg
@@ -190,7 +192,7 @@ module initialization_routines
     end if
 
     return
-    end subroutine initamb
+    end subroutine initialize_ambient
 
 ! --------------------------- initialize_memory -------------------------------------------
 
@@ -210,8 +212,7 @@ module initialization_routines
     ! DASSL forcing functions
     p(1:maxteq) = 0.0_eb
 
-    ! set the time step and inner step division for time splitting
-    ! we do not let the user choose these
+    ! set time-released defaults
     deltat = 1.0_eb
 
     ! time step checking
@@ -222,16 +223,24 @@ module initialization_routines
 
     ! define universal constants
 
-    t_ref = 293.15_eb
-    lower_o2_limit = 0.15_eb
-    pressure_ref = 101325.0_eb
+    t_ref = default_temperature
+    pressure_ref = default_pressure
     interior_abs_pressure = pressure_ref
     pressure_offset = pressure_ref
     interior_temperature = t_ref
     tgignt = t_ref + 200.0_eb
     exterior_temperature = interior_temperature
     exterior_abs_pressure = interior_abs_pressure
-    relative_humidity = 0.5_eb
+    relative_humidity = default_relative_humidity
+
+    !thermal properties. initialize to nothing
+    thermalinfo(1:mxthrmp)%name          = ' '
+    thermalinfo(1:mxthrmp)%nslab         = 1
+    thermalinfo(1:mxthrmp)%k(1)          = 0.0_eb
+    thermalinfo(1:mxthrmp)%c(1)          = 0.0_eb
+    thermalinfo(1:mxthrmp)%rho(1)        = 0.0_eb
+    thermalinfo(1:mxthrmp)%thickness(1)  = 0.0_eb
+    thermalinfo(1:mxthrmp)%eps           = 0.0_eb
 
     ! rooms
     nr = 0
@@ -247,12 +256,12 @@ module initialization_routines
     roominfo(1:mxrooms)%ibar = 50
     roominfo(1:mxrooms)%jbar = 50
     roominfo(1:mxrooms)%kbar = 50
-    adiabatic_walls = .false.
     roominfo(1:mxrooms)%deadroom = 0
     roominfo(1:mxrooms)%hall = .false.
     roominfo(1:mxrooms)%shaft = .false.
     roominfo(1:mxrooms)%sprinkler_activated = 0
     roominfo(1:mxrooms)%qdot_doorjet = 0.0_eb
+
     do i = 1, mxrooms
         roomptr => roominfo(i)
         roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
@@ -261,6 +270,8 @@ module initialization_routines
         roomptr%surface_on(1:nwal) = .false.
         roomptr%eps_w(1:nwal) = 0.0_eb
     end do
+
+    adiabatic_walls = .false.
     
     ! room to room heat transfer
     nvcons = 0
@@ -270,9 +281,9 @@ module initialization_routines
         
         ! variable cross sectional area
         roomptr%nvars = 0
-        roomptr%var_volume(1:mxcross) = 0.0_eb
-        roomptr%var_area(1:mxcross) = 0.0_eb
-        roomptr%var_height(1:mxcross) = 0.0_eb
+        roomptr%var_volume(1:mxpts) = 0.0_eb
+        roomptr%var_area(1:mxpts) = 0.0_eb
+        roomptr%var_height(1:mxpts) = 0.0_eb
         
         ! initialize inter-compartment heat transfer fractions
         roomptr%iheat = 0
@@ -333,12 +344,12 @@ module initialization_routines
 
     ! detectors
     n_detectors = 0
-    detectorinfo(1:mxdtect)%rti = 50.0_eb
+    detectorinfo(1:mxdtect)%rti = default_rti
     detectorinfo(1:mxdtect)%spray_density = -300.0_eb
     detectorinfo(1:mxdtect)%center(1) = -1.0_eb
     detectorinfo(1:mxdtect)%center(2) = -1.0_eb
     detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb
-    detectorinfo(1:mxdtect)%trigger = 330.3722_eb
+    detectorinfo(1:mxdtect)%trigger = default_activation_temperature
     detectorinfo(1:mxdtect)%velocity = 0.0_eb
     detectorinfo(1:mxdtect)%velocity_o = 0.0_eb
     detectorinfo(1:mxdtect)%activation_time = 99999.0_eb
@@ -357,6 +368,9 @@ module initialization_routines
     targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
     targetinfo(1:mxtarg)%fed_heat = 0.0_eb
     targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
+    
+    ! fires
+    call initialize_fire_objects
 
     return
     end subroutine initialize_memory
@@ -365,11 +379,11 @@ module initialization_routines
 
     subroutine initialize_fire_objects
 
-    !     routine: initialize_fire_objects
-    !     purpose: this routine initializes the fire objects
-    !     arguments: none
+    !     this routine initializes the fires
 
-    ! turn off objects
+    lower_o2_limit = default_lower_oxygen_limit
+    
+    ! turn off fires
     n_fires = 0
     fireinfo(1:mxfires)%x_position = -1.0_eb
     fireinfo(1:mxfires)%y_position = -1.0_eb
@@ -383,7 +397,7 @@ module initialization_routines
     fireinfo(1:mxfires)%ignited = .false.
     fireinfo(1:mxfires)%reported = .false.
     fireinfo(1:mxfires)%modified_plume = 1
-    fireinfo(1:mxfires)%chirad = 0.35_eb
+    fireinfo(1:mxfires)%chirad = default_radiative_fraction
 
     fireinfo(1:mxfires)%qdot_at_activation(u) = 0.0_eb
     fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb

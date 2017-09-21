@@ -56,7 +56,6 @@
 
     stime = 0.0_eb
     call initialize_memory
-    call initialize_fire_objects
     call read_command_options
     call open_files
 

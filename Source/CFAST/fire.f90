@@ -782,7 +782,7 @@ module fire_routines
 
     real(eb) :: d
 
-    if (area<=0_eb) then
+    if (area<=0._eb) then
         d = pio4*0.2_eb**2
     else
         d = sqrt(4.0_eb*area/pi)

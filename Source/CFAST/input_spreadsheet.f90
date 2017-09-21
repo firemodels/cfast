@@ -3,7 +3,7 @@ module spreadsheet_input_routines
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use initialization_routines, only : inittarg, initamb, offset
+    use initialization_routines, only : inittarg, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix, set_heat_of_combustion, position_object
@@ -108,15 +108,6 @@ module spreadsheet_input_routines
     type(fire_type), pointer :: fireptr
     type(vent_type), pointer :: ventptr
 
-    !	Start with a clean slate
-
-    do i = 1, mxrooms
-        roomptr => roominfo(i)
-        do j = 1, 4
-            roomptr%matl(j) = 'OFF'
-            roomptr%surface_on(j) = .false.
-        end do
-    end do
     ncomp = 0
 
     ! First check for a maximum time step. This may be modified by fires, vents, or detectors
@@ -1082,7 +1073,7 @@ module spreadsheet_input_routines
 
                 ! make sure the number of points is valid
                 npts = lrarray(2)
-                if (npts>mxcross.or.npts<=0.or.npts/=countargs(lcarray)-2) then
+                if (npts>mxpts.or.npts<=0.or.npts/=countargs(lcarray)-2) then
                     write (*,5347) npts
                     write (iofill,5347) npts
                     stop
@@ -1125,7 +1116,7 @@ module spreadsheet_input_routines
 
                 ! make sure the number of points is valid
                 npts = lrarray(2)
-                if (npts>mxcross.or.npts<0.or.npts/=countargs(lcarray)-2) then
+                if (npts>mxpts.or.npts<0.or.npts/=countargs(lcarray)-2) then
                     write (*,5350) npts
                     write (iofill,5350) npts
                     stop

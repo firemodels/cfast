@@ -23,7 +23,7 @@ Parameters within a namelist record can be separated by either commas, spaces, o
 
 The parameters in the input file can be integers, reals, character strings, or logical parameters. A logical parameter is either {\ct .TRUE.} or {\ct .FALSE.} -- the periods are a Fortran convention. Character strings that are listed in this User's Guide must be copied exactly as written -- the code is case sensitive and underscores {\em do} matter. The maximum length of most character input parameters is 60.
 
-Most of the input parameters are simply real or integer scalars, like {\ct PRINT = 50.}, but sometimes the inputs can be arrays. 
+Most of the input parameters are simply real or integer scalars, like {\ct PRINT = 50.}, but sometimes the inputs can be arrays.
 
 Note that character strings can be enclosed either by single or double quotation marks. Be careful not to create the input file by pasting text from something other than a simple text editor, in which case the punctuation marks may not transfer properly into the text file. Some text file encodings may not work on all systems. If file reading errors occur and no typographical errors can be found in the input file, try saving the input file using a different encoding. For example, the text file editor Notepad works fine on a Windows PC, but a file edited in Notepad may not work on Linux or Mac OS~X because of the difference in line endings between Windows and Unix/Linux operating systems. The editor Wordpad typically works better, but try a simple case first.
 
@@ -46,18 +46,18 @@ The general structure of an input file is shown below, with many lines of the or
 &MATL ...
 &COMP ID = 'Comp 1', WIDTH = 5., DEPTH = 5., HEIGHT = 3. ... /
 &RAMP ... / for compartment cross-sectional area if required
-&VENT ID = 'VVENT 1', TYPE = 'CEILING', COMP_IDS = 'Comp 3', 'Comp 2', 
+&VENT ID = 'VVENT 1', TYPE = 'CEILING', COMP_IDS = 'Comp 3', 'Comp 2',
       AREA = 1., SHAPE = 'ROUND',
 &RAMP ... / for vent opening and closing if required
 &FIRE ID = 'Wood_Wall', COMP_ID = 'Comp 2', LOCATION = 2.5, 5., 0.,
-      CARBON = 6, HYDROGEN = 10, OXYGEN = 5, 
+      CARBON = 6, HYDROGEN = 10, OXYGEN = 5,
       HEAT_OF_COMBUSTION = 1.81e4, RADIATIVE_FRACTION = 0.33,
       SOOT_YIELD = 0.015, CO_YIELD = 0.006171682,
       AREA = 4.5, HEIGHT = 1.5,
       HRR_RAMP_ID = 'Wood Wall Fire' /
-&RAMP ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE', 
+&RAMP ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE',
       T = 0., 8000., HRR = 0., 1000000. / for the fire
-&DEVC ID = 'Smoke Detector 1', COMP_ID = 'Comp 1', 
+&DEVC ID = 'Smoke Detector 1', COMP_ID = 'Comp 1',
       TYPE = 'SMOKE', LOCATION = 3., 3., 2.97, SETPOINT = 23.93346 /
 &CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
 &SLCF DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
@@ -142,7 +142,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct PRINT}             & Integer   & Section \ref{info:TIME}                 & s         & 60              \\ \hline
-{\ct SIMULATION}        & Integer   & Section \ref{info:TIME}                 & s         &                 \\ \hline
+{\ct SIMULATION}        & Integer   & Section \ref{info:TIME}                 & s         &  0              \\ \hline
 {\ct SMOKEVIEW}         & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
 {\ct SPREADSHEET}       & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
 \end{longtable}

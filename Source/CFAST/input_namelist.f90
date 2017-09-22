@@ -9,6 +9,7 @@
     use cenviro
     use ramp_data
     use cparams
+    use defaults
     use setup_data
     use detectorptrs
     use target_data
@@ -20,9 +21,7 @@
     use room_data
     use namelist_data
 
-    implicit none
-
-    logical :: exsets=.false. 
+    implicit none 
     
     private
 
@@ -64,11 +63,11 @@
     end subroutine namelist_input
 
 
-    ! --------------------------- HEAD --------------------------------------
+    ! --------------------------- head --------------------------------------
     subroutine read_head(lu)
 
-    integer :: ios,iversion
-    integer :: lu
+    integer :: ios, iversion
+    integer, intent(in) :: lu
 
     namelist /HEAD/ iversion,title
 
@@ -78,15 +77,15 @@
     rewind (unit=lu)
     input_file_line_number = 0
 
-    ! Scan entire file to look for 'VERSN'
+    ! scan entire file to look for &HEAD input
     head_loop: do
         call checkread ('HEAD', lu, ios)
         if (ios==0) headflag=.true.
         if (ios==1) then
             exit head_loop
         end if
-        read(lu,HEAD,err=34,iostat=ios)
-34      if (ios>0) then
+        read(lu,HEAD,iostat=ios)
+        if (ios>0) then
             write(iofill, '(a)') '***Error in &HEAD: Invalid specification for inputs.'
             stop
         end if
@@ -98,6 +97,7 @@
         stop
     end if
 
+    ! we found one. read it (only the first one counts; others are ignored)
     head_flag: if (headflag) then
 
         rewind (lu)
@@ -119,76 +119,41 @@
 
 5002 format ('***Error: Not a compatible version, input file written for CFAST', i3, ' running on CFAST', i3)
 
-
-
     contains
 
     subroutine set_head_defaults
 
-    iversion      = 0
+    iversion = default_version
 
     end subroutine set_head_defaults
 
     end subroutine read_head
 
 
-    ! --------------------------- CHECKREAD ---------------------------------------
-    subroutine checkread(name,lu,ios)
-
-    ! look for the namelist variable name and then stop at that line.
-
-    integer :: ii
-    integer, intent(out) :: ios
-    integer, intent(in) :: lu
-    character(4), intent(in) :: name
-    character(80) text
-    ios = 1
-
-    readloop: do
-        read(lu,'(a)',end=10) text
-        input_file_line_number = input_file_line_number + 1
-        tloop: do ii=1,72
-            if (text(ii:ii)/='&' .and. text(ii:ii)/=' ') exit tloop
-            if (text(ii:ii)=='&') then
-                if (text(ii+1:ii+4)==name) then
-                    backspace(lu)
-                    ios = 0
-                    exit readloop
-                else
-                    cycle readloop
-                endif
-            endif
-        enddo tloop
-    enddo readloop
-
-10  return
-
-    end subroutine checkread
-
-
-    ! --------------------------- TIME -------------------------------------------
+    ! --------------------------- time -------------------------------------------
+    
     subroutine read_time(lu)
 
     integer :: ios
-    integer :: lu
+    integer, intent(in) :: lu
 
     integer :: simulation,print,spreadsheet,smokeview
-    namelist /TIME/print,simulation,spreadsheet,smokeview
+    namelist /TIME/ print,simulation,spreadsheet,smokeview
 
     ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
 
-    ! Scan entire file to look for 'TIME'
+    ! scan entire file to look for &TIME input
     time_loop: do
         call checkread ('TIME',lu,ios)
         if (ios==0) timeflag=.true.
         if (ios==1) then
             exit time_loop
         end if
-        read(lu,TIME,err=34,iostat=ios)
-34      if (ios>0) then
+        read(lu,TIME,iostat=ios)
+        if (ios>0) then
             write(iofill, '(a)') '***Error in &TIME: Invalid specification for inputs.'
             stop
         end if
@@ -200,6 +165,7 @@
         stop
     end if
 
+    ! we found one. read it (only the first one counts; others are ignored)
     time_flag: if (timeflag) then
 
         rewind (lu)
@@ -216,38 +182,36 @@
 
     end if time_flag
 
-
-
     contains
 
     subroutine set_time_defaults
 
-    simulation             = 0_eb          ! s
-    print                  = 60_eb         ! s
-    smokeview              = 15_eb         ! s
-    spreadsheet            = 15_eb         ! s
+    simulation              = default_simulation_time    ! s
+    print                   = default_print_out_interval ! s
+    smokeview               = default_smv_out_interval   ! s
+    spreadsheet             = default_ss_out_interval    ! s
 
     end subroutine set_time_defaults
 
     end subroutine read_time
 
-
-    ! --------------------------- INIT -------------------------------------------
+    ! --------------------------- init ------------------------------------------
+    
     subroutine read_init(lu)
 
     integer :: ios
-    integer :: lu
+    integer, intent(in) :: lu
 
     real(eb) :: pressure
     real(eb),dimension(2) :: temperatures
-    namelist /INIT/pressure,relative_humidity,temperatures
+    namelist /INIT/ pressure,relative_humidity,temperatures
 
     ios = 1
 
     rewind (unit=lu)
     input_file_line_number = 0
 
-    ! Scan entire file to look for 'INIT'
+    ! Scan entire file to look for &INIT input
     init_loop: do
         call checkread ('INIT',lu,ios)
         if (ios==0) initflag=.true.
@@ -284,24 +248,25 @@
 
     subroutine set_init_defaults
 
-    temperatures             = 20._eb           !C
-    pressure                 = 101325.0_eb      !Pa
-    relative_humidity        = 50_eb            !%
+    temperatures             = default_temperature - kelvin_c_offset    ! C
+    pressure                 = default_pressure                         ! Pa
+    relative_humidity        = default_relative_humidity*100._eb        ! %
 
     end subroutine set_init_defaults
 
     end subroutine read_init
 
 
-    ! --------------------------- MISC -------------------------------------------
+    ! --------------------------- misc -------------------------------------------
     subroutine read_misc(lu)
 
-    integer :: ios
-    integer :: lu
+    integer, intent(in) :: lu
 
-    real(eb) :: max_time_step,lower_oxygen_limit
+    integer :: ios
+
+    real(eb) :: max_time_step, lower_oxygen_limit
     character(64) :: adiabatic
-    namelist /MISC/adiabatic,max_time_step,lower_oxygen_limit
+    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit
 
     ios = 1
 
@@ -314,8 +279,8 @@
         if (ios==1) then
             exit misc_loop
         end if
-        read(lu,MISC,err=34,iostat=ios)
-34      if (ios>0) then
+        read(lu,MISC,iostat=ios)
+        if (ios>0) then
             write(iofill, '(a)') '***Error in &MISC: Invalid specification inputs.'
             stop
         end if
@@ -332,8 +297,8 @@
 
         adiabatic_walls=.false.
         if (adiabatic == '.TRUE.') adiabatic_walls=.true.
-        stpmax=max_time_step
-        lower_o2_limit=lower_oxygen_limit
+        stpmax = max_time_step
+        lower_o2_limit = lower_oxygen_limit
 
     end if misc_flag
 
@@ -341,9 +306,11 @@
 
     subroutine set_misc_defaults
 
-    adiabatic                = '.FALSE.'
-    max_time_step            = 1._eb     ! s
-    lower_oxygen_limit       = 0.15_eb
+    ! note actual default values are set in initialize_memory and used here to initialize namelist
+
+    adiabatic = '.FALSE.'
+    max_time_step = stpmax                          ! s
+    lower_oxygen_limit = default_lower_oxygen_limit
 
     end subroutine set_misc_defaults
 
@@ -355,7 +322,7 @@
 
 
     integer :: ios,ii
-    integer :: lu
+    integer, intent(in) :: lu
     type(thermal_type), pointer :: thrmpptr
 
     real(eb) :: conductivity,density,emissivity,specific_heat,thickness
@@ -375,9 +342,9 @@
         if (ios==1) then
             exit matl_loop
         end if
-        read(lu,MATL,err=34,iostat=ios)
+        read(lu,MATL,iostat=ios)
         n_thrmp = n_thrmp + 1
-34      if (ios>0) then
+        if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_thrmp
             stop
         end if
@@ -435,11 +402,14 @@
     ! --------------------------- COMP -------------------------------------------
     subroutine read_comp(lu,ncomp)
 
-    integer :: ios,ii,i,kk
-    integer :: lu,ncomp
+    integer, intent(in) :: lu
+    integer, intent(inout) :: ncomp
+    
+    integer :: ios, ii, i, kk
+    character :: tcname*64
+
     type(ramp_type), pointer :: rampptr
     type(room_type), pointer :: roomptr
-    character :: tcname*64
 
     integer,dimension(3) :: grid
     real(eb) :: depth, height ,width
@@ -487,7 +457,7 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_comp_loop: do ii=1,ncomp
+        read_comp_loop: do ii = 1, ncomp
 
             roomptr => roominfo(ii)
 
@@ -496,7 +466,7 @@
             read(lu,COMP)
 
             if (trim(room_area_ramp) /= 'NULL') then
-                ramp_search: do kk=1,nramps
+                ramp_search: do kk = 1, nramps
                     rampptr=>rampinfo(kk)
                     if (trim(rampptr%id) == trim(room_area_ramp)) then
                         rampptr%room1 = ii
@@ -559,7 +529,7 @@
             if (hall == '.TRUE.') roomptr%hall = .true.
 
         end do read_comp_loop
-        ! reset this each time in case this is the last entry
+
         nr = ncomp + 1
 
     end if comp_flag
@@ -587,10 +557,12 @@
 
 
     ! --------------------------- DEVC -------------------------------------------
-    subroutine read_devc(lu)
+    subroutine read_devc (lu)
 
-    integer :: lu,ios
-    integer :: iroom,ii,jj,i1,counter1,counter2
+    integer, intent(in) :: lu
+    
+    integer :: ios
+    integer :: iroom, ii, jj ,i1, counter1, counter2
     character(64) :: compartment_id
     character :: tcname*64
     logical :: idcheck
@@ -646,30 +618,30 @@
         rewind (lu)
         input_file_line_number = 0
 
-        counter1=0
-        counter2=0
+        counter1 = 0
+        counter2 = 0
         ! Assign value to CFAST variables for further calculations
-        read_devc_loop: do ii=1,n_targets+n_detectors
+        read_devc_loop: do ii=1 , n_targets + n_detectors
 
             call checkread('DEVC',lu,ios)
             call set_devc_defaults
             read(lu,DEVC)
 
             if (trim(type) == 'PLATE' .or. trim(type) == 'CYLINDER') then
-                counter1=counter1+1
+                counter1 = counter1 + 1
 
                 targptr => targetinfo(counter1)
 
                 iroom=0
-                compartment_id='NULL'
-                compartment_id=trim(comp_id)
+                compartment_id = 'NULL'
+                compartment_id = trim(comp_id)
 
                 idcheck=.false.
-                searching: do jj=1,nr-1
+                searching: do jj = 1, nr-1
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%name)) then
                         iroom = roomptr%compartment
-                        idcheck=.true.
+                        idcheck = .true.
                         exit searching
                     end if
                 end do searching
@@ -689,12 +661,8 @@
                 targptr%room = iroom
 
                 ! position and normal vector
-                targptr%center(1) = location(1)
-                targptr%center(2) = location(2)
-                targptr%center(3) = location(3)
-                targptr%normal(1) = normal(1)
-                targptr%normal(2) = normal(2)
-                targptr%normal(3) = normal(3)
+                targptr%center = location
+                targptr%normal = normal
 
                 targptr%depth_loc = internal_location
 
@@ -703,7 +671,7 @@
 
                 ! material type
                 tcname = matl_id
-                if (tcname=='NULL') tcname='DEFAULT'
+                if (tcname=='NULL') tcname = 'DEFAULT'
                 targptr%material = tcname
                 targptr%wall = 0
 
@@ -719,7 +687,7 @@
                 end if
 
             else if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT'.or. trim(type) == 'SMOKE') then
-                counter2=counter2+1
+                counter2 = counter2 + 1
 
                 dtectptr => detectorinfo(counter2)
 
@@ -736,16 +704,16 @@
 
                 dtectptr%dtype = i1
 
-                iroom=0
-                compartment_id=' '
-                compartment_id=trim(comp_id)
+                iroom = 0
+                compartment_id = ' '
+                compartment_id = trim(comp_id)
 
                 idcheck=.false.
-                searching_2: do jj=1,nr-1
+                searching_2: do jj = 1, nr-1
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%name)) then
                         iroom = roomptr%compartment
-                        idcheck=.true.
+                        idcheck = .true.
                         exit searching_2
                     end if
                 end do searching_2
@@ -769,13 +737,11 @@
                 else
                     dtectptr%trigger = setpoint
                 end if
-                dtectptr%center(1) = location(1)
-                dtectptr%center(2) = location(2)
-                dtectptr%center(3) = location(3)
+                dtectptr%center = location
                 dtectptr%rti =  rti
 
                 if (trim(type) == 'SPRINKLER') then
-                    if (rti > 0) then
+                    if (rti>0) then
                         dtectptr%quench = .true.
                     else
                         dtectptr%quench = .false.
@@ -824,14 +790,14 @@
 
     comp_id                         = 'NULL'
     type                            = 'NULL'
-        id                              = 'NULL'
-        internal_location               = 0.0_eb
-        location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
-        matl_id                         = 'NULL'
-        normal(:)                       = 0.0_eb
-        rti                             = 50.0_eb
-        setpoint                        = 330.3722_eb
-        spray_density                   = -300.0_eb
+    id                              = 'NULL'
+    internal_location               = 0.0_eb
+    location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
+    matl_id                         = 'NULL'
+    normal(:)                       = 0.0_eb
+    rti                             = default_rti
+    setpoint                        = default_activation_temperature
+    spray_density                   = -300.0_eb
 
     end subroutine set_devc_defaults
 
@@ -841,15 +807,16 @@
     ! --------------------------- RAMP -------------------------------------------
     subroutine read_ramp(lu)
 
-    integer :: ii,iramp
-    integer :: ios,lu
+    integer, intent(in) :: lu
+    
+    integer :: ii, ios
 
     type(ramp_type), pointer :: rampptr
 
-    real(eb), dimension(mxpts) :: f,hrr,t,h
+    real(eb), dimension(mxpts) :: f, hrr, t, h, a
     character(64) :: type,id
     character(64), dimension(2) :: comp_ids
-    namelist /RAMP/f,hrr,id,t,h,type,comp_ids
+    namelist /RAMP/ f, hrr, id ,t ,h, a, type, comp_ids
 
     ios = 1
 
@@ -864,9 +831,9 @@
         if (ios==1) then
             exit ramp_loop
         end if
-        read(lu,RAMP,err=34,iostat=ios)
+        read(lu,RAMP,iostat=ios)
         nramps =nramps + 1
-34      if (ios>0) then
+        if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &RAMP: Invalid specification for inputs. Check &RAMP input, ', nramps
             stop
         end if
@@ -895,28 +862,22 @@
             rampptr%type=type
 
             if (trim(type) == 'FRACTION' .or. trim(type) == 'EFFICENCY') then
-                do iramp = 1,mxpts
-                    rampptr%time(iramp)  = t(iramp)
-                    rampptr%value(iramp) = f(iramp)
-                end do
+                rampptr%time(1:mxpts)  = t(1:mxpts)
+                rampptr%value(1:mxpts) = f(1:mxpts)
             else if (trim(type) == 'HEAT_RELEASE_RATE') then
-                do iramp = 1,mxpts
-                    rampptr%time(iramp)  = t(iramp)
-                    rampptr%value(iramp) = hrr (iramp)
-                end do
+                rampptr%time(1:mxpts)  = t(1:mxpts)
+                rampptr%value(1:mxpts) = hrr (1:mxpts)
             else if (trim(type) == 'AREA') then
-                do iramp = 1,mxpts
-                    rampptr%time(iramp)  = h(iramp)
-                    rampptr%value(iramp) = f(iramp)
-                end do
+                rampptr%time(1:mxpts)  = h(1:mxpts)
+                rampptr%value(1:mxpts) = a(1:mxpts)
             end if
 
-            if (count(rampptr%time/=-101) /= count(rampptr%value/=-101)) then
+            if (count(rampptr%time/=-101._eb) /= count(rampptr%value/=-101._eb)) then
                 write (*,'(a,i3)') '***Error in &RAMP: The number of inputs not match. Check ramp, ', nramps
                 write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs not match. Check ramp, ', nramps
                 stop
             end if
-            rampptr%npoints=count(rampptr%time/=-101)
+            rampptr%npoints=count(rampptr%time/=-101._eb)
 
         end do read_ramp_loop
 
@@ -927,12 +888,13 @@
 
     subroutine set_ramp_defaults
 
-    type                         = 'NULL'
-        t(:)                         = -101._eb
-        hrr(:)                       = -101._eb
-        f(:)                         = -101._eb
-        h(:)                         = -101._eb
-        id                           = 'NULL'
+    type                    = 'NULL'
+    t(:)                    = -101._eb
+    hrr(:)                  = -101._eb
+    f(:)                    = -101._eb
+    h(:)                    = -101._eb
+    a(:)                    = -101._eb
+    id                      = 'NULL'
 
     end subroutine set_ramp_defaults
 
@@ -942,9 +904,10 @@
     ! --------------------------- FIRE -------------------------------------------
     subroutine read_fire(lu)
 
-    integer :: ios,i,ii,jj,kk,iroom
-    integer :: lu,base,midpoint
-    real(eb) :: tmpcond,max_hrr,flamelength,hrrpm3,max_area,ohcomb
+    integer, intent(in) :: lu
+    
+    integer :: ios, i, ii, jj, kk, iroom, base, midpoint
+    real(eb) :: tmpcond, max_hrr, flamelength, hrrpm3, max_area, ohcomb
     character(64) :: compartment_id
 
     type(room_type),   pointer :: roomptr
@@ -971,7 +934,7 @@
     n_fires = 0
     fire_loop: do
         call checkread ('FIRE', lu, ios)
-        if (ios==0) fireflag=.true.
+        if (ios==0) fireflag = .true.
         if (ios==1) then
             exit fire_loop
         end if
@@ -995,7 +958,7 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_fire_loop: do ii=1,n_fires
+        read_fire_loop: do ii = 1, n_fires
 
             fireptr => fireinfo(ii)
 
@@ -1003,11 +966,11 @@
             call set_fire_defaults
             read(lu,FIRE)
 
-            iroom=0
-            compartment_id=' '
-            compartment_id=trim(comp_id)
+            iroom = 0
+            compartment_id = ' '
+            compartment_id = trim(comp_id)
 
-            searching: do jj=1,nr-1
+            searching: do jj = 1, nr-1
                 roomptr => roominfo(jj)
                 if (trim(compartment_id) == trim(roomptr%name)) then
                     iroom = roomptr%compartment
@@ -1108,7 +1071,7 @@
             fireptr%molar_mass = (12.01_eb*fireptr%n_c + 1.008_eb*fireptr%n_h + 16.0_eb*fireptr%n_o + &
                 14.01_eb*fireptr%n_n + 35.45_eb*fireptr%n_cl)/1000.0_eb
             fireptr%chirad = radiative_fraction
-            ohcomb = heat_of_combustion *1e3
+            ohcomb = heat_of_combustion *1.e3_eb
             if (ohcomb<=0.0_eb) then
                 write (*,5001) ohcomb
                 write (iofill,5001) ohcomb
@@ -1116,20 +1079,20 @@
             end if
 
             ! Define time and hrr
-            ramp_search: do kk=1,nramps
+            ramp_search: do kk = 1, nramps
                 max_hrr = 0.0_eb
                 rampptr=>rampinfo(kk)
                 if (trim(rampptr%id) == trim(hrr_ramp_id)) then
                     rampptr%room1 = iroom
                     rampptr%room2 = iroom
                     rampptr%counter = kk
-                    fireptr%npoints=rampptr%npoints
+                    fireptr%npoints = rampptr%npoints
                     do i=1,rampptr%npoints
                         fireptr%time(i) = rampptr%time(i)
 
                         fireptr%qdot(i) = rampptr%value(i)
                         max_hrr = max(max_hrr, fireptr%qdot(i))
-                        fireptr%mdot(i) = fireptr%qdot(i)/ohcomb
+                        fireptr%mdot(i) = fireptr%qdot(i) / ohcomb
 
                         ! Define soot
                         fireptr%y_soot(i) = soot_yield
@@ -1218,28 +1181,28 @@
 
     subroutine set_fire_defaults
 
-    area                      =0_eb
-    carbon                    =0
-    chlorine                  =0
-    comp_id                   ='NULL'
-    co_yield                  =0_eb
-    devc_id                   ='NULL'
-    heat_of_combustion        =0_eb
-    hrr_ramp_id               ='NULL'
-    hydrogen                  =0
-    id                        ='NULL'
-    ignition_criterion        ='NULL'
-    location(:)               =0_eb
-    nitrogen                  =0
-    oxygen                    =0
-    pf_co_yield               =0_eb
-    pf_soot_yield             =0_eb
-    pf_trace_yield            =0_eb
-    post_flashover            ='.FAlSE.'
-    radiative_fraction        =0_eb
-    setpoint                  =0_eb
-    soot_yield                =0_eb
-    trace_yield               =0_eb
+    area                      = 0._eb
+    carbon                    = 0
+    chlorine                  = 0
+    comp_id                   = 'NULL'
+    co_yield                  = 0._eb
+    devc_id                   = 'NULL'
+    heat_of_combustion        = 0._eb
+    hrr_ramp_id               = 'NULL'
+    hydrogen                  = 0
+    id                        = 'NULL'
+    ignition_criterion        = 'NULL'
+    location(:)               = 0._eb
+    nitrogen                  = 0
+    oxygen                    = 0
+    pf_co_yield               = 0._eb
+    pf_soot_yield             = 0._eb
+    pf_trace_yield            = 0._eb
+    post_flashover            = '.FAlSE.'
+    radiative_fraction        = 0._eb
+    setpoint                  = 0._eb
+    soot_yield                = 0._eb
+    trace_yield               = 0._eb
 
     end subroutine set_fire_defaults
 
@@ -1249,22 +1212,24 @@
     ! --------------------------- VENT -------------------------------------------
     subroutine read_vent(lu)
 
-    integer :: i,ii,j,jj,k,kk,mm,imin,jmax,counter1,counter2,counter3,iroom
-    integer :: ios,lu
+    integer, intent(in) :: lu
+
+    integer :: i, ii, j, jj, k, kk, mm, imin, jmax, counter1, counter2, counter3, iroom
+    integer :: ios
     character(64) :: compartment_id
-    real(eb) :: initialtime,initialfraction,finaltime,finalfraction
+    real(eb) :: initialtime, initialfraction, finaltime, finalfraction
 
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
 
-    real(eb) :: area,bottom,flow,setpoint,top,width
-    real(eb),dimension(2):: areas,cutoffs,heights,offsets
+    real(eb) :: area, bottom, flow, setpoint, top, width
+    real(eb),dimension(2):: areas, cutoffs, heights, offsets
     character(64),dimension(2) :: comp_ids
-    character(64) :: criterion,devc_id,face,filtering_ramp_id,id,opening_ramp_id,shape,type
-    namelist /VENT/area,areas,bottom,comp_ids,criterion,cutoffs,devc_id,face,filtering_ramp_id,flow,heights,id,offsets, &
-        opening_ramp_id,setpoint,shape,top,type,width
+    character(64) :: criterion, devc_id, face, filtering_ramp_id, id, opening_ramp_id, shape, type
+    namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, face, filtering_ramp_id, flow, heights, &
+        id, offsets, opening_ramp_id, setpoint, shape, top, type, width
 
     ios = 1
 
@@ -1333,7 +1298,7 @@
                 i=0
                 j=0
 
-                do mm=1,2
+                do mm = 1, 2
                     iroom=-101
                     compartment_id=' '
                     compartment_id=trim(comp_ids(mm))
@@ -1356,8 +1321,8 @@
                         stop
                     end if
 
-                    if (mm == 1) i=iroom
-                    if (mm == 2) j=iroom
+                    if (mm == 1) i = iroom
+                    if (mm == 2) j = iroom
                 end do
 
                 imin = min(i,j)
@@ -1424,10 +1389,10 @@
 
                     if (trim(criterion)=='TIME') then
                         ventptr%opening_type = trigger_by_time
-                        ventptr%opening_initial_time     = initialtime
+                        ventptr%opening_initial_time = initialtime
                         ventptr%opening_initial_fraction = initialfraction
-                        ventptr%opening_final_time       = finaltime
-                        ventptr%opening_final_fraction   = finalfraction
+                        ventptr%opening_final_time = finaltime
+                        ventptr%opening_final_fraction = finalfraction
                     else
                         if (trim(criterion)=='TEMPERATURE') ventptr%opening_type = trigger_by_temp
                         if (criterion=='FLUX') ventptr%opening_type = trigger_by_flux
@@ -1443,7 +1408,7 @@
                             stop
                         end if
                         ventptr%opening_initial_fraction = initialfraction
-                        ventptr%opening_final_fraction   = finalfraction
+                        ventptr%opening_final_fraction = finalfraction
                         if (stpmax>0) then
                             stpmax = min(stpmax,1.0_eb)
                         else
@@ -1472,7 +1437,7 @@
                 i=0
                 j=0
 
-                do mm=1,2
+                do mm = 1, 2
                     iroom=-101
                     compartment_id=' '
                     compartment_id=trim(comp_ids(mm))
@@ -1516,9 +1481,9 @@
                 ventptr%orientation(1) = 1
                 ventptr%orientation(2) = 1
 
-                ventptr%height(1)        = heights(1)
+                ventptr%height(1) = heights(1)
                 ventptr%diffuser_area(1) = areas(1)
-                ventptr%height(2)        = heights(2)
+                ventptr%height(2) = heights(2)
                 ventptr%diffuser_area(2) = areas(2)
 
                 ventptr%n_coeffs = 1
@@ -1531,7 +1496,7 @@
                 if (trim(criterion) /= 'NULL') then
                     if (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
 
-                        initialtime=0._eb
+                        initialtime=0._eb       ! in namelist input, these are just placeholders for the older event data
                         initialfraction=1._eb
                         finaltime=0._eb
                         finalfraction=1._eb
@@ -1598,10 +1563,10 @@
                 i=0
                 j=0
 
-                do mm=1,2
-                    iroom=-101
-                    compartment_id=' '
-                    compartment_id=trim(comp_ids(mm))
+                do mm = 1, 2
+                    iroom = -101
+                    compartment_id = ' '
+                    compartment_id = trim(comp_ids(mm))
 
                     searching_3: do jj=1,nr-1
                         roomptr => roominfo(jj)
@@ -1621,8 +1586,8 @@
                         stop
                     end if
 
-                    if (mm == 1) i=iroom
-                    if (mm == 2) j=iroom
+                    if (mm == 1) i = iroom
+                    if (mm == 2) j = iroom
                 end do
 
                 k = counter3
@@ -1635,8 +1600,8 @@
                 end if
 
                 ventptr => vventinfo(counter3)
-                ventptr%room1   = i
-                ventptr%room2   = j
+                ventptr%room1 = i
+                ventptr%room2 = j
                 ventptr%counter = counter3
                 ventptr%ramp_id = opening_ramp_id
 
@@ -1656,10 +1621,10 @@
                 if (trim(criterion) /='NULL') then
                     if (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
 
-                        initialtime=0._eb
-                        initialfraction=0._eb
-                        finaltime=100._eb
-                        finalfraction=0.5_eb
+                        initialtime = 0._eb
+                        initialfraction = 1._eb
+                        finaltime = 0._eb
+                        finalfraction = 1._eb
 
                         if (trim(opening_ramp_id) /= 'NULL') then
                             ramp_search_3: do kk=1,nramps
@@ -1732,25 +1697,25 @@
 
     subroutine set_vent_defaults
 
-    area                  =0._eb
-    areas(:)              =0._eb
-    bottom                =0._eb
-    comp_ids(:)           ='NULL'
-    criterion             ='NULL'
-    cutoffs(:)            =0._eb
-    devc_id               ='NULL'
-    face                  ='NULL'
-    filtering_ramp_id     ='NULL'
-    flow                  =0._eb
-    heights(:)            =0._eb
-    id                    ='NULL'
-    offsets(:)            =0._eb
-    opening_ramp_id       ='NULL'
-    setpoint              =0._eb
-    shape                 ='NULL'
-    top                   =0._eb
-    type                  ='NULL'
-        width                 =0._eb
+    area                  = 0._eb
+    areas(:)              = 0._eb
+    bottom                = 0._eb
+    comp_ids(:)           = 'NULL'
+    criterion             = 'NULL'
+    cutoffs(:)            = 0._eb
+    devc_id               = 'NULL'
+    face                  = 'NULL'
+    filtering_ramp_id     = 'NULL'
+    flow                  = 0._eb
+    heights(:)            = 0._eb
+    id                    = 'NULL'
+    offsets(:)            = 0._eb
+    opening_ramp_id       = 'NULL'
+    setpoint              = 0._eb
+    shape                 = 'NULL'
+    top                   = 0._eb
+    type                  = 'NULL'
+    width                 = 0._eb
 
     end subroutine set_vent_defaults
 
@@ -1760,19 +1725,19 @@
     ! --------------------------- CONN -------------------------------------------
     subroutine read_conn(lu)
 
-    integer :: ios,ifrom,ito,i,k,jj,i1,i2,counter1
-    integer :: lu
+    integer, intent(in) :: lu
+
+    integer :: ios, ifrom, ito, i, k, jj, i1, i2, counter1
     real(eb), dimension(mxpts) :: frac
     character(64) :: compartment_id
-
     integer :: nmlcount                             ! count of number of each namelist type read in so far
 
     type(room_type), pointer :: roomptr
 
     real(eb), dimension(mxpts) :: f
     character(64), dimension(mxpts) :: comp_ids
-    character(64) :: comp_id,type
-    namelist/CONN/comp_id,comp_ids,f,type
+    character(64) :: comp_id, type
+    namelist /CONN/ comp_id, comp_ids, f, type
 
     ios = 1
 
@@ -1780,7 +1745,7 @@
     input_file_line_number = 0
 
     ! Scan entire file to look for 'CONN'
-    nmlcount=0
+    nmlcount = 0
     conn_loop: do
         call checkread ('CONN', lu, ios)
         if (ios==0) connflag=.true.
@@ -1801,9 +1766,9 @@
         rewind (lu)
         input_file_line_number = 0
 
-        counter1=0
+        counter1 = 0
 
-        countloop : do k=1,nmlcount+nvcons
+        countloop : do k = 1, nmlcount + nvcons
 
             call checkread('CONN',lu,ios)
             call set_conn_defaults
@@ -1811,10 +1776,9 @@
 
             if (trim(type) == 'WALL') then
                 frac(:)=-101
-
-                compartment_id=' '
-                compartment_id=comp_id
-                ifrom=-101
+                compartment_id = ' '
+                compartment_id = comp_id
+                ifrom = -101
 
                 searching: do jj=1,nr-1
                     roomptr => roominfo(jj)
@@ -1833,14 +1797,14 @@
                 roomptr => roominfo(ifrom)
                 roomptr%iheat = 2
 
-                frac(:)=f(:)
+                frac(:) = f(:)
 
-                do i = 1, count(frac /= -101)
-                    compartment_id=' '
-                    compartment_id=comp_ids(i)
+                do i = 1, count(frac /= -101._eb)
+                    compartment_id = ' '
+                    compartment_id = comp_ids(i)
                     ito=-101
 
-                    searching_2: do jj=1,nr-1
+                    searching_2: do jj = 1, nr-1
                         roomptr => roominfo(jj)
                         if (trim(compartment_id) == trim(roomptr%name)) then
                             ito = roomptr%compartment
@@ -1868,13 +1832,13 @@
                 end do
 
             else if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') then
-                counter1=counter1+1
+                counter1 = counter1 + 1
 
-                compartment_id=' '
-                compartment_id=comp_id
-                i1=-101
+                compartment_id = ' '
+                compartment_id = comp_id
+                i1 = -101
 
-                searching_3: do jj=1,nr-1
+                searching_3: do jj = 1, nr-1
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%name)) then
                         i1 = roomptr%compartment
@@ -1888,11 +1852,11 @@
                     stop
                 end if
 
-                compartment_id=' '
-                compartment_id=comp_ids(1)
-                i2=-101
+                compartment_id = ' '
+                compartment_id = comp_ids(1)
+                i2 = -101
 
-                searching_4: do jj=1,nr-1
+                searching_4: do jj = 1, nr-1
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%name)) then
                         i2 = roomptr%compartment
@@ -1932,10 +1896,10 @@
 
     subroutine set_conn_defaults
 
-    comp_id           ='NULL'
-    comp_ids(:)       ='NULL'
-    f(:)              = 0_eb
-    type              ='NULL'
+    comp_id           = 'NULL'
+    comp_ids(:)       = 'NULL'
+    f(:)              = 0._eb
+    type              = 'NULL'
 
     end subroutine set_conn_defaults
 
@@ -1945,8 +1909,9 @@
     ! --------------------------- ISOF --------------------------------------------
     subroutine read_isof(lu)
 
-    integer :: ios,ii,icomp,jj,counter
-    integer :: lu
+    integer, intent(in) :: lu
+
+    integer :: ios, ii, icomp, jj, counter
     character(64) :: compartment_id
 
     type(visual_type), pointer :: sliceptr
@@ -1954,7 +1919,7 @@
 
     real(eb) :: value
     character(64) :: comp_id
-    namelist /ISOF/comp_id,value
+    namelist /ISOF/ comp_id, value
 
     ios = 1
 
@@ -1969,7 +1934,7 @@
             exit isof_loop
         end if
         read(lu,ISOF,err=34,iostat=ios)
-        counter=counter+1
+        counter = counter + 1
 34      if (ios>0) then
             write(iofill, '(a,i3)') 'Error: Invalid specification in &ISOF inputs. Check &ISOF input, ' , counter
             stop
@@ -1984,17 +1949,17 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_isof_loop: do ii=1,counter
+        read_isof_loop: do ii = 1, counter
 
             call checkread('ISOF',lu,ios)
             call set_isof_defaults
             read(lu,ISOF)
 
-            compartment_id=' '
-            compartment_id=comp_id
-            icomp=-101
+            compartment_id = ' '
+            compartment_id = comp_id
+            icomp = -101
 
-            searching: do jj=1,nr-1
+            searching: do jj = 1, nr-1
                 roomptr => roominfo(jj)
                 if (trim(compartment_id) == trim(roomptr%name)) then
                     icomp = roomptr%compartment
@@ -2032,12 +1997,13 @@
 
     end subroutine read_isof
 
-
     ! --------------------------- SLCF --------------------------------------------
+    
     subroutine read_slcf(lu)
 
-    integer :: ios,ii,jj,icomp,counter
-    integer :: lu
+    integer, intent(in) :: lu
+    
+    integer :: ios, ii, jj, icomp, counter
     character(64) :: compartment_id
 
     type(room_type), pointer :: roomptr
@@ -2046,7 +2012,7 @@
     real(eb) :: position
     character(64) :: domain,plane
     character(64) :: comp_id
-    namelist /SLCF/domain,plane,position,comp_id
+    namelist /SLCF/ domain, plane, position, comp_id
 
     ios = 1
 
@@ -2076,7 +2042,7 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_slcf_loop: do ii=1,counter
+        read_slcf_loop: do ii = 1,counter
 
             call checkread('SLCF',lu,ios)
             call set_slcf_defaults
@@ -2093,12 +2059,12 @@
                 stop
             end if
 
-            compartment_id=' '
-            compartment_id=comp_id
-            icomp=0
+            compartment_id = ' '
+            compartment_id = comp_id
+            icomp = 0
 
             if (trim(compartment_id) /= 'NULL') then
-                searching: do jj=1,nr-1
+                searching: do jj = 1, nr-1
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%name)) then
                         icomp = roomptr%compartment
@@ -2170,20 +2136,50 @@
 
 5403 format ('***Error: Bad SLCF input. Invalid SLCF specification in visualization input ',i0)
 
-
     contains
 
     subroutine set_slcf_defaults
 
     domain                  = 'NULL'
     plane                   = 'NULL'
-    position                = 0.0_eb
+    position                = 0._eb
     comp_id                 = 'NULL'
 
     end subroutine set_slcf_defaults
 
     end subroutine read_slcf
 
+    ! --------------------------- checkread ---------------------------------------
+    subroutine checkread(name,lu,ios)
 
+    ! look for the namelist variable name and then stop at that line.
+
+    integer :: ii
+    integer, intent(out) :: ios
+    integer, intent(in) :: lu
+    character(4), intent(in) :: name
+    character(80) text
+    ios = 1
+
+    readloop: do
+        read(lu,'(a)',end=10) text
+        input_file_line_number = input_file_line_number + 1
+        tloop: do ii=1,72
+            if (text(ii:ii)/='&' .and. text(ii:ii)/=' ') exit tloop
+            if (text(ii:ii)=='&') then
+                if (text(ii+1:ii+4)==name) then
+                    backspace(lu)
+                    ios = 0
+                    exit readloop
+                else
+                    cycle readloop
+                endif
+            endif
+        enddo tloop
+    enddo readloop
+
+10  return
+
+    end subroutine checkread
 
     end module namelist_input_routines

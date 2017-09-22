@@ -3,7 +3,7 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use initialization_routines, only : inittarg, initamb, offset
+    use initialization_routines, only : inittarg, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
@@ -43,7 +43,7 @@
 
     implicit none
 
-    real(eb) :: temparea(mxcross), temphgt(mxcross), deps1, dwall1, dwall2, rti
+    real(eb) :: temparea(mxpts), temphgt(mxpts), deps1, dwall1, dwall2, rti
     real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx, sum
     integer :: ios, i, ii, j, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2
@@ -331,7 +331,7 @@
     end do
 
     ! initialize variables that will change when ambient conditions change
-    call initamb
+    call initialize_ambient
 
     ! check detectors
     do i = 1, n_detectors

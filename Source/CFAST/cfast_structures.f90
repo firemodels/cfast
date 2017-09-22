@@ -1,7 +1,7 @@
 module cfast_types
 
     use precision_parameters
-    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxcross, mxslb, nnodes, mxrooms, mxcoeff
+    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, mxcoeff
 
     ! detector / sprinkler structure
     type detector_type
@@ -123,9 +123,9 @@ module cfast_types
 
         ! cross-sectional area variables
         integer :: nvars                                ! number of data points for variable cross-secitonal area
-        real(eb), dimension(mxcross) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
-        real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
-        real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
+        real(eb), dimension(mxpts) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
+        real(eb), dimension(mxpts) :: var_area        ! variable cross-sectional area base area
+        real(eb), dimension(mxpts) :: var_height      ! variable cross-sectional area heights
 
         ! compartment surfaces
         real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface

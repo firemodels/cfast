@@ -857,7 +857,7 @@ Here, $\Tu$ is the average temperature of the upper layer and $\Ts$ is the ceili
 
 The heat conduction equation is solved in the direction normal to solid targets or wall surfaces using non-uniformly spaced nodes and a second-order accurate central difference scheme for the spatial derivatives.
 
-Wall surface temperatures are updated in time implicity using the solver DASSL which couples wall surface temperatures with gas solution variables (pressures, layer volumes and temperatures).   Target temperatures on the other hand are updated in time using a semi-implicit time marching scheme.  Since they do not affect compartment conditions significantly, there is no need to couple them with other solution variables as is done with wall temperatures.
+Wall surface temperatures are updated in time implicitly using the solver DASSL which couples wall surface temperatures with gas solution variables (pressures, layer volumes and temperatures).   Target temperatures on the other hand are updated in time using a semi-implicit time marching scheme.  Since they do not affect compartment conditions significantly, there is no need to couple them with other solution variables as is done with wall temperatures.
 
 At each time step, the wall temperature profiles are updated in time until the net convective and radiative heat flux striking the wall equals with the heat flux into the solid~\cite{Moss:1992}:
 \be

@@ -96,7 +96,7 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 Examples of each of the inputs are included in the sections that follow.  All examples are taken from the sample input file {\ct Users\_Guide\_Example.in} included with the CFAST distribution. Following are some general rules about the CFAST input file:
 
 \begin{itemize}
-\item The {\ct HEAD} is required to be the first line in an input file and identifies the version of CFAST that the input file was created for. Use {\ct \&TAIL} as the last line at the end of the input file. This completes the file from {\ct \&HEAD} to {\ct \&TAIL}. CFAST does not even look for this last line. It just forces the “end of file” character past relevant input.
+\item The {\ct HEAD} input identifies the version of CFAST for which the input file was created and is typically the first line in the input file. Use {\ct \&TAIL} as the last line at the end of the input file. This completes the file from {\ct \&HEAD} to {\ct \&TAIL}. CFAST does not even look for this last line. It just forces the “end of file” character past relevant input.
 \item Many of the listed keywords are mutually exclusive. Repeated entry of some keywords can cause the program to either fail or run in an unpredictable manner.
 \item Use of some keywords triggers the code to operate in a certain mode/condition. For example, specifying {\ct ADIABATIC} to be {\ct TRUE} triggers the code to treat all compartment surfaces to be perfectly insulated.
 \item Multiple inputs are required whenever the keyword is in plural form --- keywords ending with an \textbf{s}. For example, the keyword parameter, {\ct TEMPERATURES}, within the namelist group, {\ct INIT}, requires two temperature values (in this case, one for exterior ambient temperature and one for interior ambient temperature). In the case of missing inputs, an error message will be generated to assist users in troubleshooting any errors.
@@ -142,7 +142,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct PRINT}             & Integer   & Section \ref{info:TIME}                 & s         & 60              \\ \hline
-{\ct SIMULATION}        & Integer   & Section \ref{info:TIME}                 & s         &  0              \\ \hline
+{\ct SIMULATION}        & Integer   & Section \ref{info:TIME}                 & s         & 900             \\ \hline
 {\ct SMOKEVIEW}         & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
 {\ct SPREADSHEET}       & Integer   & Section \ref{info:TIME}                 & s         & 15              \\ \hline
 \end{longtable}
@@ -164,7 +164,8 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct PRESSURE}                   & Real   		   & Section \ref{info:INIT}      & Pa       		     & 101325     		       \\ \hline
 {\ct RELATIVE\_HUMIDITY}         & Real   		   & Section \ref{info:INIT}      & \%      		     & 50       		       \\ \hline
-{\ct TEMPERATURES(1:2)}          & Real Doublet  	           & Section \ref{info:INIT}      & $^\circ$C		     & 20, 20  		               \\ \hline
+{\ct INTERIOR\_TEMPERATURE}       & Real  	       & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
+{\ct EXTERIOR\_TEMPERATURE}       & Real            & Section \ref{info:INIT}      & $^\circ$C		     & 20      	   \\ \hline
 \end{longtable}
 
 
@@ -191,7 +192,8 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{lstlisting}
 &HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
 &TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
-&INIT  PRESSURE = 101325., RELATIVE_HUMIDITY = 50., TEMPERATURES = 20., 20. /
+&INIT  PRESSURE = 101325., RELATIVE_HUMIDITY = 50., 
+       INTERIOR_TEMPERATURE = 20., EXTERIOR_TEMPERATURE = 20. /
 &MISC  LOWER_OXYGEN_LIMIT = 0.10 /
 \end{lstlisting}
 
@@ -253,7 +255,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct GRID(1:3)}             & Integer Triplet& Section \ref{info:SLCF2}               &           &                 \\ \hline
 {\ct HALL}                  & Logical  		 & Section \ref{info:COMP3}               &           & {\ct .FALSE.}   \\ \hline
 {\ct HEIGHT}                & Real     		 & Section \ref{info:COMP}   	          & m         &                 \\ \hline
-{\ct ID}                    & Character		 & Section \ref{info:COMP}                &           &                 \\ \hline
+{\ct ID}                    & Character		 & Section \ref{info:COMP}                &           & (0,0,0)         \\ \hline
 {\ct ORIGIN(1:3)}           & Real Triplet   & Section \ref{info:COMP}                & m         &                 \\ \hline
 {\ct ROOM\_AREA\_RAMP}
 \footnote{For compartments where the cross-sectional area varies with height, the namelist group, {\ct RAMP} can be used. Keywords associated with this feature can be found in Section~\ref{tbl:RAMP}.}
@@ -299,7 +301,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct BOTTOM}\footnote{Appropriate for wall vent}                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
 {\ct COMP\_IDS(1:2)}     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
-                            				         & Character              & Section \ref{info:VENT}      &                             &                 \\ \hline
+                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CUTOFFS(1:2)}       					 & Real Doublet 	  	  & Section \ref{info:VENT4}     & Pa                          &     200, 300     \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}.}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
@@ -362,31 +364,38 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct AREA}                 & Real        & Section \ref{info:FIRE}                 & m$^2$                       &     0.3         \\ \hline
-{\ct CARBON}               & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct CHLORINE}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct AREA}\footnote{For AREA, HRR, and species yields, either a constant value (e.g., AREA or CO\_YIELD) or ramp (e.g., AREA\_RAMP\_ID or CO\_YIELD\_RAMP\_ID) may be used. Do not use both.}                & Real        & Section \ref{info:FIRE}                 & m$^2$                       &     0.3         \\ \hline
+{\ct AREA\_RAMP\_ID}                 & Character        & Section \ref{info:FIRE}                 &                        &              \\ \hline
+{\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct COMP\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct CO\_YIELD}            & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct CO\_YIELD}            & Real        & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct CO\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct HCL\_YIELD}           & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct HCN\_YIELD}           & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct HCL\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct HCL\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct HCN\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct HCN\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
+{\ct HRR}        & Real   &  Section \ref{info:RAMP}                &  kW                           &                 \\ \hline
 {\ct HRR\_RAMP\_ID}        & Character   &  Section \ref{info:RAMP}                &                             &                 \\ \hline
 {\ct HYDROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct ID}                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct IGNITION\_CRITERION}\footnote{Input for {\ct IGNITION\_CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
-                           & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+                           & Selection List   & Section \ref{info:FIRE}                 &  TIME                           &                 \\ \hline
 {\ct LOCATION}             & Real        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
-{\ct NITROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct OXYGEN}               & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct PF\_CO\_YIELD}        & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct PF\_SOOT\_YIELD}      & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct PF\_TRACE\_YIELD}     & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct POST\_FLASHOVER}      & Logical     & Section \ref{info:FIRE}                 &                             &  {\ct .FALSE.}  \\ \hline
+{\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+%{\ct PF\_CO\_YIELD}        & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+%{\ct PF\_SOOT\_YIELD}      & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+%{\ct PF\_TRACE\_YIELD}     & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+%{\ct POST\_FLASHOVER}      & Logical     & Section \ref{info:FIRE}                 &                             &  {\ct .FALSE.}  \\ \hline
 {\ct RADIATIVE\_FRACTION}  & Real        & Section \ref{info:FIRE}                 &                             &     0.35        \\ \hline
-{\ct SETPOINT}             & Real        & Section \ref{info:FIRE}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$  &         \\ \hline
-{\ct SOOT\_YIELD}          & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct TRACE\_YIELD}         & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct SETPOINT}             & Real        & Section \ref{info:FIRE}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$  & 0 s        \\ \hline
+{\ct SOOT\_YIELD}          & Real        & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
+{\ct SOOT\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct TRACE\_YIELD}         & Real        & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct TRACE\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -430,7 +439,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct PLATE}, {\ct CYLINDER}, {\ct SPRINKLER}, {\ct HEAT\_DETECTOR}, or {\ct SMOKE\_DETECTOR}}
-                          & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+                          & Selection List   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct ID}      		  & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct INTERNAL\_LOCATION}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
 {\ct LOCATION(1:3)}       & Real Triplet  & Section \ref{info:DEVC}     & m                 &                 \\ \hline
@@ -486,7 +495,7 @@ A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct 
 {\ct COMP\_IDS}            & Character Array     & Section \ref{info:CONN}                 &           &  	      \\ \hline
 {\ct F}                    & Real Array          & Section \ref{info:CONN}                 &           &              \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING}, {\ct FLOOR}, or {\ct WALL}}        	
-                           & Character           & Section \ref{info:CONN}                 &           &              \\ \hline
+                           & Selection List           & Section \ref{info:CONN}                 &           &              \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -531,6 +540,7 @@ A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct 
 
 \subsection{\texorpdfstring{{\tt SLCF}}{SLCF} (Slice File Parameters)}
 
+\begin{minipage}{6.5in}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Slice File parameters ({\ct SLCF} namelist group)]{For more information see Section~\ref{info:SLCF}.}
 \label{tbl:SLCF} \\
@@ -545,11 +555,13 @@ A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct 
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}          & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
-{\ct DOMAIN}            & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
-{\ct PLANE}             & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
+{\ct DOMAIN}\footnote{DOMAIN must be 2-D or 3-D. If 2-D, {\ct PLANE} specifies the orientation of the slice in the X, Y, or Z direction and {\ct POSITION} specifies the offset from the origin of the specified plane.}            & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
+{\ct PLANE}             & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct POSITION}          & Real        & Section \ref{info:SLCF}                 &           &                 \\ \hline
 \end{longtable}
+\end{minipage}
 
+\vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
 &SLCF  DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
@@ -578,23 +590,20 @@ A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct 
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct F}               & Real Array            & Section \ref{info:RAMP2}                 &          &                 \\ \hline
-{\ct A}               & Real Array            & Section \ref{info:RAMP2}                 &  m$^2$   &                 \\ \hline
-{\ct H}               & Real Array            & Section \ref{info:RAMP2}                 &  m       &                 \\ \hline
-{\ct HRR}             & Real Array            & Section \ref{info:RAMP2}                 &  kW      &                 \\ \hline
-{\ct ID}              & Character             & Section \ref{info:RAMP2}                 &          &                 \\ \hline
 {\ct T}               & Real Array            & Section \ref{info:RAMP2}                 &  s       &                 \\ \hline
-{\ct TYPE}\footnote{{\ct AREA}, {\ct EFFICIENCY}, {\ct FRACTION}, or {\ct HEAT\_RELEASE\_RATE}}
-                      & Selection List        & Section \ref{info:RAMP2}                 &          &                 \\ \hline
+{\ct Z}               & Real Array            & Section \ref{info:RAMP2}                 &  m       &                 \\ \hline
 \end{longtable}
 
 \graybox{
-Vent opening is specified as a function of time with {\ct T} and {\ct F}. {\ct F} is the fraction of the vent width (for wall vents) or the vent area (for ceiling, floor, and mechanical vents). Refer to Section~\ref{info:VENT2}. \\
+Vent opening is specified as a function of time with {\ct T} and {\ct F} as the fraction of the vent width (for wall vents) or of the vent area (for ceiling, floor, and mechanical vents). Refer to Section~\ref{info:VENT2}. \\
 
-Filter efficiency is specified as a function of time with {\ct T} and {\ct F}. {\ct F} is the fraction of soot and trace species removed in the associated mechanical vent. Refer to Section~\ref{info:VENT4}. \\
+Filter efficiency is specified as a function of time with {\ct T} and {\ct F} as the fraction of soot and trace species removed in the associated mechanical vent. Refer to Section~\ref{info:VENT4}. \\
 
-Compartment area in XY-plane is specified as  function of compartment height with {\ct H} and {\ct A}. Refer to Section~\ref{info:COMP4}. \\
+Compartment area in XY-plane is specified as a function of compartment height with {\ct Z} as the height and {\ct F} as the cross-sectional area in m$^2$. Refer to Section~\ref{info:COMP4}. \\
 
-Heat release rate of a fire is specified as  function of time using {\ct T} abd {\ct HRR}. Refer to Section~\ref{info:FIRE2}.
+Heat release rate of a fire is specified as a function of time with {\ct T} and {\ct F} as the heat release rate of the fire in kW. Refer to Section~\ref{info:FIRE2}.
+
+Fire species yields are specified as a function of time using {\ct T} as time {\ct F} as the yield fraction in kg of species produced per kg of fuel burned.
 }
 
 

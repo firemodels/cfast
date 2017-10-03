@@ -252,14 +252,14 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct CEILING\_MATL\_ID}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least on {\ct COMP} input must be included in an input file.}     & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
-{\ct DEPTH}*                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
+{\ct CEILING\_MATL\_ID}     & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct DEPTH}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least on {\ct COMP} input must be included in an input file.}                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
 {\ct FLOOR\_MATL\_ID}       & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
 {\ct GRID(1:3)}             & Integer Triplet& Section \ref{info:SLCF2}               &           & (50,50,50)                \\ \hline
 {\ct HALL}                  & Logical  		 & Section \ref{info:COMP3}               &           & {\ct .FALSE.}   \\ \hline
 {\ct HEIGHT}*                & Real     		 & Section \ref{info:COMP}   	          & m         &                 \\ \hline
-{\ct ID}*                    & Character		 & Section \ref{info:COMP}                &           & (0,0,0)         \\ \hline
-{\ct ORIGIN(1:3)}           & Real Triplet   & Section \ref{info:COMP}                & m         &                 \\ \hline
+{\ct ID}*                    & Character		 & Section \ref{info:COMP}                &           &          \\ \hline
+{\ct ORIGIN(1:3)}           & Real Triplet   & Section \ref{info:COMP}                & m         & (0,0,0)                \\ \hline
 {\ct ROOM\_AREA\_RAMP}
 \footnote{For compartments where the cross-sectional area varies with height, the namelist group, {\ct RAMP} can be used. Keywords associated with this feature can be found in Section~\ref{tbl:RAMP}.}
                             & Character          & Section \ref{info:COMP4}                 &           &                 \\ \hline
@@ -369,7 +369,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct AREA}\footnote{For AREA, HRR, and species yields, either a constant value (e.g., AREA or CO\_YIELD) or ramp (e.g., AREA\_RAMP\_ID or CO\_YIELD\_RAMP\_ID) may be used. Do not use both.}                & Real        & Section \ref{info:FIRE}                 & m$^2$                       &     0.3         \\ \hline
 {\ct AREA\_RAMP\_ID}                 & Character        & Section \ref{info:FIRE}                 &                        &              \\ \hline
-{\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &  1               \\ \hline
 {\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file. For heat release rate, either {\ct HRR} or {\ct HRR\_RAMP\_ID} must be included but not both.}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct CO\_YIELD}            & Real        & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
@@ -382,7 +382,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
 {\ct HRR}*        & Real   &  Section \ref{info:RAMP}                &  kW                           &                 \\ \hline
 {\ct HRR\_RAMP\_ID}*        & Character   &  Section \ref{info:RAMP}                &                             &                 \\ \hline
-{\ct HYDROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct HYDROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct IGNITION\_CRITERION}\footnote{Input for {\ct IGNITION\_CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                            & Selection List   & Section \ref{info:FIRE}                 &  TIME                           &                 \\ \hline

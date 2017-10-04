@@ -814,9 +814,10 @@
 
     type(ramp_type), pointer :: rampptr
 
-    real(eb), dimension(mxpts) :: f, t, z
+    real(eb), dimension(mxpts) :: f, hrr, t, h, a
+    character(64) :: type,id
     character(64), dimension(2) :: comp_ids
-    namelist /RAMP/ f, id ,t ,z, comp_ids
+    namelist /RAMP/ f, hrr, id ,t ,h, a, type, comp_ids
 
     ios = 1
 
@@ -859,13 +860,6 @@
 
             rampptr => rampinfo(ii)
             rampptr%id = id
-            
-            if (t(1)==-101._eb .and. z(1)==-101._eb) then
-                write (*,'(a,i3)') '***Error in &RAMP: Both t and z are specified. Check ramp, ', nramps
-                write (iofill,'(a,i3)') '***Error in &RAMP: Both t and z are specified. Check ramp, ', nramps
-                stop
-            end if
-                
 
             if (trim(type) == 'FRACTION' .or. trim(type) == 'EFFICENCY') then
                 rampptr%time(1:mxpts)  = t(1:mxpts)

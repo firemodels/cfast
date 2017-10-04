@@ -546,7 +546,7 @@
     height                  = 0.0_eb
     wall_matl_id            = 'OFF'
     width                   = 0.0_eb
-    grid(:)                 = 50
+    grid(:)                 = default_grid
     origin(:)               = 0.0_eb
     room_area_ramp          = 'NULL'
     hall                    = '.FALSE.'
@@ -814,10 +814,9 @@
 
     type(ramp_type), pointer :: rampptr
 
-    real(eb), dimension(mxpts) :: f, hrr, t, h, a
-    character(64) :: type,id
+    real(eb), dimension(mxpts) :: f, t, z
     character(64), dimension(2) :: comp_ids
-    namelist /RAMP/ f, hrr, id ,t ,h, a, type, comp_ids
+    namelist /RAMP/ f, id ,t ,z, comp_ids
 
     ios = 1
 
@@ -852,15 +851,21 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_ramp_loop: do ii=1,nramps
+        read_ramp_loop: do ii = 1,nramps
 
             call checkread('RAMP',lu,ios)
             call set_ramp_defaults
             read(lu,RAMP)
 
-            rampptr=>rampinfo(ii)
-            rampptr%id=id
-            rampptr%type=type
+            rampptr => rampinfo(ii)
+            rampptr%id = id
+            
+            if (t(1)==-101._eb .and. z(1)==-101._eb) then
+                write (*,'(a,i3)') '***Error in &RAMP: Both t and z are specified. Check ramp, ', nramps
+                write (iofill,'(a,i3)') '***Error in &RAMP: Both t and z are specified. Check ramp, ', nramps
+                stop
+            end if
+                
 
             if (trim(type) == 'FRACTION' .or. trim(type) == 'EFFICENCY') then
                 rampptr%time(1:mxpts)  = t(1:mxpts)

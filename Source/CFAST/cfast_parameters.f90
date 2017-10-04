@@ -67,6 +67,7 @@
     real(eb), parameter :: deltatemp_min = 1.0_eb   ! minimum temperature difference for bouyancy to deposit all into a layer
     integer, parameter :: interior = 1              ! compartment interior
     integer, parameter :: exterior = 2              ! compartment exterior
+    integer, parameter :: default_grid = 50         ! number of grid cells in each direction at initialization
 
     ! target parameters
     integer, parameter :: mxtarg = mxperrm*(mxrooms-1)      ! maximum number of targets

@@ -89,7 +89,8 @@ module vflow_routines
                 roomptr => roominfo(ifrm)
                 if (tmvent(iflow)>interior_ambient_temperature) then
                     zlayer = roomptr%depth(ilay)
-                    froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_ambient_temperature)/interior_ambient_temperature)
+                    froude(iflow) = vvent(iflow) / &
+                        sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_ambient_temperature)/interior_ambient_temperature)
                 else
                     froude(iflow) = 0.0_eb
                 end if

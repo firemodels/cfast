@@ -69,7 +69,7 @@ module conduction_routines
             ! use exterior wall temperature from last time step to ...
             twint = roomptr%t_surfaces(1,iwall)
             twext = roomptr%t_surfaces(2,iwall)
-            tgas = exterior_temperature
+            tgas = exterior_ambient_temperature
             iweq = i_wallmap(iroom,iwall) - nofwt
             iwb = i_hconnections(iweq,w_boundary_condition)
 

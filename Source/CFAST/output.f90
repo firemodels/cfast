@@ -621,8 +621,8 @@ module output_routines
 
     !     Description:  Output initial test case ambient conditions
 
-    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
-       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
+    write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
+       exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
     return
 
 5000 format (//,'AMBIENT CONDITIONS',//, &

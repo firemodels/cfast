@@ -203,8 +203,8 @@
     integer, intent(in) :: lu
 
     real(eb) :: pressure
-    real(eb),dimension(2) :: temperatures
-    namelist /INIT/ pressure,relative_humidity,temperatures
+    real(eb) :: interior_temperature, exterior_temperature
+    namelist /INIT/ pressure, relative_humidity, interior_temperature, exterior_temperature
 
     ios = 1
 
@@ -234,13 +234,13 @@
         call set_init_defaults
         read(lu,INIT)
 
-        exterior_temperature  = temperatures(1) + kelvin_c_offset
-        interior_temperature  = temperatures(2) + kelvin_c_offset
+        exterior_ambient_temperature  = exterior_temperature + kelvin_c_offset
+        interior_ambient_temperature  = interior_temperature + kelvin_c_offset
         exterior_abs_pressure = pressure
-        interior_abs_pressure = exterior_abs_pressure*exterior_temperature/interior_temperature
+        interior_abs_pressure = exterior_abs_pressure*exterior_ambient_temperature/interior_ambient_temperature
         relative_humidity     = relative_humidity*0.01_eb
 
-        tgignt = interior_temperature + 200.0_eb
+        tgignt = interior_ambient_temperature + 200.0_eb
 
     end if init_flag
 
@@ -248,7 +248,8 @@
 
     subroutine set_init_defaults
 
-    temperatures             = default_temperature - kelvin_c_offset    ! C
+    exterior_temperature     = default_temperature - kelvin_c_offset    ! C
+    interior_temperature     = default_temperature - kelvin_c_offset    ! C
     pressure                 = default_pressure                         ! Pa
     relative_humidity        = default_relative_humidity*100._eb        ! %
 

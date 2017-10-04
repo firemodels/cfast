@@ -111,10 +111,10 @@ module initialization_routines
     do i = 1, nrm1
         roomptr => roominfo(i)
         p(i) = roomptr%interior_relp_initial
-        p(i+noftu) = interior_temperature
+        p(i+noftu) = interior_ambient_temperature
         p(i+nofvu) = roomptr%vmin
         if (roomptr%shaft) p(i+nofvu) = roomptr%vmax
-        p(i+noftl) = interior_temperature
+        p(i+noftl) = interior_ambient_temperature
     end do
 
     ! define interior surface wall temperatures
@@ -124,7 +124,7 @@ module initialization_routines
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
                 ii = ii + 1
-                p(ii) = interior_temperature
+                p(ii) = interior_ambient_temperature
             end if
         end do
     end do
@@ -159,10 +159,10 @@ module initialization_routines
         dtectptr%tau = tdrate
 
         ! set initial ceiling jet and detector link temperatures to ambient
-        dtectptr%value = interior_temperature
-        dtectptr%value_o = interior_temperature
-        dtectptr%temp_gas = interior_temperature
-        dtectptr%temp_gas_o = interior_temperature
+        dtectptr%value = interior_ambient_temperature
+        dtectptr%value_o = interior_ambient_temperature
+        dtectptr%temp_gas = interior_ambient_temperature
+        dtectptr%temp_gas_o = interior_ambient_temperature
     end do
 
     ! p's for pressure, volume and temperature are defined
@@ -173,8 +173,8 @@ module initialization_routines
     do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        targptr%temperature(idx_tempf_trg:idx_tempb_trg) = interior_temperature
-        targptr%tgas = interior_temperature
+        targptr%temperature(idx_tempf_trg:idx_tempb_trg) = interior_ambient_temperature
+        targptr%tgas = interior_ambient_temperature
 
         ! scale normal vectors to have length 1
         scale = 1.0_eb/dnrm2(3,targptr%normal,1)
@@ -227,9 +227,9 @@ module initialization_routines
     pressure_ref = default_pressure
     interior_abs_pressure = pressure_ref
     pressure_offset = pressure_ref
-    interior_temperature = t_ref
+    interior_ambient_temperature = t_ref
     tgignt = t_ref + 200.0_eb
-    exterior_temperature = interior_temperature
+    exterior_ambient_temperature = interior_ambient_temperature
     exterior_abs_pressure = interior_abs_pressure
     relative_humidity = default_relative_humidity
 
@@ -438,7 +438,7 @@ module initialization_routines
         !  set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
         ! tables in the handbook of physics and chemistry.
-        xt = interior_temperature
+        xt = interior_ambient_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.016_eb/28.584_eb)
         initial_mass_fraction(h2o) = relative_humidity*xh2o
@@ -643,7 +643,7 @@ module initialization_routines
     do i = 1, nrm1
         roomptr => roominfo(i)
         do j = 1, nwal
-            roomptr%t_profile(1:nnodes,j) = interior_temperature
+            roomptr%t_profile(1:nnodes,j) = interior_ambient_temperature
             if (roomptr%surface_on(j)) then
                 k_w(1:mxslb) = roomptr%k_w(1:mxslb,j)
                 c_w(1:mxslb) = roomptr%c_w(1:mxslb,j)
@@ -655,7 +655,7 @@ module initialization_routines
                 wtemps = roomptr%t_profile(1:nnodes,j)
                 walldx = roomptr%walldx(1:nnodes,j)
                 call wset(numnode,nslab,tstop,walldx,wsplit,k_w,c_w,rho_w,thick_w,&
-                   thick,wtemps,interior_temperature,exterior_temperature)
+                   thick,wtemps,interior_ambient_temperature,exterior_ambient_temperature)
                 roomptr%nodes_w(1:mxslb+1,j) = numnode
                 roomptr%t_profile(1:nnodes,j) = wtemps
                 roomptr%walldx(1:nnodes,j) = walldx
@@ -708,20 +708,20 @@ module initialization_routines
         end do
 
         do j = 1,nptsf
-            from_roomptr%t_profile(j,ifromw) = interior_temperature
-            to_roomptr%t_profile(j,itow) = interior_temperature
+            from_roomptr%t_profile(j,ifromw) = interior_ambient_temperature
+            to_roomptr%t_profile(j,itow) = interior_ambient_temperature
         end do
         jj = nptst
         do j = nptsf+1,nptsf+nptst - 1
             jj = jj - 1
-            from_roomptr%t_profile(j,ifromw) = interior_temperature
+            from_roomptr%t_profile(j,ifromw) = interior_ambient_temperature
             from_roomptr%walldx(j-1,ifromw) = to_roomptr%walldx(jj,itow)
         end do
 
         jj = nptsf
         do j = nptst+1,nptst+nptsf - 1
             jj = jj - 1
-            to_roomptr%t_profile(j,itow) = interior_temperature
+            to_roomptr%t_profile(j,itow) = interior_ambient_temperature
             to_roomptr%walldx(j-1,itow) = from_roomptr%walldx(jj,ifromw)
         end do
     end do

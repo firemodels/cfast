@@ -87,9 +87,9 @@ module vflow_routines
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nrm1) then
                 roomptr => roominfo(ifrm)
-                if (tmvent(iflow)>interior_temperature) then
+                if (tmvent(iflow)>interior_ambient_temperature) then
                     zlayer = roomptr%depth(ilay)
-                    froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
+                    froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_ambient_temperature)/interior_ambient_temperature)
                 else
                     froude(iflow) = 0.0_eb
                 end if
@@ -117,8 +117,8 @@ module vflow_routines
                 frommu = 0.0_eb
                 fromml = xmvent(iflow)
                 fromqu = 0.0_eb
-                fromql = cp*fromml*exterior_temperature
-                from_temp = exterior_temperature
+                fromql = cp*fromml*exterior_ambient_temperature
+                from_temp = exterior_ambient_temperature
             end if
             fromtq = fromqu + fromql
 
@@ -329,8 +329,8 @@ module vflow_routines
             roomptr => roominfo(iroom(i))
             tmvent(i) = roomptr%temp(ilay(3-i))
         else
-            ! iroom(i) is an outside room so use exterior_temperature for temperature
-            tmvent(i) = exterior_temperature
+            ! iroom(i) is an outside room so use exterior_ambient_temperature for temperature
+            tmvent(i) = exterior_ambient_temperature
         end if
     end do
     return

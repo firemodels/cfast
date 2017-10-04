@@ -97,14 +97,14 @@
     ! now we can check the input data for consistency
 
     ! check for temperature outside reasonable limits
-    if (exterior_temperature>373.15_eb.or.exterior_temperature<223.15_eb) then
-        write (*,5022) exterior_temperature
-        write (iofill,5022) exterior_temperature
+    if (exterior_ambient_temperature>373.15_eb.or.exterior_ambient_temperature<223.15_eb) then
+        write (*,5022) exterior_ambient_temperature
+        write (iofill,5022) exterior_ambient_temperature
         stop
     end if
-    if (interior_temperature>373.15_eb.or.interior_temperature<223.15_eb) then
-        write (*,5022) interior_temperature
-        write (iofill,5022) interior_temperature
+    if (interior_ambient_temperature>373.15_eb.or.interior_ambient_temperature<223.15_eb) then
+        write (*,5022) interior_ambient_temperature
+        write (iofill,5022) interior_ambient_temperature
         stop
     end if
 
@@ -120,8 +120,8 @@
     ! we now know what output is going to be generated, so create the files
     call openoutputfiles
 
-    interior_rho = interior_abs_pressure/interior_temperature/rgas
-    exterior_rho = exterior_abs_pressure/exterior_temperature/rgas
+    interior_rho = interior_abs_pressure/interior_ambient_temperature/rgas
+    exterior_rho = exterior_abs_pressure/exterior_ambient_temperature/rgas
 
     ! initialize the targets.
     call inittarg

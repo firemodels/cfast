@@ -173,7 +173,7 @@ module room_data
     integer nr, nrm1
 
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
-        initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
+        initial_mass_fraction(ns), interior_rho, exterior_rho, interior_ambient_temperature, exterior_ambient_temperature
     
     type(room_type), target :: roominfo(mxrooms)
 

@@ -79,7 +79,7 @@ module fire_routines
         xtl = roomptr%temp(l)
         flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume
         flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
-        q_firemass = cp*fireptr%mdot_pyrolysis*interior_temperature
+        q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
         q_entrained = cp*fireptr%mdot_entrained*xtl
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + xqfc + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
@@ -193,7 +193,7 @@ module fire_routines
 
         ! calculate the entrainment rate but constrain the actual amount
         ! of air entrained to that required to produce stable stratification
-        call fire_plume(object_area, qheatl, qheatl_c, xxfirel, interior_temperature, xemp, xems, xeme, &
+        call fire_plume(object_area, qheatl, qheatl_c, xxfirel, interior_ambient_temperature, xemp, xems, xeme, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         ! check for an upper only layer fire
@@ -251,7 +251,7 @@ module fire_routines
         qheatu = qheatu_c/(1.0_eb-chirad)
         height = max (0.0_eb, min(xz,xxfireu))
 
-        call fire_plume (object_area, qheatu, qheatu_c, height, interior_temperature, uplmep, uplmes, uplmee, &
+        call fire_plume (object_area, qheatu, qheatu_c, height, interior_ambient_temperature, uplmep, uplmes, uplmee, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = roomptr%species_fraction(u,o2)

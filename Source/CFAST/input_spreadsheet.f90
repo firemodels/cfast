@@ -726,8 +726,8 @@ module spreadsheet_input_routines
                 rampptr%counter = lrarray(4)
                 rampptr%npoints = lrarray(5)
                 do iramp = 1,rampptr%npoints
-                    rampptr%time(iramp) = lrarray(4+2*iramp)
-                    rampptr%value(iramp) = lrarray(5+2*iramp)
+                    rampptr%x(iramp) = lrarray(4+2*iramp)
+                    rampptr%f_of_x(iramp) = lrarray(5+2*iramp)
                 end do
             end if
 

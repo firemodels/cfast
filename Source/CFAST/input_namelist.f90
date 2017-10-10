@@ -474,8 +474,8 @@
                         rampptr%room2 = ii
                         rampptr%counter = kk
                         do i = 1, rampptr%npoints
-                            roomptr%var_height(i) = rampptr%time(i)
-                            roomptr%var_area(i)   = rampptr%value(i)
+                            roomptr%var_height(i) = rampptr%x(i)
+                            roomptr%var_area(i)   = rampptr%f_of_x(i)
                         end do
                         exit ramp_search
                     end if
@@ -814,10 +814,10 @@
 
     type(ramp_type), pointer :: rampptr
 
-    real(eb), dimension(mxpts) :: f, hrr, t, h, a
+    real(eb), dimension(mxpts) :: f, t, z
     character(64) :: type,id
     character(64), dimension(2) :: comp_ids
-    namelist /RAMP/ f, hrr, id ,t ,h, a, type, comp_ids
+    namelist /RAMP/ f, id ,t, z, type, comp_ids
 
     ios = 1
 
@@ -860,24 +860,24 @@
 
             rampptr => rampinfo(ii)
             rampptr%id = id
-
-            if (trim(type) == 'FRACTION' .or. trim(type) == 'EFFICENCY') then
-                rampptr%time(1:mxpts)  = t(1:mxpts)
-                rampptr%value(1:mxpts) = f(1:mxpts)
-            else if (trim(type) == 'HEAT_RELEASE_RATE') then
-                rampptr%time(1:mxpts)  = t(1:mxpts)
-                rampptr%value(1:mxpts) = hrr (1:mxpts)
-            else if (trim(type) == 'AREA') then
-                rampptr%time(1:mxpts)  = h(1:mxpts)
-                rampptr%value(1:mxpts) = a(1:mxpts)
+            if (type=='AREA') then
+                rampptr%x(1:mxpts)  = z(1:mxpts)
+            else
+                rampptr%x(1:mxpts) = t(1:mxpts)
             end if
+            rampptr%f_of_x(1:mxpts) = f(1:mxpts)
 
-            if (count(rampptr%time/=-101._eb) /= count(rampptr%value/=-101._eb)) then
-                write (*,'(a,i3)') '***Error in &RAMP: The number of inputs not match. Check ramp, ', nramps
-                write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs not match. Check ramp, ', nramps
+            if (count(rampptr%x/=-101._eb) /= count(rampptr%f_of_x/=-101._eb)) then
+                if (type=='AREA') then
+                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', nramps
+                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', nramps
+                else
+                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', nramps
+                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', nramps
+                end if
                 stop
             end if
-            rampptr%npoints=count(rampptr%time/=-101._eb)
+            rampptr%npoints=count(rampptr%x/=-101._eb)
 
         end do read_ramp_loop
 
@@ -890,10 +890,8 @@
 
     type                    = 'NULL'
     t(:)                    = -101._eb
-    hrr(:)                  = -101._eb
     f(:)                    = -101._eb
-    h(:)                    = -101._eb
-    a(:)                    = -101._eb
+    z(:)                    = -101._eb
     id                      = 'NULL'
 
     end subroutine set_ramp_defaults
@@ -1088,9 +1086,9 @@
                     rampptr%counter = kk
                     fireptr%npoints = rampptr%npoints
                     do i=1,rampptr%npoints
-                        fireptr%time(i) = rampptr%time(i)
+                        fireptr%time(i) = rampptr%x(i)
 
-                        fireptr%qdot(i) = rampptr%value(i)
+                        fireptr%qdot(i) = rampptr%f_of_x(i)
                         max_hrr = max(max_hrr, fireptr%qdot(i))
                         fireptr%mdot(i) = fireptr%qdot(i) / ohcomb
 

@@ -1342,20 +1342,20 @@
         iramp = find_vent_opening_ramp (ventid,venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)
-            if (time<=rampptr%time(1)) then
-                fraction = rampptr%value(1)
+            if (time<=rampptr%x(1)) then
+                fraction = rampptr%f_of_x(1)
                 return
-            else if (time>=rampptr%time(rampptr%npoints)) then
-                fraction = rampptr%value(rampptr%npoints)
+            else if (time>=rampptr%x(rampptr%npoints)) then
+                fraction = rampptr%f_of_x(rampptr%npoints)
                 return
             else
                 do i=2,rampptr%npoints
-                    if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
-                        dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
-                        dtfull = max(time-rampptr%time(i-1),mintime)
-                        dy = rampptr%value(i)-rampptr%value(i-1)
+                    if (time>rampptr%x(i-1).and.time<=rampptr%x(i)) then
+                        dt = max(rampptr%x(i)-rampptr%x(i-1),mintime)
+                        dtfull = max(time-rampptr%x(i-1),mintime)
+                        dy = rampptr%f_of_x(i)-rampptr%f_of_x(i-1)
                         dydt = dy / dt
-                        fraction = rampptr%value(i-1)+dydt * dtfull
+                        fraction = rampptr%f_of_x(i-1)+dydt * dtfull
                         return
                     end if
                 end do

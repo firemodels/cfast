@@ -90,7 +90,7 @@ module cfast_types
         character(64) :: id  
         character(64) :: type  
         integer :: room1, room2, counter, npoints
-        real(eb) :: time(mxpts), value(mxpts)
+        real(eb) :: x(mxpts), f_of_x(mxpts)
     end type ramp_type
 
     ! room data structure

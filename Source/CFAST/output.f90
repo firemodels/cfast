@@ -834,8 +834,8 @@ module output_routines
                if (rampptr%room2==nr) cjout = 'Outside'
                roomptr => roominfo(rampptr%room1)
                write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
-                   (int(rampptr%time(j)),j=1,rampptr%npoints)
-               write (iofilo,5180) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
+                   (int(rampptr%x(j)),j=1,rampptr%npoints)
+               write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
                goto 223
             end if
 223         continue

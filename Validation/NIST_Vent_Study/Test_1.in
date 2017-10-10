@@ -9,11 +9,12 @@ TAMB,293.15,101325,0,50
 !!Material Properties
 !!
 MATL,Gypboard,0.16,1000,480,0.015875,0.9,Gypsum Board
+MATL,Thingyp,0.16,1000,480,0.0079375,0.9,Thin Gypsum Board
 !!
 !!Compartments
 !!
-COMPA,Comp 1,1.1938,1.2192,0.587375,0,0,0,Gypboard,Gypboard,Gypboard,50,50,50
-COMPA,Comp 2,1.1938,1.2192,0.6096,0,0,0.587375,Gypboard,Gypboard,Gypboard,50,50,50
+COMPA,Comp 1,1.1938,1.2192,0.587375,0,0,0,Thingyp,Gypboard,Gypboard,50,50,50
+COMPA,Comp 2,1.1938,1.2192,0.6096,0,0,0.587375,Thingyp,Gypboard,Gypboard,50,50,50
 !!
 !!Vents
 !!

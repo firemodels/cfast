@@ -498,7 +498,7 @@ module solve_routines
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
                 call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1, &
                     n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, t, i_time_step)
-                call output_smokeview_header (version,nrm1,nfires)
+                call output_smokeview_header (cfast_version,nrm1,nfires)
             end if
             smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
             smv_zlay(1:nrm1) = roominfo(1:nrm1)%depth(l)

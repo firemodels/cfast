@@ -219,7 +219,7 @@ module setup_data
 
     logical :: nokbd=.false., initializeonly=.false.
     logical :: debugging=.false., validate=.false., netheatflux=.false.
-    integer :: version, outputformat=0
+    integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile
     character(32) :: mpsdatc

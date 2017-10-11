@@ -1,4 +1,4 @@
-&HEAD  IVERSION = 7300, TITLE = 'Users Guide Example Case' /
+&HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
 !!
 !!Scenario Configuration
 !!
@@ -86,29 +86,29 @@ CARBON = 9, HYDROGEN = 6, OXYGEN = 2, NITROGEN = 2,
 IGNITION_CRITERION = 'TIME', 
 HEAT_OF_COMBUSTION = 5e4, RADIATIVE_FRACTION = 0.33 ,
 SOOT_YIELD = 0.227, CO_YIELD = 0.0845557,
-AREA = 0.1, HEIGHT = 0.,
+AREA = 0.1,
 HRR_RAMP_ID = 'Cushion Fire' /
 
 &RAMP
 ID = 'Cushion Fire', TYPE = 'HEAT_RELEASE_RATE',
 T = 0., 60., 120., 180., 240., 300., 360., 420., 480., 540., 1800.
-HRR = 0., 100000., 150000., 200000., 150000., 125000., 100000., 90000., 80000., 75000., 75000.  /
+F = 0., 100000., 150000., 200000., 150000., 125000., 100000., 90000., 80000., 75000., 75000.  /
 
 !!Wood_Wall
 &FIRE 
 ID = 'Wood_Wall', COMP_ID = 'Comp 2',
-LOCATION = 2.5, 5., 0.,
+LOCATION = 2.5, 5., 1.5,
 CARBON = 6, HYDROGEN = 10, OXYGEN = 5,
 IGNITION_CRITERION = 'TIME', 
 HEAT_OF_COMBUSTION = 1.81e4, RADIATIVE_FRACTION = 0.33,
 SOOT_YIELD = 0.015, CO_YIELD = 0.006171682,
-AREA = 4.5, HEIGHT = 1.5,
+AREA = 4.5,
 HRR_RAMP_ID = 'Wood Wall Fire' /
 
 &RAMP
 ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE',
 T = 0., 8000.,
-HRR = 0., 1000000./
+F = 0., 1000000./
 !!
 !!Targets and detectors
 !! 

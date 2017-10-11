@@ -45,7 +45,7 @@
     real(eb) :: xdelt, tstop, tbeg, tend
     type(thermal_type), pointer :: thrmpptr
 
-    version = 7300        ! Current CFAST version number
+    cfast_version = 7300        ! Current CFAST version number
 
     if (command_argument_count().eq.0) then
         call output_version(0)

@@ -53,10 +53,10 @@ module spreadsheet_input_routines
         aversion = carray(1,1)
         ivers = rarray(1,2)
         ! new version numbering 600->6000, so current version is 7000
-        if (version>=1000) then
-            iversion = version/1000
+        if (cfast_version>=1000) then
+            iversion = cfast_version/1000
         else
-            iversion = version/100
+            iversion = cfast_version/100
         end if
     
         if (aversion==heading.and.ivers==iversion-1) then

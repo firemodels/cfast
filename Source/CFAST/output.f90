@@ -44,7 +44,7 @@ module output_routines
 
     call get_info(revision, revision_date, compile_date)
 
-    call splitversion(version,imajor,iminor,iminorrev)
+    call splitversion(cfast_version,imajor,iminor,iminorrev)
 
     write (iunit,'(/A/)')                    'CFAST'
 #ifndef VERSION_PP

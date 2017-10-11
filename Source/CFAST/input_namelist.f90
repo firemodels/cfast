@@ -66,13 +66,13 @@
     ! --------------------------- head --------------------------------------
     subroutine read_head(lu)
 
-    integer :: ios, iversion
+    integer :: ios, version
     integer, intent(in) :: lu
 
-    namelist /HEAD/ iversion,title
+    namelist /HEAD/ version, title
 
     ios = 1
-    iversion = 0
+    version = 0
 
     rewind (unit=lu)
     input_file_line_number = 0
@@ -107,13 +107,13 @@
         call set_head_defaults
         read(lu,HEAD)
 
-        iversion = iversion/1000
+        version = version/1000
 
     end if head_flag
 
-    if (iversion/=version/1000) then
-        write (*,5002) iversion, version/1000
-        write (iofill,5002) iversion, version/1000
+    if (version/=cfast_version/1000) then
+        write (*,5002) version, cfast_version/1000
+        write (iofill,5002) version, cfast_version/1000
         stop
     end if
 
@@ -123,7 +123,7 @@
 
     subroutine set_head_defaults
 
-    iversion = default_version
+    version = default_version
 
     end subroutine set_head_defaults
 
@@ -913,14 +913,14 @@
     type(target_type), pointer :: targptr
     type(ramp_type),   pointer :: rampptr
 
-    integer :: carbon,chlorine,hydrogen,nitrogen,oxygen
-    real(eb) :: area,co_yield, heat_of_combustion, height, pf_co_yield, pf_soot_yield, pf_trace_yield, &
-        radiative_fraction, setpoint, soot_yield, trace_yield
+    integer :: carbon, chlorine, hydrogen, nitrogen, oxygen
+    real(eb) :: area, co_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, setpoint, soot_yield, trace_yield
     real(eb), dimension(3) :: location
-    character(64) :: comp_id,devc_id,id,hrr_ramp_id,ignition_criterion,post_flashover
-    namelist /FIRE/ area, carbon, chlorine, comp_id, co_yield, devc_id, heat_of_combustion, height, hrr_ramp_id, hydrogen,id, &
-        ignition_criterion, location, nitrogen, oxygen, pf_co_yield, pf_soot_yield, pf_trace_yield, post_flashover, &
-        radiative_fraction, setpoint, soot_yield, trace_yield
+    character(64) :: area_ramp_id, co_yield_ramp_id, comp_id, devc_id, id, hcn_yield_ramp_id, hrr_ramp_id, &
+        ignition_criterion, soot_yield_ramp_id, trace_yield_ramp_id
+    namelist /FIRE/ area, area_ramp_id, carbon, chlorine, comp_id, co_yield, co_yield_ramp_id, devc_id, heat_of_combustion, &
+        hcn_yield, hcn_yield_ramp_id, hrr_ramp_id, hydrogen, id, ignition_criterion, location, nitrogen, oxygen, &
+        radiative_fraction, setpoint, soot_yield, soot_yield_ramp_id, trace_yield, trace_yield_ramp_id
 
     ios = 1
     tmpcond = 0.0
@@ -1078,49 +1078,50 @@
 
             ! Define time and hrr
             ramp_search: do kk = 1, nramps
-                max_hrr = 0.0_eb
                 rampptr=>rampinfo(kk)
                 if (trim(rampptr%id) == trim(hrr_ramp_id)) then
                     rampptr%room1 = iroom
                     rampptr%room2 = iroom
                     rampptr%counter = kk
                     fireptr%npoints = rampptr%npoints
-                    do i=1,rampptr%npoints
-                        fireptr%time(i) = rampptr%x(i)
+                    fireptr%time = rampptr%x
 
-                        fireptr%qdot(i) = rampptr%f_of_x(i)
-                        max_hrr = max(max_hrr, fireptr%qdot(i))
-                        fireptr%mdot(i) = fireptr%qdot(i) / ohcomb
-
-                        ! Define soot
-                        fireptr%y_soot(i) = soot_yield
-
-                        ! define co
-                        fireptr%y_co(i) = co_yield
-
-                        ! define trace
-                        ! note that ct, tuhc and ts are carried in the mprodr array - all other species have their own array
-                        fireptr%y_trace(i) = trace_yield
-
-                        ! define area
-                        max_area = 0.0_eb
-
-                        ! the minimum area is to stop dassl from a floating point underflow when it tries to extrapolate back to the
-                        ! ignition point. it only occurs for objects which are on the floor and ignite after t=0. the assumed minimum fire
-                        ! diameter of 0.2 m below is the minimum valid fire diameter for heskestad's plume correlation
-                        ! (from sfpe handbook chapter)
-                        if (area==0.0_eb) then
-                            write (*,5002)
-                            write (iofill,5002)
-                            stop
-                        end if
-                        fireptr%area(i) = max(area,pio4*0.2_eb**2)
-                        max_area = max(max_area,fireptr%area(i))
-
-                        fireptr%height(i) = height
-                    end do
-                    exit ramp_search
+                    fireptr%qdot = rampptr%f_of_x
+                    fireptr%mdot = fireptr%qdot / ohcomb
                 end if
+
+                    ! Define soot
+                    fireptr%y_soot = soot_yield
+
+                    ! define co
+                    fireptr%y_co = co_yield
+
+                    ! define trace
+                    ! note that ct, tuhc and ts are carried in the mprodr array - all other species have their own array
+                    fireptr%y_trace = trace_yield
+
+                    ! define area
+                    
+                    ! the minimum area is to stop dassl from a floating point underflow when it tries to extrapolate back to the
+                    ! ignition point. it only occurs for objects which are on the floor and ignite after t=0. the assumed minimum fire
+                    ! diameter of 0.2 m below is the minimum valid fire diameter for heskestad's plume correlation
+                    ! (from sfpe handbook chapter)
+                    fireptr%area = max(area,pio4*0.2_eb**2)
+
+                    max_area = 0.0_eb
+                    max_hrr = 0.0_eb
+                    do i = 1, rampptr%npoints
+                        max_area = max(max_area,fireptr%area(i))
+                        max_hrr = max(max_hrr, fireptr%qdot(i))
+                    end do
+                    if (max_area==0.0_eb) then
+                        write (*,5002)
+                        write (iofill,5002)
+                        stop
+                    end if
+
+                    fireptr%height(1:rampptr%npoints) = 0._eb
+
             end do ramp_search
 
             ! calculate a characteristic length of an object (we assume the diameter).
@@ -1142,7 +1143,7 @@
             call flame_height(max_hrr, max_area, flamelength)
             flamelength = max (0.0_eb, flamelength)
 
-            ! Now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
+            ! Now the heat release per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
             hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
             if (hrrpm3>4.0e6_eb) then
                 write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
@@ -1184,8 +1185,12 @@
     chlorine                  = 0
     comp_id                   = 'NULL'
     co_yield                  = 0._eb
+    co_yield_ramp_id           = 'NULL'
     devc_id                   = 'NULL'
+    hcn_yield                 = 0.0_eb
+    hcn_yield_ramp_id         = 'NULL'
     heat_of_combustion        = 0._eb
+    hrr                       = 0.0_eb
     hrr_ramp_id               = 'NULL'
     hydrogen                  = 0
     id                        = 'NULL'
@@ -1193,14 +1198,12 @@
     location(:)               = 0._eb
     nitrogen                  = 0
     oxygen                    = 0
-    pf_co_yield               = 0._eb
-    pf_soot_yield             = 0._eb
-    pf_trace_yield            = 0._eb
-    post_flashover            = '.FAlSE.'
     radiative_fraction        = 0._eb
     setpoint                  = 0._eb
     soot_yield                = 0._eb
+    soot_yield_ramp_id        = 'NULL'
     trace_yield               = 0._eb
+    trace_yield_ramp_id       = 'NULL'
 
     end subroutine set_fire_defaults
 

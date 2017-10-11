@@ -39,7 +39,7 @@ as the last line at the end of the input file. This completes the file from {\ct
 The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Users\_Guide\_Example.in, is part of the CFAST software distribution} removed for clarity.
 
 \begin{lstlisting}
-&HEAD  IVERSION = 7300, TITLE = 'Users Guide Example Case' /
+&HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
 &TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
 &INIT  PRESSURE = 101325., RELATIVE_HUMIDITY = 50., TEMPERATURES = 20., 20. /
 &MISC  LOWER_OXYGEN_LIMIT = 0.10 /
@@ -56,7 +56,7 @@ The general structure of an input file is shown below, with many lines of the or
       AREA = 4.5, HEIGHT = 1.5,
       HRR_RAMP_ID = 'Wood Wall Fire' /
 &RAMP ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE',
-      T = 0., 8000., HRR = 0., 1000000. / for the fire
+      T = 0., 8000., F = 0., 1000000. / for the fire
 &DEVC ID = 'Smoke Detector 1', COMP_ID = 'Comp 1',
       TYPE = 'SMOKE', LOCATION = 3., 3., 2.97, SETPOINT = 23.93346 /
 &CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
@@ -385,8 +385,8 @@ Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS(1:2)}, {\ct C
 {\ct CO\_YIELD}            & Real        & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
 {\ct CO\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-%{\ct HCL\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
-%{\ct HCL\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct HCL\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct HCL\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct HCN\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
 {\ct HCN\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline

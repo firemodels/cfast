@@ -257,11 +257,11 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct CEILING\_MATL\_ID}     & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
 {\ct DEPTH}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least on {\ct COMP} input must be included in an input file.}                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
 {\ct FLOOR\_MATL\_ID}       & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
-{\ct GRID(1:3)}             & Integer Triplet& Section \ref{info:SLCF2}               &           & (50,50,50)                \\ \hline
+{\ct GRID}             & Integer Triplet& Section \ref{info:SLCF2}               &           & 50,50,50                \\ \hline
 {\ct HALL}                  & Logical  		 & Section \ref{info:COMP3}               &           & {\ct .FALSE.}   \\ \hline
 {\ct HEIGHT}*                & Real     		 & Section \ref{info:COMP}   	          & m         &                 \\ \hline
 {\ct ID}*                    & Character		 & Section \ref{info:COMP}                &           &          \\ \hline
-{\ct ORIGIN(1:3)}           & Real Triplet   & Section \ref{info:COMP}                & m         & (0,0,0)                \\ \hline
+{\ct ORIGIN}           & Real Triplet   & Section \ref{info:COMP}                & m         & 0,0,0                \\ \hline
 {\ct ROOM\_AREA\_RAMP}
 \footnote{For compartments where the cross-sectional area varies with height, the namelist group, {\ct RAMP} can be used. Keywords associated with this feature can be found in Section~\ref{tbl:RAMP}.}
                             & Character          & Section \ref{info:COMP4}                 &           &                 \\ \hline
@@ -303,22 +303,22 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct AREA}      	 & Real  	          & Section \ref{info:VENT2}     & m$^2$                    &                                 \\ \hline
-{\ct AREAS(1:2)}       & Real Doublet 	          & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
+{\ct AREAS}       & Real Doublet 	          & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
 {\ct BOTTOM}                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
-{\ct COMP\_IDS(1:2)}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. Additional inputs may be required depending on the type of vent.}     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
-{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
-                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
-{\ct CUTOFFS(1:2)}       					 & Real Doublet 	  	  & Section \ref{info:VENT4}     & Pa                          &     200, 300     \\ \hline
-{\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct COMP\_IDS}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. Additional inputs may be required depending on the type of vent.}     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
+%{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
+%                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct CUTOFFS}       					 & Real Doublet 	  	  & Section \ref{info:VENT4}     & Pa                          &     200,300     \\ \hline
+%{\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}.}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
 {\ct FILTERING\_RAMP\_ID}    					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct FLOW}      	 					 & Real  		  & Section \ref{info:VENT4}     & m$^3$/s                     &                 \\ \hline
-{\ct HEIGHTS(1:2)}      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
+{\ct HEIGHTS}      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
-{\ct OFFSETS(1:2)}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0, 0        \\ \hline
+{\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
 {\ct OPENING\_RAMP\_ID}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct ORIENTATION}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
+%{\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
 {\ct SHAPE}\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
                                                                  & Selection List         & Section \ref{info:VENT2}     &                             &                 \\ \hline
 {\ct TOP}                    & Real  	  	  & Section \ref{info:VENT}      & m                           &                 \\ \hline
@@ -330,9 +330,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \graybox{Wall vents ({\ct TYPE='WALL'}) are defined by {\ct BOTTOM}, {\ct TOP}, and {\ct WIDTH}. Location of the vent for visualization is defined by {\ct FACE}, and {\ct OFFSET(1)}. \\
 
-Ceiling and floor vents ({\ct TYPE='CEILING'} or {\ct TYPE='FLOOR'}) are defined by {\ct AREA} and {\ct SHAPE}. Location of the vent for visualization is defined by {\ct OFFSET(1:2)} as the distance from the compartment origin in the X (width) and Y (depth) direction. \\
+Ceiling and floor vents ({\ct TYPE='CEILING'} or {\ct TYPE='FLOOR'}) are defined by {\ct AREA} and {\ct SHAPE}. Location of the vent for visualization is defined by {\ct OFFSET} as the distance from the compartment origin in the X (width) and Y (depth) direction. \\
 
-Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS(1:2)}, {\ct CUTOFFS(1:2)}, {\ct FLOW}, and {\ct HEIGHTS(1:2)}. Location of the vent for visualization is defined by {\ct ORIENTATION} and {\ct OFFSETS(1:2)} as the distance from the compartment origin in the X (width) and Y (depth) direction. \\
+Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS}, {\ct CUTOFFS}, {\ct FLOW}, and {\ct HEIGHTS}. Location of the vent for visualization is defined by {\ct ORIENTATION} and {\ct OFFSETS} as the distance from the compartment origin in the X (width) and Y (depth) direction. \\
 }
 
 \noindent Examples:
@@ -396,7 +396,7 @@ Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS(1:2)}, {\ct C
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct IGNITION\_CRITERION}\footnote{Input for {\ct IGNITION\_CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                            & Selection List   & Section \ref{info:FIRE}                 &  TIME                           &                 \\ \hline
-{\ct LOCATION(1:3)}             & Real Triplet        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
+{\ct LOCATION}             & Real Triplet        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
 {\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
 {\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
 %{\ct PF\_CO\_YIELD}        & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
@@ -453,10 +453,10 @@ Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS(1:2)}, {\ct C
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct DEVC} input included in the input file. Additional inputs may be required depending on the type of device.}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct ID}*      		  & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
-{\ct INTERNAL\_LOCATION}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
-{\ct LOCATION(1:3)}*       & Real Triplet  & Section \ref{info:DEVC}     & m                 &                 \\ \hline
+{\ct TEMPERATURE\_DEPTH}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
+{\ct LOCATION}*       & Real Triplet  & Section \ref{info:DEVC}     & m                 &                 \\ \hline
 {\ct MATL\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
-{\ct NORMAL(1:3)}         & Real Triplet  & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct NORMAL}         & Real Triplet  & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct RTI}                 & Real        & Section \ref{info:DEVC2}    & $\sqrt{\hbox{m}\cdot\hbox{s}}$   & 130  \\ \hline
 {\ct SETPOINT}
 	                  & Real        & Section \ref{info:DEVC}     & \degc or \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}  \\ \hline
@@ -466,11 +466,13 @@ Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS(1:2)}, {\ct C
 \end{longtable}
 \end{minipage}
 
-\graybox{{\ct PLATE} and {\ct CYLINDER} targets are defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct LOCATION}, {\ct INTERNAL\_TEMPERATURE\_LOCATION}, and {\ct NORMAL}. \\
+\graybox{{\ct PLATE} and {\ct CYLINDER} targets are defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct TEMPERATURE\_DEPTH}, and {\ct NORMAL}. \\
 
-A sprinkler is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, {\ct SETPOINT}, and {\ct SPRAY\_DENSITY}.  \\
+A sprinkler is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, {\ct SETPOINT}, and {\ct SPRAY\_DENSITY}.  \\
 
-A smoke detector is defined by {\ct COMP\_ID}, {\ct DEVC\_TYPE}, {\ct ID}, {\ct LOCATION}, and {\ct SETPOINT}.
+A smoke detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, and {\ct SETPOINT}. \\
+
+A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, and {\ct SETPOINT}.
 }
 
 \vspace{\baselineskip}

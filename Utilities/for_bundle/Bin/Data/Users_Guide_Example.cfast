@@ -116,7 +116,7 @@ F = 0., 1000000./
 ID = 'Targ 1', COMP_ID = 'Comp 1', 
 TYPE = 'PLATE', 
 LOCATION = 2.2, 1.88, 2.34, NORMAL = 0., 0., 1.,
-MATL_ID = 'CONCRETE', INTERNAL_LOCATION = 0.5 / 
+MATL_ID = 'CONCRETE', TEMPERATURE_DEPTH = 0.5 / 
 
 &DEVC 
 ID = 'Sprinkler 1', COMP_ID = 'Comp 1', 

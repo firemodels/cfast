@@ -572,11 +572,11 @@
     type(target_type), pointer :: targptr
     type(detector_type), pointer :: dtectptr
 
-    real(eb) :: internal_location,rti,setpoint,spray_density
+    real(eb) :: temperature_depth,rti,setpoint,spray_density
     real(eb),dimension(3) :: location,normal
     character(64) :: comp_id,id,matl_id
     character(64) :: type
-    namelist /DEVC/ comp_id, type, id, internal_location, location, matl_id, normal, rti, setpoint, spray_density
+    namelist /DEVC/ comp_id, type, id, temperature_depth, location, matl_id, normal, rti, setpoint, spray_density
 
     ios = 1
 
@@ -665,7 +665,7 @@
                 targptr%center = location
                 targptr%normal = normal
 
-                targptr%depth_loc = internal_location
+                targptr%depth_loc = temperature_depth
 
                 ! target name
                 targptr%name = id
@@ -792,7 +792,7 @@
     comp_id                         = 'NULL'
     type                            = 'NULL'
     id                              = 'NULL'
-    internal_location               = 0.0_eb
+    temperature_depth               = 0.0_eb
     location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
     matl_id                         = 'NULL'
     normal(:)                       = 0.0_eb

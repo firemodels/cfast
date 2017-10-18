@@ -395,8 +395,8 @@ Mechanical vents {\ct TYPE='MECHANICAL'} are defined by {\ct AREAS}, {\ct CUTOFF
 {\ct HYDROGEN}             & Integer     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct IGNITION\_CRITERION}\footnote{Input for {\ct IGNITION\_CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
-                           & Selection List   & Section \ref{info:FIRE}                 &  TIME                           &                 \\ \hline
-{\ct LOCATION}             & Real Triplet        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
+                           & Selection List   & Section \ref{info:FIRE}                 &                             & TIME                \\ \hline
+{\ct LOCATION}*             & Real Triplet        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
 {\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
 {\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
 %{\ct PF\_CO\_YIELD}        & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline

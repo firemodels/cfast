@@ -326,9 +326,9 @@
     integer, intent(in) :: lu
     type(thermal_type), pointer :: thrmpptr
 
-    real(eb) :: conductivity,density,emissivity,specific_heat,thickness
+    real(eb) :: conductivity, density, emissivity, specific_heat, thickness
     character(64) :: id
-    namelist /MATL/conductivity,density,emissivity,specific_heat,id,thickness
+    namelist /MATL/ conductivity, density, emissivity, specific_heat, id, thickness
 
     ios = 1
 

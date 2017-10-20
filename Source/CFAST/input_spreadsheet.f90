@@ -1457,30 +1457,30 @@ module spreadsheet_input_routines
             end if
         case ('TIME')
             nret = countargs(lcarray)
-            fireptr%npoints = nret
-            do i = 1, nret
-                fireptr%time(i) = lrarray(i)
-            end do
+            fireptr%n_qdot = nret
+            fireptr%t_qdot(1:nret) = lrarray(1:nret)
         case ('HRR')
+            fireptr%qdot(1:nret) = lrarray(1:nret)
+            fireptr%mdot(1:nret) = fireptr%qdot(1:nret)/ohcomb
+            fireptr%t_mdot = fireptr%t_qdot
+            fireptr%n_mdot = nret
             max_hrr = 0.0_eb
             do i = 1, nret
-                fireptr%qdot(i) = lrarray(i)
                 max_hrr = max(max_hrr, fireptr%qdot(i))
-                fireptr%mdot(i) = fireptr%qdot(i)/ohcomb
             end do
         case ('SOOT')
-            do i = 1, nret
-                fireptr%y_soot(i) = lrarray(i)
-            end do
+                fireptr%y_soot(1:nret) = lrarray(1:nret)
+                fireptr%t_soot = fireptr%t_qdot
+                fireptr%n_soot = nret
         case ('CO')
-            do i = 1, nret
-                fireptr%y_co(i) = lrarray(i)
-            end do
+                fireptr%y_co(1:nret) = lrarray(1:nret)
+                fireptr%t_co = fireptr%t_qdot
+                fireptr%n_co = nret
         case ('TRACE')
             ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
-            do i = 1, nret
-                fireptr%y_trace(i) = lrarray(i)
-            end do
+                fireptr%y_trace(1:nret) = lrarray(1:nret)
+                fireptr%t_trace = fireptr%t_qdot
+                fireptr%n_trace = nret
         case ('AREA')
             max_area = 0.0_eb
             do i = 1, nret
@@ -1496,15 +1496,17 @@ module spreadsheet_input_routines
                 fireptr%area(i) = max(lrarray(i),pio4*0.2_eb**2)
                 max_area = max(max_area,fireptr%area(i))
             end do
+            fireptr%t_area = fireptr%t_qdot
+                fireptr%n_area = nret
 
             ! calculate a characteristic length of an object (we assume the diameter).
             ! This is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances
             fireptr%characteristic_length = sqrt(max_area/pio4)
         case ('HEIGH')
-            do i = 1, nret
-                fireptr%height(i) = max(lrarray(i),0.0_eb)
-            end do
+                fireptr%height(1:nret) = lrarray(1:nret)
+                fireptr%t_height = fireptr%t_qdot
+                fireptr%n_height = nret
             case default
             write (*, 5000) label
             write (iofill, 5000) label
@@ -1514,7 +1516,9 @@ module spreadsheet_input_routines
     end do
 
     ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-    call set_heat_of_combustion (fireptr%npoints, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+    call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+    fireptr%t_hoc = fireptr%t_qdot
+    fireptr%n_hoc = fireptr%n_qdot
 
     ! Position the object
     roomptr => roominfo(fireptr%room)

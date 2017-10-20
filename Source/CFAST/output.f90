@@ -937,8 +937,8 @@ module output_routines
             write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
             write (iofilo,5010) ('-',i = 1,is-1)
-            do i = 1, fireptr%npoints
-                write (cbuf,5060) fireptr%time(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
+            do i = 1, fireptr%n_qdot
+                write (cbuf,5060) fireptr%t_qdot(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
                 y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
                 y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
                 write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i)

@@ -403,7 +403,7 @@ module fire_routines
     real(eb), intent(out) :: omasst, oareat, ohight, oqdott, objhct, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_co, y_trace
 
     real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max
-    integer :: lobjlfm, id, ifact
+    integer :: id, ifact
     
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
@@ -429,7 +429,6 @@ module fire_routines
         return
     end if
 
-    lobjlfm = fireptr%npoints
     xxtime = time - fireptr%ignition_time
 
     id = roomptr%sprinkler_activated
@@ -447,8 +446,8 @@ module fire_routines
         dtectptr => detectorinfo(id)
         tdrate = dtectptr%tau
         xxtimef = dtectptr%activation_time - fireptr%ignition_time
-        call interp(fireptr%time,fireptr%qdot,lobjlfm,xxtime,1,qt)
-        call interp(fireptr%time,fireptr%qdot,lobjlfm,xxtimef,1,qtf)
+        call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtime,1,qt)
+        call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtimef,1,qtf)
         ifact = 1
         tfact = exp(-(xxtime-xxtimef)/tdrate)
         if (qt<tfact*qtf) then
@@ -462,14 +461,14 @@ module fire_routines
         end if
     end if
 
-    call interp(fireptr%time,fireptr%mdot,lobjlfm,xxtime,1,omasst)
-    call interp(fireptr%time,fireptr%qdot,lobjlfm,xxtime,1,oqdott)
-    call interp(fireptr%time,fireptr%hoc,lobjlfm,xxtime,1,objhct)
-    call interp(fireptr%time,fireptr%y_soot,lobjlfm,xxtime,1,y_soot)
-    call interp(fireptr%time,fireptr%y_co,lobjlfm,xxtime,1,y_co)
-    call interp(fireptr%time,fireptr%y_trace,lobjlfm,xxtime,1,y_trace)
-    call interp(fireptr%time,fireptr%area,lobjlfm,xxtime,1,oareat)
-    call interp(fireptr%time,fireptr%height,lobjlfm,xxtime,1,ohight)
+    call interp(fireptr%t_mdot,fireptr%mdot,fireptr%n_mdot,xxtime,1,omasst)
+    call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtime,1,oqdott)
+    call interp(fireptr%t_hoc,fireptr%hoc,fireptr%n_hoc,xxtime,1,objhct)
+    call interp(fireptr%t_soot,fireptr%y_soot,fireptr%n_soot,xxtime,1,y_soot)
+    call interp(fireptr%t_co,fireptr%y_co,fireptr%n_co,xxtime,1,y_co)
+    call interp(fireptr%t_trace,fireptr%y_trace,fireptr%n_trace,xxtime,1,y_trace)
+    call interp(fireptr%t_area,fireptr%area,fireptr%n_area,xxtime,1,oareat)
+    call interp(fireptr%t_height,fireptr%height,fireptr%n_height,xxtime,1,ohight)
 
     n_C = fireptr%n_C
     n_H = fireptr%n_H

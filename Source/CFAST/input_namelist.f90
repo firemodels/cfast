@@ -1075,52 +1075,121 @@
                 write (iofill,5001) ohcomb
                 stop
             end if
+            
+            ! do constant values for fire inputs first, then check for ramps
 
-            ! Define time and hrr
+            ! constant hrr
+            fireptr%n_qdot = 1
+            fireptr%t_qdot(1) = 0.0_eb
+            fireptr%qdot(1) = hrr
+
+            ! constant soot
+            fireptr%n_soot = 1
+            fireptr%t_soot(1) = 0.0_eb
+            fireptr%y_soot(1) = soot_yield
+
+            ! constant co
+            fireptr%n_co = 1
+            fireptr%t_co(1) = 0.0_eb
+            fireptr%y_co(1) = co_yield
+
+            ! constant trace species
+            fireptr%n_trace = 1
+            fireptr%t_trace(1) = 0.0_eb
+            fireptr%y_trace(1) = trace_yield
+
+            ! constant area
+            fireptr%n_area = 1
+            fireptr%t_area(1) = 0.0_eb
+            fireptr%area(1) = max(area,pio4*0.2_eb**2)
+
+            ! height is no longer variable. it's input is through location(3) and fixed
+            fireptr%n_height = 1
+            fireptr%t_height = 0.0_eb
+            fireptr%height(1) = 0.0_eb
+
             ramp_search: do kk = 1, nramps
                 rampptr=>rampinfo(kk)
+
+                ! Define hrr
                 if (trim(rampptr%id) == trim(hrr_ramp_id)) then
                     rampptr%room1 = iroom
                     rampptr%room2 = iroom
                     rampptr%counter = kk
-                    fireptr%npoints = rampptr%npoints
-                    fireptr%time = rampptr%x
-
+                    fireptr%n_qdot = rampptr%npoints
+                    fireptr%t_qdot = rampptr%x
                     fireptr%qdot = rampptr%f_of_x
-                    fireptr%mdot = fireptr%qdot / ohcomb
+                end if
+                fireptr%mdot = fireptr%qdot / ohcomb
+                fireptr%t_mdot = fireptr%t_qdot
+                fireptr%n_mdot = fireptr%n_qdot
+
+                max_hrr = 0.0_eb
+                do i = 1, fireptr%n_qdot
+                    max_hrr = max(max_hrr, fireptr%qdot(i))
+                end do
+   
+
+                ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
+                call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+                fireptr%t_hoc = fireptr%t_qdot
+                fireptr%n_hoc = fireptr%n_qdot
+
+                ! Define soot
+                if (trim(rampptr%id) == trim(soot_yield_ramp_id)) then
+                    rampptr%room1 = iroom
+                    rampptr%room2 = iroom
+                    rampptr%counter = kk
+                    fireptr%n_soot = rampptr%npoints
+                    fireptr%t_soot = rampptr%x
+                    fireptr%y_soot = rampptr%f_of_x
                 end if
 
-                    ! Define soot
-                    fireptr%y_soot = soot_yield
+                ! define co
+                if (trim(rampptr%id) == trim(soot_yield_ramp_id)) then
+                    rampptr%room1 = iroom
+                    rampptr%room2 = iroom
+                    rampptr%counter = kk
+                    fireptr%n_co = rampptr%npoints
+                    fireptr%t_co = rampptr%x
+                    fireptr%y_co = rampptr%f_of_x
+                end if
 
-                    ! define co
-                    fireptr%y_co = co_yield
+                ! define trace
+                ! note that ct, tuhc and ts are carried in the mprodr array - all other species have their own array
+                if (trim(rampptr%id) == trim(soot_yield_ramp_id)) then
+                    rampptr%room1 = iroom
+                    rampptr%room2 = iroom
+                    rampptr%counter = kk
+                    fireptr%n_co = rampptr%npoints
+                    fireptr%t_trace = rampptr%x
+                    fireptr%y_trace = rampptr%f_of_x
+                end if
 
-                    ! define trace
-                    ! note that ct, tuhc and ts are carried in the mprodr array - all other species have their own array
-                    fireptr%y_trace = trace_yield
+                ! define area
 
-                    ! define area
-                    
-                    ! the minimum area is to stop dassl from a floating point underflow when it tries to extrapolate back to the
-                    ! ignition point. it only occurs for objects which are on the floor and ignite after t=0. the assumed minimum fire
-                    ! diameter of 0.2 m below is the minimum valid fire diameter for heskestad's plume correlation
-                    ! (from sfpe handbook chapter)
-                    fireptr%area = max(area,pio4*0.2_eb**2)
+                ! the minimum area is to stop dassl from a floating point underflow when it tries to extrapolate back to the
+                ! ignition point. it only occurs for objects which are on the floor and ignite after t=0. the assumed minimum fire
+                ! diameter of 0.2 m below is the minimum valid fire diameter for heskestad's plume correlation
+                ! (from sfpe handbook chapter)
+                if (trim(rampptr%id) == trim(trace_yield_ramp_id)) then
+                    rampptr%room1 = iroom
+                    rampptr%room2 = iroom
+                    rampptr%counter = kk
+                    fireptr%n_area = rampptr%npoints
+                    fireptr%t_area = rampptr%x
+                    fireptr%area = rampptr%f_of_x
+                end if
 
-                    max_area = 0.0_eb
-                    max_hrr = 0.0_eb
-                    do i = 1, rampptr%npoints
-                        max_area = max(max_area,fireptr%area(i))
-                        max_hrr = max(max_hrr, fireptr%qdot(i))
-                    end do
-                    if (max_area==0.0_eb) then
-                        write (*,5002)
-                        write (iofill,5002)
-                        stop
-                    end if
-
-                    fireptr%height(1:rampptr%npoints) = 0._eb
+                max_area = 0.0_eb
+                do i = 1, fireptr%n_area
+                    max_area = max(max_area,max(fireptr%area(i),pio4*0.2_eb**2))
+                end do
+                if (max_area==0.0_eb) then
+                    write (*,5002)
+                    write (iofill,5002)
+                    stop
+                end if
 
             end do ramp_search
 
@@ -1128,9 +1197,6 @@
             ! this is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances
             fireptr%characteristic_length = sqrt(max_area/pio4)
-
-            ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-            call set_heat_of_combustion (fireptr%npoints, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
 
             ! Position the object
             roomptr => roominfo(fireptr%room)

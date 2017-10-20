@@ -1146,7 +1146,7 @@
                 end if
 
                 ! define co
-                if (trim(rampptr%id) == trim(soot_yield_ramp_id)) then
+                if (trim(rampptr%id) == trim(co_yield_ramp_id)) then
                     rampptr%room1 = iroom
                     rampptr%room2 = iroom
                     rampptr%counter = kk
@@ -1157,7 +1157,7 @@
 
                 ! define trace
                 ! note that ct, tuhc and ts are carried in the mprodr array - all other species have their own array
-                if (trim(rampptr%id) == trim(soot_yield_ramp_id)) then
+                if (trim(rampptr%id) == trim(trace_yield_ramp_id)) then
                     rampptr%room1 = iroom
                     rampptr%room2 = iroom
                     rampptr%counter = kk
@@ -1172,7 +1172,7 @@
                 ! ignition point. it only occurs for objects which are on the floor and ignite after t=0. the assumed minimum fire
                 ! diameter of 0.2 m below is the minimum valid fire diameter for heskestad's plume correlation
                 ! (from sfpe handbook chapter)
-                if (trim(rampptr%id) == trim(trace_yield_ramp_id)) then
+                if (trim(rampptr%id) == trim(area_ramp_id)) then
                     rampptr%room1 = iroom
                     rampptr%room2 = iroom
                     rampptr%counter = kk
@@ -1181,6 +1181,9 @@
                     fireptr%area = rampptr%f_of_x
                 end if
 
+            end do ramp_search
+
+                ! maximum area, used for input check of hrr per flame volume
                 max_area = 0.0_eb
                 do i = 1, fireptr%n_area
                     max_area = max(max_area,max(fireptr%area(i),pio4*0.2_eb**2))
@@ -1191,8 +1194,7 @@
                     stop
                 end if
 
-            end do ramp_search
-
+write (*,*) 'hrr, area =',max_hrr, max_area
             ! calculate a characteristic length of an object (we assume the diameter).
             ! this is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances

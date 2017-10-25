@@ -918,7 +918,7 @@
     character(64) :: area_ramp_id, co_yield_ramp_id, comp_id, devc_id, id, hcn_yield_ramp_id, hrr_ramp_id, &
         ignition_criterion, soot_yield_ramp_id, trace_yield_ramp_id
     namelist /FIRE/ area, area_ramp_id, carbon, chlorine, comp_id, co_yield, co_yield_ramp_id, devc_id, heat_of_combustion, &
-        hcn_yield, hcn_yield_ramp_id, hrr_ramp_id, hydrogen, id, ignition_criterion, location, nitrogen, oxygen, &
+        hcn_yield, hcn_yield_ramp_id, hrr, hrr_ramp_id, hydrogen, id, ignition_criterion, location, nitrogen, oxygen, &
         radiative_fraction, setpoint, soot_yield, soot_yield_ramp_id, trace_yield, trace_yield_ramp_id
 
     ios = 1
@@ -1081,6 +1081,7 @@
             fireptr%n_qdot = 1
             fireptr%t_qdot(1) = 0.0_eb
             fireptr%qdot(1) = hrr
+            max_hrr = hrr
 
             ! constant soot
             fireptr%n_soot = 1
@@ -1119,20 +1120,11 @@
                     fireptr%t_qdot = rampptr%x
                     fireptr%qdot = rampptr%f_of_x
                 end if
-                fireptr%mdot = fireptr%qdot / ohcomb
-                fireptr%t_mdot = fireptr%t_qdot
-                fireptr%n_mdot = fireptr%n_qdot
 
                 max_hrr = 0.0_eb
                 do i = 1, fireptr%n_qdot
                     max_hrr = max(max_hrr, fireptr%qdot(i))
                 end do
-   
-
-                ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-                call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
-                fireptr%t_hoc = fireptr%t_qdot
-                fireptr%n_hoc = fireptr%n_qdot
 
                 ! Define soot
                 if (trim(rampptr%id) == trim(soot_yield_ramp_id)) then
@@ -1182,16 +1174,25 @@
 
             end do ramp_search
 
-                ! maximum area, used for input check of hrr per flame volume
-                max_area = 0.0_eb
-                do i = 1, fireptr%n_area
-                    max_area = max(max_area,max(fireptr%area(i),pio4*0.2_eb**2))
-                end do
-                if (max_area==0.0_eb) then
-                    write (*,5002)
-                    write (iofill,5002)
-                    stop
-                end if
+            ! calculate mass loos rate from hrr and hoc inputs
+            fireptr%mdot = fireptr%qdot / ohcomb
+            fireptr%t_mdot = fireptr%t_qdot
+            fireptr%n_mdot = fireptr%n_qdot
+            ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
+            call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+            fireptr%t_hoc = fireptr%t_qdot
+            fireptr%n_hoc = fireptr%n_qdot
+
+            ! maximum area, used for input check of hrr per flame volume
+            max_area = 0.0_eb
+            do i = 1, fireptr%n_area
+                max_area = max(max_area,max(fireptr%area(i),pio4*0.2_eb**2))
+            end do
+            if (max_area==0.0_eb) then
+                write (*,5002)
+                write (iofill,5002)
+                stop
+            end if
 
             ! calculate a characteristic length of an object (we assume the diameter).
             ! this is used for point source radiation fire to target calculation as a minimum effective
@@ -1239,8 +1240,8 @@
 5002 format ('***Error: invalid fire area. all input values must be greater than zero')
 5106 format ('***Error: object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
 5107 format ('Object ',a,' position set to ',3f7.3,'; maximum c_hrr per m^3 = ',1pg10.3,' exceeds nominal limits')
-5108 format ('Typically, this is caused by too small fire area inputs. check c_hrr and fire area inputs')
-5000 format ('***Error: the key word ',a5,' is not part of a fire definition. fire keyword are likely out of order')
+5108 format ('Typically, this is caused by too small fire area inputs. check hrr and fire area inputs')
+5000 format ('***Error: the key word ',a5,' is not part of a fire definition. fire keywords are likely out of order')
 
     contains
 
@@ -1261,7 +1262,7 @@
     hrr_ramp_id               = 'NULL'
     hydrogen                  = 0._eb
     id                        = 'NULL'
-    ignition_criterion        = 'NULL'
+    ignition_criterion        = 'TIME'
     location(:)               = 0._eb
     nitrogen                  = 0._eb
     oxygen                    = 0._eb
@@ -1485,7 +1486,7 @@
                     end if
                 else
                     write (*,*) 'Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                    write (iofill,*) 'Inputs for wall vent: criterion has to be "TEMPERATURE", "TEMP", or "FLUX".'
+                    write (iofill,*) 'Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
                     stop
                 end if
 
@@ -1769,7 +1770,7 @@
     areas(:)              = 0._eb
     bottom                = 0._eb
     comp_ids(:)           = 'NULL'
-    criterion             = 'NULL'
+    criterion             = 'TIME'
     cutoffs(:)            = 0._eb
     devc_id               = 'NULL'
     face                  = 'NULL'

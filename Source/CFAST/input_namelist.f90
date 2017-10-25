@@ -114,10 +114,9 @@
     if (version/=cfast_version/1000) then
         write (*,5002) version, cfast_version/1000
         write (iofill,5002) version, cfast_version/1000
-        stop
     end if
 
-5002 format ('***Error: Not a compatible version, input file written for CFAST', i3, ' running on CFAST', i3)
+5002 format ('***Warning: Input file written for CFAST version', i3, ' running on CFAST version', i3)
 
     contains
 
@@ -1194,7 +1193,6 @@
                     stop
                 end if
 
-write (*,*) 'hrr, area =',max_hrr, max_area
             ! calculate a characteristic length of an object (we assume the diameter).
             ! this is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances
@@ -1249,6 +1247,7 @@ write (*,*) 'hrr, area =',max_hrr, max_area
     subroutine set_fire_defaults
 
     area                      = 0._eb
+    area_ramp_id              = 'NULL'
     carbon                    = 0
     chlorine                  = 0
     comp_id                   = 'NULL'

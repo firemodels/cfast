@@ -102,13 +102,12 @@ CARBON = 6, HYDROGEN = 10, OXYGEN = 5,
 IGNITION_CRITERION = 'TIME', 
 HEAT_OF_COMBUSTION = 1.81e4, RADIATIVE_FRACTION = 0.33,
 SOOT_YIELD = 0.015, CO_YIELD = 0.006171682,
-AREA = 4.5,
+AREA_RAMP_ID = 'Wood Wall Area',
 HRR_RAMP_ID = 'Wood Wall Fire' /
 
-&RAMP
-ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE',
-T = 0., 8000.,
-F = 0., 1000000./
+&RAMP ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE', T = 0., 8000., F = 0., 1000000./
+&RAMP ID = 'Wood Wall Area', TYPE = 'FRACTION', T = 0., 8000., F = 0.05, 9./
+
 !!
 !!Targets and detectors
 !! 
@@ -128,25 +127,24 @@ SETPOINT = 73.8889, RTI = 100., SPRAY_DENSITY = 7.E-5 /
 ID = 'Smoke Detector 1', COMP_ID = 'Comp 1', 
 TYPE = 'SMOKE',
 LOCATION = 3., 3., 2.97, 
-SETPOINT = 23.93346, RTI = 404., SPRAY_DENSITY = 7.E-5 /
+SETPOINT = 23.93346 /
 
 &DEVC 
 ID = 'Heat Detector 1', COMP_ID = 'Comp 1', 
 TYPE = 'HEAT',
 LOCATION = 3., 3., 2.97, 
-SETPOINT = 30., RTI = 5., SPRAY_DENSITY = 7.E-5 /
+SETPOINT = 30., RTI = 5. /
+
 !!
 !!Intercompartment heat transfer
 !!
 &CONN  TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
+
 !!
 !!Visualizations
 !!
-&SLCF 
-DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
-&SLCF 
-DOMAIN = '2-D', PLANE = 'Y', POSITION = 2.5 /
-&SLCF 
-DOMAIN = '2-D', PLANE = 'Z', POSITION = 2.95 /
+&SLCF DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
+&SLCF DOMAIN = '2-D', PLANE = 'Y', POSITION = 2.5 /
+&SLCF DOMAIN = '2-D', PLANE = 'Z', POSITION = 2.95 /
 
 &TAIL

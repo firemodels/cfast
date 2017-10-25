@@ -306,19 +306,19 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct AREAS}       & Real Doublet 	          & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
 {\ct BOTTOM}                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
 {\ct COMP\_IDS}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. Additional inputs may be required depending on the type of vent.}     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
-%{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
-%                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
+                            				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CUTOFFS}       					 & Real Doublet 	  	  & Section \ref{info:VENT4}     & Pa                          &     200,300     \\ \hline
-%{\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}.}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
 {\ct FILTERING\_RAMP\_ID}    					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct FLOW}      	 					 & Real  		  & Section \ref{info:VENT4}     & m$^3$/s                     &                 \\ \hline
 {\ct HEIGHTS}      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
-{\ct OPENING\_RAMP\_ID}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
+{\ct VENT\_RAMP\_ID}\footnote{Associate ramp specifies the fraction of vent width for wall vents, the fraction of vent area or ceiling and floor vents, or fraction of flow for mechanical vents.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct ORIENTATION}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-%{\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
+{\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
 {\ct SHAPE}\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
                                                                  & Selection List         & Section \ref{info:VENT2}     &                             &                 \\ \hline
 {\ct TOP}                    & Real  	  	  & Section \ref{info:VENT}      & m                           &                 \\ \hline

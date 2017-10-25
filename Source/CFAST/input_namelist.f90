@@ -912,7 +912,7 @@
     type(target_type), pointer :: targptr
     type(ramp_type),   pointer :: rampptr
 
-    integer :: carbon, chlorine, hydrogen, nitrogen, oxygen
+    real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
     real(eb) :: area, co_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, setpoint, soot_yield, trace_yield
     real(eb), dimension(3) :: location
     character(64) :: area_ramp_id, co_yield_ramp_id, comp_id, devc_id, id, hcn_yield_ramp_id, hrr_ramp_id, &
@@ -1248,8 +1248,8 @@
 
     area                      = 0._eb
     area_ramp_id              = 'NULL'
-    carbon                    = 0
-    chlorine                  = 0
+    carbon                    = 0._eb
+    chlorine                  = 0._eb
     comp_id                   = 'NULL'
     co_yield                  = 0._eb
     co_yield_ramp_id           = 'NULL'
@@ -1259,12 +1259,12 @@
     heat_of_combustion        = 0._eb
     hrr                       = 0.0_eb
     hrr_ramp_id               = 'NULL'
-    hydrogen                  = 0
+    hydrogen                  = 0._eb
     id                        = 'NULL'
     ignition_criterion        = 'NULL'
     location(:)               = 0._eb
-    nitrogen                  = 0
-    oxygen                    = 0
+    nitrogen                  = 0._eb
+    oxygen                    = 0._eb
     radiative_fraction        = 0._eb
     setpoint                  = 0._eb
     soot_yield                = 0._eb

@@ -1327,20 +1327,20 @@
     end do vent_loop
 
     if (n_hvents>mxhvents) then
-        write (*,'(a,i3)') '***Error: Too many hvent in input data file. Limit is ', mxhvents
-        write (iofill,'(a,i3)') '***Error: Too many hvent in input data file. Limit is ', mxhvents
+        write (*,'(a,i3)') '***Error: Too many wall vents in input data file. Limit is ', mxhvents
+        write (iofill,'(a,i3)') '***Error: Too many wall vents in input data file. Limit is ', mxhvents
         stop
     end if
 
     if (n_mvents>mxmvents) then
-        write (*,'(a,i3)') '***Error: Too many mvent in input data file. Limit is ', mxmvents
-        write (iofill,'(a,i3)') '***Error: Too many mvent in input data file. Limit is ', mxmvents
+        write (*,'(a,i3)') '***Error: Too many mechanical vents in input data file. Limit is ', mxmvents
+        write (iofill,'(a,i3)') '***Error: Too many mechanical vents in input data file. Limit is ', mxmvents
         stop
     end if
 
     if (n_vvents>mxvvents) then
-        write (*,'(a,i3)') '***Error: Too many vvent in input data file. Limit is ', mxvvents
-        write (iofill,'(a,i3)') '***Error: Too many vvent in input data file. Limit is ', mxvvents
+        write (*,'(a,i3)') '***Error: Too many celing/floor vents in input data file. Limit is ', mxvvents
+        write (iofill,'(a,i3)') '***Error: Too many ceiling/floor vents in input data file. Limit is ', mxvvents
         stop
     end if
 
@@ -1385,8 +1385,8 @@
                     end do searching
 
                     if (iroom == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(mm)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(mm)
+                        write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
+                        write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
                         stop
                     end if
 
@@ -1450,8 +1450,8 @@
                         end do ramp_search
 
                         if (kk == nramps+1) then
-                            write (*,'(a,a)') '***Error: RAMP ID not match. ', opening_ramp_id
-                            write (iofill,'(a,a)') '***Error: RAMP ID not match. ', opening_ramp_id
+                            write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
+                            write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                             stop
                         end if
                     end if
@@ -1524,8 +1524,8 @@
                     end do searching_2
 
                     if (iroom == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(mm)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(mm)
+                        write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
+                        write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
                         stop
                     end if
 
@@ -1582,8 +1582,8 @@
                             end do ramp_search_2
 
                             if (kk == nramps+1) then
-                                write (*,'(a,a)') '***Error: RAMP ID not match. ', opening_ramp_id
-                                write (iofill,'(a,a)') '***Error: RAMP ID not match. ', opening_ramp_id
+                                write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
+                                write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                                 stop
                             end if
                         end if
@@ -1650,8 +1650,8 @@
                     end do searching_3
 
                     if (iroom == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(mm)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(mm)
+                        write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
+                        write (iofill,'(a,a)') '***Error: COMP_IDS do specify existing compartments. ', comp_ids(mm)
                         stop
                     end if
 
@@ -1707,8 +1707,8 @@
                             end do ramp_search_3
 
                             if (kk == nramps+1) then
-                                write (*,'(a,a)') '***Error: RAMP ID not match. ', opening_ramp_id
-                                write (iofill,'(a,a)') '***Error: RAMP ID not match. ', opening_ramp_id
+                                write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
+                                write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                                 stop
                             end if
                         end if

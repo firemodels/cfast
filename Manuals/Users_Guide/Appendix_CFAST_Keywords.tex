@@ -316,7 +316,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct HEIGHTS}      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
-{\ct VENT\_RAMP\_ID}\footnote{Associate ramp specifies the fraction of vent width for wall vents, the fraction of vent area or ceiling and floor vents, or fraction of flow for mechanical vents.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
+{\ct VENT\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent width for wall vents, the fraction of vent area or ceiling and floor vents, or fraction of flow for mechanical vents.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct ORIENTATION}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
 {\ct SHAPE}\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
@@ -624,9 +624,9 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 \vspace{\baselineskip}
 
 \graybox{
-Vent opening is specified as a function of time with {\ct T} as time and {\ct F} as the fraction of the vent width (for wall vents) or of the vent area (for ceiling, floor, and mechanical vents). Refer to Section~\ref{info:VENT2}. \\
+Vent opening is specified as a function of time with {\ct T} as time and {\ct F} as the fraction of the vent width (for wall vents), fraction of the vent area (for ceiling / floor vents), or the flowrate for mechanical vents). Refer to Section~\ref{info:VENT2}. \\
 
-Filter efficiency is specified as a function of time with {\ct T} as time and {\ct F} as the fraction of soot and trace species removed in the associated mechanical vent. Refer to Section~\ref{info:VENT4}. \\
+Filter efficiency is specified as a function of time with {\ct T} as time and {\ct F} as the fraction of soot and trace species flow removed in the associated mechanical vent. Refer to Section~\ref{info:VENT4}. \\
 
 Compartment area in XY-plane is specified as a function of compartment height with {\ct Z} as the height and {\ct F} as the cross-sectional area in m$^2$. Refer to Section~\ref{info:COMP4}. \\
 

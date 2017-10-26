@@ -32,17 +32,17 @@ GRID = 50, 50, 50 /
 !!Vents
 !!
 &VENT ID = 'HVENT 1', TYPE = 'WALL', COMP_IDS = 'Comp 1', 'OUTSIDE', 
-WIDTH = 1., TOP = 2., BOTTOM = 0., OFFSETS = 2., 0.,
+WIDTH = 1., TOP = 2., BOTTOM = 0., OFFSET = 2.,
 FACE = 'FRONT',
 CRITERION = 'TIME' /
 
 &VENT ID = 'HVENT 2', TYPE = 'WALL', COMP_IDS = 'Comp 1', 'Comp 2', 
-WIDTH = 1., TOP = 2., BOTTOM = 0., OFFSETS = 0.5, 0.,
+WIDTH = 1., TOP = 2., BOTTOM = 0., OFFSET = 0.5,
 FACE = 'RIGHT',
 CRITERION = 'TIME' /
 
 &VENT ID = 'HVENT 3', TYPE = 'WALL', COMP_IDS = 'Comp 3', 'OUTSIDE', 
-WIDTH = 1., TOP = 2., BOTTOM = 1., OFFSETS = 0.5, 0.,
+WIDTH = 1., TOP = 2., BOTTOM = 1., OFFSET = 0.5,
 FACE = 'RIGHT',
 CRITERION = 'TIME' /
 

@@ -1293,12 +1293,12 @@
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
 
-    real(eb) :: area, bottom, flow, setpoint, top, width
+    real(eb) :: area, bottom, flow, offset, setpoint, top, width
     real(eb),dimension(2):: areas, cutoffs, heights, offsets
     character(64),dimension(2) :: comp_ids
     character(64) :: criterion, devc_id, face, filtering_ramp_id, id, opening_ramp_id, shape, type
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, face, filtering_ramp_id, flow, heights, &
-        id, offsets, opening_ramp_id, setpoint, shape, top, type, width
+        id, offset, offsets, opening_ramp_id, setpoint, shape, top, type, width
 
     ios = 1
 
@@ -1425,7 +1425,7 @@
                 ventptr%sill   = bottom
 
                 if  (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
-                    ventptr%offset(1) = offsets(1)
+                    ventptr%offset(1) = offset
                     ventptr%offset(2) = 0
 
                     if (trim(face) == 'FRONT') ventptr%face=1

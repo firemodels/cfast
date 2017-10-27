@@ -794,7 +794,7 @@
     temperature_depth               = 0.0_eb
     location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
     matl_id                         = 'NULL'
-    normal(:)                       = 0.0_eb
+    normal(:)                       = (/0., 0., 1./)
     rti                             = default_rti
     setpoint                        = default_activation_temperature
     spray_density                   = -300.0_eb
@@ -1298,7 +1298,7 @@
     character(64),dimension(2) :: comp_ids
     character(64) :: criterion, devc_id, face, filtering_ramp_id, id, opening_ramp_id, shape, type
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, face, filtering_ramp_id, flow, heights, &
-        id, offset, offsets, opening_ramp_id, setpoint, shape, top, type, width
+        id, offset, offsets, opening_ramp_id, pre_fraction, post_fraction, setpoint, shape, top, type, width
 
     ios = 1
 
@@ -1778,6 +1778,7 @@
     flow                  = 0._eb
     heights(:)            = 0._eb
     id                    = 'NULL'
+    offset                = 0._eb
     offsets(:)            = 0._eb
     opening_ramp_id       = 'NULL'
     pre_fraction          = 1._eb

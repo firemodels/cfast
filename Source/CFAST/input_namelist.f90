@@ -1293,7 +1293,7 @@
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
 
-    real(eb) :: area, bottom, flow, offset, setpoint, top, width
+    real(eb) :: area, bottom, flow, offset, setpoint, top, width, pre_fraction, post_fraction
     real(eb),dimension(2):: areas, cutoffs, heights, offsets
     character(64),dimension(2) :: comp_ids
     character(64) :: criterion, devc_id, face, filtering_ramp_id, id, opening_ramp_id, shape, type
@@ -1433,10 +1433,10 @@
                     if (trim(face) == 'BACK') ventptr%face=3
                     if (trim(face) == 'LEFT') ventptr%face=4
 
-                    initialtime=0._eb
-                    initialfraction=1._eb
-                    finaltime=0._eb
-                    finalfraction=1._eb
+                    initialtime = 0._eb
+                    initialfraction = pre_fraction
+                    finaltime = 0._eb
+                    finalfraction = post_fraction
 
                     if (trim(opening_ramp_id) /= 'NULL') then
                         ramp_search: do kk=1,nramps
@@ -1565,14 +1565,14 @@
                 if (trim(criterion) /= 'NULL') then
                     if (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
 
-                        initialtime=0._eb       ! in namelist input, these are just placeholders for the older event data
-                        initialfraction=1._eb
-                        finaltime=0._eb
-                        finalfraction=1._eb
+                        initialtime = 0._eb       ! in namelist input, these are just placeholders for the older event data
+                        initialfraction = pre_fraction
+                        finaltime = 0._eb
+                        finalfraction = post_fraction
 
                         if (trim(opening_ramp_id) /= 'NULL') then
                             ramp_search_2: do kk=1,nramps
-                                rampptr=>rampinfo(kk)
+                                rampptr => rampinfo(kk)
                                 if (trim(rampptr%id) == trim(opening_ramp_id)) then
                                     rampptr%room1 = i
                                     rampptr%room2 = j
@@ -1780,6 +1780,8 @@
     id                    = 'NULL'
     offsets(:)            = 0._eb
     opening_ramp_id       = 'NULL'
+    pre_fraction          = 1._eb
+    post_fraction         = 1._eb
     setpoint              = 0._eb
     shape                 = 'NULL'
     top                   = 0._eb

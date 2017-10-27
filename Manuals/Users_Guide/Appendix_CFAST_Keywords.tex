@@ -304,8 +304,8 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct BOTTOM}                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
-{\ct COMP\_IDS}*\footnote{ * indicates a required input for each {\ct VENT} input included in the input file. Additional inputs may be required depending on the type of vent.}     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct BOTTOM}\footnote{ * indicates a required input for each wall {\ct VENT} input included in the input file.} *               & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
+{\ct COMP\_IDS}*     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                             				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
@@ -317,9 +317,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct WALL} to specify a wall vent. } *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
-{\ct TOP}                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
+{\ct TOP}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
 {\ct VENT\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct WIDTH}                                                      & Real                   & Section \ref{info:VENT}      & m                           &                 \\ \hline
+{\ct WIDTH}*                                                      & Real                   & Section \ref{info:VENT}      & m                           &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -351,8 +351,8 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct AREA}      	 & Real  	          & Section \ref{info:VENT2}     & m$^2$                    &                                 \\ \hline
-{\ct COMP\_IDS}*\footnote{ * indicates a required input for each {\ct VENT} input included in the input file. Additional inputs may be required depending on the type of vent.}     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct AREA}\footnote{ * indicates a required input for each ceiling/floor {\ct VENT} input included in the input file.} *      	 & Real  	          & Section \ref{info:VENT2}     & m$^2$                    &                                 \\ \hline
+{\ct COMP\_IDS}*     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                             				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
@@ -360,7 +360,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
-{\ct SHAPE}\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
+{\ct SHAPE}*\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
                                                                  & Selection List         & Section \ref{info:VENT2}     &                             &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING} or {\ct FLOOR} for ceiling and floor vents. These may be used interchangeably. The order of {\ct COMP\_IDS} specifies the location of the vent with {\ct COMP\_IDS(1)} specifying the top compartment and {\ct COMP\_IDS(2)} specifying the bottom compartment.} *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
@@ -399,15 +399,15 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct AREAS}       & Real Doublet 	          & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
-{\ct COMP\_IDS}*\footnote{ * indicates a required input for each {\ct VENT} input included in the input file. Additional inputs may be required depending on the type of vent.}     	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct AREAS}\footnote{ * indicates a required input for each mechanical {\ct VENT} input included in the input file.} *       & Real Doublet 	          & Section \ref{info:VENT3}     & m$^2$                    &                 \\ \hline
+{\ct COMP\_IDS}*    	   			         & Character Doublet        & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                             				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CUTOFFS}       					 & Real Doublet 	  	  & Section \ref{info:VENT4}     & Pa                          &     200,300     \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct FILTERING\_RAMP\_ID}    					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct FLOW}      	 					 & Real  		  & Section \ref{info:VENT4}     & m$^3$/s                     &                 \\ \hline
-{\ct HEIGHTS}      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
+{\ct FLOW}*      	 					 & Real  		  & Section \ref{info:VENT4}     & m$^3$/s                     &                 \\ \hline
+{\ct HEIGHTS}*      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline

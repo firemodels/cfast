@@ -41,11 +41,9 @@ Public Class Vent
     Private aArea As Single                     ' Cross-sectional area of vent for vertical flow vents
     Private aShape As Integer                   ' Vertical flow vent shape, 1 for circular and 2 for square
     Private aFirstArea As Single                ' Mechanical vent opening size in first compartment
-    Private aFirstWidth As Single               ' Mechanical vent effective width of vent opening in first compartment
     Private aFirstCenterHeight As Single        ' Height of center of mechanical flow vent opening
     Private aFirstOrientation As Integer        ' Orientation of mechanical flow vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
     Private aSecondArea As Single               ' Mechanical vent opening size in second compartment
-    Private aSecondWidth As Single              ' Mechanical vent effective width of vent opening in second compartment
     Private aSecondCenterHeight As Single       ' Height of center of mechanical flow vent opening
     Private aSecondOrientation As Integer       ' Orientation of mechanical flow vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
     Private aFlowRate As Single                 ' Fan flow rate for mechanical flow vents
@@ -325,8 +323,6 @@ Public Class Vent
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Area).ToSI(Value) <> aArea Then
                 aArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
-                aFirstWidth = Math.Sqrt(aArea)
-                aSecondWidth = Math.Sqrt(aArea)
                 aChanged = True
             End If
         End Set
@@ -349,15 +345,9 @@ Public Class Vent
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Area).ToSI(Value) <> aFirstArea Then
                 aFirstArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
-                aFirstWidth = Math.Sqrt(aFirstArea)
                 aChanged = True
             End If
         End Set
-    End Property
-    Public ReadOnly Property FirstWidth() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aFirstWidth)
-        End Get
     End Property
     Public Property FirstCenterHeight() As Single
         Get
@@ -388,15 +378,9 @@ Public Class Vent
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Area).ToSI(Value) <> aSecondArea Then
                 aSecondArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
-                aSecondWidth = Math.Sqrt(aSecondArea)
                 aChanged = True
             End If
         End Set
-    End Property
-    Public ReadOnly Property SecondWidth() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aSecondWidth)
-        End Get
     End Property
     Public Property SecondCenterHeight() As Single
         Get

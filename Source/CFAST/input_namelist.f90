@@ -859,7 +859,15 @@
 
             rampptr => rampinfo(ii)
             rampptr%id = id
-            if (type=='AREA') then
+            if (count(z/=-101._eb)>0 .and. count(t/=-101._eb)>0) then
+                write (*,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', nramps
+                write (iofill,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', nramps
+            else if (count(z/=-101._eb)==0 .and. count(t/=-101._eb)==0) then
+                write (*,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', nramps
+                write (iofill,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', nramps
+            end if
+            
+            if (type=='AREA' .and. count(z/=-101._eb)>0) then
                 rampptr%x(1:mxpts)  = z(1:mxpts)
             else
                 rampptr%x(1:mxpts) = t(1:mxpts)
@@ -913,13 +921,14 @@
     type(ramp_type),   pointer :: rampptr
 
     real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
-    real(eb) :: area, co_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, setpoint, soot_yield, trace_yield
+    real(eb) :: area, co_yield, hcl_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, setpoint, &
+        soot_yield, trace_yield
     real(eb), dimension(3) :: location
-    character(64) :: area_ramp_id, co_yield_ramp_id, comp_id, devc_id, id, hcn_yield_ramp_id, hrr_ramp_id, &
+    character(64) :: area_ramp_id, co_yield_ramp_id, comp_id, devc_id, id, hcl_yield_ramp_id, hcn_yield_ramp_id, hrr_ramp_id, &
         ignition_criterion, soot_yield_ramp_id, trace_yield_ramp_id
     namelist /FIRE/ area, area_ramp_id, carbon, chlorine, comp_id, co_yield, co_yield_ramp_id, devc_id, heat_of_combustion, &
-        hcn_yield, hcn_yield_ramp_id, hrr, hrr_ramp_id, hydrogen, id, ignition_criterion, location, nitrogen, oxygen, &
-        radiative_fraction, setpoint, soot_yield, soot_yield_ramp_id, trace_yield, trace_yield_ramp_id
+        hcl_yield, hcn_yield, hcl_yield_ramp_id, hcn_yield_ramp_id, hrr, hrr_ramp_id, hydrogen, id, ignition_criterion, location, &
+        nitrogen, oxygen, radiative_fraction, setpoint, soot_yield, soot_yield_ramp_id, trace_yield, trace_yield_ramp_id
 
     ios = 1
     tmpcond = 0.0
@@ -1257,7 +1266,7 @@
     devc_id                   = 'NULL'
     hcn_yield                 = 0.0_eb
     hcn_yield_ramp_id         = 'NULL'
-    heat_of_combustion        = 0._eb
+    heat_of_combustion        = 50000._eb
     hrr                       = 0.0_eb
     hrr_ramp_id               = 'NULL'
     hydrogen                  = 0._eb
@@ -1295,10 +1304,10 @@
 
     real(eb) :: area, bottom, flow, offset, setpoint, top, width, pre_fraction, post_fraction, filter_time, filter_efficiency
     real(eb),dimension(2):: areas, cutoffs, heights, offsets
-    character(64),dimension(2) :: comp_ids
+    character(64),dimension(2) :: comp_ids, orientations
     character(64) :: criterion, devc_id, face, filtering_ramp_id, id, opening_ramp_id, shape, type
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, face, filter_efficiency, filtering_ramp_id, &
-        filter_time, flow, heights, id, offset, offsets, opening_ramp_id, pre_fraction, post_fraction, &
+        filter_time, flow, heights, id, offset, offsets, opening_ramp_id, orientations, pre_fraction, post_fraction, &
         setpoint, shape, top, type, width
 
     ios = 1
@@ -1321,7 +1330,9 @@
         if (trim(type) == 'MECHANICAL') n_mvents =n_mvents + 1
         if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') n_vvents =n_vvents + 1
 34      if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &VENT: Invalid specification for inputs. Check &VENT input, ', &
+            write(*, '(3a,i0)') '***Error in &VENT: Invalid specification for inputs. Check &VENT input, ',trim(id),': ', &
+                n_hvents + n_mvents + n_vvents
+            write(iofill, '(3a,i0)') '***Error in &VENT: Invalid specification for inputs. Check &VENT input, ',trim(id),': ', &
                 n_hvents + n_mvents + n_vvents
             stop
         end if
@@ -1778,6 +1789,8 @@
     cutoffs(:)            = 0._eb
     devc_id               = 'NULL'
     face                  = 'NULL'
+    filter_time           = 0._eb
+    filter_efficiency     = 0._eb
     filtering_ramp_id     = 'NULL'
     flow                  = 0._eb
     heights(:)            = 0._eb
@@ -1785,6 +1798,7 @@
     offset                = 0._eb
     offsets(:)            = 0._eb
     opening_ramp_id       = 'NULL'
+    orientations          = 'VERTICAL'
     pre_fraction          = 1._eb
     post_fraction         = 1._eb
     setpoint              = 0._eb
@@ -1880,8 +1894,12 @@
                     compartment_id = comp_ids(i)
                     ito=-101
 
-                    searching_2: do jj = 1, nr-1
+                   searching_2: do jj=1,nr-1
                         roomptr => roominfo(jj)
+                        if (trim(compartment_id) == 'OUTSIDE') then
+                            ito = nr
+                            exit searching_2
+                        end if
                         if (trim(compartment_id) == trim(roomptr%name)) then
                             ito = roomptr%compartment
                             exit searching_2
@@ -1974,7 +1992,7 @@
 
     comp_id           = 'NULL'
     comp_ids(:)       = 'NULL'
-    f(:)              = 0._eb
+    f(:)              = -101._eb
     type              = 'NULL'
 
     end subroutine set_conn_defaults

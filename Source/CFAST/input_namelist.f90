@@ -1293,12 +1293,13 @@
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
 
-    real(eb) :: area, bottom, flow, offset, setpoint, top, width, pre_fraction, post_fraction
+    real(eb) :: area, bottom, flow, offset, setpoint, top, width, pre_fraction, post_fraction, filter_time, filter_efficiency
     real(eb),dimension(2):: areas, cutoffs, heights, offsets
     character(64),dimension(2) :: comp_ids
     character(64) :: criterion, devc_id, face, filtering_ramp_id, id, opening_ramp_id, shape, type
-    namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, face, filtering_ramp_id, flow, heights, &
-        id, offset, offsets, opening_ramp_id, pre_fraction, post_fraction, setpoint, shape, top, type, width
+    namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, face, filter_efficiency, filtering_ramp_id, &
+        filter_time, flow, heights, id, offset, offsets, opening_ramp_id, pre_fraction, post_fraction, &
+        setpoint, shape, top, type, width
 
     ios = 1
 
@@ -1546,6 +1547,9 @@
                 ventptr%counter = counter2
                 ventptr%ramp_id = opening_ramp_id
                 ventptr%filter_id = filtering_ramp_id
+                ventptr%filter_initial_time = filter_time
+                ventptr%filter_final_time = filter_time + 1.0_eb
+                ventptr%filter_final_fraction = filter_efficiency / 100.0_eb
 
                 ventptr%orientation(1) = 1
                 ventptr%orientation(2) = 1

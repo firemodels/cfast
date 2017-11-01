@@ -293,7 +293,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Wall Vent Parameters ({\ct VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
-\label{tbl:VENT} \\
+\label{tbl:WVENT} \\
 \hline
 \multicolumn{5}{|c|}{{\ct VENT, TYPE='WALL'} (Wall Vent Parameters)} \\
 \hline \hline
@@ -312,13 +312,13 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}. Both {\ct FACE} and {\ct OFFSET} positioning refer to the first compartment specified ({\ct COMP\_IDS(1)}).}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSET}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      0        \\ \hline
+{\ct OPENING\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct WALL} to specify a wall vent. } *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
 {\ct TOP}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
-{\ct VENT\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 {\ct WIDTH}*                                                      & Real                   & Section \ref{info:VENT}      & m                           &                 \\ \hline
 \end{longtable}
 \end{minipage}
@@ -340,7 +340,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Ceiling/Floor Vent Parameters ({\ct VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
-\label{tbl:VENT} \\
+\label{tbl:CFVENT} \\
 \hline
 \multicolumn{5}{|c|}{{\ct VENT, TYPE='CEILING'} or {\ct TYPE='FLOOR'} (Ceiling/Floor Vent Parameters)} \\
 \hline \hline
@@ -358,13 +358,13 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
+{\ct OPENING\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent area or ceiling and floor vents and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ 
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct SHAPE}*\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
                                                                  & Selection List         & Section \ref{info:VENT2}     &                             &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING} or {\ct FLOOR} for ceiling and floor vents. These may be used interchangeably. The order of {\ct COMP\_IDS} specifies the location of the vent with {\ct COMP\_IDS(1)} specifying the top compartment and {\ct COMP\_IDS(2)} specifying the bottom compartment.} *
-                                                                 & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
-{\ct VENT\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent area or ceiling and floor vents and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
+                                                                 & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline \hline
 \end{longtable}
 \end{minipage}
 
@@ -388,7 +388,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Mechanical Vent Parameters ({\ct VENT} namelist group)]{For more information see Section~\ref{info:VENT}.}
-\label{tbl:VENT} \\
+\label{tbl:MVENT} \\
 \hline
 \multicolumn{5}{|c|}{{\ct VENT, TYPE='MECHANICAL'} (Mechanical Vent Parameters)} \\
 \hline \hline
@@ -412,13 +412,13 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct HEIGHTS}*      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0.,0.        \\ \hline
+{\ct OPENING\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of flow for mechanical vents and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
+{\ct ORIENTATIONS}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List Doublet 		  & Section \ref{info:RAMP}      &  VERTICAL,VERTICAL                           &                 \\ \hline
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
-{\ct ORIENTATION}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List  		  & Section \ref{info:RAMP}      &  VERTICAL                           &                 \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct MECHANICAL} for mechanical vents. } *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
-{\ct VENT\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of flow for mechanical vents and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
 \end{longtable}
 \end{minipage}
 

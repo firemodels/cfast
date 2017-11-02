@@ -1907,8 +1907,8 @@
                     end do searching_2
 
                     if (ito == -101) then
-                        write (*,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(i)
-                        write (iofill,'(a,a)') '***Error: COMP_IDS not match. ', comp_ids(i)
+                        write (*,'(a,a)') '***Error: COMP_IDS do not match existing compartments. ', comp_ids(i)
+                        write (iofill,'(a,a)') '***Error: COMP_IDS do not match existing compartments. ', comp_ids(i)
                         stop
                     end if
 
@@ -2035,8 +2035,6 @@
         end if
     end do isof_loop
 
-    nvisualinfo=nvisualinfo+counter
-
     isof_flag: if (isofflag) then
 
         rewind (lu)
@@ -2061,7 +2059,8 @@
                 end if
             end do searching
 
-            sliceptr => visualinfo(ii)
+            nvisualinfo = nvisualinfo + 1
+            sliceptr => visualinfo(nvisualinfo)
             sliceptr%vtype = 3
             sliceptr%value = value
             sliceptr%roomnum = icomp
@@ -2128,8 +2127,6 @@
         end if
     end do slcf_loop
 
-    nvisualinfo=nvisualinfo+counter
-
     slcf_flag: if (slcfflag) then
 
         rewind (lu)
@@ -2142,7 +2139,8 @@
             call set_slcf_defaults
             read(lu,SLCF)
 
-            sliceptr => visualinfo(ii)
+            nvisualinfo = nvisualinfo + 1
+            sliceptr => visualinfo(nvisualinfo)
             if (trim(domain)=='2-D') then
                 sliceptr%vtype = 1
             else if (trim(domain)=='3-D') then

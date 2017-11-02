@@ -593,7 +593,7 @@
         end if
         read(lu,DEVC,err=34,iostat=ios)
         if (type == 'PLATE' .or. type == 'CYLINDER') n_targets =n_targets + 1
-        if (type == 'SPRINKLER' .or. type == 'HEAT'.or. type == 'SMOKE') n_detectors =n_detectors + 1
+        if (type == 'SPRINKLER' .or. type == 'HEAT_DETECTOR'.or. type == 'SMOKE_DETECTOR') n_detectors =n_detectors + 1
 34      if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &DEVC: Invalid specification for inputs. Check &DEVC input, ' , &
                 n_targets+n_detectors
@@ -686,14 +686,14 @@
                     stop
                 end if
 
-            else if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT'.or. trim(type) == 'SMOKE') then
+            else if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT_DETECTOR'.or. trim(type) == 'SMOKE_DETECTOR') then
                 counter2 = counter2 + 1
 
                 dtectptr => detectorinfo(counter2)
 
-                if (trim(type) == 'SMOKE') then
+                if (trim(type) == 'SMOKE_DETECTOR') then
                     i1 = smoked
-                else if (trim(type) == 'HEAT') then
+                else if (trim(type) == 'HEAT_DETECTOR') then
                     i1 = heatd
                 else if (trim(type) == 'SPRINKLER') then
                     i1 = sprinkd
@@ -732,10 +732,18 @@
                 end if
 
                 dtectptr%name = id
-                if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT') then
-                    dtectptr%trigger = setpoint + 273.15_eb
+                if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT_DETECTOR') then
+                    if (setpoint/=-101._eb) then
+                        dtectptr%trigger = setpoint + 273.15_eb
+                    else
+                        dtectptr%trigger = default_activation_temperature
+                    end if
                 else
-                    dtectptr%trigger = setpoint
+                    if (setpoint/=-101._eb) then
+                        dtectptr%trigger = setpoint
+                    else
+                        dtectptr%trigger = default_activation_obscuration
+                    end if
                 end if
                 dtectptr%center = location
                 dtectptr%rti =  rti
@@ -791,12 +799,12 @@
     comp_id                         = 'NULL'
     type                            = 'NULL'
     id                              = 'NULL'
-    temperature_depth               = 0.0_eb
+    temperature_depth               = 0.5_eb
     location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
     matl_id                         = 'NULL'
     normal(:)                       = (/0., 0., 1./)
     rti                             = default_rti
-    setpoint                        = default_activation_temperature
+    setpoint                        = -101._eb
     spray_density                   = -300.0_eb
 
     end subroutine set_devc_defaults
@@ -1050,9 +1058,17 @@
                 if (fireptr%ignition_type==trigger_by_time) then
                     fireptr%ignition_time = tmpcond
                     fireptr%ignition_criterion = 1.0e30_eb !check units
-                else if (fireptr%ignition_type==trigger_by_temp.or.fireptr%ignition_type==trigger_by_flux) then
+                else if (fireptr%ignition_type==trigger_by_temp) then
                     fireptr%ignition_time = 1.0e30_eb  !check units
-                    fireptr%ignition_criterion = tmpcond
+                    fireptr%ignition_criterion = tmpcond + 273.15
+                    if (stpmax>0) then
+                        stpmax = min(stpmax,1.0_eb)
+                    else
+                        stpmax = 1.0_eb
+                    end if
+                else if (fireptr%ignition_type==trigger_by_flux) then
+                    fireptr%ignition_time = 1.0e30_eb  !check units
+                    fireptr%ignition_criterion = tmpcond * 1000._eb
                     if (stpmax>0) then
                         stpmax = min(stpmax,1.0_eb)
                     else
@@ -1089,7 +1105,7 @@
             ! constant hrr
             fireptr%n_qdot = 1
             fireptr%t_qdot(1) = 0.0_eb
-            fireptr%qdot(1) = hrr
+            fireptr%qdot(1) = hrr * 1000._eb
             max_hrr = hrr
 
             ! constant soot
@@ -1127,7 +1143,7 @@
                     rampptr%counter = kk
                     fireptr%n_qdot = rampptr%npoints
                     fireptr%t_qdot = rampptr%x
-                    fireptr%qdot = rampptr%f_of_x
+                    fireptr%qdot = rampptr%f_of_x * 1000._eb
                 end if
 
                 max_hrr = 0.0_eb
@@ -1475,9 +1491,14 @@
                         ventptr%opening_final_time = finaltime
                         ventptr%opening_final_fraction = finalfraction
                     else
-                        if (trim(criterion)=='TEMPERATURE') ventptr%opening_type = trigger_by_temp
-                        if (criterion=='FLUX') ventptr%opening_type = trigger_by_flux
-                        ventptr%opening_criterion = setpoint
+                        if (trim(criterion)=='TEMPERATURE') then
+                            ventptr%opening_type = trigger_by_temp
+                            ventptr%opening_criterion = setpoint + 273.15
+                        end if
+                        if (criterion=='FLUX') then
+                            ventptr%opening_type = trigger_by_flux
+                            ventptr%opening_criterion = setpoint * 1000._eb
+                        end if
                         ventptr%opening_target = 0
                         do i = 1,n_targets
                             targptr => targetinfo(i)
@@ -2062,7 +2083,7 @@
             nvisualinfo = nvisualinfo + 1
             sliceptr => visualinfo(nvisualinfo)
             sliceptr%vtype = 3
-            sliceptr%value = value
+            sliceptr%value = value + 273.15
             sliceptr%roomnum = icomp
 
             if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then

@@ -57,6 +57,9 @@ module vflow_routines
         icount = ventptr%counter
         ventid = ventptr%ramp_id
         call get_vent_opening (ventid,'V',itop,ibot,icount,i,tsec,fraction)
+        if (fraction /= 1._eb) then
+            continue
+        end if
         area = fraction * ventptr%area
         ventptr%current_area = area
         ishape = ventptr%shape

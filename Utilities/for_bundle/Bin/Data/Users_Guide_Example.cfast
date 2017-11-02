@@ -81,7 +81,7 @@ HRR_RAMP_ID = 'Cushion Fire' /
 
 &RAMP ID = 'Cushion Fire', TYPE = 'HEAT_RELEASE_RATE',
 T = 0., 60., 120., 180., 240., 300., 360., 420., 480., 540., 1800.
-F = 0., 100000., 150000., 200000., 150000., 125000., 100000., 90000., 80000., 75000., 75000.  /
+F = 0., 100., 150., 200., 150., 125., 100., 90., 80., 75., 75.  /
 
 !!Wood_Wall
 &FIRE 
@@ -94,7 +94,7 @@ SOOT_YIELD = 0.015, CO_YIELD = 0.006171682,
 AREA_RAMP_ID = 'Wood Wall Area',
 HRR_RAMP_ID = 'Wood Wall Fire' /
 
-&RAMP ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE', T = 0., 8000., F = 0., 1000000./
+&RAMP ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE', T = 0., 8000., F = 0., 1000./
 &RAMP ID = 'Wood Wall Area', TYPE = 'FRACTION', T = 0., 8000., F = 0.05, 9./
 
 !!

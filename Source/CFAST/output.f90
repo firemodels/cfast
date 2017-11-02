@@ -823,6 +823,7 @@ module output_routines
     
     ! ramps
     if (nramps==0) then
+        write (*,*) 'nramps = ',nramps
         write (iofilo,5150)
     else
         write (iofilo,5160)
@@ -1002,7 +1003,7 @@ module output_routines
          ,'                                                                        Obscuration    ', &
          'Temperature   RTI           Spray Density',/ &
          ,'                                         (m)      (m)      (m)          (%/m)       ', &
-         '  (C)           (m s)^1/2     (m/s)',/ &
+         '  (C)           (m s)^1/2     (mm/s)',/ &
          ,128('-'))
 
     do idtect = 1, n_detectors

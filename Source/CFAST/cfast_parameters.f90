@@ -140,9 +140,10 @@
     real(eb), parameter :: default_lower_oxygen_limit = 0.15_eb
     real(eb), parameter :: default_radiative_fraction = 0.35_eb
     
-    ! sprinkler defaults
+    ! sprinkler/detector defaults
     real(eb), parameter :: default_rti = 50._eb
-    real(eb), parameter :: default_activation_temperature = 135._eb*1.8_eb+ 32._eb
+    real(eb), parameter :: default_activation_temperature = (135._eb - 32._eb)/1.8_eb
+    real(eb), parameter :: default_activation_obscuration = 100._eb*(1._eb-(1._eb-8._eb/100._eb)**(1._eb/0.3048_eb))
 
     end module defaults
     ! --------------------------- detectorptrs -------------------------------------------

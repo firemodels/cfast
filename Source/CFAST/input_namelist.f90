@@ -2070,7 +2070,7 @@
 
             compartment_id = ' '
             compartment_id = comp_id
-            icomp = -101
+            icomp = 0
 
             searching: do jj = 1, nr-1
                 roomptr => roominfo(jj)

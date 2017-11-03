@@ -231,6 +231,7 @@ Public Class UpdateGUI
         General()
         If index < 0 Or myCompartments.Count = 0 Then
             ClearGrid(MainWin.CompSummary)
+            ClearGrid(MainWin.CompVariableArea)
             MainWin.TabHorizontalFlow.Enabled = False
             MainWin.TabVerticalFlow.Enabled = False
             MainWin.TabMechanicalFlow.Enabled = False
@@ -375,6 +376,7 @@ Public Class UpdateGUI
         Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myHVents.Count Then
             ClearGrid(MainWin.HVentSummary)
+            ClearGrid(MainWin.HVentFractions)
             MainWin.GroupHVentGeometry.Enabled = False
         Else
             MainWin.GroupHVentGeometry.Enabled = True
@@ -490,6 +492,7 @@ Public Class UpdateGUI
         Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myVVents.Count Then
             ClearGrid(MainWin.VVentSummary)
+            ClearGrid(MainWin.VVentFractions)
             MainWin.GroupVVents.Enabled = False
         Else
             MainWin.GroupVVents.Enabled = True
@@ -599,6 +602,7 @@ Public Class UpdateGUI
         Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myMVents.Count Then
             ClearGrid(MainWin.MVentSummary)
+            ClearGrid(MainWin.MVentFractions)
             MainWin.GroupMVents.Enabled = False
         Else
             MainWin.GroupMVents.Enabled = True
@@ -961,6 +965,7 @@ Public Class UpdateGUI
         Dim ir, ic As Integer
         If index < 0 Or index >= myFires.Count Then
             ClearGrid(MainWin.FireSummary)
+            ClearGrid(MainWin.FireDataSS)
             MainWin.GroupFire.Enabled = False
         Else
             MainWin.GroupFire.Enabled = True

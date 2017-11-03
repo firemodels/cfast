@@ -326,8 +326,8 @@
     type(thermal_type), pointer :: thrmpptr
 
     real(eb) :: conductivity, density, emissivity, specific_heat, thickness
-    character(64) :: id
-    namelist /MATL/ conductivity, density, emissivity, specific_heat, id, thickness
+    character(64) :: id, material
+    namelist /MATL/ conductivity, density, emissivity, id, material, specific_heat, thickness
 
     ios = 1
 

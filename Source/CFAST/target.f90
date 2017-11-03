@@ -77,13 +77,11 @@ module target_routines
         ttarg(2) = targptr%temperature(idx_tempb_trg)
         
         call target_flux(front,itarg,ttarg,flux,dflux)
-        targptr%flux_incident_front = targptr%flux_surface(front) + targptr%flux_fire(front)+ targptr%flux_gas(front) + &
-            targptr%flux_convection(front)
+        targptr%flux_incident_front = targptr%flux_surface(front) + targptr%flux_fire(front)+ targptr%flux_gas(front)
         targptr%flux_net_front = flux(front)
         
         call target_flux(back,itarg,ttarg,flux,dflux) 
-        targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back) + &
-            targptr%flux_convection(back)
+        targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back)
         targptr%flux_net_back = flux(back)
 
         ! do conduction into target

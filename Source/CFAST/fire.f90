@@ -579,7 +579,7 @@ module fire_routines
 
     integer ::i
     real(eb) :: fraction
-    character(64) :: ventid
+    character(64) :: rampid
     type(fire_type), pointer :: fireptr
     type(vent_type), pointer :: ventptr
 
@@ -600,8 +600,8 @@ module fire_routines
     ! ...%total_trace_flow is the trace species which gets through the vent, ...%total_trace_filtered is the mass stopped.
     do i = 1, n_mvents
         ventptr => mventinfo(i)
-        ventid = ventptr%ramp_id
-        call get_vent_opening (ventid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,time,fraction)
+        rampid = ventptr%ramp_id
+        call get_vent_opening (rampid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,time,fraction)
         fraction = (1.0_eb-fraction)
         ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mv_mflow(u)*deltt
         ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mv_mflow(l)*deltt

@@ -823,7 +823,6 @@ module output_routines
     
     ! ramps
     if (nramps==0) then
-        write (*,*) 'nramps = ',nramps
         write (iofilo,5150)
     else
         write (iofilo,5160)

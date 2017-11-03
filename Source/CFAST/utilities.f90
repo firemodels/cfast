@@ -1284,23 +1284,20 @@
 
     ! --------------------------- find_vent_opening_ramp ------------------------------
 
-    integer function find_vent_opening_ramp (ventid,venttype,room1,room2,counter)
+    integer function find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
 
-    character(len=64), intent(in) :: ventid
+    character(len=64), intent(in) :: rampid
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: room1, room2, counter
 
     integer iramp, vent_index
     type(ramp_type), pointer :: rampptr
-    type(vent_type), pointer :: ventptr
-
-    ventptr=>vventinfo(counter)
 
     if (nramps>0) then
         do iramp = 1, nramps
             rampptr=>rampinfo(iramp)
-            if (nmlflag) then
-                if (ventptr%ramp_id==trim(ventid)) then
+            if (nmlflag.and.rampid/='NULL') then
+                if (rampptr%id==trim(rampid)) then
                     vent_index = iramp
                     find_vent_opening_ramp = iramp
                     return
@@ -1322,9 +1319,9 @@
 
     ! --------------------------- get_vent_opening-------------------------------------
 
-    subroutine get_vent_opening (ventid,venttype,room1,room2,counter,vent_index,time,fraction)
+    subroutine get_vent_opening (rampid,venttype,room1,room2,counter,vent_index,time,fraction)
 
-    character(len=64), intent(in) :: ventid
+    character(len=64), intent(in) :: rampid
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: room1, room2, counter, vent_index
     real(eb), intent(in) :: time
@@ -1338,8 +1335,8 @@
 
     fraction = 1.0_eb
 
-    if (nramps>0) then
-        iramp = find_vent_opening_ramp (ventid,venttype,room1,room2,counter)
+    if (nramps>0 .and. rampid/='NULL') then
+        iramp = find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)
             if (time<=rampptr%x(1)) then

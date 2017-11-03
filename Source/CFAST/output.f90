@@ -663,7 +663,7 @@ module output_routines
 
     integer :: i, j, iramp
     character :: ciout*14, cjout*14, csout*6, crout*10, ctrigger*4
-    character(64) :: ventid
+    character(64) :: rampid
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
@@ -682,8 +682,8 @@ module output_routines
             roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                ventid = ventptr%ramp_id
-                iramp = find_vent_opening_ramp(ventid,'H',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'H',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -735,8 +735,8 @@ module output_routines
             roomptr => roominfo(ventptr%room2)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                ventid = ventptr%ramp_id
-                iramp = find_vent_opening_ramp(ventid,'V',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'V',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5050) ciout, cjout, ventptr%counter, csout, ventptr%area, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -785,8 +785,8 @@ module output_routines
             if (ventptr%room2==nr) cjout = 'Outside'
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                ventid = ventptr%ramp_id
-                iramp = find_vent_opening_ramp(ventid,'M',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'M',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &

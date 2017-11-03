@@ -52,7 +52,7 @@ module hflow_routines
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     real(eb) :: outarray(maxhead)
     integer :: position
-    character(64) :: ventid
+    character(64) :: rampid
 
     type(vent_type), pointer :: ventptr
 
@@ -102,8 +102,8 @@ module hflow_routines
         !  use new interpolator to find vent opening fraction
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        ventid = ventptr%ramp_id
-        call get_vent_opening (ventid,'H',im,ix,ik,i,tsec,fraction)
+        rampid = ventptr%ramp_id
+        call get_vent_opening (rampid,'H',im,ix,ik,i,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width*fraction
         avent = height*width

@@ -474,7 +474,7 @@ module spreadsheet_routines
     logical :: firstc
     integer :: position
     integer :: i, j, iroom1, iroom2, ik, im, ix
-    character(64) :: ventid
+    character(64) :: rampid
 
 
     type(vent_type), pointer :: ventptr
@@ -529,8 +529,8 @@ module spreadsheet_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        ventid = ventptr%ramp_id
-        call get_vent_opening (ventid,'H',im,ix,ik,i,time,fraction)
+        rampid = ventptr%ramp_id
+        call get_vent_opening (rampid,'H',im,ix,ik,i,time,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = fraction*height*width

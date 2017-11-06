@@ -46,16 +46,17 @@ module cfast_types
         real(eb) :: y_position                          ! initial Y position of the base of fire (user input)
         real(eb) :: z_position                          ! initial Z position of the base of fire (user input)
 
-        integer :: npoints                              ! actual number of time points for fire (user input)
-        real(eb), dimension(mxpts) :: time              ! time points for fire inputs (user input)
-        real(eb), dimension(mxpts) :: mdot              ! pyrolysis rate as a function of time (user input)
-        real(eb), dimension(mxpts) :: qdot              ! heat release rate of the fire as a function of time (user input)
-        real(eb), dimension(mxpts) :: area              ! area of the base of the fire as a function of time (user input)
-        real(eb), dimension(mxpts) :: height            ! height of the base of the fire as a function of time (user input)
-        real(eb), dimension(mxpts) :: y_soot            ! soot production rate as a funciton of time (user input)
-        real(eb), dimension(mxpts) :: y_co              ! CO production rate as a function of time (user input)
-        real(eb), dimension(mxpts) :: y_trace           ! trace species production rate as a funciton of time (user input)
-        real(eb), dimension(mxpts) :: hoc               ! heat of combustion as a function of time
+        !integer :: npoints                                       ! actual number of time points for fire (user input)
+        !real(eb), dimension(mxpts) :: time                      ! time points for fire inputs (user input)
+        integer :: n_mdot, n_qdot, n_area, n_height, n_soot, n_co, n_trace, n_hoc ! number of time points (user input)
+        real(eb), dimension(mxpts) :: mdot, t_mdot      ! pyrolysis rate (user input)
+        real(eb), dimension(mxpts) :: qdot, t_qdot      ! heat release rate of the fire (user input)
+        real(eb), dimension(mxpts) :: area, t_area      ! area of the base of the fire (user input)
+        real(eb), dimension(mxpts) :: height, t_height  ! height of the base of the fire (user input)
+        real(eb), dimension(mxpts) :: y_soot, t_soot    ! soot production rate (user input)
+        real(eb), dimension(mxpts) :: y_co, t_co        ! CO production rate (user input)
+        real(eb), dimension(mxpts) :: y_trace, t_trace  ! trace species production rate (user input)
+        real(eb), dimension(mxpts) :: hoc, t_hoc        ! heat of combustion
 
         real(eb) :: z_offset                            ! current height of the fire above initial Z position
         real(eb) :: characteristic_length               ! characteristic length for fire = max fire diameter
@@ -90,7 +91,7 @@ module cfast_types
         character(64) :: id  
         character(64) :: type  
         integer :: room1, room2, counter, npoints
-        real(eb) :: time(mxpts), value(mxpts)
+        real(eb) :: x(mxpts), f_of_x(mxpts)
     end type ramp_type
 
     ! room data structure

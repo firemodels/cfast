@@ -77,13 +77,11 @@ module target_routines
         ttarg(2) = targptr%temperature(idx_tempb_trg)
         
         call target_flux(front,itarg,ttarg,flux,dflux)
-        targptr%flux_incident_front = targptr%flux_surface(front) + targptr%flux_fire(front)+ targptr%flux_gas(front) + &
-            targptr%flux_convection(front)
+        targptr%flux_incident_front = targptr%flux_surface(front) + targptr%flux_fire(front)+ targptr%flux_gas(front)
         targptr%flux_net_front = flux(front)
         
         call target_flux(back,itarg,ttarg,flux,dflux) 
-        targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back) + &
-            targptr%flux_convection(back)
+        targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back)
         targptr%flux_net_back = flux(back)
 
         ! do conduction into target
@@ -278,7 +276,7 @@ module target_routines
         qtgflux(back) = qgassum(back)
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if (targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_temperature**4
+        if (targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_ambient_temperature**4
     end if
 
     ! compute convective flux
@@ -303,7 +301,7 @@ module target_routines
     if (targptr%back==interior) then
         tgb = tg
     else
-        tgb = interior_temperature
+        tgb = interior_ambient_temperature
     end if
     dttarg = 1.0e-7_eb*ttarg(front)
     dttargb = 1.0e-7_eb*ttarg(back)
@@ -340,9 +338,9 @@ module target_routines
         targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_convection(i) + targptr%flux_target(i)
 
-        call convective_flux (iw,tg,interior_temperature,q1g)
+        call convective_flux (iw,tg,interior_ambient_temperature,q1g)
         targptr%flux_convection_gauge = q1g
-        targptr%flux_target_gauge(i) = -temis*sigma*interior_temperature**4
+        targptr%flux_target_gauge(i) = -temis*sigma*interior_ambient_temperature**4
         targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_target_gauge(i)
         targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &

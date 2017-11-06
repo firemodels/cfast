@@ -67,6 +67,7 @@
     real(eb), parameter :: deltatemp_min = 1.0_eb   ! minimum temperature difference for bouyancy to deposit all into a layer
     integer, parameter :: interior = 1              ! compartment interior
     integer, parameter :: exterior = 2              ! compartment exterior
+    integer, parameter :: default_grid = 50         ! number of grid cells in each direction at initialization
 
     ! target parameters
     integer, parameter :: mxtarg = mxperrm*(mxrooms-1)      ! maximum number of targets
@@ -139,9 +140,10 @@
     real(eb), parameter :: default_lower_oxygen_limit = 0.15_eb
     real(eb), parameter :: default_radiative_fraction = 0.35_eb
     
-    ! sprinkler defaults
+    ! sprinkler/detector defaults
     real(eb), parameter :: default_rti = 50._eb
-    real(eb), parameter :: default_activation_temperature = 135._eb*1.8_eb+ 32._eb
+    real(eb), parameter :: default_activation_temperature = (135._eb - 32._eb)/1.8_eb
+    real(eb), parameter :: default_activation_obscuration = 100._eb*(1._eb-(1._eb-8._eb/100._eb)**(1._eb/0.3048_eb))
 
     end module defaults
     ! --------------------------- detectorptrs -------------------------------------------

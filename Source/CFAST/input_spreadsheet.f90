@@ -53,10 +53,10 @@ module spreadsheet_input_routines
         aversion = carray(1,1)
         ivers = rarray(1,2)
         ! new version numbering 600->6000, so current version is 7000
-        if (version>=1000) then
-            iversion = version/1000
+        if (cfast_version>=1000) then
+            iversion = cfast_version/1000
         else
-            iversion = version/100
+            iversion = cfast_version/100
         end if
     
         if (aversion==heading.and.ivers==iversion-1) then
@@ -474,11 +474,11 @@ module spreadsheet_input_routines
             ! TAMB reference ambient temperature (c), reference ambient pressure, reference pressure, relative humidity
         case ("TAMB")
             if (countargs(lcarray)>=4) then
-                interior_temperature = lrarray(1)
+                interior_ambient_temperature = lrarray(1)
                 interior_abs_pressure = lrarray(2)
                 relative_humidity = lrarray(4)*0.01_eb
             else if (countargs(lcarray)>=3) then
-                interior_temperature = lrarray(1)
+                interior_ambient_temperature = lrarray(1)
                 interior_abs_pressure = lrarray(2)
                 relative_humidity = lrarray(3)*0.01_eb
             else
@@ -487,11 +487,11 @@ module spreadsheet_input_routines
                 stop
             end if
             if (.not.exset) then
-                exterior_temperature = interior_temperature
+                exterior_ambient_temperature = interior_ambient_temperature
                 exterior_abs_pressure = interior_abs_pressure
                 exterior_rho = interior_rho
             end if
-            tgignt = interior_temperature + 200.0_eb
+            tgignt = interior_ambient_temperature + 200.0_eb
 
             ! EAMB reference external ambient temperature (c), reference external ambient pressure
         case ("EAMB")
@@ -500,7 +500,7 @@ module spreadsheet_input_routines
                 write (iofill,*) '***Error: Bad EAMB input. 3 arguments required.'
                 stop
             end if
-            exterior_temperature = lrarray(1)
+            exterior_ambient_temperature = lrarray(1)
             exterior_abs_pressure = lrarray(2)
             exset = .true.
             
@@ -726,8 +726,8 @@ module spreadsheet_input_routines
                 rampptr%counter = lrarray(4)
                 rampptr%npoints = lrarray(5)
                 do iramp = 1,rampptr%npoints
-                    rampptr%time(iramp) = lrarray(4+2*iramp)
-                    rampptr%value(iramp) = lrarray(5+2*iramp)
+                    rampptr%x(iramp) = lrarray(4+2*iramp)
+                    rampptr%f_of_x(iramp) = lrarray(5+2*iramp)
                 end do
             end if
 
@@ -1457,30 +1457,30 @@ module spreadsheet_input_routines
             end if
         case ('TIME')
             nret = countargs(lcarray)
-            fireptr%npoints = nret
-            do i = 1, nret
-                fireptr%time(i) = lrarray(i)
-            end do
+            fireptr%n_qdot = nret
+            fireptr%t_qdot(1:nret) = lrarray(1:nret)
         case ('HRR')
+            fireptr%qdot(1:nret) = lrarray(1:nret)
+            fireptr%mdot(1:nret) = fireptr%qdot(1:nret)/ohcomb
+            fireptr%t_mdot = fireptr%t_qdot
+            fireptr%n_mdot = nret
             max_hrr = 0.0_eb
             do i = 1, nret
-                fireptr%qdot(i) = lrarray(i)
                 max_hrr = max(max_hrr, fireptr%qdot(i))
-                fireptr%mdot(i) = fireptr%qdot(i)/ohcomb
             end do
         case ('SOOT')
-            do i = 1, nret
-                fireptr%y_soot(i) = lrarray(i)
-            end do
+                fireptr%y_soot(1:nret) = lrarray(1:nret)
+                fireptr%t_soot = fireptr%t_qdot
+                fireptr%n_soot = nret
         case ('CO')
-            do i = 1, nret
-                fireptr%y_co(i) = lrarray(i)
-            end do
+                fireptr%y_co(1:nret) = lrarray(1:nret)
+                fireptr%t_co = fireptr%t_qdot
+                fireptr%n_co = nret
         case ('TRACE')
             ! Note that CT, TUHC and TS are carried in the mprodr array - all other species have their own array
-            do i = 1, nret
-                fireptr%y_trace(i) = lrarray(i)
-            end do
+                fireptr%y_trace(1:nret) = lrarray(1:nret)
+                fireptr%t_trace = fireptr%t_qdot
+                fireptr%n_trace = nret
         case ('AREA')
             max_area = 0.0_eb
             do i = 1, nret
@@ -1496,15 +1496,17 @@ module spreadsheet_input_routines
                 fireptr%area(i) = max(lrarray(i),pio4*0.2_eb**2)
                 max_area = max(max_area,fireptr%area(i))
             end do
+            fireptr%t_area = fireptr%t_qdot
+                fireptr%n_area = nret
 
             ! calculate a characteristic length of an object (we assume the diameter).
             ! This is used for point source radiation fire to target calculation as a minimum effective
             ! distance between the fire and the target which only impact very small fire to target distances
             fireptr%characteristic_length = sqrt(max_area/pio4)
         case ('HEIGH')
-            do i = 1, nret
-                fireptr%height(i) = max(lrarray(i),0.0_eb)
-            end do
+                fireptr%height(1:nret) = lrarray(1:nret)
+                fireptr%t_height = fireptr%t_qdot
+                fireptr%n_height = nret
             case default
             write (*, 5000) label
             write (iofill, 5000) label
@@ -1514,7 +1516,9 @@ module spreadsheet_input_routines
     end do
 
     ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-    call set_heat_of_combustion (fireptr%npoints, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+    call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+    fireptr%t_hoc = fireptr%t_qdot
+    fireptr%n_hoc = fireptr%n_qdot
 
     ! Position the object
     roomptr => roominfo(fireptr%room)

@@ -1441,7 +1441,7 @@ Public Class CeditMain
         Me.EnvSimTime.Name = "EnvSimTime"
         Me.EnvSimTime.Size = New System.Drawing.Size(96, 20)
         Me.EnvSimTime.TabIndex = 102
-        Me.EnvSimTime.Text = "900 s"
+        Me.EnvSimTime.Text = "3600 s"
         '
         'TabHorizontalFlow
         '

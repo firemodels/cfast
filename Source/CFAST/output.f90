@@ -44,7 +44,7 @@ module output_routines
 
     call get_info(revision, revision_date, compile_date)
 
-    call splitversion(version,imajor,iminor,iminorrev)
+    call splitversion(cfast_version,imajor,iminor,iminorrev)
 
     write (iunit,'(/A/)')                    'CFAST'
 #ifndef VERSION_PP
@@ -621,8 +621,8 @@ module output_routines
 
     !     Description:  Output initial test case ambient conditions
 
-    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
-       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
+    write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
+       exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
     return
 
 5000 format (//,'AMBIENT CONDITIONS',//, &
@@ -663,7 +663,7 @@ module output_routines
 
     integer :: i, j, iramp
     character :: ciout*14, cjout*14, csout*6, crout*10, ctrigger*4
-    character(64) :: ventid
+    character(64) :: rampid
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
@@ -682,8 +682,8 @@ module output_routines
             roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                ventid = ventptr%ramp_id
-                iramp = find_vent_opening_ramp(ventid,'H',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'H',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -735,8 +735,8 @@ module output_routines
             roomptr => roominfo(ventptr%room2)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                ventid = ventptr%ramp_id
-                iramp = find_vent_opening_ramp(ventid,'V',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'V',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5050) ciout, cjout, ventptr%counter, csout, ventptr%area, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -785,8 +785,8 @@ module output_routines
             if (ventptr%room2==nr) cjout = 'Outside'
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                ventid = ventptr%ramp_id
-                iramp = find_vent_opening_ramp(ventid,'M',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'M',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -834,8 +834,8 @@ module output_routines
                if (rampptr%room2==nr) cjout = 'Outside'
                roomptr => roominfo(rampptr%room1)
                write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
-                   (int(rampptr%time(j)),j=1,rampptr%npoints)
-               write (iofilo,5180) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
+                   (int(rampptr%x(j)),j=1,rampptr%npoints)
+               write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
                goto 223
             end if
 223         continue
@@ -937,8 +937,8 @@ module output_routines
             write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
             write (iofilo,5010) ('-',i = 1,is-1)
-            do i = 1, fireptr%npoints
-                write (cbuf,5060) fireptr%time(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
+            do i = 1, fireptr%n_qdot
+                write (cbuf,5060) fireptr%t_qdot(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
                 y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
                 y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
                 write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i)
@@ -1002,7 +1002,7 @@ module output_routines
          ,'                                                                        Obscuration    ', &
          'Temperature   RTI           Spray Density',/ &
          ,'                                         (m)      (m)      (m)          (%/m)       ', &
-         '  (C)           (m s)^1/2     (m/s)',/ &
+         '  (C)           (m s)^1/2     (mm/s)',/ &
          ,128('-'))
 
     do idtect = 1, n_detectors

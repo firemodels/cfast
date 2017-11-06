@@ -33,7 +33,7 @@ Public Class Environment
     Public Sub New()
         aTitle = "CFAST Simulation"
         aVersion = 7300
-        aSimulationTime = 900
+        aSimulationTime = 3600
         aOutputInterval = 60
         aSpreadsheetInterval = 15
         aSmokeviewInterval = 15

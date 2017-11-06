@@ -67,6 +67,10 @@ Public Class Fire
     Private aRadiativeFraction As Single            ' Radiative fraction
     Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
+
+    Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
+    Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
+                                             "FireHC", "FireO2", "FireHCN", "FireHCl", "FireCt", "FireTS"}
     Public Sub New()
         ' New definitions for an instance of a fire 
         aCompartment = -2
@@ -85,6 +89,7 @@ Public Class Fire
         aHeatofCombustion = 50000000.0
         aRadiativeFraction = 0.35
         aCommentsIndex = -1
+        Me.InitilizeFireTimeSeries()
     End Sub
     Public Sub New(ByVal Name As String, ByVal Chemical_Formula() As Single, ByVal Hoc As Single, ByVal RadiativeFraction As Single)
         ' New to define a fire object with all the details
@@ -100,6 +105,7 @@ Public Class Fire
         aHeatofCombustion = Hoc
         aRadiativeFraction = RadiativeFraction
         aCommentsIndex = -1
+        Me.InitilizeFireTimeSeries()
     End Sub
     Public Sub New(ByVal TimetoPeak As Single, ByVal PeakHRR As Single, ByVal SteadyBurningTime As Single, ByVal DecayTime As Single)
         ' New to define a t^2 fire object
@@ -141,13 +147,14 @@ Public Class Fire
         FireTimeSeries(FireTime, 22) = aTimetoPeak + aSteadyBurningTime + aDecayTime + 10.0
         FireTimeSeries(FireMdot, 22) = 0.0
         FireTimeSeries(FireHRR, 22) = 0
+        Me.InitilizeFireTimeSeries()
         myUnits.SI = True
         SetFireData(FireTimeSeries)
         myUnits.SI = False
     End Sub
     Public Sub PeakFireValues(ByRef PeakHeight As Single, ByRef PeakArea As Single, ByRef PeakHRR As Single, ByRef PeakCO As Single, ByRef PeakC As Single, ByRef PeakHCN As Single, ByRef PeakHCl As Single)
         Dim NumPoints, j As Integer
-        NumPoints = aFireTimeSeries.GetUpperBound(1)
+        NumPoints = Me.DimFireTimeSeries
         PeakHeight = 0.0
         PeakArea = 0.0
         PeakHRR = 0.0
@@ -156,21 +163,28 @@ Public Class Fire
         PeakHCN = 0.0
         PeakHCl = 0.0
         For j = 0 To NumPoints
-            If aFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = aFireTimeSeries(Fire.FireHeight, j)
-            If aFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = aFireTimeSeries(Fire.FireArea, j)
-            If aFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = aFireTimeSeries(Fire.FireHRR, j)
-            If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
-            If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
-            If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
-            If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
+            'If aFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = aFireTimeSeries(Fire.FireHeight, j)
+            'If aFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = aFireTimeSeries(Fire.FireArea, j)
+            'If aFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = aFireTimeSeries(Fire.FireHRR, j)
+            'If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
+            'If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
+            'If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
+            'If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
+            If Me.BaseFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = Me.BaseFireTimeSeries(Fire.FireHeight, j)
+            If Me.BaseFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = Me.BaseFireTimeSeries(Fire.FireArea, j)
+            If Me.BaseFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = Me.BaseFireTimeSeries(Fire.FireHRR, j)
+            If Me.BaseFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = Me.BaseFireTimeSeries(Fire.FireCO, j)
+            If Me.BaseFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = Me.BaseFireTimeSeries(Fire.FireSoot, j)
+            If Me.BaseFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = Me.BaseFireTimeSeries(Fire.FireHCN, j)
+            If Me.BaseFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = Me.BaseFireTimeSeries(Fire.FireHCl, j)
         Next
     End Sub
     ReadOnly Property Peak(ByVal whichItem As Integer) As Single
         Get
             aPeak = -10 ^ 99
             If whichItem >= 0 And whichItem <= 12 Then
-                For ic = 0 To aFireTimeSeries.GetUpperBound(1)
-                    aValue = myUnits.ConvertFireData(whichItem).FromSI(aFireTimeSeries(whichItem, ic))
+                For ic = 0 To Me.DimFireTimeSeries
+                    aValue = myUnits.ConvertFireData(whichItem).FromSI(Me.BaseFireTimeSeries(whichItem, ic))
                     If aValue > aPeak Then aPeak = aValue
                 Next
             End If
@@ -424,16 +438,16 @@ Public Class Fire
     End Property
     Property FireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Single
         Get
-            If i <= 12 And i > 0 And j > 0 And j <= aFireTimeSeries.GetUpperBound(1) Then
-                Return myUnits.ConvertFireData(i).FromSI(aFireTimeSeries(i, j))
+            If i <= Me.NumFireTimeSeries And i > 0 And j > 0 And j <= Me.DimFireTimeSeries Then
+                Return myUnits.ConvertFireData(i).FromSI(Me.BaseFireTimeSeries(i, j))
             Else
                 Return -1.0
             End If
         End Get
         Set(ByVal Value As Single)
-            If i <= 12 And i > 0 And j > 0 And j < aFireTimeSeries.GetUpperBound(1) Then
-                If aFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(Value) Then
-                    aFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(Value)
+            If i <= Me.NumFireTimeSeries And i > 0 And j > 0 And j < Me.DimFireTimeSeries Then
+                If Me.BaseFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(Value) Then
+                    Me.BaseFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(Value)
                     aChanged = True
                 End If
             End If
@@ -467,28 +481,28 @@ Public Class Fire
     End Sub
     Public Sub GetFireData(ByRef FireTimeSeries(,) As Single, ByRef NumDataPoints As Integer)
         Dim i As Integer, j As Integer
-        If aFireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then
-            ReDim FireTimeSeries(aFireTimeSeries.GetUpperBound(0), aFireTimeSeries.GetUpperBound(1))
-            For i = 0 To aFireTimeSeries.GetUpperBound(0)
-                For j = 0 To aFireTimeSeries.GetUpperBound(1)
-                    FireTimeSeries(i, j) = myUnits.ConvertFireData(i).FromSI(aFireTimeSeries(i, j))
+        If FireTimeSeries.GetUpperBound(0) = Me.NumFireTimeSeries Then
+            ReDim FireTimeSeries(Me.NumFireTimeSeries, Me.DimFireTimeSeries)
+            For i = 0 To Me.NumFireTimeSeries
+                For j = 0 To Me.DimFireTimeSeries
+                    FireTimeSeries(i, j) = myUnits.ConvertFireData(i).FromSI(Me.BaseFireTimeSeries(i, j))
                 Next
             Next
-            NumDataPoints = aFireTimeSeries.GetUpperBound(1)
+            NumDataPoints = Me.DimFireTimeSeries
         End If
     End Sub
     Public Sub SetFireData(ByVal FireTimeSeries(,) As Single)
         Dim i As Integer, j As Integer
-        If FireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then
-            If aFireTimeSeries.GetUpperBound(1) <> FireTimeSeries.GetUpperBound(1) Then
-                ReDim aFireTimeSeries(aFireTimeSeries.GetUpperBound(0), FireTimeSeries.GetUpperBound(1))
+        If FireTimeSeries.GetUpperBound(0) = Me.NumFireTimeSeries Then
+            If FireTimeSeries.GetUpperBound(1) <> Me.DimFireTimeSeries Then
+                Me.DimFireTimeSeries = FireTimeSeries.GetUpperBound(1)
                 aChanged = True
             End If
-            For i = 0 To aFireTimeSeries.GetUpperBound(0)
-                For j = 0 To aFireTimeSeries.GetUpperBound(1)
-                    If aFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j)) Then
+            For i = 0 To Me.NumFireTimeSeries
+                For j = 0 To Me.DimFireTimeSeries
+                    If Me.BaseFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j)) Then
                         aChanged = True
-                        aFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j))
+                        Me.BaseFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j))
                     End If
                 Next
             Next
@@ -500,6 +514,146 @@ Public Class Fire
         End Get
         Set(ByVal Value As Boolean)
             aChanged = Value
+        End Set
+    End Property
+    Private Sub InitilizeFireTimeSeries()
+        Dim tmpRamp As Ramp
+        Dim i As Integer
+
+        For i = 1 To 12
+            aRampIDs(i) = RampNames(i) + "_" + (myRamps.Count + 1).ToString
+            tmpRamp = New Ramp
+            tmpRamp.Name = aRampIDs(i)
+            tmpRamp.DimF = 0
+            tmpRamp.X(0) = 0
+            tmpRamp.F(0) = 0
+            tmpRamp.IsT = True
+            If i = Fire.FireArea Then
+                tmpRamp.Type = Ramp.TypeArea
+            ElseIf i = Fire.FireHRR Then
+                tmpRamp.Type = Ramp.TypeHRR
+            Else
+                tmpRamp.Type = Ramp.TypeFrac
+            End If
+            myRamps.Add(tmpRamp)
+        Next
+
+    End Sub
+    Private Property DimFireTimeSeries() As Integer
+        Get
+            Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(1))).DimF
+        End Get
+        Set(ByVal value As Integer)
+            Dim i As Integer
+            For i = 1 To 12
+                myRamps.Item(myRamps.GetRampIndex(aRampIDs(1))).DimF = value
+            Next
+        End Set
+    End Property
+    Private Property BaseFireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Single
+        Get
+            If i < 0 Or i > Me.NumFireTimeSeries Or j < 0 Or j > Me.DimFireTimeSeries Then
+                Return -1
+            ElseIf i = 0 Then
+                Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(1))).X(j)
+            ElseIf i <= 12 Then
+                Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).F(j)
+            End If
+        End Get
+        Set(value As Single)
+            Dim k As Integer
+            If i >= 0 And i <= Me.NumFireTimeSeries And j >= 0 And j <= Me.DimFireTimeSeries Then
+                If i = 0 Then
+                    For k = 1 To Me.NumFireTimeSeries
+                        myRamps.Item(myRamps.GetRampIndex(aRampIDs(k))).X(j) = value
+                    Next
+                Else
+                    myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).F(j) = value
+                End If
+            End If
+
+        End Set
+    End Property
+    Private ReadOnly Property NumFireTimeSeries() As Integer
+        Get
+            Return 12
+        End Get
+    End Property
+    Public Property AreaRampID() As String
+        Get
+            Return aRampIDs(FireArea)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireArea) Then
+                aRampIDs(FireArea) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property CORampID() As String
+        Get
+            Return aRampIDs(FireCO)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireCO) Then
+                aRampIDs(FireCO) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property HClRampID() As String
+        Get
+            Return aRampIDs(FireHCl)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireHCl) Then
+                aRampIDs(FireHCl) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property HCNRampID() As String
+        Get
+            Return aRampIDs(FireHCN)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireHCN) Then
+                aRampIDs(FireHCN) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property HRRRampID() As String
+        Get
+            Return aRampIDs(FireHRR)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireHRR) Then
+                aRampIDs(FireHRR) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property SootRampID() As String
+        Get
+            Return aRampIDs(FireSoot)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireSoot) Then
+                aRampIDs(FireSoot) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property TraceRampID() As String
+        Get
+            Return aRampIDs(FireTS)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireTS) Then
+                aRampIDs(FireTS) = value
+                aChanged = True
+            End If
         End Set
     End Property
     Public ReadOnly Property IsValid(ByVal FireNumber As Integer) As Integer
@@ -520,18 +674,18 @@ Public Class Fire
                 myErrors.Add("Fire " + aName + ". Radiative fraction is less than 0 or greater than 1", ErrorMessages.TypeError)
                 HasErrors += 1
             End If
-            If aFireTimeSeries.GetUpperBound(1) > 0 Then
+            If Me.DimFireTimeSeries > 0 Then
                 Dim FireCurveErrors() As Boolean = {False, False, False, False, False, False, False, False, False, False, False, False, False}
-                For ir = 0 To aFireTimeSeries.GetUpperBound(1)
-                    For ic = 0 To 12
+                For ir = 0 To Me.DimFireTimeSeries
+                    For ic = 0 To Me.NumFireTimeSeries
                         Select Case ic
                             Case FireTime
-                                If aFireTimeSeries(FireTime, ir) < 0.0 Then
+                                If Me.BaseFireTimeSeries(FireTime, ir) < 0.0 Then
                                     FireCurveErrors(FireTime) = True
                                     HasErrors += 1
                                 End If
                             Case FireHRR
-                                If aFireTimeSeries(FireHRR, ir) < 0.0 Or aFireTimeSeries(FireHRR, ir) > MaxHRR Then
+                                If Me.BaseFireTimeSeries(FireHRR, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHRR, ir) > MaxHRR Then
                                     FireCurveErrors(FireHRR) = True
                                     HasErrors += 1
                                 End If
@@ -545,60 +699,60 @@ Public Class Fire
                                 'HasErrors += 1
                                 'End If
                             Case FireMdot
-                                If aFireTimeSeries(FireMdot, ir) < 0.0 Or aFireTimeSeries(FireMdot, ir) > MaxMdot Then
+                                If Me.BaseFireTimeSeries(FireMdot, ir) < 0.0 Or Me.BaseFireTimeSeries(FireMdot, ir) > MaxMdot Then
                                     FireCurveErrors(FireMdot) = True
                                     HasErrors += 1
                                 End If
                             Case FireHeight
-                                If aFireTimeSeries(FireHeight, ir) < 0.0 Or aFireTimeSeries(FireHeight, ir) > CEdit.Compartment.MaxSize Then
+                                If Me.BaseFireTimeSeries(FireHeight, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHeight, ir) > CEdit.Compartment.MaxSize Then
                                     FireCurveErrors(FireHeight) = True
                                     HasErrors += 1
                                 End If
                             Case FireArea
-                                If aFireTimeSeries(FireArea, ir) < MinArea Or aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
-                                    aFireTimeSeries(FireArea, ir) = 0.09
+                                If Me.BaseFireTimeSeries(FireArea, ir) < MinArea Or Me.BaseFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
+                                    Me.BaseFireTimeSeries(FireArea, ir) = 0.09
                                     FireCurveErrors(FireArea) = True
                                     HasErrors += 1
-                                ElseIf aFireTimeSeries(FireArea, ir) = MinArea Then
-                                    aFireTimeSeries(FireArea, ir) = 0.09
+                                ElseIf Me.BaseFireTimeSeries(FireArea, ir) = MinArea Then
+                                    Me.BaseFireTimeSeries(FireArea, ir) = 0.09
                                 End If
                             Case FireCO
-                                If aFireTimeSeries(FireCO, ir) < 0.0 Or aFireTimeSeries(FireCO, ir) > MaxCO Then
+                                If Me.BaseFireTimeSeries(FireCO, ir) < 0.0 Or Me.BaseFireTimeSeries(FireCO, ir) > MaxCO Then
                                     FireCurveErrors(FireCO) = True
                                     HasErrors += 1
                                 End If
                             Case FireSoot
-                                If aFireTimeSeries(FireSoot, ir) < 0.0 Or aFireTimeSeries(FireSoot, ir) > MaxSoot Then
+                                If Me.BaseFireTimeSeries(FireSoot, ir) < 0.0 Or Me.BaseFireTimeSeries(FireSoot, ir) > MaxSoot Then
                                     FireCurveErrors(FireSoot) = True
                                     HasErrors += 1
                                 End If
                             Case FireHC
-                                If aFireTimeSeries(FireHC, ir) < 0.0 Or aFireTimeSeries(FireHC, ir) > MaxHC Then
+                                If Me.BaseFireTimeSeries(FireHC, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHC, ir) > MaxHC Then
                                     FireCurveErrors(FireHC) = True
                                     HasErrors += 1
                                 End If
                             Case FireO2
-                                If aFireTimeSeries(FireO2, ir) < 0.0 Or aFireTimeSeries(FireO2, ir) > MaxO2 Then
+                                If Me.BaseFireTimeSeries(FireO2, ir) < 0.0 Or Me.BaseFireTimeSeries(FireO2, ir) > MaxO2 Then
                                     FireCurveErrors(FireO2) = True
                                     HasErrors += 1
                                 End If
                             Case FireHCN
-                                If aFireTimeSeries(FireHCN, ir) < 0.0 Or aFireTimeSeries(FireHCN, ir) > MaxHCN Then
+                                If Me.BaseFireTimeSeries(FireHCN, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHCN, ir) > MaxHCN Then
                                     FireCurveErrors(FireHCN) = True
                                     HasErrors += 1
                                 End If
                             Case FireHCl
-                                If aFireTimeSeries(FireHCl, ir) < 0.0 Or aFireTimeSeries(FireHCl, ir) > MaxHCl Then
+                                If Me.BaseFireTimeSeries(FireHCl, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHCl, ir) > MaxHCl Then
                                     FireCurveErrors(FireHCl) = True
                                     HasErrors += 1
                                 End If
                             Case FireCt
-                                If aFireTimeSeries(FireCt, ir) < 0.0 Or aFireTimeSeries(FireCt, ir) > MaxCt Then
+                                If Me.BaseFireTimeSeries(FireCt, ir) < 0.0 Or Me.BaseFireTimeSeries(FireCt, ir) > MaxCt Then
                                     FireCurveErrors(FireCt) = True
                                     HasErrors += 1
                                 End If
                             Case FireTS
-                                If aFireTimeSeries(FireTS, ir) < 0.0 Or aFireTimeSeries(FireTS, ir) > maxTS Then
+                                If Me.BaseFireTimeSeries(FireTS, ir) < 0.0 Or Me.BaseFireTimeSeries(FireTS, ir) > MaxTS Then
                                     FireCurveErrors(FireTS) = True
                                     HasErrors += 1
                                 End If
@@ -617,7 +771,7 @@ Public Class Fire
                 If FireCurveErrors(FireHCN) Then myErrors.Add("Fire " + aName + ". One or more HCN yields are less than 0 or greater than " + MaxHCN.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireHCl) Then myErrors.Add("Fire " + aName + ". One or more HCl yields are less than 0 or greater than " + MaxHCl.ToString + ".", ErrorMessages.TypeWarning)
                 If FireCurveErrors(FireCt) Then myErrors.Add("Fire " + aName + ". One or more Ct values are less than 0 or greater than " + MaxCt.ToString + ".", ErrorMessages.TypeWarning)
-                If FireCurveErrors(FireTS) Then myErrors.Add("Fire " + aName + ". One or more trace species (TS) values are less than 0 or greater than " + maxTS.ToString + ".", ErrorMessages.TypeWarning)
+                If FireCurveErrors(FireTS) Then myErrors.Add("Fire " + aName + ". One or more trace species (TS) values are less than 0 or greater than " + MaxTS.ToString + ".", ErrorMessages.TypeWarning)
             End If
             If aCompartment < 0 Or aCompartment > myCompartments.Count - 1 Then
                 myErrors.Add("Fire " + FireNumber.ToString + " is not assigned to an existing Compartment. Select Compartment.", ErrorMessages.TypeFatal)
@@ -695,7 +849,7 @@ Public Class FireCollection
         End If
     End Sub
     Public Sub Remove(ByVal index As Integer)
-        ' make sure that the COmpartment number is valid
+        ' make sure that the Compartment number is valid
         If index > Count - 1 Or index < 0 Then
             System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Fire number not found.")
         Else

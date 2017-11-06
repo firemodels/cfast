@@ -37,4 +37,13 @@ Module Copy
         FromMaterial.GetHCl(Vector1)
         ToMaterial.SetHCl(Vector1)
     End Sub
+    Public Sub RampCopy(ByVal FromRamp As Ramp, ByVal ToRamp As Ramp)
+        'Copies an entire Ramp from one structure to another
+        ToRamp.Name = FromRamp.Name
+        ToRamp.IsT = FromRamp.IsT
+        ToRamp.Type = FromRamp.Type
+        Dim aRampData(2, 0) As Single
+        FromRamp.GetRampData(aRampData)
+        ToRamp.SetRampData(aRampData)
+    End Sub
 End Module

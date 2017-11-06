@@ -50,6 +50,8 @@ Friend Module Data
     Friend TempThermalProperties As New ThermalPropertiesCollection
     Friend Const MaximumThermalProperties As Integer = 150
 
+    Friend myRamps As New RampCollection
+
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)
     Friend dataFileComments As New Collection                       'dead keywords and other comments
     Friend thermalFileComments As New Collection                    'comments in the thermal file
@@ -391,5 +393,17 @@ Friend Module Data
         ThermalProperty
         EmbeddedFire = 1
         ObjectFile
+    End Enum
+
+    Friend Enum LocationNum
+        x = 0
+        y
+        z
+    End Enum
+
+    Friend Enum IgnitionCriteriaNum
+        time
+        temp
+        flux
     End Enum
 End Module

@@ -6,11 +6,13 @@ Public Class CeditMain
     Private About As New About
     Private ViewFile As New ViewFile
     'Private RunSimulation As New RunModel
-    Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
-    CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
+    Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0,
+    CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
     Friend WithEvents Label18 As Label
+    Friend WithEvents TestReadNML As MenuItem
+    Friend WithEvents MenuItem2 As MenuItem
     Friend WithEvents EnvLOI As TextBox
 
 #Region " Windows Form Designer generated code "
@@ -487,6 +489,7 @@ Public Class CeditMain
         Me.MenuShowHelp = New System.Windows.Forms.MenuItem()
         Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem()
         Me.MenuAbout = New System.Windows.Forms.MenuItem()
+        Me.TestReadNML = New System.Windows.Forms.MenuItem()
         Me.TabEnvironment = New System.Windows.Forms.TabPage()
         Me.EnvErrors = New System.Windows.Forms.TextBox()
         Me.EnvTitle = New System.Windows.Forms.TextBox()
@@ -875,6 +878,7 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
+        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1073,7 +1077,7 @@ Public Class CeditMain
         'MenuHelp
         '
         Me.MenuHelp.Index = 2
-        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
+        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout, Me.TestReadNML, Me.MenuItem2})
         Me.MenuHelp.Text = "Help"
         '
         'MenuHelpUpdate
@@ -1095,6 +1099,11 @@ Public Class CeditMain
         '
         Me.MenuAbout.Index = 3
         Me.MenuAbout.Text = "About"
+        '
+        'TestReadNML
+        '
+        Me.TestReadNML.Index = 4
+        Me.TestReadNML.Text = "test read NML"
         '
         'TabEnvironment
         '
@@ -1381,7 +1390,7 @@ Public Class CeditMain
         Me.EnvSmokeviewInterval.Name = "EnvSmokeviewInterval"
         Me.EnvSmokeviewInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSmokeviewInterval.TabIndex = 105
-        Me.EnvSmokeviewInterval.Text = "15 s"
+        Me.EnvSmokeviewInterval.Text = "10 s"
         '
         'Label4
         '
@@ -1398,7 +1407,7 @@ Public Class CeditMain
         Me.EnvSpreadOutInterval.Name = "EnvSpreadOutInterval"
         Me.EnvSpreadOutInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvSpreadOutInterval.TabIndex = 104
-        Me.EnvSpreadOutInterval.Text = "15 s"
+        Me.EnvSpreadOutInterval.Text = "10 s"
         '
         'Label2
         '
@@ -1460,7 +1469,7 @@ Public Class CeditMain
         Me.HVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.HVentSummary.Location = New System.Drawing.Point(157, 30)
         Me.HVentSummary.Name = "HVentSummary"
-        Me.HVentSummary.Rows.Count = 1001
+        Me.HVentSummary.Rows.Count = 2501
         Me.HVentSummary.Rows.DefaultSize = 19
         Me.HVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.HVentSummary.SelectionMode = C1.Win.C1FlexGrid.SelectionModeEnum.Row
@@ -1803,7 +1812,7 @@ Public Class CeditMain
         Me.VVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.VVentSummary.Location = New System.Drawing.Point(278, 25)
         Me.VVentSummary.Name = "VVentSummary"
-        Me.VVentSummary.Rows.Count = 1001
+        Me.VVentSummary.Rows.Count = 2501
         Me.VVentSummary.Rows.DefaultSize = 19
         Me.VVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.VVentSummary.Size = New System.Drawing.Size(421, 154)
@@ -2634,7 +2643,7 @@ Public Class CeditMain
         Me.MVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.MVentSummary.Location = New System.Drawing.Point(53, 25)
         Me.MVentSummary.Name = "MVentSummary"
-        Me.MVentSummary.Rows.Count = 1001
+        Me.MVentSummary.Rows.Count = 2501
         Me.MVentSummary.Rows.DefaultSize = 19
         Me.MVentSummary.Size = New System.Drawing.Size(862, 120)
         Me.MVentSummary.StyleInfo = resources.GetString("MVentSummary.StyleInfo")
@@ -3621,7 +3630,7 @@ Public Class CeditMain
         Me.DetectorSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
         Me.DetectorSummary.Location = New System.Drawing.Point(117, 53)
         Me.DetectorSummary.Name = "DetectorSummary"
-        Me.DetectorSummary.Rows.Count = 1001
+        Me.DetectorSummary.Rows.Count = 401
         Me.DetectorSummary.Rows.DefaultSize = 19
         Me.DetectorSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.DetectorSummary.Size = New System.Drawing.Size(742, 195)
@@ -5043,6 +5052,11 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
+        '
+        'MenuItem2
+        '
+        Me.MenuItem2.Index = 5
+        Me.MenuItem2.Text = "test write NML"
         '
         'CeditMain
         '
@@ -6744,6 +6758,32 @@ Public Class CeditMain
         End Get
     End Property
 
+    Private Sub MenuItem2_Click(sender As Object, e As EventArgs) Handles TestReadNML.Click
+        'test item for reading Name List File
+        Dim FileName As String
+
+        FileName = myEnvironment.InputFilePath + "\" + "TestNML.cfast"
+        Dim NMList As NameListFile
+        NMList = New NameListFile(FileName)
+        FileName = myEnvironment.InputFilePath + "\" + "TestNML_a.csv"
+        Dim filename2 As String = myEnvironment.InputFilePath + "\" + "TestNML_b.csv"
+        NMList.DebugPrint(FileName, filename2)
+        FileName = myEnvironment.InputFilePath + "\" + "TestNML.cfast"
+        InitNew()
+        ReadInputFileNML(FileName)
+
+    End Sub
+
+    Private Sub MenuItem2_Click_1(sender As Object, e As EventArgs) Handles MenuItem2.Click
+        Dim FileName As String = "TestNML.cfast"
+
+        myUnits.SI = True
+        FileName = myEnvironment.InputFilePath + "\" + FileName
+        WriteInputFileNML(FileName)
+        myUnits.SI = False
+
+    End Sub
+
     Private Sub CopyFireData(ByVal aFire As Fire)
         ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
         Dim numPoints As Integer, ir As Integer, ic As Integer
@@ -6945,6 +6985,7 @@ Public Class CeditMain
         myThermalProperties.Clear()
         TempThermalProperties.Clear()
         myErrors.Queue.Clear()
+        myRamps.Clear()
         Do While (dataFileHeader.Count > 0)
             dataFileHeader.Remove(dataFileHeader.Count)
         Loop

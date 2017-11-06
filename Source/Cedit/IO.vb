@@ -3,6 +3,9 @@ Imports System.IO
 Module IO
 #Region "Read Routines"
     Public Sub ReadInputFile(ByVal Filename As String)
+        ReadInputFileCSV(Filename)
+    End Sub
+    Public Sub ReadInputFileCSV(ByVal Filename As String)
         'Read in a *.in file Filename is to include path as well as file name
         Dim csv As New CSVsheet(Filename)
         Dim i As Integer = 1, j As Integer
@@ -38,9 +41,9 @@ Module IO
                     myCompartments.Add(compa)
                     compa.Name = csv.str(i, compaNum.Name)
                     compa.SetSize(csv.num(i, compaNum.Width), csv.num(i, compaNum.Depth), csv.num(i, compaNum.Height))
-                    compa.SetPosition(csv.num(i, compaNum.AbsXPos), csv.num(i, compaNum.AbsYPos), _
+                    compa.SetPosition(csv.num(i, compaNum.AbsXPos), csv.num(i, compaNum.AbsYPos),
                             csv.num(i, compaNum.FlrHeight))
-                    compa.SetMaterial(csv.str(i, compaNum.CeilingMat), csv.str(i, compaNum.WallMat), _
+                    compa.SetMaterial(csv.str(i, compaNum.CeilingMat), csv.str(i, compaNum.WallMat),
                             csv.str(i, compaNum.FloorMat))
                     If csv.num(i, 0) > compaNum.WallMat Then compa.SetGrid(csv.num(i, compaNum.xGrid), csv.num(i, compaNum.yGrid), csv.num(i, compaNum.zGrid))
                     compa.Changed = False
@@ -56,8 +59,8 @@ Module IO
                 If csv.str(i, CFASTlnNum.keyWord) = "TARGET" Then
                     Dim aDetect As New Target
                     aDetect.Type = 0
-                    aDetect.SetPosition(csv.num(i, targetNum.xPosition), csv.num(i, targetNum.yPosition), _
-                        csv.num(i, targetNum.zPosition), csv.num(i, targetNum.xNormal), csv.num(i, targetNum.yNormal), _
+                    aDetect.SetPosition(csv.num(i, targetNum.xPosition), csv.num(i, targetNum.yPosition),
+                        csv.num(i, targetNum.zPosition), csv.num(i, targetNum.xNormal), csv.num(i, targetNum.yNormal),
                         csv.num(i, targetNum.zNormal))
                     Dim type As Integer
                     If csv.str(i, targetNum.equationType) = "CYL" Then
@@ -626,6 +629,1012 @@ Module IO
             End If
             i += 1
         Loop
+
+    End Sub
+    Public Sub ReadInputFileNML(ByVal Filename As String)
+        'Filename is assumed to be the complete path plus name and extenstion
+        Dim NMList As NameListFile
+        NMList = New NameListFile(Filename)
+        ReadInputFileNMLHead(NMList)
+        ReadInputFileNMLTime(NMList)
+        ReadInputFileNMLInit(NMList)
+        ReadInputFileNMLMisc(NMList)
+        ReadInputFileNMLMatl(NMList)
+        ReadInputFileNMLRamp(NMList)
+        ReadInputFileNMLComp(NMList)
+        ReadInputFileNMLDevc(NMList)
+        ReadInputFileNMLFire(NMList)
+        ReadInputFileNMLVent(NMList)
+        ReadInputFileNMLConn(NMList)
+        ReadInputFileNMLISOF(NMList)
+        ReadInputFileNMLSLCF(NMList)
+    End Sub
+    Public Sub ReadInputFileNMLHead(ByVal NMList As NameListFile)
+        Dim i, j As Integer
+        Dim ver As Integer
+        Dim title As String
+
+        ver = 7300
+        title = ""
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "HEAD") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "VERSION") Then
+                        ver = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "TITLE") Then
+                        title = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In HEAD name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+            End If
+        Next
+        myEnvironment.Title = title
+        myEnvironment.Version = ver
+        myEnvironment.Changed = False
+    End Sub
+    Public Sub ReadInputFileNMLTime(ByVal NMList As NameListFile)
+        Dim i, j As Integer
+        Dim print, sim, smoke, ss As Integer
+
+        print = 60
+        sim = 900
+        smoke = 15
+        ss = 15
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "TIME") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "PRINT") Then
+                        print = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SIMULATION") Then
+                        sim = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SMOKEVIEW") Then
+                        smoke = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SPREADSHEET") Then
+                        ss = NMList.ForNMListVarGetNum(i, j, 1)
+                    Else
+                        myErrors.Add("In TIME name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+            End If
+        Next
+        myEnvironment.OutputInterval = print
+        myEnvironment.SimulationTime = sim
+        myEnvironment.SmokeviewInterval = smoke
+        myEnvironment.SpreadsheetInterval = ss
+        myEnvironment.Changed = False
+    End Sub
+    Public Sub ReadInputFileNMLInit(ByVal NMList As NameListFile)
+        Dim i, j As Integer
+        Dim pressure, rh, intemp, extemp As Single
+
+        pressure = 101325
+        rh = 50
+        intemp = 20
+        extemp = 20
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "INIT") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "PRESSURE") Then
+                        pressure = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "RELATIVE_HUMIDITY") Then
+                        rh = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "INTERIOR_TEMPERATURE") Then
+                        intemp = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "EXTERIOR_TEMPERATURE") Then
+                        extemp = NMList.ForNMListVarGetNum(i, j, 1)
+                    Else
+                        myErrors.Add("In INIT name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+            End If
+        Next
+        myEnvironment.IntAmbTemperature = intemp + 273.15
+        myEnvironment.ExtAmbTemperature = extemp + 273.15
+        myEnvironment.IntAmbPressure = pressure
+        myEnvironment.ExtAmbPressure = pressure
+        myEnvironment.IntAmbRH = rh
+        myEnvironment.Changed = False
+    End Sub
+    Public Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile)
+        Dim i, j As Integer
+        Dim adiabatic As Boolean
+        Dim maxts, loxyl As Single
+
+        adiabatic = False
+        maxts = 2
+        loxyl = 0.15
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "MISC") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ADIABATIC") Then
+                        If NMList.ForNMListVarGetStr(i, j, 1) = ".FALSE." Then
+                            adiabatic = False
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
+                            adiabatic = True
+                        Else
+                            myErrors.Add("In MISC name list for ADIABATIC " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MAX_TIME_STEP") Then
+                        maxts = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "LOWER_OXYGEN_LIMIT") Then
+                        loxyl = NMList.ForNMListVarGetNum(i, j, 1)
+                    Else
+                        myErrors.Add("In MISC name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+            End If
+        Next
+
+        myEnvironment.AdiabaticWalls = adiabatic
+        myEnvironment.MaximumTimeStep = maxts
+        myEnvironment.LowerOxygenLimit = loxyl
+        myEnvironment.Changed = False
+    End Sub
+    Public Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile)
+        Dim i, j As Integer
+        Dim conduct, dens, emiss, spech, thick As Single
+        Dim id, matl As String
+        Dim valid As Boolean
+        Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+        Dim iProp As Integer
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "MATL") Then
+                conduct = -1
+                dens = -1
+                emiss = 0.9
+                spech = -1
+                thick = -1
+                id = ""
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "CONDUCTIVITY") Then
+                        conduct = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "DENSITY") Then
+                        dens = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "EMISSIVITY") Then
+                        emiss = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SPECIFIC_HEAT") Then
+                        spech = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "THICKNESS") Then
+                        thick = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MATERIAL") Then
+                        matl = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In MATL name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                valid = True
+                If conduct <= 0 Then valid = False
+                If dens <= 0 Then valid = False
+                If emiss <= 0 Then valid = False
+                If spech <= 0 Then valid = False
+                If thick <= 0 Then valid = False
+                If id = "" Then valid = False
+                If valid Then
+                    If myThermalProperties.Count > 0 Then
+                        iProp = myThermalProperties.GetIndex(id)
+                        If iProp > -1 Then
+                            ' We already have a thermal property with this name.  If it's totally identical, then it's already been added.  If not, they are trying to add a second one with the same name.  We'll allow it but error checking with flag it as an issue.
+                            Dim aProperty As New ThermalProperty
+                            aProperty = myThermalProperties.Item(iProp)
+                            If aProperty.Name = id And aProperty.Conductivity = conduct And aProperty.SpecificHeat = spech And aProperty.Density = dens _
+                                And aProperty.Thickness = thick And aProperty.Emissivity = emiss Then
+                                'logic needs to be reworked
+                            Else
+                                myThermalProperties.Add(New ThermalProperty(id, id, conduct, spech, dens, thick, emiss))
+                                myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                                myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                            End If
+                        End If
+                    Else
+                        myThermalProperties.Add(New ThermalProperty(id, id, conduct, spech, dens, thick, emiss))
+                        myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                        myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                    End If
+                End If
+            End If
+        Next
+        Dim test As Integer = myThermalProperties.Count
+
+    End Sub
+    Public Sub ReadInputFileNMLRamp(ByVal NMList As NameListFile)
+        Const maxnum As Integer = 1000
+        Dim i, j, k As Integer
+        Dim x(1), f(1) As Single
+        Dim max As Integer
+        Dim id, type As String
+        Dim isT, def1, def2, deff As Boolean
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "RAMP") Then
+                type = ""
+                id = ""
+                def1 = False
+                def2 = False
+                deff = False
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "TYPE") Then
+                        type = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 And max <= maxnum Then
+                            ReDim f(max)
+                            For k = 1 To max
+                                f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In RAMP name list for F input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                        deff = True
+                    ElseIf NMList.ForNMListGetVar(i, j) = "T" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 And max <= maxnum Then
+                            ReDim x(max)
+                            For k = 1 To max
+                                x(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In RAMP name list for T input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                        isT = True
+                        If def1 Then
+                            def2 = True
+                        Else
+                            def1 = True
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "Z" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 And max <= maxnum Then
+                            ReDim x(max)
+                            For k = 1 To max
+                                x(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In RAMP name list for Z input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                        isT = False
+                        If def1 Then
+                            def2 = True
+                        Else
+                            def1 = True
+                        End If
+                    Else
+                        myErrors.Add("In RAMP name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                If def2 Then
+                    myErrors.Add("In RAMP name list " + id + " has both t and z defined. Only one can be defined", ErrorMessages.TypeFatal)
+                ElseIf def1 And deff Then
+                    If Ramp.ValidRamp(id, type, x, f) Then
+                        myRamps.Add(New Ramp(id, type, x, f, isT))
+                    Else
+                        myErrors.Add("In RAMP name list " + id + " id not a valid ramp definition", ErrorMessages.TypeFatal)
+                    End If
+                Else
+                    myErrors.Add("In RAMP name list " + id + " id not a valid ramp definition", ErrorMessages.TypeFatal)
+                End If
+            End If
+        Next
+        Dim test As Integer = myRamps.Count
+
+    End Sub
+    Public Sub ReadInputFileNMLComp(ByVal NMList As NameListFile)
+        Dim i, j, k, max As Integer
+        Dim ceilid, wallid, floorid, rampid, id As String
+        Dim depth, height, width As Single
+        Dim shaft, hall, valid As Boolean
+        Dim grid(3) As Integer
+        Dim origin(3) As Single
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "COMP") Then
+                hall = False
+                shaft = False
+                depth = -1
+                width = -1
+                height = -1
+                id = ""
+                ceilid = ""
+                floorid = ""
+                wallid = ""
+                rampid = ""
+                For k = 0 To 2
+                    grid(k) = 50
+                    origin(k) = 0.0
+                Next
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "CEILING_MATL_ID") Then
+                        ceilid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLOOR_MATL_ID") Then
+                        floorid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "WALL_MATL_ID") Then
+                        wallid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "ROOM_AREA_RAMP") Then
+                        rampid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "HALL") Then
+                        If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
+                            hall = True
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".FALSE." Then
+                            hall = False
+                        Else
+                            myErrors.Add("In COMP name list for HALL " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SHAFT") Then
+                        If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
+                            shaft = True
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".FALSE." Then
+                            shaft = False
+                        Else
+                            myErrors.Add("In COMP name list for SHAFT " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DEPTH" Then
+                        depth = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HEIGHT" Then
+                        height = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "WIDTH" Then
+                        width = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "GRID" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 And max <= 3 Then
+                            For k = 1 To max
+                                grid(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In COMP name list for GRID input must be 1 to 3 positive integers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "ORIGIN" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 3 And max <= 3 Then
+                            For k = 1 To max
+                                origin(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In COMP name list for ORIGIN input must be 3 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    Else
+                        myErrors.Add("In COMP name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                valid = True
+                If id = "" Then valid = False
+                If depth <= 0 Then valid = False
+                If width <= 0 Then valid = False
+                If height <= 0 Then valid = False
+                If valid Then
+                    Dim compa As New Compartment
+                    myCompartments.Add(compa)
+                    compa.Name = id
+                    compa.SetSize(width, depth, height)
+                    If myThermalProperties.GetIndex(ceilid) < 0 And ceilid <> "OFF" Then
+                        ceilid = "OFF"
+                        myErrors.Add("In COMP name list " + id + " CEILING_MATL_ID " + ceilid + " is not valid switching ceiling to OFF", ErrorMessages.TypeWarning)
+                    End If
+                    If myThermalProperties.GetIndex(wallid) < 0 And wallid <> "OFF" Then
+                        wallid = "OFF"
+                        myErrors.Add("In COMP name list " + id + " WALL_MATL_ID " + wallid + " is not valid switching wall to OFF", ErrorMessages.TypeWarning)
+                    End If
+                    If myThermalProperties.GetIndex(floorid) < 0 And floorid <> "OFF" Then
+                        floorid = "OFF"
+                        myErrors.Add("In COMP name list " + id + "FLOOR_MATL_ID " + floorid + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
+                    End If
+                    compa.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
+                    compa.SetMaterial(ceilid, wallid, floorid)
+                    If rampid <> "" Then
+                        If myRamps.GetRampIndex(rampid) >= 0 Then
+                            If myRamps.Item(myRamps.GetRampIndex(rampid)).Type = Ramp.TypeArea Then
+                                compa.AreaRampID = rampid
+                            Else
+                                myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not type AREA", ErrorMessages.TypeWarning)
+                            End If
+                        Else
+                            myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not a valid ramp id", ErrorMessages.TypeWarning)
+                        End If
+                    End If
+                Else
+                    myErrors.Add("In COMP name list " + id + " is not fully defined", ErrorMessages.TypeWarning)
+                End If
+            End If
+        Next
+        Dim test As Integer = myCompartments.Count
+
+    End Sub
+    Public Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile)
+        Dim i, j, k, max As Integer
+        Dim compid, matlid, id, type As String
+        Dim tempdepth, rti, setp, sprayd As Single
+        Dim loc(3), norm(3) As Single
+        Dim valid, lvalid As Boolean
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "DEVC") Then
+                tempdepth = 0.5
+                rti = 130
+                setp = -1
+                id = ""
+                type = ""
+                compid = ""
+                matlid = ""
+                For k = 0 To 2
+                    loc(k) = -1
+                    norm(k) = 0
+                Next
+                norm(2) = 1
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "COMP_ID") Then
+                        compid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "MATL_ID") Then
+                        matlid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "TYPE") Then
+                        If NMList.ForNMListVarGetStr(i, j, 1) = "PLATE" Or NMList.ForNMListVarGetStr(i, j, 1) = "CYLINDER" Then
+                            type = NMList.ForNMListVarGetStr(i, j, 1)
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = "SPRINKLER" Then
+                            type = NMList.ForNMListVarGetStr(i, j, 1)
+                            If setp <= 0 Then setp = 74.0
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = "HEAT_DETECTOR" Then
+                            type = NMList.ForNMListVarGetStr(i, j, 1)
+                            If setp <= 0 Then setp = 57.0
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = "SMOKE_DETECTOR" Then
+                            type = NMList.ForNMListVarGetStr(i, j, 1)
+                            If setp <= 0 Then setp = 23.93
+                        Else
+                            myErrors.Add("In DEVC name list for TYPE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value.", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TEMPERATURE_DEPTH" Then
+                        tempdepth = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "RTI" Then
+                        rti = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
+                        setp = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SPRAY_DENSITY" Then
+                        sprayd = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 3 And max <= 3 Then
+                            For k = 1 To max
+                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In DEVC name list for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "NORMAL" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 And max <= 3 Then
+                            For k = 1 To max
+                                norm(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In DEVC name list for NORMAL input must be 3 numbers", ErrorMessages.TypeFatal)
+                        End If
+                    Else
+                        myErrors.Add("In DEVC name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                valid = True
+                If id = "" Then
+                    valid = False
+                    myErrors.Add("DEVC name list is not a valid DEVC because it has no ID", ErrorMessages.TypeFatal)
+                End If
+                If type = "" Then
+                    valid = False
+                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because it has no type", ErrorMessages.TypeFatal)
+                End If
+                If compid = "" Then
+                    valid = False
+                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because it has no COMP_ID", ErrorMessages.TypeFatal)
+                ElseIf myCompartments.GetCompIndex(compid) < 0 Then
+                    valid = False
+                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because COMP_ID " + compid + " does not refernce a valid compartment", ErrorMessages.TypeFatal)
+                End If
+                lvalid = True
+                For k = 0 To 2
+                    If loc(k) <= 0 Then
+                        lvalid = False
+                    End If
+                Next
+                If Not lvalid Then
+                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because at least one of the components of the location has not been set", ErrorMessages.TypeFatal)
+                End If
+                If valid Then
+                    Dim aDetect As New Target
+                    aDetect.Type = 0
+                    aDetect.SetPosition(loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z), norm(LocationNum.x), norm(LocationNum.y), norm(LocationNum.z))
+                    Dim atype As Integer
+                    If type = "CYLINDER" Then
+                        atype = 1
+                    Else ' PDE
+                        atype = 0
+                    End If
+                    aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
+                    aDetect.InternalLocation = tempdepth
+                    aDetect.Name = id
+                    aDetect.Changed = False
+                    myTargets.Add(aDetect)
+                Else
+                    myErrors.Add("In DEVC name list " + id + " is not fully defined", ErrorMessages.TypeFatal)
+                End If
+            End If
+        Next
+        Dim test As Integer = myTargets.Count
+
+    End Sub
+    Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
+        Dim i, j, k, max As Integer
+        Dim arearamp, compid, coramp, hclramp, hrrramp, id, sootramp, traceramp, devcid, hcnramp, ignitcrit As String
+        Dim area, carbon, chlorine, coyield, hclyield, hcnyield, hoc, hrr, hydrogen, nitrogen, oxygen, radfrac As Single
+        Dim setp, sootyield, traceyield As Single
+        Dim loc(3) As Single
+        Dim valid, locval As Boolean
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "FIRE") Then
+                area = 0.3
+                carbon = 1
+                chlorine = 0
+                coyield = -1
+                hclyield = -1
+                hcnyield = -1
+                hoc = 50000
+                hrr = -1
+                hydrogen = 4
+                ignitcrit = "TIME"
+                nitrogen = 0
+                oxygen = 0
+                radfrac = 0.35
+                setp = 0
+                sootyield = -1
+                traceyield = -1
+                id = ""
+                arearamp = ""
+                coramp = ""
+                hclramp = ""
+                hcnramp = ""
+                hrrramp = ""
+                sootramp = ""
+                traceramp = ""
+                devcid = ""
+                compid = ""
+                For k = 0 To 2
+                    loc(k) = -1
+                Next
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "AREA_RAMP_ID" Then
+                        arearamp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
+                        compid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CO_YIELD_RAMP_ID" Then
+                        coramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DEVC_ID" Then
+                        devcid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HCL_YIELD_RAMP_ID" Then
+                        hclramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HCN_YIELD_RAMP_ID" Then
+                        hcnramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HRR_RAMP_ID" Then
+                        hrrramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "IGNITION_CRITERION" Then
+                        ignitcrit = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD_RAMP_ID" Then
+                        sootramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD_RAMP_ID" Then
+                        traceramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "AREA" Then
+                        area = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CARBON" Then
+                        carbon = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CHLORINE" Then
+                        chlorine = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CO_YIELD" Then
+                        coyield = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HCL_YIELD" Then
+                        hclyield = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HCN_YIELD" Then
+                        hcnyield = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HEAT_OF_COMBUSTION" Then
+                        hoc = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HRR" Then
+                        hrr = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HYDROGEN" Then
+                        hydrogen = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "NITROGEN" Then
+                        nitrogen = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "OXYGEN" Then
+                        oxygen = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_FRACTION" Then
+                        radfrac = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
+                        setp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD" Then
+                        sootyield = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD" Then
+                        traceyield = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 3 And max <= 3 Then
+                            For k = 1 To max
+                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In FIRE name list for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    Else
+                        myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                valid = True
+                If id = "" Then
+                    myErrors.Add("In FIRE name list ID parameter must be set", ErrorMessages.TypeFatal)
+                    valid = False
+                End If
+                If hrr >= 0 Then
+                    If myRamps.GetRampIndex(hrrramp) >= 0 Then
+                        myErrors.Add("In FIRE name list " + id + " both HRR and HRR_RAMP_ID are used CFAST will use HRR_RAMP_ID " + hrrramp, ErrorMessages.TypeNothing)
+                    End If
+                ElseIf myRamps.GetRampIndex(hrrramp) < 0 Then
+                    valid = False
+                    myErrors.Add("In FIRE name list either HRR or HRR_RAMP_ID parameters must be set", ErrorMessages.TypeFatal)
+                End If
+                If coyield >= 0 Then
+                    If myRamps.GetRampIndex(coramp) >= 0 Then
+                        myErrors.Add("In FIRE name list " + id + " both CO_YIELD and CO_YEILD_RAMP_ID are used CFAST will use CO_YEILD_RAMP_ID " + coramp, ErrorMessages.TypeNothing)
+                    End If
+                End If
+                If coramp <> "" And myRamps.GetRampIndex(coramp) < 0 Then
+                    valid = False
+                    myErrors.Add("In FIRE name list " + id + " CO_YEILD_RAMP " + coramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                End If
+                If hclyield >= 0 Then
+                    If myRamps.GetRampIndex(hclramp) >= 0 Then
+                        myErrors.Add("In FIRE name list " + id + " both HCL_YIELD and HCL_YEILD_RAMP_ID are used CFAST will use HCL_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
+                    End If
+                End If
+                If hclramp <> "" And myRamps.GetRampIndex(hclramp) < 0 Then
+                    valid = False
+                    myErrors.Add("In FIRE name list " + id + " HCL_YEILD_RAMP " + hclramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                End If
+                If hcnyield >= 0 Then
+                    If myRamps.GetRampIndex(hcnramp) >= 0 Then
+                        myErrors.Add("In FIRE name list " + id + " both HCN_YIELD and HCN_YEILD_RAMP_ID are used CFAST will use HCN_YEILD_RAMP_ID " + hcnramp, ErrorMessages.TypeNothing)
+                    End If
+                End If
+                If hcnramp <> "" And myRamps.GetRampIndex(hcnramp) < 0 Then
+                    valid = False
+                    myErrors.Add("In FIRE name list " + id + " HCN_YEILD_RAMP " + hcnramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                End If
+                If sootyield >= 0 Then
+                    If myRamps.GetRampIndex(sootramp) >= 0 Then
+                        myErrors.Add("In FIRE name list " + id + " both SOOT_YIELD and SOOT_YEILD_RAMP_ID are used CFAST will use SOOT_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
+                    End If
+                End If
+                If sootramp <> "" And myRamps.GetRampIndex(sootramp) < 0 Then
+                    valid = False
+                    myErrors.Add("In FIRE name list " + id + " SOOT_YEILD_RAMP " + sootramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                End If
+                If traceyield >= 0 Then
+                    If myRamps.GetRampIndex(traceramp) >= 0 Then
+                        myErrors.Add("In FIRE name list " + id + " both TRACE_YIELD and TRACE_YEILD_RAMP_ID are used CFAST will use TRACE_YEILD_RAMP_ID " + traceramp, ErrorMessages.TypeNothing)
+                    End If
+                End If
+                If traceramp <> "" And myRamps.GetRampIndex(traceramp) < 0 Then
+                    valid = False
+                    myErrors.Add("In FIRE name list " + id + " TRACE_YEILD_RAMP " + traceramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                End If
+                If compid = "" Then
+                    valid = False
+                    myErrors.Add("In FIRE name list " + id + " COMP_ID parameter must be set", ErrorMessages.TypeFatal)
+                ElseIf myCompartments.GetCompIndex(compid) < 0 Then
+                    valid = False
+                    myErrors.Add("In FIRE name list " + id + " COMP_ID " + compid + " does not reference a valid compartment", ErrorMessages.TypeFatal)
+                End If
+                If ignitcrit <> "" Then
+                    If ignitcrit <> "TIME" And ignitcrit <> "TEMPERATURE" And ignitcrit <> "FLUX" Then
+                        valid = False
+                        myErrors.Add("In FIRE name list " + id + " IGNITION_CRITERION parameter must be TIME, TEMPERATURE, or FLUX", ErrorMessages.TypeFatal)
+                    End If
+                End If
+                If ignitcrit = "TEMPERATURE" Or ignitcrit = "FLUX" Then
+                    If devcid = "" Then
+                        valid = False
+                        myErrors.Add("In FIRE name list " + id + " DEVC_ID must be a valid target", ErrorMessages.TypeFatal)
+                    ElseIf myTargets.GetIndex(devcid) < 0 Then
+                        valid = False
+                        myErrors.Add("In FIRE name list " + id + " DEVC_ID " + devcid + " is not a valid target", ErrorMessages.TypeFatal)
+                    End If
+                End If
+                locval = True
+                For k = 0 To 2
+                    If loc(k) < 0 Then locval = False
+                Next
+                If Not locval Then
+                    valid = False
+                    myErrors.Add("In FIRE name list LOCATIOM parameter must be set with a real triplet >= 0", ErrorMessages.TypeFatal)
+                End If
+                If valid Then
+                    Dim aFireObject As New Fire()
+                    Dim aThermalProperty As New ThermalProperty()
+                    aFireObject.Name = id
+                    aFireObject.ChemicalFormula(formula.C) = carbon
+                    aFireObject.ChemicalFormula(formula.H) = hydrogen
+                    aFireObject.ChemicalFormula(formula.O) = oxygen
+                    aFireObject.ChemicalFormula(formula.N) = nitrogen
+                    aFireObject.ChemicalFormula(formula.Cl) = chlorine
+                    aFireObject.HeatofCombustion = hoc
+
+                    aFireObject.RadiativeFraction = radfrac
+                    aFireObject.SetPosition(myCompartments.GetCompIndex(compid), loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z))
+                    If ignitcrit = "TIME" Then
+                        aFireObject.IgnitionType = IgnitionCriteriaNum.time
+                    ElseIf ignitcrit = "TEMPERATURE" Then
+                        aFireObject.IgnitionType = IgnitionCriteriaNum.temp
+                    ElseIf ignitcrit = "FLUX" Then
+                        aFireObject.IgnitionValue = IgnitionCriteriaNum.flux
+                    End If
+                    If devcid <> "" Then
+                        aFireObject.Target = devcid
+                    End If
+                    aFireObject.Changed = False
+                    myFires.Add(aFireObject)
+                Else
+                    myErrors.Add("In FIRE name list " + id + " is not fully defined", ErrorMessages.TypeFatal)
+                End If
+            End If
+        Next
+        Dim test As Integer = myFires.Count
+    End Sub
+    Public Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
+        Dim i, j, k, max As Integer
+        Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width As Single
+        Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id As String
+        Dim valid As Boolean
+        Dim comp0dx, comp1dx As Integer
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "VENT") Then
+                area = -1
+                bot = -1
+                For k = 0 To 1
+                    compids(k) = ""
+                    orien(k) = "VERTICAL"
+                Next
+                face = ""
+                filtramp = ""
+                flow = -1
+                id = ""
+                For k = 0 To 1
+                    areas(k) = -1
+                    cutoffs(k) = -1
+                    heights(k) = -1
+                    offsets(k) = -1
+                Next
+                openramp = ""
+                shape = ""
+                top = -1
+                type = ""
+                width = -1
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FACE" Then
+                        face = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FILTERING_RAMP_ID" Then
+                        filtramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "OPENING_RAMP_ID" Then
+                        openramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "ORIENTATIONS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                orien(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for COMP_IDS there must be 2 compartment IDs", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SHAPE" Then
+                        shape = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TYPE" Then
+                        type = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "COMP_IDS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                compids(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for COMP_IDS there must be 2 compartment IDs", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "AREA" Then
+                        area = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "BOTTOM" Then
+                        bot = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FLOW" Then
+                        flow = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "OFFSET" Then
+                        offset = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TOP" Then
+                        top = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "WIDTH" Then
+                        width = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "AREAS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                areas(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for AREAS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CUTOFFS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                cutoffs(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for CUTOFFS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HEIGHTS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                heights(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for HEIGHTS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "OFFSETS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                offsets(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for OFFSETS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    Else
+                        myErrors.Add("In VENT name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                valid = True
+                If id = "" Then
+                    valid = False
+                    myErrors.Add("In VENT name list ID must be defined", ErrorMessages.TypeFatal)
+                End If
+                For k = 0 To 1
+                    If myCompartments.GetCompIndex(compids(k)) < 0 And compids(k) <> "OUTSIDE" Then
+                        valid = False
+                        myErrors.Add("In VENT name list " + id + " does not have two valid compartments", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                If type <> "CEILING" And type <> "FLOOR" And type <> "MECHANICAL" And type <> "WALL" Then
+                    valid = False
+                    myErrors.Add("In VENT name list " + id + " TYPE is not set to a valid value", ErrorMessages.TypeFatal)
+                End If
+                If valid Then
+                    If type = "Wall" Then
+                        Dim hvent As New Vent
+                        hvent.VentType = Vent.TypeHVent
+                        If compids(0) = "OUTSIDE" Then
+                            comp0dx = -1
+                        Else
+                            comp0dx = myCompartments.GetCompIndex(compids(0))
+                        End If
+                        If compids(1) = "OUTSIDE" Then
+                            comp1dx = -1
+                        Else
+                            comp1dx = myCompartments.GetCompIndex(compids(1))
+                        End If
+                        hvent.SetVent(comp0dx, comp1dx, width, top, bot)
+                        ' This is the new format that includes trigger by flux or temperature
+                        hvent.Face = face
+                        hvent.Offset = offset
+                    ElseIf type = "MECHANICAL" Then
+                    ElseIf type = "CEILING" Or type = "FLOOR" Then
+                    End If
+                Else
+                    myErrors.Add("In VENT name list " + id + " is not fully defined", ErrorMessages.TypeFatal)
+                End If
+            End If
+        Next
+    End Sub
+    Public Sub ReadInputFileNMLConn(ByVal NMList As NameListFile)
+        Dim i, j, k, max As Integer
+        Dim compid, compids(1), type As String
+        Dim f(1) As Single
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "CONN") Then
+                compid = ""
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
+                        compid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "COMP_IDS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 Then
+                            ReDim compids(max)
+                            For k = 1 To max
+                                compids(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for COMP_IDS there must be at least 1 compartment ID", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 Then
+                            ReDim f(max)
+                            For k = 1 To max
+                                f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for F input must be 1 positive number", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TYPE" Then
+                        type = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In CONN name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+            End If
+        Next
+
+    End Sub
+    Public Sub ReadInputFileNMLISOF(ByVal NMList As NameListFile)
+        Dim i, j As Integer
+        Dim compid As String
+        Dim value As Single
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "ISOF") Then
+                compid = ""
+                value = -1
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
+                        compid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "VALUE" Then
+                        value = NMList.ForNMListVarGetNum(i, j, 1)
+                    Else
+                        myErrors.Add("In ISOF name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+            End If
+        Next
+
+    End Sub
+    Public Sub ReadInputFileNMLSLCF(ByVal NMList As NameListFile)
+        Dim i, j As Integer
+        Dim compid, domain, plane As String
+        Dim pos As Single
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "SLCF") Then
+                compid = ""
+                domain = ""
+                plane = ""
+                pos = -1
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
+                        compid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DOMAIN" Then
+                        domain = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "PLANE" Then
+                        plane = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "POSITION" Then
+                        pos = NMList.ForNMListVarGetNum(i, j, 1)
+                    Else
+                        myErrors.Add("In SLCF name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+            End If
+        Next
 
     End Sub
     Public Sub ReadThermalProperties(ByVal FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
@@ -1459,6 +2468,767 @@ Module IO
         csv.WrtCSVfile(FileName)
         myThermalProperties.FileChanged = False
         'End If
+    End Sub
+    Public Sub WriteInputFileNML(ByVal filename As String)
+        Dim IO As Integer = 1
+        Dim ln As String
+        Dim i, j As Integer
+        Dim aFlag As Boolean
+        Dim aDummy As Single
+        Dim aComp As Compartment
+        Dim aTarg As Target
+        Dim aVent As Vent
+        Dim aFire As Fire
+        Dim aVisual As Visual
+        Dim doneRamps As New RampCollection
+
+        FileOpen(IO, filename, OpenMode.Output, OpenAccess.Write, OpenShare.Shared)
+
+        'Writing HEAD namelist
+        ln = "&HEAD VERSION = " + myEnvironment.Version.ToString + " , "
+        PrintLine(IO, ln)
+        ln = "TITLE = " + "'" + myEnvironment.Title + "' "
+        PrintLine(IO, ln)
+        ln = "/"
+        PrintLine(IO, ln)
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! Scenario Configuration "
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        'Writing TIME namelist
+        ln = "&TIME SIMULATION = " + myEnvironment.SimulationTime.ToString + " , PRINT = " + myEnvironment.OutputInterval.ToString +
+            " , SMOKEVIEW = " + myEnvironment.SmokeviewInterval.ToString + " , SPREADSHEET = " + myEnvironment.SpreadsheetInterval.ToString + " / "
+        PrintLine(IO, ln)
+
+        'Writing INIT namelist
+        aDummy = 293.15
+        If myEnvironment.ExtAmbPressure <> 101325.0 Or myEnvironment.IntAmbRH <> 50.0 Or myEnvironment.IntAmbTemperature <> aDummy _
+            Or myEnvironment.ExtAmbTemperature <> aDummy Then
+            ln = "&INIT "
+            PrintLine(IO, ln)
+            aFlag = True
+        Else
+            aFlag = False
+        End If
+        If myEnvironment.ExtAmbPressure <> 101325.0 Then
+            ln = "PRESSURE = " + myEnvironment.ExtAmbPressure.ToString
+            PrintLine(IO, ln)
+        End If
+        If myEnvironment.IntAmbRH <> 50.0 Then
+            ln = " RELATIVE_HUMIDITY = " + myEnvironment.IntAmbRH.ToString
+            PrintLine(IO, ln)
+        End If
+        aDummy = 293.15
+        If myEnvironment.IntAmbTemperature <> aDummy Then
+            aDummy = 273.15
+            aDummy = myEnvironment.IntAmbTemperature - aDummy
+            ln = " INTERIOR_TEMPERATURE = " + aDummy.ToString
+            PrintLine(IO, ln)
+        End If
+        aDummy = 293.15
+        If myEnvironment.ExtAmbTemperature <> aDummy Then
+            aDummy = 273.15
+            aDummy = myEnvironment.ExtAmbTemperature - aDummy
+            ln = " EXTERIOR_TEMPERATURE = " + aDummy.ToString
+            PrintLine(IO, ln)
+        End If
+        If aFlag Then
+            ln = " / "
+            PrintLine(IO, ln)
+        End If
+
+        'Writing MISC namelist
+        aDummy = 0.15
+        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> aDummy Then
+            ln = "&MISC "
+            PrintLine(IO, ln)
+            aFlag = True
+        Else
+            aFlag = False
+        End If
+        If myEnvironment.AdiabaticWalls <> False Then
+            ln = " ADIABATIC = .TRUE. "
+            PrintLine(IO, ln)
+        End If
+        If myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0 Then
+            ln = " MAX_TIME_STEP = " + myEnvironment.MaximumTimeStep.ToString
+            PrintLine(IO, ln)
+        End If
+        aDummy = 0.15
+        If myEnvironment.LowerOxygenLimit <> aDummy Then
+            ln = " LOWER_OXYGEN_LIMIT = " + myEnvironment.LowerOxygenLimit.ToString
+            PrintLine(IO, ln)
+        End If
+        If aFlag Then
+            ln = " / "
+            PrintLine(IO, ln)
+        End If
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! Material Properties "
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        'Writing MATL namelist
+        For i = 0 To myThermalProperties.Count - 1
+            ln = "&MATL"
+            PrintLine(IO, ln)
+            ln = " ID = '" + myThermalProperties.Item(i).ShortName + "' , "
+            PrintLine(IO, ln)
+            If myThermalProperties.Item(i).Name <> "" Then
+                If myThermalProperties.Item(i).Name.IndexOf("'") > 0 Then
+                    ln = " MATERIAL = """ + myThermalProperties.Item(i).Name + """ , "
+                Else
+                    ln = " MATERIAL = '" + myThermalProperties.Item(i).Name + "' , "
+                End If
+                PrintLine(IO, ln)
+            End If
+            ln = " CONDUCTIVITY = " + myThermalProperties.Item(i).Conductivity.ToString + " , DENSITY = " + myThermalProperties.Item(i).Density.ToString + " , "
+            PrintLine(IO, ln)
+            ln = " SPECIFIC_HEAT = " + (myThermalProperties.Item(i).SpecificHeat / 1000.0).ToString + " , THICKNESS = " + myThermalProperties.Item(i).Thickness.ToString
+            PrintLine(IO, ln)
+            aDummy = 0.9
+            If myThermalProperties.Item(i).Emissivity <> aDummy Then
+                ln = " EMISSIVITY = " + myThermalProperties.Item(i).Emissivity.ToString
+                PrintLine(IO, ln)
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! Comparments "
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        ' Writing COMP namelist
+
+        For i = 0 To myCompartments.Count - 1
+            ln = "&COMP "
+            PrintLine(IO, ln)
+            aComp = myCompartments.Item(i)
+            ln = " ID = '" + aComp.Name + "' "
+            PrintLine(IO, ln)
+            ln = " DEPTH = " + aComp.RoomDepth.ToString + " , HEIGHT = " + aComp.RoomHeight.ToString + " , WIDTH = " + aComp.RoomWidth.ToString
+            PrintLine(IO, ln)
+            If aComp.CeilingMaterial <> "" Then
+                If aComp.CeilingMaterial = "Off" Then
+                    ln = " CEILING_MATL_ID = 'OFF' "
+                Else
+                    ln = " CEILING_MATL_ID = '" + aComp.CeilingMaterial + "' "
+                End If
+                PrintLine(IO, ln)
+            End If
+            If aComp.WallMaterial <> "" Then
+                If aComp.WallMaterial = "Off" Then
+                    ln = " WALL_MATL_ID = 'OFF' "
+                Else
+                    ln = " WALL_MATL_ID = '" + aComp.WallMaterial + "' "
+                End If
+                PrintLine(IO, ln)
+            End If
+            If aComp.FloorMaterial <> "" Then
+                If aComp.FloorMaterial = "Off" Then
+                    ln = " FLOOR_MATL_ID = 'OFF' "
+                Else
+                    ln = " FLOOR_MATL_ID = '" + aComp.FloorMaterial + "' "
+                End If
+                PrintLine(IO, ln)
+            End If
+            If aComp.RoomOriginX <> 0 Or aComp.RoomOriginY <> 0 Or aComp.RoomOriginZ <> 0 Then
+                ln = " ORIGIN = " + aComp.RoomOriginX.ToString + " , " + aComp.RoomOriginY.ToString + " , " + aComp.RoomOriginZ.ToString
+                PrintLine(IO, ln)
+            End If
+            If aComp.xGrid <> 50 Or aComp.yGrid <> 50 Or aComp.zGrid <> 50 Then
+                ln = " GRID = " + aComp.xGrid.ToString + " , " + aComp.yGrid.ToString + " , " + aComp.zGrid.ToString
+                PrintLine(IO, ln)
+            End If
+            If aComp.Hall Then
+                ln = " HALL = .TRUE. "
+                PrintLine(IO, ln)
+            ElseIf aComp.Shaft Then
+                ln = " SHAFT = .TRUE. "
+                PrintLine(IO, ln)
+            End If
+            If aComp.AreaRampID <> "" Then
+                ln = " ROOM_AREA_RAMP = '" + aComp.AreaRampID + "' "
+                PrintLine(IO, ln)
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+            If aComp.AreaRampID <> "" Then
+                WriteRamp(IO, aComp.AreaRampID, doneRamps, 1)
+            End If
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! DEVC"
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        For i = 0 To myTargets.Count - 1
+            aTarg = myTargets.Item(i)
+            ln = "&DEVC "
+            PrintLine(IO, ln)
+            ln = " ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "' "
+            PrintLine(IO, ln)
+            ln = " LOCATION = " + aTarg.XPosition.ToString + " , " + aTarg.YPosition.ToString + " , " + aTarg.ZPosition.ToString
+            PrintLine(IO, ln)
+            If aTarg.SolutionType = Target.ThermallyThick Then
+                ln = " TYPE = 'PLATE' "
+            Else
+                ln = " TYPE = 'CYLINDER' "
+            End If
+            PrintLine(IO, ln)
+            ln = " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
+            PrintLine(IO, ln)
+            ln = ""
+            If aTarg.XNormal <> 0 Or aTarg.YNormal <> 0 Or aTarg.ZNormal <> 1 Then
+                ln = " NORMAL = " + aTarg.XNormal.ToString + " , " + aTarg.YNormal.ToString + " , " + aTarg.ZNormal.ToString
+            End If
+            If aTarg.InternalLocation <> 0.5 Then
+                If ln <> "" Then ln = ln + " ,"
+                ln = ln + " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
+            End If
+            If ln <> "" Then
+                PrintLine(IO, ln)
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+        Next
+
+        For i = 0 To myDetectors.Count - 1
+            aTarg = myDetectors.Item(i)
+            ln = "&DEVC "
+            PrintLine(IO, ln)
+            If aTarg.Name = "" Then
+                If aTarg.DetectorType = Target.TypeHeatDetector Then
+                    aTarg.Name = "HeatDetector_" + (i + 1).ToString
+                ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
+                    aTarg.Name = "SmokeDetector_" + (i + 1).ToString
+                ElseIf aTarg.DetectorType = Target.TypeSprinkler Then
+                    aTarg.Name = "Sprinkler_" + (i + 1).ToString
+                End If
+            End If
+            ln = " ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "' "
+            PrintLine(IO, ln)
+            ln = " LOCATION = " + aTarg.XPosition.ToString + " , " + aTarg.YPosition.ToString + " , " + aTarg.ZPosition.ToString
+            PrintLine(IO, ln)
+            If aTarg.DetectorType = Target.TypeHeatDetector Then
+                ln = " TYPE = 'HEAT_DETECTOR' "
+                If aTarg.ActivationTemperature <> Target.HeatDetectorActiviationTemperature Then
+                    aDummy = 273.15
+                    aDummy = aTarg.ActivationTemperature - aDummy
+                    ln = ln + " , SETPOINT = " + aDummy.ToString
+                End If
+                If aTarg.RTI <> 130 Then
+                    ln = ln + " , RTI = " + aTarg.RTI.ToString
+                End If
+            ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
+                ln = " TYPE = 'SMOKE_DETECTOR' "
+                If aTarg.ActivationObscuration <> Target.SmokeDetectorActivationObscuration Then
+                    ln = ln + " , SETPOINT = " + aTarg.ActivationObscuration.ToString
+                End If
+            Else
+                ln = " TYPE = 'SPRINKLER' "
+                If aTarg.ActivationTemperature <> Target.SprinklerActivationTemperature Then
+                    aDummy = 273.15
+                    aDummy = aTarg.ActivationTemperature - aDummy
+                    ln = ln + " , SETPOINT = " + aDummy.ToString
+                End If
+                If aTarg.RTI <> 130 Then
+                    ln = ln + " , RTI = " + aTarg.RTI.ToString
+                End If
+                ln = ln + " , SPRAY_DENSITY = " + aTarg.SprayDensity.ToString
+            End If
+            PrintLine(IO, ln)
+            ln = " / "
+            PrintLine(IO, ln)
+
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! VENTS TYPE = WALL"
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        ' Writing VENT namelist for WALL vents
+        For i = 0 To myHVents.Count - 1
+            ln = "&VENT TYPE = 'WALL' , "
+            PrintLine(IO, ln)
+            aVent = myHVents.Item(i)
+            If aVent.Name = "" Then
+                aVent.Name = "WallVent_" + (i + 1).ToString
+            End If
+            ln = " ID = '" + aVent.Name + "' "
+            PrintLine(IO, ln)
+            If aVent.FirstCompartment < 0 Then
+                ln = " COMP_IDS = 'OUTSIDE' , '" _
+                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+            ElseIf aVent.SecondCompartment < 0 Then
+                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' , 'OUTSIDE' "
+            Else
+                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' , '" _
+                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+            End If
+            PrintLine(IO, ln)
+            ln = " TOP = " + aVent.Soffit.ToString + " , BOTTOM = " + aVent.Sill.ToString + " , WIDTH = " + aVent.Width.ToString
+            PrintLine(IO, ln)
+            If aVent.Face > 0 Then
+                If aVent.Face = 1 Then
+                    ln = " FACE = 'FRONT'"
+                ElseIf aVent.Face = 2 Then
+                    ln = " FACE = 'RIGHT'"
+                ElseIf aVent.Face = 3 Then
+                    ln = " FACE = 'REAR'"
+                ElseIf aVent.Face = 4 Then
+                    ln = " FACE = 'LEFT'"
+                End If
+                PrintLine(IO, ln)
+                If aVent.Offset > 0.0 Then
+                    ln = " OFFSET = " + aVent.Offset.ToString
+                    PrintLine(IO, ln)
+                End If
+            End If
+            If aVent.OpenType = 0 Then
+                If aVent.RampID <> "" Then
+                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            ElseIf aVent.OpenType = 1 Then
+                aDummy = 273.15
+                aDummy = aVent.OpenValue - aDummy
+                ln = " CRITERION = 'TEMPERATURE' , SETPOINT = " + aDummy.ToString + " , DEVC_ID = '" + aVent.Target + "' "
+                PrintLine(IO, ln)
+                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
+                PrintLine(IO, ln)
+            ElseIf aVent.OpenType = 2 Then
+                ln = " CRITERION = 'FLUX' , SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " , DEVC_ID = '" + aVent.Target + "' "
+                PrintLine(IO, ln)
+                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
+                PrintLine(IO, ln)
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+            If aVent.RampID <> "" Then
+                WriteRamp(IO, aVent.RampID, doneRamps, 1)
+            End If
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! VENTS TYPE = CEILING/FLOOR "
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        'Writing VENT namelist for CEILING/FLOOR vents
+        For i = 0 To myVVents.Count - 1
+            aVent = myVVents.Item(i)
+            If aVent.FirstCompartment < 0 Then
+                ln = "&VENT TYPE = 'CEILING' , "
+            Else
+                ln = "&VENT TYPE = 'FLOOR' , "
+            End If
+            PrintLine(IO, ln)
+            If aVent.Name = "" Then
+                aVent.Name = "CeilFloorVent_" + (i + 1).ToString
+            End If
+            ln = " ID = '" + aVent.Name + "' "
+            PrintLine(IO, ln)
+            If aVent.FirstCompartment < 0 Then
+                ln = " COMP_IDS = 'OUTSIDE' , '" _
+                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+            ElseIf aVent.SecondCompartment < 0 Then
+                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' , 'OUTSIDE' "
+            Else
+                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' , '" _
+                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+            End If
+            PrintLine(IO, ln)
+            If aVent.Shape = 1 Then
+                ln = " AREA = " + aVent.Area.ToString + " , SHAPE = 'ROUND' "
+            Else
+                ln = " AREA = " + aVent.Area.ToString + " , SHAPE = 'SQUARE' "
+            End If
+            PrintLine(IO, ln)
+            If aVent.OffsetX <> 0 Or aVent.OffsetY <> 0 Then
+                ln = " OFFSETS = " + aVent.OffsetX.ToString + " , " + aVent.OffsetY.ToString
+                PrintLine(IO, ln)
+            End If
+            If aVent.OpenType = 0 Then
+                If aVent.RampID <> "" Then
+                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            ElseIf aVent.OpenType = 1 Then
+                aDummy = 273.15
+                aDummy = aVent.OpenValue - aDummy
+                ln = " CRITERION = 'TEMPERATURE' , SETPOINT = " + aDummy.ToString + " , DEVC_ID = '" + aVent.Target + "' "
+                PrintLine(IO, ln)
+                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
+                PrintLine(IO, ln)
+            ElseIf aVent.OpenType = 2 Then
+                ln = " CRITERION = 'FLUX' , SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " , DEVC_ID = '" + aVent.Target + "' "
+                PrintLine(IO, ln)
+                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
+                PrintLine(IO, ln)
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+            If aVent.RampID <> "" Then
+                WriteRamp(IO, aVent.RampID, doneRamps, 1)
+            End If
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! VENTS TYPE = MECHANICAL"
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        For i = 0 To myMVents.Count - 1
+            aVent = myMVents.Item(i)
+            ln = "&VENT TYPE = 'MECHANICAL' , "
+            PrintLine(IO, ln)
+            If aVent.Name = "" Then
+                aVent.Name = "MechanicalVent_" + (i + 1).ToString
+            End If
+            ln = " ID = '" + aVent.Name + "' "
+            PrintLine(IO, ln)
+            If aVent.FirstCompartment < 0 Then
+                ln = " COMP_IDS = 'OUTSIDE' , '" _
+                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+            ElseIf aVent.SecondCompartment < 0 Then
+                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' , 'OUTSIDE' "
+            Else
+                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' , '" _
+                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+            End If
+            PrintLine(IO, ln)
+            ln = " AREAS = " + aVent.FirstArea.ToString + " , " + aVent.SecondArea.ToString +
+                " , HEIGHTS = " + aVent.FirstCenterHeight.ToString + " , " + aVent.SecondCenterHeight.ToString
+            PrintLine(IO, ln)
+            If aVent.FirstOrientation = 1 Then
+                If aVent.SecondOrientation = 2 Then
+                    ln = " ORIENTATIONS = 'VERTICAL' , 'HORIZONTAL' "
+                    PrintLine(IO, ln)
+                End If
+            Else
+                If aVent.SecondOrientation = 2 Then
+                    ln = " ORIENTATIONS = 'HORIZONAL' , 'HORIZANTAL' "
+                    PrintLine(IO, ln)
+                Else
+                    ln = " ORIENTATIONS = 'HORIZONAL' , 'VERTICAL' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            ln = " FLOW = " + aVent.FlowRate.ToString + " , CUTOFFS = " + aVent.BeginFlowDropoff.ToString + " , " + aVent.ZeroFlow.ToString
+            PrintLine(IO, ln)
+            ln = " OFFSETS = " + aVent.OffsetX.ToString + " , " + aVent.OffsetY.ToString
+            PrintLine(IO, ln)
+            If aVent.OpenType = 0 Then
+                If aVent.RampID <> "" Then
+                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            ElseIf aVent.OpenType = 1 Then
+                aDummy = 273.15
+                aDummy = aVent.OpenValue - aDummy
+                ln = " CRITERION = 'TEMPERATURE' , SETPOINT = " + aDummy.ToString + " , DEVC_ID = '" + aVent.Target + "' "
+                PrintLine(IO, ln)
+                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
+                PrintLine(IO, ln)
+            ElseIf aVent.OpenType = 2 Then
+                ln = " CRITERION = 'FLUX' , SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " , DEVC_ID = '" + aVent.Target + "' "
+                PrintLine(IO, ln)
+                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
+                PrintLine(IO, ln)
+            End If
+            If aVent.FilterTime > 0 And aVent.FilterEfficiency > 0 Then
+                ln = " FILTER_TIME = " + aVent.FilterTime.ToString + " , FILTER_EFFICIENCY = " + aVent.FilterEfficiency.ToString
+                PrintLine(IO, ln)
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+            If aVent.RampID <> "" Then
+                WriteRamp(IO, aVent.RampID, doneRamps, 1)
+            End If
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! FIRE "
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        For i = 0 To myFires.Count - 1
+            aFire = myFires.Item(i)
+            ln = "&FIRE"
+            PrintLine(IO, ln)
+            ln = " ID = '" + aFire.Name + "' COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' "
+            PrintLine(IO, ln)
+            ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString + " , " + aFire.ZPosition.ToString
+            PrintLine(IO, ln)
+            ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
+                " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +
+                " , OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
+            PrintLine(IO, ln)
+            If aFire.HeatofCombustion <> 50000000 Then
+                ln = " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
+                PrintLine(IO, ln)
+            End If
+            If aFire.RadiativeFraction <> 0.35 Then
+                ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
+                PrintLine(IO, ln)
+            End If
+            If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
+                If aFire.IgnitionType > 0 Then
+                    ln = " IGNITION_CRITERION = 'TIME' , SETPOINT = " + aFire.IgnitionValue.ToString
+                    PrintLine(IO, ln)
+                End If
+            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then
+                aDummy = 273.15
+                aDummy = aFire.IgnitionValue - aDummy
+                ln = " IGNITION_CRITERION = 'TEMPERATURE' , DEVC_ID = '" + aFire.Target + "' , SETPOINT = " + aDummy.ToString
+                PrintLine(IO, ln)
+            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyFlux Then
+                ln = " IGNITION_CRITERION = 'FLUX' , DEVC_ID = '" + aFire.Target + "' , SETPOINT = " + (aFire.IgnitionValue / 1000.0).ToString
+                PrintLine(IO, ln)
+            End If
+            If myRamps.GetRampIndex(aFire.AreaRampID) >= 0 Then
+                If myRamps.Item(myRamps.GetRampIndex(aFire.AreaRampID)).DimF > 0 Then
+                    ln = " AREA_RAMP_ID = '" + aFire.AreaRampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            If myRamps.GetRampIndex(aFire.CORampID) >= 0 Then
+                If myRamps.Item(myRamps.GetRampIndex(aFire.CORampID)).DimF > 0 Then
+                    ln = " CO_YIELD_RAMP_ID = '" + aFire.CORampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            If myRamps.GetRampIndex(aFire.HClRampID) >= 0 Then
+                If myRamps.Item(myRamps.GetRampIndex(aFire.HClRampID)).DimF > 0 Then
+                    ln = " HCL_YIELD_RAMP_ID = '" + aFire.HClRampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            If myRamps.GetRampIndex(aFire.HCNRampID) >= 0 Then
+                If myRamps.Item(myRamps.GetRampIndex(aFire.HCNRampID)).DimF > 0 Then
+                    ln = " HCN_YIELD_RAMP_ID = '" + aFire.HCNRampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            If myRamps.GetRampIndex(aFire.HRRRampID) >= 0 Then
+                If myRamps.Item(myRamps.GetRampIndex(aFire.HRRRampID)).DimF > 0 Then
+                    ln = " HRR_RAMP_ID = '" + aFire.HRRRampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            If myRamps.GetRampIndex(aFire.SootRampID) >= 0 Then
+                If myRamps.Item(myRamps.GetRampIndex(aFire.SootRampID)).DimF > 0 Then
+                    ln = " SOOT_YIELD_RAMP_ID = '" + aFire.SootRampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            If myRamps.GetRampIndex(aFire.TraceRampID) >= 0 Then
+                If myRamps.Item(myRamps.GetRampIndex(aFire.TraceRampID)).DimF > 0 Then
+                    ln = " TRACE_YIELD_RAMP_ID = '" + aFire.TraceRampID + "' "
+                    PrintLine(IO, ln)
+                End If
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+            If myRamps.GetRampIndex(aFire.AreaRampID) >= 0 Then
+                WriteRamp(IO, aFire.AreaRampID, doneRamps, 0)
+            End If
+            If myRamps.GetRampIndex(aFire.CORampID) >= 0 Then
+                WriteRamp(IO, aFire.CORampID, doneRamps, 0)
+            End If
+            If myRamps.GetRampIndex(aFire.HClRampID) >= 0 Then
+                WriteRamp(IO, aFire.HClRampID, doneRamps, 0)
+            End If
+            If myRamps.GetRampIndex(aFire.HCNRampID) >= 0 Then
+                WriteRamp(IO, aFire.HCNRampID, doneRamps, 0)
+            End If
+            If myRamps.GetRampIndex(aFire.HRRRampID) >= 0 Then
+                WriteRamp(IO, aFire.HRRRampID, doneRamps, 0)
+            End If
+            If myRamps.GetRampIndex(aFire.SootRampID) >= 0 Then
+                WriteRamp(IO, aFire.SootRampID, doneRamps, 0)
+            End If
+            If myRamps.GetRampIndex(aFire.TraceRampID) >= 0 Then
+                WriteRamp(IO, aFire.TraceRampID, doneRamps, 0)
+            End If
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! CONN "
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        Dim fracln As String
+        For i = 0 To myCompartments.Count - 1
+            If myHHeats.FromConnections(i) > 0 Then
+                ln = "&CONN "
+                PrintLine(IO, ln)
+                ln = " TYPE = 'WALL' "
+                PrintLine(IO, ln)
+                ln = " COMP_ID = '" + myCompartments.Item(i).Name + "' "
+                PrintLine(IO, ln)
+                fracln = " F = "
+                ln = " COMP_IDS = "
+                For j = 0 To myHHeats.Count - 1
+                    aVent = myHHeats.Item(j)
+                    If aVent.FirstCompartment = i Then
+                        If aVent.SecondCompartment = -1 Then
+                            ln = ln + " 'OUTSIDE'"
+                        Else
+                            ln = ln + "  '" + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+                        End If
+                        fracln = fracln + aVent.InitialOpening.ToString + "  "
+                    End If
+                Next
+                PrintLine(IO, ln)
+                PrintLine(IO, fracln)
+                ln = " / "
+                PrintLine(IO, ln)
+
+            End If
+        Next
+
+        For i = 0 To myVHeats.Count - 1
+            ln = "&CONN "
+            PrintLine(IO, ln)
+            aVent = myVHeats.Item(i)
+            If aVent.FirstCompartment = -1 Then
+                ln = " TYPE = 'CEILING' "
+            Else
+                ln = " TYPE = 'FLOOR' "
+            End If
+            PrintLine(IO, ln)
+            If aVent.FirstCompartment = -1 Then
+                ln = " COMP_ID = 'OUTSIDE' "
+            Else
+                ln = " COMP_ID = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' "
+            End If
+            PrintLine(IO, ln)
+            If aVent.SecondCompartment = -1 Then
+                ln = " COMP_IDS = 'OUTSIDE' "
+            Else
+                ln = " COMP_IDS = '" + myCompartments.Item(aVent.SecondCompartment).Name + "' "
+            End If
+            PrintLine(IO, ln)
+            ln = " / "
+            PrintLine(IO, ln)
+        Next
+
+        ln = "!! "
+        PrintLine(IO, ln)
+        ln = "!! ISOF and SLCF "
+        PrintLine(IO, ln)
+        ln = "!! "
+        PrintLine(IO, ln)
+
+        For i = 0 To myVisuals.Count - 1
+            aVisual = myVisuals.Item(i)
+            If aVisual.Type = Visual.IsoSurface Then
+                ln = "&ISOF "
+                PrintLine(IO, ln)
+                aDummy = 273.15
+                aDummy = aVisual.Value - aDummy
+                ln = " VALUE = " + aDummy.ToString
+                PrintLine(IO, ln)
+                ln = " / "
+                PrintLine(IO, ln)
+            Else
+                ln = "&SLCF "
+                PrintLine(IO, ln)
+                If aVisual.Compartment > -1 Then
+                    ln = " COMP_ID = '" + myCompartments.Item(aVisual.Compartment).Name + "' "
+                    PrintLine(IO, ln)
+                End If
+                If aVisual.Type = Visual.TwoD Then
+                    ln = " DOMAIN = '2-D' "
+                    PrintLine(IO, ln)
+                    ln = " POSITION = " + aVisual.Value.ToString + " , PLANE = '" + VisualAxisNames.Substring((aVisual.Axis) * 6, 1) + "' "
+                    PrintLine(IO, ln)
+                Else
+                    ln = " DOMAIN = '3-D' "
+                    PrintLine(IO, ln)
+                End If
+                    ln = " / "
+                    PrintLine(IO, ln)
+                End If
+        Next
+
+        doneRamps.Clear()
+        FileClose(IO)
+
+    End Sub
+    Public Sub WriteRamp(ByVal IO As Integer, ByVal name As String, ByRef doneRamps As RampCollection, ByVal StartValue As Integer)
+        Dim ln As String
+        Dim aRamp As Ramp
+        Dim idx As Integer
+        Dim aDenom As Single
+
+        If myRamps.GetRampIndex(name) >= 0 And doneRamps.GetRampIndex(name) < 0 Then
+            aRamp = myRamps.Item(myRamps.GetRampIndex(name))
+            doneRamps.Add(aRamp)
+            ln = "&RAMP "
+            PrintLine(IO, ln)
+            ln = " ID = '" + aRamp.Name + "' "
+            PrintLine(IO, ln)
+            ln = " TYPE = '" + aRamp.Type + "' "
+            If aRamp.Type = "HRR" Then
+                aDenom = 1000.0
+            Else
+                aDenom = 1.0
+            End If
+            PrintLine(IO, ln)
+            If aRamp.DimF >= StartValue Then
+                ln = " F = " + (aRamp.F(StartValue) / aDenom).ToString
+                If aRamp.DimF > StartValue Then
+                    For idx = StartValue + 1 To aRamp.DimF
+                        ln = ln + " , " + (aRamp.F(idx) / aDenom).ToString
+                    Next
+                End If
+                PrintLine(IO, ln)
+            End If
+            If aRamp.DimX >= StartValue Then
+                If aRamp.IsT Then
+                    ln = " T = " + aRamp.X(StartValue).ToString
+                Else
+                    ln = " Z = " + aRamp.X(StartValue).ToString
+                End If
+                If aRamp.DimX > StartValue Then
+                    For idx = StartValue + 1 To aRamp.DimX
+                        ln = ln + " , " + aRamp.X(idx).ToString
+                    Next
+                End If
+                PrintLine(IO, ln)
+            End If
+            ln = " / "
+            PrintLine(IO, ln)
+        End If
+
     End Sub
 #End Region
 #Region "Support Routines"

@@ -92,8 +92,8 @@
     end do head_loop
 
     if (.not.headflag) then
-        write (*, '(/, "***Error: Inputs for &HEAD are required.")')
-        write (iofill, '(/, "***Error: Inputs for &HEAD are required.")')
+        write (*, '(/, "***Error: &HEAD inputs are required.")')
+        write (iofill, '(/, "***Error: &HEAD inputs are required.")')
         stop
     end if
 
@@ -159,8 +159,8 @@
     end do time_loop
 
     if (.not.timeflag) then
-        write (*, '(/, "***Error: Inputs for &TIME are required.")')
-        write (iofill, '(/, "***Error: Inputs for &TIME are required.")')
+        write (*, '(/, "***Error: &TIME inputs are required.")')
+        write (iofill, '(/, "***Error: &TIME inputs are required.")')
         stop
     end if
 
@@ -281,7 +281,7 @@
         end if
         read(lu,MISC,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a)') '***Error in &MISC: Invalid specification inputs.'
+            write(iofill, '(a)') '***Error in &MISC: Invalid specification for inputs.'
             stop
         end if
     end do misc_loop
@@ -446,8 +446,8 @@
     end if
 
     if (.not.compflag) then
-        write (*, '(/, "***Error: Inputs for &COMP are required.")')
-        write (iofill, '(/, "***Error: Inputs for &COMP are required.")')
+        write (*, '(/, "***Error: &COMP inputs are required.")')
+        write (iofill, '(/, "***Error: &COMP inputs are required.")')
         stop
     end if
 
@@ -481,8 +481,8 @@
                 end do ramp_search
 
                 if (kk == nramps+1) then
-                    write (*,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP ID--- ', room_area_ramp, ', not match.'
-                    write (iofill,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP ID--- ', room_area_ramp, ', not match.'
+                    write (*,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP_ID: ', room_area_ramp, ', not found.'
+                    write (iofill,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP_ID: ', room_area_ramp, ', not found.'
                     stop
                 end if
             end if
@@ -647,8 +647,8 @@
                 end do searching
 
                 if (.not. idcheck) then
-                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID--- ', id, ', not match. Check target, ', counter1
-                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID--- ', id, ', not match. Check target, ', counter1
+                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check target, ', counter1
+                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check target, ', counter1
                     stop
                 end if
 
@@ -719,8 +719,8 @@
                 end do searching_2
 
                 if (.not. idcheck) then
-                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID--- ', id, ', not match. Check detector, ', counter2
-                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID--- ', id, ', not match. Check detector, ', counter2
+                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check detector, ', counter2
+                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check detector, ', counter2
                     stop
                 end if
 
@@ -1518,8 +1518,8 @@
                         end if
                     end if
                 else
-                    write (*,*) 'Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                    write (iofill,*) 'Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
+                    write (*,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
+                    write (iofill,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
                     stop
                 end if
 
@@ -1719,8 +1719,8 @@
                 else if (trim(shape) == 'SQUARE') then
                     ventptr%shape = 2
                 else
-                    write (*,'(a,a)') '***Error: SHAPE cannot be recognized. ', shape
-                    write (iofill,'(a,a)') '***Error: SHAPE cannot be recognized. ', shape
+                    write (*,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
+                    write (iofill,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
                 end if
 
                 if (trim(criterion) /='NULL') then
@@ -1900,8 +1900,8 @@
                 end do searching
 
                 if (ifrom == -101) then
-                    write (*,'(a,a)') '***Error: COMP_ID not match. ', comp_id
-                    write (iofill,'(a,a)') '***Error: COMP_ID not match. ', comp_id
+                    write (*,'(a,a)') '***Error: COMP_ID not found. ', comp_id
+                    write (iofill,'(a,a)') '***Error: COMP_ID not found. ', comp_id
                     stop
                 end if
 
@@ -1962,8 +1962,8 @@
                 end do searching_3
 
                 if (i1 == -101) then
-                    write (*,'(a,a)') '***Error: COMP_ID not match. ', comp_id
-                    write (iofill,'(a,a)') '***Error: COMP_ID not match. ', comp_id
+                    write (*,'(a,a)') '***Error: COMP_ID not found. ', comp_id
+                    write (iofill,'(a,a)') '***Error: COMP_ID not found. ', comp_id
                     stop
                 end if
 
@@ -1980,8 +1980,8 @@
                 end do searching_4
 
                 if (i2 == -101) then
-                    write (*,'(a,a)') '***Error: COMP_ID not match. ', comp_ids(1)
-                    write (iofill,'(a,a)') '***Error: COMP_ID not match. ', comp_ids(1)
+                    write (*,'(a,a)') '***Error: COMP_ID not found. ', comp_ids(1)
+                    write (iofill,'(a,a)') '***Error: COMP_ID not found. ', comp_ids(1)
                     stop
                 end if
 

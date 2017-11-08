@@ -215,6 +215,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="NameListFile.vb" />
+    <Compile Include="Ramp.vb" />
     <Compile Include="RecentFiles.vb">
       <SubType>Code</SubType>
     </Compile>

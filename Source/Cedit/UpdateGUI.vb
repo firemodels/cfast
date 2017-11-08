@@ -1071,7 +1071,7 @@ Public Class UpdateGUI
         Dim aFireData(12, 0) As Single, numPoints As Integer, iSelectedColumn As Integer
         Dim x() As Single, y() As Single, j As Integer
         aFire = myFires(index)
-        MainWin.FirePlot.Clear()
+        MainWin.HRRPlot.Clear()
         aFire.GetFireData(aFireData, numPoints)
         ReDim x(numPoints), y(numPoints)
         iSelectedColumn = MainWin.FireDataSS.ColSel
@@ -1081,9 +1081,9 @@ Public Class UpdateGUI
             y(j) = aFireData(iSelectedColumn, j)
         Next
         Dim lp As New NPlot.LinePlot(y, x)
-        MainWin.FirePlot.Add(lp)
-        MainWin.FirePlot.Title = aFire.Name + ": " + MainWin.FireDataSS(0, iSelectedColumn).ToString.Replace(Chr(10), " ")
-        MainWin.FirePlot.Refresh()
+        MainWin.HRRPlot.Add(lp)
+        MainWin.HRRPlot.Title = aFire.Name + ": " + MainWin.FireDataSS(0, iSelectedColumn).ToString.Replace(Chr(10), " ")
+        MainWin.HRRPlot.Refresh()
     End Sub
 #End Region
 #Region "Support Routines"

@@ -191,6 +191,18 @@ Public Class Fire
             Return aPeak
         End Get
     End Property
+    ReadOnly Property MaxHClYield() As Single
+        Get
+            aPeak = (1.00794 + 35.453) / 1000.0 / aMolarMass * aChemicalFormula(formula.Cl)
+            MaxHClYield = aPeak
+        End Get
+    End Property
+    ReadOnly Property MaxHCNYield() As Single
+        Get
+            aPeak = (1.00794 + 12.0107 + 14.01) / 1000.0 / aMolarMass * aChemicalFormula(formula.N)
+            MaxHCNYield = aPeak
+        End Get
+    End Property
     Property Compartment() As Integer
         Get
             Return aCompartment

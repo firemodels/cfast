@@ -490,6 +490,7 @@ Public Class CeditMain
         Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem()
         Me.MenuAbout = New System.Windows.Forms.MenuItem()
         Me.TestReadNML = New System.Windows.Forms.MenuItem()
+        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
         Me.TabEnvironment = New System.Windows.Forms.TabPage()
         Me.EnvErrors = New System.Windows.Forms.TextBox()
         Me.EnvTitle = New System.Windows.Forms.TextBox()
@@ -878,7 +879,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1104,6 +1104,11 @@ Public Class CeditMain
         '
         Me.TestReadNML.Index = 4
         Me.TestReadNML.Text = "test read NML"
+        '
+        'MenuItem2
+        '
+        Me.MenuItem2.Index = 5
+        Me.MenuItem2.Text = "test write NML"
         '
         'TabEnvironment
         '
@@ -5052,11 +5057,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
-        '
-        'MenuItem2
-        '
-        Me.MenuItem2.Index = 5
-        Me.MenuItem2.Text = "test write NML"
         '
         'CeditMain
         '

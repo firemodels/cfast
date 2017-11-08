@@ -413,7 +413,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0.,0.        \\ \hline
 {\ct OPENING\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of flow for mechanical vents and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct ORIENTATIONS}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List Doublet 		  & Section \ref{info:RAMP}      &                             & {\tiny VERTICAL,VERTICAL}                \\ \hline
+{\ct ORIENTATIONS}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List Doublet 		  & Section \ref{info:RAMP}      &                             & {\small VERTICAL,VERTICAL}                \\ \hline
 {\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
@@ -633,7 +633,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 
 \noindent Example:
 \begin{lstlisting}
-&ISOF COMP_ID = 'COMP_ID', VALUE = 100. /
+&ISOF COMP_ID = 'COMP_1', VALUE = 100. /
 \end{lstlisting}
 
 

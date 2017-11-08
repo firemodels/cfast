@@ -3,7 +3,18 @@ Imports System.IO
 Module IO
 #Region "Read Routines"
     Public Sub ReadInputFile(ByVal Filename As String)
-        ReadInputFileCSV(Filename)
+        Dim IO As Integer = 1
+        Dim str As String
+
+        FileOpen(IO, Filename, OpenMode.Input, OpenAccess.Read, OpenShare.Shared)
+        str = LineInput(IO)
+        If str.Substring(0, 1) = "&" Then
+            FileClose(IO)
+            ReadInputFileNML(Filename)
+        ElseIf str.Substring(0, 5) = "VERSN" Then
+            FileClose(IO)
+            ReadInputFileCSV(Filename)
+        End If
     End Sub
     Public Sub ReadInputFileCSV(ByVal Filename As String)
         'Read in a *.in file Filename is to include path as well as file name
@@ -787,6 +798,7 @@ Module IO
                 spech = -1
                 thick = -1
                 id = ""
+                matl = ""
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "CONDUCTIVITY") Then
                         conduct = NMList.ForNMListVarGetNum(i, j, 1)
@@ -816,21 +828,25 @@ Module IO
                 If valid Then
                     If myThermalProperties.Count > 0 Then
                         iProp = myThermalProperties.GetIndex(id)
-                        If iProp > -1 Then
+                        If iProp >= 0 Then
                             ' We already have a thermal property with this name.  If it's totally identical, then it's already been added.  If not, they are trying to add a second one with the same name.  We'll allow it but error checking with flag it as an issue.
                             Dim aProperty As New ThermalProperty
                             aProperty = myThermalProperties.Item(iProp)
-                            If aProperty.Name = id And aProperty.Conductivity = conduct And aProperty.SpecificHeat = spech And aProperty.Density = dens _
+                            If aProperty.Name = matl And aProperty.Conductivity = conduct And aProperty.SpecificHeat = spech And aProperty.Density = dens _
                                 And aProperty.Thickness = thick And aProperty.Emissivity = emiss Then
                                 'logic needs to be reworked
                             Else
-                                myThermalProperties.Add(New ThermalProperty(id, id, conduct, spech, dens, thick, emiss))
+                                myThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
                                 myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
                                 myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
                             End If
+                        Else
+                            myThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
+                            myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                            myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
                         End If
                     Else
-                        myThermalProperties.Add(New ThermalProperty(id, id, conduct, spech, dens, thick, emiss))
+                        myThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
                         myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
                         myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
                     End If
@@ -863,7 +879,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 And max <= maxnum Then
-                            ReDim f(max)
+                            ReDim f(max - 1)
                             For k = 1 To max
                                 f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
@@ -874,7 +890,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "T" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 And max <= maxnum Then
-                            ReDim x(max)
+                            ReDim x(max - 1)
                             For k = 1 To max
                                 x(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
@@ -890,7 +906,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "Z" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 And max <= maxnum Then
-                            ReDim x(max)
+                            ReDim x(max - 1)
                             For k = 1 To max
                                 x(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
@@ -911,6 +927,11 @@ Module IO
                     myErrors.Add("In RAMP name list " + id + " has both t and z defined. Only one can be defined", ErrorMessages.TypeFatal)
                 ElseIf def1 And deff Then
                     If Ramp.ValidRamp(id, type, x, f) Then
+                        If type = "HRR" Then
+                            For k = 0 To f.GetUpperBound(0)
+                                f(k) = f(k) * 1000.0
+                            Next
+                        End If
                         myRamps.Add(New Ramp(id, type, x, f, isT))
                     Else
                         myErrors.Add("In RAMP name list " + id + " id not a valid ramp definition", ErrorMessages.TypeFatal)
@@ -1051,6 +1072,7 @@ Module IO
         Dim tempdepth, rti, setp, sprayd As Single
         Dim loc(3), norm(3) As Single
         Dim valid, lvalid As Boolean
+        Dim aTempOffset As Single = 273.15
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DEVC") Then
@@ -1145,21 +1167,44 @@ Module IO
                 End If
                 If valid Then
                     Dim aDetect As New Target
-                    aDetect.Type = 0
-                    aDetect.SetPosition(loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z), norm(LocationNum.x), norm(LocationNum.y), norm(LocationNum.z))
-                    Dim atype As Integer
-                    If type = "CYLINDER" Then
-                        atype = 1
-                    Else ' PDE
-                        atype = 0
+                    If type = "PLATE" Or type = "CYLINDER" Then
+                        aDetect.Type = Target.TypeTarget
+                        aDetect.SetPosition(loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z), norm(LocationNum.x), norm(LocationNum.y), norm(LocationNum.z))
+                        Dim atype As Integer
+                        If type = "CYLINDER" Then
+                            atype = Target.Cylindrical
+                        Else ' PDE
+                            atype = Target.ThermallyThick
+                        End If
+                        aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
+                        aDetect.InternalLocation = tempdepth
+                        aDetect.Name = id
+                        aDetect.Changed = False
+                        myTargets.Add(aDetect)
+                    Else
+                        aDetect.Type = Target.TypeDetector
+                        aDetect.Name = id
+                        aDetect.Compartment = myCompartments.GetCompIndex(compid)
+                        If type = "HEAT_DETECTOR" Then
+                            aDetect.DetectorType = Target.TypeHeatDetector
+                            aDetect.RTI = rti
+                            aDetect.ActivationTemperature = setp + aTempOffset
+                            aDetect.SprayDensity = 0.0
+                        ElseIf type = "SMOKE_DETECTOR" Then
+                            aDetect.DetectorType = Target.TypeSmokeDetector
+                            aDetect.ActivationObscuration = setp
+                        Else
+                            aDetect.DetectorType = Target.TypeSprinkler
+                            aDetect.RTI = rti
+                            aDetect.ActivationTemperature = setp + aTempOffset
+                            aDetect.SprayDensity = sprayd
+                        End If
+                        aDetect.SetPosition(loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z), norm(LocationNum.x), norm(LocationNum.y), norm(LocationNum.z))
+                        aDetect.Changed = False
+                        myDetectors.Add(aDetect)
                     End If
-                    aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
-                    aDetect.InternalLocation = tempdepth
-                    aDetect.Name = id
-                    aDetect.Changed = False
-                    myTargets.Add(aDetect)
                 Else
-                    myErrors.Add("In DEVC name list " + id + " is not fully defined", ErrorMessages.TypeFatal)
+                        myErrors.Add("In DEVC name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
@@ -1268,7 +1313,7 @@ Module IO
                             myErrors.Add("In FIRE name list for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     Else
-                        myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 valid = True
@@ -1278,68 +1323,68 @@ Module IO
                 End If
                 If hrr >= 0 Then
                     If myRamps.GetRampIndex(hrrramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both HRR and HRR_RAMP_ID are used CFAST will use HRR_RAMP_ID " + hrrramp, ErrorMessages.TypeNothing)
+                        myErrors.Add("In FIRE name list " + id + " both HRR And HRR_RAMP_ID are used CFAST will use HRR_RAMP_ID " + hrrramp, ErrorMessages.TypeNothing)
                     End If
                 ElseIf myRamps.GetRampIndex(hrrramp) < 0 Then
                     valid = False
-                    myErrors.Add("In FIRE name list either HRR or HRR_RAMP_ID parameters must be set", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list either HRR Or HRR_RAMP_ID parameters must be set", ErrorMessages.TypeFatal)
                 End If
                 If coyield >= 0 Then
                     If myRamps.GetRampIndex(coramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both CO_YIELD and CO_YEILD_RAMP_ID are used CFAST will use CO_YEILD_RAMP_ID " + coramp, ErrorMessages.TypeNothing)
+                        myErrors.Add("In FIRE name list " + id + " both CO_YIELD And CO_YEILD_RAMP_ID are used CFAST will use CO_YEILD_RAMP_ID " + coramp, ErrorMessages.TypeNothing)
                     End If
                 End If
                 If coramp <> "" And myRamps.GetRampIndex(coramp) < 0 Then
                     valid = False
-                    myErrors.Add("In FIRE name list " + id + " CO_YEILD_RAMP " + coramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list " + id + " CO_YEILD_RAMP " + coramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
                 End If
                 If hclyield >= 0 Then
                     If myRamps.GetRampIndex(hclramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both HCL_YIELD and HCL_YEILD_RAMP_ID are used CFAST will use HCL_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
+                        myErrors.Add("In FIRE name list " + id + " both HCL_YIELD And HCL_YEILD_RAMP_ID are used CFAST will use HCL_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
                     End If
                 End If
                 If hclramp <> "" And myRamps.GetRampIndex(hclramp) < 0 Then
                     valid = False
-                    myErrors.Add("In FIRE name list " + id + " HCL_YEILD_RAMP " + hclramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list " + id + " HCL_YEILD_RAMP " + hclramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
                 End If
                 If hcnyield >= 0 Then
                     If myRamps.GetRampIndex(hcnramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both HCN_YIELD and HCN_YEILD_RAMP_ID are used CFAST will use HCN_YEILD_RAMP_ID " + hcnramp, ErrorMessages.TypeNothing)
+                        myErrors.Add("In FIRE name list " + id + " both HCN_YIELD And HCN_YEILD_RAMP_ID are used CFAST will use HCN_YEILD_RAMP_ID " + hcnramp, ErrorMessages.TypeNothing)
                     End If
                 End If
                 If hcnramp <> "" And myRamps.GetRampIndex(hcnramp) < 0 Then
                     valid = False
-                    myErrors.Add("In FIRE name list " + id + " HCN_YEILD_RAMP " + hcnramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list " + id + " HCN_YEILD_RAMP " + hcnramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
                 End If
                 If sootyield >= 0 Then
                     If myRamps.GetRampIndex(sootramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both SOOT_YIELD and SOOT_YEILD_RAMP_ID are used CFAST will use SOOT_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
+                        myErrors.Add("In FIRE name list " + id + " both SOOT_YIELD And SOOT_YEILD_RAMP_ID are used CFAST will use SOOT_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
                     End If
                 End If
                 If sootramp <> "" And myRamps.GetRampIndex(sootramp) < 0 Then
                     valid = False
-                    myErrors.Add("In FIRE name list " + id + " SOOT_YEILD_RAMP " + sootramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list " + id + " SOOT_YEILD_RAMP " + sootramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
                 End If
                 If traceyield >= 0 Then
                     If myRamps.GetRampIndex(traceramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both TRACE_YIELD and TRACE_YEILD_RAMP_ID are used CFAST will use TRACE_YEILD_RAMP_ID " + traceramp, ErrorMessages.TypeNothing)
+                        myErrors.Add("In FIRE name list " + id + " both TRACE_YIELD And TRACE_YEILD_RAMP_ID are used CFAST will use TRACE_YEILD_RAMP_ID " + traceramp, ErrorMessages.TypeNothing)
                     End If
                 End If
                 If traceramp <> "" And myRamps.GetRampIndex(traceramp) < 0 Then
                     valid = False
-                    myErrors.Add("In FIRE name list " + id + " TRACE_YEILD_RAMP " + traceramp + " does not reference a valid ramp", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list " + id + " TRACE_YEILD_RAMP " + traceramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
                 End If
                 If compid = "" Then
                     valid = False
                     myErrors.Add("In FIRE name list " + id + " COMP_ID parameter must be set", ErrorMessages.TypeFatal)
                 ElseIf myCompartments.GetCompIndex(compid) < 0 Then
                     valid = False
-                    myErrors.Add("In FIRE name list " + id + " COMP_ID " + compid + " does not reference a valid compartment", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list " + id + " COMP_ID " + compid + " does Not reference a valid compartment", ErrorMessages.TypeFatal)
                 End If
                 If ignitcrit <> "" Then
                     If ignitcrit <> "TIME" And ignitcrit <> "TEMPERATURE" And ignitcrit <> "FLUX" Then
                         valid = False
-                        myErrors.Add("In FIRE name list " + id + " IGNITION_CRITERION parameter must be TIME, TEMPERATURE, or FLUX", ErrorMessages.TypeFatal)
+                        myErrors.Add("In FIRE name list " + id + " IGNITION_CRITERION parameter must be TIME, TEMPERATURE, Or FLUX", ErrorMessages.TypeFatal)
                     End If
                 End If
                 If ignitcrit = "TEMPERATURE" Or ignitcrit = "FLUX" Then
@@ -1348,7 +1393,7 @@ Module IO
                         myErrors.Add("In FIRE name list " + id + " DEVC_ID must be a valid target", ErrorMessages.TypeFatal)
                     ElseIf myTargets.GetIndex(devcid) < 0 Then
                         valid = False
-                        myErrors.Add("In FIRE name list " + id + " DEVC_ID " + devcid + " is not a valid target", ErrorMessages.TypeFatal)
+                        myErrors.Add("In FIRE name list " + id + " DEVC_ID " + devcid + " Is Not a valid target", ErrorMessages.TypeFatal)
                     End If
                 End If
                 locval = True
@@ -1368,24 +1413,47 @@ Module IO
                     aFireObject.ChemicalFormula(formula.O) = oxygen
                     aFireObject.ChemicalFormula(formula.N) = nitrogen
                     aFireObject.ChemicalFormula(formula.Cl) = chlorine
-                    aFireObject.HeatofCombustion = hoc
-
+                    aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
                     aFireObject.SetPosition(myCompartments.GetCompIndex(compid), loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z))
                     If ignitcrit = "TIME" Then
                         aFireObject.IgnitionType = IgnitionCriteriaNum.time
+                        aFireObject.IgnitionValue = setp
                     ElseIf ignitcrit = "TEMPERATURE" Then
                         aFireObject.IgnitionType = IgnitionCriteriaNum.temp
+                        aFireObject.IgnitionValue = setp
                     ElseIf ignitcrit = "FLUX" Then
                         aFireObject.IgnitionValue = IgnitionCriteriaNum.flux
+                        aFireObject.IgnitionValue = setp
                     End If
                     If devcid <> "" Then
                         aFireObject.Target = devcid
                     End If
+                    If arearamp <> "" Then
+                        aFireObject.AreaRampID = arearamp
+                    End If
+                    If coramp <> "" Then
+                        aFireObject.CORampID = coramp
+                    End If
+                    If hclramp <> "" Then
+                        aFireObject.HClRampID = hclramp
+                    End If
+                    If hcnramp <> "" Then
+                        aFireObject.HCNRampID = hcnramp
+                    End If
+                    If hrrramp <> "" Then
+                        aFireObject.HRRRampID = hrrramp
+                    End If
+                    If sootramp <> "" Then
+                        aFireObject.SootRampID = sootramp
+                    End If
+                    If traceramp <> "" Then
+                        aFireObject.TraceRampID = traceramp
+                    End If
                     aFireObject.Changed = False
                     myFires.Add(aFireObject)
                 Else
-                    myErrors.Add("In FIRE name list " + id + " is not fully defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
@@ -1393,8 +1461,8 @@ Module IO
     End Sub
     Public Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
-        Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width As Single
-        Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id As String
+        Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width, setp, prefrac, postfrac, filttime, filteff As Single
+        Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id, crit, devcid As String
         Dim valid As Boolean
         Dim comp0dx, comp1dx As Integer
 
@@ -1402,12 +1470,19 @@ Module IO
             If (NMList.GetNMListID(i) = "VENT") Then
                 area = -1
                 bot = -1
+                crit = "TIME"
+                devcid = ""
+                setp = 0.0
+                prefrac = 1
+                postfrac = 1
                 For k = 0 To 1
                     compids(k) = ""
                     orien(k) = "VERTICAL"
                 Next
                 face = ""
                 filtramp = ""
+                filttime = 0
+                filteff = 0.0
                 flow = -1
                 id = ""
                 For k = 0 To 1
@@ -1424,6 +1499,10 @@ Module IO
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CRITERION" Then
+                        crit = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DEVC_ID" Then
+                        devcid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FACE" Then
                         face = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FILTERING_RAMP_ID" Then
@@ -1456,10 +1535,20 @@ Module IO
                         area = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "BOTTOM" Then
                         bot = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FILTER_TIME" Then
+                        filttime = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FILTER_EFFICIENCY" Then
+                        filteff = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FLOW" Then
                         flow = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "OFFSET" Then
                         offset = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "PRE_FRACTION" Then
+                        prefrac = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "POST_FRACTION" Then
+                        postfrac = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
+                        setp = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TOP" Then
                         top = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "WIDTH" Then
@@ -1501,7 +1590,7 @@ Module IO
                             myErrors.Add("In VENT name list for OFFSETS input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     Else
-                        myErrors.Add("In VENT name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In VENT name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 valid = True
@@ -1512,17 +1601,18 @@ Module IO
                 For k = 0 To 1
                     If myCompartments.GetCompIndex(compids(k)) < 0 And compids(k) <> "OUTSIDE" Then
                         valid = False
-                        myErrors.Add("In VENT name list " + id + " does not have two valid compartments", ErrorMessages.TypeFatal)
+                        myErrors.Add("In VENT name list " + id + " does Not have two valid compartments", ErrorMessages.TypeFatal)
                     End If
                 Next
                 If type <> "CEILING" And type <> "FLOOR" And type <> "MECHANICAL" And type <> "WALL" Then
                     valid = False
-                    myErrors.Add("In VENT name list " + id + " TYPE is not set to a valid value", ErrorMessages.TypeFatal)
+                    myErrors.Add("In VENT name list " + id + " TYPE Is Not set to a valid value", ErrorMessages.TypeFatal)
                 End If
                 If valid Then
-                    If type = "Wall" Then
-                        Dim hvent As New Vent
-                        hvent.VentType = Vent.TypeHVent
+                    Dim aVent As New Vent
+                    If type = "WALL" Then
+                        aVent.VentType = Vent.TypeHVent
+                        aVent.Name = id
                         If compids(0) = "OUTSIDE" Then
                             comp0dx = -1
                         Else
@@ -1533,34 +1623,150 @@ Module IO
                         Else
                             comp1dx = myCompartments.GetCompIndex(compids(1))
                         End If
-                        hvent.SetVent(comp0dx, comp1dx, width, top, bot)
+                        aVent.SetVent(comp0dx, comp1dx, width, top, bot)
                         ' This is the new format that includes trigger by flux or temperature
-                        hvent.Face = face
-                        hvent.Offset = offset
+                        If face = "FRONT" Then
+                            aVent.Face = 1
+                        ElseIf face = "RIGHT" Then
+                            aVent.Face = 2
+                        ElseIf face = "REAR" Then
+                            aVent.Face = 3
+                        ElseIf face = "LEFT" Then
+                            aVent.Face = 4
+                        End If
+                        aVent.Offset = offset
+                        If crit = "TIME" Then
+                            aVent.RampID = openramp
+                            aVent.OpenType = Vent.OpenbyTime
+                        ElseIf crit = "FLUX" Then
+                            aVent.Target = devcid
+                            aVent.OpenType = Vent.OpenbyFlux
+                            aVent.OpenValue = setp
+                            aVent.InitialOpening = prefrac
+                            aVent.FinalOpening = postfrac
+                        ElseIf crit = "TEMPERATURE" Then
+                            aVent.Target = devcid
+                            aVent.OpenType = Vent.OpenbyTemperature
+                            aVent.OpenValue = setp
+                            aVent.InitialOpening = prefrac
+                            aVent.FinalOpening = postfrac
+                        End If
+                        aVent.Changed = False
+                        myHVents.Add(aVent)
                     ElseIf type = "MECHANICAL" Then
+                        aVent.VentType = Vent.TypeMVent
+                        aVent.Name = id
+                        If compids(0) = "OUTSIDE" Then
+                            aVent.FirstCompartment = -1
+                        Else
+                            aVent.FirstCompartment = myCompartments.GetCompIndex(compids(0))
+                        End If
+                        If compids(1) = "OUTSIDE" Then
+                            aVent.SecondCompartment = -1
+                        Else
+                            aVent.SecondCompartment = myCompartments.GetCompIndex(compids(1))
+                        End If
+                        aVent.FirstArea = areas(0)
+                        aVent.SecondArea = areas(1)
+                        aVent.FirstCenterHeight = heights(0)
+                        aVent.SecondCenterHeight = heights(1)
+                        If orien(0) = "HORIZONTAL" Then
+                            aVent.FirstOrientation = 2
+                        Else
+                            aVent.FirstOrientation = 1
+                        End If
+                        If orien(0) = "HORIZONTAL" Then
+                            aVent.SecondOrientation = 2
+                        Else
+                            aVent.SecondOrientation = 1
+                        End If
+                        aVent.OffsetX = offsets(0)
+                        aVent.OffsetY = offsets(1)
+                        aVent.BeginFlowDropoff = cutoffs(0)
+                        aVent.ZeroFlow = cutoffs(1)
+                        aVent.FilterTime = filttime
+                        aVent.FilterEfficiency = filteff
+                        aVent.FlowRate = flow
+                        If crit = "TIME" Then
+                            aVent.RampID = openramp
+                            aVent.OpenType = Vent.OpenbyTime
+                        ElseIf crit = "FLUX" Then
+                            aVent.Target = devcid
+                            aVent.OpenType = Vent.OpenbyFlux
+                            aVent.OpenValue = setp
+                            aVent.InitialOpening = prefrac
+                            aVent.FinalOpening = postfrac
+                        ElseIf crit = "TEMPERATURE" Then
+                            aVent.Target = devcid
+                            aVent.OpenType = Vent.OpenbyTemperature
+                            aVent.OpenValue = setp
+                            aVent.InitialOpening = prefrac
+                            aVent.FinalOpening = postfrac
+                        End If
+                        aVent.Changed = False
+                        myMVents.Add(aVent)
                     ElseIf type = "CEILING" Or type = "FLOOR" Then
+                        aVent.VentType = Vent.TypeVVent
+                        aVent.Name = id
+                        aVent.Area = area
+                        If compids(0) = "OUTSIDE" Then
+                            aVent.FirstCompartment = -1
+                        Else
+                            aVent.FirstCompartment = myCompartments.GetCompIndex(compids(0))
+                        End If
+                        If compids(1) = "OUTSIDE" Then
+                            aVent.SecondCompartment = -1
+                        Else
+                            aVent.SecondCompartment = myCompartments.GetCompIndex(compids(1))
+                        End If
+                        If shape = "ROUND" Then
+                            aVent.Shape = 1
+                        Else
+                            aVent.Shape = 2
+                        End If
+                        aVent.OffsetX = offsets(0)
+                        aVent.OffsetY = offsets(1)
+                        If crit = "TIME" Then
+                            aVent.RampID = openramp
+                            aVent.OpenType = Vent.OpenbyTime
+                        ElseIf crit = "FLUX" Then
+                            aVent.Target = devcid
+                            aVent.OpenType = Vent.OpenbyFlux
+                            aVent.OpenValue = setp
+                            aVent.InitialOpening = prefrac
+                            aVent.FinalOpening = postfrac
+                        ElseIf crit = "TEMPERATURE" Then
+                            aVent.Target = devcid
+                            aVent.OpenType = Vent.OpenbyTemperature
+                            aVent.OpenValue = setp
+                            aVent.InitialOpening = prefrac
+                            aVent.FinalOpening = postfrac
+                        End If
+                        aVent.Changed = False
+                        myVVents.Add(aVent)
                     End If
                 Else
-                    myErrors.Add("In VENT name list " + id + " is not fully defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In VENT name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
     End Sub
     Public Sub ReadInputFileNMLConn(ByVal NMList As NameListFile)
-        Dim i, j, k, max As Integer
+        Dim i, j, k, max, cFirst, cSecond As Integer
         Dim compid, compids(1), type As String
         Dim f(1) As Single
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "CONN") Then
                 compid = ""
+                type = ""
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
                         compid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "COMP_IDS" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 Then
-                            ReDim compids(max)
+                            ReDim compids(max - 1)
                             For k = 1 To max
                                 compids(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
                             Next
@@ -1570,7 +1776,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 Then
-                            ReDim f(max)
+                            ReDim f(max - 1)
                             For k = 1 To max
                                 f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
@@ -1580,9 +1786,39 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "TYPE" Then
                         type = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
-                        myErrors.Add("In CONN name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In CONN name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
+                If type = "WALL" Then
+                    max = compids.GetUpperBound(0)
+                    cFirst = myCompartments.GetCompIndex(compid)
+                    For k = 0 To max
+                        If compids(k) = "OUTSIDE" Then
+                            cSecond = -1
+                        Else
+                            cSecond = myCompartments.GetCompIndex(compids(k))
+                        End If
+                        Dim aHeat As New Vent
+                        aHeat.SetVent(cFirst, cSecond, f(k))
+                        aHeat.Changed = False
+                        myHHeats.Add(aHeat)
+                    Next
+                Else
+                    If compid = "OUTSIDE" Then
+                        cFirst = -1
+                    Else
+                        cFirst = myCompartments.GetCompIndex(compid)
+                    End If
+                    If compids(0) = "OUTSIDE" Then
+                        cSecond = -1
+                    Else
+                        cSecond = myCompartments.GetCompIndex(compids(0))
+                    End If
+                    Dim aHeat As New Vent
+                    aHeat.SetVent(cFirst, cSecond)
+                    aHeat.Changed = False
+                    myVHeats.Add(aHeat)
+                End If
             End If
         Next
 
@@ -1602,7 +1838,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "VALUE" Then
                         value = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In ISOF name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In ISOF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
             End If
@@ -1630,7 +1866,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "POSITION" Then
                         pos = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In SLCF name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In SLCF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
             End If
@@ -1927,7 +2163,7 @@ Module IO
                         aFire = aFireObject
                         Exit Do
                     Case Else
-                        System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). FIRE input line not first line in fire specification.")
+                        System.Windows.Forms.MessageBox.Show("Internal Error (User should Not see this). FIRE input line Not first line in fire specification.")
                         Exit Do
                 End Select
             End If
@@ -2300,7 +2536,7 @@ Module IO
         Next
 
         'comment header of targets and detectors
-        If myDetectors.Count > 0 Or myTargets.Count > 0 Then AddHeadertoOutput(csv, i, "Targets and detectors")
+        If myDetectors.Count > 0 Or myTargets.Count > 0 Then AddHeadertoOutput(csv, i, "Targets And detectors")
         'detectors
         Dim aDetect As New Target
         For j = 0 To myDetectors.Count - 1
@@ -2436,7 +2672,7 @@ Module IO
         myEnvironment.Changed = False
 
         'comments and dead keywords
-        If dataFileComments.Count > 0 Then AddHeadertoOutput(csv, i, "comments and ignored keywords")
+        If dataFileComments.Count > 0 Then AddHeadertoOutput(csv, i, "comments And ignored keywords")
         'comments
         For j = 1 To dataFileComments.Count
             csv.CSVrow(i) = dataFileComments.Item(j)
@@ -2806,6 +3042,18 @@ Module IO
                 If aVent.RampID <> "" Then
                     ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
                     PrintLine(IO, ln)
+                ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
+                    Dim f(2), x(2) As Single
+                    f(1) = aVent.InitialOpening
+                    f(2) = aVent.FinalOpening
+                    x(1) = aVent.InitialOpeningTime
+                    x(2) = aVent.FinalOpeningTime
+                    aVent.RampID = "VentFraction_" + myRamps.Count.ToString
+                    Dim aRamp As Ramp
+                    aRamp = New Ramp(aVent.RampID, "FRACTION", x, f, True)
+                    myRamps.Add(aRamp)
+                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+                    PrintLine(IO, ln)
                 End If
             ElseIf aVent.OpenType = 1 Then
                 aDummy = 273.15
@@ -2929,10 +3177,10 @@ Module IO
                 End If
             Else
                 If aVent.SecondOrientation = 2 Then
-                    ln = " ORIENTATIONS = 'HORIZONAL' , 'HORIZANTAL' "
+                    ln = " ORIENTATIONS = 'HORIZONTAL' , 'HORIZANTAL' "
                     PrintLine(IO, ln)
                 Else
-                    ln = " ORIENTATIONS = 'HORIZONAL' , 'VERTICAL' "
+                    ln = " ORIENTATIONS = 'HORIZONTAL' , 'VERTICAL' "
                     PrintLine(IO, ln)
                 End If
             End If

@@ -541,12 +541,12 @@ Public Class Fire
     End Sub
     Private Property DimFireTimeSeries() As Integer
         Get
-            Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(1))).DimF
+            Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(2))).DimF
         End Get
         Set(ByVal value As Integer)
             Dim i As Integer
             For i = 1 To 12
-                myRamps.Item(myRamps.GetRampIndex(aRampIDs(1))).DimF = value
+                myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).DimF = value
             Next
         End Set
     End Property
@@ -555,7 +555,7 @@ Public Class Fire
             If i < 0 Or i > Me.NumFireTimeSeries Or j < 0 Or j > Me.DimFireTimeSeries Then
                 Return -1
             ElseIf i = 0 Then
-                Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(1))).X(j)
+                Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(2))).X(j)
             ElseIf i <= 12 Then
                 Return myRamps.Item(myRamps.GetRampIndex(aRampIDs(i))).F(j)
             End If

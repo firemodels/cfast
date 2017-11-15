@@ -11,25 +11,6 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
-    Friend WithEvents Label18 As Label
-    Friend WithEvents TestReadNML As MenuItem
-    Friend WithEvents MenuItem2 As MenuItem
-    Friend WithEvents GroupBox9 As GroupBox
-    Friend WithEvents FireHRR As TextBox
-    Friend WithEvents Label67 As Label
-    Friend WithEvents FireHCNYield As TextBox
-    Friend WithEvents Label66 As Label
-    Friend WithEvents FireArea As TextBox
-    Friend WithEvents Label95 As Label
-    Friend WithEvents FireHClYield As TextBox
-    Friend WithEvents Label36 As Label
-    Friend WithEvents GroupBox6 As GroupBox
-    Friend WithEvents GroupBox15 As GroupBox
-    Friend WithEvents GroupBox10 As GroupBox
-    Friend WithEvents HRRPlot As NPlot.Windows.PlotSurface2D
-    Friend WithEvents FireAdvanced As Button
-    Friend WithEvents FireType As Label
-    Friend WithEvents EnvLOI As TextBox
 
 #Region " Windows Form Designer generated code "
 
@@ -59,6 +40,25 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents Label18 As Label
+    Friend WithEvents TestReadNML As MenuItem
+    Friend WithEvents MenuItem2 As MenuItem
+    Friend WithEvents GroupBox9 As GroupBox
+    Friend WithEvents FireHRR As TextBox
+    Friend WithEvents Label67 As Label
+    Friend WithEvents FireHCNYield As TextBox
+    Friend WithEvents Label66 As Label
+    Friend WithEvents FireArea As TextBox
+    Friend WithEvents Label95 As Label
+    Friend WithEvents FireHClYield As TextBox
+    Friend WithEvents Label36 As Label
+    Friend WithEvents GroupBox6 As GroupBox
+    Friend WithEvents GroupBox15 As GroupBox
+    Friend WithEvents GroupBox10 As GroupBox
+    Friend WithEvents HRRPlot As NPlot.Windows.PlotSurface2D
+    Friend WithEvents FireAdvanced As Button
+    Friend WithEvents FireType As Label
+    Friend WithEvents EnvLOI As TextBox
     Friend WithEvents HVentFinalLabel As Label
     Friend WithEvents HVentFinalFraction As TextBox
     Friend WithEvents HVentInitialLabel As Label
@@ -6054,6 +6054,16 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
+
+    Private Sub FireAdvanced_Click(sender As Object, e As EventArgs) Handles FireAdvanced.Click
+        Dim iReturn As Integer
+        FireDialog.Index = CurrentFire
+        iReturn = FireDialog.ShowDialog(Me)
+        If iReturn = Windows.Forms.DialogResult.OK Then
+            If CurrentFire >= 0 Then myFires(CurrentFire) = FireDialog.ReturnedFire
+            UpdateGUI.Fires(CurrentFire)
+        End If
+    End Sub
 #End Region
 
 #Region " Targets Tab "
@@ -6735,16 +6745,6 @@ Public Class CeditMain
         WriteInputFileNML(FileName)
         myUnits.SI = False
 
-    End Sub
-
-    Private Sub FireAdvanced_Click(sender As Object, e As EventArgs) Handles FireAdvanced.Click
-        Dim iReturn As Integer
-        iReturn = FireDialog.ShowDialog(Me)
-        If iReturn = Windows.Forms.DialogResult.OK Then
-            If CurrentFire >= 0 Then myFires(CurrentFire) = FireDialog.ReturnedFire
-            UpdateGUI.Fires(CurrentFire)
-            UpdateGUI.Fires(CurrentFire)
-        End If
     End Sub
 
     Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalFromFile.Click, FireFromFile.Click

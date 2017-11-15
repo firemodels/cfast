@@ -4,9 +4,11 @@
     Friend Const TypeArea As String = "AREA"
     Friend Const TypeFrac As String = "FRACTION"
     Friend Const TypeHRR As String = "HRR"
+    Friend Const TypeLength As String = "LENGTH"
     Friend Const IdxArea As Integer = 0
     Friend Const IdxFrac As Integer = 1
     Friend Const IdxHRR As Integer = 2
+    Friend Const IdxLength As Integer = 2
     Friend Const xdx As Integer = 0
     Friend Const fdx As Integer = 1
     Friend Const ErrorVal As Integer = -1
@@ -17,7 +19,7 @@
     Private aF(0) As Single                         'Array for the dependent variable for the ramp data
     Private aIsT As Boolean                         'Logical flag is true if the independant variable is time t 
     Private aMaxNumRamp As Integer                  'Number of data points in arrays af and ax
-    Private aType(3) As String                      'Selection list that determines units of the function
+    Private aType(4) As String                      'Selection list that determines units of the function
     Private aIdxType As Integer
     Private aChange As Boolean                      'Logical flag for when some vaule in object has changed
     Private HasErrors As Integer                    ' Temp variable that holds error count during error check
@@ -219,6 +221,7 @@
         aType(IdxArea) = TypeArea
         aType(IdxFrac) = TypeFrac
         aType(IdxHRR) = TypeHRR
+        aType(IdxLength) = TypeLength
         aChange = False
     End Sub
     Public Sub New(ByVal Name As String, ByVal Type As String, ByVal x() As Single, ByVal f() As Single, ByVal IsT As Boolean)
@@ -265,16 +268,16 @@
         valid = False
         If type.Trim = TypeArea Then
             valid = True
-        End If
-        If type.Trim = TypeFrac Then
+        ElseIf type.Trim = TypeFrac Then
             valid = True
-        End If
-        If type.Trim = TypeHRR Then
+        ElseIf type.Trim = TypeHRR Then
             valid = True
+        ElseIf type.Trim = TypeLength Then
+            valid = True
+        Else
+            valid = False
         End If
         If name = "" Then
-            valid = False
-        ElseIf type.Trim <> TypeArea And type.Trim <> TypeFrac And type <> TypeHRR Then
             valid = False
         ElseIf x.GetUpperBound(0) <> f.GetUpperBound(0) Then
             valid = False

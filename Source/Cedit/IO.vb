@@ -1827,6 +1827,7 @@ Module IO
         Dim i, j As Integer
         Dim compid As String
         Dim value As Single
+        Dim aTempOffset As Single = 273.15
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "ISOF") Then
@@ -1841,6 +1842,16 @@ Module IO
                         myErrors.Add("In ISOF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
+                Dim aVisual As New Visual
+                aVisual.Type = Visual.IsoSurface
+                If compid <> "" Then
+                    aVisual.Compartment = myCompartments.GetCompIndex(compid)
+                Else
+                    aVisual.Compartment = -1
+                End If
+                aVisual.Value = value + aTempOffset
+                aVisual.Changed = False
+                myVisuals.Add(aVisual)
             End If
         Next
 
@@ -1869,6 +1880,27 @@ Module IO
                         myErrors.Add("In SLCF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
+                Dim aVisual As New Visual
+                If compid = "" Then
+                    aVisual.Compartment = -1
+                Else
+                    aVisual.Compartment = myCompartments.GetCompIndex(compid)
+                End If
+                If domain = "2-D" Then
+                    aVisual.Type = Visual.TwoD
+                    If plane = "X" Then
+                        aVisual.Axis = 0
+                    ElseIf plane = "Y" Then
+                        aVisual.Axis = 1
+                    ElseIf plane = "Z" Then
+                        aVisual.Axis = 2
+                    End If
+                    aVisual.Value = pos
+                Else
+                    aVisual.Type = Visual.ThreeD
+                End If
+                aVisual.Changed = False
+                myVisuals.Add(aVisual)
             End If
         Next
 
@@ -2901,7 +2933,7 @@ Module IO
             ln = " / "
             PrintLine(IO, ln)
             If aComp.AreaRampID <> "" Then
-                WriteRamp(IO, aComp.AreaRampID, doneRamps, 1)
+                WriteRamp(IO, aComp.AreaRampID, doneRamps, 0)
             End If
         Next
 
@@ -3038,14 +3070,16 @@ Module IO
                     PrintLine(IO, ln)
                 End If
             End If
-            If aVent.OpenType = 0 Then
+            If aVent.OpenType = Vent.OpenbyTime Then
                 If aVent.RampID <> "" Then
                     ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
                     PrintLine(IO, ln)
                 ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
                     Dim f(2), x(2) As Single
+                    f(0) = aVent.InitialOpening
                     f(1) = aVent.InitialOpening
                     f(2) = aVent.FinalOpening
+                    x(0) = 0.0
                     x(1) = aVent.InitialOpeningTime
                     x(2) = aVent.FinalOpeningTime
                     aVent.RampID = "VentFraction_" + myRamps.Count.ToString
@@ -3055,14 +3089,14 @@ Module IO
                     ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
                     PrintLine(IO, ln)
                 End If
-            ElseIf aVent.OpenType = 1 Then
+            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                 aDummy = 273.15
                 aDummy = aVent.OpenValue - aDummy
                 ln = " CRITERION = 'TEMPERATURE' , SETPOINT = " + aDummy.ToString + " , DEVC_ID = '" + aVent.Target + "' "
                 PrintLine(IO, ln)
                 ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
                 PrintLine(IO, ln)
-            ElseIf aVent.OpenType = 2 Then
+            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
                 ln = " CRITERION = 'FLUX' , SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " , DEVC_ID = '" + aVent.Target + "' "
                 PrintLine(IO, ln)
                 ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
@@ -3071,7 +3105,7 @@ Module IO
             ln = " / "
             PrintLine(IO, ln)
             If aVent.RampID <> "" Then
-                WriteRamp(IO, aVent.RampID, doneRamps, 1)
+                WriteRamp(IO, aVent.RampID, doneRamps, 0)
             End If
         Next
 

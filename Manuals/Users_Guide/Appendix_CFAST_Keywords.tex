@@ -469,6 +469,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct HCN\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
 {\ct HCN\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
+{\ct HEIGHT\_RAMP\_ID} & Character        & Section \ref{info:RAMP}                 &                        &            \\ \hline
 {\ct HRR}*        & Real   &  Section \ref{info:RAMP}                &  kW                           &                 \\ \hline
 {\ct HRR\_RAMP\_ID}*        & Character   &  Section \ref{info:RAMP}                &                             &                 \\ \hline
 {\ct HYDROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
@@ -695,7 +696,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 {\ct F}*\footnote{ * indicates a required input for each {\ct RAMP} input included in the input file. Either {\ct T} or {\ct Z} (but not both) are required depending on the type associated with the ramp.}               & Real Array            & Section \ref{info:RAMP2}                 &  use dependent        &                 \\ \hline
 {\ct ID}*      		  & Character   & Section \ref{info:RAMP2}     &                   &                 \\ \hline
 {\ct T}*               & Real Array            & Section \ref{info:RAMP2}                 &  s       &                 \\ \hline
-{\ct TYPE}*\footnote{{\ct TYPE} must be either AREA, FRACTION, or HRR}            & Selection List        & Section \ref{info:RAMP2}                 &          &                 \\ \hline
+{\ct TYPE}*\footnote{{\ct TYPE} must be either AREA, FRACTION, HRR, or LENGTH}            & Selection List        & Section \ref{info:RAMP2}                 &          &                 \\ \hline
 {\ct Z}*               & Real Array            & Section \ref{info:RAMP2}                 &  m       &                 \\ \hline
 \end{longtable}
 \end{minipage}
@@ -709,9 +710,11 @@ Filter efficiency is specified as a function of time with {\ct T} as time and {\
 
 Compartment area in XY-plane is specified as a function of compartment height with {\ct Z} as the height and {\ct F} as the cross-sectional area in m$^2$. Refer to Section~\ref{info:COMP4}. \\
 
-Heat release rate of a fire is specified as a function of time with {\ct T} as time and {\ct F} as the heat release rate of the fire in kW. Refer to Section~\ref{info:FIRE2}. \\
+Heat release rate of a fire is specified as a function of time with {\ct T} as time and {\ct F} as the heat release rate of the fire in kW. Refer to Section~\ref{info:FIRE2}. This may not be used with a constant HRR specified with the HRR input.\\
 
-Fire species yields are specified as a function of time using {\ct T} as time and {\ct F} as the species yield fraction in kg of species produced per kg of fuel burned.  Refer to Section~\ref{info:FIRE2}.
+Fire height is specified as a function of time with {\ct T} as time and {\ct F} as the height of the base of the fire from the compartment floor in m. Refer to Section~\ref{info:FIRE2}. This overrides any value specified by LOCATION(3).\\
+
+Fire species yields are specified as a function of time using {\ct T} as time and {\ct F} as the species yield fraction in kg of species produced per kg of fuel burned.  Refer to Section~\ref{info:FIRE2} These may not be used with the corresponding constant species yield input(s).
 }
 
 

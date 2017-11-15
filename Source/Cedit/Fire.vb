@@ -47,9 +47,8 @@ Public Class Fire
 
     ' Variables for current instance of a fire
     Private aCompartment As Integer                 ' COmpartment where the fire is located
-    Private aXPosition As Single                    ' X (width) position of the fire in the COmpartment
-    Private aYPosition As Single                    ' Y (depth) position of the fire in the COmpartment
-    Private aZPosition As Single                    ' Z Component of normal vector from chosen surface of target
+    Private aXPosition As Single                    ' X (width) position of the fire in the Compartment
+    Private aYPosition As Single                    ' Y (depth) position of the fire in the Compartment
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
     Private Const minValueIgnType As Integer = 0
     Private Const maxValueIgnType As Integer = 2
@@ -63,8 +62,16 @@ Public Class Fire
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
     Private aChemicalFormula(5) As Single           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
     Private aMolarMass As Single                    ' Molecular weight of the fuel
+    Private aHRR As Single                          ' Constant heat release rate
     Private aHeatofCombustion As Single             ' Heat of Combustion
     Private aRadiativeFraction As Single            ' Radiative fraction
+    Private aArea As Single                         ' Constant fire area
+    Private aHeight As Single                       ' Constant fire height
+    Private aCOYield As Single                      ' Constant CO yield
+    Private aHClYield As Single                     ' Constant HCl yield
+    Private aHCNYield As Single                     ' Constant HCN yield
+    Private aSootYield As Single                    ' Constant soot yield
+    Private aTSYield As Single                      ' Constant trace species yield
     Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
 
@@ -76,7 +83,6 @@ Public Class Fire
         aCompartment = -2
         aXPosition = -1.0
         aYPosition = -1.0
-        aZPosition = -1.0
         aPlumeType = 0
         aIgnitionType = FireIgnitionbyTime
         aIgnitionValue = 0.0
@@ -88,6 +94,13 @@ Public Class Fire
         aChemicalFormula(1) = 1.0 : aChemicalFormula(2) = 4.0 : aChemicalFormula(3) = 0.0 : aChemicalFormula(4) = 0.0 : aChemicalFormula(5) = 0.0
         aHeatofCombustion = 50000000.0
         aRadiativeFraction = 0.35
+        aArea = 0.3
+        aHeight = -1.0
+        aCOYield = 0.0
+        aHClYield = 0.0
+        aHCNYield = 0.0
+        aSootYield = 0.0
+        aTSYield = 0.0
         aCommentsIndex = -1
         Me.InitilizeFireTimeSeries()
     End Sub
@@ -274,30 +287,30 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property ZPosition() As Single
+    Property Height() As Single
         Get
-            If aZPosition = -1 Then
+            If aHeight = -1 Then
                 Return -1
             Else
-                Return myUnits.Convert(UnitsNum.Length).FromSI(aZPosition)
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aHeight)
             End If
         End Get
         Set(ByVal Value As Single)
             If Value >= 0 Then
-                If aZPosition <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
-                    aZPosition = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+                If aHeight <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                    aHeight = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                     aChanged = True
                 End If
             ElseIf Value = -1 Then
                 If aCompartment > -1 And aCompartment <= myCompartments.Count - 1 Then
-                    aZPosition = 0.0
+                    aHeight = 0.0
                     aChanged = True
                 Else
-                    aZPosition = -1
+                    aHeight = -1
                     aChanged = True
                 End If
             Else
-                aZPosition = -1
+                aHeight = -1
                 aChanged = True
             End If
         End Set
@@ -426,6 +439,17 @@ Public Class Fire
             End If
         End Set
     End Property
+    Property HRR() As Single
+        Get
+            Return myUnits.Convert(UnitsNum.HRR).FromSI(aHRR)
+        End Get
+        Set(ByVal Value As Single)
+            If aHRR <> myUnits.Convert(UnitsNum.HRR).ToSI(Value) And Value > 0.0 Then
+                aHRR = myUnits.Convert(UnitsNum.HRR).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
     Property HeatofCombustion() As Single
         Get
             Return myUnits.Convert(UnitsNum.HoC).FromSI(aHeatofCombustion)
@@ -444,6 +468,72 @@ Public Class Fire
         Set(ByVal Value As Single)
             If aRadiativeFraction <> Value And Value >= 0.0 Then
                 aRadiativeFraction = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property Area() As Single
+        Get
+            Return myUnits.Convert(UnitsNum.Area).FromSI(aArea)
+        End Get
+        Set(ByVal Value As Single)
+            If aArea <> myUnits.Convert(UnitsNum.Area).ToSI(Value) And Value > 0.0 Then
+                aArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property COYield() As Single
+        Get
+            Return aCOYield
+        End Get
+        Set(ByVal Value As Single)
+            If aCOYield <> Value And Value >= 0.0 Then
+                aCOYield = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property HClYield() As Single
+        Get
+            Return aHClYield
+        End Get
+        Set(ByVal Value As Single)
+            If aHClYield <> Value And Value >= 0.0 Then
+                aHClYield = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property HCNYield() As Single
+        Get
+            Return aHCNYield
+        End Get
+        Set(ByVal Value As Single)
+            If aHCNYield <> Value And Value >= 0.0 Then
+                aHCNYield = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property SootYield() As Single
+        Get
+            Return aSootYield
+        End Get
+        Set(ByVal Value As Single)
+            If aSootYield <> Value And Value >= 0.0 Then
+                aSootYield = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property TSYield() As Single
+        Get
+            Return aTSYield
+        End Get
+        Set(ByVal Value As Single)
+            If aTSYield <> Value And Value >= 0.0 Then
+                aTSYield = Value
                 aChanged = True
             End If
         End Set
@@ -488,7 +578,7 @@ Public Class Fire
             Compartment = index
             Me.XPosition = XPosition
             Me.YPosition = YPosition
-            Me.ZPosition = ZPosition
+            Me.Height = ZPosition
         End If
     End Sub
     Public Sub GetFireData(ByRef FireTimeSeries(,) As Single, ByRef NumDataPoints As Integer)
@@ -598,6 +688,17 @@ Public Class Fire
         Set(value As String)
             If value <> aRampIDs(FireArea) Then
                 aRampIDs(FireArea) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property HeightRampID() As String
+        Get
+            Return aRampIDs(FireHeight)
+        End Get
+        Set(value As String)
+            If value <> aRampIDs(FireHeight) Then
+                aRampIDs(FireHeight) = value
                 aChanged = True
             End If
         End Set
@@ -803,8 +904,8 @@ Public Class Fire
                         HasErrors += 1
                     End If
                 End If
-                If aZPosition <> -1 Then
-                    If aZPosition < 0.0 Or aZPosition > aComp.RoomHeight Then
+                If aHeight <> -1 Then
+                    If aHeight < 0.0 Or aHeight > aComp.RoomHeight Then
                         myErrors.Add("Fire " + FireNumber.ToString + " initial height is less than 0 m or greater than Compartment height.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If

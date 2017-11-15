@@ -2171,7 +2171,7 @@ Module IO
                                 Dim aTarget As New Target
                                 aTarget.Type = Target.TypeTarget
                                 aTarget.Name = "Ign_" + aFireObject.Name
-                                aTarget.SetPosition(aFireObject.XPosition, aFireObject.YPosition, aFireObject.ZPosition, csv.num(iFire, fireNum.xNormal), csv.num(iFire, fireNum.yNormal), csv.num(iFire, fireNum.zNormal))
+                                aTarget.SetPosition(aFireObject.XPosition, aFireObject.YPosition, aFireObject.Height, csv.num(iFire, fireNum.xNormal), csv.num(iFire, fireNum.yNormal), csv.num(iFire, fireNum.zNormal))
                                 aTarget.SetTarget(aFireObject.Compartment, csv.str(iChemie, chemieNum.Material), Target.ThermallyThick)
                                 myTargets.Add(aTarget)
                                 aFireObject.Target = aTarget.Name
@@ -2532,7 +2532,7 @@ Module IO
             csv.num(i, fireNum.compartment) = aFire.Compartment + 1
             csv.num(i, fireNum.xPosition) = aFire.XPosition
             csv.num(i, fireNum.yPosition) = aFire.YPosition
-            csv.num(i, fireNum.zposition) = aFire.ZPosition
+            csv.num(i, fireNum.zposition) = aFire.Height
             csv.num(i, fireNum.plumeType) = aFire.PlumeType + 1
             csv.str(i, fireNum.ignType) = IgnitionTypes.Substring(aFire.IgnitionType * 4, 4)
             csv.num(i, fireNum.ignCriterion) = aFire.IgnitionValue
@@ -3264,7 +3264,7 @@ Module IO
             PrintLine(IO, ln)
             ln = " ID = '" + aFire.Name + "' COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' "
             PrintLine(IO, ln)
-            ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString + " , " + aFire.ZPosition.ToString
+            ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString + " , " + aFire.Height.ToString
             PrintLine(IO, ln)
             ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
                 " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +

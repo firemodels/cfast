@@ -303,10 +303,10 @@ Public Class Compartment
         'i = aAreaPoints.GetUpperBound(0)
         If aAreaRampID <> "" Then
             Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
-            ReDim AreaPoints(myRamps.Item(iramp).DimF), HeightPoints(myRamps.Item(iramp).DimF)
+            ReDim AreaPoints(myRamps.Item(iramp).DimF + 1), HeightPoints(myRamps.Item(iramp).DimF + 1)
             For i = 0 To myRamps.Item(iramp).DimF
-                AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
-                HeightPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
+                AreaPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
+                HeightPoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
             Next
             NumAreaPoints = myRamps.Item(iramp).MaxNumRamp
         Else
@@ -333,10 +333,10 @@ Public Class Compartment
                 myRamps.Item(myRamps.Count - 1).IsZ = True
             End If
             Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
-            myRamps.Item(idx).DimX = AreaPoints.GetUpperBound(0)
-            For i = 0 To AreaPoints.GetUpperBound(0)
-                myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i))
-                myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
+            myRamps.Item(idx).DimX = AreaPoints.GetUpperBound(0) - 1
+            For i = 1 To AreaPoints.GetUpperBound(0)
+                myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i - 1))
+                myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i - 1))
             Next
             aChanged = True
         End If
@@ -349,9 +349,9 @@ Public Class Compartment
         'Next
         If aAreaRampID <> "" Then
             Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
-            ReDim HeightPoints(myRamps.Item(iramp).DimF)
+            ReDim HeightPoints(myRamps.Item(iramp).DimF + 1)
             For i = 0 To myRamps.Item(iramp).DimX
-                HeightPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
+                HeightPoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
             Next
         Else
             ReDim HeightPoints(0)
@@ -365,9 +365,9 @@ Public Class Compartment
         'Next
         If aAreaRampID <> "" Then
             Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
-            ReDim AreaPoints(myRamps.Item(iramp).DimF)
+            ReDim AreaPoints(myRamps.Item(iramp).DimF + 1)
             For i = 0 To myRamps.Item(iramp).DimF
-                AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
+                AreaPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
             Next
         Else
             ReDim AreaPoints(0)
@@ -388,9 +388,9 @@ Public Class Compartment
             myRamps.Item(myRamps.Count - 1).IsZ = True
         End If
         Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
-        myRamps.Item(idx).DimX = HeightPoints.GetUpperBound(0)
-        For i = 0 To HeightPoints.GetUpperBound(0)
-            myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i))
+        myRamps.Item(idx).DimX = HeightPoints.GetUpperBound(0) - 1
+        For i = 0 To HeightPoints.GetUpperBound(0) - 1
+            myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i + 1))
         Next
         aChanged = True
     End Sub
@@ -409,9 +409,9 @@ Public Class Compartment
             myRamps.Item(myRamps.Count - 1).IsZ = True
         End If
         Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
-        myRamps.Item(idx).DimF = AreaPoints.GetUpperBound(0)
-        For i = 0 To AreaPoints.GetUpperBound(0)
-            myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
+        myRamps.Item(idx).DimF = AreaPoints.GetUpperBound(0) - 1
+        For i = 0 To AreaPoints.GetUpperBound(0) - 1
+            myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i + 1))
         Next
         aChanged = True
     End Sub

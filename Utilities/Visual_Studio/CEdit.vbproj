@@ -201,6 +201,12 @@
     <Compile Include="Fire.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Fire_Advanced.Designer.vb">
+      <DependentUpon>Fire_Advanced.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Fire_Advanced.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="InsertData.Designer.vb">
       <DependentUpon>InsertData.vb</DependentUpon>
     </Compile>
@@ -264,6 +270,9 @@
     <EmbeddedResource Include="CEdit.resx">
       <DependentUpon>CEdit.vb</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fire_Advanced.resx">
+      <DependentUpon>Fire_Advanced.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InsertData.resx">
       <DependentUpon>InsertData.vb</DependentUpon>

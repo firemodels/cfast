@@ -45,18 +45,15 @@ The general structure of an input file is shown below, with many lines of the or
 &MISC  LOWER_OXYGEN_LIMIT = 0.10 /
 &MATL ...
 &COMP ID = 'Comp 1', WIDTH = 5., DEPTH = 5., HEIGHT = 3. ... /
-&RAMP ... / for compartment cross-sectional area if required
 &VENT ID = 'VVENT 1', TYPE = 'CEILING', COMP_IDS = 'Comp 3', 'Comp 2',
-      AREA = 1., SHAPE = 'ROUND',
-&RAMP ... / for vent opening and closing if required
-&FIRE ID = 'Wood_Wall', COMP_ID = 'Comp 2', LOCATION = 2.5, 5., 0.,
-      CARBON = 6, HYDROGEN = 10, OXYGEN = 5,
-      HEAT_OF_COMBUSTION = 1.81e4, RADIATIVE_FRACTION = 0.33,
-      SOOT_YIELD = 0.015, CO_YIELD = 0.006171682,
-      AREA = 4.5, HEIGHT = 1.5,
-      HRR_RAMP_ID = 'Wood Wall Fire' /
-&RAMP ID = 'Wood Wall Fire', TYPE = 'HEAT_RELEASE_RATE',
-      T = 0., 8000., F = 0., 1000000. / for the fire
+      AREA = 1., SHAPE = 'ROUND', /
+&FIRE ID = 'Wood_Wall', COMP_ID = 'Comp 2',
+LOCATION = 2.5, 5., 1.5,
+CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
+IGNITION_CRITERION = 'TIME',
+HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33,
+T = 0., 8000., HRRS = 0., 1000., AREAS = 0.05, 9.,
+SOOT_YIELD = 0.015, 0.015, CO_YIELD = 0.006171682, 0.006171682 /
 &DEVC ID = 'Smoke Detector 1', COMP_ID = 'Comp 1',
       TYPE = 'SMOKE', LOCATION = 3., 3., 2.97, SETPOINT = 23.93346 /
 &CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
@@ -78,15 +75,16 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 {\ct COMP}   & Compartments                   & \ref{info:COMP}   & \ref{tbl:COMP}   \\ \hline
 {\ct CONN}   & Surface Connections            & \ref{info:CONN}   & \ref{tbl:CONN}   \\ \hline
 {\ct DEVC}   & Devices                        & \ref{info:DEVC}   & \ref{tbl:DEVC}   \\ \hline
-{\ct FIRE}   & Fires                          & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
+{\ct FIRE}   & Fire Objects                   & \ref{info:FOBJ}   & \ref{tbl:FOBJ}   \\ \hline
+{\ct FIRE}   & Fires Instances                & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
 {\ct HEAD}   & Input File Header              & \ref{info:HEAD}   & \ref{tbl:HEAD}   \\ \hline
 {\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
 {\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
 {\ct MATL}   & Material Properties            & \ref{info:MATL}   & \ref{tbl:MATL}   \\ \hline
 {\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
-{\ct RAMP}   & Ramp Profiles                  & \ref{info:RAMP}   & \ref{tbl:RAMP}   \\ \hline
 {\ct SLCF}   & Slice File Outputs             & \ref{info:SLCF}   & \ref{tbl:SLCF}   \\ \hline
 {\ct TAIL}   & End of Input File Indicator    &                   &                  \\ \hline
+{\ct TABL}   & Table of Time-Based Inputs     & \ref{info:TABL}   & \ref{info:TABL}   \\ \hline
 {\ct TIME}   & Simulation Time                & \ref{info:TIME}   & \ref{tbl:TIME}   \\ \hline
 {\ct VENT}   & Vents                          & \ref{info:VENT}   & \ref{tbl:WVENT}   \\ \hline
 \end{tabular}
@@ -255,6 +253,10 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct CEILING\_MATL\_ID}     & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct CROSS\_SECT\_AREAS}
+\footnote{For compartments where the cross-sectional area varies with height, the inputs, {\ct CROSS\_SECT\_AREAS} and {\ct CROSS\_SECT\_HEIGHTS} can be used.}
+                            & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
+{\ct CROSS\_SECT\_HEIGHTS}  & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
 {\ct DEPTH}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least on {\ct COMP} input must be included in an input file.}                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
 {\ct FLOOR\_MATL\_ID}       & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
 {\ct GRID}             & Integer Triplet& Section \ref{info:SLCF2}               &           & 50,50,50                \\ \hline
@@ -262,9 +264,6 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct HEIGHT}*                & Real     		 & Section \ref{info:COMP}   	          & m         &                 \\ \hline
 {\ct ID}*                    & Character		 & Section \ref{info:COMP}                &           &          \\ \hline
 {\ct ORIGIN}           & Real Triplet   & Section \ref{info:COMP}                & m         & 0,0,0                \\ \hline
-{\ct ROOM\_AREA\_RAMP}
-\footnote{For compartments where the cross-sectional area varies with height, the namelist group, {\ct RAMP} can be used. Keywords associated with this feature can be found in Section~\ref{tbl:RAMP}.}
-                            & Character          & Section \ref{info:COMP4}                 &           &                 \\ \hline
 {\ct SHAFT}                 & Logical  		 & Section \ref{info:COMP3}                 &           & {\ct .FALSE.}   \\ \hline
 {\ct WALL\_MATL\_ID}        & Character		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
 {\ct WIDTH}*                 & Real               & Section \ref{info:COMP}                  & m         &                 \\ \hline
@@ -309,13 +308,14 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                             				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include {\ct T}.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct FACE}\footnote{Input for {\ct FACE} must be {\ct RIGHT}, {\ct FRONT}, {\ct LEFT}, or {\ct REAR}. Both {\ct FACE} and {\ct OFFSET} positioning refer to the first compartment specified ({\ct COMP\_IDS(1)}).}      	  & Selection List   & Section \ref{info:VENT}                 &                             &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSET}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      0        \\ \hline
-{\ct OPENING\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
+{\ct T}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct WALL} to specify a wall vent. } *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
 {\ct TOP}*                 & Real                   & Section \ref{info:VENT}      & m                        &                 \\ \hline
@@ -330,7 +330,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{lstlisting}
 &VENT TYPE = 'WALL', ID = 'HVENT 1', COMP_IDS = 'Comp 1', 'OUTSIDE',
       WIDTH = 1., TOP = 2., BOTTOM = 0.,
-      OFFSET = 2., FACE = 'FRONT', CRITERION = 'TIME' /
+      OFFSET = 2., FACE = 'FRONT' /
 
 \end{lstlisting}
 
@@ -356,13 +356,14 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct CRITERION}\footnote{Input for {\ct CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                             				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include T.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0,0        \\ \hline
-{\ct OPENING\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of vent area or ceiling and floor vents and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct SHAPE}*\footnote{Input for {\ct SHAPE} must be {\ct ROUND} or {\ct SQUARE}.}
                                                                  & Selection List         & Section \ref{info:VENT2}     &                             &                 \\ \hline
+{\ct T}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct CEILING} or {\ct FLOOR} for ceiling and floor vents. These may be used interchangeably. The order of {\ct COMP\_IDS} specifies the location of the vent with {\ct COMP\_IDS(1)} specifying the top compartment and {\ct COMP\_IDS(2)} specifying the bottom compartment.} *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
 \end{longtable}
@@ -375,8 +376,6 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{lstlisting}
 &VENT TYPE = 'CEILING', ID = 'VVENT 1', COMP_IDS = 'Comp 3', 'Comp 2',
       AREA = 1., SHAPE = 'ROUND', CRITERION= 'TIME',
-      OPENING_RAMP_ID = 'RAMP_VVENT_1'/
-&RAMP ID = 'RAMP_VVENT_1', TYPE = 'FRACTION',
       T = 0., 100., 500.,
       F = 0., 0.5, 1. /
 
@@ -405,19 +404,19 @@ Examples of each of the inputs are included in the sections that follow.  All ex
                             				         & Selection List              & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct CUTOFFS}       					 & Real Doublet 	  	  & Section \ref{info:VENT4}     & Pa                          &     200.,300.     \\ \hline
 {\ct DEVC\_ID}           					 & Character  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
-%{\ct FILTERING\_RAMP\_ID}    					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct FILTER\_TIME}    					 & Real  		  & Section \ref{info:RAMP}      & s                            &  0               \\ \hline
-{\ct FILTER\_EFFICIENCY}    					 & Real  		  & Section \ref{info:RAMP}      & \% removed                            &  0.0               \\ \hline
+{\ct F}\footnote{Specifies the fraction of vent width for wall vents as a function of time and is only applicable when {\ct CRITERION} is set to {\ct TIME}. Must also include {\ct T}.}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct FILTER\_TIME}    					 & Real  		  & Section \ref{info:VENT}      & s                            &  0               \\ \hline
+{\ct FILTER\_EFFICIENCY}    					 & Real  		  & Section \ref{info:VENT}      & \% removed                            &  0.0               \\ \hline
 {\ct FLOW}*      	 					 & Real  		  & Section \ref{info:VENT4}     & m$^3$/s                     &                 \\ \hline
 {\ct HEIGHTS}*      					 & Real Doublet  	  & Section \ref{info:VENT3}     & m                           &                 \\ \hline
 {\ct ID}*                                                         & Character  	          & Section \ref{info:VENT}      &                             &                 \\ \hline
 {\ct OFFSETS}       					 & Real Doublet 		  & Section \ref{info:VENT}      & m                           &      0.,0.        \\ \hline
-{\ct OPENING\_RAMP\_ID}\footnote{Associated ramp specifies the fraction of flow for mechanical vents and is only applicable when {\ct CRITERION} is set to {\ct TIME}.}  					 & Character  		  & Section \ref{info:RAMP}      &                             &                 \\ \hline
-{\ct ORIENTATIONS}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List Doublet 		  & Section \ref{info:RAMP}      &                             & {\tiny VERTICAL,VERTICAL}                \\ \hline
-{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct VENT\_RAMP\_ID}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
+{\ct ORIENTATIONS}\footnote{Input for {\ct ORIENTATION} must be {\ct HORIZONTAL} or {\ct VERTICAL}}  					 & Selection List Doublet 		  & Section \ref{info:VENT}      &                             & {\tiny VERTICAL,VERTICAL}                \\ \hline
+{\ct PRE\_FRACTION}\footnote{{\ct PRE\_FRACTION} and {\ct POST\_FRACTION} specify the vent fraction before and after the {\ct SETPOINT} is reached when {\ct CRITERION} is either {\ct TEMPERATURE} or {\ct FLUX}. They cannot be used with {\ct F} and {\ct T}.}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct POST\_FRACTION}       					 & Real 		  & Section \ref{info:VENT}      & m                           &      1        \\ \hline
 {\ct SETPOINT}           					 & Real  	          & Section \ref{info:VENT}      & s $\mid$ $^\circ$C $\mid$ kW/m$^2$ &                 \\ \hline
-{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct MECHANICAL} for mechanical vents. } *
+{\ct T}  					 & Real Array  		  & Section \ref{info:VENT}      &                             &                 \\ \hline
+{\ct TYPE}\footnote{Input for {\ct TYPE} must be {\ct MECHANICAL} for mechanical vents.} *
                                                                  & Selection List         & Section \ref{info:VENT6}     &                             &                 \\ \hline
 \end{longtable}
 \end{minipage}
@@ -429,7 +428,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{lstlisting}
 &VENT TYPE = 'MECHANICAL', ID = 'MVENT_1',
       COMP_IDS = 'OUTSIDE', 'Comp 1', AREAS = 0.25, 0.25,
-      HEIGHTS = 2.75, 2.75, CRITERION = 'TIME', FLOW = 0.02,
+      HEIGHTS = 2.75, 2.75, FLOW = 0.02,
       CUTOFFS = 200., 300., ORIENTATION='VERTICAL', OFFSETS = 0., 4. /
 
 \end{lstlisting}
@@ -444,68 +443,91 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
-\label{tbl:FIRE} \\
+\caption[Fire Parameters ({\ct FOBJ} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FOBJ} \\
 \hline
-\multicolumn{5}{|c|}{{\ct FIRE} (Fire Parameters)} \\
+\multicolumn{5}{|c|}{{\ct FOBJ} (Fixed Fire Parameters)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct FIRE} (Fire Parameters)} \\
+\multicolumn{5}{|c|}{{\ct FOBJ} (Fixed Fire Parameters)} \\
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct AREA}\footnote{For AREA, HRR, and species yields, either a constant value (e.g., AREA or CO\_YIELD) or ramp (e.g., AREA\_RAMP\_ID or CO\_YIELD\_RAMP\_ID) may be used. Do not use both.}                & Real        & Section \ref{info:FIRE}                 & m$^2$                       &     0.3         \\ \hline
-{\ct AREA\_RAMP\_ID}                 & Character        & Section \ref{info:FIRE}                 &                        &              \\ \hline
 {\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &  1               \\ \hline
 {\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
-{\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file. For heat release rate, either {\ct HRR} or {\ct HRR\_RAMP\_ID} must be included but not both.}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct CO\_YIELD}            & Real        & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
-{\ct CO\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct HCL\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
-{\ct HCL\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct HCN\_YIELD}           & Real   & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
-{\ct HCN\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
-{\ct HEIGHT\_RAMP\_ID} & Character        & Section \ref{info:RAMP}                 &                        &            \\ \hline
-{\ct HRR}*        & Real   &  Section \ref{info:RAMP}                &  kW                           &                 \\ \hline
-{\ct HRR\_RAMP\_ID}*        & Character   &  Section \ref{info:RAMP}                &                             &                 \\ \hline
 {\ct HYDROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
+{\ct ID}**\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.}                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
+{\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
+{\ct RADIATIVE\_FRACTION}  & Real        & Section \ref{info:FIRE}                 &                             &     0.35        \\ \hline
+\end{longtable}
+\end{minipage}
+
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FIRE2} \\
+\hline
+\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instances of a Fire Object)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instances of a Fire Object)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct FIRE\_OBJECT} & Character        & Section \ref{info:FIRE}                 & kJ/kg                       &            \\ \hline
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct IGNITION\_CRITERION}\footnote{Input for {\ct IGNITION\_CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
                            & Selection List   & Section \ref{info:FIRE}                 &                             & TIME                \\ \hline
 {\ct LOCATION}*             & Real Triplet        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
-{\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
-{\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
-%{\ct PF\_CO\_YIELD}        & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-%{\ct PF\_SOOT\_YIELD}      & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-%{\ct PF\_TRACE\_YIELD}     & Real        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-%{\ct POST\_FLASHOVER}      & Logical     & Section \ref{info:FIRE}                 &                             &  {\ct .FALSE.}  \\ \hline
-{\ct RADIATIVE\_FRACTION}  & Real        & Section \ref{info:FIRE}                 &                             &     0.35        \\ \hline
 {\ct SETPOINT}             & Real        & Section \ref{info:FIRE}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$  & 0 s        \\ \hline
-{\ct SOOT\_YIELD}          & Real        & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
-{\ct SOOT\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct TRACE\_YIELD}         & Real        & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
-{\ct TRACE\_YIELD\_RAMP\_ID}            & Character        & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
 
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Fire Parameters ({\ct TABL} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FIRE3} \\
+\hline
+\multicolumn{5}{|c|}{{\ct TABL} (Time-Based Fire Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct FIRE} (Time-Based Fire Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct LABELS}\footnote{Inputs for fire area ({\ct AREAS}, default value 0.3 m$^2$), CO yield ({\ct CO\_YIELDS}, default value 0.0 kg/kg), HCl yield, ({\ct HCL\_YIELDS}, default value 0.0 kg/kg), HCN yield ({\ct HCN\_YIELDS}, default value 0.0 kg/kg), fire height ({\ct HEIGHTS}, default value 0.0 kg/kg), heat release rate ({\ct HRRS}), soot yield ({\ct SOOT\_YIELDS}, default value 0.0 kg/kg), time ({\ct T}, default value 0.0 s), and trace species yield ({\ct TRACE\_YIELDS}, default value 0.0 kg/kg), when included, must include the same number of data points in a single {\ct FIRE} input. At a minimum, {\ct HRRS} must be included.} *                & Character Array        & Section \ref{info:FIRE}                 &                        &              \\ \hline
+{\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct DATA*}             & Real Array       & Section \ref{info:FIRE}                 &   &        \\ \hline
+\end{longtable}
+\end{minipage}
+
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&FIRE ID = 'Cushion', COMP_ID = 'Comp 1',
-      LOCATION = 2.5, 2.5, 0.,
-      CARBON = 9, HYDROGEN = 6, OXYGEN = 2, NITROGEN = 2,
-      IGNITION_CRITERION = 'TIME',
-      HEAT_OF_COMBUSTION = 50000., RADIATIVE_FRACTION = 0.33,
-      SOOT_YIELD = 0.227, CO_YIELD = 0.0845557,
-      AREA = 0.1, HEIGHT = 0., HRR_RAMP_ID = 'Cushion Fire' /
-&RAMP ID = 'Cushion Fire', TYPE = 'HEAT_RELEASE_RATE',
-      T = 0., 60., 120., 180., 240., 300.,
-      HRR = 0., 100000., 150000., 200000., 150000., 125000. /
+&FIRE
+ID = 'Wood_Wall', COMP_ID = 'Comp 2',
+LOCATION = 2.5, 5., 1.5,
+CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
+IGNITION_CRITERION = 'TIME',
+HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33,
+T = 0., 8000.,
+HRRS = 0., 1000.,
+AREAS = 0.05, 9.,
+SOOT_YIELD = 0.015, 0.015,
+CO_YIELD = 0.006171682, 0.006171682/
 \end{lstlisting}
 
 
@@ -670,52 +692,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 &SLCF  DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
 \end{lstlisting}
 
-
-
-
 \clearpage
-\section{Ramp Functions, Namelist Group \texorpdfstring{{\tt RAMP}}{RAMP}}
-\label{info:RAMP}
-\label{info:RAMP2}
-
-\begin{minipage}{6.5in}
-\renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Ramp Function Parameters ({\ct RAMP} namelist group)]{For more information see Section~\ref{info:RAMP}.}
-\label{tbl:RAMP} \\
-\hline
-\multicolumn{5}{|c|}{{\ct RAMP} (Ramp Function Parameters)} \\
-\hline \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{5}{|c|}{{\ct RAMP} (Ramp Function Parameters)} \\
-\hline \hline
-\endhead
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct F}*\footnote{ * indicates a required input for each {\ct RAMP} input included in the input file. Either {\ct T} or {\ct Z} (but not both) are required depending on the type associated with the ramp.}               & Real Array            & Section \ref{info:RAMP2}                 &  use dependent        &                 \\ \hline
-{\ct ID}*      		  & Character   & Section \ref{info:RAMP2}     &                   &                 \\ \hline
-{\ct T}*               & Real Array            & Section \ref{info:RAMP2}                 &  s       &                 \\ \hline
-{\ct TYPE}*\footnote{{\ct TYPE} must be either AREA, FRACTION, HRR, or LENGTH}            & Selection List        & Section \ref{info:RAMP2}                 &          &                 \\ \hline
-{\ct Z}*               & Real Array            & Section \ref{info:RAMP2}                 &  m       &                 \\ \hline
-\end{longtable}
-\end{minipage}
-
-\vspace{\baselineskip}
-
-\graybox{
-Vent opening is specified as a function of time with {\ct T} as time and {\ct F} as the fraction of the vent width (for wall vents), fraction of the vent area (for ceiling / floor vents), or the flowrate for mechanical vents). Refer to Section~\ref{info:VENT2}. \\
-
-Filter efficiency is specified as a function of time with {\ct T} as time and {\ct F} as the fraction of soot and trace species flow removed in the associated mechanical vent. Refer to Section~\ref{info:VENT4}. \\
-
-Compartment area in XY-plane is specified as a function of compartment height with {\ct Z} as the height and {\ct F} as the cross-sectional area in m$^2$. Refer to Section~\ref{info:COMP4}. \\
-
-Heat release rate of a fire is specified as a function of time with {\ct T} as time and {\ct F} as the heat release rate of the fire in kW. Refer to Section~\ref{info:FIRE2}. This may not be used with a constant HRR specified with the HRR input.\\
-
-Fire height is specified as a function of time with {\ct T} as time and {\ct F} as the height of the base of the fire from the compartment floor in m. Refer to Section~\ref{info:FIRE2}. This overrides any value specified by LOCATION(3).\\
-
-Fire species yields are specified as a function of time using {\ct T} as time and {\ct F} as the species yield fraction in kg of species produced per kg of fuel burned.  Refer to Section~\ref{info:FIRE2} These may not be used with the corresponding constant species yield input(s).
-}
 
 
 

@@ -8,20 +8,21 @@
 
     ! geometry parameters
     integer, parameter :: mxrooms = 101         ! maximum number of compartments
-    integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material
-    !                        (at the moment, the gui only support 1)
+    integer, parameter :: mxslb = 6             ! maximum number of slabs in a surface material 
+                                                ! (at the moment, the gui only supports 1)
     integer, parameter :: nwal = 4              ! number of compartment surfaces (ceiling, upper walls, lower walls, floor)
     integer, parameter :: mxwal = mxrooms*nwal  ! maximum total number of compartment surfaces
     integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation (should be odd number)
     integer, parameter :: mxslice = 5*mxrooms   ! maximum number of slices and isosurfaces in an input file
+    
+    integer, parameter :: mxperrm = 25          ! maximum number of connections per compartment (for vents, targets, etc)
 
     ! fire related input parameters
-    integer, parameter :: mxpts = 199           ! maximum number of data points in a input curve/ramp
+    integer, parameter :: mxpts = 200           ! maximum number of data points in a input curve/ramp
     integer, parameter :: ns = 11               ! number of species
-    integer, parameter :: mxfires = 202         ! maximum number of fire objects
-    integer, parameter :: mxfirp = 20           ! number of parameters for each fire object
+    integer, parameter :: mxfires = mxperrm*mxrooms ! maximum number of fires
 
-    integer, parameter :: mxthrmp = 125         ! maximum number of thermal properties
+    integer, parameter :: mxthrmp = 200         ! maximum number of thermal properties
     integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names
 
     integer, parameter :: trigger_by_time = 1   ! indicies for fire ignition type (also used by vents)
@@ -29,7 +30,6 @@
     integer, parameter :: trigger_by_flux = 3
 
     ! ventilation parameters
-    integer, parameter :: mxperrm = 10              ! maximum number of connections per compartment (for vents, targets, etc)
     integer, parameter :: mxhvents = mxperrm*mxrooms! maximum number of horizontal flow vents
     integer, parameter :: mxfslab = 10              ! maximum number of slabs in a horizontal flow calculation
 
@@ -70,7 +70,7 @@
     integer, parameter :: default_grid = 50         ! number of grid cells in each direction at initialization
 
     ! target parameters
-    integer, parameter :: mxtarg = mxperrm*(mxrooms-1)      ! maximum number of targets
+    integer, parameter :: mxtarg = mxperrm*mxrooms          ! maximum number of targets
     integer, parameter :: nnodes_trg = nnodes-1             ! number of interior nodes in a target for conduction calculation
     integer, parameter :: idx_tempf_trg = 1                 ! position of front temperature of target (front surface temperature)
     integer, parameter :: idx_tempb_trg = idx_tempf_trg+nnodes_trg-1 ! position of back temperature of target
@@ -78,7 +78,7 @@
     integer, parameter :: mxr_trg = idx_tempb_trg           ! upper bound of real target array
     integer, parameter :: mxi_trg = 7                       ! upper bound of integer target array
 
-    integer, parameter :: mxdtect=mxperrm*(mxrooms-1)       ! maximum number of detectors
+    integer, parameter :: mxdtect=mxperrm*mxrooms-1         ! maximum number of detectors
 
     integer, parameter :: check_state = 0                   ! index to check state of detectors and targets
     integer, parameter :: set_state = 1                     ! index to calculate full state of detectors and targets

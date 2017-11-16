@@ -269,7 +269,7 @@ module cfast_types
         ! These are common to more than one vent types
 
         character(64) :: ramp_id            ! ramp id assocated with vent
-        character(64) :: filter_id            ! filter id assocated with vent
+        character(64) :: filter_id          ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent
         integer :: room2                    ! second or bottom compartment for connecting vent
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
@@ -298,7 +298,7 @@ module cfast_types
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type
 
-    ! slice file data structure
+    ! visualization data structure
     type slice_type
        character(256) :: filename
        character(64) :: menu_label, colorbar_label, unit_label

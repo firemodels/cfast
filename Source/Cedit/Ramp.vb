@@ -8,7 +8,7 @@
     Friend Const IdxArea As Integer = 0
     Friend Const IdxFrac As Integer = 1
     Friend Const IdxHRR As Integer = 2
-    Friend Const IdxLength As Integer = 2
+    Friend Const IdxLength As Integer = 3
     Friend Const xdx As Integer = 0
     Friend Const fdx As Integer = 1
     Friend Const ErrorVal As Integer = -1

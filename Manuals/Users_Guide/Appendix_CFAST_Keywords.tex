@@ -75,16 +75,16 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 {\ct COMP}   & Compartments                   & \ref{info:COMP}   & \ref{tbl:COMP}   \\ \hline
 {\ct CONN}   & Surface Connections            & \ref{info:CONN}   & \ref{tbl:CONN}   \\ \hline
 {\ct DEVC}   & Devices                        & \ref{info:DEVC}   & \ref{tbl:DEVC}   \\ \hline
-{\ct FIRE}   & Fire Definition                & \ref{info:FOBJ}   & \ref{tbl:FOBJ}   \\ \hline
+{\ct FIRE}   & Fire Definition                & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
 {\ct HEAD}   & Input File Header              & \ref{info:HEAD}   & \ref{tbl:HEAD}   \\ \hline
 {\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
-{\ct INSF}   & Fires Instances                & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
+{\ct INSF}   & Fires Instances                & \ref{info:FIRE2}   & \ref{tbl:FIRE2}   \\ \hline
 {\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
 {\ct MATL}   & Material Properties            & \ref{info:MATL}   & \ref{tbl:MATL}   \\ \hline
 {\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
 {\ct SLCF}   & Slice File Outputs             & \ref{info:SLCF}   & \ref{tbl:SLCF}   \\ \hline
 {\ct TAIL}   & End of Input File Indicator    &                   &                  \\ \hline
-{\ct TABL}   & Table of Time-Based Inputs     & \ref{info:TABL}   & \ref{info:TABL}   \\ \hline
+{\ct TABL}   & Table of Time-Based Inputs     & \ref{info:FIRE3}   & \ref{tbl:FIRE3}   \\ \hline
 {\ct TIME}   & Simulation Time                & \ref{info:TIME}   & \ref{tbl:TIME}   \\ \hline
 {\ct VENT}   & Vents                          & \ref{info:VENT}   & \ref{tbl:WVENT}   \\ \hline
 \end{tabular}
@@ -444,7 +444,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
-\label{tbl:FOBJ} \\
+\label{tbl:FIRE} \\
 \hline
 \multicolumn{5}{|c|}{{\ct FIRE} (Fixed Fire Parameters)} \\
 \hline \hline
@@ -518,9 +518,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \clearpage
 \noindent Example:
 \begin{lstlisting}
-&INSF ID = 'Wood_Wall', COMP_ID = 'Comp 2', 
+&INSF ID = 'Wood_Wall', COMP_ID = 'Comp 2',
       LOCATION = 2.5, 5., 1.5, FIRE_ID=''Wood Wall' /
-&FIRE ID = 'Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5., 
+&FIRE ID = 'Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
       HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33 /
 &TABL ID = 'Wood Wall', LABELS = 'TIME', 'HRR' ,'AREA', 'CO_YIELD', 'SOOT_YIELD' /
 &TABL ID = 'Wood Wall', DATA =     0.,    0.,    0.05,   0.006,      0.015 /

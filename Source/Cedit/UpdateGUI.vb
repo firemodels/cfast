@@ -5,7 +5,7 @@ Public Class UpdateGUI
     Private MainWin As CeditMain
     Private AreaPoints() As Single, HeightPoints() As Single, OpeningTimes() As Single, OpeningFractions() As Single
     Private NumPoints As Integer, i As Integer, j As Integer, NumCompartments As Integer
-    Private NumHVents As Integer, numVVents As Integer, numMVents As Integer, NumVHeats As Integer, NumHHeats As Integer, _
+    Private NumHVents As Integer, numVVents As Integer, numMVents As Integer, NumVHeats As Integer, NumHHeats As Integer,
     numTargets As Integer, numDetectors As Integer, numHeats As Integer, numFires As Integer, numVisuals As Integer
     Public Sub New(ByVal ParentWindow As Object)
         MainWin = ParentWindow
@@ -62,7 +62,7 @@ Public Class UpdateGUI
     End Sub
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
-        ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid + _
+        ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid +
             myTargets.IsValid + myFires.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
             myErrors.Break(System.IO.Path.GetFileName(myEnvironment.InputFileName))
@@ -443,7 +443,7 @@ Public Class UpdateGUI
                         MainWin.HVentFractions(2, 1) = aVent.FinalOpening
                     End If
                 Else
-                        For i = 1 To NumPoints
+                    For i = 1 To NumPoints
                         MainWin.HVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.HVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -558,7 +558,7 @@ Public Class UpdateGUI
                         MainWin.VVentFractions(2, 1) = aVent.FinalOpening
                     End If
                 Else
-                        For i = 1 To NumPoints
+                    For i = 1 To NumPoints
                         MainWin.VVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.VVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -681,7 +681,7 @@ Public Class UpdateGUI
                         MainWin.MVentFractions(2, 1) = aVent.FinalOpening
                     End If
                 Else
-                        For i = 1 To NumPoints
+                    For i = 1 To NumPoints
                         MainWin.MVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.MVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -962,8 +962,10 @@ Public Class UpdateGUI
         Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
         Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single
         Dim IgnitionTypeLabel As String = ""
+        Dim ir, ic As Integer
         If index < 0 Or index >= myFires.Count Then
             ClearGrid(MainWin.FireSummary)
+            ClearGrid(MainWin.FireDataSS)
             MainWin.GroupFire.Enabled = False
         Else
             MainWin.GroupFire.Enabled = True
@@ -986,7 +988,6 @@ Public Class UpdateGUI
 
             MainWin.FireXPosition.Text = aFire.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFire.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.FireHeight.Text = aFire.Height.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireIgnitionCriteria.SelectedIndex = aFire.IgnitionType
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
                 IgnitionTypeLabel = myUnits.Convert(UnitsNum.Time).Units
@@ -1002,23 +1003,34 @@ Public Class UpdateGUI
             End If
             MainWin.FireIgnitionValue.Text = " "
             If aFire.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFire.IgnitionValue.ToString + IgnitionTypeLabel
-            MainWin.FireName.Text = aFire.Name
+            MainWin.FireInstanceName.Text = aFire.Name
 
             MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
             MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
             MainWin.FireO.Text = aFire.ChemicalFormula(formula.O).ToString
             MainWin.FireN.Text = aFire.ChemicalFormula(formula.N).ToString
             MainWin.FireCl.Text = aFire.ChemicalFormula(formula.Cl).ToString
-            MainWin.FireHRR.Text = aFire.HRR.ToString + myUnits.Convert(UnitsNum.HRR).Units
             MainWin.FireHoC.Text = aFire.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
             MainWin.FireRadiativeFraction.Text = aFire.RadiativeFraction.ToString
-            MainWin.FireArea.Text = aFire.Area.ToString + myUnits.Convert(UnitsNum.Area).Units
-            MainWin.FireHeight.Text = aFire.Height.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.FireCOYield.Text = aFire.COYield.ToString
-            MainWin.FireHClYield.Text = aFire.HClYield.ToString
-            MainWin.FireHCNYield.Text = aFire.HCNYield.ToString
-            MainWin.FireSootYield.Text = aFire.SootYield.ToString
-            MainWin.FireTSYield.Text = aFire.TSYield.ToString
+
+            aFire.GetFireData(afireTimeSeries, NumPoints)
+            ClearGrid(MainWin.FireDataSS)
+            MainWin.FireDataSS(0, 0) = "Time" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireTime).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 1) = "Mdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireMdot).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 2) = "HRR" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireQdot).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 3) = "Height" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireHeight).Units.Substring(1) + ")"
+            MainWin.FireDataSS(0, 4) = "Area" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireArea).Units.Substring(1) + ")"
+            MainWin.FireDataSS.AutoSizeRow(0)
+
+            If NumPoints >= 0 Then
+                For ir = 0 To NumPoints
+                    For ic = 0 To 12
+                        MainWin.FireDataSS(ir + 1, ic) = afireTimeSeries(ic, ir)
+                    Next
+                Next
+            End If
+
+            UpdateFirePlot(index)
 
             numFires = myFires.Count
             ClearGrid(MainWin.FireSummary)
@@ -1039,7 +1051,6 @@ Public Class UpdateGUI
                     End If
                     MainWin.FireSummary(i, 6) = aFire.XPosition.ToString
                     MainWin.FireSummary(i, 7) = aFire.YPosition.ToString
-                    MainWin.FireSummary(i, 8) = aFire.Height.ToString
 
                     MainWin.FireSummary(i, 2) = aFire.Name
                     PeakHRR = 0.0
@@ -1052,6 +1063,25 @@ Public Class UpdateGUI
                 MainWin.FireSummary.Select(index + 1, 0, index + 1, MainWin.FireSummary.Cols.Count - 1, True)
             End If
         End If
+    End Sub
+    Private Sub UpdateFirePlot(ByVal index As Integer)
+        Dim aFire As New Fire
+        Dim aFireData(12, 0) As Single, numPoints As Integer, iSelectedColumn As Integer
+        Dim x() As Single, y() As Single, j As Integer
+        aFire = myFires(index)
+        MainWin.FirePlot.Clear()
+        aFire.GetFireData(aFireData, numPoints)
+        ReDim x(numPoints), y(numPoints)
+        iSelectedColumn = MainWin.FireDataSS.ColSel
+        If iSelectedColumn < 1 Then iSelectedColumn = Fire.FireHRR
+        For j = 0 To numPoints
+            x(j) = aFireData(Fire.FireTime, j)
+            y(j) = aFireData(iSelectedColumn, j)
+        Next
+        Dim lp As New NPlot.LinePlot(y, x)
+        MainWin.FirePlot.Add(lp)
+        MainWin.FirePlot.Title = aFire.Name + ": " + MainWin.FireDataSS(0, iSelectedColumn).ToString.Replace(Chr(10), " ")
+        MainWin.FirePlot.Refresh()
     End Sub
 #End Region
 #Region "Support Routines"
@@ -1143,7 +1173,7 @@ Public Class UpdateGUI
             Dim aFire As Fire
             For i = 1 To numFires
                 aFire = myFires(i - 1)
-                If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aFire.Height - aTarget.ZPosition <> 0) Then
+                If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aTarget.ZPosition <> 0) Then
                     MainWin.TargetNormalCalc.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
                 End If
             Next

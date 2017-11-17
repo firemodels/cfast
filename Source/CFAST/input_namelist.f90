@@ -51,6 +51,7 @@
     call read_conn(iofili)
     call read_isof(iofili)
     call read_slcf(iofili)
+    call read_diag(iofili) !(ANDY)
 
     close (iofili)
     
@@ -2261,6 +2262,62 @@
     end subroutine set_slcf_defaults
 
     end subroutine read_slcf
+
+
+    ! --------------------------- diag -------------------------------------------
+    
+    subroutine read_diag(lu)
+
+    integer :: ios
+    integer, intent(in) :: lu
+
+    namelist /DIAG/ partial_pressure_h2o,partial_pressure_co2,soot_volume_fraction,tempTgas
+
+    ios = 1
+
+    rewind (unit=lu)
+    input_file_line_number = 0
+
+    ! scan entire file to look for &DIAG input
+    diag_loop: do
+        call checkread ('DIAG',lu,ios)
+        if (ios==0) diagflag=.true.
+        if (ios==1) then
+            exit diag_loop
+        end if
+        read(lu,DIAG,iostat=ios)
+        if (ios>0) then
+            write(iofill, '(a)') '***Error in &DIAG: Invalid specification for inputs.'
+            stop
+        end if
+    end do diag_loop
+
+    ! we found one. read it (only the first one counts; others are ignored)
+    diag_flag: if (diagflag) then
+
+        rewind (lu)
+        input_file_line_number = 0
+
+        call checkread('DIAG',lu,ios)
+        call set_diag_defaults
+        read(lu,DIAG)
+    
+    end if diag_flag
+    
+    if (diagflag == .true.) validate = .true.
+
+    contains
+
+    subroutine set_diag_defaults
+
+    partial_pressure_h2o = 0._eb
+    partial_pressure_co2 = 0._eb
+    soot_volume_fraction = 0._eb
+    tempTgas = 0._eb
+
+    end subroutine set_diag_defaults
+
+    end subroutine read_diag
 
     ! --------------------------- checkread ---------------------------------------
     subroutine checkread(name,lu,ios)

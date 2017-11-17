@@ -96,7 +96,8 @@
    
     ! now we can check the input data for consistency
 
-    ! check for temperature outside reasonable limits
+    ! check for temperature outside reasonable limits (ANDY)
+    if (diagflag == .true.) goto 211    
     if (exterior_ambient_temperature>373.15_eb.or.exterior_ambient_temperature<223.15_eb) then
         write (*,5022) exterior_ambient_temperature
         write (iofill,5022) exterior_ambient_temperature
@@ -106,7 +107,8 @@
         write (*,5022) interior_ambient_temperature
         write (iofill,5022) interior_ambient_temperature
         stop
-    end if
+    end if    
+211 continue
 
     ! compartment geometry related data
     nrm1 = nr - 1

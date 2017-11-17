@@ -248,8 +248,6 @@ module target_routines
 
             ! compute path length in lower (zl) and upper (zu) layer
             call getylyu(zwall,zlay,ztarg,s,zl,zu)
-            absu = absorb(iroom, u) ! (ANDY)
-            absl = absorb(iroom, l)
 
             ! find fractions transmitted and absorbed in lower and upper layer
             taul = exp(-absl*zl)
@@ -402,7 +400,7 @@ module target_routines
 
     integer :: nsolid_front_verts, nsolid_back_verts
     integer, parameter :: front=1, back=2
-    integer :: i, iwall, ivert, skiptagr
+    integer :: i, iwall, ivert
 
  ! vertices
  !       3--------------4
@@ -478,12 +476,6 @@ module target_routines
     target_factors_back(1:10)=0.0_eb
     do iwall=1, 10
        facei=>faces(1:5,iwall)
-       skiptagr = 0 !(ANDY)
-       do ivert = 1, 5
-           if (vert_distance(facei(ivert)) == roomi%x0 .or. vert_distance(facei(ivert)) == roomi%y0 .or. &
-               vert_distance(facei(ivert)) == roomi%z0) skiptagr = skiptagr + 1
-       end do
-       if (skiptagr == 5) goto 201
        nsolid_front_verts=0
        nsolid_back_verts=0
        do ivert = 1, 4
@@ -493,12 +485,12 @@ module target_routines
           d2 = vert_distance(facei(ivert+1))
           v2(1:3) => room_verts(1:3,facei(ivert+1))
 
-          if (d1.ge.0) then  ! face vertex is above target plane
+          if (d1.gt.0) then  ! face vertex is above target plane
              nsolid_front_verts=nsolid_front_verts+1
              solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
           end if
 
-          if (d1.le.0) then  ! face vertex is below target plane
+          if (d1.lt.0) then  ! face vertex is below target plane
              nsolid_back_verts=nsolid_back_verts+1
              solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
           end if
@@ -582,7 +574,6 @@ module target_routines
           end do
           end if
        end if
-201    continue
     end do
     sum_front = 0.0_eb
     sum_back = 0.0_eb

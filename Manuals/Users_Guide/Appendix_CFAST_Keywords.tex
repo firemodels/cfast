@@ -466,6 +466,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \end{longtable}
 \end{minipage}
 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -492,7 +493,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \end{longtable}
 \end{minipage}
 
-
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -517,13 +518,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&FIRE
-ID = 'Wood_Wall', COMP_ID = 'Comp 2',
-LOCATION = 2.5, 5., 1.5,
-CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
-IGNITION_CRITERION = 'TIME',
-HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33,
-T = 0., 8000.,
+&FIRE ID = 'Wood_Wall', COMP_ID = 'Comp 2', LOCATION = 2.5, 5., 1.5, FIRE_OBJECT=''Wood Wall' /
+&FOBJ  ID='Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5., HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33 /
+&TABL T = 0., 8000.,
 HRRS = 0., 1000.,
 AREAS = 0.05, 9.,
 SOOT_YIELD = 0.015, 0.015,

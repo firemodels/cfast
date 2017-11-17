@@ -10,8 +10,6 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
-    Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
-    Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
 
 #Region " Windows Form Designer generated code "
 
@@ -41,6 +39,8 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
     Friend WithEvents FireDefinitionName As ComboBox
     Friend WithEvents FireType As Label
     Friend WithEvents Label36 As Label

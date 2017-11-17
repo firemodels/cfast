@@ -38,7 +38,7 @@ as the last line at the end of the input file. This completes the file from {\ct
 
 The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Users\_Guide\_Example.in, is part of the CFAST software distribution} removed for clarity.
 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\tiny]
 &HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
 &TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
 &INIT  PRESSURE = 101325., RELATIVE_HUMIDITY = 50., TEMPERATURES = 20., 20. /
@@ -47,13 +47,13 @@ The general structure of an input file is shown below, with many lines of the or
 &COMP ID = 'Comp 1', WIDTH = 5., DEPTH = 5., HEIGHT = 3. ... /
 &VENT ID = 'VVENT 1', TYPE = 'CEILING', COMP_IDS = 'Comp 3', 'Comp 2',
       AREA = 1., SHAPE = 'ROUND', /
-&FIRE ID = 'Wood_Wall', COMP_ID = 'Comp 2',
-LOCATION = 2.5, 5., 1.5,
-CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
-IGNITION_CRITERION = 'TIME',
-HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33,
-T = 0., 8000., HRRS = 0., 1000., AREAS = 0.05, 9.,
-SOOT_YIELD = 0.015, 0.015, CO_YIELD = 0.006171682, 0.006171682 /
+&INSF ID = 'Wood_Wall', COMP_ID = 'Comp 2',
+      LOCATION = 2.5, 5., 1.5, FIRE_ID=''Wood Wall' /
+&FIRE ID = 'Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
+      HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Wood Wall', LABELS = 'TIME', 'HRR' ,'AREA', 'CO_YIELD', 'SOOT_YIELD' /
+&TABL ID = 'Wood Wall', DATA =     0.,    0.,    0.05,   0.006,      0.015 /
+&TABL ID = 'Wood Wall', DATA =     0.,    8000., 9.0,    0.006,      0.015 /
 &DEVC ID = 'Smoke Detector 1', COMP_ID = 'Comp 1',
       TYPE = 'SMOKE', LOCATION = 3., 3., 2.97, SETPOINT = 23.93346 /
 &CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
@@ -75,10 +75,10 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 {\ct COMP}   & Compartments                   & \ref{info:COMP}   & \ref{tbl:COMP}   \\ \hline
 {\ct CONN}   & Surface Connections            & \ref{info:CONN}   & \ref{tbl:CONN}   \\ \hline
 {\ct DEVC}   & Devices                        & \ref{info:DEVC}   & \ref{tbl:DEVC}   \\ \hline
-{\ct FIRE}   & Fire Objects                   & \ref{info:FOBJ}   & \ref{tbl:FOBJ}   \\ \hline
-{\ct FIRE}   & Fires Instances                & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
+{\ct FIRE}   & Fire Definition                & \ref{info:FOBJ}   & \ref{tbl:FOBJ}   \\ \hline
 {\ct HEAD}   & Input File Header              & \ref{info:HEAD}   & \ref{tbl:HEAD}   \\ \hline
 {\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
+{\ct INSF}   & Fires Instances                & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
 {\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
 {\ct MATL}   & Material Properties            & \ref{info:MATL}   & \ref{tbl:MATL}   \\ \hline
 {\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
@@ -443,15 +443,15 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Fire Parameters ({\ct FOBJ} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
 \label{tbl:FOBJ} \\
 \hline
-\multicolumn{5}{|c|}{{\ct FOBJ} (Fixed Fire Parameters)} \\
+\multicolumn{5}{|c|}{{\ct FIRE} (Fixed Fire Parameters)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct FOBJ} (Fixed Fire Parameters)} \\
+\multicolumn{5}{|c|}{{\ct FIRE} (Fixed Fire Parameters)} \\
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
@@ -459,10 +459,11 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
 {\ct HYDROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
-{\ct ID}**\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.}                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct ID}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *                  & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
 {\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
 {\ct RADIATIVE\_FRACTION}  & Real        & Section \ref{info:FIRE}                 &                             &     0.35        \\ \hline
+{\ct TABLE\_ID}*          & Character     & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -470,24 +471,23 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\caption[Fire Parameters ({\ct INSF} namelist group)]{For more information see Section~\ref{info:FIRE}.}
 \label{tbl:FIRE2} \\
 \hline
-\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instances of a Fire Object)} \\
+\multicolumn{5}{|c|}{{\ct INSF} (Individual Instance of a Fire Object)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instances of a Fire Object)} \\
+\multicolumn{5}{|c|}{{\ct INSF} (Individual Instance of a Fire Object)} \\
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct COMP\_ID}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct FIRE\_OBJECT} & Character        & Section \ref{info:FIRE}                 & kJ/kg                       &            \\ \hline
+{\ct FIRE\_ID} & Character        & Section \ref{info:FIRE}                 & kJ/kg                       &            \\ \hline
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct IGNITION\_CRITERION}\footnote{Input for {\ct IGNITION\_CRITERION} must be {\ct FLUX}, {\ct TEMPERATURE}, or {\ct TIME}. An associated {\ct SETPOINT} is required. For {\ct FLUX} or {\ct TEMPERATURE}, an associated ignition target must be specified by {\ct DEVC\_ID}.}
-                           & Selection List   & Section \ref{info:FIRE}                 &                             & TIME                \\ \hline
+{\ct IGNITION\_CRITERION}   & Selection List   & Section \ref{info:FIRE}                 &                             & TIME                \\ \hline
 {\ct LOCATION}*             & Real Triplet        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
 {\ct SETPOINT}             & Real        & Section \ref{info:FIRE}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$  & 0 s        \\ \hline
 \end{longtable}
@@ -509,22 +509,22 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct LABELS}\footnote{Inputs for fire area ({\ct AREAS}, default value 0.3 m$^2$), CO yield ({\ct CO\_YIELDS}, default value 0.0 kg/kg), HCl yield, ({\ct HCL\_YIELDS}, default value 0.0 kg/kg), HCN yield ({\ct HCN\_YIELDS}, default value 0.0 kg/kg), fire height ({\ct HEIGHTS}, default value 0.0 kg/kg), heat release rate ({\ct HRRS}), soot yield ({\ct SOOT\_YIELDS}, default value 0.0 kg/kg), time ({\ct T}, default value 0.0 s), and trace species yield ({\ct TRACE\_YIELDS}, default value 0.0 kg/kg), when included, must include the same number of data points in a single {\ct FIRE} input. At a minimum, {\ct HRRS} must be included.} *                & Character Array        & Section \ref{info:FIRE}                 &                        &              \\ \hline
+{\ct LABELS}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *                & Character Array        & Section \ref{info:FIRE}                 &                        &              \\ \hline
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DATA*}             & Real Array       & Section \ref{info:FIRE}                 &   &        \\ \hline
 \end{longtable}
 \end{minipage}
 
-\vspace{\baselineskip}
+\clearpage
 \noindent Example:
 \begin{lstlisting}
-&FIRE ID = 'Wood_Wall', COMP_ID = 'Comp 2', LOCATION = 2.5, 5., 1.5, FIRE_OBJECT=''Wood Wall' /
-&FOBJ  ID='Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5., HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33 /
-&TABL T = 0., 8000.,
-HRRS = 0., 1000.,
-AREAS = 0.05, 9.,
-SOOT_YIELD = 0.015, 0.015,
-CO_YIELD = 0.006171682, 0.006171682/
+&INSF ID = 'Wood_Wall', COMP_ID = 'Comp 2', 
+      LOCATION = 2.5, 5., 1.5, FIRE_ID=''Wood Wall' /
+&FIRE ID = 'Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5., 
+      HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Wood Wall', LABELS = 'TIME', 'HRR' ,'AREA', 'CO_YIELD', 'SOOT_YIELD' /
+&TABL ID = 'Wood Wall', DATA =     0.,    0.,    0.05,   0.006,      0.015 /
+&TABL ID = 'Wood Wall', DATA =     0.,    8000., 9.0,    0.006,      0.015 /
 \end{lstlisting}
 
 
@@ -557,11 +557,9 @@ CO_YIELD = 0.006171682, 0.006171682/
 {\ct MATL\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct NORMAL}         & Real Triplet  & Section \ref{info:DEVC}     &                   & 0,0,1                \\ \hline
 {\ct RTI}                 & Real        & Section \ref{info:DEVC2}    & $\sqrt{\hbox{m}\cdot\hbox{s}}$   & 130  \\ \hline
-{\ct SETPOINT}
-	                  & Real        & Section \ref{info:DEVC}     & \degc or \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}  \\ \hline
+{\ct SETPOINT}            & Real        & Section \ref{info:DEVC}     & \degc or \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}  \\ \hline
 {\ct SPRAY\_DENSITY}      & Real        & Section \ref{info:DEVC2}    & m/s               &                 \\ \hline
-{\ct TYPE}* \footnote{Input for {\ct TYPE} must be {\ct PLATE}, {\ct CYLINDER}, {\ct SPRINKLER}, {\ct HEAT\_DETECTOR}, or {\ct SMOKE\_DETECTOR}}
-                          & Selection List   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct TYPE}*               & Selection List   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -676,7 +674,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct SLCF} input included in the input file. All inputs are required for a 2-D domain slice file.}          & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
+{\ct COMP\_ID}\footnote{ * indicates a required input for each {\ct SLCF} input included in the input file. All inputs are required for a 2-D domain slice file.} *         & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct DOMAIN}*\footnote{DOMAIN must be 2-D or 3-D. If 2-D, {\ct PLANE} specifies the orientation of the slice in the X, Y, or Z direction and {\ct POSITION} specifies the offset from the origin of the specified plane.}            & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct PLANE}             & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct POSITION}          & Real        & Section \ref{info:SLCF}                 &           &                 \\ \hline

@@ -1335,6 +1335,11 @@ module output_routines
         open (unit=24, file=ssspeciesmass,form='formatted')
         open (unit=25, file=sswall,form='formatted')
     end if
+    
+    ! the diagnosis file
+    if (diagflag == .true.) then !(ANDY)
+        open (unit=26, file=ssdiag,form='formatted')
+    end if
 
     return
 

@@ -17,6 +17,7 @@ module spreadsheet_routines
     use cparams
     use vent_data
     use room_data
+    use namelist_data
 
     implicit none
 
@@ -37,6 +38,9 @@ module spreadsheet_routines
     call output_spreadsheet_species_mass (time)
     call output_spreadsheet_flow (time)
     call output_spreadsheet_target (time)
+    if (diagflag == .true.) then
+        call output_spreadsheet_diagnosis (time)
+    end if
 
     return
 
@@ -590,5 +594,43 @@ module spreadsheet_routines
 
     return
     end subroutine output_spreadsheet_smokeview
+    
+! --------------------------- output_spreadsheet_diagnosis -------------------------------------------
+
+    subroutine output_spreadsheet_diagnosis (time)
+
+    !     Output results for radiation verification case 3 and 4
+
+    real(eb), intent(in) :: time
+    
+    real(eb) :: array(4,16)
+    integer :: position
+    
+    integer :: itarg, i, j
+
+    type(target_type), pointer :: targptr
+
+    if (time > 0._eb) then
+        array(:,:) = 0._eb
+        position = 0
+        write (26, '("GAS(TOP), WALL(TOP), GAS(SIDE), WALL(SIDE)")')
+        do itarg = 1, 11
+            targptr => targetinfo(itarg)
+            array(1,itarg) = targptr%flux_gas(1)
+            array(2,itarg) = targptr%flux_surface(1)
+        end do
+        do itarg = 12, 27
+            targptr => targetinfo(itarg)
+            array(3,itarg-11) = targptr%flux_gas(1)
+            array(4,itarg-11) = targptr%flux_surface(1)
+        end do
+        do j = 1, 16
+            targptr => targetinfo(itarg)
+            write (26, '(4(e15.8, ","))' ) (array(i, j), i = 1, 4)
+        end do
+    end if
+
+    return
+    end subroutine output_spreadsheet_diagnosis
 
 end module spreadsheet_routines

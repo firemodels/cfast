@@ -10,9 +10,10 @@ module radiation_routines
     use setup_data, only: iofill
     use cparams
     use room_data
-    use fire_data, only: n_fires, fireinfo
+    use fire_data, only: n_fires, fireinfo, partial_pressure_h2o, partial_pressure_co2, soot_volume_fraction, tempTgas
     use option_data
     use debug_data
+    use namelist_data
 
     implicit none
 
@@ -62,6 +63,10 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
+        if (diagflag == .true.) then !(ANDY)
+            roomptr%temp(u) = tempTgas + 273.15_eb
+            roomptr%temp(l) = tempTgas + 273.15_eb
+        end if
         tg(u) = roomptr%temp(u)
         tg(l) = roomptr%temp(l)
         roomptr%abs_length(l) = (1.8_eb*roomptr%volume(l)) / &
@@ -925,7 +930,11 @@ module radiation_routines
 
     ! absorbance for co2
     ng = roomptr%species_mass(layer,co2)/mwco2
-    plg = ng*rtv*l
+    if (diagflag == .true.) then
+        plg = partial_pressure_co2*l
+    else
+        plg = ng*rtv*l
+    end if
     if (plg>0.0_eb) then
         cplg = log10(plg)
         tglog = log10(tg)
@@ -937,7 +946,11 @@ module radiation_routines
 
     ! absorbance for h2o
     ng = roomptr%species_mass(layer,h2o)/mwh2o
-    plg = ng*rtv*l
+    if (diagflag == .true.) then
+        plg = partial_pressure_h2o*l
+    else
+        plg = ng*rtv*l
+    end if
     if (plg>0.0_eb) then
         cplg = log10(plg)
         tglog = log10(tg)
@@ -948,7 +961,11 @@ module radiation_routines
     end if
 
     ! total absorbance
-    vfs = roomptr%species_mass(layer,soot)/(roomptr%volume(layer)*rhos)
+    if (diagflag == .true.) then
+        vfs = soot_volume_fraction
+    else
+        vfs = roomptr%species_mass(layer,soot)/(roomptr%volume(layer)*rhos)
+    end if
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
 
     return

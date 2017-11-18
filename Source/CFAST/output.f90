@@ -1337,7 +1337,7 @@ module output_routines
     end if
     
     ! the diagnosis file
-    if (diagflag == .true.) then !(ANDY)
+    if (diagflag) then
         open (unit=26, file=ssdiag,form='formatted')
     end if
 

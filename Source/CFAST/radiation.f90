@@ -63,7 +63,7 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
-        if (diagflag == .true.) then !(ANDY)
+        if (diagflag) then
             roomptr%temp(u) = tempTgas + 273.15_eb
             roomptr%temp(l) = tempTgas + 273.15_eb
         end if
@@ -930,7 +930,7 @@ module radiation_routines
 
     ! absorbance for co2
     ng = roomptr%species_mass(layer,co2)/mwco2
-    if (diagflag == .true.) then
+    if (diagflag) then
         plg = partial_pressure_co2*l
     else
         plg = ng*rtv*l
@@ -946,7 +946,7 @@ module radiation_routines
 
     ! absorbance for h2o
     ng = roomptr%species_mass(layer,h2o)/mwh2o
-    if (diagflag == .true.) then
+    if (diagflag) then
         plg = partial_pressure_h2o*l
     else
         plg = ng*rtv*l
@@ -961,7 +961,7 @@ module radiation_routines
     end if
 
     ! total absorbance
-    if (diagflag == .true.) then
+    if (diagflag) then
         vfs = soot_volume_fraction
     else
         vfs = roomptr%species_mass(layer,soot)/(roomptr%volume(layer)*rhos)

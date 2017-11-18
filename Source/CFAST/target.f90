@@ -248,7 +248,8 @@ module target_routines
 
             ! compute path length in lower (zl) and upper (zu) layer
             call getylyu(zwall,zlay,ztarg,s,zl,zu)
-            absu = absorb(iroom, u) ! (ANDY)
+            ! For no fires
+            absu = absorb(iroom, u)
             absl = absorb(iroom, l)
 
             ! find fractions transmitted and absorbed in lower and upper layer
@@ -478,7 +479,7 @@ module target_routines
     target_factors_back(1:10)=0.0_eb
     do iwall=1, 10
        facei=>faces(1:5,iwall)
-       skiptagr = 0 !(ANDY)
+       skiptagr = 0
        do ivert = 1, 5
            if (vert_distance(facei(ivert)) == roomi%x0 .or. vert_distance(facei(ivert)) == roomi%y0 .or. &
                vert_distance(facei(ivert)) == roomi%z0) skiptagr = skiptagr + 1

@@ -96,8 +96,8 @@
    
     ! now we can check the input data for consistency
 
-    ! check for temperature outside reasonable limits (ANDY)
-    if (diagflag == .true.) goto 211    
+    ! check for temperature outside reasonable limits
+    if (diagflag) goto 211    
     if (exterior_ambient_temperature>373.15_eb.or.exterior_ambient_temperature<223.15_eb) then
         write (*,5022) exterior_ambient_temperature
         write (iofill,5022) exterior_ambient_temperature
@@ -473,7 +473,7 @@
     statusfile = datapath(1:lp) // project(1:ld) // '.status'
     slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
     kernelisrunning = datapath(1:lp) // project(1:ld) // '.kernelisrunning'
-    ssdiag = datapath(1:lp) // project(1:ld) // '_diag.csv' !(ANDY)
+    ssdiag = datapath(1:lp) // project(1:ld) // '_diag.csv'
 
     lp = len_trim (exepath)
     solverini = datapath(1:lp) // 'solver.ini'

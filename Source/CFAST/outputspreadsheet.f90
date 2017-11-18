@@ -38,9 +38,7 @@ module spreadsheet_routines
     call output_spreadsheet_species_mass (time)
     call output_spreadsheet_flow (time)
     call output_spreadsheet_target (time)
-    if (diagflag == .true.) then
-        call output_spreadsheet_diagnosis (time)
-    end if
+    if (diagflag) call output_spreadsheet_diagnosis (time)
 
     return
 
@@ -603,7 +601,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
     
-    real(eb) :: array(4,16)
+    real(eb) :: array(6,16)
     integer :: position
     
     integer :: itarg, i, j
@@ -613,20 +611,22 @@ module spreadsheet_routines
     if (time > 0._eb) then
         array(:,:) = 0._eb
         position = 0
-        write (26, '("GAS(TOP), WALL(TOP), GAS(SIDE), WALL(SIDE)")')
+        write (26, '("X, GAS(TOP), WALL(TOP), Z, GAS(SIDE), WALL(SIDE)")')
         do itarg = 1, 11
             targptr => targetinfo(itarg)
-            array(1,itarg) = targptr%flux_gas(1)
-            array(2,itarg) = targptr%flux_surface(1)
+            array(1,itarg) = targptr%center(1)
+            array(2,itarg) = targptr%flux_gas(1)
+            array(3,itarg) = targptr%flux_surface(1)
         end do
         do itarg = 12, 27
             targptr => targetinfo(itarg)
-            array(3,itarg-11) = targptr%flux_gas(1)
-            array(4,itarg-11) = targptr%flux_surface(1)
+            array(4,itarg-11) = targptr%center(3)
+            array(5,itarg-11) = targptr%flux_gas(1)
+            array(6,itarg-11) = targptr%flux_surface(1)
         end do
         do j = 1, 16
             targptr => targetinfo(itarg)
-            write (26, '(4(e15.8, ","))' ) (array(i, j), i = 1, 4)
+            write (26, '(6(e15.8, ","))' ) (array(i, j), i = 1, 6)
         end do
     end if
 

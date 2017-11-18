@@ -51,7 +51,7 @@
     call read_conn(iofili)
     call read_isof(iofili)
     call read_slcf(iofili)
-    call read_diag(iofili) !(ANDY)
+    call read_diag(iofili)
 
     close (iofili)
     
@@ -2304,7 +2304,7 @@
     
     end if diag_flag
     
-    if (diagflag == .true.) validate = .true.
+    if (diagflag) validate = .true.
 
     contains
 

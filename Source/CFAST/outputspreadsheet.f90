@@ -626,7 +626,8 @@ module spreadsheet_routines
         end do
         do j = 1, 16
             targptr => targetinfo(itarg)
-            write (26, '(6(e15.8, ","))' ) (array(i, j), i = 1, 6)
+            if (j < 12) write (26, '(6(e19.12, ","))' ) (array(i, j), i = 1, 6)
+            if (j > 11) write (26, '(3(","), 3(e19.12, ","))' ) (array(i, j), i = 4, 6)
         end do
     end if
 

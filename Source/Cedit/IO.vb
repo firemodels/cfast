@@ -3085,22 +3085,27 @@ Module IO
                 End If
             End If
             If aVent.OpenType = Vent.OpenbyTime Then
-                If aVent.RampID <> "" Then
-                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+                Dim ff(2), xx(2), numpoints As Single
+                aVent.GetRamp(xx, ff, numpoints)
+                If numpoints > 1 Then
+                    ln = " CRITERION = 'TIME' "
+                    PrintLine(IO, ln)
+                    ln = " T = " + xx(1).ToString
+                    For k = 2 To numpoints
+                        ln = ln + " , " + xx(k).ToString
+                    Next
+                    PrintLine(IO, ln)
+                    ln = " F = " + ff(1).ToString
+                    For k = 2 To numpoints
+                        ln = ln + " , " + ff(k).ToString
+                    Next
                     PrintLine(IO, ln)
                 ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
-                    Dim ff(2), xx(2) As Single
-                    ff(0) = aVent.InitialOpening
-                    ff(1) = aVent.InitialOpening
-                    ff(2) = aVent.FinalOpening
-                    xx(0) = 0.0
-                    xx(1) = aVent.InitialOpeningTime
-                    xx(2) = aVent.FinalOpeningTime
-                    aVent.RampID = "VentFraction_" + myRamps.Count.ToString
-                    Dim aRamp As Ramp
-                    aRamp = New Ramp(aVent.RampID, "FRACTION", xx, ff, True)
-                    myRamps.Add(aRamp)
-                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+                    ln = " CRITERION = 'TIME' "
+                    PrintLine(IO, ln)
+                    ln = " T = " + aVent.InitialOpeningTime.ToString + " , " + aVent.FinalOpeningTime.ToString + " "
+                    PrintLine(IO, ln)
+                    ln = " F = " + aVent.InitialOpening.ToString + " , " + aVent.FinalOpening.ToString + " "
                     PrintLine(IO, ln)
                 End If
             ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
@@ -3164,19 +3169,38 @@ Module IO
                 ln = " OFFSETS = " + aVent.OffsetX.ToString + " , " + aVent.OffsetY.ToString
                 PrintLine(IO, ln)
             End If
-            If aVent.OpenType = 0 Then
-                If aVent.RampID <> "" Then
-                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+            If aVent.OpenType = Vent.OpenbyTime Then
+                Dim ff(2), xx(2), numpoints As Single
+                aVent.GetRamp(xx, ff, numpoints)
+                If numpoints > 1 Then
+                    ln = " CRITERION = 'TIME' "
+                    PrintLine(IO, ln)
+                    ln = " T = " + xx(1).ToString
+                    For k = 2 To numpoints
+                        ln = ln + " , " + xx(k).ToString
+                    Next
+                    PrintLine(IO, ln)
+                    ln = " F = " + ff(1).ToString
+                    For k = 2 To numpoints
+                        ln = ln + " , " + ff(k).ToString
+                    Next
+                    PrintLine(IO, ln)
+                ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
+                    ln = " CRITERION = 'TIME' "
+                    PrintLine(IO, ln)
+                    ln = " T = " + aVent.InitialOpeningTime.ToString + " , " + aVent.FinalOpeningTime.ToString + " "
+                    PrintLine(IO, ln)
+                    ln = " F = " + aVent.InitialOpening.ToString + " , " + aVent.FinalOpening.ToString + " "
                     PrintLine(IO, ln)
                 End If
-            ElseIf aVent.OpenType = 1 Then
+            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                 aDummy = 273.15
                 aDummy = aVent.OpenValue - aDummy
                 ln = " CRITERION = 'TEMPERATURE' , SETPOINT = " + aDummy.ToString + " , DEVC_ID = '" + aVent.Target + "' "
                 PrintLine(IO, ln)
                 ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
                 PrintLine(IO, ln)
-            ElseIf aVent.OpenType = 2 Then
+            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
                 ln = " CRITERION = 'FLUX' , SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " , DEVC_ID = '" + aVent.Target + "' "
                 PrintLine(IO, ln)
                 ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
@@ -3236,19 +3260,38 @@ Module IO
             PrintLine(IO, ln)
             ln = " OFFSETS = " + aVent.OffsetX.ToString + " , " + aVent.OffsetY.ToString
             PrintLine(IO, ln)
-            If aVent.OpenType = 0 Then
-                If aVent.RampID <> "" Then
-                    ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
+            If aVent.OpenType = Vent.OpenbyTime Then
+                Dim ff(2), xx(2), numpoints As Single
+                aVent.GetRamp(xx, ff, numpoints)
+                If numpoints > 1 Then
+                    ln = " CRITERION = 'TIME' "
+                    PrintLine(IO, ln)
+                    ln = " T = " + xx(1).ToString
+                    For k = 2 To numpoints
+                        ln = ln + " , " + xx(k).ToString
+                    Next
+                    PrintLine(IO, ln)
+                    ln = " F = " + ff(1).ToString
+                    For k = 2 To numpoints
+                        ln = ln + " , " + ff(k).ToString
+                    Next
+                    PrintLine(IO, ln)
+                ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
+                    ln = " CRITERION = 'TIME' "
+                    PrintLine(IO, ln)
+                    ln = " T = " + aVent.InitialOpeningTime.ToString + " , " + aVent.FinalOpeningTime.ToString + " "
+                    PrintLine(IO, ln)
+                    ln = " F = " + aVent.InitialOpening.ToString + " , " + aVent.FinalOpening.ToString + " "
                     PrintLine(IO, ln)
                 End If
-            ElseIf aVent.OpenType = 1 Then
+            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                 aDummy = 273.15
                 aDummy = aVent.OpenValue - aDummy
                 ln = " CRITERION = 'TEMPERATURE' , SETPOINT = " + aDummy.ToString + " , DEVC_ID = '" + aVent.Target + "' "
                 PrintLine(IO, ln)
                 ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString
                 PrintLine(IO, ln)
-            ElseIf aVent.OpenType = 2 Then
+            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
                 ln = " CRITERION = 'FLUX' , SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " , DEVC_ID = '" + aVent.Target + "' "
                 PrintLine(IO, ln)
                 ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + " , POST_FRACTION = " + aVent.FinalOpening.ToString

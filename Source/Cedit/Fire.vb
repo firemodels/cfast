@@ -192,7 +192,7 @@ Public Class Fire
             aPeak = -10 ^ 99
             If whichItem >= 0 And whichItem <= 12 Then
                 For ic = 0 To Me.DimFireTimeSeries
-                    aValue = myUnits.ConvertFireData(whichItem).FromSI(Me.BaseFireTimeSeries(whichItem, ic))
+                    aValue = myUnits.ConvertFireData(whichItem).FromSI(Me.aFireTimeSeries(whichItem, ic))
                     If aValue > aPeak Then aPeak = aValue
                 Next
             End If
@@ -799,12 +799,12 @@ Public Class Fire
                     For ic = 0 To Me.NumFireTimeSeries
                         Select Case ic
                             Case FireTime
-                                If Me.BaseFireTimeSeries(FireTime, ir) < 0.0 Then
+                                If Me.aFireTimeSeries(FireTime, ir) < 0.0 Then
                                     FireCurveErrors(FireTime) = True
                                     HasErrors += 1
                                 End If
                             Case FireHRR
-                                If Me.BaseFireTimeSeries(FireHRR, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHRR, ir) > MaxHRR Then
+                                If Me.aFireTimeSeries(FireHRR, ir) < 0.0 Or Me.aFireTimeSeries(FireHRR, ir) > MaxHRR Then
                                     FireCurveErrors(FireHRR) = True
                                     HasErrors += 1
                                 End If
@@ -818,60 +818,60 @@ Public Class Fire
                                 'HasErrors += 1
                                 'End If
                             Case FireMdot
-                                If Me.BaseFireTimeSeries(FireMdot, ir) < 0.0 Or Me.BaseFireTimeSeries(FireMdot, ir) > MaxMdot Then
+                                If Me.aFireTimeSeries(FireMdot, ir) < 0.0 Or Me.aFireTimeSeries(FireMdot, ir) > MaxMdot Then
                                     FireCurveErrors(FireMdot) = True
                                     HasErrors += 1
                                 End If
                             Case FireHeight
-                                If Me.BaseFireTimeSeries(FireHeight, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHeight, ir) > CEdit.Compartment.MaxSize Then
+                                If Me.aFireTimeSeries(FireHeight, ir) < 0.0 Or Me.aFireTimeSeries(FireHeight, ir) > CEdit.Compartment.MaxSize Then
                                     FireCurveErrors(FireHeight) = True
                                     HasErrors += 1
                                 End If
                             Case FireArea
-                                If Me.BaseFireTimeSeries(FireArea, ir) < MinArea Or Me.BaseFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
-                                    Me.BaseFireTimeSeries(FireArea, ir) = 0.09
+                                If Me.aFireTimeSeries(FireArea, ir) < MinArea Or Me.aFireTimeSeries(FireArea, ir) > CEdit.Compartment.MaxSize ^ 2 Then
+                                    Me.aFireTimeSeries(FireArea, ir) = 0.09
                                     FireCurveErrors(FireArea) = True
                                     HasErrors += 1
-                                ElseIf Me.BaseFireTimeSeries(FireArea, ir) = MinArea Then
-                                    Me.BaseFireTimeSeries(FireArea, ir) = 0.09
+                                ElseIf Me.aFireTimeSeries(FireArea, ir) = MinArea Then
+                                    Me.aFireTimeSeries(FireArea, ir) = 0.09
                                 End If
                             Case FireCO
-                                If Me.BaseFireTimeSeries(FireCO, ir) < 0.0 Or Me.BaseFireTimeSeries(FireCO, ir) > MaxCO Then
+                                If Me.aFireTimeSeries(FireCO, ir) < 0.0 Or Me.aFireTimeSeries(FireCO, ir) > MaxCO Then
                                     FireCurveErrors(FireCO) = True
                                     HasErrors += 1
                                 End If
                             Case FireSoot
-                                If Me.BaseFireTimeSeries(FireSoot, ir) < 0.0 Or Me.BaseFireTimeSeries(FireSoot, ir) > MaxSoot Then
+                                If Me.aFireTimeSeries(FireSoot, ir) < 0.0 Or Me.aFireTimeSeries(FireSoot, ir) > MaxSoot Then
                                     FireCurveErrors(FireSoot) = True
                                     HasErrors += 1
                                 End If
                             Case FireHC
-                                If Me.BaseFireTimeSeries(FireHC, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHC, ir) > MaxHC Then
+                                If Me.aFireTimeSeries(FireHC, ir) < 0.0 Or Me.aFireTimeSeries(FireHC, ir) > MaxHC Then
                                     FireCurveErrors(FireHC) = True
                                     HasErrors += 1
                                 End If
                             Case FireO2
-                                If Me.BaseFireTimeSeries(FireO2, ir) < 0.0 Or Me.BaseFireTimeSeries(FireO2, ir) > MaxO2 Then
+                                If Me.aFireTimeSeries(FireO2, ir) < 0.0 Or Me.aFireTimeSeries(FireO2, ir) > MaxO2 Then
                                     FireCurveErrors(FireO2) = True
                                     HasErrors += 1
                                 End If
                             Case FireHCN
-                                If Me.BaseFireTimeSeries(FireHCN, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHCN, ir) > MaxHCN Then
+                                If Me.aFireTimeSeries(FireHCN, ir) < 0.0 Or Me.aFireTimeSeries(FireHCN, ir) > MaxHCN Then
                                     FireCurveErrors(FireHCN) = True
                                     HasErrors += 1
                                 End If
                             Case FireHCl
-                                If Me.BaseFireTimeSeries(FireHCl, ir) < 0.0 Or Me.BaseFireTimeSeries(FireHCl, ir) > MaxHCl Then
+                                If Me.aFireTimeSeries(FireHCl, ir) < 0.0 Or Me.aFireTimeSeries(FireHCl, ir) > MaxHCl Then
                                     FireCurveErrors(FireHCl) = True
                                     HasErrors += 1
                                 End If
                             Case FireCt
-                                If Me.BaseFireTimeSeries(FireCt, ir) < 0.0 Or Me.BaseFireTimeSeries(FireCt, ir) > MaxCt Then
+                                If Me.aFireTimeSeries(FireCt, ir) < 0.0 Or Me.aFireTimeSeries(FireCt, ir) > MaxCt Then
                                     FireCurveErrors(FireCt) = True
                                     HasErrors += 1
                                 End If
                             Case FireTS
-                                If Me.BaseFireTimeSeries(FireTS, ir) < 0.0 Or Me.BaseFireTimeSeries(FireTS, ir) > MaxTS Then
+                                If Me.aFireTimeSeries(FireTS, ir) < 0.0 Or Me.aFireTimeSeries(FireTS, ir) > MaxTS Then
                                     FireCurveErrors(FireTS) = True
                                     HasErrors += 1
                                 End If

@@ -5794,6 +5794,7 @@ Public Class CeditMain
     End Sub
     Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
         Dim aFire As New Fire
+        Dim aFireTimeSeries(12, 0) As Single
         If CurrentFire >= 0 And myFires.Count > 0 Then
             aFire = myFires(CurrentFire)
             If sender Is FireComp Then
@@ -5815,6 +5816,7 @@ Public Class CeditMain
             If sender Is FireTarget Then
                 aFire.Target = myTargets.Item(FireTarget.SelectedIndex).Name
             End If
+            If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
             If sender Is FireInstanceName Then
                 aFire.Name = FireInstanceName.Text
             End If
@@ -5858,7 +5860,7 @@ Public Class CeditMain
                     aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
                 Next
             Next
-            aFire.SetFireData(aFireTimeSeries)
+            UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
     Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange

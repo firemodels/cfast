@@ -178,20 +178,13 @@ Public Class Fire
         PeakHCN = 0.0
         PeakHCl = 0.0
         For j = 0 To NumPoints
-            'If aFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = aFireTimeSeries(Fire.FireHeight, j)
-            'If aFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = aFireTimeSeries(Fire.FireArea, j)
-            'If aFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = aFireTimeSeries(Fire.FireHRR, j)
-            'If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
-            'If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
-            'If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
-            'If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
-            If Me.BaseFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = Me.BaseFireTimeSeries(Fire.FireHeight, j)
-            If Me.BaseFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = Me.BaseFireTimeSeries(Fire.FireArea, j)
-            If Me.BaseFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = Me.BaseFireTimeSeries(Fire.FireHRR, j)
-            If Me.BaseFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = Me.BaseFireTimeSeries(Fire.FireCO, j)
-            If Me.BaseFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = Me.BaseFireTimeSeries(Fire.FireSoot, j)
-            If Me.BaseFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = Me.BaseFireTimeSeries(Fire.FireHCN, j)
-            If Me.BaseFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = Me.BaseFireTimeSeries(Fire.FireHCl, j)
+            If aFireTimeSeries(Fire.FireHeight, j) > PeakHeight Then PeakHeight = aFireTimeSeries(Fire.FireHeight, j)
+            If aFireTimeSeries(Fire.FireArea, j) > PeakArea Then PeakArea = aFireTimeSeries(Fire.FireArea, j)
+            If aFireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = aFireTimeSeries(Fire.FireHRR, j)
+            If aFireTimeSeries(Fire.FireCO, j) > PeakCO Then PeakCO = aFireTimeSeries(Fire.FireCO, j)
+            If aFireTimeSeries(Fire.FireSoot, j) > PeakC Then PeakC = aFireTimeSeries(Fire.FireSoot, j)
+            If aFireTimeSeries(Fire.FireHCN, j) > PeakHCN Then PeakHCN = aFireTimeSeries(Fire.FireHCN, j)
+            If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
         Next
     End Sub
     ReadOnly Property Peak(ByVal whichItem As Integer) As Single

@@ -587,122 +587,122 @@ Public Class Vent
     End Sub
     Public Sub GetRamp(ByRef TimePoints() As Single, ByRef FractionPoints() As Single, ByRef NumPoints As Integer)
         Dim i As Integer
-        'If aRampTimePoints.GetLength(0) = aRampFractionPoints.GetLength(0) Then
-        'ReDim TimePoints(aRampTimePoints.GetUpperBound(0)), FractionPoints(aRampFractionPoints.GetUpperBound(0))
-        'For i = 0 To aRampTimePoints.GetUpperBound(0)
-        'TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
-        'FractionPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aRampFractionPoints(i))
-        'NumPoints = aRampTimePoints.GetUpperBound(0)
-        'Next
-        'End If
-        If aRampID <> "" Then
-            Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
-            ReDim FractionPoints(myRamps.Item(iramp).DimF + 1), TimePoints(myRamps.Item(iramp).DimX + 1)
-            For i = 0 To myRamps.Item(iramp).DimF
-                FractionPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
-                TimePoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
+        If aRampTimePoints.GetLength(0) = aRampFractionPoints.GetLength(0) Then
+            ReDim TimePoints(aRampTimePoints.GetUpperBound(0)), FractionPoints(aRampFractionPoints.GetUpperBound(0))
+            For i = 0 To aRampTimePoints.GetUpperBound(0)
+                TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
+                FractionPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aRampFractionPoints(i))
+                NumPoints = aRampTimePoints.GetUpperBound(0)
             Next
-            NumPoints = myRamps.Item(iramp).MaxNumRamp + 1
-        Else
-            NumPoints = 0
         End If
+        'If aRampID <> "" Then
+        'Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
+        'ReDim FractionPoints(myRamps.Item(iramp).DimF + 1), TimePoints(myRamps.Item(iramp).DimX + 1)
+        'For i = 0 To myRamps.Item(iramp).DimF
+        'FractionPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
+        'TimePoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
+        'Next
+        'NumPoints = myRamps.Item(iramp).MaxNumRamp + 1
+        'Else
+        'NumPoints = 0
+        'End If
     End Sub
     Public Sub SetRamp(ByVal TimePoints() As Single, ByVal FractionPoints() As Single)
         Dim i As Integer
-        'If TimePoints.GetLength(0) = FractionPoints.GetLength(0) Then
-        'ReDim aRampTimePoints(TimePoints.GetUpperBound(0)), aRampFractionPoints(FractionPoints.GetUpperBound(0))
-        'For i = 0 To TimePoints.GetUpperBound(0)
-        'aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
-        'aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(FractionPoints(i))
-        'Next
-        'aChanged = True
-        'End If
         If TimePoints.GetLength(0) = FractionPoints.GetLength(0) Then
-            If aRampID = "" Then
-                aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
-                myRamps.Add(New Ramp)
-                myRamps.Item(myRamps.Count - 1).Name = aRampID
-                myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeFrac
-                myRamps.Item(myRamps.Count - 1).IsT = True
-            End If
-            Dim idx As Integer = myRamps.GetRampIndex(aRampID)
-            myRamps.Item(idx).DimF = FractionPoints.GetUpperBound(0) - 1
-            For i = 0 To TimePoints.GetUpperBound(0) - 1
-                myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(TimePoints(i + 1))
-                myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i + 1))
+            ReDim aRampTimePoints(TimePoints.GetUpperBound(0)), aRampFractionPoints(FractionPoints.GetUpperBound(0))
+            For i = 0 To TimePoints.GetUpperBound(0)
+                aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
+                aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(FractionPoints(i))
             Next
             aChanged = True
         End If
+        'If TimePoints.GetLength(0) = FractionPoints.GetLength(0) Then
+        'If aRampID = "" Then
+        'aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
+        'myRamps.Add(New Ramp)
+        'myRamps.Item(myRamps.Count - 1).Name = aRampID
+        'myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeFrac
+        'myRamps.Item(myRamps.Count - 1).IsT = True
+        'End If
+        'Dim idx As Integer = myRamps.GetRampIndex(aRampID)
+        'myRamps.Item(idx).DimF = FractionPoints.GetUpperBound(0) - 1
+        'For i = 0 To TimePoints.GetUpperBound(0) - 1
+        'myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(TimePoints(i + 1))
+        'myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i + 1))
+        'Next
+        'aChanged = True
+        'End If
     End Sub
     Public Sub GetRampFractions(ByRef FractionPoints() As Single)
         Dim i As Integer
-        'ReDim FractionPoints(aRampFractionPoints.GetUpperBound(0))
-        'For i = 0 To FractionPoints.GetUpperBound(0)
-        'FractionPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampFractionPoints(i))
+        ReDim FractionPoints(aRampFractionPoints.GetUpperBound(0))
+        For i = 0 To FractionPoints.GetUpperBound(0)
+            FractionPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampFractionPoints(i))
+        Next
+        'If aRampID <> "" Then
+        'Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
+        'ReDim FractionPoints(myRamps.Item(iramp).DimF + 1)
+        'For i = 0 To myRamps.Item(iramp).DimF
+        'FractionPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
         'Next
-        If aRampID <> "" Then
-            Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
-            ReDim FractionPoints(myRamps.Item(iramp).DimF + 1)
-            For i = 0 To myRamps.Item(iramp).DimF
-                FractionPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
-            Next
-        Else
-            ReDim FractionPoints(0)
-        End If
+        'Else
+        'ReDim FractionPoints(0)
+        'End If
     End Sub
     Public Sub GetRampTimes(ByRef TimePoints() As Single)
         Dim i As Integer
-        'ReDim TimePoints(aRampTimePoints.GetUpperBound(0))
-        'For i = 0 To TimePoints.GetUpperBound(0)
-        'TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
+        ReDim TimePoints(aRampTimePoints.GetUpperBound(0))
+        For i = 0 To TimePoints.GetUpperBound(0)
+            TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
+        Next
+        'If aRampID <> "" Then
+        'Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
+        'ReDim TimePoints(myRamps.Item(iramp).DimX + 1)
+        'For i = 0 To myRamps.Item(iramp).DimX
+        'TimePoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
         'Next
-        If aRampID <> "" Then
-            Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
-            ReDim TimePoints(myRamps.Item(iramp).DimX + 1)
-            For i = 0 To myRamps.Item(iramp).DimX
-                TimePoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
-            Next
-        Else
-            ReDim TimePoints(0)
-        End If
+        'Else
+        'ReDim TimePoints(0)
+        'End If
     End Sub
     Public Sub SetRampFractions(ByVal FractionPoints() As Single)
         Dim i As Integer
-        'ReDim aRampFractionPoints(FractionPoints.GetUpperBound(0))
-        'For i = 0 To FractionPoints.GetUpperBound(0)
-        'aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i))
-        'Next
-        'aChanged = True
-        If aRampID = "" Then
-            aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
-            myRamps.Add(New Ramp)
-            myRamps.Item(myRamps.Count - 1).Name = aRampID
-        End If
-        Dim idx As Integer = myRamps.GetRampIndex(aRampID)
-        myRamps.Item(idx).DimF = FractionPoints.GetUpperBound(0) - 1
-        For i = 0 To FractionPoints.GetUpperBound(0) - 1
-            myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i + 1))
+        ReDim aRampFractionPoints(FractionPoints.GetUpperBound(0))
+        For i = 0 To FractionPoints.GetUpperBound(0)
+            aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i))
         Next
         aChanged = True
+        'If aRampID = "" Then
+        'aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
+        'myRamps.Add(New Ramp)
+        'myRamps.Item(myRamps.Count - 1).Name = aRampID
+        'End If
+        'Dim idx As Integer = myRamps.GetRampIndex(aRampID)
+        'myRamps.Item(idx).DimF = FractionPoints.GetUpperBound(0) - 1
+        'For i = 0 To FractionPoints.GetUpperBound(0) - 1
+        'myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i + 1))
+        'Next
+        'aChanged = True
     End Sub
     Public Sub SetRampTimes(ByVal TimePoints() As Single)
         Dim i As Integer
-        'ReDim aRampTimePoints(TimePoints.GetUpperBound(0))
-        'For i = 0 To TimePoints.GetUpperBound(0)
-        'aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
-        'Next
-        'aChanged = True
-        If aRampID = "" Then
-            aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
-            myRamps.Add(New Ramp)
-            myRamps.Item(myRamps.Count - 1).Name = aRampID
-        End If
-        Dim idx As Integer = myRamps.GetRampIndex(aRampID)
-        myRamps.Item(idx).DimX = TimePoints.GetUpperBound(0) - 1
-        For i = 0 To TimePoints.GetUpperBound(0) - 1
-            myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(TimePoints(i + 1))
+        ReDim aRampTimePoints(TimePoints.GetUpperBound(0))
+        For i = 0 To TimePoints.GetUpperBound(0)
+            aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
         Next
         aChanged = True
+        'If aRampID = "" Then
+        'aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
+        'myRamps.Add(New Ramp)
+        'myRamps.Item(myRamps.Count - 1).Name = aRampID
+        'End If
+        'Dim idx As Integer = myRamps.GetRampIndex(aRampID)
+        'myRamps.Item(idx).DimX = TimePoints.GetUpperBound(0) - 1
+        'For i = 0 To TimePoints.GetUpperBound(0) - 1
+        'myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(TimePoints(i + 1))
+        'Next
+        'aChanged = True
     End Sub
     Public ReadOnly Property IsValid(ByVal VentNumber As Integer) As Integer
         Get

@@ -292,128 +292,128 @@ Public Class Compartment
     End Sub
     Public Sub GetVariableArea(ByRef AreaPoints() As Single, ByRef HeightPoints() As Single, ByRef NumAreaPoints As Integer)
         Dim i As Integer
-        'If aAreaPoints.GetLength(0) = aHeightPoints.GetLength(0) Then
-        'ReDim AreaPoints(aAreaPoints.GetUpperBound(0)), HeightPoints(aHeightPoints.GetUpperBound(0))
-        'For i = 0 To aAreaPoints.GetUpperBound(0)
-        'AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aAreaPoints(i))
-        'HeightPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aHeightPoints(i))
-        'NumAreaPoints = aAreaPoints.GetUpperBound(0)
-        'Next
-        'End If
-        'i = aAreaPoints.GetUpperBound(0)
-        If aAreaRampID <> "" Then
-            Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
-            ReDim AreaPoints(myRamps.Item(iramp).DimF + 1), HeightPoints(myRamps.Item(iramp).DimF + 1)
-            For i = 0 To myRamps.Item(iramp).DimF
-                AreaPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
-                HeightPoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
+        If aAreaPoints.GetLength(0) = aHeightPoints.GetLength(0) Then
+            ReDim AreaPoints(aAreaPoints.GetUpperBound(0)), HeightPoints(aHeightPoints.GetUpperBound(0))
+            For i = 0 To aAreaPoints.GetUpperBound(0)
+                AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aAreaPoints(i))
+                HeightPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aHeightPoints(i))
+                NumAreaPoints = aAreaPoints.GetUpperBound(0)
             Next
-            NumAreaPoints = myRamps.Item(iramp).MaxNumRamp
-        Else
-            NumAreaPoints = 0
-            ReDim AreaPoints(0), HeightPoints(0)
         End If
+        i = aAreaPoints.GetUpperBound(0)
+        'If aAreaRampID <> "" Then
+        'Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
+        'ReDim AreaPoints(myRamps.Item(iramp).DimF + 1), HeightPoints(myRamps.Item(iramp).DimF + 1)
+        'For i = 0 To myRamps.Item(iramp).DimF
+        'AreaPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
+        'HeightPoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
+        'Next
+        'NumAreaPoints = myRamps.Item(iramp).MaxNumRamp
+        'Else
+        'NumAreaPoints = 0
+        'ReDim AreaPoints(0), HeightPoints(0)
+        'End If
     End Sub
     Public Sub SetVariableArea(ByVal AreaPoints() As Single, ByVal HeightPoints() As Single)
         Dim i As Integer
-        'If AreaPoints.GetLength(0) = HeightPoints.GetLength(0) Then
-        'ReDim aAreaPoints(AreaPoints.GetUpperBound(0)), aHeightPoints(HeightPoints.GetUpperBound(0))
-        'For i = 0 To AreaPoints.GetUpperBound(0)
-        'aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
-        'aHeightPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i))
-        'Next
-        'aChanged = True
-        'End If
         If AreaPoints.GetLength(0) = HeightPoints.GetLength(0) Then
-            If aAreaRampID = "" Then
-                aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
-                myRamps.Add(New Ramp)
-                myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
-                myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeArea
-                myRamps.Item(myRamps.Count - 1).IsZ = True
-            End If
-            Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
-            myRamps.Item(idx).DimX = AreaPoints.GetUpperBound(0) - 1
-            For i = 1 To AreaPoints.GetUpperBound(0)
-                myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i - 1))
-                myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i - 1))
+            ReDim aAreaPoints(AreaPoints.GetUpperBound(0)), aHeightPoints(HeightPoints.GetUpperBound(0))
+            For i = 0 To AreaPoints.GetUpperBound(0)
+                aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
+                aHeightPoints(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i))
             Next
             aChanged = True
         End If
+        'If AreaPoints.GetLength(0) = HeightPoints.GetLength(0) Then
+        'If aAreaRampID = "" Then
+        'aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
+        'myRamps.Add(New Ramp)
+        'myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
+        'myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeArea
+        'myRamps.Item(myRamps.Count - 1).IsZ = True
+        'End If
+        'Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
+        'myRamps.Item(idx).DimX = AreaPoints.GetUpperBound(0) - 1
+        'For i = 1 To AreaPoints.GetUpperBound(0)
+        'myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i - 1))
+        'myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i - 1))
+        'Next
+        'aChanged = True
+        'End If
     End Sub
     Public Sub GetVariableAreasHeight(ByRef HeightPoints() As Single)
         Dim i As Integer
-        'ReDim HeightPoints(aHeightPoints.GetUpperBound(0))
-        'For i = 0 To HeightPoints.GetUpperBound(0)
-        'HeightPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aHeightPoints(i))
+        ReDim HeightPoints(aHeightPoints.GetUpperBound(0))
+        For i = 0 To HeightPoints.GetUpperBound(0)
+            HeightPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aHeightPoints(i))
+        Next
+        'If aAreaRampID <> "" Then
+        'Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
+        'ReDim HeightPoints(myRamps.Item(iramp).DimF + 1)
+        'For i = 0 To myRamps.Item(iramp).DimX
+        'HeightPoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
         'Next
-        If aAreaRampID <> "" Then
-            Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
-            ReDim HeightPoints(myRamps.Item(iramp).DimF + 1)
-            For i = 0 To myRamps.Item(iramp).DimX
-                HeightPoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
-            Next
-        Else
-            ReDim HeightPoints(0)
-        End If
+        'Else
+        'ReDim HeightPoints(0)
+        'End If
     End Sub
     Public Sub GetVariableAreaPoints(ByRef AreaPoints() As Single)
         Dim i As Integer
-        'ReDim AreaPoints(aAreaPoints.GetUpperBound(0))
-        'For i = 0 To AreaPoints.GetUpperBound(0)
-        'AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aAreaPoints(i))
+        ReDim AreaPoints(aAreaPoints.GetUpperBound(0))
+        For i = 0 To AreaPoints.GetUpperBound(0)
+            AreaPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aAreaPoints(i))
+        Next
+        'If aAreaRampID <> "" Then
+        'Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
+        'ReDim AreaPoints(myRamps.Item(iramp).DimF + 1)
+        'For i = 0 To myRamps.Item(iramp).DimF
+        'AreaPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
         'Next
-        If aAreaRampID <> "" Then
-            Dim iramp As Integer = myRamps.GetRampIndex(aAreaRampID)
-            ReDim AreaPoints(myRamps.Item(iramp).DimF + 1)
-            For i = 0 To myRamps.Item(iramp).DimF
-                AreaPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
-            Next
-        Else
-            ReDim AreaPoints(0)
-        End If
+        'Else
+        'ReDim AreaPoints(0)
+        'End If
     End Sub
     Public Sub SetVariableAreasHeight(ByVal HeightPoints() As Single)
         Dim i As Integer
-        'ReDim aHeightPoints(HeightPoints.GetUpperBound(0))
-        'For i = 0 To HeightPoints.GetUpperBound(0)
-        'aHeightPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(HeightPoints(i))
-        'Next
-        'aChanged = True
-        If aAreaRampID = "" Then
-            aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
-            myRamps.Add(New Ramp)
-            myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
-            myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeArea
-            myRamps.Item(myRamps.Count - 1).IsZ = True
-        End If
-        Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
-        myRamps.Item(idx).DimX = HeightPoints.GetUpperBound(0) - 1
-        For i = 0 To HeightPoints.GetUpperBound(0) - 1
-            myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i + 1))
+        ReDim aHeightPoints(HeightPoints.GetUpperBound(0))
+        For i = 0 To HeightPoints.GetUpperBound(0)
+            aHeightPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(HeightPoints(i))
         Next
         aChanged = True
+        'If aAreaRampID = "" Then
+        'aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
+        'myRamps.Add(New Ramp)
+        'myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
+        'myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeArea
+        'myRamps.Item(myRamps.Count - 1).IsZ = True
+        'End If
+        'Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
+        'myRamps.Item(idx).DimX = HeightPoints.GetUpperBound(0) - 1
+        'For i = 0 To HeightPoints.GetUpperBound(0) - 1
+        'myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(HeightPoints(i + 1))
+        'Next
+        'aChanged = True
     End Sub
     Public Sub SetVariableAreaPoints(ByVal AreaPoints() As Single)
         Dim i As Integer
-        'ReDim aAreaPoints(AreaPoints.GetUpperBound(0))
-        'For i = 0 To AreaPoints.GetUpperBound(0)
-        'aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
-        'Next
-        'aChanged = True
-        If aAreaRampID = "" Then
-            aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
-            myRamps.Add(New Ramp)
-            myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
-            myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeArea
-            myRamps.Item(myRamps.Count - 1).IsZ = True
-        End If
-        Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
-        myRamps.Item(idx).DimF = AreaPoints.GetUpperBound(0) - 1
-        For i = 0 To AreaPoints.GetUpperBound(0) - 1
-            myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i + 1))
+        ReDim aAreaPoints(AreaPoints.GetUpperBound(0))
+        For i = 0 To AreaPoints.GetUpperBound(0)
+            aAreaPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i))
         Next
         aChanged = True
+        'If aAreaRampID = "" Then
+        'aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
+        'myRamps.Add(New Ramp)
+        'myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
+        'myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeArea
+        'myRamps.Item(myRamps.Count - 1).IsZ = True
+        'End If
+        'Dim idx As Integer = myRamps.GetRampIndex(aAreaRampID)
+        'myRamps.Item(idx).DimF = AreaPoints.GetUpperBound(0) - 1
+        'For i = 0 To AreaPoints.GetUpperBound(0) - 1
+        'myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(AreaPoints(i + 1))
+        'Next
+        'aChanged = True
     End Sub
     Public ReadOnly Property IsValid() As Integer
         ' Checks the overall validity of the current compartment specification

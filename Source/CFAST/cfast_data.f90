@@ -56,6 +56,9 @@ module fire_data
     integer :: nfurn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
+    
+    ! Diagnosis variables
+    real(eb) :: partial_pressure_h2o, partial_pressure_co2, soot_volume_fraction, tempTgas
 
     end module fire_data
     
@@ -84,6 +87,7 @@ module fire_data
     logical :: slcfflag=.false.
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
+    logical :: diagflag=.false.
 
     end module namelist_data
     
@@ -230,7 +234,7 @@ module setup_data
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
-        queryfile, statusfile, kernelisrunning
+        queryfile, statusfile, kernelisrunning, ssdiag
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100

@@ -36,6 +36,7 @@ Friend Module Data
     Friend NormalPointsToData() As Single = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0}
 
     Friend myFires As New FireCollection                            ' Fires defined for this test case
+    Friend myFireInstances As New FireCollection                    ' Fire instances the fire definition is in myFires and is linked by Fire_ID
     Friend TempFires As New FireCollection
     Friend Const IgnitionNames As String = "Time       TemperatureHeat Flux  "
     Friend Const IgnitionTypes As String = "TIMETEMPFLUX"

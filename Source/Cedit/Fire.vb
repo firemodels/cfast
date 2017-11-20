@@ -75,6 +75,8 @@ Public Class Fire
     Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
 
+    Private aFireName As String                     ' Link from a intance in myFireInstances to the fire in the myFires collection 
+
     Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
     Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
                                              "FireHC", "FireO2", "FireHCN", "FireHCl", "FireCt", "FireTS"}
@@ -563,6 +565,17 @@ Public Class Fire
             If Value <> aCommentsIndex Then
                 aCommentsIndex = Value
                 aChanged = True
+            End If
+        End Set
+    End Property
+    Property FireName() As String
+        Get
+            Return aFireName
+        End Get
+        Set(value As String)
+            If value <> aFireName Then
+                aChanged = True
+                aFireName = value
             End If
         End Set
     End Property

@@ -688,6 +688,7 @@ Public Class CeditMain
         Me.FireRemove = New System.Windows.Forms.Button()
         Me.FireDup = New System.Windows.Forms.Button()
         Me.GroupFire = New System.Windows.Forms.GroupBox()
+        Me.FireType = New System.Windows.Forms.Label()
         Me.FireDefinitionName = New System.Windows.Forms.ComboBox()
         Me.Label36 = New System.Windows.Forms.Label()
         Me.FirePlot = New NPlot.Windows.PlotSurface2D()
@@ -866,7 +867,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.FireType = New System.Windows.Forms.Label()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -3222,6 +3222,14 @@ Public Class CeditMain
         Me.GroupFire.TabStop = False
         Me.GroupFire.Text = "Fire 1"
         '
+        'FireType
+        '
+        Me.FireType.AutoSize = True
+        Me.FireType.Location = New System.Drawing.Point(202, 97)
+        Me.FireType.Name = "FireType"
+        Me.FireType.Size = New System.Drawing.Size(0, 13)
+        Me.FireType.TabIndex = 735
+        '
         'FireDefinitionName
         '
         Me.FireDefinitionName.ItemHeight = 13
@@ -4980,14 +4988,6 @@ Public Class CeditMain
         Me.MainOpen.Size = New System.Drawing.Size(75, 23)
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
-        '
-        'FireType
-        '
-        Me.FireType.AutoSize = True
-        Me.FireType.Location = New System.Drawing.Point(202, 97)
-        Me.FireType.Name = "FireType"
-        Me.FireType.Size = New System.Drawing.Size(0, 13)
-        Me.FireType.TabIndex = 735
         '
         'CeditMain
         '

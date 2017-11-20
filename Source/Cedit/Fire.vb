@@ -540,16 +540,16 @@ Public Class Fire
     End Property
     Property FireTimeSeries(ByVal i As Integer, ByVal j As Integer) As Single
         Get
-            If i <= Me.NumFireTimeSeries And i > 0 And j > 0 And j <= Me.DimFireTimeSeries Then
-                Return myUnits.ConvertFireData(i).FromSI(Me.BaseFireTimeSeries(i, j))
+            If i <= aFireTimeSeries.GetUpperBound(0) And i >= 0 And j >= 0 And j <= aFireTimeSeries.GetUpperBound(1) Then
+                Return myUnits.ConvertFireData(i).FromSI(aFireTimeSeries(i, j))
             Else
                 Return -1.0
             End If
         End Get
         Set(ByVal Value As Single)
-            If i <= Me.NumFireTimeSeries And i > 0 And j > 0 And j < Me.DimFireTimeSeries Then
-                If Me.BaseFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(Value) Then
-                    Me.BaseFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(Value)
+            If i <= aFireTimeSeries.GetUpperBound(0) And i >= 0 And j >= 0 And j < aFireTimeSeries.GetUpperBound(1) Then
+                If aFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(Value) Then
+                    aFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(Value)
                     aChanged = True
                 End If
             End If
@@ -583,28 +583,28 @@ Public Class Fire
     End Sub
     Public Sub GetFireData(ByRef FireTimeSeries(,) As Single, ByRef NumDataPoints As Integer)
         Dim i As Integer, j As Integer
-        If FireTimeSeries.GetUpperBound(0) = Me.NumFireTimeSeries Then
-            ReDim FireTimeSeries(Me.NumFireTimeSeries, Me.DimFireTimeSeries)
-            For i = 0 To Me.NumFireTimeSeries
-                For j = 0 To Me.DimFireTimeSeries
-                    FireTimeSeries(i, j) = myUnits.ConvertFireData(i).FromSI(Me.BaseFireTimeSeries(i, j))
+        If FireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then
+            ReDim FireTimeSeries(aFireTimeSeries.GetUpperBound(0), aFireTimeSeries.GetUpperBound(1))
+            For i = 0 To aFireTimeSeries.GetUpperBound(0)
+                For j = 0 To aFireTimeSeries.GetUpperBound(1)
+                    FireTimeSeries(i, j) = myUnits.ConvertFireData(i).FromSI(aFireTimeSeries(i, j))
                 Next
             Next
-            NumDataPoints = Me.DimFireTimeSeries
+            NumDataPoints = aFireTimeSeries.GetUpperBound(1)
         End If
     End Sub
     Public Sub SetFireData(ByVal FireTimeSeries(,) As Single)
         Dim i As Integer, j As Integer
-        If FireTimeSeries.GetUpperBound(0) = Me.NumFireTimeSeries Then
-            If FireTimeSeries.GetUpperBound(1) <> Me.DimFireTimeSeries Then
-                Me.DimFireTimeSeries = FireTimeSeries.GetUpperBound(1)
+        If FireTimeSeries.GetUpperBound(0) = aFireTimeSeries.GetUpperBound(0) Then
+            If FireTimeSeries.GetUpperBound(1) <> aFireTimeSeries.GetUpperBound(1) Then
+                ReDim aFireTimeSeries(FireTimeSeries.GetUpperBound(0), FireTimeSeries.GetUpperBound(1))
                 aChanged = True
             End If
-            For i = 0 To Me.NumFireTimeSeries
-                For j = 0 To Me.DimFireTimeSeries
-                    If Me.BaseFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j)) Then
+            For i = 0 To FireTimeSeries.GetUpperBound(0)
+                For j = 0 To FireTimeSeries.GetUpperBound(1)
+                    If aFireTimeSeries(i, j) <> myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j)) Then
                         aChanged = True
-                        Me.BaseFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j))
+                        aFireTimeSeries(i, j) = myUnits.ConvertFireData(i).ToSI(FireTimeSeries(i, j))
                     End If
                 Next
             Next

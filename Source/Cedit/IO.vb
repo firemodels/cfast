@@ -2740,9 +2740,10 @@ Module IO
     Public Sub WriteInputFileNML(ByVal filename As String)
         Dim IO As Integer = 1
         Dim ln As String
-        Dim i, j As Integer
+        Dim i, j, k As Integer
         Dim aFlag As Boolean
         Dim aDummy As Single
+        Dim x(0), f(0) As Single
         Dim aComp As Compartment
         Dim aTarg As Target
         Dim aVent As Vent
@@ -2926,15 +2927,28 @@ Module IO
                 ln = " SHAFT = .TRUE. "
                 PrintLine(IO, ln)
             End If
-            If aComp.AreaRampID <> "" Then
-                ln = " ROOM_AREA_RAMP = '" + aComp.AreaRampID + "' "
+            aComp.GetVariableArea(f, x, j)
+            If j > 1 Then
+                ln = " CROSS_SECT_AREAS = "
+                For k = 1 To j
+                    ln = ln + f(k).ToString + " , "
+                Next
+                PrintLine(IO, ln)
+                ln = " CROSS_SECT_HEIGHTS = "
+                For k = 1 To j
+                    ln = ln + x(k).ToString + " , "
+                Next
                 PrintLine(IO, ln)
             End If
+            'If aComp.AreaRampID <> "" Then
+            'ln = " ROOM_AREA_RAMP = '" + aComp.AreaRampID + "' "
+            'PrintLine(IO, ln)
+            'End If
             ln = " / "
             PrintLine(IO, ln)
-            If aComp.AreaRampID <> "" Then
-                WriteRamp(IO, aComp.AreaRampID, doneRamps, 0)
-            End If
+            'If aComp.AreaRampID <> "" Then
+            'WriteRamp(IO, aComp.AreaRampID, doneRamps, 0)
+            'End If
         Next
 
         ln = "!! "
@@ -3075,16 +3089,16 @@ Module IO
                     ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
                     PrintLine(IO, ln)
                 ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
-                    Dim f(2), x(2) As Single
-                    f(0) = aVent.InitialOpening
-                    f(1) = aVent.InitialOpening
-                    f(2) = aVent.FinalOpening
-                    x(0) = 0.0
-                    x(1) = aVent.InitialOpeningTime
-                    x(2) = aVent.FinalOpeningTime
+                    Dim ff(2), xx(2) As Single
+                    ff(0) = aVent.InitialOpening
+                    ff(1) = aVent.InitialOpening
+                    ff(2) = aVent.FinalOpening
+                    xx(0) = 0.0
+                    xx(1) = aVent.InitialOpeningTime
+                    xx(2) = aVent.FinalOpeningTime
                     aVent.RampID = "VentFraction_" + myRamps.Count.ToString
                     Dim aRamp As Ramp
-                    aRamp = New Ramp(aVent.RampID, "FRACTION", x, f, True)
+                    aRamp = New Ramp(aVent.RampID, "FRACTION", xx, ff, True)
                     myRamps.Add(aRamp)
                     ln = " CRITERION = 'TIME' , OPENING_RAMP_ID = '" + aVent.RampID + "' "
                     PrintLine(IO, ln)

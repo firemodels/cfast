@@ -76,6 +76,7 @@ Public Class Fire
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
 
     Private aFireName As String                     ' Link from a intance in myFireInstances to the fire in the myFires collection 
+    Private aFireTableName As String                ' The name of the table to be created in the inputfile for a fire in myFires collection
 
     Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
     Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
@@ -572,6 +573,17 @@ Public Class Fire
             End If
         End Set
     End Property
+    Property FireTableName() As String
+        Get
+            Return aFireTableName
+        End Get
+        Set(value As String)
+            If value <> aFireTableName Then
+                aChanged = True
+                aFireTableName = value
+            End If
+        End Set
+    End Property
     Public Sub SetPosition(ByVal index As Integer)
         Dim tmpCompartment As New Compartment
         If index <= myCompartments.Count - 1 Then
@@ -785,7 +797,7 @@ Public Class Fire
                 HasErrors += 1
             End If
             If aHeatofCombustion < MinHeatofCombustion Or aHeatofCombustion > MaxHeatofCombustion Then
-                myErrors.Add("Fire " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString + _
+                myErrors.Add("Fire " + aName + " has a heat of combustion less than " + MinHeatofCombustion.ToString +
                     " J/kg or greater than " + MaxHeatofCombustion.ToString + " J/kg.", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If

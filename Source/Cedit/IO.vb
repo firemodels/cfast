@@ -1206,7 +1206,7 @@ Module IO
                 csv.num(i, rampNum.firstcompartment) = myCompartments.Count + 1
                 If csv.num(i, rampNum.secondcompartment) = 0 Then _
                 csv.num(i, rampNum.secondcompartment) = myCompartments.Count + 1
-                csv.num(i, rampNum.ventnumber) = myMVents.VentNumber(j)
+                csv.num(i, rampNum.ventnumber) = j + 1
                 csv.num(i, rampNum.numpoints) = x.GetUpperBound(0)
                 For k = 1 To x.GetUpperBound(0)
                     csv.num(i, 2 * k + rampNum.numpoints - 1) = x(k)

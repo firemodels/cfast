@@ -485,10 +485,10 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct FIRE\_ID} & Character        & Section \ref{info:FIRE}                 & kJ/kg                       &            \\ \hline
+{\ct FIRE\_ID}* & Character        & Section \ref{info:FIRE}                 &                        &            \\ \hline
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct IGNITION\_CRITERION}   & Selection List   & Section \ref{info:FIRE}                 &                             & TIME                \\ \hline
-{\ct LOCATION}*             & Real Triplet        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
+{\ct LOCATION}*             & Real Pair        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
 {\ct SETPOINT}             & Real        & Section \ref{info:FIRE}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$  & 0 s        \\ \hline
 \end{longtable}
 \end{minipage}
@@ -509,9 +509,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct LABELS}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *                & Character Array        & Section \ref{info:FIRE}                 &                        &              \\ \hline
-{\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct DATA*}             & Real Array       & Section \ref{info:FIRE}                 &   &        \\ \hline
+{\ct LABELS}               & Character Array        & Section \ref{info:FIRE}                 &                        &              \\ \hline
+{\ct ID}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *                    & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct DATA}             & Real Array       & Section \ref{info:FIRE}                 &   &        \\ \hline
 \end{longtable}
 \end{minipage}
 

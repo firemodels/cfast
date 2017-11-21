@@ -475,115 +475,115 @@ module target_routines
        vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal,1)
     end do
 
-    target_factors_front(1:10)=0.0_eb
-    target_factors_back(1:10)=0.0_eb
+    target_factors_front(1:10) = 0.0_eb
+    target_factors_back(1:10) = 0.0_eb
     do iwall=1, 10
        facei=>faces(1:5,iwall)
        skiptagr = 0
        do ivert = 1, 5
-           if (vert_distance(facei(ivert)) == roomi%x0 .or. vert_distance(facei(ivert)) == roomi%y0 .or. &
-               vert_distance(facei(ivert)) == roomi%z0) skiptagr = skiptagr + 1
+           if (vert_distance(facei(ivert)) == 0 .or. vert_distance(facei(ivert)) == 0 .or. &
+               vert_distance(facei(ivert)) == 0) skiptagr = skiptagr + 1
        end do
-       if (skiptagr == 5) goto 201 ! the target is located on a surface
-       nsolid_front_verts=0
-       nsolid_back_verts=0
-       do ivert = 1, 4
-          d1 = vert_distance(facei(ivert))
-          v1(1:3) => room_verts(1:3,facei(ivert))
+       if (skiptagr /= 5) then
+           nsolid_front_verts=0
+           nsolid_back_verts=0
+           do ivert = 1, 4
+               d1 = vert_distance(facei(ivert))
+               v1(1:3) => room_verts(1:3,facei(ivert))
 
-          d2 = vert_distance(facei(ivert+1))
-          v2(1:3) => room_verts(1:3,facei(ivert+1))
+               d2 = vert_distance(facei(ivert+1))
+               v2(1:3) => room_verts(1:3,facei(ivert+1))
 
-          if (d1.ge.0) then  ! face vertex is above target plane
-             nsolid_front_verts=nsolid_front_verts+1
-             solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
-          end if
+               if (d1.ge.0) then  ! face vertex is above target plane
+                   nsolid_front_verts=nsolid_front_verts+1
+                   solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
+               end if
 
-          if (d1.le.0) then  ! face vertex is below target plane
-             nsolid_back_verts=nsolid_back_verts+1
-             solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
-          end if
-          if (d1*d2.lt.0) then ! two successive face vertices are on opposite sides of target plane
-                             ! interpolate to find vertex that lies on target plane
-             !  d1   0    d2
-             !  v1   v0   v2
-             !
-             !  (v0-v1)/(0-d1) = (v2-v1)/(d2-d1)
-             !  solve for v0
-             ! v0 = (1-(-d1)/(d2-d1))*v1 + (-d1/(d2-d1))*v2
-             ! note: d2-d1 can't be 0 since d1*d2<0.0
-             nsolid_front_verts=nsolid_front_verts+1
-             nsolid_back_verts=nsolid_back_verts+1
+               if (d1.le.0) then  ! face vertex is below target plane
+                   nsolid_back_verts=nsolid_back_verts+1
+                   solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
+               end if
+               if (d1*d2.lt.0) then ! two successive face vertices are on opposite sides of target plane
+                   ! interpolate to find vertex that lies on target plane
+                   !  d1   0    d2
+                   !  v1   v0   v2
+                   !
+                   !  (v0-v1)/(0-d1) = (v2-v1)/(d2-d1)
+                   !  solve for v0
+                   ! v0 = (1-(-d1)/(d2-d1))*v1 + (-d1/(d2-d1))*v2
+                   ! note: d2-d1 can't be 0 since d1*d2<0.0
+                   nsolid_front_verts=nsolid_front_verts+1
+                   nsolid_back_verts=nsolid_back_verts+1
 
-             factor = -d1/(d2-d1)
-             v0(1:3) = (1.0_eb-factor)*v1 + factor*v2
-             solid_angle_front_verts(1:3,nsolid_front_verts) = v0(1:3)
-             solid_angle_back_verts(1:3,nsolid_back_verts) =   v0(1:3)
-          end if
-       end do
-       if (nsolid_front_verts.ge.3) then
+                   factor = -d1/(d2-d1)
+                   v0(1:3) = (1.0_eb-factor)*v1 + factor*v2
+                   solid_angle_front_verts(1:3,nsolid_front_verts) = v0(1:3)
+                   solid_angle_back_verts(1:3,nsolid_back_verts) =   v0(1:3)
+               end if
+           end do
+           if (nsolid_front_verts.ge.3) then
 
-          ! triangulate polygon, compute solid angle for each triangle and sum
-          ! the solid angle is zero whenever a vertex coincides with the target location
+               ! triangulate polygon, compute solid angle for each triangle and sum
+               ! the solid angle is zero whenever a vertex coincides with the target location
 
-          v1 => solid_angle_front_verts(1:3,1)
-          t1(1:3) = v1(1:3) - targptr%center(1:3)
-          d1 = dnrm2(3,t1,1)
+               v1 => solid_angle_front_verts(1:3,1)
+               t1(1:3) = v1(1:3) - targptr%center(1:3)
+               d1 = dnrm2(3,t1,1)
 
-          if (d1.gt.0.0_eb) then
-             t1(1:3) = t1(1:3)/d1
-             do i = 2, nsolid_front_verts-1
-                v2 => solid_angle_front_verts(1:3,i)
+               if (d1.gt.0.0_eb) then
+                   t1(1:3) = t1(1:3)/d1
+                   do i = 2, nsolid_front_verts-1
+                       v2 => solid_angle_front_verts(1:3,i)
 
-                t2(1:3) = v2(1:3) - targptr%center(1:3)
-                d2 = dnrm2(3,t2,1)
-                if (d2.eq.0.0_eb)cycle
+                       t2(1:3) = v2(1:3) - targptr%center(1:3)
+                       d2 = dnrm2(3,t2,1)
+                       if (d2.eq.0.0_eb)cycle
 
-                v3 => solid_angle_front_verts(1:3,i+1)
-                t3(1:3) = v3(1:3) - targptr%center(1:3)
-                d3 = dnrm2(3,t3,1)
-                if (d3.eq.0.0_eb)cycle
+                       v3 => solid_angle_front_verts(1:3,i+1)
+                       t3(1:3) = v3(1:3) - targptr%center(1:3)
+                       d3 = dnrm2(3,t3,1)
+                       if (d3.eq.0.0_eb)cycle
 
-                t2(1:3) = t2(1:3)/d2
-                t3(1:3) = t3(1:3)/d3
+                       t2(1:3) = t2(1:3)/d2
+                       t3(1:3) = t3(1:3)/d3
 
-                call solid_angle_triangle(solid_angle,t1,t2,t3)
-                target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
-             end do
-          end if
+                       call solid_angle_triangle(solid_angle,t1,t2,t3)
+                       target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
+                   end do
+               end if
+           end if
+           if (nsolid_back_verts.ge.3) then
+
+               ! triangulate polygon, compute solid angle for each triangle and sum
+               ! the solid angle is zero whenever a vertex coincides with the target location
+
+               v1 => solid_angle_back_verts(1:3,1)
+               t1(1:3) = v1(1:3) - targptr%center(1:3)
+               d1 = dnrm2(3,t1,1)
+
+               if (d1.gt.0.0_eb) then
+                   t1(1:3) = t1(1:3)/d1
+                   do i = 2, nsolid_back_verts-1
+                       v2 => solid_angle_back_verts(1:3,i)
+
+                       t2(1:3) = v2(1:3) - targptr%center(1:3)
+                       d2 = dnrm2(3,t2,1)
+                       if (d2.eq.0.0_eb)cycle
+
+                       v3 => solid_angle_back_verts(1:3,i+1)
+                       t3(1:3) = v3(1:3) - targptr%center(1:3)
+                       d3 = dnrm2(3,t3,1)
+                       if (d3.eq.0.0_eb)cycle
+
+                       t2(1:3) = t2(1:3)/d2
+                       t3(1:3) = t3(1:3)/d3
+
+                       call solid_angle_triangle(solid_angle,t1,t2,t3)
+                       target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
+                   end do
+               end if
+           end if
        end if
-       if (nsolid_back_verts.ge.3) then
-
-          ! triangulate polygon, compute solid angle for each triangle and sum
-          ! the solid angle is zero whenever a vertex coincides with the target location
-
-          v1 => solid_angle_back_verts(1:3,1)
-          t1(1:3) = v1(1:3) - targptr%center(1:3)
-          d1 = dnrm2(3,t1,1)
-
-          if (d1.gt.0.0_eb) then
-             t1(1:3) = t1(1:3)/d1
-             do i = 2, nsolid_back_verts-1
-                v2 => solid_angle_back_verts(1:3,i)
-
-                t2(1:3) = v2(1:3) - targptr%center(1:3)
-                d2 = dnrm2(3,t2,1)
-                if (d2.eq.0.0_eb)cycle
-
-                v3 => solid_angle_back_verts(1:3,i+1)
-                t3(1:3) = v3(1:3) - targptr%center(1:3)
-                d3 = dnrm2(3,t3,1)
-                if (d3.eq.0.0_eb)cycle
-
-                t2(1:3) = t2(1:3)/d2
-                t3(1:3) = t3(1:3)/d3
-
-                call solid_angle_triangle(solid_angle,t1,t2,t3)
-                target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
-          end do
-          end if
-       end if
-201    continue
     end do
     sum_front = 0.0_eb
     sum_back = 0.0_eb

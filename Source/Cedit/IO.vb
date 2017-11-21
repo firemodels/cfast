@@ -3323,26 +3323,16 @@ Module IO
         ln = "!! "
         PrintLine(IO, ln)
 
-        For i = 0 To myFires.Count - 1
-            aFire = myFires.Item(i)
-            ln = "&FIRE"
+        For i = 0 To myFireInstances.Count - 1
+            aFire = myFireInstances.Item(i)
+            ln = "&INSF"
             PrintLine(IO, ln)
-            ln = " ID = '" + aFire.Name + "' COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' "
+            ln = " ID = '" + aFire.Name + "' "
+            PrintLine(IO, ln)
+            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.FireName + "' "
             PrintLine(IO, ln)
             ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString + " , " + aFire.Height.ToString
             PrintLine(IO, ln)
-            ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
-                " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +
-                " , OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
-            PrintLine(IO, ln)
-            If aFire.HeatofCombustion <> 50000000 Then
-                ln = " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
-                PrintLine(IO, ln)
-            End If
-            If aFire.RadiativeFraction <> 0.35 Then
-                ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
-                PrintLine(IO, ln)
-            End If
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
                 If aFire.IgnitionType > 0 Then
                     ln = " IGNITION_CRITERION = 'TIME' , SETPOINT = " + aFire.IgnitionValue.ToString
@@ -3357,71 +3347,32 @@ Module IO
                 ln = " IGNITION_CRITERION = 'FLUX' , DEVC_ID = '" + aFire.Target + "' , SETPOINT = " + (aFire.IgnitionValue / 1000.0).ToString
                 PrintLine(IO, ln)
             End If
-            If myRamps.GetRampIndex(aFire.AreaRampID) >= 0 Then
-                If myRamps.Item(myRamps.GetRampIndex(aFire.AreaRampID)).DimF > 0 Then
-                    ln = " AREA_RAMP_ID = '" + aFire.AreaRampID + "' "
-                    PrintLine(IO, ln)
-                End If
-            End If
-            If myRamps.GetRampIndex(aFire.CORampID) >= 0 Then
-                If myRamps.Item(myRamps.GetRampIndex(aFire.CORampID)).DimF > 0 Then
-                    ln = " CO_YIELD_RAMP_ID = '" + aFire.CORampID + "' "
-                    PrintLine(IO, ln)
-                End If
-            End If
-            If myRamps.GetRampIndex(aFire.HClRampID) >= 0 Then
-                If myRamps.Item(myRamps.GetRampIndex(aFire.HClRampID)).DimF > 0 Then
-                    ln = " HCL_YIELD_RAMP_ID = '" + aFire.HClRampID + "' "
-                    PrintLine(IO, ln)
-                End If
-            End If
-            If myRamps.GetRampIndex(aFire.HCNRampID) >= 0 Then
-                If myRamps.Item(myRamps.GetRampIndex(aFire.HCNRampID)).DimF > 0 Then
-                    ln = " HCN_YIELD_RAMP_ID = '" + aFire.HCNRampID + "' "
-                    PrintLine(IO, ln)
-                End If
-            End If
-            If myRamps.GetRampIndex(aFire.HRRRampID) >= 0 Then
-                If myRamps.Item(myRamps.GetRampIndex(aFire.HRRRampID)).DimF > 0 Then
-                    ln = " HRR_RAMP_ID = '" + aFire.HRRRampID + "' "
-                    PrintLine(IO, ln)
-                End If
-            End If
-            If myRamps.GetRampIndex(aFire.SootRampID) >= 0 Then
-                If myRamps.Item(myRamps.GetRampIndex(aFire.SootRampID)).DimF > 0 Then
-                    ln = " SOOT_YIELD_RAMP_ID = '" + aFire.SootRampID + "' "
-                    PrintLine(IO, ln)
-                End If
-            End If
-            If myRamps.GetRampIndex(aFire.TraceRampID) >= 0 Then
-                If myRamps.Item(myRamps.GetRampIndex(aFire.TraceRampID)).DimF > 0 Then
-                    ln = " TRACE_YIELD_RAMP_ID = '" + aFire.TraceRampID + "' "
-                    PrintLine(IO, ln)
-                End If
-            End If
             ln = " / "
             PrintLine(IO, ln)
-            If myRamps.GetRampIndex(aFire.AreaRampID) >= 0 Then
-                WriteRamp(IO, aFire.AreaRampID, doneRamps, 0)
+        Next
+
+        For i = 0 To myFires.Count - 1
+            aFire = myFires.Item(i)
+            ln = "&FIRE"
+            PrintLine(IO, ln)
+            ln = " ID = '" + aFire.Name
+            PrintLine(IO, ln)
+            ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
+                " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +
+                " , OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
+            PrintLine(IO, ln)
+            If aFire.HeatofCombustion <> 50000000 Then
+                ln = " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
+                PrintLine(IO, ln)
             End If
-            If myRamps.GetRampIndex(aFire.CORampID) >= 0 Then
-                WriteRamp(IO, aFire.CORampID, doneRamps, 0)
+            If aFire.RadiativeFraction <> 0.35 Then
+                ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
+                PrintLine(IO, ln)
             End If
-            If myRamps.GetRampIndex(aFire.HClRampID) >= 0 Then
-                WriteRamp(IO, aFire.HClRampID, doneRamps, 0)
-            End If
-            If myRamps.GetRampIndex(aFire.HCNRampID) >= 0 Then
-                WriteRamp(IO, aFire.HCNRampID, doneRamps, 0)
-            End If
-            If myRamps.GetRampIndex(aFire.HRRRampID) >= 0 Then
-                WriteRamp(IO, aFire.HRRRampID, doneRamps, 0)
-            End If
-            If myRamps.GetRampIndex(aFire.SootRampID) >= 0 Then
-                WriteRamp(IO, aFire.SootRampID, doneRamps, 0)
-            End If
-            If myRamps.GetRampIndex(aFire.TraceRampID) >= 0 Then
-                WriteRamp(IO, aFire.TraceRampID, doneRamps, 0)
-            End If
+            ln = " TABLE_ID = '" + aFire.FireTableName + "' "
+            PrintLine(IO, ln)
+            ln = " / "
+            PrintLine(IO, ln)
         Next
 
         ln = "!! "

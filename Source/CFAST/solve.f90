@@ -1610,6 +1610,7 @@ module solve_routines
                     else
                         ppgas = y_vector(isof)
                     end if
+                    roomptr%species_mass(u,lsp) = max(ppgas,0.0_eb)
                 end if
                                 
                 isof = isof + 1
@@ -1631,6 +1632,7 @@ module solve_routines
                     else
                         ppgas = y_vector(isof)
                     end if
+                    roomptr%species_mass(l,lsp) = max(ppgas,0.0_eb)
                 end if
             end do
         end do

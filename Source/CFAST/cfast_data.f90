@@ -234,7 +234,7 @@ module setup_data
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
-        queryfile, statusfile, kernelisrunning, ssdiag
+        queryfile, statusfile, kernelisrunning
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100

@@ -31,6 +31,9 @@ module  debug_data
     integer :: ioresid, ioslab
     real(eb) ::   dbtime
     character(256) :: residfile, residcsv, slabcsv
+    
+    ! Diagnosis variables
+    real(eb) :: partial_pressure_h2o, partial_pressure_co2, tempTgas
 
 end module debug_data
 
@@ -84,6 +87,7 @@ module fire_data
     logical :: slcfflag=.false.
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
+    logical :: diagflag=.false., radi_diag_flag=.false.
 
     end module namelist_data
     
@@ -230,7 +234,7 @@ module setup_data
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
-        queryfile, statusfile, kernelisrunning
+        queryfile, statusfile, kernelisrunning, ssdiag
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100

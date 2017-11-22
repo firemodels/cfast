@@ -1207,7 +1207,7 @@ Module IO
                         myDetectors.Add(aDetect)
                     End If
                 Else
-                        myErrors.Add("In DEVC name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In DEVC name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
@@ -2151,7 +2151,6 @@ Module IO
                         Dim aFireIns As New Fire()
                         Dim aThermalProperty As New ThermalProperty()
                         aFireObject.Name = csv.str(iFire, fireNum.name).Trim + "_Fire"
-                        aFireObject.FireTableName = csv.str(iFire, fireNum.name).Trim + "_Table"
                         aFireIns.Name = csv.str(iFire, fireNum.name)
                         aFireIns.FireName = aFireObject.Name
                         aFireObject.ChemicalFormula(formula.C) = csv.num(iChemie, chemieNum.C)
@@ -2748,10 +2747,11 @@ Module IO
     Public Sub WriteInputFileNML(ByVal filename As String)
         Dim IO As Integer = 1
         Dim ln As String
-        Dim i, j, k As Integer
+        Dim i, j, k, l As Integer
         Dim aFlag As Boolean
         Dim aDummy As Single
         Dim x(0), f(0) As Single
+        Dim aFireCurves(12, 0) As Single
         Dim aComp As Compartment
         Dim aTarg As Target
         Dim aVent As Vent
@@ -2948,15 +2948,8 @@ Module IO
                 Next
                 PrintLine(IO, ln)
             End If
-            'If aComp.AreaRampID <> "" Then
-            'ln = " ROOM_AREA_RAMP = '" + aComp.AreaRampID + "' "
-            'PrintLine(IO, ln)
-            'End If
             ln = " / "
             PrintLine(IO, ln)
-            'If aComp.AreaRampID <> "" Then
-            'WriteRamp(IO, aComp.AreaRampID, doneRamps, 0)
-            'End If
         Next
 
         ln = "!! "
@@ -3331,7 +3324,7 @@ Module IO
             PrintLine(IO, ln)
             ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.FireName + "' "
             PrintLine(IO, ln)
-            ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString + " , " + aFire.Height.ToString
+            ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString
             PrintLine(IO, ln)
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
                 If aFire.IgnitionType > 0 Then
@@ -3369,13 +3362,28 @@ Module IO
                 ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
                 PrintLine(IO, ln)
             End If
-            ln = " TABLE_ID = '" + aFire.FireTableName + "' "
-            PrintLine(IO, ln)
             ln = " / "
             PrintLine(IO, ln)
+            aFire.GetFireData(aFireCurves, k)
+            ln = "&TABLE ID = '" + aFire.Name + "' "
+            PrintLine(IO, ln)
+            ln = " LABEL = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
+            For j = 1 To aFire.ColMapUpperBound
+                ln = ln + ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
+            Next
+            ln = ln + " /"
+            PrintLine(IO, ln)
+            For j = 0 To k
+                ln = "&TABLE ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
+                For l = 1 To aFire.ColMapUpperBound
+                    ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
+                Next
+                ln = ln + " /"
+                PrintLine(IO, ln)
+            Next
         Next
 
-        ln = "!! "
+            ln = "!! "
         PrintLine(IO, ln)
         ln = "!! CONN "
         PrintLine(IO, ln)
@@ -3472,9 +3480,9 @@ Module IO
                     ln = " DOMAIN = '3-D' "
                     PrintLine(IO, ln)
                 End If
-                    ln = " / "
-                    PrintLine(IO, ln)
-                End If
+                ln = " / "
+                PrintLine(IO, ln)
+            End If
         Next
 
         doneRamps.Clear()

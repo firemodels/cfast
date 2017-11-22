@@ -81,6 +81,10 @@ Public Class Fire
     Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
     Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
                                              "FireHC", "FireO2", "FireHCN", "FireHCl", "FireCt", "FireTS"}
+    Private aColNames() As String = {"TIME", "MDOT", "HRR", "HEIGHT", "AREA", "CO_YEILD", "SOOT_YEILD", "HC_YEILD", "O2_YEILD",
+                                                "HCN_YEILD", "HCL_YEILD", "CT_YEILD", "TRACE_YEILD"}
+    Private aColMap() As Integer = {0, 2, 3, 4, 5, 6, 9, 10, 12}
+
     Public Sub New()
         ' New definitions for an instance of a fire 
         aCompartment = -2
@@ -121,7 +125,6 @@ Public Class Fire
         aHeatofCombustion = Hoc
         aRadiativeFraction = RadiativeFraction
         aCommentsIndex = -1
-        Me.InitilizeFireTimeSeries()
     End Sub
     Public Sub New(ByVal TimetoPeak As Single, ByVal PeakHRR As Single, ByVal SteadyBurningTime As Single, ByVal DecayTime As Single)
         ' New to define a t^2 fire object
@@ -573,16 +576,33 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property FireTableName() As String
+    ReadOnly Property ColNames(ByVal i As Integer) As String
         Get
-            Return aFireTableName
-        End Get
-        Set(value As String)
-            If value <> aFireTableName Then
-                aChanged = True
-                aFireTableName = value
+            If i >= 0 And i <= aColNames.GetUpperBound(0) Then
+                Return aColNames(i)
+            Else
+                Return ""
             End If
-        End Set
+        End Get
+    End Property
+    ReadOnly Property ColMap(ByVal i As Integer) As Integer
+        Get
+            If i >= 0 And i <= aColMap.GetUpperBound(0) Then
+                Return aColMap(i)
+            Else
+                Return -1
+            End If
+        End Get
+    End Property
+    ReadOnly Property ColMapUpperBound() As Integer
+        Get
+            Return aColMap.GetUpperBound(0)
+        End Get
+    End Property
+    ReadOnly Property ColNamesUpperBound() As Integer
+        Get
+            Return aColNames.GetUpperBound(0)
+        End Get
     End Property
     Public Sub SetPosition(ByVal index As Integer)
         Dim tmpCompartment As New Compartment

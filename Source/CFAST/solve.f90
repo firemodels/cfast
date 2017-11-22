@@ -1597,9 +1597,11 @@ module solve_routines
                             ppgas = 0._eb
                         else if (lsp == 3) then
                             ! partical pressure = species_mass/its molecular weight*ideal gas constant*gas temperature/volume of the medium
-                            roomptr%species_mass(u,lsp) = partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
+                            roomptr%species_mass(u,lsp) = &
+                            partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
                         else if (lsp == 8) then
-                            roomptr%species_mass(u,lsp) = partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
+                            roomptr%species_mass(u,lsp) = &
+                            partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
                         else 
                             ppgas = 0._eb
                         end if
@@ -1619,9 +1621,11 @@ module solve_routines
                         if (lsp == 1 .or. lsp == 2) then 
                             ppgas = 0._eb
                         else if (lsp == 3) then
-                            roomptr%species_mass(l,lsp) = partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
+                            roomptr%species_mass(l,lsp) = &
+                            partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
                         else if (lsp == 8) then
-                            roomptr%species_mass(l,lsp) = partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
+                            roomptr%species_mass(l,lsp) = &
+                            partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
                         else 
                             ppgas = 0._eb
                         end if

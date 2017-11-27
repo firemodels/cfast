@@ -2147,8 +2147,7 @@ Module IO
                             End If
                             i += 1
                         Loop
-                        Dim aFireObject As New Fire()
-                        Dim aFireIns As New Fire()
+                        Dim aFireObject As New Fire(), aFireIns As New Fire()
                         Dim aThermalProperty As New ThermalProperty()
                         aFireObject.Name = csv.str(iFire, fireNum.name).Trim + "_Fire"
                         aFireIns.Name = csv.str(iFire, fireNum.name)

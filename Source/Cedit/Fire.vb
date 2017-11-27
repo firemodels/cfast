@@ -4,6 +4,8 @@ Public Class Fire
     Friend Const FireIgnitionbyTime As Integer = 0                  ' Ignition Criteria for additional fires, 0 for time, 1 for temperature, 2 for heat flux
     Friend Const FireIgnitionbyTemperature As Integer = 1
     Friend Const FireIgnitionbyFlux As Integer = 2
+    Friend Const TypeObject As Integer = 0                          ' Differentiate between object definitions and instances for fires
+    Friend Const TypeInstance As Integer = 1
     Friend Const FireTime As Integer = 0                            ' Column numbers for fire time series data array
     Friend Const FireMdot As Integer = 1
     Friend Const FireHRR As Integer = 2
@@ -45,8 +47,10 @@ Public Class Fire
     Private aValue, aPeak As Single
     Private aString As String
 
+    Private aObjectType As Integer
+
     ' Variables for current instance of a fire
-    Private aCompartment As Integer                 ' COmpartment where the fire is located
+    Private aCompartment As Integer                 ' Compartment where the fire is located
     Private aXPosition As Single                    ' X (width) position of the fire in the Compartment
     Private aYPosition As Single                    ' Y (depth) position of the fire in the Compartment
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
@@ -58,7 +62,9 @@ Public Class Fire
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1
     Private aFireObject As Integer                  ' index pointer to the selected fire object for this instance
+    Private aFireName As String                     ' Link from a instance in myFireInstances to the fire in the myFires collection
 
+    ' Variables for the current fire object definition (that can be used for one or more instances)
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
     Private aChemicalFormula(5) As Single           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
     Private aMolarMass As Single                    ' Molecular weight of the fuel
@@ -74,9 +80,6 @@ Public Class Fire
     Private aTSYield As Single                      ' Constant trace species yield
     Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
-
-    Private aFireName As String                     ' Link from a intance in myFireInstances to the fire in the myFires collection 
-    Private aFireTableName As String                ' The name of the table to be created in the inputfile for a fire in myFires collection
 
     Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
     Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
@@ -191,6 +194,16 @@ Public Class Fire
             If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
         Next
     End Sub
+    Property FireType() As Integer
+        Get
+            Return aObjectType
+        End Get
+        Set(value As Integer)
+            If value = TypeObject Or value = TypeInstance Then
+                aObjectType = value
+            End If
+        End Set
+    End Property
     ReadOnly Property Peak(ByVal whichItem As Integer) As Single
         Get
             aPeak = -10 ^ 99

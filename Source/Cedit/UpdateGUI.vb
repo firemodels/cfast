@@ -971,14 +971,16 @@ Public Class UpdateGUI
             MainWin.GroupFire.Enabled = True
             MainWin.GroupFire.Text = "Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
             MainWin.FireType.Text = ""
-            Dim aFire As New Fire
-            aFire = myFires(index)
-            If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
-                MainWin.FireComp.SelectedIndex = aFire.Compartment
+            Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
+            aFireInstance = myFireInstances(index)
+            FireIndex = myFires.GetFireIndex(aFireInstance.FireName)
+            aFire = myFires(FireIndex)
+            If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
+                MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
                 Dim aCompartment As New Compartment
-                aCompartment = myCompartments(aFire.Compartment)
-                xFire = aFire.XPosition
-                yFire = aFire.YPosition
+                aCompartment = myCompartments(aFireInstance.Compartment)
+                xFire = aFireInstance.XPosition
+                yFire = aFireInstance.YPosition
                 xRoom = aCompartment.RoomWidth
                 yRoom = aCompartment.RoomDepth
                 If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.FireType.Text = "Wall Fire"
@@ -986,24 +988,24 @@ Public Class UpdateGUI
 
             End If
 
-            MainWin.FireXPosition.Text = aFire.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.FireYPosition.Text = aFire.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.FireIgnitionCriteria.SelectedIndex = aFire.IgnitionType
-            If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
+            MainWin.FireXPosition.Text = aFireInstance.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.FireYPosition.Text = aFireInstance.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.FireIgnitionCriteria.SelectedIndex = aFireInstance.IgnitionType
+            If aFireInstance.IgnitionType = Fire.FireIgnitionbyTime Then
                 IgnitionTypeLabel = myUnits.Convert(UnitsNum.Time).Units
                 MainWin.FireTarget.Enabled = False
-            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then
+            ElseIf aFireInstance.IgnitionType = Fire.FireIgnitionbyTemperature Then
                 IgnitionTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
                 MainWin.FireTarget.Enabled = True
                 MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFire.Target)
-            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyFlux Then
+            ElseIf aFireInstance.IgnitionType = Fire.FireIgnitionbyFlux Then
                 IgnitionTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
                 MainWin.FireTarget.Enabled = True
                 MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFire.Target)
             End If
             MainWin.FireIgnitionValue.Text = " "
-            If aFire.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFire.IgnitionValue.ToString + IgnitionTypeLabel
-            MainWin.FireInstanceName.Text = aFire.Name
+            If aFireInstance.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFireInstance.IgnitionValue.ToString + IgnitionTypeLabel
+            MainWin.FireInstanceName.Text = aFireInstance.Name
 
             MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
             MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
@@ -1062,6 +1064,7 @@ Public Class UpdateGUI
                 Next
                 MainWin.FireSummary.Select(index + 1, 0, index + 1, MainWin.FireSummary.Cols.Count - 1, True)
             End If
+            InitFireList(MainWin.FireDefinitionName)
         End If
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)
@@ -1146,6 +1149,21 @@ Public Class UpdateGUI
         If myCompartments.Count > 0 Then
             For i = 0 To myCompartments.Count - 1
                 obj.Items.Add(myCompartments.Item(i).Name)
+            Next
+        End If
+    End Sub
+    Public Sub InitFireList(ByVal obj As ComboBox)
+        Dim i As Integer, current As String
+        current = obj.Text
+        obj.Items.Clear()
+        obj.Items.Add("New")
+        obj.SelectedIndex = 0
+        If myFireInstances.Count > 0 Then
+            For i = 0 To myFireInstances.Count - 1
+                obj.Items.Add(myFireInstances.Item(i).Name)
+                If myFireInstances.Item(i).Name = current Then
+                    obj.SelectedIndex = i + 1
+                End If
             Next
         End If
     End Sub

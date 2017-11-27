@@ -36,6 +36,7 @@ Friend Module Data
     Friend NormalPointsToData() As Single = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0}
 
     Friend myFires As New FireCollection                            ' Fires defined for this test case
+    Friend myFireInstances As New FireCollection                    ' Fire instances the fire definition is in myFires and is linked by Fire_ID
     Friend TempFires As New FireCollection
     Friend Const IgnitionNames As String = "Time       TemperatureHeat Flux  "
     Friend Const IgnitionTypes As String = "TIMETEMPFLUX"
@@ -49,6 +50,8 @@ Friend Module Data
     Friend myThermalProperties As New ThermalPropertiesCollection
     Friend TempThermalProperties As New ThermalPropertiesCollection
     Friend Const MaximumThermalProperties As Integer = 150
+
+    Friend myRamps As New RampCollection
 
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)
     Friend dataFileComments As New Collection                       'dead keywords and other comments
@@ -391,5 +394,17 @@ Friend Module Data
         ThermalProperty
         EmbeddedFire = 1
         ObjectFile
+    End Enum
+
+    Friend Enum LocationNum
+        x = 0
+        y
+        z
+    End Enum
+
+    Friend Enum IgnitionCriteriaNum
+        time
+        temp
+        flux
     End Enum
 End Module

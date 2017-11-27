@@ -45,7 +45,8 @@ module target_routines
     real(eb) :: x_node(nnodes_trg), walldx(nnodes_trg), tgrad(2), wk(1), wspec(1), wrho(1), tempin, tempout
     real(eb) :: tderv, wfluxin, wfluxout, wfluxavg, xl
     real(eb) :: flux(2), dflux(2), ttarg(2), t_inf, t_max = 900._eb
-    integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom
+    real(eb) :: nu_co2, fed_gas_increment, fed_heat_increment
+    integer :: i, itarg, nmnode(2), iieq, iwbound, nslab, iroom, ilayer
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -76,13 +77,11 @@ module target_routines
         ttarg(2) = targptr%temperature(idx_tempb_trg)
         
         call target_flux(front,itarg,ttarg,flux,dflux)
-        targptr%flux_incident_front = targptr%flux_surface(front) + targptr%flux_fire(front)+ targptr%flux_gas(front) + &
-            targptr%flux_convection(front)
+        targptr%flux_incident_front = targptr%flux_surface(front) + targptr%flux_fire(front)+ targptr%flux_gas(front)
         targptr%flux_net_front = flux(front)
         
         call target_flux(back,itarg,ttarg,flux,dflux) 
-        targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back) + &
-            targptr%flux_convection(back)
+        targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back)
         targptr%flux_net_back = flux(back)
 
         ! do conduction into target
@@ -112,6 +111,18 @@ module target_routines
         do i = idx_tempf_trg,idx_tempb_trg
             targptr%temperature(i) = min(targptr%temperature(i),t_inf+t_max)
         end do
+        
+        ! calculate tenability for this time step
+        ilayer = u
+        if (targptr%center(3)<roomptr%depth(l)) ilayer = l
+        nu_co2 = exp(roomptr%species_output(ilayer,co2)/5._eb)
+        fed_gas_increment = (dt/60._eb)*nu_co2*((roomptr%species_output(ilayer,co)*1000)/35000._eb + &
+            (roomptr%species_output(ilayer,hcn)*1000)**2.36_eb/1.2e6_eb)
+        targptr%dfed_gas = targptr%dfed_gas + fed_gas_increment
+        targptr%fed_gas = targptr%fed_gas + fed_gas_increment
+        fed_heat_increment = (dt/60._eb)*((targptr%flux_incident_front/1000._eb)**1.9/4.2+((targptr%tgas-273.15)**3.61/4.1e8_eb))
+        targptr%dfed_heat = targptr%dfed_heat + fed_heat_increment
+        targptr%fed_heat = targptr%fed_heat + fed_heat_increment
     end do
     return
     end subroutine target
@@ -237,6 +248,9 @@ module target_routines
 
             ! compute path length in lower (zl) and upper (zu) layer
             call getylyu(zwall,zlay,ztarg,s,zl,zu)
+            ! For no fire cases
+            absu = absorb(iroom, u)
+            absl = absorb(iroom, l)
 
             ! find fractions transmitted and absorbed in lower and upper layer
             taul = exp(-absl*zl)
@@ -265,7 +279,7 @@ module target_routines
         qtgflux(back) = qgassum(back)
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if (targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_temperature**4
+        if (targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_ambient_temperature**4
     end if
 
     ! compute convective flux
@@ -290,7 +304,7 @@ module target_routines
     if (targptr%back==interior) then
         tgb = tg
     else
-        tgb = interior_temperature
+        tgb = interior_ambient_temperature
     end if
     dttarg = 1.0e-7_eb*ttarg(front)
     dttargb = 1.0e-7_eb*ttarg(back)
@@ -327,9 +341,9 @@ module target_routines
         targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_convection(i) + targptr%flux_target(i)
 
-        call convective_flux (iw,tg,interior_temperature,q1g)
+        call convective_flux (iw,tg,interior_ambient_temperature,q1g)
         targptr%flux_convection_gauge = q1g
-        targptr%flux_target_gauge(i) = -temis*sigma*interior_temperature**4
+        targptr%flux_target_gauge(i) = -temis*sigma*interior_ambient_temperature**4
         targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_target_gauge(i)
         targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
@@ -389,7 +403,7 @@ module target_routines
 
     integer :: nsolid_front_verts, nsolid_back_verts
     integer, parameter :: front=1, back=2
-    integer :: i, iwall, ivert
+    integer :: i, iwall, ivert, skiptagr
 
  ! vertices
  !       3--------------4
@@ -461,107 +475,114 @@ module target_routines
        vert_distance(ivert) = ddot(3,rel_room_vert,1,targptr%normal,1)
     end do
 
-    target_factors_front(1:10)=0.0_eb
-    target_factors_back(1:10)=0.0_eb
+    target_factors_front(1:10) = 0.0_eb
+    target_factors_back(1:10) = 0.0_eb
     do iwall=1, 10
        facei=>faces(1:5,iwall)
-       nsolid_front_verts=0
-       nsolid_back_verts=0
-       do ivert = 1, 4
-          d1 = vert_distance(facei(ivert))
-          v1(1:3) => room_verts(1:3,facei(ivert))
-
-          d2 = vert_distance(facei(ivert+1))
-          v2(1:3) => room_verts(1:3,facei(ivert+1))
-
-          if (d1.gt.0) then  ! face vertex is above target plane
-             nsolid_front_verts=nsolid_front_verts+1
-             solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
-          end if
-
-          if (d1.lt.0) then  ! face vertex is below target plane
-             nsolid_back_verts=nsolid_back_verts+1
-             solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
-          end if
-          if (d1*d2.lt.0) then ! two successive face vertices are on opposite sides of target plane
-                             ! interpolate to find vertex that lies on target plane
-             !  d1   0    d2
-             !  v1   v0   v2
-             !
-             !  (v0-v1)/(0-d1) = (v2-v1)/(d2-d1)
-             !  solve for v0
-             ! v0 = (1-(-d1)/(d2-d1))*v1 + (-d1/(d2-d1))*v2
-             ! note: d2-d1 can't be 0 since d1*d2<0.0
-             nsolid_front_verts=nsolid_front_verts+1
-             nsolid_back_verts=nsolid_back_verts+1
-
-             factor = -d1/(d2-d1)
-             v0(1:3) = (1.0_eb-factor)*v1 + factor*v2
-             solid_angle_front_verts(1:3,nsolid_front_verts) = v0(1:3)
-             solid_angle_back_verts(1:3,nsolid_back_verts) =   v0(1:3)
-          end if
+       skiptagr = 0
+       do ivert = 1, 5
+           if (vert_distance(facei(ivert)) == 0 .or. vert_distance(facei(ivert)) == 0 .or. &
+               vert_distance(facei(ivert)) == 0) skiptagr = skiptagr + 1
        end do
-       if (nsolid_front_verts.ge.3) then
+       if (skiptagr /= 5) then
+           nsolid_front_verts=0
+           nsolid_back_verts=0
+           do ivert = 1, 4
+               d1 = vert_distance(facei(ivert))
+               v1(1:3) => room_verts(1:3,facei(ivert))
 
-          ! triangulate polygon, compute solid angle for each triangle and sum
-          ! the solid angle is zero whenever a vertex coincides with the target location
+               d2 = vert_distance(facei(ivert+1))
+               v2(1:3) => room_verts(1:3,facei(ivert+1))
 
-          v1 => solid_angle_front_verts(1:3,1)
-          t1(1:3) = v1(1:3) - targptr%center(1:3)
-          d1 = dnrm2(3,t1,1)
+               if (d1.ge.0) then  ! face vertex is above target plane
+                   nsolid_front_verts=nsolid_front_verts+1
+                   solid_angle_front_verts(1:3,nsolid_front_verts) = v1(1:3)
+               end if
 
-          if (d1.gt.0.0_eb) then
-             t1(1:3) = t1(1:3)/d1
-             do i = 2, nsolid_front_verts-1
-                v2 => solid_angle_front_verts(1:3,i)
+               if (d1.le.0) then  ! face vertex is below target plane
+                   nsolid_back_verts=nsolid_back_verts+1
+                   solid_angle_back_verts(1:3,nsolid_back_verts) = v1(1:3)
+               end if
+               if (d1*d2.lt.0) then ! two successive face vertices are on opposite sides of target plane
+                   ! interpolate to find vertex that lies on target plane
+                   !  d1   0    d2
+                   !  v1   v0   v2
+                   !
+                   !  (v0-v1)/(0-d1) = (v2-v1)/(d2-d1)
+                   !  solve for v0
+                   ! v0 = (1-(-d1)/(d2-d1))*v1 + (-d1/(d2-d1))*v2
+                   ! note: d2-d1 can't be 0 since d1*d2<0.0
+                   nsolid_front_verts=nsolid_front_verts+1
+                   nsolid_back_verts=nsolid_back_verts+1
 
-                t2(1:3) = v2(1:3) - targptr%center(1:3)
-                d2 = dnrm2(3,t2,1)
-                if (d2.eq.0.0_eb)cycle
+                   factor = -d1/(d2-d1)
+                   v0(1:3) = (1.0_eb-factor)*v1 + factor*v2
+                   solid_angle_front_verts(1:3,nsolid_front_verts) = v0(1:3)
+                   solid_angle_back_verts(1:3,nsolid_back_verts) =   v0(1:3)
+               end if
+           end do
+           if (nsolid_front_verts.ge.3) then
 
-                v3 => solid_angle_front_verts(1:3,i+1)
-                t3(1:3) = v3(1:3) - targptr%center(1:3)
-                d3 = dnrm2(3,t3,1)
-                if (d3.eq.0.0_eb)cycle
+               ! triangulate polygon, compute solid angle for each triangle and sum
+               ! the solid angle is zero whenever a vertex coincides with the target location
 
-                t2(1:3) = t2(1:3)/d2
-                t3(1:3) = t3(1:3)/d3
+               v1 => solid_angle_front_verts(1:3,1)
+               t1(1:3) = v1(1:3) - targptr%center(1:3)
+               d1 = dnrm2(3,t1,1)
 
-                call solid_angle_triangle(solid_angle,t1,t2,t3)
-                target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
-             end do
-          end if
-       end if
-       if (nsolid_back_verts.ge.3) then
+               if (d1.gt.0.0_eb) then
+                   t1(1:3) = t1(1:3)/d1
+                   do i = 2, nsolid_front_verts-1
+                       v2 => solid_angle_front_verts(1:3,i)
 
-          ! triangulate polygon, compute solid angle for each triangle and sum
-          ! the solid angle is zero whenever a vertex coincides with the target location
+                       t2(1:3) = v2(1:3) - targptr%center(1:3)
+                       d2 = dnrm2(3,t2,1)
+                       if (d2.eq.0.0_eb)cycle
 
-          v1 => solid_angle_back_verts(1:3,1)
-          t1(1:3) = v1(1:3) - targptr%center(1:3)
-          d1 = dnrm2(3,t1,1)
+                       v3 => solid_angle_front_verts(1:3,i+1)
+                       t3(1:3) = v3(1:3) - targptr%center(1:3)
+                       d3 = dnrm2(3,t3,1)
+                       if (d3.eq.0.0_eb)cycle
 
-          if (d1.gt.0.0_eb) then
-             t1(1:3) = t1(1:3)/d1
-             do i = 2, nsolid_back_verts-1
-                v2 => solid_angle_back_verts(1:3,i)
+                       t2(1:3) = t2(1:3)/d2
+                       t3(1:3) = t3(1:3)/d3
 
-                t2(1:3) = v2(1:3) - targptr%center(1:3)
-                d2 = dnrm2(3,t2,1)
-                if (d2.eq.0.0_eb)cycle
+                       call solid_angle_triangle(solid_angle,t1,t2,t3)
+                       target_factors_front(iwall) = target_factors_front(iwall) + solid_angle
+                   end do
+               end if
+           end if
+           if (nsolid_back_verts.ge.3) then
 
-                v3 => solid_angle_back_verts(1:3,i+1)
-                t3(1:3) = v3(1:3) - targptr%center(1:3)
-                d3 = dnrm2(3,t3,1)
-                if (d3.eq.0.0_eb)cycle
+               ! triangulate polygon, compute solid angle for each triangle and sum
+               ! the solid angle is zero whenever a vertex coincides with the target location
 
-                t2(1:3) = t2(1:3)/d2
-                t3(1:3) = t3(1:3)/d3
+               v1 => solid_angle_back_verts(1:3,1)
+               t1(1:3) = v1(1:3) - targptr%center(1:3)
+               d1 = dnrm2(3,t1,1)
 
-                call solid_angle_triangle(solid_angle,t1,t2,t3)
-                target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
-          end do
-          end if
+               if (d1.gt.0.0_eb) then
+                   t1(1:3) = t1(1:3)/d1
+                   do i = 2, nsolid_back_verts-1
+                       v2 => solid_angle_back_verts(1:3,i)
+
+                       t2(1:3) = v2(1:3) - targptr%center(1:3)
+                       d2 = dnrm2(3,t2,1)
+                       if (d2.eq.0.0_eb)cycle
+
+                       v3 => solid_angle_back_verts(1:3,i+1)
+                       t3(1:3) = v3(1:3) - targptr%center(1:3)
+                       d3 = dnrm2(3,t3,1)
+                       if (d3.eq.0.0_eb)cycle
+
+                       t2(1:3) = t2(1:3)/d2
+                       t3(1:3) = t3(1:3)/d3
+
+                       call solid_angle_triangle(solid_angle,t1,t2,t3)
+                       target_factors_back(iwall) = target_factors_back(iwall) + solid_angle
+                   end do
+               end if
+           end if
        end if
     end do
     sum_front = 0.0_eb

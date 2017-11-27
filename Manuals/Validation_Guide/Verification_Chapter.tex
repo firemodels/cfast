@@ -17,7 +17,7 @@ A series of verification test cases follow, examining the energy balance, mass b
 
 
 \section{Energy Balance}
-
+\label{energy_balance}
 For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment.
 
 \subsection{Temperature Equilibrium via Heat Conduction}
@@ -140,6 +140,7 @@ Consider now the same case as in Section~\ref{sealed_test}, but now with two zon
 
 \section{Mass Balance}
 \label{mass_conservation}
+\label{mass_balance}
 
 \subsection{A Fire in a Single, Sealed Compartment}
 \label{sec:spec1}
@@ -233,10 +234,37 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \label{fig:specmass4abcd}
 \end{figure}
 
+\subsection{Product Yields (\texorpdfstring{\textct{methane\_flame}}{methane\_flame})}
+\label{methane_flame}
+
+A simple 5 kW methane flame with 10~\% CO yield is burned inside a closed compartment for 100~s. Initially, the relative humidity within the compartment is zero. The total mass of CO$_2$, H$_2$O and CO produced is calculated. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
+\be
+   \mathrm{C_{n_\C}H_{n_H}} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow   \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO}
+\ee
+where
+\begin{eqnarray}
+    \nu_\CO &=& \frac{M_\F}{M_\CO} \; y_\CO \\[.1in]
+    \nu_\COTWO &=& \mathrm{n_\C} - \nu_\CO \\[.1in]
+    \nu_\HTWOO &=& \frac{\mathrm{n_\Hy}}{2} \\[.1in]
+    \nu_\OTWO  &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO}{2}
+\end{eqnarray}
+
+With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), 0.026 kg of CO$_2$, 0.022 kg of H$_2$O, and 0.001 kg of CO are produced by the fire. The following figure compares the mass of the three combustion products to their expected values.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/methane_flame}
+\caption[Results of the test case {\ct methane\_flame\_simple.in}]{Expected and CFAST calculated values for the masses of CO, CO$_2$, and H$_2$O in a one room test case {\ct methane\_flame\_simple.in}.}
+\label{fig_methane_flame_yields}
+\end{figure}
+
+\clearpage
+
 \clearpage
 
 
 \section{Ventilation}
+\label{ventilation}
 
 \subsection{Air Flow Through a Single Compartment}
 \label{ventilation_1}
@@ -330,6 +358,7 @@ A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12
 \end{figure}
 
 \section{Heat Transfer}
+\label{radiation}
 
 \subsection{Measuring the Temperature Change of a Thermally Thin Target}
 \label{radiation_1}
@@ -381,6 +410,7 @@ where $\epsilon$ is the emissivity of the target (taken here to be 1), $\sigma$ 
 
 
 \section{Sprinklers}
+\label{sprinklers}
 
 \subsection{Utilizing a Sprinkler to Detect and Suppress a Fire}
 \label{sprinkler_1}

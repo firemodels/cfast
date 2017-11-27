@@ -1,10 +1,11 @@
 module cfast_types
 
     use precision_parameters
-    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxcross, mxslb, nnodes, mxrooms, mxcoeff
+    use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, mxcoeff
 
     ! detector / sprinkler structure
     type detector_type
+        character(64) :: name           ! user selected name for the detector (user input)
         real(eb) :: center(3)           ! position of detector center (user input)
         real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
         real(eb) :: rti                 ! rti value for heat detector or sprinkler (user input)
@@ -32,7 +33,7 @@ module cfast_types
     ! fire data structure
     type fire_type
         ! These are the fire definitions from the input
-        character(128) :: name                          ! user selected name for the fire (user input)
+        character(64) :: name                           ! user selected name for the fire (user input)
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
         integer :: ignition_type                        ! ignition type for fire (user input)
@@ -45,16 +46,17 @@ module cfast_types
         real(eb) :: y_position                          ! initial Y position of the base of fire (user input)
         real(eb) :: z_position                          ! initial Z position of the base of fire (user input)
 
-        integer :: npoints                              ! actual number of time points for fire (user input)
-        real(eb), dimension(mxpts) :: time              ! time points for fire inputs (user input)
-        real(eb), dimension(mxpts) :: mdot              ! pyrolysis rate as a function of time (user input)
-        real(eb), dimension(mxpts) :: qdot              ! heat release rate of the fire as a function of time (user input)
-        real(eb), dimension(mxpts) :: area              ! area of the base of the fire as a function of time (user input)
-        real(eb), dimension(mxpts) :: height            ! height of the base of the fire as a function of time (user input)
-        real(eb), dimension(mxpts) :: y_soot            ! soot production rate as a funciton of time (user input)
-        real(eb), dimension(mxpts) :: y_co              ! CO production rate as a function of time (user input)
-        real(eb), dimension(mxpts) :: y_trace           ! trace species production rate as a funciton of time (user input)
-        real(eb), dimension(mxpts) :: hoc               ! heat of combustion as a function of time
+        !integer :: npoints                                       ! actual number of time points for fire (user input)
+        !real(eb), dimension(mxpts) :: time                      ! time points for fire inputs (user input)
+        integer :: n_mdot, n_qdot, n_area, n_height, n_soot, n_co, n_trace, n_hoc ! number of time points (user input)
+        real(eb), dimension(mxpts) :: mdot, t_mdot      ! pyrolysis rate (user input)
+        real(eb), dimension(mxpts) :: qdot, t_qdot      ! heat release rate of the fire (user input)
+        real(eb), dimension(mxpts) :: area, t_area      ! area of the base of the fire (user input)
+        real(eb), dimension(mxpts) :: height, t_height  ! height of the base of the fire (user input)
+        real(eb), dimension(mxpts) :: y_soot, t_soot    ! soot production rate (user input)
+        real(eb), dimension(mxpts) :: y_co, t_co        ! CO production rate (user input)
+        real(eb), dimension(mxpts) :: y_trace, t_trace  ! trace species production rate (user input)
+        real(eb), dimension(mxpts) :: hoc, t_hoc        ! heat of combustion
 
         real(eb) :: z_offset                            ! current height of the fire above initial Z position
         real(eb) :: characteristic_length               ! characteristic length for fire = max fire diameter
@@ -86,17 +88,19 @@ module cfast_types
 
     ! ramp data structure
     type ramp_type
-        character :: type
+        character(64) :: id  
+        character(64) :: type  
         integer :: room1, room2, counter, npoints
-        real(eb) :: time(mxpts), value(mxpts)
+        real(eb) :: x(mxpts), f_of_x(mxpts)
     end type ramp_type
 
     ! room data structure
     type room_type
         ! These are room definitions from or calculated from user input
-        character(128) :: name                          ! user selected name for the compartment
-        character(mxthrmplen), dimension(nwal) :: matl  ! surface materials for ceiling, floor, upper wall, lower wall
+        character(64) :: name                           ! user selected name for the compartment
+        character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
 
+        integer :: compartment                          ! compartment number assigned automatically for namelist inputs
         integer :: ibar, jbar, kbar                     ! number of grids in x, y, and z direction in compartment
         integer :: deadroom                             ! if compartment is only connected to a single other compartment
                                                         ! pressure of other compartment is used for the dead compartment
@@ -120,9 +124,9 @@ module cfast_types
 
         ! cross-sectional area variables
         integer :: nvars                                ! number of data points for variable cross-secitonal area
-        real(eb), dimension(mxcross) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
-        real(eb), dimension(mxcross) :: var_area        ! variable cross-sectional area base area
-        real(eb), dimension(mxcross) :: var_height      ! variable cross-sectional area heights
+        real(eb), dimension(mxpts) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
+        real(eb), dimension(mxpts) :: var_area        ! variable cross-sectional area base area
+        real(eb), dimension(mxpts) :: var_height      ! variable cross-sectional area heights
 
         ! compartment surfaces
         real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface
@@ -172,8 +176,8 @@ module cfast_types
 
     ! target data structure
     type target_type
-        character(128) :: name          ! user selected name for the target
-        character(mxthrmplen) :: material ! material for the target (used to match materials properties)
+        character(64) :: name           ! user selected name for the target
+        character(64) :: material       ! material for the target (used to match materials properties)
 
         real(eb) :: center(3)           ! position of target center
         real(eb) :: normal(3)           ! target normal vector
@@ -199,6 +203,10 @@ module cfast_types
         integer :: layer                ! layer (within the compartment) where the target is located (calculated)
         real(eb) :: tgas                ! gas temperature near target
         real(eb) :: tinternal           ! target temperature at depth_loc
+        real(eb) :: fed_gas             ! accumulated gas tenability at target location
+        real(eb) :: dfed_gas            ! current accumulated increment (since last ss output) of gas tenability at target location
+        real(eb) :: fed_heat            ! accumulated heat tenability at target location
+        real(eb) :: dfed_heat           ! current accumulated increment (since last ss output) of heat tenability at target location
         real(eb) :: tfront              ! target front surface temperature (= ...%temperature(1) for plate,
                                         !                                   = ...%temperature(nnodes_trg) for cylinder)
         real(eb) :: tback               ! target back surface temperature  (= ...%temperature(nnodes_trg) for plate,
@@ -210,7 +218,7 @@ module cfast_types
 
     ! thermal properties structure
     type thermal_type
-        character(mxthrmplen) :: name                   ! user selected name for the material
+        character(64) :: name                           ! user selected name for the material
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
         real(eb), dimension(mxslb) :: rho               ! density of each slab
@@ -260,6 +268,8 @@ module cfast_types
 
         ! These are common to more than one vent types
 
+        character(64) :: ramp_id            ! ramp id assocated with vent
+        character(64) :: filter_id          ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent
         integer :: room2                    ! second or bottom compartment for connecting vent
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
@@ -288,7 +298,7 @@ module cfast_types
         real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type
 
-    ! slice file data structure
+    ! visualization data structure
     type slice_type
        character(256) :: filename
        character(64) :: menu_label, colorbar_label, unit_label

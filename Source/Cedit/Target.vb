@@ -17,7 +17,7 @@ Public Class Target
     Friend Const TypeSmokeDetector As Integer = 0                       ' Type 0 is a smoke detector, 1 is a heat detector, 2 is a sprinkler
     Friend Const TypeHeatDetector As Integer = 1
     Friend Const TypeSprinkler As Integer = 2
-    Friend Const MaximumTargets As Integer = 100
+    Friend Const MaximumTargets As Integer = 1000
     Friend Const ActivationbyTemperature As Integer = 0
     Friend Const ActivationbyObscuration As Integer = 1
 

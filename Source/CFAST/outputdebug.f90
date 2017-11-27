@@ -2,7 +2,7 @@ module debug_routines
 
     use precision_parameters
 
-    use spreadsheet_header_routines, only: ssheadersfslabs, ssheadersresid
+    use spreadsheet_header_routines, only: ssHeaders_fslabs, ssHeaders_resid
     use utility_routines, only: ssaddtolist
 
     use cenviro
@@ -35,7 +35,7 @@ module debug_routines
     logical :: firstc=.true.
 
     if (firstc) then
-        call SSHeadersFSlabs
+        call ssHeaders_fslabs
         firstc = .false.
     end if
 
@@ -124,7 +124,7 @@ module debug_routines
 
     ! headers
     if (firstc) then
-        call ssHeadersResid
+        call ssHeaders_resid
         firstc = .false.
     end if
 

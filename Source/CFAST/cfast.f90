@@ -33,17 +33,19 @@
     use output_routines, only: output_version, output_initial_conditions
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
+    use radiation_routines, only : radiation
 
     use setup_data
     use thermal_data
     use option_data, only: total_steps
+    use namelist_data
 
     implicit none
 
     real(eb) :: xdelt, tstop, tbeg, tend
     type(thermal_type), pointer :: thrmpptr
 
-    version = 7203        ! Current CFAST version number
+    cfast_version = 7300        ! Current CFAST version number
 
     if (command_argument_count().eq.0) then
         call output_version(0)
@@ -54,7 +56,6 @@
 
     stime = 0.0_eb
     call initialize_memory
-    call initialize_fire_objects
     call read_command_options
     call open_files
 

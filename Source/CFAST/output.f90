@@ -18,6 +18,7 @@ module output_routines
     use wallptrs
     use room_data
     use ramp_data
+    use namelist_data
 
     implicit none
 
@@ -43,7 +44,7 @@ module output_routines
 
     call get_info(revision, revision_date, compile_date)
 
-    call splitversion(version,imajor,iminor,iminorrev)
+    call splitversion(cfast_version,imajor,iminor,iminorrev)
 
     write (iunit,'(/A/)')                    'CFAST'
 #ifndef VERSION_PP
@@ -480,7 +481,7 @@ module output_routines
     integer, intent(in) :: itprt
 
     integer :: i, iw, itarg
-    real(eb) :: ctotal, total, ftotal, wtotal, gtotal, itotal, tgtemp, tttemp, tctemp
+    real(eb) :: itotal, total, tgtemp, tttemp, tctemp, gasfed, heatfed
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -502,50 +503,43 @@ module output_routines
                 tgtemp = targptr%tgas
                 tttemp = targptr%tfront
                 tctemp = targptr%tinternal
+                gasfed = targptr%fed_gas
+                heatfed = targptr%fed_heat
                 if (validate.or.netheatflux) then
+                    itotal = targptr%flux_incident_front
                     total = targptr%flux_net_gauge(1)
-                    ftotal = targptr%flux_fire(1)
-                    wtotal = targptr%flux_surface(1)
-                    gtotal = targptr%flux_gas(1)
-                    ctotal = targptr%flux_convection_gauge(1)
-                    itotal = targptr%flux_incident_front
                 else
-                    total = targptr%flux_net(1)
-                    ftotal = targptr%flux_fire(1)
-                    wtotal = targptr%flux_surface(1)
-                    gtotal = targptr%flux_gas(1)
-                    ctotal = targptr%flux_convection(1)
                     itotal = targptr%flux_incident_front
+                    total = targptr%flux_net(1)
                 end if
+                if (abs(itotal)<=1.0e-10_eb) itotal = 0.0_eb
                 if (abs(total)<=1.0e-10_eb) total = 0.0_eb
-                if (abs(ftotal)<=1.0e-10_eb) ftotal = 0.0_eb
-                if (abs(wtotal)<=1.0e-10_eb) wtotal = 0.0_eb
-                if (abs(gtotal)<=1.0e-10_eb) gtotal = 0.0_eb
-                if (abs(ctotal)<=1.0e-10_eb) ctotal = 0.0_eb
                 if (total/=0.0_eb) then
                     write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
-                        tctemp-kelvin_c_offset, itotal, total, ftotal, wtotal, gtotal, ctotal
+                        tctemp-kelvin_c_offset, itotal, total, gasfed, heatfed
                 elseif (itotal/=0.0_eb) then
                     write (iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
-                        itotal
+                        itotal, gasfed,heatfed
                 else
-                    write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset
+                    write (iofilo,5040) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                        gasfed, heatfed
                 end if
             end if
         end do
 
     end do
     return
-5000 format (//,'SURFACES AND TARGETS',//, &
-    'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       ', &
-    'Surface   Interior Incident     Net          Fire         Surface      Gas',/, &
-    '               Temp.     Temp.     Temp.     Temp.                  Temp.     ', &
-    'Temp.     Temp.    Flux         Flux         Rad.         Rad.         Rad.         Convect.',/, &
-    '               (C)       (C)       (C)       (C)                    (C)       ', &
-         '(C)       (C)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)      (W/m^2)',/,172('-'))
+    5000 format (//,'SURFACES AND TARGETS',//, &
+    'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       Surface   Interior Incident     ', &
+    'Net          Gas         Heat',/, &
+    '               Temp.     Temp.     Temp.     Temp.                  Temp.     Temp.     Temp.    Flux         Flux', &
+    '         FED         FED',/, &
+    '               (C)       (C)       (C)       (C)                    (C)       (C)       (C)      (W/m^2)      (W/m^2)' &
+    ,/,172('-'))
 5010 format (a14,4(1pg10.3))
 5020 format (54x,a8,4x,3(1pg10.3),1x,6(1pg10.3,3x))
-5030 format (54x,a8,4x,3(1pg10.3),66x,1pg10.3)
+5030 format (54x,a8,4x,3(1pg10.3),15x,3(1pg10.3,3x))
+5040 format (54x,a8,4x,3(1pg10.3),25x,2(1pg10.3,3x))  
     end subroutine results_targets
 
 ! --------------------------- results_detectors -------------------------------------------
@@ -627,8 +621,8 @@ module output_routines
 
     !     Description:  Output initial test case ambient conditions
 
-    write (iofilo,5000) interior_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
-       exterior_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
+    write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
+       exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
     return
 
 5000 format (//,'AMBIENT CONDITIONS',//, &
@@ -669,6 +663,7 @@ module output_routines
 
     integer :: i, j, iramp
     character :: ciout*14, cjout*14, csout*6, crout*10, ctrigger*4
+    character(64) :: rampid
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
@@ -687,7 +682,8 @@ module output_routines
             roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                iramp = find_vent_opening_ramp('H',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'H',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -739,7 +735,8 @@ module output_routines
             roomptr => roominfo(ventptr%room2)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                iramp = find_vent_opening_ramp('V',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'V',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5050) ciout, cjout, ventptr%counter, csout, ventptr%area, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -788,7 +785,8 @@ module output_routines
             if (ventptr%room2==nr) cjout = 'Outside'
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
-                iramp = find_vent_opening_ramp('M',ventptr%room1,ventptr%room2,ventptr%counter)
+                rampid = ventptr%ramp_id
+                iramp = find_vent_opening_ramp(rampid,'M',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
                     write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
@@ -830,13 +828,17 @@ module output_routines
         write (iofilo,5160)
         do i = 1, nramps
             rampptr => rampinfo(i)
-            roomptr => roominfo(rampptr%room2)
-            write (cjout,'(a14)') roomptr%name
-            if (rampptr%room2==nr) cjout = 'Outside'
-            roomptr => roominfo(rampptr%room1)
-            write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
-                (int(rampptr%time(j)),j=1,rampptr%npoints)
-            write (iofilo,5180) 'Fraction', (rampptr%value(j),j=1,rampptr%npoints)
+            if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
+222            roomptr => roominfo(rampptr%room2)
+               write (cjout,'(a14)') roomptr%name
+               if (rampptr%room2==nr) cjout = 'Outside'
+               roomptr => roominfo(rampptr%room1)
+               write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
+                   (int(rampptr%x(j)),j=1,rampptr%npoints)
+               write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
+               goto 223
+            end if
+223         continue
         end do
     end if
     return
@@ -935,8 +937,8 @@ module output_routines
             write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             write (iofilo,5000) ('(kg/kg)',i = 1,(is-51)/10)
             write (iofilo,5010) ('-',i = 1,is-1)
-            do i = 1, fireptr%npoints
-                write (cbuf,5060) fireptr%time(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
+            do i = 1, fireptr%n_qdot
+                write (cbuf,5060) fireptr%t_qdot(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
                 y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
                 y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
                 write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i)
@@ -1000,7 +1002,7 @@ module output_routines
          ,'                                                                        Obscuration    ', &
          'Temperature   RTI           Spray Density',/ &
          ,'                                         (m)      (m)      (m)          (%/m)       ', &
-         '  (C)           (m s)^1/2     (m/s)',/ &
+         '  (C)           (m s)^1/2     (mm/s)',/ &
          ,128('-'))
 
     do idtect = 1, n_detectors

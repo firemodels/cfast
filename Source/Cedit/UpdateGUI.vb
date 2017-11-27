@@ -5,7 +5,7 @@ Public Class UpdateGUI
     Private MainWin As CeditMain
     Private AreaPoints() As Single, HeightPoints() As Single, OpeningTimes() As Single, OpeningFractions() As Single
     Private NumPoints As Integer, i As Integer, j As Integer, NumCompartments As Integer
-    Private NumHVents As Integer, numVVents As Integer, numMVents As Integer, NumVHeats As Integer, NumHHeats As Integer, _
+    Private NumHVents As Integer, numVVents As Integer, numMVents As Integer, NumVHeats As Integer, NumHHeats As Integer,
     numTargets As Integer, numDetectors As Integer, numHeats As Integer, numFires As Integer, numVisuals As Integer
     Public Sub New(ByVal ParentWindow As Object)
         MainWin = ParentWindow
@@ -62,7 +62,7 @@ Public Class UpdateGUI
     End Sub
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
-        ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid + _
+        ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid +
             myTargets.IsValid + myFires.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
             myErrors.Break(System.IO.Path.GetFileName(myEnvironment.InputFileName))
@@ -231,6 +231,7 @@ Public Class UpdateGUI
         General()
         If index < 0 Or myCompartments.Count = 0 Then
             ClearGrid(MainWin.CompSummary)
+            ClearGrid(MainWin.CompVariableArea)
             MainWin.TabHorizontalFlow.Enabled = False
             MainWin.TabVerticalFlow.Enabled = False
             MainWin.TabMechanicalFlow.Enabled = False
@@ -375,6 +376,7 @@ Public Class UpdateGUI
         Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myHVents.Count Then
             ClearGrid(MainWin.HVentSummary)
+            ClearGrid(MainWin.HVentFractions)
             MainWin.GroupHVentGeometry.Enabled = False
         Else
             MainWin.GroupHVentGeometry.Enabled = True
@@ -441,7 +443,7 @@ Public Class UpdateGUI
                         MainWin.HVentFractions(2, 1) = aVent.FinalOpening
                     End If
                 Else
-                        For i = 1 To NumPoints
+                    For i = 1 To NumPoints
                         MainWin.HVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.HVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -490,6 +492,7 @@ Public Class UpdateGUI
         Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myVVents.Count Then
             ClearGrid(MainWin.VVentSummary)
+            ClearGrid(MainWin.VVentFractions)
             MainWin.GroupVVents.Enabled = False
         Else
             MainWin.GroupVVents.Enabled = True
@@ -555,7 +558,7 @@ Public Class UpdateGUI
                         MainWin.VVentFractions(2, 1) = aVent.FinalOpening
                     End If
                 Else
-                        For i = 1 To NumPoints
+                    For i = 1 To NumPoints
                         MainWin.VVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.VVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -599,6 +602,7 @@ Public Class UpdateGUI
         Dim OpenTypeLabel As String = ""
         If index < 0 Or index >= myMVents.Count Then
             ClearGrid(MainWin.MVentSummary)
+            ClearGrid(MainWin.MVentFractions)
             MainWin.GroupMVents.Enabled = False
         Else
             MainWin.GroupMVents.Enabled = True
@@ -677,7 +681,7 @@ Public Class UpdateGUI
                         MainWin.MVentFractions(2, 1) = aVent.FinalOpening
                     End If
                 Else
-                        For i = 1 To NumPoints
+                    For i = 1 To NumPoints
                         MainWin.MVentFractions(i, 0) = OpeningTimes(i)
                         MainWin.MVentFractions(i, 1) = OpeningFractions(i)
                     Next
@@ -961,6 +965,7 @@ Public Class UpdateGUI
         Dim ir, ic As Integer
         If index < 0 Or index >= myFires.Count Then
             ClearGrid(MainWin.FireSummary)
+            ClearGrid(MainWin.FireDataSS)
             MainWin.GroupFire.Enabled = False
         Else
             MainWin.GroupFire.Enabled = True
@@ -983,7 +988,6 @@ Public Class UpdateGUI
 
             MainWin.FireXPosition.Text = aFire.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFire.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.FireZPosition.Text = aFire.ZPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireIgnitionCriteria.SelectedIndex = aFire.IgnitionType
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
                 IgnitionTypeLabel = myUnits.Convert(UnitsNum.Time).Units
@@ -999,7 +1003,7 @@ Public Class UpdateGUI
             End If
             MainWin.FireIgnitionValue.Text = " "
             If aFire.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFire.IgnitionValue.ToString + IgnitionTypeLabel
-            MainWin.FireName.Text = aFire.Name
+            MainWin.FireInstanceName.Text = aFire.Name
 
             MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
             MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
@@ -1047,7 +1051,6 @@ Public Class UpdateGUI
                     End If
                     MainWin.FireSummary(i, 6) = aFire.XPosition.ToString
                     MainWin.FireSummary(i, 7) = aFire.YPosition.ToString
-                    MainWin.FireSummary(i, 8) = aFire.ZPosition.ToString
 
                     MainWin.FireSummary(i, 2) = aFire.Name
                     PeakHRR = 0.0
@@ -1170,7 +1173,7 @@ Public Class UpdateGUI
             Dim aFire As Fire
             For i = 1 To numFires
                 aFire = myFires(i - 1)
-                If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aFire.ZPosition - aTarget.ZPosition <> 0) Then
+                If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aTarget.ZPosition <> 0) Then
                     MainWin.TargetNormalCalc.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
                 End If
             Next

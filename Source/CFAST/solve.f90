@@ -141,6 +141,7 @@ module solve_routines
     real(eb) :: fraction, height, width, avent
     integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
+    character(64) :: rampid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -160,7 +161,8 @@ module solve_routines
         ik = ventptr%counter
         im = min(iroom1,iroom2)
         ix = max(iroom1,iroom2)
-        call get_vent_opening ('H',im,ix,ik,i,tsec,fraction)
+        rampid = ventptr%ramp_id
+        call get_vent_opening (rampid,'H',im,ix,ik,i,tsec,fraction)
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width
         avent = fraction*height*width
@@ -406,7 +408,7 @@ module solve_routines
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run
         ! then we need the output now
         call remap_fires (nfires)
-        call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_temperature, nrm1,  &
+        call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1,  &
              n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, 0.0_eb, 1)
         icode = 0
         write (*, '(a)') 'Initialize only'
@@ -494,9 +496,9 @@ module solve_routines
                 firstpassforsmokeview = .false.
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information. remap_fires just puts all of the information in a single list
-                call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_temperature, nrm1, &
+                call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1, &
                     n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, t, i_time_step)
-                call output_smokeview_header (version,nrm1,nfires)
+                call output_smokeview_header (cfast_version,nrm1,nfires)
             end if
             smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
             smv_zlay(1:nrm1) = roominfo(1:nrm1)%depth(l)
@@ -517,6 +519,10 @@ module solve_routines
             i_time_step = tspread
             tspread =tspread + dspread
             call output_status (t, dt)
+            
+            ! reset incremental FED data
+            targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
+            targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
         end if
 
         ! diagnostic output
@@ -1291,8 +1297,8 @@ module solve_routines
         roomptr%depth(l) = 100000.0_eb
         roomptr%relp = 0.0_eb
         roomptr%absp = pressure_offset
-        roomptr%temp(u) = exterior_temperature
-        roomptr%temp(l) = exterior_temperature
+        roomptr%temp(u) = exterior_ambient_temperature
+        roomptr%temp(l) = exterior_ambient_temperature
         roomptr%species_fraction(u,3:ns) = 0.0_eb
         roomptr%species_fraction(l,3:ns) = 0.0_eb
         roomptr%species_mass(l,3:ns) = 0.0_eb
@@ -1305,7 +1311,7 @@ module solve_routines
         ! set the water content to relative_humidity - the polynomial fit is to (t-273), and
         ! is for saturation pressure of water.  this fit comes from the steam
         ! tables in the handbook of physics and chemistry.
-        xt = exterior_temperature
+        xt = exterior_ambient_temperature
         xtemp = 23.2_eb - 3.816e3_eb/(xt-46.0_eb)
         xh2o = exp(xtemp)/101325.0_eb*(18.016_eb/28.584_eb)
         roomptr%species_fraction(u,h2o) = relative_humidity*xh2o

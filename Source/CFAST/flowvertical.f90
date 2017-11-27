@@ -38,6 +38,8 @@ module vflow_routines
     real(eb) :: tomu, toml, toqu, toql, speciesl, speciesu, pmtoup, pmtolp
     integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape, icount
     real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
+    
+    character(64) :: rampid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
@@ -53,7 +55,11 @@ module vflow_routines
         itop = ventptr%room1
         ibot = ventptr%room2
         icount = ventptr%counter
-        call get_vent_opening ('V',itop,ibot,icount,i,tsec,fraction)
+        rampid = ventptr%ramp_id
+        call get_vent_opening (rampid,'V',itop,ibot,icount,i,tsec,fraction)
+        if (fraction /= 1._eb) then
+            continue
+        end if
         area = fraction * ventptr%area
         ventptr%current_area = area
         ishape = ventptr%shape
@@ -84,9 +90,10 @@ module vflow_routines
             ! determine mass and enthalpy fractions for the from room
             if (ifrm<=nrm1) then
                 roomptr => roominfo(ifrm)
-                if (tmvent(iflow)>interior_temperature) then
+                if (tmvent(iflow)>interior_ambient_temperature) then
                     zlayer = roomptr%depth(ilay)
-                    froude(iflow) = vvent(iflow)/sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_temperature)/interior_temperature)
+                    froude(iflow) = vvent(iflow) / &
+                        sqrt(grav_con*zlayer**5*(tmvent(iflow)-interior_ambient_temperature)/interior_ambient_temperature)
                 else
                     froude(iflow) = 0.0_eb
                 end if
@@ -114,8 +121,8 @@ module vflow_routines
                 frommu = 0.0_eb
                 fromml = xmvent(iflow)
                 fromqu = 0.0_eb
-                fromql = cp*fromml*exterior_temperature
-                from_temp = exterior_temperature
+                fromql = cp*fromml*exterior_ambient_temperature
+                from_temp = exterior_ambient_temperature
             end if
             fromtq = fromqu + fromql
 
@@ -326,8 +333,8 @@ module vflow_routines
             roomptr => roominfo(iroom(i))
             tmvent(i) = roomptr%temp(ilay(3-i))
         else
-            ! iroom(i) is an outside room so use exterior_temperature for temperature
-            tmvent(i) = exterior_temperature
+            ! iroom(i) is an outside room so use exterior_ambient_temperature for temperature
+            tmvent(i) = exterior_ambient_temperature
         end if
     end do
     return

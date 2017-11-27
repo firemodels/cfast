@@ -6,6 +6,7 @@ Public Class Environment
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aTitle As String                        ' Title for the simulation
+    Private aVersion As Integer                     ' CFAST version number
     Private aSimulationTime As Integer              ' Total simulation time
     Private aOutputInterval As Integer              ' Time interval for printed output, + is compact output and - is full output
     Private aSpreadsheetInterval As Integer         ' Time interval for comma-separated output
@@ -31,10 +32,11 @@ Public Class Environment
 
     Public Sub New()
         aTitle = "CFAST Simulation"
-        aSimulationTime = 900
-        aOutputInterval = 50
-        aSpreadsheetInterval = 10
-        aSmokeviewInterval = 10
+        aVersion = 7300
+        aSimulationTime = 3600
+        aOutputInterval = 60
+        aSpreadsheetInterval = 15
+        aSmokeviewInterval = 15
         aIntAmbTemperature = 293.15
         aIntAmbPressure = 101325.0
         aIntAmbElevation = 0.0
@@ -58,6 +60,17 @@ Public Class Environment
             If Value <> aTitle Then
                 aChanged = True
                 aTitle = Value
+            End If
+        End Set
+    End Property
+    Friend Property Version() As Integer
+        Get
+            Return aVersion
+        End Get
+        Set(value As Integer)
+            If value <> aVersion Then
+                aChanged = True
+                aVersion = value
             End If
         End Set
     End Property

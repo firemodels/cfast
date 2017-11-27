@@ -1,4 +1,4 @@
-module utility_routines
+    module utility_routines
 
     use precision_parameters
 
@@ -8,6 +8,8 @@ module utility_routines
     use solver_data
     use room_data, only: nwpts, wsplit, iwbound
 
+    use namelist_data
+
     implicit none
 
     character(lbufln) :: lbuf
@@ -16,8 +18,76 @@ module utility_routines
     ! used by other routines
 
     contains
+    
 
-! --------------------------- ssaddtolist -------------------------------------------
+    ! --------------------------- set_heat_of_combustion -------------------------------------------
+
+    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
+
+    !	Routine to implement the algorithm to set the heat of combustion for all fires
+
+    integer, intent(in) :: maxint
+    real(eb), intent(in) :: qdot(maxint), hinitial
+    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
+
+    integer :: i
+    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
+
+    do i = 1, maxint
+        if (i>1) then
+            if (mdot(i)*qdot(i)<=0.0_eb) then
+                hdot(i) = hinitial
+            else
+                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
+                mdot(i) = qdot(i)/hdot(i)
+            end if
+        else
+            hdot(1) = hinitial
+        end if
+    end do
+
+    return
+
+    end subroutine set_heat_of_combustion
+
+
+
+    ! --------------------------- position_object -------------------------------------------
+
+    subroutine position_object (xyorz,pos_max,defaultposition,minimumseparation)
+
+    !     Position an object in a compartment
+    !     arguments: xyorz: object position in the x, y, or z direction
+    !		         pos_max: the maximum extent
+    !		         defaultposition: to set to zero (base)(2) or midpoint(1)
+    !		         minimumseparation: the closest the object can be to a wall
+
+    integer, intent(in) :: defaultposition
+    real(eb), intent(in) :: minimumseparation, pos_max
+    real(eb), intent(inout) :: xyorz
+
+    if ((xyorz<0.0_eb).or.(xyorz>pos_max)) then
+        select case (defaultposition)
+        case (1)
+            xyorz = pos_max / 2.0_eb
+        case (2)
+            xyorz = minimumseparation
+            case default
+            write (*,*) 'Fire objects positioned specified outside compartment bounds.'
+            write (iofill,*) 'Fire objects positioned specified outside compartment bounds.'
+            stop
+        end select
+    else if (xyorz==0.0_eb) then
+        xyorz = minimumseparation
+    else if (xyorz==pos_max) then
+        xyorz = pos_max - minimumseparation
+    end if
+
+    return
+
+    end subroutine position_object
+
+    ! --------------------------- ssaddtolist -------------------------------------------
 
     subroutine ssaddtolist (ic, valu, array)
 
@@ -37,7 +107,7 @@ module utility_routines
 
     end subroutine ssaddtolist
 
-! --------------------------- toIntString -------------------------------------------
+    ! --------------------------- toIntString -------------------------------------------
 
     subroutine toIntString(i,istring)
 
@@ -65,7 +135,7 @@ module utility_routines
     return
     end subroutine toIntString
 
-! --------------------------- tanhsmooth ---------------------------------------
+    ! --------------------------- tanhsmooth ---------------------------------------
 
     real(eb) function tanhsmooth (x, xmax, xmin, ymax, ymin)
 
@@ -87,7 +157,7 @@ module utility_routines
     return
     end function tanhsmooth
 
-! --------------------------- xerror -------------------------------------------
+    ! --------------------------- xerror -------------------------------------------
 
     subroutine xerror(messg,nmessg,nerr,level)
 
@@ -118,11 +188,11 @@ module utility_routines
     integer :: nmess
 
     if (level==2) then
-       error_label = "***Fatal error:"
+        error_label = "***Fatal error:"
     else if (level==1) then
-       error_label = "***Error:"
+        error_label = "***Error:"
     else
-       error_label = "***Warning:"
+        error_label = "***Warning:"
     end if
 
     if (nmessg==0) then
@@ -134,15 +204,15 @@ module utility_routines
 
     if (level==-2) then
     else if (level==-3) then
-       call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+        call xerrwv(messg,nmess,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
     else
-       call xerrwv(trim(error_label)//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
+        call xerrwv(trim(error_label)//" "//messg,nmess+len_trim(error_label)+1,nerr,level,0,0,0,0,0.0_eb,0.0_eb)
     end if
 
     return
     end subroutine xerror
 
-! --------------------------- xerrwv -------------------------------------------
+    ! --------------------------- xerrwv -------------------------------------------
 
     subroutine xerrwv(msg,nmes,nerr,level,ni,i1,i2,nnr,r1,r2)
 
@@ -189,7 +259,7 @@ module utility_routines
 
     end subroutine xerrwv
 
-! --------------------------- d1mach -------------------------------------------
+    ! --------------------------- d1mach -------------------------------------------
 
     real(eb) function d1mach (i)
 
@@ -238,14 +308,14 @@ module utility_routines
         d1mach = b**(1-digits(x))      ! the largest relative spacing.
     case (5)
         d1mach = log10(b)
-    case default
+        case default
         write (*, '(''1error    1 in d1mach - i out of bounds'')')
         stop
     end select
     return
     end function d1mach
 
-! --------------------------- xerrormod -------------------------------------------
+    ! --------------------------- xerrormod -------------------------------------------
 
     subroutine xerrmod(mesg,nerr,nnr,r1,r2)
 
@@ -283,7 +353,7 @@ module utility_routines
 5002 format('ierror,r1,r2 =',i5,2d14.4)
     end subroutine xerrmod
 
-! --------------------------- cmdline -------------------------------------------
+    ! --------------------------- cmdline -------------------------------------------
 
     subroutine cmdline (nargs,strs,iarg,iopt)
 
@@ -381,7 +451,7 @@ module utility_routines
     return
     end subroutine cmdline
 
-! --------------------------- cmove -------------------------------------------
+    ! --------------------------- cmove -------------------------------------------
 
     subroutine cmove(cmdlin,i1,i2,i3,i4,i5,chr)
 
@@ -409,7 +479,7 @@ module utility_routines
     return
     end subroutine cmove
 
-! --------------------------- getcl -------------------------------------------
+    ! --------------------------- getcl -------------------------------------------
 
     subroutine getcl (cmdlin)
 
@@ -445,7 +515,7 @@ module utility_routines
     return
     end subroutine getcl
 
-! --------------------------- countargs -------------------------------------------
+    ! --------------------------- countargs -------------------------------------------
 
     integer function countargs (lcarray)
 
@@ -473,7 +543,7 @@ module utility_routines
 
     end function countargs
 
-! --------------------------- cptime -------------------------------------------
+    ! --------------------------- cptime -------------------------------------------
 
     subroutine cptime (cputim)
 
@@ -488,7 +558,7 @@ module utility_routines
     return
     end subroutine cptime
 
-! --------------------------- doesthefileexist -------------------------------------------
+    ! --------------------------- doesthefileexist -------------------------------------------
 
     logical function doesthefileexist (checkfile)
 
@@ -511,18 +581,17 @@ module utility_routines
 
     end function doesthefileexist
 
-! --------------------------- exehandle -------------------------------------------
+    ! --------------------------- exehandle -------------------------------------------
 
-    subroutine exehandle (exepath, datapath, project)
+    subroutine exehandle (exepath, datapath, project, extension)
 
-    !     routine: exehandle
-    !     purpose: get the arguments used to call the main program
-    !     arguments: exepath - path (without the name) to the folder where the executable resides
+    ! get the arguments used to call the main program
+    ! arguments: exepath - path (without the name) to the folder where the executable resides
     !                datapath - path (without a file name) to the folder where the project data file resides
     !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of
     !                          datapath + project cannot exceed 256 characters
 
-    character(*), intent(out) :: exepath, datapath, project
+    character(*), intent(out) :: exepath, datapath, project, extension
 
     integer :: i, loop, status, nargs, ld(2), li(2), ln(2), le(2), lb
     character(256) :: buf, xname
@@ -547,7 +616,10 @@ module utility_routines
 
     exepath = ' '
     datapath = ' '
+    project = ' '
+    extension = ' '
 
+    ! only look at the first two arguments (1 = executable name, 2 =cfast input file name)
     do i = 1, 2
         loop = i - 1
         call get_command_argument(loop, buf, ilen, status)
@@ -555,7 +627,6 @@ module utility_routines
             xname = buf
 
             !	Split out the components
-
             drive(i) = ' '
             dir(i) = ' '
             name(i) = ' '
@@ -576,38 +647,36 @@ module utility_routines
         end if
     end do
 
-    ! Now check that the project.in file exists - this is the data file
+    ! Now check that the cfast input file exists = this is the data file
     buf = ' '
     if (le(2)/=0) then
-        if (ext(2)(1:le(2))=='.in') then
-            buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
-        else
-            write (*,*) ' Input file does not exist: ', trim(buf)
-            stop
-        end if
+        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
     else
         buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
     end if
 
-    lb = len_trim(buf)
-
     ! buf(1:lb) is the data file to check
-
+    lb = len_trim(buf)
     if (DoesTheFileExist(buf(1:lb))) then
         !	The project file exists
         exepath = drive(1)(1:ld(1)) // dir(1)(1:li(1))
         datapath = drive(2)(1:ld(2)) // dir(2)(1:li(2))
         project = name(2)(1:ln(2))
-        return
+        if (le(2)/=0) then
+            extension = ext(2)(1:le(2))
+        else
+            extension = '.in'
+        end if
     else
         write (*,*) ' Input file does not exist: ', trim(buf)
         stop
     end if
+    
     return
 
     end subroutine exehandle
 
-! --------------------------- mat2mult -------------------------------------------
+    ! --------------------------- mat2mult -------------------------------------------
 
     subroutine mat2mult(mat1,mat2,idim,nr)
 
@@ -643,7 +712,7 @@ module utility_routines
     return
     end subroutine mat2mult
 
-! --------------------------- indexi -------------------------------------------
+    ! --------------------------- indexi -------------------------------------------
 
     subroutine indexi (nr,arrin,indx)
 
@@ -687,7 +756,7 @@ module utility_routines
     return
     end subroutine indexi
 
-! --------------------------- interp -------------------------------------------
+    ! --------------------------- interp -------------------------------------------
 
     subroutine interp (x,y,nr,t,icode,yint)
 
@@ -761,18 +830,18 @@ module utility_routines
 
     end subroutine interp
 
-! --------------------------- cmdflag -------------------------------------------
+    ! --------------------------- cmdflag -------------------------------------------
 
-   integer function cmdflag (ic,iopt)
+    integer function cmdflag (ic,iopt)
 
-      character(1), intent(in) :: ic
-      integer, intent(in) :: iopt(26)
+    character(1), intent(in) :: ic
+    integer, intent(in) :: iopt(26)
 
-      cmdflag = iopt(ichar(ic)-ichar('A')+1)
+    cmdflag = iopt(ichar(ic)-ichar('A')+1)
 
-   end function cmdflag
+    end function cmdflag
 
-! --------------------------- read_command_options -------------------------------------------
+    ! --------------------------- read_command_options -------------------------------------------
 
     subroutine read_command_options
 
@@ -847,7 +916,7 @@ module utility_routines
 5010 format (i4.4,'/',i2.2,'/',i2.2)
     end   subroutine read_command_options
 
-! --------------------------- writeini -------------------------------------------
+    ! --------------------------- writeini -------------------------------------------
 
     subroutine writeini(file)
 
@@ -915,7 +984,7 @@ module utility_routines
     return
     end subroutine writeini
 
-! --------------------------- shellsort -------------------------------------------
+    ! --------------------------- shellsort -------------------------------------------
 
     subroutine shellsort (ra, nr)
 
@@ -945,7 +1014,7 @@ module utility_routines
     return
     end  subroutine shellsort
 
-! --------------------------- sstrng -------------------------------------------
+    ! --------------------------- sstrng -------------------------------------------
 
     subroutine sstrng (string,wcount,sstart,sfirst,slast,svalid)
 
@@ -979,9 +1048,9 @@ module utility_routines
     ! find position of first element of substring
     do i = sstart, endstr
 
-    ! move to the beginning of the substring
-    sfirst = i
-    if ((string(i)/=space).and.(string(i)/=comma)) goto 60
+        ! move to the beginning of the substring
+        sfirst = i
+        if ((string(i)/=space).and.(string(i)/=comma)) goto 60
     end do
 
     ! no substring found - only delimiter
@@ -990,9 +1059,9 @@ module utility_routines
     ! find position of last character of substring
 60  do j = sfirst, endstr
 
-    ! position of last element of substring
-    slast = j-1
-    if ((string(j)==space).or.(string(j)==comma)) go to 100
+        ! position of last element of substring
+        slast = j-1
+        if ((string(j)==space).or.(string(j)==comma)) go to 100
     end do
 
     ! no substring delimiter => last character of substring is the last character of the string
@@ -1004,7 +1073,7 @@ module utility_routines
 100 return
     end subroutine sstrng
 
-! --------------------------- upperall -------------------------------------------
+    ! --------------------------- upperall -------------------------------------------
 
     subroutine upperall(string)
 
@@ -1028,7 +1097,7 @@ module utility_routines
     return
     end subroutine upperall
 
-! --------------------------- funit -------------------------------------------
+    ! --------------------------- funit -------------------------------------------
 
     integer function funit (io)
 
@@ -1055,7 +1124,7 @@ module utility_routines
     return
     end function funit
 
-! --------------------------- opnotpt -------------------------------------------
+    ! --------------------------- opnotpt -------------------------------------------
 
     subroutine opnotpt (filname, iounit)
 
@@ -1090,7 +1159,7 @@ module utility_routines
     return
     end subroutine opnotpt
 
-! --------------------------- xerbla -------------------------------------------
+    ! --------------------------- xerbla -------------------------------------------
 
     subroutine xerbla ( srname, info )
 
@@ -1110,7 +1179,7 @@ module utility_routines
 
     end subroutine xerbla
 
-! --------------------------- laame -------------------------------------------
+    ! --------------------------- laame -------------------------------------------
 
     logical function lsame ( ca, cb )
 
@@ -1132,9 +1201,9 @@ module utility_routines
     end if
     return
 
-   end function lsame
+    end function lsame
 
-! ------------------ fmix ------------------------
+    ! ------------------ fmix ------------------------
 
     real(fb) function fmix (f,a,b)
 
@@ -1146,7 +1215,7 @@ module utility_routines
 
     end function fmix
 
-! ------------------ emix ------------------------
+    ! ------------------ emix ------------------------
 
     real(eb) function emix (f,a,b)
 
@@ -1158,7 +1227,7 @@ module utility_routines
 
     end function emix
 
-! ------------------ get_igrid ------------------------
+    ! ------------------ get_igrid ------------------------
 
     integer function get_igrid (x,xgrid,nr)
 
@@ -1182,9 +1251,9 @@ module utility_routines
     return
     end function get_igrid
 
-end module utility_routines
+    end module utility_routines
 
-module opening_fractions
+    module opening_fractions
 
     !	The following functions implement the simple open/close function for vents.
     !	This is done with a simple, linear interpolation.
@@ -1195,14 +1264,15 @@ module opening_fractions
     !		(4) Is the final fraction
 
     !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
-   
+
     use precision_parameters
-    use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux 
+    use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux
     use ramp_data
     use vent_data
     use room_data, only: roominfo, nrm1
     use target_data, only: targetinfo
     use setup_data, only: iofilo, iofill
+    use namelist_data
 
     implicit none
 
@@ -1211,25 +1281,34 @@ module opening_fractions
     public get_vent_opening, find_vent_opening_ramp
 
     contains
-    
-! --------------------------- find_vent_opening_ramp ------------------------------
-    
-    integer function find_vent_opening_ramp (venttype,room1,room2,counter)
-    
+
+    ! --------------------------- find_vent_opening_ramp ------------------------------
+
+    integer function find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
+
+    character(len=64), intent(in) :: rampid
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: room1, room2, counter
-    
+
     integer iramp, vent_index
     type(ramp_type), pointer :: rampptr
 
     if (nramps>0) then
         do iramp = 1, nramps
             rampptr=>rampinfo(iramp)
-            if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
-                rampptr%counter==counter) then
+            if (nmlflag.and.rampid/='NULL') then
+                if (rampptr%id==trim(rampid)) then
+                    vent_index = iramp
+                    find_vent_opening_ramp = iramp
+                    return
+                end if
+            else
+                if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
+                    rampptr%counter==counter) then
                 vent_index = iramp
                 find_vent_opening_ramp = iramp
                 return
+                end if
             end if
         end do
     end if
@@ -1238,41 +1317,42 @@ module opening_fractions
 
     end function find_vent_opening_ramp
 
-! --------------------------- get_vent_opening-------------------------------------
+    ! --------------------------- get_vent_opening-------------------------------------
 
-    subroutine get_vent_opening (venttype,room1,room2,counter,vent_index,time,fraction)
+    subroutine get_vent_opening (rampid,venttype,room1,room2,counter,vent_index,time,fraction)
 
+    character(len=64), intent(in) :: rampid
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: room1, room2, counter, vent_index
     real(eb), intent(in) :: time
     real(eb), intent(out) :: fraction
 
     integer :: iramp, i
-    real(eb), parameter :: mintime=1.0e-6_eb
+    real(eb), parameter :: mintime = 1.0e-6_eb
     real(eb) :: dt, dtfull, dy, dydt
     type(ramp_type), pointer :: rampptr
     type(vent_type), pointer :: ventptr
 
     fraction = 1.0_eb
 
-    if (nramps>0) then
-        iramp = find_vent_opening_ramp (venttype,room1,room2,counter)
+    if (nramps>0 .and. rampid/='NULL') then
+        iramp = find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)
-            if (time<=rampptr%time(1)) then
-                fraction = rampptr%value(1)
+            if (time<=rampptr%x(1)) then
+                fraction = rampptr%f_of_x(1)
                 return
-            else if (time>=rampptr%time(rampptr%npoints)) then
-                fraction = rampptr%value(rampptr%npoints)
+            else if (time>=rampptr%x(rampptr%npoints)) then
+                fraction = rampptr%f_of_x(rampptr%npoints)
                 return
             else
                 do i=2,rampptr%npoints
-                    if (time>rampptr%time(i-1).and.time<=rampptr%time(i)) then
-                        dt = max(rampptr%time(i)-rampptr%time(i-1),mintime)
-                        dtfull = max(time-rampptr%time(i-1),mintime)
-                        dy = rampptr%value(i)-rampptr%value(i-1)
+                    if (time>rampptr%x(i-1).and.time<=rampptr%x(i)) then
+                        dt = max(rampptr%x(i)-rampptr%x(i-1),mintime)
+                        dtfull = max(time-rampptr%x(i-1),mintime)
+                        dy = rampptr%f_of_x(i)-rampptr%f_of_x(i-1)
                         dydt = dy / dt
-                        fraction = rampptr%value(i-1)+dydt * dtfull
+                        fraction = rampptr%f_of_x(i-1)+dydt * dtfull
                         return
                     end if
                 end do
@@ -1296,7 +1376,7 @@ module opening_fractions
         fraction = vfraction(venttype,ventptr, time)
     end if
     return
-        
+
     end subroutine get_vent_opening
 
     ! --------------------------- vfraction -------------------------------------------
@@ -1341,7 +1421,7 @@ module opening_fractions
                 dydt = dy/dt
                 vfraction = ventptr%opening_initial_fraction + dydt*deltat
             end if
-        ! check vent triggering by temperature. if tripped, turn it into a time-based change
+            ! check vent triggering by temperature. if tripped, turn it into a time-based change
         else if (ventptr%opening_type==trigger_by_temp.and..not.ventptr%opening_triggered) then
             targptr => targetinfo(ventptr%opening_target)
             if (targptr%temperature(idx_tempf_trg)>ventptr%opening_criterion) then
@@ -1364,7 +1444,7 @@ module opening_fractions
                     ventptr%room1,' (',trim(room1c),') to compartment ',ventptr%room2,' (',trim(room2c), &
                     '), opening change triggered by temperature at ',time,' s'
             end if
-        ! check vent triggering by flux. if tripped, turn it into a time-based change
+            ! check vent triggering by flux. if tripped, turn it into a time-based change
         else if (ventptr%opening_type==trigger_by_flux.and..not.ventptr%opening_triggered) then
             targptr => targetinfo(ventptr%opening_target)
             if (targptr%flux_incident_front>ventptr%opening_criterion) then
@@ -1392,5 +1472,5 @@ module opening_fractions
     return
 
     end function vfraction
-    
-end module opening_fractions
+
+    end module opening_fractions

@@ -6,12 +6,10 @@ Public Class CeditMain
     Private About As New About
     Private ViewFile As New ViewFile
     'Private RunSimulation As New RunModel
-    Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0, _
-    CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0, _
+    Private CurrentThermalProperty As Integer = 0, CurrentCompartment As Integer = 0, CurrentHVent As Integer = 0, CurrentVVent As Integer = 0,
+    CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
-    Friend WithEvents Label18 As Label
-    Friend WithEvents EnvLOI As TextBox
 
 #Region " Windows Form Designer generated code "
 
@@ -41,6 +39,15 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
+    Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
+    Friend WithEvents FireDefinitionName As ComboBox
+    Friend WithEvents FireType As Label
+    Friend WithEvents Label36 As Label
+    Friend WithEvents Label18 As Label
+    Friend WithEvents TestReadNML As MenuItem
+    Friend WithEvents MenuItem2 As MenuItem
+    Friend WithEvents EnvLOI As TextBox
     Friend WithEvents HVentFinalLabel As Label
     Friend WithEvents HVentFinalFraction As TextBox
     Friend WithEvents HVentInitialLabel As Label
@@ -85,8 +92,6 @@ Public Class CeditMain
     Friend WithEvents Label80 As Label
     Friend WithEvents DetectorActivationObscuration As System.Windows.Forms.TextBox
     Friend WithEvents Label17 As System.Windows.Forms.Label
-    Friend WithEvents FireTSYield As System.Windows.Forms.TextBox
-    Friend WithEvents Label115 As System.Windows.Forms.Label
     Friend WithEvents TargetName As System.Windows.Forms.TextBox
     Friend WithEvents Label116 As System.Windows.Forms.Label
     Friend WithEvents FireTarget As System.Windows.Forms.ComboBox
@@ -117,11 +122,6 @@ Public Class CeditMain
     Friend WithEvents ThermalEmissivity As System.Windows.Forms.TextBox
     Friend WithEvents Label104 As System.Windows.Forms.Label
     Friend WithEvents FireFromFile As System.Windows.Forms.Button
-    Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
-    Friend WithEvents FireCOYield As System.Windows.Forms.TextBox
-    Friend WithEvents Label71 As System.Windows.Forms.Label
-    Friend WithEvents FireSootYield As System.Windows.Forms.TextBox
-    Friend WithEvents Label105 As System.Windows.Forms.Label
     Friend WithEvents FireHoC As System.Windows.Forms.TextBox
     Friend WithEvents Label108 As System.Windows.Forms.Label
     Friend WithEvents Label113 As System.Windows.Forms.Label
@@ -137,9 +137,8 @@ Public Class CeditMain
     Friend WithEvents Label110 As System.Windows.Forms.Label
     Friend WithEvents Label111 As System.Windows.Forms.Label
     Friend WithEvents Label112 As System.Windows.Forms.Label
-    Friend WithEvents FireName As System.Windows.Forms.TextBox
+    Friend WithEvents FireInstanceName As System.Windows.Forms.TextBox
     Friend WithEvents Label114 As System.Windows.Forms.Label
-    Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
     Friend WithEvents EnvAdiabatic As System.Windows.Forms.CheckBox
     Friend WithEvents ThermalShortName As System.Windows.Forms.TextBox
     Friend WithEvents GroupVisualResolution As System.Windows.Forms.GroupBox
@@ -186,7 +185,6 @@ Public Class CeditMain
     Friend WithEvents MainOpen As System.Windows.Forms.Button
     Friend WithEvents FireAddt2 As System.Windows.Forms.Button
     Friend WithEvents FireAdd As System.Windows.Forms.Button
-    Friend WithEvents FireType As System.Windows.Forms.Label
     Friend WithEvents C1SizerLight1 As C1.Win.C1Sizer.C1SizerLight
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents EnvTimeStep As System.Windows.Forms.TextBox
@@ -249,7 +247,6 @@ Public Class CeditMain
     Friend WithEvents TabTargets As System.Windows.Forms.TabPage
     Friend WithEvents TabHeatTransfer As System.Windows.Forms.TabPage
     Friend WithEvents TabMain As System.Windows.Forms.TabControl
-    Friend WithEvents Label60 As System.Windows.Forms.Label
     Friend WithEvents Label69 As System.Windows.Forms.Label
     Friend WithEvents Label70 As System.Windows.Forms.Label
     Friend WithEvents Label52 As System.Windows.Forms.Label
@@ -332,7 +329,6 @@ Public Class CeditMain
     Friend WithEvents MVentFromComp As System.Windows.Forms.ComboBox
     Friend WithEvents MVentFlow As System.Windows.Forms.TextBox
     Friend WithEvents FireComp As System.Windows.Forms.ComboBox
-    Friend WithEvents FireZPosition As System.Windows.Forms.TextBox
     Friend WithEvents FireYPosition As System.Windows.Forms.TextBox
     Friend WithEvents FireXPosition As System.Windows.Forms.TextBox
     Friend WithEvents FireRemove As System.Windows.Forms.Button
@@ -487,6 +483,8 @@ Public Class CeditMain
         Me.MenuShowHelp = New System.Windows.Forms.MenuItem()
         Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem()
         Me.MenuAbout = New System.Windows.Forms.MenuItem()
+        Me.TestReadNML = New System.Windows.Forms.MenuItem()
+        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
         Me.TabEnvironment = New System.Windows.Forms.TabPage()
         Me.EnvErrors = New System.Windows.Forms.TextBox()
         Me.EnvTitle = New System.Windows.Forms.TextBox()
@@ -690,45 +688,39 @@ Public Class CeditMain
         Me.FireRemove = New System.Windows.Forms.Button()
         Me.FireDup = New System.Windows.Forms.Button()
         Me.GroupFire = New System.Windows.Forms.GroupBox()
-        Me.FireTarget = New System.Windows.Forms.ComboBox()
-        Me.FireTSYield = New System.Windows.Forms.TextBox()
-        Me.Label115 = New System.Windows.Forms.Label()
-        Me.FirePlot = New NPlot.Windows.PlotSurface2D()
-        Me.FireCOYield = New System.Windows.Forms.TextBox()
-        Me.FireHoC = New System.Windows.Forms.TextBox()
-        Me.Label107 = New System.Windows.Forms.Label()
-        Me.Label71 = New System.Windows.Forms.Label()
-        Me.Label108 = New System.Windows.Forms.Label()
-        Me.FireCl = New System.Windows.Forms.TextBox()
-        Me.FireName = New System.Windows.Forms.TextBox()
-        Me.FireSootYield = New System.Windows.Forms.TextBox()
-        Me.Label106 = New System.Windows.Forms.Label()
-        Me.Label114 = New System.Windows.Forms.Label()
-        Me.FireDataSS = New C1.Win.C1FlexGrid.C1FlexGrid()
-        Me.Label105 = New System.Windows.Forms.Label()
         Me.FireType = New System.Windows.Forms.Label()
-        Me.FireN = New System.Windows.Forms.TextBox()
-        Me.Label60 = New System.Windows.Forms.Label()
-        Me.FireH = New System.Windows.Forms.TextBox()
-        Me.Label113 = New System.Windows.Forms.Label()
-        Me.Label109 = New System.Windows.Forms.Label()
-        Me.FireYPosition = New System.Windows.Forms.TextBox()
-        Me.Label69 = New System.Windows.Forms.Label()
-        Me.FireC = New System.Windows.Forms.TextBox()
-        Me.FireRadiativeFraction = New System.Windows.Forms.TextBox()
-        Me.FireXPosition = New System.Windows.Forms.TextBox()
+        Me.FireDefinitionName = New System.Windows.Forms.ComboBox()
+        Me.Label36 = New System.Windows.Forms.Label()
+        Me.FirePlot = New NPlot.Windows.PlotSurface2D()
         Me.FireO = New System.Windows.Forms.TextBox()
-        Me.Label70 = New System.Windows.Forms.Label()
-        Me.Label110 = New System.Windows.Forms.Label()
-        Me.FireZPosition = New System.Windows.Forms.TextBox()
-        Me.FireComp = New System.Windows.Forms.ComboBox()
-        Me.Label111 = New System.Windows.Forms.Label()
-        Me.Label52 = New System.Windows.Forms.Label()
         Me.Label112 = New System.Windows.Forms.Label()
-        Me.FireIgnitionCriteria = New System.Windows.Forms.ComboBox()
         Me.FireIgnitionValue = New System.Windows.Forms.TextBox()
-        Me.Label63 = New System.Windows.Forms.Label()
+        Me.Label108 = New System.Windows.Forms.Label()
+        Me.FireDataSS = New C1.Win.C1FlexGrid.C1FlexGrid()
+        Me.Label111 = New System.Windows.Forms.Label()
         Me.Label58 = New System.Windows.Forms.Label()
+        Me.FireHoC = New System.Windows.Forms.TextBox()
+        Me.Label63 = New System.Windows.Forms.Label()
+        Me.Label110 = New System.Windows.Forms.Label()
+        Me.Label70 = New System.Windows.Forms.Label()
+        Me.FireRadiativeFraction = New System.Windows.Forms.TextBox()
+        Me.FireIgnitionCriteria = New System.Windows.Forms.ComboBox()
+        Me.FireC = New System.Windows.Forms.TextBox()
+        Me.FireComp = New System.Windows.Forms.ComboBox()
+        Me.Label113 = New System.Windows.Forms.Label()
+        Me.FireTarget = New System.Windows.Forms.ComboBox()
+        Me.Label109 = New System.Windows.Forms.Label()
+        Me.FireXPosition = New System.Windows.Forms.TextBox()
+        Me.FireH = New System.Windows.Forms.TextBox()
+        Me.Label107 = New System.Windows.Forms.Label()
+        Me.FireCl = New System.Windows.Forms.TextBox()
+        Me.Label69 = New System.Windows.Forms.Label()
+        Me.FireN = New System.Windows.Forms.TextBox()
+        Me.Label52 = New System.Windows.Forms.Label()
+        Me.Label106 = New System.Windows.Forms.Label()
+        Me.FireYPosition = New System.Windows.Forms.TextBox()
+        Me.FireInstanceName = New System.Windows.Forms.TextBox()
+        Me.Label114 = New System.Windows.Forms.Label()
         Me.TabDetection = New System.Windows.Forms.TabPage()
         Me.DetectorSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupDetectors = New System.Windows.Forms.GroupBox()
@@ -1073,7 +1065,7 @@ Public Class CeditMain
         'MenuHelp
         '
         Me.MenuHelp.Index = 2
-        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
+        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout, Me.TestReadNML, Me.MenuItem2})
         Me.MenuHelp.Text = "Help"
         '
         'MenuHelpUpdate
@@ -1095,6 +1087,16 @@ Public Class CeditMain
         '
         Me.MenuAbout.Index = 3
         Me.MenuAbout.Text = "About"
+        '
+        'TestReadNML
+        '
+        Me.TestReadNML.Index = 4
+        Me.TestReadNML.Text = "test read NML"
+        '
+        'MenuItem2
+        '
+        Me.MenuItem2.Index = 5
+        Me.MenuItem2.Text = "test write NML"
         '
         'TabEnvironment
         '
@@ -1415,7 +1417,7 @@ Public Class CeditMain
         Me.EnvTextOutInterval.Name = "EnvTextOutInterval"
         Me.EnvTextOutInterval.Size = New System.Drawing.Size(96, 20)
         Me.EnvTextOutInterval.TabIndex = 103
-        Me.EnvTextOutInterval.Text = "50 s"
+        Me.EnvTextOutInterval.Text = "60 s"
         '
         'Label1
         '
@@ -1432,7 +1434,7 @@ Public Class CeditMain
         Me.EnvSimTime.Name = "EnvSimTime"
         Me.EnvSimTime.Size = New System.Drawing.Size(96, 20)
         Me.EnvSimTime.TabIndex = 102
-        Me.EnvSimTime.Text = "900 s"
+        Me.EnvSimTime.Text = "3600 s"
         '
         'TabHorizontalFlow
         '
@@ -3180,45 +3182,39 @@ Public Class CeditMain
         '
         'GroupFire
         '
-        Me.GroupFire.Controls.Add(Me.FireTarget)
-        Me.GroupFire.Controls.Add(Me.FireTSYield)
-        Me.GroupFire.Controls.Add(Me.Label115)
-        Me.GroupFire.Controls.Add(Me.FirePlot)
-        Me.GroupFire.Controls.Add(Me.FireCOYield)
-        Me.GroupFire.Controls.Add(Me.FireHoC)
-        Me.GroupFire.Controls.Add(Me.Label107)
-        Me.GroupFire.Controls.Add(Me.Label71)
-        Me.GroupFire.Controls.Add(Me.Label108)
-        Me.GroupFire.Controls.Add(Me.FireCl)
-        Me.GroupFire.Controls.Add(Me.FireName)
-        Me.GroupFire.Controls.Add(Me.FireSootYield)
-        Me.GroupFire.Controls.Add(Me.Label106)
-        Me.GroupFire.Controls.Add(Me.Label114)
-        Me.GroupFire.Controls.Add(Me.FireDataSS)
-        Me.GroupFire.Controls.Add(Me.Label105)
         Me.GroupFire.Controls.Add(Me.FireType)
-        Me.GroupFire.Controls.Add(Me.FireN)
-        Me.GroupFire.Controls.Add(Me.Label60)
-        Me.GroupFire.Controls.Add(Me.FireH)
-        Me.GroupFire.Controls.Add(Me.Label113)
-        Me.GroupFire.Controls.Add(Me.Label109)
-        Me.GroupFire.Controls.Add(Me.FireYPosition)
-        Me.GroupFire.Controls.Add(Me.Label69)
-        Me.GroupFire.Controls.Add(Me.FireC)
-        Me.GroupFire.Controls.Add(Me.FireRadiativeFraction)
-        Me.GroupFire.Controls.Add(Me.FireXPosition)
+        Me.GroupFire.Controls.Add(Me.FireDefinitionName)
+        Me.GroupFire.Controls.Add(Me.Label36)
+        Me.GroupFire.Controls.Add(Me.FirePlot)
         Me.GroupFire.Controls.Add(Me.FireO)
-        Me.GroupFire.Controls.Add(Me.Label70)
-        Me.GroupFire.Controls.Add(Me.Label110)
-        Me.GroupFire.Controls.Add(Me.FireZPosition)
-        Me.GroupFire.Controls.Add(Me.FireComp)
-        Me.GroupFire.Controls.Add(Me.Label111)
-        Me.GroupFire.Controls.Add(Me.Label52)
         Me.GroupFire.Controls.Add(Me.Label112)
-        Me.GroupFire.Controls.Add(Me.FireIgnitionCriteria)
         Me.GroupFire.Controls.Add(Me.FireIgnitionValue)
-        Me.GroupFire.Controls.Add(Me.Label63)
+        Me.GroupFire.Controls.Add(Me.Label108)
+        Me.GroupFire.Controls.Add(Me.FireDataSS)
+        Me.GroupFire.Controls.Add(Me.Label111)
         Me.GroupFire.Controls.Add(Me.Label58)
+        Me.GroupFire.Controls.Add(Me.FireHoC)
+        Me.GroupFire.Controls.Add(Me.Label63)
+        Me.GroupFire.Controls.Add(Me.Label110)
+        Me.GroupFire.Controls.Add(Me.Label70)
+        Me.GroupFire.Controls.Add(Me.FireRadiativeFraction)
+        Me.GroupFire.Controls.Add(Me.FireIgnitionCriteria)
+        Me.GroupFire.Controls.Add(Me.FireC)
+        Me.GroupFire.Controls.Add(Me.FireComp)
+        Me.GroupFire.Controls.Add(Me.Label113)
+        Me.GroupFire.Controls.Add(Me.FireTarget)
+        Me.GroupFire.Controls.Add(Me.Label109)
+        Me.GroupFire.Controls.Add(Me.FireXPosition)
+        Me.GroupFire.Controls.Add(Me.FireH)
+        Me.GroupFire.Controls.Add(Me.Label107)
+        Me.GroupFire.Controls.Add(Me.FireCl)
+        Me.GroupFire.Controls.Add(Me.Label69)
+        Me.GroupFire.Controls.Add(Me.FireN)
+        Me.GroupFire.Controls.Add(Me.Label52)
+        Me.GroupFire.Controls.Add(Me.Label106)
+        Me.GroupFire.Controls.Add(Me.FireYPosition)
+        Me.GroupFire.Controls.Add(Me.FireInstanceName)
+        Me.GroupFire.Controls.Add(Me.Label114)
         Me.GroupFire.Location = New System.Drawing.Point(3, 132)
         Me.GroupFire.Name = "GroupFire"
         Me.GroupFire.Size = New System.Drawing.Size(970, 457)
@@ -3226,30 +3222,31 @@ Public Class CeditMain
         Me.GroupFire.TabStop = False
         Me.GroupFire.Text = "Fire 1"
         '
-        'FireTarget
+        'FireType
         '
-        Me.FireTarget.ItemHeight = 13
-        Me.FireTarget.Location = New System.Drawing.Point(795, 116)
-        Me.FireTarget.Name = "FireTarget"
-        Me.FireTarget.Size = New System.Drawing.Size(98, 21)
-        Me.FireTarget.TabIndex = 729
+        Me.FireType.AutoSize = True
+        Me.FireType.Location = New System.Drawing.Point(202, 97)
+        Me.FireType.Name = "FireType"
+        Me.FireType.Size = New System.Drawing.Size(0, 13)
+        Me.FireType.TabIndex = 735
         '
-        'FireTSYield
+        'FireDefinitionName
         '
-        Me.FireTSYield.Location = New System.Drawing.Point(335, 148)
-        Me.FireTSYield.Name = "FireTSYield"
-        Me.FireTSYield.Size = New System.Drawing.Size(80, 20)
-        Me.FireTSYield.TabIndex = 717
+        Me.FireDefinitionName.ItemHeight = 13
+        Me.FireDefinitionName.Location = New System.Drawing.Point(114, 225)
+        Me.FireDefinitionName.Name = "FireDefinitionName"
+        Me.FireDefinitionName.Size = New System.Drawing.Size(80, 21)
+        Me.FireDefinitionName.TabIndex = 734
         '
-        'Label115
+        'Label36
         '
-        Me.Label115.AutoSize = True
-        Me.Label115.Location = New System.Drawing.Point(276, 152)
-        Me.Label115.Name = "Label115"
-        Me.Label115.Size = New System.Drawing.Size(50, 13)
-        Me.Label115.TabIndex = 159
-        Me.Label115.Text = "TS Yield:"
-        Me.Label115.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.Label36.AutoSize = True
+        Me.Label36.Location = New System.Drawing.Point(73, 230)
+        Me.Label36.Name = "Label36"
+        Me.Label36.Size = New System.Drawing.Size(41, 13)
+        Me.Label36.TabIndex = 733
+        Me.Label36.Text = "Fire ID:"
+        Me.Label36.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'FirePlot
         '
@@ -3259,13 +3256,13 @@ Public Class CeditMain
         Me.FirePlot.DateTimeToolTip = False
         Me.FirePlot.Legend = Nothing
         Me.FirePlot.LegendZOrder = -1
-        Me.FirePlot.Location = New System.Drawing.Point(546, 214)
+        Me.FirePlot.Location = New System.Drawing.Point(416, 28)
         Me.FirePlot.Name = "FirePlot"
         Me.FirePlot.RightMenu = Nothing
         Me.FirePlot.ShowCoordinates = True
-        Me.FirePlot.Size = New System.Drawing.Size(410, 223)
+        Me.FirePlot.Size = New System.Drawing.Size(417, 223)
         Me.FirePlot.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None
-        Me.FirePlot.TabIndex = 157
+        Me.FirePlot.TabIndex = 732
         Me.FirePlot.TabStop = False
         Me.FirePlot.Title = ""
         Me.FirePlot.TitleFont = New System.Drawing.Font("Arial", 14.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel)
@@ -3274,91 +3271,40 @@ Public Class CeditMain
         Me.FirePlot.YAxis1 = Nothing
         Me.FirePlot.YAxis2 = Nothing
         '
-        'FireCOYield
+        'FireO
         '
-        Me.FireCOYield.Location = New System.Drawing.Point(335, 119)
-        Me.FireCOYield.Name = "FireCOYield"
-        Me.FireCOYield.Size = New System.Drawing.Size(80, 20)
-        Me.FireCOYield.TabIndex = 716
+        Me.FireO.Location = New System.Drawing.Point(114, 304)
+        Me.FireO.Name = "FireO"
+        Me.FireO.Size = New System.Drawing.Size(80, 20)
+        Me.FireO.TabIndex = 711
         '
-        'FireHoC
+        'Label112
         '
-        Me.FireHoC.Location = New System.Drawing.Point(335, 56)
-        Me.FireHoC.Name = "FireHoC"
-        Me.FireHoC.Size = New System.Drawing.Size(80, 20)
-        Me.FireHoC.TabIndex = 714
-        Me.FireHoC.Text = "50000000 J/kg"
+        Me.Label112.AutoSize = True
+        Me.Label112.Location = New System.Drawing.Point(96, 334)
+        Me.Label112.Name = "Label112"
+        Me.Label112.Size = New System.Drawing.Size(18, 13)
+        Me.Label112.TabIndex = 116
+        Me.Label112.Text = "N:"
+        Me.Label112.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'Label107
+        'FireIgnitionValue
         '
-        Me.Label107.AutoSize = True
-        Me.Label107.Location = New System.Drawing.Point(711, 121)
-        Me.Label107.Name = "Label107"
-        Me.Label107.Size = New System.Drawing.Size(78, 13)
-        Me.Label107.TabIndex = 134
-        Me.Label107.Text = "Ignition Target:"
-        Me.Label107.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label71
-        '
-        Me.Label71.AutoSize = True
-        Me.Label71.Location = New System.Drawing.Point(276, 123)
-        Me.Label71.Name = "Label71"
-        Me.Label71.Size = New System.Drawing.Size(51, 13)
-        Me.Label71.TabIndex = 140
-        Me.Label71.Text = "CO Yield:"
-        Me.Label71.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.FireIgnitionValue.Location = New System.Drawing.Point(114, 160)
+        Me.FireIgnitionValue.Name = "FireIgnitionValue"
+        Me.FireIgnitionValue.Size = New System.Drawing.Size(80, 20)
+        Me.FireIgnitionValue.TabIndex = 720
+        Me.FireIgnitionValue.Text = "0 s"
         '
         'Label108
         '
-        Me.Label108.Location = New System.Drawing.Point(255, 52)
+        Me.Label108.AutoSize = True
+        Me.Label108.Location = New System.Drawing.Point(11, 386)
         Me.Label108.Name = "Label108"
-        Me.Label108.Size = New System.Drawing.Size(72, 28)
+        Me.Label108.Size = New System.Drawing.Size(103, 13)
         Me.Label108.TabIndex = 116
         Me.Label108.Text = "Heat of Combustion:"
         Me.Label108.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireCl
-        '
-        Me.FireCl.Location = New System.Drawing.Point(110, 180)
-        Me.FireCl.Name = "FireCl"
-        Me.FireCl.Size = New System.Drawing.Size(80, 20)
-        Me.FireCl.TabIndex = 713
-        '
-        'FireName
-        '
-        Me.FireName.Location = New System.Drawing.Point(242, 16)
-        Me.FireName.Name = "FireName"
-        Me.FireName.Size = New System.Drawing.Size(98, 20)
-        Me.FireName.TabIndex = 707
-        Me.FireName.Text = "New Fire"
-        '
-        'FireSootYield
-        '
-        Me.FireSootYield.Location = New System.Drawing.Point(335, 88)
-        Me.FireSootYield.Name = "FireSootYield"
-        Me.FireSootYield.Size = New System.Drawing.Size(80, 20)
-        Me.FireSootYield.TabIndex = 715
-        '
-        'Label106
-        '
-        Me.Label106.AutoSize = True
-        Me.Label106.Location = New System.Drawing.Point(78, 184)
-        Me.Label106.Name = "Label106"
-        Me.Label106.Size = New System.Drawing.Size(19, 13)
-        Me.Label106.TabIndex = 136
-        Me.Label106.Text = "Cl:"
-        Me.Label106.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label114
-        '
-        Me.Label114.AutoSize = True
-        Me.Label114.Location = New System.Drawing.Point(198, 20)
-        Me.Label114.Name = "Label114"
-        Me.Label114.Size = New System.Drawing.Size(38, 13)
-        Me.Label114.TabIndex = 156
-        Me.Label114.Text = "Name:"
-        Me.Label114.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'FireDataSS
         '
@@ -3370,229 +3316,228 @@ Public Class CeditMain
         Me.FireDataSS.AutoClipboard = True
         Me.FireDataSS.ColumnInfo = resources.GetString("FireDataSS.ColumnInfo")
         Me.FireDataSS.ExtendLastCol = True
-        Me.FireDataSS.Location = New System.Drawing.Point(15, 214)
+        Me.FireDataSS.Location = New System.Drawing.Point(289, 268)
         Me.FireDataSS.Name = "FireDataSS"
         Me.FireDataSS.Rows.Count = 101
         Me.FireDataSS.Rows.DefaultSize = 17
         Me.FireDataSS.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.FireDataSS.Size = New System.Drawing.Size(525, 223)
-        Me.FireDataSS.TabIndex = 728
-        '
-        'Label105
-        '
-        Me.Label105.AutoSize = True
-        Me.Label105.Location = New System.Drawing.Point(269, 92)
-        Me.Label105.Name = "Label105"
-        Me.Label105.Size = New System.Drawing.Size(58, 13)
-        Me.Label105.TabIndex = 138
-        Me.Label105.Text = "Soot Yield:"
-        Me.Label105.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireType
-        '
-        Me.FireType.AutoSize = True
-        Me.FireType.Location = New System.Drawing.Point(557, 152)
-        Me.FireType.Name = "FireType"
-        Me.FireType.Size = New System.Drawing.Size(25, 13)
-        Me.FireType.TabIndex = 121
-        Me.FireType.Text = "      "
-        Me.FireType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        '
-        'FireN
-        '
-        Me.FireN.Location = New System.Drawing.Point(110, 148)
-        Me.FireN.Name = "FireN"
-        Me.FireN.Size = New System.Drawing.Size(80, 20)
-        Me.FireN.TabIndex = 712
-        '
-        'Label60
-        '
-        Me.Label60.AutoSize = True
-        Me.Label60.Location = New System.Drawing.Point(493, 127)
-        Me.Label60.Name = "Label60"
-        Me.Label60.Size = New System.Drawing.Size(57, 13)
-        Me.Label60.TabIndex = 69
-        Me.Label60.Text = "Position Z:"
-        Me.Label60.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireH
-        '
-        Me.FireH.Location = New System.Drawing.Point(110, 88)
-        Me.FireH.Name = "FireH"
-        Me.FireH.Size = New System.Drawing.Size(80, 20)
-        Me.FireH.TabIndex = 710
-        '
-        'Label113
-        '
-        Me.Label113.Location = New System.Drawing.Point(271, 172)
-        Me.Label113.Name = "Label113"
-        Me.Label113.Size = New System.Drawing.Size(56, 31)
-        Me.Label113.TabIndex = 124
-        Me.Label113.Text = "Radiative Fraction:"
-        Me.Label113.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label109
-        '
-        Me.Label109.AutoSize = True
-        Me.Label109.Location = New System.Drawing.Point(80, 60)
-        Me.Label109.Name = "Label109"
-        Me.Label109.Size = New System.Drawing.Size(17, 13)
-        Me.Label109.TabIndex = 118
-        Me.Label109.Text = "C:"
-        Me.Label109.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireYPosition
-        '
-        Me.FireYPosition.Location = New System.Drawing.Point(559, 92)
-        Me.FireYPosition.Name = "FireYPosition"
-        Me.FireYPosition.Size = New System.Drawing.Size(80, 20)
-        Me.FireYPosition.TabIndex = 723
-        Me.FireYPosition.Text = "Center"
-        '
-        'Label69
-        '
-        Me.Label69.AutoSize = True
-        Me.Label69.Location = New System.Drawing.Point(495, 96)
-        Me.Label69.Name = "Label69"
-        Me.Label69.Size = New System.Drawing.Size(57, 13)
-        Me.Label69.TabIndex = 67
-        Me.Label69.Text = "Position Y:"
-        Me.Label69.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireC
-        '
-        Me.FireC.Location = New System.Drawing.Point(110, 56)
-        Me.FireC.Name = "FireC"
-        Me.FireC.Size = New System.Drawing.Size(80, 20)
-        Me.FireC.TabIndex = 709
-        '
-        'FireRadiativeFraction
-        '
-        Me.FireRadiativeFraction.Location = New System.Drawing.Point(335, 177)
-        Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
-        Me.FireRadiativeFraction.Size = New System.Drawing.Size(80, 20)
-        Me.FireRadiativeFraction.TabIndex = 718
-        Me.FireRadiativeFraction.Text = "0.3"
-        '
-        'FireXPosition
-        '
-        Me.FireXPosition.Location = New System.Drawing.Point(560, 60)
-        Me.FireXPosition.Name = "FireXPosition"
-        Me.FireXPosition.Size = New System.Drawing.Size(80, 20)
-        Me.FireXPosition.TabIndex = 722
-        Me.FireXPosition.Text = "Center"
-        '
-        'FireO
-        '
-        Me.FireO.Location = New System.Drawing.Point(110, 119)
-        Me.FireO.Name = "FireO"
-        Me.FireO.Size = New System.Drawing.Size(80, 20)
-        Me.FireO.TabIndex = 711
-        '
-        'Label70
-        '
-        Me.Label70.AutoSize = True
-        Me.Label70.Location = New System.Drawing.Point(493, 64)
-        Me.Label70.Name = "Label70"
-        Me.Label70.Size = New System.Drawing.Size(60, 13)
-        Me.Label70.TabIndex = 65
-        Me.Label70.Text = "Position, X:"
-        Me.Label70.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label110
-        '
-        Me.Label110.AutoSize = True
-        Me.Label110.Location = New System.Drawing.Point(79, 123)
-        Me.Label110.Name = "Label110"
-        Me.Label110.Size = New System.Drawing.Size(18, 13)
-        Me.Label110.TabIndex = 122
-        Me.Label110.Text = "O:"
-        Me.Label110.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireZPosition
-        '
-        Me.FireZPosition.Location = New System.Drawing.Point(560, 123)
-        Me.FireZPosition.Name = "FireZPosition"
-        Me.FireZPosition.Size = New System.Drawing.Size(80, 20)
-        Me.FireZPosition.TabIndex = 724
-        Me.FireZPosition.Text = "0"
-        '
-        'FireComp
-        '
-        Me.FireComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.FireComp.ItemHeight = 13
-        Me.FireComp.Location = New System.Drawing.Point(546, 16)
-        Me.FireComp.Name = "FireComp"
-        Me.FireComp.Size = New System.Drawing.Size(208, 21)
-        Me.FireComp.TabIndex = 708
+        Me.FireDataSS.Size = New System.Drawing.Size(671, 160)
+        Me.FireDataSS.TabIndex = 731
         '
         'Label111
         '
         Me.Label111.AutoSize = True
-        Me.Label111.Location = New System.Drawing.Point(79, 92)
+        Me.Label111.Location = New System.Drawing.Point(96, 282)
         Me.Label111.Name = "Label111"
         Me.Label111.Size = New System.Drawing.Size(18, 13)
         Me.Label111.TabIndex = 119
         Me.Label111.Text = "H:"
         Me.Label111.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'Label52
+        'Label58
         '
-        Me.Label52.AutoSize = True
-        Me.Label52.Location = New System.Drawing.Point(466, 20)
-        Me.Label52.Name = "Label52"
-        Me.Label52.Size = New System.Drawing.Size(72, 13)
-        Me.Label52.TabIndex = 3
-        Me.Label52.Text = "Compartment:"
-        Me.Label52.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.Label58.AutoSize = True
+        Me.Label58.Location = New System.Drawing.Point(23, 137)
+        Me.Label58.Name = "Label58"
+        Me.Label58.Size = New System.Drawing.Size(85, 13)
+        Me.Label58.TabIndex = 79
+        Me.Label58.Text = "Ignition Criterion:"
+        Me.Label58.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'Label112
+        'FireHoC
         '
-        Me.Label112.AutoSize = True
-        Me.Label112.Location = New System.Drawing.Point(79, 152)
-        Me.Label112.Name = "Label112"
-        Me.Label112.Size = New System.Drawing.Size(18, 13)
-        Me.Label112.TabIndex = 116
-        Me.Label112.Text = "N:"
-        Me.Label112.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FireIgnitionCriteria
-        '
-        Me.FireIgnitionCriteria.ItemHeight = 13
-        Me.FireIgnitionCriteria.Items.AddRange(New Object() {"Time", "Temperature", "Heat Flux"})
-        Me.FireIgnitionCriteria.Location = New System.Drawing.Point(795, 57)
-        Me.FireIgnitionCriteria.Name = "FireIgnitionCriteria"
-        Me.FireIgnitionCriteria.Size = New System.Drawing.Size(80, 21)
-        Me.FireIgnitionCriteria.TabIndex = 719
-        Me.FireIgnitionCriteria.Text = "Time"
-        '
-        'FireIgnitionValue
-        '
-        Me.FireIgnitionValue.Location = New System.Drawing.Point(795, 88)
-        Me.FireIgnitionValue.Name = "FireIgnitionValue"
-        Me.FireIgnitionValue.Size = New System.Drawing.Size(80, 20)
-        Me.FireIgnitionValue.TabIndex = 720
-        Me.FireIgnitionValue.Text = "0 s"
+        Me.FireHoC.Location = New System.Drawing.Point(114, 382)
+        Me.FireHoC.Name = "FireHoC"
+        Me.FireHoC.Size = New System.Drawing.Size(80, 20)
+        Me.FireHoC.TabIndex = 714
+        Me.FireHoC.Text = "50000000 J/kg"
         '
         'Label63
         '
         Me.Label63.AutoSize = True
-        Me.Label63.Location = New System.Drawing.Point(736, 92)
+        Me.Label63.Location = New System.Drawing.Point(55, 164)
         Me.Label63.Name = "Label63"
         Me.Label63.Size = New System.Drawing.Size(53, 13)
         Me.Label63.TabIndex = 82
         Me.Label63.Text = "Set Point:"
         Me.Label63.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
-        'Label58
+        'Label110
         '
-        Me.Label58.AutoSize = True
-        Me.Label58.Location = New System.Drawing.Point(704, 61)
-        Me.Label58.Name = "Label58"
-        Me.Label58.Size = New System.Drawing.Size(85, 13)
-        Me.Label58.TabIndex = 79
-        Me.Label58.Text = "Ignition Criterion:"
-        Me.Label58.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.Label110.AutoSize = True
+        Me.Label110.Location = New System.Drawing.Point(96, 308)
+        Me.Label110.Name = "Label110"
+        Me.Label110.Size = New System.Drawing.Size(18, 13)
+        Me.Label110.TabIndex = 122
+        Me.Label110.Text = "O:"
+        Me.Label110.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'Label70
+        '
+        Me.Label70.AutoSize = True
+        Me.Label70.Location = New System.Drawing.Point(47, 85)
+        Me.Label70.Name = "Label70"
+        Me.Label70.Size = New System.Drawing.Size(60, 13)
+        Me.Label70.TabIndex = 65
+        Me.Label70.Text = "Position, X:"
+        Me.Label70.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireRadiativeFraction
+        '
+        Me.FireRadiativeFraction.Location = New System.Drawing.Point(114, 408)
+        Me.FireRadiativeFraction.Name = "FireRadiativeFraction"
+        Me.FireRadiativeFraction.Size = New System.Drawing.Size(80, 20)
+        Me.FireRadiativeFraction.TabIndex = 718
+        Me.FireRadiativeFraction.Text = "0.3"
+        '
+        'FireIgnitionCriteria
+        '
+        Me.FireIgnitionCriteria.ItemHeight = 13
+        Me.FireIgnitionCriteria.Items.AddRange(New Object() {"Time", "Temperature", "Heat Flux"})
+        Me.FireIgnitionCriteria.Location = New System.Drawing.Point(114, 133)
+        Me.FireIgnitionCriteria.Name = "FireIgnitionCriteria"
+        Me.FireIgnitionCriteria.Size = New System.Drawing.Size(80, 21)
+        Me.FireIgnitionCriteria.TabIndex = 719
+        Me.FireIgnitionCriteria.Text = "Time"
+        '
+        'FireC
+        '
+        Me.FireC.Location = New System.Drawing.Point(114, 252)
+        Me.FireC.Name = "FireC"
+        Me.FireC.Size = New System.Drawing.Size(80, 20)
+        Me.FireC.TabIndex = 709
+        '
+        'FireComp
+        '
+        Me.FireComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.FireComp.ItemHeight = 13
+        Me.FireComp.Location = New System.Drawing.Point(114, 54)
+        Me.FireComp.Name = "FireComp"
+        Me.FireComp.Size = New System.Drawing.Size(208, 21)
+        Me.FireComp.TabIndex = 708
+        '
+        'Label113
+        '
+        Me.Label113.AutoSize = True
+        Me.Label113.Location = New System.Drawing.Point(18, 412)
+        Me.Label113.Name = "Label113"
+        Me.Label113.Size = New System.Drawing.Size(96, 13)
+        Me.Label113.TabIndex = 124
+        Me.Label113.Text = "Radiative Fraction:"
+        Me.Label113.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireTarget
+        '
+        Me.FireTarget.ItemHeight = 13
+        Me.FireTarget.Location = New System.Drawing.Point(114, 186)
+        Me.FireTarget.Name = "FireTarget"
+        Me.FireTarget.Size = New System.Drawing.Size(80, 21)
+        Me.FireTarget.TabIndex = 729
+        '
+        'Label109
+        '
+        Me.Label109.AutoSize = True
+        Me.Label109.Location = New System.Drawing.Point(97, 256)
+        Me.Label109.Name = "Label109"
+        Me.Label109.Size = New System.Drawing.Size(17, 13)
+        Me.Label109.TabIndex = 118
+        Me.Label109.Text = "C:"
+        Me.Label109.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireXPosition
+        '
+        Me.FireXPosition.Location = New System.Drawing.Point(114, 81)
+        Me.FireXPosition.Name = "FireXPosition"
+        Me.FireXPosition.Size = New System.Drawing.Size(80, 20)
+        Me.FireXPosition.TabIndex = 722
+        Me.FireXPosition.Text = "Center"
+        '
+        'FireH
+        '
+        Me.FireH.Location = New System.Drawing.Point(114, 278)
+        Me.FireH.Name = "FireH"
+        Me.FireH.Size = New System.Drawing.Size(80, 20)
+        Me.FireH.TabIndex = 710
+        '
+        'Label107
+        '
+        Me.Label107.AutoSize = True
+        Me.Label107.Location = New System.Drawing.Point(30, 191)
+        Me.Label107.Name = "Label107"
+        Me.Label107.Size = New System.Drawing.Size(78, 13)
+        Me.Label107.TabIndex = 134
+        Me.Label107.Text = "Ignition Target:"
+        Me.Label107.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireCl
+        '
+        Me.FireCl.Location = New System.Drawing.Point(114, 356)
+        Me.FireCl.Name = "FireCl"
+        Me.FireCl.Size = New System.Drawing.Size(80, 20)
+        Me.FireCl.TabIndex = 713
+        '
+        'Label69
+        '
+        Me.Label69.AutoSize = True
+        Me.Label69.Location = New System.Drawing.Point(50, 111)
+        Me.Label69.Name = "Label69"
+        Me.Label69.Size = New System.Drawing.Size(57, 13)
+        Me.Label69.TabIndex = 67
+        Me.Label69.Text = "Position Y:"
+        Me.Label69.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireN
+        '
+        Me.FireN.Location = New System.Drawing.Point(114, 330)
+        Me.FireN.Name = "FireN"
+        Me.FireN.Size = New System.Drawing.Size(80, 20)
+        Me.FireN.TabIndex = 712
+        '
+        'Label52
+        '
+        Me.Label52.AutoSize = True
+        Me.Label52.Location = New System.Drawing.Point(34, 58)
+        Me.Label52.Name = "Label52"
+        Me.Label52.Size = New System.Drawing.Size(72, 13)
+        Me.Label52.TabIndex = 3
+        Me.Label52.Text = "Compartment:"
+        Me.Label52.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'Label106
+        '
+        Me.Label106.AutoSize = True
+        Me.Label106.Location = New System.Drawing.Point(95, 360)
+        Me.Label106.Name = "Label106"
+        Me.Label106.Size = New System.Drawing.Size(19, 13)
+        Me.Label106.TabIndex = 136
+        Me.Label106.Text = "Cl:"
+        Me.Label106.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'FireYPosition
+        '
+        Me.FireYPosition.Location = New System.Drawing.Point(114, 107)
+        Me.FireYPosition.Name = "FireYPosition"
+        Me.FireYPosition.Size = New System.Drawing.Size(80, 20)
+        Me.FireYPosition.TabIndex = 723
+        Me.FireYPosition.Text = "Center"
+        '
+        'FireInstanceName
+        '
+        Me.FireInstanceName.Location = New System.Drawing.Point(114, 28)
+        Me.FireInstanceName.Name = "FireInstanceName"
+        Me.FireInstanceName.Size = New System.Drawing.Size(208, 20)
+        Me.FireInstanceName.TabIndex = 707
+        Me.FireInstanceName.Text = "New Fire"
+        '
+        'Label114
+        '
+        Me.Label114.AutoSize = True
+        Me.Label114.Location = New System.Drawing.Point(93, 32)
+        Me.Label114.Name = "Label114"
+        Me.Label114.Size = New System.Drawing.Size(21, 13)
+        Me.Label114.TabIndex = 156
+        Me.Label114.Text = "ID:"
+        Me.Label114.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'TabDetection
         '
@@ -4277,7 +4222,7 @@ Public Class CeditMain
         Me.GroupBox2.Size = New System.Drawing.Size(441, 474)
         Me.GroupBox2.TabIndex = 7
         Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "Vertical Connections"
+        Me.GroupBox2.Text = "Ceiling/Floor Connections"
         '
         'VHeatSummary
         '
@@ -4381,7 +4326,7 @@ Public Class CeditMain
         Me.GroupBox1.Size = New System.Drawing.Size(441, 474)
         Me.GroupBox1.TabIndex = 6
         Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "Horizontal Connections"
+        Me.GroupBox1.Text = "Wall Connections"
         '
         'HHeatSummary
         '
@@ -5847,21 +5792,18 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireZPosition.Leave, FireIgnitionValue.Leave, FireName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireSootYield.Leave, FireCOYield.Leave, FireTSYield.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
         Dim aFire As New Fire
-        Dim aFireTimeSeries(12, 0) As Single, numPoints As Integer
-        Dim ir As Integer
+        Dim aFireTimeSeries(12, 0) As Single
         If CurrentFire >= 0 And myFires.Count > 0 Then
             aFire = myFires(CurrentFire)
             If sender Is FireComp Then
                 aFire.Compartment = FireComp.SelectedIndex
                 If Val(FireXPosition.Text) = -1 Then aFire.XPosition = Val(FireXPosition.Text)
                 If Val(FireYPosition.Text) = -1 Then aFire.YPosition = Val(FireYPosition.Text)
-                If Val(FireZPosition.Text) = -1 Then aFire.ZPosition = Val(FireZPosition.Text)
             End If
             If sender Is FireXPosition Then aFire.XPosition = Val(FireXPosition.Text)
             If sender Is FireYPosition Then aFire.YPosition = Val(FireYPosition.Text)
-            If sender Is FireZPosition Then aFire.ZPosition = Val(FireZPosition.Text)
             If sender Is FireIgnitionCriteria Then
                 If aFire.IgnitionType <> FireIgnitionCriteria.SelectedIndex Then
                     aFire.IgnitionType = FireIgnitionCriteria.SelectedIndex
@@ -5875,8 +5817,8 @@ Public Class CeditMain
                 aFire.Target = myTargets.Item(FireTarget.SelectedIndex).Name
             End If
             If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
-            If sender Is FireName Then
-                aFire.Name = FireName.Text
+            If sender Is FireInstanceName Then
+                aFire.Name = FireInstanceName.Text
             End If
             If sender Is FireC Then
                 If Val(FireC.Text) > 0 Then
@@ -5889,53 +5831,35 @@ Public Class CeditMain
             If sender Is FireO Then aFire.ChemicalFormula(formula.O) = Val(FireO.Text)
             If sender Is FireN Then aFire.ChemicalFormula(formula.N) = Val(FireN.Text)
             If sender Is FireCl Then aFire.ChemicalFormula(formula.Cl) = Val(FireCl.Text)
-            If sender Is FireC Or sender Is FireH Or sender Is FireO Or sender Is FireN Or sender Is FireCl Then
+            If sender Is FireHoC Then aFire.HeatofCombustion = Val(FireHoC.Text)
+            If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
+
+            Dim numPoints As Integer, ir As Integer
+            If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
+                aFire.HeatofCombustion = Val(FireHoC.Text)
                 numPoints = CountGridPoints(FireDataSS)
                 For ir = 1 To numPoints
-                    ' Note that though these are calculated, they are actually hidden from the user since they only support the older format CFAST input
-                    FireDataSS(ir, Fire.FireHC) = aFire.ChemicalFormula(formula.H) * 1.00794 / (aFire.ChemicalFormula(formula.C) * 12.0107)
-                    FireDataSS(ir, Fire.FireHCN) = (1.00794 + 12.0107 + 14.01) / 1000.0 / aFire.MolarMass * aFire.ChemicalFormula(formula.N)
-                    FireDataSS(ir, Fire.FireHCl) = (1.00794 + 35.453) / 1000.0 / aFire.MolarMass * aFire.ChemicalFormula(formula.Cl)
+                    FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
                 Next
-                CopyFireData(aFire)
             End If
-            If sender Is FireHoC Then
-                If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
-                    aFire.HeatofCombustion = Val(FireHoC.Text)
-                    numPoints = CountGridPoints(FireDataSS)
-                    For ir = 1 To numPoints
-                        FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
-                    Next
-                End If
-                CopyFireData(aFire)
-            End If
-            If sender Is FireSootYield Then
-                numPoints = CountGridPoints(FireDataSS)
-                For ir = 1 To numPoints
-                    FireDataSS(ir, Fire.FireSoot) = Val(FireSootYield.Text)
-                Next
-                CopyFireData(aFire)
-            End If
-            If sender Is FireCOYield Then
-                numPoints = CountGridPoints(FireDataSS)
-                For ir = 1 To numPoints
-                    If FireCOYield.Text <> "" Then
-                        FireDataSS(ir, Fire.FireCO) = Val(FireCOYield.Text)
-                    Else
-                        FireDataSS(ir, Fire.FireCO) = (0.012 * Val(FireC.Text) / aFire.MolarMass * 0.0014 + 0.37 * FireDataSS(ir, Fire.FireSoot))
-                    End If
-                Next
-                CopyFireData(aFire)
-            End If
-            If sender Is FireTSYield Then
-                numPoints = CountGridPoints(FireDataSS)
-                For ir = 1 To numPoints
-                    FireDataSS(ir, Fire.FireTS) = Val(FireTSYield.Text)
-                Next
-                CopyFireData(aFire)
-            End If
+            CopyFireData(aFire)
 
             If CurrentFire >= 0 Then myFires(CurrentFire) = aFire
+            UpdateGUI.Fires(CurrentFire)
+        End If
+    End Sub
+
+    Friend Sub CopyFireData(ByVal aFire As Fire)
+        ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
+        Dim numPoints As Integer, ir As Integer, ic As Integer
+        numPoints = CountGridPoints(FireDataSS)
+        If numPoints > 0 Then
+            Dim aFireTimeSeries(12, numPoints - 1) As Single
+            For ir = 0 To numPoints - 1
+                For ic = 0 To 12
+                    aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
+                Next
+            Next
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
@@ -6078,11 +6002,11 @@ Public Class CeditMain
                             If aTarget.Compartment = aFire.Compartment Then
                                 If TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFire.Name Then
                                     Dim Hypotenuse As Single
-                                    Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (aFire.ZPosition - aTarget.ZPosition) ^ 2)
+                                    Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (aFire.Height - aTarget.ZPosition) ^ 2)
                                     If Hypotenuse <> 0 Then
                                         aTarget.XNormal = (aFire.XPosition - aTarget.XPosition) / Hypotenuse
                                         aTarget.YNormal = (aFire.YPosition - aTarget.YPosition) / Hypotenuse
-                                        aTarget.ZNormal = (aFire.ZPosition - aTarget.ZPosition) / Hypotenuse
+                                        aTarget.ZNormal = (aFire.Height - aTarget.ZPosition) / Hypotenuse
                                     End If
                                 End If
                             End If
@@ -6613,6 +6537,33 @@ Public Class CeditMain
         SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
         UpdateGUI.General()
     End Sub
+
+    Private Sub MenuItem2_Click(sender As Object, e As EventArgs) Handles TestReadNML.Click
+        'test item for reading Name List File
+        Dim FileName As String
+
+        FileName = myEnvironment.InputFilePath + "\" + "TestNML.cfast"
+        Dim NMList As NameListFile
+        NMList = New NameListFile(FileName)
+        FileName = myEnvironment.InputFilePath + "\" + "TestNML_a.csv"
+        Dim filename2 As String = myEnvironment.InputFilePath + "\" + "TestNML_b.csv"
+        NMList.DebugPrint(FileName, filename2)
+        FileName = myEnvironment.InputFilePath + "\" + "TestNML.cfast"
+        InitNew()
+        ReadInputFileNML(FileName)
+
+    End Sub
+
+    Private Sub MenuItem2_Click_1(sender As Object, e As EventArgs) Handles MenuItem2.Click
+        Dim FileName As String = "TestNML.cfast"
+
+        myUnits.SI = True
+        FileName = myEnvironment.InputFilePath + "\" + FileName
+        WriteInputFileNML(FileName)
+        myUnits.SI = False
+
+    End Sub
+
     Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalFromFile.Click, FireFromFile.Click
         Dim iReturn As Integer
         OpenDataFileDialog.FilterIndex = 1
@@ -6728,7 +6679,8 @@ Public Class CeditMain
             End If
         End If
     End Sub
-    Private ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer
+
+    Friend ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer
         ' Find the last non-blank row of a grid on the GUI
         Get
             Dim LastRow As Integer, ir As Integer
@@ -6743,21 +6695,6 @@ Public Class CeditMain
             Return LastRow
         End Get
     End Property
-
-    Private Sub CopyFireData(ByVal aFire As Fire)
-        ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
-        Dim numPoints As Integer, ir As Integer, ic As Integer
-        numPoints = CountGridPoints(FireDataSS)
-        If numPoints > 0 Then
-            Dim aFireTimeSeries(12, numPoints - 1) As Single
-            For ir = 0 To numPoints - 1
-                For ic = 0 To 12
-                    aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
-                Next
-            Next
-            aFire.SetFireData(aFireTimeSeries)
-        End If
-    End Sub
     Private Sub CopyVentData(ByVal aVent As Vent, ByVal ss As C1.Win.C1FlexGrid.C1FlexGrid)
         ' Copies time dependent data from the display spreadsheet to the appropriate vent object data array
         Dim NumPoints As Integer, ir As Integer
@@ -6945,6 +6882,7 @@ Public Class CeditMain
         myThermalProperties.Clear()
         TempThermalProperties.Clear()
         myErrors.Queue.Clear()
+        myRamps.Clear()
         Do While (dataFileHeader.Count > 0)
             dataFileHeader.Remove(dataFileHeader.Count)
         Loop

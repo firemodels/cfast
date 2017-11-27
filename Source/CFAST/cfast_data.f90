@@ -57,8 +57,36 @@ module fire_data
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
-end module fire_data
+    end module fire_data
+    
+! --------------------------- namelist_data -------------------------------------------
 
+    module namelist_data
+
+    use precision_parameters
+    use cparams
+
+    implicit none
+    save
+    
+    logical :: nmlflag = .false.                    ! true if input file is in namelist format
+    integer :: input_file_line_number               ! current line read in a namelist-format input file
+    logical :: compflag=.false.                     ! true if each namelist type has been read in
+    logical :: connflag=.false.
+    logical :: devcflag=.false.
+    logical :: fireflag=.false.
+    logical :: headflag=.false.
+    logical :: initflag=.false.
+    logical :: isofflag=.false.
+    logical :: matlflag=.false.
+    logical :: miscflag=.false.
+    logical :: rampflag=.false.
+    logical :: slcfflag=.false.
+    logical :: timeflag=.false.
+    logical :: ventflag=.false. 
+
+    end module namelist_data
+    
 ! --------------------------- option_data -------------------------------------------
 
 module option_data
@@ -145,7 +173,7 @@ module room_data
     integer nr, nrm1
 
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
-        initial_mass_fraction(ns), interior_rho, exterior_rho, interior_temperature, exterior_temperature
+        initial_mass_fraction(ns), interior_rho, exterior_rho, interior_ambient_temperature, exterior_ambient_temperature
     
     type(room_type), target :: roominfo(mxrooms)
 
@@ -191,7 +219,7 @@ module setup_data
 
     logical :: nokbd=.false., initializeonly=.false.
     logical :: debugging=.false., validate=.false., netheatflux=.false.
-    integer :: version, outputformat=0
+    integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile
     character(32) :: mpsdatc
@@ -199,7 +227,7 @@ module setup_data
     !File descriptors for cfast
     integer :: iofili=1, iofilo=6, iofill=3
     character(6), parameter :: heading="VERSN"
-    character(64) :: project
+    character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning

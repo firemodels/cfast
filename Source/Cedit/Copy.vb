@@ -10,7 +10,7 @@ Module Copy
         ToFire.IgnitionValue = FromFire.IgnitionValue
         ToFire.Target = FromFire.Target
         ToFire.PlumeType = FromFire.PlumeType
-        ToFire.FireDefinitionName = FromFire.FireDefinitionName
+        ToFire.ReferencedFireDefinition = FromFire.ReferencedFireDefinition
         ToFire.Name = FromFire.Name
         ToFire.ChemicalFormula(formula.C) = FromFire.ChemicalFormula(formula.C)
         ToFire.ChemicalFormula(formula.H) = FromFire.ChemicalFormula(formula.H)

@@ -2151,7 +2151,7 @@ Module IO
                         Dim aThermalProperty As New ThermalProperty()
                         aFireObject.Name = csv.str(iFire, fireNum.name).Trim + "_Fire"
                         aFireIns.Name = csv.str(iFire, fireNum.name)
-                        aFireIns.FireName = aFireObject.Name
+                        aFireIns.FireDefinitionName = aFireObject.Name
                         aFireObject.ChemicalFormula(formula.C) = csv.num(iChemie, chemieNum.C)
                         aFireObject.ChemicalFormula(formula.H) = csv.num(iChemie, chemieNum.H)
                         aFireObject.ChemicalFormula(formula.O) = csv.num(iChemie, chemieNum.O)
@@ -3321,7 +3321,7 @@ Module IO
             PrintLine(IO, ln)
             ln = " ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
-            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.FireName + "' "
+            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.FireDefinitionName + "' "
             PrintLine(IO, ln)
             ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString
             PrintLine(IO, ln)

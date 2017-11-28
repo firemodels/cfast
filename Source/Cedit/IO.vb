@@ -1237,7 +1237,6 @@ Module IO
         Dim compid, id, devcid, ignitcrit, fireid As String
         Dim setp As Single
         Dim loc(1) As Single
-        Dim valid, locval As Boolean
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "INSF") Then
@@ -1297,7 +1296,7 @@ Module IO
         Next
     End Sub
     Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
-        Dim i, j, k, max As Integer
+        Dim i, j, k As Integer
         Dim arearamp, compid, coramp, hclramp, hrrramp, id, sootramp, traceramp, devcid, hcnramp, ignitcrit As String
         Dim area, carbon, chlorine, coyield, hclyield, hcnyield, hoc, hrr, hydrogen, nitrogen, oxygen, radfrac As Single
         Dim setp, sootyield, traceyield As Single
@@ -2206,7 +2205,7 @@ Module IO
                         Dim aThermalProperty As New ThermalProperty()
                         aFireObject.Name = csv.str(iFire, fireNum.name).Trim + "_Fire"
                         aFireIns.Name = csv.str(iFire, fireNum.name)
-                        aFireIns.FireDefinitionName = aFireObject.Name
+                        aFireIns.ReferencedFireDefinition = aFireObject.Name
                         aFireObject.ChemicalFormula(formula.C) = csv.num(iChemie, chemieNum.C)
                         aFireObject.ChemicalFormula(formula.H) = csv.num(iChemie, chemieNum.H)
                         aFireObject.ChemicalFormula(formula.O) = csv.num(iChemie, chemieNum.O)
@@ -3376,7 +3375,7 @@ Module IO
             PrintLine(IO, ln)
             ln = " ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
-            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.FireDefinitionName + "' "
+            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
             PrintLine(IO, ln)
             ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString
             PrintLine(IO, ln)

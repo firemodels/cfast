@@ -45,7 +45,7 @@ Public Class CeditMain
     Friend WithEvents FireDefinition As GroupBox
     Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
-    Friend WithEvents FireDefinitionName As ComboBox
+    Friend WithEvents ReferencedFireDefinition As ComboBox
     Friend WithEvents PlumeType As Label
     Friend WithEvents Label36 As Label
     Friend WithEvents Label18 As Label
@@ -693,7 +693,7 @@ Public Class CeditMain
         Me.FireDup = New System.Windows.Forms.Button()
         Me.GroupFire = New System.Windows.Forms.GroupBox()
         Me.PlumeType = New System.Windows.Forms.Label()
-        Me.FireDefinitionName = New System.Windows.Forms.ComboBox()
+        Me.ReferencedFireDefinition = New System.Windows.Forms.ComboBox()
         Me.Label36 = New System.Windows.Forms.Label()
         Me.FirePlot = New NPlot.Windows.PlotSurface2D()
         Me.FireO = New System.Windows.Forms.TextBox()
@@ -3210,13 +3210,13 @@ Public Class CeditMain
         Me.PlumeType.Size = New System.Drawing.Size(0, 13)
         Me.PlumeType.TabIndex = 735
         '
-        'FireDefinitionName
+        'ReferencedFireDefinition
         '
-        Me.FireDefinitionName.ItemHeight = 13
-        Me.FireDefinitionName.Location = New System.Drawing.Point(97, 206)
-        Me.FireDefinitionName.Name = "FireDefinitionName"
-        Me.FireDefinitionName.Size = New System.Drawing.Size(208, 21)
-        Me.FireDefinitionName.TabIndex = 734
+        Me.ReferencedFireDefinition.ItemHeight = 13
+        Me.ReferencedFireDefinition.Location = New System.Drawing.Point(97, 206)
+        Me.ReferencedFireDefinition.Name = "ReferencedFireDefinition"
+        Me.ReferencedFireDefinition.Size = New System.Drawing.Size(208, 21)
+        Me.ReferencedFireDefinition.TabIndex = 734
         '
         'Label36
         '
@@ -4973,7 +4973,7 @@ Public Class CeditMain
         Me.FireInstance.Controls.Add(Me.FireYPosition)
         Me.FireInstance.Controls.Add(Me.PlumeType)
         Me.FireInstance.Controls.Add(Me.Label114)
-        Me.FireInstance.Controls.Add(Me.FireDefinitionName)
+        Me.FireInstance.Controls.Add(Me.ReferencedFireDefinition)
         Me.FireInstance.Controls.Add(Me.FireInstanceName)
         Me.FireInstance.Controls.Add(Me.Label36)
         Me.FireInstance.Controls.Add(Me.Label52)
@@ -5849,7 +5849,7 @@ Public Class CeditMain
             Dim aFireTimeSeries(12, 0) As Single
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(CurrentFire)
-            FireIndex = myFires.GetFireIndex(aFireInstance.FireDefinitionName)
+            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             aFire = myFires(FireIndex)
             If sender Is FireComp Then
                 aFireInstance.Compartment = FireComp.SelectedIndex

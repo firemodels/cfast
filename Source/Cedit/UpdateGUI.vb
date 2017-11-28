@@ -973,7 +973,7 @@ Public Class UpdateGUI
             MainWin.PlumeType.Text = ""
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(index)
-            FireIndex = myFires.GetFireIndex(aFireInstance.FireDefinitionName)
+            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             aFire = myFires(FireIndex)
             If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
                 MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
@@ -1039,7 +1039,7 @@ Public Class UpdateGUI
             If numFires > 0 Then
                 For i = 1 To numFires
                     aFireInstance = myFireInstances(i - 1)
-                    FireIndex = myFires.GetFireIndex(aFireInstance.FireDefinitionName)
+                    FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
                     aFire = myFires(FireIndex)
                     MainWin.FireSummary(i, 0) = i.ToString
                     If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
@@ -1066,7 +1066,7 @@ Public Class UpdateGUI
                 Next
                 MainWin.FireSummary.Select(index + 1, 0, index + 1, MainWin.FireSummary.Cols.Count - 1, True)
             End If
-            InitFireList(MainWin.FireDefinitionName)
+            InitFireList(MainWin.ReferencedFireDefinition)
         End If
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)

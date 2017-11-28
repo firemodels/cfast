@@ -61,7 +61,7 @@ Public Class Fire
     Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1
-    Private aFireName As String                     ' Link from a instance in myFireInstances to the fire in the myFires collection
+    Private aReferencedFireDefinition As String                     ' Link from a instance in myFireInstances to the fire in the myFires collection
 
     ' Variables for the current fire object definition (that can be used for one or more instances)
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
@@ -566,14 +566,14 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property FireDefinitionName() As String
+    Property ReferencedFireDefinition() As String
         Get
-            Return aFireName
+            Return aReferencedFireDefinition
         End Get
         Set(value As String)
-            If value <> aFireName Then
+            If value <> aReferencedFireDefinition Then
                 aChanged = True
-                aFireName = value
+                aReferencedFireDefinition = value
             End If
         End Set
     End Property

@@ -61,7 +61,6 @@ Public Class Fire
     Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1
-    Private aFireObject As Integer                  ' index pointer to the selected fire object for this instance
     Private aFireName As String                     ' Link from a instance in myFireInstances to the fire in the myFires collection
 
     ' Variables for the current fire object definition (that can be used for one or more instances)
@@ -98,7 +97,6 @@ Public Class Fire
         aIgnitionType = FireIgnitionbyTime
         aIgnitionValue = 0.0
         aIgnitionTarget = ""
-        aFireObject = -1
         aCommentsIndex = -1
         ' New definitions for a fire object
         aName = "New Fire"
@@ -383,17 +381,6 @@ Public Class Fire
                     aPlumeType = Value
                     aChanged = True
                 End If
-            End If
-        End Set
-    End Property
-    Property FireObject() As Integer
-        Get
-            Return aFireObject
-        End Get
-        Set(ByVal Value As Integer)
-            If aFireObject <> Value Then
-                aFireObject = Value
-                aChanged = True
             End If
         End Set
     End Property

@@ -655,7 +655,7 @@ Module IO
         ReadInputFileNMLInit(NMList)
         ReadInputFileNMLMisc(NMList)
         ReadInputFileNMLMatl(NMList)
-        ReadInputFileNMLRamp(NMList)
+        'ReadInputFileNMLRamp(NMList)
         ReadInputFileNMLComp(NMList)
         ReadInputFileNMLDevc(NMList)
         ReadInputFileNMLFire(NMList)
@@ -954,7 +954,7 @@ Module IO
         Dim depth, height, width As Single
         Dim shaft, hall, valid As Boolean
         Dim grid(3) As Integer
-        Dim origin(3) As Single
+        Dim origin(3), comparea(0), compheight(0) As Single
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "COMP") Then
@@ -968,6 +968,7 @@ Module IO
                 floorid = ""
                 wallid = ""
                 rampid = ""
+                ReDim comparea(0), compheight(0)
                 For k = 0 To 2
                     grid(k) = 50
                     origin(k) = 0.0
@@ -981,8 +982,8 @@ Module IO
                         floorid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "WALL_MATL_ID") Then
                         wallid = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ROOM_AREA_RAMP") Then
-                        rampid = NMList.ForNMListVarGetStr(i, j, 1)
+                        'ElseIf (NMList.ForNMListGetVar(i, j) = "ROOM_AREA_RAMP") Then
+                        'rampid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "HALL") Then
                         If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
                             hall = True
@@ -1005,6 +1006,18 @@ Module IO
                         height = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "WIDTH" Then
                         width = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CROSS_SECT_AREAS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim comparea(max)
+                        For k = 1 To max
+                            comparea(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CROSS_SECT_HEIGHTS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim compheight(max)
+                        For k = 1 To max
+                            compheight(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
                     ElseIf NMList.ForNMListGetVar(i, j) = "GRID" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 And max <= 3 Then
@@ -1033,10 +1046,10 @@ Module IO
                 If width <= 0 Then valid = False
                 If height <= 0 Then valid = False
                 If valid Then
-                    Dim compa As New Compartment
-                    myCompartments.Add(compa)
-                    compa.Name = id
-                    compa.SetSize(width, depth, height)
+                    Dim aComp As New Compartment
+                    myCompartments.Add(aComp)
+                    aComp.Name = id
+                    aComp.SetSize(width, depth, height)
                     If myThermalProperties.GetIndex(ceilid) < 0 And ceilid <> "OFF" Then
                         ceilid = "OFF"
                         myErrors.Add("In COMP name list " + id + " CEILING_MATL_ID " + ceilid + " is not valid switching ceiling to OFF", ErrorMessages.TypeWarning)
@@ -1049,19 +1062,23 @@ Module IO
                         floorid = "OFF"
                         myErrors.Add("In COMP name list " + id + "FLOOR_MATL_ID " + floorid + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
                     End If
-                    compa.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
-                    compa.SetMaterial(ceilid, wallid, floorid)
-                    If rampid <> "" Then
-                        If myRamps.GetRampIndex(rampid) >= 0 Then
-                            If myRamps.Item(myRamps.GetRampIndex(rampid)).Type = Ramp.TypeArea Then
-                                compa.AreaRampID = rampid
-                            Else
-                                myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not type AREA", ErrorMessages.TypeWarning)
-                            End If
-                        Else
-                            myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not a valid ramp id", ErrorMessages.TypeWarning)
-                        End If
+                    aComp.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
+                    aComp.SetMaterial(ceilid, wallid, floorid)
+                    If comparea.GetUpperBound(0) > 0 Then
+                        aComp.SetVariableArea(comparea, compheight)
                     End If
+                    'If rampid <> "" Then
+                    'If myRamps.GetRampIndex(rampid) >= 0 Then
+                    'If myRamps.Item(myRamps.GetRampIndex(rampid)).Type = Ramp.TypeArea Then
+                    'compa.AreaRampID = rampid
+                    'Else
+                    '   myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not type AREA", ErrorMessages.TypeWarning)
+                    'End If
+                    'Else
+                    'myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not a valid ramp id", ErrorMessages.TypeWarning)
+                    'End If
+                    'End If
+
                 Else
                     myErrors.Add("In COMP name list " + id + " is not fully defined", ErrorMessages.TypeWarning)
                 End If
@@ -1215,6 +1232,70 @@ Module IO
         Dim test As Integer = myTargets.Count
 
     End Sub
+    Public Sub ReadInputFileNMLInsf(ByVal NMList As NameListFile)
+        Dim i, j, k, max As Integer
+        Dim compid, id, devcid, ignitcrit, fireid As String
+        Dim setp As Single
+        Dim loc(1) As Single
+        Dim valid, locval As Boolean
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "INSF") Then
+                id = ""
+                compid = ""
+                devcid = ""
+                fireid = ""
+                ignitcrit = ""
+                setp = 0
+                loc(0) = -1.0
+                loc(1) = -1.0
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
+                        compid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DEVC_ID" Then
+                        devcid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_ID" Then
+                        fireid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "IGNITION_CRITERION" Then
+                        ignitcrit = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
+                        setp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In INSF name list for LOCATION input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    Else
+                        myErrors.Add("In INSF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                Dim aFire As New Fire()
+                aFire.ObjectType = Fire.TypeInstance
+                myFireInstances.Add(aFire)
+                aFire.Name = id
+                aFire.Compartment = myCompartments.GetCompIndex(compid)
+                aFire.Target = myTargets.GetIndex(devcid)
+                If ignitcrit = "TIME" Then
+                    aFire.IgnitionType = Fire.FireIgnitionbyTime
+                    aFire.IgnitionValue = setp
+                ElseIf ignitcrit = "TEMPERATURE" Then
+                    aFire.IgnitionType = Fire.FireIgnitionbyTemperature
+                    aFire.IgnitionValue = setp
+                ElseIf ignitcrit = "FLUX" Then
+                    aFire.IgnitionValue = Fire.FireIgnitionbyFlux
+                    aFire.IgnitionValue = setp
+                End If
+                aFire.XPosition = loc(0)
+                aFire.YPosition = loc(1)
+            End If
+        Next
+    End Sub
     Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
         Dim arearamp, compid, coramp, hclramp, hrrramp, id, sootramp, traceramp, devcid, hcnramp, ignitcrit As String
@@ -1259,20 +1340,14 @@ Module IO
                         id = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "AREA_RAMP_ID" Then
                         arearamp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
-                        compid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "CO_YIELD_RAMP_ID" Then
                         coramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "DEVC_ID" Then
-                        devcid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HCL_YIELD_RAMP_ID" Then
                         hclramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HCN_YIELD_RAMP_ID" Then
                         hcnramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HRR_RAMP_ID" Then
                         hrrramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "IGNITION_CRITERION" Then
-                        ignitcrit = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD_RAMP_ID" Then
                         sootramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD_RAMP_ID" Then
@@ -1301,21 +1376,10 @@ Module IO
                         oxygen = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_FRACTION" Then
                         radfrac = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
-                        setp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD" Then
                         sootyield = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD" Then
                         traceyield = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        If max >= 3 And max <= 3 Then
-                            For k = 1 To max
-                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
-                            Next
-                        Else
-                            myErrors.Add("In FIRE name list for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
-                        End If
                     Else
                         myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1420,16 +1484,6 @@ Module IO
                     aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
                     aFireObject.SetPosition(myCompartments.GetCompIndex(compid), loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z))
-                    If ignitcrit = "TIME" Then
-                        aFireObject.IgnitionType = IgnitionCriteriaNum.time
-                        aFireObject.IgnitionValue = setp
-                    ElseIf ignitcrit = "TEMPERATURE" Then
-                        aFireObject.IgnitionType = IgnitionCriteriaNum.temp
-                        aFireObject.IgnitionValue = setp
-                    ElseIf ignitcrit = "FLUX" Then
-                        aFireObject.IgnitionValue = IgnitionCriteriaNum.flux
-                        aFireObject.IgnitionValue = setp
-                    End If
                     If devcid <> "" Then
                         aFireObject.Target = devcid
                     End If
@@ -2937,14 +2991,14 @@ Module IO
             End If
             aComp.GetVariableArea(f, x, j)
             If j > 1 Then
-                ln = " CROSS_SECT_AREAS = "
-                For k = 1 To j
-                    ln = ln + f(k).ToString + " , "
+                ln = " CROSS_SECT_AREAS = " + f(1).ToString
+                For k = 2 To j
+                    ln = ln + " , " + f(k).ToString
                 Next
                 PrintLine(IO, ln)
-                ln = " CROSS_SECT_HEIGHTS = "
-                For k = 1 To j
-                    ln = ln + x(k).ToString + " , "
+                ln = " CROSS_SECT_HEIGHTS = " + x(1).ToString
+                For k = 2 To j
+                    ln = ln + " , " + x(k).ToString
                 Next
                 PrintLine(IO, ln)
             End If

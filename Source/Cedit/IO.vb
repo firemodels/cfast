@@ -1234,7 +1234,7 @@ Module IO
     End Sub
     Public Sub ReadInputFileNMLInsf(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
-        Dim compid, id, devcid, ignitcrit As String
+        Dim compid, id, devcid, ignitcrit, fireid As String
         Dim setp As Single
         Dim loc(1) As Single
         Dim valid, locval As Boolean
@@ -1244,14 +1244,57 @@ Module IO
                 id = ""
                 compid = ""
                 devcid = ""
+                fireid = ""
                 ignitcrit = ""
                 setp = 0
-                loc(0) = 0.0
-                loc(1) = 0.0
-
+                loc(0) = -1.0
+                loc(1) = -1.0
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
+                        compid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DEVC_ID" Then
+                        devcid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_ID" Then
+                        fireid = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "IGNITION_CRITERION" Then
+                        ignitcrit = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
+                        setp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In INSF name list for LOCATION input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    Else
+                        myErrors.Add("In INSF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                Dim aFire As New Fire()
+                aFire.ObjectType = Fire.TypeInstance
+                myFireInstances.Add(aFire)
+                aFire.Name = id
+                aFire.Compartment = myCompartments.GetCompIndex(compid)
+                aFire.Target = myTargets.GetIndex(devcid)
+                If ignitcrit = "TIME" Then
+                    aFire.IgnitionType = Fire.FireIgnitionbyTime
+                    aFire.IgnitionValue = setp
+                ElseIf ignitcrit = "TEMPERATURE" Then
+                    aFire.IgnitionType = Fire.FireIgnitionbyTemperature
+                    aFire.IgnitionValue = setp
+                ElseIf ignitcrit = "FLUX" Then
+                    aFire.IgnitionValue = Fire.FireIgnitionbyFlux
+                    aFire.IgnitionValue = setp
+                End If
+                aFire.XPosition = loc(0)
+                aFire.YPosition = loc(1)
             End If
         Next
-
     End Sub
     Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
@@ -1297,20 +1340,14 @@ Module IO
                         id = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "AREA_RAMP_ID" Then
                         arearamp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
-                        compid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "CO_YIELD_RAMP_ID" Then
                         coramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "DEVC_ID" Then
-                        devcid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HCL_YIELD_RAMP_ID" Then
                         hclramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HCN_YIELD_RAMP_ID" Then
                         hcnramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HRR_RAMP_ID" Then
                         hrrramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "IGNITION_CRITERION" Then
-                        ignitcrit = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD_RAMP_ID" Then
                         sootramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD_RAMP_ID" Then
@@ -1339,21 +1376,10 @@ Module IO
                         oxygen = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_FRACTION" Then
                         radfrac = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
-                        setp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD" Then
                         sootyield = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD" Then
                         traceyield = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        If max >= 3 And max <= 3 Then
-                            For k = 1 To max
-                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
-                            Next
-                        Else
-                            myErrors.Add("In FIRE name list for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
-                        End If
                     Else
                         myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1458,16 +1484,6 @@ Module IO
                     aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
                     aFireObject.SetPosition(myCompartments.GetCompIndex(compid), loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z))
-                    If ignitcrit = "TIME" Then
-                        aFireObject.IgnitionType = IgnitionCriteriaNum.time
-                        aFireObject.IgnitionValue = setp
-                    ElseIf ignitcrit = "TEMPERATURE" Then
-                        aFireObject.IgnitionType = IgnitionCriteriaNum.temp
-                        aFireObject.IgnitionValue = setp
-                    ElseIf ignitcrit = "FLUX" Then
-                        aFireObject.IgnitionValue = IgnitionCriteriaNum.flux
-                        aFireObject.IgnitionValue = setp
-                    End If
                     If devcid <> "" Then
                         aFireObject.Target = devcid
                     End If

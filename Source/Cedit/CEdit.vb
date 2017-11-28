@@ -5792,34 +5792,34 @@ Public Class CeditMain
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
-    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged
-        Dim aFire As New Fire
-        Dim aFireTimeSeries(12, 0) As Single
+    Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged, FireInstanceName.Leave
         If CurrentFire >= 0 And myFires.Count > 0 Then
-            aFire = myFires(CurrentFire)
+            Dim aFireTimeSeries(12, 0) As Single
+            Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
+            aFireInstance = myFireInstances(CurrentFire)
+            FireIndex = myFires.GetFireIndex(aFireInstance.FireName)
+            aFire = myFires(FireIndex)
             If sender Is FireComp Then
-                aFire.Compartment = FireComp.SelectedIndex
-                If Val(FireXPosition.Text) = -1 Then aFire.XPosition = Val(FireXPosition.Text)
-                If Val(FireYPosition.Text) = -1 Then aFire.YPosition = Val(FireYPosition.Text)
+                aFireInstance.Compartment = FireComp.SelectedIndex
+                If Val(FireXPosition.Text) = -1 Then aFireInstance.XPosition = Val(FireXPosition.Text)
+                If Val(FireYPosition.Text) = -1 Then aFireInstance.YPosition = Val(FireYPosition.Text)
             End If
-            If sender Is FireXPosition Then aFire.XPosition = Val(FireXPosition.Text)
-            If sender Is FireYPosition Then aFire.YPosition = Val(FireYPosition.Text)
+            If sender Is FireXPosition Then aFireInstance.XPosition = Val(FireXPosition.Text)
+            If sender Is FireYPosition Then aFireInstance.YPosition = Val(FireYPosition.Text)
             If sender Is FireIgnitionCriteria Then
-                If aFire.IgnitionType <> FireIgnitionCriteria.SelectedIndex Then
-                    aFire.IgnitionType = FireIgnitionCriteria.SelectedIndex
-                    If aFire.IgnitionType = Fire.FireIgnitionbyTime Then aFire.IgnitionValue = 0.0
-                    If aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then aFire.IgnitionValue = myEnvironment.IntAmbTemperature
-                    If aFire.IgnitionType = Fire.FireIgnitionbyFlux Then aFire.IgnitionValue = 0.0
+                If aFireInstance.IgnitionType <> FireIgnitionCriteria.SelectedIndex Then
+                    aFireInstance.IgnitionType = FireIgnitionCriteria.SelectedIndex
+                    If aFireInstance.IgnitionType = Fire.FireIgnitionbyTime Then aFireInstance.IgnitionValue = 0.0
+                    If aFireInstance.IgnitionType = Fire.FireIgnitionbyTemperature Then aFireInstance.IgnitionValue = myEnvironment.IntAmbTemperature
+                    If aFireInstance.IgnitionType = Fire.FireIgnitionbyFlux Then aFireInstance.IgnitionValue = 0.0
                 End If
             End If
-            If sender Is FireIgnitionValue Then aFire.IgnitionValue = Val(FireIgnitionValue.Text)
+            If sender Is FireIgnitionValue Then aFireInstance.IgnitionValue = Val(FireIgnitionValue.Text)
             If sender Is FireTarget Then
-                aFire.Target = myTargets.Item(FireTarget.SelectedIndex).Name
+                aFireInstance.Target = myTargets.Item(FireTarget.SelectedIndex).Name
             End If
             If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
-            If sender Is FireInstanceName Then
-                aFire.Name = FireInstanceName.Text
-            End If
+            If sender Is FireInstanceName Then aFireInstance.Name = FireInstanceName.Text
             If sender Is FireC Then
                 If Val(FireC.Text) > 0 Then
                     aFire.ChemicalFormula(formula.C) = Val(FireC.Text)
@@ -5844,7 +5844,10 @@ Public Class CeditMain
             End If
             CopyFireData(aFire)
 
-            If CurrentFire >= 0 Then myFires(CurrentFire) = aFire
+            If CurrentFire >= 0 Then
+                myFires(FireIndex) = aFire
+                myFireInstances(CurrentFire) = aFireInstance
+            End If
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub

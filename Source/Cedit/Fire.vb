@@ -820,12 +820,12 @@ Public Class Fire
             End If
         End Set
     End Property
-    Public ReadOnly Property IsValid(ByVal FireNumber As Integer) As Integer
+    Public ReadOnly Property IsValid(ByVal FireNumber As Integer, ObjectType As Integer) As Integer
         Get
             myUnits.SI = True
             HasErrors = 0
-
-            If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
+            If ObjectType = TypeObject Then
+                If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
                 myErrors.Add("Fire " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
@@ -1109,7 +1109,7 @@ Public Class FireCollection
             Return False
         End Get
     End Property
-    Public ReadOnly Property IsValid() As Integer
+    Public ReadOnly Property IsValid(ObjectType As Integer) As Integer
         Get
             HasErrors = 0
             ' Check individual fire objects or instances for errors
@@ -1117,7 +1117,7 @@ Public Class FireCollection
                 Dim aFire1 As Fire, aFire2 As Fire
                 For i = 0 To Count - 1
                     aFire1 = CType(List(i), Fire)
-                    HasErrors += aFire1.IsValid(i + 1)
+                    HasErrors += aFire1.IsValid(i + 1, ObjectType)
                 Next
                 ' Cannot have duplicate fire object names
                 If Count > 1 Then

@@ -1038,23 +1038,25 @@ Public Class UpdateGUI
             ClearGrid(MainWin.FireSummary)
             If numFires > 0 Then
                 For i = 1 To numFires
-                    aFire = myFires(i - 1)
+                    aFireInstance = myFireInstances(i - 1)
+                    FireIndex = myFires.GetFireIndex(aFireInstance.FireName)
+                    aFire = myFires(FireIndex)
                     MainWin.FireSummary(i, 0) = i.ToString
-                    If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
-                        MainWin.FireSummary(i, 1) = myCompartments(aFire.Compartment).Name
-                    ElseIf aFire.Compartment = -1 Then
+                    If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
+                        MainWin.FireSummary(i, 1) = myCompartments(aFireInstance.Compartment).Name
+                    ElseIf aFireInstance.Compartment = -1 Then
                         MainWin.FireSummary(i, 1) = "Outside"
                     Else
                         MainWin.FireSummary(i, 1) = "Not defined"
                     End If
-                    If aFire.IgnitionType >= 0 Then
-                        MainWin.FireSummary(i, 4) = IgnitionNames.Substring((aFire.IgnitionType) * 11, 11)
-                        MainWin.FireSummary(i, 5) = aFire.IgnitionValue
+                    If aFireInstance.IgnitionType >= 0 Then
+                        MainWin.FireSummary(i, 4) = IgnitionNames.Substring((aFireInstance.IgnitionType) * 11, 11)
+                        MainWin.FireSummary(i, 5) = aFireInstance.IgnitionValue
                     End If
-                    MainWin.FireSummary(i, 6) = aFire.XPosition.ToString
-                    MainWin.FireSummary(i, 7) = aFire.YPosition.ToString
+                    MainWin.FireSummary(i, 6) = aFireInstance.XPosition.ToString
+                    MainWin.FireSummary(i, 7) = aFireInstance.YPosition.ToString
 
-                    MainWin.FireSummary(i, 2) = aFire.Name
+                    MainWin.FireSummary(i, 2) = aFireInstance.Name
                     PeakHRR = 0.0
                     aFire.GetFireData(afireTimeSeries, NumPoints)
                     For j = 0 To NumPoints

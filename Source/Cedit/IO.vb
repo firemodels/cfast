@@ -159,6 +159,7 @@ Module IO
                     Case "FIRE"
                         Dim aFire As New Fire
                         Dim aFireInstance As New Fire
+                        aFireInstance.ObjectType = Fire.TypeInstance
                         ReadEmbeddedFire(csv, i, aFire, aFireInstance)
                         aFire.Changed = False
                         myFires.Add(aFire)

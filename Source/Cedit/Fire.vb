@@ -4,7 +4,7 @@ Public Class Fire
     Friend Const FireIgnitionbyTime As Integer = 0                  ' Ignition Criteria for additional fires, 0 for time, 1 for temperature, 2 for heat flux
     Friend Const FireIgnitionbyTemperature As Integer = 1
     Friend Const FireIgnitionbyFlux As Integer = 2
-    Friend Const TypeObject As Integer = 0                          ' Differentiate between object definitions and instances for fires
+    Friend Const TypeDefinition As Integer = 0                          ' Differentiate between object definitions and instances for fires
     Friend Const TypeInstance As Integer = 1
     Friend Const FireTime As Integer = 0                            ' Column numbers for fire time series data array
     Friend Const FireMdot As Integer = 1
@@ -89,7 +89,8 @@ Public Class Fire
     Private aColMap() As Integer = {0, 2, 3, 4, 5, 6, 9, 10, 12}
 
     Public Sub New()
-        ' New definitions for an instance of a fire 
+        ' New definitions for a fire 
+        aObjectType = TypeDefinition
         aCompartment = -2
         aXPosition = -1.0
         aYPosition = -1.0
@@ -194,12 +195,12 @@ Public Class Fire
             If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
         Next
     End Sub
-    Property FireType() As Integer
+    Property ObjectType() As Integer
         Get
             Return aObjectType
         End Get
         Set(value As Integer)
-            If value = TypeObject Or value = TypeInstance Then
+            If value = TypeDefinition Or value = TypeInstance Then
                 aObjectType = value
             End If
         End Set
@@ -578,7 +579,7 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property FireName() As String
+    Property FireDefinitionName() As String
         Get
             Return aFireName
         End Get
@@ -820,12 +821,12 @@ Public Class Fire
             End If
         End Set
     End Property
-    Public ReadOnly Property IsValid(ByVal FireNumber As Integer, ObjectType As Integer) As Integer
+    Public ReadOnly Property IsValid(ByVal FireNumber As Integer) As Integer
         Get
             myUnits.SI = True
             HasErrors = 0
-            If ObjectType = TypeObject Then
-                If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
+            'If ObjectType = TypeDefinition Then
+            If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
                 myErrors.Add("Fire " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
@@ -1109,7 +1110,7 @@ Public Class FireCollection
             Return False
         End Get
     End Property
-    Public ReadOnly Property IsValid(ObjectType As Integer) As Integer
+    Public ReadOnly Property IsValid() As Integer
         Get
             HasErrors = 0
             ' Check individual fire objects or instances for errors
@@ -1117,7 +1118,7 @@ Public Class FireCollection
                 Dim aFire1 As Fire, aFire2 As Fire
                 For i = 0 To Count - 1
                     aFire1 = CType(List(i), Fire)
-                    HasErrors += aFire1.IsValid(i + 1, ObjectType)
+                    HasErrors += aFire1.IsValid(i + 1)
                 Next
                 ' Cannot have duplicate fire object names
                 If Count > 1 Then

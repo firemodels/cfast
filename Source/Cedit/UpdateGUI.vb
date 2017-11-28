@@ -970,10 +970,10 @@ Public Class UpdateGUI
         Else
             MainWin.GroupFire.Enabled = True
             MainWin.GroupFire.Text = "Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
-            MainWin.FireType.Text = ""
+            MainWin.PlumeType.Text = ""
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(index)
-            FireIndex = myFires.GetFireIndex(aFireInstance.FireName)
+            FireIndex = myFires.GetFireIndex(aFireInstance.FireDefinitionName)
             aFire = myFires(FireIndex)
             If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
                 MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
@@ -983,8 +983,8 @@ Public Class UpdateGUI
                 yFire = aFireInstance.YPosition
                 xRoom = aCompartment.RoomWidth
                 yRoom = aCompartment.RoomDepth
-                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.FireType.Text = "Wall Fire"
-                If (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then MainWin.FireType.Text = "Corner Fire"
+                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.PlumeType.Text = "Wall Fire"
+                If (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then MainWin.PlumeType.Text = "Corner Fire"
 
             End If
 
@@ -1039,7 +1039,7 @@ Public Class UpdateGUI
             If numFires > 0 Then
                 For i = 1 To numFires
                     aFireInstance = myFireInstances(i - 1)
-                    FireIndex = myFires.GetFireIndex(aFireInstance.FireName)
+                    FireIndex = myFires.GetFireIndex(aFireInstance.FireDefinitionName)
                     aFire = myFires(FireIndex)
                     MainWin.FireSummary(i, 0) = i.ToString
                     If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
@@ -1160,10 +1160,10 @@ Public Class UpdateGUI
         obj.Items.Clear()
         obj.Items.Add("New")
         obj.SelectedIndex = 0
-        If myFireInstances.Count > 0 Then
-            For i = 0 To myFireInstances.Count - 1
-                obj.Items.Add(myFireInstances.Item(i).Name)
-                If myFireInstances.Item(i).Name = current Then
+        If myFires.Count > 0 Then
+            For i = 0 To myFires.Count - 1
+                obj.Items.Add(myFires.Item(i).Name)
+                If myFires.Item(i).Name = current Then
                     obj.SelectedIndex = i + 1
                 End If
             Next

@@ -4,6 +4,8 @@ Public Class Fire
     Friend Const FireIgnitionbyTime As Integer = 0                  ' Ignition Criteria for additional fires, 0 for time, 1 for temperature, 2 for heat flux
     Friend Const FireIgnitionbyTemperature As Integer = 1
     Friend Const FireIgnitionbyFlux As Integer = 2
+    Friend Const TypeDefinition As Integer = 0                          ' Differentiate between object definitions and instances for fires
+    Friend Const TypeInstance As Integer = 1
     Friend Const FireTime As Integer = 0                            ' Column numbers for fire time series data array
     Friend Const FireMdot As Integer = 1
     Friend Const FireHRR As Integer = 2
@@ -45,8 +47,10 @@ Public Class Fire
     Private aValue, aPeak As Single
     Private aString As String
 
+    Private aObjectType As Integer
+
     ' Variables for current instance of a fire
-    Private aCompartment As Integer                 ' COmpartment where the fire is located
+    Private aCompartment As Integer                 ' Compartment where the fire is located
     Private aXPosition As Single                    ' X (width) position of the fire in the Compartment
     Private aYPosition As Single                    ' Y (depth) position of the fire in the Compartment
     Private aIgnitionType As Integer                ' Igntion criterion, 0 if by time, 1 if by temperature and 2 if by heat flux
@@ -57,8 +61,9 @@ Public Class Fire
     Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1
-    Private aFireObject As Integer                  ' index pointer to the selected fire object for this instance
+    Private aReferencedFireDefinition As String                     ' Link from a instance in myFireInstances to the fire in the myFires collection
 
+    ' Variables for the current fire object definition (that can be used for one or more instances)
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
     Private aChemicalFormula(5) As Single           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
     Private aMolarMass As Single                    ' Molecular weight of the fuel
@@ -75,14 +80,16 @@ Public Class Fire
     Private aFireTimeSeries(12, 0) As Single        ' Time series values for time, Mdot, HRR, and species
     Private aCommentsIndex As Integer               ' pointer into collection of comments for fire objects
 
-    Private aFireName As String                     ' Link from a intance in myFireInstances to the fire in the myFires collection 
-    Private aFireTableName As String                ' The name of the table to be created in the inputfile for a fire in myFires collection
-
     Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
     Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
                                              "FireHC", "FireO2", "FireHCN", "FireHCl", "FireCt", "FireTS"}
+    Private aColNames() As String = {"TIME", "MDOT", "HRR", "HEIGHT", "AREA", "CO_YEILD", "SOOT_YEILD", "HC_YEILD", "O2_YEILD",
+                                                "HCN_YEILD", "HCL_YEILD", "CT_YEILD", "TRACE_YEILD"}
+    Private aColMap() As Integer = {0, 2, 3, 4, 5, 6, 9, 10, 12}
+
     Public Sub New()
-        ' New definitions for an instance of a fire 
+        ' New definitions for a fire 
+        aObjectType = TypeDefinition
         aCompartment = -2
         aXPosition = -1.0
         aYPosition = -1.0
@@ -90,7 +97,6 @@ Public Class Fire
         aIgnitionType = FireIgnitionbyTime
         aIgnitionValue = 0.0
         aIgnitionTarget = ""
-        aFireObject = -1
         aCommentsIndex = -1
         ' New definitions for a fire object
         aName = "New Fire"
@@ -121,7 +127,6 @@ Public Class Fire
         aHeatofCombustion = Hoc
         aRadiativeFraction = RadiativeFraction
         aCommentsIndex = -1
-        Me.InitilizeFireTimeSeries()
     End Sub
     Public Sub New(ByVal TimetoPeak As Single, ByVal PeakHRR As Single, ByVal SteadyBurningTime As Single, ByVal DecayTime As Single)
         ' New to define a t^2 fire object
@@ -188,6 +193,16 @@ Public Class Fire
             If aFireTimeSeries(Fire.FireHCl, j) > PeakHCl Then PeakHCl = aFireTimeSeries(Fire.FireHCl, j)
         Next
     End Sub
+    Property ObjectType() As Integer
+        Get
+            Return aObjectType
+        End Get
+        Set(value As Integer)
+            If value = TypeDefinition Or value = TypeInstance Then
+                aObjectType = value
+            End If
+        End Set
+    End Property
     ReadOnly Property Peak(ByVal whichItem As Integer) As Single
         Get
             aPeak = -10 ^ 99
@@ -366,17 +381,6 @@ Public Class Fire
                     aPlumeType = Value
                     aChanged = True
                 End If
-            End If
-        End Set
-    End Property
-    Property FireObject() As Integer
-        Get
-            Return aFireObject
-        End Get
-        Set(ByVal Value As Integer)
-            If aFireObject <> Value Then
-                aFireObject = Value
-                aChanged = True
             End If
         End Set
     End Property
@@ -562,27 +566,44 @@ Public Class Fire
             End If
         End Set
     End Property
-    Property FireName() As String
+    Property ReferencedFireDefinition() As String
         Get
-            Return aFireName
+            Return aReferencedFireDefinition
         End Get
         Set(value As String)
-            If value <> aFireName Then
+            If value <> aReferencedFireDefinition Then
                 aChanged = True
-                aFireName = value
+                aReferencedFireDefinition = value
             End If
         End Set
     End Property
-    Property FireTableName() As String
+    ReadOnly Property ColNames(ByVal i As Integer) As String
         Get
-            Return aFireTableName
-        End Get
-        Set(value As String)
-            If value <> aFireTableName Then
-                aChanged = True
-                aFireTableName = value
+            If i >= 0 And i <= aColNames.GetUpperBound(0) Then
+                Return aColNames(i)
+            Else
+                Return ""
             End If
-        End Set
+        End Get
+    End Property
+    ReadOnly Property ColMap(ByVal i As Integer) As Integer
+        Get
+            If i >= 0 And i <= aColMap.GetUpperBound(0) Then
+                Return aColMap(i)
+            Else
+                Return -1
+            End If
+        End Get
+    End Property
+    ReadOnly Property ColMapUpperBound() As Integer
+        Get
+            Return aColMap.GetUpperBound(0)
+        End Get
+    End Property
+    ReadOnly Property ColNamesUpperBound() As Integer
+        Get
+            Return aColNames.GetUpperBound(0)
+        End Get
     End Property
     Public Sub SetPosition(ByVal index As Integer)
         Dim tmpCompartment As New Compartment
@@ -791,7 +812,7 @@ Public Class Fire
         Get
             myUnits.SI = True
             HasErrors = 0
-
+            'If ObjectType = TypeDefinition Then
             If aMolarMass < 0.0 Or aMolarMass > MaxMolarMass Then
                 myErrors.Add("Fire " + aName + " has a molar mass less than 0 kg/mol or greater than " + MaxMolarMass.ToString + " kg/mol.", ErrorMessages.TypeWarning)
                 HasErrors += 1

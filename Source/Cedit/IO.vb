@@ -159,6 +159,7 @@ Module IO
                     Case "FIRE"
                         Dim aFire As New Fire
                         Dim aFireInstance As New Fire
+                        aFireInstance.ObjectType = Fire.TypeInstance
                         ReadEmbeddedFire(csv, i, aFire, aFireInstance)
                         aFire.Changed = False
                         myFires.Add(aFire)
@@ -654,7 +655,7 @@ Module IO
         ReadInputFileNMLInit(NMList)
         ReadInputFileNMLMisc(NMList)
         ReadInputFileNMLMatl(NMList)
-        ReadInputFileNMLRamp(NMList)
+        'ReadInputFileNMLRamp(NMList)
         ReadInputFileNMLComp(NMList)
         ReadInputFileNMLDevc(NMList)
         ReadInputFileNMLFire(NMList)
@@ -953,7 +954,7 @@ Module IO
         Dim depth, height, width As Single
         Dim shaft, hall, valid As Boolean
         Dim grid(3) As Integer
-        Dim origin(3) As Single
+        Dim origin(3), comparea(0), compheight(0) As Single
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "COMP") Then
@@ -967,6 +968,7 @@ Module IO
                 floorid = ""
                 wallid = ""
                 rampid = ""
+                ReDim comparea(0), compheight(0)
                 For k = 0 To 2
                     grid(k) = 50
                     origin(k) = 0.0
@@ -980,8 +982,8 @@ Module IO
                         floorid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "WALL_MATL_ID") Then
                         wallid = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "ROOM_AREA_RAMP") Then
-                        rampid = NMList.ForNMListVarGetStr(i, j, 1)
+                        'ElseIf (NMList.ForNMListGetVar(i, j) = "ROOM_AREA_RAMP") Then
+                        'rampid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "HALL") Then
                         If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
                             hall = True
@@ -1004,6 +1006,18 @@ Module IO
                         height = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "WIDTH" Then
                         width = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CROSS_SECT_AREAS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim comparea(max)
+                        For k = 1 To max
+                            comparea(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CROSS_SECT_HEIGHTS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        ReDim compheight(max)
+                        For k = 1 To max
+                            compheight(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
                     ElseIf NMList.ForNMListGetVar(i, j) = "GRID" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 And max <= 3 Then
@@ -1032,10 +1046,10 @@ Module IO
                 If width <= 0 Then valid = False
                 If height <= 0 Then valid = False
                 If valid Then
-                    Dim compa As New Compartment
-                    myCompartments.Add(compa)
-                    compa.Name = id
-                    compa.SetSize(width, depth, height)
+                    Dim aComp As New Compartment
+                    myCompartments.Add(aComp)
+                    aComp.Name = id
+                    aComp.SetSize(width, depth, height)
                     If myThermalProperties.GetIndex(ceilid) < 0 And ceilid <> "OFF" Then
                         ceilid = "OFF"
                         myErrors.Add("In COMP name list " + id + " CEILING_MATL_ID " + ceilid + " is not valid switching ceiling to OFF", ErrorMessages.TypeWarning)
@@ -1048,19 +1062,23 @@ Module IO
                         floorid = "OFF"
                         myErrors.Add("In COMP name list " + id + "FLOOR_MATL_ID " + floorid + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
                     End If
-                    compa.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
-                    compa.SetMaterial(ceilid, wallid, floorid)
-                    If rampid <> "" Then
-                        If myRamps.GetRampIndex(rampid) >= 0 Then
-                            If myRamps.Item(myRamps.GetRampIndex(rampid)).Type = Ramp.TypeArea Then
-                                compa.AreaRampID = rampid
-                            Else
-                                myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not type AREA", ErrorMessages.TypeWarning)
-                            End If
-                        Else
-                            myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not a valid ramp id", ErrorMessages.TypeWarning)
-                        End If
+                    aComp.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
+                    aComp.SetMaterial(ceilid, wallid, floorid)
+                    If comparea.GetUpperBound(0) > 0 Then
+                        aComp.SetVariableArea(comparea, compheight)
                     End If
+                    'If rampid <> "" Then
+                    'If myRamps.GetRampIndex(rampid) >= 0 Then
+                    'If myRamps.Item(myRamps.GetRampIndex(rampid)).Type = Ramp.TypeArea Then
+                    'compa.AreaRampID = rampid
+                    'Else
+                    '   myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not type AREA", ErrorMessages.TypeWarning)
+                    'End If
+                    'Else
+                    'myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not a valid ramp id", ErrorMessages.TypeWarning)
+                    'End If
+                    'End If
+
                 Else
                     myErrors.Add("In COMP name list " + id + " is not fully defined", ErrorMessages.TypeWarning)
                 End If
@@ -1207,114 +1225,114 @@ Module IO
                         myDetectors.Add(aDetect)
                     End If
                 Else
-                        myErrors.Add("In DEVC name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In DEVC name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
         Dim test As Integer = myTargets.Count
 
     End Sub
-    Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
+    Public Sub ReadInputFileNMLInsf(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
-        Dim arearamp, compid, coramp, hclramp, hrrramp, id, sootramp, traceramp, devcid, hcnramp, ignitcrit As String
-        Dim area, carbon, chlorine, coyield, hclyield, hcnyield, hoc, hrr, hydrogen, nitrogen, oxygen, radfrac As Single
-        Dim setp, sootyield, traceyield As Single
-        Dim loc(3) As Single
-        Dim valid, locval As Boolean
+        Dim compid, id, devcid, ignitcrit, fireid As String
+        Dim setp As Single
+        Dim loc(1) As Single
 
         For i = 1 To NMList.TotNMList
-            If (NMList.GetNMListID(i) = "FIRE") Then
-                area = 0.3
-                carbon = 1
-                chlorine = 0
-                coyield = -1
-                hclyield = -1
-                hcnyield = -1
-                hoc = 50000
-                hrr = -1
-                hydrogen = 4
-                ignitcrit = "TIME"
-                nitrogen = 0
-                oxygen = 0
-                radfrac = 0.35
-                setp = 0
-                sootyield = -1
-                traceyield = -1
+            If (NMList.GetNMListID(i) = "INSF") Then
                 id = ""
-                arearamp = ""
-                coramp = ""
-                hclramp = ""
-                hcnramp = ""
-                hrrramp = ""
-                sootramp = ""
-                traceramp = ""
-                devcid = ""
                 compid = ""
-                For k = 0 To 2
-                    loc(k) = -1
-                Next
+                devcid = ""
+                fireid = ""
+                ignitcrit = ""
+                setp = 0
+                loc(0) = -1.0
+                loc(1) = -1.0
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "AREA_RAMP_ID" Then
-                        arearamp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "COMP_ID" Then
                         compid = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "CO_YIELD_RAMP_ID" Then
-                        coramp = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "DEVC_ID" Then
                         devcid = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "HCL_YIELD_RAMP_ID" Then
-                        hclramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "HCN_YIELD_RAMP_ID" Then
-                        hcnramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "HRR_RAMP_ID" Then
-                        hrrramp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_ID" Then
+                        fireid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "IGNITION_CRITERION" Then
                         ignitcrit = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD_RAMP_ID" Then
-                        sootramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD_RAMP_ID" Then
-                        traceramp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "AREA" Then
-                        area = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
+                        setp = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In INSF name list for LOCATION input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    Else
+                        myErrors.Add("In INSF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                Dim aFire As New Fire()
+                aFire.ObjectType = Fire.TypeInstance
+                myFireInstances.Add(aFire)
+                aFire.Name = id
+                aFire.Compartment = myCompartments.GetCompIndex(compid)
+                aFire.Target = myTargets.GetIndex(devcid)
+                If ignitcrit = "TIME" Then
+                    aFire.IgnitionType = Fire.FireIgnitionbyTime
+                    aFire.IgnitionValue = setp
+                ElseIf ignitcrit = "TEMPERATURE" Then
+                    aFire.IgnitionType = Fire.FireIgnitionbyTemperature
+                    aFire.IgnitionValue = setp
+                ElseIf ignitcrit = "FLUX" Then
+                    aFire.IgnitionValue = Fire.FireIgnitionbyFlux
+                    aFire.IgnitionValue = setp
+                End If
+                aFire.XPosition = loc(0)
+                aFire.YPosition = loc(1)
+                aFire.ReferencedFireDefinition = fireid
+                aFire.Changed = False
+            End If
+        Next
+    End Sub
+    Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
+        Dim i, j, k As Integer
+        Dim id, tableid As String
+        Dim carbon, chlorine, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
+        Dim valid As Boolean
+
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "FIRE") Then
+                carbon = 1
+                chlorine = 0
+                hoc = 50000
+                hydrogen = 4
+                nitrogen = 0
+                oxygen = 0
+                radfrac = 0.35
+                id = ""
+                tableid = ""
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "CARBON" Then
                         carbon = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "CHLORINE" Then
                         chlorine = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "CO_YIELD" Then
-                        coyield = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "HCL_YIELD" Then
-                        hclyield = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "HCN_YIELD" Then
-                        hcnyield = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HEAT_OF_COMBUSTION" Then
                         hoc = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "HRR" Then
-                        hrr = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HYDROGEN" Then
                         hydrogen = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "NITROGEN" Then
                         nitrogen = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "OXYGEN" Then
-                        oxygen = NMList.ForNMListVarGetStr(i, j, 1)
+                        oxygen = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_FRACTION" Then
-                        radfrac = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
-                        setp = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "SOOT_YIELD" Then
-                        sootyield = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "TRACE_YIELD" Then
-                        traceyield = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
-                        max = NMList.ForNMListVarNumVal(i, j)
-                        If max >= 3 And max <= 3 Then
-                            For k = 1 To max
-                                loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
-                            Next
-                        Else
-                            myErrors.Add("In FIRE name list for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
-                        End If
+                        radfrac = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TABLE_ID" Then
+                        tableid = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1323,89 +1341,6 @@ Module IO
                 If id = "" Then
                     myErrors.Add("In FIRE name list ID parameter must be set", ErrorMessages.TypeFatal)
                     valid = False
-                End If
-                If hrr >= 0 Then
-                    If myRamps.GetRampIndex(hrrramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both HRR And HRR_RAMP_ID are used CFAST will use HRR_RAMP_ID " + hrrramp, ErrorMessages.TypeNothing)
-                    End If
-                ElseIf myRamps.GetRampIndex(hrrramp) < 0 Then
-                    valid = False
-                    myErrors.Add("In FIRE name list either HRR Or HRR_RAMP_ID parameters must be set", ErrorMessages.TypeFatal)
-                End If
-                If coyield >= 0 Then
-                    If myRamps.GetRampIndex(coramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both CO_YIELD And CO_YEILD_RAMP_ID are used CFAST will use CO_YEILD_RAMP_ID " + coramp, ErrorMessages.TypeNothing)
-                    End If
-                End If
-                If coramp <> "" And myRamps.GetRampIndex(coramp) < 0 Then
-                    valid = False
-                    myErrors.Add("In FIRE name list " + id + " CO_YEILD_RAMP " + coramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
-                End If
-                If hclyield >= 0 Then
-                    If myRamps.GetRampIndex(hclramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both HCL_YIELD And HCL_YEILD_RAMP_ID are used CFAST will use HCL_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
-                    End If
-                End If
-                If hclramp <> "" And myRamps.GetRampIndex(hclramp) < 0 Then
-                    valid = False
-                    myErrors.Add("In FIRE name list " + id + " HCL_YEILD_RAMP " + hclramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
-                End If
-                If hcnyield >= 0 Then
-                    If myRamps.GetRampIndex(hcnramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both HCN_YIELD And HCN_YEILD_RAMP_ID are used CFAST will use HCN_YEILD_RAMP_ID " + hcnramp, ErrorMessages.TypeNothing)
-                    End If
-                End If
-                If hcnramp <> "" And myRamps.GetRampIndex(hcnramp) < 0 Then
-                    valid = False
-                    myErrors.Add("In FIRE name list " + id + " HCN_YEILD_RAMP " + hcnramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
-                End If
-                If sootyield >= 0 Then
-                    If myRamps.GetRampIndex(sootramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both SOOT_YIELD And SOOT_YEILD_RAMP_ID are used CFAST will use SOOT_YEILD_RAMP_ID " + hclramp, ErrorMessages.TypeNothing)
-                    End If
-                End If
-                If sootramp <> "" And myRamps.GetRampIndex(sootramp) < 0 Then
-                    valid = False
-                    myErrors.Add("In FIRE name list " + id + " SOOT_YEILD_RAMP " + sootramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
-                End If
-                If traceyield >= 0 Then
-                    If myRamps.GetRampIndex(traceramp) >= 0 Then
-                        myErrors.Add("In FIRE name list " + id + " both TRACE_YIELD And TRACE_YEILD_RAMP_ID are used CFAST will use TRACE_YEILD_RAMP_ID " + traceramp, ErrorMessages.TypeNothing)
-                    End If
-                End If
-                If traceramp <> "" And myRamps.GetRampIndex(traceramp) < 0 Then
-                    valid = False
-                    myErrors.Add("In FIRE name list " + id + " TRACE_YEILD_RAMP " + traceramp + " does Not reference a valid ramp", ErrorMessages.TypeFatal)
-                End If
-                If compid = "" Then
-                    valid = False
-                    myErrors.Add("In FIRE name list " + id + " COMP_ID parameter must be set", ErrorMessages.TypeFatal)
-                ElseIf myCompartments.GetCompIndex(compid) < 0 Then
-                    valid = False
-                    myErrors.Add("In FIRE name list " + id + " COMP_ID " + compid + " does Not reference a valid compartment", ErrorMessages.TypeFatal)
-                End If
-                If ignitcrit <> "" Then
-                    If ignitcrit <> "TIME" And ignitcrit <> "TEMPERATURE" And ignitcrit <> "FLUX" Then
-                        valid = False
-                        myErrors.Add("In FIRE name list " + id + " IGNITION_CRITERION parameter must be TIME, TEMPERATURE, Or FLUX", ErrorMessages.TypeFatal)
-                    End If
-                End If
-                If ignitcrit = "TEMPERATURE" Or ignitcrit = "FLUX" Then
-                    If devcid = "" Then
-                        valid = False
-                        myErrors.Add("In FIRE name list " + id + " DEVC_ID must be a valid target", ErrorMessages.TypeFatal)
-                    ElseIf myTargets.GetIndex(devcid) < 0 Then
-                        valid = False
-                        myErrors.Add("In FIRE name list " + id + " DEVC_ID " + devcid + " Is Not a valid target", ErrorMessages.TypeFatal)
-                    End If
-                End If
-                locval = True
-                For k = 0 To 2
-                    If loc(k) < 0 Then locval = False
-                Next
-                If Not locval Then
-                    valid = False
-                    myErrors.Add("In FIRE name list LOCATIOM parameter must be set with a real triplet >= 0", ErrorMessages.TypeFatal)
                 End If
                 If valid Then
                     Dim aFireObject As New Fire()
@@ -1418,41 +1353,6 @@ Module IO
                     aFireObject.ChemicalFormula(formula.Cl) = chlorine
                     aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
-                    aFireObject.SetPosition(myCompartments.GetCompIndex(compid), loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z))
-                    If ignitcrit = "TIME" Then
-                        aFireObject.IgnitionType = IgnitionCriteriaNum.time
-                        aFireObject.IgnitionValue = setp
-                    ElseIf ignitcrit = "TEMPERATURE" Then
-                        aFireObject.IgnitionType = IgnitionCriteriaNum.temp
-                        aFireObject.IgnitionValue = setp
-                    ElseIf ignitcrit = "FLUX" Then
-                        aFireObject.IgnitionValue = IgnitionCriteriaNum.flux
-                        aFireObject.IgnitionValue = setp
-                    End If
-                    If devcid <> "" Then
-                        aFireObject.Target = devcid
-                    End If
-                    If arearamp <> "" Then
-                        aFireObject.AreaRampID = arearamp
-                    End If
-                    If coramp <> "" Then
-                        aFireObject.CORampID = coramp
-                    End If
-                    If hclramp <> "" Then
-                        aFireObject.HClRampID = hclramp
-                    End If
-                    If hcnramp <> "" Then
-                        aFireObject.HCNRampID = hcnramp
-                    End If
-                    If hrrramp <> "" Then
-                        aFireObject.HRRRampID = hrrramp
-                    End If
-                    If sootramp <> "" Then
-                        aFireObject.SootRampID = sootramp
-                    End If
-                    If traceramp <> "" Then
-                        aFireObject.TraceRampID = traceramp
-                    End If
                     aFireObject.Changed = False
                     myFires.Add(aFireObject)
                 Else
@@ -2147,13 +2047,11 @@ Module IO
                             End If
                             i += 1
                         Loop
-                        Dim aFireObject As New Fire()
-                        Dim aFireIns As New Fire()
+                        Dim aFireObject As New Fire(), aFireIns As New Fire()
                         Dim aThermalProperty As New ThermalProperty()
                         aFireObject.Name = csv.str(iFire, fireNum.name).Trim + "_Fire"
-                        aFireObject.FireTableName = csv.str(iFire, fireNum.name).Trim + "_Table"
                         aFireIns.Name = csv.str(iFire, fireNum.name)
-                        aFireIns.FireName = aFireObject.Name
+                        aFireIns.ReferencedFireDefinition = aFireObject.Name
                         aFireObject.ChemicalFormula(formula.C) = csv.num(iChemie, chemieNum.C)
                         aFireObject.ChemicalFormula(formula.H) = csv.num(iChemie, chemieNum.H)
                         aFireObject.ChemicalFormula(formula.O) = csv.num(iChemie, chemieNum.O)
@@ -2748,10 +2646,11 @@ Module IO
     Public Sub WriteInputFileNML(ByVal filename As String)
         Dim IO As Integer = 1
         Dim ln As String
-        Dim i, j, k As Integer
+        Dim i, j, k, l As Integer
         Dim aFlag As Boolean
         Dim aDummy As Single
         Dim x(0), f(0) As Single
+        Dim aFireCurves(12, 0) As Single
         Dim aComp As Compartment
         Dim aTarg As Target
         Dim aVent As Vent
@@ -2937,26 +2836,19 @@ Module IO
             End If
             aComp.GetVariableArea(f, x, j)
             If j > 1 Then
-                ln = " CROSS_SECT_AREAS = "
-                For k = 1 To j
-                    ln = ln + f(k).ToString + " , "
+                ln = " CROSS_SECT_AREAS = " + f(1).ToString
+                For k = 2 To j
+                    ln = ln + " , " + f(k).ToString
                 Next
                 PrintLine(IO, ln)
-                ln = " CROSS_SECT_HEIGHTS = "
-                For k = 1 To j
-                    ln = ln + x(k).ToString + " , "
+                ln = " CROSS_SECT_HEIGHTS = " + x(1).ToString
+                For k = 2 To j
+                    ln = ln + " , " + x(k).ToString
                 Next
                 PrintLine(IO, ln)
             End If
-            'If aComp.AreaRampID <> "" Then
-            'ln = " ROOM_AREA_RAMP = '" + aComp.AreaRampID + "' "
-            'PrintLine(IO, ln)
-            'End If
             ln = " / "
             PrintLine(IO, ln)
-            'If aComp.AreaRampID <> "" Then
-            'WriteRamp(IO, aComp.AreaRampID, doneRamps, 0)
-            'End If
         Next
 
         ln = "!! "
@@ -3329,9 +3221,9 @@ Module IO
             PrintLine(IO, ln)
             ln = " ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
-            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.FireName + "' "
+            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
             PrintLine(IO, ln)
-            ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString + " , " + aFire.Height.ToString
+            ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString
             PrintLine(IO, ln)
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
                 If aFire.IgnitionType > 0 Then
@@ -3369,13 +3261,28 @@ Module IO
                 ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
                 PrintLine(IO, ln)
             End If
-            ln = " TABLE_ID = '" + aFire.FireTableName + "' "
-            PrintLine(IO, ln)
             ln = " / "
             PrintLine(IO, ln)
+            aFire.GetFireData(aFireCurves, k)
+            ln = "&TABLE ID = '" + aFire.Name + "' "
+            PrintLine(IO, ln)
+            ln = " LABEL = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
+            For j = 1 To aFire.ColMapUpperBound
+                ln = ln + ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
+            Next
+            ln = ln + " /"
+            PrintLine(IO, ln)
+            For j = 0 To k
+                ln = "&TABLE ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
+                For l = 1 To aFire.ColMapUpperBound
+                    ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
+                Next
+                ln = ln + " /"
+                PrintLine(IO, ln)
+            Next
         Next
 
-        ln = "!! "
+            ln = "!! "
         PrintLine(IO, ln)
         ln = "!! CONN "
         PrintLine(IO, ln)
@@ -3472,9 +3379,9 @@ Module IO
                     ln = " DOMAIN = '3-D' "
                     PrintLine(IO, ln)
                 End If
-                    ln = " / "
-                    PrintLine(IO, ln)
-                End If
+                ln = " / "
+                PrintLine(IO, ln)
+            End If
         Next
 
         doneRamps.Clear()

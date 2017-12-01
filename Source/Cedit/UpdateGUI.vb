@@ -1007,6 +1007,7 @@ Public Class UpdateGUI
             If aFireInstance.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFireInstance.IgnitionValue.ToString + IgnitionTypeLabel
             MainWin.FireInstanceName.Text = aFireInstance.Name
 
+            MainWin.FireDefinitionName.Text = aFire.Name
             MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
             MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
             MainWin.FireO.Text = aFire.ChemicalFormula(formula.O).ToString

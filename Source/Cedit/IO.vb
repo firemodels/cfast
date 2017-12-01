@@ -1298,9 +1298,10 @@ Module IO
         Next
     End Sub
     Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
-        Dim i, j, k As Integer
-        Dim id, tableid As String
+        Dim i, j As Integer
+        Dim id As String
         Dim carbon, chlorine, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
+        Dim aFireCurves(12, 0) As Single
         Dim valid As Boolean
 
         For i = 1 To NMList.TotNMList
@@ -1313,7 +1314,6 @@ Module IO
                 oxygen = 0
                 radfrac = 0.35
                 id = ""
-                tableid = ""
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
@@ -1331,8 +1331,6 @@ Module IO
                         oxygen = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_FRACTION" Then
                         radfrac = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "TABLE_ID" Then
-                        tableid = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1344,7 +1342,6 @@ Module IO
                 End If
                 If valid Then
                     Dim aFireObject As New Fire()
-                    Dim aThermalProperty As New ThermalProperty()
                     aFireObject.Name = id
                     aFireObject.ChemicalFormula(formula.C) = carbon
                     aFireObject.ChemicalFormula(formula.H) = hydrogen
@@ -1353,6 +1350,7 @@ Module IO
                     aFireObject.ChemicalFormula(formula.Cl) = chlorine
                     aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
+
                     aFireObject.Changed = False
                     myFires.Add(aFireObject)
                 Else
@@ -1361,6 +1359,55 @@ Module IO
             End If
         Next
         Dim test As Integer = myFires.Count
+    End Sub
+    Public Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves() As Single, ByRef ErrFlag As Boolean)
+        Dim i, j, k, max As Integer
+        Dim aMap(8) As Integer
+        Dim labels(8) As String
+        Dim LabelFlag, IDFlag As Boolean
+
+        ErrFlag = False
+        Dim aFire As New Fire()
+        For i = 1 To NMList.TotNMList
+            LabelFlag = False
+            IDFlag = False
+            If (NMList.GetNMListID(i) = "TABL") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        If id = NMList.ForNMListVarGetStr(i, j, 1) Then
+                            IDFlag = True
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LABELS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 8 Then
+                            LabelFlag = True
+                            For k = 1 To max
+                                labels(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In TABL name list for LABELS input must be between 2 and 8 labels ", ErrorMessages.TypeFatal)
+                            ErrFlag = True
+                        End If
+                    End If
+                Next
+            End If
+            If IDFlag And LabelFlag Then
+                Exit For
+            End If
+        Next
+        If LabelFlag Then
+            For i = 0 To max - 1
+                For j = 0 To aFire.ColMapUpperBound
+                    If labels(i) = aFire.ColNames(aFire.ColMap(j)) Then
+                        aMap(i) = aFire.ColMap(j)
+                    End If
+                Next
+            Next
+        Else
+            ErrFlag = True
+            myErrors.Add("In TABL name list LABELS keyword not found for FIRE " + id, ErrorMessages.TypeFatal)
+        End If
+
     End Sub
     Public Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer

@@ -975,6 +975,7 @@ Public Class UpdateGUI
             aFireInstance = myFireInstances(index)
             FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             aFire = myFires(FireIndex)
+            MainWin.FireInstanceName.Text = aFireInstance.Name
             If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
                 MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
                 Dim aCompartment As New Compartment
@@ -985,7 +986,6 @@ Public Class UpdateGUI
                 yRoom = aCompartment.RoomDepth
                 If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.PlumeType.Text = "Wall Fire"
                 If (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then MainWin.PlumeType.Text = "Corner Fire"
-
             End If
 
             MainWin.FireXPosition.Text = aFireInstance.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
@@ -1005,7 +1005,7 @@ Public Class UpdateGUI
             End If
             MainWin.FireIgnitionValue.Text = " "
             If aFireInstance.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFireInstance.IgnitionValue.ToString + IgnitionTypeLabel
-            MainWin.FireInstanceName.Text = aFireInstance.Name
+            MainWin.ReferencedFireDefinition.Text = aFire.Name
 
             MainWin.FireDefinitionName.Text = aFire.Name
             MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString

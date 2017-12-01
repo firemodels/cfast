@@ -5808,7 +5808,7 @@ Public Class CeditMain
         ' Copy the current vent, adding it to the end of the list of vents
         If CurrentFire >= 0 And myFires.Count > 0 And CurrentFire + 1 <= myFires.Maximum And myFires.Count + 1 <= Fire.MaximumFires Then
             myFires.Add(New Fire)
-            myFires.Copy(CurrentFire, myFires.Count - 1)
+            myFires.Copy(CurrentFire, myFireInstances.Count - 1)
             CurrentFire = myFires.Count - 1
             UpdateGUI.Fires(CurrentFire)
         ElseIf CurrentFire + 1 > myFires.Maximum Then
@@ -5817,8 +5817,8 @@ Public Class CeditMain
     End Sub
     Private Sub FireRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireRemove.Click
         ' Remove the current Fire from the list of hvents
-        If CurrentFire >= 0 And myFires.Count > 0 Then
-            myFires.Remove(CurrentFire)
+        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
+            myFireInstances.Remove(CurrentFire)
             If CurrentFire > 0 Then
                 CurrentFire -= 1
             End If
@@ -5830,7 +5830,7 @@ Public Class CeditMain
         ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
         index = FireSummary.RowSel - 1
-        If index >= 0 And index <= myFires.Count - 1 Then
+        If index >= 0 And index <= myFireInstances.Count - 1 Then
             CurrentFire = index
             UpdateGUI.Fires(CurrentFire)
         End If
@@ -5839,13 +5839,28 @@ Public Class CeditMain
         ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
         index = FireSummary.RowSel - 1
-        If index >= 0 And index <= myFires.Count - 1 Then
+        If index >= 0 And index <= myFireInstances.Count - 1 Then
             CurrentFire = index
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
+    Private Sub Referenced_Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReferencedFireDefinition.SelectedIndexChanged
+        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
+            Dim aFireTimeSeries(12, 0) As Single
+            Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
+            aFireInstance = myFireInstances(CurrentFire)
+            FireIndex = ReferencedFireDefinition.SelectedIndex - 1
+            If FireIndex >= 0 Then
+                aFire = myFires(FireIndex)
+                aFireInstance.ReferencedFireDefinition = aFire.Name
+                If CurrentFire >= 0 Then
+                    myFireInstances(CurrentFire) = aFireInstance
+                End If
+            End If
+        End If
+    End Sub
     Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged, FireDefinitionName.Leave
-        If CurrentFire >= 0 And myFires.Count > 0 Then
+        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
             Dim aFireTimeSeries(12, 0) As Single
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(CurrentFire)
@@ -5891,15 +5906,15 @@ Public Class CeditMain
             If sender Is FireHoC Then aFire.HeatofCombustion = Val(FireHoC.Text)
             If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
 
-            Dim numPoints As Integer, ir As Integer
-            If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
-                aFire.HeatofCombustion = Val(FireHoC.Text)
-                numPoints = CountGridPoints(FireDataSS)
-                For ir = 1 To numPoints
-                    FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
-                Next
-            End If
-            CopyFireData(aFire)
+            ' Dim numPoints As Integer, ir As Integer
+            ' If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
+            ' aFire.HeatofCombustion = Val(FireHoC.Text)
+            ' numPoints = CountGridPoints(FireDataSS)
+            ' For ir = 1 To numPoints
+            ' FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
+            ' Next
+            'End If
+            '    CopyFireData(aFire)
 
             If CurrentFire >= 0 Then
                 myFires(FireIndex) = aFire
@@ -5924,17 +5939,18 @@ Public Class CeditMain
         End If
     End Sub
     Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange
-        Dim aFire As New Fire
-        Dim numPoints As Integer
-        If CurrentFire >= 0 And myFires.Count > 0 Then
-            aFire = myFires(CurrentFire)
+        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
+            Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer, numPoints As Integer
+            aFireInstance = myFireInstances(CurrentFire)
+            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+            aFire = myFires(FireIndex)
             numPoints = CountGridPoints(FireDataSS)
             ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
             If FireDataSS.ColSel = Fire.FireHRR Then
                 FireDataSS(FireDataSS.RowSel, Fire.FireMdot) = FireDataSS(FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
             End If
             CopyFireData(aFire)
-            myFires(CurrentFire) = aFire
+            myFires(FireIndex) = aFire
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub

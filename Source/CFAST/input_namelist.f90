@@ -912,9 +912,15 @@
     end subroutine set_ramp_defaults
 
     end subroutine read_ramp
+    
+    subroutine read_Fire_instance(lu)
+    
+    integer, intent(in) :: lu
+    
+    end subroutine read_fire_instance
 
 
-    ! --------------------------- FIRE -------------------------------------------
+    ! --------------------------- FIRE (actual definition of the fire) -------------------------------------------
     subroutine read_fire(lu)
 
     integer, intent(in) :: lu

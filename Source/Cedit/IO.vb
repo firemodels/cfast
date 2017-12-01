@@ -1360,8 +1360,8 @@ Module IO
         Next
         Dim test As Integer = myFires.Count
     End Sub
-    Public Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves() As Single, ByRef ErrFlag As Boolean)
-        Dim i, j, k, max As Integer
+    Public Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef ErrFlag As Boolean)
+        Dim i, j, k, m, n, max As Integer
         Dim aMap(8) As Integer
         Dim labels(8) As String
         Dim LabelFlag, IDFlag As Boolean
@@ -1406,7 +1406,37 @@ Module IO
         Else
             ErrFlag = True
             myErrors.Add("In TABL name list LABELS keyword not found for FIRE " + id, ErrorMessages.TypeFatal)
+            Exit Sub
         End If
+
+        m = 0
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "TABL") Then
+                n = -1
+                IDFlag = False
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        If id = NMList.ForNMListVarGetStr(i, j, 1) Then
+                            IDFlag = True
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DATA" Then
+                        n = j
+                    End If
+                Next
+                If IDFlag Then
+                    If n > 0 Then
+                        max = NMList.ForNMListVarNumVal(i, n)
+                        ReDim Preserve aFireCurves(12, m)
+                        For k = 1 To 12
+                            aFireCurves(k, m) = 0.0
+                        Next
+                        For k = 1 To max
+                            aFireCurves(aMap(k - 1), m) = NMList.ForNMListVarGetStr(i, n, k)
+                        Next
+                    End If
+                End If
+            End If
+        Next
 
     End Sub
     Public Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
@@ -3313,7 +3343,7 @@ Module IO
             aFire.GetFireData(aFireCurves, k)
             ln = "&TABLE ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
-            ln = " LABEL = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
+            ln = " LABELS = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
             For j = 1 To aFire.ColMapUpperBound
                 ln = ln + ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
             Next

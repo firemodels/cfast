@@ -659,6 +659,7 @@ Module IO
         ReadInputFileNMLComp(NMList)
         ReadInputFileNMLDevc(NMList)
         ReadInputFileNMLFire(NMList)
+        ReadInputFileNMLInit(NMList)
         ReadInputFileNMLVent(NMList)
         ReadInputFileNMLConn(NMList)
         ReadInputFileNMLISOF(NMList)
@@ -1350,7 +1351,8 @@ Module IO
                     aFireObject.ChemicalFormula(formula.Cl) = chlorine
                     aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
-
+                    ReadInputFileNMLTabl(NMList, id, aFireCurves, valid)
+                    aFireObject.SetFireData(aFireCurves)
                     aFireObject.Changed = False
                     myFires.Add(aFireObject)
                 Else
@@ -1431,8 +1433,9 @@ Module IO
                             aFireCurves(k, m) = 0.0
                         Next
                         For k = 1 To max
-                            aFireCurves(aMap(k - 1), m) = NMList.ForNMListVarGetStr(i, n, k)
+                            aFireCurves(aMap(k - 1), m) = NMList.ForNMListVarGetNum(i, n, k)
                         Next
+                        m += 1
                     End If
                 End If
             End If
@@ -3324,7 +3327,7 @@ Module IO
             aFire = myFires.Item(i)
             ln = "&FIRE"
             PrintLine(IO, ln)
-            ln = " ID = '" + aFire.Name
+            ln = " ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
             ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
                 " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +

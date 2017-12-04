@@ -31,6 +31,9 @@ module  debug_data
     integer :: ioresid, ioslab
     real(eb) ::   dbtime
     character(256) :: residfile, residcsv, slabcsv
+    
+    ! Diagnosis variables
+    real(eb) :: partial_pressure_h2o, partial_pressure_co2, tempTgas
 
 end module debug_data
 
@@ -84,6 +87,7 @@ module fire_data
     logical :: slcfflag=.false.
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
+    logical :: diagflag=.false., radi_diag_flag=.false.
 
     end module namelist_data
     

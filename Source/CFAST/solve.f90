@@ -32,6 +32,7 @@ module solve_routines
     use vent_data
     use wallptrs
     use room_data
+    use namelist_data
 
     implicit none
 
@@ -1446,6 +1447,9 @@ module solve_routines
             if (nfurn>0) then
               roomptr%temp(u) = wtemp
               roomptr%temp(l) = wtemp
+            else if (radi_diag_flag) then
+              roomptr%temp(u) = tempTgas + kelvin_c_offset
+              roomptr%temp(l) = tempTgas + kelvin_c_offset
             else
               roomptr%temp(u) = y_vector(iroom+noftu)
               roomptr%temp(l) = y_vector(iroom+noftl)
@@ -1587,19 +1591,53 @@ module solve_routines
             do iroom = 1, nrm1
                 roomptr => roominfo(iroom)
                 isof = isof + 1
-                if (iflag==odevarb) then
-                    ppgas = pold(isof) + dt*pdold(isof)
+                if (radi_diag_flag) then
+                    if (partial_pressure_co2+partial_pressure_h2o == 1._eb) then ! Only H2O and CO2 exist
+                        if (lsp == 1 .or. lsp == 2) then ! N2 and O2 will have to be zero 
+                            ppgas = 0._eb
+                        else if (lsp == 3) then
+                            ! partical pressure = species_mass/its molecular weight*ideal gas constant*gas temperature/volume of the medium
+                            roomptr%species_mass(u,lsp) = &
+                            partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
+                        else if (lsp == 8) then
+                            roomptr%species_mass(u,lsp) = &
+                            partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
+                        else 
+                            ppgas = 0._eb
+                        end if
+                    end if
                 else
-                    ppgas = y_vector(isof)
+                    if (iflag==odevarb) then
+                        ppgas = pold(isof) + dt*pdold(isof)
+                    else
+                        ppgas = y_vector(isof)
+                    end if
+                    roomptr%species_mass(u,lsp) = max(ppgas,0.0_eb)
                 end if
-                roomptr%species_mass(u,lsp) = max(ppgas,0.0_eb)
+                                
                 isof = isof + 1
-                if (iflag==odevarb) then
-                    ppgas = pold(isof) + dt*pdold(isof)
+                if (radi_diag_flag) then
+                    if (partial_pressure_co2+partial_pressure_h2o == 1._eb) then
+                        if (lsp == 1 .or. lsp == 2) then 
+                            ppgas = 0._eb
+                        else if (lsp == 3) then
+                            roomptr%species_mass(l,lsp) = &
+                            partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
+                        else if (lsp == 8) then
+                            roomptr%species_mass(l,lsp) = &
+                            partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
+                        else 
+                            ppgas = 0._eb
+                        end if
+                    end if
                 else
-                    ppgas = y_vector(isof)
+                    if (iflag==odevarb) then
+                        ppgas = pold(isof) + dt*pdold(isof)
+                    else
+                        ppgas = y_vector(isof)
+                    end if
+                    roomptr%species_mass(l,lsp) = max(ppgas,0.0_eb)
                 end if
-                roomptr%species_mass(l,lsp) = max(ppgas,0.0_eb)
             end do
         end do
 

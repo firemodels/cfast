@@ -408,6 +408,36 @@ where $\epsilon$ is the emissivity of the target (taken here to be 1), $\sigma$ 
 \label{fig:rad2}
 \end{figure}
 
+\subsection{Measuring Incident Heat Flux to Targets ($T_{\rm g}$ = $T_{\rm w}$)}
+\label{radiation_3}
+
+Consider a rectangular enclosure with black walls in dimensions of 2~m by 2~m by 4~m as shown in Figure~\ref{fig:rad3_1}. For a pure water vapor medium being kept at 1~atm with wall and gas medium temperature being maintained at 726.85~$^\circ$C, incident heat flux to target devices, along the line (X, 2~m, 4~m) on the top surface of the enclosure and the line (2~m, 1~m, Z) on the right surface, are obtained. Comparsion between benchmark results (exact) reported from the literature \cite{Liu:1999} and results calculated by CFAST is made. Figure~\ref{fig:rad3_2} shows the incident heat flux to the target devices due to the emission from a hot medium and Figure~\ref{fig:rad3_3} shows the corresponding results due to the emission from hot walls.
+
+\label{fig:rad3_1}
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{FIGURES/Verification/radiation_verification_case3_enclosure_geometry}
+\caption[Geometry for {\ct radiation\_3.in}]{Schematic of the considered geometry.}
+\end{figure}
+
+\label{fig:rad3_2}
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_top_gas}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_side_gas}
+\end{tabular*}
+\caption[Results of mixture emission case {\ct radiation\_3.in}]{Expected and CFAST calculated target incident heat flux values due to mixture emission for the case {\ct radiation\_3.in}.}
+\end{figure}
+
+\label{fig:rad3_3}
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_top_wall}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_side_wall}
+\end{tabular*}
+\caption[Results of wall emission case {\ct radiation\_3.in}]{Expected and CFAST calculated target incident heat flux values due to wall emission for the case {\ct radiation\_3.in}.}
+\end{figure}
+
 
 \section{Sprinklers}
 \label{sprinklers}

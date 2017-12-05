@@ -659,7 +659,7 @@ Module IO
         ReadInputFileNMLComp(NMList)
         ReadInputFileNMLDevc(NMList)
         ReadInputFileNMLFire(NMList)
-        ReadInputFileNMLInit(NMList)
+        ReadInputFileNMLInsf(NMList)
         ReadInputFileNMLVent(NMList)
         ReadInputFileNMLConn(NMList)
         ReadInputFileNMLISOF(NMList)
@@ -1280,14 +1280,15 @@ Module IO
                 myFireInstances.Add(aFire)
                 aFire.Name = id
                 aFire.Compartment = myCompartments.GetCompIndex(compid)
-                aFire.Target = myTargets.GetIndex(devcid)
                 If ignitcrit = "TIME" Then
                     aFire.IgnitionType = Fire.FireIgnitionbyTime
                     aFire.IgnitionValue = setp
                 ElseIf ignitcrit = "TEMPERATURE" Then
+                    aFire.Target = myTargets.GetIndex(devcid)
                     aFire.IgnitionType = Fire.FireIgnitionbyTemperature
                     aFire.IgnitionValue = setp
                 ElseIf ignitcrit = "FLUX" Then
+                    aFire.Target = myTargets.GetIndex(devcid)
                     aFire.IgnitionValue = Fire.FireIgnitionbyFlux
                     aFire.IgnitionValue = setp
                 End If
@@ -1343,6 +1344,7 @@ Module IO
                 End If
                 If valid Then
                     Dim aFireObject As New Fire()
+                    aFireObject.ObjectType = Fire.TypeDefinition
                     aFireObject.Name = id
                     aFireObject.ChemicalFormula(formula.C) = carbon
                     aFireObject.ChemicalFormula(formula.H) = hydrogen
@@ -1371,9 +1373,9 @@ Module IO
         ErrFlag = False
         Dim aFire As New Fire()
         For i = 1 To NMList.TotNMList
-            LabelFlag = False
-            IDFlag = False
             If (NMList.GetNMListID(i) = "TABL") Then
+                LabelFlag = False
+                IDFlag = False
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         If id = NMList.ForNMListVarGetStr(i, j, 1) Then
@@ -1381,7 +1383,7 @@ Module IO
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "LABELS" Then
                         max = NMList.ForNMListVarNumVal(i, j)
-                        If max >= 2 And max <= 8 Then
+                        If max >= 2 And max <= 9 Then
                             LabelFlag = True
                             For k = 1 To max
                                 labels(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
@@ -3344,7 +3346,7 @@ Module IO
             ln = " / "
             PrintLine(IO, ln)
             aFire.GetFireData(aFireCurves, k)
-            ln = "&TABLE ID = '" + aFire.Name + "' "
+            ln = "&TABL ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
             ln = " LABELS = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
             For j = 1 To aFire.ColMapUpperBound
@@ -3353,7 +3355,7 @@ Module IO
             ln = ln + " /"
             PrintLine(IO, ln)
             For j = 0 To k
-                ln = "&TABLE ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
+                ln = "&TABL ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
                 For l = 1 To aFire.ColMapUpperBound
                     ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
                 Next

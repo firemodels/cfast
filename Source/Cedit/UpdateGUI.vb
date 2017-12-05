@@ -963,18 +963,29 @@ Public Class UpdateGUI
         Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single
         Dim IgnitionTypeLabel As String = ""
         Dim ir, ic As Integer
-        If index < 0 Or index >= myFires.Count Then
+
+        ' Update fire instances
+        If index < 0 Or index >= myFireInstances.Count Then
+            MainWin.FireDefinitionName.Enabled = False
+            MainWin.FireH.Enabled = False
+            MainWin.FireC.Enabled = False
+            MainWin.FireO.Enabled = False
+            MainWin.FireN.Enabled = False
+            MainWin.FireCl.Enabled = False
+            MainWin.FireHoC.Enabled = False
+            MainWin.FireRadiativeFraction.Enabled = False
+            MainWin.FireAdd.Enabled = False
+            MainWin.FireAddt2.Enabled = False
+            MainWin.FireFromFile.Enabled = False
             ClearGrid(MainWin.FireSummary)
             ClearGrid(MainWin.FireDataSS)
-            MainWin.GroupFire.Enabled = False
         Else
-            MainWin.GroupFire.Enabled = True
-            MainWin.GroupFire.Text = "Fire " + (index + 1).ToString + " (of " + myFires.Count.ToString + ")"
-            MainWin.PlumeType.Text = ""
+            MainWin.FireAdd.Enabled = True
+            MainWin.FireAddt2.Enabled = True
+            MainWin.FireFromFile.Enabled = True
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(index)
             FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
-            aFire = myFires(FireIndex)
             MainWin.FireInstanceName.Text = aFireInstance.Name
             If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
                 MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
@@ -984,10 +995,15 @@ Public Class UpdateGUI
                 yFire = aFireInstance.YPosition
                 xRoom = aCompartment.RoomWidth
                 yRoom = aCompartment.RoomDepth
-                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then MainWin.PlumeType.Text = "Wall Fire"
-                If (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then MainWin.PlumeType.Text = "Corner Fire"
+                MainWin.FirePlumeType.Text = ""
+                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then
+                    MainWin.FirePlumeType.Text = "Wall Fire"
+                ElseIf (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then
+                    MainWin.FirePlumeType.Text = "Corner Fire"
+                Else
+                    MainWin.FirePlumeType.Text = "Normal"
+                End If
             End If
-
             MainWin.FireXPosition.Text = aFireInstance.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFireInstance.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireIgnitionCriteria.SelectedIndex = aFireInstance.IgnitionType
@@ -1005,43 +1021,13 @@ Public Class UpdateGUI
             End If
             MainWin.FireIgnitionValue.Text = " "
             If aFireInstance.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFireInstance.IgnitionValue.ToString + IgnitionTypeLabel
-            MainWin.ReferencedFireDefinition.Text = aFire.Name
 
-            MainWin.FireDefinitionName.Text = aFire.Name
-            MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
-            MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
-            MainWin.FireO.Text = aFire.ChemicalFormula(formula.O).ToString
-            MainWin.FireN.Text = aFire.ChemicalFormula(formula.N).ToString
-            MainWin.FireCl.Text = aFire.ChemicalFormula(formula.Cl).ToString
-            MainWin.FireHoC.Text = aFire.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
-            MainWin.FireRadiativeFraction.Text = aFire.RadiativeFraction.ToString
-
-            aFire.GetFireData(afireTimeSeries, NumPoints)
-            ClearGrid(MainWin.FireDataSS)
-            MainWin.FireDataSS(0, 0) = "Time" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireTime).Units.Substring(1) + ")"
-            MainWin.FireDataSS(0, 1) = "Mdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireMdot).Units.Substring(1) + ")"
-            MainWin.FireDataSS(0, 2) = "HRR" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireQdot).Units.Substring(1) + ")"
-            MainWin.FireDataSS(0, 3) = "Height" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireHeight).Units.Substring(1) + ")"
-            MainWin.FireDataSS(0, 4) = "Area" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireArea).Units.Substring(1) + ")"
-            MainWin.FireDataSS.AutoSizeRow(0)
-
-            If NumPoints >= 0 Then
-                For ir = 0 To NumPoints
-                    For ic = 0 To 12
-                        MainWin.FireDataSS(ir + 1, ic) = afireTimeSeries(ic, ir)
-                    Next
-                Next
-            End If
-
-            UpdateFirePlot(index)
-
-            numFires = myFires.Count
+            numFires = myFireInstances.Count
             ClearGrid(MainWin.FireSummary)
             If numFires > 0 Then
                 For i = 1 To numFires
                     aFireInstance = myFireInstances(i - 1)
-                    FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
-                    aFire = myFires(FireIndex)
+
                     MainWin.FireSummary(i, 0) = i.ToString
                     If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
                         MainWin.FireSummary(i, 1) = myCompartments(aFireInstance.Compartment).Name
@@ -1057,17 +1043,77 @@ Public Class UpdateGUI
                     MainWin.FireSummary(i, 6) = aFireInstance.XPosition.ToString
                     MainWin.FireSummary(i, 7) = aFireInstance.YPosition.ToString
 
-                    MainWin.FireSummary(i, 2) = aFireInstance.Name
-                    PeakHRR = 0.0
-                    aFire.GetFireData(afireTimeSeries, NumPoints)
-                    For j = 0 To NumPoints
-                        If afireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = afireTimeSeries(Fire.FireHRR, j)
-                    Next
-                    MainWin.FireSummary(i, 9) = PeakHRR.ToString
+                    FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+                    If FireIndex >= 0 Then
+                        aFire = myFires(FireIndex)
+                        MainWin.FireSummary(i, 2) = aFireInstance.Name
+
+                        PeakHRR = 0.0
+                        aFire.GetFireData(afireTimeSeries, NumPoints)
+                        For j = 0 To NumPoints
+                            If afireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = afireTimeSeries(Fire.FireHRR, j)
+                        Next
+                        MainWin.FireSummary(i, 9) = PeakHRR.ToString
+                    Else
+                        MainWin.FireSummary(i, 2) = ""
+                        MainWin.FireSummary(i, 9) = ""
+                    End If
                 Next
                 MainWin.FireSummary.Select(index + 1, 0, index + 1, MainWin.FireSummary.Cols.Count - 1, True)
             End If
-            InitFireList(MainWin.ReferencedFireDefinition)
+
+            ' Update fire definitions
+            If FireIndex < 0 Or FireIndex >= myFires.Count Then
+                ClearGrid(MainWin.FireDataSS)
+            Else
+                MainWin.FireDefinitionName.Enabled = True
+                MainWin.FireH.Enabled = True
+                MainWin.FireC.Enabled = True
+                MainWin.FireO.Enabled = True
+                MainWin.FireN.Enabled = True
+                MainWin.FireCl.Enabled = True
+                MainWin.FireHoC.Enabled = True
+                MainWin.FireRadiativeFraction.Enabled = True
+                ClearGrid(MainWin.FireDataSS)
+
+                FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+                aFire = myFires(FireIndex)
+                MainWin.FireDefinitionName.Text = aFire.Name
+                MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
+                MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
+                MainWin.FireO.Text = aFire.ChemicalFormula(formula.O).ToString
+                MainWin.FireN.Text = aFire.ChemicalFormula(formula.N).ToString
+                MainWin.FireCl.Text = aFire.ChemicalFormula(formula.Cl).ToString
+                MainWin.FireHoC.Text = aFire.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
+                MainWin.FireRadiativeFraction.Text = aFire.RadiativeFraction.ToString
+
+                aFire.GetFireData(afireTimeSeries, NumPoints)
+                ClearGrid(MainWin.FireDataSS)
+                MainWin.FireDataSS(0, 0) = "Time" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireTime).Units.Substring(1) + ")"
+                MainWin.FireDataSS(0, 1) = "Mdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireMdot).Units.Substring(1) + ")"
+                MainWin.FireDataSS(0, 2) = "HRR" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireQdot).Units.Substring(1) + ")"
+                MainWin.FireDataSS(0, 3) = "Height" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireHeight).Units.Substring(1) + ")"
+                MainWin.FireDataSS(0, 4) = "Area" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireArea).Units.Substring(1) + ")"
+                MainWin.FireDataSS.AutoSizeRow(0)
+
+                If NumPoints >= 0 Then
+                    For ir = 0 To NumPoints
+                        For ic = 0 To 12
+                            MainWin.FireDataSS(ir + 1, ic) = afireTimeSeries(ic, ir)
+                        Next
+                    Next
+                End If
+
+                UpdateFirePlot(index)
+
+                InitFireList(MainWin.ReferencedFireDefinition)
+                If FireIndex >= 0 Then
+                    MainWin.ReferencedFireDefinition.SelectedIndex = FireIndex
+                Else
+                    MainWin.ReferencedFireDefinition.SelectedIndex = -1
+                End If
+
+            End If
         End If
     End Sub
     Private Sub UpdateFirePlot(ByVal index As Integer)

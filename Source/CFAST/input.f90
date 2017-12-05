@@ -102,11 +102,11 @@
         write (iofill,5022) exterior_ambient_temperature
         stop
     end if
-    if (interior_ambient_temperature>373.15_eb.or.interior_ambient_temperature<223.15_eb) then
+    if (interior_ambient_temperature>1573.15_eb.or.interior_ambient_temperature<223.15_eb) then
         write (*,5022) interior_ambient_temperature
         write (iofill,5022) interior_ambient_temperature
         stop
-    end if
+    end if    
 
     ! compartment geometry related data
     nrm1 = nr - 1

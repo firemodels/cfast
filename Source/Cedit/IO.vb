@@ -659,6 +659,7 @@ Module IO
         ReadInputFileNMLComp(NMList)
         ReadInputFileNMLDevc(NMList)
         ReadInputFileNMLFire(NMList)
+        ReadInputFileNMLInsf(NMList)
         ReadInputFileNMLVent(NMList)
         ReadInputFileNMLConn(NMList)
         ReadInputFileNMLISOF(NMList)
@@ -1279,14 +1280,15 @@ Module IO
                 myFireInstances.Add(aFire)
                 aFire.Name = id
                 aFire.Compartment = myCompartments.GetCompIndex(compid)
-                aFire.Target = myTargets.GetIndex(devcid)
                 If ignitcrit = "TIME" Then
                     aFire.IgnitionType = Fire.FireIgnitionbyTime
                     aFire.IgnitionValue = setp
                 ElseIf ignitcrit = "TEMPERATURE" Then
+                    aFire.Target = myTargets.GetIndex(devcid)
                     aFire.IgnitionType = Fire.FireIgnitionbyTemperature
                     aFire.IgnitionValue = setp
                 ElseIf ignitcrit = "FLUX" Then
+                    aFire.Target = myTargets.GetIndex(devcid)
                     aFire.IgnitionValue = Fire.FireIgnitionbyFlux
                     aFire.IgnitionValue = setp
                 End If
@@ -1342,6 +1344,7 @@ Module IO
                 End If
                 If valid Then
                     Dim aFireObject As New Fire()
+                    aFireObject.ObjectType = Fire.TypeDefinition
                     aFireObject.Name = id
                     aFireObject.ChemicalFormula(formula.C) = carbon
                     aFireObject.ChemicalFormula(formula.H) = hydrogen
@@ -1350,7 +1353,8 @@ Module IO
                     aFireObject.ChemicalFormula(formula.Cl) = chlorine
                     aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
-
+                    ReadInputFileNMLTabl(NMList, id, aFireCurves, valid)
+                    aFireObject.SetFireData(aFireCurves)
                     aFireObject.Changed = False
                     myFires.Add(aFireObject)
                 Else
@@ -1360,8 +1364,8 @@ Module IO
         Next
         Dim test As Integer = myFires.Count
     End Sub
-    Public Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves() As Single, ByRef ErrFlag As Boolean)
-        Dim i, j, k, max As Integer
+    Public Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef ErrFlag As Boolean)
+        Dim i, j, k, m, n, max As Integer
         Dim aMap(8) As Integer
         Dim labels(8) As String
         Dim LabelFlag, IDFlag As Boolean
@@ -1369,9 +1373,9 @@ Module IO
         ErrFlag = False
         Dim aFire As New Fire()
         For i = 1 To NMList.TotNMList
-            LabelFlag = False
-            IDFlag = False
             If (NMList.GetNMListID(i) = "TABL") Then
+                LabelFlag = False
+                IDFlag = False
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         If id = NMList.ForNMListVarGetStr(i, j, 1) Then
@@ -1379,7 +1383,7 @@ Module IO
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "LABELS" Then
                         max = NMList.ForNMListVarNumVal(i, j)
-                        If max >= 2 And max <= 8 Then
+                        If max >= 2 And max <= 9 Then
                             LabelFlag = True
                             For k = 1 To max
                                 labels(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
@@ -1406,7 +1410,38 @@ Module IO
         Else
             ErrFlag = True
             myErrors.Add("In TABL name list LABELS keyword not found for FIRE " + id, ErrorMessages.TypeFatal)
+            Exit Sub
         End If
+
+        m = 0
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "TABL") Then
+                n = -1
+                IDFlag = False
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "ID" Then
+                        If id = NMList.ForNMListVarGetStr(i, j, 1) Then
+                            IDFlag = True
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DATA" Then
+                        n = j
+                    End If
+                Next
+                If IDFlag Then
+                    If n > 0 Then
+                        max = NMList.ForNMListVarNumVal(i, n)
+                        ReDim Preserve aFireCurves(12, m)
+                        For k = 1 To 12
+                            aFireCurves(k, m) = 0.0
+                        Next
+                        For k = 1 To max
+                            aFireCurves(aMap(k - 1), m) = NMList.ForNMListVarGetNum(i, n, k)
+                        Next
+                        m += 1
+                    End If
+                End If
+            End If
+        Next
 
     End Sub
     Public Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
@@ -3294,7 +3329,7 @@ Module IO
             aFire = myFires.Item(i)
             ln = "&FIRE"
             PrintLine(IO, ln)
-            ln = " ID = '" + aFire.Name
+            ln = " ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
             ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
                 " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +
@@ -3311,16 +3346,16 @@ Module IO
             ln = " / "
             PrintLine(IO, ln)
             aFire.GetFireData(aFireCurves, k)
-            ln = "&TABLE ID = '" + aFire.Name + "' "
+            ln = "&TABL ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
-            ln = " LABEL = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
+            ln = " LABELS = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
             For j = 1 To aFire.ColMapUpperBound
                 ln = ln + ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
             Next
             ln = ln + " /"
             PrintLine(IO, ln)
             For j = 0 To k
-                ln = "&TABLE ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
+                ln = "&TABL ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
                 For l = 1 To aFire.ColMapUpperBound
                     ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
                 Next

@@ -5851,12 +5851,15 @@ Public Class CeditMain
             FireIndex = ReferencedFireDefinition.SelectedIndex - 1
             If FireIndex >= 0 Then
                 aFire = myFires(FireIndex)
-                aFireInstance.ReferencedFireDefinition = aFire.Name
-                If CurrentFire >= 0 Then
-                    myFireInstances(CurrentFire) = aFireInstance
+                If aFireInstance.ReferencedFireDefinition <> aFire.Name Then
+                    aFireInstance.ReferencedFireDefinition = aFire.Name
+                    If CurrentFire >= 0 Then
+                        myFireInstances(CurrentFire) = aFireInstance
+                    End If
+                    UpdateGUI.Fires(CurrentFire)
                 End If
             End If
-            End If
+        End If
     End Sub
     Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged, FireDefinitionName.Leave
         If CurrentFire >= 0 And myFireInstances.Count > 0 Then
@@ -5931,15 +5934,10 @@ Public Class CeditMain
     End Sub
     Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange
         If CurrentFire >= 0 And myFireInstances.Count > 0 Then
-            Dim aFire As New Fire, aFireInstance As New Fire, fireIndex As Integer, numPoints As Integer
+            Dim aFire As New Fire, aFireInstance As New Fire, fireIndex As Integer
             aFireInstance = myFireInstances(CurrentFire)
             FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
-            aFire = myFires(FireIndex)
-            'numPoints = CountGridPoints(FireDataSS)
-            ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
-            'If FireDataSS.ColSel = Fire.FireHRR Then
-            'FireDataSS(FireDataSS.RowSel, Fire.FireMdot) = FireDataSS(FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
-            'End If
+            aFire = myFires(fireIndex)
             CopyFireData(aFire)
             myFires(FireIndex) = aFire
             UpdateGUI.Fires(CurrentFire)

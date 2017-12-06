@@ -63,7 +63,7 @@ Public Class UpdateGUI
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
         ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid +
-            myTargets.IsValid + myFires.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
+            myTargets.IsValid + myFires.IsValid + myFireInstances.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
             myErrors.Break(System.IO.Path.GetFileName(myEnvironment.InputFileName))
             MainWin.StatusBar.Panels(0).Text = ErrorCount.ToString + " Errors or Messages: "
@@ -1121,7 +1121,7 @@ Public Class UpdateGUI
                     Next
                 End If
 
-                UpdateFirePlot(index)
+                UpdateFirePlot(FireIndex)
 
                 InitFireList(MainWin.ReferencedFireDefinition)
                 If FireIndex >= 0 Then

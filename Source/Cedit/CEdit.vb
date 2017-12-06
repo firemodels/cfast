@@ -5868,6 +5868,7 @@ Public Class CeditMain
             aFireInstance = myFireInstances(CurrentFire)
 
             ' Inputs related to fire instance
+
             If sender Is FireComp Then
                 aFireInstance.Compartment = FireComp.SelectedIndex
                 If Val(FireXPosition.Text) = -1 Then aFireInstance.XPosition = Val(FireXPosition.Text)
@@ -5890,46 +5891,43 @@ Public Class CeditMain
             If sender Is FireInstanceName Then aFireInstance.Name = FireInstanceName.Text
 
             ' Inputs related to fire definition
-            If sender Is FireDefinitionName Then
-                aFire.Name = FireDefinitionName.Text
-                aFireInstance.ReferencedFireDefinition = aFire.Name
-            End If
-            If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
-            If sender Is FireC Then
-                If Val(FireC.Text) > 0 Then
-                    aFire.ChemicalFormula(formula.C) = Val(FireC.Text)
-                Else
-                    aFire.ChemicalFormula(formula.C) = 1
-                End If
-            End If
-            If sender Is FireH Then aFire.ChemicalFormula(formula.H) = Val(FireH.Text)
-            If sender Is FireO Then aFire.ChemicalFormula(formula.O) = Val(FireO.Text)
-            If sender Is FireN Then aFire.ChemicalFormula(formula.N) = Val(FireN.Text)
-            If sender Is FireCl Then aFire.ChemicalFormula(formula.Cl) = Val(FireCl.Text)
-            If sender Is FireHoC Then aFire.HeatofCombustion = Val(FireHoC.Text)
-            If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
-
-            ' Dim numPoints As Integer, ir As Integer
-            ' If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
-            ' aFire.HeatofCombustion = Val(FireHoC.Text)
-            ' numPoints = CountGridPoints(FireDataSS)
-            ' For ir = 1 To numPoints
-            ' FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
-            ' Next
-            'End If
-            '    CopyFireData(aFire)
-
-            If CurrentFire >= 0 Then
-                myFireInstances(CurrentFire) = aFireInstance
-            End If
-
             Dim fireIndex As Integer
             fireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
-            If FireIndex >= 0 Then
-                aFire = myFires(FireIndex)
-            End If
+            If fireIndex >= 0 Then
+                aFire = myFires(fireIndex)
+                If sender Is FireDefinitionName Then
+                    aFire.Name = FireDefinitionName.Text
+                    aFireInstance.ReferencedFireDefinition = aFire.Name
+                End If
+                If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
+                If sender Is FireC Then
+                    If Val(FireC.Text) > 0 Then
+                        aFire.ChemicalFormula(formula.C) = Val(FireC.Text)
+                    Else
+                        aFire.ChemicalFormula(formula.C) = 1
+                    End If
+                End If
+                If sender Is FireH Then aFire.ChemicalFormula(formula.H) = Val(FireH.Text)
+                If sender Is FireO Then aFire.ChemicalFormula(formula.O) = Val(FireO.Text)
+                If sender Is FireN Then aFire.ChemicalFormula(formula.N) = Val(FireN.Text)
+                If sender Is FireCl Then aFire.ChemicalFormula(formula.Cl) = Val(FireCl.Text)
+                If sender Is FireHoC Then aFire.HeatofCombustion = Val(FireHoC.Text)
+                If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
 
-            If CurrentFire >= 0 Or fireIndex >= 0 Then UpdateGUI.Fires(CurrentFire)
+                ' Dim numPoints As Integer, ir As Integer
+                ' If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
+                ' aFire.HeatofCombustion = Val(FireHoC.Text)
+                ' numPoints = CountGridPoints(FireDataSS)
+                ' For ir = 1 To numPoints
+                ' FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
+                ' Next
+                'End If
+                '    CopyFireData(aFire)
+
+                myFires(fireIndex) = aFire
+            End If
+            myFireInstances(CurrentFire) = aFireInstance
+            UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
     Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange

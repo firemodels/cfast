@@ -1447,6 +1447,7 @@ Module IO
     Public Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
         Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width, setp, prefrac, postfrac, filttime, filteff As Single
+        Dim tt(0), ff(0) As Single
         Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id, crit, devcid As String
         Dim valid As Boolean
         Dim comp0dx, comp1dx As Integer
@@ -1574,6 +1575,26 @@ Module IO
                         Else
                             myErrors.Add("In VENT name list for OFFSETS input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "T" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 Then
+                            ReDim tt(max)
+                            For k = 1 To max
+                                tt(k) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for T input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 Then
+                            ReDim ff(max)
+                            For k = 1 To max
+                                ff(k) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In VENT name list for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                        End If
                     Else
                         myErrors.Add("In VENT name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1623,6 +1644,7 @@ Module IO
                         If crit = "TIME" Then
                             aVent.RampID = openramp
                             aVent.OpenType = Vent.OpenbyTime
+                            aVent.SetRamp(tt, ff)
                         ElseIf crit = "FLUX" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyFlux
@@ -1675,6 +1697,7 @@ Module IO
                         If crit = "TIME" Then
                             aVent.RampID = openramp
                             aVent.OpenType = Vent.OpenbyTime
+                            aVent.SetRamp(tt, ff)
                         ElseIf crit = "FLUX" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyFlux
@@ -1714,6 +1737,7 @@ Module IO
                         If crit = "TIME" Then
                             aVent.RampID = openramp
                             aVent.OpenType = Vent.OpenbyTime
+                            aVent.SetRamp(tt, ff)
                         ElseIf crit = "FLUX" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyFlux

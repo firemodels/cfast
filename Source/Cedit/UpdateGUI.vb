@@ -977,12 +977,14 @@ Public Class UpdateGUI
             MainWin.FireAdd.Enabled = False
             MainWin.FireAddt2.Enabled = False
             MainWin.FireFromFile.Enabled = False
+
             ClearGrid(MainWin.FireSummary)
             ClearGrid(MainWin.FireDataSS)
         Else
             MainWin.FireAdd.Enabled = True
             MainWin.FireAddt2.Enabled = True
             MainWin.FireFromFile.Enabled = True
+
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(index)
             FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
@@ -1063,6 +1065,14 @@ Public Class UpdateGUI
             End If
 
             ' Update fire definitions
+            aFireInstance = myFireInstances(index)
+            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+
+            If FireIndex = 1 Then
+                Dim dummy As Integer
+                dummy = 1
+            End If
+
             If FireIndex < 0 Or FireIndex >= myFires.Count Then
                 ClearGrid(MainWin.FireDataSS)
             Else
@@ -1076,7 +1086,6 @@ Public Class UpdateGUI
                 MainWin.FireRadiativeFraction.Enabled = True
                 ClearGrid(MainWin.FireDataSS)
 
-                FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
                 aFire = myFires(FireIndex)
                 MainWin.FireDefinitionName.Text = aFire.Name
                 MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
@@ -1108,7 +1117,7 @@ Public Class UpdateGUI
 
                 InitFireList(MainWin.ReferencedFireDefinition)
                 If FireIndex >= 0 Then
-                    MainWin.ReferencedFireDefinition.SelectedIndex = FireIndex
+                    MainWin.ReferencedFireDefinition.SelectedIndex = FireIndex + 1
                 Else
                     MainWin.ReferencedFireDefinition.SelectedIndex = -1
                 End If

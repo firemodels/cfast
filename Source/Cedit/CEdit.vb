@@ -5788,16 +5788,28 @@ Public Class CeditMain
                 If iReturn = Windows.Forms.DialogResult.OK Then
                     Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
                     myFires.Add(aFire)
+                    Dim aFireInstance As New Fire
+                    aFireInstance = myFireInstances(CurrentFire)
+                    aFireInstance.ReferencedFireDefinition = aFire.Name
+                    myFireInstances(CurrentFire) = aFireInstance
                     UpdateGUI.Fires(CurrentFire)
                 End If
             ElseIf sender Is FireAdd Then
                 Dim aFire As New Fire()
                 myFires.Add(aFire)
+                Dim aFireInstance As New Fire
+                aFireInstance = myFireInstances(CurrentFire)
+                aFireInstance.ReferencedFireDefinition = aFire.Name
+                myFireInstances(CurrentFire) = aFireInstance
                 UpdateGUI.Fires(CurrentFire)
-            ElseIf sender Is FireAddInstance Then
+            End If
+        End If
+        If myFireInstances.Count + 1 <= Fire.MaximumFireObjects Then
+            If sender Is FireAddInstance Then
                 Dim aFire As New Fire()
                 aFire.ObjectType = Fire.TypeInstance
                 myFireInstances.Add(aFire)
+                CurrentFire = myFireInstances.Count - 1
                 UpdateGUI.Fires(CurrentFire)
             End If
         End If

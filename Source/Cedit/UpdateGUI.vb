@@ -981,6 +981,14 @@ Public Class UpdateGUI
             ClearGrid(MainWin.FireSummary)
             ClearGrid(MainWin.FireDataSS)
         Else
+            MainWin.FireDefinitionName.Enabled = True
+            MainWin.FireH.Enabled = True
+            MainWin.FireC.Enabled = True
+            MainWin.FireO.Enabled = True
+            MainWin.FireN.Enabled = True
+            MainWin.FireCl.Enabled = True
+            MainWin.FireHoC.Enabled = True
+            MainWin.FireRadiativeFraction.Enabled = True
             MainWin.FireAdd.Enabled = True
             MainWin.FireAddt2.Enabled = True
             MainWin.FireFromFile.Enabled = True

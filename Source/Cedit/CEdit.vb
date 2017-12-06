@@ -5926,32 +5926,17 @@ Public Class CeditMain
             If CurrentFire >= 0 Or fireIndex >= 0 Then UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
-
-    Friend Sub CopyFireData(ByVal aFire As Fire)
-        ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
-        Dim numPoints As Integer, ir As Integer, ic As Integer
-        numPoints = CountGridPoints(FireDataSS)
-        If numPoints > 0 Then
-            Dim aFireTimeSeries(12, numPoints - 1) As Single
-            For ir = 0 To numPoints - 1
-                For ic = 0 To 12
-                    aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
-                Next
-            Next
-            UpdateGUI.Fires(CurrentFire)
-        End If
-    End Sub
     Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange
         If CurrentFire >= 0 And myFireInstances.Count > 0 Then
             Dim aFire As New Fire, aFireInstance As New Fire, fireIndex As Integer, numPoints As Integer
             aFireInstance = myFireInstances(CurrentFire)
             FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             aFire = myFires(FireIndex)
-            numPoints = CountGridPoints(FireDataSS)
+            'numPoints = CountGridPoints(FireDataSS)
             ' Copy the values from the spreadsheet to the array for fire data, then put them in the FireObject data structure
-            If FireDataSS.ColSel = Fire.FireHRR Then
-                FireDataSS(FireDataSS.RowSel, Fire.FireMdot) = FireDataSS(FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
-            End If
+            'If FireDataSS.ColSel = Fire.FireHRR Then
+            'FireDataSS(FireDataSS.RowSel, Fire.FireMdot) = FireDataSS(FireDataSS.RowSel, Fire.FireHRR) / aFire.HeatofCombustion
+            'End If
             CopyFireData(aFire)
             myFires(FireIndex) = aFire
             UpdateGUI.Fires(CurrentFire)
@@ -6750,6 +6735,21 @@ Public Class CeditMain
 
                 End If
             End If
+        End If
+    End Sub
+
+    Friend Sub CopyFireData(ByVal aFire As Fire)
+        ' Copies time dependent data from the display spreadsheet to the appropriate fire object data array
+        Dim numPoints As Integer, ir As Integer, ic As Integer
+        numPoints = CountGridPoints(FireDataSS)
+        If numPoints > 0 Then
+            Dim aFireTimeSeries(12, numPoints - 1) As Single
+            For ir = 0 To numPoints - 1
+                For ic = 0 To 12
+                    aFireTimeSeries(ic, ir) = Val(FireDataSS(ir + 1, ic))
+                Next
+            Next
+            aFire.SetFireData(aFireTimeSeries)
         End If
     End Sub
 

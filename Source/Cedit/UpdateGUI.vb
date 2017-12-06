@@ -1023,11 +1023,11 @@ Public Class UpdateGUI
             ElseIf aFireInstance.IgnitionType = Fire.FireIgnitionbyTemperature Then
                 IgnitionTypeLabel = myUnits.Convert(UnitsNum.Temperature).Units
                 MainWin.FireTarget.Enabled = True
-                MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFire.Target)
+                MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFireInstance.Target)
             ElseIf aFireInstance.IgnitionType = Fire.FireIgnitionbyFlux Then
                 IgnitionTypeLabel = myUnits.Convert(UnitsNum.HeatFlux).Units
                 MainWin.FireTarget.Enabled = True
-                MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFire.Target)
+                MainWin.FireTarget.SelectedIndex = myTargets.GetIndex(aFireInstance.Target)
             End If
             MainWin.FireIgnitionValue.Text = " "
             If aFireInstance.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFireInstance.IgnitionValue.ToString + IgnitionTypeLabel

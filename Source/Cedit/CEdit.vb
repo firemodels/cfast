@@ -5887,7 +5887,10 @@ Public Class CeditMain
             If sender Is FireInstanceName Then aFireInstance.Name = FireInstanceName.Text
 
             ' Inputs related to fire definition
-            If sender Is FireDefinitionName Then aFire.Name = FireDefinitionName.Text
+            If sender Is FireDefinitionName Then
+                aFire.Name = FireDefinitionName.Text
+                aFireInstance.ReferencedFireDefinition = aFire.Name
+            End If
             If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
             If sender Is FireC Then
                 If Val(FireC.Text) > 0 Then

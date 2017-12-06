@@ -83,8 +83,8 @@ Public Class Fire
     Private aRampIDs(12) As String                  ' Array of the Ramp IDs 
     Dim RampNames() As String = {"FireTime", "FireMdot", "FireHRR", "FireHeight", "FireArea", "FireCO", "FireSoot",
                                              "FireHC", "FireO2", "FireHCN", "FireHCl", "FireCt", "FireTS"}
-    Private aColNames() As String = {"TIME", "MDOT", "HRR", "HEIGHT", "AREA", "CO_YEILD", "SOOT_YEILD", "HC_YEILD", "O2_YEILD",
-                                                "HCN_YEILD", "HCL_YEILD", "CT_YEILD", "TRACE_YEILD"}
+    Private aColNames() As String = {"TIME", "MDOT", "HRR", "HEIGHT", "AREA", "CO_YIELD", "SOOT_YIELD", "HC_YIELD", "O2_YIELD",
+                                                "HCN_YIELD", "HCL_YIELD", "CT_YIELD", "TRACE_YIELD"}
     Private aColMap() As Integer = {0, 2, 3, 4, 5, 6, 9, 10, 12}
 
     Public Sub New()

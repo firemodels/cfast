@@ -554,6 +554,14 @@ module solve_routines
             info(4) = 0
         end if
     end if
+    
+    ! Special case for radiation verification
+    if (radi_verification_flag) then
+        t = tstop
+        call target (1,t)
+        call output_spreadsheet(t)
+        return
+    end if
 
     if (t<tstop) then
         idset = 0
@@ -1447,7 +1455,7 @@ module solve_routines
             if (nfurn>0) then
               roomptr%temp(u) = wtemp
               roomptr%temp(l) = wtemp
-            else if (radi_diag_flag) then
+            else if (radi_verification_flag) then
               roomptr%temp(u) = tempTgas + kelvin_c_offset
               roomptr%temp(l) = tempTgas + kelvin_c_offset
             else
@@ -1591,7 +1599,7 @@ module solve_routines
             do iroom = 1, nrm1
                 roomptr => roominfo(iroom)
                 isof = isof + 1
-                if (radi_diag_flag) then
+                if (radi_verification_flag) then
                     if (partial_pressure_co2+partial_pressure_h2o == 1._eb) then ! Only H2O and CO2 exist
                         if (lsp == 1 .or. lsp == 2) then ! N2 and O2 will have to be zero 
                             ppgas = 0._eb
@@ -1616,7 +1624,7 @@ module solve_routines
                 end if
                                 
                 isof = isof + 1
-                if (radi_diag_flag) then
+                if (radi_verification_flag) then
                     if (partial_pressure_co2+partial_pressure_h2o == 1._eb) then
                         if (lsp == 1 .or. lsp == 2) then 
                             ppgas = 0._eb

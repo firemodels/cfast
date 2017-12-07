@@ -1086,6 +1086,20 @@ Public Class FireCollection
             Return numFires
         End Get
     End Property
+    Public ReadOnly Property NumberofInstances(ByVal id As String) As Integer
+        Get
+            Dim aFire As Fire
+            Dim numFires As Integer = 0
+            numFires = 0
+            If Count > 0 Then
+                For i = 0 To Count - 1
+                    aFire = CType(List.Item(i), Fire)
+                    If aFire.ReferencedFireDefinition = id Then numFires += 1
+                Next
+            End If
+            Return numFires
+        End Get
+    End Property
     Public ReadOnly Property Changed() As Boolean
         Get
             If Count > 0 Then

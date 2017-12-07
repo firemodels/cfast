@@ -2859,29 +2859,31 @@ Module IO
 
         'Writing MATL namelist
         For i = 0 To myThermalProperties.Count - 1
-            ln = "&MATL"
-            PrintLine(IO, ln)
-            ln = " ID = '" + myThermalProperties.Item(i).ShortName + "' , "
-            PrintLine(IO, ln)
-            If myThermalProperties.Item(i).Name <> "" Then
-                If myThermalProperties.Item(i).Name.IndexOf("'") > 0 Then
-                    ln = " MATERIAL = """ + myThermalProperties.Item(i).Name + """ , "
-                Else
-                    ln = " MATERIAL = '" + myThermalProperties.Item(i).Name + "' , "
+            If myThermalProperties.NumberofConnections(myThermalProperties.Item(i).ShortName) > 0 Then
+                ln = "&MATL"
+                PrintLine(IO, ln)
+                ln = " ID = '" + myThermalProperties.Item(i).ShortName + "' , "
+                PrintLine(IO, ln)
+                If myThermalProperties.Item(i).Name <> "" Then
+                    If myThermalProperties.Item(i).Name.IndexOf("'") > 0 Then
+                        ln = " MATERIAL = """ + myThermalProperties.Item(i).Name + """ , "
+                    Else
+                        ln = " MATERIAL = '" + myThermalProperties.Item(i).Name + "' , "
+                    End If
+                    PrintLine(IO, ln)
                 End If
+                ln = " CONDUCTIVITY = " + myThermalProperties.Item(i).Conductivity.ToString + " , DENSITY = " + myThermalProperties.Item(i).Density.ToString + " , "
+                PrintLine(IO, ln)
+                ln = " SPECIFIC_HEAT = " + (myThermalProperties.Item(i).SpecificHeat / 1000.0).ToString + " , THICKNESS = " + myThermalProperties.Item(i).Thickness.ToString
+                PrintLine(IO, ln)
+                aDummy = 0.9
+                If myThermalProperties.Item(i).Emissivity <> aDummy Then
+                    ln = " EMISSIVITY = " + myThermalProperties.Item(i).Emissivity.ToString
+                    PrintLine(IO, ln)
+                End If
+                ln = " / "
                 PrintLine(IO, ln)
             End If
-            ln = " CONDUCTIVITY = " + myThermalProperties.Item(i).Conductivity.ToString + " , DENSITY = " + myThermalProperties.Item(i).Density.ToString + " , "
-            PrintLine(IO, ln)
-            ln = " SPECIFIC_HEAT = " + (myThermalProperties.Item(i).SpecificHeat / 1000.0).ToString + " , THICKNESS = " + myThermalProperties.Item(i).Thickness.ToString
-            PrintLine(IO, ln)
-            aDummy = 0.9
-            If myThermalProperties.Item(i).Emissivity <> aDummy Then
-                ln = " EMISSIVITY = " + myThermalProperties.Item(i).Emissivity.ToString
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
         Next
 
         ln = "!! "
@@ -3332,7 +3334,7 @@ Module IO
             ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString
             PrintLine(IO, ln)
             If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
-                If aFire.IgnitionType > 0 Then
+                If aFire.IgnitionValue > 0 Then
                     ln = " IGNITION_CRITERION = 'TIME' , SETPOINT = " + aFire.IgnitionValue.ToString
                     PrintLine(IO, ln)
                 End If
@@ -3350,45 +3352,47 @@ Module IO
         Next
 
         For i = 0 To myFires.Count - 1
-            aFire = myFires.Item(i)
-            ln = "&FIRE"
-            PrintLine(IO, ln)
-            ln = " ID = '" + aFire.Name + "' "
-            PrintLine(IO, ln)
-            ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
-                " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +
-                " , OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
-            PrintLine(IO, ln)
-            If aFire.HeatofCombustion <> 50000000 Then
-                ln = " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
+            If myFireInstances.NumberofInstances(myFires.Item(i).Name) > 0 Then
+                aFire = myFires.Item(i)
+                ln = "&FIRE"
                 PrintLine(IO, ln)
-            End If
-            If aFire.RadiativeFraction <> 0.35 Then
-                ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
+                ln = " ID = '" + aFire.Name + "' "
                 PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-            aFire.GetFireData(aFireCurves, k)
-            ln = "&TABL ID = '" + aFire.Name + "' "
-            PrintLine(IO, ln)
-            ln = " LABELS = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
-            For j = 1 To aFire.ColMapUpperBound
-                ln = ln + ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
-            Next
-            ln = ln + " /"
-            PrintLine(IO, ln)
-            For j = 0 To k
-                ln = "&TABL ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
-                For l = 1 To aFire.ColMapUpperBound
-                    ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
+                ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " , CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
+                    " , HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " , NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +
+                    " , OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
+                PrintLine(IO, ln)
+                If aFire.HeatofCombustion <> 50000000 Then
+                    ln = " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
+                    PrintLine(IO, ln)
+                End If
+                If aFire.RadiativeFraction <> 0.35 Then
+                    ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
+                    PrintLine(IO, ln)
+                End If
+                ln = " / "
+                PrintLine(IO, ln)
+                aFire.GetFireData(aFireCurves, k)
+                ln = "&TABL ID = '" + aFire.Name + "' "
+                PrintLine(IO, ln)
+                ln = " LABELS = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
+                For j = 1 To aFire.ColMapUpperBound
+                    ln = ln + ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
                 Next
                 ln = ln + " /"
                 PrintLine(IO, ln)
-            Next
+                For j = 0 To k
+                    ln = "&TABL ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
+                    For l = 1 To aFire.ColMapUpperBound
+                        ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
+                    Next
+                    ln = ln + " /"
+                    PrintLine(IO, ln)
+                Next
+            End If
         Next
 
-            ln = "!! "
+        ln = "!! "
         PrintLine(IO, ln)
         ln = "!! CONN "
         PrintLine(IO, ln)

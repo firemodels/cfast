@@ -33,7 +33,7 @@ module  debug_data
     character(256) :: residfile, residcsv, slabcsv
     
     ! Diagnosis variables
-    real(eb) :: partial_pressure_h2o, partial_pressure_co2, tempTgas
+    real(eb) :: rad_solver, partial_pressure_h2o, partial_pressure_co2, tempTgas
 
 end module debug_data
 
@@ -87,7 +87,7 @@ module fire_data
     logical :: slcfflag=.false.
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
-    logical :: diagflag=.false., radi_diag_flag=.false.
+    logical :: diagflag=.false., radi_verification_flag=.false., radi_radnnet_flag=.false.
 
     end module namelist_data
     

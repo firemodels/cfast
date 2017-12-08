@@ -2279,7 +2279,7 @@
     integer, intent(in) :: lu
 
     character(8) :: mode
-    namelist /DIAG/ mode,partial_pressure_h2o,partial_pressure_co2,tempTgas
+    namelist /DIAG/ mode,rad_solver,partial_pressure_h2o,partial_pressure_co2,tempTgas
 
     ios = 1
 
@@ -2310,17 +2310,19 @@
         call set_diag_defaults
         read(lu,DIAG)
         
-        if (mode == 'RADI') radi_diag_flag = .true.
+        if (mode == 'RADI') radi_verification_flag = .true.
+        if (rad_solver == 'RADNNET') radi_radnnet_flag = .true.
     
     end if diag_flag
     
-    if (radi_diag_flag) validate = .true.
+    if (radi_verification_flag) validate = .true.
 
     contains
 
     subroutine set_diag_defaults
 
     mode = 'NULL'
+    rad_solver =  'NULL'
     partial_pressure_h2o = 0._eb
     partial_pressure_co2 = 0._eb
     tempTgas = 0._eb

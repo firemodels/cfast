@@ -97,7 +97,7 @@
     ! now we can check the input data for consistency
 
     ! check for temperature outside reasonable limits
-    if (exterior_ambient_temperature>373.15_eb.or.exterior_ambient_temperature<223.15_eb) then
+    if (exterior_ambient_temperature>1573.15_eb.or.exterior_ambient_temperature<223.15_eb) then
         write (*,5022) exterior_ambient_temperature
         write (iofill,5022) exterior_ambient_temperature
         stop

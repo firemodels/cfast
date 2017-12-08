@@ -1238,6 +1238,7 @@ Module IO
         Dim compid, id, devcid, ignitcrit, fireid As String
         Dim setp As Single
         Dim loc(1) As Single
+        Dim aDummy As Single = 273.15
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "INSF") Then
@@ -1284,13 +1285,13 @@ Module IO
                     aFire.IgnitionType = Fire.FireIgnitionbyTime
                     aFire.IgnitionValue = setp
                 ElseIf ignitcrit = "TEMPERATURE" Then
-                    aFire.Target = myTargets.GetIndex(devcid)
+                    aFire.Target = devcid
                     aFire.IgnitionType = Fire.FireIgnitionbyTemperature
-                    aFire.IgnitionValue = setp
+                    aFire.IgnitionValue = setp + aDummy
                 ElseIf ignitcrit = "FLUX" Then
-                    aFire.Target = myTargets.GetIndex(devcid)
+                    aFire.Target = devcid
                     aFire.IgnitionValue = Fire.FireIgnitionbyFlux
-                    aFire.IgnitionValue = setp
+                    aFire.IgnitionValue = setp * 1000.0
                 End If
                 aFire.XPosition = loc(0)
                 aFire.YPosition = loc(1)
@@ -3329,7 +3330,11 @@ Module IO
             PrintLine(IO, ln)
             ln = " ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
-            ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
+            If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
+                ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "' , FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
+            Else
+                ln = " COMP_ID = '' , FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
+            End If
             PrintLine(IO, ln)
             ln = " LOCATION = " + aFire.XPosition.ToString + " , " + aFire.YPosition.ToString
             PrintLine(IO, ln)

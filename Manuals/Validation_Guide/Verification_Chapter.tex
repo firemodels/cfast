@@ -408,34 +408,65 @@ where $\epsilon$ is the emissivity of the target (taken here to be 1), $\sigma$ 
 \label{fig:rad2}
 \end{figure}
 
-\subsection{Measuring Incident Heat Flux to Targets ($T_{\rm g}$ = $T_{\rm w}$)}
+\subsection{Measuring Incident Heat Flux to Targets}
 \label{radiation_3}
 
 Consider a rectangular enclosure with black walls in dimensions of 2~m by 2~m by 4~m as shown in Figure~\ref{fig:rad3_1}. For a pure water vapor medium being kept at 1~atm with wall and gas medium temperature being maintained at 726.85~$^\circ$C, incident heat flux to target devices, along the line (X, 2~m, 4~m) on the top surface of the enclosure and the line (2~m, 1~m, Z) on the right surface, are obtained. Comparsion between benchmark results (exact) reported from the literature \cite{Liu:1999} and results calculated by CFAST is made. Figure~\ref{fig:rad3_2} shows the incident heat flux to the target devices due to the emission from a hot medium and Figure~\ref{fig:rad3_3} shows the corresponding results due to the emission from hot walls.
 
-\label{fig:rad3_1}
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=3.0in]{FIGURES/Verification/radiation_verification_case3_enclosure_geometry}
 \caption[Geometry for {\ct radiation\_3.in}]{Schematic of the considered geometry.}
+\label{fig:rad3_1}
 \end{figure}
 
-\label{fig:rad3_2}
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_top_gas}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_side_gas}
 \end{tabular*}
 \caption[Results of mixture emission case {\ct radiation\_3.in}]{Expected and CFAST calculated target incident heat flux values due to mixture emission for the case {\ct radiation\_3.in}.}
+\label{fig:rad3_2}
 \end{figure}
 
-\label{fig:rad3_3}
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_top_wall}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_3_flux_1000_side_wall}
 \end{tabular*}
 \caption[Results of wall emission case {\ct radiation\_3.in}]{Expected and CFAST calculated target incident heat flux values due to wall emission for the case {\ct radiation\_3.in}.}
+\label{fig:rad3_3}
+\end{figure}
+
+\subsection{Total Emissivity and Hemispherical Absorptivitiy}
+\label{radiation_4and5}
+
+Consider the identical case being described in Section~\ref{radiation_3}. For black surfaces, the total emissivity of the gas medium, radiating to surface $A_{\rm i}$, can be simplified in the following simple form \cite{Yuen:2014} 
+\begin{equation}
+\mathrm{\epsilon_g \brackets{T_g, T_g}} = \frac{Q_{\rm i}}{A_{\rm i} \sigma T_{\rm g}^4} \quad  ; \quad Q_{\rm i} = \left[ A_{\rm i} -  \sum_{j \neq i} S_{\rm i}S_{\rm j}\brackets{T_g, T_g} \right] \sigma T_{\rm g}^4 
+\end{equation}
+where $Q_{\rm i}$ is radiative heat transfer to the surface due to the emission from the hot medium from all surrounding surfaces in the direction of surface $A_{\rm i}$. With identical emitting temperature for all surfaces, the hemispherical absorptivity is given to be
+\begin{equation}
+\mathrm{\alpha_{\rm g}\brackets{T_{\rm w}, T_g}} = \frac{1}{A_{\rm i}} \sum_{j \neq i} \left[ A_{\rm i}F_{\rm i-j} - S_{\rm i}S_{\rm j}\brackets{T_{\rm w,j}, T_{\rm g}} \right]
+\end{equation}
+The total emissivity and the hemisperical absorptivity of the gas medium for targets on the top surface calculated by CFAST are compared with the benchmark results reported by \cite{Tam:2017}. Two emitting temperatures $T_{\rm w}$ are considered. Results for $T_{\rm w}$ = 226.85 $^\circ$C case and $T_{\rm w}$ = 1226.85 $^\circ$C case are presented in Figure~\ref{fig:rad4_1} and Figure~\ref{fig:rad4_2}, respectively.
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_4_emissivity_500_top_gas}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_4_absorptivity_500_top_gas}
+\end{tabular*}
+\caption[Results of $T_w$ = 226.85 $^\circ$C case {\ct radiation\_4.in}]{Expected and CFAST total emissivity and hemispherical absorptivity of the gas medium to the targets located at top surface for the case {\ct radiation\_4.in}.}
+\label{fig:rad4_1}
+\end{figure}
+
+\begin{figure}[!ht]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_5_emissivity_1500_top_gas}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_5_absorptivity_1500_top_gas}
+\end{tabular*}
+\caption[Results of $T_w$ = 1226.85 $^\circ$C case {\ct radiation\_5.in}]{Expected and CFAST total emissivity and hemispherical absorptivity of the gas medium to the targets located at top surface for the case {\ct radiation\_5.in}.}
+\label{fig:rad4_2}
 \end{figure}
 
 

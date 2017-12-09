@@ -388,6 +388,8 @@ $RUNCFAST -d ../Verification/Sprinkler sprinkler_1.in
 $RUNCFAST -d ../Verification/Radiation radiation_1.in
 $RUNCFAST -d ../Verification/Radiation radiation_2.in
 $RUNCFAST -d ../Verification/Radiation radiation_3.in
+$RUNCFAST -d ../Verification/Radiation radiation_4.in
+$RUNCFAST -d ../Verification/Radiation radiation_5.in
 
 $RUNCFAST -d ../Verification/Fires Ignition_Test.in
 

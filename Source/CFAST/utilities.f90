@@ -932,7 +932,7 @@
 
     integer :: nnnopt, i, j, iunit
 
-    nnnopt = 21
+    nnnopt = 19
 
     iunit = funit(70)
     open(unit=iunit,file=file)
@@ -959,11 +959,8 @@
     write (iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, TYPE OF INITIALIZATION'
     write (iunit,*) (option(j),j = 11,15)
 
-    write (iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE    DETECTORS'
-    write (iunit,*) (option(j),j = 16,20)
-
-    write (iunit,'(a)') ' OBJECT BACKTRACKING'
-    write (iunit,*) (option(j),j = 21,21)
+    write (iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE'
+    write (iunit,*) (option(j),j = 16,19)
 
     write (iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB'
     write (iunit,'(1x,i3,1x,3(1pg11.4,1x))') nwpts, (wsplit(i),i=1,3)
@@ -977,8 +974,8 @@
     write (iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
     write (iunit,11) 0.0_eb
 
-    write (iunit,'(a)') ' JAC CHECK (>0 CHECK JACOBIAN), JACOBIAN CUTOFF,   SNSQE PRINT (1=ON)'
-    write (iunit,'(1x,i3,1x,1pg11.4,i3)') jacchk, cutjac, iprtalg
+    write (iunit,'(a)') ' SNSQE PRINT (1=ON)'
+    write (iunit,'(1x,i3)') iprtalg
 
     if (1==1) stop
     return

@@ -594,7 +594,7 @@
 
     ! read in jacobian and snsqe print flags
     read (iofili,*)
-    read (iofili,*) jacchk, cutjac, iprtalg
+    read (iofili,*) iprtalg
     close (iofili)
 
     return

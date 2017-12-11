@@ -5870,7 +5870,7 @@ Public Class CeditMain
             ' Inputs related to fire instance
 
             If sender Is FireComp Then
-                aFireInstance.Compartment = FireComp.SelectedIndex
+                If FireComp.SelectedIndex > -1 Then aFireInstance.Compartment = FireComp.SelectedIndex
                 If Val(FireXPosition.Text) = -1 Then aFireInstance.XPosition = Val(FireXPosition.Text)
                 If Val(FireYPosition.Text) = -1 Then aFireInstance.YPosition = Val(FireYPosition.Text)
             End If

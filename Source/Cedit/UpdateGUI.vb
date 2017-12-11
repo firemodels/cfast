@@ -1013,6 +1013,9 @@ Public Class UpdateGUI
                 Else
                     MainWin.FirePlumeType.Text = "Normal"
                 End If
+            Else
+                MainWin.FireComp.SelectedIndex = -1
+                MainWin.FirePlumeType.Text = ""
             End If
             MainWin.FireXPosition.Text = aFireInstance.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFireInstance.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units

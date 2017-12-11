@@ -441,32 +441,25 @@ Consider a rectangular enclosure with black walls in dimensions of 2~m by 2~m by
 \subsection{Total Emissivity and Hemispherical Absorptivitiy}
 \label{radiation_4and5}
 
-Consider the identical case being described in Section~\ref{radiation_3}. For black surfaces, the total emissivity of the gas medium, radiating to surface $A_{\rm i}$, can be simplified in the following simple form \cite{Yuen:2014} 
+Consider the identical case being described in Section~\ref{radiation_3}. For black surfaces, the total emissivity of the gas medium, radiating to surface $A_{\rm i}$, can be simplified in the following simple form \cite{Yuen:2014}
 \begin{equation}
-\mathrm{\epsilon_g \brackets{T_g, T_g}} = \frac{Q_{\rm i}}{A_{\rm i} \sigma T_{\rm g}^4} \quad  ; \quad Q_{\rm i} = \left[ A_{\rm i} -  \sum_{j \neq i} S_{\rm i}S_{\rm j}\brackets{T_g, T_g} \right] \sigma T_{\rm g}^4 
+\mathrm{\epsilon_g \brackets{T_g, T_g}} = \frac{Q_{\rm i}}{A_{\rm i} \sigma T_{\rm g}^4} \quad  ; \quad Q_{\rm i} = \left[ A_{\rm i} -  \sum_{j \neq i} S_{\rm i}S_{\rm j}\brackets{T_g, T_g} \right] \sigma T_{\rm g}^4
 \end{equation}
 where $Q_{\rm i}$ is radiative heat transfer to the surface due to the emission from the hot medium from all surrounding surfaces in the direction of surface $A_{\rm i}$. With identical emitting temperature for all surfaces, the hemispherical absorptivity is given to be
 \begin{equation}
 \mathrm{\alpha_{\rm g}\brackets{T_{\rm w}, T_g}} = \frac{1}{A_{\rm i}} \sum_{j \neq i} \left[ A_{\rm i}F_{\rm i-j} - S_{\rm i}S_{\rm j}\brackets{T_{\rm w,j}, T_{\rm g}} \right]
 \end{equation}
-The total emissivity and the hemisperical absorptivity of the gas medium for targets on the top surface calculated by CFAST are compared with the benchmark results reported by \cite{Tam:2017}. Two emitting temperatures $T_{\rm w}$ are considered. Results for $T_{\rm w}$ = 226.85 $^\circ$C case and $T_{\rm w}$ = 1226.85 $^\circ$C case are presented in Figure~\ref{fig:rad4_1} and Figure~\ref{fig:rad4_2}, respectively.
+The total emissivity and the hemisperical absorptivity of the gas medium for targets on the top surface calculated by CFAST are compared with the benchmark results reported by \cite{Tam:2017}. Two emitting temperatures $T_{\rm w}$ are considered. Results for $T_{\rm w}$ = 226.85 $^\circ$C case and $T_{\rm w}$ = 1226.85 $^\circ$C case are presented in Figure~\ref{fig:rad4_1}.
 
 \begin{figure}[!ht]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_4_emissivity_500_top_gas}
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_4_absorptivity_500_top_gas}
-\end{tabular*}
-\caption[Results of $T_w$ = 226.85 $^\circ$C case {\ct radiation\_4.in}]{Expected and CFAST total emissivity and hemispherical absorptivity of the gas medium to the targets located at top surface for the case {\ct radiation\_4.in}.}
-\label{fig:rad4_1}
-\end{figure}
-
-\begin{figure}[!ht]
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_4_absorptivity_500_top_gas} \\
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_5_emissivity_1500_top_gas}
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/radiation_5_absorptivity_1500_top_gas}
 \end{tabular*}
 \caption[Results of $T_w$ = 1226.85 $^\circ$C case {\ct radiation\_5.in}]{Expected and CFAST total emissivity and hemispherical absorptivity of the gas medium to the targets located at top surface for the case {\ct radiation\_5.in}.}
-\label{fig:rad4_2}
+\label{fig:rad4_1}
 \end{figure}
 
 

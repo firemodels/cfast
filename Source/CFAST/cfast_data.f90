@@ -33,7 +33,8 @@ module  debug_data
     character(256) :: residfile, residcsv, slabcsv
     
     ! Diagnosis variables
-    real(eb) :: rad_solver, partial_pressure_h2o, partial_pressure_co2, tempTgas
+    real(eb) :: partial_pressure_h2o, partial_pressure_co2, tempTgas
+    character(64) :: rad_solver
 
 end module debug_data
 

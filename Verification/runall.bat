@@ -56,6 +56,9 @@ cd Radiation
 call ..\..\Validation\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_1 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_2 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_3 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_4 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_5 -V
 cd ..
 
 echo Running Fire Cases

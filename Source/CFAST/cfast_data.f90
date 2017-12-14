@@ -17,9 +17,9 @@ module cenviro
 
 end module cenviro
 
-! --------------------------- debug_data -------------------------------------------
+! --------------------------- diag_data -------------------------------------------
 
-module  debug_data
+module  diag_data
 
     use precision_parameters
     implicit none
@@ -35,8 +35,9 @@ module  debug_data
     ! Diagnosis variables
     real(eb) :: partial_pressure_h2o, partial_pressure_co2, tempTgas
     character(64) :: rad_solver
+    logical :: radi_verification_flag=.false., radi_radnnet_flag=.false.
 
-end module debug_data
+end module diag_data
 
 ! --------------------------- fire_data -------------------------------------------
 
@@ -56,6 +57,9 @@ module fire_data
 
     integer :: n_fires                              ! number of fires in the current simulation
     type(fire_type), target :: fireinfo(mxfires)
+    
+    integer :: n_tabls                              ! number of tables of fire data in the current simulation
+    type(table_type), target :: tablinfo(mxfires)
 
     integer :: nfurn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
@@ -78,6 +82,8 @@ module fire_data
     logical :: compflag=.false.                     ! true if each namelist type has been read in
     logical :: connflag=.false.
     logical :: devcflag=.false.
+    logical :: tablflag=.false.
+    logical :: insfflag=.false.
     logical :: fireflag=.false.
     logical :: headflag=.false.
     logical :: initflag=.false.
@@ -88,7 +94,7 @@ module fire_data
     logical :: slcfflag=.false.
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
-    logical :: diagflag=.false., radi_verification_flag=.false., radi_radnnet_flag=.false.
+    logical :: diagflag=.false.
 
     end module namelist_data
     
@@ -159,7 +165,7 @@ module ramp_data
     save
 
     ! ramping variables
-    integer :: nramps = 0
+    integer :: n_ramps = 0
     type(ramp_type), target :: rampinfo(mxramps)
 
 end module ramp_data

@@ -13,7 +13,7 @@ module spreadsheet_input_routines
     use ramp_data
     use cparams, only: mx_hsep
     use setup_data
-    use debug_data
+    use diag_data
     use detectorptrs
     use target_data
     use fire_data
@@ -717,9 +717,9 @@ module spreadsheet_input_routines
                 write (iofill,*) '***Error: Bad RAMP input. Inputs must be in pairs.'
                 stop
             end if
-            if (nramps<=mxramps) then
-                nramps = nramps + 1
-                rampptr=>rampinfo(nramps)
+            if (n_ramps<=mxramps) then
+                n_ramps = n_ramps + 1
+                rampptr=>rampinfo(n_ramps)
                 rampptr%type = lcarray(1)
                 rampptr%room1 = lrarray(2)
                 rampptr%room2 = lrarray(3)

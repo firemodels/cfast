@@ -33,7 +33,8 @@ module cfast_types
     ! fire data structure
     type fire_type
         ! These are the fire definitions from the input
-        character(64) :: name                           ! user selected name for the fire (user input)
+        character(64) :: name                           ! user selected name for the fire instance (user input)
+        character(64) :: fire_name                      ! user selected name for the data associated with this fire instance
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
         integer :: ignition_type                        ! ignition type for fire (user input)
@@ -46,8 +47,6 @@ module cfast_types
         real(eb) :: y_position                          ! initial Y position of the base of fire (user input)
         real(eb) :: z_position                          ! initial Z position of the base of fire (user input)
 
-        !integer :: npoints                                       ! actual number of time points for fire (user input)
-        !real(eb), dimension(mxpts) :: time                      ! time points for fire inputs (user input)
         integer :: n_mdot, n_qdot, n_area, n_height, n_soot, n_co, n_trace, n_hoc ! number of time points (user input)
         real(eb), dimension(mxpts) :: mdot, t_mdot      ! pyrolysis rate (user input)
         real(eb), dimension(mxpts) :: qdot, t_qdot      ! heat release rate of the fire (user input)
@@ -173,6 +172,15 @@ module cfast_types
         real(eb) :: qdot_doorjet                        ! HRR of door jet fires at the current time
 
     end type room_type
+    
+    ! time-dependent fire parameters table input data sctructure
+    type table_type
+        character(64) :: name                           ! user selected name for the table (normally this would match the fire name)
+        character(64), dimension(ns+3) :: labels        ! column labels for columns of data in the table
+        real(eb), dimension(mxpts,ns+3) :: data         ! actual input data for the table
+        integer :: n_points                             ! number of data points (rows) in the table
+        integer :: n_columns                            ! number of columns of data in the table
+    end type table_type
 
     ! target data structure
     type target_type

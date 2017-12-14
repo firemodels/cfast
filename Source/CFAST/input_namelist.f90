@@ -20,7 +20,7 @@
     use vent_data
     use room_data
     use namelist_data
-    use debug_data
+    use diag_data
 
     implicit none 
     
@@ -39,20 +39,22 @@
     ncomp = 0
     nvisualinfo=0
 
-    call read_head(iofili)
-    call read_time(iofili)
-    call read_init(iofili)
-    call read_misc(iofili)
-    call read_matl(iofili)
-    call read_ramp(iofili)
-    call read_comp(iofili,ncomp)
-    call read_devc(iofili)
-    call read_fire(iofili)
-    call read_vent(iofili)
-    call read_conn(iofili)
-    call read_isof(iofili)
-    call read_slcf(iofili)
-    call read_diag(iofili)
+    call read_head (iofili)
+    call read_time (iofili)
+    call read_init (iofili)
+    call read_misc (iofili)
+    call read_matl (iofili)
+    call read_ramp (iofili)
+    call read_comp (iofili,ncomp)
+    call read_devc (iofili)
+    call read_tabl (iofili)
+    call read_insf (iofili)
+    call read_fire (iofili)
+    call read_vent (iofili)
+    call read_conn (iofili)
+    call read_isof (iofili)
+    call read_slcf (iofili)
+    call read_diag (iofili)
 
     close (iofili)
     
@@ -106,7 +108,7 @@
         input_file_line_number = 0
 
         call checkread('HEAD',lu,ios)
-        call set_head_defaults
+        call set_defaults
         read(lu,HEAD)
 
         version = version/1000
@@ -122,11 +124,11 @@
 
     contains
 
-    subroutine set_head_defaults
+    subroutine set_defaults
 
     version = default_version
 
-    end subroutine set_head_defaults
+    end subroutine set_defaults
 
     end subroutine read_head
 
@@ -173,7 +175,7 @@
         input_file_line_number = 0
 
         call checkread('TIME',lu,ios)
-        call set_time_defaults
+        call set_defaults
         read(lu,TIME)
 
         time_end=simulation
@@ -185,14 +187,14 @@
 
     contains
 
-    subroutine set_time_defaults
+    subroutine set_defaults
 
     simulation              = default_simulation_time    ! s
     print                   = default_print_out_interval ! s
     smokeview               = default_smv_out_interval   ! s
     spreadsheet             = default_ss_out_interval    ! s
 
-    end subroutine set_time_defaults
+    end subroutine set_defaults
 
     end subroutine read_time
 
@@ -232,7 +234,7 @@
         input_file_line_number = 0
 
         call checkread('INIT',lu,ios)
-        call set_init_defaults
+        call set_defaults
         read(lu,INIT)
 
         exterior_ambient_temperature  = exterior_temperature + kelvin_c_offset
@@ -247,14 +249,14 @@
 
     contains
 
-    subroutine set_init_defaults
+    subroutine set_defaults
 
     exterior_temperature     = default_temperature - kelvin_c_offset    ! C
     interior_temperature     = default_temperature - kelvin_c_offset    ! C
     pressure                 = default_pressure                         ! Pa
     relative_humidity        = default_relative_humidity*100._eb        ! %
 
-    end subroutine set_init_defaults
+    end subroutine set_defaults
 
     end subroutine read_init
 
@@ -294,7 +296,7 @@
         input_file_line_number = 0
 
         call checkread('MISC',lu,ios)
-        call set_misc_defaults
+        call set_defaults
         read(lu,MISC)
 
         adiabatic_walls=.false.
@@ -306,7 +308,7 @@
 
     contains
 
-    subroutine set_misc_defaults
+    subroutine set_defaults
 
     ! note actual default values are set in initialize_memory and used here to initialize namelist
 
@@ -314,7 +316,7 @@
     max_time_step = stpmax                          ! s
     lower_oxygen_limit = default_lower_oxygen_limit
 
-    end subroutine set_misc_defaults
+    end subroutine set_defaults
 
     end subroutine read_misc
 
@@ -369,7 +371,7 @@
             thrmpptr => thermalinfo(ii)
 
             call checkread('MATL',lu,ios)
-            call set_matl_defaults
+            call set_defaults
             read(lu,MATL)
 
             thrmpptr%name          = id
@@ -387,7 +389,7 @@
 
     contains
 
-    subroutine set_matl_defaults
+    subroutine set_defaults
 
     specific_heat          = 0.0_eb        !j/kg-k
     emissivity             = 0.9_eb
@@ -396,7 +398,7 @@
     density                = 0.0_eb        !kg/m3
     thickness              = 0.0_eb        !m
 
-    end subroutine set_matl_defaults
+    end subroutine set_defaults
 
     end subroutine read_matl
 
@@ -464,11 +466,11 @@
             roomptr => roominfo(ii)
 
             call checkread('COMP',lu,ios)
-            call set_comp_defaults
+            call set_defaults
             read(lu,COMP)
 
             if (trim(room_area_ramp) /= 'NULL') then
-                ramp_search: do kk = 1, nramps
+                ramp_search: do kk = 1, n_ramps
                     rampptr=>rampinfo(kk)
                     if (trim(rampptr%id) == trim(room_area_ramp)) then
                         rampptr%room1 = ii
@@ -482,7 +484,7 @@
                     end if
                 end do ramp_search
 
-                if (kk == nramps+1) then
+                if (kk == n_ramps+1) then
                     write (*,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP_ID: ', room_area_ramp, ', not found.'
                     write (iofill,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP_ID: ', room_area_ramp, ', not found.'
                     stop
@@ -538,7 +540,7 @@
 
     contains
 
-    subroutine set_comp_defaults
+    subroutine set_defaults
 
     ceiling_matl_id         = 'OFF'
     id                      = 'NULL'
@@ -553,7 +555,7 @@
     hall                    = '.FALSE.'
     shaft                   = '.FALSE.'
 
-    end subroutine set_comp_defaults
+    end subroutine set_defaults
 
     end subroutine read_comp
 
@@ -626,7 +628,7 @@
         read_devc_loop: do ii=1 , n_targets + n_detectors
 
             call checkread('DEVC',lu,ios)
-            call set_devc_defaults
+            call set_defaults
             read(lu,DEVC)
 
             if (trim(type) == 'PLATE' .or. trim(type) == 'CYLINDER') then
@@ -796,7 +798,7 @@
 
     contains
 
-    subroutine set_devc_defaults
+    subroutine set_defaults
 
     comp_id                         = 'NULL'
     type                            = 'NULL'
@@ -809,7 +811,7 @@
     setpoint                        = -101._eb
     spray_density                   = -300.0_eb
 
-    end subroutine set_devc_defaults
+    end subroutine set_defaults
 
     end subroutine read_devc
 
@@ -834,7 +836,7 @@
     input_file_line_number = 0
 
     ! Scan entire file to look for 'RAMP'
-    nramps = 0
+    n_ramps = 0
     ramp_loop: do
         call checkread ('RAMP',lu,ios)
         if (ios==0) rampflag=.true.
@@ -842,14 +844,14 @@
             exit ramp_loop
         end if
         read(lu,RAMP,iostat=ios)
-        nramps =nramps + 1
+        n_ramps =n_ramps + 1
         if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &RAMP: Invalid specification for inputs. Check &RAMP input, ', nramps
+            write(iofill, '(a,i3)') '***Error in &RAMP: Invalid specification for inputs. Check &RAMP input, ', n_ramps
             stop
         end if
     end do ramp_loop
 
-    if (nramps>mxramps) then
+    if (n_ramps>mxramps) then
         write (*,'(a,i3)') '***Error: Too many ramps in input data file. Limit is ', mxramps
         write (iofill,'(a,i3)') '***Error: Too many ramps in input data file. Limit is ', mxramps
         stop
@@ -861,20 +863,20 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_ramp_loop: do ii = 1,nramps
+        read_ramp_loop: do ii = 1,n_ramps
 
             call checkread('RAMP',lu,ios)
-            call set_ramp_defaults
+            call set_defaults
             read(lu,RAMP)
 
             rampptr => rampinfo(ii)
             rampptr%id = id
             if (count(z/=-101._eb)>0 .and. count(t/=-101._eb)>0) then
-                write (*,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', nramps
-                write (iofill,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', nramps
+                write (*,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
+                write (iofill,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
             else if (count(z/=-101._eb)==0 .and. count(t/=-101._eb)==0) then
-                write (*,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', nramps
-                write (iofill,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', nramps
+                write (*,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
+                write (iofill,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
             end if
             
             if (type=='AREA' .and. count(z/=-101._eb)>0) then
@@ -886,11 +888,11 @@
 
             if (count(rampptr%x/=-101._eb) /= count(rampptr%f_of_x/=-101._eb)) then
                 if (type=='AREA') then
-                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', nramps
-                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', nramps
+                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
+                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
                 else
-                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', nramps
-                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', nramps
+                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
+                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
                 end if
                 stop
             end if
@@ -903,7 +905,7 @@
 
     contains
 
-    subroutine set_ramp_defaults
+    subroutine set_defaults
 
     type                    = 'NULL'
     t(:)                    = -101._eb
@@ -911,40 +913,126 @@
     z(:)                    = -101._eb
     id                      = 'NULL'
 
-    end subroutine set_ramp_defaults
+    end subroutine set_defaults
 
     end subroutine read_ramp
+
+
+    ! --------------------------- TABL (time-dependent table of inputs, currently just for fires) ------------------------
     
-    subroutine read_Fire_instance(lu)
+    subroutine read_tabl(lu)
     
     integer, intent(in) :: lu
     
-    end subroutine read_fire_instance
+    integer :: ios, i, ii
 
+    type(table_type),   pointer :: tablptr
 
-    ! --------------------------- FIRE (actual definition of the fire) -------------------------------------------
-    subroutine read_fire(lu)
+    character(64) :: id
+    character(64), dimension(mxtablcols) :: labels
+    real(eb), dimension(mxtablcols) :: data
+    
+    namelist /TABL/ id, labels, data
+
+    ios = 1
+
+    rewind (unit=lu)
+    input_file_line_number = 0
+
+    ! Scan entire file to look for 'TABL' and identify unique table names
+    n_tabls = 0
+    search_loop: do
+        call checkread('TABL',lu,ios)
+        if (ios==0) tablflag = .true.
+        if (ios==1) exit search_loop
+        read(lu,tabl,iostat=ios)
+        if (ios>0) then
+            write(iofill, '(a,i3)') '***Error in &TABL: Invalid specification for inputs. Check &TABL input, ', n_tabls+1
+            stop
+        end if
+        do i = 1, n_tabls
+            tablptr => tablinfo(i)
+            if(id==tablptr%name) cycle search_loop
+        end do
+        n_tabls = n_tabls + 1
+        if (n_tabls>mxtabls) then
+            write (*,'(a,i3)') '***Error: Too many tables in input data file. Limit is ', mxfires
+            write (iofill,'(a,i3)') '***Error: Too many tables in input data file. Limit is ', mxfires
+            stop
+        end if
+        tablptr => tablinfo(n_tabls)
+        tablptr%name = id
+        tablptr%n_points = 0
+    enddo search_loop
+
+    tabl_flag: if (tablflag) then
+
+        ! gather column names and data for use later on
+        read_tabl_loop: do ii = 1, n_tabls
+            tablptr => tablinfo(ii)
+            rewind (lu)
+            input_file_line_number = 0
+            call checkread('TABL',lu,ios)
+            call set_defaults
+            read(lu,TABL)
+            if (id==tablptr%name) then
+                if(labels(1)/='NULL') then
+                    ! input is column headings
+                    tablptr%n_columns = 0
+                    do i = 1,mxtablcols
+                        if (labels(i)/='NULL') then
+                            tablptr%labels(i) = labels(i)
+                            tablptr%n_columns = tablptr%n_columns + 1
+                        end if
+                    end do
+                else
+                    ! input is a row of data for the table
+                    if (data(1)/=-101._eb) then
+                        tablptr%n_points = tablptr%n_points +1
+                        do i = 1,mxtablcols
+                            if (data(i)/=-101._eb) then
+                                tablptr%data(tablptr%n_points,i) = data(i)
+                            end if
+                        end do
+                    end if
+                end if
+            end if
+
+        end do read_tabl_loop
+
+    end if tabl_flag
+
+    contains
+
+    subroutine set_defaults
+
+    id                    = 'NULL'
+    labels(:)             = 'NULL'
+    data(:)               = -101._eb
+
+    end subroutine set_defaults
+    
+    end subroutine read_tabl
+
+    ! --------------------------- INSF (place an instance of a fire into a compartment) ----------------------------------
+    
+    subroutine read_insf(lu)
 
     integer, intent(in) :: lu
     
-    integer :: ios, i, ii, jj, kk, iroom, base, midpoint
-    real(eb) :: tmpcond, max_hrr, flamelength, hrrpm3, max_area, ohcomb
+    integer :: ios, i, ii, jj, iroom, base, midpoint
+    real(eb) :: tmpcond
     character(64) :: compartment_id
 
     type(room_type),   pointer :: roomptr
     type(fire_type),   pointer :: fireptr
     type(target_type), pointer :: targptr
-    type(ramp_type),   pointer :: rampptr
 
-    real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
-    real(eb) :: area, co_yield, hcl_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, setpoint, &
-        soot_yield, trace_yield
-    real(eb), dimension(3) :: location
-    character(64) :: area_ramp_id, co_yield_ramp_id, comp_id, devc_id, id, hcl_yield_ramp_id, hcn_yield_ramp_id, hrr_ramp_id, &
-        ignition_criterion, soot_yield_ramp_id, trace_yield_ramp_id
-    namelist /FIRE/ area, area_ramp_id, carbon, chlorine, comp_id, co_yield, co_yield_ramp_id, devc_id, heat_of_combustion, &
-        hcl_yield, hcn_yield, hcl_yield_ramp_id, hcn_yield_ramp_id, hrr, hrr_ramp_id, hydrogen, id, ignition_criterion, location, &
-        nitrogen, oxygen, radiative_fraction, setpoint, soot_yield, soot_yield_ramp_id, trace_yield, trace_yield_ramp_id
+    real(eb) setpoint
+    character(64) :: comp_id, devc_id, fire_id, id, ignition_criterion
+    real(eb), dimension(2) :: location
+    
+    namelist /INSF/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint
 
     ios = 1
     tmpcond = 0.0
@@ -952,21 +1040,21 @@
     rewind (unit=lu)
     input_file_line_number = 0
 
-    ! Scan entire file to look for 'FIRE'
+    ! Scan entire file to look for 'INSF'
     n_fires = 0
-    fire_loop: do
-        call checkread ('FIRE', lu, ios)
-        if (ios==0) fireflag = .true.
+    insf_loop: do
+        call checkread ('INSF', lu, ios)
+        if (ios==0) insfflag = .true.
         if (ios==1) then
-            exit fire_loop
+            exit insf_loop
         end if
-        read(lu,FIRE,iostat=ios)
+        read(lu,INSF,iostat=ios)
         if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_fires+1
             stop
         end if
         n_fires =n_fires + 1
-    end do fire_loop
+    end do insf_loop
 
     if (n_fires>mxfires) then
         write (*,'(a,i3)') '***Error: Too many fires in input data file. Limit is ', mxfires
@@ -974,19 +1062,19 @@
         stop
     end if
 
-    fire_flag: if (fireflag) then
+    insf_flag: if (insfflag) then
 
         rewind (lu)
         input_file_line_number = 0
 
-        ! Assign value to CFAST variables for further calculations
-        read_fire_loop: do ii = 1, n_fires
+        ! Assign values to CFAST variables for further calculations
+        read_insf_loop: do ii = 1, n_fires
 
             fireptr => fireinfo(ii)
 
-            call checkread('FIRE',lu,ios)
-            call set_fire_defaults
-            read(lu,FIRE)
+            call checkread('INSF',lu,ios)
+            call set_defaults
+            read(lu,INSF)
 
             iroom = 0
             compartment_id = ' '
@@ -1010,20 +1098,12 @@
             fireptr%room = iroom
             fireptr%name = id
 
-            ! Only constrained fires
-            fireptr%chemistry_type = 2
-            if (fireptr%chemistry_type>2) then
-                write (*,5321) fireptr%chemistry_type
-                write (iofill,5321) fireptr%chemistry_type
-                stop
-            end if
-
             fireptr%x_position = location(1)
             fireptr%y_position = location(2)
-            fireptr%z_position = location(3)
+            fireptr%z_position = 0.0_eb
             if (fireptr%x_position>roomptr%cwidth.or.fireptr%y_position>roomptr%cdepth.or.fireptr%z_position>roomptr%cheight) then
-                write (*,5323) n_fires
-                write (iofill,5323) n_fires
+                write (*,5323) ii
+                write (iofill,5323) ii
                 stop
             end if
 
@@ -1091,6 +1171,132 @@
                 fireptr%ignited  = .true.
                 fireptr%reported = .true.
             end if
+            
+            ! Position the fire
+            roomptr => roominfo(fireptr%room)
+            call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
+            call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
+            call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
+
+        end do read_insf_loop
+
+    end if insf_flag
+
+5320 format ('***Error: Bad FIRE input. Fire specification error, room ',i0,' out of range')
+5321 format ('***Error: Bad FIRE input. Fire specification error, not an allowed fire type',i0)
+5322 format ('***Error: Bad FIRE input. Fire specification is outdated and must include target for ignition')
+5323 format ('***Error: Bad FIRE input. Fire location ',i0,' is outside its compartment')
+5324 format ('***Error: Bad FIRE input. Target specified for fire ',i0, ' does not exist')
+5358 format ('***Error: Bad FIRE input. Not a valid ignition criterion ',i0)
+
+5001 format ('***Error: invalid heat of combustion, must be greater than zero, ',1pg12.3)
+5002 format ('***Error: invalid fire area. all input values must be greater than zero')
+5106 format ('***Error: object ',a,' position set to ',3f7.3,'; maximum hrr per m^3 = ',1pg10.3,' exceeds physical limits')
+5107 format ('Object ',a,' position set to ',3f7.3,'; maximum c_hrr per m^3 = ',1pg10.3,' exceeds nominal limits')
+5108 format ('Typically, this is caused by too small fire area inputs. check hrr and fire area inputs')
+5000 format ('***Error: the key word ',a5,' is not part of a fire definition. fire keywords are likely out of order')
+
+    contains
+
+    subroutine set_defaults
+
+    comp_id                 = 'NULL'
+    devc_id                 = 'NULL'
+    fire_id                 = 'NULL'
+    id                      = 'NULL'
+    ignition_criterion      = 'TIME'
+    location(:)             = 0._eb
+    setpoint                  = 0._eb
+
+    end subroutine set_defaults
+    
+    end subroutine read_insf
+
+
+    ! --------------------------- FIRE (actual definition of the fire) -------------------------------------------
+    subroutine read_fire(lu)
+
+    integer, intent(in) :: lu
+    
+    integer :: ios, i, ii, jj, kk, base, midpoint, n_defs, ifire
+    real(eb) :: tmpcond, max_hrr, flamelength, hrrpm3, max_area, ohcomb
+
+    type(room_type),   pointer :: roomptr
+    type(fire_type),   pointer :: fireptr
+    type(table_type),   pointer :: tablptr
+
+    real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
+    real(eb) :: area, co_yield, hcl_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
+        soot_yield, trace_yield
+    character(64) :: comp_id, id, table_id
+    namelist /FIRE/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
+        hcl_yield, hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
+        table_id, trace_yield
+
+    ios = 1
+    tmpcond = 0.0
+
+    rewind (unit=lu)
+    input_file_line_number = 0
+
+    ! Scan entire file to look for 'FIRE'
+    n_defs = 0
+    fire_loop: do
+        call checkread ('FIRE', lu, ios)
+        if (ios==0) fireflag = .true.
+        if (ios==1) then
+            exit fire_loop
+        end if
+        read(lu,FIRE,iostat=ios)
+        if (ios>0) then
+            write(iofill, '(a,i3)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_defs+1
+            stop
+        end if
+        n_defs =n_defs + 1
+    end do fire_loop
+
+    if (n_defs>mxfires) then
+        write (*,'(a,i3)') '***Error: Too many fires in input data file. Limit is ', mxfires
+        write (iofill,'(a,i3)') '***Error: Too many fires in input data file. Limit is ', mxfires
+        stop
+    end if
+
+    fire_flag: if (fireflag) then
+
+        rewind (lu)
+        input_file_line_number = 0
+
+        ! Assign value to CFAST variables for further calculations
+        read_fire_loop: do ii = 1, n_defs
+
+            call checkread('FIRE',lu,ios)
+            call set_defaults
+            read(lu,FIRE)
+
+            ifire = 0
+            searching: do jj = 1, nr-1
+                fireptr => fireinfo(jj)
+                if (trim(id) == trim(fireptr%fire_name)) then
+                    ifire =jj
+                    exit searching
+                end if
+            end do searching
+
+            if (ifire<1.or.ifire>n_fires) then
+                write (*,5320) ifire
+                write (iofill,5320) ifire
+                stop
+            end if
+            
+            fireptr => fireinfo(ii)
+
+            ! Only constrained fires
+            fireptr%chemistry_type = 2
+            if (fireptr%chemistry_type>2) then
+                write (*,5321) fireptr%chemistry_type
+                write (iofill,5321) fireptr%chemistry_type
+                stop
+            end if
 
             ! Define chemical formula
             fireptr%n_c  = carbon
@@ -1108,7 +1314,7 @@
                 stop
             end if
             
-            ! do constant values for fire inputs first, then check for ramps
+            ! do constant values for fire inputs first, then check for time-varying inputs
 
             ! constant hrr
             fireptr%n_qdot = 1
@@ -1136,78 +1342,36 @@
             fireptr%t_area(1) = 0.0_eb
             fireptr%area(1) = max(area,pio4*0.2_eb**2)
 
-            ! height is no longer variable. it's input is through location(3) and fixed
+            ! constant height
             fireptr%n_height = 1
             fireptr%t_height = 0.0_eb
             fireptr%height(1) = 0.0_eb
 
-            ramp_search: do kk = 1, nramps
-                rampptr=>rampinfo(kk)
-
-                ! Define hrr
-                if (trim(rampptr%id) == trim(hrr_ramp_id)) then
-                    rampptr%room1 = iroom
-                    rampptr%room2 = iroom
-                    rampptr%counter = kk
-                    fireptr%n_qdot = rampptr%npoints
-                    fireptr%t_qdot = rampptr%x
-                    fireptr%qdot = rampptr%f_of_x * 1000._eb
+            tabl_search: do kk = 1, n_tabls
+                tablptr=>tablinfo(kk)
+                if (trim(tablptr%name)==trim(fireptr%fire_name)) then
+                    do i = 1,mxtablcols
+                        select case (trim(tablptr%labels(i)))
+                        case ('TIME')
+                        case ('MDOT')
+                        case ('HRR')
+                            ! hrr = input value * 1000
+                        case ('HEIGHT')
+                        case ('AREA')
+                            case ('CO_YIELD')
+                            case ('SOOT_YIELD')
+                            case ('HC_YIELD')
+                            case ('O2_YIELD')
+                            case ('HCN_YIELD')
+                            case ('HCL_YIELD')
+                            case ('CT_YIELD')
+                            case ('TRACE_YIELD')
+                        end select
+                    end do
                 end if
+            end do tabl_search
 
-                max_hrr = 0.0_eb
-                do i = 1, fireptr%n_qdot
-                    max_hrr = max(max_hrr, fireptr%qdot(i))
-                end do
-
-                ! Define soot
-                if (trim(rampptr%id) == trim(soot_yield_ramp_id)) then
-                    rampptr%room1 = iroom
-                    rampptr%room2 = iroom
-                    rampptr%counter = kk
-                    fireptr%n_soot = rampptr%npoints
-                    fireptr%t_soot = rampptr%x
-                    fireptr%y_soot = rampptr%f_of_x
-                end if
-
-                ! define co
-                if (trim(rampptr%id) == trim(co_yield_ramp_id)) then
-                    rampptr%room1 = iroom
-                    rampptr%room2 = iroom
-                    rampptr%counter = kk
-                    fireptr%n_co = rampptr%npoints
-                    fireptr%t_co = rampptr%x
-                    fireptr%y_co = rampptr%f_of_x
-                end if
-
-                ! define trace
-                ! note that ct, tuhc and ts are carried in the mprodr array - all other species have their own array
-                if (trim(rampptr%id) == trim(trace_yield_ramp_id)) then
-                    rampptr%room1 = iroom
-                    rampptr%room2 = iroom
-                    rampptr%counter = kk
-                    fireptr%n_co = rampptr%npoints
-                    fireptr%t_trace = rampptr%x
-                    fireptr%y_trace = rampptr%f_of_x
-                end if
-
-                ! define area
-
-                ! the minimum area is to stop dassl from a floating point underflow when it tries to extrapolate back to the
-                ! ignition point. it only occurs for objects which are on the floor and ignite after t=0. the assumed minimum fire
-                ! diameter of 0.2 m below is the minimum valid fire diameter for heskestad's plume correlation
-                ! (from sfpe handbook chapter)
-                if (trim(rampptr%id) == trim(area_ramp_id)) then
-                    rampptr%room1 = iroom
-                    rampptr%room2 = iroom
-                    rampptr%counter = kk
-                    fireptr%n_area = rampptr%npoints
-                    fireptr%t_area = rampptr%x
-                    fireptr%area = rampptr%f_of_x
-                end if
-
-            end do ramp_search
-
-            ! calculate mass loos rate from hrr and hoc inputs
+            ! calculate mass loss rate from hrr and hoc inputs
             fireptr%mdot = fireptr%qdot / ohcomb
             fireptr%t_mdot = fireptr%t_qdot
             fireptr%n_mdot = fireptr%n_qdot
@@ -1262,7 +1426,7 @@
 
     end if fire_flag
 
-5320 format ('***Error: Bad FIRE input. Fire specification error, room ',i0,' out of range')
+5320 format ('***Error: Bad FIRE input. Fire specification error, fire ',i0,' is not referenced')
 5321 format ('***Error: Bad FIRE input. Fire specification error, not an allowed fire type',i0)
 5322 format ('***Error: Bad FIRE input. Fire specification is outdated and must include target for ignition')
 5323 format ('***Error: Bad FIRE input. Fire location ',i0,' is outside its compartment')
@@ -1278,35 +1442,26 @@
 
     contains
 
-    subroutine set_fire_defaults
+    subroutine set_defaults
 
     area                      = 0._eb
-    area_ramp_id              = 'NULL'
     carbon                    = 0._eb
     chlorine                  = 0._eb
     comp_id                   = 'NULL'
     co_yield                  = 0._eb
-    co_yield_ramp_id           = 'NULL'
-    devc_id                   = 'NULL'
     hcn_yield                 = 0.0_eb
-    hcn_yield_ramp_id         = 'NULL'
     heat_of_combustion        = 50000._eb
     hrr                       = 0.0_eb
-    hrr_ramp_id               = 'NULL'
     hydrogen                  = 0._eb
     id                        = 'NULL'
-    ignition_criterion        = 'TIME'
-    location(:)               = 0._eb
     nitrogen                  = 0._eb
     oxygen                    = 0._eb
     radiative_fraction        = 0._eb
-    setpoint                  = 0._eb
     soot_yield                = 0._eb
-    soot_yield_ramp_id        = 'NULL'
+    table_id                  = 'NULL'
     trace_yield               = 0._eb
-    trace_yield_ramp_id       = 'NULL'
 
-    end subroutine set_fire_defaults
+    end subroutine set_defaults
 
     end subroutine read_fire
 
@@ -1393,7 +1548,7 @@
         read_vent_loop: do ii=1,n_hvents+n_mvents+n_vvents
 
             call checkread('VENT',lu,ios)
-            call set_vent_defaults
+            call set_defaults
             read(lu,VENT)
 
             ! Wall vent
@@ -1475,7 +1630,7 @@
                     finalfraction = post_fraction
 
                     if (trim(opening_ramp_id) /= 'NULL') then
-                        ramp_search: do kk=1,nramps
+                        ramp_search: do kk=1,n_ramps
                             rampptr=>rampinfo(kk)
                             if (trim(rampptr%id) == trim(opening_ramp_id)) then
                                 rampptr%room1 = i
@@ -1485,7 +1640,7 @@
                             end if
                         end do ramp_search
 
-                        if (kk == nramps+1) then
+                        if (kk == n_ramps+1) then
                             write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                             write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                             stop
@@ -1615,7 +1770,7 @@
                         finalfraction = post_fraction
 
                         if (trim(opening_ramp_id) /= 'NULL') then
-                            ramp_search_2: do kk=1,nramps
+                            ramp_search_2: do kk=1,n_ramps
                                 rampptr => rampinfo(kk)
                                 if (trim(rampptr%id) == trim(opening_ramp_id)) then
                                     rampptr%room1 = i
@@ -1625,7 +1780,7 @@
                                 end if
                             end do ramp_search_2
 
-                            if (kk == nramps+1) then
+                            if (kk == n_ramps+1) then
                                 write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                                 write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                                 stop
@@ -1740,7 +1895,7 @@
                         finalfraction = 1._eb
 
                         if (trim(opening_ramp_id) /= 'NULL') then
-                            ramp_search_3: do kk=1,nramps
+                            ramp_search_3: do kk=1,n_ramps
                                 rampptr=>rampinfo(kk)
                                 if (trim(rampptr%id) == trim(opening_ramp_id)) then
                                     rampptr%room1 = i
@@ -1750,7 +1905,7 @@
                                 end if
                             end do ramp_search_3
 
-                            if (kk == nramps+1) then
+                            if (kk == n_ramps+1) then
                                 write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                                 write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
                                 stop
@@ -1808,7 +1963,7 @@
 
     contains
 
-    subroutine set_vent_defaults
+    subroutine set_defaults
 
     area                  = 0._eb
     areas(:)              = 0._eb
@@ -1836,7 +1991,7 @@
     type                  = 'NULL'
     width                 = 0._eb
 
-    end subroutine set_vent_defaults
+    end subroutine set_defaults
 
     end subroutine read_vent
 
@@ -1890,7 +2045,7 @@
         countloop : do k = 1, nmlcount + nvcons
 
             call checkread('CONN',lu,ios)
-            call set_conn_defaults
+            call set_defaults
             read(lu,CONN)
 
             if (trim(type) == 'WALL') then
@@ -2017,14 +2172,14 @@
 
     contains
 
-    subroutine set_conn_defaults
+    subroutine set_defaults
 
     comp_id           = 'NULL'
     comp_ids(:)       = 'NULL'
     f(:)              = -101._eb
     type              = 'NULL'
 
-    end subroutine set_conn_defaults
+    end subroutine set_defaults
 
     end subroutine read_conn
 
@@ -2073,7 +2228,7 @@
         read_isof_loop: do ii = 1, counter
 
             call checkread('ISOF',lu,ios)
-            call set_isof_defaults
+            call set_defaults
             read(lu,ISOF)
 
             compartment_id = ' '
@@ -2110,12 +2265,12 @@
 
     contains
 
-    subroutine set_isof_defaults
+    subroutine set_defaults
 
     value                   = -101.0_eb
     comp_id                 = 'NULL'
 
-    end subroutine set_isof_defaults
+    end subroutine set_defaults
 
     end subroutine read_isof
 
@@ -2165,7 +2320,7 @@
         read_slcf_loop: do ii = 1,counter
 
             call checkread('SLCF',lu,ios)
-            call set_slcf_defaults
+            call set_defaults
             read(lu,SLCF)
 
             nvisualinfo = nvisualinfo + 1
@@ -2259,14 +2414,14 @@
 
     contains
 
-    subroutine set_slcf_defaults
+    subroutine set_defaults
 
     domain                  = 'NULL'
     plane                   = 'NULL'
     position                = 0._eb
     comp_id                 = 'NULL'
 
-    end subroutine set_slcf_defaults
+    end subroutine set_defaults
 
     end subroutine read_slcf
 
@@ -2307,7 +2462,7 @@
         input_file_line_number = 0
 
         call checkread('DIAG',lu,ios)
-        call set_diag_defaults
+        call set_defaults
         read(lu,DIAG)
         
         if (mode == 'RADI') radi_verification_flag = .true.
@@ -2319,7 +2474,7 @@
 
     contains
 
-    subroutine set_diag_defaults
+    subroutine set_defaults
 
     mode = 'NULL'
     rad_solver =  'NULL'
@@ -2327,7 +2482,7 @@
     partial_pressure_co2 = 0._eb
     tempTgas = 0._eb
 
-    end subroutine set_diag_defaults
+    end subroutine set_defaults
 
     end subroutine read_diag
 

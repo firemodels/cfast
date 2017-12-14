@@ -12,7 +12,7 @@ module radiation_routines
     use room_data
     use fire_data, only: n_fires, fireinfo
     use option_data
-    use debug_data
+    use diag_data
 
     implicit none
 

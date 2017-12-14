@@ -822,11 +822,11 @@ module output_routines
 5135 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))  
     
     ! ramps
-    if (nramps==0) then
+    if (n_ramps==0) then
         write (iofilo,5150)
     else
         write (iofilo,5160)
-        do i = 1, nramps
+        do i = 1, n_ramps
             rampptr => rampinfo(i)
             if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
 222            roomptr => roominfo(rampptr%room2)

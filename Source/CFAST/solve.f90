@@ -23,7 +23,7 @@ module solve_routines
     use ramp_data
     use setup_data
     use solver_data
-    use debug_data
+    use diag_data
     use cparams
     use target_data
     use fire_data

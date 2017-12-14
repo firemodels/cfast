@@ -13,7 +13,7 @@ module hflow_routines
     use cparams
     use option_data
     use vent_data
-    use debug_data
+    use diag_data
     use solver_data, only: i_wallmap, i_speciesmap
 
     implicit none

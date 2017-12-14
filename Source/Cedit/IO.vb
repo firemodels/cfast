@@ -2763,7 +2763,6 @@ Module IO
         Dim aVent As Vent
         Dim aFire As Fire
         Dim aVisual As Visual
-        Dim doneRamps As New RampCollection
 
         FileOpen(IO, filename, OpenMode.Output, OpenAccess.Write, OpenShare.Shared)
 
@@ -2867,7 +2866,16 @@ Module IO
                 PrintLine(IO, ln)
                 If myThermalProperties.Item(i).Name <> "" Then
                     If myThermalProperties.Item(i).Name.IndexOf("'") > 0 Then
-                        ln = " MATERIAL = """ + myThermalProperties.Item(i).Name + """ , "
+                        ln = myThermalProperties.Item(i).Name
+                        j = 0
+                        Do While (j <= ln.Length - 1)
+                            If ln.Substring(j, 1) = "'" Then
+                                ln = ln.Insert(j, "'")
+                                j += 1
+                            End If
+                            j += 1
+                        Loop
+                        ln = " MATERIAL = '" + ln + "' , "
                     Else
                         ln = " MATERIAL = '" + myThermalProperties.Item(i).Name + "' , "
                     End If
@@ -3132,9 +3140,6 @@ Module IO
             End If
             ln = " / "
             PrintLine(IO, ln)
-            If aVent.RampID <> "" Then
-                WriteRamp(IO, aVent.RampID, doneRamps, 0)
-            End If
         Next
 
         ln = "!! "
@@ -3216,10 +3221,6 @@ Module IO
                 PrintLine(IO, ln)
             End If
             ln = " / "
-            PrintLine(IO, ln)
-            If aVent.RampID <> "" Then
-                WriteRamp(IO, aVent.RampID, doneRamps, 1)
-            End If
         Next
 
         ln = "!! "
@@ -3312,9 +3313,6 @@ Module IO
             End If
             ln = " / "
             PrintLine(IO, ln)
-            If aVent.RampID <> "" Then
-                WriteRamp(IO, aVent.RampID, doneRamps, 1)
-            End If
         Next
 
         ln = "!! "
@@ -3499,7 +3497,6 @@ Module IO
             End If
         Next
 
-        doneRamps.Clear()
         FileClose(IO)
 
     End Sub

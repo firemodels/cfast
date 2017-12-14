@@ -102,7 +102,7 @@ Public Class NameListFile
                 Do While (Not delimiter(nmlst.Substring(idx, 1)))
                     idx -= 1
                 Loop
-                val = nmlst.Substring(0, idx + 1)
+                val = nmlst.Substring(0, idx + 1) + "  "
                 nmlst = nmlst.Remove(0, idx + 1)
             ElseIf (nmlst.IndexOf("/", 0) >= 0) Then
                 idx = nmlst.IndexOf("/", 0)
@@ -212,8 +212,14 @@ Public Class NameListFile
                         ElseIf (nmlst.Substring(idx, 1) = "'") Then
                             idx2 = idx + 1
                             idx += 1
-                            Do While (nmlst.Substring(idx2, 1) <> "'" And Not (nmlst.Substring(idx2, 2) = "''"))
-                                idx2 += 1
+                            Do While (nmlst.Substring(idx2, 1) <> "'" Or (nmlst.Substring(idx2, 2) = "''"))
+                                If nmlst.Substring(idx2, 2) = "''" Then
+                                    nmlst = nmlst.Remove(idx2, 1)
+                                    ilen = nmlst.Length
+                                    idx2 += 1
+                                Else
+                                    idx2 += 1
+                                End If
                             Loop
                             ssht.CSVcell(irow, icol) = nmlst.Substring(idx, idx2 - idx)
                             ssht.CSVcell(irow, 3) = ssht.CSVcell(irow, 3) + 1

@@ -924,7 +924,7 @@
     
     integer, intent(in) :: lu
     
-    integer :: ios, i, ii
+    integer :: ios, i, ii, jj, n_tabl_lines
 
     type(table_type),   pointer :: tablptr
 
@@ -952,7 +952,10 @@
         end if
         do i = 1, n_tabls
             tablptr => tablinfo(i)
-            if(id==tablptr%name) cycle search_loop
+            if(id==tablptr%name) then
+                n_tabl_lines = n_tabl_lines +1
+                cycle search_loop
+            end if
         end do
         n_tabls = n_tabls + 1
         if (n_tabls>mxtabls) then
@@ -960,9 +963,11 @@
             write (iofill,'(a,i3)') '***Error: Too many tables in input data file. Limit is ', mxfires
             stop
         end if
+        n_tabl_lines = n_tabl_lines +1
         tablptr => tablinfo(n_tabls)
         tablptr%name = id
         tablptr%n_points = 0
+
     enddo search_loop
 
     tabl_flag: if (tablflag) then
@@ -972,34 +977,35 @@
             tablptr => tablinfo(ii)
             rewind (lu)
             input_file_line_number = 0
-            call checkread('TABL',lu,ios)
-            call set_defaults
-            read(lu,TABL)
-            if (id==tablptr%name) then
-                if(labels(1)/='NULL') then
-                    ! input is column headings
-                    tablptr%n_columns = 0
-                    do i = 1,mxtablcols
-                        if (labels(i)/='NULL') then
-                            tablptr%labels(i) = labels(i)
-                            tablptr%n_columns = tablptr%n_columns + 1
-                        end if
-                    end do
-                else
-                    ! input is a row of data for the table
-                    if (data(1)/=-101._eb) then
-                        tablptr%n_points = tablptr%n_points +1
+            do jj = 1, n_tabl_lines
+                call checkread('TABL',lu,ios)
+                call set_defaults
+                read(lu,TABL)
+                if (id==tablptr%name) then
+                    if(labels(1)/='NULL') then
+                        ! input is column headings
+                        tablptr%n_columns = 0
                         do i = 1,mxtablcols
-                            if (data(i)/=-101._eb) then
-                                tablptr%data(tablptr%n_points,i) = data(i)
+                            if (labels(i)/='NULL') then
+                                tablptr%labels(i) = labels(i)
+                                tablptr%n_columns = tablptr%n_columns + 1
                             end if
                         end do
+                    else
+                        ! input is a row of data for the table
+                        if (data(1)/=-101._eb) then
+                            tablptr%n_points = tablptr%n_points +1
+                            do i = 1,mxtablcols
+                                if (data(i)/=-101._eb) then
+                                    tablptr%data(tablptr%n_points,i) = data(i)
+                                end if
+                            end do
+                        end if
                     end if
                 end if
-            end if
-
+            end do
         end do read_tabl_loop
-
+continue
     end if tabl_flag
 
     contains
@@ -1097,6 +1103,7 @@
 
             fireptr%room = iroom
             fireptr%name = id
+            fireptr%fire_name = fire_id
 
             fireptr%x_position = location(1)
             fireptr%y_position = location(2)
@@ -1218,7 +1225,7 @@
 
     integer, intent(in) :: lu
     
-    integer :: ios, i, ii, jj, kk, base, midpoint, n_defs, ifire
+    integer :: ios, i, ii, jj, kk, base, midpoint, n_defs, ifire, np
     real(eb) :: tmpcond, max_hrr, flamelength, hrrpm3, max_area, ohcomb
 
     type(room_type),   pointer :: roomptr
@@ -1274,7 +1281,7 @@
             read(lu,FIRE)
 
             ifire = 0
-            searching: do jj = 1, nr-1
+            searching: do jj = 1, n_fires
                 fireptr => fireinfo(jj)
                 if (trim(id) == trim(fireptr%fire_name)) then
                     ifire =jj
@@ -1288,7 +1295,13 @@
                 stop
             end if
             
-            fireptr => fireinfo(ii)
+            fireptr => fireinfo(ifire)
+            fireptr%qdot = 0.0_eb
+            fireptr%y_soot = 0.0_eb
+            fireptr%y_co = 0.0_eb
+            fireptr%y_trace = 0.0_eb
+            fireptr%area = pio4*0.2_eb**2
+            fireptr%height = 0.0_eb
 
             ! Only constrained fires
             fireptr%chemistry_type = 2
@@ -1350,22 +1363,36 @@
             tabl_search: do kk = 1, n_tabls
                 tablptr=>tablinfo(kk)
                 if (trim(tablptr%name)==trim(fireptr%fire_name)) then
+                    np = tablptr%n_points
                     do i = 1,mxtablcols
                         select case (trim(tablptr%labels(i)))
                         case ('TIME')
-                        case ('MDOT')
+                            fireptr%t_qdot(1:np) = tablptr%data(1:np,i)
+                            fireptr%n_qdot = np
+                            fireptr%t_soot(1:np) = tablptr%data(1:np,i)
+                            fireptr%n_soot = np
+                            fireptr%t_co(1:np) = tablptr%data(1:np,i)
+                            fireptr%n_co = np
+                            fireptr%t_trace(1:np) = tablptr%data(1:np,i)
+                            fireptr%n_trace = np
+                            fireptr%t_area(1:np) = tablptr%data(1:np,i)
+                            fireptr%n_area = np
+                            fireptr%t_height(1:np) = tablptr%data(1:np,i)
+                            fireptr%n_height = np
                         case ('HRR')
-                            ! hrr = input value * 1000
+                            fireptr%qdot(1:np) = tablptr%data(1:np,i)*1000._eb
                         case ('HEIGHT')
+                            fireptr%height(1:np) = tablptr%data(1:np,i)
                         case ('AREA')
-                            case ('CO_YIELD')
-                            case ('SOOT_YIELD')
-                            case ('HC_YIELD')
-                            case ('O2_YIELD')
-                            case ('HCN_YIELD')
-                            case ('HCL_YIELD')
-                            case ('CT_YIELD')
-                            case ('TRACE_YIELD')
+                            fireptr%area(1:np) = tablptr%data(1:np,i)
+                        case ('CO_YIELD')
+                            fireptr%y_co(1:np) = tablptr%data(1:np,i)
+                        case ('SOOT_YIELD')
+                            fireptr%y_soot(1:np) = tablptr%data(1:np,i)
+                        case ('HCN_YIELD')
+                        case ('HCL_YIELD')
+                        case ('TRACE_YIELD')
+                            fireptr%y_trace(1:np) = tablptr%data(1:np,i)
                         end select
                     end do
                 end if
@@ -1471,7 +1498,7 @@
 
     integer, intent(in) :: lu
 
-    integer :: i, ii, j, jj, k, kk, mm, imin, jmax, counter1, counter2, counter3, iroom
+    integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, iramp
     integer :: ios
     character(64) :: compartment_id
     real(eb) :: initialtime, initialfraction, finaltime, finalfraction
@@ -1482,12 +1509,13 @@
     type(ramp_type), pointer :: rampptr
 
     real(eb) :: area, bottom, flow, offset, setpoint, top, width, pre_fraction, post_fraction, filter_time, filter_efficiency
-    real(eb),dimension(2):: areas, cutoffs, heights, offsets
+    real(eb), dimension(2) :: areas, cutoffs, heights, offsets
+    real(eb), dimension(mxpts) :: t, f
     character(64),dimension(2) :: comp_ids, orientations
-    character(64) :: criterion, devc_id, face, filtering_ramp_id, id, opening_ramp_id, shape, type
-    namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, face, filter_efficiency, filtering_ramp_id, &
-        filter_time, flow, heights, id, offset, offsets, opening_ramp_id, orientations, pre_fraction, post_fraction, &
-        setpoint, shape, top, type, width
+    character(64) :: criterion, devc_id, face, id, shape, type
+    namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, f, face, filter_efficiency, &
+        filter_time, flow, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
+        setpoint, shape, t, top, type, width
 
     ios = 1
 
@@ -1603,7 +1631,6 @@
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter1
-                ventptr%ramp_id = opening_ramp_id
 
                 if (n_hvents>mxhvents) then
                     write (*,5081) i,j,k
@@ -1629,20 +1656,25 @@
                     finaltime = 0._eb
                     finalfraction = post_fraction
 
-                    if (trim(opening_ramp_id) /= 'NULL') then
-                        ramp_search: do kk=1,n_ramps
-                            rampptr=>rampinfo(kk)
-                            if (trim(rampptr%id) == trim(opening_ramp_id)) then
-                                rampptr%room1 = i
-                                rampptr%room2 = j
-                                rampptr%counter = kk
-                                exit ramp_search
-                            end if
-                        end do ramp_search
-
-                        if (kk == n_ramps+1) then
-                            write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
-                            write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
+                    if (t(1)/=-101._eb) then
+                        if (n_ramps<=mxramps) then
+                            n_ramps = n_ramps + 1
+                            rampptr=>rampinfo(n_ramps)
+                            rampptr%type = 'H'
+                            rampptr%room1 = ventptr%room1
+                            rampptr%room2 = ventptr%room2
+                            rampptr%counter = ventptr%counter
+                            rampptr%npoints = 0
+                            do iramp = 1,mxpts
+                                if (t(iramp)/=-101._eb) then
+                                    rampptr%x(iramp) = t(iramp)
+                                    rampptr%f_of_x(iramp) = f(iramp)
+                                    rampptr%npoints = rampptr%npoints + 1
+                                end if
+                            end do
+                        else
+                            write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
+                            write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
                             stop
                         end if
                     end if
@@ -1740,8 +1772,6 @@
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter2
-                ventptr%ramp_id = opening_ramp_id
-                ventptr%filter_id = filtering_ramp_id
                 ventptr%filter_initial_time = filter_time
                 ventptr%filter_final_time = filter_time + 1.0_eb
                 ventptr%filter_final_fraction = filter_efficiency / 100.0_eb
@@ -1769,20 +1799,25 @@
                         finaltime = 0._eb
                         finalfraction = post_fraction
 
-                        if (trim(opening_ramp_id) /= 'NULL') then
-                            ramp_search_2: do kk=1,n_ramps
-                                rampptr => rampinfo(kk)
-                                if (trim(rampptr%id) == trim(opening_ramp_id)) then
-                                    rampptr%room1 = i
-                                    rampptr%room2 = j
-                                    rampptr%counter = kk
-                                    exit ramp_search_2
-                                end if
-                            end do ramp_search_2
-
-                            if (kk == n_ramps+1) then
-                                write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
-                                write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
+                        if (t(1)/=-101._eb) then
+                            if (n_ramps<=mxramps) then
+                                n_ramps = n_ramps + 1
+                                rampptr=>rampinfo(n_ramps)
+                                rampptr%type = 'M'
+                                rampptr%room1 = ventptr%room1
+                                rampptr%room2 = ventptr%room2
+                                rampptr%counter = ventptr%counter
+                                rampptr%npoints = 0
+                                do iramp = 1,mxpts
+                                    if (t(iramp)/=-101._eb) then
+                                        rampptr%x(iramp) = t(iramp)
+                                        rampptr%f_of_x(iramp) = f(iramp)
+                                        rampptr%npoints = rampptr%npoints + 1
+                                    end if
+                                end do
+                            else
+                                write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
+                                write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
                                 stop
                             end if
                         end if
@@ -1871,7 +1906,6 @@
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter3
-                ventptr%ramp_id = opening_ramp_id
 
                 ! read_input_file will verify the orientation (i is on top of j)
                 ventptr%area = area
@@ -1894,20 +1928,25 @@
                         finaltime = 0._eb
                         finalfraction = 1._eb
 
-                        if (trim(opening_ramp_id) /= 'NULL') then
-                            ramp_search_3: do kk=1,n_ramps
-                                rampptr=>rampinfo(kk)
-                                if (trim(rampptr%id) == trim(opening_ramp_id)) then
-                                    rampptr%room1 = i
-                                    rampptr%room2 = j
-                                    rampptr%counter = kk
-                                    exit ramp_search_3
-                                end if
-                            end do ramp_search_3
-
-                            if (kk == n_ramps+1) then
-                                write (*,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
-                                write (iofill,'(a,a)') '***Error: RAMP ID cannot be found in input file. ', opening_ramp_id
+                        if (t(1)/=-101._eb) then
+                            if (n_ramps<=mxramps) then
+                                n_ramps = n_ramps + 1
+                                rampptr=>rampinfo(n_ramps)
+                                rampptr%type = 'V'
+                                rampptr%room1 = ventptr%room1
+                                rampptr%room2 = ventptr%room2
+                                rampptr%counter = ventptr%counter
+                                rampptr%npoints = 0
+                                do iramp = 1,mxpts
+                                    if (t(iramp)/=-101._eb) then
+                                        rampptr%x(iramp) = t(iramp)
+                                        rampptr%f_of_x(iramp) = f(iramp)
+                                        rampptr%npoints = rampptr%npoints + 1
+                                    end if
+                                end do
+                            else
+                                write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
+                                write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
                                 stop
                             end if
                         end if
@@ -1972,24 +2011,24 @@
     criterion             = 'TIME'
     cutoffs(:)            = 0._eb
     devc_id               = 'NULL'
+    f                     = -101._eb
     face                  = 'NULL'
     filter_time           = 0._eb
     filter_efficiency     = 0._eb
-    filtering_ramp_id     = 'NULL'
     flow                  = 0._eb
     heights(:)            = 0._eb
     id                    = 'NULL'
     offset                = 0._eb
     offsets(:)            = 0._eb
-    opening_ramp_id       = 'NULL'
     orientations          = 'VERTICAL'
     pre_fraction          = 1._eb
     post_fraction         = 1._eb
     setpoint              = 0._eb
     shape                 = 'NULL'
+    t                     = -101._eb
     top                   = 0._eb
     type                  = 'NULL'
-    width                 = 0._eb
+        width                 = 0._eb
 
     end subroutine set_defaults
 

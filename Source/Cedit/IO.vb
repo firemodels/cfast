@@ -2969,9 +2969,11 @@ Module IO
             PrintLine(IO, ln)
         Next
 
+        ' Writing devices (targets, detectors, sprinklers)
+
         ln = "!! "
         PrintLine(IO, ln)
-        ln = "!! DEVC"
+        ln = "!! Devices"
         PrintLine(IO, ln)
         ln = "!! "
         PrintLine(IO, ln)

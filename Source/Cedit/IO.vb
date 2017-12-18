@@ -1437,6 +1437,7 @@ Module IO
                         Next
                         For k = 1 To max
                             aFireCurves(aMap(k - 1), m) = NMList.ForNMListVarGetNum(i, n, k)
+                            If aMap(k - 1) = 2 Then aFireCurves(aMap(k - 1), m) *= 1000
                         Next
                         m += 1
                     End If
@@ -3221,6 +3222,7 @@ Module IO
                 PrintLine(IO, ln)
             End If
             ln = " / "
+            PrintLine(IO, ln)
         Next
 
         ln = "!! "
@@ -3387,7 +3389,11 @@ Module IO
                 For j = 0 To k
                     ln = "&TABL ID = '" + aFire.Name + "' , DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
                     For l = 1 To aFire.ColMapUpperBound
-                        ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
+                        If aFire.ColMap(l) = 2 Then
+                            ln = ln + " , " + (aFireCurves(aFire.ColMap(l), j) / 1000).ToString
+                        Else
+                            ln = ln + " , " + aFireCurves(aFire.ColMap(l), j).ToString
+                        End If
                     Next
                     ln = ln + " /"
                     PrintLine(IO, ln)

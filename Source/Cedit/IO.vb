@@ -658,8 +658,8 @@ Module IO
         'ReadInputFileNMLRamp(NMList)
         ReadInputFileNMLComp(NMList)
         ReadInputFileNMLDevc(NMList)
+        ReadInputFileNMLChem(NMList)
         ReadInputFileNMLFire(NMList)
-        ReadInputFileNMLInsf(NMList)
         ReadInputFileNMLVent(NMList)
         ReadInputFileNMLConn(NMList)
         ReadInputFileNMLISOF(NMList)
@@ -1233,7 +1233,7 @@ Module IO
         Dim test As Integer = myTargets.Count
 
     End Sub
-    Public Sub ReadInputFileNMLInsf(ByVal NMList As NameListFile)
+    Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
         Dim compid, id, devcid, ignitcrit, fireid As String
         Dim setp As Single
@@ -1241,7 +1241,7 @@ Module IO
         Dim aDummy As Single = 273.15
 
         For i = 1 To NMList.TotNMList
-            If (NMList.GetNMListID(i) = "INSF") Then
+            If (NMList.GetNMListID(i) = "FIRE") Then
                 id = ""
                 compid = ""
                 devcid = ""
@@ -1300,7 +1300,7 @@ Module IO
             End If
         Next
     End Sub
-    Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
+    Public Sub ReadInputFileNMLChem(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim id As String
         Dim carbon, chlorine, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
@@ -1308,7 +1308,7 @@ Module IO
         Dim valid As Boolean
 
         For i = 1 To NMList.TotNMList
-            If (NMList.GetNMListID(i) = "FIRE") Then
+            If (NMList.GetNMListID(i) = "CHEM") Then
                 carbon = 1
                 chlorine = 0
                 hoc = 50000
@@ -3321,14 +3321,14 @@ Module IO
 
         ln = "!! "
         PrintLine(IO, ln)
-        ln = "!! FIRE "
+        ln = "!! Fires "
         PrintLine(IO, ln)
         ln = "!! "
         PrintLine(IO, ln)
 
         For i = 0 To myFireInstances.Count - 1
             aFire = myFireInstances.Item(i)
-            ln = "&INSF"
+            ln = "&FIRE"
             PrintLine(IO, ln)
             ln = " ID = '" + aFire.Name + "' "
             PrintLine(IO, ln)
@@ -3361,7 +3361,7 @@ Module IO
         For i = 0 To myFires.Count - 1
             If myFireInstances.NumberofInstances(myFires.Item(i).Name) > 0 Then
                 aFire = myFires.Item(i)
-                ln = "&FIRE"
+                ln = "&CHEM"
                 PrintLine(IO, ln)
                 ln = " ID = '" + aFire.Name + "' "
                 PrintLine(IO, ln)

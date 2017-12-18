@@ -48,8 +48,8 @@
     call read_comp (iofili,ncomp)
     call read_devc (iofili)
     call read_tabl (iofili)
-    call read_insf (iofili)
     call read_fire (iofili)
+    call read_chem (iofili)
     call read_vent (iofili)
     call read_conn (iofili)
     call read_isof (iofili)
@@ -1020,9 +1020,9 @@ continue
     
     end subroutine read_tabl
 
-    ! --------------------------- INSF (place an instance of a fire into a compartment) ----------------------------------
+    ! --------------------------- FIRE (place an instance of a fire into a compartment) ----------------------------------
     
-    subroutine read_insf(lu)
+    subroutine read_fire(lu)
 
     integer, intent(in) :: lu
     
@@ -1038,7 +1038,7 @@ continue
     character(64) :: comp_id, devc_id, fire_id, id, ignition_criterion
     real(eb), dimension(2) :: location
     
-    namelist /INSF/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint
+    namelist /FIRE/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint
 
     ios = 1
     tmpcond = 0.0
@@ -1046,15 +1046,15 @@ continue
     rewind (unit=lu)
     input_file_line_number = 0
 
-    ! Scan entire file to look for 'INSF'
+    ! Scan entire file to look for 'FIRE'
     n_fires = 0
     insf_loop: do
-        call checkread ('INSF', lu, ios)
+        call checkread ('FIRE', lu, ios)
         if (ios==0) insfflag = .true.
         if (ios==1) then
             exit insf_loop
         end if
-        read(lu,INSF,iostat=ios)
+        read(lu,FIRE,iostat=ios)
         if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_fires+1
             stop
@@ -1078,9 +1078,9 @@ continue
 
             fireptr => fireinfo(ii)
 
-            call checkread('INSF',lu,ios)
+            call checkread('FIRE',lu,ios)
             call set_defaults
-            read(lu,INSF)
+            read(lu,FIRE)
 
             iroom = 0
             compartment_id = ' '
@@ -1217,11 +1217,11 @@ continue
 
     end subroutine set_defaults
     
-    end subroutine read_insf
+    end subroutine read_fire
 
 
-    ! --------------------------- FIRE (actual definition of the fire) -------------------------------------------
-    subroutine read_fire(lu)
+    ! --------------------------- CHEM (chemistry of the fire) -------------------------------------------
+    subroutine read_chem(lu)
 
     integer, intent(in) :: lu
     
@@ -1236,7 +1236,7 @@ continue
     real(eb) :: area, co_yield, hcl_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
         soot_yield, trace_yield
     character(64) :: comp_id, id, table_id
-    namelist /FIRE/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
+    namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
         hcl_yield, hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
         table_id, trace_yield
 
@@ -1249,12 +1249,12 @@ continue
     ! Scan entire file to look for 'FIRE'
     n_defs = 0
     fire_loop: do
-        call checkread ('FIRE', lu, ios)
+        call checkread ('CHEM', lu, ios)
         if (ios==0) fireflag = .true.
         if (ios==1) then
             exit fire_loop
         end if
-        read(lu,FIRE,iostat=ios)
+        read(lu,CHEM,iostat=ios)
         if (ios>0) then
             write(iofill, '(a,i3)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_defs+1
             stop
@@ -1273,12 +1273,13 @@ continue
         rewind (lu)
         input_file_line_number = 0
 
-        ! Assign value to CFAST variables for further calculations
+        ! Assign value to CFAST variables for further calculations. 
+        !This just adds information to previously read and defined fires from &FIRE
         read_fire_loop: do ii = 1, n_defs
 
-            call checkread('FIRE',lu,ios)
+            call checkread('CHEM',lu,ios)
             call set_defaults
-            read(lu,FIRE)
+            read(lu,CHEM)
 
             ifire = 0
             searching: do jj = 1, n_fires
@@ -1490,7 +1491,7 @@ continue
 
     end subroutine set_defaults
 
-    end subroutine read_fire
+    end subroutine read_chem
 
 
     ! --------------------------- VENT -------------------------------------------

@@ -47,15 +47,17 @@ The general structure of an input file is shown below, with many lines of the or
 &COMP ID = 'Comp 1', WIDTH = 5., DEPTH = 5., HEIGHT = 3. ... /
 &VENT ID = 'VVENT 1', TYPE = 'CEILING', COMP_IDS = 'Comp 3', 'Comp 2',
       AREA = 1., SHAPE = 'ROUND', /
-&INSF ID = 'Wood_Wall', COMP_ID = 'Comp 2',
-      LOCATION = 2.5, 5., 1.5, FIRE_ID=''Wood Wall' /
-&FIRE ID = 'Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
-      HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33 /
-&TABL ID = 'Wood Wall', LABELS = 'TIME', 'HRR' ,'AREA', 'CO_YIELD', 'SOOT_YIELD' /
-&TABL ID = 'Wood Wall', DATA =     0.,    0.,    0.05,   0.006,      0.015 /
-&TABL ID = 'Wood Wall', DATA =     0.,    8000., 9.0,    0.006,      0.015 /
 &DEVC ID = 'Smoke Detector 1', COMP_ID = 'Comp 1',
       TYPE = 'SMOKE', LOCATION = 3., 3., 2.97, SETPOINT = 23.93346 /
+&FIRE ID = 'Wood_Wall'
+ COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'
+ LOCATION = 2.5, 5 /
+&CHEM ID = 'Wood_Wall_Fire'
+ CARBON = 6, CHLORINE = 0, HYDROGEN = 10, NITROGEN = 0, OXYGEN = 5
+ HEAT_OF_COMBUSTION = 18100,  RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Wood_Wall_Fire', LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA', 'CO_YIELD', 'SOOT_YIELD' /
+&TABL ID = 'Wood_Wall_Fire', DATA =    0,      0,     0,        0.05,   0.00617,    0.015 /
+&TABL ID = 'Wood_Wall_Fire', DATA =    8000,   1000,  3,        9,      0.00617,    0.015 /
 &CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
 &SLCF DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
 &TAIL / End of file.
@@ -73,12 +75,12 @@ Table~\ref{tbl:namelistgroups} provides a quick reference to all the namelist pa
 \hline
 Group Name   & Namelist Group Description     & Reference Section & Parameter Table  \\ \hline
 {\ct COMP}   & Compartments                   & \ref{info:COMP}   & \ref{tbl:COMP}   \\ \hline
+{\ct CHEM}   & Fire Chemistry                 & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
 {\ct CONN}   & Surface Connections            & \ref{info:CONN}   & \ref{tbl:CONN}   \\ \hline
 {\ct DEVC}   & Devices                        & \ref{info:DEVC}   & \ref{tbl:DEVC}   \\ \hline
-{\ct FIRE}   & Fire Definition                & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
+{\ct FIRE}   & Fires Placement                & \ref{info:FIRE2}   & \ref{tbl:FIRE2}   \\ \hline
 {\ct HEAD}   & Input File Header              & \ref{info:HEAD}   & \ref{tbl:HEAD}   \\ \hline
 {\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
-{\ct INSF}   & Fires Instances                & \ref{info:FIRE2}   & \ref{tbl:FIRE2}   \\ \hline
 {\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
 {\ct MATL}   & Material Properties            & \ref{info:MATL}   & \ref{tbl:MATL}   \\ \hline
 {\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
@@ -437,48 +439,22 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 
 \clearpage
-\section{Fires, Namelist Group \texorpdfstring{{\tt FIRE}}{FIRE}}
+\section{Fires, Namelist Groups \texorpdfstring{{\tt FIRE}}{FIRE}, \texorpdfstring{{\tt CHEM}}{CHEM},  and  \texorpdfstring{{\tt TABL}}{TABL}}
 \label{info:FIRE3}
-
-\begin{minipage}{6.5in}
-\renewcommand\footnoterule{}
-\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
-\label{tbl:FIRE} \\
-\hline
-\multicolumn{5}{|c|}{{\ct FIRE} (Fixed Fire Parameters)} \\
-\hline \hline
-\endfirsthead
-\caption[]{Continued} \\
-\hline
-\multicolumn{5}{|c|}{{\ct FIRE} (Fixed Fire Parameters)} \\
-\hline \hline
-\endhead
-\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &  1               \\ \hline
-{\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
-{\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
-{\ct HYDROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
-{\ct ID}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *                  & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
-{\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
-{\ct RADIATIVE\_FRACTION}  & Real        & Section \ref{info:FIRE}                 &                             &     0.35        \\ \hline
-\end{longtable}
-\end{minipage}
 
 \noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Fire Parameters ({\ct INSF} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\caption[Fire Parameters ({\ct FIRE} namelist group)]{For more information see Section~\ref{info:FIRE}.}
 \label{tbl:FIRE2} \\
 \hline
-\multicolumn{5}{|c|}{{\ct INSF} (Individual Instance of a Fire Object)} \\
+\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instance of a Fire Object)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct INSF} (Individual Instance of a Fire Object)} \\
+\multicolumn{5}{|c|}{{\ct FIRE} (Individual Instance of a Fire Object)} \\
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
@@ -496,20 +472,47 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Fire Parameters ({\ct TABL} namelist group)]{For more information see Section~\ref{info:FIRE}.}
-\label{tbl:FIRE3} \\
+\caption[Fire Parameters ({\ct CHEM} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FIRE} \\
 \hline
-\multicolumn{5}{|c|}{{\ct TABL} (Time-Based Fire Parameters)} \\
+\multicolumn{5}{|c|}{{\ct CHEM} (Fire Chemistry Parameters)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct FIRE} (Time-Based Fire Parameters)} \\
+\multicolumn{5}{|c|}{{\ct CHEM} (Fire Chemistry Parameters)} \\
+\hline \hline
+\endhead
+\parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &  1               \\ \hline
+{\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
+{\ct HYDROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
+{\ct ID}\footnote{ * indicates a required input for each {\ct CHEM} input included in the input file.} *                  & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct NITROGEN}             & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
+{\ct OXYGEN}               & Real     & Section \ref{info:FIRE}                 &                             & 0                \\ \hline
+{\ct RADIATIVE\_FRACTION}  & Real        & Section \ref{info:FIRE}                 &                             &     0.35        \\ \hline
+\end{longtable}
+\end{minipage}
+
+\noindent
+\begin{minipage}{6.5in}
+\renewcommand\footnoterule{}
+\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
+\caption[Fire Parameters ({\ct TABL} namelist group)]{For more information see Section~\ref{info:FIRE}.}
+\label{tbl:FIRE3} \\
+\hline
+\multicolumn{5}{|c|}{{\ct TABL} (Time-Based Fire Chemistry Parameters)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{5}{|c|}{{\ct FIRE} (Time-Based Fire Chemistry Parameters)} \\
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct LABELS}               & Character Array        & Section \ref{info:FIRE}                 &                        &              \\ \hline
-{\ct ID}\footnote{ * indicates a required input for each {\ct FIRE} input included in the input file.} *                    & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
+{\ct ID}\footnote{ * indicates a required input for each {\ct TABL} input included in the input file.} *                    & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct DATA}             & Real Array       & Section \ref{info:FIRE}                 &   &        \\ \hline
 \end{longtable}
 \end{minipage}
@@ -517,13 +520,15 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \clearpage
 \noindent Example:
 \begin{lstlisting}
-&INSF ID = 'Wood_Wall', COMP_ID = 'Comp 2',
-      LOCATION = 2.5, 5., 1.5, FIRE_ID=''Wood Wall' /
-&FIRE ID = 'Wood Wall', CARBON = 6., HYDROGEN = 10., OXYGEN = 5.,
-      HEAT_OF_COMBUSTION = 18100., RADIATIVE_FRACTION = 0.33 /
-&TABL ID = 'Wood Wall', LABELS = 'TIME', 'HRR' ,'AREA', 'CO_YIELD', 'SOOT_YIELD' /
-&TABL ID = 'Wood Wall', DATA =     0.,    0.,    0.05,   0.006,      0.015 /
-&TABL ID = 'Wood Wall', DATA =     0.,    8000., 9.0,    0.006,      0.015 /
+&FIRE ID = 'Wood_Wall'
+ COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'
+ LOCATION = 2.5, 5 /
+&CHEM ID = 'Wood_Wall_Fire'
+ CARBON = 6, CHLORINE = 0, HYDROGEN = 10, NITROGEN = 0, OXYGEN = 5
+ HEAT_OF_COMBUSTION = 18100,  RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Wood_Wall_Fire', LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA', 'CO_YIELD', 'SOOT_YIELD' /
+&TABL ID = 'Wood_Wall_Fire', DATA =    0,      0,     0,        0.05,   0.00617,    0.015 /
+&TABL ID = 'Wood_Wall_Fire', DATA =    8000,   1000,  3,        9,      0.00617,    0.015 /
 \end{lstlisting}
 
 

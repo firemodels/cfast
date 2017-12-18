@@ -122,19 +122,19 @@ TITLE = 'Users Guide Example Case'
  OFFSETS = 5 , 4
  / 
 !! 
-!! FIRE 
+!! Fires 
 !! 
-&INSF
+&FIRE
  ID = 'Cushion' 
  COMP_ID = 'Comp 1' , FIRE_ID = 'Cushion_Fire' 
  LOCATION = 2.5 , 2.5
  / 
-&INSF
+&FIRE
  ID = 'Wood_Wall' 
  COMP_ID = 'Comp 2' , FIRE_ID = 'Wood_Wall_Fire' 
  LOCATION = 2.5 , 5
  / 
-&FIRE
+&CHEM
  ID = 'Cushion_Fire' 
  CARBON = 9 , CHLORINE = 0 , HYDROGEN = 6 , NITROGEN = 2 , OXYGEN = 2
  RADIATIVE_FRACTION = 0.33
@@ -152,7 +152,7 @@ TITLE = 'Users Guide Example Case'
 &TABL ID = 'Cushion_Fire' , DATA = 480 , 80 , 0 , 0.1 , 0.0845557 , 0.227 , 0.3103955 , 0 , 0 /
 &TABL ID = 'Cushion_Fire' , DATA = 540 , 75 , 0 , 0.1 , 0.0845557 , 0.227 , 0.3103955 , 0 , 0 /
 &TABL ID = 'Cushion_Fire' , DATA = 1800 , 75 , 0 , 0.1 , 0.0845557 , 0.227 , 0.3103955 , 0 , 0 /
-&FIRE
+&CHEM
  ID = 'Wood_Wall_Fire' 
  CARBON = 6 , CHLORINE = 0 , HYDROGEN = 10 , NITROGEN = 0 , OXYGEN = 5
  HEAT_OF_COMBUSTION = 18100

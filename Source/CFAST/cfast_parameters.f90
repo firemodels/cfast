@@ -18,9 +18,11 @@
     integer, parameter :: mxperrm = 25          ! maximum number of connections per compartment (for vents, targets, etc)
 
     ! fire related input parameters
-    integer, parameter :: mxpts = 200           ! maximum number of data points in a input curve/ramp
-    integer, parameter :: ns = 11               ! number of species
-    integer, parameter :: mxfires = mxperrm*mxrooms ! maximum number of fires
+    integer, parameter :: mxpts = 200                   ! maximum number of data points in a input curve/ramp
+    integer, parameter :: ns = 11                       ! number of species
+    integer, parameter :: mxfires = mxperrm*mxrooms     ! maximum number of fires
+    integer, parameter :: mxtabls = mxfires*(mxpts+1)   ! maximum number of table inputs, currently only used for fires
+    integer, parameter :: mxtablcols = ns+2
 
     integer, parameter :: mxthrmp = 200         ! maximum number of thermal properties
     integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names
@@ -60,9 +62,9 @@
     real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume
 
     real(eb), parameter :: mx_vsep=0.01_eb          ! maximum vertical distance between elements before they are considered
-    ! separate elements (connected compartments for example)
+                                                    ! separate elements (connected compartments for example)
     real(eb), parameter :: mx_hsep = 1.0e-3_eb      ! maximum horizontal distance below which fire is assumed to
-    ! be on a surface for entrainmnt
+                                                    ! be on a surface for entrainmnt
     real(eb), parameter :: xlrg = 1.0e+5_eb         ! sizes for outside room
     real(eb), parameter :: deltatemp_min = 1.0_eb   ! minimum temperature difference for bouyancy to deposit all into a layer
     integer, parameter :: interior = 1              ! compartment interior

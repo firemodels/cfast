@@ -4,7 +4,7 @@ module spreadsheet_header_routines
     use room_data
     use cparams
     use setup_data
-    use debug_data
+    use diag_data
     use detectorptrs
     use target_data
     use fire_data

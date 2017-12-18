@@ -15,7 +15,7 @@
     use ramp_data
     use cparams, only: mx_hsep
     use setup_data
-    use debug_data
+    use diag_data
     use detectorptrs
     use target_data
     use fire_data

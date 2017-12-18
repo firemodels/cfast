@@ -1290,8 +1290,9 @@
     integer iramp, vent_index
     type(ramp_type), pointer :: rampptr
 
-    if (nramps>0) then
-        do iramp = 1, nramps
+    if (n_ramps>0) then
+        ! first see if ramp is named
+        do iramp = 1, n_ramps
             rampptr=>rampinfo(iramp)
             if (nmlflag.and.rampid/='NULL') then
                 if (rampptr%id==trim(rampid)) then
@@ -1299,13 +1300,16 @@
                     find_vent_opening_ramp = iramp
                     return
                 end if
-            else
-                if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
-                    rampptr%counter==counter) then
-                vent_index = iramp
-                find_vent_opening_ramp = iramp
-                return
-                end if
+            end if
+        end do
+        
+        ! if ramp is not named, check for specific vent
+        do iramp = 1, n_ramps
+            if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
+                rampptr%counter==counter) then
+            vent_index = iramp
+            find_vent_opening_ramp = iramp
+            return
             end if
         end do
     end if
@@ -1332,7 +1336,7 @@
 
     fraction = 1.0_eb
 
-    if (nramps>0 .and. rampid/='NULL') then
+    if (n_ramps>0 .and. rampid/='NULL') then
         iramp = find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)

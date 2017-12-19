@@ -264,9 +264,9 @@ Public Class RunModel
         ' Start the model run and then just look for the status file every so often
         found = CFastInputFile.IndexOf(" ", 0)
         If found <= 0 Then
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + CFastInputFile + ".in"
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + CFastInputFilewithExtension
         Else
-            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + CFastInputFile + ".in" + """"
+            CommandString = """" + Application.StartupPath + "\CFAST.exe"" " + """" + CFastInputFilewithExtension
         End If
         RunOptions.Text = "RunOptions: "
         If NetHeatFluxCFASTOutput Then

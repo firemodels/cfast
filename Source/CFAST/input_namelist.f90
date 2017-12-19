@@ -888,11 +888,15 @@
 
             if (count(rampptr%x/=-101._eb) /= count(rampptr%f_of_x/=-101._eb)) then
                 if (type=='AREA') then
-                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
-                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
+                    write (*,'(a,i3)') &
+                        '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
+                    write (iofill,'(a,i3)') &
+                        '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
                 else
-                    write (*,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
-                    write (iofill,'(a,i3)') '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
+                    write (*,'(a,i3)') &
+                        '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
+                    write (iofill,'(a,i3)') &
+                        '***Error in &RAMP: The number of inputs for t and f do not match. Check ramp, ', n_ramps
                 end if
                 stop
             end if

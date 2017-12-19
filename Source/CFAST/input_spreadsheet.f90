@@ -1212,8 +1212,8 @@ module spreadsheet_input_routines
 
             ! FURN - no fire, heat walls according to a prescribed time temperature curve
         case ('FURN')
-            nfurn=lrarray(1)+0.5
-            do i = 1, nfurn
+            n_furn=lrarray(1)+0.5
+            do i = 1, n_furn
                 furn_time(i)=lrarray(2*i)
                 furn_temp(i)=lrarray(2*i+1)
             end do

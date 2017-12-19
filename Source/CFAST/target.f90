@@ -13,7 +13,7 @@ module target_routines
     use cenviro
     use detectorptrs
     use target_data
-    use fire_data, only: nfurn, qfurnout, n_fires, fireinfo
+    use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use cparams
     use room_data
     use option_data, only: fcjet, option, off
@@ -120,7 +120,8 @@ module target_routines
             (roomptr%species_output(ilayer,hcn)*1000)**2.36_eb/1.2e6_eb)
         targptr%dfed_gas = targptr%dfed_gas + fed_gas_increment
         targptr%fed_gas = targptr%fed_gas + fed_gas_increment
-        fed_heat_increment = (dt/60._eb)*((targptr%flux_incident_front/1000._eb)**1.9/4.2+((targptr%tgas-273.15)**3.61/4.1e8_eb))
+        fed_heat_increment = (dt/60._eb)*((targptr%flux_incident_front/1000._eb)**1.9/4.2 + &
+            ((targptr%tgas-kelvin_c_offset)**3.61/4.1e8_eb))
         targptr%dfed_heat = targptr%dfed_heat + fed_heat_increment
         targptr%fed_heat = targptr%fed_heat + fed_heat_increment
     end do
@@ -195,7 +196,7 @@ module target_routines
 
                 ! compute portion of path in lower and upper layers
                 call getylyu(zfire,zlay,ztarg,s,zl,zu)
-                if (nfurn>0) then
+                if (n_furn>0) then
                     absl=0.0
                     absu=0.0
                     taul = 1.0_eb
@@ -233,7 +234,7 @@ module target_routines
         qgassum(back) = 0.0_eb
         call get_target_factors (iroom,itarg,target_factors_front,target_factors_back)
         do iwall = 1, 10
-            if (nfurn>0) then
+            if (n_furn>0) then
                 qout=qfurnout
             else
                 qout = roomptr%rad_qout(map10(iwall))

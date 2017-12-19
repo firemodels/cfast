@@ -292,7 +292,7 @@ module initialization_routines
     end do
 
     ! initialize number of furnace temperature nodes
-    nfurn=0
+    n_furn=0
 
     ! horizontal vents
     n_hvents = 0

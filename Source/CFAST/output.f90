@@ -696,7 +696,7 @@ module output_routines
                 ctrigger = 'Temp'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5025) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                    ctrigger, ventptr%opening_criterion-273.15, targptr%name, ventptr%opening_initial_fraction, &
+                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%name, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             else
                 ctrigger = 'Flux'
@@ -749,7 +749,7 @@ module output_routines
                 ctrigger = 'Temp'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5055) ciout, cjout, ventptr%counter, csout, ventptr%area, &
-                    ctrigger, ventptr%opening_criterion-273.15, targptr%name, ventptr%opening_initial_fraction, &
+                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%name, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             else 
                 ctrigger = 'Flux'
@@ -799,7 +799,7 @@ module output_routines
                 ctrigger = 'Temp'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5135) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
-                    ctrigger, ventptr%opening_criterion-273.15, targptr%name, ventptr%opening_initial_fraction, &
+                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%name, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             else 
                 ctrigger = 'Flux'
@@ -1013,10 +1013,10 @@ module output_routines
         if (itype==smoked) then
             write (outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
         else if (itype==heatd) then
-            write (outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-273.15, dtectptr%rti
+            write (outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-kelvin_c_offset, dtectptr%rti
         else
             write (outbuf,5020) idtect, roomptr%name, 'SPRINK', dtectptr%center(1:3), &
-                dtectptr%trigger-273.15, dtectptr%rti, dtectptr%spray_density
+                dtectptr%trigger-kelvin_c_offset, dtectptr%rti, dtectptr%spray_density
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)
 5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),13x,2(5x,f10.2),5x,1pe10.2)

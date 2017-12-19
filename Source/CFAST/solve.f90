@@ -1226,8 +1226,8 @@ module solve_routines
     type(target_type), pointer :: targptr
     type(vent_type), pointer ::ventptr
 
-    if (nfurn>0.and.iflag/=constvar) then
-        call interp(furn_time,furn_temp,nfurn,stime,1,wtemp)
+    if (n_furn>0.and.iflag/=constvar) then
+        call interp(furn_time,furn_temp,n_furn,stime,1,wtemp)
         wtemp = wtemp + kelvin_c_offset
         qfurnout=sigma*wtemp**4
     end if
@@ -1452,12 +1452,12 @@ module solve_routines
 
             roomptr%relp = y_vector(iroom)
             roomptr%absp = y_vector(iroom) + pressure_offset
-            if (nfurn>0) then
+            if (n_furn>0) then
               roomptr%temp(u) = wtemp
               roomptr%temp(l) = wtemp
             else if (radi_verification_flag) then
-              roomptr%temp(u) = tempTgas + kelvin_c_offset
-              roomptr%temp(l) = tempTgas + kelvin_c_offset
+              roomptr%temp(u) = gas_temperature
+              roomptr%temp(l) = gas_temperature
             else
               roomptr%temp(u) = y_vector(iroom+noftu)
               roomptr%temp(l) = y_vector(iroom+noftl)
@@ -1557,7 +1557,7 @@ module solve_routines
             do iwall = 1, nwal
                 iwalleq = i_wallmap(iroom,iwall)
                 if (iwalleq/=0) then
-                    if (nfurn.gt.0) then
+                    if (n_furn.gt.0) then
                         roomptr%t_surfaces(1,iwall) = wtemp
                         roomptr%t_surfaces(2,iwall) = wtemp
                     else
@@ -1584,7 +1584,7 @@ module solve_routines
                     else
                         ilay = l
                     end if
-                    if (nfurn.gt.0) then
+                    if (n_furn.gt.0) then
                         roomptr%t_surfaces(1,iwall) = wtemp
                     else
                         roomptr%t_surfaces(1,iwall) = roomptr%temp(ilay)

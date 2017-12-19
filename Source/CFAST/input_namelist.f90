@@ -68,7 +68,7 @@
 
 
     ! --------------------------- head --------------------------------------
-    subroutine read_head(lu)
+    subroutine read_head (lu)
 
     integer :: ios, version
     integer, intent(in) :: lu
@@ -135,7 +135,7 @@
 
     ! --------------------------- time -------------------------------------------
     
-    subroutine read_time(lu)
+    subroutine read_time (lu)
 
     integer :: ios
     integer, intent(in) :: lu
@@ -200,7 +200,7 @@
 
     ! --------------------------- init ------------------------------------------
     
-    subroutine read_init(lu)
+    subroutine read_init (lu)
 
     integer :: ios
     integer, intent(in) :: lu
@@ -262,7 +262,7 @@
 
 
     ! --------------------------- misc -------------------------------------------
-    subroutine read_misc(lu)
+    subroutine read_misc (lu)
 
     integer, intent(in) :: lu
 
@@ -322,7 +322,7 @@
 
 
     ! --------------------------- MATL -------------------------------------------
-    subroutine read_matl(lu)
+    subroutine read_matl (lu)
 
 
     integer :: ios,ii
@@ -817,7 +817,7 @@
 
 
     ! --------------------------- RAMP -------------------------------------------
-    subroutine read_ramp(lu)
+    subroutine read_ramp (lu)
 
     integer, intent(in) :: lu
     
@@ -920,7 +920,7 @@
 
     ! --------------------------- TABL (time-dependent table of inputs, currently just for fires) ------------------------
     
-    subroutine read_tabl(lu)
+    subroutine read_tabl (lu)
     
     integer, intent(in) :: lu
     
@@ -1022,7 +1022,7 @@ continue
 
     ! --------------------------- FIRE (place an instance of a fire into a compartment) ----------------------------------
     
-    subroutine read_fire(lu)
+    subroutine read_fire (lu)
 
     integer, intent(in) :: lu
     
@@ -1155,7 +1155,7 @@ continue
                     fireptr%ignition_criterion = 1.0e30_eb !check units
                 else if (fireptr%ignition_type==trigger_by_temp) then
                     fireptr%ignition_time = 1.0e30_eb  !check units
-                    fireptr%ignition_criterion = tmpcond + 273.15
+                    fireptr%ignition_criterion = tmpcond + kelvin_c_offset
                     if (stpmax>0) then
                         stpmax = min(stpmax,1.0_eb)
                     else
@@ -1221,7 +1221,7 @@ continue
 
 
     ! --------------------------- CHEM (chemistry of the fire) -------------------------------------------
-    subroutine read_chem(lu)
+    subroutine read_chem (lu)
 
     integer, intent(in) :: lu
     
@@ -1495,7 +1495,7 @@ continue
 
 
     ! --------------------------- VENT -------------------------------------------
-    subroutine read_vent(lu)
+    subroutine read_vent (lu)
 
     integer, intent(in) :: lu
 
@@ -1689,7 +1689,7 @@ continue
                     else
                         if (trim(criterion)=='TEMPERATURE') then
                             ventptr%opening_type = trigger_by_temp
-                            ventptr%opening_criterion = setpoint + 273.15
+                            ventptr%opening_criterion = setpoint + kelvin_c_offset
                         end if
                         if (criterion=='FLUX') then
                             ventptr%opening_type = trigger_by_flux
@@ -2037,7 +2037,7 @@ continue
 
 
     ! --------------------------- CONN -------------------------------------------
-    subroutine read_conn(lu)
+    subroutine read_conn (lu)
 
     integer, intent(in) :: lu
 
@@ -2225,7 +2225,7 @@ continue
 
 
     ! --------------------------- ISOF --------------------------------------------
-    subroutine read_isof(lu)
+    subroutine read_isof (lu)
 
     integer, intent(in) :: lu
 
@@ -2286,7 +2286,7 @@ continue
             nvisualinfo = nvisualinfo + 1
             sliceptr => visualinfo(nvisualinfo)
             sliceptr%vtype = 3
-            sliceptr%value = value + 273.15
+            sliceptr%value = value + kelvin_c_offset
             sliceptr%roomnum = icomp
 
             if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
@@ -2316,7 +2316,7 @@ continue
 
     ! --------------------------- SLCF --------------------------------------------
     
-    subroutine read_slcf(lu)
+    subroutine read_slcf (lu)
 
     integer, intent(in) :: lu
     
@@ -2468,13 +2468,14 @@ continue
 
     ! --------------------------- diag -------------------------------------------
     
-    subroutine read_diag(lu)
+    subroutine read_diag (lu)
 
-    integer :: ios
+    integer :: ios, i
     integer, intent(in) :: lu
 
     character(8) :: mode
-    namelist /DIAG/ mode,rad_solver,partial_pressure_h2o,partial_pressure_co2,tempTgas
+    real(eb), dimension(mxpts) :: t, f
+    namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f
 
     ios = 1
 
@@ -2507,6 +2508,18 @@ continue
         
         if (mode == 'RADI') radi_verification_flag = .true.
         if (rad_solver == 'RADNNET') radi_radnnet_flag = .true.
+        if (gas_temperature/=-101._eb) gas_temperature = gas_temperature + kelvin_c_offset
+        
+        if (mode == 'FURNACE') then
+            n_furn = 0
+            do i = 1, mxpts
+                if (t(i)/=-101._eb) then
+                    n_furn = n_furn + 1
+                    furn_time(n_furn) = t(i)
+                    furn_temp(n_furn) = f(i) + kelvin_c_offset
+                end if
+            end do
+        end if
     
     end if diag_flag
     
@@ -2516,11 +2529,13 @@ continue
 
     subroutine set_defaults
 
-    mode = 'NULL'
-    rad_solver =  'NULL'
-    partial_pressure_h2o = 0._eb
-    partial_pressure_co2 = 0._eb
-    tempTgas = 0._eb
+    mode                   = 'NULL'
+    rad_solver             = 'NULL'
+    partial_pressure_h2o   = 0._eb
+    partial_pressure_co2   = 0._eb
+    gas_temperature        = 0._eb
+    t                      = -101._eb
+    f                      = -101._eb
 
     end subroutine set_defaults
 

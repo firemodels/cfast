@@ -52,8 +52,6 @@ Public Class CeditMain
     Friend WithEvents FirePlumeType As Label
     Friend WithEvents Label36 As Label
     Friend WithEvents Label18 As Label
-    Friend WithEvents TestReadNML As MenuItem
-    Friend WithEvents MenuItem2 As MenuItem
     Friend WithEvents EnvLOI As TextBox
     Friend WithEvents HVentFinalLabel As Label
     Friend WithEvents HVentFinalFraction As TextBox
@@ -487,8 +485,6 @@ Public Class CeditMain
         Me.MenuShowHelp = New System.Windows.Forms.MenuItem()
         Me.MenuCFASTWeb = New System.Windows.Forms.MenuItem()
         Me.MenuAbout = New System.Windows.Forms.MenuItem()
-        Me.TestReadNML = New System.Windows.Forms.MenuItem()
-        Me.MenuItem2 = New System.Windows.Forms.MenuItem()
         Me.TabEnvironment = New System.Windows.Forms.TabPage()
         Me.EnvErrors = New System.Windows.Forms.TextBox()
         Me.EnvTitle = New System.Windows.Forms.TextBox()
@@ -1074,7 +1070,7 @@ Public Class CeditMain
         'MenuHelp
         '
         Me.MenuHelp.Index = 2
-        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout, Me.TestReadNML, Me.MenuItem2})
+        Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
         Me.MenuHelp.Text = "Help"
         '
         'MenuHelpUpdate
@@ -1096,16 +1092,6 @@ Public Class CeditMain
         '
         Me.MenuAbout.Index = 3
         Me.MenuAbout.Text = "About"
-        '
-        'TestReadNML
-        '
-        Me.TestReadNML.Index = 4
-        Me.TestReadNML.Text = "test read NML"
-        '
-        'MenuItem2
-        '
-        Me.MenuItem2.Index = 5
-        Me.MenuItem2.Text = "test write NML"
         '
         'TabEnvironment
         '
@@ -4990,13 +4976,13 @@ Public Class CeditMain
         'OpenDataFileDialog
         '
         Me.OpenDataFileDialog.DefaultExt = "in"
-        Me.OpenDataFileDialog.Filter = "CFast files|*.in|Object files|*.o|Spreadsheet files|*.csv|All files|*.*"
+        Me.OpenDataFileDialog.Filter = "CFAST files|*.cfast|CFAST files (Old format)|*.in|All files|*.*"
         Me.OpenDataFileDialog.Title = "Open"
         '
         'SaveDataFileDialog
         '
-        Me.SaveDataFileDialog.DefaultExt = "in"
-        Me.SaveDataFileDialog.Filter = "CFast files|*.in|All files|*.*"
+        Me.SaveDataFileDialog.DefaultExt = "cfast"
+        Me.SaveDataFileDialog.Filter = "CFAST files|*.cfast|CFAST files (Old format)|*.in|All files|*.*"
         Me.SaveDataFileDialog.Title = "Save As"
         '
         'HelpProvider
@@ -6466,7 +6452,7 @@ Public Class CeditMain
         End If
         UpdateAll()
     End Sub
-    Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click
+    Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click, MenuSave.Click
         SaveDataFile(False, False)
     End Sub
     Private Sub MenuUnits_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuUnits.Click
@@ -6489,25 +6475,28 @@ Public Class CeditMain
         End If
         UpdateAll()
     End Sub
-    Private Sub MenuSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSave.Click
-        SaveDataFile(False, False)
-    End Sub
     Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
-        Dim PathName As String
+        Dim PathName As String, FileExtension As String
         myUnits.SI = True
-        SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
+        SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".cfast"
         SaveDataFileDialog.Title = "Save As"
         SaveDataFileDialog.OverwritePrompt = True
         If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             If SaveDataFileDialog.FileName <> " " Then
-                ' Write out the data file since it has been changed
-                WriteInputFile(SaveDataFileDialog.FileName)
+                ' Write out the data file since it has been 
+                If SaveDataFileDialog.FilterIndex = 1 Then
+                    WriteInputFileNML(SaveDataFileDialog.FileName)
+                    FileExtension = ".cfast"
+                Else
+                    WriteInputFile(SaveDataFileDialog.FileName)
+                    FileExtension = ".in"
+                End If
                 myEnvironment.InputFileName = SaveDataFileDialog.FileName
-                myEnvironment.InputFilePath = SaveDataFileDialog.FileName
-                Text = "CEdit (" + System.IO.Path.GetFileName(SaveDataFileDialog.FileName) + ")"
-                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
+                    myEnvironment.InputFilePath = SaveDataFileDialog.FileName
+                    Text = "CEdit (" + System.IO.Path.GetFileName(SaveDataFileDialog.FileName) + ")"
+                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + FileExtension)
             End If
-            PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
+                PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
             ChDir(PathName)
         End If
         myUnits.SI = False
@@ -6595,33 +6584,6 @@ Public Class CeditMain
         SaveSetting("CFAST", "Options", "ShowCFASTOutput", CommandWindowVisible.ToString)
         UpdateGUI.General()
     End Sub
-
-    Private Sub MenuItem2_Click(sender As Object, e As EventArgs) Handles TestReadNML.Click
-        'test item for reading Name List File
-        Dim FileName As String
-
-        FileName = myEnvironment.InputFilePath + "\" + "TestNML.cfast"
-        Dim NMList As NameListFile
-        NMList = New NameListFile(FileName)
-        FileName = myEnvironment.InputFilePath + "\" + "TestNML_a.csv"
-        Dim filename2 As String = myEnvironment.InputFilePath + "\" + "TestNML_b.csv"
-        NMList.DebugPrint(FileName, filename2)
-        FileName = myEnvironment.InputFilePath + "\" + "TestNML.cfast"
-        InitNew()
-        ReadInputFileNML(FileName)
-
-    End Sub
-
-    Private Sub MenuItem2_Click_1(sender As Object, e As EventArgs) Handles MenuItem2.Click
-        Dim FileName As String = "TestNML.cfast"
-
-        myUnits.SI = True
-        FileName = myEnvironment.InputFilePath + "\" + FileName
-        WriteInputFileNML(FileName)
-        myUnits.SI = False
-
-    End Sub
-
     Private Sub FromFileInserts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ThermalFromFile.Click, FireFromFile.Click
         Dim iReturn As Integer
         OpenDataFileDialog.FilterIndex = 1
@@ -6857,15 +6819,15 @@ Public Class CeditMain
                         PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
                         ChDir(PathName)
                         ' Write out the data file since it has been changed
-                        WriteInputFile(SaveDataFileDialog.FileName)
+                        WriteInputFileNML(SaveDataFileDialog.FileName)
                         myEnvironment.InputFileName = SaveDataFileDialog.FileName
                         myEnvironment.InputFilePath = SaveDataFileDialog.FileName
-                        myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
+                        myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".cfast")
                     End If
                 End If
             Else
-                WriteInputFile(myEnvironment.InputFileName + ".in")
-                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
+                WriteInputFileNML(myEnvironment.InputFileName + ".cfast")
+                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".cfast")
             End If
         End If
         myUnits.SI = False
@@ -6874,11 +6836,22 @@ Public Class CeditMain
     End Sub
     Private Sub RunCFAST()
         If myEnvironment.FileChanged Then SaveDataFile(True, False)
-        If System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in") Then
+        If System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".cfast") Then
             Dim RunSimulation As New RunModel
             CFASTSimulationTime = myEnvironment.SimulationTime
             CFastInputFile = myEnvironment.InputFileName
-            RunSimulation.Text = "Run Model (" + CFastInputFile + ")"
+            CFastInputFilewithExtension = CFastInputFile + ".cfast"
+            RunSimulation.Text = "Run Model (" + CFastInputFilewithExtension + ")"
+            RunSimulation.ShowDialog()
+
+            UpdateGUI.Menu()
+            UpdateGUI.Environment()
+        ElseIf System.IO.File.Exists(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in") Then
+            Dim RunSimulation As New RunModel
+            CFASTSimulationTime = myEnvironment.SimulationTime
+            CFastInputFile = myEnvironment.InputFileName
+            CFastInputFilewithExtension = CFastInputFile + ".in"
+            RunSimulation.Text = "Run Model (" + CFastInputFilewithExtension + ")"
             RunSimulation.ShowDialog()
 
             UpdateGUI.Menu()

@@ -78,8 +78,8 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 {\ct CHEM}   & Fire Chemistry                 & \ref{info:FIRE}   & \ref{tbl:FIRE}   \\ \hline
 {\ct CONN}   & Surface Connections            & \ref{info:CONN}   & \ref{tbl:CONN}   \\ \hline
 {\ct DEVC}   & Devices                        & \ref{info:DEVC}   & \ref{tbl:DEVC}   \\ \hline
-{\ct DIAG}   & Diagnostics                    &                   &                  \\ \hline
-{\ct FIRE}   & Fires Placement                & \ref{info:FIRE2}   & \ref{tbl:FIRE2} \\ \hline
+{\ct DIAG}   & Diagnostics                    &                   & \ref{tbl:DIAG}   \\ \hline
+{\ct FIRE}   & Fires Placement                & \ref{info:FIRE2}  & \ref{tbl:FIRE2}  \\ \hline
 {\ct HEAD}   & Input File Header              & \ref{info:HEAD}   & \ref{tbl:HEAD}   \\ \hline
 {\ct INIT}   & Initial Conditions             & \ref{info:INIT}   & \ref{tbl:INIT}   \\ \hline
 {\ct ISOF}   & Isosurface File Outputs        & \ref{info:ISOF}   & \ref{tbl:ISOF}   \\ \hline
@@ -87,7 +87,7 @@ Group Name   & Namelist Group Description     & Reference Section & Parameter Ta
 {\ct MISC}   & Miscellaneous                  & \ref{info:MISC}   & \ref{tbl:MISC}   \\ \hline
 {\ct SLCF}   & Slice File Outputs             & \ref{info:SLCF}   & \ref{tbl:SLCF}   \\ \hline
 {\ct TAIL}   & End of Input File Indicator    &                   &                  \\ \hline
-{\ct TABL}   & Table of Time-Based Inputs     & \ref{info:FIRE3}   & \ref{tbl:FIRE3} \\ \hline
+{\ct TABL}   & Table of Time-Based Inputs     & \ref{info:FIRE3}  & \ref{tbl:FIRE3}  \\ \hline
 {\ct TIME}   & Simulation Time                & \ref{info:TIME}   & \ref{tbl:TIME}   \\ \hline
 {\ct VENT}   & Vents                          & \ref{info:VENT}   & \ref{tbl:WVENT}  \\ \hline
 \end{tabular}
@@ -109,7 +109,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \section{Simulation Environment, Namelist Groups \texorpdfstring{{\tt HEAD}}{HEAD}, \texorpdfstring{{\tt TIME}}{TIME}, \texorpdfstring{{\tt INIT}}{INIT}, and  \texorpdfstring{{\tt MISC}}{MISC}}
 
-\noindent 
+\noindent
 \renewcommand{\tabcolsep}{.1in}
 \begin{longtable}{|l|l|l|l|l|}
 \caption[Header Parameters ({\ct HEAD} namelist group)]{For more information see Section~\ref{info:HEAD}.}
@@ -130,7 +130,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 
 
-\noindent 
+\noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Time Parameters ({\ct TIME} namelist group)]{For more information see Section~\ref{info:TIME}.}
 \label{tbl:TIME} \\
@@ -152,7 +152,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 
 
-\noindent 
+\noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Initial Conditions ({\ct INIT} namelist group)]{For more information see Section~\ref{info:INIT}.}
 \label{tbl:INIT} \\
@@ -174,7 +174,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 
 
-\noindent 
+\noindent
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Miscellaneous Parameters ({\ct MISC} namelist group)]{For more information see Section~\ref{info:MISC}.}
 \label{tbl:MISC} \\
@@ -206,7 +206,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \section{Thermal Properties, Namelist Group \texorpdfstring{{\tt MATL}}{MATL}}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -244,7 +244,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \clearpage
 \section{Compartments, Namelist Group \texorpdfstring{{\tt COMP}}{COMP}}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 %\begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -297,7 +297,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \subsection{Wall Vents\texorpdfstring{{\tt ,TYPE='WALL'}}{, TYPE='WALL'}}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -346,7 +346,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \subsection{Ceiling / Floor Vents\texorpdfstring{{\tt ,TYPE='CEILING'} or {\tt TYPE='FLOOR'}}{{, TYPE='CEILING'} or {\tt TYPE='FLOOR'}}}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -394,7 +394,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \subsection{Mechanical Vents\texorpdfstring{{\tt ,TYPE='MECHANICAL'}}{, TYPE='MECHANICAL'}}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -549,7 +549,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 \label{info:DEVC3}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -605,7 +605,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 \clearpage
 \section{Compartment Connections, Namelist Group \texorpdfstring{{\tt CONN}}{CONN}}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -643,7 +643,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 
 \subsection{\texorpdfstring{{\tt ISOF}}{ISOF} (Isosurface Parameters)}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -676,7 +676,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 
 \subsection{\texorpdfstring{{\tt SLCF}}{SLCF} (Slice File Parameters)}
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
@@ -714,12 +714,12 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 
 These inputs are for internal diagnostic purposes used to test and verify specific model functions.  They are included in this appendix for completeness but are never used in typical CFAST scenarios.
 
-\noindent 
+\noindent
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
 \caption[Diagnostic parameters ({\ct DIAG} namelist group)]{}
-\label{tbl:SLCF} \\
+\label{tbl:DIAG} \\
 \hline
 \multicolumn{5}{|c|}{{\ct DIAG} (Diagnostic Parameters)} \\
 \hline \hline

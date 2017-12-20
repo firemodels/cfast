@@ -641,18 +641,22 @@ module output_routines
 
     integer i
     type(room_type), pointer :: roomptr
+    character :: hall, shaft
 
     write (iofilo,5000)
     do i = 1, nrm1
         roomptr => roominfo(i)
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1
+        shaft = '' ; if (roomptr%shaft) shaft = '*'
+        hall = '' ; if (roomptr%hall) hall = '*'
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, shaft, hall
     end do
+    if (adiabatic_walls==.true.) write (iofilo,*) 'All compartment surfaces are adiabatic'
     return
 5000 format (//,'COMPARTMENTS',//, &
-    'Compartment  Name                Width        Depth        Height       Floor        Ceiling   ',/, &
+    'Compartment  Name                Width        Depth        Height       Floor        Ceiling    Shaft    Hall   ',/, &
     '                                                                        Height       Height    ',/, &
-    33x,5('(m)',10x),/,96('-'))
-5010 format (i5,8x,a13,5(f12.2,1x))
+    33x,5('(m)',10x),/,109('-'))
+5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1)
     end subroutine output_initial_compartments
 
 ! --------------------------- output_initial_vents -------------------------------------------
@@ -894,7 +898,7 @@ module output_routines
     write (iofilo,5060)
     return
 
-5000 format (//,'Heat transfer for all surfaces is turned off')
+5000 format (//,'All compartment surfaces are adiabatic.')
 5010 format (//,'THERMAL PROPERTIES',//,'Compartment    Ceiling      Wall         Floor',/,47('-'))
 5020 format (a13,3(a10,3x))
 5030 format (//,'Name',4X,'Conductivity',6X,'Specific Heat',5X,&
@@ -924,7 +928,7 @@ module output_routines
     type(fire_type), pointer :: fireptr
 
     if (n_fires>0) then
-        write (iofilo,5080)
+        write (iofilo,5080) lower_o2_limit
         do io = 1, n_fires
             fireptr => fireinfo(io)
             roomptr => roominfo(fireptr%room)
@@ -956,7 +960,7 @@ module output_routines
 5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
 5070 format (10(1PG10.2),2x,2g10.2)
-5080 format (/,'FIRES')
+5080 format (/,'FIRES',//,'Lower oxygen limit: ',f7.2)
     end subroutine output_initial_fires
 
 ! --------------------------- output_initial_targets -------------------------------------------

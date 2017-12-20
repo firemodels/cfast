@@ -16,7 +16,7 @@ Module IO
             ReadInputFileCSV(Filename)
         End If
     End Sub
-    Public Sub ReadInputFileCSV(ByVal Filename As String)
+    Private Sub ReadInputFileCSV(ByVal Filename As String)
         'Read in a *.in file Filename is to include path as well as file name
         Dim csv As New CSVsheet(Filename)
         Dim i As Integer = 1, j As Integer
@@ -643,7 +643,7 @@ Module IO
         Loop
 
     End Sub
-    Public Sub ReadInputFileNML(ByVal Filename As String)
+    Private Sub ReadInputFileNML(ByVal Filename As String)
         'Filename is assumed to be the complete path plus name and extenstion
         Dim NMList As NameListFile
         NMList = New NameListFile(Filename)
@@ -662,7 +662,7 @@ Module IO
         ReadInputFileNMLISOF(NMList)
         ReadInputFileNMLSLCF(NMList)
     End Sub
-    Public Sub ReadInputFileNMLHead(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim ver As Integer
         Dim title As String
@@ -686,7 +686,7 @@ Module IO
         myEnvironment.Version = ver
         myEnvironment.Changed = False
     End Sub
-    Public Sub ReadInputFileNMLTime(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLTime(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim print, sim, smoke, ss As Integer
 
@@ -717,7 +717,7 @@ Module IO
         myEnvironment.SpreadsheetInterval = ss
         myEnvironment.Changed = False
     End Sub
-    Public Sub ReadInputFileNMLInit(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLInit(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim pressure, rh, intemp, extemp As Single
 
@@ -748,7 +748,7 @@ Module IO
         myEnvironment.IntAmbRH = rh
         myEnvironment.Changed = False
     End Sub
-    Public Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim adiabatic As Boolean
         Dim maxts, loxyl As Single
@@ -783,7 +783,7 @@ Module IO
         myEnvironment.LowerOxygenLimit = loxyl
         myEnvironment.Changed = False
     End Sub
-    Public Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim conduct, dens, emiss, spech, thick As Single
         Dim id, matl As String
@@ -857,7 +857,7 @@ Module IO
         Dim test As Integer = myThermalProperties.Count
 
     End Sub
-    Public Sub ReadInputFileNMLRamp(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLRamp(ByVal NMList As NameListFile)
         Const maxnum As Integer = 1000
         Dim i, j, k As Integer
         Dim x(1), f(1) As Single
@@ -945,7 +945,7 @@ Module IO
         Dim test As Integer = myRamps.Count
 
     End Sub
-    Public Sub ReadInputFileNMLComp(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
         Dim ceilid, wallid, floorid, rampid, id As String
         Dim depth, height, width As Single
@@ -1084,7 +1084,7 @@ Module IO
         Dim test As Integer = myCompartments.Count
 
     End Sub
-    Public Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type As String
         Dim tempdepth, rti, setp, sprayd As Single
@@ -1229,7 +1229,7 @@ Module IO
         Dim test As Integer = myTargets.Count
 
     End Sub
-    Public Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
         Dim compid, id, devcid, ignitcrit, fireid As String
         Dim setp As Single
@@ -1296,7 +1296,7 @@ Module IO
             End If
         Next
     End Sub
-    Public Sub ReadInputFileNMLChem(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLChem(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim id As String
         Dim carbon, chlorine, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
@@ -1361,7 +1361,7 @@ Module IO
         Next
         Dim test As Integer = myFires.Count
     End Sub
-    Public Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef ErrFlag As Boolean)
+    Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef ErrFlag As Boolean)
         Dim i, j, k, m, n, max As Integer
         Dim aMap(8) As Integer
         Dim labels(8) As String
@@ -1442,7 +1442,7 @@ Module IO
         Next
 
     End Sub
-    Public Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
         Dim i, j, k, max As Integer
         Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width, setp, prefrac, postfrac, filttime, filteff As Single
         Dim tt(0), ff(0) As Single
@@ -1758,7 +1758,7 @@ Module IO
             End If
         Next
     End Sub
-    Public Sub ReadInputFileNMLConn(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLConn(ByVal NMList As NameListFile)
         Dim i, j, k, max, cFirst, cSecond As Integer
         Dim compid, compids(1), type As String
         Dim f(1) As Single
@@ -1830,7 +1830,7 @@ Module IO
         Next
 
     End Sub
-    Public Sub ReadInputFileNMLISOF(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLISOF(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim compid As String
         Dim value As Single
@@ -1863,7 +1863,7 @@ Module IO
         Next
 
     End Sub
-    Public Sub ReadInputFileNMLSLCF(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLSLCF(ByVal NMList As NameListFile)
         Dim i, j As Integer
         Dim compid, domain, plane As String
         Dim pos As Single
@@ -1967,15 +1967,7 @@ Module IO
         End If
         aThermalPropery.ShortName = " "
     End Sub
-    Public Sub ReadFireObjects(ByVal pathName As String)
-        ' Simple routine that gets all *.o files in PathName and opens them
-        Dim dir As String() = Directory.GetFiles(pathName, "*.o")
-        Dim file As String
-        For Each file In dir
-            readFires(file, InsertDataType.ObjectFile)
-        Next
-    End Sub
-    Public Sub readFires(ByVal Filename As String, FileType As Integer)
+    Private Sub readFires(ByVal Filename As String, FileType As Integer)
         Dim csv As New CSVsheet(Filename), i As Integer
         If csv.MaxRow > 0 Then
             FindFires(FileType, csv)
@@ -2123,7 +2115,7 @@ Module IO
         If TempFires.Count > 0 Then TempFires(TempFires.Count - 1).Changed = False
         myUnits.SI = False
     End Sub
-    Public Sub ReadEmbeddedFire(ByVal csv As CSVsheet, ByVal iStart As Integer, ByRef aFire As Fire, ByRef aFireInstance As Fire)
+    Private Sub ReadEmbeddedFire(ByVal csv As CSVsheet, ByVal iStart As Integer, ByRef aFire As Fire, ByRef aFireInstance As Fire)
         Dim i, j, k, index As Integer
         i = iStart
         Do Until i > csv.MaxRow
@@ -2723,29 +2715,6 @@ Module IO
 
         csv.WrtCSVfile(FileName)
 
-    End Sub
-    Public Sub WriteThermalProperties(ByVal FileName As String)
-        'If myThermalProperties.Changed Then
-        Dim csv As New CSVsheet
-        Dim aThermalProperty As ThermalProperty
-        Dim i As Integer, j As Integer
-        'thermal properties
-        i = 1
-        For j = 0 To myThermalProperties.Count - 1
-            aThermalProperty = myThermalProperties.Item(j)
-            csv.str(i, CFASTlnNum.keyWord) = "MATL"
-            csv.str(i, MaterialNum.shortName) = aThermalProperty.ShortName
-            csv.num(i, MaterialNum.Conductivity) = aThermalProperty.Conductivity
-            csv.num(i, MaterialNum.specificHeat) = aThermalProperty.SpecificHeat
-            csv.num(i, MaterialNum.density) = aThermalProperty.Density
-            csv.num(i, MaterialNum.thickness) = aThermalProperty.Thickness
-            csv.num(i, MaterialNum.emissivity) = aThermalProperty.Emissivity
-            csv.str(i, MaterialNum.longName) = aThermalProperty.Name
-            i += 1
-        Next
-        csv.WrtCSVfile(FileName)
-        myThermalProperties.FileChanged = False
-        'End If
     End Sub
     Public Sub WriteInputFileNML(ByVal filename As String)
         Dim IO As Integer = 1
@@ -3564,7 +3533,7 @@ Module IO
     End Sub
 #End Region
 #Region "Support Routines"
-    Public Sub AddHeadertoOutput(ByRef csv As CSVsheet, ByRef i As Integer, ByVal header As String)
+    Private Sub AddHeadertoOutput(ByRef csv As CSVsheet, ByRef i As Integer, ByVal header As String)
         csv.str(i, CFASTlnNum.keyWord) = "!!"
         i += 1
         csv.str(i, CFASTlnNum.keyWord) = "!!" + header
@@ -3572,7 +3541,7 @@ Module IO
         csv.str(i, CFASTlnNum.keyWord) = "!!"
         i += 1
     End Sub
-    Public Function SkipLine(ByVal str As String) As Boolean
+    Private Function SkipLine(ByVal str As String) As Boolean
         If str = Nothing Then
             Return True
         End If
@@ -3584,7 +3553,7 @@ Module IO
             Return False
         End If
     End Function
-    Public Function HeaderComment(ByVal str As String) As Boolean
+    Private Function HeaderComment(ByVal str As String) As Boolean
         If str = Nothing Then
             Return False
         End If
@@ -3596,7 +3565,7 @@ Module IO
             Return False
         End If
     End Function
-    Public Function Comment(ByVal str As String) As Boolean
+    Private Function Comment(ByVal str As String) As Boolean
         If str = Nothing Then
             Return True
         End If
@@ -3608,7 +3577,7 @@ Module IO
             Return False
         End If
     End Function
-    Public Function DropComment(ByVal str As String) As Boolean
+    Private Function DropComment(ByVal str As String) As Boolean
         If str = Nothing Then
             Return True
         End If

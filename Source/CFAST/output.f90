@@ -641,18 +641,22 @@ module output_routines
 
     integer i
     type(room_type), pointer :: roomptr
+    character :: hall, shaft
 
     write (iofilo,5000)
     do i = 1, nrm1
         roomptr => roominfo(i)
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1
+        shaft = '' ; if (roomptr%shaft) shaft = '*'
+        hall = '' ; if (roomptr%hall) hall = '*'
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, shaft, hall
     end do
+    if (adiabatic_walls==.true.) write (iofilo,*) 'All compartment surfaces are adiabatic'
     return
 5000 format (//,'COMPARTMENTS',//, &
-    'Compartment  Name                Width        Depth        Height       Floor        Ceiling   ',/, &
+    'Compartment  Name                Width        Depth        Height       Floor        Ceiling    Shaft    Hall   ',/, &
     '                                                                        Height       Height    ',/, &
-    33x,5('(m)',10x),/,96('-'))
-5010 format (i5,8x,a13,5(f12.2,1x))
+    33x,5('(m)',10x),/,109('-'))
+5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1)
     end subroutine output_initial_compartments
 
 ! --------------------------- output_initial_vents -------------------------------------------
@@ -820,27 +824,26 @@ module output_routines
         '(s)                     (s)',/,145('-'))
 5130 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,27x,4(f9.2,3x))
 5135 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))  
-    
-    ! ramps
-    if (n_ramps==0) then
-        write (iofilo,5150)
-    else
-        write (iofilo,5160)
-        do i = 1, n_ramps
-            rampptr => rampinfo(i)
-            if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
-222            roomptr => roominfo(rampptr%room2)
-               write (cjout,'(a14)') roomptr%name
-               if (rampptr%room2==nr) cjout = 'Outside'
-               roomptr => roominfo(rampptr%room1)
-               write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
-                   (int(rampptr%x(j)),j=1,rampptr%npoints)
-               write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
-               goto 223
-            end if
-223         continue
-        end do
-    end if
+
+     ! ramps
+     if (n_ramps==0) then
+         write (iofilo,5150)
+     else
+         write (iofilo,5160)
+         do i = 1, n_ramps
+             rampptr => rampinfo(i)
+             if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
+                 roomptr => roominfo(rampptr%room2)
+                 write (cjout,'(a14)') roomptr%name
+                 if (rampptr%room2==nr) cjout = 'Outside'
+                 roomptr => roominfo(rampptr%room1)
+                 write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
+                     (int(rampptr%x(j)),j=1,rampptr%npoints)
+                 write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
+             end if
+         end do
+     end if
+     
     return
   
 5150 format (//,'VENT RAMPS',//,'There are no vent opening ramp specifications')
@@ -894,7 +897,7 @@ module output_routines
     write (iofilo,5060)
     return
 
-5000 format (//,'Heat transfer for all surfaces is turned off')
+5000 format (//,'All compartment surfaces are adiabatic.')
 5010 format (//,'THERMAL PROPERTIES',//,'Compartment    Ceiling      Wall         Floor',/,47('-'))
 5020 format (a13,3(a10,3x))
 5030 format (//,'Name',4X,'Conductivity',6X,'Specific Heat',5X,&
@@ -924,7 +927,7 @@ module output_routines
     type(fire_type), pointer :: fireptr
 
     if (n_fires>0) then
-        write (iofilo,5080)
+        write (iofilo,5080) lower_o2_limit
         do io = 1, n_fires
             fireptr => fireinfo(io)
             roomptr => roominfo(fireptr%room)
@@ -956,7 +959,7 @@ module output_routines
 5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
 5070 format (10(1PG10.2),2x,2g10.2)
-5080 format (/,'FIRES')
+5080 format (/,'FIRES',//,'Lower oxygen limit: ',f7.2)
     end subroutine output_initial_fires
 
 ! --------------------------- output_initial_targets -------------------------------------------

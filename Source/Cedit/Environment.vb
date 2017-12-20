@@ -129,27 +129,10 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Property IntAmbPressure() As Single
+    Friend ReadOnly Property IntAmbPressure() As Single
         Get
-            Return myUnits.Convert(UnitsNum.Pressure).FromSI(aIntAmbPressure)
+            Return myUnits.Convert(UnitsNum.Pressure).FromSI(aExtAmbPressure * aIntAmbTemperature / aExtAmbTemperature)
         End Get
-        Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Pressure).ToSI(Value) <> aIntAmbPressure Then
-                aChanged = True
-                aIntAmbPressure = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
-            End If
-        End Set
-    End Property
-    Friend Property IntAmbElevation() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aIntAmbElevation)
-        End Get
-        Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aIntAmbElevation Then
-                aChanged = True
-                aIntAmbElevation = myUnits.Convert(UnitsNum.Length).ToSI(Value)
-            End If
-        End Set
     End Property
     Friend Property IntAmbRH() As Single
         Get
@@ -181,17 +164,6 @@ Public Class Environment
             If myUnits.Convert(UnitsNum.Pressure).ToSI(Value) <> aExtAmbPressure Then
                 aChanged = True
                 aExtAmbPressure = myUnits.Convert(UnitsNum.Pressure).ToSI(Value)
-            End If
-        End Set
-    End Property
-    Friend Property ExtAmbElevation() As Single
-        Get
-            Return myUnits.Convert(UnitsNum.Length).FromSI(aExtAmbElevation)
-        End Get
-        Set(ByVal Value As Single)
-            If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aExtAmbElevation Then
-                aChanged = True
-                aExtAmbElevation = myUnits.Convert(UnitsNum.Length).ToSI(Value)
             End If
         End Set
     End Property

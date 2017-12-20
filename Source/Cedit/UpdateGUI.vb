@@ -82,12 +82,9 @@ Public Class UpdateGUI
         MainWin.EnvSpreadOutInterval.Text = myEnvironment.SpreadsheetInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvSmokeviewInterval.Text = myEnvironment.SmokeviewInterval.ToString + myUnits.Convert(UnitsNum.Time).Units
         MainWin.EnvIntAmbTemp.Text = myEnvironment.IntAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
-        MainWin.EnvIntAmbPress.Text = myEnvironment.IntAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
         MainWin.EnvIntAmbRH.Text = myEnvironment.IntAmbRH.ToString + " %"
-        MainWin.EnvIntAmbElevation.Text = myEnvironment.IntAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units
         MainWin.EnvExtAmbTemp.Text = myEnvironment.ExtAmbTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
         MainWin.EnvExtAmbPress.Text = myEnvironment.ExtAmbPressure.ToString + myUnits.Convert(UnitsNum.Pressure).Units
-        MainWin.EnvExtAmbElevation.Text = myEnvironment.ExtAmbElevation.ToString + myUnits.Convert(UnitsNum.Length).Units
         MainWin.EnvAdiabatic.Checked = myEnvironment.AdiabaticWalls
         MainWin.EnvLOI.Text = myEnvironment.LowerOxygenLimit.ToString
 

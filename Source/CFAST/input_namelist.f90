@@ -240,7 +240,6 @@
         exterior_ambient_temperature  = exterior_temperature + kelvin_c_offset
         interior_ambient_temperature  = interior_temperature + kelvin_c_offset
         exterior_abs_pressure = pressure
-        interior_abs_pressure = exterior_abs_pressure*exterior_ambient_temperature/interior_ambient_temperature
         relative_humidity     = relative_humidity*0.01_eb
 
         tgignt = interior_ambient_temperature + 200.0_eb

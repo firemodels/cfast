@@ -107,6 +107,9 @@
         write (iofill,5022) interior_ambient_temperature
         stop
     end if    
+    
+    ! make pressures consistent with temperatures
+    interior_abs_pressure = exterior_abs_pressure*exterior_ambient_temperature/interior_ambient_temperature
 
     ! compartment geometry related data
     nrm1 = nr - 1

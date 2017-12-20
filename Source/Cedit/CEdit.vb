@@ -268,12 +268,9 @@ Public Class CeditMain
     Friend WithEvents Label28 As System.Windows.Forms.Label
     Friend WithEvents GroupBox8 As System.Windows.Forms.GroupBox
     Friend WithEvents GroupBox12 As System.Windows.Forms.GroupBox
-    Friend WithEvents Label24 As System.Windows.Forms.Label
     Friend WithEvents Label26 As System.Windows.Forms.Label
     Friend WithEvents Label27 As System.Windows.Forms.Label
     Friend WithEvents GroupBox11 As System.Windows.Forms.GroupBox
-    Friend WithEvents Label8 As System.Windows.Forms.Label
-    Friend WithEvents Label6 As System.Windows.Forms.Label
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
     Friend WithEvents Label4 As System.Windows.Forms.Label
@@ -290,7 +287,6 @@ Public Class CeditMain
     Friend WithEvents Label83 As System.Windows.Forms.Label
     Friend WithEvents EnvTitle As System.Windows.Forms.TextBox
     Friend WithEvents EnvExtAmbPress As System.Windows.Forms.TextBox
-    Friend WithEvents EnvIntAmbPress As System.Windows.Forms.TextBox
     Friend WithEvents EnvIntAmbTemp As System.Windows.Forms.TextBox
     Friend WithEvents EnvSpreadOutInterval As System.Windows.Forms.TextBox
     Friend WithEvents EnvTextOutInterval As System.Windows.Forms.TextBox
@@ -364,7 +360,6 @@ Public Class CeditMain
     Friend WithEvents TargetZPosition As System.Windows.Forms.TextBox
     Friend WithEvents TargetYPosition As System.Windows.Forms.TextBox
     Friend WithEvents TargetXPosition As System.Windows.Forms.TextBox
-    Friend WithEvents EnvExtAmbElevation As System.Windows.Forms.TextBox
     Friend WithEvents EnvExtAmbTemp As System.Windows.Forms.TextBox
     Friend WithEvents FireIgnitionCriteria As System.Windows.Forms.ComboBox
     Friend WithEvents FireIgnitionValue As System.Windows.Forms.TextBox
@@ -421,7 +416,6 @@ Public Class CeditMain
     Friend WithEvents MenuSave As System.Windows.Forms.MenuItem
     Friend WithEvents MenuSaveAs As System.Windows.Forms.MenuItem
     Friend WithEvents MenuOpen As System.Windows.Forms.MenuItem
-    Friend WithEvents EnvIntAmbElevation As System.Windows.Forms.TextBox
     Friend WithEvents CompWidth As System.Windows.Forms.TextBox
     Friend WithEvents Label25 As System.Windows.Forms.Label
     Friend WithEvents EnvSmokeviewInterval As System.Windows.Forms.TextBox
@@ -494,8 +488,6 @@ Public Class CeditMain
         Me.EnvLOI = New System.Windows.Forms.TextBox()
         Me.EnvAdiabatic = New System.Windows.Forms.CheckBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
-        Me.Label24 = New System.Windows.Forms.Label()
-        Me.EnvExtAmbElevation = New System.Windows.Forms.TextBox()
         Me.Label26 = New System.Windows.Forms.Label()
         Me.EnvExtAmbPress = New System.Windows.Forms.TextBox()
         Me.Label27 = New System.Windows.Forms.Label()
@@ -503,10 +495,6 @@ Public Class CeditMain
         Me.GroupBox11 = New System.Windows.Forms.GroupBox()
         Me.Label30 = New System.Windows.Forms.Label()
         Me.EnvIntAmbRH = New System.Windows.Forms.TextBox()
-        Me.Label8 = New System.Windows.Forms.Label()
-        Me.EnvIntAmbElevation = New System.Windows.Forms.TextBox()
-        Me.Label6 = New System.Windows.Forms.Label()
-        Me.EnvIntAmbPress = New System.Windows.Forms.TextBox()
         Me.Label5 = New System.Windows.Forms.Label()
         Me.EnvIntAmbTemp = New System.Windows.Forms.TextBox()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
@@ -1178,8 +1166,6 @@ Public Class CeditMain
         '
         'GroupBox12
         '
-        Me.GroupBox12.Controls.Add(Me.Label24)
-        Me.GroupBox12.Controls.Add(Me.EnvExtAmbElevation)
         Me.GroupBox12.Controls.Add(Me.Label26)
         Me.GroupBox12.Controls.Add(Me.EnvExtAmbPress)
         Me.GroupBox12.Controls.Add(Me.Label27)
@@ -1191,26 +1177,9 @@ Public Class CeditMain
         Me.GroupBox12.TabStop = False
         Me.GroupBox12.Text = "Exterior"
         '
-        'Label24
-        '
-        Me.Label24.Location = New System.Drawing.Point(200, 15)
-        Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(56, 23)
-        Me.Label24.TabIndex = 108
-        Me.Label24.Text = "Elevation:"
-        Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'EnvExtAmbElevation
-        '
-        Me.EnvExtAmbElevation.Location = New System.Drawing.Point(264, 16)
-        Me.EnvExtAmbElevation.Name = "EnvExtAmbElevation"
-        Me.EnvExtAmbElevation.Size = New System.Drawing.Size(96, 20)
-        Me.EnvExtAmbElevation.TabIndex = 112
-        Me.EnvExtAmbElevation.Text = "0 m"
-        '
         'Label26
         '
-        Me.Label26.Location = New System.Drawing.Point(8, 47)
+        Me.Label26.Location = New System.Drawing.Point(184, 32)
         Me.Label26.Name = "Label26"
         Me.Label26.Size = New System.Drawing.Size(72, 23)
         Me.Label26.TabIndex = 109
@@ -1219,7 +1188,7 @@ Public Class CeditMain
         '
         'EnvExtAmbPress
         '
-        Me.EnvExtAmbPress.Location = New System.Drawing.Point(88, 48)
+        Me.EnvExtAmbPress.Location = New System.Drawing.Point(264, 33)
         Me.EnvExtAmbPress.Name = "EnvExtAmbPress"
         Me.EnvExtAmbPress.Size = New System.Drawing.Size(96, 20)
         Me.EnvExtAmbPress.TabIndex = 113
@@ -1227,7 +1196,7 @@ Public Class CeditMain
         '
         'Label27
         '
-        Me.Label27.Location = New System.Drawing.Point(8, 15)
+        Me.Label27.Location = New System.Drawing.Point(8, 32)
         Me.Label27.Name = "Label27"
         Me.Label27.Size = New System.Drawing.Size(72, 23)
         Me.Label27.TabIndex = 110
@@ -1236,7 +1205,7 @@ Public Class CeditMain
         '
         'EnvExtAmbTemp
         '
-        Me.EnvExtAmbTemp.Location = New System.Drawing.Point(88, 16)
+        Me.EnvExtAmbTemp.Location = New System.Drawing.Point(88, 33)
         Me.EnvExtAmbTemp.Name = "EnvExtAmbTemp"
         Me.EnvExtAmbTemp.Size = New System.Drawing.Size(96, 20)
         Me.EnvExtAmbTemp.TabIndex = 111
@@ -1246,10 +1215,6 @@ Public Class CeditMain
         '
         Me.GroupBox11.Controls.Add(Me.Label30)
         Me.GroupBox11.Controls.Add(Me.EnvIntAmbRH)
-        Me.GroupBox11.Controls.Add(Me.Label8)
-        Me.GroupBox11.Controls.Add(Me.EnvIntAmbElevation)
-        Me.GroupBox11.Controls.Add(Me.Label6)
-        Me.GroupBox11.Controls.Add(Me.EnvIntAmbPress)
         Me.GroupBox11.Controls.Add(Me.Label5)
         Me.GroupBox11.Controls.Add(Me.EnvIntAmbTemp)
         Me.GroupBox11.Location = New System.Drawing.Point(16, 16)
@@ -1261,7 +1226,7 @@ Public Class CeditMain
         '
         'Label30
         '
-        Me.Label30.Location = New System.Drawing.Point(200, 47)
+        Me.Label30.Location = New System.Drawing.Point(200, 32)
         Me.Label30.Name = "Label30"
         Me.Label30.Size = New System.Drawing.Size(56, 23)
         Me.Label30.TabIndex = 117
@@ -1270,49 +1235,15 @@ Public Class CeditMain
         '
         'EnvIntAmbRH
         '
-        Me.EnvIntAmbRH.Location = New System.Drawing.Point(264, 48)
+        Me.EnvIntAmbRH.Location = New System.Drawing.Point(264, 33)
         Me.EnvIntAmbRH.Name = "EnvIntAmbRH"
         Me.EnvIntAmbRH.Size = New System.Drawing.Size(96, 20)
         Me.EnvIntAmbRH.TabIndex = 110
         Me.EnvIntAmbRH.Text = "50 %"
         '
-        'Label8
-        '
-        Me.Label8.Location = New System.Drawing.Point(200, 15)
-        Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(56, 23)
-        Me.Label8.TabIndex = 112
-        Me.Label8.Text = "Elevation:"
-        Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'EnvIntAmbElevation
-        '
-        Me.EnvIntAmbElevation.Location = New System.Drawing.Point(264, 16)
-        Me.EnvIntAmbElevation.Name = "EnvIntAmbElevation"
-        Me.EnvIntAmbElevation.Size = New System.Drawing.Size(96, 20)
-        Me.EnvIntAmbElevation.TabIndex = 108
-        Me.EnvIntAmbElevation.Text = "0 m"
-        '
-        'Label6
-        '
-        Me.Label6.Location = New System.Drawing.Point(8, 47)
-        Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(72, 23)
-        Me.Label6.TabIndex = 114
-        Me.Label6.Text = "Pressure:"
-        Me.Label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'EnvIntAmbPress
-        '
-        Me.EnvIntAmbPress.Location = New System.Drawing.Point(88, 48)
-        Me.EnvIntAmbPress.Name = "EnvIntAmbPress"
-        Me.EnvIntAmbPress.Size = New System.Drawing.Size(96, 20)
-        Me.EnvIntAmbPress.TabIndex = 109
-        Me.EnvIntAmbPress.Text = "101325 Pa"
-        '
         'Label5
         '
-        Me.Label5.Location = New System.Drawing.Point(8, 15)
+        Me.Label5.Location = New System.Drawing.Point(8, 32)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(72, 23)
         Me.Label5.TabIndex = 115
@@ -1321,7 +1252,7 @@ Public Class CeditMain
         '
         'EnvIntAmbTemp
         '
-        Me.EnvIntAmbTemp.Location = New System.Drawing.Point(88, 16)
+        Me.EnvIntAmbTemp.Location = New System.Drawing.Point(88, 33)
         Me.EnvIntAmbTemp.Name = "EnvIntAmbTemp"
         Me.EnvIntAmbTemp.Size = New System.Drawing.Size(96, 20)
         Me.EnvIntAmbTemp.TabIndex = 107
@@ -5185,18 +5116,15 @@ Public Class CeditMain
     End Sub
 #Region " Simulation Tab "
     ' This section of code handles events related to the environment tab
-    Private Sub Environment_Changed(sender As Object, e As EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvIntAmbElevation.Leave, EnvIntAmbPress.Leave, EnvExtAmbTemp.Leave, EnvExtAmbElevation.Leave, EnvExtAmbPress.Leave, EnvLOI.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, EnvAdiabatic.CheckedChanged
+    Private Sub Environment_Changed(sender As Object, e As EventArgs) Handles EnvSimTime.Leave, EnvTextOutInterval.Leave, EnvSpreadOutInterval.Leave, EnvSmokeviewInterval.Leave, EnvTitle.Leave, EnvIntAmbTemp.Leave, EnvExtAmbTemp.Leave, EnvExtAmbPress.Leave, EnvLOI.Leave, EnvTimeStep.Leave, EnvIntAmbRH.Leave, EnvAdiabatic.CheckedChanged
         If sender Is EnvTitle Then myEnvironment.Title = EnvTitle.Text
         If sender Is EnvSimTime Then myEnvironment.SimulationTime = Val(EnvSimTime.Text)
         If sender Is EnvTextOutInterval Then myEnvironment.OutputInterval = Val(EnvTextOutInterval.Text)
         If sender Is EnvSpreadOutInterval Then myEnvironment.SpreadsheetInterval = Val(EnvSpreadOutInterval.Text)
         If sender Is EnvSmokeviewInterval Then myEnvironment.SmokeviewInterval = Val(EnvSmokeviewInterval.Text)
         If sender Is EnvIntAmbTemp Then myEnvironment.IntAmbTemperature = Val(EnvIntAmbTemp.Text)
-        If sender Is EnvIntAmbElevation Then myEnvironment.IntAmbElevation = Val(EnvIntAmbElevation.Text)
-        If sender Is EnvIntAmbPress Then myEnvironment.IntAmbPressure = Val(EnvIntAmbPress.Text)
         If sender Is EnvIntAmbRH Then myEnvironment.IntAmbRH = Val(EnvIntAmbRH.Text)
         If sender Is EnvExtAmbTemp Then myEnvironment.ExtAmbTemperature = Val(EnvExtAmbTemp.Text)
-        If sender Is EnvExtAmbElevation Then myEnvironment.ExtAmbElevation = Val(EnvExtAmbElevation.Text)
         If sender Is EnvExtAmbPress Then myEnvironment.ExtAmbPressure = Val(EnvExtAmbPress.Text)
         If sender Is EnvLOI Then myEnvironment.LowerOxygenLimit = Val(EnvLOI.Text)
         If sender Is EnvTimeStep Then myEnvironment.MaximumTimeStep = Val(EnvTimeStep.Text)

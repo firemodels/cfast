@@ -475,11 +475,9 @@ module spreadsheet_input_routines
         case ("TAMB")
             if (countargs(lcarray)>=4) then
                 interior_ambient_temperature = lrarray(1)
-                interior_abs_pressure = lrarray(2)
                 relative_humidity = lrarray(4)*0.01_eb
             else if (countargs(lcarray)>=3) then
                 interior_ambient_temperature = lrarray(1)
-                interior_abs_pressure = lrarray(2)
                 relative_humidity = lrarray(3)*0.01_eb
             else
                 write (*,*) '***Error: Bad TAMB input. At least 3 arguments required.'

@@ -153,7 +153,6 @@ Module IO
                     Case "EAMB"
                         myEnvironment.ExtAmbTemperature = csv.num(i, ambNum.ambTemp)
                         myEnvironment.ExtAmbPressure = csv.num(i, ambNum.ambPress)
-                        myEnvironment.ExtAmbElevation = csv.num(i, ambNum.refHeight)
                         myEnvironment.Changed = False
                     Case "EVENT"
                     Case "FIRE"
@@ -411,8 +410,6 @@ Module IO
                         myEnvironment.Changed = False
                     Case "TAMB"
                         myEnvironment.IntAmbTemperature = csv.num(i, ambNum.ambTemp)
-                        myEnvironment.IntAmbPressure = csv.num(i, ambNum.ambPress)
-                        myEnvironment.IntAmbElevation = csv.num(i, ambNum.refHeight)
                         myEnvironment.IntAmbRH = csv.num(i, ambNum.relHumidity)
                         myEnvironment.Changed = False
                     Case "THRMF"
@@ -747,7 +744,6 @@ Module IO
         Next
         myEnvironment.IntAmbTemperature = intemp + 273.15
         myEnvironment.ExtAmbTemperature = extemp + 273.15
-        myEnvironment.IntAmbPressure = pressure
         myEnvironment.ExtAmbPressure = pressure
         myEnvironment.IntAmbRH = rh
         myEnvironment.Changed = False
@@ -2247,13 +2243,13 @@ Module IO
         csv.str(i, CFASTlnNum.keyWord) = "EAMB"
         csv.num(i, ambNum.ambTemp) = myEnvironment.ExtAmbTemperature
         csv.num(i, ambNum.ambPress) = myEnvironment.ExtAmbPressure
-        csv.num(i, ambNum.refHeight) = myEnvironment.ExtAmbElevation
+        csv.num(i, ambNum.refHeight) = 0
         i += 1
         'Interior ambient conditions
         csv.str(i, CFASTlnNum.keyWord) = "TAMB"
         csv.num(i, ambNum.ambTemp) = myEnvironment.IntAmbTemperature
         csv.num(i, ambNum.ambPress) = myEnvironment.IntAmbPressure
-        csv.num(i, ambNum.refHeight) = myEnvironment.IntAmbElevation
+        csv.num(i, ambNum.refHeight) = 0
         csv.num(i, ambNum.relHumidity) = myEnvironment.IntAmbRH
         i += 1
         'adiabatic walls

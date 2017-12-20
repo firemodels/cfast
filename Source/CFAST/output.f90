@@ -824,27 +824,26 @@ module output_routines
         '(s)                     (s)',/,145('-'))
 5130 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,27x,4(f9.2,3x))
 5135 format (a14,1x,a14,i3,7x,f7.2,3x,f7.2,9x,a,6x,f9.2,5x,a10,9x,2(f9.2,15x))  
-    
-    ! ramps
-    if (n_ramps==0) then
-        write (iofilo,5150)
-    else
-        write (iofilo,5160)
-        do i = 1, n_ramps
-            rampptr => rampinfo(i)
-            if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
-222            roomptr => roominfo(rampptr%room2)
-               write (cjout,'(a14)') roomptr%name
-               if (rampptr%room2==nr) cjout = 'Outside'
-               roomptr => roominfo(rampptr%room1)
-               write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
-                   (int(rampptr%x(j)),j=1,rampptr%npoints)
-               write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
-               goto 223
-            end if
-223         continue
-        end do
-    end if
+
+     ! ramps
+     if (n_ramps==0) then
+         write (iofilo,5150)
+     else
+         write (iofilo,5160)
+         do i = 1, n_ramps
+             rampptr => rampinfo(i)
+             if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
+                 roomptr => roominfo(rampptr%room2)
+                 write (cjout,'(a14)') roomptr%name
+                 if (rampptr%room2==nr) cjout = 'Outside'
+                 roomptr => roominfo(rampptr%room1)
+                 write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
+                     (int(rampptr%x(j)),j=1,rampptr%npoints)
+                 write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
+             end if
+         end do
+     end if
+     
     return
   
 5150 format (//,'VENT RAMPS',//,'There are no vent opening ramp specifications')

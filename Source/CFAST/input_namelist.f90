@@ -408,19 +408,19 @@
     integer, intent(in) :: lu
     integer, intent(inout) :: ncomp
     
-    integer :: ios, ii, i, kk
+    integer :: ios, ii, kk
     character :: tcname*64
 
-    type(ramp_type), pointer :: rampptr
     type(room_type), pointer :: roomptr
 
     integer,dimension(3) :: grid
     real(eb) :: depth, height ,width
     real(eb),dimension(3) :: origin
+    real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     character(64) :: hall, shaft
-    character(64) :: id, room_area_ramp, ceiling_matl_id, floor_matl_id, wall_matl_id
-    namelist /COMP/ depth, grid, hall, height, id, ceiling_matl_id, floor_matl_id, wall_matl_id, origin, &
-        room_area_ramp, shaft, width
+    character(64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
+    namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, &
+        ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width
 
     ios = 1
 
@@ -468,27 +468,16 @@
             call set_defaults
             read(lu,COMP)
 
-            if (trim(room_area_ramp) /= 'NULL') then
-                ramp_search: do kk = 1, n_ramps
-                    rampptr=>rampinfo(kk)
-                    if (trim(rampptr%id) == trim(room_area_ramp)) then
-                        rampptr%room1 = ii
-                        rampptr%room2 = ii
-                        rampptr%counter = kk
-                        do i = 1, rampptr%npoints
-                            roomptr%var_height(i) = rampptr%x(i)
-                            roomptr%var_area(i)   = rampptr%f_of_x(i)
-                        end do
-                        exit ramp_search
-                    end if
-                end do ramp_search
-
-                if (kk == n_ramps+1) then
-                    write (*,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP_ID: ', room_area_ramp, ', not found.'
-                    write (iofill,'(a,a,a)') '***Error in &COMP: COMP_AREA_RAMP_ID: ', room_area_ramp, ', not found.'
-                    stop
+            roomptr%nvars = 0
+            roomptr%var_area = 0.0_eb
+            roomptr%var_height = 0.0_eb
+            do kk = 1, mxpts
+                if (cross_sect_areas(kk)/=-101._eb) then
+                    roomptr%nvars = roomptr%nvars + 1
+                    roomptr%var_area(roomptr%nvars) = cross_sect_areas(kk)
+                    roomptr%var_height(roomptr%nvars) = cross_sect_heights(kk)
                 end if
-            end if
+            end do
 
             roomptr%compartment    = ii
             roomptr%name    = id
@@ -542,6 +531,8 @@
     subroutine set_defaults
 
     ceiling_matl_id         = 'OFF'
+    cross_sect_areas        = -101._eb
+    cross_sect_heights      = -101._eb
     id                      = 'NULL'
     depth                   = 0.0_eb
     floor_matl_id           = 'OFF'
@@ -550,7 +541,6 @@
     width                   = 0.0_eb
     grid(:)                 = default_grid
     origin(:)               = 0.0_eb
-    room_area_ramp          = 'NULL'
     hall                    = '.FALSE.'
     shaft                   = '.FALSE.'
 

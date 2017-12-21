@@ -811,7 +811,7 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "EMISSIVITY") Then
                         emiss = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SPECIFIC_HEAT") Then
-                        spech = NMList.ForNMListVarGetNum(i, j, 1)
+                        spech = NMList.ForNMListVarGetNum(i, j, 1) * 1000
                     ElseIf (NMList.ForNMListGetVar(i, j) = "THICKNESS") Then
                         thick = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "ID") Then

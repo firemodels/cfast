@@ -4907,13 +4907,13 @@ Public Class CeditMain
         'OpenDataFileDialog
         '
         Me.OpenDataFileDialog.DefaultExt = "in"
-        Me.OpenDataFileDialog.Filter = "CFAST files|*.cfast|CFAST files (Old format)|*.in|All files|*.*"
+        Me.OpenDataFileDialog.Filter = "CFAST files|*.in|All files|*.*"
         Me.OpenDataFileDialog.Title = "Open"
         '
         'SaveDataFileDialog
         '
         Me.SaveDataFileDialog.DefaultExt = "cfast"
-        Me.SaveDataFileDialog.Filter = "CFAST files|*.cfast|CFAST files (Old format)|*.in|All files|*.*"
+        Me.SaveDataFileDialog.Filter = "CFAST files|*.in|CFAST files (Old format)|*.in|All files|*.*"
         Me.SaveDataFileDialog.Title = "Save As"
         '
         'HelpProvider
@@ -6406,25 +6406,25 @@ Public Class CeditMain
     Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
         Dim PathName As String, FileExtension As String
         myUnits.SI = True
-        SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".cfast"
+        SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
+        SaveDataFileDialog.FilterIndex = 1
         SaveDataFileDialog.Title = "Save As"
         SaveDataFileDialog.OverwritePrompt = True
         If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             If SaveDataFileDialog.FileName <> " " Then
-                ' Write out the data file since it has been 
                 If SaveDataFileDialog.FilterIndex = 1 Then
                     WriteInputFileNML(SaveDataFileDialog.FileName)
-                    FileExtension = ".cfast"
+                    FileExtension = ".in"
                 Else
                     WriteInputFile(SaveDataFileDialog.FileName)
                     FileExtension = ".in"
                 End If
                 myEnvironment.InputFileName = SaveDataFileDialog.FileName
-                    myEnvironment.InputFilePath = SaveDataFileDialog.FileName
-                    Text = "CEdit (" + System.IO.Path.GetFileName(SaveDataFileDialog.FileName) + ")"
+                myEnvironment.InputFilePath = SaveDataFileDialog.FileName
+                Text = "CEdit (" + System.IO.Path.GetFileName(SaveDataFileDialog.FileName) + ")"
                 myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + FileExtension)
             End If
-                PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
+            PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
             ChDir(PathName)
         End If
         myUnits.SI = False
@@ -6750,12 +6750,12 @@ Public Class CeditMain
                         WriteInputFileNML(SaveDataFileDialog.FileName)
                         myEnvironment.InputFileName = SaveDataFileDialog.FileName
                         myEnvironment.InputFilePath = SaveDataFileDialog.FileName
-                        myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".cfast")
+                        myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
                     End If
                 End If
             Else
-                WriteInputFileNML(myEnvironment.InputFileName + ".cfast")
-                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".cfast")
+                WriteInputFileNML(myEnvironment.InputFileName + ".in")
+                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + ".in")
             End If
         End If
         myUnits.SI = False

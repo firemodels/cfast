@@ -39,6 +39,9 @@ Module IO
             End If
             i += 1
         Loop
+        If Not NewFileFormat Then
+            System.Windows.Forms.MessageBox.Show("CFAST input file is from an older version that cannot be read correctly. Thermal properties and fires will not be imported. Expect additional error messages and check imported file carefully.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
 
         ' Get thermal properties from the input file
         FindThermalProperties(csv, myThermalProperties)

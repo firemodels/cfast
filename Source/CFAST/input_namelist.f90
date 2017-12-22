@@ -1174,9 +1174,9 @@ continue
             
             ! Position the fire
             roomptr => roominfo(fireptr%room)
-            call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-            call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-            call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
+            !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
+            !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
+            !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
         end do read_insf_loop
 
@@ -1378,7 +1378,7 @@ continue
                         case ('HEIGHT')
                             fireptr%height(1:np) = tablptr%data(1:np,i)
                         case ('AREA')
-                            fireptr%area(1:np) = tablptr%data(1:np,i)
+                            fireptr%area(1:np) = max(tablptr%data(1:np,i),pio4*0.2_eb**2)
                         case ('CO_YIELD')
                             fireptr%y_co(1:np) = tablptr%data(1:np,i)
                         case ('SOOT_YIELD')
@@ -1655,6 +1655,7 @@ continue
                             n_ramps = n_ramps + 1
                             rampptr=>rampinfo(n_ramps)
                             rampptr%type = 'H'
+                            rampptr%id = 'NULL'
                             rampptr%room1 = ventptr%room1
                             rampptr%room2 = ventptr%room2
                             rampptr%counter = ventptr%counter
@@ -1798,6 +1799,7 @@ continue
                                 n_ramps = n_ramps + 1
                                 rampptr=>rampinfo(n_ramps)
                                 rampptr%type = 'M'
+                                rampptr%id = 'NULL'
                                 rampptr%room1 = ventptr%room1
                                 rampptr%room2 = ventptr%room2
                                 rampptr%counter = ventptr%counter
@@ -1927,6 +1929,7 @@ continue
                                 n_ramps = n_ramps + 1
                                 rampptr=>rampinfo(n_ramps)
                                 rampptr%type = 'V'
+                                rampptr%id = 'NULL'
                                 rampptr%room1 = ventptr%room1
                                 rampptr%room2 = ventptr%room2
                                 rampptr%counter = ventptr%counter

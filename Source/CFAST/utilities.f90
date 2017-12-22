@@ -1305,6 +1305,7 @@
         
         ! if ramp is not named, check for specific vent
         do iramp = 1, n_ramps
+            rampptr=>rampinfo(iramp)
             if (rampptr%type==venttype.and.rampptr%room1==room1.and.rampptr%room2==room2.and. &
                 rampptr%counter==counter) then
             vent_index = iramp
@@ -1336,7 +1337,7 @@
 
     fraction = 1.0_eb
 
-    if (n_ramps>0 .and. rampid/='NULL') then
+    if (n_ramps>0) then
         iramp = find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)

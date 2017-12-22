@@ -2162,6 +2162,8 @@ Module IO
                         aFireObject.RadiativeFraction = csv.num(iChemie, chemieNum.chiR)
                         aFireIns.SetPosition(csv.num(iFire, fireNum.compartment) - 1, csv.num(iFire, fireNum.xPosition),
                             csv.num(iFire, fireNum.yPosition), csv.num(iFire, fireNum.zposition))
+                        Dim z_position As Single
+                        z_position = csv.num(iFire, fireNum.zposition)
                         aFireObject.PlumeType = csv.num(iFire, fireNum.plumeType) - 1
                         If InStr(IgnitionTypes, csv.str(iFire, fireNum.ignType), CompareMethod.Text) > 0 Then
                             ' if it's the new format, ignition is just linked to an existing target
@@ -2187,6 +2189,7 @@ Module IO
                         For j = 0 To csv.num(iTime, 0) - 2
                             For k = 1 To NumFireCurves
                                 firedata(FireCurveColumns(k), j) = csv.num(iTime + k - 1, j + 2)
+                                If FireCurveColumns(k) = Fire.FireHeight Then firedata(FireCurveColumns(k), j) += z_position
                             Next
                             firedata(Fire.FireMdot, j) = firedata(Fire.FireHRR, j) / aFireObject.HeatofCombustion
                             firedata(Fire.FireHC, j) = aFireObject.ChemicalFormula(formula.H) * 1.00794 / (aFireObject.ChemicalFormula(formula.C) * 12.0107)

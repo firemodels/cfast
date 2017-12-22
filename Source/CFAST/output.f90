@@ -931,7 +931,7 @@ module output_routines
             roomptr => roominfo(fireptr%room)
             write (iofilo,5020) trim(fireptr%name), io, fire_geometry(fireptr%modified_plume)
             write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), fireptr%x_position, fireptr%y_position, &
-                fireptr%z_position, relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
+                fireptr%z_position+fireptr%height(1), relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
             write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
             is = 103
@@ -942,7 +942,7 @@ module output_routines
                 write (cbuf,5060) fireptr%t_qdot(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
                 y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
                 y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
-                write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i), fireptr%area(i)
+                write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i)
                 write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             end do
         end do

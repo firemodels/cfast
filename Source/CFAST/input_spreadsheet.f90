@@ -1520,9 +1520,9 @@ module spreadsheet_input_routines
 
     ! Position the object
     roomptr => roominfo(fireptr%room)
-    call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-    call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-    call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
+    !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
+    !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
+    !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released

@@ -648,9 +648,10 @@ module output_routines
         roomptr => roominfo(i)
         shaft = '' ; if (roomptr%shaft) shaft = '*'
         hall = '' ; if (roomptr%hall) hall = '*'
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, shaft, hall
+        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, &
+            shaft, hall
     end do
-    if (adiabatic_walls==.true.) write (iofilo,*) 'All compartment surfaces are adiabatic'
+    if (adiabatic_walls) write (iofilo,*) 'All compartment surfaces are adiabatic'
     return
 5000 format (//,'COMPARTMENTS',//, &
     'Compartment  Name                Width        Depth        Height       Floor        Ceiling    Shaft    Hall   ',/, &

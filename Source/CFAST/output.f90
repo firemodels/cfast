@@ -832,19 +832,17 @@ module output_routines
          write (iofilo,5160)
          do i = 1, n_ramps
              rampptr => rampinfo(i)
-             if (trim(rampptr%type) == 'FRACTION' .or. .not. nmlflag) then
-                 roomptr => roominfo(rampptr%room2)
-                 write (cjout,'(a14)') roomptr%name
-                 if (rampptr%room2==nr) cjout = 'Outside'
-                 roomptr => roominfo(rampptr%room1)
-                 write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
-                     (int(rampptr%x(j)),j=1,rampptr%npoints)
-                 write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
-             end if
+             roomptr => roominfo(rampptr%room2)
+             write (cjout,'(a14)') roomptr%name
+             if (rampptr%room2==nr) cjout = 'Outside'
+             roomptr => roominfo(rampptr%room1)
+             write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
+                 (int(rampptr%x(j)),j=1,rampptr%npoints)
+             write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
          end do
      end if
-     
-    return
+
+     return
   
 5150 format (//,'VENT RAMPS',//,'There are no vent opening ramp specifications')
 5160 format (//,'VENT RAMPS',//, &
@@ -927,7 +925,7 @@ module output_routines
     type(fire_type), pointer :: fireptr
 
     if (n_fires>0) then
-        write (iofilo,5080) lower_o2_limit
+        write (iofilo,5080)
         do io = 1, n_fires
             fireptr => fireinfo(io)
             roomptr => roominfo(fireptr%room)
@@ -944,7 +942,7 @@ module output_routines
                 write (cbuf,5060) fireptr%t_qdot(i), fireptr%mdot(i), fireptr%hoc(i), fireptr%qdot(i), fireptr%height(i)
                 y_HCN = fireptr%n_N*0.027028_eb/fireptr%molar_mass
                 y_HCl = fireptr%n_Cl*0.036458_eb/fireptr%molar_mass
-                write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i)
+                write (cbuf(51:132),5070) fireptr%y_soot(i), fireptr%y_co(i), y_HCN, y_HCl, fireptr%y_trace(i), fireptr%area(i)
                 write (iofilo,'(a)') cbuf(1:len_trim(cbuf))
             end do
         end do
@@ -959,7 +957,7 @@ module output_routines
 5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
 5070 format (10(1PG10.2),2x,2g10.2)
-5080 format (/,'FIRES',//,'Lower oxygen limit: ',f7.2)
+5080 format (/,'FIRES')
     end subroutine output_initial_fires
 
 ! --------------------------- output_initial_targets -------------------------------------------

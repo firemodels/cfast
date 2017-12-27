@@ -1019,7 +1019,7 @@ continue
 
     integer, intent(in) :: lu
     
-    integer :: ios, i, ii, jj, iroom, base, midpoint
+    integer :: ios, i, ii, jj, iroom
     real(eb) :: tmpcond
     character(64) :: compartment_id
 
@@ -1218,7 +1218,7 @@ continue
 
     integer, intent(in) :: lu
     
-    integer :: ios, i, ii, jj, kk, base, midpoint, n_defs, ifire, np
+    integer :: ios, i, ii, jj, kk, n_defs, ifire, np
     real(eb) :: tmpcond, max_hrr, flamelength, hrrpm3, max_area, ohcomb
 
     type(room_type),   pointer :: roomptr

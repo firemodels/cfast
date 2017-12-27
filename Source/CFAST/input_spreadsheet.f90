@@ -1412,7 +1412,7 @@ module spreadsheet_input_routines
 
     character(128) :: lcarray(ncol)
     character(5) :: label
-    integer :: iofill = 3, midpoint = 1, base = 2, ir, i, nret
+    integer :: ir, i, nret
     real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, flamelength
     type(room_type), pointer :: roomptr
 

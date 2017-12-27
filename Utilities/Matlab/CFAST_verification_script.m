@@ -33,6 +33,9 @@ speciesmass(data_dir);
 data_dir = '../../Verification/Fires/';
 fire_ignition(data_dir);
 
+data_dir = '../../Verification/Sprinkler/';
+sprinkler_1(data_dir);
+
 data_dir = '../../Verification/Radiation/';
 radiativefluxes(data_dir);
 

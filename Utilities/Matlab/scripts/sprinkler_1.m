@@ -1,11 +1,12 @@
-%The _w.csv and _n.csv files for 'sprinkler_1.in' are read by MATLAB and then the expected results are calculated for
-%the sprinkler link temperature and the heat release rate of the fire.
-%These results are then plotted against the CFAST results.
+function [] = sprinkler_1(data_dir)
+%This function calculates expected sprinkler temperatures and HRR values 
+%once the sprinkler activates.
 
-clear all
-close all
-format long
-plot_style
+%The local temperature and velocity calculated by CFAST (test case 'sprinkler_1.in') 
+%are read by MATLAB and then the expected results are calculated for
+%the sprinkler link temperature and the heat release rate of the fire.
+%These results are saved to the file sprinkler_1.csv for use in
+%verification ploting script.
 
 %Define the conditions
 tempInit = 40;%C
@@ -14,9 +15,9 @@ tau = 3*(uw^-1.8);
 RTI = 100;%ms^0.5
 
 %Read in the _w.csv file for the case
-filename = 'sprinkler_1';
+filename = [data_dir 'sprinkler_1'];
 filenamew = [filename '_w.csv'];
-Z = importdata(filenamew,',',2);
+Z = importdata(filenamew,',',5);
 W = strsplit(Z.textdata{1,1},',');
 
 %find the locations for all of the variable columns
@@ -56,7 +57,7 @@ legend('theoretical','CFAST','Location','SouthEast')
 %%
 %Read in the n.csv file for the case
 filenameZone = [filename '_n.csv'];
-Q = importdata(filenameZone,',',2);
+Q = importdata(filenameZone,',',5);
 F = strsplit(Q.textdata{1,1},',');
 
 %Find the locations for all of the variables and store the columns
@@ -89,3 +90,11 @@ plot(timeshort,hrrSprink,'ro',timeSprink,hrrCFAST,'b')
 xlabel 'Time (s)'
 ylabel 'HRR (W)'
 legend('theoretical','CFAST')
+
+header = ['TimeLinkEx , TempLinkEx , TimeHRREx , HRREx'];
+data = [timeEX , TLex , timeshort , hrrSprink];
+outid = fopen([data_dir 'sprinkler_1.csv'] , 'w+');
+fprintf(outid,'%s',header);
+fclose(outid);
+dlmwrite ([data_dir 'sprinkler_1.csv'],data,'roffset',1,'-append');
+end

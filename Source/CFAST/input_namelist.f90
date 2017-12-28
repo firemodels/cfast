@@ -1107,12 +1107,6 @@ continue
                 stop
             end if
 
-            fireptr%modified_plume = 1
-            if (min(fireptr%x_position,roomptr%cwidth-fireptr%x_position)<=mx_hsep .or. &
-                min(fireptr%y_position,roomptr%cdepth-fireptr%y_position)<=mx_hsep) fireptr%modified_plume = 2
-            if (min(fireptr%x_position,roomptr%cwidth-fireptr%x_position)<=mx_hsep .and. &
-                min(fireptr%y_position,roomptr%cdepth-fireptr%y_position)<=mx_hsep) fireptr%modified_plume = 3
-
             if (trim(ignition_criterion) /= 'NULL') then
                 if (trim(ignition_criterion)=='TIME' .or. trim(ignition_criterion)=='TEMPERATURE' .or. &
                     trim(ignition_criterion)=='FLUX') then
@@ -1266,7 +1260,7 @@ continue
         rewind (lu)
         input_file_line_number = 0
 
-        ! Assign value to CFAST variables for further calculations. 
+        ! Assign value to CFAST variables for further calculations.
         !This just adds information to previously read and defined fires from &FIRE
         read_fire_loop: do ii = 1, n_defs
 
@@ -1275,11 +1269,168 @@ continue
             read(lu,CHEM)
 
             ifire = 0
+            
+            ! find all fires that this definition applies to
             searching: do jj = 1, n_fires
                 fireptr => fireinfo(jj)
                 if (trim(id) == trim(fireptr%fire_name)) then
                     ifire =jj
-                    exit searching
+
+
+                    fireptr => fireinfo(ifire)
+                    fireptr%qdot = 0.0_eb
+                    fireptr%y_soot = 0.0_eb
+                    fireptr%y_co = 0.0_eb
+                    fireptr%y_trace = 0.0_eb
+                    fireptr%area = pio4*0.2_eb**2
+                    fireptr%height = 0.0_eb
+
+                    ! Only constrained fires
+                    fireptr%chemistry_type = 2
+                    if (fireptr%chemistry_type>2) then
+                        write (*,5321) fireptr%chemistry_type
+                        write (iofill,5321) fireptr%chemistry_type
+                        stop
+                    end if
+
+                    ! Define chemical formula
+                    fireptr%n_c  = carbon
+                    fireptr%n_h  = hydrogen
+                    fireptr%n_o  = oxygen
+                    fireptr%n_n  = nitrogen
+                    fireptr%n_cl = chlorine
+                    fireptr%molar_mass = (12.01_eb*fireptr%n_c + 1.008_eb*fireptr%n_h + 16.0_eb*fireptr%n_o + &
+                        14.01_eb*fireptr%n_n + 35.45_eb*fireptr%n_cl)/1000.0_eb
+                    fireptr%chirad = radiative_fraction
+                    ohcomb = heat_of_combustion *1.e3_eb
+                    if (ohcomb<=0.0_eb) then
+                        write (*,5001) ohcomb
+                        write (iofill,5001) ohcomb
+                        stop
+                    end if
+
+                    ! do constant values for fire inputs first, then check for time-varying inputs
+
+                    ! constant hrr
+                    fireptr%n_qdot = 1
+                    fireptr%t_qdot(1) = 0.0_eb
+                    fireptr%qdot(1) = hrr * 1000._eb
+                    max_hrr = hrr
+
+                    ! constant soot
+                    fireptr%n_soot = 1
+                    fireptr%t_soot(1) = 0.0_eb
+                    fireptr%y_soot(1) = soot_yield
+
+                    ! constant co
+                    fireptr%n_co = 1
+                    fireptr%t_co(1) = 0.0_eb
+                    fireptr%y_co(1) = co_yield
+
+                    ! constant trace species
+                    fireptr%n_trace = 1
+                    fireptr%t_trace(1) = 0.0_eb
+                    fireptr%y_trace(1) = trace_yield
+
+                    ! constant area
+                    fireptr%n_area = 1
+                    fireptr%t_area(1) = 0.0_eb
+                    fireptr%area(1) = max(area,pio4*0.2_eb**2)
+
+                    ! constant height
+                    fireptr%n_height = 1
+                    fireptr%t_height = 0.0_eb
+                    fireptr%height(1) = 0.0_eb
+
+                    tabl_search: do kk = 1, n_tabls
+                        tablptr=>tablinfo(kk)
+                        if (trim(tablptr%name)==trim(fireptr%fire_name)) then
+                            np = tablptr%n_points
+                            do i = 1,mxtablcols
+                                select case (trim(tablptr%labels(i)))
+                                case ('TIME')
+                                    fireptr%t_qdot(1:np) = tablptr%data(1:np,i)
+                                    fireptr%n_qdot = np
+                                    fireptr%t_soot(1:np) = tablptr%data(1:np,i)
+                                    fireptr%n_soot = np
+                                    fireptr%t_co(1:np) = tablptr%data(1:np,i)
+                                    fireptr%n_co = np
+                                    fireptr%t_trace(1:np) = tablptr%data(1:np,i)
+                                    fireptr%n_trace = np
+                                    fireptr%t_area(1:np) = tablptr%data(1:np,i)
+                                    fireptr%n_area = np
+                                    fireptr%t_height(1:np) = tablptr%data(1:np,i)
+                                    fireptr%n_height = np
+                                case ('HRR')
+                                    fireptr%qdot(1:np) = tablptr%data(1:np,i)*1000._eb
+                                case ('HEIGHT')
+                                    fireptr%height(1:np) = tablptr%data(1:np,i)
+                                case ('AREA')
+                                    fireptr%area(1:np) = max(tablptr%data(1:np,i),pio4*0.2_eb**2)
+                                case ('CO_YIELD')
+                                    fireptr%y_co(1:np) = tablptr%data(1:np,i)
+                                case ('SOOT_YIELD')
+                                    fireptr%y_soot(1:np) = tablptr%data(1:np,i)
+                                case ('HCN_YIELD')
+                                case ('HCL_YIELD')
+                                case ('TRACE_YIELD')
+                                    fireptr%y_trace(1:np) = tablptr%data(1:np,i)
+                                end select
+                            end do
+                        end if
+                    end do tabl_search
+
+                    ! calculate mass loss rate from hrr and hoc inputs
+                    fireptr%mdot = fireptr%qdot / ohcomb
+                    fireptr%t_mdot = fireptr%t_qdot
+                    fireptr%n_mdot = fireptr%n_qdot
+                    ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
+                    call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
+                    fireptr%t_hoc = fireptr%t_qdot
+                    fireptr%n_hoc = fireptr%n_qdot
+
+                    ! maximum area, used for input check of hrr per flame volume
+                    max_area = 0.0_eb
+                    do i = 1, fireptr%n_area
+                        max_area = max(max_area,max(fireptr%area(i),pio4*0.2_eb**2))
+                    end do
+                    if (max_area==0.0_eb) then
+                        write (*,5002)
+                        write (iofill,5002)
+                        stop
+                    end if
+                    fireptr%firearea = max_area
+
+                    ! calculate a characteristic length of an object (we assume the diameter).
+                    ! this is used for point source radiation fire to target calculation as a minimum effective
+                    ! distance between the fire and the target which only impact very small fire to target distances
+                    fireptr%characteristic_length = sqrt(max_area/pio4)
+
+                    ! Position the object
+                    roomptr => roominfo(fireptr%room)
+                    !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
+                    !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
+                    !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
+
+                    ! Diagnostic - check for the maximum heat release per unit volume.
+                    ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
+                    call flame_height(max_hrr, max_area, flamelength)
+                    flamelength = max (0.0_eb, flamelength)
+
+                    ! Now the heat release per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
+                    hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
+                    if (hrrpm3>4.0e6_eb) then
+                        write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (*, 5108)
+                        write (iofill,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (iofill, 5108)
+                        stop
+                    else if (hrrpm3>2.0e6_eb) then
+                        write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (*, 5108)
+                        write (iofill,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (iofill, 5108)
+                    end if
                 end if
             end do searching
 
@@ -1287,160 +1438,6 @@ continue
                 write (*,5320) ifire
                 write (iofill,5320) ifire
                 stop
-            end if
-            
-            fireptr => fireinfo(ifire)
-            fireptr%qdot = 0.0_eb
-            fireptr%y_soot = 0.0_eb
-            fireptr%y_co = 0.0_eb
-            fireptr%y_trace = 0.0_eb
-            fireptr%area = pio4*0.2_eb**2
-            fireptr%height = 0.0_eb
-
-            ! Only constrained fires
-            fireptr%chemistry_type = 2
-            if (fireptr%chemistry_type>2) then
-                write (*,5321) fireptr%chemistry_type
-                write (iofill,5321) fireptr%chemistry_type
-                stop
-            end if
-
-            ! Define chemical formula
-            fireptr%n_c  = carbon
-            fireptr%n_h  = hydrogen
-            fireptr%n_o  = oxygen
-            fireptr%n_n  = nitrogen
-            fireptr%n_cl = chlorine
-            fireptr%molar_mass = (12.01_eb*fireptr%n_c + 1.008_eb*fireptr%n_h + 16.0_eb*fireptr%n_o + &
-                14.01_eb*fireptr%n_n + 35.45_eb*fireptr%n_cl)/1000.0_eb
-            fireptr%chirad = radiative_fraction
-            ohcomb = heat_of_combustion *1.e3_eb
-            if (ohcomb<=0.0_eb) then
-                write (*,5001) ohcomb
-                write (iofill,5001) ohcomb
-                stop
-            end if
-            
-            ! do constant values for fire inputs first, then check for time-varying inputs
-
-            ! constant hrr
-            fireptr%n_qdot = 1
-            fireptr%t_qdot(1) = 0.0_eb
-            fireptr%qdot(1) = hrr * 1000._eb
-            max_hrr = hrr
-
-            ! constant soot
-            fireptr%n_soot = 1
-            fireptr%t_soot(1) = 0.0_eb
-            fireptr%y_soot(1) = soot_yield
-
-            ! constant co
-            fireptr%n_co = 1
-            fireptr%t_co(1) = 0.0_eb
-            fireptr%y_co(1) = co_yield
-
-            ! constant trace species
-            fireptr%n_trace = 1
-            fireptr%t_trace(1) = 0.0_eb
-            fireptr%y_trace(1) = trace_yield
-
-            ! constant area
-            fireptr%n_area = 1
-            fireptr%t_area(1) = 0.0_eb
-            fireptr%area(1) = max(area,pio4*0.2_eb**2)
-
-            ! constant height
-            fireptr%n_height = 1
-            fireptr%t_height = 0.0_eb
-            fireptr%height(1) = 0.0_eb
-
-            tabl_search: do kk = 1, n_tabls
-                tablptr=>tablinfo(kk)
-                if (trim(tablptr%name)==trim(fireptr%fire_name)) then
-                    np = tablptr%n_points
-                    do i = 1,mxtablcols
-                        select case (trim(tablptr%labels(i)))
-                        case ('TIME')
-                            fireptr%t_qdot(1:np) = tablptr%data(1:np,i)
-                            fireptr%n_qdot = np
-                            fireptr%t_soot(1:np) = tablptr%data(1:np,i)
-                            fireptr%n_soot = np
-                            fireptr%t_co(1:np) = tablptr%data(1:np,i)
-                            fireptr%n_co = np
-                            fireptr%t_trace(1:np) = tablptr%data(1:np,i)
-                            fireptr%n_trace = np
-                            fireptr%t_area(1:np) = tablptr%data(1:np,i)
-                            fireptr%n_area = np
-                            fireptr%t_height(1:np) = tablptr%data(1:np,i)
-                            fireptr%n_height = np
-                        case ('HRR')
-                            fireptr%qdot(1:np) = tablptr%data(1:np,i)*1000._eb
-                        case ('HEIGHT')
-                            fireptr%height(1:np) = tablptr%data(1:np,i)
-                        case ('AREA')
-                            fireptr%area(1:np) = max(tablptr%data(1:np,i),pio4*0.2_eb**2)
-                        case ('CO_YIELD')
-                            fireptr%y_co(1:np) = tablptr%data(1:np,i)
-                        case ('SOOT_YIELD')
-                            fireptr%y_soot(1:np) = tablptr%data(1:np,i)
-                        case ('HCN_YIELD')
-                        case ('HCL_YIELD')
-                        case ('TRACE_YIELD')
-                            fireptr%y_trace(1:np) = tablptr%data(1:np,i)
-                        end select
-                    end do
-                end if
-            end do tabl_search
-
-            ! calculate mass loss rate from hrr and hoc inputs
-            fireptr%mdot = fireptr%qdot / ohcomb
-            fireptr%t_mdot = fireptr%t_qdot
-            fireptr%n_mdot = fireptr%n_qdot
-            ! set the heat of combustion - this is a problem if the qdot is zero and the mdot is zero as well
-            call set_heat_of_combustion (fireptr%n_qdot, fireptr%mdot, fireptr%qdot, fireptr%hoc, ohcomb)
-            fireptr%t_hoc = fireptr%t_qdot
-            fireptr%n_hoc = fireptr%n_qdot
-
-            ! maximum area, used for input check of hrr per flame volume
-            max_area = 0.0_eb
-            do i = 1, fireptr%n_area
-                max_area = max(max_area,max(fireptr%area(i),pio4*0.2_eb**2))
-            end do
-            if (max_area==0.0_eb) then
-                write (*,5002)
-                write (iofill,5002)
-                stop
-            end if
-
-            ! calculate a characteristic length of an object (we assume the diameter).
-            ! this is used for point source radiation fire to target calculation as a minimum effective
-            ! distance between the fire and the target which only impact very small fire to target distances
-            fireptr%characteristic_length = sqrt(max_area/pio4)
-
-            ! Position the object
-            roomptr => roominfo(fireptr%room)
-            !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-            !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-            !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
-
-            ! Diagnostic - check for the maximum heat release per unit volume.
-            ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
-            call flame_height(max_hrr, max_area, flamelength)
-            flamelength = max (0.0_eb, flamelength)
-
-            ! Now the heat release per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
-            hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
-            if (hrrpm3>4.0e6_eb) then
-                write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (*, 5108)
-                write (iofill,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (iofill, 5108)
-                stop
-            else if (hrrpm3>2.0e6_eb) then
-                write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (*, 5108)
-                write (iofill,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
-                write (iofill, 5108)
             end if
 
         end do read_fire_loop

@@ -2724,7 +2724,7 @@ Module IO
     End Sub
     Public Sub WriteInputFileNML(ByVal filename As String)
         Dim IO As Integer = 1
-        Dim ln As String
+        Dim ln As String, field As String
         Dim i, j, k, l As Integer
         Dim aFlag As Boolean
         Dim aDummy As Single
@@ -2740,752 +2740,527 @@ Module IO
         FileOpen(IO, filename, OpenMode.Output, OpenAccess.Write, OpenShare.Shared)
 
         'Writing HEAD namelist
-        ln = "&HEAD VERSION = " + myEnvironment.Version.ToString + ", "
+        ln = "&HEAD VERSION = " + myEnvironment.Version.ToString + ", " + "TITLE = " + "'" + myEnvironment.Title + "' /"
         PrintLine(IO, ln)
-        ln = "TITLE = " + "'" + myEnvironment.Title + "' "
-        PrintLine(IO, ln)
-        ln = "/"
-        PrintLine(IO, ln)
-
-        ln = "!! "
-        PrintLine(IO, ln)
+        PrintLine(IO, " ")
         ln = "!! Scenario Configuration "
-        PrintLine(IO, ln)
-        ln = "!! "
         PrintLine(IO, ln)
 
         'Writing TIME namelist
-        ln = "&TIME SIMULATION = " + myEnvironment.SimulationTime.ToString + ", PRINT = " + myEnvironment.OutputInterval.ToString +
-            ", SMOKEVIEW = " + myEnvironment.SmokeviewInterval.ToString + ", SPREADSHEET = " + myEnvironment.SpreadsheetInterval.ToString + " / "
+        ln = "&TIME SIMULATION = " + myEnvironment.SimulationTime.ToString + " PRINT = " + myEnvironment.OutputInterval.ToString + " SMOKEVIEW = " + myEnvironment.SmokeviewInterval.ToString + " SPREADSHEET = " + myEnvironment.SpreadsheetInterval.ToString + " / "
         PrintLine(IO, ln)
 
         'Writing INIT namelist
-        aDummy = 293.15
-        If myEnvironment.ExtAmbPressure <> 101325.0 Or myEnvironment.IntAmbRH <> 50.0 Or myEnvironment.IntAmbTemperature <> aDummy _
-            Or myEnvironment.ExtAmbTemperature <> aDummy Then
-            ln = "&INIT "
-            PrintLine(IO, ln)
-            aFlag = True
-        Else
-            aFlag = False
-        End If
-        If myEnvironment.ExtAmbPressure <> 101325.0 Then
-            ln = "PRESSURE = " + myEnvironment.ExtAmbPressure.ToString
-            PrintLine(IO, ln)
-        End If
-        If myEnvironment.IntAmbRH <> 50.0 Then
-            ln = " RELATIVE_HUMIDITY = " + myEnvironment.IntAmbRH.ToString
-            PrintLine(IO, ln)
-        End If
-        aDummy = 293.15
-        If myEnvironment.IntAmbTemperature <> aDummy Then
-            aDummy = 273.15
-            aDummy = myEnvironment.IntAmbTemperature - aDummy
-            ln = " INTERIOR_TEMPERATURE = " + aDummy.ToString
-            PrintLine(IO, ln)
-        End If
-        aDummy = 293.15
-        If myEnvironment.ExtAmbTemperature <> aDummy Then
-            aDummy = 273.15
-            aDummy = myEnvironment.ExtAmbTemperature - aDummy
-            ln = " EXTERIOR_TEMPERATURE = " + aDummy.ToString
-            PrintLine(IO, ln)
-        End If
-        If aFlag Then
-            ln = " / "
-            PrintLine(IO, ln)
-        End If
+        ln = "&INIT " + "PRESSURE = " + myEnvironment.ExtAmbPressure.ToString + " RELATIVE_HUMIDITY = " + myEnvironment.IntAmbRH.ToString
+        ln += " INTERIOR_TEMPERATURE = " + Math.Round((myEnvironment.IntAmbTemperature - 273.15), 2).ToString
+        ln += " EXTERIOR_TEMPERATURE = " + Math.Round((myEnvironment.ExtAmbTemperature - 273.15), 2).ToString + " /"
+        PrintLine(IO, ln)
 
         'Writing MISC namelist
-        aDummy = 0.15
-        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> aDummy Then
+        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Then
             ln = "&MISC "
-            PrintLine(IO, ln)
             aFlag = True
         Else
             aFlag = False
         End If
         If myEnvironment.AdiabaticWalls <> False Then
-            ln = " ADIABATIC = .TRUE. "
-            PrintLine(IO, ln)
+            ln += " ADIABATIC = .TRUE. "
         End If
         If myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0 Then
-            ln = " MAX_TIME_STEP = " + myEnvironment.MaximumTimeStep.ToString
-            PrintLine(IO, ln)
+            ln += " MAX_TIME_STEP = " + myEnvironment.MaximumTimeStep.ToString
         End If
-        aDummy = 0.15
-        If myEnvironment.LowerOxygenLimit <> aDummy Then
-            ln = " LOWER_OXYGEN_LIMIT = " + myEnvironment.LowerOxygenLimit.ToString
-            PrintLine(IO, ln)
+        If myEnvironment.LowerOxygenLimit <> 0.15 Then
+            ln += " LOWER_OXYGEN_LIMIT = " + myEnvironment.LowerOxygenLimit.ToString
         End If
         If aFlag Then
-            ln = " / "
+            ln += " / "
             PrintLine(IO, ln)
         End If
 
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! Material Properties "
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
-
         'Writing MATL namelist
-        For i = 0 To myThermalProperties.Count - 1
-            aThermalProperty = myThermalProperties.Item(i)
-            If myThermalProperties.NumberofConnections(aThermalProperty.ShortName) > 0 Then
-                ln = "&MATL"
-                PrintLine(IO, ln)
-                ln = " ID = '" + aThermalProperty.ShortName + "', "
-                PrintLine(IO, ln)
-                If aThermalProperty.Name <> "" Then
-                    If aThermalProperty.Name.IndexOf("'") > 0 Then
-                        ln = aThermalProperty.Name
-                        j = 0
-                        Do While (j <= ln.Length - 1)
-                            If ln.Substring(j, 1) = "'" Then
-                                ln = ln.Insert(j, "'")
+        If myThermalProperties.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Material Properties "
+            PrintLine(IO, ln)
+
+            For i = 0 To myThermalProperties.Count - 1
+                aThermalProperty = myThermalProperties.Item(i)
+                If myThermalProperties.NumberofConnections(aThermalProperty.ShortName) > 0 Then
+                    ln = "&MATL" + " ID = '" + aThermalProperty.ShortName + "'"
+                    If aThermalProperty.Name <> "" Then
+                        If aThermalProperty.Name.IndexOf("'") > 0 Then
+                            field = aThermalProperty.Name
+                            j = 0
+                            Do While (j <= field.Length - 1)
+                                If field.Substring(j, 1) = "'" Then
+                                    field = field.Insert(j, "'")
+                                    j += 1
+                                End If
                                 j += 1
-                            End If
-                            j += 1
-                        Loop
-                        ln = " MATERIAL = '" + ln + "', "
-                    Else
-                        ln = " MATERIAL = '" + aThermalProperty.Name + "', "
+                            Loop
+                            ln += " MATERIAL = '" + field + "' "
+                        Else
+                            ln += " MATERIAL = '" + aThermalProperty.Name + "', "
+                        End If
                     End If
                     PrintLine(IO, ln)
-                End If
-                ln = " CONDUCTIVITY = " + aThermalProperty.Conductivity.ToString + ", DENSITY = " + aThermalProperty.Density.ToString + ", "
-                PrintLine(IO, ln)
-                ln = " SPECIFIC_HEAT = " + (aThermalProperty.SpecificHeat / 1000.0).ToString + ", THICKNESS = " + aThermalProperty.Thickness.ToString
-                PrintLine(IO, ln)
-                aDummy = 0.9
-                If aThermalProperty.Emissivity <> aDummy Then
-                    ln = " EMISSIVITY = " + aThermalProperty.Emissivity.ToString
+                    ln = "      CONDUCTIVITY = " + aThermalProperty.Conductivity.ToString + " DENSITY = " + aThermalProperty.Density.ToString + " SPECIFIC_HEAT = " + (aThermalProperty.SpecificHeat / 1000.0).ToString + ", THICKNESS = " + aThermalProperty.Thickness.ToString + " EMISSIVITY = " + aThermalProperty.Emissivity.ToString + " /"
                     PrintLine(IO, ln)
                 End If
-                ln = " / "
-                PrintLine(IO, ln)
                 aThermalProperty.Changed = False
-            End If
-        Next
-
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! Comparments "
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
+            Next
+        End If
 
         ' Writing COMP namelist
+        If myCompartments.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Comparments "
+            PrintLine(IO, ln)
 
-        For i = 0 To myCompartments.Count - 1
-            ln = "&COMP "
-            PrintLine(IO, ln)
-            aComp = myCompartments.Item(i)
-            ln = " ID = '" + aComp.Name + "' "
-            PrintLine(IO, ln)
-            ln = " DEPTH = " + aComp.RoomDepth.ToString + ", HEIGHT = " + aComp.RoomHeight.ToString + ", WIDTH = " + aComp.RoomWidth.ToString
-            PrintLine(IO, ln)
-            If aComp.CeilingMaterial <> "" Then
-                If aComp.CeilingMaterial = "Off" Then
-                    ln = " CEILING_MATL_ID = 'OFF' "
-                Else
-                    ln = " CEILING_MATL_ID = '" + aComp.CeilingMaterial + "' "
+            For i = 0 To myCompartments.Count - 1
+                aComp = myCompartments.Item(i)
+                ln = "&COMP " + "ID = '" + aComp.Name + "'"
+                PrintLine(IO, ln)
+                ln = "      DEPTH = " + aComp.RoomDepth.ToString + " HEIGHT = " + aComp.RoomHeight.ToString + " WIDTH = " + aComp.RoomWidth.ToString
+                If aComp.CeilingMaterial <> "" Then
+                    If aComp.CeilingMaterial = "Off" Then
+                        ln += " CEILING_MATL_ID = 'OFF'"
+                    Else
+                        ln += " CEILING_MATL_ID = '" + aComp.CeilingMaterial + "'"
+                    End If
+                End If
+                If aComp.WallMaterial <> "" Then
+                    If aComp.WallMaterial = "Off" Then
+                        ln += " WALL_MATL_ID = 'OFF'"
+                    Else
+                        ln += " WALL_MATL_ID = '" + aComp.WallMaterial + "'"
+                    End If
+                End If
+                If aComp.FloorMaterial <> "" Then
+                    If aComp.FloorMaterial = "Off" Then
+                        ln += " FLOOR_MATL_ID = 'OFF'"
+                    Else
+                        ln += " FLOOR_MATL_ID = '" + aComp.FloorMaterial + "'"
+                    End If
+                End If
+                If aComp.Hall Then
+                    ln += " HALL = .TRUE."
+                ElseIf aComp.Shaft Then
+                    ln += " SHAFT = .TRUE."
                 End If
                 PrintLine(IO, ln)
-            End If
-            If aComp.WallMaterial <> "" Then
-                If aComp.WallMaterial = "Off" Then
-                    ln = " WALL_MATL_ID = 'OFF' "
-                Else
-                    ln = " WALL_MATL_ID = '" + aComp.WallMaterial + "' "
+                aComp.GetVariableArea(f, x, j)
+                If j > 1 Then
+                    ln = "      CROSS_SECT_AREAS = " + f(1).ToString
+                    For k = 2 To j
+                        ln = ln + ", " + f(k).ToString
+                    Next
+                    PrintLine(IO, ln)
+                    ln = "      CROSS_SECT_HEIGHTS = " + x(1).ToString
+                    For k = 2 To j
+                        ln = ln + ", " + x(k).ToString
+                    Next
+                    PrintLine(IO, ln)
                 End If
+                ln = "      ORIGIN = " + aComp.RoomOriginX.ToString + ", " + aComp.RoomOriginY.ToString + ", " + aComp.RoomOriginZ.ToString
+                ln += " GRID = " + aComp.xGrid.ToString + ", " + aComp.yGrid.ToString + ", " + aComp.zGrid.ToString + " /"
                 PrintLine(IO, ln)
-            End If
-            If aComp.FloorMaterial <> "" Then
-                If aComp.FloorMaterial = "Off" Then
-                    ln = " FLOOR_MATL_ID = 'OFF' "
-                Else
-                    ln = " FLOOR_MATL_ID = '" + aComp.FloorMaterial + "' "
-                End If
-                PrintLine(IO, ln)
-            End If
-            If aComp.RoomOriginX <> 0 Or aComp.RoomOriginY <> 0 Or aComp.RoomOriginZ <> 0 Then
-                ln = " ORIGIN = " + aComp.RoomOriginX.ToString + ", " + aComp.RoomOriginY.ToString + ", " + aComp.RoomOriginZ.ToString
-                PrintLine(IO, ln)
-            End If
-            If aComp.xGrid <> 50 Or aComp.yGrid <> 50 Or aComp.zGrid <> 50 Then
-                ln = " GRID = " + aComp.xGrid.ToString + ", " + aComp.yGrid.ToString + ", " + aComp.zGrid.ToString
-                PrintLine(IO, ln)
-            End If
-            If aComp.Hall Then
-                ln = " HALL = .TRUE. "
-                PrintLine(IO, ln)
-            ElseIf aComp.Shaft Then
-                ln = " SHAFT = .TRUE. "
-                PrintLine(IO, ln)
-            End If
-            aComp.GetVariableArea(f, x, j)
-            If j > 1 Then
-                ln = " CROSS_SECT_AREAS = " + f(1).ToString
-                For k = 2 To j
-                    ln = ln + ", " + f(k).ToString
-                Next
-                PrintLine(IO, ln)
-                ln = " CROSS_SECT_HEIGHTS = " + x(1).ToString
-                For k = 2 To j
-                    ln = ln + ", " + x(k).ToString
-                Next
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-            aComp.Changed = False
-        Next
+                aComp.Changed = False
+            Next
+        End If
 
         ' Writing devices (targets, detectors, sprinklers)
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! Devices"
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
+        If myTargets.Count + myDetectors.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Devices"
+            PrintLine(IO, ln)
 
-        For i = 0 To myTargets.Count - 1
-            aTarg = myTargets.Item(i)
-            ln = "&DEVC "
-            PrintLine(IO, ln)
-            ln = " ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "' "
-            PrintLine(IO, ln)
-            ln = " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
-            PrintLine(IO, ln)
-            If aTarg.SolutionType = Target.ThermallyThick Then
-                ln = " TYPE = 'PLATE' "
-            Else
-                ln = " TYPE = 'CYLINDER' "
-            End If
-            PrintLine(IO, ln)
-            ln = " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
-            PrintLine(IO, ln)
-            ln = ""
-            If aTarg.XNormal <> 0 Or aTarg.YNormal <> 0 Or aTarg.ZNormal <> 1 Then
-                ln = " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
-            End If
-            If aTarg.InternalLocation <> 0.5 Then
-                If ln <> "" Then ln = ln + ","
-                ln = ln + " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
-            End If
-            If ln <> "" Then
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-            aTarg.Changed = False
-        Next
-
-        For i = 0 To myDetectors.Count - 1
-            aTarg = myDetectors.Item(i)
-            ln = "&DEVC "
-            PrintLine(IO, ln)
-            If aTarg.Name = "" Then
-                If aTarg.DetectorType = Target.TypeHeatDetector Then
-                    aTarg.Name = "HeatDetector_" + (i + 1).ToString
-                ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
-                    aTarg.Name = "SmokeDetector_" + (i + 1).ToString
-                ElseIf aTarg.DetectorType = Target.TypeSprinkler Then
-                    aTarg.Name = "Sprinkler_" + (i + 1).ToString
-                End If
-            End If
-            ln = " ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "' "
-            PrintLine(IO, ln)
-            ln = " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
-            PrintLine(IO, ln)
-            If aTarg.DetectorType = Target.TypeHeatDetector Then
-                ln = " TYPE = 'HEAT_DETECTOR' "
-                If aTarg.ActivationTemperature <> Target.HeatDetectorActiviationTemperature Then
-                    aDummy = 273.15
-                    aDummy = aTarg.ActivationTemperature - aDummy
-                    ln = ln + ", SETPOINT = " + aDummy.ToString
-                End If
-                If aTarg.RTI <> 130 Then
-                    ln = ln + ", RTI = " + aTarg.RTI.ToString
-                End If
-            ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
-                ln = " TYPE = 'SMOKE_DETECTOR' "
-                If aTarg.ActivationObscuration <> Target.SmokeDetectorActivationObscuration Then
-                    ln = ln + ", SETPOINT = " + aTarg.ActivationObscuration.ToString
-                End If
-            Else
-                ln = " TYPE = 'SPRINKLER' "
-                If aTarg.ActivationTemperature <> Target.SprinklerActivationTemperature Then
-                    aDummy = 273.15
-                    aDummy = aTarg.ActivationTemperature - aDummy
-                    ln = ln + ", SETPOINT = " + aDummy.ToString
-                End If
-                If aTarg.RTI <> 130 Then
-                    ln = ln + ", RTI = " + aTarg.RTI.ToString
-                End If
-                ln = ln + ", SPRAY_DENSITY = " + aTarg.SprayDensity.ToString
-            End If
-            PrintLine(IO, ln)
-            ln = " / "
-            PrintLine(IO, ln)
-            aTarg.Changed = False
-        Next
-
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! VENTS TYPE = WALL"
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
-
-        ' Writing VENT namelist for WALL vents
-        For i = 0 To myHVents.Count - 1
-            ln = "&VENT TYPE = 'WALL', "
-            PrintLine(IO, ln)
-            aVent = myHVents.Item(i)
-            If aVent.Name = "" Then
-                aVent.Name = "WallVent_" + (i + 1).ToString
-            End If
-            ln = " ID = '" + aVent.Name + "' "
-            PrintLine(IO, ln)
-            If aVent.FirstCompartment < 0 Then
-                ln = " COMP_IDS = 'OUTSIDE', '" _
-                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-            ElseIf aVent.SecondCompartment < 0 Then
-                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', 'OUTSIDE' "
-            Else
-                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" _
-                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-            End If
-            PrintLine(IO, ln)
-            ln = " TOP = " + aVent.Soffit.ToString + ", BOTTOM = " + aVent.Sill.ToString + ", WIDTH = " + aVent.Width.ToString
-            PrintLine(IO, ln)
-            If aVent.Face > 0 Then
-                If aVent.Face = 1 Then
-                    ln = " FACE = 'FRONT'"
-                ElseIf aVent.Face = 2 Then
-                    ln = " FACE = 'RIGHT'"
-                ElseIf aVent.Face = 3 Then
-                    ln = " FACE = 'REAR'"
-                ElseIf aVent.Face = 4 Then
-                    ln = " FACE = 'LEFT'"
-                End If
-                PrintLine(IO, ln)
-                If aVent.Offset > 0.0 Then
-                    ln = " OFFSET = " + aVent.Offset.ToString
-                    PrintLine(IO, ln)
-                End If
-            End If
-            If aVent.OpenType = Vent.OpenbyTime Then
-                Dim ff(2), xx(2), numpoints As Single
-                aVent.GetRamp(xx, ff, numpoints)
-                If numpoints > 1 Then
-                    ln = " CRITERION = 'TIME' "
-                    PrintLine(IO, ln)
-                    ln = " T = " + xx(1).ToString
-                    For k = 2 To numpoints
-                        ln = ln + ", " + xx(k).ToString
-                    Next
-                    PrintLine(IO, ln)
-                    ln = " F = " + ff(1).ToString
-                    For k = 2 To numpoints
-                        ln = ln + ", " + ff(k).ToString
-                    Next
-                    PrintLine(IO, ln)
-                ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
-                    ln = " CRITERION = 'TIME' "
-                    PrintLine(IO, ln)
-                    ln = " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString + " "
-                    PrintLine(IO, ln)
-                    ln = " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString + " "
-                    PrintLine(IO, ln)
-                End If
-            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
-                aDummy = 273.15
-                aDummy = aVent.OpenValue - aDummy
-                ln = " CRITERION = 'TEMPERATURE', SETPOINT = " + aDummy.ToString + ", DEVC_ID = '" + aVent.Target + "' "
-                PrintLine(IO, ln)
-                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
-                PrintLine(IO, ln)
-            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
-                ln = " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "' "
-                PrintLine(IO, ln)
-                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-            aVent.Changed = False
-        Next
-
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! VENTS TYPE = CEILING/FLOOR "
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
-
-        'Writing VENT namelist for CEILING/FLOOR vents
-        For i = 0 To myVVents.Count - 1
-            aVent = myVVents.Item(i)
-            If aVent.FirstCompartment < 0 Then
-                ln = "&VENT TYPE = 'CEILING', "
-            Else
-                ln = "&VENT TYPE = 'FLOOR', "
-            End If
-            PrintLine(IO, ln)
-            If aVent.Name = "" Then
-                aVent.Name = "CeilFloorVent_" + (i + 1).ToString
-            End If
-            ln = " ID = '" + aVent.Name + "' "
-            PrintLine(IO, ln)
-            If aVent.FirstCompartment < 0 Then
-                ln = " COMP_IDS = 'OUTSIDE', '" _
-                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-            ElseIf aVent.SecondCompartment < 0 Then
-                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', 'OUTSIDE' "
-            Else
-                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" _
-                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-            End If
-            PrintLine(IO, ln)
-            If aVent.Shape = 1 Then
-                ln = " AREA = " + aVent.Area.ToString + ", SHAPE = 'ROUND' "
-            Else
-                ln = " AREA = " + aVent.Area.ToString + ", SHAPE = 'SQUARE' "
-            End If
-            PrintLine(IO, ln)
-            If aVent.OffsetX <> 0 Or aVent.OffsetY <> 0 Then
-                ln = " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString
-                PrintLine(IO, ln)
-            End If
-            If aVent.OpenType = Vent.OpenbyTime Then
-                Dim ff(2), xx(2), numpoints As Single
-                aVent.GetRamp(xx, ff, numpoints)
-                If numpoints > 1 Then
-                    ln = " CRITERION = 'TIME' "
-                    PrintLine(IO, ln)
-                    ln = " T = " + xx(1).ToString
-                    For k = 2 To numpoints
-                        ln = ln + ", " + xx(k).ToString
-                    Next
-                    PrintLine(IO, ln)
-                    ln = " F = " + ff(1).ToString
-                    For k = 2 To numpoints
-                        ln = ln + ", " + ff(k).ToString
-                    Next
-                    PrintLine(IO, ln)
-                ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
-                    ln = " CRITERION = 'TIME' "
-                    PrintLine(IO, ln)
-                    ln = " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString + " "
-                    PrintLine(IO, ln)
-                    ln = " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString + " "
-                    PrintLine(IO, ln)
-                End If
-            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
-                aDummy = 273.15
-                aDummy = aVent.OpenValue - aDummy
-                ln = " CRITERION = 'TEMPERATURE', SETPOINT = " + aDummy.ToString + ", DEVC_ID = '" + aVent.Target + "' "
-                PrintLine(IO, ln)
-                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
-                PrintLine(IO, ln)
-            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
-                ln = " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "' "
-                PrintLine(IO, ln)
-                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-            aVent.Changed = False
-        Next
-
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! VENTS TYPE = MECHANICAL"
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
-
-        For i = 0 To myMVents.Count - 1
-            aVent = myMVents.Item(i)
-            ln = "&VENT TYPE = 'MECHANICAL', "
-            PrintLine(IO, ln)
-            If aVent.Name = "" Then
-                aVent.Name = "MechanicalVent_" + (i + 1).ToString
-            End If
-            ln = " ID = '" + aVent.Name + "' "
-            PrintLine(IO, ln)
-            If aVent.FirstCompartment < 0 Then
-                ln = " COMP_IDS = 'OUTSIDE', '" _
-                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-            ElseIf aVent.SecondCompartment < 0 Then
-                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', 'OUTSIDE' "
-            Else
-                ln = " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" _
-                    + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-            End If
-            PrintLine(IO, ln)
-            ln = " AREAS = " + aVent.FirstArea.ToString + ", " + aVent.SecondArea.ToString +
-                ", HEIGHTS = " + aVent.FirstCenterHeight.ToString + ", " + aVent.SecondCenterHeight.ToString
-            PrintLine(IO, ln)
-            If aVent.FirstOrientation = 1 Then
-                If aVent.SecondOrientation = 2 Then
-                    ln = " ORIENTATIONS = 'VERTICAL', 'HORIZONTAL' "
-                    PrintLine(IO, ln)
-                End If
-            Else
-                If aVent.SecondOrientation = 2 Then
-                    ln = " ORIENTATIONS = 'HORIZONTAL', 'HORIZANTAL' "
-                    PrintLine(IO, ln)
+            For i = 0 To myTargets.Count - 1
+                aTarg = myTargets.Item(i)
+                ln = "&DEVC ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "'"
+                ln += " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
+                If aTarg.SolutionType = Target.ThermallyThick Then
+                    ln += " TYPE = 'PLATE'"
                 Else
-                    ln = " ORIENTATIONS = 'HORIZONTAL', 'VERTICAL' "
-                    PrintLine(IO, ln)
+                    ln += " TYPE = 'CYLINDER'"
                 End If
-            End If
-            ln = " FLOW = " + aVent.FlowRate.ToString + ", CUTOFFS = " + aVent.BeginFlowDropoff.ToString + ", " + aVent.ZeroFlow.ToString
-            PrintLine(IO, ln)
-            ln = " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString
-            PrintLine(IO, ln)
-            If aVent.OpenType = Vent.OpenbyTime Then
-                Dim ff(2), xx(2), numpoints As Single
-                aVent.GetRamp(xx, ff, numpoints)
-                If numpoints > 1 Then
-                    ln = " CRITERION = 'TIME' "
-                    PrintLine(IO, ln)
-                    ln = " T = " + xx(1).ToString
-                    For k = 2 To numpoints
-                        ln = ln + ", " + xx(k).ToString
-                    Next
-                    PrintLine(IO, ln)
-                    ln = " F = " + ff(1).ToString
-                    For k = 2 To numpoints
-                        ln = ln + ", " + ff(k).ToString
-                    Next
-                    PrintLine(IO, ln)
-                ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
-                    ln = " CRITERION = 'TIME' "
-                    PrintLine(IO, ln)
-                    ln = " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString + " "
-                    PrintLine(IO, ln)
-                    ln = " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString + " "
-                    PrintLine(IO, ln)
-                End If
-            ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
-                aDummy = 273.15
-                aDummy = aVent.OpenValue - aDummy
-                ln = " CRITERION = 'TEMPERATURE', SETPOINT = " + aDummy.ToString + ", DEVC_ID = '" + aVent.Target + "' "
+                ln += " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
+                ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
+                ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString + " /"
                 PrintLine(IO, ln)
-                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
-                PrintLine(IO, ln)
-            ElseIf aVent.OpenType = Vent.OpenbyFlux Then
-                ln = " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "' "
-                PrintLine(IO, ln)
-                ln = " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
-                PrintLine(IO, ln)
-            End If
-            If aVent.FilterTime > 0 And aVent.FilterEfficiency > 0 Then
-                ln = " FILTER_TIME = " + aVent.FilterTime.ToString + ", FILTER_EFFICIENCY = " + aVent.FilterEfficiency.ToString
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-            aVent.Changed = False
-        Next
+                aTarg.Changed = False
+            Next
 
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! Fires "
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
-
-        For i = 0 To myFireInstances.Count - 1
-            aFire = myFireInstances.Item(i)
-            ln = "&FIRE"
-            PrintLine(IO, ln)
-            ln = " ID = '" + aFire.Name + "' "
-            PrintLine(IO, ln)
-            If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
-                ln = " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "', FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
-            Else
-                ln = " COMP_ID = '', FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
-            End If
-            PrintLine(IO, ln)
-            ln = " LOCATION = " + aFire.XPosition.ToString + ", " + aFire.YPosition.ToString
-            PrintLine(IO, ln)
-            If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
-                If aFire.IgnitionValue > 0 Then
-                    ln = " IGNITION_CRITERION = 'TIME', SETPOINT = " + aFire.IgnitionValue.ToString
-                    PrintLine(IO, ln)
-                End If
-            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then
-                aDummy = 273.15
-                aDummy = aFire.IgnitionValue - aDummy
-                ln = " IGNITION_CRITERION = 'TEMPERATURE', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + aDummy.ToString
-                PrintLine(IO, ln)
-            ElseIf aFire.IgnitionType = Fire.FireIgnitionbyFlux Then
-                ln = " IGNITION_CRITERION = 'FLUX', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + (aFire.IgnitionValue / 1000.0).ToString
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-            aFire.Changed = False
-        Next
-
-        For i = 0 To myFires.Count - 1
-            If myFireInstances.NumberofInstances(myFires.Item(i).Name) > 0 Then
-                aFire = myFires.Item(i)
-                ln = "&CHEM"
-                PrintLine(IO, ln)
-                ln = " ID = '" + aFire.Name + "' "
-                PrintLine(IO, ln)
-                ln = " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + ", CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString +
-                    ", HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + ", NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString +
-                    ", OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
-                PrintLine(IO, ln)
-                If aFire.HeatofCombustion <> 50000000 Then
-                    ln = " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
-                    PrintLine(IO, ln)
-                End If
-                If aFire.RadiativeFraction <> 0.35 Then
-                    ln = " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
-                    PrintLine(IO, ln)
-                End If
-                ln = " / "
-                PrintLine(IO, ln)
-                aFire.GetFireData(aFireCurves, k)
-                ln = "&TABL ID = '" + aFire.Name + "' "
-                PrintLine(IO, ln)
-                ln = " LABELS = '" + aFire.ColNames(aFire.ColMap(0)) + "' "
-                For j = 1 To aFire.ColMapUpperBound
-                    ln = ln + ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
-                Next
-                ln = ln + " /"
-                PrintLine(IO, ln)
-                For j = 0 To k
-                    ln = "&TABL ID = '" + aFire.Name + "', DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
-                    For l = 1 To aFire.ColMapUpperBound
-                        If aFire.ColMap(l) = 2 Then
-                            ln = ln + ", " + (aFireCurves(aFire.ColMap(l), j) / 1000).ToString
-                        Else
-                            ln = ln + ", " + aFireCurves(aFire.ColMap(l), j).ToString
-                        End If
-                    Next
-                    ln = ln + " /"
-                    PrintLine(IO, ln)
-                Next
-                aFire.Changed = False
-            End If
-        Next
-
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! Surface Connections"
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
-
-        Dim fracln As String
-        For i = 0 To myCompartments.Count - 1
-            If myHHeats.FromConnections(i) > 0 Then
-                ln = "&CONN "
-                PrintLine(IO, ln)
-                ln = " TYPE = 'WALL' "
-                PrintLine(IO, ln)
-                ln = " COMP_ID = '" + myCompartments.Item(i).Name + "' "
-                PrintLine(IO, ln)
-                fracln = " F = "
-                ln = " COMP_IDS = "
-                For j = 0 To myHHeats.Count - 1
-                    aVent = myHHeats.Item(j)
-                    If aVent.FirstCompartment = i Then
-                        If aVent.SecondCompartment = -1 Then
-                            ln = ln + " 'OUTSIDE'"
-                        Else
-                            ln = ln + "  '" + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-                        End If
-                        fracln = fracln + aVent.InitialOpening.ToString + "  "
+            For i = 0 To myDetectors.Count - 1
+                aTarg = myDetectors.Item(i)
+                If aTarg.Name = "" Then
+                    If aTarg.DetectorType = Target.TypeHeatDetector Then
+                        aTarg.Name = "HeatDetector_" + (i + 1).ToString
+                    ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
+                        aTarg.Name = "SmokeDetector_" + (i + 1).ToString
+                    ElseIf aTarg.DetectorType = Target.TypeSprinkler Then
+                        aTarg.Name = "Sprinkler_" + (i + 1).ToString
                     End If
-                    aVent.Changed = False
-                Next
-                PrintLine(IO, ln)
-                PrintLine(IO, fracln)
-                ln = " / "
-                PrintLine(IO, ln)
-            End If
-        Next
-
-        For i = 0 To myVHeats.Count - 1
-            ln = "&CONN "
-            PrintLine(IO, ln)
-            aVent = myVHeats.Item(i)
-            If aVent.FirstCompartment = -1 Then
-                ln = " TYPE = 'CEILING' "
-            Else
-                ln = " TYPE = 'FLOOR' "
-            End If
-            PrintLine(IO, ln)
-            If aVent.FirstCompartment = -1 Then
-                ln = " COMP_ID = 'OUTSIDE' "
-            Else
-                ln = " COMP_ID = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' "
-            End If
-            PrintLine(IO, ln)
-            If aVent.SecondCompartment = -1 Then
-                ln = " COMP_IDS = 'OUTSIDE' "
-            Else
-                ln = " COMP_IDS = '" + myCompartments.Item(aVent.SecondCompartment).Name + "' "
-            End If
-            PrintLine(IO, ln)
-            ln = " / "
-            PrintLine(IO, ln)
-            aVent.Changed = False
-        Next
-
-        ln = "!! "
-        PrintLine(IO, ln)
-        ln = "!! ISOF and SLCF "
-        PrintLine(IO, ln)
-        ln = "!! "
-        PrintLine(IO, ln)
-
-        For i = 0 To myVisuals.Count - 1
-            aVisual = myVisuals.Item(i)
-            If aVisual.Type = Visual.IsoSurface Then
-                ln = "&ISOF "
-                PrintLine(IO, ln)
-                aDummy = 273.15
-                aDummy = aVisual.Value - aDummy
-                ln = " VALUE = " + aDummy.ToString
-                PrintLine(IO, ln)
-                ln = " / "
-                PrintLine(IO, ln)
-            Else
-                ln = "&SLCF "
-                PrintLine(IO, ln)
-                If aVisual.Compartment > -1 Then
-                    ln = " COMP_ID = '" + myCompartments.Item(aVisual.Compartment).Name + "' "
-                    PrintLine(IO, ln)
                 End If
-                If aVisual.Type = Visual.TwoD Then
-                    ln = " DOMAIN = '2-D' "
+                ln = "&DEVC ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "'"
+                ln += " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
+                If aTarg.DetectorType = Target.TypeHeatDetector Then
+                    ln += " TYPE = 'HEAT_DETECTOR' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " /"
+                ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
+                    ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINT = " + aTarg.ActivationObscuration.ToString + " /"
+                Else
+                    ln += " TYPE = 'SPRINKLER' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " SPRAY_DENSITY = " + aTarg.SprayDensity.ToString + " /"
+                End If
+                PrintLine(IO, ln)
+                aTarg.Changed = False
+            Next
+        End If
+
+        ' Writing VENT namelist for wall vents
+        If myHVents.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Wall Vents"
+            PrintLine(IO, ln)
+
+            For i = 0 To myHVents.Count - 1
+                aVent = myHVents.Item(i)
+                If aVent.Name = "" Then
+                    aVent.Name = "WallVent_" + (i + 1).ToString
+                End If
+                ln = "&VENT TYPE = 'WALL' ID = '" + aVent.Name + "'"
+                If aVent.FirstCompartment < 0 Then
+                    ln += " COMP_IDS = 'OUTSIDE', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                ElseIf aVent.SecondCompartment < 0 Then
+                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "' 'OUTSIDE' "
+                Else
+                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                End If
+                ln += " TOP = " + aVent.Soffit.ToString + ", BOTTOM = " + aVent.Sill.ToString + ", WIDTH = " + aVent.Width.ToString
+                PrintLine(IO, ln)
+                ln = "     "
+                If aVent.OpenType = Vent.OpenbyTime Then
+                    Dim ff(2), xx(2), numpoints As Single
+                    aVent.GetRamp(xx, ff, numpoints)
+                    If numpoints > 1 Then
+                        ln += " CRITERION = 'TIME'"
+                        ln += " T = " + xx(1).ToString
+                        For k = 2 To numpoints
+                            ln += ", " + xx(k).ToString
+                        Next
+                        PrintLine(IO, ln)
+                        ln += " F = " + ff(1).ToString
+                        For k = 2 To numpoints
+                            ln += ", " + ff(k).ToString
+                        Next
+                    ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
+                        ln += " CRITERION = 'TIME'"
+                        ln += " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString + " "
+                        ln += " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString + " "
+                    End If
+                ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
+                    ln += " CRITERION = 'TEMPERATURE', SETPOINT = " + Math.Round((aVent.OpenValue - 273.15), 2).ToString + " DEVC_ID = '" + aVent.Target + "'"
+                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
+                ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                    ln += " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "' "
+                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
+                End If
+                If aVent.Face = 2 Then
+                    ln += " FACE = 'RIGHT'"
+                ElseIf aVent.Face = 3 Then
+                    ln += " FACE = 'REAR'"
+                ElseIf aVent.Face = 4 Then
+                    ln += " FACE = 'LEFT'"
+                Else
+                    ln += " FACE = 'FRONT'"
+                End If
+                ln += " OFFSET = " + aVent.Offset.ToString + " /"
+                PrintLine(IO, ln)
+                aVent.Changed = False
+            Next
+        End If
+
+        'Writing VENT namelist for ceiling/floor vents
+        If myVVents.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Ceiling and Floor Vents "
+            PrintLine(IO, ln)
+
+            For i = 0 To myVVents.Count - 1
+                aVent = myVVents.Item(i)
+                If aVent.Name = "" Then
+                    aVent.Name = "CeilFloorVent_" + (i + 1).ToString
+                End If
+                If aVent.FirstCompartment < 0 Then
+                    ln = "&VENT TYPE = 'CEILING'"
+                Else
+                    ln = "&VENT TYPE = 'FLOOR'"
+                End If
+                ln += " ID = '" + aVent.Name + "'"
+                If aVent.FirstCompartment < 0 Then
+                    ln += " COMP_IDS = 'OUTSIDE', '" _
+                        + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                ElseIf aVent.SecondCompartment < 0 Then
+                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', 'OUTSIDE'"
+                Else
+                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                End If
+                If aVent.Shape = 1 Then
+                    ln += " AREA = " + aVent.Area.ToString + ", SHAPE = 'ROUND' "
+                Else
+                    ln += " AREA = " + aVent.Area.ToString + ", SHAPE = 'SQUARE' "
+                End If
+                If aVent.OpenType = Vent.OpenbyTime Then
+                    Dim ff(2), xx(2), numpoints As Single
+                    aVent.GetRamp(xx, ff, numpoints)
+                    If numpoints > 1 Then
+                        PrintLine(IO, ln)
+                        ln = "      CRITERION = 'TIME'"
+                        ln += " T = " + xx(1).ToString
+                        For k = 2 To numpoints
+                            ln += ", " + xx(k).ToString
+                        Next
+                        ln += " F = " + ff(1).ToString
+                        For k = 2 To numpoints
+                            ln += ", " + ff(k).ToString
+                        Next
+                    ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
+                        PrintLine(IO, ln)
+                        ln = "      CRITERION = 'TIME'"
+                        ln += " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString
+                        ln += " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString
+                    End If
+                ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                     PrintLine(IO, ln)
-                    ln = " POSITION = " + aVisual.Value.ToString + ", PLANE = '" + VisualAxisNames.Substring((aVisual.Axis) * 6, 1) + "' "
+                    ln = "      CRITERION = 'TEMPERATURE', SETPOINT = " + Math.Round((aVent.OpenValue - 273.15), 2).ToString + ", DEVC_ID = '" + aVent.Target + "'"
+                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
+                ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                    PrintLine(IO, ln)
+                    ln = " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "'"
+                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
+                End If
+                ln += " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString + " /"
+                PrintLine(IO, ln)
+                aVent.Changed = False
+            Next
+        End If
+
+        'Writing VENT namelist for mechanical vents
+        If myMVents.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Mechanical Vents"
+            PrintLine(IO, ln)
+
+            For i = 0 To myMVents.Count - 1
+                aVent = myMVents.Item(i)
+                If aVent.Name = "" Then
+                    aVent.Name = "MechanicalVent_" + (i + 1).ToString
+                End If
+                ln = "&VENT TYPE = 'MECHANICAL' ID = '" + aVent.Name + "'"
+                If aVent.FirstCompartment < 0 Then
+                    ln += " COMP_IDS = 'OUTSIDE', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                ElseIf aVent.SecondCompartment < 0 Then
+                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', 'OUTSIDE'"
+                Else
+                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.FirstCompartment).Name + "', '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                End If
+                PrintLine(IO, ln)
+
+                ln = "      AREAS = " + aVent.FirstArea.ToString + ", " + aVent.SecondArea.ToString + " HEIGHTS = " + aVent.FirstCenterHeight.ToString + ", " + aVent.SecondCenterHeight.ToString
+                If aVent.FirstOrientation = 1 Then
+                    If aVent.SecondOrientation = 2 Then
+                        ln += " ORIENTATIONS = 'VERTICAL', 'HORIZONTAL' "
+                    End If
+                Else
+                    If aVent.SecondOrientation = 2 Then
+                        ln += " ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL' "
+                    Else
+                        ln += " ORIENTATIONS = 'HORIZONTAL', 'VERTICAL' "
+                    End If
+                End If
+                ln += " FLOW = " + aVent.FlowRate.ToString + " CUTOFFS = " + aVent.BeginFlowDropoff.ToString + ", " + aVent.ZeroFlow.ToString
+                ln += " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString
+                If aVent.OpenType = Vent.OpenbyTime Then
+                    Dim ff(2), xx(2), numpoints As Single
+                    aVent.GetRamp(xx, ff, numpoints)
+                    If numpoints > 1 Then
+                        PrintLine(IO, ln)
+                        ln = "      CRITERION = 'TIME'"
+                        PrintLine(IO, ln)
+                        ln += " T = " + xx(1).ToString
+                        For k = 2 To numpoints
+                            ln += ", " + xx(k).ToString
+                        Next
+                        ln += " F = " + ff(1).ToString
+                        For k = 2 To numpoints
+                            ln += ", " + ff(k).ToString
+                        Next
+                    ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
+                        PrintLine(IO, ln)
+                        ln = "      CRITERION = 'TIME'"
+                        ln += " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString + " "
+                        ln += " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString + " "
+                    End If
+                ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
+                    PrintLine(IO, ln)
+                    ln = "      CRITERION = 'TEMPERATURE' SETPOINT = " + Math.Round((aVent.OpenValue - 273.15), 2).ToString + ", DEVC_ID = '" + aVent.Target + "'"
+                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
+                ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                    PrintLine(IO, ln)
+                    ln = "      CRITERION = 'FLUX' SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " DEVC_ID = '" + aVent.Target + "'"
+                    ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + " POST_FRACTION = " + aVent.FinalOpening.ToString
+                End If
+                ln += " FILTER_TIME = " + aVent.FilterTime.ToString + " FILTER_EFFICIENCY = " + aVent.FilterEfficiency.ToString + " / "
+                PrintLine(IO, ln)
+                aVent.Changed = False
+            Next
+        End If
+
+        'Writing Fires
+        If myFireInstances.Count + myFires.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Fires "
+            PrintLine(IO, ln)
+
+            For i = 0 To myFireInstances.Count - 1
+                aFire = myFireInstances.Item(i)
+                ln = "&FIRE ID = '" + aFire.Name + "' "
+                If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
+                    ln += " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "', FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
+                Else
+                    ln += " COMP_ID = '', FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
+                End If
+                ln += " LOCATION = " + aFire.XPosition.ToString + ", " + aFire.YPosition.ToString
+                If aFire.IgnitionType = Fire.FireIgnitionbyTime Then
+                    If aFire.IgnitionValue > 0 Then
+                        ln += " IGNITION_CRITERION = 'TIME', SETPOINT = " + aFire.IgnitionValue.ToString
+                    End If
+                ElseIf aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then
+                    ln += " IGNITION_CRITERION = 'TEMPERATURE', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + Math.Round((aFire.IgnitionValue - 273.15), 2)
+                ElseIf aFire.IgnitionType = Fire.FireIgnitionbyFlux Then
+                    ln += " IGNITION_CRITERION = 'FLUX', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + (aFire.IgnitionValue / 1000.0).ToString
+                End If
+                ln += " / "
+                PrintLine(IO, ln)
+                aFire.Changed = False
+            Next
+
+            For i = 0 To myFires.Count - 1
+                If myFireInstances.NumberofInstances(myFires.Item(i).Name) > 0 Then
+                    aFire = myFires.Item(i)
+                    ln = "&CHEM ID = '" + aFire.Name + "'"
+                    ln += " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString + " HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString + " OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
+                    ln += " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
+                    ln += " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
+                    ln += " / "
+                    PrintLine(IO, ln)
+
+                    aFire.GetFireData(aFireCurves, k)
+                    ln = "&TABL ID = '" + aFire.Name + "' LABELS = '" + aFire.ColNames(aFire.ColMap(0)) + "'"
+                    For j = 1 To aFire.ColMapUpperBound
+                        ln += ", '" + aFire.ColNames(aFire.ColMap(j)) + "' "
+                    Next
+                    ln += " /"
+                    PrintLine(IO, ln)
+                    For j = 0 To k
+                        ln = "&TABL ID = '" + aFire.Name + "', DATA = " + aFireCurves(aFire.ColMap(0), j).ToString
+                        For l = 1 To aFire.ColMapUpperBound
+                            If aFire.ColMap(l) = 2 Then
+                                ln += ", " + (aFireCurves(aFire.ColMap(l), j) / 1000).ToString
+                            Else
+                                ln += ", " + aFireCurves(aFire.ColMap(l), j).ToString
+                            End If
+                        Next
+                        ln += " /"
+                        PrintLine(IO, ln)
+                    Next
+                    aFire.Changed = False
+                End If
+            Next
+        End If
+
+        'Writing Surface Connections
+        If myHHeats.Count + myVHeats.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Surface Connections"
+            PrintLine(IO, ln)
+
+            Dim fracln As String
+            For i = 0 To myCompartments.Count - 1
+                If myHHeats.FromConnections(i) > 0 Then
+                    ln = "&CONN TYPE = 'WALL'"
+                    ln += " COMP_ID = '" + myCompartments.Item(i).Name + "' "
+                    fracln = "      F = "
+                    ln += " COMP_IDS = "
+                    For j = 0 To myHHeats.Count - 1
+                        aVent = myHHeats.Item(j)
+                        If aVent.FirstCompartment = i Then
+                            If aVent.SecondCompartment = -1 Then
+                                ln += " 'OUTSIDE'"
+                            Else
+                                ln += "  '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                            End If
+                            fracln = fracln + aVent.InitialOpening.ToString + " "
+                        End If
+                        aVent.Changed = False
+                    Next
+                    PrintLine(IO, ln)
+                    fracln += " /"
+                    PrintLine(IO, fracln)
+                End If
+            Next
+
+            For i = 0 To myVHeats.Count - 1
+                ln = "&CONN"
+                aVent = myVHeats.Item(i)
+                If aVent.FirstCompartment = -1 Then
+                    ln += " TYPE = 'CEILING'"
+                Else
+                    ln += " TYPE = 'FLOOR'"
+                End If
+                If aVent.FirstCompartment = -1 Then
+                    ln += " COMP_ID = 'OUTSIDE'"
+                Else
+                    ln += " COMP_ID = '" + myCompartments.Item(aVent.FirstCompartment).Name + "'"
+                End If
+                If aVent.SecondCompartment = -1 Then
+                    ln += " COMP_IDS = 'OUTSIDE' "
+                Else
+                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                End If
+                ln += " / "
+                PrintLine(IO, ln)
+                aVent.Changed = False
+            Next
+        End If
+
+        'Writing Visualizations
+        If myVisuals.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Visualizations"
+            PrintLine(IO, ln)
+
+            For i = 0 To myVisuals.Count - 1
+                aVisual = myVisuals.Item(i)
+                If aVisual.Type = Visual.IsoSurface Then
+                    ln = "&ISOF VALUE = " + Math.Round((aVisual.Value - 273.15), 2) + " /"
                     PrintLine(IO, ln)
                 Else
-                    ln = " DOMAIN = '3-D' "
+                    ln = "&SLCF"
+                    If aVisual.Compartment > -1 Then
+                        ln += " COMP_ID = '" + myCompartments.Item(aVisual.Compartment).Name + "'"
+                    End If
+                    If aVisual.Type = Visual.TwoD Then
+                        ln += " DOMAIN = '2-D' "
+                        ln += " POSITION = " + aVisual.Value.ToString + ", PLANE = '" + VisualAxisNames.Substring((aVisual.Axis) * 6, 1) + "'"
+                    Else
+                        ln += " DOMAIN = '3-D'"
+                    End If
+                    ln += " / "
                     PrintLine(IO, ln)
                 End If
-                ln = " / "
-                PrintLine(IO, ln)
                 aVisual.Changed = False
-            End If
-        Next
+            Next
+        End If
 
         FileClose(IO)
 

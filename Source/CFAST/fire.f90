@@ -130,6 +130,7 @@ module fire_routines
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
     real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, uplmep, uplmes, uplmee, height
+    real(eb) :: firex, firey
     integer :: ipass, lsp
     type(detector_type), pointer :: dtectptr
     type(room_type), pointer :: roomptr
@@ -182,6 +183,13 @@ module fire_routines
         activated_time = 0
         tau = 0.0
     end if
+    
+    ! set wall or corner fire
+    firex = min(xfx,xbr-xfx)
+    firey = min(xfy,xdr-xfy)
+    fireptr%modified_plume = 1
+    if (firex<=sqrt(fireptr%firearea)/2.or.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 2
+    if (firex<=sqrt(fireptr%firearea)/2.and.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 3
 
     ! note that the combination of fire_plume and chemistry can be called twice
     ! in a single iteration to make sure that the plume entrainment is
@@ -533,8 +541,8 @@ module fire_routines
     ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger;
     !                            in a corner, 1/4 the entrainment of a fire 4 times larger
     xf = 1.0_eb
-    if (xfx<=mx_hsep.or.xfy<=mx_hsep) xf = 2.0_eb
-    if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
+    if (xfx<=sqrt(area)/2.or.xfy<=sqrt(area)/2) xf = 2.0_eb
+    if (xfx<=sqrt(area)/2.and.xfy<=sqrt(area)/2) xf = 4.0_eb
 
     ! qstar and virtual origin correlation are based on total HRR
     qj = 0.001_eb*q_t*xf

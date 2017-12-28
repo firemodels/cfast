@@ -957,7 +957,7 @@ Public Class UpdateGUI
     Public Sub Fires(ByVal index As Integer)
         General()
         Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
-        Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single
+        Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single, fireCenterDistance As Single, xDistance As Single, yDistance As Single
         Dim IgnitionTypeLabel As String = ""
         Dim ir, ic As Integer
 
@@ -994,26 +994,6 @@ Public Class UpdateGUI
             aFireInstance = myFireInstances(index)
             FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             MainWin.FireInstanceName.Text = aFireInstance.Name
-            If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
-                MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
-                Dim aCompartment As New Compartment
-                aCompartment = myCompartments(aFireInstance.Compartment)
-                xFire = aFireInstance.XPosition
-                yFire = aFireInstance.YPosition
-                xRoom = aCompartment.RoomWidth
-                yRoom = aCompartment.RoomDepth
-                MainWin.FirePlumeType.Text = ""
-                If xFire = 0.0 Or xFire = xRoom Or yFire = 0.0 Or yFire = yRoom Then
-                    MainWin.FirePlumeType.Text = "Wall Fire"
-                ElseIf (xFire = 0.0 And yFire = 0.0) Or (xFire = 0.0 And yFire = yRoom) Or (xFire = xRoom And yFire = 0.0) Or (xFire = xRoom And yFire = yRoom) Then
-                    MainWin.FirePlumeType.Text = "Corner Fire"
-                Else
-                    MainWin.FirePlumeType.Text = "Normal"
-                End If
-            Else
-                MainWin.FireComp.SelectedIndex = -1
-                MainWin.FirePlumeType.Text = ""
-            End If
             MainWin.FireXPosition.Text = aFireInstance.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFireInstance.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireIgnitionCriteria.SelectedIndex = aFireInstance.IgnitionType
@@ -1122,6 +1102,34 @@ Public Class UpdateGUI
                 End If
 
                 UpdateFirePlot(FireIndex)
+
+                If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
+                    MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
+                    Dim aCompartment As New Compartment
+                    aCompartment = myCompartments(aFireInstance.Compartment)
+                    xFire = aFireInstance.XPosition
+                    yFire = aFireInstance.YPosition
+                    xRoom = aCompartment.RoomWidth
+                    yRoom = aCompartment.RoomDepth
+                    xDistance = Math.Min(xFire, Math.Abs(xRoom - xFire))
+                    yDistance = Math.Min(yFire, Math.Abs(yRoom - yFire))
+                    If NumPoints >= 1 Then
+                        firecenterdistance = Math.Sqrt(afireTimeSeries(Fire.FireArea, 1)) / 2
+                        MainWin.FirePlumeType.Text = ""
+                        If xDistance <= firecenterdistance Or yDistance <= firecenterdistance Then
+                            MainWin.FirePlumeType.Text = "Wall Fire"
+                        End If
+                        If xDistance <= fireCenterDistance And yDistance <= fireCenterDistance Then
+                            MainWin.FirePlumeType.Text = "Corner Fire"
+                        End If
+                        If xDistance > fireCenterDistance And yDistance > fireCenterDistance Then
+                            MainWin.FirePlumeType.Text = "Normal"
+                        End If
+                    End If
+                Else
+                    MainWin.FireComp.SelectedIndex = -1
+                    MainWin.FirePlumeType.Text = ""
+                End If
 
                 InitFireList(MainWin.ReferencedFireDefinition)
                 If FireIndex >= 0 Then

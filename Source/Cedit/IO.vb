@@ -830,6 +830,7 @@ Module IO
                 If thick <= 0 Then valid = False
                 If id = "" Then valid = False
                 If valid Then
+                    If matl = "" Then matl = id
                     If myThermalProperties.Count > 0 Then
                         iProp = myThermalProperties.GetIndex(id)
                         If iProp >= 0 Then

@@ -38,29 +38,37 @@ as the last line at the end of the input file. This completes the file from {\ct
 
 The general structure of an input file is shown below, with many lines of the original input file\footnote{The actual input file, Users\_Guide\_Example.in, is part of the CFAST software distribution} removed for clarity.
 
+\clearpage
 \begin{lstlisting}[basicstyle=\tiny]
-&HEAD  VERSION = 7300, TITLE = 'Users Guide Example Case' /
-&TIME  SIMULATION = 3600., PRINT = 50., SMOKEVIEW = 50., SPREADSHEET = 50. /
-&INIT  PRESSURE = 101325., RELATIVE_HUMIDITY = 50., TEMPERATURES = 20., 20. /
-&MISC  LOWER_OXYGEN_LIMIT = 0.10 /
-&MATL ...
-&COMP ID = 'Comp 1', WIDTH = 5., DEPTH = 5., HEIGHT = 3. ... /
-&VENT ID = 'VVENT 1', TYPE = 'CEILING', COMP_IDS = 'Comp 3', 'Comp 2',
-      AREA = 1., SHAPE = 'ROUND', /
-&DEVC ID = 'Smoke Detector 1', COMP_ID = 'Comp 1',
-      TYPE = 'SMOKE', LOCATION = 3., 3., 2.97, SETPOINT = 23.93346 /
-&FIRE ID = 'Wood_Wall'
- COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'
- LOCATION = 2.5, 5 /
-&CHEM ID = 'Wood_Wall_Fire'
- CARBON = 6, CHLORINE = 0, HYDROGEN = 10, NITROGEN = 0, OXYGEN = 5
- HEAT_OF_COMBUSTION = 18100,  RADIATIVE_FRACTION = 0.33 /
-&TABL ID = 'Wood_Wall_Fire', LABELS = 'TIME', 'HRR', 'HEIGHT', 'AREA', 'CO_YIELD', 'SOOT_YIELD' /
-&TABL ID = 'Wood_Wall_Fire', DATA =    0,      0,     0,        0.05,   0.00617,    0.015 /
-&TABL ID = 'Wood_Wall_Fire', DATA =    8000,   1000,  3,        9,      0.00617,    0.015 /
-&CONN TYPE = 'FLOOR', COMP_ID = 'Comp 3', COMP_IDS = 'Comp 2' /
-&SLCF DOMAIN = '2-D', PLANE = 'X', POSITION = 2.5 /
-&TAIL / End of file.
+&HEAD VERSION = 7300, TITLE = 'Users Guide Example Case' /
+!! Scenario Configuration
+&TIME SIMULATION = 3600 PRINT = 50 SMOKEVIEW = 50 SPREADSHEET = 50 /
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.1 /
+!! Material Properties
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)',
+      CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
+!! Comparments
+&COMP ID = 'Comp 1'
+      DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'CONCRETE' WALL_MATL_ID = 'CONCRETE' FLOOR_MATL_ID = 'CONCRETE'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+!! Devices
+&DEVC ID = 'HeatDetector_3' COMP_ID = 'Comp 1' LOCATION = 2, 2, 2.97 TYPE = 'HEAT_DETECTOR' SETPOINT = 30, RTI = 5 /
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1
+      FACE = 'FRONT' OFFSET = 2 /
+!! Fires
+&FIRE ID = 'Wood_Wall' COMP_ID = 'Comp 2', FIRE_ID = 'Wood_Wall_Fire'  LOCATION = 2.5, 5 /
+&CHEM ID = 'Wood_Wall_Fire' CARBON = 6 CHLORINE = 0 HYDROGEN = 10 NITROGEN = 0 OXYGEN = 5 HEAT_OF_COMBUSTION = 18100 RADIATIVE_FRACTION = 0.33 /
+&TABL ID = 'Wood_Wall_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD' /
+&TABL ID = 'Wood_Wall_Fire', DATA = 0, 0, 0, 0.05, 0.006171682, 0.015, 0, 0, 0 /
+&TABL ID = 'Wood_Wall_Fire', DATA = 8000, 1000, 3, 9, 0.006171682, 0.015, 0, 0, 0 /
+!! Surface Connections
+&CONN TYPE = 'FLOOR' COMP_ID = 'Comp 3' COMP_IDS = 'Comp 2' /
+!! Visualizations
+&SLCF DOMAIN = '2-D'  POSITION = 2.5, PLANE = 'X' /
+&TAIL /
+
 \end{lstlisting}
 It is recommended that when looking at a new scenario, first select a pre-written input file that resembles the case, make the necessary changes, then run the case to determine if the geometry is set up correctly. It is best to start off with a relatively simple file that captures the main features of the problem without getting tied down with too much detail that might mask a fundamental flaw in the calculation. As you learn how to write input files, you will continually run and re-run your case as you add in complexity.
 

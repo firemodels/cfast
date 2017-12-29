@@ -30,8 +30,12 @@ col = find(strncmpi(W,'TRGFLXS',7))';
 cfast_targ_flux_wall = Z.data(:,col);
 cfast_targ_top_wall  = cfast_targ_flux_wall(1:11)';
 cfast_targ_side_wall = cfast_targ_flux_wall(12:27)';
-cfast_absorptance_top = cfast_targ_top_wall/E;
-cfast_absorptance_side = cfast_targ_side_wall/E;
+%note that cfast_targ_top_wall is the sum of the radiative heat transfer to
+%surface A_i due to emission from all hot walls (A_j) transmitted through 
+%medium. Thus, blackbody emissive power - the transmitted energy = energy
+%being absorbed by the medium at (T_w, T_g)
+cfast_absorptance_top = (E-cfast_targ_top_wall)/E;
+cfast_absorptance_side = (E-cfast_targ_side_wall)/E;
 
 header1 = ['X, GAS(TOP), WALL(TOP)'];
 header2 = ['Z, GAS(SIDE), WALL(SIDE)'];
@@ -70,7 +74,7 @@ col = find(strncmpi(W,'TRGFLXS',7))';
 cfast_targ_flux_wall = Z.data(:,col);
 cfast_targ_top_wall  = cfast_targ_flux_wall(1:11)';
 %cfast_targ_side_wall = cfast_targ_flux_wall(12:27)';
-cfast_absorptance_top = cfast_targ_top_wall/E_wall;
+cfast_absorptance_top = (E_wall-cfast_targ_top_wall)/E_wall;
 %cfast_absorptance_side = cfast_targ_side_wall/E_wall;
 
 header3 = ['X, EMIS(TOP), ABSO(TOP)'];
@@ -110,7 +114,7 @@ col = find(strncmpi(W,'TRGFLXS',7))';
 cfast_targ_flux_wall = Z.data(:,col);
 cfast_targ_top_wall  = cfast_targ_flux_wall(1:11)';
 %cfast_targ_side_wall = cfast_targ_flux_wall(12:27)';
-cfast_absorptance_top = cfast_targ_top_wall/E_wall;
+cfast_absorptance_top = (E_wall-cfast_targ_top_wall)/E_wall;
 %cfast_absorptance_side = cfast_targ_side_wall/E_wall;
 
 header3 = ['X, EMIS(TOP), ABSO(TOP)'];

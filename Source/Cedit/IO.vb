@@ -1048,6 +1048,7 @@ Module IO
                 If height <= 0 Then valid = False
                 If valid Then
                     Dim aComp As New Compartment
+                    myCompartments.Add(aComp)
                     aComp.Name = id
                     aComp.SetSize(width, depth, height)
                     If myThermalProperties.GetIndex(ceilid) < 0 And ceilid <> "OFF" Then
@@ -1067,6 +1068,12 @@ Module IO
                     If comparea.GetUpperBound(0) > 0 Then
                         aComp.SetVariableArea(comparea, compheight)
                     End If
+                    If hall Then
+                        aComp.Hall = True
+                    End If
+                    If shaft Then
+                        aComp.Shaft = True
+                    End If
                     'If rampid <> "" Then
                     'If myRamps.GetRampIndex(rampid) >= 0 Then
                     'If myRamps.Item(myRamps.GetRampIndex(rampid)).Type = Ramp.TypeArea Then
@@ -1079,7 +1086,6 @@ Module IO
                     'End If
                     'End If
                     aComp.Changed = False
-                    myCompartments.Add(aComp)
                 Else
                     myErrors.Add("In COMP name list " + id + " is not fully defined", ErrorMessages.TypeWarning)
                 End If

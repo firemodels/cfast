@@ -35,6 +35,8 @@ Module IO
                         NewFileFormat = True
                     Case "CHEMI"
                         If csv.num(i, 0) > 3 Then NewFileFormat = True
+                    Case "ADIAB"
+                        NewFileFormat = True
                 End Select
             End If
             i += 1
@@ -2954,7 +2956,6 @@ Module IO
                         For k = 2 To numpoints
                             ln += ", " + xx(k).ToString
                         Next
-                        PrintLine(IO, ln)
                         ln += " F = " + ff(1).ToString
                         For k = 2 To numpoints
                             ln += ", " + ff(k).ToString
@@ -3142,7 +3143,7 @@ Module IO
                         ln += " IGNITION_CRITERION = 'TIME', SETPOINT = " + aFire.IgnitionValue.ToString
                     End If
                 ElseIf aFire.IgnitionType = Fire.FireIgnitionbyTemperature Then
-                    ln += " IGNITION_CRITERION = 'TEMPERATURE', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + Math.Round((aFire.IgnitionValue - 273.15), 2)
+                    ln += " IGNITION_CRITERION = 'TEMPERATURE', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + Math.Round((aFire.IgnitionValue - 273.15), 2).ToString
                 ElseIf aFire.IgnitionType = Fire.FireIgnitionbyFlux Then
                     ln += " IGNITION_CRITERION = 'FLUX', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + (aFire.IgnitionValue / 1000.0).ToString
                 End If

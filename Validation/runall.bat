@@ -25,7 +25,7 @@ if %1==Vettori_Flat goto Vettori_Flat
 if %1==VTT goto VTT
 if %1==WTC goto WTC
 :Help
-echo Choose ALL, ATF, Dunes_2000, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
+echo Choose ALL, ATF, Dunes_2000, FLeury_Heat_Flux, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
 echo        NBS, NBS_1Room, NIST_NRC, PLAZA, PRISME, Steckler_Compartment, UL_NFPRF, 
 echo        UL_NIST_Vents, Vettori_Flat, VTT, or WTC
 goto end

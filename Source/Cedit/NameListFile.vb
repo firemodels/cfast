@@ -56,7 +56,8 @@ Public Class NameListFile
                 If (str.IndexOf("&", 0) >= 0) Then
                     nmlst = str + " "
                     flag = True
-                    Do While (str.IndexOf("/", 0) < 0)
+                    'Do While (str.IndexOf("/", 0) < 0)
+                    Do While (FindEndOfNameList(nmlst) < 0)
                         str = LineInput(io)
                         nmlst = nmlst + str + " "
                     Loop
@@ -104,8 +105,10 @@ Public Class NameListFile
                 Loop
                 val = nmlst.Substring(0, idx + 1) + "  "
                 nmlst = nmlst.Remove(0, idx + 1)
-            ElseIf (nmlst.IndexOf("/", 0) >= 0) Then
-                idx = nmlst.IndexOf("/", 0)
+                'ElseIf (nmlst.IndexOf("/", 0) >= 0) Then
+                '    idx = nmlst.IndexOf("/", 0)
+            ElseIf (FindEndOfNameList(nmlst) >= 0) Then
+                idx = FindEndOfNameList(nmlst)
                 val = nmlst.Substring(0, idx)
                 nmlst = nmlst.Remove(0, idx)
             End If
@@ -150,6 +153,25 @@ Public Class NameListFile
                 Loop
             End If
             Return hdr
+        End Get
+    End Property
+    Private ReadOnly Property FindEndOfNameList(ByVal str As String) As Integer
+        Get
+            Dim idx As Integer = 0
+            Do Until str.Substring(idx, 1) = "/" Or idx >= str.Length - 1
+                If str.Substring(idx, 1) = "'" Then
+                    idx += 1
+                    Do Until str.Substring(idx, 1) = "'" Or idx >= str.Length - 1
+                        idx += 1
+                    Loop
+                End If
+                idx += 1
+            Loop
+            If idx >= str.Length - 1 Then
+                Return -1
+            Else
+                Return idx
+            End If
         End Get
     End Property
 

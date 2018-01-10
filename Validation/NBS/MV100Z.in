@@ -1,45 +1,56 @@
-VERSN,7,"NBS Test MV100Z, Open Corridor Door, Open Target Room"
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,1500,10,10,1
-EAMB,295.15,101325,0
-TAMB,295.15,101325,0,62
-!!
-!!Material Properties
-!!
-MATL,FireBrickNBS,0.36,1040,750,0.113,0.8,Fire Brick NBS
-MATL,CeramicNBS,0.09,1040,128,0.05,0.97,Ceramic Fiber NBS
-MATL,MariniteNBS,0.12,1250,720,0.0127,0.83,Marinite NBS
-MATL,GypsumNBS,0.17,1090,930,0.0127,0.95,Gypsum NBS
-MATL,ConcreteNBS,1.8,1040,2280,0.102,0.95,Concrete NBS
-!!
-!!Compartment keywords
-!!
-COMPA,Fire Room,2.34,2.34,2.16,9.85,0,0,CeramicNBS,FireBrickNBS,CeramicNBS,50,50,50
-COMPA,Entry to Fire Room,1.03,1.02,2,11.16,2.34,0,MariniteNBS,GypsumNBS,MariniteNBS,50,50,50
-COMPA,Corridor,12.19,2.44,2.44,0,3.36,0,MariniteNBS,GypsumNBS,MariniteNBS,50,50,50
-COMPA,Target Room,2.22,2.24,2.43,2.07,0.33,0,GypsumNBS,ConcreteNBS,GypsumNBS,50,50,50
-COMPA,Entry to Target Room,0.94,0.79,2.04,2.07,2.57,0,GypsumNBS,ConcreteNBS,GypsumNBS,50,50,50
-HALL,3
-!!
-!!Vent keywords
-!!
-HVENT,1,2,1,0.81,1.6,0,1.42,3,1
-HVENT,2,3,1,0.81,1.6,0,0.11,3,1
-HVENT,3,6,1,0.76,2.03,0,0.84,4,1
-HVENT,3,5,1,0.79,2.04,0,2.14,1,1
-HVENT,4,5,1,0.79,2.04,0,0.075,3,1
-!!
-!!Fire keywords
-!!
-!!MV100Z
-FIRE,1,1.17,0.1,0,1,TIME,0,0,0,0,MV100Z
-CHEMI,1,4,0,0,0,0.3,5E+07
-TIME,0,10,890,900
-HRR,0,110000,110000,0
-SOOT,0.01,0.01,0.01,0.01
-CO,0.004747221,0.004747221,0.004747221,0.004747221
-TRACE,0,0,0,0
-AREA,0.1156,0.1156,0.1156,0.1156
-HEIGH,0,0,0,0
+&HEAD VERSION = 7300, TITLE = 'NBS Test MV100Z, Open Corridor Door, Open Target Room' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 1500 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 62 INTERIOR_TEMPERATURE = 22 EXTERIOR_TEMPERATURE = 22 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'FireBrickNBS' MATERIAL = 'Fire Brick NBS', 
+      CONDUCTIVITY = 0.36 DENSITY = 750 SPECIFIC_HEAT = 1.04, THICKNESS = 0.113 EMISSIVITY = 0.8 /
+&MATL ID = 'CeramicNBS' MATERIAL = 'Ceramic Fiber NBS', 
+      CONDUCTIVITY = 0.09 DENSITY = 128 SPECIFIC_HEAT = 1.04, THICKNESS = 0.05 EMISSIVITY = 0.97 /
+&MATL ID = 'MariniteNBS' MATERIAL = 'Marinite NBS', 
+      CONDUCTIVITY = 0.12 DENSITY = 720 SPECIFIC_HEAT = 1.25, THICKNESS = 0.0127 EMISSIVITY = 0.83 /
+&MATL ID = 'GypsumNBS' MATERIAL = 'Gypsum NBS', 
+      CONDUCTIVITY = 0.17 DENSITY = 930 SPECIFIC_HEAT = 1.09, THICKNESS = 0.0127 EMISSIVITY = 0.95 /
+&MATL ID = 'ConcreteNBS' MATERIAL = 'Concrete NBS', 
+      CONDUCTIVITY = 1.8 DENSITY = 2280 SPECIFIC_HEAT = 1.04, THICKNESS = 0.102 EMISSIVITY = 0.95 /
+ 
+!! Comparments 
+&COMP ID = 'Fire Room'
+      DEPTH = 2.34 HEIGHT = 2.16 WIDTH = 2.34 CEILING_MATL_ID = 'CeramicNBS' WALL_MATL_ID = 'CeramicNBS' FLOOR_MATL_ID = 'FireBrickNBS'
+      ORIGIN = 9.85, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Entry to Fire Room'
+      DEPTH = 1.02 HEIGHT = 2 WIDTH = 1.03 CEILING_MATL_ID = 'MariniteNBS' WALL_MATL_ID = 'MariniteNBS' FLOOR_MATL_ID = 'GypsumNBS'
+      ORIGIN = 11.16, 2.34, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Corridor'
+      DEPTH = 2.44 HEIGHT = 2.44 WIDTH = 12.19 CEILING_MATL_ID = 'MariniteNBS' WALL_MATL_ID = 'MariniteNBS' FLOOR_MATL_ID = 'GypsumNBS' HALL = .TRUE.
+      ORIGIN = 0, 3.36, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Target Room'
+      DEPTH = 2.24 HEIGHT = 2.43 WIDTH = 2.22 CEILING_MATL_ID = 'GypsumNBS' WALL_MATL_ID = 'GypsumNBS' FLOOR_MATL_ID = 'ConcreteNBS'
+      ORIGIN = 2.07, 0.33, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Entry to Target Room'
+      DEPTH = 0.79 HEIGHT = 2.04 WIDTH = 0.94 CEILING_MATL_ID = 'GypsumNBS' WALL_MATL_ID = 'GypsumNBS' FLOOR_MATL_ID = 'ConcreteNBS'
+      ORIGIN = 2.07, 2.57, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Fire Room', 'Entry to Fire Room' TOP = 1.6, BOTTOM = 0, WIDTH = 0.81
+      FACE = 'REAR' OFFSET = 1.42 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Entry to Fire Room', 'Corridor' TOP = 1.6, BOTTOM = 0, WIDTH = 0.81
+      FACE = 'REAR' OFFSET = 0.11 /
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Corridor' 'OUTSIDE'  TOP = 2.03, BOTTOM = 0, WIDTH = 0.76
+      FACE = 'LEFT' OFFSET = 0.84 /
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Corridor', 'Entry to Target Room' TOP = 2.04, BOTTOM = 0, WIDTH = 0.79
+      FACE = 'FRONT' OFFSET = 2.14 /
+&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Target Room', 'Entry to Target Room' TOP = 2.04, BOTTOM = 0, WIDTH = 0.79
+      FACE = 'REAR' OFFSET = 0.075 /
+ 
+!! Fires 
+&FIRE ID = 'MV100Z'  COMP_ID = 'Fire Room', FIRE_ID = 'MV100Z_Fire'  LOCATION = 1.17, 0.1 / 
+&CHEM ID = 'MV100Z_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.3 / 
+&TABL ID = 'MV100Z_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'MV100Z_Fire', DATA = 0, 0, 0, 0.1156, 0.004747221, 0.01, 0, 0, 0 /
+&TABL ID = 'MV100Z_Fire', DATA = 10, 110, 0, 0.1156, 0.004747221, 0.01, 0, 0, 0 /
+&TABL ID = 'MV100Z_Fire', DATA = 890, 110, 0, 0.1156, 0.004747221, 0.01, 0, 0, 0 /
+&TABL ID = 'MV100Z_Fire', DATA = 900, 0, 0, 0.1156, 0.004747221, 0.01, 0, 0, 0 /

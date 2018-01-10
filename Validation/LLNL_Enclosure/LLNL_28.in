@@ -1,41 +1,45 @@
-VERSN,7,28_PH_150kW
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,1000,50,10,10
-EAMB,304.15,101325,0
-TAMB,304.15,101325,0,50
-!!
-!!Material Properties
-!!
-MATL,LLNL Walls,0.39,1000,1440,0.1,0.94,Test Cell Walls
-MATL,LLNL Ceil,0.63,1000,1920,0.1,0.94,Test Cell Floor and Ceiling
-MATL,LLNL Marinite,0.12,1120,700,0.019,0.94,Test Cell Marinite
-!!
-!!Compartment keywords
-!!
-COMPA,Lower Test Cell,4,6,3,0,0,0,LLNL Marinite,LLNL Ceil,LLNL Walls,50,50,50
-COMPA,Plenum,4,6,1.5,0,0,3,LLNL Ceil,LLNL Marinite,LLNL Walls,50,50,50
-!!
-!!Vent keywords
-!!
-HVENT,1,3,1,0.175,3,2.866,1,1,1
-VVENT,2,1,0.18,2,1
-MVENT,2,3,1,H,0.6,0.4225,V,0.75,0.0731,0.141,2000,3000,1
-!!
-!!Fire keywords
-!!
-!!150kW
-FIRE,1,2,3,0,1,TIME,30,0,0,0,150kW
-CHEMI,1,4,0,0,0,0.2,5.005E+07
-TIME,0,10,1870,1871
-HRR,0,150000,150000,0
-SOOT,0,0,0,0
-CO,0,0,0,0
-TRACE,0,0,0,0
-AREA,0.25,0.25,0.25,0.25
-HEIGH,0.2,0.2,0.2,0.2
-!!
-!!Heat flow keywords
-!!
-VHEAT,2,1
+&HEAD VERSION = 7300, TITLE = '28_PH_150kW' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 1000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 31 EXTERIOR_TEMPERATURE = 31 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'LLNL Walls' MATERIAL = 'Test Cell Walls', 
+      CONDUCTIVITY = 0.39 DENSITY = 1440 SPECIFIC_HEAT = 1, THICKNESS = 0.1 EMISSIVITY = 0.94 /
+&MATL ID = 'LLNL Ceil' MATERIAL = 'Test Cell Floor and Ceiling', 
+      CONDUCTIVITY = 0.63 DENSITY = 1920 SPECIFIC_HEAT = 1, THICKNESS = 0.1 EMISSIVITY = 0.94 /
+&MATL ID = 'LLNL Marinite' MATERIAL = 'Test Cell Marinite', 
+      CONDUCTIVITY = 0.12 DENSITY = 700 SPECIFIC_HEAT = 1.12, THICKNESS = 0.019 EMISSIVITY = 0.94 /
+ 
+!! Comparments 
+&COMP ID = 'Lower Test Cell'
+      DEPTH = 6 HEIGHT = 3 WIDTH = 4 CEILING_MATL_ID = 'LLNL Marinite' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Ceil'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Plenum'
+      DEPTH = 6 HEIGHT = 1.5 WIDTH = 4 CEILING_MATL_ID = 'LLNL Ceil' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Marinite'
+      ORIGIN = 0, 0, 3 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Lower Test Cell' 'OUTSIDE'  TOP = 3, BOTTOM = 2.866, WIDTH = 0.175
+      FACE = 'FRONT' OFFSET = 1 /
+ 
+!! Ceiling and Floor Vents 
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_1' COMP_IDS = 'Plenum', 'Lower Test Cell' AREA = 0.18, SHAPE = 'SQUARE'  OFFSETS = 2, 3 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'Plenum', 'OUTSIDE'
+      AREAS = 0.4225, 0.0731 HEIGHTS = 0.6, 0.75 ORIENTATIONS = 'HORIZONTAL', 'VERTICAL'  FLOW = 0.141 CUTOFFS = 2000, 3000 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+ 
+!! Fires 
+&FIRE ID = '150kW'  COMP_ID = 'Lower Test Cell', FIRE_ID = '150kW_Fire'  LOCATION = 2, 3 IGNITION_CRITERION = 'TIME', SETPOINT = 30 / 
+&CHEM ID = '150kW_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50050 RADIATIVE_FRACTION = 0.2 / 
+&TABL ID = '150kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = '150kW_Fire', DATA = 0, 0, 0.2, 0.25, 0, 0, 0, 0, 0 /
+&TABL ID = '150kW_Fire', DATA = 10, 150, 0.2, 0.25, 0, 0, 0, 0, 0 /
+&TABL ID = '150kW_Fire', DATA = 1870, 150, 0.2, 0.25, 0, 0, 0, 0, 0 /
+&TABL ID = '150kW_Fire', DATA = 1871, 0, 0.2, 0.25, 0, 0, 0, 0, 0 /
+ 
+!! Surface Connections
+&CONN TYPE = 'FLOOR' COMP_ID = 'Plenum' COMP_IDS = 'Lower Test Cell' / 

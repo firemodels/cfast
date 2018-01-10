@@ -472,7 +472,7 @@
             roomptr%var_area = 0.0_eb
             roomptr%var_height = 0.0_eb
             do kk = 1, mxpts
-                if (cross_sect_areas(kk)/=-101._eb) then
+                if (cross_sect_areas(kk)/=-1001._eb) then
                     roomptr%nvars = roomptr%nvars + 1
                     roomptr%var_area(roomptr%nvars) = cross_sect_areas(kk)
                     roomptr%var_height(roomptr%nvars) = cross_sect_heights(kk)
@@ -531,8 +531,8 @@
     subroutine set_defaults
 
     ceiling_matl_id         = 'OFF'
-    cross_sect_areas        = -101._eb
-    cross_sect_heights      = -101._eb
+    cross_sect_areas        = -1001._eb
+    cross_sect_heights      = -1001._eb
     id                      = 'NULL'
     depth                   = 0.0_eb
     floor_matl_id           = 'OFF'
@@ -726,13 +726,13 @@
 
                 dtectptr%name = id
                 if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT_DETECTOR') then
-                    if (setpoint/=-101._eb) then
+                    if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint + 273.15_eb
                     else
                         dtectptr%trigger = default_activation_temperature
                     end if
                 else
-                    if (setpoint/=-101._eb) then
+                    if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint
                     else
                         dtectptr%trigger = default_activation_obscuration
@@ -797,7 +797,7 @@
     matl_id                         = 'NULL'
     normal(:)                       = (/0., 0., 1./)
     rti                             = default_rti
-    setpoint                        = -101._eb
+    setpoint                        = -1001._eb
     spray_density                   = -300.0_eb
 
     end subroutine set_defaults
@@ -860,22 +860,22 @@
 
             rampptr => rampinfo(ii)
             rampptr%id = id
-            if (count(z/=-101._eb)>0 .and. count(t/=-101._eb)>0) then
+            if (count(z/=-1001._eb)>0 .and. count(t/=-1001._eb)>0) then
                 write (*,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
                 write (iofill,'(a,i3)') '***Error in &RAMP: Cannot use both z and t in a ramp. Check ramp, ', n_ramps
-            else if (count(z/=-101._eb)==0 .and. count(t/=-101._eb)==0) then
+            else if (count(z/=-1001._eb)==0 .and. count(t/=-1001._eb)==0) then
                 write (*,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
                 write (iofill,'(a,i3)') '***Error in &RAMP: Either z or t must be in a ramp. Check ramp, ', n_ramps
             end if
             
-            if (type=='AREA' .and. count(z/=-101._eb)>0) then
+            if (type=='AREA' .and. count(z/=-1001._eb)>0) then
                 rampptr%x(1:mxpts)  = z(1:mxpts)
             else
                 rampptr%x(1:mxpts) = t(1:mxpts)
             end if
             rampptr%f_of_x(1:mxpts) = f(1:mxpts)
 
-            if (count(rampptr%x/=-101._eb) /= count(rampptr%f_of_x/=-101._eb)) then
+            if (count(rampptr%x/=-1001._eb) /= count(rampptr%f_of_x/=-1001._eb)) then
                 if (type=='AREA') then
                     write (*,'(a,i3)') &
                         '***Error in &RAMP: The number of inputs for z and f do not match. Check ramp, ', n_ramps
@@ -889,7 +889,7 @@
                 end if
                 stop
             end if
-            rampptr%npoints=count(rampptr%x/=-101._eb)
+            rampptr%npoints=count(rampptr%x/=-1001._eb)
 
         end do read_ramp_loop
 
@@ -901,9 +901,9 @@
     subroutine set_defaults
 
     type                    = 'NULL'
-    t(:)                    = -101._eb
-    f(:)                    = -101._eb
-    z(:)                    = -101._eb
+    t(:)                    = -1001._eb
+    f(:)                    = -1001._eb
+    z(:)                    = -1001._eb
     id                      = 'NULL'
 
     end subroutine set_defaults
@@ -986,10 +986,10 @@
                         end do
                     else
                         ! input is a row of data for the table
-                        if (data(1)/=-101._eb) then
+                        if (data(1)/=-1001._eb) then
                             tablptr%n_points = tablptr%n_points +1
                             do i = 1,mxtablcols
-                                if (data(i)/=-101._eb) then
+                                if (data(i)/=-1001._eb) then
                                     tablptr%data(tablptr%n_points,i) = data(i)
                                 end if
                             end do
@@ -1007,7 +1007,7 @@ continue
 
     id                    = 'NULL'
     labels(:)             = 'NULL'
-    data(:)               = -101._eb
+    data(:)               = -1001._eb
 
     end subroutine set_defaults
     
@@ -1647,7 +1647,7 @@ continue
                     finaltime = 0._eb
                     finalfraction = post_fraction
 
-                    if (t(1)/=-101._eb) then
+                    if (t(1)/=-1001._eb) then
                         if (n_ramps<=mxramps) then
                             n_ramps = n_ramps + 1
                             rampptr=>rampinfo(n_ramps)
@@ -1658,7 +1658,7 @@ continue
                             rampptr%counter = ventptr%counter
                             rampptr%npoints = 0
                             do iramp = 1,mxpts
-                                if (t(iramp)/=-101._eb) then
+                                if (t(iramp)/=-1001._eb) then
                                     rampptr%x(iramp) = t(iramp)
                                     rampptr%f_of_x(iramp) = f(iramp)
                                     rampptr%npoints = rampptr%npoints + 1
@@ -1791,7 +1791,7 @@ continue
                         finaltime = 0._eb
                         finalfraction = post_fraction
 
-                        if (t(1)/=-101._eb) then
+                        if (t(1)/=-1001._eb) then
                             if (n_ramps<=mxramps) then
                                 n_ramps = n_ramps + 1
                                 rampptr=>rampinfo(n_ramps)
@@ -1802,7 +1802,7 @@ continue
                                 rampptr%counter = ventptr%counter
                                 rampptr%npoints = 0
                                 do iramp = 1,mxpts
-                                    if (t(iramp)/=-101._eb) then
+                                    if (t(iramp)/=-1001._eb) then
                                         rampptr%x(iramp) = t(iramp)
                                         rampptr%f_of_x(iramp) = f(iramp)
                                         rampptr%npoints = rampptr%npoints + 1
@@ -1921,7 +1921,7 @@ continue
                         finaltime = 0._eb
                         finalfraction = 1._eb
 
-                        if (t(1)/=-101._eb) then
+                        if (t(1)/=-1001._eb) then
                             if (n_ramps<=mxramps) then
                                 n_ramps = n_ramps + 1
                                 rampptr=>rampinfo(n_ramps)
@@ -1932,7 +1932,7 @@ continue
                                 rampptr%counter = ventptr%counter
                                 rampptr%npoints = 0
                                 do iramp = 1,mxpts
-                                    if (t(iramp)/=-101._eb) then
+                                    if (t(iramp)/=-1001._eb) then
                                         rampptr%x(iramp) = t(iramp)
                                         rampptr%f_of_x(iramp) = f(iramp)
                                         rampptr%npoints = rampptr%npoints + 1
@@ -2005,7 +2005,7 @@ continue
     criterion             = 'TIME'
     cutoffs(:)            = 0._eb
     devc_id               = 'NULL'
-    f                     = -101._eb
+    f                     = -1001._eb
     face                  = 'NULL'
     filter_time           = 0._eb
     filter_efficiency     = 0._eb
@@ -2019,7 +2019,7 @@ continue
     post_fraction         = 1._eb
     setpoint              = 0._eb
     shape                 = 'NULL'
-    t                     = -101._eb
+    t                     = -1001._eb
     top                   = 0._eb
     type                  = 'NULL'
         width                 = 0._eb
@@ -2106,7 +2106,7 @@ continue
 
                 frac(:) = f(:)
 
-                do i = 1, count(frac /= -101._eb)
+                do i = 1, count(frac /= -1001._eb)
                     compartment_id = ' '
                     compartment_id = comp_ids(i)
                     ito=-101
@@ -2209,7 +2209,7 @@ continue
 
     comp_id           = 'NULL'
     comp_ids(:)       = 'NULL'
-    f(:)              = -101._eb
+    f(:)              = -1001._eb
     type              = 'NULL'
 
     end subroutine set_defaults
@@ -2300,7 +2300,7 @@ continue
 
     subroutine set_defaults
 
-    value                   = -101.0_eb
+    value                   = -1001.0_eb
     comp_id                 = 'NULL'
 
     end subroutine set_defaults
@@ -2501,12 +2501,12 @@ continue
         
         if (mode == 'RADI') radi_verification_flag = .true.
         if (rad_solver == 'RADNNET') radi_radnnet_flag = .true.
-        if (gas_temperature/=-101._eb) gas_temperature = gas_temperature + kelvin_c_offset
+        if (gas_temperature/=-1001._eb) gas_temperature = gas_temperature + kelvin_c_offset
         
         if (mode == 'FURNACE') then
             n_furn = 0
             do i = 1, mxpts
-                if (t(i)/=-101._eb) then
+                if (t(i)/=-1001._eb) then
                     n_furn = n_furn + 1
                     furn_time(n_furn) = t(i)
                     furn_temp(n_furn) = f(i) + kelvin_c_offset
@@ -2527,8 +2527,8 @@ continue
     partial_pressure_h2o   = 0._eb
     partial_pressure_co2   = 0._eb
     gas_temperature        = 0._eb
-    t                      = -101._eb
-    f                      = -101._eb
+    t                      = -1001._eb
+    f                      = -1001._eb
 
     end subroutine set_defaults
 

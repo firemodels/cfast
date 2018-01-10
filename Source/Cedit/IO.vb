@@ -2736,7 +2736,6 @@ Module IO
         Dim ln As String, field As String
         Dim i, j, k, l As Integer
         Dim aFlag As Boolean
-        Dim aDummy As Single
         Dim x(0), f(0) As Single
         Dim aFireCurves(12, 0) As Single
         Dim aThermalProperty As New ThermalProperty

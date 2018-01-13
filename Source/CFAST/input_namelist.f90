@@ -712,8 +712,8 @@
                 end do searching_2
 
                 if (.not. idcheck) then
-                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check detector, ', counter2
-                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check detector, ', counter2
+                    write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
+                    write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
                     stop
                 end if
 
@@ -780,8 +780,8 @@
 913 format('***',A,': BAD DEVC input. Invalid equation type:',A3,' Valid choices are: PDE or CYL')
 5003 format ('***Error: BAD DEVC input. The compartment specified by DEVC does not exist ',i0)
 
-5339 format ('***Error: Bad DETEC input. Detector ',i0,' is outside of compartment ',a)
-5342 format ('***Error: Bad DETEC input. Invalid DETECTOR specification - room ',i0)
+5339 format ('***Error: Bad DEVC input. Device ',i0,' is outside of compartment ',a)
+5342 format ('***Error: Bad DEVC input. Invalid compartment specification ',i0)
 
 
 
@@ -1176,7 +1176,7 @@ continue
 
     end if insf_flag
 
-5320 format ('***Error: Bad FIRE input. Fire specification error, room ',i0,' out of range')
+5320 format ('***Error: Bad FIRE input. Fire specification error, compartment ',i0,' out of range')
 5321 format ('***Error: Bad FIRE input. Fire specification error, not an allowed fire type',i0)
 5322 format ('***Error: Bad FIRE input. Fire specification is outdated and must include target for ignition')
 5323 format ('***Error: Bad FIRE input. Fire location ',i0,' is outside its compartment')
@@ -1243,7 +1243,7 @@ continue
         end if
         read(lu,CHEM,iostat=ios)
         if (ios>0) then
-            write(iofill, '(a,i3)') '***Error in &FIRE: Invalid specification for inputs. Check &FIRE input, ', n_defs+1
+            write(iofill, '(a,i3)') '***Error in &CHEM: Invalid specification for inputs. Check &CHEM input, ', n_defs+1
             stop
         end if
         n_defs =n_defs + 1

@@ -1,20 +1,22 @@
-VERSN,7,CFAST Simulation
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,108000,100,100,100
-EAMB,293.15,101325,0
-TAMB,293.15,101325,0,50
-!!
-!!Compartment keywords
-!!
-COMPA,Comp 1,5,5,3,0,0,0,OFF,OFF,OFF,50,50,50
-!!
-!!Vent keywords
-!!
-HVENT,1,2,1,0.01,1.505,1.495,2.5,2,1
-MVENT,2,1,1,V,1.5,1,V,1.5,1,0.01,1000000,1100000,1
-!!
-!!visualizations
-!!
-SLCF,2-D,X,0
+&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 108000 PRINT = 100 SMOKEVIEW = 100 SPREADSHEET = 100 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Comparments 
+&COMP ID = 'Comp 1'
+      DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 1.505, BOTTOM = 1.495, WIDTH = 0.01
+      FACE = 'RIGHT' OFFSET = 2.5 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'
+      AREAS = 1, 1 HEIGHTS = 1.5, 1.5 FLOW = 0.01 CUTOFFS = 1000000, 1100000 OFFSETS = 0, 2.5 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+ 
+!! Visualizations
+&SLCF DOMAIN = '2-D'  POSITION = 0, PLANE = 'X' / 

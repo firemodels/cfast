@@ -1,35 +1,40 @@
-VERSN,7,Default example fire for user guide
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,1500,120,10,10
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
-!!
-!!Compartment keywords
-!!
-COMPA,Comp 1,4,4,4,0,0,0,OFF,OFF,OFF,50,50,50
-COMPA,Comp 2,4,4,4,4,0,0,OFF,OFF,OFF,50,50,50
-COMPA,Comp 3,4,4,4,4,0,4,OFF,OFF,OFF,50,50,50
-COMPA,Comp 4,4,4,4,0,0,4,OFF,OFF,OFF,50,50,50
-ONEZ,1
-ONEZ,2
-ONEZ,3
-ONEZ,4
-!!
-!!Vent keywords
-!!
-HVENT,1,2,1,1,2,0,0,2,0
-HVENT,3,4,1,1,3,0,1,4,0
-VVENT,3,2,3,1,0
-VVENT,5,4,4,1,0
-MVENT,5,1,1,V,2,1,V,2,1,1,999999,1000000,1
-EVENT,H,1,2,1,200,1,1
-EVENT,H,3,4,1,700,1,1
-EVENT,V,3,2,1,500,1,1
-EVENT,V,5,4,1,1000,1,1
-EVENT,M,5,1,1,15,0,1
-!!
-!!visualizations
-!!
-SLCF,3-D,1
+&HEAD VERSION = 7300, TITLE = 'Default example fire for user guide' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 1500 PRINT = 120 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Comparments 
+&COMP ID = 'Comp 1'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 2'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+      ORIGIN = 4, 0, 0 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 3'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+      ORIGIN = 4, 0, 4 GRID = 50, 50, 50 /
+&COMP ID = 'Comp 4'
+      DEPTH = 4 HEIGHT = 4 WIDTH = 4 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+      ORIGIN = 0, 0, 4 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 2, BOTTOM = 0, WIDTH = 1
+      CRITERION = 'TIME' T = 200, 201  F = 0, 1  FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 3', 'Comp 4' TOP = 3, BOTTOM = 0, WIDTH = 1
+      CRITERION = 'TIME' T = 700, 701  F = 0, 1  FACE = 'LEFT' OFFSET = 1 /
+ 
+!! Ceiling and Floor Vents 
+&VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_1' COMP_IDS = 'Comp 3', 'Comp 2' AREA = 3, SHAPE = 'ROUND' 
+      CRITERION = 'TIME' T = 500, 501 F = 0, 1 OFFSETS = 2, 2 /
+&VENT TYPE = 'CEILING' ID = 'CeilFloorVent_2' COMP_IDS = 'OUTSIDE', 'Comp 4' AREA = 4, SHAPE = 'ROUND' 
+      CRITERION = 'TIME' T = 1000, 1001 F = 0, 1 OFFSETS = 2, 2 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'
+      AREAS = 1, 1 HEIGHTS = 2, 2 FLOW = 1 CUTOFFS = 999999, 1000000 OFFSETS = 0, 2
+      CRITERION = 'TIME' T = 15, 16  F = 1, 0  FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+ 
+!! Visualizations
+&SLCF COMP_ID = 'Comp 1' DOMAIN = '3-D' / 

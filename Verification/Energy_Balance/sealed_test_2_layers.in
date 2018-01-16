@@ -1,28 +1,18 @@
-VERSN,7,CFAST Simulation
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,900,50,10,10
-EAMB,293.15,101325,0
-TAMB,293.15,101325,0,50
-ADIAB
-!!
-!!Material Properties
-!!
-!!
-!!Compartment keywords
-!!
-COMPA,Compartment 1,5,5,5,0,0,0,OFF,OFF,OFF,50,50,50
-!!
-!!Fire keywords
-!!
-!!100 kW
-FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,100 kW
-CHEMI,1,4,0,0,0,0.35,5E+07
-TIME,0,1800
-HRR,100000,100000
-SOOT,0,0
-CO,0,0
-TRACE,0,0
-AREA,0.3,0.3
-HEIGH,0,0
+&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 900 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  ADIABATIC = .TRUE.  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Comparments 
+&COMP ID = 'Compartment 1'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Fires 
+&FIRE ID = '100 kW'  COMP_ID = 'Compartment 1', FIRE_ID = '100 kW_Fire'  LOCATION = 2.5, 2.5 / 
+&CHEM ID = '100 kW_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = '100 kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = '100 kW_Fire', DATA = 0, 100, 0, 0.3, 0, 0, 0, 0, 0 /
+&TABL ID = '100 kW_Fire', DATA = 1800, 100, 0, 0.3, 0, 0, 0, 0, 0 /

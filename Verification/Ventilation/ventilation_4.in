@@ -1,33 +1,27 @@
-VERSN,7,CFAST Simulation
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,5000,50,10,50
-EAMB,293.15,101325,0
-TAMB,293.15,101325,0,0
-ADIAB
-!!
-!!Compartment keywords
-!!
-COMPA,Comp 1,5,5,5,0,0,0,OFF,OFF,OFF,50,50,50
-!!
-!!Vent keywords
-!!
-HVENT,1,2,1,1.5,4,0,1,2,1
-!!
-!!Fire keywords
-!!
-!!simple
-FIRE,1,2.5,2.5,0,1,TIME,0,0,0,0,simple
-CHEMI,1,4,0,0,0,0.33,5E+07
-TIME,0,30,330,360
-HRR,0,200000,200000,200000
-SOOT,0,0,0,0
-CO,0,0,0,0
-TRACE,0,0,0,0
-AREA,0.071,0.071,0.071,0.071
-HEIGH,0,0,0,0
-!!
-!!visualizations
-!!
-SLCF,2-D,X,0
+&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 5000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 50 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 0 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  ADIABATIC = .TRUE.  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Comparments 
+&COMP ID = 'Comp 1'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 4, BOTTOM = 0, WIDTH = 1.5
+      FACE = 'RIGHT' OFFSET = 1 /
+ 
+!! Fires 
+&FIRE ID = 'simple'  COMP_ID = 'Comp 1', FIRE_ID = 'simple_Fire'  LOCATION = 2.5, 2.5 / 
+&CHEM ID = 'simple_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.33 / 
+&TABL ID = 'simple_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'simple_Fire', DATA = 0, 0, 0, 0.071, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple_Fire', DATA = 30, 200, 0, 0.071, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple_Fire', DATA = 330, 200, 0, 0.071, 0, 0, 0, 0, 0 /
+&TABL ID = 'simple_Fire', DATA = 360, 200, 0, 0.071, 0, 0, 0, 0, 0 /
+ 
+!! Visualizations
+&SLCF DOMAIN = '2-D'  POSITION = 0, PLANE = 'X' / 

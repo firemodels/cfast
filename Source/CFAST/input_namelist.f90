@@ -2498,12 +2498,16 @@ continue
         call checkread('DIAG',lu,ios)
         call set_defaults
         read(lu,DIAG)
+
+        if (rad_solver == 'RADNNET') radi_radnnet_flag = .true.   
         
-        if (mode == 'RADI') radi_verification_flag = .true.
-        if (rad_solver == 'RADNNET') radi_radnnet_flag = .true.
-        if (gas_temperature/=-1001._eb) gas_temperature = gas_temperature + kelvin_c_offset
-        
-        if (mode == 'FURNACE') then
+        if (partial_pressure_h2o/=-1001._eb) radi_verification_flag = .true.
+        if (partial_pressure_co2/=-1001._eb) radi_verification_flag = .true.
+        if (gas_temperature/=-1001._eb) then
+            gas_temperature = gas_temperature + kelvin_c_offset
+            radi_verification_flag = .true.
+        end if
+        if (furn_temp(1)/=-1001._eb) then
             n_furn = 0
             do i = 1, mxpts
                 if (t(i)/=-1001._eb) then
@@ -2522,11 +2526,10 @@ continue
 
     subroutine set_defaults
 
-    mode                   = 'NULL'
     rad_solver             = 'NULL'
-    partial_pressure_h2o   = 0._eb
-    partial_pressure_co2   = 0._eb
-    gas_temperature        = 0._eb
+    partial_pressure_h2o   = -1001._eb
+    partial_pressure_co2   = -1001._eb
+    gas_temperature        = -1001._eb
     t                      = -1001._eb
     f                      = -1001._eb
 

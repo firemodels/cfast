@@ -1,15 +1,15 @@
-VERSN,7,CFAST Simulation
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,80000,10000,1000,1000
-EAMB,298.15,101325,0
-TAMB,293.15,101325,0,50
-!!
-!!Material Properties
-!!
-MATL,GYPSUM,0.16,900,790,0.016,0.9,Gypsum Board (5/8 in)
-!!
-!!Compartment keywords
-!!
-COMPA,Compartment 1,5,5,5,0,0,0,GYPSUM,OFF,GYPSUM,50,50,50
+&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 80000 PRINT = 10000 SMOKEVIEW = 1000 SPREADSHEET = 1000 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 25 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board (5/8 in)', 
+      CONDUCTIVITY = 0.16 DENSITY = 790 SPECIFIC_HEAT = 0.9, THICKNESS = 0.016 EMISSIVITY = 0.9 /
+ 
+!! Comparments 
+&COMP ID = 'Compartment 1'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'OFF'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /

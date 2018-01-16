@@ -97,17 +97,19 @@
     ! now we can check the input data for consistency
 
     ! check for temperature outside reasonable limits
-    if (exterior_ambient_temperature>1573.15_eb.or.exterior_ambient_temperature<223.15_eb) then
-        write (*,5022) exterior_ambient_temperature
-        write (iofill,5022) exterior_ambient_temperature
-        stop
+    if (.not.radi_verification_flag)  then
+        if (exterior_ambient_temperature>373.15_eb.or.exterior_ambient_temperature<223.15_eb) then
+            write (*,5022) exterior_ambient_temperature
+            write (iofill,5022) exterior_ambient_temperature
+            stop
+        end if
+        if (interior_ambient_temperature>373.15_eb.or.interior_ambient_temperature<223.15_eb) then
+            write (*,5022) interior_ambient_temperature
+            write (iofill,5022) interior_ambient_temperature
+            if (.not.radi_verification_flag) stop
+        end if
     end if
-    if (interior_ambient_temperature>1573.15_eb.or.interior_ambient_temperature<223.15_eb) then
-        write (*,5022) interior_ambient_temperature
-        write (iofill,5022) interior_ambient_temperature
-        stop
-    end if    
-    
+
     ! make pressures consistent with temperatures
     interior_abs_pressure = exterior_abs_pressure*interior_ambient_temperature/exterior_ambient_temperature
 

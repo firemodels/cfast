@@ -1224,7 +1224,8 @@ module solve_routines
 
     type(room_type), pointer :: roomptr, deadroomptr
     type(target_type), pointer :: targptr
-    type(vent_type), pointer ::ventptr
+    type(vent_type), pointer :: ventptr
+    type(ramp_type), pointer :: rampptr
 
     if (n_furn>0.and.iflag/=constvar) then
         call interp(furn_time,furn_temp,n_furn,stime,1,wtemp)
@@ -1365,10 +1366,18 @@ module solve_routines
             write (iofill,10) ndisc+2*n_hvents+2*n_vvents+4*n_mvents, mxdiscon
 10          format('***Error: Insufficient space in discontinuity array. Required: ',i0,'. Allocated: ',i0)
         end if
+        
+        do i = 1, n_ramps
+            rampptr => rampinfo(i)
+            do ii = 1, rampptr%npoints
+                discon(ndisc+ii-1) = rampptr%x(ii)
+            end do
+            ndisc = ndisc + rampptr%npoints
+        end do
 
         ! put the discontinuity array into order
         call shellsort (discon(0), ndisc+1)
-
+        
         ! define i_wallmap for jac and other constants for dassl and the conduction routine
         ieq = nofwt
         i_wallmap(nr,1:4) = 0

@@ -14,6 +14,7 @@ if %1==LLNL_Enclosure goto LLNL_Enclosure
 if %1==NBS goto NBS
 if %1==NBS_1Room goto NBS_1Room
 if %1==NIST_NRC goto NIST_NRC
+if %1==NIST_NRC_Corner_Effects goto NIST_NRC_Corner_Effects
 if %1==NIST_Vent_Study goto NIST_Vent_Study
 if %1==PLAZA goto PLAZA
 if %1==PRISME goto PRISME
@@ -26,8 +27,8 @@ if %1==VTT goto VTT
 if %1==WTC goto WTC
 :Help
 echo Choose ALL, ATF, Dunes_2000, FLeury_Heat_Flux, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
-echo        NBS, NBS_1Room, NIST_NRC, NIST_Vent_Study, PLAZA, PRISME, Steckler_Compartment, UL_NFPRF, 
-echo        UL_NIST_Vents, Vettori_Flat, VTT, or WTC
+echo        NBS, NBS_1Room, NIST_NRC, NIST_Corner_Effects, NIST_Vent_Study, PLAZA, PRISME, 
+echo        Steckler_Compartment, UL_NFPRF, UL_NIST_Vents, Vettori_Flat, VTT, or WTC
 goto end
 :ALL
 call cleanall.bat
@@ -289,6 +290,14 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe NIST_NRC_T18 -V
 cd ..\
 if %1==NIST_NRC goto end
 
+
+:NIST_NRC_Corner_Effects
+cd NIST_NRC_Corner_Effects
+call ..\cleancfast.bat
+echo NIST_NRC Corner effects Tests
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe corner_200_kW.in -V
+cd ..\
+if %1==NIST_NRC_Corner_Effects goto end
 :NIST_Vent_Study
 echo NIST Vent Study
 cd NIST_Vent_Study

@@ -268,7 +268,7 @@
     integer :: ios
 
     real(eb) :: max_time_step, lower_oxygen_limit
-    character(64) :: adiabatic
+    logical :: adiabatic
     namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit
 
     ios = 1
@@ -298,8 +298,7 @@
         call set_defaults
         read(lu,MISC)
 
-        adiabatic_walls=.false.
-        if (adiabatic == '.TRUE.') adiabatic_walls=.true.
+        adiabatic_walls=adiabatic
         stpmax = max_time_step
         lower_o2_limit = lower_oxygen_limit
 
@@ -311,7 +310,7 @@
 
     ! note actual default values are set in initialize_memory and used here to initialize namelist
 
-    adiabatic = '.FALSE.'
+    adiabatic = .false.
     max_time_step = stpmax                          ! s
     lower_oxygen_limit = default_lower_oxygen_limit
 
@@ -417,7 +416,7 @@
     real(eb) :: depth, height ,width
     real(eb),dimension(3) :: origin
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
-    character(64) :: hall, shaft
+    logical :: hall, shaft
     character(64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, &
         ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width
@@ -517,8 +516,8 @@
 
             roomptr%shaft=.false.
             roomptr%hall=.false.
-            if (shaft == '.TRUE.') roomptr%shaft = .true.
-            if (hall == '.TRUE.') roomptr%hall = .true.
+            roomptr%shaft = shaft
+            roomptr%hall = hall
 
         end do read_comp_loop
 
@@ -541,8 +540,8 @@
     width                   = 0.0_eb
     grid(:)                 = default_grid
     origin(:)               = 0.0_eb
-    hall                    = '.FALSE.'
-    shaft                   = '.FALSE.'
+    hall                    = .false.
+    shaft                   = .false.
 
     end subroutine set_defaults
 

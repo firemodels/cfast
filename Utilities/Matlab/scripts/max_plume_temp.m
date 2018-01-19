@@ -25,7 +25,7 @@ casename{16} = 'cabinet_10';
 casename{17} = 'cabinet_11';
 casename{18} = 'cabinet_12';
 
-for j=1:1
+for j=1:3
 
 M = importdata([outdir,casename{j},'_w.csv'],',',5);
 W = strsplit(M.textdata{1,1},',');%find the locations for all of the variable columns

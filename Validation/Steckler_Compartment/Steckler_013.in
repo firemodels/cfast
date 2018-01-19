@@ -1,32 +1,26 @@
-VERSN,7,Steckler Compartment Test 13
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,1800,50,10,10
-EAMB,296.15,101325,0
-TAMB,296.15,101325,0,50
-!!
-!!Material Properties
-!!
-MATL,Fiberboard,1,1000,200,0.013,0.9,Fiber Board
-!!
-!!Compartment keywords
-!!
-COMPA,Compartment 1,2.8,2.8,2.13,0,0,0,Fiberboard,Fiberboard,Fiberboard,50,50,50
-!!
-!!Vent keywords
-!!
-HVENT,1,2,1,0.62,1.83,0,1.28,1,1
-!!
-!!Fire keywords
-!!
-!!Steckler 62 kW
-FIRE,1,1.4,1.4,0.02,1,TIME,0,0,0,0,Steckler 62 kW
-CHEMI,1,4,0,0,0,0.2,5E+07
-TIME,0,1800
-HRR,62900,62900
-SOOT,0,0
-CO,0,0
-TRACE,0,0
-AREA,0.09,0.09
-HEIGH,0,0
+&HEAD VERSION = 7300, TITLE = 'Steckler Compartment Test 13' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 23 EXTERIOR_TEMPERATURE = 23 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'Fiberboard' MATERIAL = 'Fiber Board', 
+      CONDUCTIVITY = 1 DENSITY = 200 SPECIFIC_HEAT = 1, THICKNESS = 0.013 EMISSIVITY = 0.9 /
+ 
+!! Comparments 
+&COMP ID = 'Compartment 1'
+      DEPTH = 2.8 HEIGHT = 2.13 WIDTH = 2.8 CEILING_MATL_ID = 'Fiberboard' WALL_MATL_ID = 'Fiberboard' FLOOR_MATL_ID = 'Fiberboard'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 1.83, BOTTOM = 0, WIDTH = 0.62
+      FACE = 'FRONT' OFFSET = 1.28 /
+ 
+!! Fires 
+&FIRE ID = 'Steckler 62 kW'  COMP_ID = 'Compartment 1', FIRE_ID = 'Steckler 62 kW_Fire'  LOCATION = 1.4, 1.4 / 
+&CHEM ID = 'Steckler 62 kW_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.2 / 
+&TABL ID = 'Steckler 62 kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Steckler 62 kW_Fire', DATA = 0, 62.9, 0.02, 0.09, 0, 0, 0, 0, 0 /
+&TABL ID = 'Steckler 62 kW_Fire', DATA = 1800, 62.9, 0.02, 0.09, 0, 0, 0, 0, 0 /

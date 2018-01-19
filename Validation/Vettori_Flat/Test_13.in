@@ -1,42 +1,112 @@
-VERSN,7,Vettori_Flat_Test_13
-!!
-!!Scenario Configuration Keywords
-!!
-TIMES,200,50,10,1
-EAMB,295.15,101325,0
-TAMB,295.15,101325,0,50
-!!
-!!Material Properties
-!!
-MATL,CONCRETE,1.75,1000,2200,0.15,0.94,"Concrete, Normal Weight (6 in)"
-MATL,GYP1/2,0.48,840,1440,0.012,0.9,Gypsum Board (1/2 in)
-!!
-!!Compartment keywords
-!!
-COMPA,Compartment 1,9.2,5.6,2.44,0,0,0,GYP1/2,CONCRETE,GYP1/2,50,50,50
-!!
-!!Vent keywords
-!!
-HVENT,2,1,1,0.91,2.1,0,1.6,2,0
-HVENT,2,1,2,0.91,0.025,0,1.6,2,1
-VVENT,2,1,1.5588,2,1
-!!
-!!Fire keywords
-!!
-!!Slow Growth 
-FIRE,1,4.6,1.5,0,1,TIME,0,0,0,0,Slow Growth 
-CHEMI,1,4,0,0,0,0.2,4.96E+07
-TIME,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,260,265,270,275,280,285,290,295,300,305,310,315,320,325,330,335,340,345,350,355,360,365,370
-HRR,0,6328.8,9493.2,12657.6,15822,20041.2,23205.6,26370,29534.4,32698.8,34808.4,41137.2,42192,49575.6,51685.2,55904.4,62233.2,65397.6,68562,74890.8,78055.2,80164.8,85438.8,86493.6,93877.2,97041.6,100206,105480,108644.4,111808.8,114973.2,121302,124466.4,129740.4,137124,143452.8,147672,155055.6,163494,170877.6,179316,186699.6,195138,203576.4,213069.6,221508,231001.2,239439.6,249987.6,258426,268974,278467.2,290070,299563.2,311166,320659.2,333316.8,343864.8,354412.8,367070.4,377618.4,390276,401878.8,414536.4,427194,439851.6,452509.2,466221.6,478879.2,491536.8,506304,520016.4,533728.8,547441.3,562208.4
-SOOT,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-CO,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-TRACE,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-AREA,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36,0.36
-HEIGH,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3,0.3
-!!
-!!Target and detector keywords
-!!
-DETECT,2,1,341.15,2.4,1.4,2.375,55,1,0
-DETECT,2,1,341.15,6.8,1.4,2.375,55,1,0
-DETECT,2,1,341.15,6.8,4.2,2.375,55,1,0
-DETECT,2,1,341.15,2.4,4.2,2.375,55,1,0
+&HEAD VERSION = 7300, TITLE = 'Vettori_Flat_Test_13' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 200 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 1 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 22 EXTERIOR_TEMPERATURE = 22 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)', 
+      CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
+&MATL ID = 'GYP1/2' MATERIAL = 'Gypsum Board (1/2 in)', 
+      CONDUCTIVITY = 0.48 DENSITY = 1440 SPECIFIC_HEAT = 0.84, THICKNESS = 0.012 EMISSIVITY = 0.9 /
+ 
+!! Comparments 
+&COMP ID = 'Compartment 1'
+      DEPTH = 5.6 HEIGHT = 2.44 WIDTH = 9.2 CEILING_MATL_ID = 'GYP1/2' WALL_MATL_ID = 'GYP1/2' FLOOR_MATL_ID = 'CONCRETE'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Devices
+&DEVC ID = 'Sprinkler_1' COMP_ID = 'Compartment 1' LOCATION = 2.4, 1.4, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
+&DEVC ID = 'Sprinkler_2' COMP_ID = 'Compartment 1' LOCATION = 6.8, 1.4, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
+&DEVC ID = 'Sprinkler_3' COMP_ID = 'Compartment 1' LOCATION = 6.8, 4.2, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
+&DEVC ID = 'Sprinkler_4' COMP_ID = 'Compartment 1' LOCATION = 2.4, 4.2, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'OUTSIDE', 'Compartment 1' TOP = 2.1, BOTTOM = 0, WIDTH = 0.91
+      CRITERION = 'TIME' T = 0, 0  F = 0, 0  FACE = 'RIGHT' OFFSET = 1.6 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'OUTSIDE', 'Compartment 1' TOP = 0.025, BOTTOM = 0, WIDTH = 0.91
+      FACE = 'RIGHT' OFFSET = 1.6 /
+ 
+!! Ceiling and Floor Vents 
+&VENT TYPE = 'CEILING' ID = 'CeilFloorVent_1' COMP_IDS = 'OUTSIDE', 'Compartment 1' AREA = 1.5588, SHAPE = 'SQUARE'  OFFSETS = 4.6, 2.8 /
+ 
+!! Fires 
+&FIRE ID = 'Slow Growth '  COMP_ID = 'Compartment 1', FIRE_ID = 'Slow Growth_Fire'  LOCATION = 4.6, 1.5 / 
+&CHEM ID = 'Slow Growth_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 49600 RADIATIVE_FRACTION = 0.2 / 
+&TABL ID = 'Slow Growth_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Slow Growth_Fire', DATA = 0, 0, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 5, 6.3288, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 10, 9.4932, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 15, 12.6576, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 20, 15.822, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 25, 20.0412, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 30, 23.2056, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 35, 26.37, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 40, 29.5344, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 45, 32.6988, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 50, 34.8084, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 55, 41.1372, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 60, 42.192, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 65, 49.5756, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 70, 51.6852, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 75, 55.9044, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 80, 62.2332, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 85, 65.3976, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 90, 68.562, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 95, 74.8908, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 100, 78.05521, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 105, 80.16479, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 110, 85.4388, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 115, 86.4936, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 120, 93.8772, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 125, 97.0416, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 130, 100.206, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 135, 105.48, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 140, 108.6444, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 145, 111.8088, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 150, 114.9732, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 155, 121.302, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 160, 124.4664, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 165, 129.7404, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 170, 137.124, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 175, 143.4528, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 180, 147.672, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 185, 155.0556, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 190, 163.494, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 195, 170.8776, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 200, 179.316, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 205, 186.6996, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 210, 195.138, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 215, 203.5764, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 220, 213.0696, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 225, 221.508, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 230, 231.0012, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 235, 239.4396, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 240, 249.9876, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 245, 258.426, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 250, 268.974, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 255, 278.4672, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 260, 290.07, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 265, 299.5632, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 270, 311.166, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 275, 320.6592, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 280, 333.3168, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 285, 343.8648, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 290, 354.4128, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 295, 367.0704, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 300, 377.6184, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 305, 390.276, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 310, 401.8788, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 315, 414.5364, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 320, 427.194, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 325, 439.8516, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 330, 452.5092, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 335, 466.2216, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 340, 478.8792, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 345, 491.5368, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 350, 506.304, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 355, 520.0164, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 360, 533.7288, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 365, 547.4413, 0.3, 0.36, 0, 0, 0, 0, 0 /
+&TABL ID = 'Slow Growth_Fire', DATA = 370, 562.2084, 0.3, 0.36, 0, 0, 0, 0, 0 /

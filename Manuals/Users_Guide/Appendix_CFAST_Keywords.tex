@@ -740,7 +740,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct F}\footnote{If included, both {\ct F} and {\ct T} are required.}          & Real Array       &                  &  \degc         &                 \\ \hline
 {\ct GAS\_TEMPERATURE}\footnote{If included, {\ct GAS\_TEMPERATURE}, {\ct PARTIAL\_PRESSURE\_H2O}, and {\ct PARTIAL\_PRESSURE\_CO} are all required.}             & Real   &                  &  \degc         &                 \\ \hline
-{\ct RADSOLVER}            & Character   &                  &           &                 \\ \hline
+{\ct RADSOLVER}\footnote{{\ct RADSOLVER}, if included, must be either {\ct DEFAULT} or {\ct RADNET}.}            & Selection List   &                  &           &  DEFAULT               \\ \hline
 {\ct PARTIAL\_PRESSURE\_H2O}             & Real   &                  &           &                 \\ \hline
 {\ct PARTIAL\_PRESSURE\_CO}             & Real   &                  &           &                 \\ \hline
 {\ct T}          & Real Array       &                  & s          &                 \\ \hline

@@ -27,11 +27,13 @@ addpath 'scripts'
 
 % Scripts that run prior to dataplot
 
+max_plume_temp
 
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
 Dataplot_Inputs_File = [pwd, '/CFAST_validation_dataplot_inputs.csv'];
 Working_Dir = [pwd, '/../../Validation/'];
+Experimental_Dir = [pwd, '/../../../exp/'];
 Manuals_Dir = [pwd, '/../../Manuals/Validation_Guide/'];
 Scatterplot_Inputs_File = [pwd, '/CFAST_validation_scatterplot_inputs.csv'];
 
@@ -46,7 +48,7 @@ Histogram_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/Sca
 NRC_Options = false;
 Append_To_Scatterplot_Title = '';
 
-[saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Working_Dir, Manuals_Dir);
+[saved_data,drange] = dataplot(Dataplot_Inputs_File, Experimental_Dir, Working_Dir, Manuals_Dir);
 scatplot(saved_data, drange, ...
          'Scatterplot_Inputs_File', Scatterplot_Inputs_File, ...
          'Manuals_Dir', Manuals_Dir, ...

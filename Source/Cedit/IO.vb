@@ -657,7 +657,6 @@ Module IO
         ReadInputFileNMLInit(NMList)
         ReadInputFileNMLMisc(NMList)
         ReadInputFileNMLMatl(NMList)
-        'ReadInputFileNMLRamp(NMList)
         ReadInputFileNMLComp(NMList)
         ReadInputFileNMLDevc(NMList)
         ReadInputFileNMLChem(NMList)
@@ -666,6 +665,7 @@ Module IO
         ReadInputFileNMLConn(NMList)
         ReadInputFileNMLISOF(NMList)
         ReadInputFileNMLSLCF(NMList)
+        ReadInputFileNMLDiag(NMList)
     End Sub
     Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile)
         Dim i, j As Integer
@@ -1923,6 +1923,69 @@ Module IO
             End If
         Next
 
+    End Sub
+    Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile)
+        Dim i, j, k, max As Integer
+        Dim f(0), t(0) As Single
+        Dim ppco, pph2o, gastemp As Single
+        Dim radsolv As String
+
+        f(0) = Environment.DefaultNonValue
+        t(0) = Environment.DefaultNonValue
+        myEnvironment.SetDiagF(f)
+        myEnvironment.SetDiagT(t)
+        myEnvironment.GasTemp = Environment.DefaultNonValue
+        myEnvironment.PartPressCO = Environment.DefaultNonValue
+        myEnvironment.PartPressH2O = Environment.DefaultNonValue
+        myEnvironment.RadSolver = ""
+        For i = 1 To NMList.TotNMList
+            If (NMList.GetNMListID(i) = "DIAG") Then
+                ReDim f(0), t(0)
+                f(0) = Environment.DefaultNonValue
+                t(0) = Environment.DefaultNonValue
+                ppco = Environment.DefaultNonValue
+                pph2o = Environment.DefaultNonValue
+                gastemp = Environment.DefaultNonValue
+                radsolv = ""
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If NMList.ForNMListGetVar(i, j) = "RADSOLVER" Then
+                        radsolv = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "GAS_TEMPERATURE" Then
+                        gastemp = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "PARTIAL_PRESSURE_H2O" Then
+                        pph2o = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "PARTIAL_PRESSURE_CO" Then
+                        ppco = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "T" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 Then
+                            ReDim t(max - 1)
+                            For k = 1 To max
+                                t(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In DIAG name list for T input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 1 Then
+                            ReDim f(max - 1)
+                            For k = 1 To max
+                                f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In DIAG name list for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                        End If
+                    End If
+                Next
+                myEnvironment.SetDiagF(f)
+                myEnvironment.SetDiagT(t)
+                myEnvironment.GasTemp = gastemp
+                myEnvironment.PartPressCO = ppco
+                myEnvironment.PartPressH2O = pph2o
+                myEnvironment.RadSolver = radsolv
+            End If
+        Next
     End Sub
     Public Sub ReadThermalProperties(ByVal FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
         'Simple read of only thermal properties from a file. 
@@ -3267,6 +3330,65 @@ Module IO
                 End If
                 aVisual.Changed = False
             Next
+        End If
+
+        'Writing Diagnostics 
+        Dim wrtDIAG As Boolean
+        Dim wrtSlash As Boolean
+        If myEnvironment.RadSolver = "" Then
+            wrtDIAG = True
+            wrtSlash = False
+        Else
+            wrtDIAG = False
+            wrtSlash = True
+            ln = "&DIAG  RADSOLVER = '" + myEnvironment.RadSolver + "' "
+            PrintLine(IO, ln)
+        End If
+        If myEnvironment.GasTemp <> Environment.DefaultNonValue Then
+            If wrtDIAG Then
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = "     "
+            End If
+            ln = ln + "GAS_TEMPERATURE = " + Math.Round(myEnvironment.GasTemp, 2).ToString
+            ln = ln + " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.PartPressH2O, 2).ToString
+            ln = ln + " PARTIAL_PRESSURE_CO = " + Math.Round(myEnvironment.PartPressCO, 2).ToString
+            Print(IO, ln)
+        End If
+        myEnvironment.GetDiagF(f)
+        myEnvironment.GetDiagT(x)
+        If f.GetUpperBound(0) = x.GetUpperBound(0) Then
+            Dim numpoints As Integer = f.GetUpperBound(0)
+            For i = 0 To numpoints
+                If f(i) = Environment.DefaultNonValue Or x(i) = Environment.DefaultNonValue Then
+                    numpoints = -1
+                End If
+            Next
+            If numpoints >= 0 Then
+                If wrtDIAG Then
+                    ln = "&DIAG "
+                    wrtDIAG = False
+                    wrtSlash = True
+                Else
+                    ln = "     "
+                End If
+                ln += " T = " + x(0).ToString
+                For k = 1 To numpoints
+                    ln += ", " + x(k).ToString
+                Next
+                PrintLine(IO, ln)
+                ln = "      F = " + f(0).ToString
+                For k = 1 To numpoints
+                    ln += ", " + f(k).ToString
+                Next
+                PrintLine(IO, ln)
+            End If
+        End If
+        If wrtSlash Then
+            ln = "/ "
+            PrintLine(IO, ln)
         End If
 
         FileClose(IO)

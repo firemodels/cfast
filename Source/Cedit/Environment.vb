@@ -3,6 +3,7 @@ Public Class Environment
     Public Const MinTemp As Single = 223.15          ' Minimum ambient temperature limit
     Public Const MaxTemp As Single = 373.15          ' Maximum ambient temperature limit
     Public Const DefaultLOI As Single = 0.15         ' Default limiting oxygen index. This needs to be consistent with CFAST
+    Public Const DefaultNonValue As Single = -1001.0
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aTitle As String                        ' Title for the simulation
@@ -29,10 +30,17 @@ Public Class Environment
     Private aAdiabaticWalls As Boolean               ' True if all walls are adiabatic
     Private HasErrors As Integer = 0                ' Temporary variable to indicate whether there are errors in the specification
     Private aChanged As Boolean = False             ' True if any values have changed
+    Private aF(0) As Single
+    Private aT(0) As Single
+    Private aGasTemp As Single
+    Private aPartPressH2O As Single
+    Private aPartPressCO As Single
+    Private aRadSolver As String
 
     Public Sub New()
         aTitle = "CFAST Simulation"
         aVersion = 7300
+
         aSimulationTime = 3600
         aOutputInterval = 60
         aSpreadsheetInterval = 15
@@ -51,6 +59,12 @@ Public Class Environment
         aIgnitionTemp = aIntAmbTemperature + 100.0
         aMaximumTimeStep = -1.0
         aAdiabaticWalls = False
+        aF(0) = DefaultNonValue
+        aT(0) = DefaultNonValue
+        aGasTemp = DefaultNonValue
+        aPartPressCO = DefaultNonValue
+        aPartPressH2O = DefaultNonValue
+        aRadSolver = ""
     End Sub
     Friend Property Title() As String
         Get
@@ -296,4 +310,116 @@ Public Class Environment
             aChanged = Value
         End Set
     End Property
+    Friend Property F(ByVal idx As Integer) As Single
+        Get
+            If idx >= 0 And idx <= aF.GetUpperBound(0) Then
+                Return aF(idx)
+            Else
+                Return DefaultNonValue
+            End If
+        End Get
+        Set(value As Single)
+            Dim i As Integer = aF.GetUpperBound(0)
+            If idx >= 0 And idx <= i Then
+                aF(idx) = value
+            ElseIf idx > i Then
+                Dim j As Integer
+                ReDim Preserve aF(idx)
+                For j = i + 1 To idx
+                    aF(j) = DefaultNonValue
+                Next
+                aF(idx) = value
+            End If
+        End Set
+    End Property
+    Friend Property T(ByVal idx As Integer) As Single
+        Get
+            If idx >= 0 And idx <= aT.GetUpperBound(0) Then
+                Return aT(idx)
+            Else
+                Return DefaultNonValue
+            End If
+        End Get
+        Set(value As Single)
+            Dim i As Integer = aT.GetUpperBound(0)
+            If idx >= 0 And idx <= i Then
+                aT(idx) = value
+            ElseIf idx > i Then
+                Dim j As Integer
+                ReDim Preserve aT(idx)
+                For j = i + 1 To idx
+                    aT(j) = DefaultNonValue
+                Next
+                aT(idx) = value
+            End If
+        End Set
+    End Property
+    Friend Property GasTemp As Single
+        Get
+            Return aGasTemp
+        End Get
+        Set(value As Single)
+            aGasTemp = value
+        End Set
+    End Property
+    Friend Property PartPressH2O As Single
+        Get
+            Return aPartPressH2O
+        End Get
+        Set(value As Single)
+            aPartPressH2O = value
+        End Set
+    End Property
+    Friend Property PartPressCO As Single
+        Get
+            Return aPartPressCO
+        End Get
+        Set(value As Single)
+            aPartPressCO = value
+        End Set
+    End Property
+    Friend Property RadSolver As String
+        Get
+            Return aRadSolver
+        End Get
+        Set(value As String)
+            aRadSolver = value
+        End Set
+    End Property
+    Friend Sub SetDiagF(ByVal F() As Single)
+        Dim i As Integer
+        If F.GetUpperBound(0) <> aF.GetUpperBound(0) Then
+            ReDim aF(F.GetUpperBound(0))
+        End If
+        For i = 0 To aF.GetUpperBound(0)
+            aF(i) = F(i)
+        Next
+    End Sub
+    Friend Sub SetDiagT(ByVal T() As Single)
+        Dim i As Integer
+        If T.GetUpperBound(0) <> aT.GetUpperBound(0) Then
+            ReDim aT(T.GetUpperBound(0))
+        End If
+        For i = 0 To aT.GetUpperBound(0)
+            aT(i) = T(i)
+        Next
+    End Sub
+    Friend Sub GetDiagF(ByRef F() As Single)
+        Dim i As Integer
+        If F.GetUpperBound(0) <> aF.GetUpperBound(0) Then
+            ReDim F(aF.GetUpperBound(0))
+        End If
+        For i = 0 To F.GetUpperBound(0)
+            F(i) = aF(i)
+        Next
+    End Sub
+    Friend Sub GetDiagT(ByRef T() As Single)
+        Dim i As Integer
+        If T.GetUpperBound(0) <> aT.GetUpperBound(0) Then
+            ReDim T(aT.GetUpperBound(0))
+        End If
+        For i = 0 To T.GetUpperBound(0)
+            T(i) = aT(i)
+        Next
+    End Sub
 End Class

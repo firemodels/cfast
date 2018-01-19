@@ -296,6 +296,8 @@ cd NIST_NRC_Corner_Effects
 call ..\cleancfast.bat
 echo NIST_NRC Corner effects Tests
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe corner_200_kW.in -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe corner_300_kW.in -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe corner_400_kW.in -V
 cd ..\
 if %1==NIST_NRC_Corner_Effects goto end
 :NIST_Vent_Study

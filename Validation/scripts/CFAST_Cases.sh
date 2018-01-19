@@ -180,6 +180,8 @@ $RUNCFAST -d NIST_NRC NIST_NRC_T18.in
 
 
 $RUNCFAST -d NIST_NRC_Corner_Effects corner_200_kW.in
+$RUNCFAST -d NIST_NRC_Corner_Effects corner_300_kW.in
+$RUNCFAST -d NIST_NRC_Corner_Effects corner_400_kW.in
 
 $RUNCFAST -d NIST_Vent_Study Test_1.in
 $RUNCFAST -d NIST_Vent_Study Test_2.in

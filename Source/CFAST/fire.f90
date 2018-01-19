@@ -844,11 +844,11 @@ module fire_routines
             xfx = min(fireptr%x_position, roomptr%cwidth-fireptr%x_position)
             xfy = min(fireptr%y_position, roomptr%cdepth-fireptr%y_position)
             xf = 1.0_eb
-            if (xfx<=mx_hsep.or.xfy<=mx_hsep) xf = 2.0_eb
-            if (xfx<=mx_hsep.and.xfy<=mx_hsep) xf = 4.0_eb
+            if (xfx<=sqrt(fireptr%firearea)/2.or.xfy<=sqrt(fireptr%firearea)/2) xf = 2.0_eb
+            if (xfx<=sqrt(fireptr%firearea)/2.and.xfy<=sqrt(fireptr%firearea)/2) xf = 4.0_eb
             qdot = xf*fireptr%qdot_actual
             chirad = fireptr%chirad
-            area = fireptr%firearea
+            area = xf*fireptr%firearea
             tu = roomptr%temp(u)
             tl = roomptr%temp(l)
             zfire = fireptr%z_position + fireptr%z_offset

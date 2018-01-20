@@ -39,21 +39,35 @@ Figures \ref{fig:HGL_Temperature_Scatter} and \ref{fig:HGL_Height_Scatter} shows
 \label{HGL Depth: Open Compartments}
 
 \begin{figure}
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Temperature_Natural_Ventilation} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Temperature_Forced_Ventilation} \\
-\multicolumn{2}{c}{\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Temperature_No_Ventilation}} \\
+\centering
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[height=4.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Temperature_Natural_Ventilation} \\
+\includegraphics[height=4.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Temperature_Forced_Ventilation} \\
 \end{tabular*}
-\caption{Overall comparison of Measured and Predicted HGL Temperature.} \label{fig:HGL_Temperature_Scatter}
+\caption[Summary, HGL temperature, natural and forced ventilation]
+{Summary, HGL temperature, natural and forced ventilation.}
+\label{fig:HGL_Temperature_Scatter}
 \end{figure}
 
+
 \begin{figure}
-\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-\multicolumn{2}{c}{\includegraphics[height=3.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Depth}} \\
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Depth_Open_Compartments} &
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Depth_Closed_Compartments}
+\centering
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[height=4.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Temperature_No_Ventilation}
 \end{tabular*}
-\caption{Overall comparison of Measured and Predicted HGL Height.} \label{fig:HGL_Height_Scatter}
+\caption[Summary, HGL temperature, unventilated compartments]
+{Summary, HGL temperature, unventilated compartments.}
+\label{fig:HGL_Temperature_Scatter}
+\end{figure}
+
+\begin{figure}\centering
+\begin{tabular*}{\textwidth}{c}
+\includegraphics[height=4.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Depth_Open_Compartments} \\
+\includegraphics[height=4.0in]{SCRIPT_FIGURES/ScatterPlots/HGL_Depth_Closed_Compartments}
+\end{tabular*}
+\caption[Summary, HGL depth]
+{Summary, HGL depth.}
+\label{fig:HGL_Height_Scatter}
 \end{figure}
 
 The two-zone assumption inherent in CFAST, modeled as a series of ordinary differential equations that describe mass and energy conservation of flows in a multiple-compartment structure typically provide prediction of gas layer temperature and layer height for the applications studied.

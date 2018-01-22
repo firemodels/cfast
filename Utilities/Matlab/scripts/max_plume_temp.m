@@ -25,8 +25,8 @@ casename{16} = 'cabinet_10';
 casename{17} = 'cabinet_11';
 casename{18} = 'cabinet_12';
 
-for j=1:3
-
+for j=1:8
+try
 M = importdata([outdir,casename{j},'_w.csv'],',',5);
 W = strsplit(M.textdata{1,1},',');%find the locations for all of the variable columns
 col = find(strncmpi(W,'TRGGAST',7))';
@@ -54,6 +54,10 @@ clear M
 clear W
 clear col
 clear t
-
+        catch
+            display(['Error: Problem with NIST/NRC Corner Test ', num2str(j), ...
+                '. File not found. Skipping case.'])
+            continue
+        end
 end
 

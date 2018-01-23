@@ -432,7 +432,7 @@ It is assumed that all the nitrogen and chlorine in the fuel are converted to HC
 \section{Adding Fires}
 \label{info:FIRE}
 \label{sec:fire_inputs}
-Fires in CFAST are defined in two parts, a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
+Fires in CFAST are defined in two parts: a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
 
 For a new fire instance, click on the {\bf Add New} button within the fire instance block of inputs.  For each fire instance, specify the following properties:
 \begin{description}
@@ -453,18 +453,6 @@ Once one or more fire instances have been created, a new fire definition can be 
 \item[Radiative Fraction] (default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
 \end{description}
 
-Time-varying inputs for the following quantities are specified in a spreadsheet format.
-\begin{description}
-\item[HRR]
-\item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
-\item[Area] (default units: m$^2$, default values: 0.3 m$^2$): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
-\item[CO Yield] (default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
-\item[Soot Yield] (default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
-\item[HCN Yield] (default value: 0 kg/kg): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
-\item[TS Yield] (default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate.
-\end{description}
-
-
 
 
 \section{Time-Dependent Properties}
@@ -473,9 +461,13 @@ Following is a list of fire properties that can be specified as a function of ti
 \begin{description}
 \item[Time] (default units: s, default values: none): Time from ignition.
 \item[HRR] (default units: kW, default values: none): Heat release rate of the fire.
+\item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
+\item[Area] (default units: m$^2$, default values: 0.3 m$^2$): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
+\item[CO Yield] (default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
+\item[Soot Yield] (default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
+\item[HCN Yield] (default value: 0 kg/kg): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
+\item[TS Yield] (default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate.
 \end{description}
-
-
 
 
 \section{Special Topic: t-Squared Fires}

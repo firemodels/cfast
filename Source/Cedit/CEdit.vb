@@ -2118,7 +2118,7 @@ Public Class CeditMain
         '
         'CompName
         '
-        Me.CompName.Location = New System.Drawing.Point(384, 16)
+        Me.CompName.Location = New System.Drawing.Point(418, 15)
         Me.CompName.Name = "CompName"
         Me.CompName.Size = New System.Drawing.Size(208, 20)
         Me.CompName.TabIndex = 307
@@ -2127,11 +2127,11 @@ Public Class CeditMain
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(264, 16)
+        Me.Label9.Location = New System.Drawing.Point(318, 19)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(103, 13)
+        Me.Label9.Size = New System.Drawing.Size(86, 13)
         Me.Label9.TabIndex = 29
-        Me.Label9.Text = "Compartment Name:"
+        Me.Label9.Text = "Compartment ID:"
         Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'GroupBox5
@@ -3839,11 +3839,11 @@ Public Class CeditMain
         'Label116
         '
         Me.Label116.AutoSize = True
-        Me.Label116.Location = New System.Drawing.Point(69, 38)
+        Me.Label116.Location = New System.Drawing.Point(86, 37)
         Me.Label116.Name = "Label116"
-        Me.Label116.Size = New System.Drawing.Size(38, 13)
+        Me.Label116.Size = New System.Drawing.Size(21, 13)
         Me.Label116.TabIndex = 810
-        Me.Label116.Text = "Name:"
+        Me.Label116.Text = "ID:"
         Me.Label116.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'GroupBox3
@@ -4612,11 +4612,11 @@ Public Class CeditMain
         'Label104
         '
         Me.Label104.AutoSize = True
-        Me.Label104.Location = New System.Drawing.Point(56, 47)
+        Me.Label104.Location = New System.Drawing.Point(103, 51)
         Me.Label104.Name = "Label104"
-        Me.Label104.Size = New System.Drawing.Size(66, 13)
+        Me.Label104.Size = New System.Drawing.Size(21, 13)
         Me.Label104.TabIndex = 15
-        Me.Label104.Text = "Short Name:"
+        Me.Label104.Text = "ID:"
         Me.Label104.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'ThermalShortName
@@ -5848,10 +5848,10 @@ Public Class CeditMain
         If CurrentFire >= 0 And myFireInstances.Count > 0 Then
             Dim aFire As New Fire, aFireInstance As New Fire, fireIndex As Integer
             aFireInstance = myFireInstances(CurrentFire)
-            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+            fireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             aFire = myFires(fireIndex)
             CopyFireData(aFire)
-            myFires(FireIndex) = aFire
+            myFires(fireIndex) = aFire
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub

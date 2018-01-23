@@ -143,7 +143,7 @@ At least one compartment must be specified in the input file.  There are no defa
 \label{Compartment_Geometry}Compartments in CFAST are most typically defined by a width, depth, and height.  If desired, compartments can be prescribed by the cross-sectional area of the compartment as a function of height from floor to ceiling for other shapes. The absolute position of the compartment with respect to a single structure reference point can be defined to ease visualization or to allow exact placement of vents and surfaces relative to other compartments in a detailed calculation. This specification is important for positioning the compartments for visualization in Smokeview.
 
 \begin{description}
-\item[Compartment Name:] Compartments are identified by a unique alphanumeric name.  This may be as simple as a single character or number, or a description of the compartment.
+\item[Compartment ID:] Compartments are identified by a unique alphanumeric name.  This may be as simple as a single character or number, or a description of the compartment.
 \end{description}
 
 
@@ -428,34 +428,40 @@ It is assumed that all the nitrogen and chlorine in the fuel are converted to HC
 \end{center}
 \end{figure}
 
-Two inputs on the Fire Tab are global, that is, they apply to all fires included in a simulation.
-\begin{description}
-\item[Lower Oxygen Limit] (default units: \%, default value: 10~\%):  In the CFAST model, a limit is incorporated by limiting the burning rate as the oxygen level decreases until a ``lower oxygen limit'' (LOL) is reached. The lower oxygen limit is incorporated through a smooth decrease in the burning rate near the limit. Normally, this value would not be changed by the user.
-\item[Gaseous Ignition Temperature] (default units: \degc, default value: ambient temperature plus 100 K): The lower temperature limit for burning unburned fuel gas generated in an oxygen-depleted compartment.
-\end{description}
-
-
-
 
 \section{Adding Fires}
 \label{info:FIRE}
 \label{sec:fire_inputs}
-Fires are added to the simulation by clicking on the {\bf Add New} or {\bf Add t$^2$} button. The latter is useful because it has predefined quadratic growth rate options that are commonly used in fire analyses. See Section~\ref{tsq} for details. You may also {\bf Duplicate} a listed fire, or select a fire {\bf From File} of an existing case. For each fire, specify the following properties:
+Fires in CFAST are defined in two parts, a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
+
+For a new fire instance, click on the {\bf Add New} button within the fire instance block of inputs.  For each fire instance, specify the following properties:
 \begin{description}
-\item[Name] The selected name must be unique (i.e., not the same as another fire in the same simulation).
+\item[ID] The selected name must be unique (i.e., not the same as another fire instance in the same simulation).
 \item[Compartment] Name of the compartment where the fire occurs.
-\item[C, H, O, N, Cl] The number of each atom in the fuel molecule. Burning fuels in CFAST are assumed to be hydrocarbon fuels that contain at least carbon and hydrogen and optionally oxygen, nitrogen, and chlorine. All of the specified nitrogen and chlorine is assumed to completely react to form HCN and HCl.
-\item[Heat of Combustion] (default value: 50000 kJ/kg): The energy released per unit mass of fuel consumed.
-\item[Soot Yield] (default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
-\item[CO Yield] (default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
-\item[TS Yield] (default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate.
-\item[Radiative Fraction] (default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
-\item[Position X, Y, Z] (default units: m, default value: compartment center): Position of the center of the base of the fire relative to the front lower left corner of the compartment.
-\item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
-\item[Area] (default units: m$^2$, default values: 0.3 m$^2$): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
+\item[Position X, Y] (default units: m, default value: compartment center): Position of the center of the base of the fire relative to the front left corner of the compartment.
 \item[Ignition Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
 \item[Set Point] The critical value at which ignition will occur. If it is less than or equal to zero, the default value of zero is taken.
 \item[Ignition Target] User-specified target used to calculate surface temperature or incident heat flux to ignite fire. Target is typically placed at the base of the fire to be ignited.
+\item[Referenced Fire] the name of the associated fire definition for this fire instance can be selected from a list of fire definitions. A fire definition must exist before it can be selected.
+\end{description}
+
+Once one or more fire instances have been created, a new fire definition can be created by clicking on the {\bf Add New} or {\bf Add t$^2$} buttons within the fire definition block of inputs. The latter is useful because it has predefined quadratic growth rate options that are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire definition, specify the following parameters.
+\begin{description}
+\item[ID] The selected name must be unique (i.e., not the same as another fire definition in the same simulation). IDs for fire definitions can be the same as ones for fire instances.
+\item[C, H, O, N, Cl] The number of each atom in the fuel molecule. Burning fuels in CFAST are assumed to be hydrocarbon fuels that contain at least carbon and hydrogen and optionally oxygen, nitrogen, and chlorine. All of the specified nitrogen and chlorine is assumed to completely react to form HCN and HCl.
+\item[Heat of Combustion] (default value: 50000 kJ/kg): The energy released per unit mass of fuel consumed.
+\item[Radiative Fraction] (default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
+\end{description}
+
+Time-varying inputs for the following quantities are specified in a spreadsheet format.
+\begin{description}
+\item[HRR]
+\item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
+\item[Area] (default units: m$^2$, default values: 0.3 m$^2$): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
+\item[CO Yield] (default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
+\item[Soot Yield] (default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
+\item[HCN Yield] (default value: 0 kg/kg): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
+\item[TS Yield] (default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate.
 \end{description}
 
 
@@ -516,7 +522,7 @@ A target is any object in the simulation that can heat up via radiative and conv
 \end{figure}
 
 \begin{description}
-\item[Name] The selected name must be unique (i.e., not the same as another target in the same simulation).
+\item[ID] The selected name must be unique (i.e., not the same as another target in the same simulation).
 \item[Compartment] The compartment in which the target is located.
 \item[Target Type] Specify Plate, or Cylindrical.  For plate targets, CFAST solves a partial differential equation in cartesian coordinates, and for cylindrical targets, a partial differential equation in cylindrical coordinates.
 \item[Width (X)] (default units: m): Distance from the left wall of the target compartment.

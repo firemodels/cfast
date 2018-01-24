@@ -652,22 +652,22 @@ Module IO
         'Filename is assumed to be the complete path plus name and extenstion
         Dim NMList As NameListFile
         NMList = New NameListFile(Filename)
-        ReadInputFileNMLHead(NMList)
-        ReadInputFileNMLTime(NMList)
-        ReadInputFileNMLInit(NMList)
-        ReadInputFileNMLMisc(NMList)
-        ReadInputFileNMLMatl(NMList)
-        ReadInputFileNMLComp(NMList)
-        ReadInputFileNMLDevc(NMList)
-        ReadInputFileNMLChem(NMList)
-        ReadInputFileNMLFire(NMList)
-        ReadInputFileNMLVent(NMList)
-        ReadInputFileNMLConn(NMList)
-        ReadInputFileNMLISOF(NMList)
-        ReadInputFileNMLSLCF(NMList)
-        ReadInputFileNMLDiag(NMList)
+        ReadInputFileNMLHead(NMList, myEnvironment)
+        ReadInputFileNMLTime(NMList, myEnvironment)
+        ReadInputFileNMLInit(NMList, myEnvironment)
+        ReadInputFileNMLMisc(NMList, myEnvironment)
+        ReadInputFileNMLMatl(NMList, myThermalProperties)
+        ReadInputFileNMLComp(NMList, myCompartments)
+        ReadInputFileNMLDevc(NMList, myDetectors)
+        ReadInputFileNMLChem(NMList, myFires)
+        ReadInputFileNMLFire(NMList, myFireInstances)
+        ReadInputFileNMLVent(NMList, myHVents, myMVents, myVVents)
+        ReadInputFileNMLConn(NMList, myHHeats, myVHeats)
+        ReadInputFileNMLISOF(NMList, myVisuals)
+        ReadInputFileNMLSLCF(NMList, myVisuals)
+        ReadInputFileNMLDiag(NMList, myEnvironment)
     End Sub
-    Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
         Dim ver As Integer
         Dim title As String
@@ -687,11 +687,11 @@ Module IO
                 Next
             End If
         Next
-        myEnvironment.Title = title
-        myEnvironment.Version = ver
-        myEnvironment.Changed = False
+        someEnvironment.Title = title
+        someEnvironment.Version = ver
+        someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLTime(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLTime(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
         Dim print, sim, smoke, ss As Integer
 
@@ -716,13 +716,13 @@ Module IO
                 Next
             End If
         Next
-        myEnvironment.OutputInterval = print
-        myEnvironment.SimulationTime = sim
-        myEnvironment.SmokeviewInterval = smoke
-        myEnvironment.SpreadsheetInterval = ss
-        myEnvironment.Changed = False
+        someEnvironment.OutputInterval = print
+        someEnvironment.SimulationTime = sim
+        someEnvironment.SmokeviewInterval = smoke
+        someEnvironment.SpreadsheetInterval = ss
+        someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLInit(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLInit(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
         Dim pressure, rh, intemp, extemp As Single
 
@@ -747,13 +747,13 @@ Module IO
                 Next
             End If
         Next
-        myEnvironment.IntAmbTemperature = intemp + 273.15
-        myEnvironment.ExtAmbTemperature = extemp + 273.15
-        myEnvironment.ExtAmbPressure = pressure
-        myEnvironment.IntAmbRH = rh
-        myEnvironment.Changed = False
+        someEnvironment.IntAmbTemperature = intemp + 273.15
+        someEnvironment.ExtAmbTemperature = extemp + 273.15
+        someEnvironment.ExtAmbPressure = pressure
+        someEnvironment.IntAmbRH = rh
+        someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
         Dim adiabatic As Boolean
         Dim maxts, loxyl As Single
@@ -783,12 +783,12 @@ Module IO
             End If
         Next
 
-        myEnvironment.AdiabaticWalls = adiabatic
-        myEnvironment.MaximumTimeStep = maxts
-        myEnvironment.LowerOxygenLimit = loxyl
-        myEnvironment.Changed = False
+        someEnvironment.AdiabaticWalls = adiabatic
+        someEnvironment.MaximumTimeStep = maxts
+        someEnvironment.LowerOxygenLimit = loxyl
+        someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile, ByRef someThermalProperties As ThermalPropertiesCollection)
         Dim i, j As Integer
         Dim conduct, dens, emiss, spech, thick As Single
         Dim id, matl As String
@@ -833,34 +833,33 @@ Module IO
                 If id = "" Then valid = False
                 If valid Then
                     If matl = "" Then matl = id
-                    If myThermalProperties.Count > 0 Then
-                        iProp = myThermalProperties.GetIndex(id)
+                    If someThermalProperties.Count > 0 Then
+                        iProp = someThermalProperties.GetIndex(id)
                         If iProp >= 0 Then
                             ' We already have a thermal property with this name.  If it's totally identical, then it's already been added.  If not, they are trying to add a second one with the same name.  We'll allow it but error checking with flag it as an issue.
                             Dim aProperty As New ThermalProperty
-                            aProperty = myThermalProperties.Item(iProp)
+                            aProperty = someThermalProperties.Item(iProp)
                             If aProperty.Name = matl And aProperty.Conductivity = conduct And aProperty.SpecificHeat = spech And aProperty.Density = dens _
                                 And aProperty.Thickness = thick And aProperty.Emissivity = emiss Then
                                 'logic needs to be reworked
                             Else
-                                myThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
-                                myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
-                                myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                                someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
+                                someThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                                someThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
                             End If
                         Else
-                            myThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
-                            myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
-                            myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                            someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
+                            someThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                            someThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
                         End If
                     Else
-                        myThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
-                        myThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
-                        myThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                        someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
+                        someThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
+                        someThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
                     End If
                 End If
             End If
         Next
-        Dim test As Integer = myThermalProperties.Count
 
     End Sub
     Private Sub ReadInputFileNMLRamp(ByVal NMList As NameListFile)
@@ -951,7 +950,7 @@ Module IO
         Dim test As Integer = myRamps.Count
 
     End Sub
-    Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
         Dim ceilid, wallid, floorid, rampid, id As String
         Dim depth, height, width As Single
@@ -985,8 +984,6 @@ Module IO
                         floorid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "WALL_MATL_ID") Then
                         wallid = NMList.ForNMListVarGetStr(i, j, 1)
-                        'ElseIf (NMList.ForNMListGetVar(i, j) = "ROOM_AREA_RAMP") Then
-                        'rampid = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "HALL") Then
                         If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
                             hall = True
@@ -1050,7 +1047,7 @@ Module IO
                 If height <= 0 Then valid = False
                 If valid Then
                     Dim aComp As New Compartment
-                    myCompartments.Add(aComp)
+                    someCompartments.Add(aComp)
                     aComp.Name = id
                     aComp.SetSize(width, depth, height)
                     If myThermalProperties.GetIndex(ceilid) < 0 And ceilid <> "OFF" Then
@@ -1076,17 +1073,6 @@ Module IO
                     If shaft Then
                         aComp.Shaft = True
                     End If
-                    'If rampid <> "" Then
-                    'If myRamps.GetRampIndex(rampid) >= 0 Then
-                    'If myRamps.Item(myRamps.GetRampIndex(rampid)).Type = Ramp.TypeArea Then
-                    'compa.AreaRampID = rampid
-                    'Else
-                    '   myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not type AREA", ErrorMessages.TypeWarning)
-                    'End If
-                    'Else
-                    'myErrors.Add("In COMP name list " + id + " ROOM_AREA_RAMP " + rampid + " is not a valid ramp id", ErrorMessages.TypeWarning)
-                    'End If
-                    'End If
                     aComp.Changed = False
                 Else
                     myErrors.Add("In COMP name list " + id + " is not fully defined", ErrorMessages.TypeWarning)
@@ -1096,7 +1082,7 @@ Module IO
         Dim test As Integer = myCompartments.Count
 
     End Sub
-    Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile, ByRef someDetectors As TargetCollection)
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type As String
         Dim tempdepth, rti, setp, sprayd As Single
@@ -1238,10 +1224,9 @@ Module IO
                 End If
             End If
         Next
-        Dim test As Integer = myTargets.Count
 
     End Sub
-    Private Sub ReadInputFileNMLFire(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLFire(ByVal NMList As NameListFile, ByRef someFireInstances As FireCollection)
         Dim i, j, k, max As Integer
         Dim compid, id, devcid, ignitcrit, fireid As String
         Dim setp As Single
@@ -1286,7 +1271,7 @@ Module IO
                 Next
                 Dim aFire As New Fire()
                 aFire.ObjectType = Fire.TypeInstance
-                myFireInstances.Add(aFire)
+                someFireInstances.Add(aFire)
                 aFire.Name = id
                 aFire.Compartment = myCompartments.GetCompIndex(compid)
                 If ignitcrit = "TIME" Then
@@ -1308,7 +1293,7 @@ Module IO
             End If
         Next
     End Sub
-    Private Sub ReadInputFileNMLChem(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLChem(ByVal NMList As NameListFile, ByRef someFires As FireCollection)
         Dim i, j As Integer
         Dim id As String
         Dim carbon, chlorine, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
@@ -1454,7 +1439,7 @@ Module IO
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLVent(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLVent(ByVal NMList As NameListFile, ByRef someHVents As VentCollection, ByRef someMVents As VentCollection, ByRef someVVents As VentCollection)
         Dim i, j, k, max As Integer
         Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width, setp, prefrac, postfrac, filttime, filteff As Single
         Dim tt(0), ff(0) As Single
@@ -1669,7 +1654,7 @@ Module IO
                             aVent.FinalOpening = postfrac
                         End If
                         aVent.Changed = False
-                        myHVents.Add(aVent)
+                        someHVents.Add(aVent)
                     ElseIf type = "MECHANICAL" Then
                         aVent.VentType = Vent.TypeMVent
                         aVent.Name = id
@@ -1722,7 +1707,7 @@ Module IO
                             aVent.FinalOpening = postfrac
                         End If
                         aVent.Changed = False
-                        myMVents.Add(aVent)
+                        someMVents.Add(aVent)
                     ElseIf type = "CEILING" Or type = "FLOOR" Then
                         aVent.VentType = Vent.TypeVVent
                         aVent.Name = id
@@ -1762,7 +1747,7 @@ Module IO
                             aVent.FinalOpening = postfrac
                         End If
                         aVent.Changed = False
-                        myVVents.Add(aVent)
+                        someVVents.Add(aVent)
                     End If
                 Else
                     myErrors.Add("In VENT name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
@@ -1770,7 +1755,7 @@ Module IO
             End If
         Next
     End Sub
-    Private Sub ReadInputFileNMLConn(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLConn(ByVal NMList As NameListFile, ByRef someHHeats As VentCollection, ByRef someVHeats As VentCollection)
         Dim i, j, k, max, cFirst, cSecond As Integer
         Dim compid, compids(1), type As String
         Dim f(1) As Single
@@ -1820,7 +1805,7 @@ Module IO
                         Dim aHeat As New Vent
                         aHeat.SetVent(cFirst, cSecond, f(k))
                         aHeat.Changed = False
-                        myHHeats.Add(aHeat)
+                        someHHeats.Add(aHeat)
                     Next
                 Else
                     If compid = "OUTSIDE" Then
@@ -1836,13 +1821,13 @@ Module IO
                     Dim aHeat As New Vent
                     aHeat.SetVent(cFirst, cSecond)
                     aHeat.Changed = False
-                    myVHeats.Add(aHeat)
+                    someVHeats.Add(aHeat)
                 End If
             End If
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLISOF(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLISOF(ByVal NMList As NameListFile, ByRef someVisuals As VisualCollection)
         Dim i, j As Integer
         Dim compid As String
         Dim value As Single
@@ -1870,12 +1855,12 @@ Module IO
                 End If
                 aVisual.Value = value + aTempOffset
                 aVisual.Changed = False
-                myVisuals.Add(aVisual)
+                someVisuals.Add(aVisual)
             End If
         Next
 
     End Sub
-    Private Sub ReadInputFileNMLSLCF(ByVal NMList As NameListFile)
+    Private Sub ReadInputFileNMLSLCF(ByVal NMList As NameListFile, ByRef someVisuals As VisualCollection)
         Dim i, j As Integer
         Dim compid, domain, plane As String
         Dim pos As Single
@@ -1919,12 +1904,12 @@ Module IO
                     aVisual.Type = Visual.ThreeD
                 End If
                 aVisual.Changed = False
-                myVisuals.Add(aVisual)
+                someVisuals.Add(aVisual)
             End If
         Next
 
     End Sub
-    Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile)
+    Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, k, max As Integer
         Dim f(0), t(0) As Single
         Dim ppco, pph2o, gastemp As Single
@@ -1932,12 +1917,12 @@ Module IO
 
         f(0) = Environment.DefaultNonValue
         t(0) = Environment.DefaultNonValue
-        myEnvironment.SetDiagF(f)
-        myEnvironment.SetDiagT(t)
-        myEnvironment.GasTemp = Environment.DefaultNonValue
-        myEnvironment.PartPressCO = Environment.DefaultNonValue
-        myEnvironment.PartPressH2O = Environment.DefaultNonValue
-        myEnvironment.RadSolver = ""
+        someEnvironment.SetDiagF(f)
+        someEnvironment.SetDiagT(t)
+        someEnvironment.GasTemp = Environment.DefaultNonValue
+        someEnvironment.PartPressCO = Environment.DefaultNonValue
+        someEnvironment.PartPressH2O = Environment.DefaultNonValue
+        someEnvironment.RadSolver = ""
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DIAG") Then
                 ReDim f(0), t(0)
@@ -1978,12 +1963,12 @@ Module IO
                         End If
                     End If
                 Next
-                myEnvironment.SetDiagF(f)
-                myEnvironment.SetDiagT(t)
-                myEnvironment.GasTemp = gastemp
-                myEnvironment.PartPressCO = ppco
-                myEnvironment.PartPressH2O = pph2o
-                myEnvironment.RadSolver = radsolv
+                someEnvironment.SetDiagF(f)
+                someEnvironment.SetDiagT(t)
+                someEnvironment.GasTemp = gastemp
+                someEnvironment.PartPressCO = ppco
+                someEnvironment.PartPressH2O = pph2o
+                someEnvironment.RadSolver = radsolv
             End If
         Next
     End Sub

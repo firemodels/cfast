@@ -3,7 +3,7 @@ Public Class Environment
     Public Const MinTemp As Single = 223.15          ' Minimum ambient temperature limit
     Public Const MaxTemp As Single = 373.15          ' Maximum ambient temperature limit
     Public Const DefaultLOI As Single = 0.15         ' Default limiting oxygen index. This needs to be consistent with CFAST
-    Public Const DefaultNonValue As Single = -1001.0
+    Public Const DefaultNonValue As Single = -1001.0 ' Default non value
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aTitle As String                        ' Title for the simulation

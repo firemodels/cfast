@@ -8,16 +8,15 @@ Module IO
 
         FileOpen(IO, Filename, OpenMode.Input, OpenAccess.Read, OpenShare.Shared)
         str = LineInput(IO)
+        FileClose(IO)
         If str.Substring(0, 1) = "&" Then
-            FileClose(IO)
             ReadInputFileNML(Filename)
         ElseIf str.Substring(0, 5) = "VERSN" Then
-            FileClose(IO)
             ReadInputFileCSV(Filename)
         End If
     End Sub
     Private Sub ReadInputFileCSV(ByVal Filename As String)
-        'Read in a *.in file Filename is to include path as well as file name
+        'Read in a *.in file with the CSV format. Filename is to include path as well as file name
         Dim csv As New CSVsheet(Filename)
         Dim i As Integer = 1, j As Integer
         Dim NewFileFormat As Boolean = False
@@ -46,7 +45,7 @@ Module IO
         End If
 
         ' Get thermal properties from the input file
-        FindThermalProperties(csv, myThermalProperties)
+        FindThermalProperties(Filename, myThermalProperties)
 
         ' Define compartments with appropriate thermal properties
         i = 1
@@ -651,6 +650,9 @@ Module IO
     Private Sub ReadInputFileNML(ByVal Filename As String)
         'Filename is assumed to be the complete path plus name and extenstion
         Dim NMList As NameListFile
+
+        myErrors.Break(Filename)
+
         NMList = New NameListFile(Filename)
         ReadInputFileNMLHead(NMList, myEnvironment)
         ReadInputFileNMLTime(NMList, myEnvironment)
@@ -844,18 +846,18 @@ Module IO
                                 'logic needs to be reworked
                             Else
                                 someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
-                                someThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
-                                someThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                                someThermalProperties.Item(someThermalProperties.Count - 1).SetHCl(hcl)
+                                someThermalProperties.Item(someThermalProperties.Count - 1).Changed = False
                             End If
                         Else
                             someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
-                            someThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
-                            someThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                            someThermalProperties.Item(someThermalProperties.Count - 1).SetHCl(hcl)
+                            someThermalProperties.Item(someThermalProperties.Count - 1).Changed = False
                         End If
                     Else
                         someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
-                        someThermalProperties.Item(myThermalProperties.Count - 1).SetHCl(hcl)
-                        someThermalProperties.Item(myThermalProperties.Count - 1).Changed = False
+                        someThermalProperties.Item(someThermalProperties.Count - 1).SetHCl(hcl)
+                        someThermalProperties.Item(someThermalProperties.Count - 1).Changed = False
                     End If
                 End If
             End If
@@ -1350,7 +1352,7 @@ Module IO
                     ReadInputFileNMLTabl(NMList, id, aFireCurves, valid)
                     aFireObject.SetFireData(aFireCurves)
                     aFireObject.Changed = False
-                    myFires.Add(aFireObject)
+                    someFires.Add(aFireObject)
                 Else
                     myErrors.Add("In FIRE name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
@@ -1974,12 +1976,31 @@ Module IO
     End Sub
     Public Sub ReadThermalProperties(ByVal FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
         'Simple read of only thermal properties from a file. 
-        Dim csv As New CSVsheet(FileName)
-        FindThermalProperties(csv, SomeThermalProperties)
+        FindThermalProperties(FileName, SomeThermalProperties)
         SomeThermalProperties.FileName = FileName
         SomeThermalProperties.FileChanged = False
     End Sub
-    Public Sub FindThermalProperties(ByVal csv As CSVsheet, ByRef SomeThermalProperties As ThermalPropertiesCollection)
+    Public Sub FindThermalProperties(ByVal Filename As String, ByRef SomeThermalProperties As ThermalPropertiesCollection)
+        Dim IO As Integer = 1
+        Dim str As String
+
+        If File.Exists(Filename) Then
+            FileOpen(IO, Filename, OpenMode.Input, OpenAccess.Read, OpenShare.Shared)
+            str = LineInput(IO)
+            FileClose(IO)
+            If str.Substring(0, 1) = "&" Then
+                FindThermalPropertiesNML(Filename, SomeThermalProperties)
+            ElseIf str.Substring(0, 5) = "VERSN" Then
+                Dim csv As New CSVsheet(Filename)
+                FindThermalPropertiesCSV(csv, SomeThermalProperties)
+            End If
+        End If
+    End Sub
+    Public Sub FindThermalPropertiesNML(ByVal Filename As String, ByRef SomeThermalProperties As ThermalPropertiesCollection)
+        Dim NMList As New NameListFile(Filename)
+        ReadInputFileNMLMatl(NMList, SomeThermalProperties)
+    End Sub
+    Public Sub FindThermalPropertiesCSV(ByVal csv As CSVsheet, ByRef SomeThermalProperties As ThermalPropertiesCollection)
         Dim i As Integer
         ' do material properties so they are defined for compartments, fires, and targets
         Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
@@ -2014,10 +2035,10 @@ Module IO
         Loop
         myUnits.SI = False
     End Sub
-    Public Sub FindaThermalProperty(ByVal csv As CSVsheet, ByVal Material As String, ByRef aThermalPropery As ThermalProperty)
+    Public Sub FindaThermalProperty(ByVal Filename As String, ByVal Material As String, ByRef aThermalPropery As ThermalProperty)
         ' look for a specific material in the current spreadsheet
         Dim SomeThermalProperties As New ThermalPropertiesCollection, aMaterial As New ThermalProperty, index As Integer
-        FindThermalProperties(csv, SomeThermalProperties)
+        FindThermalProperties(Filename, SomeThermalProperties)
         If SomeThermalProperties.Count > 0 Then
             index = SomeThermalProperties.GetIndex(Material)
             If index >= 0 Then
@@ -2030,7 +2051,7 @@ Module IO
     Private Sub readFires(ByVal Filename As String, FileType As Integer)
         Dim csv As New CSVsheet(Filename), i As Integer
         If csv.MaxRow > 0 Then
-            FindFires(FileType, csv)
+            FindFires(FileType, Filename)
             If TempFires.Count > 0 Then
                 For i = 1 To TempFires.Count
                     Dim aFire As New Fire
@@ -2040,8 +2061,32 @@ Module IO
             End If
         End If
     End Sub
-    Public Sub FindFires(ByVal FileType As Integer, ByVal csv As CSVsheet)
+    Public Sub FindFires(ByVal FileType As Integer, ByVal Filename As String)
+        If FileType = InsertDataType.ObjectFile Then
+            FindFiresCSV(FileType, Filename)
+        Else
+            Dim IO As Integer = 1
+            Dim str As String
+            If File.Exists(Filename) Then
+                FileOpen(IO, Filename, OpenMode.Input, OpenAccess.Read, OpenShare.Shared)
+                str = LineInput(IO)
+                FileClose(IO)
+                If str.Substring(0, 1) = "&" Then
+                    FindFiresNML(FileType, Filename)
+                ElseIf str.Substring(0, 5) = "VERSN" Then
+                    FindFiresCSV(FileType, Filename)
+                End If
+            End If
+        End If
+    End Sub
+    Public Sub FindFiresNML(ByVal FileType As Integer, ByVal Filename As String)
+        Dim NMList As New NameListFile(Filename)
+
+        ReadInputFileNMLChem(NMList, TempFires)
+    End Sub
+    Public Sub FindFiresCSV(ByVal FileType As Integer, ByVal Filename As String)
         'simple read of a fire object file
+        Dim csv As New CSVsheet(Filename)
         Dim fireComments As New Collection
         Dim i, j, k, iStart, index As Integer
         Dim rowidx(csv.MaxRow) As Integer

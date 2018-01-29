@@ -1450,7 +1450,7 @@ Public Class CeditMain
         '
         'HVentName
         '
-        Me.HVentName.Location = New System.Drawing.Point(344, 29)
+        Me.HVentName.Location = New System.Drawing.Point(332, 29)
         Me.HVentName.Name = "HVentName"
         Me.HVentName.Size = New System.Drawing.Size(208, 20)
         Me.HVentName.TabIndex = 752
@@ -1459,11 +1459,11 @@ Public Class CeditMain
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(292, 32)
+        Me.Label6.Location = New System.Drawing.Point(305, 32)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(46, 13)
+        Me.Label6.Size = New System.Drawing.Size(21, 13)
         Me.Label6.TabIndex = 751
-        Me.Label6.Text = "Vent ID:"
+        Me.Label6.Text = "ID:"
         Me.Label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'HVentFinalLabel
@@ -1833,7 +1833,7 @@ Public Class CeditMain
         '
         'VVentName
         '
-        Me.VVentName.Location = New System.Drawing.Point(317, 33)
+        Me.VVentName.Location = New System.Drawing.Point(274, 33)
         Me.VVentName.Name = "VVentName"
         Me.VVentName.Size = New System.Drawing.Size(208, 20)
         Me.VVentName.TabIndex = 754
@@ -1842,11 +1842,11 @@ Public Class CeditMain
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(203, 36)
+        Me.Label8.Location = New System.Drawing.Point(247, 36)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(108, 13)
+        Me.Label8.Size = New System.Drawing.Size(21, 13)
         Me.Label8.TabIndex = 753
-        Me.Label8.Text = "Ceiling/Floor Vent ID:"
+        Me.Label8.Text = "ID:"
         Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'VVentFinalLabel
@@ -2174,7 +2174,7 @@ Public Class CeditMain
         '
         'CompName
         '
-        Me.CompName.Location = New System.Drawing.Point(418, 15)
+        Me.CompName.Location = New System.Drawing.Point(382, 15)
         Me.CompName.Name = "CompName"
         Me.CompName.Size = New System.Drawing.Size(208, 20)
         Me.CompName.TabIndex = 307
@@ -2183,11 +2183,11 @@ Public Class CeditMain
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(318, 19)
+        Me.Label9.Location = New System.Drawing.Point(355, 18)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(86, 13)
+        Me.Label9.Size = New System.Drawing.Size(21, 13)
         Me.Label9.TabIndex = 29
-        Me.Label9.Text = "Compartment ID:"
+        Me.Label9.Text = "ID:"
         Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'GroupBox5
@@ -2690,7 +2690,7 @@ Public Class CeditMain
         '
         'MVentName
         '
-        Me.MVentName.Location = New System.Drawing.Point(313, 18)
+        Me.MVentName.Location = New System.Drawing.Point(270, 18)
         Me.MVentName.Name = "MVentName"
         Me.MVentName.Size = New System.Drawing.Size(208, 20)
         Me.MVentName.TabIndex = 756
@@ -2699,11 +2699,11 @@ Public Class CeditMain
         'Label24
         '
         Me.Label24.AutoSize = True
-        Me.Label24.Location = New System.Drawing.Point(199, 21)
+        Me.Label24.Location = New System.Drawing.Point(243, 21)
         Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(104, 13)
+        Me.Label24.Size = New System.Drawing.Size(21, 13)
         Me.Label24.TabIndex = 755
-        Me.Label24.Text = "Mechanical Vent ID:"
+        Me.Label24.Text = "ID:"
         Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'MventFinalLabel
@@ -3643,7 +3643,7 @@ Public Class CeditMain
         '
         'DetectorName
         '
-        Me.DetectorName.Location = New System.Drawing.Point(362, 19)
+        Me.DetectorName.Location = New System.Drawing.Point(319, 19)
         Me.DetectorName.Name = "DetectorName"
         Me.DetectorName.Size = New System.Drawing.Size(208, 20)
         Me.DetectorName.TabIndex = 918
@@ -3652,11 +3652,11 @@ Public Class CeditMain
         'Label67
         '
         Me.Label67.AutoSize = True
-        Me.Label67.Location = New System.Drawing.Point(219, 22)
+        Me.Label67.Location = New System.Drawing.Point(292, 22)
         Me.Label67.Name = "Label67"
-        Me.Label67.Size = New System.Drawing.Size(133, 13)
+        Me.Label67.Size = New System.Drawing.Size(21, 13)
         Me.Label67.TabIndex = 917
-        Me.Label67.Text = "Detection/Suppression ID:"
+        Me.Label67.Text = "ID:"
         Me.Label67.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'DetectorActivationObscuration

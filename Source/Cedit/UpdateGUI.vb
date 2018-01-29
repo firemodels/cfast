@@ -380,6 +380,7 @@ Public Class UpdateGUI
             MainWin.GroupHVentGeometry.Text = "Vent " + (index + 1).ToString + " (of " + myHVents.Count.ToString + ") Geometry"
             Dim aVent As New Vent
             aVent = myHVents(index)
+            MainWin.HVentName.Text = aVent.Name
             If aVent.FirstCompartment <= myCompartments.Count - 1 Then
                 MainWin.HVentComp1.SelectedIndex = aVent.FirstCompartment + 1
             End If
@@ -458,27 +459,28 @@ Public Class UpdateGUI
                 For i = 1 To NumHVents
                     aVent = myHVents(i - 1)
                     MainWin.HVentSummary(i, 0) = i.ToString
+                    MainWin.HVentSummary(i, 1) = aVent.Name
                     If aVent.FirstCompartment >= 0 And aVent.FirstCompartment <= myCompartments.Count - 1 Then
-                        MainWin.HVentSummary(i, 1) = myCompartments(aVent.FirstCompartment).Name
+                        MainWin.HVentSummary(i, 2) = myCompartments(aVent.FirstCompartment).Name
                     ElseIf aVent.FirstCompartment = -1 Then
-                        MainWin.HVentSummary(i, 1) = "Outside"
+                        MainWin.HVentSummary(i, 2) = "Outside"
                     Else
-                        MainWin.HVentSummary(i, 1) = "Not defined"
+                        MainWin.HVentSummary(i, 2) = "Not defined"
                     End If
-                    MainWin.HVentSummary(i, 2) = aVent.Offset.ToString
+                    MainWin.HVentSummary(i, 3) = aVent.Offset.ToString
                     If aVent.SecondCompartment >= 0 And aVent.SecondCompartment <= myCompartments.Count - 1 Then
-                        MainWin.HVentSummary(i, 3) = myCompartments(aVent.SecondCompartment).Name
+                        MainWin.HVentSummary(i, 4) = myCompartments(aVent.SecondCompartment).Name
                     ElseIf aVent.SecondCompartment = -1 Then
-                        MainWin.HVentSummary(i, 3) = "Outside"
+                        MainWin.HVentSummary(i, 4) = "Outside"
                     Else
-                        MainWin.HVentSummary(i, 3) = "Not defined"
+                        MainWin.HVentSummary(i, 4) = "Not defined"
                     End If
-                    MainWin.HVentSummary(i, 5) = aVent.Sill.ToString
-                    MainWin.HVentSummary(i, 6) = aVent.Soffit.ToString
-                    MainWin.HVentSummary(i, 7) = aVent.Width.ToString
-                    MainWin.HVentSummary(i, 8) = aVent.InitialOpening.ToString
-                    MainWin.HVentSummary(i, 9) = FaceNames.Substring((aVent.Face - 1) * 5, 5)
-                    MainWin.HVentSummary(i, 10) = aVent.Offset.ToString
+                    MainWin.HVentSummary(i, 6) = aVent.Sill.ToString
+                    MainWin.HVentSummary(i, 7) = aVent.Soffit.ToString
+                    MainWin.HVentSummary(i, 8) = aVent.Width.ToString
+                    MainWin.HVentSummary(i, 9) = aVent.InitialOpening.ToString
+                    MainWin.HVentSummary(i, 10) = FaceNames.Substring((aVent.Face - 1) * 5, 5)
+                    MainWin.HVentSummary(i, 11) = aVent.Offset.ToString
                 Next
                 MainWin.HVentSummary.Select(index + 1, 0, index + 1, MainWin.HVentSummary.Cols.Count - 1, True)
             End If
@@ -496,6 +498,7 @@ Public Class UpdateGUI
             MainWin.GroupVVents.Text = "Vent " + (index + 1).ToString + " (of " + myVVents.Count.ToString + ") Geometry"
             Dim aVent As New Vent
             aVent = myVVents(index)
+            MainWin.VVentName.Text = aVent.Name
             If aVent.FirstCompartment <= myCompartments.Count - 1 Then
                 MainWin.VVentCompTop.SelectedIndex = aVent.FirstCompartment + 1
             End If
@@ -573,22 +576,23 @@ Public Class UpdateGUI
                 For i = 1 To numVVents
                     aVent = myVVents(i - 1)
                     MainWin.VVentSummary(i, 0) = i.ToString
+                    MainWin.VVentSummary(i, 1) = aVent.Name
                     If aVent.FirstCompartment >= 0 And aVent.FirstCompartment <= myCompartments.Count - 1 Then
-                        MainWin.VVentSummary(i, 1) = myCompartments(aVent.FirstCompartment).Name
+                        MainWin.VVentSummary(i, 2) = myCompartments(aVent.FirstCompartment).Name
                     ElseIf aVent.FirstCompartment = -1 Then
-                        MainWin.VVentSummary(i, 1) = "Outside"
-                    Else
-                        MainWin.VVentSummary(i, 1) = "Not defined"
-                    End If
-                    If aVent.SecondCompartment >= 0 And aVent.SecondCompartment <= myCompartments.Count - 1 Then
-                        MainWin.VVentSummary(i, 2) = myCompartments(aVent.SecondCompartment).Name
-                    ElseIf aVent.SecondCompartment = -1 Then
                         MainWin.VVentSummary(i, 2) = "Outside"
                     Else
                         MainWin.VVentSummary(i, 2) = "Not defined"
                     End If
-                    MainWin.VVentSummary(i, 3) = aVent.Area.ToString
-                    MainWin.VVentSummary(i, 4) = ShapeNames.Substring((aVent.Shape - 1) * 6, 6)
+                    If aVent.SecondCompartment >= 0 And aVent.SecondCompartment <= myCompartments.Count - 1 Then
+                        MainWin.VVentSummary(i, 3) = myCompartments(aVent.SecondCompartment).Name
+                    ElseIf aVent.SecondCompartment = -1 Then
+                        MainWin.VVentSummary(i, 3) = "Outside"
+                    Else
+                        MainWin.VVentSummary(i, 3) = "Not defined"
+                    End If
+                    MainWin.VVentSummary(i, 4) = aVent.Area.ToString
+                    MainWin.VVentSummary(i, 5) = ShapeNames.Substring((aVent.Shape - 1) * 6, 6)
                 Next
                 MainWin.VVentSummary.Select(index + 1, 0, index + 1, MainWin.VVentSummary.Cols.Count - 1, True)
             End If
@@ -620,6 +624,7 @@ Public Class UpdateGUI
             MainWin.MVentToHeight.Text = aVent.SecondCenterHeight.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.MVentToOrientation.SelectedIndex = aVent.SecondOrientation - 1
 
+            MainWin.MVentName.Text = aVent.Name
             MainWin.MVentFlow.Text = aVent.FlowRate.ToString + myUnits.Convert(UnitsNum.Flowrate).Units
             MainWin.MVentDropoff.Text = aVent.BeginFlowDropoff.ToString + myUnits.Convert(UnitsNum.Pressure).Units
             MainWin.MVentZero.Text = aVent.ZeroFlow.ToString + myUnits.Convert(UnitsNum.Pressure).Units
@@ -696,29 +701,30 @@ Public Class UpdateGUI
                 For i = 1 To numMVents
                     aVent = myMVents(i - 1)
                     MainWin.MVentSummary(i, 0) = i.ToString
+                    MainWin.MVentSummary(i, 1) = aVent.Name
                     If aVent.FirstCompartment >= 0 And aVent.FirstCompartment <= myCompartments.Count - 1 Then
-                        MainWin.MVentSummary(i, 1) = myCompartments(aVent.FirstCompartment).Name
+                        MainWin.MVentSummary(i, 2) = myCompartments(aVent.FirstCompartment).Name
                     ElseIf aVent.FirstCompartment = -1 Then
-                        MainWin.MVentSummary(i, 1) = "Outside"
+                        MainWin.MVentSummary(i, 2) = "Outside"
                     Else
-                        MainWin.MVentSummary(i, 1) = "Not defined"
+                        MainWin.MVentSummary(i, 2) = "Not defined"
                     End If
-                    MainWin.MVentSummary(i, 2) = aVent.FirstArea.ToString
-                    MainWin.MVentSummary(i, 3) = aVent.FirstCenterHeight.ToString
-                    MainWin.MVentSummary(i, 4) = OrientationNames.Substring((aVent.FirstOrientation - 1) * 10, 10)
+                    MainWin.MVentSummary(i, 3) = aVent.FirstArea.ToString
+                    MainWin.MVentSummary(i, 4) = aVent.FirstCenterHeight.ToString
+                    MainWin.MVentSummary(i, 5) = OrientationNames.Substring((aVent.FirstOrientation - 1) * 10, 10)
                     If aVent.SecondCompartment >= 0 And aVent.SecondCompartment <= myCompartments.Count - 1 Then
-                        MainWin.MVentSummary(i, 5) = myCompartments(aVent.SecondCompartment).Name
+                        MainWin.MVentSummary(i, 6) = myCompartments(aVent.SecondCompartment).Name
                     ElseIf aVent.SecondCompartment = -1 Then
-                        MainWin.MVentSummary(i, 5) = "Outside"
+                        MainWin.MVentSummary(i, 6) = "Outside"
                     Else
-                        MainWin.MVentSummary(i, 5) = "Not defined"
+                        MainWin.MVentSummary(i, 6) = "Not defined"
                     End If
-                    MainWin.MVentSummary(i, 6) = aVent.SecondArea.ToString
-                    MainWin.MVentSummary(i, 7) = aVent.SecondCenterHeight.ToString
-                    MainWin.MVentSummary(i, 8) = OrientationNames.Substring((aVent.SecondOrientation - 1) * 10, 10)
-                    MainWin.MVentSummary(i, 9) = aVent.FlowRate.ToString
-                    MainWin.MVentSummary(i, 10) = aVent.BeginFlowDropoff.ToString
-                    MainWin.MVentSummary(i, 11) = aVent.ZeroFlow.ToString
+                    MainWin.MVentSummary(i, 7) = aVent.SecondArea.ToString
+                    MainWin.MVentSummary(i, 8) = aVent.SecondCenterHeight.ToString
+                    MainWin.MVentSummary(i, 9) = OrientationNames.Substring((aVent.SecondOrientation - 1) * 10, 10)
+                    MainWin.MVentSummary(i, 10) = aVent.FlowRate.ToString
+                    MainWin.MVentSummary(i, 11) = aVent.BeginFlowDropoff.ToString
+                    MainWin.MVentSummary(i, 12) = aVent.ZeroFlow.ToString
                 Next
                 MainWin.MVentSummary.Select(index + 1, 0, index + 1, MainWin.MVentSummary.Cols.Count - 1, True)
             End If
@@ -810,6 +816,7 @@ Public Class UpdateGUI
             MainWin.GroupDetectors.Text = "Alarm " + (index + 1).ToString + " (of " + myDetectors.Count.ToString + ")"
             Dim aDetector As New Target
             aDetector = myDetectors(index)
+            MainWin.DetectorName.Text = aDetector.Name
             MainWin.DetectorType.SelectedIndex = aDetector.DetectorType
             If aDetector.Compartment <= -1 Then
                 MainWin.DetectorComp.SelectedIndex = -1
@@ -846,24 +853,25 @@ Public Class UpdateGUI
                 For i = 1 To numDetectors
                     aDetector = myDetectors(i - 1)
                     MainWin.DetectorSummary(i, 0) = i.ToString
+                    MainWin.DetectorSummary(i, 1) = aDetector.Name
                     If aDetector.Compartment >= 0 And aDetector.Compartment <= myCompartments.Count - 1 Then
-                        MainWin.DetectorSummary(i, 1) = myCompartments(aDetector.Compartment).Name
+                        MainWin.DetectorSummary(i, 2) = myCompartments(aDetector.Compartment).Name
                     ElseIf aDetector.Compartment = -1 Then
-                        MainWin.DetectorSummary(i, 1) = "Outside"
+                        MainWin.DetectorSummary(i, 2) = "Outside"
                     Else
-                        MainWin.DetectorSummary(i, 1) = "Not defined"
+                        MainWin.DetectorSummary(i, 2) = "Not defined"
                     End If
-                    MainWin.DetectorSummary(i, 2) = DetectorTypes.Substring(aDetector.DetectorType * 9, 9)
-                    MainWin.DetectorSummary(i, 3) = aDetector.XPosition.ToString
-                    MainWin.DetectorSummary(i, 4) = aDetector.YPosition.ToString
-                    MainWin.DetectorSummary(i, 5) = aDetector.ZPosition.ToString
+                    MainWin.DetectorSummary(i, 3) = DetectorTypes.Substring(aDetector.DetectorType * 9, 9)
+                    MainWin.DetectorSummary(i, 4) = aDetector.XPosition.ToString
+                    MainWin.DetectorSummary(i, 5) = aDetector.YPosition.ToString
+                    MainWin.DetectorSummary(i, 6) = aDetector.ZPosition.ToString
                     If aDetector.ActivationType = Target.ActivationbyTemperature Then
-                        MainWin.DetectorSummary(i, 6) = aDetector.ActivationTemperature.ToString
+                        MainWin.DetectorSummary(i, 7) = aDetector.ActivationTemperature.ToString
                     Else
-                        MainWin.DetectorSummary(i, 6) = aDetector.ActivationObscuration.ToString
+                        MainWin.DetectorSummary(i, 7) = aDetector.ActivationObscuration.ToString
                     End If
-                    MainWin.DetectorSummary(i, 7) = aDetector.RTI.ToString
-                    MainWin.DetectorSummary(i, 8) = aDetector.SprayDensity.ToString
+                    MainWin.DetectorSummary(i, 8) = aDetector.RTI.ToString
+                    MainWin.DetectorSummary(i, 9) = aDetector.SprayDensity.ToString
                 Next
                 MainWin.DetectorSummary.Select(index + 1, 0, index + 1, MainWin.DetectorSummary.Cols.Count - 1, True)
             End If

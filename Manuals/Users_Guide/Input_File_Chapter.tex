@@ -71,6 +71,8 @@ Keywords associated to global parameters are organized in the miscellaneous name
 
 \chapter{Thermal Properties}
 
+The thermophysical properites of materials used for compartment surfaces or targets are set in the Thermal Properties tab.
+
 \begin{figure}[ht]
 \centering
 \includegraphics[width=6.5in]{FIGURES/Thermal_Properties_Tab}
@@ -80,7 +82,7 @@ Keywords associated to global parameters are organized in the miscellaneous name
 \section{Adding Thermal Properties}
 \label{info:MATL}
 
-CFAST and CEdit do not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be from other simulations or input directly from reference sources or test results. Clicking the `Add' button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a fuel source in a fire. The thermophysical properties are specified at one condition of temperature, humidity, etc.  Only a single layer per boundary is allowed (some previous versions allowed up to three).
+CFAST and CEdit do not include predefined thermal properties for compartment materials. Thus, the user needs to define materials for use within a specific simulation. These may be from other simulations or input directly from reference sources or test results. Clicking the `Add' button and assigning values to the following list of properties will create a set of thermal properties associated with a material used in a compartment or a target. The thermophysical properties are specified at one condition of temperature, humidity, etc.  Only a single layer per boundary is allowed (some previous versions allowed up to three).
 
 \begin{description}
 \item[Material] A descriptive name for the material.
@@ -160,7 +162,8 @@ In CEdit the default size of a room has width of 3.6 m, depth of 2.4 m, and heig
 
 \item[Position X] (default units m, default value 0.0 m)  specifies the absolute x coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. Important in positioning the compartments for visualization in Smokeview.
 
-\item[Position Y] (default units m, default value 0.0 m)  specifies the absolute y coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. Important in positioning the compartments for visualization in Smokeview.
+\item[Position Y] (default units m, default value 0.0 m)  specifies the absolute y coordinate of the lower, left, front corner of the room. All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs. Important in positioning the compartments for visualiz
+ation in Smokeview.
 
 \item[Position Z] (default units m, default value 0.0 m)  specifies the height of the floor of each compartment with respect to station elevation specified by the internal ambient conditions reference height parameter.  The reference point must be the same for all elevations in the input data.  For example, the two rooms in the sample to the right in Fig.~\ref{fig:compartment_positioning} would be located at (0,0,0) and (0,2,2.3). All absolute positions for all compartments must be greater than or equal to zero, i.e., negative numbers are not allowed for these inputs.
 \end{description}
@@ -252,13 +255,13 @@ Wall vents are doors or windows that connect compartments that physically overla
 
 \begin{description}
 \item[ID] The selected name must be unique (i.e., not the same as another vent in the same simulation).
-\item[First Compartment] First of the two compartments connected by a door or window.
+\item[First Compartment] First of the two compartments connected by a door or window. All specifications of the vent are made relative to the floor of the first compartment.
 \item[Second Compartment] Second of the two compartments connected by a door or window.
 \item[Sill] (default units: m, default value: 0 m): Height of the bottom of the opening relative to the floor of the first compartment.
 \item[Soffit] (default units: m, default value: 0 m): Height of the top of the opening relative to the floor of the first compartment.
 \item[Width] (default units: m, default value: 0 m): The width of the opening.
-\item[Vent Offset] (default units: m, default value: 0 m): For visualization only, the horizontal distance between the near edge of the vent and the origin of the axis defined by the selected face (below) in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis).
-\item[Face] The wall on which the vent is positioned.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane.
+\item[Vent Offset] (default units: m, default value: 0 m): For visualization only, the horizontal distance between the near edge of the vent and the origin of the axis defined by the selected face (below) in the first compartment.
+\item[Face] The wall on which the vent is positioned.  Choices are Front, Rear, Right, Left and are relative to the X-Z plane (Front and Rear faces are parallel to the X-axis; left and right are parallel to the Y-axis).
 \end{description}
 
 Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
@@ -278,7 +281,7 @@ For condition-based opening changes, the inputs specify an associated target, tr
 \item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation value is assumed to occur over one second beginning when the specified set point value is reached.
 \end{description}
 
-\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the the is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
+\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the vent is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
 
 
 
@@ -290,17 +293,17 @@ For condition-based opening changes, the inputs specify an associated target, tr
 \caption[The CFAST Ceiling/Floor Vents Tab]{The CFAST Ceiling/Floor Vents Tab.}
 \end{figure}
 
-Examples of these openings are scuddles in a ship, or a hole in the roof of a residence. Connections can exist between compartments or between a compartment and the outdoors. Combined buoyancy and pressure-driven flow through a vertical flow vent is possible when the connected spaces adjacent to the vent are filled with gases of different density in an unstable configuration, with the density of the top space larger than that of the bottom space. With a moderate cross-vent pressure difference, the instability leads to a bi-directional flow between the two spaces. For relatively large cross-vent pressure difference the flow through the vent is unidirectional.
+Examples of these openings are scuddles in a ship, or a hole in the roof of a residence. Connections can exist between compartments or between a compartment and the outdoors. Combined buoyancy and pressure-driven flow through a vertical flow vent is possible when the connected spaces adjacent to the vent are filled with gases of different density in an unstable configuration, with the density of the top space greater than that of the bottom space. With a moderate cross-vent pressure difference, the instability leads to a bi-directional flow between the two spaces. For relatively large cross-vent pressure difference the flow through the vent is unidirectional.
 
 \begin{description}
 \item[ID] The selected name must be unique (i.e., not the same as another vent in the same simulation).
-\item[Top Compartment] Compartment where the vent is originated.
-\item[Bottom Compartment] The adjacent compartment where the other side of the vent is connected.
+\item[Top Compartment] Compartment where the vent is in the floor
+\item[Bottom Compartment] The adjacent compartment where the vent is in the ceiling.
 \label{Ceil Cross-sectional Area}
 \item[Cross-sectional Area] (default units: m$^2$, default value: 0 m$^2$)
 \label{Ceil Shape}
 \item[Shape] The shape factor changes the calculation of the effective diameter of the vent and flow coefficients for flow through the vent.
-\item[Vent Offset] (default units: m, default value: 0 m): For visualization only, the horizontal distances between the center of the vent and the origin of the X and Y axes in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis). See figure \ref{fig:compartment_positioning} for axis position conventions in CFAST.
+\item[Vent Offset] (default units: m, default value: 0 m): For visualization only, the horizontal distances between the center of the vent and the origin of the X and Y axes in the upper compartment. See figure \ref{fig:compartment_positioning} for axis position conventions in CFAST.
 \end{description}
 
 Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
@@ -320,7 +323,7 @@ For condition-based opening changes, the inputs specify an associated target, tr
 \item[Post-Activation Fraction] (default value: 1, fully open): Opening fraction at the end of the simulation. The transition from the pre-activation fraction to the post-activation fraction is assumed to occur over one second beginning when the specified set point value is reached.
 \end{description}
 
-\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the the is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.
+\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the vent is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.
 
 CFAST allows only a single ceiling/floor connection between any pair of compartments included in a simulation because the empirical correlation governing the flow was developed using only a single opening between connected compartments.
 
@@ -352,7 +355,7 @@ The model for mechanical ventilation is based on the theory of networks and is b
 \label{Mech Height}
 \item[Center Height] (default units: m, default value: 0 m): Height of the midpoint of the duct opening above the floor.
 \item[Orientation] (default vertical) A horizontal diffuser implies vertical flow through the ceiling or floor of the compartment.  A vertical diffuser implies horizontal flow through a wall of the compartment.
-\item[Vent Offset] (default units: m, Default value: 0 m): For visualization only, the horizontal distances between the center of the vent and the origin of the X and Y axes in the first compartment (Front and Rear are along the X-axis; left and right are along the Y-axis). See figure \ref{fig:compartment_positioning} for axis position conventions in CFAST.
+\item[Vent Offset] (default units: m, Default value: 0 m): For visualization only, the horizontal distances between the center of the vent and the origin of the X and Y axes in the first compartment. See figure \ref{fig:compartment_positioning} for axis position conventions in CFAST.
 \end{description}
 
 Vents in CFAST can be opened or closed at user-specified times or by a user-specified target's surface temperature or incident heat flux. For time-based opening changes, the inputs are a series of time points and associated opening fractions from 0 (fully closed) to 1 (fully open).
@@ -362,7 +365,7 @@ Vents in CFAST can be opened or closed at user-specified times or by a user-spec
 \item[Fraction] (default value: 1, fully open): Fraction between 0 and 1 of the vent width to indicate the vent is closed, partially-open, or fully-open as the associated time point.
 \end{description}
 
-\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the the is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
+\graybox{CFAST assumes a linear transition between time points. If the initial time specified for a time-changing opening fraction is non-zero, the vent is assumed to be open at the initial value of the open fraction from the beginning of the simulation up to and including the time associated with the initial value of the opening fraction. If the final value of the opening fraction is less than the total simulation time, the vent is assumed to be open at the final value of the opening fraction from and including the time associated with the final value of the opening fraction until the end of the simulation.}
 
 For condition-based opening changes, the inputs specify an associated target, trigger value, and vent opening fractions before and after the trigger value has been reached.
 
@@ -410,7 +413,7 @@ For mechanical vents, there are two species that can be filtered out of the gas 
 
 
 \chapter{Fires}
-A fire in CFAST is specified via a time-dependent heat release rate. The specified heat of combustion is used to calculate the mass loss rate of fuel, from which the production rate of combustion products can be calculated using specified product yields. The heat release and the corresponding product generation rates go to zero when the lower oxygen limit is reached, and are replaced by the appropriate production rate of unburned fuel gas which is transported from zone to zone until there is sufficient oxygen and a high enough temperature to support combustion.
+A fire in CFAST is specified via a time-dependent heat release rate (HRR). The specified heat of combustion is used to calculate the mass loss rate of fuel, from which the production rate of combustion products can be calculated using specified product yields. The heat release and the corresponding product generation rates go to zero when the lower oxygen limit is reached, and are replaced by the appropriate production rate of unburned fuel gas which is transported from zone to zone until there is sufficient oxygen and a high enough temperature to support combustion.
 
 The model can simulate multiple fires in one or more compartments. These fires are treated as totally separate entities, with no interaction of the plumes. These fires can be ignited at a prescribed time, or when a corresponding target (see Chapter~\ref{chapter:targets}) reaches a specified temperature or heat flux.
 
@@ -465,8 +468,9 @@ Following is a list of fire properties that can be specified as a function of ti
 \item[Area] (default units: m$^2$, default values: 0.3 m$^2$): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
 \item[CO Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
 \item[Soot Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
+%Should this still be there if all the N2 in the fuel is assumed to go to HCN.
 \item[HCN Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of hydrogen cyanide produced per unit mass of fuel consumed.
-\item[TS Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be much smaller than the total specified pyrolysis rate.
+\item[TS Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of user-defined trace species per unit mass of fuel consumed. The trace species is transported along with the other products of combustion, but is assumed not to take part in the combustion reaction and is assumed not to be a significant source of overall mass for the system mass balance. This implies that the production rate of trace species specified should be small.
 \end{description}
 
 
@@ -492,7 +496,7 @@ Use the `Add t$^2$' button to create a new fire with a heat release rate that gr
 \item[Decay Time] (default units: s, default value, 300 s): Duration of time for the fire to decay back to a zero value.  Decay follows the inverse of the t-squared growth rate.
 \end{description}
 
-
+%Where is the getting fire definitions from files?
 
 
 
@@ -530,6 +534,7 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 \item[Material] What the target is made of. Any existing material in the list of thermal properties may be used here. There can be only one material per target.
 
+%What happens to interanl temperatrue when type is cylindrical
 \item[Internal Temperature] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
 \end{description}
 

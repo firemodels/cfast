@@ -20,11 +20,11 @@ The first column contains the compartment ID.  On each row with its compartment 
 
 \section{Detailed Outputs}
 
-The following sections describe each of the outputs from the model.  Each section refers to a specific part of the print out and appears in the order the output appears. A description of each option follows. When running CFAST from within CEdit an output file is automatically generated based on the input file name. For example, running the example file  {\ct Users\_Guide\_Example.in} generates an output file named  {\ct Users\_Guide\_Example.out}. All the detailed outputs described in the following sections is included in the output file.
+The following sections describe each of the outputs from the model.  Each section refers to a specific part of the print out and appears in the order the output appears. A description of each option follows. When running CFAST from within CEdit an output file is automatically generated based on the input file name. For example, running the example file  {\ct Users\_Guide\_Example.in} generates an output file named  {\ct Users\_Guide\_Example.out}. All the detailed outputs described in the following sections are included in the output file.
 
 \subsection{Output for Initialization}
 
-This option prints the initial conditions to the output before the actual run starts.  This merely mimics the inputs specified by the user in the input data file  The initial conditions break down into seven sections.  Each is described below with the section name. The following explanation uses the output from the case {\ct Users\_Guide\_Example.in} which is included in the distribution. Please note, there are no mechanical ventilation, horizontal vents or detectors in this example, so the section discussing these phenomena are from additional data files.
+This prints the initial conditions to the output before the actual run starts.  This merely mimics the inputs specified by the user in the input data file  The initial conditions break down into seven sections.  Each is described below with the section name. The following explanation uses the output from the case {\ct Users\_Guide\_Example.in} which is included in the distribution.
 
 \subsubsection{Overview}
 
@@ -57,7 +57,7 @@ Time           Interval       Interval       Interval
 
 \subsubsection{Ambient Conditions}
 
-This section, like the overview section, needs little elaboration.  It gives the starting atmospheric conditions for the simulation both for outside and inside the structure. Temperatures are in K and pressure in Pa.
+This section, like the overview section, needs little elaboration.  It gives the starting atmospheric conditions for the simulation both for outside and inside the structure. Temperatures are in \degc and pressure in Pa.
 \begin{lstlisting}[basicstyle=\tiny]
 AMBIENT CONDITIONS
 
@@ -69,7 +69,7 @@ Temperature    Pressure       Temperature    Pressure
 \end{lstlisting}
 
 \subsubsection{Compartments}
-The compartments section gives a summary of the geometry for the simulation.  A simple table summarizes the geometry with compartments running down the page in order specified.  The various dimensions for each compartment are on the row with its compartment numbe and namer.  Two columns need explanation.  The second to last column ``Ceiling Height'' gives the height of the ceiling relative to the base height which is 0.  Similarly the ``Floor Height'' refers to the height of the floor above the base height.
+The compartments section gives a summary of the geometry for the simulation.  A simple table summarizes the geometry with compartments running down the page in order specified.  The various dimensions for each compartment are on the row with its compartment number and name.  Two columns need explanation.  The second to last column ``Ceiling Height'' gives the height of the ceiling relative to the base height which is 0.  Similarly the ``Floor Height'' refers to the height of the floor above the base height.
 
 \begin{lstlisting}[basicstyle=\tiny]
 COMPARTMENTS
@@ -150,7 +150,7 @@ V     Comp 3       Comp 2        1       Time         0    100    500
 
 \subsubsection{Thermal Properties}
 
-The thermal properties section is broken into two parts.  The first part is a table that lists the material for each surface of each compartment.  The compartments appear as rows down the page in numerical order.  From left to right next to the compartment name comes the material for the ceiling, wall and floor.  The second part lists the properties of each material used in the simulation. For each listing of a material, the name is followed by the conductivity, specific heat, density, thickness and emissivity. In addition to materials for compartment surfaces, any thermal properties specified for targets are also listed (this may include thermal properties for gaseous materials specified as fire sources in a simulation.)
+The thermal properties section is broken into two parts.  The first part is a table that lists the material for each surface of each compartment.  The compartments appear as rows down the page in order of specification.  From left to right next to the compartment name comes the material for the ceiling, wall and floor.  The second table lists the properties of each material used in the simulation. For each listing of a material, the name is followed by the conductivity, specific heat, density, thickness and emissivity. In addition to materials for compartment surfaces, any thermal properties specified for targets are also listed (this may include thermal properties for gaseous materials specified as fire sources in a simulation.)
 
 \begin{lstlisting}[basicstyle=\tiny]
 THERMAL PROPERTIES
@@ -168,7 +168,7 @@ CONCRETE     1.75           1.000E+03       2.200E+03       0.150           0.94
 DEFAULT     0.120            900.            800.           1.200E-02       0.900
 \end{lstlisting}
 
-Material choices of the ceiling, walls, and floors in section \ref{info:COMP2}. Setting thermalphysical properties are done in the Thermal Properites tad discussed in section \ref{info:MATL}. Units for thermal properties are standard S.I. units.  For thermal conductivity, W/m K; for specific heat, J/kg K; for density, kg/m$^3$; for thickness, m; emissivity is dimensionless.
+Material choices of the ceiling, walls, and floors is discussed in section \ref{info:COMP2}. Setting thermalphysical properties is done in the Thermal Properites tad discussed in section \ref{info:MATL}. Units for thermal properties are standard S.I. units.  For thermal conductivity,  kW/(m$\cdot$K); for specific heat,  kJ/(kg$\cdot$K); for density, kg/m$^3$; for thickness, m; emissivity is dimensionless.
 
 
 \subsubsection{Fires}
@@ -231,12 +231,12 @@ Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine
      0.      0.0      1.81E+07   0.0       0.0      2.00E-02  2.00E-02   0.0       0.0       0.0
   8000.     5.52E-02  1.81E+07  1.00E+06   3.0      2.00E-02  2.00E-02   0.0       0.0       0.0
 \end{lstlisting}
-All of the inputs for all fires come from the fire specifications set in the Fires tab discussed in section \ref{info:FIRE}.  Units for most values are included in the output.  Fire position is in m, relative humidity is in \%, lower oxygen limit is in volume percent, and pyrolysis temperature is in K.
+All of the inputs for all fires come from the fire specifications set in the Fires tab discussed in section \ref{info:FIRE}.  Units for most values are included in the output.  Fire position is in m, relative humidity is in \%, lower oxygen limit is in volume \%, and pyrolysis temperature is in K.
 
 
 \subsubsection{Targets}
 
-The entry for targets shows the orientation of additional targets specified in the data file. Targets explicitly specified in the data file are listed first in the order they are included in the data file.  Each target is numbered based on the order of the target specifications in the input data file.  The compartment number, position of the target within the compartment, direction of the front face of the target object expressed as a normal unit vector to the surface, and object material.
+The entry for targets shows the orientation of additional targets specified in the data file. Targets explicitly specified in the data file are listed first in the order they are included in the data file. The compartment number, position of the target within the compartment, direction of the front face of the target object expressed as a normal unit vector to the surface, and object material.
 
 \begin{lstlisting}[basicstyle=\tiny]
 TARGETS
@@ -294,7 +294,7 @@ Compartment    Fire    Plume     Pyrol     Fire      Flame   Fire in  Fire in   
 Comp 1                 8.571E-05 1.440E-07  7.20              0.00     7.20      0.00
 Comp 2                 0.974     2.486E-02 4.500E+05          0.00     4.500E+05 0.00
 \end{lstlisting}
-% This seems out of place. Like it should be in the technical reference, which if probably is, but not here. 
+% This seems out of place. Like it should be in the technical reference, which it probably is, but not here. 
 Flame height is calculated from the work of Heskestad~\cite{Heskestad:2002}. The average flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.
 
 \subsection{Output for Wall Surfaces, Targets, and Detectors/Sprinklers}
@@ -329,7 +329,7 @@ In all cases, the flux to/from a target is net radiation or net convection. That
 
 \subsection{Output for Gas Species}
 
-The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume fractions for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked (Elemental nitrogen, oxygen, carbon dioxide, carbon monoxide, hydrogen cyanide, hydrochloric acid, and water).  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``TS'' is trace species.
+The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume \% for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked (Elemental nitrogen, oxygen, carbon dioxide, carbon monoxide, hydrogen cyanide, hydrochloric acid, and water).  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``TS'' is trace species.
 
 \begin{lstlisting}[basicstyle=\tiny]
 UPPER LAYER SPECIES
@@ -352,13 +352,15 @@ Comp 2         78.3       20.4      8.491E-02  1.751E-03   0.00       0.00      
 Comp 3         78.4       20.5      4.208E-10  8.678E-12   0.00       0.00       0.00       1.16      3.726E-10   0.00
 \end{lstlisting}
 
-The report by species are percent by volume. Optical depth per meter is a measure of the visibility in the smoke. Trace species (TS) is the total mass of the trace species that is present in the layer in kilograms. It is an absolute measure and not percent or density.
+The report by species are \% by volume. Optical depth per meter is a measure of the visibility in the smoke. Trace species (TS) is the total mass of the trace species that is present in the layer in kilograms. It is an absolute measure and not percent or density.
 
 \subsection{Output for Vent Flows}
 % Need to find out if the second option still exists. It doesn't appear to be in CEdit Whole section needs to be reviewed after getting the current output of CFAST
-Information about vent flow is obtained in this section.  It includes information detailing mass flow through horizontal, vertical, and mechanical vents. There are two forms for the vent flow. The first is flow through the vents as mass per second. The alternative, obtained with the total mass flow output option on the `Run!,' `Output Options' menu, gives the total mass which has flowed through the vent(s) and the relative mass of trace species divided by the total mass of trace species produced up to the current time.
+Information about vent flow is obtained in this section.  It includes information detailing mass flow through horizontal, vertical, and mechanical vents. There are two forms for the vent flow. The first is flow through the vents as kg/s. The second gives the total mass which has flowed through the vent(s) and the relative mass of trace species divided by the total mass of trace species produced up to the current time.
 
 The section for vent flow is titled ``FLOW THROUGH VENTS (kg/s).''  Because flow is always given in positive values, each vent is listed twice, once for flow going from compartment A to compartment B (labelled as ``Flow relative to `from''') and a second time for flow from B to A (labelled as ``Flow relative to `To'''.  As the example below shows, the first column specifies the vent, including the type of vent (an ``H'' in this column stands for horizontal flow, such as through a doorway or window; a ``V'' here would mean vertical flow, such as through an opening in the ceiling, and an ``M'' stands for a mechanical ventilation connection) and the compartment from which the flow comes. The second column lists the name of the compartment. Up to six additional columns detail the flow at this vent. Flow into and out of the compartment through the vent in the upper and lower layers are included.
+
+A second table shows total (mass) flow through vents. At present this is confined to mechanical ventilation (It applies only to vents which can be filtered, in this case mechanical ventilation). The last column is obtained by summing the outflow/inflow for each vent and then dividing that sum by the total trace species produced by all fires. For details on this value, see the section on output listing for fires.
 
 \begin{lstlisting}[basicstyle=\tiny]
 FLOW THROUGH VENTS (kg/s)
@@ -388,12 +390,10 @@ Outside        M Node  1                                              0.8607E+02
                M Node  4                                 0.6798E+02
 \end{lstlisting}
 
-An alternative printout is provided that shows total (mass) flow through vents. At present this is confined to mechanical ventilation (It applies only to vents which can be filtered, in this case mechanical ventilation). The last column is obtained by summing the outflow/inflow for each vent and then dividing that sum by the total trace species produced by all fires. For details on this value, see the section on output listing for fires.
-
 
 \section{Spreadsheet Output}
 
-CFAST can generate a number of output files in a plain text spreadsheet format.  These files capture a snap shot of the modeling data at an instant of time. This instance is determined by the fourth entry on the TIMES line of the data file. \emph{However}, there are events which can occur in between these reporting periods. Examples are the ignition of objects and the activation of detectors or sprinklers. These are \emph{not} reported in these output files.
+CFAST generates a number of output files in a plain text spreadsheet format.  These files capture a snap shot of the modeling data at an instant of time. This instance is on the Simulation tab discssed in section \ref{info:TIME}. \emph{However}, there are events which can occur in between these reporting periods. Examples are the ignition of objects and the activation of detectors or sprinklers. These are \emph{not} reported in these output files.
 
 \subsection{Primary Output Variables (project\_n.csv)}
 
@@ -425,7 +425,7 @@ The second set of information is for fires. There are seven entries per fire.  T
 
 \subsection{Species Output (project\_s.csv)}
 
-At present, there are nine outputs in this file: oxygen (O2), carbon dioxide (CO2), carbon monoxide (CO),  hydrogen cyanide (HCN), hydrogen chloride (HCL), water vapor (H2O), optical depth (OD), concentration-time dose (CT) and trace species (TS). This set of nine is enumerated for the upper and lower layer, and are done sequentially by compartment.
+At present, there are nine outputs in this file: nitorgen (N2), oxygen (O2), carbon dioxide (CO2), carbon monoxide (CO),  hydrogen cyanide (HCN), hydrogen chloride (HCL), water vapor (H2O), optical depth (OD), and trace species (TS). This set of nine is enumerated for the upper and lower layer, and are done sequentially by compartment.
 \begin{description}
 \item[Time] (s)
 \item[N2 Upper/Lower Layer] (mol \%): nitrogen concentration in the upper (or lower) layer in the current compartment

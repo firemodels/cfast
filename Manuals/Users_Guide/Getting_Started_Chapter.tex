@@ -4,12 +4,9 @@
 The Consolidated Model of Fire and Smoke Transport (CFAST) is documented by four publications, this user's guide, a technical reference guide~\cite{CFAST_Tech_Guide_7} a verification and validation guide \cite{CFAST_Valid_Guide_7}, and a configuration management guide~\cite{CFAST_Config_Guide_7}. The technical reference guide describes the underlying physical principles, provides a comparison with other models, and includes an evaluation of the model following the guidelines of ASTM~E1355~\cite{ASTM:E1355}. The model verification and validation guide documents verification and validation efforts for the model. The configuration management guide documents the processes used during the development and validation of the model. This user's guide describes how to use the moded and the input editor CEdit.
 
 \section{Installation}
+%The following paragraph wsa fine till I broke it and it needs to be reworked. 
+CFAST is written in Fortran and can be run as a stand alone command line application that reads input data from a text file. It has been compiled and run on a number of different operating systems but the version in the distribution was compiled to run under Windows. The input editor distributed, CEdit, that is distributed with CFAST is designed to run on a Windows platform. Also the version of visualization software, Smokeview, is compiled to run on Windows. All of the files associated with CFAST can be obtained at: \url{http://cfast.nist.gov}
 
-CFAST is written in Fortran and can be run as a stand alone command line application that reads input data from a text file. It has been compiled and run on a number of different operating systems. All of the files associated with CFAST can be obtained at:
-%Why isn't this hyperlinked? (I didn't do it becasue I don't know how and can't be bothered right now to look it up.)
-\begin{lstlisting}
-http://cfast.nist.gov
-\end{lstlisting}
 The CFAST distribution consists of a self-extracting set-up program for Windows-based personal computers. After downloading the set-up program, double-clicking on the file's icon walks you through a series of steps for installation of the program.  The most important part of the installation is the creation of a folder ({\ct C:$\backslash$Program Files$\backslash$CFAST} by default) in which the CFAST executable files and supplemental data files are installed.  Sample input files are found in the {\ct Examples} folder.
 
 CFAST input files are best created and run using a Windows-based input editor called CEdit. Sample input files are provided with the program for new users who are encouraged to first run the sample calculations before attempting to create an input file. To run the model, browse to the location of the CFAST sample input file (default location is in a folder called {\ct Examples} in the installation folder, copy the file named {\ct Users\_Guide\_Example.in} to a location of your choice and then double click on the copied file. This should open the file in the CFAST input editor, CEdit, as shown in Fig.~\ref{primary_screen}.
@@ -39,7 +36,7 @@ The input parameters are organized via tabs near the top of the CEdit screen, as
 \item[Mechanical Ventilation] defines forced air ventilation.
 \item[Fires] include user specification of the initial fire source and any additional burning objects in one or more of the compartments of the simulation.
 \item[Targets] provide the ability to calculate the temperature and net heat flux to objects placed and oriented arbitrarily in the structure.
-\item[Detection / Suppression] defines any heat alarms and sprinklers in the compartments of the simulation.
+\item[Detection / Suppression] defines any heat/smoke alarms and sprinklers in the compartments of the simulation.
 \item[Surface Connections] allows for more detailed description of the connections between compartments in the simulation to better simulate the transfer of heat from compartment to compartment in the simulation.
 \item[Visualizations] allows specification of one or more 2-D and 3-D visualizations to be added to the simulation for viewing with Smokeview. Note that these can require significant additional computational time than a basic CFAST simulation without visualizations.
 \end{description}

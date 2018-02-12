@@ -87,7 +87,7 @@ CFAST and CEdit do not include predefined thermal properties for compartment mat
 \begin{description}
 \item[Material] A descriptive name for the material.
 
-%% Do we want to change the requirements on the ID. We don't have those requirements in the Name List 
+%% Do we want to change the requirements on the ID. We don't have those requirements in the Name List
 \item[ID] A one-word (no more than 8 characters) \textbf{unique} identifier for the material.  This identifier should not contain any spaces and is used in other CFAST inputs to identify the particular material referenced.
 
 \item[Conductivity] (default units: kW/(m$\cdot$\degc)  or  kW/(m$\cdot$K)): Thermal conductivity for the material.
@@ -127,7 +127,6 @@ The `From File' button allows you to insert thermal properties from existing CFA
 
 The Compartments page defines the size, position, materials of construction, and flow characteristics for the compartments in the simulation. Initially, only the simulation environment page and the 'Add' button on the compartment geometry and thermal properties pages are enabled; all other pages are not available to the user for detailed inputs until a compartment has been added to the simulation.
 
-%% Have we changed the max no of compartments
 In order to model a fire scenario, the size and position of each compartment relavent to the scenario must be specified. For a compartment, the width, depth, compartment height and height of the floor of the compartment provide this specification. The maximum number of compartments for version 7 is 100. The usual assumption is that compartments are rectangular parallelepipeds. However, the CFAST model can accommodate odd shapes as equivalent floor area parallelepipeds or with a cross-sectional area that varies with height.
 
 \begin{figure}[h!]
@@ -342,8 +341,7 @@ Vertical connections can only be created between compartments that could be phys
 
 Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a system with a single fan. Further information about these systems is presented in  Klote and Milke \cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers Handbook \cite{ASHRAE:2001}.
 
-%% Sholuldn't this just be taken out. We don't do this anymore do we?
-The model for mechanical ventilation is based on the theory of networks and is based on the model developed by Klote \cite{Klote:1988a}.  This is a simplified form of Kirchoff's law which says that flow into a node must be balanced by flow out of the node. The equations used describe the relationship between the pressure drop across a duct, the resistance of a duct, and the mass flow.  The pressure can be changed by conditions in a compartment, or a fan in line in the duct system.  Resistance arises from the finite size of ducts, roughness on duct surfaces, bends and joints. In CFAST, default values are used for the duct properties, and thus mechanical ventilation connections are simply described by the connections to the two compartments and a fan whose throughput is a constant volumetric flow up to a user-specified pressure drop across the fan, dropping to zero at high backwards pressure on the fan.
+CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves, and thus mechanical ventilation connections are simply described by the connections to the two compartments and a fan whose throughput is a constant volumetric flow up to a user-specified pressure drop across the fan, dropping to zero at high backwards pressure on the fan.
 
 \subsection{Connections to Compartments}
 \label{info:VENT3}
@@ -643,7 +641,7 @@ Calculated results from a CFAST simulation can be visualized using Smokeview \ci
 \item[Temperature] (default units \degc, default value: none): Specified gas temperature for the selected isosurface.
 \end{description}
 
-%Not sure what is trying to be said here but I think it is a fail. 
+%Not sure what is trying to be said here but I think it is a fail.
 \graybox{
 Use the Add Defaults button to add a default set of visualizations for the current simulation. A slice file entry is created at the center of each compartment in the x (width) and y (depth) directions along with one near the ceiling in the z direction. A 3-D slice file entry is created for each compartment as well.
 }

@@ -55,7 +55,7 @@ clear W
 clear col
 clear t
         catch
-            display(['Error: Problem with NIST/NRC Corner Test ', num2str(j), ...
+            display(['Warning: Problem with NIST/NRC Corner Test ', num2str(j), ...
                 '. File not found. Skipping case.'])
             continue
         end

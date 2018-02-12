@@ -1278,7 +1278,8 @@ module output_routines
 
     real(eb), intent(in) :: T, dT
 
-    rewind (12)
+    close (unit=12, status='DELETE')
+    open (unit=12,form='FORMATTED')
     write (12,5001) t, dt
     call results_compressed (12)
     return

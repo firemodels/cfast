@@ -10,6 +10,14 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
+    Friend WithEvents HVentName As TextBox
+    Friend WithEvents VVentName As TextBox
+    Friend WithEvents Label8 As Label
+    Friend WithEvents MVentName As TextBox
+    Friend WithEvents Label24 As Label
+    Friend WithEvents DetectorName As TextBox
+    Friend WithEvents Label67 As Label
+    Friend WithEvents Label6 As Label
 
 #Region " Windows Form Designer generated code "
 
@@ -511,6 +519,8 @@ Public Class CeditMain
         Me.TabHorizontalFlow = New System.Windows.Forms.TabPage()
         Me.HVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupHVentGeometry = New System.Windows.Forms.GroupBox()
+        Me.HVentName = New System.Windows.Forms.TextBox()
+        Me.Label6 = New System.Windows.Forms.Label()
         Me.HVentFinalLabel = New System.Windows.Forms.Label()
         Me.HVentFinalFraction = New System.Windows.Forms.TextBox()
         Me.HVentInitialLabel = New System.Windows.Forms.Label()
@@ -547,6 +557,8 @@ Public Class CeditMain
         Me.VVentAdd = New System.Windows.Forms.Button()
         Me.VVentDup = New System.Windows.Forms.Button()
         Me.GroupVVents = New System.Windows.Forms.GroupBox()
+        Me.VVentName = New System.Windows.Forms.TextBox()
+        Me.Label8 = New System.Windows.Forms.Label()
         Me.VVentFinalLabel = New System.Windows.Forms.Label()
         Me.VVentFractions = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.VVentFinalFraction = New System.Windows.Forms.TextBox()
@@ -626,6 +638,8 @@ Public Class CeditMain
         Me.MVentAdd = New System.Windows.Forms.Button()
         Me.MVentDup = New System.Windows.Forms.Button()
         Me.GroupMVents = New System.Windows.Forms.GroupBox()
+        Me.MVentName = New System.Windows.Forms.TextBox()
+        Me.Label24 = New System.Windows.Forms.Label()
         Me.MventFinalLabel = New System.Windows.Forms.Label()
         Me.MVentFinalFraction = New System.Windows.Forms.TextBox()
         Me.MVentInitialLabel = New System.Windows.Forms.Label()
@@ -716,6 +730,8 @@ Public Class CeditMain
         Me.TabDetection = New System.Windows.Forms.TabPage()
         Me.DetectorSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupDetectors = New System.Windows.Forms.GroupBox()
+        Me.DetectorName = New System.Windows.Forms.TextBox()
+        Me.Label67 = New System.Windows.Forms.Label()
         Me.DetectorActivationObscuration = New System.Windows.Forms.TextBox()
         Me.Label17 = New System.Windows.Forms.Label()
         Me.DetectorSprayDensity = New System.Windows.Forms.TextBox()
@@ -1386,20 +1402,22 @@ Public Class CeditMain
         Me.HVentSummary.ExtendLastCol = True
         Me.HVentSummary.FocusRect = C1.Win.C1FlexGrid.FocusRectEnum.None
         Me.HVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.HVentSummary.Location = New System.Drawing.Point(157, 30)
+        Me.HVentSummary.Location = New System.Drawing.Point(121, 30)
         Me.HVentSummary.Name = "HVentSummary"
         Me.HVentSummary.Rows.Count = 2501
         Me.HVentSummary.Rows.DefaultSize = 19
         Me.HVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.HVentSummary.SelectionMode = C1.Win.C1FlexGrid.SelectionModeEnum.Row
         Me.HVentSummary.ShowSortPosition = C1.Win.C1FlexGrid.ShowSortPositionEnum.None
-        Me.HVentSummary.Size = New System.Drawing.Size(662, 158)
+        Me.HVentSummary.Size = New System.Drawing.Size(735, 158)
         Me.HVentSummary.StyleInfo = resources.GetString("HVentSummary.StyleInfo")
         Me.HVentSummary.TabIndex = 401
         Me.HVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupHVentGeometry
         '
+        Me.GroupHVentGeometry.Controls.Add(Me.HVentName)
+        Me.GroupHVentGeometry.Controls.Add(Me.Label6)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentFinalLabel)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentFinalFraction)
         Me.GroupHVentGeometry.Controls.Add(Me.HVentInitialLabel)
@@ -1425,15 +1443,33 @@ Public Class CeditMain
         Me.GroupHVentGeometry.Controls.Add(Me.Label23)
         Me.GroupHVentGeometry.Location = New System.Drawing.Point(77, 234)
         Me.GroupHVentGeometry.Name = "GroupHVentGeometry"
-        Me.GroupHVentGeometry.Size = New System.Drawing.Size(844, 326)
+        Me.GroupHVentGeometry.Size = New System.Drawing.Size(844, 346)
         Me.GroupHVentGeometry.TabIndex = 7
         Me.GroupHVentGeometry.TabStop = False
         Me.GroupHVentGeometry.Text = "Vent 1 Geometry"
         '
+        'HVentName
+        '
+        Me.HVentName.Location = New System.Drawing.Point(332, 29)
+        Me.HVentName.Name = "HVentName"
+        Me.HVentName.Size = New System.Drawing.Size(208, 20)
+        Me.HVentName.TabIndex = 752
+        Me.HVentName.Text = "HVent 1"
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(305, 32)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(21, 13)
+        Me.Label6.TabIndex = 751
+        Me.Label6.Text = "ID:"
+        Me.Label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'HVentFinalLabel
         '
         Me.HVentFinalLabel.AutoSize = True
-        Me.HVentFinalLabel.Location = New System.Drawing.Point(514, 158)
+        Me.HVentFinalLabel.Location = New System.Drawing.Point(514, 194)
         Me.HVentFinalLabel.Name = "HVentFinalLabel"
         Me.HVentFinalLabel.Size = New System.Drawing.Size(122, 13)
         Me.HVentFinalLabel.TabIndex = 750
@@ -1443,7 +1479,7 @@ Public Class CeditMain
         '
         'HVentFinalFraction
         '
-        Me.HVentFinalFraction.Location = New System.Drawing.Point(644, 155)
+        Me.HVentFinalFraction.Location = New System.Drawing.Point(644, 191)
         Me.HVentFinalFraction.Name = "HVentFinalFraction"
         Me.HVentFinalFraction.Size = New System.Drawing.Size(96, 20)
         Me.HVentFinalFraction.TabIndex = 749
@@ -1453,7 +1489,7 @@ Public Class CeditMain
         'HVentInitialLabel
         '
         Me.HVentInitialLabel.AutoSize = True
-        Me.HVentInitialLabel.Location = New System.Drawing.Point(519, 131)
+        Me.HVentInitialLabel.Location = New System.Drawing.Point(519, 167)
         Me.HVentInitialLabel.Name = "HVentInitialLabel"
         Me.HVentInitialLabel.Size = New System.Drawing.Size(117, 13)
         Me.HVentInitialLabel.TabIndex = 748
@@ -1463,7 +1499,7 @@ Public Class CeditMain
         '
         'HVentInitialFraction
         '
-        Me.HVentInitialFraction.Location = New System.Drawing.Point(644, 129)
+        Me.HVentInitialFraction.Location = New System.Drawing.Point(644, 165)
         Me.HVentInitialFraction.Name = "HVentInitialFraction"
         Me.HVentInitialFraction.Size = New System.Drawing.Size(96, 20)
         Me.HVentInitialFraction.TabIndex = 747
@@ -1473,7 +1509,7 @@ Public Class CeditMain
         'HVentOpenValueLabel
         '
         Me.HVentOpenValueLabel.AutoSize = True
-        Me.HVentOpenValueLabel.Location = New System.Drawing.Point(588, 79)
+        Me.HVentOpenValueLabel.Location = New System.Drawing.Point(588, 115)
         Me.HVentOpenValueLabel.Name = "HVentOpenValueLabel"
         Me.HVentOpenValueLabel.Size = New System.Drawing.Size(50, 13)
         Me.HVentOpenValueLabel.TabIndex = 745
@@ -1483,7 +1519,7 @@ Public Class CeditMain
         '
         'HVentOpenValue
         '
-        Me.HVentOpenValue.Location = New System.Drawing.Point(646, 76)
+        Me.HVentOpenValue.Location = New System.Drawing.Point(646, 112)
         Me.HVentOpenValue.Name = "HVentOpenValue"
         Me.HVentOpenValue.Size = New System.Drawing.Size(96, 20)
         Me.HVentOpenValue.TabIndex = 744
@@ -1493,7 +1529,7 @@ Public Class CeditMain
         'HVentTarget
         '
         Me.HVentTarget.ItemHeight = 13
-        Me.HVentTarget.Location = New System.Drawing.Point(644, 102)
+        Me.HVentTarget.Location = New System.Drawing.Point(644, 138)
         Me.HVentTarget.Name = "HVentTarget"
         Me.HVentTarget.Size = New System.Drawing.Size(98, 21)
         Me.HVentTarget.TabIndex = 743
@@ -1502,7 +1538,7 @@ Public Class CeditMain
         'HVentTargetLabel
         '
         Me.HVentTargetLabel.AutoSize = True
-        Me.HVentTargetLabel.Location = New System.Drawing.Point(561, 105)
+        Me.HVentTargetLabel.Location = New System.Drawing.Point(561, 141)
         Me.HVentTargetLabel.Name = "HVentTargetLabel"
         Me.HVentTargetLabel.Size = New System.Drawing.Size(77, 13)
         Me.HVentTargetLabel.TabIndex = 741
@@ -1514,7 +1550,7 @@ Public Class CeditMain
         '
         Me.HVentOpenCriterion.ItemHeight = 13
         Me.HVentOpenCriterion.Items.AddRange(New Object() {"Time", "Temperature", "Heat Flux"})
-        Me.HVentOpenCriterion.Location = New System.Drawing.Point(644, 49)
+        Me.HVentOpenCriterion.Location = New System.Drawing.Point(644, 85)
         Me.HVentOpenCriterion.Name = "HVentOpenCriterion"
         Me.HVentOpenCriterion.Size = New System.Drawing.Size(98, 21)
         Me.HVentOpenCriterion.TabIndex = 742
@@ -1523,7 +1559,7 @@ Public Class CeditMain
         'Label82
         '
         Me.Label82.AutoSize = True
-        Me.Label82.Location = New System.Drawing.Point(530, 53)
+        Me.Label82.Location = New System.Drawing.Point(530, 89)
         Me.Label82.Name = "Label82"
         Me.Label82.Size = New System.Drawing.Size(108, 13)
         Me.Label82.TabIndex = 740
@@ -1538,7 +1574,7 @@ Public Class CeditMain
         Me.HVentFractions.ColumnInfo = resources.GetString("HVentFractions.ColumnInfo")
         Me.HVentFractions.ExtendLastCol = True
         Me.HVentFractions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.HVentFractions.Location = New System.Drawing.Point(574, 102)
+        Me.HVentFractions.Location = New System.Drawing.Point(574, 138)
         Me.HVentFractions.Name = "HVentFractions"
         Me.HVentFractions.Rows.DefaultSize = 19
         Me.HVentFractions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -1549,7 +1585,7 @@ Public Class CeditMain
         '
         'Label19
         '
-        Me.Label19.Location = New System.Drawing.Point(132, 249)
+        Me.Label19.Location = New System.Drawing.Point(132, 285)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(72, 23)
         Me.Label19.TabIndex = 20
@@ -1558,7 +1594,7 @@ Public Class CeditMain
         '
         'HVentOffset
         '
-        Me.HVentOffset.Location = New System.Drawing.Point(212, 249)
+        Me.HVentOffset.Location = New System.Drawing.Point(212, 285)
         Me.HVentOffset.Name = "HVentOffset"
         Me.HVentOffset.Size = New System.Drawing.Size(96, 20)
         Me.HVentOffset.TabIndex = 415
@@ -1568,7 +1604,7 @@ Public Class CeditMain
         '
         Me.HVentFace.ItemHeight = 13
         Me.HVentFace.Items.AddRange(New Object() {"Front", "Right", "Rear", "Left"})
-        Me.HVentFace.Location = New System.Drawing.Point(212, 275)
+        Me.HVentFace.Location = New System.Drawing.Point(212, 311)
         Me.HVentFace.Name = "HVentFace"
         Me.HVentFace.Size = New System.Drawing.Size(96, 21)
         Me.HVentFace.TabIndex = 416
@@ -1576,7 +1612,7 @@ Public Class CeditMain
         '
         'Label37
         '
-        Me.Label37.Location = New System.Drawing.Point(164, 272)
+        Me.Label37.Location = New System.Drawing.Point(164, 308)
         Me.Label37.Name = "Label37"
         Me.Label37.Size = New System.Drawing.Size(40, 23)
         Me.Label37.TabIndex = 30
@@ -1586,7 +1622,7 @@ Public Class CeditMain
         'GroupBox14
         '
         Me.GroupBox14.Controls.Add(Me.HVentComp2)
-        Me.GroupBox14.Location = New System.Drawing.Point(88, 91)
+        Me.GroupBox14.Location = New System.Drawing.Point(88, 127)
         Me.GroupBox14.Name = "GroupBox14"
         Me.GroupBox14.Size = New System.Drawing.Size(344, 54)
         Me.GroupBox14.TabIndex = 11
@@ -1605,7 +1641,7 @@ Public Class CeditMain
         'GroupBox13
         '
         Me.GroupBox13.Controls.Add(Me.HVentComp1)
-        Me.GroupBox13.Location = New System.Drawing.Point(88, 31)
+        Me.GroupBox13.Location = New System.Drawing.Point(88, 67)
         Me.GroupBox13.Name = "GroupBox13"
         Me.GroupBox13.Size = New System.Drawing.Size(344, 54)
         Me.GroupBox13.TabIndex = 8
@@ -1623,14 +1659,14 @@ Public Class CeditMain
         '
         'HVentSoffit
         '
-        Me.HVentSoffit.Location = New System.Drawing.Point(212, 197)
+        Me.HVentSoffit.Location = New System.Drawing.Point(212, 233)
         Me.HVentSoffit.Name = "HVentSoffit"
         Me.HVentSoffit.Size = New System.Drawing.Size(96, 20)
         Me.HVentSoffit.TabIndex = 410
         '
         'Label34
         '
-        Me.Label34.Location = New System.Drawing.Point(164, 196)
+        Me.Label34.Location = New System.Drawing.Point(164, 232)
         Me.Label34.Name = "Label34"
         Me.Label34.Size = New System.Drawing.Size(40, 23)
         Me.Label34.TabIndex = 19
@@ -1639,14 +1675,14 @@ Public Class CeditMain
         '
         'HVentSill
         '
-        Me.HVentSill.Location = New System.Drawing.Point(212, 171)
+        Me.HVentSill.Location = New System.Drawing.Point(212, 207)
         Me.HVentSill.Name = "HVentSill"
         Me.HVentSill.Size = New System.Drawing.Size(96, 20)
         Me.HVentSill.TabIndex = 409
         '
         'Label33
         '
-        Me.Label33.Location = New System.Drawing.Point(164, 170)
+        Me.Label33.Location = New System.Drawing.Point(164, 206)
         Me.Label33.Name = "Label33"
         Me.Label33.Size = New System.Drawing.Size(40, 23)
         Me.Label33.TabIndex = 17
@@ -1655,14 +1691,14 @@ Public Class CeditMain
         '
         'HVentWidth
         '
-        Me.HVentWidth.Location = New System.Drawing.Point(212, 223)
+        Me.HVentWidth.Location = New System.Drawing.Point(212, 259)
         Me.HVentWidth.Name = "HVentWidth"
         Me.HVentWidth.Size = New System.Drawing.Size(96, 20)
         Me.HVentWidth.TabIndex = 411
         '
         'Label23
         '
-        Me.Label23.Location = New System.Drawing.Point(164, 223)
+        Me.Label23.Location = New System.Drawing.Point(164, 259)
         Me.Label23.Name = "Label23"
         Me.Label23.Size = New System.Drawing.Size(40, 23)
         Me.Label23.TabIndex = 15
@@ -1729,12 +1765,12 @@ Public Class CeditMain
         Me.VVentSummary.ColumnInfo = resources.GetString("VVentSummary.ColumnInfo")
         Me.VVentSummary.ExtendLastCol = True
         Me.VVentSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.VVentSummary.Location = New System.Drawing.Point(278, 25)
+        Me.VVentSummary.Location = New System.Drawing.Point(227, 25)
         Me.VVentSummary.Name = "VVentSummary"
         Me.VVentSummary.Rows.Count = 2501
         Me.VVentSummary.Rows.DefaultSize = 19
         Me.VVentSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.VVentSummary.Size = New System.Drawing.Size(421, 154)
+        Me.VVentSummary.Size = New System.Drawing.Size(523, 154)
         Me.VVentSummary.StyleInfo = resources.GetString("VVentSummary.StyleInfo")
         Me.VVentSummary.TabIndex = 501
         Me.VVentSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
@@ -1765,6 +1801,8 @@ Public Class CeditMain
         '
         'GroupVVents
         '
+        Me.GroupVVents.Controls.Add(Me.VVentName)
+        Me.GroupVVents.Controls.Add(Me.Label8)
         Me.GroupVVents.Controls.Add(Me.VVentFinalLabel)
         Me.GroupVVents.Controls.Add(Me.VVentFractions)
         Me.GroupVVents.Controls.Add(Me.VVentFinalFraction)
@@ -1793,10 +1831,28 @@ Public Class CeditMain
         Me.GroupVVents.TabStop = False
         Me.GroupVVents.Text = "Vent 1 Geometry"
         '
+        'VVentName
+        '
+        Me.VVentName.Location = New System.Drawing.Point(274, 33)
+        Me.VVentName.Name = "VVentName"
+        Me.VVentName.Size = New System.Drawing.Size(208, 20)
+        Me.VVentName.TabIndex = 754
+        Me.VVentName.Text = "VVent 1"
+        '
+        'Label8
+        '
+        Me.Label8.AutoSize = True
+        Me.Label8.Location = New System.Drawing.Point(247, 36)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(21, 13)
+        Me.Label8.TabIndex = 753
+        Me.Label8.Text = "ID:"
+        Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'VVentFinalLabel
         '
         Me.VVentFinalLabel.AutoSize = True
-        Me.VVentFinalLabel.Location = New System.Drawing.Point(443, 161)
+        Me.VVentFinalLabel.Location = New System.Drawing.Point(459, 191)
         Me.VVentFinalLabel.Name = "VVentFinalLabel"
         Me.VVentFinalLabel.Size = New System.Drawing.Size(122, 13)
         Me.VVentFinalLabel.TabIndex = 746
@@ -1813,7 +1869,7 @@ Public Class CeditMain
         Me.VVentFractions.ColumnInfo = resources.GetString("VVentFractions.ColumnInfo")
         Me.VVentFractions.ExtendLastCol = True
         Me.VVentFractions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.VVentFractions.Location = New System.Drawing.Point(499, 105)
+        Me.VVentFractions.Location = New System.Drawing.Point(515, 135)
         Me.VVentFractions.Name = "VVentFractions"
         Me.VVentFractions.Rows.DefaultSize = 19
         Me.VVentFractions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -1824,7 +1880,7 @@ Public Class CeditMain
         '
         'VVentFinalFraction
         '
-        Me.VVentFinalFraction.Location = New System.Drawing.Point(573, 158)
+        Me.VVentFinalFraction.Location = New System.Drawing.Point(589, 188)
         Me.VVentFinalFraction.Name = "VVentFinalFraction"
         Me.VVentFinalFraction.Size = New System.Drawing.Size(96, 20)
         Me.VVentFinalFraction.TabIndex = 745
@@ -1834,7 +1890,7 @@ Public Class CeditMain
         'VVentInitialLabel
         '
         Me.VVentInitialLabel.AutoSize = True
-        Me.VVentInitialLabel.Location = New System.Drawing.Point(448, 134)
+        Me.VVentInitialLabel.Location = New System.Drawing.Point(464, 164)
         Me.VVentInitialLabel.Name = "VVentInitialLabel"
         Me.VVentInitialLabel.Size = New System.Drawing.Size(117, 13)
         Me.VVentInitialLabel.TabIndex = 744
@@ -1844,7 +1900,7 @@ Public Class CeditMain
         '
         'VVentInitialFraction
         '
-        Me.VVentInitialFraction.Location = New System.Drawing.Point(573, 132)
+        Me.VVentInitialFraction.Location = New System.Drawing.Point(589, 162)
         Me.VVentInitialFraction.Name = "VVentInitialFraction"
         Me.VVentInitialFraction.Size = New System.Drawing.Size(96, 20)
         Me.VVentInitialFraction.TabIndex = 743
@@ -1853,7 +1909,7 @@ Public Class CeditMain
         '
         'VVentYOffset
         '
-        Me.VVentYOffset.Location = New System.Drawing.Point(190, 269)
+        Me.VVentYOffset.Location = New System.Drawing.Point(206, 299)
         Me.VVentYOffset.Name = "VVentYOffset"
         Me.VVentYOffset.Size = New System.Drawing.Size(96, 20)
         Me.VVentYOffset.TabIndex = 742
@@ -1862,7 +1918,7 @@ Public Class CeditMain
         'Label68
         '
         Me.Label68.AutoSize = True
-        Me.Label68.Location = New System.Drawing.Point(161, 272)
+        Me.Label68.Location = New System.Drawing.Point(177, 302)
         Me.Label68.Name = "Label68"
         Me.Label68.Size = New System.Drawing.Size(17, 13)
         Me.Label68.TabIndex = 741
@@ -1871,7 +1927,7 @@ Public Class CeditMain
         '
         'VVentXOffset
         '
-        Me.VVentXOffset.Location = New System.Drawing.Point(190, 243)
+        Me.VVentXOffset.Location = New System.Drawing.Point(206, 273)
         Me.VVentXOffset.Name = "VVentXOffset"
         Me.VVentXOffset.Size = New System.Drawing.Size(96, 20)
         Me.VVentXOffset.TabIndex = 740
@@ -1880,7 +1936,7 @@ Public Class CeditMain
         'Label55
         '
         Me.Label55.AutoSize = True
-        Me.Label55.Location = New System.Drawing.Point(105, 246)
+        Me.Label55.Location = New System.Drawing.Point(121, 276)
         Me.Label55.Name = "Label55"
         Me.Label55.Size = New System.Drawing.Size(73, 13)
         Me.Label55.TabIndex = 739
@@ -1890,7 +1946,7 @@ Public Class CeditMain
         'VVentOpenValueLabel
         '
         Me.VVentOpenValueLabel.AutoSize = True
-        Me.VVentOpenValueLabel.Location = New System.Drawing.Point(515, 82)
+        Me.VVentOpenValueLabel.Location = New System.Drawing.Point(531, 112)
         Me.VVentOpenValueLabel.Name = "VVentOpenValueLabel"
         Me.VVentOpenValueLabel.Size = New System.Drawing.Size(50, 13)
         Me.VVentOpenValueLabel.TabIndex = 738
@@ -1900,7 +1956,7 @@ Public Class CeditMain
         '
         'VVentOpenValue
         '
-        Me.VVentOpenValue.Location = New System.Drawing.Point(573, 79)
+        Me.VVentOpenValue.Location = New System.Drawing.Point(589, 109)
         Me.VVentOpenValue.Name = "VVentOpenValue"
         Me.VVentOpenValue.Size = New System.Drawing.Size(96, 20)
         Me.VVentOpenValue.TabIndex = 737
@@ -1910,7 +1966,7 @@ Public Class CeditMain
         'GroupBox4
         '
         Me.GroupBox4.Controls.Add(Me.VVentCompBottom)
-        Me.GroupBox4.Location = New System.Drawing.Point(8, 101)
+        Me.GroupBox4.Location = New System.Drawing.Point(24, 131)
         Me.GroupBox4.Name = "GroupBox4"
         Me.GroupBox4.Size = New System.Drawing.Size(393, 51)
         Me.GroupBox4.TabIndex = 736
@@ -1929,7 +1985,7 @@ Public Class CeditMain
         'VVentTarget
         '
         Me.VVentTarget.ItemHeight = 13
-        Me.VVentTarget.Location = New System.Drawing.Point(571, 105)
+        Me.VVentTarget.Location = New System.Drawing.Point(587, 135)
         Me.VVentTarget.Name = "VVentTarget"
         Me.VVentTarget.Size = New System.Drawing.Size(98, 21)
         Me.VVentTarget.TabIndex = 735
@@ -1938,7 +1994,7 @@ Public Class CeditMain
         'VVentTargetLabel
         '
         Me.VVentTargetLabel.AutoSize = True
-        Me.VVentTargetLabel.Location = New System.Drawing.Point(474, 108)
+        Me.VVentTargetLabel.Location = New System.Drawing.Point(490, 138)
         Me.VVentTargetLabel.Name = "VVentTargetLabel"
         Me.VVentTargetLabel.Size = New System.Drawing.Size(91, 13)
         Me.VVentTargetLabel.TabIndex = 732
@@ -1950,7 +2006,7 @@ Public Class CeditMain
         '
         Me.VVentOpenCriterion.ItemHeight = 13
         Me.VVentOpenCriterion.Items.AddRange(New Object() {"Time", "Temperature", "Heat Flux"})
-        Me.VVentOpenCriterion.Location = New System.Drawing.Point(571, 52)
+        Me.VVentOpenCriterion.Location = New System.Drawing.Point(587, 82)
         Me.VVentOpenCriterion.Name = "VVentOpenCriterion"
         Me.VVentOpenCriterion.Size = New System.Drawing.Size(98, 21)
         Me.VVentOpenCriterion.TabIndex = 733
@@ -1959,7 +2015,7 @@ Public Class CeditMain
         'Label80
         '
         Me.Label80.AutoSize = True
-        Me.Label80.Location = New System.Drawing.Point(457, 56)
+        Me.Label80.Location = New System.Drawing.Point(473, 86)
         Me.Label80.Name = "Label80"
         Me.Label80.Size = New System.Drawing.Size(108, 13)
         Me.Label80.TabIndex = 730
@@ -1970,7 +2026,7 @@ Public Class CeditMain
         '
         Me.VVentShape.ItemHeight = 13
         Me.VVentShape.Items.AddRange(New Object() {"Round", "Square"})
-        Me.VVentShape.Location = New System.Drawing.Point(190, 216)
+        Me.VVentShape.Location = New System.Drawing.Point(206, 246)
         Me.VVentShape.Name = "VVentShape"
         Me.VVentShape.Size = New System.Drawing.Size(96, 21)
         Me.VVentShape.TabIndex = 508
@@ -1978,7 +2034,7 @@ Public Class CeditMain
         '
         'Label40
         '
-        Me.Label40.Location = New System.Drawing.Point(86, 215)
+        Me.Label40.Location = New System.Drawing.Point(102, 245)
         Me.Label40.Name = "Label40"
         Me.Label40.Size = New System.Drawing.Size(96, 23)
         Me.Label40.TabIndex = 32
@@ -1988,7 +2044,7 @@ Public Class CeditMain
         'GroupBox18
         '
         Me.GroupBox18.Controls.Add(Me.VVentCompTop)
-        Me.GroupBox18.Location = New System.Drawing.Point(8, 44)
+        Me.GroupBox18.Location = New System.Drawing.Point(24, 74)
         Me.GroupBox18.Name = "GroupBox18"
         Me.GroupBox18.Size = New System.Drawing.Size(393, 51)
         Me.GroupBox18.TabIndex = 6
@@ -2006,7 +2062,7 @@ Public Class CeditMain
         '
         'VVentArea
         '
-        Me.VVentArea.Location = New System.Drawing.Point(190, 190)
+        Me.VVentArea.Location = New System.Drawing.Point(206, 220)
         Me.VVentArea.Name = "VVentArea"
         Me.VVentArea.Size = New System.Drawing.Size(96, 20)
         Me.VVentArea.TabIndex = 507
@@ -2015,7 +2071,7 @@ Public Class CeditMain
         'Label46
         '
         Me.Label46.AutoSize = True
-        Me.Label46.Location = New System.Drawing.Point(70, 193)
+        Me.Label46.Location = New System.Drawing.Point(86, 223)
         Me.Label46.Name = "Label46"
         Me.Label46.Size = New System.Drawing.Size(108, 13)
         Me.Label46.TabIndex = 17
@@ -2118,7 +2174,7 @@ Public Class CeditMain
         '
         'CompName
         '
-        Me.CompName.Location = New System.Drawing.Point(384, 16)
+        Me.CompName.Location = New System.Drawing.Point(382, 15)
         Me.CompName.Name = "CompName"
         Me.CompName.Size = New System.Drawing.Size(208, 20)
         Me.CompName.TabIndex = 307
@@ -2127,11 +2183,11 @@ Public Class CeditMain
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(264, 16)
+        Me.Label9.Location = New System.Drawing.Point(355, 18)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(103, 13)
+        Me.Label9.Size = New System.Drawing.Size(21, 13)
         Me.Label9.TabIndex = 29
-        Me.Label9.Text = "Compartment Name:"
+        Me.Label9.Text = "ID:"
         Me.Label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'GroupBox5
@@ -2595,6 +2651,8 @@ Public Class CeditMain
         '
         'GroupMVents
         '
+        Me.GroupMVents.Controls.Add(Me.MVentName)
+        Me.GroupMVents.Controls.Add(Me.Label24)
         Me.GroupMVents.Controls.Add(Me.MventFinalLabel)
         Me.GroupMVents.Controls.Add(Me.MVentFinalFraction)
         Me.GroupMVents.Controls.Add(Me.MVentInitialLabel)
@@ -2630,10 +2688,28 @@ Public Class CeditMain
         Me.GroupMVents.TabStop = False
         Me.GroupMVents.Text = "Vent 1 Geometry"
         '
+        'MVentName
+        '
+        Me.MVentName.Location = New System.Drawing.Point(270, 18)
+        Me.MVentName.Name = "MVentName"
+        Me.MVentName.Size = New System.Drawing.Size(208, 20)
+        Me.MVentName.TabIndex = 756
+        Me.MVentName.Text = "MVent 1"
+        '
+        'Label24
+        '
+        Me.Label24.AutoSize = True
+        Me.Label24.Location = New System.Drawing.Point(243, 21)
+        Me.Label24.Name = "Label24"
+        Me.Label24.Size = New System.Drawing.Size(21, 13)
+        Me.Label24.TabIndex = 755
+        Me.Label24.Text = "ID:"
+        Me.Label24.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'MventFinalLabel
         '
         Me.MventFinalLabel.AutoSize = True
-        Me.MventFinalLabel.Location = New System.Drawing.Point(448, 160)
+        Me.MventFinalLabel.Location = New System.Drawing.Point(457, 177)
         Me.MventFinalLabel.Name = "MventFinalLabel"
         Me.MventFinalLabel.Size = New System.Drawing.Size(122, 13)
         Me.MventFinalLabel.TabIndex = 753
@@ -2643,7 +2719,7 @@ Public Class CeditMain
         '
         'MVentFinalFraction
         '
-        Me.MVentFinalFraction.Location = New System.Drawing.Point(578, 157)
+        Me.MVentFinalFraction.Location = New System.Drawing.Point(587, 174)
         Me.MVentFinalFraction.Name = "MVentFinalFraction"
         Me.MVentFinalFraction.Size = New System.Drawing.Size(96, 20)
         Me.MVentFinalFraction.TabIndex = 752
@@ -2653,7 +2729,7 @@ Public Class CeditMain
         'MVentInitialLabel
         '
         Me.MVentInitialLabel.AutoSize = True
-        Me.MVentInitialLabel.Location = New System.Drawing.Point(453, 133)
+        Me.MVentInitialLabel.Location = New System.Drawing.Point(462, 150)
         Me.MVentInitialLabel.Name = "MVentInitialLabel"
         Me.MVentInitialLabel.Size = New System.Drawing.Size(117, 13)
         Me.MVentInitialLabel.TabIndex = 751
@@ -2663,7 +2739,7 @@ Public Class CeditMain
         '
         'MVentInitialFraction
         '
-        Me.MVentInitialFraction.Location = New System.Drawing.Point(578, 131)
+        Me.MVentInitialFraction.Location = New System.Drawing.Point(587, 148)
         Me.MVentInitialFraction.Name = "MVentInitialFraction"
         Me.MVentInitialFraction.Size = New System.Drawing.Size(96, 20)
         Me.MVentInitialFraction.TabIndex = 750
@@ -2672,7 +2748,7 @@ Public Class CeditMain
         '
         'MVentYOffset
         '
-        Me.MVentYOffset.Location = New System.Drawing.Point(310, 320)
+        Me.MVentYOffset.Location = New System.Drawing.Point(319, 337)
         Me.MVentYOffset.Name = "MVentYOffset"
         Me.MVentYOffset.Size = New System.Drawing.Size(96, 20)
         Me.MVentYOffset.TabIndex = 749
@@ -2681,7 +2757,7 @@ Public Class CeditMain
         'Label98
         '
         Me.Label98.AutoSize = True
-        Me.Label98.Location = New System.Drawing.Point(281, 323)
+        Me.Label98.Location = New System.Drawing.Point(290, 340)
         Me.Label98.Name = "Label98"
         Me.Label98.Size = New System.Drawing.Size(17, 13)
         Me.Label98.TabIndex = 748
@@ -2690,7 +2766,7 @@ Public Class CeditMain
         '
         'MVentXOffset
         '
-        Me.MVentXOffset.Location = New System.Drawing.Point(310, 294)
+        Me.MVentXOffset.Location = New System.Drawing.Point(319, 311)
         Me.MVentXOffset.Name = "MVentXOffset"
         Me.MVentXOffset.Size = New System.Drawing.Size(96, 20)
         Me.MVentXOffset.TabIndex = 747
@@ -2699,7 +2775,7 @@ Public Class CeditMain
         'Label99
         '
         Me.Label99.AutoSize = True
-        Me.Label99.Location = New System.Drawing.Point(225, 297)
+        Me.Label99.Location = New System.Drawing.Point(234, 314)
         Me.Label99.Name = "Label99"
         Me.Label99.Size = New System.Drawing.Size(73, 13)
         Me.Label99.TabIndex = 746
@@ -2709,7 +2785,7 @@ Public Class CeditMain
         'MVentOpenValueLabel
         '
         Me.MVentOpenValueLabel.AutoSize = True
-        Me.MVentOpenValueLabel.Location = New System.Drawing.Point(520, 81)
+        Me.MVentOpenValueLabel.Location = New System.Drawing.Point(529, 98)
         Me.MVentOpenValueLabel.Name = "MVentOpenValueLabel"
         Me.MVentOpenValueLabel.Size = New System.Drawing.Size(50, 13)
         Me.MVentOpenValueLabel.TabIndex = 745
@@ -2719,7 +2795,7 @@ Public Class CeditMain
         '
         'MVentOpenValue
         '
-        Me.MVentOpenValue.Location = New System.Drawing.Point(578, 78)
+        Me.MVentOpenValue.Location = New System.Drawing.Point(587, 95)
         Me.MVentOpenValue.Name = "MVentOpenValue"
         Me.MVentOpenValue.Size = New System.Drawing.Size(96, 20)
         Me.MVentOpenValue.TabIndex = 744
@@ -2729,7 +2805,7 @@ Public Class CeditMain
         'MVentTarget
         '
         Me.MVentTarget.ItemHeight = 13
-        Me.MVentTarget.Location = New System.Drawing.Point(576, 104)
+        Me.MVentTarget.Location = New System.Drawing.Point(585, 121)
         Me.MVentTarget.Name = "MVentTarget"
         Me.MVentTarget.Size = New System.Drawing.Size(98, 21)
         Me.MVentTarget.TabIndex = 743
@@ -2738,7 +2814,7 @@ Public Class CeditMain
         'MVentTargetLabel
         '
         Me.MVentTargetLabel.AutoSize = True
-        Me.MVentTargetLabel.Location = New System.Drawing.Point(493, 107)
+        Me.MVentTargetLabel.Location = New System.Drawing.Point(502, 124)
         Me.MVentTargetLabel.Name = "MVentTargetLabel"
         Me.MVentTargetLabel.Size = New System.Drawing.Size(77, 13)
         Me.MVentTargetLabel.TabIndex = 741
@@ -2750,7 +2826,7 @@ Public Class CeditMain
         '
         Me.MVentOpenCriterion.ItemHeight = 13
         Me.MVentOpenCriterion.Items.AddRange(New Object() {"Time", "Temperature", "Heat Flux"})
-        Me.MVentOpenCriterion.Location = New System.Drawing.Point(576, 51)
+        Me.MVentOpenCriterion.Location = New System.Drawing.Point(585, 68)
         Me.MVentOpenCriterion.Name = "MVentOpenCriterion"
         Me.MVentOpenCriterion.Size = New System.Drawing.Size(98, 21)
         Me.MVentOpenCriterion.TabIndex = 742
@@ -2759,7 +2835,7 @@ Public Class CeditMain
         'Label97
         '
         Me.Label97.AutoSize = True
-        Me.Label97.Location = New System.Drawing.Point(462, 55)
+        Me.Label97.Location = New System.Drawing.Point(471, 72)
         Me.Label97.Name = "Label97"
         Me.Label97.Size = New System.Drawing.Size(108, 13)
         Me.Label97.TabIndex = 740
@@ -2774,7 +2850,7 @@ Public Class CeditMain
         Me.MVentFractions.ColumnInfo = resources.GetString("MVentFractions.ColumnInfo")
         Me.MVentFractions.ExtendLastCol = True
         Me.MVentFractions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.MVentFractions.Location = New System.Drawing.Point(506, 104)
+        Me.MVentFractions.Location = New System.Drawing.Point(515, 121)
         Me.MVentFractions.Name = "MVentFractions"
         Me.MVentFractions.Rows.DefaultSize = 19
         Me.MVentFractions.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
@@ -2785,7 +2861,7 @@ Public Class CeditMain
         '
         'MVentFilterTime
         '
-        Me.MVentFilterTime.Location = New System.Drawing.Point(578, 320)
+        Me.MVentFilterTime.Location = New System.Drawing.Point(587, 337)
         Me.MVentFilterTime.Name = "MVentFilterTime"
         Me.MVentFilterTime.Size = New System.Drawing.Size(96, 20)
         Me.MVentFilterTime.TabIndex = 620
@@ -2793,7 +2869,7 @@ Public Class CeditMain
         'Label38
         '
         Me.Label38.AutoSize = True
-        Me.Label38.Location = New System.Drawing.Point(497, 323)
+        Me.Label38.Location = New System.Drawing.Point(506, 340)
         Me.Label38.Name = "Label38"
         Me.Label38.Size = New System.Drawing.Size(75, 13)
         Me.Label38.TabIndex = 62
@@ -2802,7 +2878,7 @@ Public Class CeditMain
         '
         'MVentFilterEfficiency
         '
-        Me.MVentFilterEfficiency.Location = New System.Drawing.Point(578, 294)
+        Me.MVentFilterEfficiency.Location = New System.Drawing.Point(587, 311)
         Me.MVentFilterEfficiency.Name = "MVentFilterEfficiency"
         Me.MVentFilterEfficiency.Size = New System.Drawing.Size(96, 20)
         Me.MVentFilterEfficiency.TabIndex = 619
@@ -2811,7 +2887,7 @@ Public Class CeditMain
         'Label54
         '
         Me.Label54.AutoSize = True
-        Me.Label54.Location = New System.Drawing.Point(491, 297)
+        Me.Label54.Location = New System.Drawing.Point(500, 314)
         Me.Label54.Name = "Label54"
         Me.Label54.Size = New System.Drawing.Size(81, 13)
         Me.Label54.TabIndex = 61
@@ -2820,7 +2896,7 @@ Public Class CeditMain
         '
         'MVentZero
         '
-        Me.MVentZero.Location = New System.Drawing.Point(102, 346)
+        Me.MVentZero.Location = New System.Drawing.Point(111, 363)
         Me.MVentZero.Name = "MVentZero"
         Me.MVentZero.Size = New System.Drawing.Size(96, 20)
         Me.MVentZero.TabIndex = 615
@@ -2829,7 +2905,7 @@ Public Class CeditMain
         'Label41
         '
         Me.Label41.AutoSize = True
-        Me.Label41.Location = New System.Drawing.Point(22, 348)
+        Me.Label41.Location = New System.Drawing.Point(31, 365)
         Me.Label41.Name = "Label41"
         Me.Label41.Size = New System.Drawing.Size(70, 13)
         Me.Label41.TabIndex = 33
@@ -2845,7 +2921,7 @@ Public Class CeditMain
         Me.GroupBox20.Controls.Add(Me.MVentToArea)
         Me.GroupBox20.Controls.Add(Me.Label49)
         Me.GroupBox20.Controls.Add(Me.MventToComp)
-        Me.GroupBox20.Location = New System.Drawing.Point(62, 145)
+        Me.GroupBox20.Location = New System.Drawing.Point(71, 162)
         Me.GroupBox20.Name = "GroupBox20"
         Me.GroupBox20.Size = New System.Drawing.Size(344, 112)
         Me.GroupBox20.TabIndex = 11
@@ -2914,7 +2990,7 @@ Public Class CeditMain
         '
         'MVentDropoff
         '
-        Me.MVentDropoff.Location = New System.Drawing.Point(102, 320)
+        Me.MVentDropoff.Location = New System.Drawing.Point(111, 337)
         Me.MVentDropoff.Name = "MVentDropoff"
         Me.MVentDropoff.Size = New System.Drawing.Size(96, 20)
         Me.MVentDropoff.TabIndex = 614
@@ -2923,7 +2999,7 @@ Public Class CeditMain
         'Label42
         '
         Me.Label42.AutoSize = True
-        Me.Label42.Location = New System.Drawing.Point(6, 322)
+        Me.Label42.Location = New System.Drawing.Point(15, 339)
         Me.Label42.Name = "Label42"
         Me.Label42.Size = New System.Drawing.Size(88, 13)
         Me.Label42.TabIndex = 28
@@ -2939,7 +3015,7 @@ Public Class CeditMain
         Me.GroupBox21.Controls.Add(Me.MVentFromArea)
         Me.GroupBox21.Controls.Add(Me.Label51)
         Me.GroupBox21.Controls.Add(Me.MVentFromComp)
-        Me.GroupBox21.Location = New System.Drawing.Point(62, 27)
+        Me.GroupBox21.Location = New System.Drawing.Point(71, 44)
         Me.GroupBox21.Name = "GroupBox21"
         Me.GroupBox21.Size = New System.Drawing.Size(344, 112)
         Me.GroupBox21.TabIndex = 6
@@ -3008,7 +3084,7 @@ Public Class CeditMain
         '
         'MVentFlow
         '
-        Me.MVentFlow.Location = New System.Drawing.Point(102, 294)
+        Me.MVentFlow.Location = New System.Drawing.Point(111, 311)
         Me.MVentFlow.Name = "MVentFlow"
         Me.MVentFlow.Size = New System.Drawing.Size(96, 20)
         Me.MVentFlow.TabIndex = 613
@@ -3016,7 +3092,7 @@ Public Class CeditMain
         '
         'Label45
         '
-        Me.Label45.Location = New System.Drawing.Point(22, 292)
+        Me.Label45.Location = New System.Drawing.Point(31, 309)
         Me.Label45.Name = "Label45"
         Me.Label45.Size = New System.Drawing.Size(72, 24)
         Me.Label45.TabIndex = 21
@@ -3025,7 +3101,7 @@ Public Class CeditMain
         '
         'Label47
         '
-        Me.Label47.Location = New System.Drawing.Point(304, 119)
+        Me.Label47.Location = New System.Drawing.Point(313, 136)
         Me.Label47.Name = "Label47"
         Me.Label47.Size = New System.Drawing.Size(40, 23)
         Me.Label47.TabIndex = 19
@@ -3531,18 +3607,20 @@ Public Class CeditMain
         Me.DetectorSummary.ColumnInfo = resources.GetString("DetectorSummary.ColumnInfo")
         Me.DetectorSummary.ExtendLastCol = True
         Me.DetectorSummary.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!)
-        Me.DetectorSummary.Location = New System.Drawing.Point(117, 53)
+        Me.DetectorSummary.Location = New System.Drawing.Point(62, 53)
         Me.DetectorSummary.Name = "DetectorSummary"
         Me.DetectorSummary.Rows.Count = 401
         Me.DetectorSummary.Rows.DefaultSize = 19
         Me.DetectorSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.DetectorSummary.Size = New System.Drawing.Size(742, 195)
+        Me.DetectorSummary.Size = New System.Drawing.Size(852, 195)
         Me.DetectorSummary.StyleInfo = resources.GetString("DetectorSummary.StyleInfo")
         Me.DetectorSummary.TabIndex = 901
         Me.DetectorSummary.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
         '
         'GroupDetectors
         '
+        Me.GroupDetectors.Controls.Add(Me.DetectorName)
+        Me.GroupDetectors.Controls.Add(Me.Label67)
         Me.GroupDetectors.Controls.Add(Me.DetectorActivationObscuration)
         Me.GroupDetectors.Controls.Add(Me.Label17)
         Me.GroupDetectors.Controls.Add(Me.DetectorSprayDensity)
@@ -3558,14 +3636,32 @@ Public Class CeditMain
         Me.GroupDetectors.Controls.Add(Me.GroupBox33)
         Me.GroupDetectors.Location = New System.Drawing.Point(79, 325)
         Me.GroupDetectors.Name = "GroupDetectors"
-        Me.GroupDetectors.Size = New System.Drawing.Size(819, 226)
+        Me.GroupDetectors.Size = New System.Drawing.Size(819, 253)
         Me.GroupDetectors.TabIndex = 7
         Me.GroupDetectors.TabStop = False
         Me.GroupDetectors.Text = "Smoke Alarm 1"
         '
+        'DetectorName
+        '
+        Me.DetectorName.Location = New System.Drawing.Point(319, 19)
+        Me.DetectorName.Name = "DetectorName"
+        Me.DetectorName.Size = New System.Drawing.Size(208, 20)
+        Me.DetectorName.TabIndex = 918
+        Me.DetectorName.Text = "Detection/Surprssion 1"
+        '
+        'Label67
+        '
+        Me.Label67.AutoSize = True
+        Me.Label67.Location = New System.Drawing.Point(292, 22)
+        Me.Label67.Name = "Label67"
+        Me.Label67.Size = New System.Drawing.Size(21, 13)
+        Me.Label67.TabIndex = 917
+        Me.Label67.Text = "ID:"
+        Me.Label67.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
         'DetectorActivationObscuration
         '
-        Me.DetectorActivationObscuration.Location = New System.Drawing.Point(697, 52)
+        Me.DetectorActivationObscuration.Location = New System.Drawing.Point(696, 81)
         Me.DetectorActivationObscuration.Name = "DetectorActivationObscuration"
         Me.DetectorActivationObscuration.Size = New System.Drawing.Size(96, 20)
         Me.DetectorActivationObscuration.TabIndex = 916
@@ -3574,7 +3670,7 @@ Public Class CeditMain
         'Label17
         '
         Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(572, 56)
+        Me.Label17.Location = New System.Drawing.Point(571, 85)
         Me.Label17.Name = "Label17"
         Me.Label17.Size = New System.Drawing.Size(117, 13)
         Me.Label17.TabIndex = 915
@@ -3583,7 +3679,7 @@ Public Class CeditMain
         '
         'DetectorSprayDensity
         '
-        Me.DetectorSprayDensity.Location = New System.Drawing.Point(594, 168)
+        Me.DetectorSprayDensity.Location = New System.Drawing.Point(593, 197)
         Me.DetectorSprayDensity.Name = "DetectorSprayDensity"
         Me.DetectorSprayDensity.Size = New System.Drawing.Size(96, 20)
         Me.DetectorSprayDensity.TabIndex = 914
@@ -3592,7 +3688,7 @@ Public Class CeditMain
         'Label81
         '
         Me.Label81.AutoSize = True
-        Me.Label81.Location = New System.Drawing.Point(506, 168)
+        Me.Label81.Location = New System.Drawing.Point(505, 197)
         Me.Label81.Name = "Label81"
         Me.Label81.Size = New System.Drawing.Size(75, 13)
         Me.Label81.TabIndex = 48
@@ -3601,7 +3697,7 @@ Public Class CeditMain
         '
         'DetectorRTI
         '
-        Me.DetectorRTI.Location = New System.Drawing.Point(594, 136)
+        Me.DetectorRTI.Location = New System.Drawing.Point(593, 165)
         Me.DetectorRTI.Name = "DetectorRTI"
         Me.DetectorRTI.Size = New System.Drawing.Size(96, 20)
         Me.DetectorRTI.TabIndex = 913
@@ -3610,7 +3706,7 @@ Public Class CeditMain
         'Label83
         '
         Me.Label83.AutoSize = True
-        Me.Label83.Location = New System.Drawing.Point(554, 136)
+        Me.Label83.Location = New System.Drawing.Point(553, 165)
         Me.Label83.Name = "Label83"
         Me.Label83.Size = New System.Drawing.Size(28, 13)
         Me.Label83.TabIndex = 46
@@ -3619,7 +3715,7 @@ Public Class CeditMain
         '
         'DetectorActivationTemperature
         '
-        Me.DetectorActivationTemperature.Location = New System.Drawing.Point(697, 24)
+        Me.DetectorActivationTemperature.Location = New System.Drawing.Point(696, 53)
         Me.DetectorActivationTemperature.Name = "DetectorActivationTemperature"
         Me.DetectorActivationTemperature.Size = New System.Drawing.Size(96, 20)
         Me.DetectorActivationTemperature.TabIndex = 909
@@ -3628,7 +3724,7 @@ Public Class CeditMain
         'Label92
         '
         Me.Label92.AutoSize = True
-        Me.Label92.Location = New System.Drawing.Point(569, 28)
+        Me.Label92.Location = New System.Drawing.Point(568, 57)
         Me.Label92.Name = "Label92"
         Me.Label92.Size = New System.Drawing.Size(120, 13)
         Me.Label92.TabIndex = 44
@@ -3639,7 +3735,7 @@ Public Class CeditMain
         '
         Me.DetectorType.ItemHeight = 13
         Me.DetectorType.Items.AddRange(New Object() {"Smoke Alarm", "Heat Alarm", "Sprinkler"})
-        Me.DetectorType.Location = New System.Drawing.Point(65, 24)
+        Me.DetectorType.Location = New System.Drawing.Point(64, 53)
         Me.DetectorType.Name = "DetectorType"
         Me.DetectorType.Size = New System.Drawing.Size(112, 21)
         Me.DetectorType.TabIndex = 907
@@ -3648,7 +3744,7 @@ Public Class CeditMain
         'Label91
         '
         Me.Label91.AutoSize = True
-        Me.Label91.Location = New System.Drawing.Point(25, 28)
+        Me.Label91.Location = New System.Drawing.Point(24, 57)
         Me.Label91.Name = "Label91"
         Me.Label91.Size = New System.Drawing.Size(34, 13)
         Me.Label91.TabIndex = 42
@@ -3659,7 +3755,7 @@ Public Class CeditMain
         '
         Me.DetectorComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.DetectorComp.ItemHeight = 13
-        Me.DetectorComp.Location = New System.Drawing.Point(321, 24)
+        Me.DetectorComp.Location = New System.Drawing.Point(320, 53)
         Me.DetectorComp.Name = "DetectorComp"
         Me.DetectorComp.Size = New System.Drawing.Size(208, 21)
         Me.DetectorComp.TabIndex = 908
@@ -3667,7 +3763,7 @@ Public Class CeditMain
         'Label87
         '
         Me.Label87.AutoSize = True
-        Me.Label87.Location = New System.Drawing.Point(233, 28)
+        Me.Label87.Location = New System.Drawing.Point(232, 57)
         Me.Label87.Name = "Label87"
         Me.Label87.Size = New System.Drawing.Size(72, 13)
         Me.Label87.TabIndex = 34
@@ -3682,7 +3778,7 @@ Public Class CeditMain
         Me.GroupBox33.Controls.Add(Me.Label89)
         Me.GroupBox33.Controls.Add(Me.DetectorXPosition)
         Me.GroupBox33.Controls.Add(Me.Label90)
-        Me.GroupBox33.Location = New System.Drawing.Point(153, 72)
+        Me.GroupBox33.Location = New System.Drawing.Point(152, 101)
         Me.GroupBox33.Name = "GroupBox33"
         Me.GroupBox33.Size = New System.Drawing.Size(200, 136)
         Me.GroupBox33.TabIndex = 11
@@ -3839,11 +3935,11 @@ Public Class CeditMain
         'Label116
         '
         Me.Label116.AutoSize = True
-        Me.Label116.Location = New System.Drawing.Point(69, 38)
+        Me.Label116.Location = New System.Drawing.Point(86, 37)
         Me.Label116.Name = "Label116"
-        Me.Label116.Size = New System.Drawing.Size(38, 13)
+        Me.Label116.Size = New System.Drawing.Size(21, 13)
         Me.Label116.TabIndex = 810
-        Me.Label116.Text = "Name:"
+        Me.Label116.Text = "ID:"
         Me.Label116.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'GroupBox3
@@ -4612,11 +4708,11 @@ Public Class CeditMain
         'Label104
         '
         Me.Label104.AutoSize = True
-        Me.Label104.Location = New System.Drawing.Point(56, 47)
+        Me.Label104.Location = New System.Drawing.Point(103, 51)
         Me.Label104.Name = "Label104"
-        Me.Label104.Size = New System.Drawing.Size(66, 13)
+        Me.Label104.Size = New System.Drawing.Size(21, 13)
         Me.Label104.TabIndex = 15
-        Me.Label104.Text = "Short Name:"
+        Me.Label104.Text = "ID:"
         Me.Label104.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'ThermalShortName
@@ -5479,10 +5575,11 @@ Public Class CeditMain
             UpdateGUI.HVents(CurrentHVent)
         End If
     End Sub
-    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentOpenCriterion.SelectedIndexChanged, HVentOpenValue.Leave, HVentTarget.SelectedIndexChanged, HVentInitialFraction.Leave, HVentFinalFraction.Leave
+    Private Sub HVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentOffset.Leave, HVentSill.Leave, HVentSoffit.Leave, HVentWidth.Leave, HVentFace.SelectedIndexChanged, HVentComp1.SelectedIndexChanged, HVentComp2.SelectedIndexChanged, HVentOpenCriterion.SelectedIndexChanged, HVentOpenValue.Leave, HVentTarget.SelectedIndexChanged, HVentInitialFraction.Leave, HVentFinalFraction.Leave, HVentName.Leave
         Dim aVent As New Vent
         If CurrentHVent >= 0 And myHVents.Count > 0 Then
             aVent = myHVents.Item(CurrentHVent)
+            If sender Is HVentName Then aVent.Name = HVentName.Text
             If sender Is HVentOffset Then aVent.Offset = Val(HVentOffset.Text)
             If sender Is HVentSill Then aVent.Sill = Val(HVentSill.Text)
             If sender Is HVentSoffit Then aVent.Soffit = Val(HVentSoffit.Text)
@@ -5564,10 +5661,11 @@ Public Class CeditMain
             UpdateGUI.VVents(CurrentVVent)
         End If
     End Sub
-    Private Sub VVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentCompTop.SelectedIndexChanged, VVentCompBottom.SelectedIndexChanged, VVentArea.Leave, VVentShape.SelectedIndexChanged, VVentXOffset.Leave, VVentYOffset.Leave, VVentInitialFraction.Leave, VVentFinalFraction.Leave, VVentOpenCriterion.SelectedIndexChanged, VVentOpenValue.Leave, VVentTarget.SelectedIndexChanged
+    Private Sub VVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentCompTop.SelectedIndexChanged, VVentCompBottom.SelectedIndexChanged, VVentArea.Leave, VVentShape.SelectedIndexChanged, VVentXOffset.Leave, VVentYOffset.Leave, VVentInitialFraction.Leave, VVentFinalFraction.Leave, VVentOpenCriterion.SelectedIndexChanged, VVentOpenValue.Leave, VVentTarget.SelectedIndexChanged, VVentName.Leave
         Dim aVent As New Vent
         If CurrentVVent >= 0 And myVVents.Count > 0 Then
             aVent = myVVents.Item(CurrentVVent)
+            If sender Is VVentName Then aVent.Name = VVentName.Text
             If sender Is VVentArea Then aVent.Area = Val(VVentArea.Text)
             If sender Is VVentXOffset Then aVent.OffsetX = Val(VVentXOffset.Text)
             If sender Is VVentYOffset Then aVent.OffsetY = Val(VVentYOffset.Text)
@@ -5646,10 +5744,11 @@ Public Class CeditMain
             UpdateGUI.MVents(CurrentMVent)
         End If
     End Sub
-    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentFilterEfficiency.Leave, MVentFilterTime.Leave, MVentOpenCriterion.SelectedIndexChanged, MVentOpenValue.Leave, MVentTarget.SelectedIndexChanged, MVentInitialFraction.Leave, MVentFinalFraction.Leave, MVentXOffset.Leave, MVentYOffset.Leave
+    Private Sub mVent_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentFromComp.SelectedIndexChanged, MventToComp.SelectedIndexChanged, MVentFromOrientation.SelectedIndexChanged, MVentToOrientation.SelectedIndexChanged, MVentFromArea.Leave, MVentFromHeight.Leave, MVentToArea.Leave, MVentToHeight.Leave, MVentFlow.Leave, MVentDropoff.Leave, MVentZero.Leave, MVentFilterEfficiency.Leave, MVentFilterTime.Leave, MVentOpenCriterion.SelectedIndexChanged, MVentOpenValue.Leave, MVentTarget.SelectedIndexChanged, MVentInitialFraction.Leave, MVentFinalFraction.Leave, MVentXOffset.Leave, MVentYOffset.Leave, MVentName.Leave
         Dim aVent As New Vent
         If CurrentMVent >= 0 And myMVents.Count > 0 Then
             aVent = myMVents.Item(CurrentMVent)
+            If sender Is MVentName Then aVent.Name = MVentName.Text
             If sender Is MVentFromComp Then aVent.FirstCompartment = MVentFromComp.SelectedIndex - 1
             If sender Is MVentFromArea Then aVent.FirstArea = Val(MVentFromArea.Text)
             If sender Is MVentFromHeight Then aVent.FirstCenterHeight = Val(MVentFromHeight.Text)
@@ -5848,10 +5947,10 @@ Public Class CeditMain
         If CurrentFire >= 0 And myFireInstances.Count > 0 Then
             Dim aFire As New Fire, aFireInstance As New Fire, fireIndex As Integer
             aFireInstance = myFireInstances(CurrentFire)
-            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+            fireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             aFire = myFires(fireIndex)
             CopyFireData(aFire)
-            myFires(FireIndex) = aFire
+            myFires(fireIndex) = aFire
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
@@ -6070,10 +6169,11 @@ Public Class CeditMain
             UpdateGUI.Detectors(CurrentDetector)
         End If
     End Sub
-    Private Sub Detector_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorComp.SelectedIndexChanged, DetectorType.SelectedIndexChanged, DetectorActivationTemperature.Leave, DetectorActivationObscuration.Leave, DetectorXPosition.Leave, DetectorYPosition.Leave, DetectorZPosition.Leave, DetectorSprayDensity.Leave, DetectorRTI.Leave
+    Private Sub Detector_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles DetectorComp.SelectedIndexChanged, DetectorType.SelectedIndexChanged, DetectorActivationTemperature.Leave, DetectorActivationObscuration.Leave, DetectorXPosition.Leave, DetectorYPosition.Leave, DetectorZPosition.Leave, DetectorSprayDensity.Leave, DetectorRTI.Leave, DetectorName.Leave
         Dim aDetector As New Target
         If CurrentDetector >= 0 And myDetectors.Count > 0 Then
             aDetector = myDetectors(CurrentDetector)
+            If sender Is DetectorName Then aDetector.Name = DetectorName.Text
             If sender Is DetectorType Then aDetector.DetectorType = DetectorType.SelectedIndex
             If sender Is DetectorComp Then
                 aDetector.Compartment = DetectorComp.SelectedIndex

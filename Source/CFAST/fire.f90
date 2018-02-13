@@ -541,7 +541,8 @@ module fire_routines
     ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger;
     !                            in a corner, 1/4 the entrainment of a fire 4 times larger
     xf = 1.0_eb
-    if (xfx<=sqrt(area)/2.or.xfy<=sqrt(area)/2) xf = 2.0_eb
+    ! V&V experiments show no effect for walls
+    if (xfx<=sqrt(area)/2.or.xfy<=sqrt(area)/2) xf = 1.0_eb 
     if (xfx<=sqrt(area)/2.and.xfy<=sqrt(area)/2) xf = 4.0_eb
 
     ! qstar and virtual origin correlation are based on total HRR
@@ -844,7 +845,8 @@ module fire_routines
             xfx = min(fireptr%x_position, roomptr%cwidth-fireptr%x_position)
             xfy = min(fireptr%y_position, roomptr%cdepth-fireptr%y_position)
             xf = 1.0_eb
-            if (xfx<=sqrt(fireptr%firearea)/2.or.xfy<=sqrt(fireptr%firearea)/2) xf = 2.0_eb
+            ! V&V experiments show no effect for walls
+            if (xfx<=sqrt(fireptr%firearea)/2.or.xfy<=sqrt(fireptr%firearea)/2) xf = 1.0_eb
             if (xfx<=sqrt(fireptr%firearea)/2.and.xfy<=sqrt(fireptr%firearea)/2) xf = 4.0_eb
             qdot = xf*fireptr%qdot_actual
             chirad = fireptr%chirad

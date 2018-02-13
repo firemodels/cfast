@@ -59,9 +59,9 @@
                 TempFires.Clear()
                 myUnits.SI = True
                 If FileExt = ".o" Then
-                    IO.FindFires(InsertDataType.ObjectFile, csv)
+                    IO.FindFires(InsertDataType.ObjectFile, Filename)
                 Else
-                    IO.FindFires(InsertDataType.EmbeddedFire, csv)
+                    IO.FindFires(InsertDataType.EmbeddedFire, Filename)
                 End If
                 myUnits.SI = False
                 If TempFires.Count > InsertDataSummary.Rows.Count Then InsertDataSummary.Rows.Count = TempFires.Count + 1
@@ -83,7 +83,7 @@
                 Dim aThermalProperty As New ThermalProperty
                 TempThermalProperties.Clear()
                 myUnits.SI = True
-                IO.FindThermalProperties(csv, TempThermalProperties)
+                IO.FindThermalProperties(Filename, TempThermalProperties)
                 myUnits.SI = False
                 If TempThermalProperties.Count > InsertDataSummary.Rows.Count Then InsertDataSummary.Rows.Count = TempThermalProperties.Count + 1
                 If TempThermalProperties.Count > 0 Then

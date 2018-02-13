@@ -44,6 +44,7 @@
 
     real(eb) :: xdelt, tstop, tbeg, tend
     type(thermal_type), pointer :: thrmpptr
+    real(eb) :: dummy
 
     cfast_version = 7300        ! Current CFAST version number
 

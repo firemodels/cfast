@@ -738,12 +738,27 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
+{\ct CEILING\_JET\_SUB-MODEL}     & Selection List   &          &         & {\ct ON}      \\ \hline
+{\ct CONDUCTION\_SUB-MODEL}     & Selection List   &          &         & {\ct ON}      \\ \hline
+{\ct CONVECTION\_SUB-MODEL}      & Selection List   &          &         & {\ct ON}      \\ \hline
+{\ct DASSL\_DEBUG\_PRINT}            & Selection List   &          &         & {\ct OFF}     \\ \hline
+{\ct DEBUG\_PRINT}                          & Selection List   &          &         & {\ct OFF}     \\ \hline
+{\ct DOOR\_JET\_FIRE\_SUB-MODEL}  & Selection List &        &         & {\ct ON}       \\ \hline
+{\ct ENTRAINMENT\_SUB-MODEL }   & Selection List    &         &          & {\ct ON}       \\ \hline 
 {\ct F}\footnote{If included, both {\ct F} and {\ct T} are required.}          & Real Array       &                  &  \degc         &                 \\ \hline
+{\ct FIRE\_SUB-MODEL}                     & Selection List   &          &          & {\ct ON}       \\ \hline
 {\ct GAS\_TEMPERATURE}\footnote{If included, {\ct GAS\_TEMPERATURE}, {\ct PARTIAL\_PRESSURE\_H2O}, and {\ct PARTIAL\_PRESSURE\_CO} are all required.}             & Real   &                  &  \degc         &                 \\ \hline
+{\ct HORIZONTAL\_FLOW\_SUB-MODEL} & Selection List &     &           & {\ct ON}       \\ \hline
+{\ct KEYBOARD\_INPUT}                    & Selection List    &          &           & {\ct ON}      \\ \hline
+{\ct MECHANICAL\_FLOW\_SUB-MODEL} & Selection List &      &           & {\ct ON}      \\ \hline
+{\ct OXYGEN\_TRACKING}                  & Selection List    &         &            & {\ct OFF}    \\ \hline
+{\ct PARTIAL\_PRESSURE\_CO}             & Real   &                  &    Pa       &                 \\ \hline
+{\ct PARTIAL\_PRESSURE\_H2O}             & Real   &                  &   Pa        &                 \\ \hline
+{\ct RADIATION\_SUB-MODEL}           & Selection List    &         &            & {\ct ON}      \\ \hline
 {\ct RADSOLVER}\footnote{{\ct RADSOLVER}, if included, must be either {\ct DEFAULT} or {\ct RADNET}.}            & Selection List   &                  &           &  DEFAULT               \\ \hline
-{\ct PARTIAL\_PRESSURE\_H2O}             & Real   &                  &           &                 \\ \hline
-{\ct PARTIAL\_PRESSURE\_CO}             & Real   &                  &           &                 \\ \hline
+{\ct STEADY\_STATE\_INTIAL\_CONDITIONS} & Selection List &     &     & {\ct OFF}     \\ \hline
 {\ct T}          & Real Array       &                  & s          &                 \\ \hline
+{\ct VERTICAL\_FLOW\_SUB-MODEL} & Selection List &            &             & {\ct ON}      \\ \hline
 \end{longtable}
 \end{minipage}
 

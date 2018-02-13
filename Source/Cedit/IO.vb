@@ -2858,7 +2858,7 @@ Module IO
         PrintLine(IO, ln)
 
         'Writing MISC namelist
-        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Then
+        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Then
             ln = "&MISC "
             aFlag = True
         Else
@@ -2867,7 +2867,7 @@ Module IO
         If myEnvironment.AdiabaticWalls <> False Then
             ln += " ADIABATIC = .TRUE. "
         End If
-        If myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0 Then
+        If myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0 Then
             ln += " MAX_TIME_STEP = " + myEnvironment.MaximumTimeStep.ToString
         End If
         If myEnvironment.LowerOxygenLimit <> 0.15 Then

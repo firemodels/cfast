@@ -1609,16 +1609,16 @@ module solve_routines
                 roomptr => roominfo(iroom)
                 isof = isof + 1
                 if (radi_verification_flag) then
-                    if (partial_pressure_co2+partial_pressure_h2o == 1._eb) then ! Only H2O and CO2 exist
+                    if (partial_pressure_co2+partial_pressure_h2o == 101325._eb) then ! Only H2O and CO2 exist
                         if (lsp == 1 .or. lsp == 2) then ! N2 and O2 will have to be zero 
                             ppgas = 0._eb
                         else if (lsp == 3) then
                             ! partical pressure = species_mass/its molecular weight*ideal gas constant*gas temperature/volume of the medium
                             roomptr%species_mass(u,lsp) = &
-                            partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
+                            partial_pressure_co2/101325._eb*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
                         else if (lsp == 8) then
                             roomptr%species_mass(u,lsp) = &
-                            partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
+                            partial_pressure_h2o/101325._eb*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
                         else 
                             ppgas = 0._eb
                         end if
@@ -1634,15 +1634,15 @@ module solve_routines
                                 
                 isof = isof + 1
                 if (radi_verification_flag) then
-                    if (partial_pressure_co2+partial_pressure_h2o == 1._eb) then
+                    if (partial_pressure_co2+partial_pressure_h2o == 101325._eb) then
                         if (lsp == 1 .or. lsp == 2) then 
                             ppgas = 0._eb
                         else if (lsp == 3) then
                             roomptr%species_mass(l,lsp) = &
-                            partial_pressure_co2*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
+                            partial_pressure_co2/101325._eb*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
                         else if (lsp == 8) then
                             roomptr%species_mass(l,lsp) = &
-                            partial_pressure_h2o*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
+                            partial_pressure_h2o/101325._eb*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
                         else 
                             ppgas = 0._eb
                         end if

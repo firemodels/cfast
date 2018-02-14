@@ -4,6 +4,8 @@ Public Class Environment
     Public Const MaxTemp As Single = 373.15          ' Maximum ambient temperature limit
     Public Const DefaultLOI As Single = 0.15         ' Default limiting oxygen index. This needs to be consistent with CFAST
     Public Const DefaultNonValue As Single = -1001.0 ' Default non value
+    Public Const DIAGon As Integer = 1               ' For DIAG namelist, is the integer value for something being on
+    Public Const DIAGoff As Integer = 0              ' For DIAG namelist, is the integer value for something being off
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aTitle As String                        ' Title for the simulation
@@ -30,12 +32,28 @@ Public Class Environment
     Private aAdiabaticWalls As Boolean               ' True if all walls are adiabatic
     Private HasErrors As Integer = 0                ' Temporary variable to indicate whether there are errors in the specification
     Private aChanged As Boolean = False             ' True if any values have changed
-    Private aF(0) As Single
-    Private aT(0) As Single
-    Private aGasTemp As Single
-    Private aPartPressH2O As Single
-    Private aPartPressCO As Single
-    Private aRadSolver As String
+    ' all variables below are for the &DIAG name list. 
+    Private aDIAGf(0) As Single
+    Private aDIAGt(0) As Single
+    Private aDIAGGasTemp As Single
+    Private aDIAGPartPressH2O As Single
+    Private aDIAGPartPressCO As Single
+    Private aDIAGRadSolver As String
+    Private aDIAGfire As Integer
+    Private aDIAGhflow As Integer
+    Private aDIAGentrain As Integer
+    Private aDIAGvflow As Integer
+    Private aDIAGcjet As Integer
+    Private aDIAGdfire As Integer
+    Private aDIAGconvec As Integer
+    Private aDIAGrad As Integer
+    Private aDIAGconduc As Integer
+    Private aDIAGdebugprn As Integer
+    Private aDIAGmflow As Integer
+    Private aDIAGkeyin As Integer
+    Private aDIAGsteadyint As Integer
+    Private aDIAGdasslprn As Integer
+    Private aDIAGoxygen As Integer
 
     Public Sub New()
         aTitle = "CFAST Simulation"
@@ -59,12 +77,28 @@ Public Class Environment
         aIgnitionTemp = aIntAmbTemperature + 100.0
         aMaximumTimeStep = -1.0
         aAdiabaticWalls = False
-        aF(0) = DefaultNonValue
-        aT(0) = DefaultNonValue
-        aGasTemp = DefaultNonValue
-        aPartPressCO = DefaultNonValue
-        aPartPressH2O = DefaultNonValue
-        aRadSolver = ""
+        aDIAGf(0) = DefaultNonValue
+        aDIAGt(0) = DefaultNonValue
+        aDIAGGasTemp = DefaultNonValue
+        aDIAGPartPressCO = DefaultNonValue
+        aDIAGPartPressH2O = DefaultNonValue
+        aDIAGRadSolver = "DEFAULT"
+        aDIAGfire = DIAGon
+        aDIAGhflow = DIAGon
+        aDIAGentrain = DIAGon
+        aDIAGvflow = DIAGon
+        aDIAGcjet = DIAGon
+        aDIAGdfire = DIAGon
+        aDIAGconvec = DIAGon
+        aDIAGrad = 2
+        aDIAGconduc = DIAGon
+        aDIAGdebugprn = DIAGoff
+        aDIAGmflow = DIAGon
+        aDIAGkeyin = DIAGon
+        aDIAGsteadyint = DIAGoff
+        aDIAGdasslprn = DIAGoff
+        aDIAGoxygen = DIAGoff
+
     End Sub
     Friend Property Title() As String
         Get
@@ -310,116 +344,236 @@ Public Class Environment
             aChanged = Value
         End Set
     End Property
-    Friend Property F(ByVal idx As Integer) As Single
+    Friend Property DIAGf(ByVal idx As Integer) As Single
         Get
-            If idx >= 0 And idx <= aF.GetUpperBound(0) Then
-                Return aF(idx)
+            If idx >= 0 And idx <= aDIAGf.GetUpperBound(0) Then
+                Return aDIAGf(idx)
             Else
                 Return DefaultNonValue
             End If
         End Get
         Set(value As Single)
-            Dim i As Integer = aF.GetUpperBound(0)
+            Dim i As Integer = aDIAGf.GetUpperBound(0)
             If idx >= 0 And idx <= i Then
-                aF(idx) = value
+                aDIAGf(idx) = value
             ElseIf idx > i Then
                 Dim j As Integer
-                ReDim Preserve aF(idx)
+                ReDim Preserve aDIAGf(idx)
                 For j = i + 1 To idx
-                    aF(j) = DefaultNonValue
+                    aDIAGf(j) = DefaultNonValue
                 Next
-                aF(idx) = value
+                aDIAGf(idx) = value
             End If
         End Set
     End Property
-    Friend Property T(ByVal idx As Integer) As Single
+    Friend Property DIAGt(ByVal idx As Integer) As Single
         Get
-            If idx >= 0 And idx <= aT.GetUpperBound(0) Then
-                Return aT(idx)
+            If idx >= 0 And idx <= aDIAGt.GetUpperBound(0) Then
+                Return aDIAGt(idx)
             Else
                 Return DefaultNonValue
             End If
         End Get
         Set(value As Single)
-            Dim i As Integer = aT.GetUpperBound(0)
+            Dim i As Integer = aDIAGt.GetUpperBound(0)
             If idx >= 0 And idx <= i Then
-                aT(idx) = value
+                aDIAGt(idx) = value
             ElseIf idx > i Then
                 Dim j As Integer
-                ReDim Preserve aT(idx)
+                ReDim Preserve aDIAGt(idx)
                 For j = i + 1 To idx
-                    aT(j) = DefaultNonValue
+                    aDIAGt(j) = DefaultNonValue
                 Next
-                aT(idx) = value
+                aDIAGt(idx) = value
             End If
         End Set
     End Property
-    Friend Property GasTemp As Single
+    Friend Property DIAGGasTemp As Single
         Get
-            Return aGasTemp
+            Return aDIAGGasTemp
         End Get
         Set(value As Single)
-            aGasTemp = value
+            aDIAGGasTemp = value
         End Set
     End Property
-    Friend Property PartPressH2O As Single
+    Friend Property DIAGPartPressH2O As Single
         Get
-            Return aPartPressH2O
+            Return aDIAGPartPressH2O
         End Get
         Set(value As Single)
-            aPartPressH2O = value
+            aDIAGPartPressH2O = value
         End Set
     End Property
-    Friend Property PartPressCO As Single
+    Friend Property DIAGPartPressCO As Single
         Get
-            Return aPartPressCO
+            Return aDIAGPartPressCO
         End Get
         Set(value As Single)
-            aPartPressCO = value
+            aDIAGPartPressCO = value
         End Set
     End Property
-    Friend Property RadSolver As String
+    Friend Property DIAGRadSolver As String
         Get
-            Return aRadSolver
+            Return aDIAGRadSolver
         End Get
         Set(value As String)
-            aRadSolver = value
+            aDIAGRadSolver = value
         End Set
     End Property
-    Friend Sub SetDiagF(ByVal F() As Single)
+    Friend Sub SetDIAGf(ByVal F() As Single)
         Dim i As Integer
-        If F.GetUpperBound(0) <> aF.GetUpperBound(0) Then
-            ReDim aF(F.GetUpperBound(0))
+        If F.GetUpperBound(0) <> aDIAGf.GetUpperBound(0) Then
+            ReDim aDIAGf(F.GetUpperBound(0))
         End If
-        For i = 0 To aF.GetUpperBound(0)
-            aF(i) = F(i)
+        For i = 0 To aDIAGf.GetUpperBound(0)
+            aDIAGf(i) = F(i)
         Next
     End Sub
-    Friend Sub SetDiagT(ByVal T() As Single)
+    Friend Sub SetDIAGt(ByVal T() As Single)
         Dim i As Integer
-        If T.GetUpperBound(0) <> aT.GetUpperBound(0) Then
-            ReDim aT(T.GetUpperBound(0))
+        If T.GetUpperBound(0) <> aDIAGt.GetUpperBound(0) Then
+            ReDim aDIAGt(T.GetUpperBound(0))
         End If
-        For i = 0 To aT.GetUpperBound(0)
-            aT(i) = T(i)
+        For i = 0 To aDIAGt.GetUpperBound(0)
+            aDIAGt(i) = T(i)
         Next
     End Sub
-    Friend Sub GetDiagF(ByRef F() As Single)
+    Friend Sub GetDIAGf(ByRef F() As Single)
         Dim i As Integer
-        If F.GetUpperBound(0) <> aF.GetUpperBound(0) Then
-            ReDim F(aF.GetUpperBound(0))
+        If F.GetUpperBound(0) <> aDIAGf.GetUpperBound(0) Then
+            ReDim F(aDIAGf.GetUpperBound(0))
         End If
         For i = 0 To F.GetUpperBound(0)
-            F(i) = aF(i)
+            F(i) = aDIAGf(i)
         Next
     End Sub
-    Friend Sub GetDiagT(ByRef T() As Single)
+    Friend Sub GetDIAGt(ByRef T() As Single)
         Dim i As Integer
-        If T.GetUpperBound(0) <> aT.GetUpperBound(0) Then
-            ReDim T(aT.GetUpperBound(0))
+        If T.GetUpperBound(0) <> aDIAGt.GetUpperBound(0) Then
+            ReDim T(aDIAGt.GetUpperBound(0))
         End If
         For i = 0 To T.GetUpperBound(0)
-            T(i) = aT(i)
+            T(i) = aDIAGt(i)
         Next
     End Sub
+    Friend Property DIAGfire As Integer
+        Get
+            Return aDIAGfire
+        End Get
+        Set(value As Integer)
+            aDIAGfire = value
+        End Set
+    End Property
+    Friend Property DIAGhflow As Integer
+        Get
+            Return aDIAGhflow
+        End Get
+        Set(value As Integer)
+            aDIAGhflow = value
+        End Set
+    End Property
+    Friend Property DIAGentrain As Integer
+        Get
+            Return aDIAGentrain
+        End Get
+        Set(value As Integer)
+            aDIAGentrain = value
+        End Set
+    End Property
+    Friend Property DIAGvflow As Integer
+        Get
+            Return aDIAGvflow
+        End Get
+        Set(value As Integer)
+            aDIAGvflow = value
+        End Set
+    End Property
+    Friend Property DIAGcjet As Integer
+        Get
+            Return aDIAGcjet
+        End Get
+        Set(value As Integer)
+            aDIAGcjet = value
+        End Set
+    End Property
+    Friend Property DIAGdfire As Integer
+        Get
+            Return aDIAGdfire
+        End Get
+        Set(value As Integer)
+            aDIAGdfire = value
+        End Set
+    End Property
+    Friend Property DIAGconvec As Integer
+        Get
+            Return aDIAGconvec
+        End Get
+        Set(value As Integer)
+            aDIAGconvec = value
+        End Set
+    End Property
+    Friend Property DIAGrad As Integer
+        Get
+            Return aDIAGrad
+        End Get
+        Set(value As Integer)
+            aDIAGrad = value
+        End Set
+    End Property
+    Friend Property DIAGconduc As Integer
+        Get
+            Return aDIAGconduc
+        End Get
+        Set(value As Integer)
+            aDIAGconduc = value
+        End Set
+    End Property
+    Friend Property DIAGdebugprn As Integer
+        Get
+            Return aDIAGdebugprn
+        End Get
+        Set(value As Integer)
+            aDIAGdebugprn = value
+        End Set
+    End Property
+    Friend Property DIAGmflow As Integer
+        Get
+            Return aDIAGmflow
+        End Get
+        Set(value As Integer)
+            aDIAGmflow = value
+        End Set
+    End Property
+    Friend Property DIAGkeyin As Integer
+        Get
+            Return aDIAGkeyin
+        End Get
+        Set(value As Integer)
+            aDIAGkeyin = value
+        End Set
+    End Property
+    Friend Property DIAGsteadyint As Integer
+        Get
+            Return aDIAGsteadyint
+        End Get
+        Set(value As Integer)
+            aDIAGsteadyint = value
+        End Set
+    End Property
+    Friend Property DIAGdasslprn As Integer
+        Get
+            Return aDIAGdasslprn
+        End Get
+        Set(value As Integer)
+            aDIAGdasslprn = value
+        End Set
+    End Property
+    Friend Property DIAGoxygen As Integer
+        Get
+            Return aDIAGoxygen
+        End Get
+        Set(value As Integer)
+            aDIAGoxygen = value
+        End Set
+    End Property
 End Class

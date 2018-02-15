@@ -1916,15 +1916,31 @@ Module IO
         Dim f(0), t(0) As Single
         Dim ppco, pph2o, gastemp As Single
         Dim radsolv As String
+        Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
 
         f(0) = Environment.DefaultNonValue
         t(0) = Environment.DefaultNonValue
         someEnvironment.SetDiagF(f)
         someEnvironment.SetDiagT(t)
-        someEnvironment.GasTemp = Environment.DefaultNonValue
-        someEnvironment.PartPressCO = Environment.DefaultNonValue
-        someEnvironment.PartPressH2O = Environment.DefaultNonValue
-        someEnvironment.RadSolver = ""
+        someEnvironment.DIAGGasTemp = Environment.DefaultNonValue
+        someEnvironment.DIAGPartPressCO = Environment.DefaultNonValue
+        someEnvironment.DIAGPartPressH2O = Environment.DefaultNonValue
+        someEnvironment.DIAGRadSolver = "DEFAULT"
+        someEnvironment.DIAGfire = Environment.DIAGon
+        someEnvironment.DIAGhflow = Environment.DIAGon
+        someEnvironment.DIAGentrain = Environment.DIAGon
+        someEnvironment.DIAGvflow = Environment.DIAGon
+        someEnvironment.DIAGcjet = Environment.DIAGon
+        someEnvironment.DIAGdfire = Environment.DIAGon
+        someEnvironment.DIAGconvec = Environment.DIAGon
+        someEnvironment.DIAGrad = 2
+        someEnvironment.DIAGconduc = Environment.DIAGon
+        someEnvironment.DIAGdebugprn = Environment.DIAGoff
+        someEnvironment.DIAGmflow = Environment.DIAGon
+        someEnvironment.DIAGkeyin = Environment.DIAGon
+        someEnvironment.DIAGsteadyint = Environment.DIAGoff
+        someEnvironment.DIAGdasslprn = Environment.DIAGoff
+        someEnvironment.DIAGoxygen = Environment.DIAGoff
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DIAG") Then
                 ReDim f(0), t(0)
@@ -1933,7 +1949,22 @@ Module IO
                 ppco = Environment.DefaultNonValue
                 pph2o = Environment.DefaultNonValue
                 gastemp = Environment.DefaultNonValue
-                radsolv = ""
+                radsolv = "DEFAULT"
+                fire = Environment.DIAGon
+                hflow = Environment.DIAGon
+                entrain = Environment.DIAGon
+                vflow = Environment.DIAGon
+                cjet = Environment.DIAGon
+                dfire = Environment.DIAGon
+                convec = Environment.DIAGon
+                rad = 2
+                conduc = Environment.DIAGon
+                debugprn = Environment.DIAGoff
+                mflow = Environment.DIAGon
+                keyin = Environment.DIAGon
+                steadyint = Environment.DIAGoff
+                dasslprn = Environment.DIAGoff
+                oxygen = Environment.DIAGoff
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "RADSOLVER" Then
                         radsolv = NMList.ForNMListVarGetStr(i, j, 1)
@@ -1963,16 +1994,72 @@ Module IO
                         Else
                             myErrors.Add("In DIAG name list for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_SUB-MODEL" Then
+                        ReadINIInput(fire, "FIRE_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "HORIZONTAL_FLOW_SUB-MODEL" Then
+                        ReadINIInput(hflow, "HORIZONTAL_FLOW_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "ENTRAINMENT_SUB-MODEL" Then
+                        ReadINIInput(entrain, "ENTRAINMENT_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "VERTICAL_FLOW_SUB-MODEL" Then
+                        ReadINIInput(vflow, "VERTICAL_FLOW_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CEILING_JET_SUB-MODEL" Then
+                        ReadINIInput(cjet, "CEILING_JET_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DOOR_JET_FIRE_SUB-MODEL" Then
+                        ReadINIInput(dfire, "DOOR_JET_FIRE_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CONVECTION_SUB-MODEL" Then
+                        ReadINIInput(convec, "CONVECTION_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "RADIATION_SUB-MODEL" Then
+                        ReadINIInput(rad, "RADIATION_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CONDUCTION_SUB-MODEL" Then
+                        ReadINIInput(conduc, "CONDUCTION_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DEBUG_PRINT" Then
+                        ReadINIInput(debugprn, "DEBUG_PRINT", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "MECHANICAL_FLOW_SUB-MODEL" Then
+                        ReadINIInput(mflow, "MECHANICAL_FLOW_SUB-MODEL", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "KEYBOARD_INPUT" Then
+                        ReadINIInput(keyin, "KEYBOARD_INPUT", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "STEADY_STATE_INITIAl_CONDITIONS" Then
+                        ReadINIInput(steadyint, "STEADY_STATE_INITIAL_CONDITIONS", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DASSL_DEBUG_PRINT" Then
+                        ReadINIInput(dasslprn, "DASSL_DEBUG_PRINT", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "OXYGEN_TRACKING" Then
+                        ReadINIInput(oxygen, "OXYGEN_TRACKING", NMList.ForNMListVarGetStr(i, j, 1))
+                    Else
+                        myErrors.Add("In DIAG name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someEnvironment.SetDiagF(f)
-                someEnvironment.SetDiagT(t)
-                someEnvironment.GasTemp = gastemp
-                someEnvironment.PartPressCO = ppco
-                someEnvironment.PartPressH2O = pph2o
-                someEnvironment.RadSolver = radsolv
+                someEnvironment.SetDIAGf(f)
+                someEnvironment.SetDIAGt(t)
+                someEnvironment.DIAGGasTemp = gastemp
+                someEnvironment.DIAGPartPressCO = ppco
+                someEnvironment.DIAGPartPressH2O = pph2o
+                someEnvironment.DIAGRadSolver = radsolv
+                someEnvironment.DIAGfire = fire
+                someEnvironment.DIAGhflow = hflow
+                someEnvironment.DIAGentrain = entrain
+                someEnvironment.DIAGvflow = vflow
+                someEnvironment.DIAGcjet = cjet
+                someEnvironment.DIAGdfire = dfire
+                someEnvironment.DIAGconvec = convec
+                someEnvironment.DIAGrad = rad
+                someEnvironment.DIAGconduc = conduc
+                someEnvironment.DIAGdebugprn = debugprn
+                someEnvironment.DIAGmflow = mflow
+                someEnvironment.DIAGkeyin = keyin
+                someEnvironment.DIAGsteadyint = steadyint
+                someEnvironment.DIAGdasslprn = dasslprn
+                someEnvironment.DIAGoxygen = oxygen
             End If
         Next
+    End Sub
+    Public Sub ReadINIInput(ByRef x As Integer, ByVal label As String, ByVal value As String)
+        If value = "ON" Then
+            x = Environment.DIAGon
+        ElseIf value = "OFF" Then
+            x = Environment.DIAGoff
+        Else
+            myErrors.Add("In DIAG name list for " + label + " " + value + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+        End If
     End Sub
     Public Sub ReadThermalProperties(ByVal FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
         'Simple read of only thermal properties from a file. 
@@ -2858,7 +2945,7 @@ Module IO
         PrintLine(IO, ln)
 
         'Writing MISC namelist
-        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Then
+        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Then
             ln = "&MISC "
             aFlag = True
         Else
@@ -2867,7 +2954,7 @@ Module IO
         If myEnvironment.AdiabaticWalls <> False Then
             ln += " ADIABATIC = .TRUE. "
         End If
-        If myEnvironment.MaximumTimeStep <> 2.0 And myEnvironment.MaximumTimeStep > 0 Then
+        If myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0 Then
             ln += " MAX_TIME_STEP = " + myEnvironment.MaximumTimeStep.ToString
         End If
         If myEnvironment.LowerOxygenLimit <> 0.15 Then
@@ -3365,16 +3452,16 @@ Module IO
         'Writing Diagnostics 
         Dim wrtDIAG As Boolean
         Dim wrtSlash As Boolean
-        If myEnvironment.RadSolver = "" Then
+        If myEnvironment.DIAGRadSolver = "DEFAULT" Then
             wrtDIAG = True
             wrtSlash = False
         Else
             wrtDIAG = False
             wrtSlash = True
-            ln = "&DIAG  RADSOLVER = '" + myEnvironment.RadSolver + "' "
+            ln = "&DIAG  RADSOLVER = '" + myEnvironment.DIAGRadSolver + "' "
             PrintLine(IO, ln)
         End If
-        If myEnvironment.GasTemp <> Environment.DefaultNonValue Then
+        If myEnvironment.DIAGGasTemp <> Environment.DefaultNonValue Then
             If wrtDIAG Then
                 ln = "&DIAG "
                 wrtDIAG = False
@@ -3382,13 +3469,13 @@ Module IO
             Else
                 ln = "     "
             End If
-            ln = ln + "GAS_TEMPERATURE = " + Math.Round(myEnvironment.GasTemp, 2).ToString
-            ln = ln + " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.PartPressH2O, 2).ToString
-            ln = ln + " PARTIAL_PRESSURE_CO = " + Math.Round(myEnvironment.PartPressCO, 2).ToString
+            ln = ln + "GAS_TEMPERATURE = " + Math.Round(myEnvironment.DIAGGasTemp, 2).ToString
+            ln = ln + " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.DIAGPartPressH2O, 2).ToString
+            ln = ln + " PARTIAL_PRESSURE_CO = " + Math.Round(myEnvironment.DIAGPartPressCO, 2).ToString
             Print(IO, ln)
         End If
-        myEnvironment.GetDiagF(f)
-        myEnvironment.GetDiagT(x)
+        myEnvironment.GetDIAGf(f)
+        myEnvironment.GetDIAGt(x)
         If f.GetUpperBound(0) = x.GetUpperBound(0) Then
             Dim numpoints As Integer = f.GetUpperBound(0)
             For i = 0 To numpoints
@@ -3415,6 +3502,28 @@ Module IO
                 Next
                 PrintLine(IO, ln)
             End If
+        End If
+        If myEnvironment.DIAGfire <> Environment.DIAGon Then
+            If wrtDIAG Then
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = "     "
+            End If
+            ln += "FIRE_SUB-MODEL = 'OFF' "
+            PrintLine(IO, ln)
+        End If
+        If myEnvironment.DIAGhflow <> Environment.DIAGon Then
+            If wrtDIAG Then
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = "     "
+            End If
+            ln += "HORIZONTAL_FLOW_SUB-MODEL = 'OFF' "
+            PrintLine(IO, ln)
         End If
         If wrtSlash Then
             ln = "/ "

@@ -480,7 +480,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct DEVC\_ID}             & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
 {\ct FIRE\_ID}* & Character        & Section \ref{info:FIRE}                 &                        &            \\ \hline
 {\ct ID}*                   & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
-{\ct IGNITION\_CRITERION}   & Selection List   & Section \ref{info:FIRE}                 &                             & TIME                \\ \hline
+{\ct IGNITION\_CRITERION}\footnote{for {\ct IGNITION\_CRITERION} inputs must be{\ct TIME},{\ct TEMPERTURE}, or {\ct FLUX}}   & Selection List   & Section \ref{info:FIRE}                 &                             & {\ct TIME}                \\ \hline
 {\ct LOCATION}*             & Real Pair        & Section \ref{info:FIRE}                 & m                           &                 \\ \hline
 {\ct SETPOINT}             & Real        & Section \ref{info:FIRE}                 & s $\mid$ $^\circ$C $\mid$ kW/m$^2$  & 0 s        \\ \hline
 \end{longtable}
@@ -701,7 +701,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct COMP\_ID}\footnote{ * indicates a required input for each {\ct SLCF} input included in the input file. All inputs are required for a 2-D domain slice file.} *         & Character   & Section \ref{info:SLCF}                 &           &                 \\ \hline
-{\ct DOMAIN}*\footnote{DOMAIN must be 2-D or 3-D. If 2-D, {\ct PLANE} specifies the orientation of the slice in the X, Y, or Z direction and {\ct POSITION} specifies the offset from the origin of the specified plane.}            & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
+{\ct DOMAIN}*\footnote{{\ct DOMAIN} must be 2-D or 3-D. If 2-D, {\ct PLANE} specifies the orientation of the slice in the X, Y, or Z direction and {\ct POSITION} specifies the offset from the origin of the specified plane.}            & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct PLANE}             & Selection List   & Section \ref{info:SLCF}                 &           &                 \\ \hline
 {\ct POSITION}          & Real        & Section \ref{info:SLCF}                 &           &                 \\ \hline
 \end{longtable}
@@ -738,27 +738,28 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct CEILING\_JET\_SUB\_MODEL}     & Selection List   &          &         &  ON      \\ \hline
-{\ct CONDUCTION\_SUB\_MODEL}     & Selection List   &          &         &  ON      \\ \hline
-{\ct CONVECTION\_SUB\_MODEL}      & Selection List   &          &         & ON      \\ \hline
-{\ct DASSL\_DEBUG\_PRINT}            & Selection List   &          &         & OFF     \\ \hline
-{\ct DEBUG\_PRINT}                          & Selection List   &          &         & OFF     \\ \hline
-{\ct DOOR\_JET\_FIRE\_SUB\_MODEL}  & Selection List &        &         & ON       \\ \hline
-{\ct ENTRAINMENT\_SUB\_MODEL }   & Selection List    &         &          & ON       \\ \hline 
-{\ct F}\footnote{If included, both {\ct F} and {\ct T} are required.}          & Real Array       &                  &  \degc         &                 \\ \hline
-{\ct FIRE\_SUB\_MODEL}                     & Selection List   &          &          & ON       \\ \hline
-{\ct GAS\_TEMPERATURE}\footnote{If included, {\ct GAS\_TEMPERATURE}, {\ct PARTIAL\_PRESSURE\_H2O}, and {\ct PARTIAL\_PRESSURE\_CO} are all required.}             & Real   &                  &  \degc         &                 \\ \hline
-{\ct HORIZONTAL\_FLOW\_SUB\_MODEL} & Selection List &     &           & ON       \\ \hline
-{\ct KEYBOARD\_INPUT}                    & Selection List    &          &           & ON      \\ \hline
-{\ct MECHANICAL\_FLOW\_SUB\_MODEL} & Selection List &      &           & ON      \\ \hline
-{\ct OXYGEN\_TRACKING}                  & Selection List    &         &            & OFF    \\ \hline
-{\ct PARTIAL\_PRESSURE\_CO}             & Real   &                  &    Pa       &                 \\ \hline
-{\ct PARTIAL\_PRESSURE\_H2O}             & Real   &                  &   Pa        &                 \\ \hline
-{\ct RADIATION\_SUB\_MODEL}           & Selection List    &         &            & ON      \\ \hline
-{\ct RADSOLVER}\footnote{{\ct RADSOLVER}, if included, must be either {\ct DEFAULT} or {\ct RADNET}.}            & Selection List   &                  &           &  DEFAULT               \\ \hline
-{\ct STEADY\_STATE\_INTIAL\_CONDITIONS} & Selection List &     &     & OFF     \\ \hline
-{\ct T}          & Real Array       &                  & s          &                 \\ \hline
-{\ct VERTICAL\_FLOW\_SUB\_MODEL} & Selection List &            &             & ON      \\ \hline
+{\ct CEILING\_JET\_SUB\_MODEL}\footnote{If included, must be either {\ct ON} or {\ct OFF} \label{DIAGonoff}}    & Selection List   &          &         &  {\ct ON}      \\ \hline
+{\ct CONDUCTION\_SUB\_MODEL}\footref{DIAGonoff}     & Selection List   &          &         &  {\ct ON}      \\ \hline
+{\ct CONVECTION\_SUB\_MODEL}\footref{DIAGonoff}      & Selection List   &          &         & {\ct ON}      \\ \hline
+{\ct DASSL\_DEBUG\_PRINT}\footref{DIAGonoff}            & Selection List   &          &         & {\ct OFF}     \\ \hline
+{\ct DEBUG\_PRINT}\footref{DIAGonoff}                          & Selection List   &          &         & {\ct OFF}     \\ \hline
+{\ct DOOR\_JET\_FIRE\_SUB\_MODEL}\footref{DIAGonoff}  & Selection List &        &         & {\ct ON}       \\ \hline
+{\ct ENTRAINMENT\_SUB\_MODEL }\footref{DIAGonoff}   & Selection List    &         &          & {\ct ON}       \\ \hline 
+{\ct F}\footnote{If included, both {\ct F} and {\ct T} are required.\label{DIAGft}}          & Real Array       &                  &  \degc         &                 \\ \hline
+{\ct FIRE\_SUB\_MODEL}\footref{DIAGonoff}                     & Selection List   &          &          & {\ct ON}       \\ \hline
+{\ct GAS\_TEMPERATURE}\footnote{If included, {\ct GAS\_TEMPERATURE}, {\ct PARTIAL\_PRESSURE\_H2O}, and {\ct PARTIAL\_PRESSURE\_CO} are all required.\label{DIAGgpp}}             & Real   &                  &  \degc         &                 \\ \hline
+{\ct GAS\_ABSORPTION\_SUB\_MODEL}\footnote{{\ct GAS\_ABSORPTION}, if included, must be either {\ct CALCULATED} or {\ct CONSTANT}} & Selection List &  &  & {\ct CALCULATED}  \\ \hline
+{\ct HORIZONTAL\_FLOW\_SUB\_MODEL}\footref{DIAGonoff} & Selection List &     &           & {\ct ON}       \\ \hline
+{\ct KEYBOARD\_INPUT}\footref{DIAGonoff}                    & Selvection List    &          &           & {\ct ON}      \\ \hline
+{\ct MECHANICAL\_FLOW\_SUB\_MODEL}\footref{DIAGonoff} & Selection List &      &           & {\ct ON}      \\ \hline
+{\ct OXYGEN\_TRACKING}\footref{DIAGonoff}                  & Selection List    &         &            & {\ct OFF}    \\ \hline
+{\ct PARTIAL\_PRESSURE\_CO}\footref{DIAGgpp}             & Real   &                  &    Pa       &                 \\ \hline
+{\ct PARTIAL\_PRESSURE\_H2O}\footref{DIAGgpp}             & Real   &                  &   Pa        &                 \\ \hline
+{\ct RADIATION\_SUB\_MODEL}\footref{DIAGonoff}           & Selection List    &         &            & {\ct ON}      \\ \hline
+{\ct RADSOLVER}\footnote{{\ct RADSOLVER}, if included, must be either {\ct DEFAULT} or {\ct RADNET}.}            & Selection List   &                  &           &  {\ct DEFAULT}               \\ \hline
+{\ct STEADY\_STATE\_INTIAL\_CONDITIONS}\footref{DIAGonoff} & Selection List &     &     & {\ct OFF}     \\ \hline
+{\ct T}\footref{DIAGft}          & Real Array       &                  & s          &                 \\ \hline
+{\ct VERTICAL\_FLOW\_SUB\_MODEL}\footref{DIAGonoff} & Selection List &            &             & {\ct ON}      \\ \hline
 \end{longtable}
 \end{minipage}
 

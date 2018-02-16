@@ -47,6 +47,7 @@ Public Class Environment
     Private aDIAGdfire As Integer
     Private aDIAGconvec As Integer
     Private aDIAGrad As Integer
+    Private aDIAGgasabsorp As Integer
     Private aDIAGconduc As Integer
     Private aDIAGdebugprn As Integer
     Private aDIAGmflow As Integer
@@ -518,6 +519,14 @@ Public Class Environment
         End Get
         Set(value As Integer)
             aDIAGrad = value
+        End Set
+    End Property
+    Friend Property DIAGgasabsorp As Integer
+        Get
+            Return aDIAGgasabsorp
+        End Get
+        Set(value As Integer)
+            aDIAGgasabsorp = value
         End Set
     End Property
     Friend Property DIAGconduc As Integer

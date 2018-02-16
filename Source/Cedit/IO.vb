@@ -1970,7 +1970,14 @@ Module IO
                 oxygen = Environment.DIAGoff
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "RADSOLVER" Then
-                        radsolv = NMList.ForNMListVarGetStr(i, j, 1)
+                        dummy = NMList.ForNMListVarGetStr(i, j, 1)
+                        If dummy = "DEFAULT" Then
+                            radsolv = "DEFAULT"
+                        ElseIf dummy = "RADNET" Then
+                            radsolv = "RADNET"
+                        Else
+                            myErrors.Add("In DIAG name list for " + "RADSOLVER" + " " + dummy + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "GAS_TEMPERATURE" Then
                         gastemp = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "PARTIAL_PRESSURE_H2O" Then
@@ -2063,6 +2070,7 @@ Module IO
                 someEnvironment.DIAGoxygen = oxygen
             End If
         Next
+        someEnvironment.Changed = False
     End Sub
     Public Sub ReadINIInput(ByRef x As Integer, ByVal label As String, ByVal value As String)
         If value = "ON" Then

@@ -356,8 +356,12 @@ Public Class Environment
         Set(value As Single)
             Dim i As Integer = aDIAGf.GetUpperBound(0)
             If idx >= 0 And idx <= i Then
-                aDIAGf(idx) = value
+                If aDIAGf(idx) <> value Then
+                    aChanged = True
+                    aDIAGf(idx) = value
+                End If
             ElseIf idx > i Then
+                aChanged = True
                 Dim j As Integer
                 ReDim Preserve aDIAGf(idx)
                 For j = i + 1 To idx
@@ -378,8 +382,12 @@ Public Class Environment
         Set(value As Single)
             Dim i As Integer = aDIAGt.GetUpperBound(0)
             If idx >= 0 And idx <= i Then
-                aDIAGt(idx) = value
+                If aDIAGt(idx) <> value Then
+                    aChanged = True
+                    aDIAGt(idx) = value
+                End If
             ElseIf idx > i Then
+                aChanged = True
                 Dim j As Integer
                 ReDim Preserve aDIAGt(idx)
                 For j = i + 1 To idx
@@ -394,7 +402,10 @@ Public Class Environment
             Return aDIAGGasTemp
         End Get
         Set(value As Single)
-            aDIAGGasTemp = value
+            If aDIAGGasTemp <> value Then
+                aDIAGGasTemp = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGPartPressH2O As Single
@@ -410,7 +421,10 @@ Public Class Environment
             Return aDIAGPartPressCO
         End Get
         Set(value As Single)
-            aDIAGPartPressCO = value
+            If aDIAGPartPressCO <> value Then
+                aDIAGPartPressCO = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGRadSolver As String
@@ -418,7 +432,10 @@ Public Class Environment
             Return aDIAGRadSolver
         End Get
         Set(value As String)
-            aDIAGRadSolver = value
+            If aDIAGRadSolver <> value Then
+                aDIAGRadSolver = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Sub SetDIAGf(ByVal F() As Single)
@@ -429,6 +446,7 @@ Public Class Environment
         For i = 0 To aDIAGf.GetUpperBound(0)
             aDIAGf(i) = F(i)
         Next
+        aChanged = True
     End Sub
     Friend Sub SetDIAGt(ByVal T() As Single)
         Dim i As Integer
@@ -438,6 +456,7 @@ Public Class Environment
         For i = 0 To aDIAGt.GetUpperBound(0)
             aDIAGt(i) = T(i)
         Next
+        aChanged = True
     End Sub
     Friend Sub GetDIAGf(ByRef F() As Single)
         Dim i As Integer
@@ -462,7 +481,10 @@ Public Class Environment
             Return aDIAGfire
         End Get
         Set(value As Integer)
-            aDIAGfire = value
+            If aDIAGfire <> value Then
+                aDIAGfire = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGhflow As Integer
@@ -470,7 +492,10 @@ Public Class Environment
             Return aDIAGhflow
         End Get
         Set(value As Integer)
-            aDIAGhflow = value
+            If aDIAGhflow <> value Then
+                aDIAGhflow = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGentrain As Integer
@@ -478,7 +503,10 @@ Public Class Environment
             Return aDIAGentrain
         End Get
         Set(value As Integer)
-            aDIAGentrain = value
+            If aDIAGentrain <> value Then
+                aDIAGentrain = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGvflow As Integer
@@ -486,7 +514,10 @@ Public Class Environment
             Return aDIAGvflow
         End Get
         Set(value As Integer)
-            aDIAGvflow = value
+            If aDIAGvflow <> value Then
+                aDIAGvflow = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGcjet As Integer
@@ -494,7 +525,10 @@ Public Class Environment
             Return aDIAGcjet
         End Get
         Set(value As Integer)
-            aDIAGcjet = value
+            If aDIAGcjet <> value Then
+                aDIAGcjet = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGdfire As Integer
@@ -502,7 +536,10 @@ Public Class Environment
             Return aDIAGdfire
         End Get
         Set(value As Integer)
-            aDIAGdfire = value
+            If aDIAGdfire <> value Then
+                aDIAGdfire = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGconvec As Integer
@@ -510,7 +547,10 @@ Public Class Environment
             Return aDIAGconvec
         End Get
         Set(value As Integer)
-            aDIAGconvec = value
+            If aDIAGconvec <> value Then
+                aDIAGconvec = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGrad As Integer
@@ -518,7 +558,10 @@ Public Class Environment
             Return aDIAGrad
         End Get
         Set(value As Integer)
-            aDIAGrad = value
+            If aDIAGrad <> value Then
+                aDIAGrad = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGgasabsorp As Integer
@@ -526,7 +569,10 @@ Public Class Environment
             Return aDIAGgasabsorp
         End Get
         Set(value As Integer)
-            aDIAGgasabsorp = value
+            If aDIAGgasabsorp <> value Then
+                aDIAGgasabsorp = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGconduc As Integer
@@ -534,7 +580,10 @@ Public Class Environment
             Return aDIAGconduc
         End Get
         Set(value As Integer)
-            aDIAGconduc = value
+            If aDIAGconduc <> value Then
+                aDIAGconduc = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGdebugprn As Integer
@@ -542,7 +591,10 @@ Public Class Environment
             Return aDIAGdebugprn
         End Get
         Set(value As Integer)
-            aDIAGdebugprn = value
+            If aDIAGdebugprn <> value Then
+                aDIAGdebugprn = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGmflow As Integer
@@ -550,7 +602,10 @@ Public Class Environment
             Return aDIAGmflow
         End Get
         Set(value As Integer)
-            aDIAGmflow = value
+            If aDIAGmflow <> value Then
+                aDIAGmflow = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGkeyin As Integer
@@ -558,7 +613,10 @@ Public Class Environment
             Return aDIAGkeyin
         End Get
         Set(value As Integer)
-            aDIAGkeyin = value
+            If aDIAGkeyin <> value Then
+                aDIAGkeyin = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGsteadyint As Integer
@@ -566,7 +624,10 @@ Public Class Environment
             Return aDIAGsteadyint
         End Get
         Set(value As Integer)
-            aDIAGsteadyint = value
+            If aDIAGsteadyint <> value Then
+                aDIAGsteadyint = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGdasslprn As Integer
@@ -574,7 +635,10 @@ Public Class Environment
             Return aDIAGdasslprn
         End Get
         Set(value As Integer)
-            aDIAGdasslprn = value
+            If aDIAGdasslprn <> value Then
+                aDIAGdasslprn = value
+                aChanged = True
+            End If
         End Set
     End Property
     Friend Property DIAGoxygen As Integer
@@ -582,7 +646,10 @@ Public Class Environment
             Return aDIAGoxygen
         End Get
         Set(value As Integer)
-            aDIAGoxygen = value
+            If aDIAGoxygen <> value Then
+                aDIAGoxygen = value
+                aChanged = True
+            End If
         End Set
     End Property
 End Class

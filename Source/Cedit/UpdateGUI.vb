@@ -45,7 +45,7 @@ Public Class UpdateGUI
         End If
         If myEnvironment.FileChanged Then MainWin.Text = MainWin.Text + " *"
         If DoErrorCheck Then
-            myErrors.Queue.Clear()
+            ' myErrors.Queue.Clear()
             UpdateErrorCheck()
         End If
 

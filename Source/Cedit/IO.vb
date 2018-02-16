@@ -1919,30 +1919,6 @@ Module IO
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
         Dim dummy As String
 
-        f(0) = Environment.DefaultNonValue
-        t(0) = Environment.DefaultNonValue
-        someEnvironment.SetDiagF(f)
-        someEnvironment.SetDiagT(t)
-        someEnvironment.DIAGGasTemp = Environment.DefaultNonValue
-        someEnvironment.DIAGPartPressCO = Environment.DefaultNonValue
-        someEnvironment.DIAGPartPressH2O = Environment.DefaultNonValue
-        someEnvironment.DIAGRadSolver = "DEFAULT"
-        someEnvironment.DIAGfire = Environment.DIAGon
-        someEnvironment.DIAGhflow = Environment.DIAGon
-        someEnvironment.DIAGentrain = Environment.DIAGon
-        someEnvironment.DIAGvflow = Environment.DIAGon
-        someEnvironment.DIAGcjet = Environment.DIAGon
-        someEnvironment.DIAGdfire = Environment.DIAGon
-        someEnvironment.DIAGconvec = Environment.DIAGon
-        someEnvironment.DIAGrad = Environment.DIAGon
-        someEnvironment.DIAGgasabsorp = Environment.DIAGon
-        someEnvironment.DIAGconduc = Environment.DIAGon
-        someEnvironment.DIAGdebugprn = Environment.DIAGoff
-        someEnvironment.DIAGmflow = Environment.DIAGon
-        someEnvironment.DIAGkeyin = Environment.DIAGon
-        someEnvironment.DIAGsteadyint = Environment.DIAGoff
-        someEnvironment.DIAGdasslprn = Environment.DIAGoff
-        someEnvironment.DIAGoxygen = Environment.DIAGoff
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DIAG") Then
                 ReDim f(0), t(0)

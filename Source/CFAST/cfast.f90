@@ -44,7 +44,6 @@
 
     real(eb) :: xdelt, tstop, tbeg, tend
     type(thermal_type), pointer :: thrmpptr
-    real(eb) :: dummy
 
     cfast_version = 7300        ! Current CFAST version number
 
@@ -125,7 +124,7 @@
         write (iofill,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
     end if
 
-    close (unit=4, status='delete')
+    close (unit=iofilkernel, status='delete')
     call deleteoutputfiles (stopfile)
 
     stop

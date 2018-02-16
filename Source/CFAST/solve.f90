@@ -454,7 +454,7 @@ module solve_routines
     ! Ignore errors from deleting the file. It may not exist
     inquire (file=queryfile, exist = exists)
     if (exists) then
-        call output_status (T, dT)
+        call output_status (t, dt)
         call deleteoutputfiles (queryfile)
     end if
 

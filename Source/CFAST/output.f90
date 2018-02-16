@@ -1277,10 +1277,10 @@ module output_routines
     !  Write the status information to the "statusfile"
 
     real(eb), intent(in) :: T, dT
-
-    rewind (12)
-    write (12,5001) t, dt
-    call results_compressed (12)
+    rewind (unit=iofilstat)
+    write (iofilstat,5001,err=10) t, dt
+    call results_compressed (iofilstat)
+10  continue
     return
 
 5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)
@@ -1298,9 +1298,8 @@ module output_routines
     !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
     !      3 is for the log file  (iofill)
     !	   4 is for the indicator that the model is running (kernelisrunning)
-    !      6 is output (IOFILO)
-    !     11 is the history file
-    !     12 is used to write the status file (project.status)
+    !      6 is output (iofilo)
+    !     12 is used to write the status file (iofilstat)
     !     13 smokeview output (header) - note this is rewound each time the plot data is written)
     !     14 smokeview output (plot data)
     !     15 smokeview spreadsheet output
@@ -1311,7 +1310,6 @@ module output_routines
     !     25 spreadsheet output (walls and targets)
 
     !!!! Note that we assume that the default carriage control for formatted files is of type LIST (no fortran controls)
-
     integer :: ios
 
     ! first the file for "printed" output
@@ -1319,8 +1317,8 @@ module output_routines
     if (outputformat==0) outputformat = 2
 
     ! the status files
-    open (12,file=statusfile,access='append',err=81,iostat=ios)
-    open (unit=4, file=kernelisrunning)
+    open (unit=iofilstat,file=statusfile,access='append',err=81,iostat=ios)
+    open (unit=iofilkernel, file=kernelisrunning)
 
     ! the smokeview files
     if (smv_out_interval>0) then
@@ -1347,8 +1345,8 @@ module output_routines
     write (iofill,5040) mod(ios,256),trim(smvhead),trim(smvdata)
     stop
     !	this one comes from writing to the status file
-81  write (*,*) '***Fatal error writing to the status file ',ios
-    write (iofill,*) '***Fatal error writing to the status file ',ios
+81  write (*,*) '***Fatal error opening the status file ',ios
+    write (iofill,*) '***Fatal error opening the status file ',ios
     stop
 
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)

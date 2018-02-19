@@ -301,6 +301,7 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe corner_400_kW.in -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe wall_200_kW.in -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe wall_300_kW.in -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe wall_400_kW.in -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe cabinet_01.in -V
 cd ..\
 if %1==NIST_NRC_Corner_Effects goto end
 :NIST_Vent_Study

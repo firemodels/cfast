@@ -1996,14 +1996,14 @@ Module IO
                         ReadINIInput(convec, "CONVECTION_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
                     ElseIf NMList.ForNMListGetVar(i, j) = "RADIATION_SUB_MODEL" Then
                         ReadINIInput(rad, "RADIATION_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
-                    ElseIf NMList.ForNMListGetVar(i, j) = "GAS_ABSORPTION_SUB_MODEL" Then
+                    ElseIf NMList.ForNMListGetVar(i, j) = "GAS_ABSORBTION_SUB_MODEL" Then
                         dummy = NMList.ForNMListVarGetStr(i, j, 1)
                         If dummy = "CALCULATED" Then
                             gasabsorp = Environment.DIAGon
                         ElseIf dummy = "CONSTANT" Then
                             gasabsorp = Environment.DIAGoff
                         Else
-                            myErrors.Add("In DIAG name list for " + "GAS_ABSORPTION_SUB_MODEL" + " " + dummy + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DIAG name list for " + "GAS_ABSORBTION_SUB_MODEL" + " " + dummy + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "CONDUCTION_SUB_MODEL" Then
                         ReadINIInput(conduc, "CONDUCTION_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
@@ -3537,7 +3537,7 @@ Module IO
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RADIATION_SUB_MODEL = 'OFF' ")
         End If
         If myEnvironment.DIAGgasabsorp <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "GAS_ABSORPTION_SUB_MODEL = 'CONSTANT' ")
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "GAS_ABSORBTION_SUB_MODEL = 'CONSTANT' ")
         End If
         If myEnvironment.DIAGconduc <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CONDUCTION_SUB_MODEL = 'OFF' ")

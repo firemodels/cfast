@@ -1093,23 +1093,23 @@ module solve_routines
         end if
 
         ! upper layer temperature equation
-        tlaydu = (qu-cp*tmu*roomptr%temp(u))/(cp*roomptr%mass(u))
-        if (option(fode)==on) then
-            tlaydu = tlaydu + pdot/(cp*roomptr%rho(u))
-        end if
+        tlaydu = (qu-cp*tmu*roomptr%temp(u))/(cp*roomptr%mass(u)) + pdot/(cp*roomptr%rho(u))
+        !if (option(fode)==on) then
+        !    tlaydu = tlaydu + pdot/(cp*roomptr%rho(u))
+        !end if
 
         ! upper layer volume equation
-        vlayd = (gamma-1.0_eb)*qu/(gamma*pabs)
-        if (option(fode)==on) then
-            vlayd = vlayd - roomptr%volume(u)*pdot/(gamma*pabs)
-        end if
+        vlayd = (gamma-1.0_eb)*qu/(gamma*pabs) - roomptr%volume(u)*pdot/(gamma*pabs)
+        !if (option(fode)==on) then
+        !    vlayd = vlayd - roomptr%volume(u)*pdot/(gamma*pabs)
+        !end if
         if (roomptr%shaft) vlayd = 0.0_eb
 
         ! lower layer temperature equation
-        tlaydl = (ql-cp*tml*roomptr%temp(l))/(cp*roomptr%mass(l))
-        if (option(fode)==on) then
-            tlaydl = tlaydl + pdot/(cp*roomptr%rho(l))
-        end if
+        tlaydl = (ql-cp*tml*roomptr%temp(l))/(cp*roomptr%mass(l)) + pdot/(cp*roomptr%rho(l))
+        !if (option(fode)==on) then
+        !    tlaydl = tlaydl + pdot/(cp*roomptr%rho(l))
+        !end if
 
         yhatprime_vector(iroom) = pdot
         yhatprime_vector(iroom+noftl) = tlaydl

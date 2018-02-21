@@ -21,6 +21,7 @@
     use room_data
     use namelist_data
     use diag_data
+    use option_data
 
     implicit none 
     
@@ -2466,8 +2467,16 @@ continue
     integer, intent(in) :: lu
 
     character(8) :: mode
+    character(3) :: horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
+                    ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
+                    conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, steady_state_initial_conditions, &
+                    dassl_debug_print, oxygen_tracking
+    character(10) :: gas_absorbtion_sub_model
     real(eb), dimension(mxpts) :: t, f
-    namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f
+    namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  horizontal_flow_sub_model, &
+                    fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, ceiling_jet_sub_model, door_jet_fire_sub_model, &
+                    convection_sub_model, radiation_sub_model, conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
+                    steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model
 
     ios = 1
 
@@ -2516,6 +2525,55 @@ continue
                 end if
             end do
         end if
+        if (fire_sub_model == 'OFF') then
+            option(ffire) = off
+        end if 
+        if (horizontal_flow_sub_model == 'OFF') then
+            option(fhflow) = off
+        end if 
+        if (entrainment_sub_model == 'OFF') then
+            option(fentrain) = off
+        end if 
+        if (vertical_flow_sub_model == 'OFF') then
+            option(fvflow) = off
+        end if 
+        if (ceiling_jet_sub_model == 'OFF') then
+            option(fcjet) = off
+        end if 
+        if (door_jet_fire_sub_model == 'OFF') then
+            option(fdfire) = off
+        end if 
+        if (convection_sub_model == 'OFF') then
+            option(fconvec) = off
+        end if 
+        if (radiation_sub_model == 'OFF') then
+            option(frad) = off
+        end if 
+        if (conduction_sub_model == 'OFF') then
+            option(fconduc) = off
+        end if 
+        if (trim(debug_print) == 'ON') then
+            option(fdebug) = on
+        end if 
+        if (mechanical_flow_sub_model == 'OFF') then
+            option(fmvent) = off
+        end if 
+        if (keyboard_input == 'OFF') then
+            option(fkeyeval) = off
+        end if 
+        if (trim(steady_state_initial_conditions) == 'ON') then
+            option(fpsteady) = on
+        end if 
+        if (trim(dassl_debug_print) == 'ON') then
+            option(fpdassl) = on
+        end if 
+        if (trim(oxygen_tracking) == 'ON') then
+            option(ffire) = on
+        end if 
+        if (trim(gas_absorbtion_sub_model) == 'CONSTANT') then
+            option(fgasabsorb) = off
+        end if 
+        
     
     end if diag_flag
     
@@ -2525,12 +2583,28 @@ continue
 
     subroutine set_defaults
 
-    rad_solver             = 'NULL'
-    partial_pressure_h2o   = -1001._eb
-    partial_pressure_co2   = -1001._eb
-    gas_temperature        = -1001._eb
-    t                      = -1001._eb
-    f                      = -1001._eb
+    rad_solver                      = 'NULL'
+    partial_pressure_h2o            = -1001._eb
+    partial_pressure_co2            = -1001._eb
+    gas_temperature                 = -1001._eb
+    t                               = -1001._eb
+    f                               = -1001._eb
+    fire_sub_model                  = 'ON'
+    horizontal_flow_sub_model       = 'ON'
+    entrainment_sub_model           = 'ON'
+    vertical_flow_sub_model         = 'ON'
+    ceiling_jet_sub_model           = 'ON'
+    door_jet_fire_sub_model         = 'ON'
+    convection_sub_model            = 'ON'
+    radiation_sub_model             = 'ON'
+    conduction_sub_model            = 'ON'
+    debug_print                     = 'OFF'
+    mechanical_flow_sub_model       = 'ON'
+    keyboard_input                  = 'ON'
+    steady_state_initial_conditions = 'OFF'
+    dassl_debug_print               = 'OFF'
+    oxygen_tracking                 = 'OFF'
+    gas_absorbtion_sub_model        = 'CALCULATED'
 
     end subroutine set_defaults
 

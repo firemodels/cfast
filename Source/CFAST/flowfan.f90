@@ -43,6 +43,7 @@ module mflow_routines
     uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
     if (n_mvents==0) return
+    if (option(fmvent)==off) return
     
     if (tsec>1000._eb) then
         continue

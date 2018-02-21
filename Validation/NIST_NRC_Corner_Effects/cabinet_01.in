@@ -16,7 +16,7 @@
       DEPTH = 7 HEIGHT = 3.8 WIDTH = 11 CEILING_MATL_ID = 'Gypsum' WALL_MATL_ID = 'Gypsum' FLOOR_MATL_ID = 'Gypsum'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
 &COMP ID = 'Cabinet'
-      DEPTH = 0.92 HEIGHT = 2.14 WIDTH = 0.92 CEILING_MATL_ID = 'Steel' WALL_MATL_ID = 'Steel' FLOOR_MATL_ID = 'Steel' SHAFT = .TRUE.
+      DEPTH = 0.92 HEIGHT = 2.14 WIDTH = 0.92 CEILING_MATL_ID = 'Steel' WALL_MATL_ID = 'Steel' FLOOR_MATL_ID = 'Steel' 
       ORIGIN = 4.3, 1.8, 0 GRID = 50, 50, 50 /
  
 !! Devices
@@ -222,7 +222,3 @@
 &TABL ID = '50kWto400kW', DATA = 3630, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
 &TABL ID = '50kWto400kW', DATA = 4500, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
 &TABL ID = '50kWto400kW', DATA = 4530, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
- 
-!! Visualizations
-&SLCF COMP_ID = 'Cabinet' DOMAIN = '3-D' / 
-&SLCF COMP_ID = 'Compartment' DOMAIN = '3-D' / 

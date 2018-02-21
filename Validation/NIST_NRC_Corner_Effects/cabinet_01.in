@@ -16,7 +16,7 @@
       DEPTH = 7 HEIGHT = 3.8 WIDTH = 11 CEILING_MATL_ID = 'Gypsum' WALL_MATL_ID = 'Gypsum' FLOOR_MATL_ID = 'Gypsum'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
 &COMP ID = 'Cabinet'
-      DEPTH = 0.92 HEIGHT = 2.14 WIDTH = 0.92 CEILING_MATL_ID = 'Steel' WALL_MATL_ID = 'Steel' FLOOR_MATL_ID = 'Steel' SHAFT = .TRUE.
+      DEPTH = 0.92 HEIGHT = 2.14 WIDTH = 0.92 CEILING_MATL_ID = 'Steel' WALL_MATL_ID = 'Steel' FLOOR_MATL_ID = 'Steel' 
       ORIGIN = 4.3, 1.8, 0 GRID = 50, 50, 50 /
  
 !! Devices
@@ -41,8 +41,19 @@
 &DEVC ID = 'Pl-Up-17' COMP_ID = 'Compartment' LOCATION = 1.17, 1.17, 3.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'Pl-Mid-17' COMP_ID = 'Compartment' LOCATION = 1.17, 1.17, 2.74 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'Pl-Low-17' COMP_ID = 'Compartment' LOCATION = 1.17, 1.17, 2.13 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
+
 &DEVC ID = 'TC-WT-01' COMP_ID = 'Compartment' LOCATION = 3.6, 3.6, 3.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'TC-C-01' COMP_ID = 'Compartment' LOCATION = 0.02, 0.02, 3.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'TC-ET-01' COMP_ID = 'Compartment' LOCATION = 7.40, 3.60, 3.75, TYPE='PLATE' MATL_ID='Steel'   NORMAL= 0,0,-1 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'TC-Cab' COMP_ID = 'Cabinet' LOCATION = 0.46, 0.92, 1.05 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-1' COMP_ID = 'Compartment' LOCATION = 4.65, 1.2, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 1, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-2' COMP_ID = 'Compartment' LOCATION = 4.65, 1.2, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 1, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-3' COMP_ID = 'Compartment' LOCATION = 3.6, 2.25, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-4' COMP_ID = 'Compartment' LOCATION = 3.6, 2.25, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-5' COMP_ID = 'Compartment' LOCATION = 5.7, 2.25, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-6' COMP_ID = 'Compartment' LOCATION = 5.7, 2.25, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-7' COMP_ID = 'Compartment' LOCATION = 4.65, 3.3, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'PT-8' COMP_ID = 'Compartment' LOCATION = 4.65, 3.3, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
+
 &DEVC ID = 'TC-AG-01' COMP_ID = 'Compartment' LOCATION = 5.01, 1.8, 3.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TC-AG-02' COMP_ID = 'Compartment' LOCATION = 5.21, 1.8, 3.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TC-AG-03' COMP_ID = 'Compartment' LOCATION = 5.41, 1.8, 3.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
@@ -176,21 +187,12 @@
 &DEVC ID = 'TC-W-09' COMP_ID = 'Compartment' LOCATION = 5.49, 0.02, 1.4 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TC-W-10' COMP_ID = 'Compartment' LOCATION = 5.49, 0.02, 1.1 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TC-W-11' COMP_ID = 'Compartment' LOCATION = 5.49, 0.02, 0.8 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-1' COMP_ID = 'Compartment' LOCATION = 4.65, 1.2, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 1, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-2' COMP_ID = 'Compartment' LOCATION = 4.65, 1.2, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 1, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-3' COMP_ID = 'Compartment' LOCATION = 3.6, 2.25, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-4' COMP_ID = 'Compartment' LOCATION = 3.6, 2.25, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-5' COMP_ID = 'Compartment' LOCATION = 5.7, 2.25, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-6' COMP_ID = 'Compartment' LOCATION = 5.7, 2.25, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-7' COMP_ID = 'Compartment' LOCATION = 4.65, 3.3, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'PT-8' COMP_ID = 'Compartment' LOCATION = 4.65, 3.3, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-1' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 2.04 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-2' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 1.8 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-3' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 1.5 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-4' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 1.2 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-5' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 0.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-6' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 0.6 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'TC-Cab' COMP_ID = 'Compartment' LOCATION = 4.2, 2.25, 1.05 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
@@ -220,7 +222,3 @@
 &TABL ID = '50kWto400kW', DATA = 3630, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
 &TABL ID = '50kWto400kW', DATA = 4500, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
 &TABL ID = '50kWto400kW', DATA = 4530, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
- 
-!! Visualizations
-&SLCF COMP_ID = 'Cabinet' DOMAIN = '3-D' / 
-&SLCF COMP_ID = 'Compartment' DOMAIN = '3-D' / 

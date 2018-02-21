@@ -1638,7 +1638,7 @@ continue
 
                     if (trim(face) == 'FRONT') ventptr%face=1
                     if (trim(face) == 'RIGHT') ventptr%face=2
-                    if (trim(face) == 'BACK') ventptr%face=3
+                    if (trim(face) == 'REAR') ventptr%face=3
                     if (trim(face) == 'LEFT') ventptr%face=4
 
                     initialtime = 0._eb

@@ -91,7 +91,8 @@ Public Class Environment
         aDIAGcjet = DIAGon
         aDIAGdfire = DIAGon
         aDIAGconvec = DIAGon
-        aDIAGrad = 2
+        aDIAGrad = DIAGon
+        aDIAGgasabsorp = DIAGon
         aDIAGconduc = DIAGon
         aDIAGdebugprn = DIAGoff
         aDIAGmflow = DIAGon

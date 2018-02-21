@@ -107,7 +107,7 @@ module option_data
     implicit none
     save
 
-    integer, parameter :: mxdebug = 19
+    !integer, parameter :: mxdebug = 19
     integer, parameter :: mxopt = 19
 
     integer, parameter :: off = 0
@@ -127,12 +127,12 @@ module option_data
     integer, parameter :: fconduc = 9
     integer, parameter :: fdebug = 10
     integer, parameter :: fode=11
-    integer, parameter :: fhcl=12
+    !integer, parameter :: fhcl=12
     integer, parameter :: fmvent=13
     integer, parameter :: fkeyeval=14
     integer, parameter :: fpsteady=15
-    integer, parameter :: fhvloss=16
-    integer, parameter :: fmodjac=17
+    !integer, parameter :: fhvloss=16
+    !integer, parameter :: fmodjac=17
     integer, parameter :: fpdassl=18
     integer, parameter :: foxygen=19
 

@@ -2469,13 +2469,14 @@ continue
     character(8) :: mode
     character(3) :: horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
                     ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
-                    conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, steady_state_initial_conditions, &
-                    dassl_debug_print, oxygen_tracking
+                    conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
+                    steady_state_initial_conditions, dassl_debug_print, oxygen_tracking
     character(10) :: gas_absorbtion_sub_model
     real(eb), dimension(mxpts) :: t, f
-    namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  horizontal_flow_sub_model, &
-                    fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, ceiling_jet_sub_model, door_jet_fire_sub_model, &
-                    convection_sub_model, radiation_sub_model, conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
+    namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  &
+                    horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
+                    ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
+                    conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
                     steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model
 
     ios = 1

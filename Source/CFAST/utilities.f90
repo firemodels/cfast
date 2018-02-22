@@ -871,7 +871,6 @@
 
     integer :: year, month, day, iarg(8), iopt(26), nargs, values(8)
     character :: strs(8)*60
-    character(60) :: solveini
     character(10) :: big_ben(3)
 
     ! current date

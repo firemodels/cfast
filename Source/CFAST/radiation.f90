@@ -55,7 +55,6 @@ module radiation_routines
 
     if (option(frad)==off) return
     black = .false.
-    !if (option(frad)==3) black = .true.
 
     defabsup = 0.50_eb
     defabslow = 0.01_eb
@@ -91,7 +90,6 @@ module radiation_routines
             end if
         end do
         if (.not.black) then
-            !if (option(frad)==4) then
             if (option(fgasabsorb)==off) then
                 roomptr%absorb(u) = defabsup
                 roomptr%absorb(l) = defabslow

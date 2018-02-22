@@ -51,7 +51,6 @@ module fire_routines
     flows_fires(1:nr,1:ns+2,l) = 0.0_eb
     nfire = 0
 
-    !if (option(ffire)/=fcfast) return
     if (option(ffire)==off) return
 
     do i = 1, n_fires

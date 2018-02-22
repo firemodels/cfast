@@ -902,14 +902,14 @@
     if (cmdflag('C',iopt)/=0) outputformat = 1
     if (cmdflag('F',iopt)/=0) outputformat = 2
 
-    if (cmdflag('S',iopt)/=0) then
-        if (strs(cmdflag('S',iopt))/=' ') then
-            solveini = strs(cmdflag('S',iopt))
-        else
-            solveini = 'SOLVE.INI'
-        end if
-        call writeini(solveini)
-    end if
+    !if (cmdflag('S',iopt)/=0) then
+    !    if (strs(cmdflag('S',iopt))/=' ') then
+    !        solveini = strs(cmdflag('S',iopt))
+    !    else
+    !        solveini = 'SOLVE.INI'
+    !    end if
+    !    call writeini(solveini)
+    !end if
 
     return
 

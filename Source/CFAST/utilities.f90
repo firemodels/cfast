@@ -902,84 +902,10 @@
     if (cmdflag('C',iopt)/=0) outputformat = 1
     if (cmdflag('F',iopt)/=0) outputformat = 2
 
-    !if (cmdflag('S',iopt)/=0) then
-    !    if (strs(cmdflag('S',iopt))/=' ') then
-    !        solveini = strs(cmdflag('S',iopt))
-    !    else
-    !        solveini = 'SOLVE.INI'
-    !    end if
-    !    call writeini(solveini)
-    !end if
-
     return
 
 5010 format (i4.4,'/',i2.2,'/',i2.2)
     end   subroutine read_command_options
-
-    ! --------------------------- writeini -------------------------------------------
-
-    subroutine writeini(file)
-
-    !     description:  this routine creates a solver.ini file for the current
-    !                   version of cfast.  it is created using:
-    !                   cfast -s filename
-    !                   where filename is the name of the file to contain
-    !                   the solver.ini options .  the default name is
-    !                   solve.ini (so as to not overwrite solver.ini if
-    !                   it is present)
-
-    character(*), intent(in) :: file
-
-    integer :: nnnopt, i, j, iunit
-
-    nnnopt = 19
-
-    iunit = funit(70)
-    open(unit=iunit,file=file)
-
-    write (iunit,'(a)') ' ABS PRESSURE TOL, REL PRESSURE TOL, ABS OTHER TOL, REL OTHER TOL'
-    write (iunit,11) aptol, rptol, atol, rtol
-11  format(1x,5(1pg11.4,1x))
-
-    write (iunit,'(a)') ' ABS WALL TOL, REL WALL TOL, INITIALIZATION TOLERANCE'
-    write (iunit,11) awtol, rwtol, algtol
-
-    write (iunit,'(a)') ' ABS HVAC PRESS, REL HVAC PRESS, ABS HVAC TEMP, REL HVAC TEMP'
-    write (iunit,11) ahvptol, rhvptol, ahvttol, rhvttol
-
-    write (iunit,'(a)') ' NUMBER OF PHYSICAL OPTION FLAGS'
-    write (iunit,*) nnnopt
-
-    write (iunit,'(a)') ' FIRE,      HFLOW,  ENTRAIN, VFLOW,       CJET'
-    write (iunit,*) (option(j),j = 1,5)
-
-    write (iunit,'(a)') ' DOOR-FIRE, CONVEC, RAD,     CONDUCT, DEBUG PRINT  '
-    write (iunit,*) (option(j),j = 6,10)
-
-    write (iunit,'(a)') ' EXACT ODE, HCL,   MFLOW,    KEYBOARD, TYPE OF INITIALIZATION'
-    write (iunit,*) (option(j),j = 11,15)
-
-    write (iunit,'(a)') ' MV HEAT LOSS, USE MODIFIED JACOBIAN, DASSL DEBUG, OXYGEN SOLVE'
-    write (iunit,*) (option(j),j = 16,19)
-
-    write (iunit,'(a)') ' NUMBER OF WALL NODES, FRACTIONS FOR FIRST, MIDDLE AND LAST WALL SLAB'
-    write (iunit,'(1x,i3,1x,3(1pg11.4,1x))') nwpts, (wsplit(i),i=1,3)
-
-    write (iunit,'(a)') ' BOUNDARY CONDITION TYPE (1=CONSTANT TEMPERATURE,   2=INSULATED 3=FLUX)'
-    write (iunit,*) iwbound
-
-    write (iunit,'(a)') ' MAXIMUM STEP SIZE,  MAX FIRST STEP -  IF EITHER <0 THEN SOLVER DECIDES'
-    write (iunit,11) stpmax, stpfirst
-
-    write (iunit,'(a)') ' HVAC CONVECTION COEFFICIENT'
-    write (iunit,11) 0.0_eb
-
-    write (iunit,'(a)') ' SNSQE PRINT (1=ON)'
-    write (iunit,'(1x,i3)') iprtalg
-
-    if (1==1) stop
-    return
-    end subroutine writeini
 
     ! --------------------------- shellsort -------------------------------------------
 

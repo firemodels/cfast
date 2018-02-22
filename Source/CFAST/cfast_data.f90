@@ -107,14 +107,10 @@ module option_data
     implicit none
     save
 
-    !integer, parameter :: mxdebug = 19
     integer, parameter :: mxopt = 16
 
     integer, parameter :: off = 0
     integer, parameter :: on = 1
-
-    !integer, parameter :: fccfm = 1
-    !integer, parameter :: fcfast = 2
 
     integer, parameter :: ffire = 1
     integer, parameter :: fhflow = 2
@@ -132,17 +128,6 @@ module option_data
     integer, parameter :: fpsteady = 14
     integer, parameter :: fpdassl = 15
     integer, parameter :: foxygen = 16
-    
-    ! old code delete after testing
-    !integer, parameter :: fode=11
-    !integer, parameter :: fhcl=12
-    !integer, parameter :: fmvent=13
-    !integer, parameter :: fkeyeval=14
-    !integer, parameter :: fpsteady=15
-    !integer, parameter :: fhvloss=16
-    !integer, parameter :: fmodjac=17
-    !integer, parameter :: fpdassl=18
-    !integer, parameter :: foxygen=19
 
     integer, dimension(mxopt) :: option = &
         !   fire,       hflow,      entrain,    vflow,      cjet
@@ -157,18 +142,6 @@ module option_data
             on,                   on,          on,          off,                           off,  &
         !   oxygen dassl solve
             off  /)
-
-        ! old code delete after testing. 
-        !!   fire,       hflow,      entrain,    vflow,      cjet
-        !(/  2,          1,          1,          1,          1,  &
-        !!   door-fire,  convec,     rad,        conduct,    debug
-        !!                           changing default rad option from 2 to 4 causes absorption coefs 
-        !!                           to take on constant default values rather than computed from data
-        !    1,          1,          2,          1,          0,  &
-        !!   exact ode,  hcl,        h_mflow,      keyboard,   type of initialization
-        !    1,          0,          1,          1,          0,  &
-        !!   mv heat loss,   mod jac,    dassl debug,    oxygen dassl solve
-        !    0,              0,          0,              0/)
 
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
 

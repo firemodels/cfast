@@ -61,7 +61,7 @@
 
     call output_version (iofill)
 
-    call read_solver_ini
+    !call read_solver_ini
     call read_input_file
 
     call initialize_species

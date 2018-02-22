@@ -29,7 +29,7 @@
 
     use precision_parameters
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
-    use input_routines, only : open_files, read_solver_ini, read_input_file
+    use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
@@ -61,7 +61,6 @@
 
     call output_version (iofill)
 
-    !call read_solver_ini
     call read_input_file
 
     call initialize_species

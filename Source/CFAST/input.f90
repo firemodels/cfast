@@ -31,7 +31,7 @@
 
     private
 
-    public read_input_file, open_files, read_solver_ini
+    public read_input_file, open_files
 
     contains
 

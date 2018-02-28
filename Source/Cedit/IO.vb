@@ -684,7 +684,7 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "TITLE") Then
                         title = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
-                        myErrors.Add("In HEAD name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In HEAD namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
             End If
@@ -713,7 +713,7 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SPREADSHEET") Then
                         ss = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In TIME name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In TIME namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
             End If
@@ -744,7 +744,7 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "EXTERIOR_TEMPERATURE") Then
                         extemp = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In INIT name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In INIT namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
             End If
@@ -772,14 +772,14 @@ Module IO
                         ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
                             adiabatic = True
                         Else
-                            myErrors.Add("In MISC name list for ADIABATIC " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                            myErrors.Add("In MISC namelist for ADIABATIC " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
                         End If
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MAX_TIME_STEP") Then
                         maxts = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "LOWER_OXYGEN_LIMIT") Then
                         loxyl = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In MISC name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In MISC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
             End If
@@ -823,7 +823,7 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MATERIAL") Then
                         matl = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
-                        myErrors.Add("In MATL name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In MATL namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 valid = True
@@ -892,7 +892,7 @@ Module IO
                                 f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In RAMP name list for F input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In RAMP namelist for F input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
                         End If
                         deff = True
                     ElseIf NMList.ForNMListGetVar(i, j) = "T" Then
@@ -903,7 +903,7 @@ Module IO
                                 x(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In RAMP name list for T input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In RAMP namelist for T input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
                         End If
                         isT = True
                         If def1 Then
@@ -919,7 +919,7 @@ Module IO
                                 x(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In RAMP name list for Z input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In RAMP namelist for Z input must be 1 to " + maxnum + " positive numbers", ErrorMessages.TypeFatal)
                         End If
                         isT = False
                         If def1 Then
@@ -928,11 +928,11 @@ Module IO
                             def1 = True
                         End If
                     Else
-                        myErrors.Add("In RAMP name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In RAMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 If def2 Then
-                    myErrors.Add("In RAMP name list " + id + " has both t and z defined. Only one can be defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In RAMP namelist " + id + " has both t and z defined. Only one can be defined", ErrorMessages.TypeFatal)
                 ElseIf def1 And deff Then
                     If Ramp.ValidRamp(id, type, x, f) Then
                         If type = "HRR" Then
@@ -942,10 +942,10 @@ Module IO
                         End If
                         myRamps.Add(New Ramp(id, type, x, f, isT))
                     Else
-                        myErrors.Add("In RAMP name list " + id + " id not a valid ramp definition", ErrorMessages.TypeFatal)
+                        myErrors.Add("In RAMP namelist " + id + " id not a valid ramp definition", ErrorMessages.TypeFatal)
                     End If
                 Else
-                    myErrors.Add("In RAMP name list " + id + " id not a valid ramp definition", ErrorMessages.TypeFatal)
+                    myErrors.Add("In RAMP namelist " + id + " id not a valid ramp definition", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
@@ -992,7 +992,7 @@ Module IO
                         ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".FALSE." Then
                             hall = False
                         Else
-                            myErrors.Add("In COMP name list for HALL " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                            myErrors.Add("In COMP namelist for HALL " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
                         End If
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SHAFT") Then
                         If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
@@ -1000,7 +1000,7 @@ Module IO
                         ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".FALSE." Then
                             shaft = False
                         Else
-                            myErrors.Add("In COMP name list for SHAFT " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                            myErrors.Add("In COMP namelist for SHAFT " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "DEPTH" Then
                         depth = NMList.ForNMListVarGetNum(i, j, 1)
@@ -1027,7 +1027,7 @@ Module IO
                                 grid(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In COMP name list for GRID input must be 1 to 3 positive integers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In COMP namelist for GRID input must be 1 to 3 positive integers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "ORIGIN" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1036,10 +1036,10 @@ Module IO
                                 origin(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In COMP name list for ORIGIN input must be 3 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In COMP namelist for ORIGIN input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     Else
-                        myErrors.Add("In COMP name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In COMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 valid = True
@@ -1054,15 +1054,15 @@ Module IO
                     aComp.SetSize(width, depth, height)
                     If myThermalProperties.GetIndex(ceilid) < 0 And ceilid <> "OFF" Then
                         ceilid = "OFF"
-                        myErrors.Add("In COMP name list " + id + " CEILING_MATL_ID " + ceilid + " is not valid switching ceiling to OFF", ErrorMessages.TypeWarning)
+                        myErrors.Add("In COMP namelist " + id + " CEILING_MATL_ID " + ceilid + " is not valid switching ceiling to OFF", ErrorMessages.TypeWarning)
                     End If
                     If myThermalProperties.GetIndex(wallid) < 0 And wallid <> "OFF" Then
                         wallid = "OFF"
-                        myErrors.Add("In COMP name list " + id + " WALL_MATL_ID " + wallid + " is not valid switching wall to OFF", ErrorMessages.TypeWarning)
+                        myErrors.Add("In COMP namelist " + id + " WALL_MATL_ID " + wallid + " is not valid switching wall to OFF", ErrorMessages.TypeWarning)
                     End If
                     If myThermalProperties.GetIndex(floorid) < 0 And floorid <> "OFF" Then
                         floorid = "OFF"
-                        myErrors.Add("In COMP name list " + id + "FLOOR_MATL_ID " + floorid + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
+                        myErrors.Add("In COMP namelist " + id + "FLOOR_MATL_ID " + floorid + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
                     End If
                     aComp.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
                     aComp.SetMaterial(ceilid, wallid, floorid)
@@ -1077,7 +1077,7 @@ Module IO
                     End If
                     aComp.Changed = False
                 Else
-                    myErrors.Add("In COMP name list " + id + " is not fully defined", ErrorMessages.TypeWarning)
+                    myErrors.Add("In COMP namelist " + id + " is not fully defined", ErrorMessages.TypeWarning)
                 End If
             End If
         Next
@@ -1126,7 +1126,7 @@ Module IO
                             type = NMList.ForNMListVarGetStr(i, j, 1)
                             If setp <= 0 Then setp = 23.93
                         Else
-                            myErrors.Add("In DEVC name list for TYPE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value.", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DEVC namelist for TYPE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value.", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "TEMPERATURE_DEPTH" Then
                         tempdepth = NMList.ForNMListVarGetNum(i, j, 1)
@@ -1143,7 +1143,7 @@ Module IO
                                 loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In DEVC name list for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DEVC namelist for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "NORMAL" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1152,27 +1152,27 @@ Module IO
                                 norm(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In DEVC name list for NORMAL input must be 3 numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DEVC namelist for NORMAL input must be 3 numbers", ErrorMessages.TypeFatal)
                         End If
                     Else
-                        myErrors.Add("In DEVC name list " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In DEVC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 valid = True
                 If id = "" Then
                     valid = False
-                    myErrors.Add("DEVC name list is not a valid DEVC because it has no ID", ErrorMessages.TypeFatal)
+                    myErrors.Add("DEVC namelist is not a valid DEVC because it has no ID", ErrorMessages.TypeFatal)
                 End If
                 If type = "" Then
                     valid = False
-                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because it has no type", ErrorMessages.TypeFatal)
+                    myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because it has no type", ErrorMessages.TypeFatal)
                 End If
                 If compid = "" Then
                     valid = False
-                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because it has no COMP_ID", ErrorMessages.TypeFatal)
+                    myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because it has no COMP_ID", ErrorMessages.TypeFatal)
                 ElseIf myCompartments.GetCompIndex(compid) < 0 Then
                     valid = False
-                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because COMP_ID " + compid + " does not refernce a valid compartment", ErrorMessages.TypeFatal)
+                    myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because COMP_ID " + compid + " does not refernce a valid compartment", ErrorMessages.TypeFatal)
                 End If
                 lvalid = True
                 For k = 0 To 2
@@ -1181,7 +1181,7 @@ Module IO
                     End If
                 Next
                 If Not lvalid Then
-                    myErrors.Add("DEVC name list " + id + " is not a valid DEVC because at least one of the components of the location has not been set", ErrorMessages.TypeFatal)
+                    myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because at least one of the components of the location has not been set", ErrorMessages.TypeFatal)
                 End If
                 If valid Then
                     Dim aDetect As New Target
@@ -1222,7 +1222,7 @@ Module IO
                         myDetectors.Add(aDetect)
                     End If
                 Else
-                    myErrors.Add("In DEVC name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In DEVC namelist " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
@@ -1257,7 +1257,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "IGNITION_CRITERION" Then
                         ignitcrit = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
-                        setp = NMList.ForNMListVarGetStr(i, j, 1)
+                        setp = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 2 And max <= 2 Then
@@ -1265,10 +1265,10 @@ Module IO
                                 loc(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In INSF name list for LOCATION input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In FIRE namelist for LOCATION input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     Else
-                        myErrors.Add("In INSF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In FIRE namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 Dim aFire As New Fire()
@@ -1298,7 +1298,7 @@ Module IO
     Private Sub ReadInputFileNMLChem(ByVal NMList As NameListFile, ByRef someFires As FireCollection)
         Dim i, j As Integer
         Dim id As String
-        Dim carbon, chlorine, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
+        Dim carbon, chlorine, flametime, hoc, hydrogen, nitrogen, oxygen, radfrac As Single
         Dim aFireCurves(12, 0) As Single
         Dim valid As Boolean
 
@@ -1306,6 +1306,7 @@ Module IO
             If (NMList.GetNMListID(i) = "CHEM") Then
                 carbon = 1
                 chlorine = 0
+                flametime = 0
                 hoc = 50000
                 hydrogen = 4
                 nitrogen = 0
@@ -1319,6 +1320,8 @@ Module IO
                         carbon = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "CHLORINE" Then
                         chlorine = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FLAMING_TRANSITION_TIME" Then
+                        flametime = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HEAT_OF_COMBUSTION" Then
                         hoc = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "HYDROGEN" Then
@@ -1330,12 +1333,12 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_FRACTION" Then
                         radfrac = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In FIRE name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In CHEM namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 valid = True
                 If id = "" Then
-                    myErrors.Add("In FIRE name list ID parameter must be set", ErrorMessages.TypeFatal)
+                    myErrors.Add("In CHEM namelist ID parameter must be set", ErrorMessages.TypeFatal)
                     valid = False
                 End If
                 If valid Then
@@ -1349,12 +1352,13 @@ Module IO
                     aFireObject.ChemicalFormula(formula.Cl) = chlorine
                     aFireObject.HeatofCombustion = hoc * 1000.0
                     aFireObject.RadiativeFraction = radfrac
+                    aFireObject.FlamingTransitionTime = flametime
                     ReadInputFileNMLTabl(NMList, id, aFireCurves, valid)
                     aFireObject.SetFireData(aFireCurves)
                     aFireObject.Changed = False
                     someFires.Add(aFireObject)
                 Else
-                    myErrors.Add("In FIRE name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In FIRE namelist " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
@@ -1385,7 +1389,7 @@ Module IO
                                 labels(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In TABL name list for LABELS input must be between 2 and 8 labels ", ErrorMessages.TypeFatal)
+                            myErrors.Add("In TABL namelist for LABELS input must be between 2 and 8 labels ", ErrorMessages.TypeFatal)
                             ErrFlag = True
                         End If
                     End If
@@ -1405,7 +1409,7 @@ Module IO
             Next
         Else
             ErrFlag = True
-            myErrors.Add("In TABL name list LABELS keyword not found for FIRE " + id, ErrorMessages.TypeFatal)
+            myErrors.Add("In TABL namelist LABELS keyword not found for FIRE " + id, ErrorMessages.TypeFatal)
             Exit Sub
         End If
 
@@ -1499,7 +1503,7 @@ Module IO
                                 orien(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for COMP_IDS there must be 2 compartment IDs", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for COMP_IDS there must be 2 compartment IDs", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "SHAPE" Then
                         shape = NMList.ForNMListVarGetStr(i, j, 1)
@@ -1512,7 +1516,7 @@ Module IO
                                 compids(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for COMP_IDS there must be 2 compartment IDs", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for COMP_IDS there must be 2 compartment IDs", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "AREA" Then
                         area = NMList.ForNMListVarGetNum(i, j, 1)
@@ -1543,7 +1547,7 @@ Module IO
                                 areas(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for AREAS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for AREAS input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "CUTOFFS" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1552,7 +1556,7 @@ Module IO
                                 cutoffs(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for CUTOFFS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for CUTOFFS input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "HEIGHTS" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1561,7 +1565,7 @@ Module IO
                                 heights(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for HEIGHTS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for HEIGHTS input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "OFFSETS" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1570,7 +1574,7 @@ Module IO
                                 offsets(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for OFFSETS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for OFFSETS input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "T" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1580,7 +1584,7 @@ Module IO
                                 tt(k) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for T input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for T input must be at least 1 positive number", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1590,26 +1594,26 @@ Module IO
                                 ff(k) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
                         End If
                     Else
-                        myErrors.Add("In VENT name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In VENT namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 valid = True
                 If id = "" Then
                     valid = False
-                    myErrors.Add("In VENT name list ID must be defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In VENT namelist ID must be defined", ErrorMessages.TypeFatal)
                 End If
                 For k = 0 To 1
                     If myCompartments.GetCompIndex(compids(k)) < 0 And compids(k) <> "OUTSIDE" Then
                         valid = False
-                        myErrors.Add("In VENT name list " + id + " does Not have two valid compartments", ErrorMessages.TypeFatal)
+                        myErrors.Add("In VENT namelist " + id + " does Not have two valid compartments", ErrorMessages.TypeFatal)
                     End If
                 Next
                 If type <> "CEILING" And type <> "FLOOR" And type <> "MECHANICAL" And type <> "WALL" Then
                     valid = False
-                    myErrors.Add("In VENT name list " + id + " TYPE Is Not set to a valid value", ErrorMessages.TypeFatal)
+                    myErrors.Add("In VENT namelist " + id + " TYPE Is Not set to a valid value", ErrorMessages.TypeFatal)
                 End If
                 If valid Then
                     Dim aVent As New Vent
@@ -1752,7 +1756,7 @@ Module IO
                         someVVents.Add(aVent)
                     End If
                 Else
-                    myErrors.Add("In VENT name list " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
+                    myErrors.Add("In VENT namelist " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If
         Next
@@ -1777,7 +1781,7 @@ Module IO
                                 compids(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for COMP_IDS there must be at least 1 compartment ID", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for COMP_IDS there must be at least 1 compartment ID", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1787,12 +1791,12 @@ Module IO
                                 f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In VENT name list for F input must be 1 positive number", ErrorMessages.TypeFatal)
+                            myErrors.Add("In VENT namelist for F input must be 1 positive number", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "TYPE" Then
                         type = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
-                        myErrors.Add("In CONN name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In CONN namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 If type = "WALL" Then
@@ -1845,7 +1849,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "VALUE" Then
                         value = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In ISOF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In ISOF namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 Dim aVisual As New Visual
@@ -1883,7 +1887,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "POSITION" Then
                         pos = NMList.ForNMListVarGetNum(i, j, 1)
                     Else
-                        myErrors.Add("In SLCF name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In SLCF namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 Dim aVisual As New Visual
@@ -1952,7 +1956,7 @@ Module IO
                         ElseIf dummy = "RADNET" Then
                             radsolv = "RADNET"
                         Else
-                            myErrors.Add("In DIAG name list for " + "RADSOLVER" + " " + dummy + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DIAG namelist for " + "RADSOLVER" + " " + dummy + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "GAS_TEMPERATURE" Then
                         gastemp = NMList.ForNMListVarGetNum(i, j, 1)
@@ -1968,7 +1972,7 @@ Module IO
                                 t(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In DIAG name list for T input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DIAG namelist for T input must be at least 1 positive number", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "F" Then
                         max = NMList.ForNMListVarNumVal(i, j)
@@ -1978,7 +1982,7 @@ Module IO
                                 f(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In DIAG name list for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DIAG namelist for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_SUB_MODEL" Then
                         ReadINIInput(fire, "FIRE_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
@@ -2003,7 +2007,7 @@ Module IO
                         ElseIf dummy = "CONSTANT" Then
                             gasabsorp = Environment.DIAGoff
                         Else
-                            myErrors.Add("In DIAG name list for " + "GAS_ABSORBTION_SUB_MODEL" + " " + dummy + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                            myErrors.Add("In DIAG namelist for " + "GAS_ABSORBTION_SUB_MODEL" + " " + dummy + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "CONDUCTION_SUB_MODEL" Then
                         ReadINIInput(conduc, "CONDUCTION_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
@@ -2020,7 +2024,7 @@ Module IO
                     ElseIf NMList.ForNMListGetVar(i, j) = "OXYGEN_TRACKING" Then
                         ReadINIInput(oxygen, "OXYGEN_TRACKING", NMList.ForNMListVarGetStr(i, j, 1))
                     Else
-                        myErrors.Add("In DIAG name list " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In DIAG namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
                 someEnvironment.SetDIAGf(f)
@@ -2054,7 +2058,7 @@ Module IO
         ElseIf value = "OFF" Then
             x = Environment.DIAGoff
         Else
-            myErrors.Add("In DIAG name list for " + label + " " + value + " Is Not a valid parameter", ErrorMessages.TypeFatal)
+            myErrors.Add("In DIAG namelist for " + label + " " + value + " Is Not a valid parameter", ErrorMessages.TypeFatal)
         End If
     End Sub
     Public Sub ReadThermalProperties(ByVal FileName As String, SomeThermalProperties As ThermalPropertiesCollection)
@@ -2398,7 +2402,7 @@ Module IO
     End Sub
 #End Region
 #Region "Write Routines"
-    Public Sub WriteInputFile(ByVal FileName As String)
+    Public Sub WriteInputFileCSV(ByVal FileName As String)
         Dim csv As New CSVsheet
         Dim i As Integer = 1
         Dim j, k, l As Integer
@@ -3335,6 +3339,7 @@ Module IO
                     ln += " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString + " HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString + " OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
                     ln += " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
                     ln += " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
+                    ln += " FLAMING_TRANSITION_TIME = " + aFire.FlamingTransitionTime.ToString
                     ln += " / "
                     PrintLine(IO, ln)
 

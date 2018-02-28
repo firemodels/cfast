@@ -73,6 +73,7 @@ Public Class Fire
     Private aArea As Single                         ' Constant fire area
     Private aHeight As Single                       ' Constant fire height
     Private aCOYield As Single                      ' Constant CO yield
+    Private aFlamingTransitionTime As Single        ' Time of transition from smoldering to flaming combustion
     Private aHClYield As Single                     ' Constant HCl yield
     Private aHCNYield As Single                     ' Constant HCN yield
     Private aSootYield As Single                    ' Constant soot yield
@@ -124,6 +125,7 @@ Public Class Fire
             aChemicalFormula(4) = Chemical_Formula(4)
             aChemicalFormula(5) = Chemical_Formula(5)
         End If
+        aFlamingTransitionTime = 0
         aHeatofCombustion = Hoc
         aRadiativeFraction = RadiativeFraction
         aCommentsIndex = -1
@@ -435,6 +437,17 @@ Public Class Fire
         Set(ByVal Value As String)
             If Value <> aIgnitionTarget Then
                 aIgnitionTarget = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Property FlamingTransitionTime() As Single
+        Get
+            Return myUnits.Convert(UnitsNum.Time).FromSI(aFlamingTransitionTime)
+        End Get
+        Set(ByVal Value As Single)
+            If aFlamingTransitionTime <> myUnits.Convert(UnitsNum.Time).ToSI(Value) And Value > 0.0 Then
+                aFlamingTransitionTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
                 aChanged = True
             End If
         End Set
@@ -824,6 +837,10 @@ Public Class Fire
                 End If
                 If aRadiativeFraction < 0.0 Or aRadiativeFraction > 1.0 Then
                     myErrors.Add("Fire " + aName + ". Radiative fraction is less than 0 or greater than 1", ErrorMessages.TypeError)
+                    HasErrors += 1
+                End If
+                If aFlamingTransitionTime < 0.0 Then
+                    myErrors.Add("Fire " + aName + ". Flaming transition time is less than 0", ErrorMessages.TypeError)
                     HasErrors += 1
                 End If
                 If Me.DimFireTimeSeries > 0 Then

@@ -19,6 +19,7 @@ Module Copy
         ToFire.ChemicalFormula(formula.Cl) = FromFire.ChemicalFormula(formula.Cl)
         ToFire.HeatofCombustion = FromFire.HeatofCombustion
         ToFire.RadiativeFraction = FromFire.RadiativeFraction
+        ToFire.FlamingTransitionTime = FromFire.FlamingTransitionTime
         ToFire.Height = FromFire.Height
         ToFire.COYield = FromFire.COYield
         ToFire.HClYield = FromFire.HClYield

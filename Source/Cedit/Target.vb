@@ -33,7 +33,7 @@ Public Class Target
     Private aZNormal As Single                  ' Z component of normal vector from chosen surface of target
     Private aInternalLocation As Single         ' Location for reporting of internal temperature as a fraction of thickness. Default is 0.5 (center)
     Private aMaterial As String                 ' Target material from material database
-    Private aSolutionType As Integer            ' 0 for thermally thick plate which is the PDE option or 1 for cylindrical coordinates.  ODE is no loger supported
+    Private aSolutionType As Integer            ' 0 for thermally thick plate which is the PDE option or 1 for cylindrical coordinates.  ODE is no longer supported
     Private aDetectorType As Integer            ' 0 for heat detector, 1 for smoke detector, 2 for sprinkler 
     Private aActivationType As Integer          ' Used to maintain compatibility with older smoke dtector inputs. 0 for temperature, 1 for obscuration. 
     Private aActivationTemperature As Single    ' Activation temperature for all detector types.  Default depends on type

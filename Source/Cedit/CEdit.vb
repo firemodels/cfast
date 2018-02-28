@@ -6516,7 +6516,7 @@ Public Class CeditMain
                     WriteInputFileNML(SaveDataFileDialog.FileName)
                     FileExtension = ".in"
                 Else
-                    WriteInputFile(SaveDataFileDialog.FileName)
+                    WriteInputFileCSV(SaveDataFileDialog.FileName)
                     FileExtension = ".in"
                 End If
                 myEnvironment.InputFileName = SaveDataFileDialog.FileName

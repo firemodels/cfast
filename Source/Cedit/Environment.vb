@@ -32,7 +32,7 @@ Public Class Environment
     Private aAdiabaticWalls As Boolean               ' True if all walls are adiabatic
     Private HasErrors As Integer = 0                ' Temporary variable to indicate whether there are errors in the specification
     Private aChanged As Boolean = False             ' True if any values have changed
-    ' all variables below are for the &DIAG name list. 
+    ' all variables below are for the &DIAG namelist. 
     Private aDIAGf(0) As Single
     Private aDIAGt(0) As Single
     Private aDIAGGasTemp As Single

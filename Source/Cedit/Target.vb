@@ -37,7 +37,8 @@ Public Class Target
     Private aDetectorType As Integer            ' 0 for heat detector, 1 for smoke detector, 2 for sprinkler 
     Private aActivationType As Integer          ' Used to maintain compatibility with older smoke dtector inputs. 0 for temperature, 1 for obscuration. 
     Private aActivationTemperature As Single    ' Activation temperature for all detector types.  Default depends on type
-    Private aActivationObscuration As Single    ' Activation obscuration for smoke detectors
+    Private aActivationObscurationFlaming As Single ' Activation obscuration for smoke detectors from flaming smoke
+    Private aActivationObscurationSmoldering As Single ' Activation obscuration for smoke detectors from smoldering smoke
     Private aRTI As Single                      ' Detector RTI value
     Private aSprayDensity As Single             ' Sprinkler spray density
     Private aChanged As Boolean = False         ' True once compartment information has changed
@@ -58,7 +59,8 @@ Public Class Target
         aSolutionType = 0
         aDetectorType = 1
         aActivationTemperature = HeatDetectorActiviationTemperature
-        aActivationObscuration = SmokeDetectorActivationObscuration
+        aActivationObscurationSmoldering = SmokeDetectorActivationObscuration
+        aActivationObscurationFlaming = SmokeDetectorActivationObscuration
         aActivationType = ActivationbyTemperature
         aRTI = HeatDetectorRTI
         aSprayDensity = 0.00007
@@ -257,26 +259,52 @@ Public Class Target
             ActivationType = aActivationType
         End Get
     End Property
-    Public Property ActivationObscuration() As Single
+    Public Property ActivationObscurationSmoldering() As Single
         Get
-            If aActivationObscuration <> 0 Then
-                Return myUnits.Convert(UnitsNum.Smoke).FromSI(aActivationObscuration)
+            If aActivationObscurationSmoldering <> 0 Then
+                Return myUnits.Convert(UnitsNum.Smoke).FromSI(aActivationObscurationSmoldering)
             Else
                 Return 0
             End If
         End Get
         Set(ByVal Value As Single)
             If Value <> 0 Then
-                If myUnits.Convert(UnitsNum.Smoke).ToSI(Value) <> aActivationObscuration Then
-                    aActivationObscuration = myUnits.Convert(UnitsNum.Smoke).ToSI(Value)
+                If myUnits.Convert(UnitsNum.Smoke).ToSI(Value) <> aActivationObscurationSmoldering Then
+                    aActivationObscurationSmoldering = myUnits.Convert(UnitsNum.Smoke).ToSI(Value)
                     aChanged = True
                 End If
-                If aActivationType <> aActivationObscuration Then
+                If aActivationType <> aActivationObscurationSmoldering Then
                     aActivationType = ActivationbyObscuration
                 End If
             Else
-                If aActivationObscuration <> 0 Then
-                    aActivationObscuration = 0
+                If aActivationObscurationSmoldering <> 0 Then
+                    aActivationObscurationSmoldering = 0
+                    aActivationType = ActivationbyObscuration
+                    aChanged = True
+                End If
+            End If
+        End Set
+    End Property
+    Public Property ActivationObscurationFlaming() As Single
+        Get
+            If aActivationObscurationFlaming <> 0 Then
+                Return myUnits.Convert(UnitsNum.Smoke).FromSI(aActivationObscurationFlaming)
+            Else
+                Return 0
+            End If
+        End Get
+        Set(ByVal Value As Single)
+            If Value <> 0 Then
+                If myUnits.Convert(UnitsNum.Smoke).ToSI(Value) <> aActivationObscurationFlaming Then
+                    aActivationObscurationFlaming = myUnits.Convert(UnitsNum.Smoke).ToSI(Value)
+                    aChanged = True
+                End If
+                If aActivationType <> aActivationObscurationFlaming Then
+                    aActivationType = ActivationbyObscuration
+                End If
+            Else
+                If aActivationObscurationFlaming <> 0 Then
+                    aActivationObscurationFlaming = 0
                     aActivationType = ActivationbyObscuration
                     aChanged = True
                 End If
@@ -457,8 +485,8 @@ Public Class Target
                         myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " activation temperature is less than 20 °C or greater than 200 °C.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
-                    If aActivationObscuration < 0 Or aActivationObscuration > 100 Then
-                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " activation obscuration is less than 0 % or greater than 100 %.", ErrorMessages.TypeFatal)
+                    If aActivationObscurationFlaming < 0 Or aActivationObscurationFlaming > 100 Then
+                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " activation obscuration is less than 0 % or greater than 100 %/m.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aRTI <= 0.0 Or aRTI >= 500.0 Then
@@ -466,7 +494,7 @@ Public Class Target
                         HasErrors += 1
                     End If
                     If aSprayDensity < 0.0 Or aSprayDensity > 0.003 Then
-                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " spray density is less than 0 or greater than 0.003 m/s.", ErrorMessages.TypeWarning)
+                        myErrors.Add("Detector/Sprinkler " + TargetNumber.ToString + " Spray density is less than 0 or greater than 0.003 m/s.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
             End Select

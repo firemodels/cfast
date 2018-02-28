@@ -136,7 +136,7 @@ Module IO
                             End If
                         ElseIf csv.str(i, detectNum.type) = "SMOKE" Then
                             aDetect.DetectorType = Target.TypeSmokeDetector
-                            aDetect.ActivationObscuration = csv.num(i, detectNum.activationObscuration)
+                            aDetect.ActivationObscurationFlaming = csv.num(i, detectNum.ActivationObscuration)
                         ElseIf csv.str(i, detectNum.type) = "HEAT" Then
                             aDetect.DetectorType = Target.TypeHeatDetector
                             aDetect.ActivationTemperature = csv.num(i, detectNum.activationTemp)
@@ -1087,7 +1087,7 @@ Module IO
     Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile, ByRef someDetectors As TargetCollection)
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type As String
-        Dim tempdepth, rti, setp, sprayd As Single
+        Dim tempdepth, rti, setp, setps(2), sprayd As Single
         Dim loc(3), norm(3) As Single
         Dim valid, lvalid As Boolean
         Dim aTempOffset As Single = 273.15
@@ -1118,13 +1118,13 @@ Module IO
                             type = NMList.ForNMListVarGetStr(i, j, 1)
                         ElseIf NMList.ForNMListVarGetStr(i, j, 1) = "SPRINKLER" Then
                             type = NMList.ForNMListVarGetStr(i, j, 1)
-                            If setp <= 0 Then setp = 74.0
+                            If setp <= 0 Then setp = Target.SprinklerActivationTemperature
                         ElseIf NMList.ForNMListVarGetStr(i, j, 1) = "HEAT_DETECTOR" Then
                             type = NMList.ForNMListVarGetStr(i, j, 1)
-                            If setp <= 0 Then setp = 57.0
+                            If setp <= 0 Then setp = Target.HeatDetectorActiviationTemperature
                         ElseIf NMList.ForNMListVarGetStr(i, j, 1) = "SMOKE_DETECTOR" Then
                             type = NMList.ForNMListVarGetStr(i, j, 1)
-                            If setp <= 0 Then setp = 23.93
+                            If setp <= 0 Then setp = Target.SmokeDetectorActivationObscuration
                         Else
                             myErrors.Add("In DEVC namelist for TYPE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value.", ErrorMessages.TypeFatal)
                         End If
@@ -1134,6 +1134,16 @@ Module IO
                         rti = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
                         setp = NMList.ForNMListVarGetNum(i, j, 1)
+                        setps = {0, setp}
+                    ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINTS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                setps(k - 1) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In DEVC namelist for SETPOINTS input must be 2 numbers", ErrorMessages.TypeFatal)
+                        End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "SPRAY_DENSITY" Then
                         sprayd = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "LOCATION" Then
@@ -1210,7 +1220,8 @@ Module IO
                             aDetect.SprayDensity = 0.0
                         ElseIf type = "SMOKE_DETECTOR" Then
                             aDetect.DetectorType = Target.TypeSmokeDetector
-                            aDetect.ActivationObscuration = setp
+                            aDetect.ActivationObscurationSmoldering = setps(0)
+                            aDetect.ActivationObscurationFlaming = setps(1)
                         Else
                             aDetect.DetectorType = Target.TypeSprinkler
                             aDetect.RTI = rti
@@ -2778,7 +2789,7 @@ Module IO
             If aDetect.DetectorType = Target.TypeSmokeDetector Then
                 csv.str(i, detectNum.type) = "SMOKE"
                 csv.num(i, detectNum.suppression) = 0
-                csv.num(i, detectNum.activationObscuration) = aDetect.ActivationObscuration
+                csv.num(i, detectNum.ActivationObscuration) = aDetect.ActivationObscurationFlaming
             ElseIf aDetect.DetectorType = Target.TypeHeatDetector Then
                 csv.str(i, detectNum.type) = "HEAT"
                 csv.num(i, detectNum.suppression) = 0
@@ -3096,7 +3107,11 @@ Module IO
                 If aTarg.DetectorType = Target.TypeHeatDetector Then
                     ln += " TYPE = 'HEAT_DETECTOR' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " /"
                 ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
-                    ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINT = " + aTarg.ActivationObscuration.ToString + " /"
+                    If aTarg.ActivationObscurationSmoldering = 0 Then
+                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINT = " + aTarg.ActivationObscurationFlaming.ToString + " /"
+                    Else
+                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINTS = " + aTarg.ActivationObscurationSmoldering.ToString + ", " + aTarg.ActivationObscurationFlaming.ToString + " /"
+                    End If
                 Else
                     ln += " TYPE = 'SPRINKLER' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " SPRAY_DENSITY = " + aTarg.SprayDensity.ToString + " /"
                 End If

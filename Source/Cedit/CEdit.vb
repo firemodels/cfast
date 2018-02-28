@@ -6182,7 +6182,7 @@ Public Class CeditMain
                 If Val(DetectorZPosition.Text) = -1 Then aDetector.ZPosition = Val(DetectorZPosition.Text)
             End If
             If sender Is DetectorActivationTemperature Then aDetector.ActivationTemperature = Val(DetectorActivationTemperature.Text)
-            If sender Is DetectorActivationObscuration Then aDetector.ActivationObscuration = Val(DetectorActivationObscuration.Text)
+            If sender Is DetectorActivationObscuration Then aDetector.ActivationObscurationFlaming = Val(DetectorActivationObscuration.Text)
             If sender Is DetectorXPosition Then aDetector.XPosition = Val(DetectorXPosition.Text)
             If sender Is DetectorYPosition Then aDetector.YPosition = Val(DetectorYPosition.Text)
             If sender Is DetectorZPosition Then aDetector.ZPosition = Val(DetectorZPosition.Text)

@@ -1601,13 +1601,16 @@ module solve_routines
                 isof = isof + 1
                 if (radi_verification_flag) then
                     if (partial_pressure_co2+partial_pressure_h2o == 101325._eb) then ! Only H2O and CO2 exist
-                        if (lsp == 1 .or. lsp == 2) then ! N2 and O2 will have to be zero 
+                        !if (lsp == 1 .or. lsp == 2) then ! N2 and O2 will have to be zero 
+                        if (lsp == n2 .or. lsp == o2) then ! N2 and O2 will have to be zero 
                             ppgas = 0._eb
-                        else if (lsp == 3) then
+                        !else if (lsp == 3) then
+                        else if (lsp == co2) then
                             ! partical pressure = species_mass/its molecular weight*ideal gas constant*gas temperature/volume of the medium
                             roomptr%species_mass(u,lsp) = &
                             partial_pressure_co2/101325._eb*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
-                        else if (lsp == 8) then
+                        !else if (lsp == 8) then
+                        else if (lsp == h2o) then
                             roomptr%species_mass(u,lsp) = &
                             partial_pressure_h2o/101325._eb*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(u)*roomptr%volume(u)
                         else 
@@ -1626,12 +1629,15 @@ module solve_routines
                 isof = isof + 1
                 if (radi_verification_flag) then
                     if (partial_pressure_co2+partial_pressure_h2o == 101325._eb) then
-                        if (lsp == 1 .or. lsp == 2) then 
+                        !if (lsp == 1 .or. lsp == 2) then 
+                        if (lsp == n2 .or. lsp == o2) then 
                             ppgas = 0._eb
-                        else if (lsp == 3) then
+                        !else if (lsp == 3) then
+                        else if (lsp == co2) then
                             roomptr%species_mass(l,lsp) = &
                             partial_pressure_co2/101325._eb*44.0088e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
-                        else if (lsp == 8) then
+                        !else if (lsp == 8) then
+                        else if (lsp == h2o) then
                             roomptr%species_mass(l,lsp) = &
                             partial_pressure_h2o/101325._eb*18.0153e-3_eb/82.0562e-6_eb/roomptr%temp(l)*roomptr%volume(l)
                         else 
@@ -1656,7 +1662,8 @@ module solve_routines
             roomptr => roominfo(iroom)
             totl = 0.0_eb
             totu = 0.0_eb
-            do lsp = 1, min(9,ns)
+            !do lsp = 1, min(9,ns)
+            do lsp = 1, ns_mass
                 totu = totu + roomptr%species_mass(u,lsp)
                 totl = totl + roomptr%species_mass(l,lsp)
             end do
@@ -1710,7 +1717,8 @@ module solve_routines
     factor(1:nrm1,l) = 0.0_eb
 
     isof = ibeg
-    do iprod = 1, min(ns,9)
+    !do iprod = 1, min(ns,9)
+    do iprod = 1, ns_mass
         do iroom = 1, nrm1
             factor(iroom,u) = factor(iroom,u) + pdif(isof)
             isof = isof + 1
@@ -1734,7 +1742,8 @@ module solve_routines
     end do
 
     isof = ibeg
-    do iprod = 1, min(ns,9)
+    !do iprod = 1, min(ns,9)
+    do iprod = 1, ns_mass
         do iroom = 1, nrm1
             pdif(isof) = pdif(isof)*factor(iroom,u)
             isof = isof + 1

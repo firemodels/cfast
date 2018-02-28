@@ -85,11 +85,23 @@ module mflow_routines
                 uflw_mf(iroom,2+k,u) = uflw_mf(iroom,2+k,u) + roomptr%species_fraction(u,k)*ventptr%mflow(1,u)
                 uflw_mf(iroom,2+k,l) = uflw_mf(iroom,2+k,l) + roomptr%species_fraction(l,k)*ventptr%mflow(1,l)
             end do
-            ! amount filtered for smoke and trace species, (2+k) = 11 and 13
-            uflw_filtered(iroom,11,u) = uflw_filtered(iroom,11,u) + max(0.0_eb,filter*fu*uflw_totals(11))
-            uflw_filtered(iroom,11,l) = uflw_filtered(iroom,11,l) + max(0.0_eb,filter*fl*uflw_totals(11))
-            uflw_filtered(iroom,13,u) = uflw_filtered(iroom,13,u) + max(0.0_eb,filter*fu*uflw_totals(13))
-            uflw_filtered(iroom,13,l) = uflw_filtered(iroom,13,l) + max(0.0_eb,filter*fu*uflw_totals(13))
+            ! amount filtered for smoke and trace species
+            !uflw_filtered(iroom,11,u) = uflw_filtered(iroom,11,u) + max(0.0_eb,filter*fu*uflw_totals(11))
+            !uflw_filtered(iroom,11,l) = uflw_filtered(iroom,11,l) + max(0.0_eb,filter*fl*uflw_totals(11))
+            !uflw_filtered(iroom,13,u) = uflw_filtered(iroom,13,u) + max(0.0_eb,filter*fu*uflw_totals(13))
+            !uflw_filtered(iroom,13,l) = uflw_filtered(iroom,13,l) + max(0.0_eb,filter*fu*uflw_totals(13))
+            uflw_filtered(iroom,soot+2,u) = uflw_filtered(iroom,soot+2,u) + max(0.0_eb,filter*fu*uflw_totals(soot+2))
+            uflw_filtered(iroom,soot+2,l) = uflw_filtered(iroom,soot+2,l) + max(0.0_eb,filter*fl*uflw_totals(soot+2))
+            uflw_filtered(iroom,soot_flaming+2,u) = uflw_filtered(iroom,soot_flaming+2,u) + &
+                max(0.0_eb,filter*fu*uflw_totals(soot_flaming+2))
+            uflw_filtered(iroom,soot_flaming+2,l) = uflw_filtered(iroom,soot_flaming+2,l) + & 
+                max(0.0_eb,filter*fl*uflw_totals(soot_flaming+2))
+            uflw_filtered(iroom,soot_smolder+2,u) = uflw_filtered(iroom,soot_smolder+2,u) + &
+                max(0.0_eb,filter*fu*uflw_totals(soot_smolder+2))
+            uflw_filtered(iroom,soot_smolder+2,l) = uflw_filtered(iroom,soot_smolder+2,l) + & 
+                max(0.0_eb,filter*fl*uflw_totals(soot_smolder+2))
+            uflw_filtered(iroom,ts+2,u) = uflw_filtered(iroom,ts+2,u) + max(0.0_eb,filter*fu*uflw_totals(ts+2))
+            uflw_filtered(iroom,ts+2,l) = uflw_filtered(iroom,ts+2,l) + max(0.0_eb,filter*fu*uflw_totals(ts+2))
         end if
 
         ! calculate mass and enthapy flows for the to room
@@ -113,11 +125,15 @@ module mflow_routines
             uflw_filtered(iroom,m,u) = uflw_filtered(iroom,m,u) + max(0.0_eb,filter*fu*uflw_totals(11))
             uflw_filtered(iroom,m,l) = uflw_filtered(iroom,m,l) + max(0.0_eb,filter*fl*uflw_totals(11))
             uflw_filtered(iroom,q,u) = uflw_filtered(iroom,q,u) + max(0.0_eb,filter*fu* &
-                (roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
-                roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
+                !(roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
+                !roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
+                (roomptr%species_fraction(u,soot)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
+                roomptr%species_fraction(l,soot)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
             uflw_filtered(iroom,q,l) = uflw_filtered(iroom,q,l) + max(0.0_eb,filter*fl* &
-                (roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
-                roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
+                !(roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
+               ! roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
+                (roomptr%species_fraction(u,soot)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
+                roomptr%species_fraction(l,soot)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
         end if
 
         ! flow information for smokeview

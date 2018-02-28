@@ -846,10 +846,12 @@ module target_routines
             ! if ceiling jet option is off, things default to appropriate layer temperature
             if (zloc>roomptr%depth(l)) then
                 dtectptr%temp_gas = roomptr%temp(u)
-                dtectptr%obscuration = roomptr%species_output(u,9)
+                !dtectptr%obscuration = roomptr%species_output(u,9)
+                dtectptr%obscuration = roomptr%species_output(u,soot)
             else
                 dtectptr%temp_gas = roomptr%temp(l)
-                dtectptr%obscuration = roomptr%species_output(l,9)
+                !dtectptr%obscuration = roomptr%species_output(l,9)
+                dtectptr%obscuration = roomptr%species_output(l,soot)
             end if
             dtectptr%velocity = 0.1_eb
         else
@@ -858,9 +860,11 @@ module target_routines
             dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
             if (zloc>roomptr%depth(l)) then
-                dtectptr%obscuration = roomptr%species_output(u,9)
+                !dtectptr%obscuration = roomptr%species_output(u,9)
+                dtectptr%obscuration = roomptr%species_output(u,soot)
             else
-                dtectptr%obscuration = roomptr%species_output(l,9)
+                !dtectptr%obscuration = roomptr%species_output(l,9)
+                dtectptr%obscuration = roomptr%species_output(l,soot)
             end if
         end if
     end do

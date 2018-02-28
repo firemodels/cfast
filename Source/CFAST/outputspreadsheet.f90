@@ -363,9 +363,9 @@ module spreadsheet_routines
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput(ns) = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
     logical, dimension(ns), parameter :: molfrac(ns) = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false./)
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false./)
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 
@@ -392,7 +392,9 @@ module spreadsheet_routines
                     if (tooutput(lsp)) then
                         ssvalue = roomptr%species_output(layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
-                        if (validate.and.lsp==9) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
+                        if (validate.and.lsp==soot) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
+                        if (validate.and.lsp==soot_flaming) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
+                        if (validate.and.lsp==soot_smolder) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
                         call ssaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90
@@ -420,7 +422,7 @@ module spreadsheet_routines
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput(ns) = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 
@@ -504,8 +506,10 @@ module spreadsheet_routines
         call ssaddtolist(position,roomptr%relp,outarray)
         call ssaddtolist(position,roomptr%rho(u),outarray)
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%rho(l),outarray)
-        call ssaddtolist(position,roomptr%species_output(u,9),outarray)
-        if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,9),outarray)
+        !call ssaddtolist(position,roomptr%species_output(u,9),outarray)
+        !if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,9),outarray)
+        call ssaddtolist(position,roomptr%species_output(u,soot),outarray)
+        if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,soot),outarray)
     end do
 
     ! fires

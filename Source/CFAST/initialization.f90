@@ -443,7 +443,7 @@ module initialization_routines
 
         ! normalize the atmosphere
         totmass = 0.0_eb
-        do j = 1, ns
+        do j = 1, ns_mass
             totmass = totmass + initial_mass_fraction(j)
         end do
         initial_mass_fraction(1:ns) = initial_mass_fraction(1:ns)/totmass

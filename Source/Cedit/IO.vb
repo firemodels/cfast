@@ -3339,7 +3339,7 @@ Module IO
                     ln += " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString + " HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString + " OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
                     ln += " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
                     ln += " RADIATIVE_FRACTION = " + aFire.RadiativeFraction.ToString
-                    ln += " FLAMING_TRANSITION_TIME = " + aFire.FlamingTransitionTime.ToString
+                    If aFire.FlamingTransitionTime <> 0 Then ln += " FLAMING_TRANSITION_TIME = " + aFire.FlamingTransitionTime.ToString
                     ln += " / "
                     PrintLine(IO, ln)
 

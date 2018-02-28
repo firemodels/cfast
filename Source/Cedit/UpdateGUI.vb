@@ -824,7 +824,7 @@ Public Class UpdateGUI
                 MainWin.DetectorComp.SelectedIndex = aDetector.Compartment
             End If
             MainWin.DetectorActivationTemperature.Text = aDetector.ActivationTemperature.ToString + myUnits.Convert(UnitsNum.Temperature).Units
-            MainWin.DetectorActivationObscuration.Text = aDetector.ActivationObscuration.ToString + myUnits.Convert(UnitsNum.Smoke).Units
+            MainWin.DetectorActivationObscuration.Text = aDetector.ActivationObscurationFlaming.ToString + myUnits.Convert(UnitsNum.Smoke).Units
             If aDetector.ActivationType = Target.ActivationbyTemperature Then
                 MainWin.DetectorActivationTemperature.Enabled = True
                 MainWin.DetectorActivationObscuration.Enabled = False
@@ -868,7 +868,7 @@ Public Class UpdateGUI
                     If aDetector.ActivationType = Target.ActivationbyTemperature Then
                         MainWin.DetectorSummary(i, 7) = aDetector.ActivationTemperature.ToString
                     Else
-                        MainWin.DetectorSummary(i, 7) = aDetector.ActivationObscuration.ToString
+                        MainWin.DetectorSummary(i, 7) = aDetector.ActivationObscurationFlaming.ToString
                     End If
                     MainWin.DetectorSummary(i, 8) = aDetector.RTI.ToString
                     MainWin.DetectorSummary(i, 9) = aDetector.SprayDensity.ToString

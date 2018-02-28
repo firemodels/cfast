@@ -2999,7 +2999,7 @@ Module IO
         ' Writing COMP namelist
         If myCompartments.Count > 0 Then
             PrintLine(IO, " ")
-            ln = "!! Comparments "
+            ln = "!! Compartments "
             PrintLine(IO, ln)
 
             For i = 0 To myCompartments.Count - 1

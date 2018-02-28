@@ -504,6 +504,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
 {\ct CARBON}               & Real     & Section \ref{info:FIRE}                 &                             &  1               \\ \hline
 {\ct CHLORINE}             & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
+{\ct FLAMING\_TRANSITION\_TIME} & Real     & Section \ref{info:FIRE}                 &                             &  0               \\ \hline
 {\ct HEAT\_OF\_COMBUSTION} & Real        & Section \ref{info:FIRE}                 & kJ/kg                       &     50000       \\ \hline
 {\ct HYDROGEN}             & Real     & Section \ref{info:FIRE}                 &                             &  4               \\ \hline
 {\ct ID}\footnote{ * indicates a required input for each {\ct CHEM} input included in the input file.} *                  & Character   & Section \ref{info:FIRE}                 &                             &                 \\ \hline
@@ -581,6 +582,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct NORMAL}         & Real Triplet  & Section \ref{info:DEVC}     &                   & 0,0,1                \\ \hline
 {\ct RTI}                 & Real        & Section \ref{info:DEVC2}    & $\sqrt{\hbox{m}\cdot\hbox{s}}$   & 130  \\ \hline
 {\ct SETPOINT}            & Real        & Section \ref{info:DEVC}     & \degc or \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}  \\ \hline
+{\ct SETPOINTS}            & Real Doublet       & Section \ref{info:DEVC}     & \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft) for both smoldering and flaming smoke.}  \\ \hline
 {\ct SPRAY\_DENSITY}      & Real        & Section \ref{info:DEVC2}    & m/s               &                 \\ \hline
 {\ct TYPE}*               & Selection List   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 \end{longtable}
@@ -590,7 +592,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 
 A sprinkler is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, {\ct SETPOINT}, and {\ct SPRAY\_DENSITY}.  \\
 
-A smoke detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, and {\ct SETPOINT}. \\
+A smoke detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, and {\ct SETPOINT} or {\ct SETPOINTS}. The latter tracks smoulder smoke and flaming smoke separately. \\
 
 A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, and {\ct SETPOINT}.
 }
@@ -744,7 +746,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 {\ct DASSL\_DEBUG\_PRINT}\footref{DIAGonoff}            & Selection List   &          &         & {\ct OFF}     \\ \hline
 {\ct DEBUG\_PRINT}\footref{DIAGonoff}                          & Selection List   &          &         & {\ct OFF}     \\ \hline
 {\ct DOOR\_JET\_FIRE\_SUB\_MODEL}\footref{DIAGonoff}  & Selection List &        &         & {\ct ON}       \\ \hline
-{\ct ENTRAINMENT\_SUB\_MODEL }\footref{DIAGonoff}   & Selection List    &         &          & {\ct ON}       \\ \hline 
+{\ct ENTRAINMENT\_SUB\_MODEL }\footref{DIAGonoff}   & Selection List    &         &          & {\ct ON}       \\ \hline
 {\ct F}\footnote{If included, both {\ct F} and {\ct T} are required.\label{DIAGft}}          & Real Array       &                  &  \degc         &                 \\ \hline
 {\ct FIRE\_SUB\_MODEL}\footref{DIAGonoff}                     & Selection List   &          &          & {\ct ON}       \\ \hline
 {\ct GAS\_TEMPERATURE}\footnote{If included, {\ct GAS\_TEMPERATURE}, {\ct PARTIAL\_PRESSURE\_H2O}, and {\ct PARTIAL\_PRESSURE\_CO} are all required.\label{DIAGgpp}}             & Real   &                  &  \degc         &                 \\ \hline

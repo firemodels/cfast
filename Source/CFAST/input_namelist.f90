@@ -566,9 +566,10 @@
 
     real(eb) :: temperature_depth,rti,setpoint,spray_density
     real(eb),dimension(3) :: location,normal
+    real(eb),dimension(2) :: setpoints
     character(64) :: comp_id,id,matl_id
     character(64) :: type
-    namelist /DEVC/ comp_id, type, id, temperature_depth, location, matl_id, normal, rti, setpoint, spray_density
+    namelist /DEVC/ comp_id, type, id, temperature_depth, location, matl_id, normal, rti, setpoint, spray_density, setpoints 
 
     ios = 1
 
@@ -734,8 +735,14 @@
                 else
                     if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint
+                        dtectptr%duel_detector = .FALSE. 
+                    else if (setpoints(1) /= -1001._eb) then
+                        dtectptr%trigger = setpoints(2)
+                        dtectptr%trigger_smolder = setpoints(1)
+                        dtectptr%duel_detector = .TRUE.
                     else
                         dtectptr%trigger = default_activation_obscuration
+                        dtectptr%duel_detector = .FALSE. 
                     end if
                 end if
                 dtectptr%center = location
@@ -798,6 +805,7 @@
     normal(:)                       = (/0., 0., 1./)
     rti                             = default_rti
     setpoint                        = -1001._eb
+    setpoints                       = (/-1001._eb, -1001._eb/)
     spray_density                   = -300.0_eb
 
     end subroutine set_defaults
@@ -1221,11 +1229,11 @@ continue
 
     real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
     real(eb) :: area, co_yield, hcl_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
-        soot_yield, trace_yield
+        soot_yield, trace_yield, flaming_transition_time
     character(64) :: comp_id, id, table_id
     namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
         hcl_yield, hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
-        table_id, trace_yield
+        table_id, trace_yield, flaming_transition_time
 
     ios = 1
     tmpcond = 0.0
@@ -1302,6 +1310,7 @@ continue
                     fireptr%molar_mass = (12.01_eb*fireptr%n_c + 1.008_eb*fireptr%n_h + 16.0_eb*fireptr%n_o + &
                         14.01_eb*fireptr%n_n + 35.45_eb*fireptr%n_cl)/1000.0_eb
                     fireptr%chirad = radiative_fraction
+                    fireptr%flaming_transition_time = flaming_transition_time
                     ohcomb = heat_of_combustion *1.e3_eb
                     if (ohcomb<=0.0_eb) then
                         write (*,5001) ohcomb
@@ -1478,6 +1487,7 @@ continue
     soot_yield                = 0._eb
     table_id                  = 'NULL'
     trace_yield               = 0._eb
+    flaming_transition_time   = 0._eb
 
     end subroutine set_defaults
 

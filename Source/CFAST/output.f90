@@ -248,9 +248,9 @@ module output_routines
     !     Description:  Output the layer and wall species at the current time
 
     character(10), dimension(ns) :: stype = &
-        (/character(10) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'CT', ' TS'/)
+        (/character(10) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'OD_F', 'OD_S', 'CT', ' TS'/)
     character(10), dimension(ns) :: sunits = &
-        (/character(10) :: '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(g-min/m3)', ' kg '/)
+        (/character(10) :: '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(1/m)', '(1/m)', '(g-min/m3)', ' kg '/)
     character(5), dimension(2) :: lnames = (/character(5) :: 'UPPER', 'LOWER'/)
     character :: ciout*255, cjout*255
     integer :: i, icomp, layer, ic, lsp
@@ -264,7 +264,8 @@ module output_routines
             cjout = ' '
             ic = 16
             do lsp = 1, ns
-                if (lsp/=10) then
+                !if (lsp/=10) then
+                if (lsp/=ct) then
                     write (ciout(ic:ic+9),5000) stype(lsp)
                     write (cjout(ic:ic+9),5000) sunits(lsp)
                     ic = ic + 11
@@ -280,7 +281,8 @@ module output_routines
                 ic = 14
                 if (layer==u.or..not.roomptr%shaft) then
                     do lsp = 1, ns
-                        if (lsp/=10) then
+                        !if (lsp/=10) then
+                        if (lsp/=ct) then
                             write (ciout(ic:ic+9),5040) roomptr%species_output(layer,lsp)
                             ic = ic + 11
                         end if
@@ -1149,7 +1151,7 @@ module output_routines
     integer :: i, iprod, il, iroom, iobj, itarg
     integer(2) :: ch, hit
     character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
-       '   OD', '   CT', '   TS'/), ccc*3
+       '   OD', ' OD_f', ' OD_s', '   CT', '   TS'/), ccc*3
 
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr

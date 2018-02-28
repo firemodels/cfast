@@ -112,23 +112,26 @@ module spreadsheet_header_routines
 
     ! local variables
     integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
-    character(35) :: headertext(4,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
+    character(45) :: headertext(4,maxhead), cRoom, Labels(2*ns+1), LabelsShort(2*ns+1), LabelUnits(2*ns+1)
     logical tooutput(ns), molfrac(ns)
-    data tooutput /9*.true.,.false.,.true./
-    data molfrac /8*.true.,3*.false./
+    data tooutput /11*.true.,.false.,.true./
+    data molfrac /8*.true.,5*.false./
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
        'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
+       'Optical Density Flaming Smoke Upper Layer','Optical Density Smoldering Smoke Upper Layer', &
        'C-T Product Upper Layer', 'Trace Species Upper Layer',&
     'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
        'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
+       'Optical Density Flaming Smoke Lower Layer','Optical Density Smoldering Smoke Lower Layer', &
        'C-T Product Lower Layer', 'Trace Species Lower Layer' /
-    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_',&
-       'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
-    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg', &
-       'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', 'g-min/m^3', 'kg' /
+    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_','ULODF_', &
+        'ULODS_', 'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', &
+        'LLODF_','LLODS_', 'LLCT_', 'LLTS_'/
+    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m', '1/m', 'g-min/m^3', &
+       'kg', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m', '1/m', 'g-min/m^3', 'kg' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
@@ -174,22 +177,25 @@ module spreadsheet_header_routines
 
     ! local variables
     integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
-    character(35) :: headertext(4,maxhead), cRoom, Labels(23), LabelsShort(23), LabelUnits(23)
+    character(45) :: headertext(4,maxhead), cRoom, Labels(2*ns+1), LabelsShort(2*ns+1), LabelUnits(2*ns+1)
     logical tooutput(ns)
-    data tooutput /9*.true.,.false.,.true./
+    data tooutput /11*.true.,.false.,.true./
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
        'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
+       'Optical Density Flaming Smoke Upper Layer','Optical Density Smoldering Smoke Upper Layer', &
        'C-T Product Upper Layer', 'Trace Species Upper Layer',&
     'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
        'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
+       'Optical Density Flaming Smoke Lower Layer','Optical Density Smoldering Smoke Lower Layer', &
        'C-T Product Lower Layer', 'Trace Species Lower Layer' /
-    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_',&
-       'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLCT_', 'LLTS_'/
-    data LabelUnits / 's', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', &
-       'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg' /
+    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_','ULH2O_','ULOD_','ULODF_','ULODS_',&
+       'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_', 'LLODS_', &
+        'LLCT_', 'LLTS_'/
+    data LabelUnits / 's', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', &
+       'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)

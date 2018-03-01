@@ -67,9 +67,9 @@ module fire_routines
         stmass(l,1:ns) = roomptr%species_mass(l,1:ns)
 
         call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, &
-            y_soot_flaming, y_soot_smolder, y_co, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, fireptr%x_position, &
-            fireptr%y_position, fireptr%z_position+fireptr%z_offset, oareat, fireptr%mdot_entrained, fireptr%mdot_plume, oqdott, & 
-            xntms, xqfc, xqfr, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
+            y_soot_flaming, y_soot_smolder, y_co, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, &
+            fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, oareat, fireptr%mdot_entrained, &
+            fireptr%mdot_plume, oqdott, xntms, xqfc, xqfr, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
         
         fireptr%firearea = oareat
         fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
@@ -85,10 +85,10 @@ module fire_routines
         q_entrained = cp*fireptr%mdot_entrained*xtl
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + xqfc + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
-        !flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + xntms(u,1:ns)
-        !flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + xntms(l,1:ns)
-        flows_fires(iroom,pp:ns+pp-1,u) = flows_fires(iroom,pp:ns+pp-1,u) + xntms(u,1:ns)
-        flows_fires(iroom,pp:ns+pp-1,l) = flows_fires(iroom,pp:ns+pp-1,l) + xntms(l,1:ns)
+        flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + xntms(u,1:ns)
+        flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + xntms(l,1:ns)
+        !flows_fires(iroom,pp:ns+pp-1,u) = flows_fires(iroom,pp:ns+pp-1,u) + xntms(u,1:ns)
+        !flows_fires(iroom,pp:ns+pp-1,l) = flows_fires(iroom,pp:ns+pp-1,l) + xntms(l,1:ns)
     end do
 
     return
@@ -108,8 +108,8 @@ module fire_routines
     !                 xbr: breadth of the room (m)
     !                 xdr: Depth of the room (m)
     !                 hcombt: current heat of combustion (j/kg)
-    !                 y_soot, y_soot_flaming, y_soot_smolder, y_co, y_trace: species yields for soot, CO, and trace species; others are calculated
-    !                       from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
+    !                 y_soot, y_soot_flaming, y_soot_smolder, y_co, y_trace: species yields for soot, CO, and trace species;
+    !                       others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
     !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields
     !                 of O2, HCl, and HCN are determined from this
     !                 molar_mass: molar mass of the fuel (kg/mol)
@@ -215,8 +215,8 @@ module fire_routines
         xems = xemp + xeme
 
         source_o2 = roomptr%species_fraction(l,o2)
-        call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, n_C, n_H, n_O, n_N ,n_Cl, &
-            source_o2, lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, & 
+        call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, n_C, n_H, n_O, n_N, &
+            n_Cl, source_o2, lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, & 
             fireptr%qdot_at_activation(l), xqpyrl, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
@@ -299,8 +299,8 @@ module fire_routines
     !                 entrainment_rate: calculated entrainment rate (kg/s)
     !                 source_room: compartment that contains this fire
     !                 h_c: heat of combustion of the fuel (W/kg)
-    !                 y_soot, y_soot_flaming, y_soot_smolder, y_co: species yields for soot and CO; others are calculated from the molecular formula of the
-    !                 fuel (kg species produced/kg fuel pyrolyzed)
+    !                 y_soot, y_soot_flaming, y_soot_smolder, y_co: species yields for soot and CO; others are calculated from 
+    !                        the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
     !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional;
     !                 yields of O2, HCl, and HCN are determined from this
     !                 source_o2, lower_o2_limit: oxygen concentration in the source layer of the compartment;
@@ -411,8 +411,8 @@ module fire_routines
 
 ! --------------------------- interpolate_pyrolysis -------------------------------------------
 
-    subroutine interpolate_pyrolysis (objn,time,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_soot_flaming, &
-                                      y_soot_smolder,y_co,y_trace)
+    subroutine interpolate_pyrolysis (objn,time,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot, &
+                                      y_soot_flaming, y_soot_smolder,y_co,y_trace)
 
     !     routine: interpolate_pyrolysis
     !     purpose: returns yields for object fires interpolated from user input
@@ -431,8 +431,8 @@ module fire_routines
 
     integer, intent(in) :: objn, iroom
     real(eb), intent(in) :: time
-    real(eb), intent(out) :: omasst, oareat, ohight, oqdott, objhct, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_soot_flaming, y_soot_smolder 
-    real(eb), intent(out) :: y_co, y_trace
+    real(eb), intent(out) :: omasst, oareat, ohight, oqdott, objhct, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_soot_flaming 
+    real(eb), intent(out) :: y_soot_smolder, y_co, y_trace
 
     real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max
     integer :: id, ifact
@@ -1115,8 +1115,8 @@ module fire_routines
 
     ! molar_masses of the species
     real(eb), parameter :: molar_mass(ns) = &
-        (/0.02802_eb,0.032_eb,0.04401_eb,0.02801_eb,0.027028_eb,0.036458_eb,0.01201_eb,0.018016_eb,0.01201_eb,0.01201_eb,0.01201_eb, &
-           0.0_eb,0.0_eb/)
+        (/0.02802_eb,0.032_eb,0.04401_eb,0.02801_eb,0.027028_eb,0.036458_eb,0.01201_eb,0.018016_eb,0.01201_eb,0.01201_eb, &
+           0.01201_eb,0.0_eb,0.0_eb/)
 
     ! reciprocal of avagadro's number (so you can't have less than an atom of a species)
     real(eb), parameter :: avagad = 1.0_eb/6.022e23_eb

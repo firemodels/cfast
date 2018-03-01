@@ -130,7 +130,7 @@ module spreadsheet_header_routines
     data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_','ULODF_', &
         'ULODS_', 'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', &
         'LLODF_','LLODS_', 'LLCT_', 'LLTS_'/
-    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m', '1/m', 'g-min/m^3', &
+    data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m','1/m','g-min/m^3',&
        'kg', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m', '1/m', 'g-min/m^3', 'kg' /
 
     !  spreadsheet header.  Add time first
@@ -149,12 +149,14 @@ module spreadsheet_header_routines
                     if (tooutput(lsp)) then
                         position = position + 1
                         call toIntString(i,cRoom)
-                        headertext(1,position) = trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
-                        headertext(2,position) = Labels((j-1)*11+lsp+1)
+                        headertext(1,position) = trim(LabelsShort((j-1)*ns+lsp+1)) // trim(cRoom)
+                        headertext(2,position) = Labels((j-1)*ns+lsp+1)
                         headertext(3,position) = roomptr%name
-                        headertext(4,position) = LabelUnits((j-1)*11+lsp+1)
+                        headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
                         if (molfrac(lsp)) headertext(4,position) = 'mol frac'
-                        if (validate.and.lsp==9) headertext(4,position) = 'mg/m^3'
+                        if (validate.and.lsp==soot) headertext(4,position) = 'mg/m^3'
+                        if (validate.and.lsp==soot_flaming) headertext(4,position) = 'mg/m^3'
+                        if (validate.and.lsp==soot_smolder) headertext(4,position) = 'mg/m^3'
                     end if
                 end do
             end if
@@ -191,7 +193,7 @@ module spreadsheet_header_routines
        'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
        'Optical Density Flaming Smoke Lower Layer','Optical Density Smoldering Smoke Lower Layer', &
        'C-T Product Lower Layer', 'Trace Species Lower Layer' /
-    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_','ULH2O_','ULOD_','ULODF_','ULODS_',&
+    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_','ULTUHC_','ULH2O_','ULOD_','ULODF_','ULODS_',&
        'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_', 'LLODS_', &
         'LLCT_', 'LLTS_'/
     data LabelUnits / 's', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', &
@@ -213,10 +215,10 @@ module spreadsheet_header_routines
                     if (tooutput(lsp)) then
                         position = position + 1
                         call toIntString(i,cRoom)
-                        headertext(1,position) = trim(LabelsShort((j-1)*11+lsp+1)) // trim(cRoom)
-                        headertext(2,position) = Labels((j-1)*11+lsp+1)
+                        headertext(1,position) = trim(LabelsShort((j-1)*ns+lsp+1)) // trim(cRoom)
+                        headertext(2,position) = Labels((j-1)*ns+lsp+1)
                         headertext(3,position) = roomptr%name
-                        headertext(4,position) = LabelUnits((j-1)*11+lsp+1)
+                        headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
                     end if
                 end do
             end if

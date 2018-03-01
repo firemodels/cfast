@@ -848,10 +848,14 @@ module target_routines
                 dtectptr%temp_gas = roomptr%temp(u)
                 !dtectptr%obscuration = roomptr%species_output(u,9)
                 dtectptr%obscuration = roomptr%species_output(u,soot)
+                dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
+                dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
             else
                 dtectptr%temp_gas = roomptr%temp(l)
                 !dtectptr%obscuration = roomptr%species_output(l,9)
                 dtectptr%obscuration = roomptr%species_output(l,soot)
+                dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
+                dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)
             end if
             dtectptr%velocity = 0.1_eb
         else
@@ -862,9 +866,13 @@ module target_routines
             if (zloc>roomptr%depth(l)) then
                 !dtectptr%obscuration = roomptr%species_output(u,9)
                 dtectptr%obscuration = roomptr%species_output(u,soot)
+                dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
+                dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
             else
                 !dtectptr%obscuration = roomptr%species_output(l,9)
                 dtectptr%obscuration = roomptr%species_output(l,soot)
+                dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
+                dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)
             end if
         end if
     end do

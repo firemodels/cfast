@@ -392,9 +392,9 @@ module spreadsheet_routines
                     if (tooutput(lsp)) then
                         ssvalue = roomptr%species_output(layer,lsp)
                         if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
-                        if (validate.and.lsp==soot) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
-                        if (validate.and.lsp==soot_flaming) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
-                        if (validate.and.lsp==soot_smolder) ssvalue = ssvalue *264.6903_eb ! converts od to mg/m^3 (see od calculation)
+                        if (validate.and.lsp==soot) ssvalue = ssvalue*264.6903_eb ! converts od to mg/m^3 (see od calculation)
+                        if (validate.and.lsp==soot_flaming) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)
+                        if (validate.and.lsp==soot_smolder) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)
                         call ssaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90

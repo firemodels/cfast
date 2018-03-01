@@ -1709,23 +1709,49 @@ module solve_routines
     integer, intent(in) :: ibeg
     real(eb), intent(out) :: pdif(*)
 
-    real(eb) :: factor(mxrooms,2)
+    real(eb) :: factor(mxrooms,2), smoke(mxrooms,2)
     integer :: iroom, isof, iprod
     type(room_type), pointer :: roomptr
 
     factor(1:nrm1,u) = 0.0_eb
     factor(1:nrm1,l) = 0.0_eb
+    smoke(1:nrm1,1:2) = 0.0_eb
 
     isof = ibeg
     !do iprod = 1, min(ns,9)
     do iprod = 1, ns_mass
         do iroom = 1, nrm1
-            factor(iroom,u) = factor(iroom,u) + pdif(isof)
+            if (pdif(isof) >= 0.0_eb) then
+                factor(iroom,u) = factor(iroom,u) + pdif(isof)
+            else
+                pdif(isof) = 0.0_eb
+            end if
             isof = isof + 1
-            factor(iroom,l) = factor(iroom,l) + pdif(isof)
+            if (pdif(isof) >= 0.0_eb) then
+                factor(iroom,l) = factor(iroom,l) + pdif(isof)
+            else
+                pdif(isof) = 0.0_eb
+            end if
             isof = isof + 1
         end do
     end do
+    
+    do iprod = 1, 2
+        do iroom = 1, nrm1
+            if (pdif(isof) >= 0.0_eb) then
+                smoke(iroom, u) = smoke(iroom,u) + pdif(isof)
+            else
+                pdif(isof) = 0.0_eb
+            end if
+            isof = isof + 1
+            if (pdif(isof) >= 0.0_eb) then
+                smoke(iroom, l) = smoke(iroom,l) + pdif(isof)
+            else
+                pdif(isof) = 0.0_eb
+            end if
+            isof = isof + 1
+        end do
+    end do 
 
     do iroom = 1, nrm1
         roomptr => roominfo(iroom)
@@ -1746,9 +1772,28 @@ module solve_routines
     do iprod = 1, ns_mass
         do iroom = 1, nrm1
             pdif(isof) = pdif(isof)*factor(iroom,u)
+            if (iprod == soot .and. smoke(iroom,u)>0.0_eb) then
+                smoke(iroom,u) = pdif(isof)/smoke(iroom,u)
+            else if (iprod == soot) then
+                smoke(iroom,u) = 1.0_eb
+            end if
             isof = isof + 1
             pdif(isof) = pdif(isof)*factor(iroom,l)
+            if (iprod == soot .and. smoke(iroom,l) > 0.0_eb) then
+                smoke(iroom,l) = pdif(isof)/smoke(iroom,l)
+            else if (iprod == soot) then
+                smoke(iroom,l) = 1.0_eb
+            end if
             isof = isof + 1
+        end do
+    end do
+    
+    do iprod = 1, 2
+        do iroom = 1, nrm1
+            pdif(isof) = pdif(isof) * smoke(iroom,u)
+            isof  = isof + 1
+            pdif(isof) = pdif(isof) * smoke(iroom,l)
+            isof  = isof + 1
         end do
     end do
 

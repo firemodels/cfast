@@ -8,7 +8,8 @@ module cfast_types
         character(64) :: name           ! user selected name for the detector (user input)
         real(eb) :: center(3)           ! position of detector center (user input)
         real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
-        real(eb) :: trigger_smolder     ! activation value for duel_detector smoke for the smoldering smoke % obscuration (user input)
+        real(eb) :: trigger_smolder     ! activation value for duel_detector smoke for the smoldering smoke % obscuration 
+                                        !     (user input)
         real(eb) :: rti                 ! rti value for heat detector or sprinkler (user input)
         real(eb) :: spray_density       ! sprinkler spray density (user input)
 
@@ -33,7 +34,8 @@ module cfast_types
         real(eb) :: half_life           ! time for fire to diminish by a factor of two (calculated)
         logical :: activated            ! true if detector has activated (calculated)
         logical :: reported             ! true if detector activation has already been reported (calculated)
-        logical :: duel_detector        ! true if smoke detector with different triggers for flaming and smoldering smoke (determined based on user input)
+        logical :: duel_detector        ! true if smoke detector with different triggers for flaming and smoldering smoke 
+                                        !                 (determined based on user input)
     end type detector_type
 
     ! fire data structure
@@ -52,7 +54,8 @@ module cfast_types
         real(eb) :: x_position                          ! initial X position of the base of fire (user input)
         real(eb) :: y_position                          ! initial Y position of the base of fire (user input)
         real(eb) :: z_position                          ! initial Z position of the base of fire (user input)
-        real(eb) :: flaming_transition_time             ! time in sec at which fire transitions to flaming, realtive to fire start. default is 0 (user input)
+        real(eb) :: flaming_transition_time             ! time in sec at which fire transitions to flaming, realtive to fire start. 
+                                                        !                default is 0 (user input)
 
         integer :: n_mdot, n_qdot, n_area, n_height, n_soot, n_co, n_trace, n_hoc ! number of time points (user input)
         real(eb), dimension(mxpts) :: mdot, t_mdot      ! pyrolysis rate (user input)

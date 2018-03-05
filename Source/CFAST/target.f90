@@ -759,7 +759,7 @@ module target_routines
             if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
                 delta = (trig-tlinko)/(tlink-tlinko)
             else
-                delta = 10*dstep
+                delta = 10
             end if
         else if (dtectptr%dtype==smoked .and. dtectptr%duel_detector) then
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
@@ -768,7 +768,7 @@ module target_routines
             if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
                 delta = (trig-tlinko)/(tlink-tlinko)
             else
-                delta = 10*dstep
+                delta = 10
             end if
             trig_smld = log10(1._eb/(1._eb-dtectptr%trigger_smolder/100._eb))
             tlinko_smld = dtectptr%value_smolder
@@ -776,7 +776,7 @@ module target_routines
             if (tlinko_smld<trig_smld.and.trig_smld<=tlink_smld.and..not.dtectptr%activated) then
                 delta_smld = (trig_smld-tlinko_smld)/(tlink_smld-tlinko_smld)
             else
-                delta_smld = 10*dstep
+                delta_smld = 10
             end if
             if (delta_smld < delta) then
                 delta = delta_smld
@@ -796,7 +796,7 @@ module target_routines
             if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
                 delta = (trig-tlinko)/(tlink-tlinko)
             else
-                delta = 10*dstep
+                delta = 10
             end if
         end if
         if (imode>0) then
@@ -810,7 +810,7 @@ module target_routines
 
         ! determine if detector has activated in this time interval (and not earlier)
         !if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
-        if (delta <= dstep .and. .not.dtectptr%activated) then 
+        if (delta <= 1.0_eb .and. .not.dtectptr%activated) then 
             !delta = (trig-tlinko)/(tlink-tlinko)
             tmp = tcur+dstep*delta
             tdtect = min(tmp,tdtect)

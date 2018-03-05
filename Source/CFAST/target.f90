@@ -723,7 +723,7 @@ module target_routines
     real(eb), intent(out) :: tdtect
 
     real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
-       bnp1, denom, fact1, fact2, delta, tmp
+       bnp1, denom, fact1, fact2, delta, tmp, tlink_smld, tlinko_smld, delta_smld, trig_smld
     integer :: i, iroom, idold, iqu
     character(133) :: messg
     character(11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm ','Sprinkler  '/)
@@ -752,10 +752,35 @@ module target_routines
         vel = max(dtectptr%velocity,cjetmin)
         velo = max(dtectptr%velocity_o,cjetmin)
 
-        if (dtectptr%dtype==smoked) then
+        if (dtectptr%dtype==smoked .and. .not.dtectptr%duel_detector) then
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = dtectptr%value
             tlink = dtectptr%obscuration
+            if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
+                delta = (trig-tlinko)/(tlink-tlinko)
+            else
+                delta = 10*dstep
+            end if
+        else if (dtectptr%dtype==smoked .and. dtectptr%duel_detector) then
+            trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
+            tlinko = dtectptr%value
+            tlink = dtectptr%obscuration_flaming
+            if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
+                delta = (trig-tlinko)/(tlink-tlinko)
+            else
+                delta = 10*dstep
+            end if
+            trig_smld = log10(1._eb/(1._eb-dtectptr%trigger_smolder/100._eb))
+            tlinko_smld = dtectptr%value_smolder
+            tlink_smld = dtectptr%obscuration_smolder
+            if (tlinko_smld<trig_smld.and.trig_smld<=tlink_smld.and..not.dtectptr%activated) then
+                delta_smld = (trig_smld-tlinko_smld)/(tlink_smld-tlinko_smld)
+            else
+                delta_smld = 10*dstep
+            end if
+            if (delta_smld < delta) then
+                delta = delta_smld
+            end if
         else if (dtectptr%dtype>=heatd) then
             rti = dtectptr%rti
             trig = dtectptr%trigger
@@ -768,15 +793,25 @@ module target_routines
             fact1 = (1.0_eb - dstep*bn*.50_eb)/denom
             fact2 = dstep/denom
             tlink = fact1*tlinko + fact2*(an+anp1)*0.5_eb
+            if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
+                delta = (trig-tlinko)/(tlink-tlinko)
+            else
+                delta = 10*dstep
+            end if
         end if
         if (imode>0) then
             dtectptr%value_o = tlinko
             dtectptr%value = tlink
+            if (dtectptr%duel_detector) then
+                dtectptr%value_o_smolder = tlinko_smld
+                dtectptr%value_smolder = tlink_smld
+            end if
         end if
 
         ! determine if detector has activated in this time interval (and not earlier)
-        if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
-            delta = (trig-tlinko)/(tlink-tlinko)
+        !if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
+        if (delta <= dstep .and. .not.dtectptr%activated) then 
+            !delta = (trig-tlinko)/(tlink-tlinko)
             tmp = tcur+dstep*delta
             tdtect = min(tmp,tdtect)
             ifdtect = i

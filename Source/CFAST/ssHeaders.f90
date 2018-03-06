@@ -351,7 +351,7 @@ module spreadsheet_header_routines
             headertext(2,position) = Labels(j+20)
             write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
             headertext(3,position) = cTemp
-            headertext(4,position) = LabelUnits(j+19)
+            headertext(4,position) = LabelUnits(j+20)
         end do
     end do
 

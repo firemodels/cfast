@@ -933,8 +933,8 @@ module output_routines
             fireptr => fireinfo(io)
             roomptr => roominfo(fireptr%room)
             write (iofilo,5020) trim(fireptr%name), io, fire_geometry(fireptr%modified_plume)
-            write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), fireptr%x_position, fireptr%y_position, &
-                fireptr%z_position+fireptr%height(1), relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
+            write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), fireptr%flaming_transition_time, fireptr%x_position, &
+                fireptr%y_position, fireptr%z_position+fireptr%height(1), relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
             write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
             is = 103
@@ -953,9 +953,10 @@ module output_routines
     return
 5000 format ('  (s)       (kg/s)    (J/kg)    (W)       (m)       ',15(A7,3X))
 5010 format (255a1)
-5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
-          '   Position (x,y,z)     Relative    Lower O2    Radiative',/,52x,'Humidity    Limit       Fraction',/85('-'))
-5030 format (a14,1x,a13,3(f7.2),f7.1,6x,f7.2,5x,f7.2//)
+     5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
+          '   Time to Flaming      Position (x,y,z)     Relative    Lower O2    Radiative',/ &
+          ,73x,'Humidity    Limit       Fraction',/110('-'))
+5030 format (a14,1x,a13,5x,f7.1,8x,3(f7.2),2x,f7.1,6x,f7.2,5x,f7.2//)
 5031 format ('Chemical formula of the fuel',/,'Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine',/,50('-'),/,5(f7.3,3x),//)
 5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))
@@ -995,19 +996,19 @@ module output_routines
     !      description:  output initial test case target specifications
 
     integer :: idtect, iroom, itype
-    character :: outbuf*132
+    character :: outbuf*200
 
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
     if (n_detectors/=0) write (iofilo,5000)
     5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/ &
-         ,'Target  Compartment        Type           Position (x, y, z)            Activation',/ &
-         ,'                                                                        Obscuration    ', &
+         ,'Target  Compartment        Type           Position (x, y, z)            Activation     Flaming        Smoldering',/ &
+         ,'                                                                        Obscuration    Obscuration    Obscuration    ', &
          'Temperature   RTI           Spray Density',/ &
-         ,'                                         (m)      (m)      (m)          (%/m)       ', &
+         ,'                                         (m)      (m)      (m)          (%/m)          (%/m)          (%/m)        ', &
          '  (C)           (m s)^1/2     (mm/s)',/ &
-         ,128('-'))
+         ,160('-'))
 
     do idtect = 1, n_detectors
         dtectptr => detectorinfo(idtect)
@@ -1015,7 +1016,11 @@ module output_routines
         roomptr => roominfo(iroom)
         itype = dtectptr%dtype
         if (itype==smoked) then
-            write (outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
+            if (dtectptr%dual_detector) then
+                write (outbuf,5015) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger, dtectptr%trigger_smolder
+            else
+                write (outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
+            end if
         else if (itype==heatd) then
             write (outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-kelvin_c_offset, dtectptr%rti
         else
@@ -1023,7 +1028,8 @@ module output_routines
                 dtectptr%trigger-kelvin_c_offset, dtectptr%rti, dtectptr%spray_density
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)
-5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),13x,2(5x,f10.2),5x,1pe10.2)
+5015    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),18x,f10.2,5x,f10.2)
+5020    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),45x,2(5x,f10.2),5x,1pe10.2)
 
         write (iofilo,'(a)') trim(outbuf)
     end do

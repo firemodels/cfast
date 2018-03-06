@@ -752,7 +752,7 @@ module target_routines
         vel = max(dtectptr%velocity,cjetmin)
         velo = max(dtectptr%velocity_o,cjetmin)
 
-        if (dtectptr%dtype==smoked .and. .not.dtectptr%duel_detector) then
+        if (dtectptr%dtype==smoked .and. .not.dtectptr%dual_detector) then
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = dtectptr%value
             tlink = dtectptr%obscuration
@@ -761,7 +761,7 @@ module target_routines
             else
                 delta = 10
             end if
-        else if (dtectptr%dtype==smoked .and. dtectptr%duel_detector) then
+        else if (dtectptr%dtype==smoked .and. dtectptr%dual_detector) then
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))
             tlinko = dtectptr%value
             tlink = dtectptr%obscuration_flaming
@@ -802,7 +802,7 @@ module target_routines
         if (imode>0) then
             dtectptr%value_o = tlinko
             dtectptr%value = tlink
-            if (dtectptr%duel_detector) then
+            if (dtectptr%dual_detector) then
                 dtectptr%value_o_smolder = tlinko_smld
                 dtectptr%value_smolder = tlink_smld
             end if

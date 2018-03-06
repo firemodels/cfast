@@ -735,14 +735,14 @@
                 else
                     if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint
-                        dtectptr%duel_detector = .FALSE. 
+                        dtectptr%dual_detector = .FALSE. 
                     else if (setpoints(1) /= -1001._eb) then
                         dtectptr%trigger = setpoints(2)
                         dtectptr%trigger_smolder = setpoints(1)
-                        dtectptr%duel_detector = .TRUE.
+                        dtectptr%dual_detector = .TRUE.
                     else
                         dtectptr%trigger = default_activation_obscuration
-                        dtectptr%duel_detector = .FALSE. 
+                        dtectptr%dual_detector = .FALSE. 
                     end if
                 end if
                 dtectptr%center = location

@@ -87,8 +87,6 @@ module fire_routines
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
         flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + xntms(u,1:ns)
         flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + xntms(l,1:ns)
-        !flows_fires(iroom,pp:ns+pp-1,u) = flows_fires(iroom,pp:ns+pp-1,u) + xntms(u,1:ns)
-        !flows_fires(iroom,pp:ns+pp-1,l) = flows_fires(iroom,pp:ns+pp-1,l) + xntms(l,1:ns)
     end do
 
     return
@@ -134,10 +132,9 @@ module fire_routines
     real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc, xqfr, xqlp, xqup
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
-    real(eb) :: chirad, xqpyrl, source_o2, activated_time, tau, xtemp, uplmep, uplmes, uplmee, height
+    real(eb) :: chirad, xqpyrl, source_o2, xtemp, uplmep, uplmes, uplmee, height
     real(eb) :: firex, firey
     integer :: ipass, lsp
-    type(detector_type), pointer :: dtectptr
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -169,6 +166,10 @@ module fire_routines
     ! whether the fuel actually combusts here. this is consistent with the earlier chemistry routine.
     ! release it here and deposit it in the upper layer
     xntms(u,ts) = xemp*y_trace
+    
+    ! fuel released by pyrolysis is put into the upper layer. The fuel that burns in the plume is calculated
+    ! in the chemistry routine and then removed from the upper layer
+    xntms(u,fuel) = xemp
 
     ! now do the kinetics scheme
 
@@ -178,16 +179,6 @@ module fire_routines
     chirad = max(min(fireptr%chirad,1.0_eb),0.0_eb)
     qheatl = xqpyrl
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
-
-    ! Check for sprinkler activation
-    if (roomptr%sprinkler_activated>0) then
-        dtectptr => detectorinfo(roomptr%sprinkler_activated)
-        activated_time = dtectptr%activation_time
-        tau = dtectptr%tau
-    else
-        activated_time = 0
-        tau = 0.0
-    end if
     
     ! set wall or corner fire
     firex = min(xfx,xbr-xfx)
@@ -215,9 +206,8 @@ module fire_routines
         xems = xemp + xeme
 
         source_o2 = roomptr%species_fraction(l,o2)
-        call chemistry (xemp, mol_mass, xeme, iroom, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, n_C, n_H, n_O, n_N, &
-            n_Cl, source_o2, lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, tau, stime, & 
-            fireptr%qdot_at_activation(l), xqpyrl, xntfl, xmass)
+        call chemistry (xemp, mol_mass, xeme, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, n_C, n_H, n_O, n_N, &
+            n_Cl, source_o2, lower_o2_limit, xqpyrl, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
         xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
@@ -246,8 +236,7 @@ module fire_routines
     xntms(l,1:ns) = xntms(l,1:ns) - xeme*stmass(l,1:ns)/xtemp
 
     ! add in the fuel. everything else is done by chemistry.
-    !xntms(u,7) = xntms(u,7) + xemp
-    xntms(u,fuel) = xntms(u,fuel) + xemp
+    ! xntms(u,fuel) = xntms(u,fuel) + xemp
 
     xqfr = xqpyrl*chirad
     xqfc = xqpyrl*(1.0_eb-chirad)
@@ -269,9 +258,8 @@ module fire_routines
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
 
         source_o2 = roomptr%species_fraction(u,o2)
-        call chemistry (uplmep, mol_mass, uplmee, iroom, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, idset, roomptr%sprinkler_activated, activated_time, &
-            tau, stime, fireptr%qdot_at_activation(u), xqpyrl, xntfl, xmass)
+        call chemistry (uplmep, mol_mass, uplmee, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
+            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, xqpyrl, xntfl, xmass)
 
         xqfr = xqpyrl*chirad + xqfr
         xqfc = xqpyrl*(1.0_eb-chirad) + xqfc
@@ -284,9 +272,8 @@ module fire_routines
 
 ! --------------------------- chemistry -------------------------------------------
 
-    subroutine chemistry (pyrolysis_rate, molar_mass,entrainment_rate, source_room, h_c, y_soot, y_soot_flaming, y_soot_smolder, &
-       y_co,n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, activated_room, activated_sprinkler, activated_time, tau, & 
-       model_time, hrr_at_activation, hrr_constrained, pyrolysis_rate_constrained, species_rates)
+    subroutine chemistry (pyrolysis_rate, molar_mass,entrainment_rate, h_c, y_soot, y_soot_flaming, y_soot_smolder, &
+       y_co,n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
     !     routine: chemistry
     !     purpose: do the combustion chemistry - for plumes in both the upper and lower layers.
@@ -305,29 +292,18 @@ module fire_routines
     !                 yields of O2, HCl, and HCN are determined from this
     !                 source_o2, lower_o2_limit: oxygen concentration in the source layer of the compartment;
     !                 lower oxygen limit for combustion (as a fraction)
-    !                 activated_room: if zero, a sprinkler has gone off in this compartment.
-    !                                 If equal to the source room, HRR is saved for future quenching
-    !                 activated_sprinkler: sprinkler that has activated
-    !                 activated_time: time of sprinkler activaiton (s)
-    !                 tau: sprinkler suppression rate
-    !                 model_time: current simulation time (s)
-
-    !                 hrr_at_activation (output): saved hrr in case of future activation (W)
     !                 hrr_constrained (output): actual HRR of the fire constrained by available oxygen (W)
     !                                           pyrolysis_rate_constrained (output): actual pyrolysis rate of the fuel
     !                                           constrained by available oxygen (kg/s)
     !                 species_rates (output): production rates of species based on calculated yields and constrained
     !                                         pyrolysis rate (kg/s); fuel and oxygen are naturally negative
 
-    integer, intent(in) :: source_room, activated_room, activated_sprinkler
     real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: y_soot_flaming, y_soot_smolder
     real(eb), intent(in) :: source_o2, lower_o2_limit
-    real(eb), intent(in) :: activated_time, tau, model_time
     real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
-    real(eb), intent(inout) :: hrr_at_activation
 
-    real(eb) :: o2_entrained, o2_factor, o2_available, quenching_factor
+    real(eb) :: o2_entrained, o2_factor, o2_available
     real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,nu_hcn, nu_soot_flaming, nu_soot_smolder
     real(eb) :: net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct, net_soot_flaming, net_soot_smolder
     real(eb), parameter :: o2f = 1.31e7_eb
@@ -343,22 +319,6 @@ module fire_routines
     o2_available = o2_entrained*o2_factor
     hrr_constrained = max(0.0_eb,min(pyrolysis_rate*h_c,o2_available*o2f))
     pyrolysis_rate_constrained = hrr_constrained/h_c
-
-
-    ! Here we do a reduction for sprinklers if activation has occurred. Otherwise we just save the current value of the HRR
-    if (activated_room==source_room) then
-        ! if idset=source then save value of fire for later quenching
-        hrr_at_activation = hrr_constrained
-    else if (activated_room==0) then
-        ! a sprinkler reduces the hrr from a fire. the reduction factor is determined by the sprinkler characteristics.
-        ! this factor is applied to the fire based on hrr at activation.
-        ! however, the hrr might be reduced for other reasons, so the arithmetic min function is used.
-        ! the value used is the value at activation. the quenching factor is then a reduction based on time since activation
-        if (activated_sprinkler/=0) then
-            quenching_factor = exp(-(model_time-activated_time)/tau)
-            if (hrr_at_activation>0.0_eb) hrr_constrained = min(hrr_constrained,quenching_factor*hrr_at_activation)
-        end if
-    end if
 
     ! now do the chemistry balance with supplied inputs.
     nu_soot = molar_mass/0.01201_eb*y_soot
@@ -386,15 +346,6 @@ module fire_routines
     net_ct = 0.0_eb
 
     ! set mass "generation" rates in the cfast structure for species
-    !species_rates(2) = net_o2
-    !species_rates(3) = net_co2
-    !species_rates(4) = net_co
-    !species_rates(5) = net_hcn
-    !species_rates(6) = net_hcl
-    !species_rates(7) = net_fuel
-    !species_rates(8) = net_h2o
-    !species_rates(9) = net_soot
-    !species_rates(10) = net_ct
     species_rates(o2) = net_o2
     species_rates(co2) = net_co2
     species_rates(co) = net_co
@@ -798,10 +749,10 @@ module fire_routines
         source_o2 = roomptr%species_fraction(l,o2)
         xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         xxqspray = 0.0_eb
-        call chemistry (xxnetfl, xxmol_mass, sas, ito, hcombt, 0.0_eb, 0.0_eb, 0.0_eb, 0.0_eb, 1.0_eb, 4.0_eb, 0.0_eb, 0.0_eb, &
-            0.0_eb, source_o2, lower_o2_limit, 0, 0, 0.0_eb, 0.0_eb, stime, xxqspray, xqpyrl, xntfl, xmass)
+        call chemistry (xxnetfl, xxmol_mass, sas, hcombt, 0.0_eb, 0.0_eb, 0.0_eb, 0.0_eb, 1.0_eb, 4.0_eb, 0.0_eb, 0.0_eb, &
+            0.0_eb, source_o2, lower_o2_limit, xqpyrl, xntfl, xmass)
         qpyrol = xqpyrl
-
+        
         xntms(u,1:ns) = xmass(1:ns)
         xntms(l,1:ns) = 0.0_eb
     end if

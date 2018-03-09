@@ -324,13 +324,13 @@ module spreadsheet_header_routines
                 headertext(4,position) = LabelUnits(j+5)
             end do
         end if
-            do j = 1, 4
-                position = position + 1
-                headertext(1,position) = trim(LabelsShort(j+24)) // trim(cDet)
-                headertext(2,position) = Labels(j+24)
-                headertext(3,position) = targptr%name
-                headertext(4,position) = LabelUnits(j+24)
-            end do
+        do j = 1, 4
+            position = position + 1
+            headertext(1,position) = trim(LabelsShort(j+24)) // trim(cDet)
+            headertext(2,position) = Labels(j+24)
+            headertext(3,position) = targptr%name
+            headertext(4,position) = LabelUnits(j+24)
+        end do
     end do
 
     ! Detectors

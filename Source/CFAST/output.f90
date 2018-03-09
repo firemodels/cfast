@@ -119,7 +119,9 @@ module output_routines
 
     real(eb), intent(in) :: time
 
+    write (iofilo,4090)
     write (iofilo,5000) time
+    write (iofilo,5010)
     if (outputformat>1) then
         call results_layers
         call results_fires
@@ -132,7 +134,9 @@ module output_routines
     end if
     return
 
-5000 format (//,'Time = ',f8.1,' seconds.')
+4090 format (//,28('*'))
+5000 format ('* Time = ',f8.1,' seconds. *')
+5010 format (28('*'))
     end subroutine output_results
 
 ! --------------------------- results_layers -------------------------------------------
@@ -237,8 +241,8 @@ module output_routines
          '(W)       (W)        (kg)        (kg)' ,/,' ',146('-'))
 5010 format (14x,a12,4x,a,3x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
 5020 format (13x,'Object ',i2,2x,4(1pg10.3),30x,3(1pg10.3),2x,g10.3)
-5030 format (a14,10x,3(1pg10.3),10x,3(1pg10.3))
-5040 format ('Outside',76x,1pg10.3)
+5030 format (a14,20x,3(1pg10.3),10x,3(1pg10.3))
+5040 format ('Outside',87x,1pg10.3)
     end subroutine results_fires
 
 ! --------------------------- results_species -------------------------------------------

@@ -16,7 +16,7 @@ Whereas model validation consists mainly of comparing predictions with experimen
 A series of verification test cases follow, examining the energy balance, mass balance, ventilation, heat transfer and sprinkler effects modeled by CFAST. These test cases are routinely run to ensure the calculations in the model are correct for a range of simple calculations where analytical solutions exist. The energy and mass balance examples test the underlying fundamental equations that determine conditions within a compartment in the model. The ventilation examples test the flow of gases between compartments through doors, windows, holes in floors/ceilings, and mechanical ventilation systems.  The heat transfer examples test the flow of energy through walls of compartments or to user-defined objects within a compartment. The sprinkler example tests the algorithm used to simulate the response of heat detectors and fire sprinklers in CFAST.  For each of the examples, an analytical solution is presented and compared to the results of a matching CFAST simulation.
 
 
-\section{Energy Balance}
+\section{Energy}
 \label{energy_balance}
 For most of the examples presented in this section, the same basic geometry is used, a single 5~m by 5~m by 5~m compartment.
 
@@ -138,7 +138,7 @@ Consider now the same case as in Section~\ref{sealed_test}, but now with two zon
 \clearpage
 
 
-\section{Mass Balance}
+\section{Mass}
 \label{mass_conservation}
 \label{mass_balance}
 
@@ -237,7 +237,7 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \subsection{Product Yields (\texorpdfstring{\textct{methane\_flame}}{methane\_flame})}
 \label{methane_flame}
 
-A simple 5 kW methane flame with 10~\% CO yield is burned inside a closed compartment for 100~s. Initially, the relative humidity within the compartment is zero. The total mass of CO$_2$, H$_2$O and CO produced is calculated. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
+A simple 5 kW methane flame with 10~\% CO yield is burned inside a closed 5~m x 5~m x 5~m compartment for 100~s. Initially, the relative humidity within the compartment is zero. The total mass of CO$_2$, H$_2$O and CO produced is calculated. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
 \be
    \mathrm{C_{n_\C}H_{n_H}} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow   \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO}
 \ee
@@ -257,6 +257,10 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 \caption[Results of the test case {\ct methane\_flame\_simple.in}]{Expected and CFAST calculated values for the masses of CO, CO$_2$, and H$_2$O in a one room test case {\ct methane\_flame\_simple.in}.}
 \label{fig_methane_flame_yields}
 \end{figure}
+
+\subsection{Gas Tenability (\texorpdfstring{\textct{gas\_tenability}}{gas\_tenability})}
+
+For the same scenario as the previous example, gas tenability can be calculated.  A total of 0.026 kg of CO$_2$, and 0.001 kg of CO are produced by the fire.
 
 \clearpage
 

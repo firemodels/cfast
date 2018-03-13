@@ -1,30 +1,19 @@
-VERSN,7,CFAST Simulation
-!!
-!!Scenario Configuration
-!!
-TIMES,200,200,0,1
-EAMB,293.15,101325,0
-TAMB,293.15,101325,0,0
-ADIAB
-!!
-!!Compartments
-!!
-COMPA,Comp 1,1,1,2,0,0,0,OFF,OFF,OFF,50,50,50
-ONEZ,1
-!!
-!!Fires
-!!
-!!Methane Fire
-FIRE,1,0.5,0.5,0,1,TIME,0,0,0,0,Methane Fire
-CHEMI,1,4,0,0,0,0.35,5E+07
-TIME,0,100,100.001
-HRR,5000,5000,0
-SOOT,0,0,0
-CO,0.1,0.1,0.1
-TRACE,0,0,0
-AREA,0.09,0.09,0.09
-HEIGH,0,0,0
-!!
-!!Misc.
-!!
-STPMAX,0.001
+&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 200 PRINT = 200 SMOKEVIEW = 0 SPREADSHEET = 1 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 0 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  ADIABATIC = .TRUE.  MAX_TIME_STEP = 0.001 LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Compartments 
+&COMP ID = 'Comp 1'
+      DEPTH = 1 HEIGHT = 2 WIDTH = 1 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Fires 
+&FIRE ID = 'Methane Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Methane Fire_Fire'  LOCATION = 0.5, 0.5 / 
+&CHEM ID = 'Methane Fire_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Methane Fire_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Methane Fire_Fire', DATA = 0, 5, 0, 0.09, 0.1, 0, 0, 0, 0 /
+&TABL ID = 'Methane Fire_Fire', DATA = 100, 5, 0, 0.09, 0.1, 0, 0, 0, 0 /
+&TABL ID = 'Methane Fire_Fire', DATA = 100.001, 0, 0, 0.09, 0.1, 0, 0, 0, 0 /

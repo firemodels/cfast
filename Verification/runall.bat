@@ -24,6 +24,7 @@ echo Running Species cases
 cd Species
 call ..\..\Validation\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast gas_tenability -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast heat_tenability -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast methane_flame_simple -V
 cd ..
 

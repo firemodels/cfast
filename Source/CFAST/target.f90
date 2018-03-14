@@ -124,7 +124,7 @@ module target_routines
             fed_heat_increment = (dt/60._eb)*1/(4.1e8_eb*(targptr%tgas-kelvin_c_offset)**(-3.61))
         else
             fed_heat_increment = (dt/60._eb)*(1._eb/(4.2*targptr%flux_incident_front/1000._eb)**(-1.9_eb)) + &
-                (1._eb/(4.1e8_eb*(targptr%tgas-kelvin_c_offset)**(-3.61)))
+                (dt/60._eb)*(1._eb/(4.1e8_eb*(targptr%tgas-kelvin_c_offset)**(-3.61)))
         end if
         targptr%dfed_heat = targptr%dfed_heat + fed_heat_increment
         targptr%fed_heat = targptr%fed_heat + fed_heat_increment

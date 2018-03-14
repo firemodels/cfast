@@ -260,7 +260,21 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 
 \subsection{Gas Tenability (\texorpdfstring{\textct{gas\_tenability}}{gas\_tenability})}
 
-For the same scenario as the previous example, gas tenability can be calculated.  A total of 0.026 kg of CO$_2$, and 0.001 kg of CO are produced by the fire.
+For the same scenario as the previous example, gas tenability can be calculated.  A steady-state concentration of 0.0223~\% by volume of CO$_2$, and 0.00137~\% by volume of CO is reached. A 1 s increment of asphyxiant gas FED can by calculated by
+
+\begin{eqnarray}
+    \nu_{\rm CO_2} &=& e^{\varphi_{\rm CO_2} \, / \, 5} = e^{0.0223 \, / \, 5} \approx 1 \\[.1in]
+    \Delta \chi_{\FED} &=&  \frac{\varphi_{\CO} \cdot \nu_{\COTWO}}{35 000} \, \Delta t =  \frac{13.7 \cdot 1}{35 000} \frac{1}{60} = 0.0000066
+\end{eqnarray}
+
+The following figure compares the calculated FED to its expected value.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/gas_tenability}
+\caption[Results of the test case {\ct methane\_flame\_simple.in}]{Expected and CFAST calculated values for fractional effective dose in a one room test case {\ct gas\_tenability.in}.}
+\label{fig_gas_tenability}
+\end{figure}
 
 \clearpage
 

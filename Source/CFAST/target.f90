@@ -120,8 +120,12 @@ module target_routines
             (roomptr%species_output(ilayer,hcn)*10000)**2.36_eb/1.2e6_eb)
         targptr%dfed_gas = targptr%dfed_gas + fed_gas_increment
         targptr%fed_gas = targptr%fed_gas + fed_gas_increment
-        fed_heat_increment = (dt/60._eb)*((targptr%flux_incident_front/1000._eb)**1.9/4.2 + &
-            ((targptr%tgas-kelvin_c_offset)**3.61/4.1e8_eb))
+        if (targptr%flux_incident_front<2500._eb) then
+            fed_heat_increment = (dt/60._eb)*1/(4.1e8_eb*(targptr%tgas-kelvin_c_offset)**(-3.61))
+        else
+            fed_heat_increment = (dt/60._eb)*(1._eb/(4.2*targptr%flux_incident_front/1000._eb)**(-1.9_eb)) + &
+                (1._eb/(4.1e8_eb*(targptr%tgas-kelvin_c_offset)**(-3.61)))
+        end if
         targptr%dfed_heat = targptr%dfed_heat + fed_heat_increment
         targptr%fed_heat = targptr%fed_heat + fed_heat_increment
     end do

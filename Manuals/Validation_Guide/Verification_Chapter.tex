@@ -258,24 +258,6 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 \label{fig_methane_flame_yields}
 \end{figure}
 
-\subsection{Gas Tenability (\texorpdfstring{\textct{gas\_tenability}}{gas\_tenability})}
-
-For the same scenario as the previous example, gas tenability can be calculated.  A steady-state concentration of 0.0223~\% by volume of CO$_2$, and 0.00137~\% by volume of CO is reached. A 1 s increment of asphyxiant gas FED can by calculated by
-
-\begin{eqnarray}
-    \nu_{\rm CO_2} &=& e^{\varphi_{\rm CO_2} \, / \, 5} = e^{0.0223 \, / \, 5} \approx 1 \\[.1in]
-    \Delta \chi_{\FED} &=&  \frac{\varphi_{\CO} \cdot \nu_{\COTWO}}{35 000} \, \Delta t =  \frac{13.7 \cdot 1}{35 000} \frac{1}{60} = 0.0000066
-\end{eqnarray}
-
-The following figure compares the calculated FED to its expected value.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/gas_tenability}
-\caption[Results of the test case {\ct methane\_flame\_simple.in}]{Expected and CFAST calculated values for fractional effective dose in a one room test case {\ct gas\_tenability.in}.}
-\label{fig_gas_tenability}
-\end{figure}
-
 \clearpage
 
 \clearpage
@@ -527,6 +509,44 @@ Two small fires are located in a single compartment some distance away from a la
 \caption[Results of the test case {\ct Ignition\_Test.in}]{Heat release rate of the fire and surface temperature at the fire location for the case {\ct Ignition\_Test.in}.}
 \label{fireignition2}
 \end{figure}
+
+
+\section{Tenability}
+
+\subsection{Gas Tenability}
+
+For the same scenario as the example in section \ref{methane_flame}, gas tenability can be calculated.  A steady-state concentration of 0.0223~\% by volume of CO$_2$, and 0.00137~\% by volume of CO is reached. A 1 s increment of asphyxiant gas FED can by calculated by
+
+\begin{eqnarray}
+    \nu_{\rm CO_2} &=& e^{\varphi_{\rm CO_2} \, / \, 5} = e^{0.0223 \, / \, 5} \approx 1 \\[.1in]
+    \Delta \chi_{\FED} &=&  \frac{\varphi_{\CO} \cdot \nu_{\COTWO}}{35 000} \, \Delta t =  \frac{13.7 \cdot 1}{35 000} \frac{1}{60} = 0.0000066
+\end{eqnarray}
+for a 1 s increment. The following figure compares the calculated FED to its expected value.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/gas_tenability}
+\caption[Results of the test case {\ct gas\_tenability\.in}]{Expected and CFAST calculated values for fractional effective dose due to asphyxiant gases in a one room test case {\ct gas\_tenability.in}.}
+\label{fig_gas_tenability}
+\end{figure}
+
+\subsection{Heat Tenability}
+
+A compartment is maintained at a constant 100 \degc and a target is placed in the center of the compartment. Heat flux to the target is less than 2.5 kW/m$^2$.  Heat tenability can be calculated by
+
+\be
+    \Delta \chi_{\FED} = \frac{1}{4.1 \times 10^8 \, T^{-3.61}} \, \Delta t = 0.00068
+\ee
+for a 1 s increment. The following figure compares the calculated FED to its expected value.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/heat_tenability}
+\caption[Results of the test case {\ct heat\_tenability\.in}]{Expected and CFAST calculated values for fractional effective dose due to convected heat in a one room test case {\ct heat\_tenability.in}.}
+\label{fig_gas_tenability}
+\end{figure}
+
+
 
 \section{Summary of Verification Results}
 

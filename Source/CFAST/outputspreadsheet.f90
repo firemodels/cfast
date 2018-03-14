@@ -391,7 +391,7 @@ module spreadsheet_routines
                 if (layer==u.or..not.roomptr%shaft) then
                     if (tooutput(lsp)) then
                         ssvalue = roomptr%species_output(layer,lsp)
-                        if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts ppm to  molar fraction
+                        if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
                         if (validate.and.lsp==soot) ssvalue = ssvalue*264.6903_eb ! converts od to mg/m^3 (see od calculation)
                         if (validate.and.lsp==soot_flaming) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)
                         if (validate.and.lsp==soot_smolder) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)

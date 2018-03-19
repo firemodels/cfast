@@ -19,7 +19,7 @@
 
     ! fire related input parameters
     integer, parameter :: mxpts = 200                   ! maximum number of data points in a input curve/ramp
-    integer, parameter :: ns = 13                       ! number of species
+    integer, parameter :: ns = 22                       ! number of species
     integer, parameter :: ns_mass = 9                   ! number of species that count toward total mass
     integer, parameter :: mxfires = mxperrm*mxrooms     ! maximum number of fires
     integer, parameter :: mxtabls = mxfires*(mxpts+1)   ! maximum number of table inputs, currently only used for fires
@@ -119,6 +119,15 @@
     integer, parameter :: soot_smolder = 11
     integer, parameter :: ct = 12
     integer, parameter :: ts = 13
+    integer, parameter :: fuel_moles = 14
+    integer, parameter :: fuel_Q = 15
+    integer, parameter :: fuel_o2 = 16
+    integer, parameter :: fuel_co2 = 17
+    integer, parameter :: fuel_co = 18
+    integer, parameter :: fuel_hcn = 19
+    integer, parameter :: fuel_hcl = 20
+    integer, parameter :: fuel_h2o = 21
+    integer, parameter :: fuel_soot = 22
 
     end module cparams
 

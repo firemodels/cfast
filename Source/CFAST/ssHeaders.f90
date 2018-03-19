@@ -111,27 +111,33 @@ module spreadsheet_header_routines
     ! This is the header information for the spreadsheet output
 
     ! local variables
-    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
+    integer, parameter :: maxhead = 1+2*ns*mxrooms
     character(45) :: headertext(4,maxhead), cRoom, Labels(2*ns+1), LabelsShort(2*ns+1), LabelUnits(2*ns+1)
     logical tooutput(ns), molfrac(ns)
-    data tooutput /11*.true.,.false.,.true./
-    data molfrac /8*.true.,5*.false./
+    data tooutput /11*.true.,.false.,10*.true./
+    data molfrac /8*.true.,14*.false./
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
        'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
        'Optical Density Flaming Smoke Upper Layer','Optical Density Smoldering Smoke Upper Layer', &
-       'C-T Product Upper Layer', 'Trace Species Upper Layer',&
-    'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
+       'C-T Product Upper Layer', 'Trace Species Upper Layer', 'Moles Fuel Upper Layer', 'Potential Total Heat Upper Layer', &
+       'Potential O2 Upper Layer', 'Potential CO2 Upper Layer', 'Potential CO Upper Layer', 'Potential HCN Upper Layer', &
+       'Potential HCl Upper Layer', 'Potential H2O Upper Layer', 'Potential Soot Upper Layer',& 
+       'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
        'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
        'Optical Density Flaming Smoke Lower Layer','Optical Density Smoldering Smoke Lower Layer', &
-       'C-T Product Lower Layer', 'Trace Species Lower Layer' /
+       'C-T Product Lower Layer', 'Trace Species Lower Layer', 'Moles Fuel Lower Layer', 'Potential Total Heat Lower Layer', &
+       'Potential O2 Lower Layer', 'Potential CO2 Lower Layer', 'Potential CO Lower Layer', 'Potential HCN Lower Layer', &
+       'Potential HCl Lower Layer', 'Potential H2O Lower Layer', 'Potential Soot Lower Layer' /
     data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_','ULODF_', &
-        'ULODS_', 'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', &
-        'LLODF_','LLODS_', 'LLCT_', 'LLTS_'/
+        'ULODS_', 'ULCT_', 'ULTS_', 'ULFM_','ULPQ_','ULPO2_','ULPCO2_','ULPCO_','ULPHCN_','ULPHCL_','ULPH2O_','ULPSOOT_', &
+        'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_','LLODS_', 'LLCT_', &
+        'LLTS_', 'LLFM_','LLPQ_','LLPO2_','LLPCO2_','LLPCO_','LLPHCN_','LLPHCL_','LLPH2O_','LLPSOOT_'/
     data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m','1/m','g-min/m^3',&
-       'kg', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m', '1/m', 'g-min/m^3', 'kg' /
+       'kg', 'mole', 'j', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', &
+       'mol %', 'mol %', '1/m', '1/m', '1/m', 'g-min/m^3', 'kg', 'mole', 'j', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
@@ -178,26 +184,32 @@ module spreadsheet_header_routines
     ! This is the header information for the spreadsheet output
 
     ! local variables
-    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires
+    integer, parameter :: maxhead = 1+2*ns*mxrooms
     character(45) :: headertext(4,maxhead), cRoom, Labels(2*ns+1), LabelsShort(2*ns+1), LabelUnits(2*ns+1)
     logical tooutput(ns)
-    data tooutput /11*.true.,.false.,.true./
+    data tooutput /11*.true.,.false.,10*.true./
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
        'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
        'Optical Density Flaming Smoke Upper Layer','Optical Density Smoldering Smoke Upper Layer', &
-       'C-T Product Upper Layer', 'Trace Species Upper Layer',&
-    'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
+       'C-T Product Upper Layer', 'Trace Species Upper Layer', 'Moles Fuel Upper Layer', 'Potential Total Heat Upper Layer', &
+       'Potential O2 Upper Layer', 'Potential CO2 Upper Layer', 'Potential CO Upper Layer', 'Potential HCN Upper Layer', &
+       'Potential HCl Upper Layer', 'Potential H2O Upper Layer', 'Potential Soot Upper Layer',&
+       'N2 Lower Layer', 'O2 Lower Layer', 'CO2 Lower Layer', 'CO Lower Layer', 'HCN Lower Layer', &
        'HCL Lower Layer', 'Unburned Hydrocarbons Lower Layer', 'H2O Lower Layer', 'Optical Density Lower Layer',&
        'Optical Density Flaming Smoke Lower Layer','Optical Density Smoldering Smoke Lower Layer', &
-       'C-T Product Lower Layer', 'Trace Species Lower Layer' /
+       'C-T Product Lower Layer', 'Trace Species Lower Layer', 'Moles Fuel Lower Layer', 'Potential Total Heat Lower Layer', &
+       'Potential O2 Lower Layer', 'Potential CO2 Lower Layer', 'Potential CO Lower Layer', 'Potential HCN Lower Layer', &
+       'Potential HCl Lower Layer', 'Potential H2O Lower Layer', 'Potential Soot Lower Layer' /
     data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_','ULTUHC_','ULH2O_','ULOD_','ULODF_','ULODS_',&
-       'ULCT_', 'ULTS_', 'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_', 'LLODS_', &
-        'LLCT_', 'LLTS_'/
-    data LabelUnits / 's', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', &
-       'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg' /
+       'ULCT_', 'ULTS_', 'ULFM_','ULPQ_','ULPO2_','ULPCO2_','ULPCO_','ULPHCN_','ULPHCL_','ULPH2O_','ULPSOOT_', 'LLN2_', 'LLO2_', &
+       'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_', 'LLODS_', 'LLCT_', 'LLTS_', &
+       'LLFM_','LLPQ_','LLPO2_','LLPCO2_','LLPCO_','LLPHCN_','LLPHCL_','LLPH2O_','LLPSOOT_'/
+    data LabelUnits / 's', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', 'mole', 'j', 'kg', &
+       'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', &
+       'mole', 'j', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)

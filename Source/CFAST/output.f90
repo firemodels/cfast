@@ -251,9 +251,9 @@ module output_routines
 
     !     Description:  Output the layer and wall species at the current time
 
-    character(10), dimension(ns) :: stype = &
+    character(10), dimension(ns_mass+4) :: stype = &
         (/character(10) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'OD_F', 'OD_S', 'CT', ' TS'/)
-    character(10), dimension(ns) :: sunits = &
+    character(10), dimension(ns_mass+4) :: sunits = &
         (/character(10) :: '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(1/m)', '(1/m)', '(g-min/m3)', ' kg '/)
     character(5), dimension(2) :: lnames = (/character(5) :: 'UPPER', 'LOWER'/)
     character :: ciout*255, cjout*255
@@ -267,7 +267,7 @@ module output_routines
             ciout = 'Compartment'
             cjout = ' '
             ic = 16
-            do lsp = 1, ns
+            do lsp = 1, ns_mass+4
                 !if (lsp/=10) then
                 if (lsp/=ct) then
                     write (ciout(ic:ic+9),5000) stype(lsp)
@@ -284,7 +284,7 @@ module output_routines
                 write (ciout,5060) roomptr%name
                 ic = 14
                 if (layer==u.or..not.roomptr%shaft) then
-                    do lsp = 1, ns
+                    do lsp = 1, ns_mass+4
                         !if (lsp/=10) then
                         if (lsp/=ct) then
                             write (ciout(ic:ic+9),5040) roomptr%species_output(layer,lsp)
@@ -1160,7 +1160,7 @@ module output_routines
     real(eb) :: xqf
     integer :: i, iprod, il, iroom, iobj, itarg
     integer(2) :: ch, hit
-    character(5) :: spname(ns) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
+    character(5) :: spname(ns_mass+4) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
        '   OD', ' OD_f', ' OD_s', '   CT', '   TS'/), ccc*3
 
     type(room_type), pointer :: roomptr
@@ -1185,7 +1185,7 @@ module output_routines
             write (*,5020) ' Interface ht(m)', roomptr%depth(l)
             write (*,5020) '   Pressure (pa)', roomptr%relp
             if (ns>0) write (*,*) ' Species mass fractions ',' Upper           Lower'
-            do iprod = 1, ns
+            do iprod = 1, ns_mass+4
                 write (*,5030) spname(iprod), (roomptr%species_fraction(il,iprod),il= u,l)
             end do
             if (nhcons/=0) write (*,*) ' Wall temperatures'

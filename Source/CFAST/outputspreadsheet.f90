@@ -165,6 +165,15 @@ module spreadsheet_routines
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
+        call ssaddtolist(position,ventptr%h_mflow(2,1,1),outarray)
+        call ssaddtolist(position,ventptr%h_mflow(2,1,2),outarray)
+        call ssaddtolist(position,ventptr%h_mflow(2,2,1),outarray)
+        call ssaddtolist(position,ventptr%h_mflow(2,2,2),outarray)
+        call ssaddtolist(position,ventptr%h_mflow(1,1,1),outarray)
+        call ssaddtolist(position,ventptr%h_mflow(1,1,2),outarray)
+        call ssaddtolist(position,ventptr%h_mflow(1,2,1),outarray)
+        call ssaddtolist(position,ventptr%h_mflow(1,2,2),outarray)
+        
         ifrom = ventptr%room1
         ito = ventptr%room2
         netflow = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
@@ -189,7 +198,7 @@ module spreadsheet_routines
         if (ventptr%mflow(1,u)<0.0_eb) flow(2) = -ventptr%mflow(1,u)
         if (ventptr%mflow(1,l)>=0.0_eb) flow(3) = ventptr%mflow(1,l)
         if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
-
+        
         sumin = flow(5) + flow(7)
         sumout = flow(6) + flow(8)
         netflow = sumin - sumout
@@ -357,15 +366,17 @@ module spreadsheet_routines
 
     !	Write out the species to the spread sheet file
 
-    integer, parameter :: maxhead = 1+22*mxrooms
+    integer, parameter :: maxhead = 1+2*ns*mxrooms
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput(ns) = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
+          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
     logical, dimension(ns), parameter :: molfrac(ns) = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false./)
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false., &
+          .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 
@@ -416,13 +427,14 @@ module spreadsheet_routines
 
     !	Write out the species mass to the spread sheet file
 
-    integer, parameter :: maxhead = 1+22*mxrooms
+    integer, parameter :: maxhead = 1+2*ns*mxrooms
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput(ns) = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true./)
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
+          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 
@@ -506,8 +518,6 @@ module spreadsheet_routines
         call ssaddtolist(position,roomptr%relp,outarray)
         call ssaddtolist(position,roomptr%rho(u),outarray)
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%rho(l),outarray)
-        !call ssaddtolist(position,roomptr%species_output(u,9),outarray)
-        !if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,9),outarray)
         call ssaddtolist(position,roomptr%species_output(u,soot),outarray)
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,soot),outarray)
     end do

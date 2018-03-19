@@ -1718,7 +1718,6 @@ module solve_routines
     smoke(1:nrm1,1:2) = 0.0_eb
 
     isof = ibeg
-    !do iprod = 1, min(ns,9)
     do iprod = 1, ns_mass
         do iroom = 1, nrm1
             if (pdif(isof) >= 0.0_eb) then
@@ -1768,7 +1767,6 @@ module solve_routines
     end do
 
     isof = ibeg
-    !do iprod = 1, min(ns,9)
     do iprod = 1, ns_mass
         do iroom = 1, nrm1
             pdif(isof) = pdif(isof)*factor(iroom,u)
@@ -1796,6 +1794,16 @@ module solve_routines
             isof  = isof + 1
         end do
     end do
+    
+    isof = isof + 4*nrm1
+    do iprod = 1, 9 
+        do iroom = 1, nrm1
+            pdif(isof) = pdif(isof)*factor(iroom,u)
+            isof = isof + 1
+            pdif(isof) = pdif(isof)*factor(iroom,l)
+            isof = isof + 1
+        end do
+    end do 
 
     return
 

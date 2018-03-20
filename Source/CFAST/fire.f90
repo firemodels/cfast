@@ -194,7 +194,6 @@ module fire_routines
     ! this is done by "re-passing" the actual fire size to fire_plume in the
     ! second pass
     ipass = 1
-    write(*,*) fireptr%name
     do while (ipass<=2)
 
         ! calculate the entrainment rate but constrain the actual amount
@@ -258,7 +257,7 @@ module fire_routines
         xqup = xqpyrl
         xntms(u,1:ns) = xmass(1:ns) + xntms(u,1:ns)
     end if
-    write(*,*) 'fuel = ',xntms(u,fuel)
+    
     if (xntms(u,fuel)>0.0_eb) then
         uplmep = xntms(u,fuel)
         source_o2 = lower_o2_limit+0.02

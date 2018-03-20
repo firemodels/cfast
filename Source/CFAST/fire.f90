@@ -176,6 +176,7 @@ module fire_routines
     ! divvy up the plume output into radiation and convective energy.
     ! convection drives the plume entrainment
 
+    xqpyrl = xemp*hcombt
     chirad = max(min(fireptr%chirad,1.0_eb),0.0_eb)
     qheatl = xqpyrl
     qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
@@ -193,6 +194,7 @@ module fire_routines
     ! this is done by "re-passing" the actual fire size to fire_plume in the
     ! second pass
     ipass = 1
+    write(*,*) fireptr%name
     do while (ipass<=2)
 
         ! calculate the entrainment rate but constrain the actual amount
@@ -228,15 +230,6 @@ module fire_routines
     
     xntms(u,1:ns) = xmass(1:ns) + xntms(u,1:ns)
 
-    ! add the species flow entrained by the plume to normalize the yields to unity
-    xtemp = 0.0_eb
-    do lsp = 1, ns_mass
-        xtemp = xtemp + stmass(l,lsp)
-    end do
-    if (xtemp==0.0_eb) xtemp = 1.0_eb
-    xntms(u,1:ns) = xntms(u,1:ns) + xeme*stmass(l,1:ns)/xtemp
-    xntms(l,1:ns) = xntms(l,1:ns) - xeme*stmass(l,1:ns)/xtemp
-
     xqfr = xqpyrl*chirad
     xqfc = xqpyrl*(1.0_eb-chirad)
     xqlp = xqpyrl
@@ -265,7 +258,7 @@ module fire_routines
         xqup = xqpyrl
         xntms(u,1:ns) = xmass(1:ns) + xntms(u,1:ns)
     end if
-    
+    write(*,*) 'fuel = ',xntms(u,fuel)
     if (xntms(u,fuel)>0.0_eb) then
         uplmep = xntms(u,fuel)
         source_o2 = lower_o2_limit+0.02
@@ -285,6 +278,14 @@ module fire_routines
         xntms(u,fuel_h2o) = xmass(h2o)
         xntms(u,fuel_soot) = xmass(soot)
     end if 
+    ! add the species flow entrained by the plume to normalize the yields to unity
+    xtemp = 0.0_eb
+    do lsp = 1, ns_mass
+        xtemp = xtemp + stmass(l,lsp)
+    end do
+    if (xtemp==0.0_eb) xtemp = 1.0_eb
+    xntms(u,1:ns) = xntms(u,1:ns) + xeme*stmass(l,1:ns)/xtemp
+    xntms(l,1:ns) = xntms(l,1:ns) - xeme*stmass(l,1:ns)/xtemp
     return
     end subroutine do_fire
 
@@ -783,7 +784,6 @@ module fire_routines
         xmass(1:ns) = 0.0_eb
         
         source_o2 = room1ptr%species_fraction(l,o2)
-       ! xxmol_mass = 0.01201_eb ! we assume it's just complete combustion of methane
         hcombt = room2ptr%species_mass(u,fuel_Q)/room2ptr%species_mass(u,fuel)
         xxmol_mass = room2ptr%species_mass(u,fuel)/room2ptr%species_mass(u,fuel_moles)
         y_soot = room2ptr%species_mass(u,fuel_soot)/room2ptr%species_mass(u,fuel)

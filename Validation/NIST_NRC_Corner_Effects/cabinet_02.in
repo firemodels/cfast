@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'NIST NRC Cabinet Test 1' /
+&HEAD VERSION = 7300, TITLE = 'NIST NRC Cabinet Test 2' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 5400 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
@@ -197,13 +197,13 @@
       FACE = 'RIGHT' OFFSET = 2.6 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
       FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
       FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
       FACE = 'RIGHT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
       FACE = 'REAR' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
       FACE = 'LEFT' OFFSET = 0.1 /
  
 !! Fires 

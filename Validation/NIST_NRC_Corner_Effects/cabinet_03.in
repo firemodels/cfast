@@ -199,12 +199,6 @@
       FACE = 'FRONT' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
       FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
-      FACE = 'RIGHT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
-      FACE = 'REAR' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
-      FACE = 'LEFT' OFFSET = 0.1 /
  
 !! Fires 
 &FIRE ID = 'burner1'  COMP_ID = 'Cabinet', FIRE_ID = '50kWto400kW'  LOCATION = 0.46, 0.46 / 

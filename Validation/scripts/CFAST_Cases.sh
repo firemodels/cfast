@@ -188,6 +188,7 @@ $RUNCFAST -d NIST_NRC_Corner_Effects wall_400_kW.in
 $RUNCFAST -d NIST_NRC_Corner_Effects cabinet_01.in
 $RUNCFAST -d NIST_NRC_Corner_Effects cabinet_02.in
 $RUNCFAST -d NIST_NRC_Corner_Effects cabinet_03.in
+$RUNCFAST -d NIST_NRC_Corner_Effects cabinet_04.in
 
 $RUNCFAST -d NIST_Vent_Study Test_1.in
 $RUNCFAST -d NIST_Vent_Study Test_2.in

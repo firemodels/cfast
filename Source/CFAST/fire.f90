@@ -442,6 +442,8 @@ module fire_routines
         n_Cl = 0.0_eb
         objhct = 5.0e7_eb
         y_soot = 0.0_eb
+        y_soot_flaming = 0.0_eb
+        y_soot_smolder = 0.0_eb
         y_co = 0.0_eb
         y_trace = 0.0_eb
         return

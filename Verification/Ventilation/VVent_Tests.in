@@ -45,7 +45,7 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 3 All Vents' 'OUTSIDE'  TOP = 2.75, BOTTOM = 2.25, WIDTH = 0.5
-      CRITERION = 'TIME' T = 0, 0  F = 0, 0  FACE = 'FRONT' OFFSET = 2.25 /
+      CRITERION = 'TIME' T = 0, 0  F = 1, 1  FACE = 'FRONT' OFFSET = 2.25 /
  
 !! Ceiling and Floor Vents 
 &VENT TYPE = 'CEILING' ID = 'CeilFloorVent_1' COMP_IDS = 'OUTSIDE', 'Comp 3 Up' AREA = 2, SHAPE = 'ROUND'  OFFSETS = 2.5, 2.5 /

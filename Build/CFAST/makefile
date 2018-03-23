@@ -88,7 +88,7 @@ gnu_win_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_win_64 : FFLAGS = /O1 /Qsave /Qinit:zero /fp:strict /fpconstant /traceback /stand:f08  $(GITINFO)
+intel_win_64 : FFLAGS = /O2 /Qsave /Qinit:zero /fp:consistent /fpconstant /traceback /stand:f08  $(GITINFO)
 intel_win_64 : FCOMPL = ifort
 intel_win_64 : obj = cfast7_win_64
 intel_win_64 : setup_win $(objwin)

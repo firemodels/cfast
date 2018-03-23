@@ -1717,8 +1717,10 @@ module solve_routines
     factor(1:nrm1,l) = 0.0_eb
     smoke(1:nrm1,1:2) = 0.0_eb
 
-    isof = ibeg
-    do iprod = 1, ns_mass
+    !isof = ibeg
+    isof = ibeg + 2*nrm1
+    !do iprod = 1, ns_mass
+    do iprod = 2, ns_mass
         do iroom = 1, nrm1
             if (pdif(isof) >= 0.0_eb) then
                 factor(iroom,u) = factor(iroom,u) + pdif(isof)
@@ -1752,38 +1754,56 @@ module solve_routines
         end do
     end do 
 
-    do iroom = 1, nrm1
-        roomptr => roominfo(iroom)
-        if (factor(iroom,u)>0.0_eb.and.roomptr%mass(u)>0.0_eb) then
-            factor(iroom,u) = roomptr%mass(u)/factor(iroom,u)
-        else
-            factor(iroom,u) = 1.0_eb
-        end if
-        if (factor(iroom,l)>0.0_eb.and.roomptr%mass(l)>0.0_eb) then
-            factor(iroom,l) = roomptr%mass(l)/factor(iroom,l)
-        else
-            factor(iroom,l) = 1.0_eb
-        end if
-    end do
+    !do iroom = 1, nrm1
+    !    roomptr => roominfo(iroom)
+    !    if (factor(iroom,u)>0.0_eb.and.roomptr%mass(u)>0.0_eb) then
+    !        factor(iroom,u) = roomptr%mass(u)/factor(iroom,u)
+    !    else
+    !        factor(iroom,u) = 1.0_eb
+    !    end if
+    !    if (factor(iroom,l)>0.0_eb.and.roomptr%mass(l)>0.0_eb) then
+    !        factor(iroom,l) = roomptr%mass(l)/factor(iroom,l)
+    !    else
+    !        factor(iroom,l) = 1.0_eb
+    !    end if
+    !end do
 
     isof = ibeg
-    do iprod = 1, ns_mass
+    !do iprod = 1, ns_mass
         do iroom = 1, nrm1
-            pdif(isof) = pdif(isof)*factor(iroom,u)
-            if (iprod == soot .and. smoke(iroom,u)>0.0_eb) then
-                smoke(iroom,u) = pdif(isof)/smoke(iroom,u)
-            else if (iprod == soot) then
-                smoke(iroom,u) = 1.0_eb
-            end if
+            pdif(isof) = roominfo(iroom)%mass(u) - factor(iroom,u)
+            !pdif(isof) = pdif(isof)*factor(iroom,u)
+            !if (iprod == soot .and. smoke(iroom,u)>0.0_eb) then
+            !    smoke(iroom,u) = pdif(isof)/smoke(iroom,u)
+            !else if (iprod == soot) then
+            !    smoke(iroom,u) = 1.0_eb
+            !end if
             isof = isof + 1
-            pdif(isof) = pdif(isof)*factor(iroom,l)
-            if (iprod == soot .and. smoke(iroom,l) > 0.0_eb) then
-                smoke(iroom,l) = pdif(isof)/smoke(iroom,l)
-            else if (iprod == soot) then
-                smoke(iroom,l) = 1.0_eb
-            end if
+            pdif(isof) = roominfo(iroom)%mass(l) - factor(iroom,l)
+            !pdif(isof) = pdif(isof)*factor(iroom,l)
+            !if (iprod == soot .and. smoke(iroom,l) > 0.0_eb) then
+            !    smoke(iroom,l) = pdif(isof)/smoke(iroom,l)
+            !else if (iprod == soot) then
+            !    smoke(iroom,l) = 1.0_eb
+            !end if
             isof = isof + 1
         end do
+    !end do
+    
+    isof = ibeg + 2*(ns_mass - 1)*nrm1
+    do iroom = 1, nrm1
+        if (smoke(iroom,u) > 0.0_eb) then
+            smoke(iroom,u) = pdif(isof)/smoke(iroom,u)
+        else
+            smoke(iroom,u) = 1.0_eb
+        end if
+        isof = isof + 1
+        if (smoke(iroom,l) > 0.0_eb) then
+            smoke(iroom,l) = pdif(isof)/smoke(iroom,l)
+        else
+            smoke(iroom,l) = 1.0_eb
+        end if
+        isof = isof + 1
     end do
     
     do iprod = 1, 2
@@ -1795,15 +1815,15 @@ module solve_routines
         end do
     end do
     
-    isof = isof + 4*nrm1
-    do iprod = 1, 9 
-        do iroom = 1, nrm1
-            pdif(isof) = pdif(isof)*factor(iroom,u)
-            isof = isof + 1
-            pdif(isof) = pdif(isof)*factor(iroom,l)
-            isof = isof + 1
-        end do
-    end do 
+    !isof = isof + 4*nrm1
+    !do iprod = 1, 9 
+    !    do iroom = 1, nrm1
+    !        pdif(isof) = pdif(isof)*factor(iroom,u)
+    !        isof = isof + 1
+    !        pdif(isof) = pdif(isof)*factor(iroom,l)
+    !        isof = isof + 1
+    !    end do
+    !end do 
 
     return
 

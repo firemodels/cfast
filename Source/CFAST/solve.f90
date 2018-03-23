@@ -1711,7 +1711,6 @@ module solve_routines
 
     real(eb) :: factor(mxrooms,2), smoke(mxrooms,2)
     integer :: iroom, isof, iprod
-    type(room_type), pointer :: roomptr
 
     factor(1:nrm1,u) = 0.0_eb
     factor(1:nrm1,l) = 0.0_eb

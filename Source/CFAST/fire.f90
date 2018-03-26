@@ -94,7 +94,7 @@ module fire_routines
 
 ! --------------------------- do_fire -------------------------------------------
 
-    subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_soot_flaming, y_soot_smolder,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl, &
+    subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_soot_flaming, y_soot_smolder,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,&
        mol_mass,stmass,xfx,xfy,xfz,object_area,xeme,xems,xqpyrl,xntms,xqfc,xqfr,xqlp,xqup)
 
     !     routine: do_fire

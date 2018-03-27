@@ -383,17 +383,18 @@ module spreadsheet_header_routines
     !	This is the header information for the flow spreadsheet and is called once
     !	The logic is identical to output_spreadsheet_flow so the output should be parallel
 
-    integer, parameter :: maxhead = mxhvents+2*mxvvents+2*mxmvents
-    character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(6), LabelsShort(6), LabelUnits(6)
+    integer, parameter :: maxhead = 10*mxhvents+2*mxvvents+2*mxmvents
+    character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(10), LabelsShort(7), LabelUnits(7)
     integer :: position, i, ii, ifrom, ito, ih
     type(vent_type), pointer :: ventptr
 
     data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
-       'MVENT Trace Species Filtered' /
+       'MVENT Trace Species Filtered', 'HVENT Total Inflow Upper', 'HVENT Total Outflow Upper', &
+       'HVENT Total Inflow Lower', 'HVENT Total Outflow Lower'/
 
-    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_' /
+    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_', 'HT_' /
 
-    data LabelUnits / 's', 3*'kg/s', 2*'kg' /
+    data LabelUnits / 's', 3*'kg/s', 2*'kg', 'kg/s'/
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
@@ -428,6 +429,66 @@ module spreadsheet_header_routines
         write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ',trim(cito),' to ',trim(cifrom)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(2)
+        
+        if (validate) then
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cifrom),'_u_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(7)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' to ',trim(cifrom),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cifrom),'_u_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(8)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' from ',trim(cifrom),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cifrom),'_l_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(9)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' to ',trim(cifrom),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cifrom),'_l_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(10)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' from ',trim(cifrom),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cito),'_u_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(7)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' to ',trim(cito),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cito),'_u_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(8)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' from ',trim(cito),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cito),'_l_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(9)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' to ',trim(cito),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(7)),trim(cito),'_l_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(10)
+            write(ctemp,'(5a)') 'Vent ',trim(cvent),' from ',trim(cito),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(2)
+        end if
+        
     end do
 
     ! Natural flow through horizontal vents (vertical flow)

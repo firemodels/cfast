@@ -305,6 +305,8 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe cabinet_01.in -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe cabinet_02.in -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe cabinet_03.in -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe cabinet_04.in -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe cabinet_05.in -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe cabinet_06.in -V
 cd ..\
 if %1==NIST_NRC_Corner_Effects goto end
 :NIST_Vent_Study

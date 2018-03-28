@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'NIST NRC Cabinet Test 2' /
+&HEAD VERSION = 7300, TITLE = 'NIST NRC Cabinet Test 1' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 5400 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
@@ -15,7 +15,7 @@
 &COMP ID = 'Compartment'
       DEPTH = 7 HEIGHT = 3.8 WIDTH = 11 CEILING_MATL_ID = 'Gypsum' WALL_MATL_ID = 'Gypsum' FLOOR_MATL_ID = 'Gypsum'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
-&COMP ID = 'Cabinet'
+&COMP ID = 'Large Cabinet'
       DEPTH = 0.92 HEIGHT = 2.14 WIDTH = 0.92 CEILING_MATL_ID = 'Steel' WALL_MATL_ID = 'Steel' FLOOR_MATL_ID = 'Steel'
       ORIGIN = 4.3, 1.8, 0 GRID = 50, 50, 50 /
  
@@ -43,7 +43,7 @@
 &DEVC ID = 'Pl-Low-17' COMP_ID = 'Compartment' LOCATION = 1.17, 1.17, 2.13 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TC-WT-01' COMP_ID = 'Compartment' LOCATION = 3.6, 3.6, 3.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TC-ET-01' COMP_ID = 'Compartment' LOCATION = 7.4, 3.6, 3.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'TC-Cab' COMP_ID = 'Cabinet' LOCATION = 0.46, 0.92, 1.05 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'TC-Cab' COMP_ID = 'Large Cabinet' LOCATION = 0.46, 0.92, 1.05 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'PT-1' COMP_ID = 'Compartment' LOCATION = 4.65, 1.2, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 1, 0 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'PT-2' COMP_ID = 'Compartment' LOCATION = 4.65, 1.2, 0.75 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 1, 0 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'PT-3' COMP_ID = 'Compartment' LOCATION = 3.6, 2.25, 1.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
@@ -193,21 +193,29 @@
 &DEVC ID = 'STC-6' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 0.6 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
+&VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
       FACE = 'RIGHT' OFFSET = 2.6 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Bottom Vent' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
       FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Grill Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+      FACE = 'FRONT' OFFSET = 0.155 /
+&VENT TYPE = 'WALL' ID = 'Grill Right' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+      FACE = 'RIGHT' OFFSET = 0.155 /
+&VENT TYPE = 'WALL' ID = 'Gilll Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+      FACE = 'REAR' OFFSET = 0.155 /
+&VENT TYPE = 'WALL' ID = 'Grill Left' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+      FACE = 'LEFT' OFFSET = 0.155 /
+&VENT TYPE = 'WALL' ID = 'Top Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
       FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Top Right' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
       FACE = 'RIGHT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Top Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
       FACE = 'REAR' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 1.8, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Top Left' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
       FACE = 'LEFT' OFFSET = 0.1 /
  
 !! Fires 
-&FIRE ID = 'burner1'  COMP_ID = 'Cabinet', FIRE_ID = '50kWto400kW'  LOCATION = 0.46, 0.46 / 
+&FIRE ID = 'burner1'  COMP_ID = 'Large Cabinet', FIRE_ID = '50kWto400kW'  LOCATION = 0.46, 0.46 / 
 &CHEM ID = '50kWto400kW' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.25 / 
 &TABL ID = '50kWto400kW' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = '50kWto400kW', DATA = 0, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /

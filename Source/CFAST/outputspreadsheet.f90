@@ -96,7 +96,7 @@ module spreadsheet_routines
                 fire_ignition = 0
             end if
             call ssaddtolist (position,fire_ignition,outarray)
-            call ssaddtolist (position,fireptr%mdot_plume,outarray)
+            call ssaddtolist (position,fireptr%mdot_entrained,outarray)
             call ssaddtolist (position,fireptr%mdot_pyrolysis,outarray)
             call ssaddtolist (position,fireptr%qdot_actual,outarray)
             call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
@@ -164,22 +164,24 @@ module spreadsheet_routines
     ! next the horizontal flow through vertical vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
-
-        call ssaddtolist(position,ventptr%h_mflow(2,1,1),outarray)
-        call ssaddtolist(position,ventptr%h_mflow(2,1,2),outarray)
-        call ssaddtolist(position,ventptr%h_mflow(2,2,1),outarray)
-        call ssaddtolist(position,ventptr%h_mflow(2,2,2),outarray)
-        call ssaddtolist(position,ventptr%h_mflow(1,1,1),outarray)
-        call ssaddtolist(position,ventptr%h_mflow(1,1,2),outarray)
-        call ssaddtolist(position,ventptr%h_mflow(1,2,1),outarray)
-        call ssaddtolist(position,ventptr%h_mflow(1,2,2),outarray)
-        
         ifrom = ventptr%room1
         ito = ventptr%room2
         netflow = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
         call ssaddtolist (position,netflow,outarray)
         netflow = ventptr%h_mflow(1,1,1) - ventptr%h_mflow(1,1,2) + ventptr%h_mflow(1,2,1) - ventptr%h_mflow(1,2,2)
         call ssaddtolist (position,netflow,outarray)
+        
+        if (validate) then
+            call ssaddtolist(position,ventptr%h_mflow(1,1,1),outarray)
+            call ssaddtolist(position,ventptr%h_mflow(1,1,2),outarray)
+            call ssaddtolist(position,ventptr%h_mflow(1,2,1),outarray)
+            call ssaddtolist(position,ventptr%h_mflow(1,2,2),outarray)
+            call ssaddtolist(position,ventptr%h_mflow(2,1,1),outarray)
+            call ssaddtolist(position,ventptr%h_mflow(2,1,2),outarray)
+            call ssaddtolist(position,ventptr%h_mflow(2,2,1),outarray)
+            call ssaddtolist(position,ventptr%h_mflow(2,2,2),outarray)
+        end if 
+        
     end do
 
     ! next natural flow through horizontal vents (vertical flow)

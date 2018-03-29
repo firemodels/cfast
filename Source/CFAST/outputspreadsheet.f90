@@ -146,7 +146,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
-    integer :: position, i, ifrom, ito
+    integer :: position, i, ifrom, ito, j
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
     save firstc
@@ -209,6 +209,12 @@ module spreadsheet_routines
         sumout = flow(2) + flow(4)
         netflow = sumin - sumout
         call ssaddtolist (position,netflow,outarray)
+        
+        if(validate) then
+            do j = 1, 8
+                call ssaddtolist(position, flow(j), outarray)
+            end do
+        end if 
     end do
 
     ! finally, mechanical ventilation

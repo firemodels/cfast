@@ -677,9 +677,12 @@ module fire_routines
     type(room_type), pointer :: roomptr, room1ptr, room2ptr
 
     ! initialize summations and local data
+
+    flows_doorjets(1:nr,1:ns+2,l) = 0.0_eb
+    flows_doorjets(1:nr,1:ns+2,u) = 0.0_eb
+    roominfo(1:nr)%qdot_doorjet = 0.0_eb
     djetflg = .false.
     if (option(fdfire)/=on.or.n_fires<=0) return
-
 
     ! if no vents have a door jet fire then exit
     do i = 1, n_hvents
@@ -707,11 +710,7 @@ module fire_routines
             end if
         end if
     end do
-
     if (.not.djetflg)return
-    flows_doorjets(1:nr,1:ns+2,l) = 0.0_eb
-    flows_doorjets(1:nr,1:ns+2,u) = 0.0_eb
-    roominfo(1:nr)%qdot_doorjet = 0.0_eb
 
     ! calculate the heat for each of the door jet fires
 

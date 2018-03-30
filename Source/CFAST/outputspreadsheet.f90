@@ -145,7 +145,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow
+    real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow, trace, tracefiltered
     integer :: position, i, ifrom, ito, j
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
@@ -228,15 +228,25 @@ module spreadsheet_routines
             if (ventptr%mflow(2,u)<0.0_eb) flow(6) = -ventptr%mflow(2,u)
             if (ventptr%mflow(2,l)>=0.0_eb) flow(7) = ventptr%mflow(2,l)
             if (ventptr%mflow(2,l)<0.0_eb) flow(8) = -ventptr%mflow(2,l)
+            if (ventptr%mflow(1,u)>=0.0_eb) flow(1) = ventptr%mflow(1,u)
+            if (ventptr%mflow(1,u)<0.0_eb) flow(2) = -ventptr%mflow(1,u)
+            if (ventptr%mflow(1,l)>=0.0_eb) flow(3) = ventptr%mflow(1,l)
+            if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
 
             sumin = flow(5) + flow(7)
             sumout = flow(6) + flow(8)
             netflow = sumin - sumout
             call ssaddtolist (position,netflow,outarray)
-            flow(5) =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
-            flow(6) =abs(ventptr%total_trace_filtered(u))+abs(ventptr%total_trace_filtered(l))
-            call ssaddtolist (position, flow(5), outarray)
-            call ssaddtolist (position, flow(6), outarray)
+            trace =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
+            tracefiltered =abs(ventptr%total_trace_filtered(u))+abs(ventptr%total_trace_filtered(l))
+            call ssaddtolist (position, trace, outarray)
+            call ssaddtolist (position, tracefiltered, outarray)
+        
+            if(validate) then
+                do j = 1, 8
+                    call ssaddtolist(position, flow(j), outarray)
+                end do
+            end if 
         end do
     end if
 

@@ -512,7 +512,7 @@ module spreadsheet_header_routines
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(3)
         position = position + 1
-        write (ctemp,'(5a)') trim(labelsshort(3)),trim(cito),'_',trim(cifrom)
+        write (ctemp,'(7a)') trim(labelsshort(3)),trim(cito),'_',trim(cifrom),'_',trim(cvent)
         headertext(1,position) = ctemp
         headertext(2,position) = labels(3)
         write (ctemp,'(3a,1x,3a)') 'Vent ',trim(cvent),' from ',trim(cito),' to ',trim(cifrom)
@@ -593,16 +593,6 @@ module spreadsheet_header_routines
             do ih = 1,3
                 position = position + 1
                 headertext(1,position) = trim(LabelsShort(ih+3)) // trim(cifrom) // '_' // trim(cito) // '_' // trim(cvent)
-                !if (ciFrom=='Outside') then
-                !    headertext(1,position) = trim(LabelsShort(ih+3)) // 'F' // trim(cvent) // '_' // trim(ciFrom) &
-                !        // '_' // 'C' // trim(ciTo)
-                !else if (cito=='Outside') then
-                !    headertext(1,position) = trim(LabelsShort(ih+3)) // 'F' // trim(cvent) // '_'  // 'C' // trim(ciFrom) &
-                !        // '_' // trim(ciTo)
-                !else
-                !    headertext(1,position) = trim(LabelsShort(ih+3)) // 'F' // trim(cvent) // '_'  // 'C' // trim(ciFrom) &
-                !        // '_' //  'C' // trim(ciTo)
-                !end if
                 headertext(2,position) = Labels(ih+3)
                 headertext(3,position) = 'Fan ' // trim(cvent) // ' from ' // trim(ciFrom) // ' to ' // trim(ciTo)
                 headertext(4,position) = LabelUnits(ih+3)

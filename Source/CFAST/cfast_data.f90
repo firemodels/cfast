@@ -107,7 +107,7 @@ module option_data
     implicit none
     save
 
-    integer, parameter :: mxopt = 16
+    integer, parameter :: mxopt = 17
 
     integer, parameter :: off = 0
     integer, parameter :: on = 1
@@ -128,6 +128,7 @@ module option_data
     integer, parameter :: fpsteady = 14
     integer, parameter :: fpdassl = 15
     integer, parameter :: foxygen = 16
+    integer, parameter :: fresidprn = 17
 
     integer, dimension(mxopt) :: option = &
         !   fire,       hflow,      entrain,    vflow,      cjet
@@ -140,8 +141,8 @@ module option_data
         !   off means use constant
         !   value
             on,                   on,          on,          off,                           off,  &
-        !   oxygen dassl solve
-            off  /)
+        !   oxygen dassl solve    Residual print
+            off,                  on  /)
 
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
 

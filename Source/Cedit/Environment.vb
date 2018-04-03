@@ -55,6 +55,7 @@ Public Class Environment
     Private aDIAGsteadyint As Integer
     Private aDIAGdasslprn As Integer
     Private aDIAGoxygen As Integer
+    Private aDIAGresiddbprn As Integer
 
     Public Sub New()
         aTitle = "CFAST Simulation"
@@ -649,6 +650,17 @@ Public Class Environment
         Set(value As Integer)
             If aDIAGoxygen <> value Then
                 aDIAGoxygen = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property DIAGresiddbprn As Integer
+        Get
+            Return aDIAGresiddbprn
+        End Get
+        Set(value As Integer)
+            If aDIAGresiddbprn <> value Then
+                aDIAGresiddbprn = value
                 aChanged = True
             End If
         End Set

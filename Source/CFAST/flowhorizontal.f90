@@ -639,6 +639,7 @@ module hflow_routines
         temp_slab = tslab(nr)
         temp_upper = tu(ito)
         temp_lower = tl(ito)
+        if (temp_lower > temp_upper) temp_lower = temp_upper
 
         ! transition smoothly from all upper to all lower over the range Tu+dT to Tl-dt
         fupper = tanhsmooth (temp_slab, temp_upper+deltatemp_min, temp_lower-deltatemp_min, 1._eb, 0._eb)

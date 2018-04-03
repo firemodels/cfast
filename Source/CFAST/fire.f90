@@ -133,7 +133,7 @@ module fire_routines
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
     real(eb) :: chirad, xqpyrl, source_o2, xtemp, uplmep, uplmes, uplmee, height
-    real(eb) :: firex, firey
+    real(eb) :: firex, firey, factor
     integer :: ipass, lsp
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -200,7 +200,11 @@ module fire_routines
         ! of air entrained to that required to produce stable stratification
         call fire_plume(object_area, qheatl, qheatl_c, xxfirel, interior_ambient_temperature, xemp, xems, xeme, &
            min(xfx,xbr-xfx), min(xfy,xdr-xfy))
-
+        
+        if (roomptr%mass(l)-xeme <= roomptr%vmin*roomptr%rho(l)) then
+            xeme = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
+        end if 
+        
         ! check for an upper only layer fire
         if (xxfirel<=0.0_eb) go to 90
         xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))

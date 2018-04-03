@@ -1932,6 +1932,7 @@ Module IO
         Dim ppco, pph2o, gastemp As Single
         Dim radsolv As String
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
+        Dim residdbprn As Integer
         Dim dummy As String
 
         For i = 1 To NMList.TotNMList
@@ -1959,6 +1960,7 @@ Module IO
                 steadyint = Environment.DIAGoff
                 dasslprn = Environment.DIAGoff
                 oxygen = Environment.DIAGoff
+                residdbprn = Environment.DIAGoff
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "RADSOLVER" Then
                         dummy = NMList.ForNMListVarGetStr(i, j, 1)
@@ -2034,6 +2036,8 @@ Module IO
                         ReadINIInput(dasslprn, "DASSL_DEBUG_PRINT", NMList.ForNMListVarGetStr(i, j, 1))
                     ElseIf NMList.ForNMListGetVar(i, j) = "OXYGEN_TRACKING" Then
                         ReadINIInput(oxygen, "OXYGEN_TRACKING", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "RESIDUAL_DEBUG_PRINT" Then
+                        ReadINIInput(residdbprn, "RESIDUAL_DEBUG_PRINT", NMList.ForNMListVarGetStr(i, j, 1))
                     Else
                         myErrors.Add("In DIAG namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -2059,6 +2063,7 @@ Module IO
                 someEnvironment.DIAGsteadyint = steadyint
                 someEnvironment.DIAGdasslprn = dasslprn
                 someEnvironment.DIAGoxygen = oxygen
+                someEnvironment.DIAGresiddbprn = residdbprn
             End If
         Next
         someEnvironment.Changed = False
@@ -3579,6 +3584,9 @@ Module IO
         End If
         If myEnvironment.DIAGoxygen <> Environment.DIAGoff Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "OXYGEN_TRACKING = 'ON' ")
+        End If
+        If myEnvironment.DIAGresiddbprn <> Environment.DIAGoff Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RESIDUAL_DEBUG_PRINT = 'ON' ")
         End If
         If wrtSlash Then
             ln = "/ "

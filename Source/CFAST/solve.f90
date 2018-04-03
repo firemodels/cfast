@@ -461,7 +461,7 @@ module solve_routines
     !Check to see if diagnostic files .resid and .jac exist. If they do exist
     !set flags and open file, if needed, to print diagnositic information.
     inquire (file=residfile, exist=exists)
-    if (exists) then
+    if (exists .or. option(fresidprn) == on) then
         residprn = .true.
         if (residfirst) then
             residfirst = .false.

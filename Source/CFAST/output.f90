@@ -960,7 +960,7 @@ module output_routines
      5020 format (//,'Name: ',A,'   Referenced as object #',i3,1x,a6,' fire',//,'Compartment    Fire Type    ',&
           '   Time to Flaming      Position (x,y,z)     Relative    Lower O2    Radiative',/ &
           ,73x,'Humidity    Limit       Fraction',/110('-'))
-5030 format (a14,1x,a13,5x,f7.1,8x,3(f7.2),2x,f7.1,6x,f7.2,5x,f7.2//)
+5030 format (a14,1x,a13,3x,f9.1,8x,3(f7.2),2x,f7.1,6x,f7.2,5x,f7.2//)
 5031 format ('Chemical formula of the fuel',/,'Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine',/,50('-'),/,5(f7.3,3x),//)
 5040 format ('  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS')
 5060 format (F7.0,3X,4(1PG10.2))

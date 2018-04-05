@@ -156,13 +156,13 @@ module debug_routines
     do i = 1, nrm1
         do j = 1, 2
             do k = 1, 9
-                !call ssaddtolist (position,flows_total(i,k,j),outarray)
-                !call ssaddtolist (position,flows_hvents(i,k,j),outarray)
+                !call ssaddtolist (position,flows_total(i,k+2,j),outarray)
+                !call ssaddtolist (position,flows_hvents(i,k+2,j),outarray)
                 call ssaddtolist (position,flows_fires(i,k+2,j),outarray)
-                !call ssaddtolist (position,flows_vvents(i,k,j),outarray)
-                !call ssaddtolist (position,flows_mvents(i,k,j),outarray)
-                !call ssaddtolist (position,filtered(i,k,j),outarray)
-                !call ssaddtolist (position,flows_doorjets(i,k,j),outarray)
+                !call ssaddtolist (position,flows_vvents(i,k+2,j),outarray)
+                !call ssaddtolist (position,flows_mvents(i,k+2,j),outarray)
+                !call ssaddtolist (position,filtered(i,k+2,j),outarray)
+                !call ssaddtolist (position,flows_doorjets(i,k+2,j),outarray)
             end do
             !call ssaddtolist (position,flows_convection(i,j),outarray)
             !call ssaddtolist (position,flows_radiation(i,j),outarray)

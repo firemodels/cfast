@@ -10,9 +10,9 @@ With that said, we obviously do not want to spend all day, everyday fixing error
 
 1. Your code should have verification (unit) tests.  [Here](https://github.com/firemodels/fds/wiki/Verification-Case-Setup-Example) is a guide to setting up a verification test.
 
-2. Your code should have documentation. You can find information on compiling the maunals [here](https://github.com/firemodels/fds/wiki/FDS-Verification-Process).  Note that once a feature is documented users will expect it to be ready for use in the next release.  Features that are in beta testing should be documented as such.  In some special cases we may opt to maintain a separate document during development (for example, this is being done with Complex Geometry), but it is still important that other developers have access to the documentation.
+2. Your code should have documentation. You can find information on compiling the maunals [here](hhttps://github.com/firemodels/cfast/wiki/Compiling-the-CFAST-Validation-Guide.  Note that once a feature is documented users will expect it to be ready for use in the next release.  Features that are in beta testing should be documented as such.  In some special cases we may opt to maintain a separate document during development (for example, this is being done with Complex Geometry), but it is still important that other developers have access to the documentation.
 
-3. Your code should compile without warnings in debug mode with Intel (if possible) and GNU compilers. You can find information on compiling FDS [here](https://github.com/firemodels/cfast/wiki/Compiling-CFAST).
+3. Your code should compile without warnings in debug mode with Intel (if possible) and GNU compilers. You can find information on compiling CFAST [here](https://github.com/firemodels/cfast/wiki/Compiling-CFAST).
 
 4. Your PR should not contain merge commits. The main reason for this rule is that often what we see is that a PR with lots of merges will have mistakes in other areas. If we cannot have a reasonable level of confidence that a binary file has not been accidentally committed, then we cannot merge the PR.  This means it is important to make your PRs reasonably small (just a few commits) and organized.
 

@@ -133,7 +133,7 @@ module fire_routines
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
     real(eb) :: chirad, xqpyrl, source_o2, xtemp, uplmep, uplmes, uplmee, height
-    real(eb) :: firex, firey, factor
+    real(eb) :: firex, firey
     integer :: ipass, lsp
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr

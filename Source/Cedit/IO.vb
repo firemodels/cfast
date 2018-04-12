@@ -1932,7 +1932,7 @@ Module IO
         Dim ppco, pph2o, gastemp As Single
         Dim radsolv As String
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
-        Dim residdbprn As Integer
+        Dim residdbprn, layermixing As Integer
         Dim dummy As String
 
         For i = 1 To NMList.TotNMList
@@ -1961,6 +1961,7 @@ Module IO
                 dasslprn = Environment.DIAGoff
                 oxygen = Environment.DIAGoff
                 residdbprn = Environment.DIAGoff
+                layermixing = Environment.DIAGon
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "RADSOLVER" Then
                         dummy = NMList.ForNMListVarGetStr(i, j, 1)
@@ -2038,6 +2039,8 @@ Module IO
                         ReadINIInput(oxygen, "OXYGEN_TRACKING", NMList.ForNMListVarGetStr(i, j, 1))
                     ElseIf NMList.ForNMListGetVar(i, j) = "RESIDUAL_DEBUG_PRINT" Then
                         ReadINIInput(residdbprn, "RESIDUAL_DEBUG_PRINT", NMList.ForNMListVarGetStr(i, j, 1))
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LAYER_MIXING_SUB_MODEL" Then
+                        ReadINIInput(layermixing, "LAYER_MIXING_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
                     Else
                         myErrors.Add("In DIAG namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -2064,6 +2067,7 @@ Module IO
                 someEnvironment.DIAGdasslprn = dasslprn
                 someEnvironment.DIAGoxygen = oxygen
                 someEnvironment.DIAGresiddbprn = residdbprn
+                someEnvironment.DIAGlayermixing = layermixing
             End If
         Next
         someEnvironment.Changed = False
@@ -3587,6 +3591,9 @@ Module IO
         End If
         If myEnvironment.DIAGresiddbprn <> Environment.DIAGoff Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RESIDUAL_DEBUG_PRINT = 'ON' ")
+        End If
+        If myEnvironment.DIAGlayermixing <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "LAYER_MIXING_SUB_MODEL = 'OFF' ")
         End If
         If wrtSlash Then
             ln = "/ "

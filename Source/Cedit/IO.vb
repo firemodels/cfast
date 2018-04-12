@@ -3455,7 +3455,7 @@ Module IO
             For i = 0 To myVisuals.Count - 1
                 aVisual = myVisuals.Item(i)
                 If aVisual.Type = Visual.IsoSurface Then
-                    ln = "&ISOF VALUE = " + Math.Round((aVisual.Value - 273.15), 2) + " /"
+                    ln = "&ISOF VALUE = " + Math.Round((aVisual.Value - 273.15), 2).ToString + " /"
                     PrintLine(IO, ln)
                 Else
                     ln = "&SLCF"

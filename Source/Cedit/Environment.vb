@@ -56,6 +56,7 @@ Public Class Environment
     Private aDIAGdasslprn As Integer
     Private aDIAGoxygen As Integer
     Private aDIAGresiddbprn As Integer
+    Private aDIAGlayermixing As Integer
 
     Public Sub New()
         aTitle = "CFAST Simulation"
@@ -101,6 +102,8 @@ Public Class Environment
         aDIAGsteadyint = DIAGoff
         aDIAGdasslprn = DIAGoff
         aDIAGoxygen = DIAGoff
+        aDIAGresiddbprn = DIAGoff
+        aDIAGlayermixing = DIAGon
 
     End Sub
     Friend Property Title() As String
@@ -661,6 +664,17 @@ Public Class Environment
         Set(value As Integer)
             If aDIAGresiddbprn <> value Then
                 aDIAGresiddbprn = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property DIAGlayermixing As Integer
+        Get
+            Return aDIAGlayermixing
+        End Get
+        Set(value As Integer)
+            If aDIAGlayermixing <> value Then
+                aDIAGlayermixing = value
                 aChanged = True
             End If
         End Set

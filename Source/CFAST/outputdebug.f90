@@ -91,7 +91,7 @@ module debug_routines
 ! --------------------------- output_spreadsheet_residuals -------------------------------------------
 
     subroutine output_spreadsheet_residuals (time, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
-        filtered, flows_doorjets, flows_convection, flows_radiation)
+        filtered, flows_doorjets, flows_convection_layers, flows_convection, flows_radiation)
 
     real(eb), intent(in) :: time
     ! data structure for total flows and fluxes
@@ -113,8 +113,10 @@ module debug_routines
 
     ! data structures for door jet fires
     real(eb), intent(in) :: flows_doorjets(mxrooms,ns+2,2)
+    
+    real(eb), intent(in) :: flows_convection_layers(mxrooms,ns+2,2)
 
-    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*mxrooms + 4*mxrooms
+    integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms
     real(eb) :: outarray(maxhead)
     logical :: firstc
     integer :: position, i, j, k
@@ -147,6 +149,7 @@ module debug_routines
                 call ssaddtolist (position,flows_mvents(i,k,j),outarray)
                 call ssaddtolist (position,filtered(i,k,j),outarray)
                 call ssaddtolist (position,flows_doorjets(i,k,j),outarray)
+                call ssaddtolist (position,flows_convection_layers(i,k,j),outarray)
             end do
             call ssaddtolist (position,flows_convection(i,j),outarray)
             call ssaddtolist (position,flows_radiation(i,j),outarray)
@@ -163,6 +166,7 @@ module debug_routines
                 !call ssaddtolist (position,flows_mvents(i,k+2,j),outarray)
                 !call ssaddtolist (position,filtered(i,k+2,j),outarray)
                 !call ssaddtolist (position,flows_doorjets(i,k+2,j),outarray)
+                !call ssaddtolist (position,flows_convection_layers(i,k+2,j),outarray)
             end do
             !call ssaddtolist (position,flows_convection(i,j),outarray)
             !call ssaddtolist (position,flows_radiation(i,j),outarray)

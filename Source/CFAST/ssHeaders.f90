@@ -853,15 +853,15 @@ module spreadsheet_header_routines
 
     ! This is the header information for the calculate_residuals spreadsheet output
 
-    integer, parameter :: maxhead = 1+2*(7*(ns+2)+3)*mxrooms + 4*mxrooms
-    character(35) :: headertext(3,maxhead), Labels(14), LabelUnits(8), Layers(2), Species(9)
+    integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms
+    character(35) :: headertext(3,maxhead), Labels(15), LabelUnits(8), Layers(2), Species(9)
     integer position, i, j, k, l
     type(room_type), pointer :: roomptr
 
     data Labels / 'Time','Delta P', 'Vol Upper', 'Temp UP', 'Temp Low', 'Total Flow', 'Natural Vent Flow', 'Fire Flow',&
-       'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', &
+       'Vertical Flow', 'Mechanical Flow', 'Filtered Mass', 'Door Jet Fire Flow', 'Mixing Between Layers', &
     'Convective Flow', 'Radiative Flow'/
-    data LabelUnits / 'sec', 'Pa', 'm^3', 'C', 'C', 'kg/s','w', 'kg/s' /
+    data LabelUnits / 'sec', 'Pa', 'm^3', 'K', 'K', 'kg/s','w', 'kg/s' /
     data Layers /'upper', 'lower'/
     data Species /'N2','O2','CO2','CO','HCN','HCL','FUEL','H2O','Soot'/
 
@@ -893,7 +893,7 @@ module spreadsheet_header_routines
         headertext(3,position) = LabelUnits(5)
         do i = 1, 2
             do k = 1, 2
-                do l = 2, 8
+                do l = 2, 9
                     position = position + 1
                     headertext(1,position) = trim(Labels(l+4))//trim(Layers(i))
                     headertext(2,position) = roomptr%name
@@ -901,11 +901,11 @@ module spreadsheet_header_routines
                 end do
             end do
             position = position + 1
-            headertext(1,position) = trim(Labels(13))//trim(Layers(i))
+            headertext(1,position) = trim(Labels(14))//trim(Layers(i))
             headertext(2,position) = roomptr%name
             headertext(3,position) = LabelUnits(7)
             position = position + 1
-            headertext(1,position) = trim(Labels(14))//trim(Layers(i))
+            headertext(1,position) = trim(Labels(15))//trim(Layers(i))
             headertext(2,position) = roomptr%name
             headertext(3,position) = LabelUnits(7)
         end do

@@ -18,6 +18,7 @@ module solve_routines
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
     use utility_routines, only: mat2mult, interp, shellsort, cptime, xerror, funit
     use vflow_routines, only: vertical_flow
+    use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections
 
     use cenviro
     use ramp_data
@@ -126,87 +127,6 @@ module solve_routines
     end do
     return
     end subroutine initial_solution
-
-! --------------------------- room_connections -------------------------------------------
-
-    subroutine room_connections (tsec)
-
-    ! routine: room_connections
-    ! purpose: this routine determines whether flow from each room can reach the outside (perhaps through intermediate rooms)
-    !           via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an
-    !           initial pressure solution.
-    ! arguments: tsec: current simulation time
-
-    real(eb), intent(in) :: tsec
-
-    real(eb) :: fraction, height, width, avent
-    integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
-    integer, parameter :: toprm = 1, botrm = 2
-    character(64) :: rampid
-
-    type(vent_type), pointer :: ventptr
-    type(room_type), pointer :: roomptr
-
-    ! initially assume that no rooms are connected
-    roomc(1:nr,1:nr) = 0
-    do i = 1, nr
-        roomc(i,i) = 1
-    end do
-
-    ! check horizontal vent flow
-    do i = 1, n_hvents
-        ventptr=>hventinfo(i)
-
-        iroom1 = ventptr%room1
-        iroom2 = ventptr%room2
-        ik = ventptr%counter
-        im = min(iroom1,iroom2)
-        ix = max(iroom1,iroom2)
-        rampid = ventptr%ramp_id
-        call get_vent_opening (rampid,'H',im,ix,ik,i,tsec,fraction)
-        height = ventptr%soffit - ventptr%sill
-        width = ventptr%width
-        avent = fraction*height*width
-        if (avent/=0.0_eb) then
-            roomc(iroom1,iroom2) = 1
-            roomc(iroom2,iroom1) = 1
-        end if
-    end do
-
-    ! check vertical vent flow
-    do i = 1, n_vvents
-        ventptr => vventinfo(i)
-        if (ventptr%current_area/=0.0_eb) then
-            roomc(iroom1,iroom2) = 1
-            roomc(iroom2,iroom1) = 1
-        end if
-    end do
-
-    ! construct roomc**matiter where matiter > nr
-    ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection
-    !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.
-    !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.
-    !        since there are only nr rooms, roomc**nr tells us whether any given room is connected to any
-    !        other room in nr steps. the entries roomc**nr(i,nr) then indicates whether a room is connected
-    !        to the outside (perhaps through several other intermediate rooms).
-    matiter = 1
-    do i = 1, nr
-        if (nr<=matiter) exit
-        call mat2mult(roomc,tempmat,mxrooms,nr)
-        matiter = matiter*2
-    end do
-
-    do i = 1, nrm1
-        roomptr => roominfo(i)
-        if (roomc(i,nr)/=0) then
-            roomptr%is_connection = .true.
-        else
-            roomptr%is_connection = .false.
-        end if
-    end do
-
-    return
-    end subroutine room_connections
 
 ! --------------------------- gres -------------------------------------------
 
@@ -954,6 +874,9 @@ module solve_routines
     ! data structures for convection, radiation, and ceiling jets
     real(eb) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
     real(eb) :: flows_radiation(mxrooms,2), fluxes_radiation(mxrooms,nwal)
+    
+    ! data structures for heat and mass transfer between layers
+    real(eb) :: flows_layer_mixing(mxrooms, ns+2, 2)
 
     logical :: djetflg
     integer :: nprod, i, iroom, iprod, ip, iwall, nprodsv, iprodu, iprodl
@@ -1002,6 +925,8 @@ module solve_routines
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
     call convection (flows_convection,fluxes_convection)
     call radiation (flows_radiation,fluxes_radiation)
+    
+    call layer_mixing(flows_layer_mixing)
 
     ! sum flow for inside rooms
     do iroom = 1, nrm1
@@ -1021,6 +946,11 @@ module solve_routines
             ip = i_speciesmap(iprod)
             flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_mvents(iroom,ip,l) - filtered(iroom,iprod,l)
             flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_mvents(iroom,ip,u) - filtered(iroom,iprod,u)
+        end do
+        do iprod = 1, nprod + 2
+            ip = i_speciesmap(iprod)
+            flows_total(iroom,iprod,l) = flows_total(iroom,iprod,l) + flows_layer_mixing(iroom,iprod,l)
+            flows_total(iroom,iprod,u) = flows_total(iroom,iprod,u) + flows_layer_mixing(iroom,iprod,u)
         end do
         if (djetflg) then
             do iprod = 1, nprod + 2
@@ -1049,7 +979,7 @@ module solve_routines
     if (update==all) then
         if (residprn) then
             call output_spreadsheet_residuals (tsec, flows_total, flows_hvents, flows_fires, flows_vvents, flows_mvents, &
-                filtered, flows_doorjets, flows_convection, flows_radiation)
+                filtered, flows_doorjets, flows_layer_mixing, flows_convection, flows_radiation)
         end if
     end if
     ! sum flux for inside rooms
@@ -1694,138 +1624,5 @@ module solve_routines
     return
 
     end subroutine update_data
-
-! --------------------------- synchronize_species_mass -------------------------------------------
-
-    subroutine synchronize_species_mass (pdif,ibeg)
-
-    !     routine: synchronize_species_mass
-    !     purpose: resyncronize the total mass of the
-    !              species with that of the total mass to insure overall and individual mass balance
-
-    !     arguments: pdif   the p array to synchronize_species_mass
-    !                ibeg   the point at which species are started in p array
-
-    integer, intent(in) :: ibeg
-    real(eb), intent(out) :: pdif(*)
-
-    real(eb) :: factor(mxrooms,2), smoke(mxrooms,2)
-    integer :: iroom, isof, iprod
-
-    factor(1:nrm1,u) = 0.0_eb
-    factor(1:nrm1,l) = 0.0_eb
-    smoke(1:nrm1,1:2) = 0.0_eb
-
-    !isof = ibeg
-    isof = ibeg + 2*nrm1
-    !do iprod = 1, ns_mass
-    do iprod = 2, ns_mass
-        do iroom = 1, nrm1
-            if (pdif(isof) >= 0.0_eb) then
-                factor(iroom,u) = factor(iroom,u) + pdif(isof)
-            else
-                pdif(isof) = 0.0_eb
-            end if
-            isof = isof + 1
-            if (pdif(isof) >= 0.0_eb) then
-                factor(iroom,l) = factor(iroom,l) + pdif(isof)
-            else
-                pdif(isof) = 0.0_eb
-            end if
-            isof = isof + 1
-        end do
-    end do
-    
-    do iprod = 1, 2
-        do iroom = 1, nrm1
-            if (pdif(isof) >= 0.0_eb) then
-                smoke(iroom, u) = smoke(iroom,u) + pdif(isof)
-            else
-                pdif(isof) = 0.0_eb
-            end if
-            isof = isof + 1
-            if (pdif(isof) >= 0.0_eb) then
-                smoke(iroom, l) = smoke(iroom,l) + pdif(isof)
-            else
-                pdif(isof) = 0.0_eb
-            end if
-            isof = isof + 1
-        end do
-    end do 
-
-    !do iroom = 1, nrm1
-    !    roomptr => roominfo(iroom)
-    !    if (factor(iroom,u)>0.0_eb.and.roomptr%mass(u)>0.0_eb) then
-    !        factor(iroom,u) = roomptr%mass(u)/factor(iroom,u)
-    !    else
-    !        factor(iroom,u) = 1.0_eb
-    !    end if
-    !    if (factor(iroom,l)>0.0_eb.and.roomptr%mass(l)>0.0_eb) then
-    !        factor(iroom,l) = roomptr%mass(l)/factor(iroom,l)
-    !    else
-    !        factor(iroom,l) = 1.0_eb
-    !    end if
-    !end do
-
-    isof = ibeg
-    !do iprod = 1, ns_mass
-        do iroom = 1, nrm1
-            pdif(isof) = roominfo(iroom)%mass(u) - factor(iroom,u)
-            !pdif(isof) = pdif(isof)*factor(iroom,u)
-            !if (iprod == soot .and. smoke(iroom,u)>0.0_eb) then
-            !    smoke(iroom,u) = pdif(isof)/smoke(iroom,u)
-            !else if (iprod == soot) then
-            !    smoke(iroom,u) = 1.0_eb
-            !end if
-            isof = isof + 1
-            pdif(isof) = roominfo(iroom)%mass(l) - factor(iroom,l)
-            !pdif(isof) = pdif(isof)*factor(iroom,l)
-            !if (iprod == soot .and. smoke(iroom,l) > 0.0_eb) then
-            !    smoke(iroom,l) = pdif(isof)/smoke(iroom,l)
-            !else if (iprod == soot) then
-            !    smoke(iroom,l) = 1.0_eb
-            !end if
-            isof = isof + 1
-        end do
-    !end do
-    
-    isof = ibeg + 2*(ns_mass - 1)*nrm1
-    do iroom = 1, nrm1
-        if (smoke(iroom,u) > 0.0_eb) then
-            smoke(iroom,u) = pdif(isof)/smoke(iroom,u)
-        else
-            smoke(iroom,u) = 1.0_eb
-        end if
-        isof = isof + 1
-        if (smoke(iroom,l) > 0.0_eb) then
-            smoke(iroom,l) = pdif(isof)/smoke(iroom,l)
-        else
-            smoke(iroom,l) = 1.0_eb
-        end if
-        isof = isof + 1
-    end do
-    
-    do iprod = 1, 2
-        do iroom = 1, nrm1
-            pdif(isof) = pdif(isof) * smoke(iroom,u)
-            isof  = isof + 1
-            pdif(isof) = pdif(isof) * smoke(iroom,l)
-            isof  = isof + 1
-        end do
-    end do
-    
-    !isof = isof + 4*nrm1
-    !do iprod = 1, 9 
-    !    do iroom = 1, nrm1
-    !        pdif(isof) = pdif(isof)*factor(iroom,u)
-    !        isof = isof + 1
-    !        pdif(isof) = pdif(isof)*factor(iroom,l)
-    !        isof = isof + 1
-    !    end do
-    !end do 
-
-    return
-
-    end subroutine synchronize_species_mass
 
 end module solve_routines

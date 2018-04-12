@@ -6,7 +6,7 @@ module spreadsheet_input_routines
     use initialization_routines, only : inittarg, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
-    use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix, set_heat_of_combustion, position_object
+    use utility_routines, only: countargs, upperall, exehandle, emix, set_heat_of_combustion, position_object
 
     use wallptrs
     use cenviro

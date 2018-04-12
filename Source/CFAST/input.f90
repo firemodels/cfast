@@ -6,7 +6,7 @@
     use initialization_routines, only : inittarg, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
-    use utility_routines, only: countargs, get_igrid, upperall, exehandle, emix
+    use utility_routines, only: countargs, upperall, exehandle, emix
     use namelist_input_routines, only: namelist_input
     use spreadsheet_input_routines, only: spreadsheet_input
 
@@ -740,6 +740,30 @@
     end do
 
     end subroutine setup_slice_iso
+
+    ! ------------------ get_igrid ------------------------
+
+    integer function get_igrid (x,xgrid,nr)
+
+    integer, intent(in) :: nr
+    real(eb), intent(in), dimension(0:nr) :: xgrid
+    real(eb), intent(in) :: x
+
+    integer :: i
+
+    do i = 0, nr-1
+        if (xgrid(i).le.x.and.x.lt.xgrid(i+1)) then
+            get_igrid=i
+            return
+        end if
+    end do
+    if (xgrid(nr).eq.x) then
+        get_igrid=nr
+    else
+        get_igrid=-1
+    end if
+    return
+    end function get_igrid
 
     ! --------------------------- set_grid -------------------------------------------
 

@@ -75,7 +75,6 @@
 		<File RelativePath=".\cfast.f90"/>
 		<File RelativePath=".\conduction.f90"/>
 		<File RelativePath=".\convection.f90"/>
-		<File RelativePath=".\cyl_conduct.f90"/>
 		<File RelativePath=".\fire.f90"/>
 		<File RelativePath=".\flowfan.f90"/>
 		<File RelativePath=".\flowhorizontal.f90"/>

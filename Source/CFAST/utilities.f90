@@ -1149,30 +1149,6 @@
 
     end function emix
 
-    ! ------------------ get_igrid ------------------------
-
-    integer function get_igrid (x,xgrid,nr)
-
-    integer, intent(in) :: nr
-    real(eb), intent(in), dimension(0:nr) :: xgrid
-    real(eb), intent(in) :: x
-
-    integer :: i
-
-    do i = 0, nr-1
-        if (xgrid(i).le.x.and.x.lt.xgrid(i+1)) then
-            get_igrid=i
-            return
-        end if
-    end do
-    if (xgrid(nr).eq.x) then
-        get_igrid=nr
-    else
-        get_igrid=-1
-    end if
-    return
-    end function get_igrid
-
     end module utility_routines
 
     module opening_fractions

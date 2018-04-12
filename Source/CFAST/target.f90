@@ -2,9 +2,8 @@ module target_routines
 
     use precision_parameters
 
-    use conduction_routines, only: conductive_flux
+    use conduction_routines, only: conductive_flux, cylindrical_conductive_flux
     use convection_routines, only: convective_flux
-    use cylinder_routines, only: cylindrical_conductive_flux
     use fire_routines, only: get_gas_temp_velocity, flame_height
     use numerics_routines, only : ddot, dnrm2
     use radiation_routines, only : absorb, solid_angle_triangle

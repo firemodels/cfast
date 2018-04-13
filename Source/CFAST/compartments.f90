@@ -20,16 +20,15 @@
     subroutine layer_mixing (flows_layer_mixing)
 
     !     routine:    layer_mixing
-    !     function:   interface between calculate_residuals and convective_flux.  loops over rooms
-    !                 setting up varibles.  passes to convective_flux if ceiling jet for
-    !                 a surface is off, otherwise sets fluxes_convection to 0.0 and then
-    !                 solves for flows_convection
+    !     function:   interface between calculate_residuals and single line layer mixing model.  
+    !                 loops over room setting up varibles, does calculation and fills in data
+    !                 structures with results. 
     !     outputs:    flows_layer_mixing      net enthalphy and mass into each layer
 
 
     real(eb), intent(out) :: flows_layer_mixing(mxrooms, ns+2, 2)
 
-    real(eb) :: fm, spmass, ft
+    real(eb) :: fm, spmass
 
     integer iroom, lsp
     type(room_type), pointer :: roomptr
@@ -42,10 +41,8 @@
     
     do iroom = 1, nrm1
         roomptr => roominfo(iroom)
-        !ft = tanhsmooth(roomptr%temp(l),interior_ambient_temperature+100.0_eb,interior_ambient_temperature,1.0_eb,0.0_eb)
-        ft = 0.0_eb
-        if (roomptr%temp(l)+ft > roomptr%temp(u)) then
-            flows_layer_mixing(iroom,q,u) = 1000.0_eb*(roomptr%temp(l)+ft - roomptr%temp(u))**2
+        if (roomptr%temp(l) > roomptr%temp(u)) then
+            flows_layer_mixing(iroom,q,u) = 1000.0_eb*(roomptr%temp(l) - roomptr%temp(u))**2
             flows_layer_mixing(iroom,q,u) = roomptr%wall_area4(1)*flows_layer_mixing(iroom,q,u)
             flows_layer_mixing(iroom,q,l) = -flows_layer_mixing(iroom,q,u)
             fm = tanhsmooth(roomptr%mass(l),2*roomptr%vmin*roomptr%rho(l),roomptr%vmin*roomptr%rho(l),0.5_eb,0.0_eb)

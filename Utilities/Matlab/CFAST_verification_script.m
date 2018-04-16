@@ -52,11 +52,6 @@ Stats_Output = 'Verification';
 Output_File = [pwd, '/CFAST_verification_scatterplot_output.csv'];
 Statistics_Tex_Output = [pwd, '/../../Manuals/Validation_Guide/SCRIPT_FIGURES/Verification/verification_statistics.tex'];
 
-% Override the plot style options with NRC 1824 plot options
-
-NRC_Options = false;
-Append_To_Scatterplot_Title = '';
-
 % Run dataplot and scatplot scripts
 
 [saved_data,drange] = dataplot(Dataplot_Inputs_File, Working_Dir, Working_Dir, Manuals_Dir);
@@ -65,9 +60,7 @@ scatplot(saved_data, drange, ...
          'Manuals_Dir', Manuals_Dir, ...
          'Output_File', Output_File, ...
          'Stats_Output', Stats_Output, ...
-         'Statistics_Tex_Output', Statistics_Tex_Output, ...
-         'NRC_Options', NRC_Options, ...
-         'Append_To_Scatterplot_Title', Append_To_Scatterplot_Title)
+         'Statistics_Tex_Output', Statistics_Tex_Output)
 
 % Special Cases
 

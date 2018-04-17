@@ -569,7 +569,10 @@
     real(eb),dimension(2) :: setpoints
     character(64) :: comp_id,id,matl_id
     character(64) :: type
-    namelist /DEVC/ comp_id, type, id, temperature_depth, location, matl_id, normal, rti, setpoint, spray_density, setpoints 
+    logical :: adiabatic
+    real(eb) :: convective_heat_transfer_coefficient_front,convective_heat_transfer_coefficient_back
+    namelist /DEVC/ comp_id, type, id, temperature_depth, location, matl_id, normal, rti, setpoint, spray_density, setpoints, &
+                    adiabatic, convective_heat_transfer_coefficient_front, convective_heat_transfer_coefficient_back ! andy 1
 
     ios = 1
 
@@ -679,6 +682,15 @@
                     write (iofill,913) 'Error',type
                     stop
                 end if
+                
+                ! adiabatic condition Andy 2
+                targptr%adiabatic = .false.
+                targptr%adiabatic = adiabatic
+                
+                ! convective heat transfer coefficient
+                targptr%h_conv(:) = 0._eb
+                targptr%h_conv(1) = convective_heat_transfer_coefficient_front
+                targptr%h_conv(2) = convective_heat_transfer_coefficient_back
 
             else if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT_DETECTOR'.or. trim(type) == 'SMOKE_DETECTOR') then
                 counter2 = counter2 + 1
@@ -807,6 +819,9 @@
     setpoint                        = -1001._eb
     setpoints                       = (/-1001._eb, -1001._eb/)
     spray_density                   = -300.0_eb
+    adiabatic                       = .false.
+    convective_heat_transfer_coefficient_front = 0._eb ! Andy 3
+    convective_heat_transfer_coefficient_back  = 0._eb
 
     end subroutine set_defaults
 
@@ -2484,12 +2499,13 @@ continue
                     layer_mixing_sub_model
     character(10) :: gas_absorbtion_sub_model
     real(eb), dimension(mxpts) :: t, f
+    real(eb) :: radiative_incident_heat_flux
     namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  &
                     horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
                     ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
                     conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
                     steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model, &
-                    residual_debug_print, layer_mixing_sub_model
+                    residual_debug_print, layer_mixing_sub_model, radiative_incident_heat_flux 
 
     ios = 1
 
@@ -2593,6 +2609,10 @@ continue
             option(flayermixing) = off
         end if 
         
+        radiative_incident_flux_AST = 0._eb
+        radiative_incident_flux_AST = radiative_incident_heat_flux ! Andy 9
+        
+        if (trim(mode) == 'AST') verification_ast = .true.
     
     end if diag_flag
     
@@ -2625,6 +2645,7 @@ continue
     oxygen_tracking                 = 'OFF'
     gas_absorbtion_sub_model        = 'CALCULATED'
     residual_debug_print            = 'OFF'
+    radiative_incident_heat_flux    = 0._eb
 
     end subroutine set_defaults
 

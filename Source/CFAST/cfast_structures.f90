@@ -231,6 +231,8 @@ module cfast_types
                                         !                                   = ...%temperature(1) for cylinder)
         real(eb), dimension(2) :: flux_net, flux_fire, flux_gas, flux_surface, flux_radiation, flux_convection, flux_target
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
+        real(eb), dimension(2) :: h_conv        ! user-defined convective heat transfer coefficient for adiabatic surface temperature
+        logical  :: adiabatic           ! true if target is adiabatic ! Andy 4
 
     end type target_type
 

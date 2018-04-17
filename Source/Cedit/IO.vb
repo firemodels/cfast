@@ -3078,57 +3078,6 @@ Module IO
             Next
         End If
 
-        ' Writing devices (targets, detectors, sprinklers)
-        If myTargets.Count + myDetectors.Count > 0 Then
-            PrintLine(IO, " ")
-            ln = "!! Devices"
-            PrintLine(IO, ln)
-
-            For i = 0 To myTargets.Count - 1
-                aTarg = myTargets.Item(i)
-                ln = "&DEVC ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "'"
-                ln += " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
-                If aTarg.SolutionType = Target.ThermallyThick Then
-                    ln += " TYPE = 'PLATE'"
-                Else
-                    ln += " TYPE = 'CYLINDER'"
-                End If
-                ln += " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
-                ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
-                ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString + " /"
-                PrintLine(IO, ln)
-                aTarg.Changed = False
-            Next
-
-            For i = 0 To myDetectors.Count - 1
-                aTarg = myDetectors.Item(i)
-                If aTarg.Name = "" Then
-                    If aTarg.DetectorType = Target.TypeHeatDetector Then
-                        aTarg.Name = "HeatDetector_" + (i + 1).ToString
-                    ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
-                        aTarg.Name = "SmokeDetector_" + (i + 1).ToString
-                    ElseIf aTarg.DetectorType = Target.TypeSprinkler Then
-                        aTarg.Name = "Sprinkler_" + (i + 1).ToString
-                    End If
-                End If
-                ln = "&DEVC ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "'"
-                ln += " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
-                If aTarg.DetectorType = Target.TypeHeatDetector Then
-                    ln += " TYPE = 'HEAT_DETECTOR' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " /"
-                ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
-                    If aTarg.ActivationObscurationSmoldering = 0 Then
-                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINT = " + aTarg.ActivationObscurationFlaming.ToString + " /"
-                    Else
-                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINTS = " + aTarg.ActivationObscurationSmoldering.ToString + ", " + aTarg.ActivationObscurationFlaming.ToString + " /"
-                    End If
-                Else
-                    ln += " TYPE = 'SPRINKLER' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " SPRAY_DENSITY = " + aTarg.SprayDensity.ToString + " /"
-                End If
-                PrintLine(IO, ln)
-                aTarg.Changed = False
-            Next
-        End If
-
         ' Writing VENT namelist for wall vents
         If myHVents.Count > 0 Then
             PrintLine(IO, " ")
@@ -3388,6 +3337,57 @@ Module IO
                     Next
                     aFire.Changed = False
                 End If
+            Next
+        End If
+
+        ' Writing devices (targets, detectors, sprinklers)
+        If myTargets.Count + myDetectors.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Devices"
+            PrintLine(IO, ln)
+
+            For i = 0 To myTargets.Count - 1
+                aTarg = myTargets.Item(i)
+                ln = "&DEVC ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "'"
+                ln += " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
+                If aTarg.SolutionType = Target.ThermallyThick Then
+                    ln += " TYPE = 'PLATE'"
+                Else
+                    ln += " TYPE = 'CYLINDER'"
+                End If
+                ln += " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
+                ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
+                ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString + " /"
+                PrintLine(IO, ln)
+                aTarg.Changed = False
+            Next
+
+            For i = 0 To myDetectors.Count - 1
+                aTarg = myDetectors.Item(i)
+                If aTarg.Name = "" Then
+                    If aTarg.DetectorType = Target.TypeHeatDetector Then
+                        aTarg.Name = "HeatDetector_" + (i + 1).ToString
+                    ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
+                        aTarg.Name = "SmokeDetector_" + (i + 1).ToString
+                    ElseIf aTarg.DetectorType = Target.TypeSprinkler Then
+                        aTarg.Name = "Sprinkler_" + (i + 1).ToString
+                    End If
+                End If
+                ln = "&DEVC ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "'"
+                ln += " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
+                If aTarg.DetectorType = Target.TypeHeatDetector Then
+                    ln += " TYPE = 'HEAT_DETECTOR' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " /"
+                ElseIf aTarg.DetectorType = Target.TypeSmokeDetector Then
+                    If aTarg.ActivationObscurationSmoldering = 0 Then
+                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINT = " + aTarg.ActivationObscurationFlaming.ToString + " /"
+                    Else
+                        ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINTS = " + aTarg.ActivationObscurationSmoldering.ToString + ", " + aTarg.ActivationObscurationFlaming.ToString + " /"
+                    End If
+                Else
+                    ln += " TYPE = 'SPRINKLER' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " SPRAY_DENSITY = " + aTarg.SprayDensity.ToString + " /"
+                End If
+                PrintLine(IO, ln)
+                aTarg.Changed = False
             Next
         End If
 

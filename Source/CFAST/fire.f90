@@ -1179,7 +1179,7 @@ module fire_routines
         ! opacity is calculated from seder's work
         ! note: this value was changed 2/15/2 from 3500 to 3778 to reflect the new value as reported by
         ! mulholland in fire and materials, 24, 227(2000) with recommended value of extinction coefficient
-        ! of 8700 m^2/g or 8700/ln(1)=3778 converted to optical density
+        ! of 8700 m^2/kg or 8700/ln(10)=3778 converted to optical density
         do layer = u, l
             roomptr%species_output(layer,soot) = roomptr%species_rho(layer,soot)*3778.0_eb
             roomptr%species_output(layer,soot_flaming) = roomptr%species_rho(layer,soot_flaming)*3778.0_eb

@@ -1186,7 +1186,7 @@ Module IO
                 End If
                 lvalid = True
                 For k = 0 To 2
-                    If loc(k) <= 0 Then
+                    If loc(k) < 0 Then
                         lvalid = False
                     End If
                 Next

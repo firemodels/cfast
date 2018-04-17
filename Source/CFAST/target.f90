@@ -884,13 +884,11 @@ module target_routines
             ! if ceiling jet option is off, things default to appropriate layer temperature
             if (zloc>roomptr%depth(l)) then
                 dtectptr%temp_gas = roomptr%temp(u)
-                !dtectptr%obscuration = roomptr%species_output(u,9)
                 dtectptr%obscuration = roomptr%species_output(u,soot)
                 dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
                 dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
             else
                 dtectptr%temp_gas = roomptr%temp(l)
-                !dtectptr%obscuration = roomptr%species_output(l,9)
                 dtectptr%obscuration = roomptr%species_output(l,soot)
                 dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
                 dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)
@@ -902,12 +900,10 @@ module target_routines
             dtectptr%temp_gas = tg
             dtectptr%velocity = vg(4)
             if (zloc>roomptr%depth(l)) then
-                !dtectptr%obscuration = roomptr%species_output(u,9)
                 dtectptr%obscuration = roomptr%species_output(u,soot)
                 dtectptr%obscuration_flaming = roomptr%species_output(u,soot_flaming)
                 dtectptr%obscuration_smolder = roomptr%species_output(u,soot_smolder)
             else
-                !dtectptr%obscuration = roomptr%species_output(l,9)
                 dtectptr%obscuration = roomptr%species_output(l,soot)
                 dtectptr%obscuration_flaming = roomptr%species_output(l,soot_flaming)
                 dtectptr%obscuration_smolder = roomptr%species_output(l,soot_smolder)

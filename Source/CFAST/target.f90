@@ -831,7 +831,6 @@ module target_routines
         ! determine if detector has activated in this time interval (and not earlier)
         !if (tlinko<trig.and.trig<=tlink.and..not.dtectptr%activated) then
         if (delta <= 1.0_eb .and. .not.dtectptr%activated) then 
-            !delta = (trig-tlinko)/(tlink-tlinko)
             tmp = tcur+dstep*delta
             tdtect = min(tmp,tdtect)
             ifdtect = i

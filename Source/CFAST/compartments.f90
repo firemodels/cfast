@@ -52,10 +52,15 @@
             do lsp = 1, ns_mass
                 spmass = spmass + roomptr%species_mass(l,lsp)
             end do
-            do lsp = 1, ns
-                flows_layer_mixing(iroom,lsp+2,u) = flows_layer_mixing(iroom,m,u)/spmass*roomptr%species_mass(l,lsp)
-                flows_layer_mixing(iroom,lsp+2,l) = -flows_layer_mixing(iroom,lsp+2,u)
-            end do
+            if (spmass > 0.0_eb) then
+                do lsp = 1, ns
+                    flows_layer_mixing(iroom,lsp+2,u) = flows_layer_mixing(iroom,m,u)/spmass*roomptr%species_mass(l,lsp)
+                    flows_layer_mixing(iroom,lsp+2,l) = -flows_layer_mixing(iroom,lsp+2,u)
+                end do
+            else
+                flows_layer_mixing(iroom,m,u) = 0.0_eb
+                flows_layer_mixing(iroom,m,l) = 0.0_eb
+            end if 
         end if
     end do
     

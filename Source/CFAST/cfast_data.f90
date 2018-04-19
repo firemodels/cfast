@@ -38,7 +38,7 @@ module  diag_data
     logical :: radi_verification_flag=.false., radi_radnnet_flag=.false.
     ! Diagnosis variables (adiabatic surface temperature)
     logical :: verification_ast=.false.
-    real(eb) :: radiative_incident_flux_ast ! Andy 8
+    real(eb) :: radiative_incident_flux_ast
 
 end module diag_data
 

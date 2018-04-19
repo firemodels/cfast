@@ -51,7 +51,7 @@ module target_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    real(eb) :: qinc_targ, h_conv !Andy 7
+    real(eb) :: qinc_targ, h_conv
 
     save first,x_node
 
@@ -86,7 +86,6 @@ module target_routines
         targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back)
         targptr%flux_net_back = flux(back)
 
-        ! Andy 5
         if (targptr%adiabatic) then
             do i = front,back
                 if (verification_ast) then
@@ -953,7 +952,7 @@ module target_routines
 
 ! ---------------------------- adiabatic surface temperature -----------------------------------
 
-    subroutine adiabatic_surface_temperature (emis, h, tg, qinc, AST) !Andy 6
+    subroutine adiabatic_surface_temperature (emis, h, tg, qinc, AST)
 
     ! purpose: calculate adiabatic temperature (AST with the unit in Kelvin) for a target
     

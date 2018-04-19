@@ -572,7 +572,7 @@
     logical :: adiabatic
     real(eb) :: convective_heat_transfer_coefficient_front,convective_heat_transfer_coefficient_back
     namelist /DEVC/ comp_id, type, id, temperature_depth, location, matl_id, normal, rti, setpoint, spray_density, setpoints, &
-                    adiabatic, convective_heat_transfer_coefficient_front, convective_heat_transfer_coefficient_back ! andy 1
+                    adiabatic, convective_heat_transfer_coefficient_front, convective_heat_transfer_coefficient_back
 
     ios = 1
 
@@ -683,7 +683,7 @@
                     stop
                 end if
                 
-                ! adiabatic condition Andy 2
+                ! adiabatic condition
                 targptr%adiabatic = .false.
                 targptr%adiabatic = adiabatic
                 
@@ -820,7 +820,7 @@
     setpoints                       = (/-1001._eb, -1001._eb/)
     spray_density                   = -300.0_eb
     adiabatic                       = .false.
-    convective_heat_transfer_coefficient_front = 0._eb ! Andy 3
+    convective_heat_transfer_coefficient_front = 0._eb
     convective_heat_transfer_coefficient_back  = 0._eb
 
     end subroutine set_defaults
@@ -2610,7 +2610,7 @@ continue
         end if 
         
         radiative_incident_flux_AST = 0._eb
-        radiative_incident_flux_AST = radiative_incident_heat_flux ! Andy 9
+        radiative_incident_flux_AST = radiative_incident_heat_flux
         
         if (trim(mode) == 'AST') verification_ast = .true.
     

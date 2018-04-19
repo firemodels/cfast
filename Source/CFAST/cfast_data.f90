@@ -36,6 +36,9 @@ module  diag_data
     real(eb) :: partial_pressure_h2o, partial_pressure_co2, gas_temperature
     character(64) :: rad_solver
     logical :: radi_verification_flag=.false., radi_radnnet_flag=.false.
+    ! Diagnosis variables (adiabatic surface temperature)
+    logical :: verification_ast=.false.
+    real(eb) :: radiative_incident_flux_ast
 
 end module diag_data
 

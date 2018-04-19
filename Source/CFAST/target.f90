@@ -16,6 +16,7 @@ module target_routines
     use cparams
     use room_data
     use option_data, only: fcjet, option, off
+    use diag_data
 
     implicit none
 
@@ -50,6 +51,8 @@ module target_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
+    real(eb) :: qinc_targ, h_conv
+
     save first,x_node
 
     ! initialize non-dimensional target node thicknesses the first time target is called
@@ -83,33 +86,46 @@ module target_routines
         targptr%flux_incident_back = targptr%flux_surface(back) + targptr%flux_fire(back) + targptr%flux_gas(back)
         targptr%flux_net_back = flux(back)
 
-        ! do conduction into target
-        wfluxin = targptr%flux_net_front
-        wfluxout = targptr%flux_net_back
-        wspec(1) = targptr%c
-        wrho(1) =  targptr%rho
-        wk(1) =  targptr%k
-        xl = targptr%thickness
-        iieq = targptr%equaton_type
-        nmnode(1) = nnodes_trg
-        nmnode(2) = nnodes_trg - 2
-        nslab = 1
-        if (iieq==pde) then
-            iwbound = 4
-            walldx(1:nnodes_trg-1) = xl*x_node(1:nnodes_trg-1)
-            call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
-                wfluxin,wfluxout,iwbound,tgrad,tderv)
-        else if (iieq==cylpde) then
-            wfluxavg = (wfluxin+wfluxout)/2.0_eb
-            iwbound = 4
-            call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
-                dt,wk(1),wrho(1),wspec(1),xl,tgrad)
-        end if
+        if (targptr%adiabatic) then
+            do i = front,back
+                if (verification_ast) then
+                    qinc_targ = radiative_incident_flux_ast
+                else 
+                    if (i == 1) qinc_targ = targptr%flux_incident_front
+                    if (i == 2) qinc_targ = targptr%flux_incident_back
+                end if 
+                h_conv = targptr%h_conv(i)
+                call adiabatic_surface_temperature(targptr%emissivity,h_conv,t_inf,qinc_targ,targptr%temperature(i))
+            end do
+        else
+            ! do conduction into target
+            wfluxin = targptr%flux_net_front
+            wfluxout = targptr%flux_net_back
+            wspec(1) = targptr%c
+            wrho(1) =  targptr%rho
+            wk(1) =  targptr%k
+            xl = targptr%thickness
+            iieq = targptr%equaton_type
+            nmnode(1) = nnodes_trg
+            nmnode(2) = nnodes_trg - 2
+            nslab = 1
+            if (iieq==pde) then
+                iwbound = 4
+                walldx(1:nnodes_trg-1) = xl*x_node(1:nnodes_trg-1)
+                call conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,targptr%temperature,walldx,nmnode,nslab,&
+                    wfluxin,wfluxout,iwbound,tgrad,tderv)
+            else if (iieq==cylpde) then
+                wfluxavg = (wfluxin+wfluxout)/2.0_eb
+                iwbound = 4
+                call cylindrical_conductive_flux (iwbound,tempin,targptr%temperature,nmnode(1),wfluxavg,&
+                    dt,wk(1),wrho(1),wspec(1),xl,tgrad)
+            end if
 
-        ! limit target temperature to flame temperature
-        do i = idx_tempf_trg,idx_tempb_trg
-            targptr%temperature(i) = min(targptr%temperature(i),t_inf+t_max)
-        end do
+            ! limit target temperature to flame temperature
+            do i = idx_tempf_trg,idx_tempb_trg
+                targptr%temperature(i) = min(targptr%temperature(i),t_inf+t_max)
+            end do
+        end if
         
         ! calculate tenability for this time step
         ilayer = u
@@ -933,5 +949,43 @@ module target_routines
     return
 
     end subroutine device_activated
+
+! ---------------------------- adiabatic surface temperature -----------------------------------
+
+    subroutine adiabatic_surface_temperature (emis, h, tg, qinc, AST)
+
+    ! purpose: calculate adiabatic temperature (AST with the unit in Kelvin) for a target
+    
+    ! Reference:  
+    ! M Malendowski (2017). Analytical solution for adiabatic surface temperature (AST). Fire Technology.
+
+        real(eb), intent(out) :: AST
+        real(eb), intent(in) ::  emis, h, tg, qinc
+        
+        ! intermediate paramenters
+        real(eb) :: aaa, bbb, ccc, alp, bet, gam, &
+                    mmm, sr3, onth, fttot, eionth, tmpm
+        
+        sr3    = sqrt(3._eb)
+        onth   = 1._eb/3._eb
+        fttot  = 4._eb*(2._eb/3._eb)**(1._eb/3._eb)
+        eionth = 18._eb**(1._eb/3._eb)
+        tmpm   = 273.15_eb
+
+        if (h > 0._eb) then
+           aaa = emis*sigma
+           bbb = h
+           ccc = -emis*qinc - h*tg
+           alp = (sr3*sqrt(27._eb*aaa**2._eb*bbb**4._eb-256._eb*aaa**3._eb*ccc**3._eb)+9._eb*aaa*bbb**2._eb)**onth
+           bet = fttot*ccc
+           gam = eionth*aaa
+           mmm = sqrt(bet/alp + alp/gam)
+           AST = 0.5_eb*(-mmm+sqrt(2._eb*bbb/(aaa*mmm)-mmm**2._eb))
+        else
+           AST = (emis*qinc/(emis*sigma))**0.25_eb
+        end if
+
+        return
+    end subroutine adiabatic_surface_temperature
 
 end module target_routines

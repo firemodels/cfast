@@ -2625,6 +2625,7 @@ continue
     oxygen_tracking                 = 'OFF'
     gas_absorbtion_sub_model        = 'CALCULATED'
     residual_debug_print            = 'OFF'
+    layer_mixing_sub_model          = 'ON'
 
     end subroutine set_defaults
 

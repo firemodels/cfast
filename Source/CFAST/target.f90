@@ -89,7 +89,7 @@ module target_routines
         if (targptr%adiabatic) then
             do i = front,back
                 if (verification_ast) then
-                    qinc_targ = radiative_incident_flux_ast
+                    qinc_targ = radiative_incident_flux_AST
                 else 
                     if (i == 1) qinc_targ = targptr%flux_incident_front
                     if (i == 2) qinc_targ = targptr%flux_incident_back

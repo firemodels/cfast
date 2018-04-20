@@ -547,6 +547,22 @@ for a 1 s increment. The following figure compares the calculated FED to its exp
 \end{figure}
 
 
+\section{Target}
+\label{target_adiabatic_surface_temperature_1}
+
+A target is located at the center of a 4~m by 4~m by 4~m enclosure. Assuming adiabatic condition for the target, an adiabatic surface temperature\footnote{CFAST has an option to create a target with adiabatic surface conditions. The option must be invoked by adding a special comment to the input file.} can be evaluated from solving the following energy balance equation:
+\be
+   \epsilon \, \left( \dq_{\rm inc,rad}'' - \sigma \, T_{\hbox{\tiny AST}}^4 \right) + h \, (T_{\rm gas} - T_{\hbox{\tiny AST}}) = 0
+\ee
+where, $\dot{q}_{\rm inc,rad}''$ is the incident radiative heat flux onto the surface, $\epsilon$ is the surface emissivity, $h$ is the convective heat transfer coefficient, and $T_{\rm gas}$ is the surrounding gas temperature. The closed form equation can be obtained from Malendowsky \cite{Malendowski:2017}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/target_1} 
+\caption[Results of the test case {\ct target\.in}]{Expected and CFAST calculated values for the adiabatic surface temperature of a target in the case {\ct target.in}.}
+\label{fig:ast_1}
+\end{figure}
+
 
 \section{Summary of Verification Results}
 

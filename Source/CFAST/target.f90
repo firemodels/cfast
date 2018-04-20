@@ -971,8 +971,6 @@ module target_routines
         fttot  = 4._eb*(2._eb/3._eb)**(1._eb/3._eb)
         eionth = 18._eb**(1._eb/3._eb)
         tmpm   = 273.15_eb
-        
-        if (h < 1.e-10) h = 0._eb !
 
         if (h > 0._eb) then
            aaa = emis*sigma

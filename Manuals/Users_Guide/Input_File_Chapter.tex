@@ -534,6 +534,11 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 %What happens to interanl temperatrue when type is cylindrical
 \item[Internal Temperature] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
+
+\item[Adiabatic Target] When this box is checked, the target is assumed to be perfectly insulated. Input for convection coefficient is required. This feature is useful when the adiabatic surface temperature for a target is desired.
+
+\item[Convection Coefficent Front] (default units: kW/(m$^2$$\cdot$K), default value: 0 kW/(m$^2$$\cdot$K): User-defined input for the evaluation of  adiabatic surface temperature for the front side of the target.
+\item[Convection Coefficent Back] (default units: kW/(m$^2$$\cdot$K), default value: 0 kW/(m$^2$$\cdot$K): User-defined input for the evaluation of target adiabatic surface temperature for the back side of the target.
 \end{description}
 
 \graybox{

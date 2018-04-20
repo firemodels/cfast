@@ -89,7 +89,7 @@ module target_routines
         if (targptr%adiabatic) then
             do i = front,back
                 if (verification_ast) then
-                    qinc_targ = radiative_incident_flux_ast
+                    qinc_targ = radiative_incident_flux_AST
                 else 
                     if (i == 1) qinc_targ = targptr%flux_incident_front
                     if (i == 2) qinc_targ = targptr%flux_incident_back
@@ -971,6 +971,8 @@ module target_routines
         fttot  = 4._eb*(2._eb/3._eb)**(1._eb/3._eb)
         eionth = 18._eb**(1._eb/3._eb)
         tmpm   = 273.15_eb
+        
+        if (h < 1.e-10) h = 0._eb !
 
         if (h > 0._eb) then
            aaa = emis*sigma

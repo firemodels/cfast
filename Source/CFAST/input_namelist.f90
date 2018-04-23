@@ -2644,7 +2644,7 @@ continue
     gas_absorbtion_sub_model        = 'CALCULATED'
     residual_debug_print            = 'OFF'
     layer_mixing_sub_model          = 'ON'
-    adiabatic_target_verification   = 'ON'
+    adiabatic_target_verification   = 'OFF'
     radiative_incident_heat_flux    = 0._eb
 
     end subroutine set_defaults

@@ -1183,7 +1183,8 @@ module fire_routines
         do layer = u, l
             roomptr%species_output(layer,soot_flaming) = roomptr%species_rho(layer,soot_flaming)*3778.4_eb
             roomptr%species_output(layer,soot_smolder) = roomptr%species_rho(layer,soot_smolder)*1910.9_eb
-            roomptr%species_output(layer,soot) = roomptr%species_output(layer,soot_flaming) + roomptr%species_output(layer,soot_smolder)
+            roomptr%species_output(layer,soot) = roomptr%species_output(layer,soot_flaming) + &
+                roomptr%species_output(layer,soot_smolder)
         end do
 
         ! ct is the integration of the total "junk" being transported

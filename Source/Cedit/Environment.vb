@@ -39,6 +39,8 @@ Public Class Environment
     Private aDIAGPartPressH2O As Single
     Private aDIAGPartPressCO As Single
     Private aDIAGRadSolver As String
+    Private aDiagAdiabaticTargetVerification As Boolean
+    Private aDiagAdiabaticTargetFlux As Single
     Private aDIAGfire As Integer
     Private aDIAGhflow As Integer
     Private aDIAGentrain As Integer
@@ -86,6 +88,8 @@ Public Class Environment
         aDIAGPartPressCO = DefaultNonValue
         aDIAGPartPressH2O = DefaultNonValue
         aDIAGRadSolver = "DEFAULT"
+        aDiagAdiabaticTargetVerification = False
+        aDiagAdiabaticTargetFlux = 0
         aDIAGfire = DIAGon
         aDIAGhflow = DIAGon
         aDIAGentrain = DIAGon
@@ -481,6 +485,28 @@ Public Class Environment
             T(i) = aDIAGt(i)
         Next
     End Sub
+    Friend Property DIAGAdiabaticTargetVerification As Boolean
+        Get
+            Return aDiagAdiabaticTargetVerification
+        End Get
+        Set(value As Boolean)
+            If value <> aDiagAdiabaticTargetVerification Then
+                aDiagAdiabaticTargetVerification = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property DIAGAdiabaticTargetFlux As Single
+        Get
+            Return aDiagAdiabaticTargetFlux
+        End Get
+        Set(value As Single)
+            If value <> aDiagAdiabaticTargetFlux Then
+                aDiagAdiabaticTargetFlux = value
+                aChanged = True
+            End If
+        End Set
+    End Property
     Friend Property DIAGfire As Integer
         Get
             Return aDIAGfire

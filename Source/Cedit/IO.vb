@@ -1960,6 +1960,7 @@ Module IO
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
         Dim residdbprn, layermixing As Integer
         Dim dummy As String
+        Dim adiabatic As Boolean, fluxAST As Single
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DIAG") Then
@@ -1970,6 +1971,8 @@ Module IO
                 pph2o = Environment.DefaultNonValue
                 gastemp = Environment.DefaultNonValue
                 radsolv = "DEFAULT"
+                adiabatic = False
+                fluxAST = 0
                 fire = Environment.DIAGon
                 hflow = Environment.DIAGon
                 entrain = Environment.DIAGon
@@ -2024,6 +2027,16 @@ Module IO
                         Else
                             myErrors.Add("In DIAG namelist for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "ADIABATIC_TARGET_VERIFICATION" Then
+                        If NMList.ForNMListVarGetStr(i, j, 1) = "ON" Then
+                            adiabatic = True
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = "OFF" Then
+                            adiabatic = False
+                        Else
+                            myErrors.Add("In DIAG namelist for ADIABATIC_TARGET_VERIFICATION " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either ON or OFF", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_INCIDENT_FLUX" Then
+                        fluxAST = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_SUB_MODEL" Then
                         ReadINIInput(fire, "FIRE_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
                     ElseIf NMList.ForNMListGetVar(i, j) = "HORIZONTAL_FLOW_SUB_MODEL" Then
@@ -2077,6 +2090,8 @@ Module IO
                 someEnvironment.DIAGPartPressCO = ppco
                 someEnvironment.DIAGPartPressH2O = pph2o
                 someEnvironment.DIAGRadSolver = radsolv
+                someEnvironment.DIAGAdiabaticTargetVerification = adiabatic
+                someEnvironment.DIAGAdiabaticTargetFlux = fluxAST
                 someEnvironment.DIAGfire = fire
                 someEnvironment.DIAGhflow = hflow
                 someEnvironment.DIAGentrain = entrain
@@ -3521,6 +3536,21 @@ Module IO
             ln = "&DIAG  RADSOLVER = '" + myEnvironment.DIAGRadSolver + "' "
             PrintLine(IO, ln)
         End If
+        If myEnvironment.DIAGAdiabaticTargetVerification = True Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = "     "
+            End If
+            ln += "ADIABATIC_TARGET_VERIFICATION = 'ON' RADIATIVE_INCIDENT_FLUX = " + myEnvironment.DIAGAdiabaticTargetFlux.ToString
+            Print(IO, ln)
+        End If
         If myEnvironment.DIAGGasTemp <> Environment.DefaultNonValue Then
             If wrtDIAG Then
                 ln = " "
@@ -3533,9 +3563,9 @@ Module IO
             Else
                 ln = "     "
             End If
-            ln = ln + "GAS_TEMPERATURE = " + Math.Round(myEnvironment.DIAGGasTemp, 2).ToString
-            ln = ln + " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.DIAGPartPressH2O, 2).ToString
-            ln = ln + " PARTIAL_PRESSURE_CO = " + Math.Round(myEnvironment.DIAGPartPressCO, 2).ToString
+            ln += "GAS_TEMPERATURE = " + Math.Round(myEnvironment.DIAGGasTemp, 2).ToString
+            ln += " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.DIAGPartPressH2O, 2).ToString
+            ln += " PARTIAL_PRESSURE_CO = " + Math.Round(myEnvironment.DIAGPartPressCO, 2).ToString
             Print(IO, ln)
         End If
         myEnvironment.GetDIAGf(f)

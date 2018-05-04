@@ -22,6 +22,8 @@ Public Class Target
     Friend Const ActivationbyObscuration As Integer = 1
 
     ' All units within the class are assumed to be consistent and typically SI
+    Private aAdiabaticTarget As Boolean = False ' True for calculation of adiabatic surface temperature of target
+    Private aConvectionCoefficients(2) As Single ' Front(1) and back(2) convection coefficients for calculation of adiabatic target temperature 
     Private aType As Integer                    ' 0 for target and 1 for detector
     Private aName As String                     ' Target name (at the moment, only used for targets, not detectors)
     Private aCompartment As Integer             ' Compartment number where target or detector is located
@@ -64,6 +66,8 @@ Public Class Target
         aActivationType = ActivationbyTemperature
         aRTI = HeatDetectorRTI
         aSprayDensity = 0.00007
+        aAdiabaticTarget = False
+        aConvectionCoefficients = {0, 0, 0}
     End Sub
     Public Property Name() As String
         Get
@@ -428,6 +432,38 @@ Public Class Target
             If ZPosition = -1 Then ZPosition = aCompartment.RoomHeight
         End If
     End Sub
+    Public Sub SetConvectionCoefficients(ByVal isAdiabatic As Boolean, ByVal Coeff1 As Single, ByVal Coeff2 As Single)
+        Me.Adiabatic = isAdiabatic
+        Me.aConvectionCoefficients(1) = Coeff1
+        Me.aConvectionCoefficients(2) = Coeff2
+    End Sub
+    Public Property Adiabatic() As Boolean
+        Get
+            Return aAdiabaticTarget
+        End Get
+        Set(value As Boolean)
+            If value <> aAdiabaticTarget Then
+                aAdiabaticTarget = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property Convection_Coefficient(index As Integer) As Single
+        Get
+            If index >= 1 And index <= 2 Then
+                Convection_Coefficient = aConvectionCoefficients(index)
+            Else
+                myErrors.Add("Target Convection coefficients specification out of bounds.", ErrorMessages.TypeFatal)
+                HasErrors += 1
+            End If
+        End Get
+        Set(value As Single)
+            If value <> aConvectionCoefficients(index) Then
+                aConvectionCoefficients(index) = value
+                aChanged = True
+            End If
+        End Set
+    End Property
     Public ReadOnly Property IsValid(ByVal TargetNumber As Integer) As Integer
         Get
             myUnits.SI = True

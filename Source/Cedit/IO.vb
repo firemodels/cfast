@@ -1088,12 +1088,15 @@ Module IO
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type As String
         Dim tempdepth, rti, setp, setps(2), sprayd As Single
-        Dim loc(3), norm(3) As Single
-        Dim valid, lvalid As Boolean
+        Dim loc(3), norm(3), coeffs(2) As Single
+        Dim valid, lvalid, adiabatic As Boolean
         Dim aTempOffset As Single = 273.15
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "DEVC") Then
+                adiabatic = False
+                coeffs(1) = 0
+                coeffs(2) = 0
                 tempdepth = 0.5
                 rti = 130
                 setp = -1
@@ -1164,10 +1167,28 @@ Module IO
                         Else
                             myErrors.Add("In DEVC namelist for NORMAL input must be 3 numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "ADIABATIC_TARGET" Then
+                        If NMList.ForNMListVarGetStr(i, j, 1) = ".FALSE." Then
+                            adiabatic = False
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
+                            adiabatic = True
+                        Else
+                            myErrors.Add("In DEVC namelist for ADIABATIC_TARGET " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "CONVECTION_COEFFICIENTS" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            For k = 1 To max
+                                coeffs(k) = NMList.ForNMListVarGetNum(i, j, k)
+                            Next
+                        Else
+                            myErrors.Add("In DEVC namelist for CONVECTION_COEFFICIENTS input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
                     Else
                         myErrors.Add("In DEVC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
+
                 valid = True
                 If id = "" Then
                     valid = False
@@ -1207,10 +1228,15 @@ Module IO
                         aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
                         aDetect.InternalLocation = tempdepth
                         aDetect.Name = id
+                        If adiabatic = True Then
+                            aDetect.Adiabatic = adiabatic
+                            aDetect.Convection_Coefficient(1) = coeffs(1)
+                            aDetect.Convection_Coefficient(2) = coeffs(2)
+                        End If
                         aDetect.Changed = False
-                        myTargets.Add(aDetect)
-                    Else
-                        aDetect.Type = Target.TypeDetector
+                            myTargets.Add(aDetect)
+                        Else
+                            aDetect.Type = Target.TypeDetector
                         aDetect.Name = id
                         aDetect.Compartment = myCompartments.GetCompIndex(compid)
                         If type = "HEAT_DETECTOR" Then
@@ -3357,7 +3383,11 @@ Module IO
                 End If
                 ln += " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
                 ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
-                ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString + " /"
+                ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
+                If aTarg.Adiabatic = True Then
+                    ln += " ADIABTIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString
+                End If
+                ln += " /"
                 PrintLine(IO, ln)
                 aTarg.Changed = False
             Next

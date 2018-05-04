@@ -2498,13 +2498,13 @@ continue
                     layer_mixing_sub_model, adiabatic_target_verification
     character(10) :: gas_absorbtion_sub_model
     real(eb), dimension(mxpts) :: t, f
-    real(eb) :: radiative_incident_heat_flux
+    real(eb) :: radiative_incident_flux
     namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  &
                     horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
                     ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
                     conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
                     steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model, &
-                    residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_heat_flux 
+                    residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_flux 
 
     ios = 1
 
@@ -2609,7 +2609,7 @@ continue
         end if         
         if (trim(adiabatic_target_verification) == 'ON') then 
             verification_ast = .true.
-            radiative_incident_flux_AST = radiative_incident_heat_flux*1000._eb ! W/m^2 is used in the calculation
+            radiative_incident_flux_AST = radiative_incident_flux*1000._eb ! W/m^2 is used in the calculation
         end if
     
     end if diag_flag
@@ -2645,7 +2645,7 @@ continue
     residual_debug_print            = 'OFF'
     layer_mixing_sub_model          = 'ON'
     adiabatic_target_verification   = 'OFF'
-    radiative_incident_heat_flux    = 0._eb
+    radiative_incident_flux    = 0._eb
 
     end subroutine set_defaults
 

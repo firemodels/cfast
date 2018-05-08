@@ -54,17 +54,17 @@ module fire_data
 
     ! fire variables
 
-    real(eb) :: tgignt                              ! gaseous ignition temperature for burning in upper layer and door jets
-    real(eb) :: lower_o2_limit                      ! minimum oxygen level for combustion
+    real(eb) :: tgignt                                  ! gaseous ignition temperature for burning in upper layer and door jets
+    real(eb) :: lower_o2_limit                          ! minimum oxygen level for combustion
     real(eb) :: tradio     
 
-    integer :: n_fires                              ! number of fires in the current simulation
-    type(fire_type), target :: fireinfo(mxfires)
+    integer :: n_fires                                  ! number of fires in the current simulation
+    type(fire_type), allocatable, dimension(:), target :: fireinfo
     
-    integer :: n_tabls                              ! number of tables of fire data in the current simulation
-    type(table_type), target :: tablinfo(mxfires)
+    integer :: n_tabls                                  ! number of tables of fire data in the current simulation
+    type(table_type), allocatable, dimension(:), target :: tablinfo
 
-    integer :: n_furn                                    ! number of data points in furnace temperature curve
+    integer :: n_furn                                   ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
@@ -166,7 +166,7 @@ module ramp_data
 
     ! ramping variables
     integer :: n_ramps = 0
-    type(ramp_type), target :: rampinfo(mxramps)
+    type(ramp_type), allocatable, dimension(:), target :: rampinfo
 
 end module ramp_data
 
@@ -320,8 +320,8 @@ module solver_data
     integer :: jaccol
     integer :: jacdim
                              
-    integer :: ndisc                            ! number of discontinuities fed to DASSL
-    real(eb), dimension(0:mxdiscon) :: discon    ! list of discontinuities fed to DASSL to ease solution
+    integer :: ndisc                                 ! number of discontinuities fed to DASSL
+    real(eb), allocatable, dimension(:) :: discon    ! list of discontinuities fed to DASSL to ease solution
 
 end module solver_data
 
@@ -340,10 +340,10 @@ module target_data
                                                                     ! sprinkler in a compartment is meaningless to CFAST
 
     integer :: n_targets                                            ! number of detectors in the simulation
-    type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
+    type (target_type), allocatable, dimension(:), target :: targetinfo ! structured target data
 
     integer :: n_detectors                                          ! number of detectors in the simulation
-    type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
+    type (detector_type), allocatable, dimension(:), target :: detectorinfo! structured detector data
 
 end module target_data
 

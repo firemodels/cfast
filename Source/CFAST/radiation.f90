@@ -793,8 +793,7 @@ module radiation_routines
     !  eco2 and eh2o are interpolated from spfe handbook graphs which show e = f(t,pl), where t is the gas
     !  temperature (kelvins) and pl is the
     !  partial pressure-path length product (atm-m). temperature and gas partial pressures are based on
-    !  data calculated elsewhere and stored in
-    !  common blocks. using handbook formulae, path length is estimated as
+    !  data calculated elsewhere. using handbook formulae, path length is estimated as
 
     !  l = c*4*v/a; where c ~ 0.9 for typical geometries, v is the gas volume and a is the surface area of the gas volume.
 

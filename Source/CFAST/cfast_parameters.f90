@@ -81,7 +81,7 @@
     integer, parameter :: mxr_trg = idx_tempb_trg           ! upper bound of real target array
     integer, parameter :: mxi_trg = 7                       ! upper bound of integer target array
 
-    integer, parameter :: mxdtect=mxperrm*mxrooms-1         ! maximum number of detectors
+    integer, parameter :: mxdtect = mxperrm*mxrooms-1       ! maximum number of detectors
 
     integer, parameter :: check_state = 0                   ! index to check state of detectors and targets
     integer, parameter :: set_state = 1                     ! index to calculate full state of detectors and targets

@@ -26,38 +26,24 @@ module initialization_routines
 
     private
 
-    public get_thermal_property, inittarg, initialize_ambient, offset, initialize_memory, initialize_fire_objects, &
+    public allocate_variables, inittarg, initialize_ambient, offset, initialize_memory, initialize_fire_objects, &
         initialize_species, initialize_walls
 
     contains
 
+! --------------------------- allocate_variables -------------------------------------------
 
-! --------------------------- get_thermal_property -------------------------------------------
-
-    subroutine get_thermal_property (name, tp)
-
-    ! check for and return index to a thermal property
+    subroutine allocate_variables ()
     
-    implicit none
-    character, intent(in) :: name*(*)
-
-    character(mxthrmplen) missingtpp
-    integer tp, i
-    type(thermal_type), pointer :: thrmpptr
-
-    do i = 1, n_thrmp
-        thrmpptr => thermalinfo(i)
-        if (name==thrmpptr%name) then
-            tp = i
-            return
-        end if
-    end do
-    missingtpp = name
-    write (*,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
-    write (iofill,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
-    stop
-
-    end subroutine get_thermal_property
+    ! compartment data
+    allocate (roominfo(mxrooms))
+    
+    ! vent data
+    allocate (hventinfo(mxhvents), vventinfo(mxvvents), mventinfo(mxmvents))
+    
+    return
+    
+    end subroutine allocate_variables
 
 ! --------------------------- initialize_ambient -------------------------------------------
 
@@ -744,6 +730,33 @@ module initialization_routines
 
     return
     end subroutine initialize_walls
+
+! --------------------------- get_thermal_property -------------------------------------------
+
+    subroutine get_thermal_property (name, tp)
+
+    ! check for and return index to a thermal property
+    
+    implicit none
+    character, intent(in) :: name*(*)
+
+    character(mxthrmplen) missingtpp
+    integer tp, i
+    type(thermal_type), pointer :: thrmpptr
+
+    do i = 1, n_thrmp
+        thrmpptr => thermalinfo(i)
+        if (name==thrmpptr%name) then
+            tp = i
+            return
+        end if
+    end do
+    missingtpp = name
+    write (*,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    write (iofill,'(''***Error: A thermal property was not found in the input file. Missing material: '',a)') missingtpp
+    stop
+
+    end subroutine get_thermal_property
 
 ! --------------------------- offset -------------------------------------------
 

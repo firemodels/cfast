@@ -38,24 +38,8 @@ module initialization_routines
     ! compartment data
     allocate (roominfo(mxrooms))
     
-    !fire data
-    allocate (fireinfo(mxfires))
-    allocate (tablinfo(mxtabls))
-    
-    ! ramp data
-    allocate (rampinfo(mxramps))
-    
-    ! solver data
-    allocate (discon(0:mxdiscon))
-    
-    ! target data
-    allocate (targetinfo(mxtarg))
-    allocate (detectorinfo(mxdtect))
-    
     ! vent data
-    allocate (hventinfo(mxhvents))
-    allocate (vventinfo(mxvvents))
-    allocate (mventinfo(mxmvents))
+    allocate (hventinfo(mxhvents), vventinfo(mxvvents), mventinfo(mxmvents))
     
     return
     

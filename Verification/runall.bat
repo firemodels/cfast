@@ -68,12 +68,6 @@ call ..\..\Validation\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast Ignition_Test -V
 cd ..
 
-echo Running Target Cases
-cd Target
-call ..\..\Validation\cleancfast.bat
-background -u 98 ..\..\Utilities\for_bundle\Bin\cfast target_1 -V
-cd ..
-
 echo Waiting for all CFAST runs to finish
 :loop1
 tasklist | find /i /c "CFAST" > temp.out

@@ -6,8 +6,6 @@ del *_w.csv /s/q >nul 2>&1
 del *_m.csv /s/q >nul 2>&1
 del *_git.txt /s/q >nul 2>&1
 del *_zone.csv /s/q >nul 2>&1
-del *_resid.csv /s/q >nul 2>&1
-del *_slab.csv /s/q >nul 2>&1
 del *.out /s/q >nul 2>&1
 del *.smv /s/q >nul 2>&1
 del *.plt /s/q >nul 2>&1

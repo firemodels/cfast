@@ -1636,11 +1636,11 @@ continue
                     write (iofill,5070) i, j
                     stop
                 end if
-                !if (counter1>mxperrm) then
-                !    write (*,5080) i, j, k
-                !    write (iofill,5080) i, j, k
-                !    stop
-                !end if
+                if (counter1>mxperrm) then
+                    write (*,5080) i, j, k
+                    write (iofill,5080) i, j, k
+                    stop
+                end if
 
                 ventptr => hventinfo(counter1)
                 ventptr%room1 = i

@@ -1256,7 +1256,7 @@ module solve_routines
         itstop = xdelt + 1
         tstop = itstop - 1
 
-        discon(0) = 0.0_eb
+        discon = 0.0_eb
         discon(1) = tstop
         ndisc = 2
 

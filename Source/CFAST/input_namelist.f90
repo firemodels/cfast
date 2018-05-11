@@ -953,6 +953,7 @@
 
     rewind (unit=lu)
     input_file_line_number = 0
+    n_tabl_lines = 0
 
     ! Scan entire file to look for 'TABL' and identify unique table names
     n_tabls = 0
@@ -1634,11 +1635,6 @@ continue
                 if (imin>mxrooms-1.or.jmax>mxrooms.or.imin==jmax) then
                     write (*,5070) i, j
                     write (iofill,5070) i, j
-                    stop
-                end if
-                if (counter1>mxperrm) then
-                    write (*,5080) i, j, k
-                    write (iofill,5080) i, j, k
                     stop
                 end if
 

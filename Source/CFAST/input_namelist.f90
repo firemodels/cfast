@@ -2348,6 +2348,7 @@ continue
 
     rewind (unit=lu)
     input_file_line_number = 0
+    counter = 0
 
     ! Scan entire file to look for 'SLCF'
     slcf_loop: do
@@ -2357,7 +2358,7 @@ continue
             exit slcf_loop
         end if
         read(lu,SLCF,err=34,iostat=ios)
-        counter=counter+1
+        counter = counter + 1
 34      if (ios>0) then
             write(iofill, '(a,i3)') 'Error: Invalid specification in &SLCF inputs. Check &SLCF input, ' , counter
             stop

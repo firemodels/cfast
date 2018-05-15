@@ -88,13 +88,13 @@ gnu_win_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_win_64 : FFLAGS = /O2 /Qsave /Qinit:zero /fp:consistent /fpconstant /traceback /stand:f08  $(GITINFO)
+intel_win_64 : FFLAGS = /O2 /fp:consistent /fpconstant /traceback /stand:f08  $(GITINFO)
 intel_win_64 : FCOMPL = ifort
 intel_win_64 : obj = cfast7_win_64
 intel_win_64 : setup_win $(objwin)
 	$(FCOMPL) -o $(obj) $(FFLAGS) /F1000000000 $(objwin) 
 
-intel_win_64_db : FFLAGS = /Qsave /Qinit:zero /debug:full /Z7 /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:consistent /fpconstant /traceback /check:all /stand:f08 $(GITINFO)
+intel_win_64_db : FFLAGS = /Qtrapuv /Qinit:snan /debug:full /Z7 /Od /extend_source:132 /warn:all /warn:nointerfaces /Qtrapuv /fp:consistent /fpconstant /traceback /check:all /stand:f08 $(GITINFO)
 intel_win_64_db : FCOMPL = ifort
 intel_win_64_db : obj = cfast7_win_64_db
 intel_win_64_db : setup_win $(objwin)
@@ -135,7 +135,7 @@ gnu_linux_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_linux_64 : FFLAGS = -m64 -O1 -save -zero -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
+intel_linux_64 : FFLAGS = -m64 -O1 -static -gen-interfaces -warn interfaces -traceback $(GITINFO)
 intel_linux_64 : LFLAGS = -static-intel
 intel_linux_64 : FCOMPL = ifort
 intel_linux_64 : obj = cfast7_linux_64
@@ -143,7 +143,7 @@ intel_linux_64 : $(objf)
 	$(FCOMPL) $(LFLAGS) -o $(obj) $(objf)
 
 #intel_linux_64_db : FFLAGS = -m64 -check all -ftrapuv -warn unused -gen-interfaces -warn interfaces -O0 -WB -traceback -g -fpe0 -fp-model strict -debug full
-intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -save -zero -static -WB -traceback -g -fpe0 -fp-model strict -stand:f08 $(GITINFO)
+intel_linux_64_db : FFLAGS = -m64 -check -warn unused -O0 -init=snan -static -WB -traceback -g -fpe0 -fp-model strict -stand:f08 $(GITINFO)
 intel_linux_64_db : LFLAGS = -static-intel
 intel_linux_64_db : FCOMPL = ifort
 intel_linux_64_db : obj = cfast7_linux_64_db

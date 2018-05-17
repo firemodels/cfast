@@ -40,7 +40,7 @@ objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o ke
 objwin = $(objf:.o=.obj)
 
 objfgnu = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o keyboard_gnu.o \
-       srev.o utilities.o ssHeaders.o outputdebug.o compartments.obj conduction.o flowfan.o flowhorizontal.o flowvertical.o fire.o \
+       srev.o utilities.o ssHeaders.o outputdebug.o compartments.o conduction.o flowfan.o flowhorizontal.o flowvertical.o fire.o \
        numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o input_spreadsheet.o input_namelist.o input.o cfast.o  
 
 

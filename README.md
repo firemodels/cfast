@@ -1,6 +1,4 @@
-# cfast
-Consolidated Model of Fire and Smoke Transport
-
+## Consolidated Fire and Smoke Transport (CFAST)
 
 CFAST is a two-zone fire model that predicts the thermal environment caused by a fire within a compartmented structure.
 

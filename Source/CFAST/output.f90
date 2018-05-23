@@ -618,7 +618,7 @@ module output_routines
 5010 FORMAT (/,'Compartments    Doors, ...    Ceil. Vents, ...    MV Connects',/,61('-'),/,i4,12x,i4,10x,i4,17x,i4)
 5020 format (/,'Simulation     Output         Smokeview      Spreadsheet',/, &
              'Time           Interval       Interval       Interval',/, &
-             '   (s)            (s)            (s)            (s)',/,56('-'),/,i6,6x,3(i6,9x))
+             '   (s)            (s)            (s)            (s)',/,56('-'),/,4(e10.5,5x))
     end subroutine output_initial_overview
 
 ! --------------------------- output_initial_ambient_conditions -------------------------------------------

@@ -141,7 +141,7 @@
     integer :: ios
     integer, intent(in) :: lu
 
-    integer :: simulation,print,spreadsheet,smokeview
+    real(eb) :: simulation,print,spreadsheet,smokeview
     namelist /TIME/ print,simulation,spreadsheet,smokeview
 
     ios = 1

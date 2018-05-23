@@ -139,10 +139,10 @@
     integer, parameter :: default_version = 0
 
     ! time-related default values
-    integer, parameter :: default_simulation_time = 900
-    integer, parameter :: default_print_out_interval = 60
-    integer, parameter :: default_smv_out_interval = 15
-    integer, parameter :: default_ss_out_interval = 15
+    real(eb), parameter :: default_simulation_time = 900._eb
+    real(eb), parameter :: default_print_out_interval = 60._eb
+    real(eb), parameter :: default_smv_out_interval = 15._eb
+    real(eb), parameter :: default_ss_out_interval = 15._eb
 
     ! ambient condition default values
     real(eb), parameter :: default_temperature = 293.15_eb

@@ -223,7 +223,8 @@ module setup_data
     implicit none
     save
     
-    integer :: ss_out_interval, print_out_interval, smv_out_interval, time_end, i_time_end, i_time_step
+    integer :: i_time_end, i_time_step
+    real(eb) :: ss_out_interval, print_out_interval, smv_out_interval, time_end
     real(eb) :: stime, deltat
 
     character(128) :: title

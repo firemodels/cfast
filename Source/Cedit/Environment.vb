@@ -10,10 +10,10 @@ Public Class Environment
     ' All units within the class are assumed to be consistent and typically SI
     Private aTitle As String                        ' Title for the simulation
     Private aVersion As Integer                     ' CFAST version number
-    Private aSimulationTime As Integer              ' Total simulation time
-    Private aOutputInterval As Integer              ' Time interval for printed output, + is compact output and - is full output
-    Private aSpreadsheetInterval As Integer         ' Time interval for comma-separated output
-    Private aSmokeviewInterval As Integer           ' Time interval for smokeview output
+    Private aSimulationTime As Single              ' Total simulation time
+    Private aOutputInterval As Single              ' Time interval for printed output, + is compact output and - is full output
+    Private aSpreadsheetInterval As Single         ' Time interval for comma-separated output
+    Private aSmokeviewInterval As Single           ' Time interval for smokeview output
     Private aIntAmbTemperature As Single            ' Ambient temperature inside the structure at t=0
     Private aIntAmbPressure As Single               ' Ambient pressure inside the structure at t=0
     Private aIntAmbElevation As Single              ' Reference elevation for measurement of ambients inside the structure
@@ -132,44 +132,44 @@ Public Class Environment
             End If
         End Set
     End Property
-    Friend Property SimulationTime() As Integer
+    Friend Property SimulationTime() As Single
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aSimulationTime)
         End Get
-        Set(ByVal Value As Integer)
+        Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aSimulationTime Then
                 aChanged = True
                 aSimulationTime = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property OutputInterval() As Integer
+    Friend Property OutputInterval() As Single
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aOutputInterval)
         End Get
-        Set(ByVal Value As Integer)
+        Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aOutputInterval Then
                 aChanged = True
                 aOutputInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property SpreadsheetInterval() As Integer
+    Friend Property SpreadsheetInterval() As Single
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aSpreadsheetInterval)
         End Get
-        Set(ByVal Value As Integer)
+        Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aSpreadsheetInterval Then
                 aChanged = True
                 aSpreadsheetInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)
             End If
         End Set
     End Property
-    Friend Property SmokeviewInterval() As Integer
+    Friend Property SmokeviewInterval() As Single
         Get
             Return myUnits.Convert(UnitsNum.Time).FromSI(aSmokeviewInterval)
         End Get
-        Set(ByVal Value As Integer)
+        Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Time).ToSI(Value) <> aSmokeviewInterval Then
                 aChanged = True
                 aSmokeviewInterval = myUnits.Convert(UnitsNum.Time).ToSI(Value)

@@ -36,7 +36,7 @@
 &FIRE ID = 'UL_NIST_Test1'  COMP_ID = 'Compartment 1', FIRE_ID = 'UL_NIST_Test1_Fire'  LOCATION = 0, 4.3 / 
 &CHEM ID = 'UL_NIST_Test1_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.2 / 
 &TABL ID = 'UL_NIST_Test1_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'UL_NIST_Test1_Fire', DATA = 0, 0, 0.8, 0.64, 0, 0, 0, 0, 0 /
-&TABL ID = 'UL_NIST_Test1_Fire', DATA = 10, 2144, 0.8, 0.64, 0, 0, 0, 0, 0 /
-&TABL ID = 'UL_NIST_Test1_Fire', DATA = 930, 2144, 0.8, 0.64, 0, 0, 0, 0, 0 /
-&TABL ID = 'UL_NIST_Test1_Fire', DATA = 950, 0, 0.8, 0.64, 0, 0, 0, 0, 0 /
+&TABL ID = 'UL_NIST_Test1_Fire', DATA = 0, 0, 0.39, 0.64, 0, 0, 0, 0, 0 /
+&TABL ID = 'UL_NIST_Test1_Fire', DATA = 10, 2144, 0.39, 0.64, 0, 0, 0, 0, 0 /
+&TABL ID = 'UL_NIST_Test1_Fire', DATA = 930, 2144, 0.39, 0.64, 0, 0, 0, 0, 0 /
+&TABL ID = 'UL_NIST_Test1_Fire', DATA = 950, 0, 0.39, 0.64, 0, 0, 0, 0, 0 /

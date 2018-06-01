@@ -311,6 +311,7 @@ module initialization_routines
     hventinfo(1:mxhvents)%opening_final_fraction = 1.0_eb
 
     ! vertical vents
+    n_vvents = 0
     vventinfo(1:mxvvents)%shape = 1
     vventinfo(1:mxvvents)%area = 0.0_eb
     ! start with vents open

@@ -635,16 +635,12 @@ module fire_routines
         ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mv_mflow(u)*deltt
         ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mv_mflow(l)*deltt
         ventptr%total_trace_flow(u)  = ventptr%total_trace_flow(u) + &
-           ! ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*fraction*deltt
             ventptr%mv_mflow(u)*ventptr%species_fraction(u,ts)*fraction*deltt
         ventptr%total_trace_flow(l)  = ventptr%total_trace_flow(l) + &
-            !ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*fraction*deltt
             ventptr%mv_mflow(l)*ventptr%species_fraction(l,ts)*fraction*deltt
         ventptr%total_trace_filtered(u)  = ventptr%total_trace_filtered(u) + &
-            !ventptr%mv_mflow(u)*ventptr%species_fraction(u,11)*(1.0_eb-fraction)*deltt
             ventptr%mv_mflow(u)*ventptr%species_fraction(u,ts)*(1.0_eb-fraction)*deltt
         ventptr%total_trace_filtered(l)  = ventptr%total_trace_filtered(l) + &
-            !ventptr%mv_mflow(l)*ventptr%species_fraction(l,11)*(1.0_eb-fraction)*deltt
             ventptr%mv_mflow(l)*ventptr%species_fraction(l,ts)*(1.0_eb-fraction)*deltt
     end do
 

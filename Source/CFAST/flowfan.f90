@@ -48,6 +48,7 @@ module mflow_routines
     do i = 1, n_mvents
         ventptr => mventinfo(i)
         ventptr%mflow(1:2,1:2) = 0.0_eb
+        ventptr%mv_mflow(1:2) = 0.0_eb
         uflw_totals = 0.0_eb
         rampid = ventptr%ramp_id
         filterid = ventptr%filter_id
@@ -72,6 +73,8 @@ module mflow_routines
         end do
         call get_vent_opening (filterid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
 
+        ventptr%mv_mflow(u) = ventptr%mflow(1,u)
+        ventptr%mv_mflow(l) = ventptr%mflow(1,l)
         if (iroom<=nrm1) then
             uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + ventptr%mflow(1,u)
             uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + ventptr%mflow(1,l)
@@ -80,12 +83,10 @@ module mflow_routines
             do k = 1, ns
                 uflw_mf(iroom,2+k,u) = uflw_mf(iroom,2+k,u) + roomptr%species_fraction(u,k)*ventptr%mflow(1,u)
                 uflw_mf(iroom,2+k,l) = uflw_mf(iroom,2+k,l) + roomptr%species_fraction(l,k)*ventptr%mflow(1,l)
+                ventptr%species_fraction(u,k) = roomptr%species_fraction(u,k)
+                ventptr%species_fraction(l,k) = roomptr%species_fraction(l,k)
             end do
             ! amount filtered for smoke and trace species
-            !uflw_filtered(iroom,11,u) = uflw_filtered(iroom,11,u) + max(0.0_eb,filter*fu*uflw_totals(11))
-            !uflw_filtered(iroom,11,l) = uflw_filtered(iroom,11,l) + max(0.0_eb,filter*fl*uflw_totals(11))
-            !uflw_filtered(iroom,13,u) = uflw_filtered(iroom,13,u) + max(0.0_eb,filter*fu*uflw_totals(13))
-            !uflw_filtered(iroom,13,l) = uflw_filtered(iroom,13,l) + max(0.0_eb,filter*fu*uflw_totals(13))
             uflw_filtered(iroom,soot+2,u) = uflw_filtered(iroom,soot+2,u) + max(0.0_eb,filter*fu*uflw_totals(soot+2))
             uflw_filtered(iroom,soot+2,l) = uflw_filtered(iroom,soot+2,l) + max(0.0_eb,filter*fl*uflw_totals(soot+2))
             uflw_filtered(iroom,soot_flaming+2,u) = uflw_filtered(iroom,soot_flaming+2,u) + &
@@ -121,13 +122,9 @@ module mflow_routines
             uflw_filtered(iroom,m,u) = uflw_filtered(iroom,m,u) + max(0.0_eb,filter*fu*uflw_totals(11))
             uflw_filtered(iroom,m,l) = uflw_filtered(iroom,m,l) + max(0.0_eb,filter*fl*uflw_totals(11))
             uflw_filtered(iroom,q,u) = uflw_filtered(iroom,q,u) + max(0.0_eb,filter*fu* &
-                !(roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
-                !roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
                 (roomptr%species_fraction(u,soot)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
                 roomptr%species_fraction(l,soot)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
             uflw_filtered(iroom,q,l) = uflw_filtered(iroom,q,l) + max(0.0_eb,filter*fl* &
-                !(roomptr%species_fraction(u,9)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
-               ! roomptr%species_fraction(l,9)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
                 (roomptr%species_fraction(u,soot)*ventptr%mflow(1,u)*cp*roomptr%temp(u)+ &
                 roomptr%species_fraction(l,soot)*ventptr%mflow(1,l)*cp*roomptr%temp(l)))
         end if

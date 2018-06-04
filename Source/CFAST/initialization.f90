@@ -325,10 +325,10 @@ module initialization_routines
     ! mechanical vents
 
     n_mvents = 0
-    mventinfo(1:n_mvents)%total_flow(u) = 0.0_eb
-    mventinfo(1:n_mvents)%total_flow(l) = 0.0_eb
-    mventinfo(1:n_mvents)%total_trace_flow(u) = 0.0_eb
-    mventinfo(1:n_mvents)%total_trace_flow(l) = 0.0_eb
+    mventinfo(1:mxmvents)%total_flow(u) = 0.0_eb
+    mventinfo(1:mxmvents)%total_flow(l) = 0.0_eb
+    mventinfo(1:mxmvents)%total_trace_flow(u) = 0.0_eb
+    mventinfo(1:mxmvents)%total_trace_flow(l) = 0.0_eb
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering 
     mventinfo(1:mxmvents)%opening_type = trigger_by_time
     mventinfo(1:mxmvents)%opening_triggered = .false.

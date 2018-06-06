@@ -64,7 +64,7 @@ module solve_routines
     real(eb) deltamv(mxalg), hhvp(mxalg)
     integer, parameter :: lrwork = (3*mxalg**2+13*mxalg)/2
     real(eb) :: work(lrwork)
-    integer :: ires, iopt, nalg1, nprint, i, info, nodes
+    integer :: ires, iopt, nalg1, nprint, i, info, n_odes
     real(eb) :: tol
 
     type(room_type), pointer :: roomptr
@@ -119,8 +119,8 @@ module solve_routines
     call calculate_residuals(t,p,pdzero,pdold,ires,rpar,ipar)
 
     ! Added to synchronize_species_mass the species mass with the total mass of each layer at the new pressure
-    nodes = nofprd+1
-    call synchronize_species_mass (p,nodes)
+    n_odes = nofprd+1
+    call synchronize_species_mass (p,n_odes)
 
     do i = 1, nhcons
         pdold(i+nofwt) = 0.0_eb
@@ -210,7 +210,7 @@ module solve_routines
 
     !     An important note - solve sets the last variable to be solved to NOFPRD
     !     which is the beginning of the species (-1) and the end of the array which
-    !     is presently used by DASSL. The important point is that NODES is set to
+    !     is presently used by DASSL. The important point is that N_ODES is set to
     !     NOFPRD
 
     real(eb), intent(in) :: tstop
@@ -225,7 +225,7 @@ module solve_routines
     real(eb) :: pprime(maxteq), pdnew(maxteq), vatol(maxeq), vrtol(maxeq)
     real(eb) :: pdzero(maxteq) = 0.0_eb
     logical :: iprint, ismv, exists, ispread,firstpassforsmokeview
-    integer :: idid, i, nodes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj
+    integer :: idid, i, n_odes, nfires, icode, ieqmax, idisc, ires, idsave, ifdtect, ifobj
     real(eb) :: ton, toff, tpaws, tstart, tdout, dprint, dplot, dspread, t, tprint, td, tsmv, tspread, tout,  &
         ostptime, tdtect, tobj
     integer :: first_time
@@ -305,9 +305,9 @@ module solve_routines
     tottime = 0.0_eb
     prttime = 0.0_eb
 
-    ! See note in comments about the nodes=nofprd line below
-    nodes = nofprd
-    ipar(1) = nodes
+    ! Set number of equations solved by DASSL
+    n_odes = nofprd
+    ipar(1) = n_odes
     ipar(2) = all
     idset = 0
 
@@ -489,7 +489,7 @@ module solve_routines
         told = t
         call setderv(-1)
         call cptime(ton)
-        call ddassl (calculate_residuals,nodes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
+        call ddassl (calculate_residuals,n_odes,t,p,pprime,tout,info,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
         ! call cpu timer and measure, solver time within dassl and overhead time (everything else).
         call setderv(-2)
         ieqmax = ipar(3)
@@ -533,7 +533,7 @@ module solve_routines
 
         ipar(2) = all
         call calculate_residuals (t,p,pdzero,pdnew,ires,rpar,ipar)
-        call update_solution (nodes, nequals, t, told, p, pold, pdnew, pdold)
+        call update_solution (n_odes, nequals, t, told, p, pold, pdnew, pdold)
 
         ! advance the detector temperature solutions and check for object ignition
         idsave = 0
@@ -580,7 +580,7 @@ module solve_routines
                 end do
                 info2(2) = 1
                 told = t
-                call ddassl (calculate_residuals,nodes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
+                call ddassl (calculate_residuals,n_odes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
 
                 ! make sure dassl is happy (again)
                 if (idid<0) then
@@ -603,7 +603,7 @@ module solve_routines
                 ! to save fire release rates in room where detector has
                 ! activated.  (this happens because idset /= 0)
                 call calculate_residuals (t, p, pdzero, pdnew, ires, rpar, ipar)
-                call update_solution (nodes, nequals, t, told, p, pold, pdnew, pdold)
+                call update_solution (n_odes, nequals, t, told, p, pold, pdnew, pdold)
                 call set_info_flags (info,rwork)
             else if (td==t) then
                 call set_info_flags (info,rwork)
@@ -644,12 +644,12 @@ module solve_routines
 
 ! --------------------------- update_solution -------------------------------------------
 
-    subroutine update_solution(nodes, nequals,  t, told, p, pold, pdnew, pdold)
+    subroutine update_solution(n_odes, nequals,  t, told, p, pold, pdnew, pdold)
 
     !     routine: update_solution
     !     purpose: update solution returned by dassl
 
-    integer, intent(in) :: nodes, nequals
+    integer, intent(in) :: n_odes, nequals
     real(eb), intent(in) :: t, told, pdnew(*)
 
     real(eb), intent(inout) :: p(*), pdold(*)
@@ -661,7 +661,7 @@ module solve_routines
     dt = t - told
 
     ! advance species
-    do i = nodes + 1, nequals
+    do i = n_odes + 1, nequals
         p(i) = p(i) + dt*pdold(i)
         p(i) = max (0.0_eb, p(i))
         pdold(i) = pdnew(i)
@@ -671,7 +671,7 @@ module solve_routines
     call target (1,dt)
 
     ! make sure species mass adds up to total mass
-    if (ns>0) call synchronize_species_mass (p,nodes+1)
+    if (ns>0) call synchronize_species_mass (p,n_odes+1)
 
     pold(1:nequals) = p(1:nequals)
 

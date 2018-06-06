@@ -26,6 +26,8 @@ call ..\..\Validation\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast gas_tenability -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast heat_tenability -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast methane_flame_simple -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast Trace_Species_1 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast Trace_Species_2 -V
 cd ..
 
 echo Running Thermal Equilibrium cases

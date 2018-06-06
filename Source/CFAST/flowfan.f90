@@ -98,7 +98,7 @@ module mflow_routines
             uflw_filtered(iroom,soot_smolder+2,l) = uflw_filtered(iroom,soot_smolder+2,l) + & 
                 max(0.0_eb,filter*fl*uflw_totals(soot_smolder+2))
             uflw_filtered(iroom,ts+2,u) = uflw_filtered(iroom,ts+2,u) + max(0.0_eb,filter*fu*uflw_totals(ts+2))
-            uflw_filtered(iroom,ts+2,l) = uflw_filtered(iroom,ts+2,l) + max(0.0_eb,filter*fu*uflw_totals(ts+2))
+            uflw_filtered(iroom,ts+2,l) = uflw_filtered(iroom,ts+2,l) + max(0.0_eb,filter*fl*uflw_totals(ts+2))
         end if
 
         ! calculate mass and enthapy flows for the to room

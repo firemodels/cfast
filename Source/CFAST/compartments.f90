@@ -13,7 +13,7 @@
 
     private
 
-    public layer_mixing, synchronize_species_mass, room_connections
+    public layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
     contains
 
@@ -240,6 +240,259 @@
 
     return
     end subroutine room_connections
+
+! ---------------------------- wall_opening_fraction -------------------------------------------
+
+    subroutine wall_opening_fraction (tsec)
+
+    !     purpose: to calculate the opening ratio of a surface
+    
+    !     note:
+    !     surface number associated with ceiling, upper front, upper right, upper rear, upper left
+    !                                       lower front, lower right, lower rear, lower left, floor 
+    !     is denoted as 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and this is different than logic in target subroutine
+
+    real(eb), intent(in) :: tsec          ! current simulation    
+    integer :: i, j, k                    ! counter
+    integer :: side                       ! surface number (10 surfaces in total)
+    integer :: map(4) = (/3, 4, 1, 2/)    ! surface correction mapping
+    integer :: top, bottom                ! intermediate integers used to keep track of the compartment number in vertical vents
+    integer :: from, to                   ! intermediate integers used to keep track of the compartment number in mechanical vertical vents
+    real(eb) :: A_total(10)               ! total surface area
+    real(eb) :: A_opening(10)             ! total opening area for a surface
+    real(eb) :: temp_opening              ! intermediate value to store an opening area for a surface
+    real(eb) :: fraction                  ! opening fraction (0 to 1)
+    real(eb) :: length                    ! length of the square opening for mechanical horizontal (wall) vents
+    real(eb) :: lowest, highest           ! sill and soffit of an opening (be aware that there are 2 reference points
+    real(eb) :: abs_cheight               ! absolute height for the compartment
+    
+    type(vent_type), pointer :: ventptr
+    type(room_type), pointer :: roomptr
+        
+    do i = 1, nrm1
+        A_opening(:) = 0._eb
+        A_total (:)  = 0._eb
+        
+        roomptr => roominfo(i)
+    
+        A_total(1)  = roomptr%cwidth*roomptr%cdepth
+        A_total(2)  = roomptr%cwidth*roomptr%depth(u)
+        A_total(3)  = roomptr%cdepth*roomptr%depth(u)
+        A_total(4)  = A_total(2)
+        A_total(5)  = A_total(3)
+        A_total(6)  = roomptr%cwidth*roomptr%depth(l)
+        A_total(7)  = roomptr%cdepth*roomptr%depth(l)
+        A_total(8)  = A_total(6)
+        A_total(9)  = A_total(7)
+        A_total(10) = A_total(1)
+        
+        ! Determine areas for horizontal (wall) vents
+        do j = 1, n_hvents
+            ventptr=>hventinfo(j)
+            if (ventptr%room1 == i .or. ventptr%room2 == i) then
+                fraction = 0._eb
+                call get_vent_opening (ventptr%ramp_id,'H',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                        
+                ! identify surface number
+                if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                    side = ventptr%face
+                else if (ventptr%room2 == i) then 
+                ! correct location for vent in room i because vent info is given as it is in room2
+                    side = map(ventptr%face)
+                end if 
+                        
+                do k = 1, 2
+                    if (k == 1) then
+                        ! reference point for z is at roomptr%cheight
+                        abs_cheight = roomptr%z0 + roomptr%cheight
+                        lowest  = abs_cheight - ventptr%absolute_soffit
+                        highest = abs_cheight - ventptr%absolute_sill
+                        
+                        if (roomptr%depth(k) < lowest) then
+                            temp_opening = 0._eb
+                        else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
+                            temp_opening = (roomptr%depth(k) - lowest) * ventptr%width
+                        else if (roomptr%depth(k) > highest) then
+                            temp_opening = (highest - lowest) * ventptr%width
+                        end if
+                        
+                        A_opening(side+1) = A_opening(side+1) + fraction*temp_opening  
+                    else if (k == 2) then
+                        ! reference point for z is at 0
+                        abs_cheight = roomptr%z0 + roomptr%cheight
+                        lowest  = ventptr%absolute_sill - roomptr%z0
+                        highest = ventptr%absolute_soffit - roomptr%z0
+                        
+                        if (roomptr%depth(k) < lowest) then
+                            temp_opening = 0._eb
+                        else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
+                            temp_opening = (roomptr%depth(k) - lowest) * ventptr%width
+                        else if (roomptr%depth(k) > highest) then
+                            temp_opening = (highest - lowest) * ventptr%width
+                        end if
+                        
+                        A_opening(side+5) = A_opening(side+5) + fraction*temp_opening  
+                    end if                   
+                end do
+            end if
+        end do
+        
+        ! Determine areas for mechanical vents
+        do j = 1, n_mvents
+            ventptr=>mventinfo(j)
+            ! For horizontal (ceiling/floor) mechanical vents
+            if ((ventptr%room1 == i .or. ventptr%room2 == i) .and. ventptr%orientation(1) == 2) then
+                fraction = 0._eb
+                call get_vent_opening (ventptr%ramp_id,'M',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                
+                from = ventptr%room1
+                to = ventptr%room2
+                                
+                side = 0
+                if (from <= nrm1 .and. to == nrm1 + 1) then
+                    side = 1
+                else if (to <= nrm1 .and. from == nrm1 + 1) then
+                    side = 10
+                else if (roominfo(from)%z0 > roominfo(to)%z0) then 
+                    side = 10
+                    if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                        continue
+                    else if (ventptr%room2 == i) then 
+                        ! correct location for vent in room i because vent info is given as it is in room2
+                        if (side == 1) then
+                            side = 10
+                        else if (side == 10) then
+                            side = 1
+                        end if
+                    end if
+                else if (roominfo(from)%z0 < roominfo(to)%z0) then
+                    side = 1
+                    if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                        continue
+                    else if (ventptr%room2 == i) then 
+                        ! correct location for vent in room i because vent info is given as it is in room2
+                        if (side == 1) then
+                            side = 10
+                        else if (side == 10) then
+                            side = 1
+                        end if
+                    end if
+                end if
+                
+                temp_opening = ventptr%diffuser_area(1)
+                if (side .ne. 0) A_opening(side) = A_opening(side) + fraction*temp_opening
+                
+            ! For vertical (wall) mechanical vents
+            else if ((ventptr%room1 == i .or. ventptr%room2 == i) .and. ventptr%orientation(1) == 1) then 
+                fraction = 0._eb
+                length = sqrt(ventptr%diffuser_area(1))
+                call get_vent_opening (ventptr%ramp_id,'M',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                
+                ! There is a possibility that the mechanical vent is not attached to any surfaces. 
+                ! If this is the case, the assocated vent area will be counted as opening area for any surfaces.
+                side = 0
+                if (ventptr%yoffset .eq. 0._eb) side = 1
+                if (ventptr%xoffset .eq. roomptr%cwidth) side = 2
+                if (ventptr%yoffset .eq. roomptr%cdepth) side = 3
+                if (ventptr%xoffset .eq. 0._eb) side = 4
+                        
+                if (side .ne. 0) then
+                    if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                        continue
+                    else if (ventptr%room2 == i) then 
+                        ! correct location for vent in room i because vent info is given as it is in room2
+                        side = map(side)
+                    end if
+                end if
+                
+                do k = 1, 2                    
+                    if (k == 1) then
+                        ! reference point for z is at roomptr%cheight
+                        abs_cheight = roomptr%z0 + roomptr%cheight
+                        lowest  = abs_cheight - (roomptr%z0 + ventptr%height(1) + length/2._eb)
+                        highest = abs_cheight - (roomptr%z0 + ventptr%height(1) - length/2._eb)
+                        
+                        if (roomptr%depth(k) < lowest) then
+                            temp_opening = 0._eb
+                        else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
+                            temp_opening = (roomptr%depth(k) - lowest) * length
+                        else if (roomptr%depth(k) > highest) then
+                            temp_opening = (highest - lowest) * length
+                        end if
+                        
+                        A_opening(side+1) = A_opening(side+1) + fraction*temp_opening  
+                    else if (k == 2) then
+                        ! reference point for z is at 0
+                        abs_cheight = roomptr%z0 + roomptr%cheight
+                        lowest  = roomptr%z0 + ventptr%height(1) - length/2._eb
+                        highest = roomptr%z0 + ventptr%height(1) + length/2._eb
+                        
+                        if (roomptr%depth(k) < lowest) then
+                            temp_opening = 0._eb
+                        else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
+                            temp_opening = (roomptr%depth(k) - lowest) * length
+                        else if (roomptr%depth(k) > highest) then
+                            temp_opening = (highest - lowest) * length
+                        end if
+                        
+                        A_opening(side+5) = A_opening(side+5) + fraction*temp_opening  
+                    end if                  
+                end do
+            end if
+        end do
+        
+        ! Determine areas for vertical (ceiling/floor) vents
+        do j = 1, n_vvents
+            ventptr=>vventinfo(j)
+            if (ventptr%room1 == i .or. ventptr%room2 == i) then 
+                fraction = 0._eb
+                call get_vent_opening (ventptr%ramp_id,'V',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
+                
+                top = ventptr%room1
+                bottom = ventptr%room2
+                
+                side = 0
+                if (top <= nrm1 .and. bottom == nrm1 +1 ) then
+                    side = 10
+                else if (bottom <= nrm1 .and. top == nrm1 + 1) then
+                    side = 1
+                else if (roominfo(top)%z0 > roominfo(bottom)%z0) then 
+                    side = 1
+                    if (ventptr%room2 == i .or. ventptr%room2 == nrm1+1) then
+                        continue
+                    else if (ventptr%room1 == i) then 
+                        ! correct location for vent in room i because vent info is given as it is in room2
+                        if (side == 1) then
+                            side = 10
+                        else if (side == 10) then
+                            side = 1
+                        end if
+                    end if
+                else if (roominfo(top)%z0 < roominfo(bottom)%z0) then
+                    side = 10
+                    if (ventptr%room2 == i .or. ventptr%room2 == nrm1+1) then
+                        continue
+                    else if (ventptr%room1 == i) then 
+                        ! correct location for vent in room i because vent info is given as it is in room2
+                        if (side == 1) then
+                            side = 10
+                        else if (side == 10) then
+                            side = 1
+                        end if
+                    end if
+                end if
+                
+                ! Bare in mind that vent shape can be circular or rectangular
+                temp_opening = ventptr%area
+                if (side .ne. 0) A_opening(side) = A_opening(side) + fraction*temp_opening
+            end if
+        end do
+        
+        roomptr%chi(:) = A_opening(:)/A_total(:)
+    end do
+
+    return
+    end subroutine wall_opening_fraction
 
  end module compartment_routines
     

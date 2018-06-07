@@ -1731,7 +1731,7 @@ continue
                 end if
 
                 ! Avoiding referring "OUTSIDE"
-                if (j /= nr) then
+                if (i == nr) then
                     roomptr => roominfo(j)
                 else
                     roomptr => roominfo(i)
@@ -1788,8 +1788,13 @@ continue
                 ventptr%filter_final_time = filter_time + 1.0_eb
                 ventptr%filter_final_fraction = filter_efficiency / 100.0_eb
 
-                ventptr%orientation(1) = 1
-                ventptr%orientation(2) = 1
+                do jj = 1, 2
+                    if (orientations(jj) == 'VERTICAL') then
+                        ventptr%orientation(jj) = 1
+                    else if (orientations(jj) == 'HORIZONTAL') then
+                        ventptr%orientation(jj) = 2
+                    end if 
+                end do 
 
                 ventptr%height(1) = heights(1)
                 ventptr%diffuser_area(1) = areas(1)
@@ -2025,7 +2030,7 @@ continue
     criterion             = 'TIME'
     cutoffs(:)            = 0._eb
     devc_id               = 'NULL'
-    f                     = -1001._eb
+    f(:)                  = -1001._eb
     face                  = 'NULL'
     filter_time           = 0._eb
     filter_efficiency     = 0._eb
@@ -2034,15 +2039,15 @@ continue
     id                    = 'NULL'
     offset                = 0._eb
     offsets(:)            = 0._eb
-    orientations          = 'VERTICAL'
+    orientations(:)       = 'NULL'
     pre_fraction          = 1._eb
     post_fraction         = 1._eb
     setpoint              = 0._eb
     shape                 = 'NULL'
-    t                     = -1001._eb
+    t(:)                  = -1001._eb
     top                   = 0._eb
     type                  = 'NULL'
-        width                 = 0._eb
+    width                 = 0._eb
 
     end subroutine set_defaults
 

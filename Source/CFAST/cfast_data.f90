@@ -34,6 +34,7 @@ module  diag_data
     
     ! Diagnosis variables
     real(eb) :: partial_pressure_h2o, partial_pressure_co2, gas_temperature
+    real(eb) :: upper_layer_thickness
     character(64) :: rad_solver
     logical :: radi_verification_flag=.false., radi_radnnet_flag=.false.
     ! Diagnosis variables (target adiabatic surface temperature)
@@ -241,7 +242,7 @@ module setup_data
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
-        ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
+        ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning
 
     ! Work arrays for the csv input routines

@@ -19,6 +19,7 @@ module output_routines
     use room_data
     use ramp_data
     use namelist_data
+    use diag_data
 
     implicit none
 
@@ -1346,6 +1347,7 @@ module output_routines
         open (unit=23, file=ssspecies,form='formatted')
         open (unit=24, file=ssspeciesmass,form='formatted')
         open (unit=25, file=sswall,form='formatted')
+        if (radi_verification_flag) open (unit=26, file=ssdiag,form='formatted')
     end if
 
     return

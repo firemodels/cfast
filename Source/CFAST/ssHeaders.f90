@@ -16,7 +16,7 @@ module spreadsheet_header_routines
     private
 
     public ssheaders_normal, ssheaders_species, ssheaders_speciesmass, ssheaders_flow, ssheaders_target, ssheaders_smv, &
-        ssHeaders_resid, ssHeaders_fslabs
+        ssHeaders_resid, ssHeaders_fslabs, ssheaders_diagnosis
 
     contains
 
@@ -972,5 +972,52 @@ module spreadsheet_header_routines
     write (ioslab,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
 
     end subroutine ssHeaders_fslabs
+
+! --------------------------- ssheaders_diagnosis -------------------------------------------
+
+    subroutine ssheaders_diagnosis
+
+    ! This is the header information for the normal spreadsheet output
+
+    integer, parameter :: maxhead = 1+10*mxrooms
+    character(35) :: headertext(4,maxhead), cRoom, Labels(11), LabelsShort(11), LabelUnits(11)
+    integer :: position, i, j
+    type(room_type), pointer :: roomptr
+
+    data Labels / 'Time','Ceiling Opening Fraction', 'Upper Front Opening Fraction', 'Upper Right Opening Fraction', &
+    'Upper Back Opening Fraction', 'Upper Left Opening Fraction', 'Lower Front Opening Fraction', 'Lower Right Opening Fraction', &
+    'Lower Back Opening Fraction', 'Lower Left Opening Fraction', 'Floor Opening Fraction' /
+    data LabelsShort / 'Time', 'COF_', 'UFOF_', 'UROF_', 'UBOF_', 'ULOF_', 'LFOF_', 'LROF_', 'LBOF_', 'LLOF_', &
+    'FOF_' /
+    data LabelUnits / 's', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' /
+
+    !  spreadsheet header.  Add time first
+    headertext(1,1) = LabelsShort(1)
+    headertext(2,1) = Labels(1)
+    headertext(3,1) = ' '
+    headertext(4,1) = LabelUnits(1)
+
+    position = 1
+
+    ! Compartment variables
+    do j = 1, nrm1
+        roomptr => roominfo(j)
+        do i = 1, 10
+            position = position + 1
+            call toIntString(j,cRoom)
+            headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
+            headertext(2,position) = Labels(i+1)
+            headertext(3,position) = roomptr%name
+            headertext(4,position) = LabelUnits(i+1)
+        end do
+    end do
+
+    ! write out header
+    write (26,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (26,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (26,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (26,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+
+    end subroutine ssheaders_diagnosis
 
 end module spreadsheet_header_routines

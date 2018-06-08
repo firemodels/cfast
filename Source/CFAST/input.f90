@@ -467,6 +467,7 @@
     ssspecies = datapath(1:lp) // project(1:ld) // '_s.csv'
     ssspeciesmass = datapath(1:lp) // project(1:ld) // '_m.csv'
     sswall = datapath(1:lp) // project(1:ld) // '_w.csv'
+    ssdiag = datapath(1:lp) // project(1:ld) // '_d.csv'
     gitfile = datapath(1:lp) // project(1:ld) // '_git.txt'
     errorlogging = datapath(1:lp) // project(1:ld) // '.log'
     stopfile = datapath(1:lp) // project(1:ld) // '.stop'

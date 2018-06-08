@@ -252,6 +252,16 @@ module solve_routines
     idid = 1
     firstpassforsmokeview = .true.
     first_time = 1
+    
+    ! To run verification cases then exit
+    if (radi_verification_flag) then
+        t = tstop
+        if (upper_layer_thickness /= -1001._eb) then
+            call wall_opening_fraction(t)
+            call output_spreadsheet(t)
+            return
+        end if
+    end if
 
     ! Output options
     if (dprint<0.0001_eb.or.print_out_interval==0) then

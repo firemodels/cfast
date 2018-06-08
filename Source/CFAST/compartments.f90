@@ -6,6 +6,7 @@
     use room_data
     use option_data
     use vent_data
+    use diag_data
     use utility_routines
     use opening_fractions, only : get_vent_opening
 
@@ -274,6 +275,11 @@
         A_total (:)  = 0._eb
         
         roomptr => roominfo(i)
+        
+        if (radi_verification_flag) then
+            roomptr%depth(u) = upper_layer_thickness
+            roomptr%depth(l) = roomptr%cheight - roomptr%depth(u)
+        end if
     
         A_total(1)  = roomptr%cwidth*roomptr%cdepth
         A_total(2)  = roomptr%cwidth*roomptr%depth(u)

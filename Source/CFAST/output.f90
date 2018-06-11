@@ -1347,7 +1347,7 @@ module output_routines
         open (unit=23, file=ssspecies,form='formatted')
         open (unit=24, file=ssspeciesmass,form='formatted')
         open (unit=25, file=sswall,form='formatted')
-        if (radi_verification_flag) open (unit=26, file=ssdiag,form='formatted')
+        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (unit=26, file=ssdiag,form='formatted')
     end if
 
     return

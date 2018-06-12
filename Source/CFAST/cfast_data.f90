@@ -33,18 +33,18 @@ module  diag_data
     character(256) :: residfile, residcsv, slabcsv
     
     ! Verification flag
-    logical :: radi_verification_flag=.false.
-    real(eb) :: verification_time_step=0._eb
-    ! Diagnosis variables (radiative properties)
+    logical :: radi_verification_flag = .false.
+    real(eb) :: verification_time_step = 0._eb
+    ! Diagnostic variables for radiative properties
     real(eb) :: partial_pressure_h2o, partial_pressure_co2, gas_temperature
-    ! Diagnosis veriables (radiation solver)
+    ! Diagnostic veriables for radiation solver
     character(64) :: rad_solver
-    logical :: radi_radnnet_flag=.false.
-    ! Diagnosis variables (target adiabatic surface temperature)
+    logical :: radi_radnnet_flag = .false.
+    ! Diagnostic variables for adiabatic target surface temperature
     logical :: verification_ast=.false.
-    real(eb) :: radiative_incident_flux_AST=0._eb
-    ! Diagnosis variable (surface opening fraction)
-    real(eb) :: upper_layer_thickness=0._eb
+    real(eb) :: radiative_incident_flux_AST = 0._eb
+    ! Diagnostic variable for surface opening fraction
+    real(eb) :: upper_layer_thickness = 0._eb
 
 end module diag_data
 

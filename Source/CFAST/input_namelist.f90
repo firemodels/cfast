@@ -2506,7 +2506,8 @@ continue
                     ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
                     conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
                     steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model, &
-                    residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_flux 
+                    residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_flux, &
+                    upper_layer_thickness, verification_time_step
 
     ios = 1
 
@@ -2647,8 +2648,10 @@ continue
     residual_debug_print            = 'OFF'
     layer_mixing_sub_model          = 'ON'
     adiabatic_target_verification   = 'OFF'
-    radiative_incident_flux    = 0._eb
-
+    radiative_incident_flux         = 0._eb
+    upper_layer_thickness           = -1001._eb
+    verification_time_step          = 0._eb
+    
     end subroutine set_defaults
 
     end subroutine read_diag

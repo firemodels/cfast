@@ -276,7 +276,7 @@
         
         roomptr => roominfo(i)
         
-        if (radi_verification_flag) then
+        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) then
             roomptr%depth(u) = upper_layer_thickness
             roomptr%depth(l) = roomptr%cheight - roomptr%depth(u)
         end if

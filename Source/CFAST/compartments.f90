@@ -258,9 +258,9 @@
     integer :: side                       ! surface number (10 surfaces in total)
     integer :: map(4) = (/3, 4, 1, 2/)    ! surface correction mapping
     integer :: top, bottom                ! intermediate integers used to keep track of the compartment number in vertical vents
-    integer :: from, to                   ! intermediate integers used to keep track of the compartment number in mechanical vertical vents
-    real(eb) :: A_total(10)               ! total surface area
-    real(eb) :: A_opening(10)             ! total opening area for a surface
+    integer :: from, to                   ! intermediate integers used to keep track of the compartment number in mechanical vents
+    real(eb) :: a_total(10)               ! total surface area
+    real(eb) :: a_opening(10)             ! total opening area for a surface
     real(eb) :: temp_opening              ! intermediate value to store an opening area for a surface
     real(eb) :: fraction                  ! opening fraction (0 to 1)
     real(eb) :: length                    ! length of the square opening for mechanical horizontal (wall) vents
@@ -271,8 +271,8 @@
     type(room_type), pointer :: roomptr
         
     do i = 1, nrm1
-        A_opening(:) = 0._eb
-        A_total (:)  = 0._eb
+        a_opening(:) = 0._eb
+        a_total (:)  = 0._eb
         
         roomptr => roominfo(i)
         
@@ -281,16 +281,16 @@
             roomptr%depth(l) = roomptr%cheight - roomptr%depth(u)
         end if
     
-        A_total(1)  = roomptr%cwidth*roomptr%cdepth
-        A_total(2)  = roomptr%cwidth*roomptr%depth(u)
-        A_total(3)  = roomptr%cdepth*roomptr%depth(u)
-        A_total(4)  = A_total(2)
-        A_total(5)  = A_total(3)
-        A_total(6)  = roomptr%cwidth*roomptr%depth(l)
-        A_total(7)  = roomptr%cdepth*roomptr%depth(l)
-        A_total(8)  = A_total(6)
-        A_total(9)  = A_total(7)
-        A_total(10) = A_total(1)
+        a_total(1)  = roomptr%cwidth*roomptr%cdepth
+        a_total(2)  = roomptr%cwidth*roomptr%depth(u)
+        a_total(3)  = roomptr%cdepth*roomptr%depth(u)
+        a_total(4)  = a_total(2)
+        a_total(5)  = a_total(3)
+        a_total(6)  = roomptr%cwidth*roomptr%depth(l)
+        a_total(7)  = roomptr%cdepth*roomptr%depth(l)
+        a_total(8)  = a_total(6)
+        a_total(9)  = a_total(7)
+        a_total(10) = a_total(1)
         
         ! Determine areas for horizontal (wall) vents
         do j = 1, n_hvents
@@ -322,7 +322,7 @@
                             temp_opening = (highest - lowest) * ventptr%width
                         end if
                         
-                        A_opening(side+1) = A_opening(side+1) + fraction*temp_opening  
+                        a_opening(side+1) = a_opening(side+1) + fraction*temp_opening  
                     else if (k == 2) then
                         ! reference point for z is at 0
                         abs_cheight = roomptr%z0 + roomptr%cheight
@@ -337,7 +337,7 @@
                             temp_opening = (highest - lowest) * ventptr%width
                         end if
                         
-                        A_opening(side+5) = A_opening(side+5) + fraction*temp_opening  
+                        a_opening(side+5) = a_opening(side+5) + fraction*temp_opening  
                     end if                   
                 end do
             end if
@@ -386,7 +386,7 @@
                 end if
                 
                 temp_opening = ventptr%diffuser_area(1)
-                if (side .ne. 0) A_opening(side) = A_opening(side) + fraction*temp_opening
+                if (side .ne. 0) a_opening(side) = a_opening(side) + fraction*temp_opening
                 
             ! For vertical (wall) mechanical vents
             else if ((ventptr%room1 == i .or. ventptr%room2 == i) .and. ventptr%orientation(1) == 1) then 
@@ -426,7 +426,7 @@
                             temp_opening = (highest - lowest) * length
                         end if
                         
-                        A_opening(side+1) = A_opening(side+1) + fraction*temp_opening  
+                        a_opening(side+1) = a_opening(side+1) + fraction*temp_opening  
                     else if (k == 2) then
                         ! reference point for z is at 0
                         abs_cheight = roomptr%z0 + roomptr%cheight
@@ -441,7 +441,7 @@
                             temp_opening = (highest - lowest) * length
                         end if
                         
-                        A_opening(side+5) = A_opening(side+5) + fraction*temp_opening  
+                        a_opening(side+5) = a_opening(side+5) + fraction*temp_opening  
                     end if                  
                 end do
             end if
@@ -490,11 +490,11 @@
                 
                 ! Bare in mind that vent shape can be circular or rectangular
                 temp_opening = ventptr%area
-                if (side .ne. 0) A_opening(side) = A_opening(side) + fraction*temp_opening
+                if (side .ne. 0) a_opening(side) = a_opening(side) + fraction*temp_opening
             end if
         end do
         
-        roomptr%chi(:) = A_opening(:)/A_total(:)
+        roomptr%chi(:) = a_opening(:)/a_total(:)
     end do
 
     return

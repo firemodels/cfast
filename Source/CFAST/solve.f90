@@ -255,10 +255,17 @@ module solve_routines
     
     ! To run verification cases then exit
     if (radi_verification_flag) then
-        t = tstop
+        if (verification_time_step /= 0._eb) then
+            dt = verification_time_step
+        else
+            dt = tstop
+        end if 
         if (upper_layer_thickness /= -1001._eb) then
-            call wall_opening_fraction(t)
-            call output_spreadsheet(t)
+            do while (t<=tstop)
+                call wall_opening_fraction(t)
+                call output_spreadsheet(t)
+            t = t + dt
+            end do
             return
         end if
     end if

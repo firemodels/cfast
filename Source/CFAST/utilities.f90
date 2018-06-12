@@ -1242,7 +1242,7 @@
         iramp = find_vent_opening_ramp (rampid,venttype,room1,room2,counter)
         if (iramp>0) then
             rampptr=>rampinfo(iramp)
-            if (time<rampptr%x(1)) then
+            if (time<=rampptr%x(1)) then
                 fraction = rampptr%f_of_x(1)
                 return
             else if (time>rampptr%x(rampptr%npoints)) then

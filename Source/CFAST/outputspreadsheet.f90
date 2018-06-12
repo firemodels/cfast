@@ -17,6 +17,7 @@ module spreadsheet_routines
     use cparams
     use vent_data
     use room_data
+    use diag_data
 
     implicit none
 
@@ -37,6 +38,7 @@ module spreadsheet_routines
     call output_spreadsheet_species_mass (time)
     call output_spreadsheet_flow (time)
     call output_spreadsheet_target (time)
+    if (radi_verification_flag) call output_spreadsheet_diag(time)
 
     return
 
@@ -622,5 +624,43 @@ module spreadsheet_routines
 
     return
     end subroutine output_spreadsheet_smokeview
+    
+    ! --------------------------- output_spreadsheet_diag -------------------------------------------
+
+    subroutine output_spreadsheet_diag (time)
+
+    ! This routine writes to the {project}_d.csv file, the diagnostic parameters
+
+    real(eb), intent(in) :: time
+
+    integer, parameter :: maxhead = 1+10*mxrooms
+    real(eb) :: outarray(maxhead)
+    logical :: firstc = .true.
+    integer :: position, i, j
+    type(room_type), pointer :: roomptr
+
+    save firstc
+
+    ! headers
+    if (firstc) then
+        call ssheaders_diagnosis
+        firstc = .false.
+    end if
+
+    position = 0
+    call ssaddtolist (position,time,outarray)
+
+    ! compartment information
+    do i = 1, nrm1
+        roomptr => roominfo(i)
+        do j = 1, 10
+            call ssaddtolist (position,roomptr%chi(j),outarray)
+        end do
+    end do
+
+    call ssprintresults (26, position, outarray)
+    
+    return
+    end subroutine output_spreadsheet_diag
 
 end module spreadsheet_routines

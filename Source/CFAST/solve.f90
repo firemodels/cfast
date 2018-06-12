@@ -18,7 +18,7 @@ module solve_routines
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
     use utility_routines, only: mat2mult, interp, shellsort, cptime, xerror, funit
     use vflow_routines, only: vertical_flow
-    use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections
+    use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
     use cenviro
     use ramp_data
@@ -252,6 +252,16 @@ module solve_routines
     idid = 1
     firstpassforsmokeview = .true.
     first_time = 1
+    
+    ! To run verification cases then exit
+    if (radi_verification_flag) then
+        t = tstop
+        if (upper_layer_thickness /= -1001._eb) then
+            call wall_opening_fraction(t)
+            call output_spreadsheet(t)
+            return
+        end if
+    end if
 
     ! Output options
     if (dprint<0.0001_eb.or.print_out_interval==0) then
@@ -921,6 +931,9 @@ module solve_routines
     ! calculate heat and mass flows due to fires
     call fire (tsec,flows_fires)
     call door_jet (flows_doorjets,djetflg)
+    
+    ! calculation opening fraction for radiation loss and etc
+    call wall_opening_fraction (tsec)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
     call convection (flows_convection,fluxes_convection)

@@ -32,13 +32,19 @@ module  diag_data
     real(eb) ::   dbtime
     character(256) :: residfile, residcsv, slabcsv
     
-    ! Diagnosis variables
+    ! Verification flag
+    logical :: radi_verification_flag=.false.
+    real(eb) :: verification_time_step=0._eb
+    ! Diagnosis variables (radiative properties)
     real(eb) :: partial_pressure_h2o, partial_pressure_co2, gas_temperature
+    ! Diagnosis veriables (radiation solver)
     character(64) :: rad_solver
-    logical :: radi_verification_flag=.false., radi_radnnet_flag=.false.
+    logical :: radi_radnnet_flag=.false.
     ! Diagnosis variables (target adiabatic surface temperature)
     logical :: verification_ast=.false.
     real(eb) :: radiative_incident_flux_AST=0._eb
+    ! Diagnosis variable (surface opening fraction)
+    real(eb) :: upper_layer_thickness=0._eb
 
 end module diag_data
 
@@ -241,7 +247,7 @@ module setup_data
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
-        ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, gitfile, errorlogging, stopfile, solverini, &
+        ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning
 
     ! Work arrays for the csv input routines

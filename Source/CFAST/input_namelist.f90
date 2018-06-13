@@ -2540,6 +2540,7 @@ continue
 
         if (rad_solver == 'RADNNET') radi_radnnet_flag = .true.   
         
+        if (upper_layer_thickness/=-1001._eb) radi_verification_flag = .true.
         if (partial_pressure_h2o/=-1001._eb) radi_verification_flag = .true.
         if (partial_pressure_co2/=-1001._eb) radi_verification_flag = .true.
         if (gas_temperature/=-1001._eb) then
@@ -2651,7 +2652,7 @@ continue
     radiative_incident_flux         = 0._eb
     upper_layer_thickness           = -1001._eb
     verification_time_step          = 0._eb
-    
+
     end subroutine set_defaults
 
     end subroutine read_diag

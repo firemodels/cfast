@@ -260,8 +260,6 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 
 \clearpage
 
-\clearpage
-
 
 \section{Ventilation}
 \label{ventilation}
@@ -285,7 +283,6 @@ Figure~\ref{fig:vent1} shows how the pressure changes as air flows through the c
 \caption[Results of the test case {\ct ventilation\_1.in}]{Expected and CFAST calculated values for pressure of the compartment for the case {\ct ventilation\_1.in}.}
 \label{fig:vent1}
 \end{figure}
-
 
 
 \subsection{Steady-State Air Flow}
@@ -343,6 +340,7 @@ where $\delta A$ represents the infinitesimal area of the door segment and $\rho
 \label{fig:vel}
 \end{figure}
 
+
 \subsection{Flow Through Different Vent Types}
 \label{VVent_Tests}
 
@@ -356,6 +354,55 @@ A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12
 \caption[Results of the test case {\ct VVent\_Tests.in}]{Expected and CFAST calculated values for mass flow through vents {\ct VVent\_Tests.in}.}
 \label{fig:vvent}
 \end{figure}
+
+
+\subsection{Surface Opening Fraction for Vents}
+\label{Surface_Opening_Fraction}
+
+This case tests the computation of the surface opening fraction. A three-compartment geometry is shown in Figure~\ref{SOF_GEO}. Different horizontal, vertical, and/or mechanical vents are included in each compartment. Given with the dimensions of the compartments, the upper layer thickness of each compartment, and the locations and dimensions of each vent, the surface opening fraction for a surface, $\chi$, can be approximated using the following equation
+\begin{equation}
+\chi = \frac{\sum_{i=1}^N A_{opening,i}} {A_{total}}
+\end{equation}
+where \textit{N} is the total number of vents, \textit{A\textsubscript{opening}} is the opening area associated with a vent, \textit{A\textsubscript{total}} is the total surface area. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figures~\ref{SOF_Result_1}, \ref{SOF_Result_2}, \ref{SOF_Result_3}, and \ref{SOF_Result_4}, respectively. 
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{FIGURES/Verification/surface_opening_fraction_1} \\
+\caption[Geometry of the test case {\ct surface\_opening\_fraction\_1.in}]{Geometry of the test case {\ct surface\_opening\_fraction\_1.in}.}
+\label{SOF_GEO}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_1}
+\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 1 upper layer.}
+\label{SOF_Result_1}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_2}
+\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 1 lower layer.}
+\label{SOF_Result_2}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_3}
+\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 2.}
+\label{SOF_Result_3}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_4}
+\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 3.}
+\label{SOF_Result_4}
+\end{figure}
+
+
+\clearpage
+
 
 \section{Heat Transfer}
 \label{radiation}

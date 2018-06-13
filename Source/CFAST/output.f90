@@ -800,12 +800,12 @@ module output_routines
                 rampid = ventptr%ramp_id
                 iramp = find_vent_opening_ramp(rampid,'M',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
-                    write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
+                    write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%diffuser_area(1), ventptr%coeff(1), &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
                         ventptr%opening_final_time, ventptr%opening_final_fraction
                 else
                     write (crout,'(a6,1x,i0)') 'RAMP #',iramp
-                    write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%coeff(1), ventptr%area, crout
+                    write (iofilo,5130) ciout, cjout, ventptr%counter, ventptr%coeff(1), ventptr%diffuser_area(1), crout
                 end if
             else if (ventptr%opening_type==trigger_by_temp) then
                 ctrigger = 'Temp'

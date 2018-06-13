@@ -192,7 +192,7 @@ module room_data
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
         initial_mass_fraction(ns), interior_rho, exterior_rho, interior_ambient_temperature, exterior_ambient_temperature
     
-    type(room_type), target :: roominfo(mxrooms)
+    type(room_type), allocatable, dimension(:), target :: roominfo
 
     ! wall variables
     integer :: nwpts = (nnodes-1)/2                                     ! number of wall nodes 
@@ -343,14 +343,14 @@ module target_data
 
     ! variables for calculation of flux to a target
 
-    integer :: idset                                                ! compartment where detector just went off. more than one
-                                                                    ! sprinkler in a compartment is meaningless to CFAST
+    integer :: idset    ! compartment where detector just went off. more than one
+                        ! sprinkler in a compartment is meaningless to CFAST
 
-    integer :: n_targets                                            ! number of detectors in the simulation
-    type (target_type), dimension(mxtarg), target :: targetinfo     ! structured target data
+    integer :: n_targets                                                        ! number of detectors in the simulation
+    type (target_type), allocatable, dimension(:), target  :: targetinfo        ! structured target data
 
-    integer :: n_detectors                                          ! number of detectors in the simulation
-    type (detector_type), dimension(mxdtect), target :: detectorinfo! structured detector data
+    integer :: n_detectors                                                      ! number of detectors in the simulation
+    type (detector_type), allocatable, dimension(:), target  :: detectorinfo    ! structured detector data
 
 end module target_data
 
@@ -364,8 +364,8 @@ module thermal_data
     implicit none
     save
 
-    integer n_thrmp                                                  ! number of unique thermal properties in the simulation
-    type (thermal_type), dimension(mxthrmp), target :: thermalinfo  ! structured thermal property data
+    integer n_thrmp                                                         ! number of thermal properties in the simulation
+    type (thermal_type), allocatable, dimension(:), target  :: thermalinfo  ! structured thermal property data
 
     end module thermal_data
 
@@ -381,7 +381,7 @@ module vent_data
 
     ! hvent variables
     integer :: n_hvents                                                 ! number of horizontal vents
-    type (vent_type), dimension(mxhvents), target :: hventinfo          ! structured horizontal vent data
+    type (vent_type), allocatable, dimension(:), target  :: hventinfo   ! structured horizontal vent data
     
     real(eb), dimension(2,mxhvents) :: vss, vsa, vas, vaa, vsas, vasa   ! individual flows for door jet fires (u or l)
     
@@ -393,10 +393,10 @@ module vent_data
 
     ! vvent variables
     integer :: n_vvents                                                 ! number of vertical flow vents
-    type (vent_type), dimension(mxvvents), target :: vventinfo          ! structured vertical vent data
+    type (vent_type), allocatable, dimension(:), target :: vventinfo    ! structured vertical vent data
 
     ! hvac variables
     integer :: n_mvents                                                 ! number of mechanical flow vents
-    type(vent_type), dimension(mxmvents), target :: mventinfo 
+    type(vent_type), allocatable, dimension(:), target :: mventinfo 
 
 end module vent_data

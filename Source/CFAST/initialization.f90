@@ -234,6 +234,8 @@ module initialization_routines
     relative_humidity = default_relative_humidity
 
     !thermal properties. initialize to nothing
+    n_thrmp = 0
+    allocate (thermalinfo(mxthrmp))
     thermalinfo(1:mxthrmp)%name          = ' '
     thermalinfo(1:mxthrmp)%nslab         = 1
     thermalinfo(1:mxthrmp)%k(1)          = 0.0_eb
@@ -244,6 +246,7 @@ module initialization_routines
 
     ! rooms
     nr = 0
+    allocate (roominfo(mxrooms))
     roominfo(1:mxrooms)%cwidth = xlrg
     roominfo(1:mxrooms)%cdepth = xlrg
     roominfo(1:mxrooms)%cheight = xlrg
@@ -299,6 +302,7 @@ module initialization_routines
 
     ! horizontal vents
     n_hvents = 0
+    allocate (hventinfo(mxhvents))
     hventinfo(1:mxhvents)%width = 0.0_eb
     hventinfo(1:mxhvents)%soffit = 0.0_eb
     hventinfo(1:mxhvents)%sill = 0.0_eb
@@ -315,6 +319,7 @@ module initialization_routines
 
     ! vertical vents
     n_vvents = 0
+    allocate (vventinfo(mxvvents))
     vventinfo(1:mxvvents)%shape = 1
     vventinfo(1:mxvvents)%area = 0.0_eb
     ! start with vents open
@@ -328,10 +333,13 @@ module initialization_routines
     ! mechanical vents
 
     n_mvents = 0
+    allocate (mventinfo(mxmvents))
     mventinfo(1:mxmvents)%total_flow(u) = 0.0_eb
     mventinfo(1:mxmvents)%total_flow(l) = 0.0_eb
     mventinfo(1:mxmvents)%total_trace_flow(u) = 0.0_eb
     mventinfo(1:mxmvents)%total_trace_flow(l) = 0.0_eb
+    mventinfo(1:mxmvents)%total_trace_filtered(u) = 0.0_eb
+    mventinfo(1:mxmvents)%total_trace_filtered(l) = 0.0_eb
     ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering 
     mventinfo(1:mxmvents)%opening_type = trigger_by_time
     mventinfo(1:mxmvents)%opening_triggered = .false.
@@ -346,6 +354,7 @@ module initialization_routines
 
     ! detectors
     n_detectors = 0
+    allocate (detectorinfo(mxdtect))
     detectorinfo(1:mxdtect)%rti = default_rti
     detectorinfo(1:mxdtect)%spray_density = -300.0_eb
     detectorinfo(1:mxdtect)%center(1) = -1.0_eb
@@ -363,6 +372,7 @@ module initialization_routines
 
     ! targets
     n_targets = 0
+    allocate (targetinfo(mxtarg))
     targetinfo(1:mxtarg)%equaton_type = pde
     targetinfo(1:mxtarg)%back = interior
     targetinfo(1:mxtarg)%material = 'DEFAULT'
@@ -445,7 +455,7 @@ module initialization_routines
         xh2o = exp(xtemp)/101325.0_eb*(18.016_eb/28.584_eb)
         initial_mass_fraction(h2o) = relative_humidity*xh2o
 
-        ! normalize the atmosphere
+        ! normalize the compartment atmosphere
         totmass = 0.0_eb
         do j = 1, ns_mass
             totmass = totmass + initial_mass_fraction(j)
@@ -457,6 +467,15 @@ module initialization_routines
                 roomptr%species_output(k,lsp) = 0.0_eb
                 initialmass(k,i,lsp) = initial_mass_fraction(lsp)*interior_rho*roomptr%volume(k)
             end do
+        end do
+    end do
+    
+    ! initialize vent species
+    do k = u, l
+        do lsp = 1, ns
+            hventinfo(1:mxhvents)%species_fraction(k,lsp) = 0.0_eb
+            vventinfo(1:mxvvents)%species_fraction(k,lsp) = 0.0_eb
+            mventinfo(1:mxmvents)%species_fraction(k,lsp) = 0.0_eb
         end do
     end do
 

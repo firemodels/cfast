@@ -359,11 +359,13 @@ A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12
 \subsection{Surface Opening Fraction for Vents}
 \label{Surface_Opening_Fraction}
 
-This case tests the computation of the surface opening fraction. A three-compartment geometry is shown in Figure~\ref{SOF_GEO}. Different horizontal, vertical, and/or mechanical vents are included in each compartment. Given with the dimensions of the compartments, the upper layer thickness of each compartment, and the locations and dimensions of each vent, the surface opening fraction for a surface, $\chi$, can be approximated using the following equation
+This case tests the computation of the surface opening fraction. A three-compartment geometry is shown in Figure~\ref{SOF_GEO}. Different horizontal, vertical, and/or mechanical vents are included in each compartment. Given with the dimensions of the compartments, the upper layer thickness of each compartment, and the locations and dimensions of each vent, the surface opening fraction for a surface, $\chi$, can be approximated using the following expression
 \begin{equation}
 \chi = \frac{\sum_{i=1}^N A_{opening,i}} {A_{total}}
 \end{equation}
-where \textit{N} is the total number of vents, \textit{A\textsubscript{opening}} is the opening area associated with a vent, \textit{A\textsubscript{total}} is the total surface area. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figures~\ref{SOF_Result_1}, \ref{SOF_Result_2}, \ref{SOF_Result_3}, and \ref{SOF_Result_4}, respectively. 
+where \textit{N} is the total number of vents, \textit{A\textsubscript{opening}} is the opening area associated with a vent, \textit{A\textsubscript{total}} is the total surface area. It should be noted that each compartment has 10 surfaces. 
+
+For this verification case, the upper layer thickness for each compartment is set to be 1~m and the vent opening fraction for all vents is set to be 0, 0.5, and 1 at  0~sec, 0.5~sec, and 1~sec, respectively. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figures~\ref{SOF_Result_1}, \ref{SOF_Result_2}, \ref{SOF_Result_3}, and \ref{SOF_Result_4}, respectively. Note that vent opening fraction is different than surface opening fractoin.
 
 \begin{figure}[!ht]
 \centering

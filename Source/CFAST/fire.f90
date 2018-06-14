@@ -634,8 +634,8 @@ module fire_routines
         fraction = (1.0_eb-fraction)
         ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mflow(1,u)*deltt
         ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mflow(1,l)*deltt
-        ventptr%total_trace_flow(u)  = ventptr%total_trace_flow(u) + ventptr%mflow(1,u)*ventptr%species_fraction(u,ts)*fraction*deltt
-        ventptr%total_trace_flow(l)  = ventptr%total_trace_flow(l) + ventptr%mflow(1,l)*ventptr%species_fraction(l,ts)*fraction*deltt
+        ventptr%total_trace_flow(u) = ventptr%total_trace_flow(u) + ventptr%mflow(1,u)*ventptr%species_fraction(u,ts)*fraction*deltt
+        ventptr%total_trace_flow(l) = ventptr%total_trace_flow(l) + ventptr%mflow(1,l)*ventptr%species_fraction(l,ts)*fraction*deltt
         ventptr%total_trace_filtered(u)  = ventptr%total_trace_filtered(u) + &
             ventptr%mflow(1,u)*ventptr%species_fraction(u,ts)*(1.0_eb-fraction)*deltt
         ventptr%total_trace_filtered(l)  = ventptr%total_trace_filtered(l) + &

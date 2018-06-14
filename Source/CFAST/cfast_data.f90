@@ -65,10 +65,10 @@ module fire_data
     real(eb) :: tradio     
 
     integer :: n_fires                              ! number of fires in the current simulation
-    type(fire_type), target :: fireinfo(mxfires)
+    type(fire_type), allocatable, dimension(:), target :: fireinfo
     
     integer :: n_tabls                              ! number of tables of fire data in the current simulation
-    type(table_type), target :: tablinfo(mxfires)
+    type(table_type), allocatable, dimension(:), target :: tablinfo
 
     integer :: n_furn                                    ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time

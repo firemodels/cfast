@@ -390,13 +390,16 @@ module initialization_routines
 ! --------------------------- initialize_fire_objects -------------------------------------------
 
     subroutine initialize_fire_objects
+    
+    integer i, lsp
 
     !     this routine initializes the fires
 
     lower_o2_limit = default_lower_oxygen_limit
     
-    ! turn off fires
+    ! fire data initialized to no fires
     n_fires = 0
+    allocate (fireinfo(mxfires))
     fireinfo(1:mxfires)%x_position = -1.0_eb
     fireinfo(1:mxfires)%y_position = -1.0_eb
     fireinfo(1:mxfires)%z_position = -1.0_eb
@@ -420,6 +423,21 @@ module initialization_routines
     fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
     fireinfo(1:mxfires)%total_trace = 0.0_eb
     tradio = 0.0_eb
+    
+    ! no data for fires without user input
+    n_tabls = 0
+    allocate (tablinfo(mxtabls))
+    tablinfo(1:mxtabls)%name = ' '
+    do lsp = 1, ns+3
+        tablinfo(1:mxtabls)%labels(lsp) = ' '
+    end do
+    do i = 1, mxpts
+        do lsp = 1, ns+3
+            tablinfo(1:mxtabls)%data(i,lsp) = 0.0_eb
+        end do
+    end do
+    tablinfo(1:mxtabls)%n_points = 0
+    tablinfo(1:mxtabls)%n_columns = 0
 
     return
     end subroutine initialize_fire_objects

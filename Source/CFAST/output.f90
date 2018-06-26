@@ -512,7 +512,7 @@ module output_routines
                 tctemp = targptr%tinternal
                 gasfed = targptr%fed_gas
                 heatfed = targptr%fed_heat
-                if (validate.or.netheatflux) then
+                if (validation_flag.or.netheatflux) then
                     itotal = targptr%flux_incident_front
                     total = targptr%flux_net_gauge(1)
                 else
@@ -1083,7 +1083,7 @@ module output_routines
             write (outbuf(13*(i-1)+1:13*i),5000) flow(i)
         end if
         if (flow(i)<=atol) outbuf(13*(i-1)+1:13*i) = ' '
-        if (validate.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
+        if (validation_flag.and.flow(i).ne.0.0_eb) write (outbuf(13*(i-1)+1:13*i),5050) flow(i)
     end do
     return
 
@@ -1316,11 +1316,15 @@ module output_routines
     !     13 smokeview output (header) - note this is rewound each time the plot data is written)
     !     14 smokeview output (plot data)
     !     15 smokeview spreadsheet output
+    !     20 spreadsheet output (compartment connections)    
     !     21 spreadsheet output (normal)
     !     22 spreadsheet output (flow field)
     !     23 spreadsheet output (species molar %, etc.)
     !     24 spreadsheet otuput (species mass)
     !     25 spreadsheet output (walls and targets)
+    !     26 spreadsheet output (various diagnostics for verification)
+
+    ! Other files may be opened above unit 30 by the routine funit which searches for available open units
 
     !!!! Note that we assume that the default carriage control for formatted files is of type LIST (no fortran controls)
     integer :: ios
@@ -1342,6 +1346,7 @@ module output_routines
 
     ! the spread sheet files
     if (ss_out_interval>0) then
+        if (validation_flag) open (unit=20, file=ssconnections,form='formatted')
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')
         open (unit=23, file=ssspecies,form='formatted')
@@ -1375,7 +1380,7 @@ module output_routines
     integer fileunit,ios
 
     if (doesthefileexist(outputfile)) then
-        fileunit=funit(14)
+        fileunit=funit(30)
         open(unit=fileunit, iostat=ios, file=outputfile, status='old')
         if (ios==0) then
             close(fileunit, status='delete', iostat=ios)

@@ -2618,7 +2618,7 @@ continue
     
     end if diag_flag
     
-    if (radi_verification_flag) validate = .true.
+    if (radi_verification_flag) validation_flag = .true.
 
     contains
 

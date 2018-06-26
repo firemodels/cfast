@@ -890,7 +890,7 @@
     if (cmdflag('K',iopt)/=0) nokbd = .true.
     if (cmdflag('I',iopt)/=0) initializeonly = .true.
     if (cmdflag('D',iopt)/=0) debugging = .true.
-    if (cmdflag('V',iopt)/=0) validate = .true.
+    if (cmdflag('V',iopt)/=0) validation_flag = .true.
     if (cmdflag('N',iopt)/=0) netheatflux = .true.
     iofill = 3
 

@@ -1,8 +1,9 @@
- module compartment_routines
+    module compartment_routines
 
     use precision_parameters
     use cparams
     use cenviro
+    use fire_data
     use room_data
     use option_data
     use vent_data
@@ -14,16 +15,335 @@
 
     private
 
-    public layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
+    public layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction, room_connection_distance
 
     contains
+
+! --------------------------- connection_distance -------------------------------------------
+
+    subroutine room_connection_distance
+
+    ! calculates estimated connections from every room to every other room
+    ! -1        = there is no connected between compartments
+    !  0        = room is connected to itself (duh)
+    !  1 ... nr = there are one or more compartments between compartments
+    
+    type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: ventptr
+    integer i, j, ibig
+    integer, allocatable, dimension(:,:) :: ohd
+    integer, allocatable, dimension(:) :: mind, ic, itemp
+
+    allocate (mind(nr), ohd(nr,nr), ic(nr), itemp(nr))
+    ibig = huge(1)
+    do i = 1, nrm1
+        ! define the connection matrix for the current compartment
+        do j = 1,nr
+            itemp(j) = imod(i-1+j,nr)
+            if (itemp(j)==0) itemp(j) = nr
+        end do
+        do j = 1,nr
+            ic(itemp(j)) = j
+        end do
+        ohd(1:nr,1:nr) = ibig
+        do j = 1, nr
+            ohd(j,j) = 0
+        end do
+        mind(1:nr) = ibig
+
+        if (n_hvents+n_vvents+n_mvents>0) then
+            ! smoke can travel both ways in wall vents
+            do j = 1,n_hvents
+                ventptr => hventinfo(j)
+                if (ventptr%room1/=nr) ohd(ic(ventptr%room1),ic(ventptr%room2)) = 1
+                if (ventptr%room2/=nr) ohd(ic(ventptr%room2),ic(ventptr%room1)) = 1
+            end do
+            ! smoke can travel both ways in ceiling/floor vents vents
+            do j = 1,n_vvents
+                ventptr => vventinfo(j)
+                if (ventptr%room1/=nr) ohd(ic(ventptr%room1),ic(ventptr%room2)) = 1
+                if (ventptr%room2/=nr) ohd(ic(ventptr%room2),ic(ventptr%room1)) = 1
+            end do
+            ! smoke can only travel one way in mechanical vents
+            do j = 1,n_mvents
+                ventptr => mventinfo(j)
+                if (ventptr%room1/=nr) ohd(ic(ventptr%room1),ic(ventptr%room2)) = 1
+            end do
+            ! Distance matrix
+            !write ( *, '(a)' )  ' '
+            !write (*,'(6x,10(2x,i3))') (itemp(ii),ii=1,nr)
+            !do ii = 1, nr
+            !    write (*,'(2x,i3,a)', advance = 'NO') itemp(ii),':'
+            !    do j = 1, nr
+            !        if ( ohd(ii,j) == ibig ) then
+            !            write ( *, '(2x,a)', advance = 'NO' ) 'Inf'
+            !        else
+            !            write ( *, '(2x,i3)', advance = 'NO' ) ohd(ii,j)
+            !        end if
+            !    end do
+            !    write ( *, '(a)', advance = 'yes' )
+            !end do
+            
+            call dijkstra_distance ( nr, ohd, mind )
+
+            !  Print the results.
+            !write ( *, '(a)' )  ' '
+            !write ( *, '(a,i0)' )  '  Minimum steps from node ', i
+            !write ( *, '(a)' )  ' '
+            !do j = 1, nr
+            !    if (mind(j) == ibig) then
+            !        write (*, '(2x,i6,2x,a)') itemp(j), 'Inf'
+            !    else
+            !        write ( *, '(2x,i6,2x,i6)' ) itemp(j), mind(j)
+            !    end if
+            !end do
+            
+            roomptr => roominfo(i)
+            do j = 1,nr
+                if (mind(j) == ibig) mind(j) = -1
+                roomptr%room_connections(itemp(j)) = mind(j)
+            end do
+                
+        end if
+    end do
+
+    end subroutine room_connection_distance
+
+! --------------------------- dijkstra_distance -------------------------------------------
+
+    subroutine dijkstra_distance ( nv, ohd, mind )
+
+    !*****************************************************************************80
+    !
+    !! DIJKSTRA_DISTANCE uses Dijkstra's minimum distance algorithm.
+    !
+    !  Discussion:
+    !
+    !    We essentially build a tree.  We start with only node 0 connected
+    !    to the tree, and this is indicated by setting CONNECTED(0) = TRUE.
+    !
+    !    We initialize MIND(I) to the one step distance from node 0 to node I.
+    !
+    !    Now we search among the unconnected nodes for the node MV whose minimum
+    !    distance is smallest, and connect it to the tree.  For each remaining
+    !    unconnected node I, we check to see whether the distance from 0 to MV
+    !    to I is less than that recorded in MIND(I), and if so, we can reduce
+    !    the distance.
+    !
+    !    After NV-1 steps, we have connected all the nodes to 0, and computed
+    !    the correct minimum distances.
+    !
+    !  Licensing:
+    !
+    !    This code is distributed under the GNU LGPL license.
+    !
+    !  Modified:
+    !
+    !    01 July 2010
+    !
+    !  Author:
+    !
+    !    Original C version by Norm Matloff, CS Dept, UC Davis.
+    !    FORTRAN90 version by John Burkardt.
+    !
+    !  Parameters:
+    !
+    !    Input, integer ( kind = 4 ) NV, the number of nodes.
+    !
+    !    Input, integer ( kind = 4 ) OHD(NV,NV), the distance of the direct
+    !    link between nodes I and J.
+    !
+    !    Output, integer ( kind = 4 ) MIND(NV), the minimum
+    !    distance from node 1 to each node.
+    !
+    implicit none
+
+    integer ( kind = 4 ) nv
+
+    logical ( kind = 4 ) connected(nv)
+    integer ( kind = 4 ) md
+    integer ( kind = 4 ) mind(nv)
+    integer ( kind = 4 ) mv
+    integer ( kind = 4 ) ohd(nv,nv)
+    integer ( kind = 4 ) step
+    !
+    !  Start out with only node 1 connected to the tree.
+    !
+    connected(1) = .true.
+    connected(2:nv) = .false.
+    !
+    !  Initialize the minimum distance to the one-step distance.
+    !
+    mind(1:nv) = ohd(1,1:nv)
+    !
+    !  Attach one more node on each iteration.
+    !
+    do step = 2, nv
+        !
+        !  Find the nearest unconnected node.
+        !
+        call find_nearest ( nv, mind, connected, md, mv )
+
+        if ( mv == - 1 ) then
+            !write ( *, '(a)' )  ' '
+            !write ( *, '(a)' )  'DIJKSTRA_DISTANCE - Warning!'
+            !write ( *, '(a)' )  '  Search terminated early.'
+            !write ( *, '(a)' )  '  Graph might not be connected.'
+            return
+        end if
+        !
+        !  Mark this node as connected.
+        !
+        connected(mv) = .true.
+        !
+        !  Having determined the minimum distance to node MV, see if
+        !  that reduces the minimum distance to other nodes.
+        !
+        call update_mind ( nv, connected, ohd, mv, mind )
+
+    end do
+
+    return
+    end
+    subroutine find_nearest ( nv, mind, connected, d, v )
+
+    !*****************************************************************************80
+    !
+    !! FIND_NEAREST finds the nearest unconnected node.
+    !
+    !  Licensing:
+    !
+    !    This code is distributed under the GNU LGPL license.
+    !
+    !  Modified:
+    !
+    !    01 July 2010
+    !
+    !  Author:
+    !
+    !    Original C version by Norm Matloff, CS Dept, UC Davis.
+    !    FORTRAN90 version by John Burkardt.
+    !
+    !  Parameters:
+    !
+    !    Input, integer ( kind = 4 ) NV, the number of nodes.
+    !
+    !    Input, integer ( kind = 4 ) MIND(NV), the currently computed minimum
+    !    distance from node 1 to each node.
+    !
+    !    Input, logical ( kind = 4 ) CONNECTED(NV), is true for each connected
+    !    node, whose minimum distance to node 1 has been determined.
+    !
+    !    Output, integer ( kind = 4 ) D, the distance from node 1 to the nearest
+    !    unconnected node.
+    !
+    !    Output, integer ( kind = 4 ) V, the index of the nearest unconnected node.
+    !
+    implicit none
+
+    integer ( kind = 4 ) nv
+
+    logical ( kind = 4 ) connected(nv)
+    integer ( kind = 4 ) d
+    integer ( kind = 4 ) i
+    integer ( kind = 4 ) mind(nv)
+    integer ( kind = 4 ) v
+
+    d = huge(1)
+    v = -1
+
+    do i = 1, nv
+        if ( .not. connected(i) .and. mind(i) < d ) then
+            d = mind(i)
+            v = i
+        end if
+    end do
+
+    return
+    end
+    subroutine update_mind ( nv, connected, ohd, mv, mind )
+
+    !*****************************************************************************80
+    !
+    !! UPDATE_MIND updates the minimum distance vector.
+    !
+    !  Discussion:
+    !
+    !    We've just determined the minimum distance to node MV.
+    !
+    !    For each node I which is not connected yet,
+    !    check whether the route from node 0 to MV to I is shorter
+    !    than the currently known minimum distance.
+    !
+    !  Licensing:
+    !
+    !    This code is distributed under the GNU LGPL license.
+    !
+    !  Modified:
+    !
+    !    01 July 2010
+    !
+    !  Author:
+    !
+    !    Original C version by Norm Matloff, CS Dept, UC Davis.
+    !    FORTRAN90 version by John Burkardt.
+    !
+    !  Parameters:
+    !
+    !    Input, integer ( kind = 4 ) NV, the number of nodes.
+    !
+    !    Input, logical ( kind = 4 ) CONNECTED(NV), is true for each connected
+    !    node, whose minimum distance to node 0 has been determined.
+    !
+    !    Input, integer ( kind = 4 ) OHD(NV,NV), the distance of the direct link
+    !    between nodes I and J.
+    !
+    !    Input, integer ( kind = 4 ) MV, the node whose minimum distance to node 20
+    !    has just been determined.
+    !
+    !    Input/output, integer ( kind = 4 ) MIND(NV), the currently computed
+    !    minimum distances from node 1 to each node.
+    !
+    implicit none
+
+    integer ( kind = 4 ) nv
+
+    logical ( kind = 4 ) connected(nv)
+    integer ( kind = 4 ) i
+    integer ( kind = 4 ) mind(nv)
+    integer ( kind = 4 ) mv
+    integer ( kind = 4 ) ohd(nv,nv)
+
+    do i = 1, nv
+        if ( .not. connected(i) ) then
+            !
+            !  If we really use the maximum integer (or something close) to indicate
+            !  no link, then we'll get burned if we add it to another value
+            !  Integer arithmetic can 'wrap around', so that 17 + i4_huge becomes
+            !  a very negative number!  So first we eliminate the possiblity that
+            !  the link is infinite.
+            !
+            if ( ohd(mv,i) < huge(1) ) then
+                if ( mind(mv) + ohd(mv,i) < mind(i) ) then
+                    mind(i) = mind(mv) + ohd(mv,i)
+                end if
+            end if
+        end if
+    end do
+
+    return
+    end
+
+
+
+! --------------------------- layer_mixing -------------------------------------------
 
     subroutine layer_mixing (flows_layer_mixing)
 
     !     routine:    layer_mixing
-    !     function:   interface between calculate_residuals and single line layer mixing model.  
+    !     function:   interface between calculate_residuals and single line layer mixing model.
     !                 loops over room setting up varibles, does calculation and fills in data
-    !                 structures with results. 
+    !                 structures with results.
     !     outputs:    flows_layer_mixing      net enthalphy and mass into each layer
 
 
@@ -37,9 +357,9 @@
 
     flows_layer_mixing(1:nrm1,1:ns+2,u) = 0.0_eb
     flows_layer_mixing(1:nrm1,1:ns+2,l) = 0.0_eb
-    
+
     if (option(flayermixing)==off) return
-    
+
     do iroom = 1, nrm1
         roomptr => roominfo(iroom)
         if (roomptr%temp(l) > roomptr%temp(u)) then
@@ -61,10 +381,10 @@
             else
                 flows_layer_mixing(iroom,m,u) = 0.0_eb
                 flows_layer_mixing(iroom,m,l) = 0.0_eb
-            end if 
+            end if
         end if
     end do
-    
+
     return
     end subroutine layer_mixing
 
@@ -106,7 +426,7 @@
             isof = isof + 1
         end do
     end do
-    
+
     do iprod = 1, 2
         do iroom = 1, nrm1
             if (pdif(isof) >= 0.0_eb) then
@@ -122,7 +442,7 @@
             end if
             isof = isof + 1
         end do
-    end do 
+    end do
 
     isof = ibeg
     do iroom = 1, nrm1
@@ -131,7 +451,7 @@
         pdif(isof) = roominfo(iroom)%mass(l) - factor(iroom,l)
         isof = isof + 1
     end do
-    
+
     isof = ibeg + 2*(ns_mass - 1)*nrm1
     do iroom = 1, nrm1
         if (smoke(iroom,u) > 0.0_eb) then
@@ -147,7 +467,7 @@
         end if
         isof = isof + 1
     end do
-    
+
     do iprod = 1, 2
         do iroom = 1, nrm1
             pdif(isof) = pdif(isof) * smoke(iroom,u)
@@ -210,6 +530,12 @@
     ! check vertical vent flow
     do i = 1, n_vvents
         ventptr => vventinfo(i)
+        iroom1 = ventptr%room1
+        iroom2 = ventptr%room2
+        ik = ventptr%counter
+        rampid = ventptr%ramp_id
+        call get_vent_opening (rampid,'V',iroom1,iroom2,ik,i,tsec,fraction)
+        avent = ventptr%area*fraction
         if (ventptr%current_area/=0.0_eb) then
             roomc(iroom1,iroom2) = 1
             roomc(iroom2,iroom1) = 1
@@ -247,13 +573,13 @@
     subroutine wall_opening_fraction (tsec)
 
     !     purpose: to calculate the opening ratio of a surface
-    
+
     !     note:
     !     surface number associated with ceiling, upper front, upper right, upper rear, upper left
-    !                                       lower front, lower right, lower rear, lower left, floor 
+    !                                       lower front, lower right, lower rear, lower left, floor
     !     is denoted as 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and this is different than logic in target subroutine
 
-    real(eb), intent(in) :: tsec          ! current simulation    
+    real(eb), intent(in) :: tsec          ! current simulation
     integer :: i, j, k                    ! counter
     integer :: side                       ! surface number (10 surfaces in total)
     integer :: map(4) = (/3, 4, 1, 2/)    ! surface correction mapping
@@ -266,21 +592,21 @@
     real(eb) :: length                    ! length of the square opening for mechanical horizontal (wall) vents
     real(eb) :: lowest, highest           ! sill and soffit of an opening (be aware that there are 2 reference points
     real(eb) :: abs_cheight               ! absolute height for the compartment
-    
+
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
-        
+
     do i = 1, nrm1
         a_opening(:) = 0._eb
         a_total (:)  = 0._eb
-        
+
         roomptr => roominfo(i)
-        
+
         if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) then
             roomptr%depth(u) = upper_layer_thickness
             roomptr%depth(l) = roomptr%cheight - roomptr%depth(u)
         end if
-    
+
         a_total(1)  = roomptr%cwidth*roomptr%cdepth
         a_total(2)  = roomptr%cwidth*roomptr%depth(u)
         a_total(3)  = roomptr%cdepth*roomptr%depth(u)
@@ -291,29 +617,29 @@
         a_total(8)  = a_total(6)
         a_total(9)  = a_total(7)
         a_total(10) = a_total(1)
-        
+
         ! Determine areas for horizontal (wall) vents
         do j = 1, n_hvents
             ventptr=>hventinfo(j)
             if (ventptr%room1 == i .or. ventptr%room2 == i) then
                 fraction = 0._eb
                 call get_vent_opening (ventptr%ramp_id,'H',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
-                        
+
                 ! identify surface number
                 if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
                     side = ventptr%face
-                else if (ventptr%room2 == i) then 
-                ! correct location for vent in room i because vent info is given as it is in room2
+                else if (ventptr%room2 == i) then
+                    ! correct location for vent in room i because vent info is given as it is in room2
                     side = map(ventptr%face)
-                end if 
-                        
+                end if
+
                 do k = 1, 2
                     if (k == 1) then
                         ! reference point for z is at roomptr%cheight
                         abs_cheight = roomptr%z0 + roomptr%cheight
                         lowest  = abs_cheight - ventptr%absolute_soffit
                         highest = abs_cheight - ventptr%absolute_sill
-                        
+
                         if (roomptr%depth(k) < lowest) then
                             temp_opening = 0._eb
                         else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
@@ -321,14 +647,14 @@
                         else if (roomptr%depth(k) > highest) then
                             temp_opening = (highest - lowest) * ventptr%width
                         end if
-                        
-                        a_opening(side+1) = a_opening(side+1) + fraction*temp_opening  
+
+                        a_opening(side+1) = a_opening(side+1) + fraction*temp_opening
                     else if (k == 2) then
                         ! reference point for z is at 0
                         abs_cheight = roomptr%z0 + roomptr%cheight
                         lowest  = ventptr%absolute_sill - roomptr%z0
                         highest = ventptr%absolute_soffit - roomptr%z0
-                        
+
                         if (roomptr%depth(k) < lowest) then
                             temp_opening = 0._eb
                         else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
@@ -336,13 +662,13 @@
                         else if (roomptr%depth(k) > highest) then
                             temp_opening = (highest - lowest) * ventptr%width
                         end if
-                        
-                        a_opening(side+5) = a_opening(side+5) + fraction*temp_opening  
-                    end if                   
+
+                        a_opening(side+5) = a_opening(side+5) + fraction*temp_opening
+                    end if
                 end do
             end if
         end do
-        
+
         ! Determine areas for mechanical vents
         do j = 1, n_mvents
             ventptr=>mventinfo(j)
@@ -350,20 +676,20 @@
             if ((ventptr%room1 == i .or. ventptr%room2 == i) .and. ventptr%orientation(1) == 2) then
                 fraction = 0._eb
                 call get_vent_opening (ventptr%ramp_id,'M',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
-                
+
                 from = ventptr%room1
                 to = ventptr%room2
-                                
+
                 side = 0
                 if (from <= nrm1 .and. to == nrm1 + 1) then
                     side = 1
                 else if (to <= nrm1 .and. from == nrm1 + 1) then
                     side = 10
-                else if (roominfo(from)%z0 > roominfo(to)%z0) then 
+                else if (roominfo(from)%z0 > roominfo(to)%z0) then
                     side = 10
                     if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
                         continue
-                    else if (ventptr%room2 == i) then 
+                    else if (ventptr%room2 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
                         if (side == 1) then
                             side = 10
@@ -375,7 +701,7 @@
                     side = 1
                     if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
                         continue
-                    else if (ventptr%room2 == i) then 
+                    else if (ventptr%room2 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
                         if (side == 1) then
                             side = 10
@@ -384,7 +710,7 @@
                         end if
                     end if
                 end if
-                
+
                 temp_opening = ventptr%diffuser_area(1)
                 if (side .ne. 0) a_opening(side) = a_opening(side) + fraction*temp_opening
                 
@@ -393,31 +719,31 @@
                 fraction = 0._eb
                 length = sqrt(ventptr%diffuser_area(1))
                 call get_vent_opening (ventptr%ramp_id,'M',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
-                
-                ! There is a possibility that the mechanical vent is not attached to any surfaces. 
+
+                ! There is a possibility that the mechanical vent is not attached to any surfaces.
                 ! If this is the case, the assocated vent area will be counted as opening area for any surfaces.
                 side = 0
                 if (ventptr%yoffset .eq. 0._eb) side = 1
                 if (ventptr%xoffset .eq. roomptr%cwidth) side = 2
                 if (ventptr%yoffset .eq. roomptr%cdepth) side = 3
                 if (ventptr%xoffset .eq. 0._eb) side = 4
-                        
+
                 if (side .ne. 0) then
                     if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
                         continue
-                    else if (ventptr%room2 == i) then 
+                    else if (ventptr%room2 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
                         side = map(side)
                     end if
                 end if
-                
-                do k = 1, 2                    
+
+                do k = 1, 2
                     if (k == 1) then
                         ! reference point for z is at roomptr%cheight
                         abs_cheight = roomptr%z0 + roomptr%cheight
                         lowest  = abs_cheight - (roomptr%z0 + ventptr%height(1) + length/2._eb)
                         highest = abs_cheight - (roomptr%z0 + ventptr%height(1) - length/2._eb)
-                        
+
                         if (roomptr%depth(k) < lowest) then
                             temp_opening = 0._eb
                         else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
@@ -425,14 +751,14 @@
                         else if (roomptr%depth(k) > highest) then
                             temp_opening = (highest - lowest) * length
                         end if
-                        
-                        a_opening(side+1) = a_opening(side+1) + fraction*temp_opening  
+
+                        a_opening(side+1) = a_opening(side+1) + fraction*temp_opening
                     else if (k == 2) then
                         ! reference point for z is at 0
                         abs_cheight = roomptr%z0 + roomptr%cheight
                         lowest  = roomptr%z0 + ventptr%height(1) - length/2._eb
                         highest = roomptr%z0 + ventptr%height(1) + length/2._eb
-                        
+
                         if (roomptr%depth(k) < lowest) then
                             temp_opening = 0._eb
                         else if (roomptr%depth(k) >= lowest .and. roomptr%depth(k) <= highest) then
@@ -440,33 +766,33 @@
                         else if (roomptr%depth(k) > highest) then
                             temp_opening = (highest - lowest) * length
                         end if
-                        
-                        a_opening(side+5) = a_opening(side+5) + fraction*temp_opening  
-                    end if                  
+
+                        a_opening(side+5) = a_opening(side+5) + fraction*temp_opening
+                    end if
                 end do
             end if
         end do
-        
+
         ! Determine areas for vertical (ceiling/floor) vents
         do j = 1, n_vvents
             ventptr=>vventinfo(j)
-            if (ventptr%room1 == i .or. ventptr%room2 == i) then 
+            if (ventptr%room1 == i .or. ventptr%room2 == i) then
                 fraction = 0._eb
                 call get_vent_opening (ventptr%ramp_id,'V',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
-                
+
                 top = ventptr%room1
                 bottom = ventptr%room2
-                
+
                 side = 0
                 if (top <= nrm1 .and. bottom == nrm1 +1 ) then
                     side = 10
                 else if (bottom <= nrm1 .and. top == nrm1 + 1) then
                     side = 1
-                else if (roominfo(top)%z0 > roominfo(bottom)%z0) then 
+                else if (roominfo(top)%z0 > roominfo(bottom)%z0) then
                     side = 1
                     if (ventptr%room2 == i .or. ventptr%room2 == nrm1+1) then
                         continue
-                    else if (ventptr%room1 == i) then 
+                    else if (ventptr%room1 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
                         if (side == 1) then
                             side = 10
@@ -478,7 +804,7 @@
                     side = 10
                     if (ventptr%room2 == i .or. ventptr%room2 == nrm1+1) then
                         continue
-                    else if (ventptr%room1 == i) then 
+                    else if (ventptr%room1 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
                         if (side == 1) then
                             side = 10
@@ -487,18 +813,17 @@
                         end if
                     end if
                 end if
-                
+
                 ! Bare in mind that vent shape can be circular or rectangular
                 temp_opening = ventptr%area
                 if (side .ne. 0) a_opening(side) = a_opening(side) + fraction*temp_opening
             end if
         end do
-        
+
         roomptr%chi(:) = a_opening(:)/a_total(:)
     end do
 
     return
     end subroutine wall_opening_fraction
 
- end module compartment_routines
-    
+    end module compartment_routines

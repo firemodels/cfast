@@ -15,10 +15,37 @@ module spreadsheet_header_routines
 
     private
 
-    public ssheaders_normal, ssheaders_species, ssheaders_speciesmass, ssheaders_flow, ssheaders_target, ssheaders_smv, &
-        ssHeaders_resid, ssHeaders_fslabs, ssheaders_diagnosis
+    public ssheaders_connections, ssheaders_normal, ssheaders_species, ssheaders_speciesmass, ssheaders_flow, ssheaders_target, &
+        ssheaders_smv, ssHeaders_resid, ssHeaders_fslabs, ssheaders_diagnosis
 
     contains
+    
+! --------------------------- ssheaders_connections --------------------------------------
+    
+    subroutine ssheaders_connections
+    
+    ! this is the header information for the romm connections matrix output
+    
+    character(35) :: headertext(1,mxrooms)
+    integer position, i
+    type(room_type), pointer :: roomptr
+    
+    !spreadsheet header of compartment names
+    headertext(1,1) = ' '
+    position = 2
+    do i = 1, nrm1
+        roomptr => roominfo(i)
+        headertext(1,position) = roomptr%name
+        position = position + 1
+    end do
+    headertext(1,position) = 'Outside'
+    position = position + 1
+    
+    ! write out header
+    write (20,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    
+    return
+    end subroutine ssheaders_connections
 
 ! --------------------------- ssheaders_normal -------------------------------------------
 
@@ -160,9 +187,9 @@ module spreadsheet_header_routines
                         headertext(3,position) = roomptr%name
                         headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
                         if (molfrac(lsp)) headertext(4,position) = 'mol frac'
-                        if (validate.and.lsp==soot) headertext(4,position) = 'mg/m^3'
-                        if (validate.and.lsp==soot_flaming) headertext(4,position) = 'mg/m^3'
-                        if (validate.and.lsp==soot_smolder) headertext(4,position) = 'mg/m^3'
+                        if (validation_flag.and.lsp==soot) headertext(4,position) = 'mg/m^3'
+                        if (validation_flag.and.lsp==soot_flaming) headertext(4,position) = 'mg/m^3'
+                        if (validation_flag.and.lsp==soot_smolder) headertext(4,position) = 'mg/m^3'
                     end if
                 end do
             end if
@@ -317,7 +344,7 @@ module spreadsheet_header_routines
         targptr => targetinfo(itarg)
         ! front surface
         do j = 1, 15
-            if (j<6.or.validate) then
+            if (j<6.or.validation_flag) then
                 position = position + 1
                 headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
                 headertext(2,position) = Labels(j+5)
@@ -326,7 +353,7 @@ module spreadsheet_header_routines
             end if
         end do
         ! back surface
-        if (validate) then
+        if (validation_flag) then
             do j = 3, 15
                 if (j==3) cycle
                 position = position + 1
@@ -432,7 +459,7 @@ module spreadsheet_header_routines
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(2)
         
-        if (validate) then
+        if (validation_flag) then
             position = position + 1
             write(ctemp,'(3a)')trim(labelsshort(7)),trim(cifrom),'_u_inflow'
             headertext(1,position) = ctemp
@@ -519,7 +546,7 @@ module spreadsheet_header_routines
         headertext(3,position) = cTemp
         headertext(4,position) = LabelUnits(3)
         
-        if (validate) then
+        if (validation_flag) then
             position = position + 1
             write(ctemp,'(3a)')trim(labelsshort(8)),trim(cifrom),'_u_inflow'
             headertext(1,position) = ctemp
@@ -598,7 +625,7 @@ module spreadsheet_header_routines
                 headertext(4,position) = LabelUnits(ih+3)
             end do
             
-            if (validate) then
+            if (validation_flag) then
                 position = position + 1
                 write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_u_inflow'
                 headertext(1,position) = ctemp

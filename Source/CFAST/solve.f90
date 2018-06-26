@@ -371,7 +371,7 @@ module solve_routines
     inquire (file=stopfile, exist =exists)
     stopiter=-1
     if (exists) then
-       stopunit=funit(14)
+       stopunit=funit(30)
        open(unit=stopunit,file=stopfile)
        read (stopunit,*,iostat=ios) stopiter
        if (ios.ne.0) stopiter=0
@@ -402,9 +402,9 @@ module solve_routines
         residprn = .true.
         if (residfirst) then
             residfirst = .false.
-            ioresid = funit(150)
+            ioresid = funit(30)
             open(unit=ioresid,file=residcsv)
-            ioslab = funit(150)
+            ioslab = funit(30)
             open(unit = ioslab, file=slabcsv)
         end if
     else

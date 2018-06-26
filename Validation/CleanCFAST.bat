@@ -4,6 +4,8 @@ del *_s.csv /s/q >nul 2>&1
 del *_f.csv /s/q >nul 2>&1
 del *_w.csv /s/q >nul 2>&1
 del *_m.csv /s/q >nul 2>&1
+del *_c.csv /s/q >nul 2>&1
+del *_d.csv /s/q >nul 2>&1
 del *_git.txt /s/q >nul 2>&1
 del *_zone.csv /s/q >nul 2>&1
 del *_resid.csv /s/q >nul 2>&1

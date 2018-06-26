@@ -236,17 +236,17 @@ module setup_data
     character(128) :: title
 
     logical :: nokbd=.false., initializeonly=.false.
-    logical :: debugging=.false., validate=.false., netheatflux=.false.
+    logical :: debugging=.false., validation_flag=.false., netheatflux=.false.
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile
     character(32) :: mpsdatc
     
     !File descriptors for cfast
-    integer :: iofili=1, iofilo=6, iofill=3, iofilkernel, iofilstat=12
+    integer :: iofili=1, iofilo=6, iofill=3, iofilkernel=4, iofilstat=12
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
-    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, &
+    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, ssconnections, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning
 

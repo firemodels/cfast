@@ -7,6 +7,7 @@ module spreadsheet_routines
     use opening_fractions, only : get_vent_opening
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
+    use compartment_routines, only: room_connection_distance
 
     use precision_parameters
     use cenviro
@@ -23,9 +24,25 @@ module spreadsheet_routines
 
     private
 
-    public output_spreadsheet, output_spreadsheet_smokeview
+    public output_connections, output_spreadsheet, output_spreadsheet_smokeview
 
     contains
+    
+! --------------------------- output_connections -------------------------------------------
+    
+    subroutine output_connections
+    
+    integer i, j
+    type(room_type), pointer :: roomptr
+    
+    call room_connection_distance
+    call ssheaders_connections
+    do i = 1, nrm1
+        roomptr => roominfo(i)
+        write (20, '(2a,16384(i0,a))') trim(roomptr%name),',',(roomptr%room_connections(j),',',j=1,nr)
+    end do
+    end subroutine output_connections
+    
 
 ! --------------------------- output_spreadsheet -------------------------------------------
 
@@ -44,7 +61,7 @@ module spreadsheet_routines
 
     end subroutine output_spreadsheet
 
-! --------------------------- output_spreadsheet_normal -------------------------------------------
+! --------------------------- output_spreadsheet_normal ------------------------------------
 
     subroutine output_spreadsheet_normal (time)
 
@@ -125,7 +142,7 @@ module spreadsheet_routines
     
     out = ' '
     do i = 1, ic
-        if (validate) then
+        if (validation_flag) then
             write (out(i),"(e19.12)" ) array(i)
         else
             write (out(i),"(e13.6)" ) array(i)
@@ -173,7 +190,7 @@ module spreadsheet_routines
         netflow = ventptr%h_mflow(1,1,1) - ventptr%h_mflow(1,1,2) + ventptr%h_mflow(1,2,1) - ventptr%h_mflow(1,2,2)
         call ssaddtolist (position,netflow,outarray)
         
-        if (validate) then
+        if (validation_flag) then
             call ssaddtolist(position,ventptr%h_mflow(1,1,1),outarray)
             call ssaddtolist(position,ventptr%h_mflow(1,1,2),outarray)
             call ssaddtolist(position,ventptr%h_mflow(1,2,1),outarray)
@@ -212,7 +229,7 @@ module spreadsheet_routines
         netflow = sumin - sumout
         call ssaddtolist (position,netflow,outarray)
         
-        if(validate) then
+        if(validation_flag) then
             do j = 1, 8
                 call ssaddtolist(position, flow(j), outarray)
             end do
@@ -244,7 +261,7 @@ module spreadsheet_routines
             call ssaddtolist (position, trace, outarray)
             call ssaddtolist (position, tracefiltered, outarray)
         
-            if(validate) then
+            if(validation_flag) then
                 do j = 1, 8
                     call ssaddtolist(position, flow(j), outarray)
                 end do
@@ -314,8 +331,8 @@ module spreadsheet_routines
         call ssaddtolist (position, targptr%flux_incident_front / 1000._eb, outarray)
         call ssaddtolist (position, targptr%flux_net(1) / 1000._eb, outarray)
         
-        !much more detailed output for validate option
-        if (validate) then
+        !much more detailed output for validation_flag option
+        if (validation_flag) then
             call ssaddtolist (position, targptr%flux_radiation(1) / 1000._eb, outarray)
             call ssaddtolist (position, targptr%flux_convection(1) / 1000._eb, outarray)
             call ssaddtolist (position, targptr%flux_fire(1) / 1000._eb, outarray)
@@ -422,10 +439,10 @@ module spreadsheet_routines
                 if (layer==u.or..not.roomptr%shaft) then
                     if (tooutput(lsp)) then
                         ssvalue = roomptr%species_output(layer,lsp)
-                        if (validate.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-                        if (validate.and.lsp==soot) ssvalue = ssvalue*264.6903_eb ! converts od to mg/m^3 (see od calculation)
-                        if (validate.and.lsp==soot_flaming) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)
-                        if (validate.and.lsp==soot_smolder) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)
+                        if (validation_flag.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                        if (validation_flag.and.lsp==soot) ssvalue = ssvalue*264.6903_eb ! converts od to mg/m^3 (see od calculation)
+                        if (validation_flag.and.lsp==soot_flaming) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)
+                        if (validation_flag.and.lsp==soot_smolder) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3 (see od calculation)
                         call ssaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                         if (position>=maxhead) go to 90

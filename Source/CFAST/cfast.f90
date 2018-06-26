@@ -31,6 +31,7 @@
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions
+    use spreadsheet_routines, only : output_connections
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
     use radiation_routines, only : radiation
@@ -84,13 +85,14 @@
     call initialize_walls (tstop)
 
     call output_initial_conditions
+    if (validation_flag) call output_connections
 
     call cptime(tbeg)
     call solve_simulation (tstop)
     call cptime(tend)
 
-    if (.not.validate) write (*,5000) tend - tbeg
-    if (.not.validate) write (*,5010) total_steps
+    if (.not.validation_flag) write (*,5000) tend - tbeg
+    if (.not.validation_flag) write (*,5010) total_steps
     write (iofill,5000) tend - tbeg
     write (iofill,5010) total_steps
     call cfastexit ('CFAST', 0)
@@ -116,7 +118,7 @@
     integer, intent(in) :: errorcode
 
     if (errorcode==0) then
-        if (.not.validate) write (*, '(''Normal exit from '',a)') trim(name)
+        if (.not.validation_flag) write (*, '(''Normal exit from '',a)') trim(name)
         write (iofill, '(''Normal exit from '',a)') trim(name)
     else
         write (*,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode

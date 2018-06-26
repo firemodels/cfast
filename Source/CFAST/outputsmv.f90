@@ -443,7 +443,7 @@
             end do
         end do
 
-        unit=funit(14)
+        unit=funit(30)
         if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
@@ -458,7 +458,7 @@
         deallocate(tslicedata)
         close(unit)
 
-        unit=funit(14)
+        unit=funit(30)
         sf => sliceinfo(i+1)
         if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
@@ -474,7 +474,7 @@
         deallocate(uslicedata)
         close(unit)
 
-        unit=funit(14)
+        unit=funit(30)
         sf => sliceinfo(i+2)
         if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
@@ -490,7 +490,7 @@
         deallocate(vslicedata)
         close(unit)
 
-        unit=funit(14)
+        unit=funit(30)
         sf => sliceinfo(i+3)
         if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
@@ -506,7 +506,7 @@
         deallocate(wslicedata)
         close(unit)
 
-        unit=funit(14)
+        unit=funit(30)
         sf => sliceinfo(i+4)
         if (first_time.eq.1) then
             open(unit,file=sf%filename,form='unformatted',status='replace')
@@ -664,7 +664,7 @@ module isosurface
                 end do
             end do
         end do
-        unit=funit(14)
+        unit=funit(30)
         if (first_time.eq.1) then
             open(unit,file=isoptr%filename,form='unformatted',status='replace')
             unit=-unit

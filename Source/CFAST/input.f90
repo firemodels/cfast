@@ -53,25 +53,6 @@
     type(detector_type), pointer :: dtectptr
     type(vent_type), pointer :: ventptr
 
-    !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
-    !
-    !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
-    !      3 is for the log file  (iofill)
-    !      6 is output (IOFILO)
-    !     11 is the history file
-    !     12 is used to write the status file (project.status)
-    !     13 smokeview output (header) - note this is rewound each time the plot data is written)
-    !     14 smokeview output (plot data)
-    !     15 spreadsheet output (normal)
-    !     16 spreadsheet output (flow field)
-    !     17 spreadsheet output (species)
-    !     18 spreadsheet output (walls and targets)
-    !
-    !     surface_on (1) = ceiling properties are defined
-    !                (2) = floor properties are defined
-    !                (3) = side wall properties are defined for upper walls
-    !                (4) = side wall properties are defined for lower walls
-
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
     open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
@@ -462,6 +443,7 @@
     smvhead = datapath(1:lp) // project(1:ld) // '.smv'
     smvdata = datapath(1:lp) // project(1:ld) // '.plt'
     smvcsv = datapath(1:lp) // project(1:ld) // '_zone.csv'
+    ssconnections = datapath(1:lp) // project(1:ld) // '_c.csv'
     ssflow = datapath(1:lp) // project(1:ld) // '_f.csv'
     ssnormal = datapath(1:lp) // project(1:ld) // '_n.csv'
     ssspecies = datapath(1:lp) // project(1:ld) // '_s.csv'
@@ -494,7 +476,7 @@
     end if
  
     ! output the revision for later identification of validation plots
-    if (validate) then
+    if (validation_flag) then
         call deleteoutputfiles (gitfile)
         open (unit=3, file=gitfile, action='write', iostat=ios, status='new')
         if (ios==0) then
@@ -517,6 +499,7 @@
     call deleteoutputfiles (smvdata)
     call deleteoutputfiles (smvcsv)
     call deleteoutputfiles (ssflow)
+    call deleteoutputfiles (ssconnections)
     call deleteoutputfiles (ssnormal)
     call deleteoutputfiles (ssspecies)
     call deleteoutputfiles (ssspeciesmass)

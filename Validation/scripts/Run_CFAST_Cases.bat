@@ -10,6 +10,7 @@ set installed_cfast=0
 set installed_smokeview=0
 set size=_64
 set DEBUG=
+set check=
 
 call :getopts %*
 if %stopscript% == 1 (
@@ -77,23 +78,30 @@ set CFAST=%bg% %CFAST_EXE%
 set RUNCFAST_R=call %SCRIPT_DIR%\runcfast.bat
 set RUNCFAST_M=call %SCRIPT_DIR%\make_stop.bat
 set RUNCFAST_E=call %SCRIPT_DIR%\erase_stop.bat
+set RUNCFAST_C=call %SCRIPT_DIR%\checkcfast.bat
 
 cd "%SCRIPT_DIR%"
 %SH2BAT% CFAST_Cases.sh CFAST_Cases.bat
 
 :: create or erase stop files
 
+cd "%BASEDIR%"
+if "%check%" == "1" goto skip1
 if "%rundebug%" == "1" (
   SET RUNCFAST=%RUNCFAST_M%
+  call Scripts\CFAST_Cases.bat
 ) else (
   SET RUNCFAST=%RUNCFAST_E%
+  call Scripts\CFAST_Cases.bat
 )
-cd "%BASEDIR%"
-call Scripts\CFAST_Cases.bat
+:skip1
 
 :: run cases
 
 SET RUNCFAST=%RUNCFAST_R%
+if "%check%" == "1" (
+  SET RUNCFAST=%RUNCFAST_C%
+)
 cd "%BASEDIR%"
 call Scripts\CFAST_Cases.bat
 
@@ -169,6 +177,10 @@ exit /b 0
    set stopscript=1
    exit /b
  )
+ if /I "%1" EQU "-check" (
+   set valid=1
+   set check=1
+ )
  if /I "%1" EQU "-cfast" (
    set valid=1
    set installed_cfast=1
@@ -200,6 +212,7 @@ echo Run_CFAST_Cases [options]
 echo. 
 echo -cfast          - use installed cfast
 echo -debug          - use debug version of cfast
+echo -check          - check that cases ran (that .out file was generated)
 echo -help           - display this message
 echo -installed      - same as -cfast -smokeview
 echo -smokeview      - use installed smokeview utilities 

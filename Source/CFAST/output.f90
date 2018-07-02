@@ -68,12 +68,12 @@ module output_routines
 
     if (version>=1000) then
         imajor = version/1000
-        iminor = mod(version,1000)/100
-        iminorrev = mod(version,100)
+        iminor = modulo(version,1000)/100
+        iminorrev = modulo(version,100)
     else
         imajor = version/100
-        iminor = mod(version,100)/10
-        iminorrev = mod(version,10)
+        iminor = modulo(version,100)/10
+        iminorrev = modulo(version,10)
     end if
     return
 
@@ -1360,8 +1360,8 @@ module output_routines
     ! error processing
 
     !	smokeview file
-11  write (*,5040) mod(ios,256),trim(smvhead),trim(smvdata)
-    write (iofill,5040) mod(ios,256),trim(smvhead),trim(smvdata)
+11  write (*,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
+    write (iofill,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
     stop
     !	this one comes from writing to the status file
 81  write (*,*) '***Fatal error opening the status file ',ios

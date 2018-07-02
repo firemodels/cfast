@@ -390,7 +390,7 @@ module target_routines
             x_node(i) = x_node(i-1)*1.50_eb
             x_node(nnodes_trg-i) = x_node(i)
         end do
-        if (mod((nnodes_trg-1),2)==1) x_node((nnodes_trg-1)/2+1) = x_node((nnodes_trg-1)/2)*1.50_eb
+        if (modulo((nnodes_trg-1),2)==1) x_node((nnodes_trg-1)/2+1) = x_node((nnodes_trg-1)/2)*1.50_eb
         sum = 0.0_eb
         do i = 1, nnodes_trg-1
             sum = sum + x_node(i)

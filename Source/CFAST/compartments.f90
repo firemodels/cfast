@@ -39,7 +39,7 @@
     do i = 1, nrm1
         ! define the connection matrix for the current compartment
         do j = 1,nr
-            itemp(j) = imod(i-1+j,nr)
+            itemp(j) = modulo(i-1+j,nr)
             if (itemp(j)==0) itemp(j) = nr
         end do
         do j = 1,nr

@@ -48,7 +48,7 @@
         i = i_hconnections(iw,w_from_room)
         roomptr => roominfo(i)
         iwall = i_hconnections(iw,w_from_wall)
-        if (mod(iwall,2)==1) then
+        if (modulo(iwall,2)==1) then
             ilay = u
         else
             ilay = l

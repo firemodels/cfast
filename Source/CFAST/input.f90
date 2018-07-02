@@ -58,10 +58,10 @@
     open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
     if (ios/=0) then
         if (iofill>0) then
-            write (*,5050) mod(ios,256)
-            write (iofill,5050) mod(ios,256)
+            write (*,5050) modulo(ios,256)
+            write (iofill,5050) modulo(ios,256)
         else
-            write (*,5050) mod(ios,256)
+            write (*,5050) modulo(ios,256)
         end if
         stop
     end if

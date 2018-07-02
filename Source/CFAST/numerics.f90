@@ -4538,7 +4538,7 @@ module numerics_routines
     !
     if (nprint <= 0) go to 190
     iflag = 0
-    if (mod(iter-1,nprint) == 0) call fcn(n,x,fvec,iflag)
+    if (modulo(iter-1,nprint) == 0) call fcn(n,x,fvec,iflag)
     if (iflag < 0) go to 300
 190 continue
     !
@@ -4825,7 +4825,7 @@ module numerics_routines
     !
     !        clean-up loop so remaining vector length is a multiple of 6.
     !
-20  m = mod(n,6)
+20  m = modulo(n,6)
     if ( m == 0 ) go to 40
     do i = 1,m
         dasum = dasum + abs(dx(i))
@@ -4914,7 +4914,7 @@ module numerics_routines
     !
     !        clean-up loop so remaining vector length is a multiple of 4.
     !
-20  m = mod(n,4)
+20  m = modulo(n,4)
     if ( m == 0 ) go to 40
     do i = 1,m
         dy(i) = dy(i) + da*dx(i)
@@ -5017,7 +5017,7 @@ module numerics_routines
     !
     !        clean-up loop so remaining vector length is a multiple of 5.
     !
-20  m = mod(n,5)
+20  m = modulo(n,5)
     if ( m == 0 ) go to 40
     do 30 i = 1,m
         ddot = ddot + dx(i)*dy(i)
@@ -5166,7 +5166,7 @@ module numerics_routines
     !
     !        clean-up loop so remaining vector length is a multiple of 5.
     !
-20  m = mod(n,5)
+20  m = modulo(n,5)
     if ( m == 0 ) go to 40
     do i = 1,m
         dx(i) = da*dx(i)

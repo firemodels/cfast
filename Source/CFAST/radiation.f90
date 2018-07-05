@@ -39,6 +39,7 @@ module radiation_routines
     real(eb), intent(out), dimension(mxrooms,nwal) :: fluxes_radiation
 
     real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight, rabsorb(2)
+    real(eb) :: chi10(10)
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
     
@@ -48,6 +49,7 @@ module radiation_routines
     ! work and dummy arrays passed to rad2 and rad4
 
     real(eb) :: taufl(mxfires,nwal), taufu(mxfires,nwal), firang(nwal,mxfires)
+    real(eb) :: taufl10(mxfires,10), taufu10(mxfires,10), firang10(10,mxfires)
     real(eb) :: xrfire(mxfires), yrfire(mxfires), zrfire(mxfires), qrfire(mxfires)
 
     fluxes_radiation(1:nrm1,1:nwal) = 0.0_eb
@@ -61,6 +63,10 @@ module radiation_routines
 
     do i = 1, nrm1
         roomptr => roominfo(i)
+        if (radi_verification_flag .and. upper_layer_thickness > 0._eb) then
+            roomptr%volume(u) = roomptr%depth(u)*roomptr%floor_area
+            roomptr%volume(l) = roomptr%depth(l)*roomptr%floor_area
+        end if
         tg(u) = roomptr%temp(u)
         tg(l) = roomptr%temp(l)
         roomptr%abs_length(l) = (1.8_eb*roomptr%volume(l)) / &
@@ -69,9 +75,15 @@ module radiation_routines
             (roomptr%floor_area + roomptr%depth(u)*(roomptr%cdepth + roomptr%cwidth))
         do iwall = 1, 4
             imap = map(iwall)
-            twall(imap) = roomptr%t_surfaces(1,iwall)
-            emis(imap) = roomptr%eps_w(iwall)
+            if (radi_verification_flag .and. temperature_wall(imap) /= -1001._eb) then
+                twall(imap) = temperature_wall(iwall) + kelvin_c_offset
+                emis(imap) = emissivity_wall(iwall)
+            else
+                twall(imap) = roomptr%t_surfaces(1,iwall)
+                emis(imap) = roomptr%eps_w(iwall)
+            end if
         end do
+        chi10(:) = roomptr%chi10(:)
         nrmfire = 0
         do ifire = 1, n_fires
             fireptr => fireinfo(ifire)
@@ -100,9 +112,18 @@ module radiation_routines
         end if
         rabsorb(1) = roomptr%absorb(u)
         rabsorb(2) = roomptr%absorb(l)
-        call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
-            qrfire,xrfire,yrfire,zrfire,nrmfire, &
-            qflxw,qlay,mxfires,taufl,taufu,firang,roomptr%rad_qout,black)
+        
+        if (nrm1 == 1 .and. sum(chi10(:)) /= 0._eb .or. radi_verification_flag) then 
+            call rad10(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
+                      qrfire,xrfire,yrfire,zrfire,nrmfire,chi10, &
+                      qflxw,qlay,mxfires,taufl10,taufu10,firang10,roomptr%rad_qout,black)
+        else
+            ! limiting the new feature for one compartment only, this restriction will be removed in the future
+            call rad4(twall,tg,emis,rabsorb,i,roomptr%cwidth,roomptr%cdepth,roomptr%cheight,roomptr%depth(l), &
+                      qrfire,xrfire,yrfire,zrfire,nrmfire, &
+                      qflxw,qlay,mxfires,taufl,taufu,firang,roomptr%rad_qout,black)
+        end if
+        
         do j = 1, nwal
             fluxes_radiation(i,j) = qflxw(map(j))
         end do
@@ -487,6 +508,43 @@ module radiation_routines
     return
     end function rdparfig
 
+! --------------------------- rdprpfig -------------------------------------------
+
+    real(eb) function rdprpfig(x,y,z)
+
+    !     routine: rdparfig
+    !     purpose: this routine calculates the configuration factor between two perpindular plates with a common edge.
+
+    use precision_parameters
+    implicit none
+
+    real(eb), intent(in) :: x, y, z
+
+    real(eb) :: h, w, f1, f2, f3, f4a, f4b, f4c, f4, hwsum, hwnorm, rhwnorm, wsum1, hsum1, hwsum2
+
+    rdprpfig = 0.0_eb
+    if(y==0.0_eb.or.x==0.0_eb.or.z==0.0_eb) return
+    h = x/y
+    w = z/y
+    f1 = w*atan(1.0_eb/w)
+    f2 = h*atan(1.0_eb/h)
+
+    hwsum = h**2._eb + w**2._eb
+    hwnorm = sqrt(hwsum)
+    rhwnorm = 1.0_eb/hwnorm
+    f3 = hwnorm*atan(rhwnorm)
+
+    wsum1 = 1.0_eb + w**2._eb
+    hsum1 = 1.0_eb + h**2._eb
+    hwsum2 = 1.0_eb + hwsum
+    f4a = wsum1*hsum1/hwsum2
+    f4b = (w**2._eb*hwsum2/wsum1/hwsum)
+    f4c = (h**2._eb*hwsum2/hsum1/hwsum)
+    f4 = 0.25_eb*(log(f4a)+log(f4b)*w**2._eb+log(f4c)*h**2._eb) 
+    rdprpfig = (f1+f2-f3+f4)/(pi*w)
+    return
+    end function rdprpfig
+
 ! --------------------------- getvrel -------------------------------------------
 
     subroutine getvrel(vrel,v1,vf)
@@ -587,6 +645,14 @@ module radiation_routines
     real(eb) :: hlay, beam, beamu, beaml
     integer :: i, j
 
+    if (radi_verification_flag .and. partial_pressure_h2o == 99999._eb .or. partial_pressure_co2 == 99999._eb) then
+        do i = 1, nfire
+            taufu(:,i) = 0._eb
+            taufl(:,i) = 0._eb
+        end do
+        return
+    end if
+
     do i = 1, nfire
         do j = 1, nup
             if (zfire(i)>hlay) then
@@ -650,6 +716,12 @@ module radiation_routines
     integer i, j
     real(eb) :: fu, fl
     logical black
+
+    if (radi_verification_flag .and. partial_pressure_h2o == 99999._eb .or. partial_pressure_co2 == 99999._eb) then
+        tauu(:,:) = 0._eb
+        taul(:,:) = 0._eb
+        return
+    end if
 
     ! define upper layer transmission factors
     ! upper to upper
@@ -949,6 +1021,8 @@ module radiation_routines
     ! total absorbance
     vfs = roomptr%species_mass(layer,soot)/(roomptr%volume(layer)*rhos)
     absorb = max(k*vfs*tg - log(1.0_eb-ag)/l,0.01_eb)
+    
+    if (radi_verification_flag .and. partial_pressure_h2o == 0._eb .and. partial_pressure_co2 == 0._eb) absorb = 0._eb
 
     return
 
@@ -1054,5 +1128,943 @@ module radiation_routines
 
     return
     end subroutine linterp
+
+! --------------------------- rad10 ---------------------------------------------
+
+    subroutine rad10(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay, &
+                    qfire,xfire,yfire,zfire,nfire,chi10, &
+                    qflux,qlay,mxfires,taufl10,taufu10,firang10,qout,black)
+
+    !     routine: rad10
+    !     purpose: Similiar to rad4 except that rad10 has capabilities to account for radiatoin loss due to any openings
+
+    integer, parameter :: u = 1, l = 2, mxroom = 100
+    integer :: ipvt(10), iflag(mxroom), iroom, i, j, k, nfire, info, mxfires
+
+    real(eb), intent(in) :: twall(4), tlay(2), emis(4), absorb(2), xroom, yroom, zroom, hlay, qfire(*), xfire(*), yfire(*), zfire(*)
+    real(eb), intent(in) :: chi10(10)
+    real(eb), intent(out) :: taufl10(mxfires,*), taufu10(mxfires,*), firang10(10,mxfires)
+    real(eb), intent(out) :: qflux(4), qlay(2), qout(4)
+
+    real(eb) :: taul(10,10), tauu(10,10), beam(10,10)
+    real(eb) :: area(10), figs(10,10), zz(10), a(10,10), b(10,10), e(10), c(10), rhs(10), dq(10), dqde(10), f14(mxroom)
+    real(eb) :: aij, qllay, qulay
+    
+    real(eb) :: twall10(10), emis10(10), qout10(10), qflux10(10)
+    real(eb) :: radi_gain_gas(10), radi_loss_gas(10), &
+                radi_gain_gas_fire(10), radi_loss_gas_fire(10), radi_gain_wall_fire(10), radi_loss_wall_fire(10), &
+                radi_gain_gas_wall(10), radi_loss_gas_wall(10), radi_loss_wall_wall(10), radi_gain_wall_wall(10)
+    real(eb) :: summataion(10)
+    
+
+    logical black
+
+    data iflag /mxroom*0/
+
+    if (iflag(iroom)==0) then
+        f14(iroom) = rdparfig(xroom,yroom,zroom)
+        iflag(iroom) = 1
+    end if
+    
+    ! obtain area, zz, twall10 and emis10
+    call rad10_initalization(xroom,yroom,zroom,hlay,twall,emis,area,zz,twall10,emis10)
+    
+    ! determine view factors for 10-wall model
+    call ten_view_factors(area,xroom,yroom,zroom,hlay,figs)
+    
+    ! evaluate center-to-center path-length
+    call ten_beam(zz,xroom,yroom,beam)
+    
+    ! define transmission factors for medium
+    call rdrtran(10,5,absorb,beam,hlay,zz,tauu,taul,black)
+
+    ! define transmission factors for fires
+    if (nfire/=0) then
+        call rdftran(mxfires,10,5,absorb,hlay,zz,nfire,zfire,taufu10,taufl10,black)
+    end if
+    
+    ! define solid angles for fires
+    if (nfire/=0) then
+        call rdfang10(mxfires,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang10)
+    end if
+    
+    summataion(:) = 0._eb
+    do i = 1, 10
+        do j = 1, 10
+            figs(i,j) = figs(i,j) * (1._eb-chi10(i)) * (1._eb-chi10(j))
+            summataion(i) = summataion(i) + figs(i,j)
+        end do
+        firang10(i,:) = firang10(i,:) * (1._eb-chi10(i))
+    end do
+
+    !     note: we want to solve the linear system
+    !         a*dq = b*e + c
+    !         where a and b are nxn matrices, q, e and c are nr vectors
+    
+    ! define e vector
+    do i = 1, 10
+        e(i) = sigma*twall10(i)**4
+    end do
+
+    ! define c vector
+    call rdflux10(mxfires,10,5,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl10,taufu10,firang10,nfire,qllay,qulay,c, &
+                  chi10, &
+                  radi_gain_gas,radi_loss_gas,radi_gain_gas_fire,radi_loss_gas_fire, &
+                  radi_gain_wall_fire,radi_loss_wall_fire)
+        
+    ! define 'a' and 'b' coefficient matrix
+    do k = 1, 10
+        do j = 1, 10
+            aij = figs(k,j)*taul(k,j)*tauu(k,j)
+            a(k,j) = -aij*(1.0_eb-emis10(j))
+            b(k,j) = -aij
+        end do
+        a(k,k) = a(k,k) + summataion(k)
+        b(k,k) = b(k,k) + summataion(k)
+    end do
+    
+    ! construct right hand side (rhs) of linear system to be solved, i.e. compute b*e - c
+    do k = 1, 10
+        rhs(k) = ddot(10,b(k,1),10,e(1),1) - c(k)
+    end do
+
+    ! solve the linear system
+    call dgefa(a,10,10,ipvt,info)
+    if (info/=0) then
+        write (*,*) '***Error: RAD10 - singular matrix'
+        write (iofill,*) '***Error: RAD10 - singular matrix'
+        do k = 1, 10
+            rhs(k) = 0.0_eb
+        end do
+    else
+        call dgesl(a,10,10,ipvt,rhs,0)
+    end if
+
+    ! note: each row k of the a matrix, as defined by seigal and howell was divided by emis(k) (in order to insure
+    !       that this new 'a' was diagonally dominant.  now we have to multiply the solution to the modified problem
+    !       by emis(i) to get the answer to the original problem
+    do k = 1, 10
+        dqde(k) = rhs(k)
+        qout10(k) = e(k) - (1.0_eb - emis10(k))*dqde(k)
+        dq(k) = rhs(k)*emis10(k)
+    end do
+
+    ! take solution and compute energy gain or loss to each panel and each layer.  also compute fluxes.  change sign so that
+    ! a postive flux means that heat is flowing to the wall
+    do i = 1, 10
+        qflux10(i) = -dq(i)
+    end do
+
+    ! compute radiation absorbed by each layer
+    call rabs10(10,5,e,dqde,emis10,area,figs,tauu,taul,chi10,radi_gain_wall_wall,radi_loss_wall_wall, &
+                radi_gain_gas_wall,radi_loss_gas_wall,qllay,qulay)
+    
+    qlay(u) = qulay
+    qlay(l) = qllay    
+    
+    ! obtain data for 4-wall model based on 10-wall model
+    qflux(:) = 0._eb
+    qout(:) = 0._eb
+    
+    do i = 1, 10
+        if (i == 1) then
+            qflux(1) = qflux10(i)
+            qout(1) = qout10(i)
+        else if (i > 1 .and. i < 6) then
+            qflux(2) = qflux(2) + qflux10(i)/4._eb
+            qout(2) = qout(2) + qout10(i)/4._eb
+        else if (i > 5 .and. i < 10) then
+            qflux(3) = qflux(3) + qflux10(i)/4._eb
+            qout(3) = qout(3) + qout10(i)/4._eb
+        else
+            qflux(4) = qflux10(i)
+            qout(4) = qout10(i)
+        end if
+    end do
+
+    return
+    end subroutine rad10
+
+! --------------------------- rad10_initalization -------------------------------
+
+    subroutine rad10_initalization(xroom,yroom,zroom,hlay,twall,emis,area,zz,twall10,emis10)
+
+    !     purpose: initalization area, zz, and other parameters
+
+    real(eb), intent(in)  :: xroom,yroom,zroom,hlay,twall(4),emis(4)
+    real(eb), intent(out) :: area(10),zz(10),twall10(10),emis10(10)
+    
+    integer :: i
+
+    ! define areas
+    area(1) = xroom*yroom
+    area(2) = (zroom-hlay)*xroom
+    area(3) = (zroom-hlay)*yroom
+    area(4) = area(2)
+    area(5) = area(3)
+    area(6) = hlay*xroom
+    area(7) = hlay*yroom
+    area(8) = area(6)
+    area(9) = area(7)
+    area(10) = area(1)
+    
+    ! define zz 
+    zz(1) = zroom
+    zz(2) = (hlay+zroom)*0.50_eb
+    zz(3) = (hlay+zroom)*0.50_eb
+    zz(4) = (hlay+zroom)*0.50_eb
+    zz(5) = (hlay+zroom)*0.50_eb
+    zz(6) = hlay*0.50_eb
+    zz(7) = hlay*0.50_eb
+    zz(8) = hlay*0.50_eb
+    zz(9) = hlay*0.50_eb
+    zz(10) = 0.0_eb
+
+    do i = 1, 10
+        if (i == 1) then
+            twall10(i) = twall(1)
+            emis10(i) = emis(1)
+        else if (i > 1 .and. i < 6) then
+            twall10(i) = twall(2)
+            emis10(i) = emis(2)
+        else if (i > 5 .and. i < 10) then
+            twall10(i) = twall(3)
+            emis10(i) = emis(3)
+        else
+            twall10(i) = twall(4)
+            emis10(i) = emis(4)
+        end if
+    end do 
+
+    return
+    end subroutine rad10_initalization
+
+! --------------------------- ten_view_factors ----------------------------------
+
+    subroutine ten_view_factors(area,xroom,yroom,zroom,hlay,figs)
+
+    !     purpose: to determine 10 view factors
+
+    real(eb), intent(in)  :: area(10),xroom,yroom,zroom,hlay
+    real(eb), intent(out) :: figs(10,10)
+    
+    real(eb) :: f1d, ff14, f4d, f1x, f1y, f10x, f10y
+    
+    ! define configuration factors
+    f1d = rdparfig(xroom,yroom,zroom-hlay)
+    ff14 = rdparfig(xroom,yroom,zroom)
+    f4d = rdparfig(xroom,yroom,hlay)
+    f1x = rdprpfig(zroom-hlay,yroom,xroom)
+    f1y = rdprpfig(zroom-hlay,xroom,yroom)
+    f10x = rdprpfig(xroom,yroom,hlay)
+    f10y = rdprpfig(yroom,xroom,hlay)
+
+    figs(1,1)   = 0.0_eb
+    figs(1,2)   = f1y
+    figs(1,3)   = f1x
+    figs(1,4)   = figs(1,2)
+    figs(1,5)   = figs(1,3)
+    figs(1,6)   = 1._eb/area(1)*((area(2)+area(6))*rdprpfig(yroom,xroom,zroom)-area(1)*figs(1,2))
+    figs(1,7)   = 1._eb/area(1)*((area(3)+area(7))*rdprpfig(xroom,yroom,zroom)-area(1)*figs(1,3))
+    figs(1,8)   = figs(1,6)
+    figs(1,9)   = figs(1,7)
+    figs(1,10)  = ff14
+    
+    figs(2,1)   = area(1)/area(2)*figs(1,2)
+    figs(2,2)   = 0._eb
+    figs(2,3)   = rdprpfig(yroom,zroom-hlay,xroom)
+    figs(2,4)   = rdparfig(zroom-hlay,xroom,yroom)
+    figs(2,5)   = figs(2,3)
+    figs(2,6)   = 0._eb
+    figs(2,7)   = 1._eb/(2._eb*area(2))*((area(2)+area(6))*rdprpfig(yroom,zroom,xroom)- &
+                                          area(2)*rdprpfig(yroom,zroom-hlay,xroom)-area(6)*rdprpfig(yroom,hlay,xroom))
+    figs(2,8)   = 1._eb/(2._eb*area(2))*((area(2)+area(6))*rdparfig(xroom,zroom,yroom)- &
+                                          area(2)*rdparfig(xroom,zroom-hlay,yroom)-area(6)*rdparfig(xroom,hlay,yroom))
+    figs(2,9)   = figs(2,7)
+    figs(2,10)  = 1._eb/area(2)*((area(2)+area(6))*rdprpfig(yroom,xroom,zroom)-area(6)*rdprpfig(yroom,xroom,hlay))
+    
+    figs(3,1)   = area(1)/area(3)*figs(1,3)
+    figs(3,2)   = area(2)/area(3)*figs(2,3)
+    figs(3,3)   = 0._eb
+    figs(3,4)   = figs(3,2)
+    figs(3,5)   = rdparfig(zroom-hlay,yroom,xroom)
+    figs(3,6)   = 1._eb/(2._eb*area(3))*((area(3)+area(7))*rdprpfig(xroom,zroom,yroom)- &
+                                          area(3)*rdprpfig(xroom,zroom-hlay,yroom)-area(7)*rdprpfig(xroom,hlay,yroom))
+    figs(3,7)   = 0._eb
+    figs(3,8)   = figs(3,6)
+    figs(3,9)   = 1._eb/(2._eb*area(3))*((area(3)+area(7))*rdparfig(yroom,zroom,xroom)- &
+                                          area(3)*rdparfig(yroom,zroom-hlay,xroom)-area(7)*rdparfig(yroom,hlay,xroom))
+    figs(3,10)  = 1._eb/area(3)*((area(3)+area(7))*rdprpfig(xroom,yroom,zroom)-area(7)*rdprpfig(xroom,yroom,hlay))
+    
+    figs(4,1)   = area(2)/area(4)*figs(2,1)
+    figs(4,2)   = area(2)/area(4)*figs(2,4)
+    figs(4,3)   = area(2)/area(4)*figs(2,5)
+    figs(4,4)   = 0._eb
+    figs(4,5)   = area(2)/area(4)*figs(2,3)
+    figs(4,6)   = area(2)/area(4)*figs(2,8)
+    figs(4,7)   = area(2)/area(4)*figs(2,9)
+    figs(4,8)   = 0._eb
+    figs(4,9)   = area(2)/area(4)*figs(2,7)
+    figs(4,10)  = area(2)/area(4)*figs(2,10) 
+    
+    figs(5,1)   = area(3)/area(5)*figs(3,1)
+    figs(5,2)   = area(3)/area(5)*figs(3,4)
+    figs(5,3)   = area(3)/area(5)*figs(3,5)
+    figs(5,4)   = area(3)/area(5)*figs(3,2)
+    figs(5,5)   = 0._eb
+    figs(5,6)   = area(3)/area(5)*figs(3,8)
+    figs(5,7)   = area(3)/area(5)*figs(3,9)
+    figs(5,8)   = area(3)/area(5)*figs(5,6)
+    figs(5,9)   = 0._eb
+    figs(5,10)  = area(3)/area(5)*figs(3,10)
+    
+    figs(6,1)   = 1._eb/area(6)*((area(2)+area(6))*rdprpfig(yroom,xroom,zroom)-area(2)*rdprpfig(yroom,xroom,zroom-hlay))
+    figs(6,2)   = 0._eb
+    figs(6,3)   = area(3)/area(6)*figs(3,6)
+    figs(6,4)   = area(4)/area(6)*figs(4,6)
+    figs(6,5)   = area(5)/area(6)*figs(5,6)
+    figs(6,6)   = 0._eb
+    figs(6,7)   = rdprpfig(yroom,hlay,xroom)
+    figs(6,8)   = rdparfig(hlay,xroom,yroom)
+    figs(6,9)   = figs(6,7)
+    figs(6,10)  = f10y
+    
+    figs(7,1)   = 1._eb/area(7)*((area(3)+area(7))*rdprpfig(xroom,yroom,zroom)-area(3)*rdprpfig(xroom,yroom,zroom-hlay))
+    figs(7,2)   = area(2)/area(7)*figs(2,7)
+    figs(7,3)   = 0._eb
+    figs(7,4)   = area(4)/area(7)*figs(4,7)
+    figs(7,5)   = area(5)/area(7)*figs(5,7)
+    figs(7,6)   = area(6)/area(7)*figs(6,7)
+    figs(7,7)   = 0._eb
+    figs(7,8)   = figs(7,6)
+    figs(7,9)   = rdparfig(yroom,hlay,xroom)
+    figs(7,10)  = f10x
+    
+    figs(8,1)   = area(1)/area(8)*figs(1,8)
+    figs(8,2)   = area(2)/area(8)*figs(2,8)
+    figs(8,3)   = area(3)/area(8)*figs(3,8)
+    figs(8,4)   = 0._eb
+    figs(8,5)   = area(5)/area(8)*figs(5,8)
+    figs(8,6)   = area(6)/area(8)*figs(6,8)
+    figs(8,7)   = area(7)/area(8)*figs(7,8)
+    figs(8,8)   = 0._eb
+    figs(8,9)   = figs(8,7)
+    figs(8,10)  = area(6)/area(8)*figs(6,10)
+    
+    figs(9,1)   = area(1)/area(9)*figs(1,9)
+    figs(9,2)   = area(2)/area(9)*figs(2,9)
+    figs(9,3)   = area(3)/area(9)*figs(3,9)
+    figs(9,4)   = area(4)/area(9)*figs(4,9)
+    figs(9,5)   = 0._eb
+    figs(9,6)   = area(6)/area(9)*figs(6,9)
+    figs(9,7)   = area(7)/area(9)*figs(7,9)
+    figs(9,8)   = area(8)/area(9)*figs(8,9)
+    figs(9,9)   = 0._eb
+    figs(9,10)  = area(7)/area(9)*figs(7,10)
+    
+    figs(10,1)   = area(1)/area(10)*figs(1,10)
+    figs(10,2)   = area(2)/area(10)*figs(2,10)
+    figs(10,3)   = area(3)/area(10)*figs(3,10)
+    figs(10,4)   = area(4)/area(10)*figs(4,10)
+    figs(10,5)   = area(5)/area(10)*figs(5,10)
+    figs(10,6)   = area(6)/area(10)*figs(6,10)
+    figs(10,7)   = area(7)/area(10)*figs(7,10)
+    figs(10,8)   = area(8)/area(10)*figs(8,10)
+    figs(10,9)   = area(9)/area(10)*figs(9,10)
+    figs(10,10)  = 0._eb
+
+    return
+    end subroutine ten_view_factors
+
+! --------------------------- ten_beam ------------------------------------------
+
+    subroutine ten_beam(zz,xroom,yroom,beam)
+
+    !     purpose: to determine 10 view factors
+
+    real(eb), intent(in)  :: zz(10),xroom,yroom
+    real(eb), intent(out) :: beam(10,10)
+    
+    real(eb) :: dx2, dy2, dz1, dz2, dz3, dz4, x2, y2
+
+    ! define transmission factors for surfaces, but first define beam lengths
+    dz1 = (zz(1)-zz(2))**2
+    dz2 = (zz(1)-zz(6))**2
+    dz3 = (zz(2)-zz(6))**2
+    dz4 = (zz(6)-zz(10))**2
+    dx2 = (xroom*0.50_eb)**2
+    dy2 = (yroom*0.50_eb)**2
+    x2 = xroom**2
+    y2 = yroom**2
+
+    beam(1,1) = 0.0_eb
+    beam(1,2) = sqrt(dy2+dz1)
+    beam(1,3) = sqrt(dx2+dz1)
+    beam(1,4) = beam(1,2)
+    beam(1,5) = beam(1,3)
+    beam(1,6) = sqrt(dy2+dz2)
+    beam(1,7) = sqrt(dx2+dz2)
+    beam(1,8) = beam(1,6)
+    beam(1,9) = beam(1,7)
+    beam(1,10) = zz(1)
+
+    beam(2,1) = beam(1,2)
+    beam(2,2) = 0.0_eb
+    beam(2,3) = sqrt(dx2+dy2)
+    beam(2,4) = sqrt(y2)
+    beam(2,5) = beam(2,3)
+    beam(2,6) = sqrt(dz3)
+    beam(2,7) = sqrt(dz3+(dx2+dy2))
+    beam(2,8) = sqrt(dz3+y2)
+    beam(2,9) = beam(2,7)
+    beam(2,10) = sqrt(zz(2)**2+dy2)
+
+    beam(3,1) = beam(1,3)
+    beam(3,2) = beam(2,3)
+    beam(3,3) = 0.0_eb
+    beam(3,4) = beam(3,2)
+    beam(3,5) = sqrt(x2)
+    beam(3,6) = sqrt(dz3+(dx2+dy2))
+    beam(3,7) = sqrt(dz3)
+    beam(3,8) = beam(3,6)
+    beam(3,9) = sqrt(dz3+x2)
+    beam(3,10) = sqrt(zz(2)**2+dx2)
+
+    beam(4,1) = beam(1,4)
+    beam(4,2) = beam(2,4)
+    beam(4,3) = beam(3,4)
+    beam(4,4) = 0.0_eb
+    beam(4,5) = beam(4,3)
+    beam(4,6) = sqrt(dz3+y2)
+    beam(4,7) = sqrt(dz3+(dx2+dy2))
+    beam(4,8) = sqrt(dz3)
+    beam(4,9) = beam(4,7)
+    beam(4,10) = sqrt(zz(2)**2+dy2)
+
+    beam(5,1) = beam(1,5)
+    beam(5,2) = beam(2,5)
+    beam(5,3) = beam(3,5)
+    beam(5,4) = beam(4,5)
+    beam(5,5) = 0._eb
+    beam(5,6) = sqrt(dz3+sqrt(dx2+dy2)**2)
+    beam(5,7) = sqrt(dz3+x2)
+    beam(5,8) = beam(5,6)
+    beam(5,9) = sqrt(dz3)
+    beam(5,10) = sqrt(zz(2)**2+dx2)
+
+    beam(6,1) = beam(1,6)
+    beam(6,2) = beam(2,6)
+    beam(6,3) = beam(3,6)
+    beam(6,4) = beam(4,6)
+    beam(6,5) = beam(5,6)
+    beam(6,6) = 0._eb
+    beam(6,7) = sqrt(dx2+dy2)
+    beam(6,8) = sqrt(y2)
+    beam(6,9) = beam(6,7)
+    beam(6,10) = sqrt(dz4+dy2)
+
+    beam(7,1) = beam(1,7)
+    beam(7,2) = beam(2,7)
+    beam(7,3) = beam(3,7)
+    beam(7,4) = beam(4,7)
+    beam(7,5) = beam(5,7)
+    beam(7,6) = beam(6,7)
+    beam(7,7) = 0._eb
+    beam(7,8) = beam(7,6)
+    beam(7,9) = sqrt(x2)
+    beam(7,10) = sqrt(dz4+dx2)
+
+    beam(8,1) = beam(1,8)
+    beam(8,2) = beam(2,8)
+    beam(8,3) = beam(3,8)
+    beam(8,4) = beam(4,8)
+    beam(8,5) = beam(5,8)
+    beam(8,6) = beam(6,8)
+    beam(8,7) = beam(7,8)
+    beam(8,8) = 0._eb
+    beam(8,9) = beam(8,7)
+    beam(8,10) = sqrt(dz4+dy2)
+
+    beam(9,1) = beam(1,9)
+    beam(9,2) = beam(2,9)
+    beam(9,3) = beam(3,9)
+    beam(9,4) = beam(4,9)
+    beam(9,5) = beam(5,9)
+    beam(9,6) = beam(6,9)
+    beam(9,7) = beam(7,9)
+    beam(9,8) = beam(8,9)
+    beam(9,9) = 0._eb
+    beam(9,10) = sqrt(dz4+dx2)
+
+    beam(10,1) = beam(1,10)
+    beam(10,2) = beam(2,10)
+    beam(10,3) = beam(3,10)
+    beam(10,4) = beam(4,10)
+    beam(10,5) = beam(5,10)
+    beam(10,6) = beam(6,10)
+    beam(10,7) = beam(7,10)
+    beam(10,8) = beam(8,10)
+    beam(10,9) = beam(9,10)
+    beam(10,10) = 0._eb
+
+    return
+    end subroutine ten_beam
+
+! --------------------------- rdfang10 ------------------------------------------
+
+    subroutine rdfang10(mxfires,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang10)
+
+    !     routine: rdfang
+    !     purpose:
+
+    integer, intent(in) :: mxfires, nfire
+    real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
+
+    real(eb), intent(out) :: firang10(10,mxfires)
+
+    real(eb), dimension(3) :: v1_1, v2_1, v3_1, v4_1
+    real(eb), dimension(3) :: v1_2, v2_2, v3_2, v4_2
+    real(eb), dimension(3) :: v1_3, v2_3, v3_3, v4_3
+    real(eb), dimension(3) :: v1_4, v2_4, v3_4, v4_4
+    real(eb), dimension(3) :: v1_5, v2_5, v3_5, v4_5
+    real(eb), dimension(3) :: v1_6, v2_6, v3_6, v4_6
+    real(eb), dimension(3) :: v1_7, v2_7, v3_7, v4_7
+    real(eb), dimension(3) :: v1_8, v2_8, v3_8, v4_8
+    real(eb), dimension(3) :: v1_9, v2_9, v3_9, v4_9
+    real(eb), dimension(3) :: v1_10, v2_10, v3_10, v4_10
+    real(eb), dimension(3) :: vrel1, vrel2, vrel3, vrel4
+    real(eb), dimension(3) :: vfire
+    real(eb) :: solid_angle1, solid_angle2
+
+    integer :: i, j
+    real(eb) :: temp
+
+    v1_1 = (/0.0_eb,0.0_eb,zroom/)
+    v2_1 = (/ xroom,0.0_eb,zroom/)
+    v3_1 = (/ xroom, yroom,zroom/)
+    v4_1 = (/0.0_eb, yroom,zroom/)
+
+    v1_2 = (/0.0_eb,0.0_eb,hlay/)
+    v2_2 = (/ xroom,0.0_eb,hlay/)
+    v3_2 = (/ xroom,0.0_eb,zroom/)
+    v4_2 = (/0.0_eb,0.0_eb,zroom/)
+
+    v1_3 = (/ xroom,0.0_eb,hlay/)
+    v2_3 = (/ xroom, yroom,hlay/)
+    v3_3 = (/ xroom, yroom,zroom/)
+    v4_3 = (/ xroom,0.0_eb,zroom/)
+
+    v1_4 = (/ xroom, yroom,hlay/)
+    v2_4 = (/0.0_eb, yroom,hlay/)
+    v3_4 = (/0.0_eb, yroom,zroom/)
+    v4_4 = (/ xroom, yroom,zroom/)
+
+    v1_5 = (/0.0_eb, yroom,hlay/)
+    v2_5 = (/0.0_eb,0.0_eb,hlay/)
+    v3_5 = (/0.0_eb,0.0_eb,zroom/)
+    v4_5 = (/0.0_eb, yroom,zroom/)
+
+    v1_6 = (/0.0_eb,0.0_eb,0.0_eb/)
+    v2_6 = (/ xroom,0.0_eb,0.0_eb/)
+    v3_6 = (/ xroom,0.0_eb,hlay/)
+    v4_6 = (/0.0_eb,0.0_eb,hlay/)
+
+    v1_7 = (/ xroom,0.0_eb,0.0_eb/)
+    v2_7 = (/ xroom, yroom,0.0_eb/)
+    v3_7 = (/ xroom, yroom,hlay/)
+    v4_7 = (/ xroom,0.0_eb,hlay/)
+
+    v1_8 = (/ xroom, yroom,0.0_eb/)
+    v2_8 = (/0.0_eb, yroom,0.0_eb/)
+    v3_8 = (/0.0_eb, yroom,hlay/)
+    v4_8 = (/ xroom, yroom,hlay/)
+
+    v1_9 = (/0.0_eb, yroom,0.0_eb/)
+    v2_9 = (/0.0_eb,0.0_eb,0.0_eb/)
+    v3_9 = (/0.0_eb,0.0_eb,hlay/)
+    v4_9 = (/0.0_eb, yroom,hlay/)
+
+    v1_10 = (/0.0_eb,0.0_eb,0.0_eb/)
+    v2_10 = (/ xroom,0.0_eb,0.0_eb/)
+    v3_10 = (/ xroom, yroom,0.0_eb/)
+    v4_10 = (/0.0_eb, yroom,0.0_eb/)
+
+    do i = 1, nfire
+       vfire = (/xfire(i),yfire(i),zfire(i)/)
+       do j = 1, 3
+           if (j == 1) then
+               temp = xroom
+           else if (j == 2) then
+               temp = yroom
+           else
+               temp = zroom
+           end if
+           if (vfire(j) == 0._eb) then
+               vfire(j) = vfire(j) + 0.0001
+           else if  (vfire(1) == temp) then
+               vfire(j) = vfire(j) - 0.0001
+           end if
+       end do
+       call getvrel(vrel1,v1_1,vfire)
+       call getvrel(vrel2,v2_1,vfire)
+       call getvrel(vrel3,v3_1,vfire)
+       call getvrel(vrel4,v4_1,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(1,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_2,vfire)
+       call getvrel(vrel2,v2_2,vfire)
+       call getvrel(vrel3,v3_2,vfire)
+       call getvrel(vrel4,v4_2,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(2,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_3,vfire)
+       call getvrel(vrel2,v2_3,vfire)
+       call getvrel(vrel3,v3_3,vfire)
+       call getvrel(vrel4,v4_3,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(3,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_4,vfire)
+       call getvrel(vrel2,v2_4,vfire)
+       call getvrel(vrel3,v3_4,vfire)
+       call getvrel(vrel4,v4_4,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(4,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_5,vfire)
+       call getvrel(vrel2,v2_5,vfire)
+       call getvrel(vrel3,v3_5,vfire)
+       call getvrel(vrel4,v4_5,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(5,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_6,vfire)
+       call getvrel(vrel2,v2_6,vfire)
+       call getvrel(vrel3,v3_6,vfire)
+       call getvrel(vrel4,v4_6,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(6,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_7,vfire)
+       call getvrel(vrel2,v2_7,vfire)
+       call getvrel(vrel3,v3_7,vfire)
+       call getvrel(vrel4,v4_7,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(7,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_8,vfire)
+       call getvrel(vrel2,v2_8,vfire)
+       call getvrel(vrel3,v3_8,vfire)
+       call getvrel(vrel4,v4_8,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(8,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_9,vfire)
+       call getvrel(vrel2,v2_9,vfire)
+       call getvrel(vrel3,v3_9,vfire)
+       call getvrel(vrel4,v4_9,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(9,i) = solid_angle1 + solid_angle2
+
+       call getvrel(vrel1,v1_10,vfire)
+       call getvrel(vrel2,v2_10,vfire)
+       call getvrel(vrel3,v3_10,vfire)
+       call getvrel(vrel4,v4_10,vfire)
+       call solid_angle_triangle(solid_angle1,vrel1,vrel2,vrel3)
+       call solid_angle_triangle(solid_angle2,vrel1,vrel3,vrel4)
+       firang10(10,i) = solid_angle1 + solid_angle2
+    end do
+    
+   return
+   end  subroutine rdfang10
+
+! --------------------------- rdflux10 ------------------------------------------
+
+    subroutine rdflux10(mxfires,nzone,nup,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl10,taufu10,firang10,nfire,qllay,qulay,c, &
+                        chi10, &
+                        radi_gain_gas,radi_loss_gas,radi_gain_gas_fire,radi_loss_gas_fire, &
+                        radi_gain_wall_fire,radi_loss_wall_fire)
+    
+    !     routine: rad4
+    !     purpose: this routine calculates the 'c' vector in the net radiation equations of seigel and howell and the
+    !        heat absorbed by the lower and upper layer fires due to gas layer emission and fires..
+
+    integer, intent(in) :: mxfires, nzone, nfire, nup
+    real(eb), intent(in) :: area(*), hlay, tlay(2), zfire(*), qfire(mxfires), chi10(10)
+    real(eb), intent(in) :: figs(nzone,*), taul(nzone,*), tauu(nzone,*), taufl10(mxfires,*), taufu10(mxfires,*), &
+                            firang10(10,mxfires)
+
+    real(eb), intent(out) :: qulay, qllay, c(*), radi_loss_gas(10), radi_gain_gas(10), &
+                             radi_loss_gas_fire(10), radi_gain_gas_fire(10), &
+                             radi_loss_wall_fire(10), radi_gain_wall_fire(10)
+
+    integer, parameter ::u = 1, l = 2
+    integer :: j, k, ifire
+    real(eb) :: eu, el, qugas, qlgas, wf, qfflux, factu, factl
+
+    ! define c vector
+    
+    qulay = 0.0_eb
+    qllay = 0.0_eb
+    eu = sigma*tlay(u)**4
+    el = sigma*tlay(l)**4
+    do k = 1, nup
+        c(k) = 0.0_eb
+        radi_gain_gas(k) = 0.0_eb
+        radi_loss_gas(k) = 0.0_eb
+        radi_gain_gas_fire(k) = 0.0_eb
+        radi_loss_gas_fire(k) = 0.0_eb
+        radi_gain_wall_fire(k) = 0.0_eb
+        radi_loss_wall_fire(k) = 0.0_eb
+        
+        ! Adding energy due to radiation loss from other comparments to "c"
+        !c(k) = c(k) + radi_gain_wall_wall(k)
+
+        ! case: upper to upper
+        do j = 1, nup
+            qugas = (1.0_eb - tauu(k,j))*eu
+            c(k) = c(k) + figs(k,j)*qugas
+            qulay = qulay - area(k)*figs(k,j)*qugas
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_gas(k) = radi_gain_gas(k) + area(k)*figs(k,j)*qugas
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(j))*chi10(j)*qugas
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(k))*chi10(k)*qugas
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(j))*chi10(j)/(1._eb-chi10(k))*chi10(k)*qugas
+            end if
+        end do
+
+        ! case: lower to upper
+        do j = nup + 1, nzone
+            qugas = (1.0_eb - tauu(k,j))*eu
+            qlgas = (1.0_eb - taul(k,j))*el
+            c(k) = c(k) + figs(k,j)*(qugas + qlgas*tauu(k,j))
+            wf = area(k)*figs(k,j)
+            qulay = qulay + qlgas*wf*(1.0_eb - tauu(k,j)) - qugas*wf
+            qllay = qllay - qlgas*wf
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_gas(k) = radi_gain_gas(k) + area(k)*figs(k,j)*(qugas + qlgas*tauu(k,j))
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(j))*chi10(j)*(qugas + qlgas*tauu(k,j))
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(k))*chi10(k)*(qugas + qlgas*tauu(k,j))
+                radi_loss_gas(k) = radi_loss_gas(k) + &
+                                   area(k)*figs(k,j)/(1._eb-chi10(j))*chi10(j)/(1._eb-chi10(k))*chi10(k)*&
+                                   (qugas + qlgas*tauu(k,j))
+            end if
+        end do
+
+        ! case: fire to upper layer
+        do ifire = 1, nfire
+            qfflux = qfire(ifire)*firang10(k,ifire)/(fourpi*area(k))
+            c(k) = c(k) + qfflux*taufl10(ifire,k)*taufu10(ifire,k)
+            if (firang10(k,ifire) /= 0._eb) then
+                radi_gain_wall_fire(k) = radi_gain_gas_fire(k) + area(k)*qfflux*taufl10(ifire,k)*taufu10(ifire,k)
+                radi_loss_wall_fire(k) = radi_loss_gas_fire(k) + &
+                                         area(k)*qfflux*taufl10(ifire,k)*taufu10(ifire,k)*chi10(k)/(1._eb-chi10(k))
+            end if
+            if (zfire(ifire)>hlay) then
+                factu = 1.0_eb - taufu10(ifire,k)
+                factl = 0.0_eb
+            else
+                factu = (1.0_eb - taufu10(ifire,k))*taufl10(ifire,k)
+                factl = 1.0_eb - taufl10(ifire,k)
+            end if
+            qulay = qulay + factu*qfflux*area(k)
+            qllay = qllay + factl*qfflux*area(k)
+            if (firang10(k,ifire) /= 0._eb) then
+                radi_gain_gas_fire(k) = radi_gain_gas_fire(k) + area(k)*(factu+factl)*qfflux
+                radi_loss_gas_fire(k) = radi_loss_gas_fire(k) + area(k)*(factu+factl)*qfflux*chi10(k)/(1._eb-chi10(k))
+            end if
+        end do
+    end do
+
+    do k = nup + 1, nzone
+        c(k) = 0.0_eb
+        radi_gain_gas(k) = 0.0_eb
+        radi_loss_gas(k) = 0.0_eb
+        radi_gain_gas_fire(k) = 0.0_eb
+        radi_loss_gas_fire(k) = 0.0_eb
+        radi_gain_wall_fire(k) = 0.0_eb
+        radi_loss_wall_fire(k) = 0.0_eb
+        
+        ! Adding energy due to radiation loss from other comparments to "c"
+        !c(k) = c(k) + radi_gain_wall_wall(k)
+
+        ! case: upper to lower
+        do j = 1, nup
+            qugas = (1.0_eb - tauu(k,j))*eu
+            qlgas = (1.0_eb - taul(k,j))*el
+            c(k) = c(k) + figs(k,j)*(qugas*taul(k,j) + qlgas)
+            wf = area(k)*figs(k,j)
+            qulay = qulay - qugas*wf
+            qllay = qllay + qugas*wf*(1.0_eb - taul(k,j)) - qlgas*wf
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_gas(k) = radi_gain_gas(k) + area(k)*figs(k,j)*(qugas*taul(k,j) + qlgas)
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(j))*chi10(j)*(qugas*taul(k,j) + qlgas)
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(k))*chi10(k)*(qugas*taul(k,j) + qlgas)
+                radi_loss_gas(k) = radi_loss_gas(k) + &
+                                   area(k)*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)* &
+                                  (qugas*taul(k,j) + qlgas)
+            end if
+        end do
+
+        !case: lower to lower
+        do j = nup + 1, nzone
+            qlgas = (1.0_eb - taul(k,j))*el
+            c(k) = c(k) + figs(k,j)*qlgas
+            qllay = qllay - qlgas*area(k)*figs(k,j)
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_gas(k) = radi_gain_gas(k) + area(k)*figs(k,j)*qlgas
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(j))*chi10(j)*qlgas
+                radi_loss_gas(k) = radi_loss_gas(k) + area(k)*figs(k,j)/(1._eb-chi10(k))*chi10(k)*qlgas
+                radi_loss_gas(k) = radi_loss_gas(k) + &
+                                   area(k)*figs(k,j)/(1._eb-chi10(j))*chi10(j)/(1._eb-chi10(k))*chi10(k)*qlgas
+            end if
+        end do
+
+        ! case: fire to lower layer
+        do ifire = 1, nfire
+            qfflux = qfire(ifire)*firang10(k,ifire)/(fourpi*area(k))
+            c(k) = c(k) + qfflux*taufl10(ifire,k)*taufu10(ifire,k)
+            if (firang10(k,ifire) /= 0._eb) then
+                radi_gain_wall_fire(k) = radi_gain_gas_fire(k) + area(k)*qfflux*taufl10(ifire,k)*taufu10(ifire,k)
+                radi_loss_wall_fire(k) = radi_loss_gas_fire(k) + &
+                                         area(k)*qfflux*taufl10(ifire,k)*taufu10(ifire,k)*chi10(k)/(1._eb-chi10(k))
+            end if
+            if (zfire(ifire)>hlay) then
+                factu = 1.0_eb - taufu10(ifire,k)
+                factl = (1.0_eb - taufl10(ifire,k))*taufu10(ifire,k)
+            else
+                factu = 0.0_eb
+                factl = 1.0_eb - taufl10(ifire,k)
+            end if
+            qulay = qulay + factu*qfflux*area(k)
+            qllay = qllay + factl*qfflux*area(k)
+            if (firang10(k,ifire) /= 0._eb) then
+                radi_gain_gas_fire(k) = radi_gain_gas_fire(k) + area(k)*(factu+factl)*qfflux
+                radi_loss_gas_fire(k) = radi_loss_gas_fire(k) + area(k)*(factu+factl)*qfflux*chi10(k)/(1._eb-chi10(k))
+            end if
+        end do
+    end do
+    
+    return
+    end subroutine rdflux10
+    
+! --------------------------- rabs10 --------------------------------------------
+
+    subroutine rabs10(nzone,nup,e,dqde,emis2,area,figs,tauu,taul,chi10,radi_gain_wall_wall,radi_loss_wall_wall, &
+                      radi_gain_gas_wall,radi_loss_gas_wall,qllay,qulay)
+
+    integer, intent(in) :: nup, nzone
+    real(eb), intent(in) :: e(10), emis2(10), area(10),dqde(10), figs(nzone,10), tauu(nzone,10), &
+                            taul(nzone,10), chi10(10)
+
+    real(eb), intent(out) :: qulay, qllay, radi_loss_wall_wall(10), radi_gain_wall_wall(10), &
+                             radi_gain_gas_wall(10), radi_loss_gas_wall(10)
+
+    integer :: j, k
+    real(eb) :: qout, qk
+
+    radi_gain_gas_wall(:) = 0._eb
+    radi_loss_gas_wall(:) = 0._eb
+    radi_gain_wall_wall(:) = 0._eb
+    radi_loss_wall_wall(:) = 0._eb
+    do k = 1, nup
+        qout = e(k) - dqde(k)*(1.0_eb - emis2(k))
+        qk = qout*area(k)
+        do j = 1,nup
+            qulay = qulay + qk*figs(k,j)*(1.0_eb - tauu(k,j))
+            
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_wall_wall(k) = radi_gain_wall_wall(k) + qk*figs(k,j)*tauu(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*tauu(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*tauu(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + &
+                                         qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*tauu(k,j)
+            
+                radi_gain_gas_wall(k) = radi_gain_gas_wall(k) + qk*figs(k,j)*(1._eb-tauu(k,j))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*(1._eb-tauu(k,j))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*(1._eb-tauu(k,j))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*(1._eb-tauu(k,j))
+            end if
+        end do
+        do j = nup + 1, nzone
+            qulay = qulay + qk*figs(k,j)*(1.0_eb - tauu(k,j))
+            qllay = qllay + qk*figs(k,j)*tauu(k,j)*(1.0_eb - taul(k,j))
+            
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_wall_wall(k) = radi_gain_wall_wall(k) + qk*figs(k,j)*tauu(k,j)*taul(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*tauu(k,j)*taul(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*tauu(k,j)*taul(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + &
+                                         qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*tauu(k,j)*taul(k,j)
+            
+                radi_gain_gas_wall(k) = radi_gain_gas_wall(k) + qk*figs(k,j)*(1._eb-tauu(k,j)+tauu(k,j)*(1.0_eb-taul(k,j)))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*(1._eb-tauu(k,j)+tauu(k,j)*(1.0_eb-taul(k,j)))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*(1._eb-tauu(k,j)+tauu(k,j)*(1.0_eb-taul(k,j)))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*&
+                                        (1._eb-tauu(k,j)+tauu(k,j)*(1.0_eb-taul(k,j)))
+            end if
+        end do
+    end do
+
+    do k = nup+1,nzone
+        qout = e(k) - dqde(k)*(1.0_eb-emis2(k))
+        qk = qout*area(k)
+        do j = 1,nup
+            qulay = qulay + qk*figs(k,j)*taul(k,j)*(1.0_eb - tauu(k,j))
+            qllay = qllay + qk*figs(k,j)*(1.0_eb - taul(k,j))
+            
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_wall_wall(k) = radi_gain_wall_wall(k) + qk*figs(k,j)*taul(k,j)*tauu(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*taul(k,j)*tauu(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*taul(k,j)*tauu(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + &
+                                         qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*taul(k,j)*tauu(k,j)
+            
+                radi_gain_gas_wall(k) = radi_gain_gas_wall(k) + qk*figs(k,j)*(1._eb-taul(k,j)+taul(k,j)*(1.0_eb-tauu(k,j)))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*(1._eb-taul(k,j)+taul(k,j)*(1.0_eb-tauu(k,j)))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*(1._eb-taul(k,j)+taul(k,j)*(1.0_eb-tauu(k,j)))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*&
+                                        (1._eb-taul(k,j)+taul(k,j)*(1.0_eb-tauu(k,j)))
+            end if
+        end do
+        do j = nup+1,nzone
+            qllay = qllay + qk*figs(k,j)*(1.0_eb - taul(k,j))
+            
+            if (figs(k,j) /= 0._eb) then
+                radi_gain_wall_wall(k) = radi_gain_wall_wall(k) + qk*figs(k,j)*taul(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*taul(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*taul(k,j)
+                radi_loss_wall_wall(k) = radi_loss_wall_wall(k) + &
+                                         qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*taul(k,j)
+            
+                radi_gain_gas_wall(k) = radi_gain_gas_wall(k) + qk*figs(k,j)*(1._eb-taul(k,j))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + qk*figs(k,j)/(1._eb-chi10(j))*chi10(j)*(1._eb-taul(k,j))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)*(1._eb-taul(k,j))
+                radi_loss_gas_wall(k) = radi_loss_gas_wall(k) + &
+                                        qk*figs(k,j)/(1._eb-chi10(k))*chi10(k)/(1._eb-chi10(j))*chi10(j)*(1._eb-taul(k,j))
+            end if
+        end do
+    end do
+
+    return
+    end subroutine rabs10
 
 end module radiation_routines

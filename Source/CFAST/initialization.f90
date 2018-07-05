@@ -293,8 +293,11 @@ module initialization_routines
         roomptr%hheat_connections(1:mxrooms) = 0
         roomptr%heat_frac(1:mxrooms) = 0
         
-        !initialize surface opening fraction
-        roomptr%chi(1:10) = 0._eb
+        !initialize surface opening fraction parameters
+        roomptr%chi4(1:4) = 0._eb
+        roomptr%chi10(1:10) = 0._eb
+        roomptr%total_surface_opening4(1:4) = 0._eb
+        roomptr%total_surface_opening10(1:10) = 0._eb
     end do
 
     ! initialize number of furnace temperature nodes

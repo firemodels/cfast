@@ -51,8 +51,8 @@
     !  froom_number - room containing fire
     !  fx0,fy0,fz0 - location of fire base
 
-    real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
-    integer, intent(in) :: nrm, nscount, n_hvents, nfires, n_vvents, n_targets
+    real(eb), intent(in) :: pabs_ref, pamb, tamb, stime, nscount
+    integer, intent(in) :: nrm, n_hvents, nfires, n_vvents, n_targets
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
 
@@ -220,7 +220,7 @@
     end do
 
     write (13,"(a)") "TIME"
-    write (13,"(1x,i6,1x,f11.0)") nscount, stime
+    write (13,"(1x,f11.0,1x,f11.0)") nscount, stime
 
     ! zone model devices
     call ssheaders_smv(.false.)

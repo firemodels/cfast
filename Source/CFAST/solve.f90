@@ -236,7 +236,7 @@ module solve_routines
     call cptime(toff)
     ires = 0
     tpaws = tstop + 1.0_eb
-    tstart = i_time_step - 1
+    tstart = i_time_step - 1._eb
     told = tstart
     dt = tstop - tstart
     dprint = abs(print_out_interval)
@@ -252,23 +252,6 @@ module solve_routines
     idid = 1
     firstpassforsmokeview = .true.
     first_time = 1
-    
-    ! To run verification cases then exit
-    if (radi_verification_flag) then
-        if (verification_time_step /= 0._eb) then
-            dt = verification_time_step
-        else
-            dt = tstop
-        end if 
-        if (upper_layer_thickness /= -1001._eb) then
-            do while (t<=tstop)
-                call wall_opening_fraction(t)
-                call output_spreadsheet(t)
-            t = t + dt
-            end do
-            return
-        end if
-    end if
 
     ! Output options
     if (dprint<0.0001_eb.or.print_out_interval==0) then
@@ -347,7 +330,7 @@ module solve_routines
         ! then we need the output now
         call remap_fires (nfires)
         call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1,  &
-             n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, 0.0_eb, 1)
+             n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, 0.0_eb, 1.0_eb)
         icode = 0
         write (*, '(a)') 'Initialize only'
         write (iofill, '(a)') 'Initialize only'
@@ -492,11 +475,9 @@ module solve_routines
         end if
     end if
     
-    ! Special case for radiation verification
+    ! To run verification cases then exit
     if (radi_verification_flag) then
-        t = tstop
-        call target (1,t)
-        call output_spreadsheet(t)
+        call verification_case(tstop)
         return
     end if
 
@@ -939,7 +920,7 @@ module solve_routines
     call fire (tsec,flows_fires)
     call door_jet (flows_doorjets,djetflg)
     
-    ! calculation opening fraction for radiation loss and etc
+    ! calculate surface opening fraction for convection, radiation, and target subroutine
     call wall_opening_fraction (tsec)
 
     ! calculate flow and flux due to heat transfer (ceiling jets, convection and radiation)
@@ -1385,10 +1366,15 @@ module solve_routines
         do iroom = 1, nrm1
             roomptr=>roominfo(iroom)
 
-            roomptr%volume(u) = max(y_vector(iroom+nofvu),roomptr%vmin)
-            roomptr%volume(u) = min(roomptr%volume(u),roomptr%vmax)
-            roomptr%volume(l) = max(roomptr%cvolume-roomptr%volume(u),roomptr%vmin)
-            roomptr%volume(l) = min(roomptr%volume(l),roomptr%vmax)
+            if (radi_verification_flag .and. upper_layer_thickness /= -1001._eb) then
+                roomptr%volume(u) = upper_layer_thickness*roomptr%floor_area
+                roomptr%volume(l) = (roomptr%cheight-upper_layer_thickness)*roomptr%floor_area
+            else
+                roomptr%volume(u) = max(y_vector(iroom+nofvu),roomptr%vmin)
+                roomptr%volume(u) = min(roomptr%volume(u),roomptr%vmax)
+                roomptr%volume(l) = max(roomptr%cvolume-roomptr%volume(u),roomptr%vmin)
+                roomptr%volume(l) = min(roomptr%volume(l),roomptr%vmax)
+            end if
 
             ! calculate layer height for non-rectangular rooms
             npts = roomptr%nvars
@@ -1549,7 +1535,8 @@ module solve_routines
             do iroom = 1, nrm1
                 roomptr => roominfo(iroom)
                 isof = isof + 1
-                if (radi_verification_flag) then
+                if (radi_verification_flag .and. partial_pressure_co2 /= 1001._eb .or. partial_pressure_h2o /= 1001._eb &
+                    .and. partial_pressure_co2+partial_pressure_h2o > 0._eb) then
                     if (partial_pressure_co2+partial_pressure_h2o == 101325._eb) then ! Only H2O and CO2 exist
                         !if (lsp == 1 .or. lsp == 2) then ! N2 and O2 will have to be zero 
                         if (lsp == n2 .or. lsp == o2) then ! N2 and O2 will have to be zero 
@@ -1577,7 +1564,8 @@ module solve_routines
                 end if
                                 
                 isof = isof + 1
-                if (radi_verification_flag) then
+                if (radi_verification_flag .and. partial_pressure_co2 /= -1001._eb .or. partial_pressure_h2o /= -1001._eb &
+                    .and. partial_pressure_co2+partial_pressure_h2o > 0._eb) then
                     if (partial_pressure_co2+partial_pressure_h2o == 101325._eb) then
                         !if (lsp == 1 .or. lsp == 2) then 
                         if (lsp == n2 .or. lsp == o2) then 
@@ -1644,5 +1632,39 @@ module solve_routines
     return
 
     end subroutine update_data
+
+! --------------------------- verification_case -------------------------------------------
+
+    subroutine verification_case (tstop)
+
+    !     purpose: to run verificiation cases (only some of them for now)
+
+    real(eb), intent(in) :: tstop
+    real(eb) :: t, dt
+    real(eb) :: radiation_flows(mxrooms,2), radiation_fluxes(mxrooms,nwal)
+
+
+    if (verification_time_step /= -1001._eb) then
+        dt = verification_time_step
+    else
+        dt = tstop
+    end if 
+
+    t = 0._eb
+    if (upper_layer_thickness /= -1001._eb) then
+        do while (t<=tstop)
+            call wall_opening_fraction(t)
+            call radiation (radiation_flows,radiation_fluxes)
+            if (t > 0._eb .and. t < tstop) call output_spreadsheet(t)
+            t = t + dt
+        end do
+    end if
+    
+    t = tstop
+    call target (1,t)
+    call output_spreadsheet(t)
+        
+    return
+    end subroutine verification_case
 
 end module solve_routines

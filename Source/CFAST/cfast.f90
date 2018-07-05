@@ -66,10 +66,10 @@
 
     call initialize_species
 
-    i_time_step = 1
+    i_time_step = 1._eb
     xdelt = time_end/deltat
-    i_time_end = xdelt + 1
-    tstop = i_time_end - 1
+    i_time_end = xdelt + 1._eb
+    tstop = i_time_end - 1._eb
 
     ! add the default thermal property
     n_thrmp = n_thrmp + 1

@@ -573,11 +573,18 @@
     subroutine wall_opening_fraction (tsec)
 
     !     purpose: to calculate the opening ratio of a surface
-
+    
     !     note:
-    !     surface number associated with ceiling, upper front, upper right, upper rear, upper left
-    !                                       lower front, lower right, lower rear, lower left, floor
-    !     is denoted as 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and this is different than logic in target subroutine
+    !     1) In radiation and convection subroutines, compartment boundaries are divided into 4 surface segments
+    !     if a layer height exsits.
+    !     2) In target subroutine, compartment boundaries are divided into 10 surfaces.
+    !     3) Therefore, in order to account for "4-wall" and "10-wall" models, chi4 and chi10 will be calculated.
+    !     4a) For chi4, surface number associated with ceiling, upper wall segment, lower wall segment, and floor
+    !         is denoted as 1, 3, 4, and 2, respectively. The numbering is consistent with convection subroutine.
+    !         However, appropriate mapping will be needed for calculations in radiation subroutine (1, 4, 2, 3).
+    !     4b) For chi10, surface number associated with ceiling, upper front, upper right, upper rear, upper left
+    !                                                   lower front, lower right, lower rear, lower left, floor 
+    !         is denoted as 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and this is different than logic in target subroutine. (double check)
 
     real(eb), intent(in) :: tsec          ! current simulation
     integer :: i, j, k                    ! counter
@@ -818,9 +825,35 @@
                 temp_opening = ventptr%area
                 if (side .ne. 0) a_opening(side) = a_opening(side) + fraction*temp_opening
             end if
+        end do      
+        
+        roomptr%total_surface_opening4(:) = 0._eb
+        roomptr%chi4(:) = 0._eb
+        do j = 1, 10
+            if (j == 1 .and. (a_total(j) /= 0._eb)) then
+                roomptr%total_surface_opening4(1) = a_opening(j)
+                roomptr%chi4(1) = a_opening(j)/a_total(j)
+            else if (j == 10) then
+                roomptr%total_surface_opening4(2) = a_opening(j)
+                roomptr%chi4(2) = a_opening(j)/a_total(j)
+            else if (j >= 2 .and. j <= 5 .and. (a_total(j) /= 0._eb)) then
+                roomptr%total_surface_opening4(3) = roomptr%total_surface_opening4(3) + a_opening(j)
+                if (j == 5 .and. (a_total(j) /= 0._eb)) then
+                    roomptr%chi4(3) = roomptr%total_surface_opening4(3)/sum(a_total(2:5))
+                end if
+            else if (j >= 6 .and. j <= 9 .and. (a_total(j) /= 0._eb)) then
+                roomptr%total_surface_opening4(4) = roomptr%total_surface_opening4(4) + a_opening(j)
+                if (j == 9) then
+                    roomptr%chi4(4) = roomptr%total_surface_opening4(4)/sum(a_total(6:9))
+                end if
+            end if
         end do
-
-        roomptr%chi(:) = a_opening(:)/a_total(:)
+        
+        roomptr%total_surface_opening10(:) = a_opening(:)
+        roomptr%chi10(:) = 0._eb
+        do j = 1, 10
+            if (a_total(j) /= 0._eb) roomptr%chi10(j) = a_opening(j)/a_total(j)
+        end do    
     end do
 
     return

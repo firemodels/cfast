@@ -34,17 +34,19 @@ module  diag_data
     
     ! Verification flag
     logical :: radi_verification_flag = .false.
-    real(eb) :: verification_time_step = 0._eb
+    real(eb) :: verification_time_step = -1001._eb
     ! Diagnostic variables for radiative properties
-    real(eb) :: partial_pressure_h2o, partial_pressure_co2, gas_temperature
+    real(eb) :: partial_pressure_h2o = -1001._eb, partial_pressure_co2 = -1001._eb, &
+                gas_temperature = -1001._eb
     ! Diagnostic veriables for radiation solver
     character(64) :: rad_solver
     logical :: radi_radnnet_flag = .false.
+    real(eb), dimension(4) :: temperature_wall = -1001._eb, emissivity_wall = 1._eb
     ! Diagnostic variables for adiabatic target surface temperature
     logical :: verification_ast=.false.
     real(eb) :: radiative_incident_flux_AST = 0._eb
     ! Diagnostic variable for surface opening fraction
-    real(eb) :: upper_layer_thickness = 0._eb
+    real(eb) :: upper_layer_thickness = -1001._eb
 
 end module diag_data
 
@@ -229,7 +231,7 @@ module setup_data
     implicit none
     save
     
-    integer :: i_time_end, i_time_step
+    real(eb) :: i_time_end, i_time_step
     real(eb) :: ss_out_interval, print_out_interval, smv_out_interval, time_end
     real(eb) :: stime, deltat
 

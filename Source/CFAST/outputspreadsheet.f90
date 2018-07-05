@@ -671,7 +671,7 @@ module spreadsheet_routines
     do i = 1, nrm1
         roomptr => roominfo(i)
         do j = 1, 10
-            call ssaddtolist (position,roomptr%chi(j),outarray)
+            call ssaddtolist (position,roomptr%chi10(j),outarray)
         end do
     end do
 

@@ -578,7 +578,8 @@ module solve_routines
                 end do
                 info2(2) = 1
                 told = t
-                call ddassl (calculate_residuals,n_odes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
+                call ddassl (calculate_residuals, &
+                    n_odes,t,p,pprime,tdout,info2,vrtol,vatol,idid,rwork,lrwork,iwork,liw,rpar,ipar,jac)
 
                 ! make sure dassl is happy (again)
                 if (idid<0) then

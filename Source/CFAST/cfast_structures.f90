@@ -154,12 +154,9 @@ module cfast_types
                                                         !   2 = only user specified vents
         integer, dimension(mxrooms) :: hheat_connections! list of connected compartments for horizontal heat transfer
         real(eb), dimension(mxrooms) :: heat_frac       ! fractions of wall surface of this room connected to other rooms in list
+        real(eb), dimension(10) :: chi                  ! surface opening ratio of a particular surface based on 10-wall model
         integer, dimension(mxrooms) :: room_connections ! list of connected compartments, number of compartments to travel through
                                                         ! to get to each compartment from the current compartment
-        real(eb), dimension(4)  :: chi4                 ! surface opening ratio of a particular surface for 4-wall model
-        real(eb), dimension(10) :: chi10                ! surface opening ratio of a particular surface for 10-wall model
-        real(eb), dimension(4)  :: total_surface_opening4  ! total opening area for a particular surface for 4-wall model
-        real(eb), dimension(10) :: total_surface_opening10 ! total opening area for a particular surface for 10-wall model
 
 
         ! These are calculated results for the current time step

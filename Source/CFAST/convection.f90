@@ -55,11 +55,7 @@
         end if
         ! assume no fires in this room.  just use regular convection
         call convective_flux(iwall,roomptr%temp(ilay),roomptr%t_surfaces(1,iwall),fluxes_convection(i,iwall))
-        if (nrm1 == 1 .and. sum(roomptr%chi4(:)) /= 0._eb) then 
-            w_area = roomptr%wall_area4(iwall)*(1._eb - roomptr%chi4(iwall))
-        else
-            w_area = roomptr%wall_area4(iwall)
-        end if
+        w_area = roomptr%wall_area4(iwall)
         ! if there's a fire, we may need to modify the convection to account for the ceiling jet
         if (iwall==1.and.n_fires>0) then
             qconv = 0.0_eb

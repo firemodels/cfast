@@ -90,12 +90,6 @@ call :COPY %bindir%\..\SMV6\smokediff.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokeview.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokezip.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
-
-:: these two dll's probably are not needed
-
-call :COPY %bindir%\..\SMV6\glew32_x64.dll			%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\pthreadVC2_x64.dll		%SMVDISTDIR%\
-
 call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokeview.ini			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\textures				%SMVDISTDIR%\

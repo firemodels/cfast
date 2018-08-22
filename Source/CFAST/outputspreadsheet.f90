@@ -364,6 +364,7 @@ module spreadsheet_routines
         call ssaddtolist (position, targptr%dfed_gas, outarray)
         call ssaddtolist (position, targptr%fed_heat, outarray)
         call ssaddtolist (position, targptr%dfed_heat, outarray)
+        call ssaddtolist (position, targptr%fed_obs, outarray)
     end do
 
     ! detectors (including sprinklers)

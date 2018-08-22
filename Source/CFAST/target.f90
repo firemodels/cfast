@@ -143,6 +143,7 @@ module target_routines
         end if
         targptr%dfed_heat = targptr%dfed_heat + fed_heat_increment
         targptr%fed_heat = targptr%fed_heat + fed_heat_increment
+        targptr%fed_obs = roomptr%species_output(ilayer,soot)
     end do
     return
     end subroutine target

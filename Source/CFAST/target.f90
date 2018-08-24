@@ -230,7 +230,7 @@ module target_routines
                     qfire = fireptr%qdot_radiative
                 end if
                 if (s/=0.0_eb) then
-                    qft = qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2)
+                    qft = min(qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2), qfire*abs(cosang)*tauu*taul/(4.0_eb*pi)*(2.0_eb*pi))
                 else
                     qft = 0.0_eb
                 end if

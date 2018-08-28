@@ -45,6 +45,8 @@ module  diag_data
     real(eb) :: radiative_incident_flux_AST = 0._eb
     ! Diagnostic variable for surface opening fraction
     real(eb) :: upper_layer_thickness = 0._eb
+    ! Diagnostic variable for fire to target radiative heat flux
+    real(eb) :: verification_fire_heat_flux = 0._eb
 
 end module diag_data
 

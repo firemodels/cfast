@@ -39,6 +39,9 @@ sprinkler_1(data_dir);
 data_dir = '../../Verification/Radiation/';
 radiativefluxes(data_dir);
 
+data_dir = '../../Verification/Target/';
+target_2(data_dir);
+
 % dataplot creates most of the plots for the Validation Guide. It must be run before scatplot, which makes the scatter plots.
 
 Dataplot_Inputs_File = [pwd, '/CFAST_verification_dataplot_inputs.csv'];

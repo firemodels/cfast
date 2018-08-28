@@ -227,7 +227,15 @@ module target_routines
                     absu = absorb(iroom, u)
                     taul = exp(-absl*zl)
                     tauu = exp(-absu*zu)
-                    qfire = fireptr%qdot_radiative
+                    if (radi_verification_flag) then
+                        if (partial_pressure_h2o == 0._eb .and. partial_pressure_co2 == 0._eb) then
+                            taul = 1._eb
+                            tauu = 1._eb
+                        end if
+                        qfire = verification_fire_heat_flux
+                    else
+                        qfire = fireptr%qdot_radiative
+                    end if
                 end if
                 if (s/=0.0_eb) then
                     qft = min(qfire*abs(cosang)*tauu*taul/(4.0_eb*pi*s**2), qfire*abs(cosang)*tauu*taul/(4.0_eb*pi)*(2.0_eb*pi))

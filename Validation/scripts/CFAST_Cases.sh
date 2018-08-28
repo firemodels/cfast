@@ -418,5 +418,6 @@ $RUNCFAST -d ../Verification/Radiation radiation_5.in
 $RUNCFAST -d ../Verification/Fires Ignition_Test.in
 
 $RUNCFAST -d ../Verification/Target target_1.in
+$RUNCFAST -d ../Verification/Target target_2.in
 
 

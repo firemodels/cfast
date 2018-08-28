@@ -487,23 +487,6 @@ Consider a 2~m by 2~m by 4~m enclosure with black walls as shown in Figure~\ref{
 \label{fig:rad3_3}
 \end{figure}
 
-
-\subsection{Adiabatic Target Temperature}
-\label{target_adiabatic_surface_temperature_1}
-
-A target is located at the center of a 4~m by 4~m by 4~m enclosure. Assuming adiabatic conditions for the target, an adiabatic surface temperature\footnote{CFAST has an option to create a target with adiabatic surface conditions. The option must be invoked by adding a specification directly to the input file; it is not an input in CEdit.} can be evaluated by solving the following energy balance:
-\be
-   \epsilon \, \left( \dq_{\rm inc,rad}'' - \sigma \, T_{\hbox{\tiny AST}}^4 \right) + h \, (T_{\rm gas} - T_{\hbox{\tiny AST}}) = 0
-\ee
-where, $\dot{q}_{\rm inc,rad}''$ is the incident radiative heat flux onto the surface, $\epsilon$ is the surface emissivity, $h$ is the convective heat transfer coefficient, and $T_{\rm gas}$ is the surrounding gas temperature. The closed form equation can be obtained from Malendowsky \cite{Malendowski:2017}.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/target_1}
-\caption[Results of the test case {\ct target\.in}]{Expected and CFAST calculated values for the adiabatic surface temperature of a target in the case {\ct target.in}.}
-\label{fig:ast_1}
-\end{figure}
-
 \subsection{Total Emissivity and Hemispherical Absorptivitiy}
 \label{radiation_4and5}
 
@@ -526,6 +509,34 @@ The total emissivity and the hemisperical absorptivity of the gas medium for tar
 \end{tabular*}
 \caption[Results of $T_w$ = 1226.85 $^\circ$C case {\ct radiation\_5.in}]{Expected and CFAST total emissivity and hemispherical absorptivity of the gas medium to the targets located at top surface for the case {\ct radiation\_5.in}.}
 \label{fig:rad4_1}
+\end{figure}
+
+\subsection{Adiabatic Target Temperature}
+\label{target_adiabatic_surface_temperature_1}
+
+A target is located at the center of a 4~m by 4~m by 4~m enclosure. Assuming adiabatic conditions for the target, an adiabatic surface temperature\footnote{CFAST has an option to create a target with adiabatic surface conditions. The option must be invoked by adding a specification directly to the input file; it is not an input in CEdit.} can be evaluated by solving the following energy balance:
+\be
+   \epsilon \, \left( \dq_{\rm inc,rad}'' - \sigma \, T_{\hbox{\tiny AST}}^4 \right) + h \, (T_{\rm gas} - T_{\hbox{\tiny AST}}) = 0
+\ee
+where, $\dot{q}_{\rm inc,rad}''$ is the incident radiative heat flux onto the surface, $\epsilon$ is the surface emissivity, $h$ is the convective heat transfer coefficient, and $T_{\rm gas}$ is the surrounding gas temperature. The closed form equation can be obtained from Malendowsky \cite{Malendowski:2017}.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/target_1}
+\caption[Results of the test case {\ct target\_1.in}]{Expected and CFAST calculated values for the adiabatic surface temperature of a target in the case {\ct target\_1.in}.}
+\label{fig:ast_1}
+\end{figure}
+
+\subsection{Fire Heat Flux to Targets}
+\label{target_2}
+
+Consider a 6~m by 6~m by 8~m enclosure with a constant 50~kW fire located at a fixed position\footnote{In CFAST, the fire can be specified accordingly such that the emission location of the fire remains at a fixed vertical location.} (3~m, 3~m, 4~m). The fire is assumed to be radiating uniformly in all directions in the enclosure. Eight black target devices are specified right above the fire at different vertical locations. The vertical positions of each target are 4.1~m, 4.2~m, 4.3~m, 4.4~m, 4.5~m, 5~m, 6~m, and 8~m, respectively. Figure~\ref{fig:targ_2} shows the fire heat flux to different target devices.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/target_2}
+\caption[Results of the test case {\ct target\_2.in}]{Expected and CFAST calculated values for the radiative heat fluxof a fire to different target devices in the case {\ct target\_2.in}.}
+\label{fig:targ_2}
 \end{figure}
 
 

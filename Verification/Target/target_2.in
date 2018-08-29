@@ -1,0 +1,35 @@
+&HEAD VERSION = 7300, TITLE = 'Fire to target radiation' /
+
+!! Scenario Configuration
+&TIME SIMULATION = 1 PRINT = 1 SMOKEVIEW = 1 SPREADSHEET = 1 /
+&INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+
+&DIAG PARTIAL_PRESSURE_H2O = 0. PARTIAL_PRESSURE_CO2 = 0. GAS_TEMPERATURE = 20 
+VERIFICATION_FIRE_HEAT_FLUX = 50. /
+
+!! Material Properties
+&MATL ID = 'Concrete'
+CONDUCTIVITY = 1.6 DENSITY = 2400 SPECIFIC_HEAT = 0.75, THICKNESS = 0.6 EMISSIVITY = 1.0 /
+
+!! Compartments
+&COMP ID = 'Comp_1'
+DEPTH = 6.0 HEIGHT = 8.0 WIDTH = 6.0 CEILING_MATL_ID = 'Concrete' WALL_MATL_ID = 'Concrete' FLOOR_MATL_ID = 'Concrete'
+ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+
+!! Fires
+&FIRE ID = 'MCC 702 kW' COMP_ID = 'Comp_1', FIRE_ID = 'MCC 702 kW_Fire' LOCATION = 3., 3. /
+&CHEM ID = 'MCC 702 kW_Fire' CARBON = 3 CHLORINE = 0.5 HYDROGEN = 4.5 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 10300 RADIATIVE_FRACTION = 0.5 /
+&TABL ID = 'MCC 702 kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD' /
+&TABL ID = 'MCC 702 kW_Fire', DATA = 0, 100, 4.0, 2.0, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'MCC 702 kW_Fire', DATA = 1, 100., 4.0, 2.0, 0.082, 0.175, 0, 0.3127314, 0 /
+
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 8.0 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 6.0 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 5.0 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 4.5 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 4.4 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 4.3 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 4.2 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp_1' LOCATION = 3.0, 3.0, 4.1 TYPE = 'PLATE' MATL_ID = 'Concrete' NORMAL = 0, 0, -1 /
+

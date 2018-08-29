@@ -2507,7 +2507,7 @@ continue
                     conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
                     steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model, &
                     residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_flux, &
-                    upper_layer_thickness, verification_time_step
+                    upper_layer_thickness, verification_time_step, verification_fire_heat_flux
 
     ios = 1
 
@@ -2547,6 +2547,8 @@ continue
             gas_temperature = gas_temperature + kelvin_c_offset
             radi_verification_flag = .true.
         end if
+        if (verification_fire_heat_flux/=-1001._eb) &
+            verification_fire_heat_flux = verification_fire_heat_flux * 1000._eb
         if (furn_temp(1)/=-1001._eb) then
             n_furn = 0
             do i = 1, mxpts

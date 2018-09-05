@@ -154,7 +154,7 @@ module option_data
         !   value
             on,                   on,          on,          off,                           off,  &
         !   oxygen dassl solve    Residual print   convection between layers
-            off,                  on,                  on  /)
+            off,                  off,                  on  /)
 
     real(eb) :: cutjac, stptime, prttime, tottime, ovtime, tovtime
 

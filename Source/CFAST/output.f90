@@ -1291,12 +1291,12 @@ module output_routines
 
     real(eb), intent(in) :: T, dT
     rewind (unit=iofilstat)
-    write (iofilstat,5001,err=10) t, dt
+    write (iofilstat,5001,err=10) t, dt, total_steps
     call results_compressed (iofilstat)
 10  continue
     return
 
-5001 FORMAT('Status at T = ',1PG11.2, ' DT = ',G11.3)
+5001 FORMAT('Status at T = ',1pg11.2, ' DT = ',g11.3, ' STEPS = ',i0)
     end subroutine output_status
 
 ! --------------------------- openoutputfiles -------------------------------------------

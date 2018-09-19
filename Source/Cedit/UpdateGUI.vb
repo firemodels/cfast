@@ -1268,11 +1268,11 @@ Public Class UpdateGUI
         aTarget = myTargets(index)
         MainWin.TargetNormalCalc.Items.Clear()
         MainWin.TargetNormalCalc.Items.Add("User Specified")
-        numFires = myFires.Count
+        numFires = myFireInstances.Count
         If numFires > 0 Then
             Dim aFire As Fire
             For i = 1 To numFires
-                aFire = myFires(i - 1)
+                aFire = myFireInstances(i - 1)
                 If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aTarget.ZPosition <> 0) Then
                     MainWin.TargetNormalCalc.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
                 End If

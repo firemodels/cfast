@@ -6069,11 +6069,11 @@ Public Class CeditMain
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 1
                 Else
-                    numFires = myFires.Count
+                    numFires = myFireInstances.Count
                     If numFires > 0 Then
                         Dim aFire As Fire
                         For i = 1 To numFires
-                            aFire = myFires(i - 1)
+                            aFire = myFireInstances(i - 1)
                             If aTarget.Compartment = aFire.Compartment Then
                                 If TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFire.Name Then
                                     Dim Hypotenuse As Single

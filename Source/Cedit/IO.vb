@@ -1686,7 +1686,7 @@ Module IO
                         ElseIf crit = "FLUX" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyFlux
-                            aVent.OpenValue = setp
+                            aVent.OpenValue = setp * 1000
                             aVent.InitialOpening = prefrac
                             aVent.FinalOpening = postfrac
                         ElseIf crit = "TEMPERATURE" Then
@@ -1739,7 +1739,7 @@ Module IO
                         ElseIf crit = "FLUX" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyFlux
-                            aVent.OpenValue = setp
+                            aVent.OpenValue = setp * 1000
                             aVent.InitialOpening = prefrac
                             aVent.FinalOpening = postfrac
                         ElseIf crit = "TEMPERATURE" Then
@@ -1779,7 +1779,7 @@ Module IO
                         ElseIf crit = "FLUX" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyFlux
-                            aVent.OpenValue = setp
+                            aVent.OpenValue = setp * 1000
                             aVent.InitialOpening = prefrac
                             aVent.FinalOpening = postfrac
                         ElseIf crit = "TEMPERATURE" Then

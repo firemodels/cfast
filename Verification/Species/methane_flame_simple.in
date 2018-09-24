@@ -6,14 +6,15 @@
 &MISC  ADIABATIC = .TRUE.  MAX_TIME_STEP = 0.001 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Compartments 
-&COMP ID = 'Comp 1'
-      DEPTH = 1 HEIGHT = 2 WIDTH = 1 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
+&COMP ID = 'Room_1'
+      DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF' SHAFT = .TRUE.
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Fires 
-&FIRE ID = 'Methane Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'Methane Fire_Fire'  LOCATION = 0.5, 0.5 / 
-&CHEM ID = 'Methane Fire_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
-&TABL ID = 'Methane Fire_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'Methane Fire_Fire', DATA = 0, 5, 0, 0.09, 0.1, 0, 0, 0, 0 /
-&TABL ID = 'Methane Fire_Fire', DATA = 100, 5, 0, 0.09, 0.1, 0, 0, 0, 0 /
-&TABL ID = 'Methane Fire_Fire', DATA = 100.001, 0, 0, 0.09, 0.1, 0, 0, 0, 0 /
+&FIRE ID = 'Methane_Fire'  COMP_ID = 'Room_1', FIRE_ID = 'Methane_Fire'  LOCATION = 0.5, 0.5 / 
+&CHEM ID = 'Methane_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Methane_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Methane_Fire', DATA = 0, 0, 0, 0.09, 0.1, 0, 0, 0, 0.001 /
+&TABL ID = 'Methane_Fire', DATA = 1, 5, 0, 0.09, 0.1, 0, 0, 0, 0.001 /
+&TABL ID = 'Methane_Fire', DATA = 100, 5, 0, 0.09, 0.1, 0, 0, 0, 0.001 /
+&TABL ID = 'Methane_Fire', DATA = 101, 0, 0, 0.09, 0.1, 0, 0, 0, 0.001 /

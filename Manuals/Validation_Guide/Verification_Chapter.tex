@@ -258,6 +258,34 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 \label{fig_methane_flame_yields}
 \end{figure}
 
+\subsection{Trace Species}
+
+With the same 5 kW methane flame in the previous example, we add a trace species yield of 0.001 kg/kg. With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), a total mass of 0.00001 kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/trace_1}
+\caption[Results of the test case {\ct Trace\_Species\_1.in}]{Expected and CFAST calculated values for the mass of trace species in a one room test case {\ct Trace\_Species\_1.in}.}
+\label{fig_trace_1}
+\end{figure}
+
+With the same 5 kW methane flame, we add a second compartment with mechanical ventilation flowing both directions from room to room. One half the trace species mass should ultimately end up in each room. Figure~\ref{fig_trace_2} compares the expected and calculated values.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/trace_2}
+\caption[Results of the test case {\ct Trace\_Species\_2.in}]{Expected and CFAST calculated values for the mass of trace species in a two room test case with mechanical ventilation {\ct Trace\_Species\_2.in}.}
+\label{fig_trace_2}
+\end{figure}
+
+Returning to the two room case with the same 5 kW methane flame, we add a 100 \% filtering of the trace species in the mechanical ventilation system. The mass of trace species should asymptote to zero. Figure~\ref{fig_trace_3} compares the expected and calculated values.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/trace_3}
+\caption[Results of the test case {\ct Trace\_Species\_3.in}]{Expected and CFAST calculated values for the mass of trace species in a two room test case with mechanical ventilation filtering {\ct Trace\_Species\_3.in}.}
+\label{fig_trace_3}
+\end{figure}
 \clearpage
 
 
@@ -363,7 +391,7 @@ This case tests the computation of the surface opening fraction. A three-compart
 \begin{equation}
 \chi = \frac{\sum_{i=1}^N A_{opening,i}} {A_{total}}
 \end{equation}
-where \textit{N} is the total number of vents, \textit{A\textsubscript{opening}} is the opening area associated with a vent, \textit{A\textsubscript{total}} is the total surface area. It should be noted that each compartment has 10 surfaces. 
+where \textit{N} is the total number of vents, \textit{A\textsubscript{opening}} is the opening area associated with a vent, \textit{A\textsubscript{total}} is the total surface area. It should be noted that each compartment has 10 surfaces.
 
 For this verification case, the upper layer thickness for each compartment is set to be 1~m and the vent opening fraction for all vents is set to be 0, 0.5, and 1 at  0~sec, 0.5~sec, and 1~sec, respectively. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figures~\ref{SOF_Result_1}, \ref{SOF_Result_2}, \ref{SOF_Result_3}, and \ref{SOF_Result_4}, respectively. Note that vent opening fraction is different than surface opening fractoin.
 

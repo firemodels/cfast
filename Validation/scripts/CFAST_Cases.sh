@@ -395,6 +395,7 @@ $RUNCFAST -d ../Verification/Species gas_tenability.in
 $RUNCFAST -d ../Verification/Species heat_tenability.in
 $RUNCFAST -d ../Verification/Species Trace_Species_1.in
 $RUNCFAST -d ../Verification/Species Trace_Species_2.in
+$RUNCFAST -d ../Verification/Species Trace_Species_3.in
 
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib.in
 $RUNCFAST -d ../Verification/Thermal_Equilibrium basic_tempequilib_window.in

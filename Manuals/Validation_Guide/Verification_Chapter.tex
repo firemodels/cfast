@@ -260,7 +260,7 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 
 \subsection{Trace Species}
 
-With the same 5 kW methane flame in the previous example, we add a trace species yield of 0.001 kg/kg. With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), a total mass of 0.00001 kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
+With the same 5 kW methane flame as in the previous example, we add a trace species yield of 0.001 kg/kg. With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), a total mass of 0.00001 kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
 
 \begin{figure}[ht]
 \centering
@@ -269,25 +269,17 @@ With the same 5 kW methane flame in the previous example, we add a trace species
 \label{fig_trace_1}
 \end{figure}
 
-With the same 5 kW methane flame, we add a second compartment with mechanical ventilation flowing both directions from room to room. One half the trace species mass should ultimately end up in each room. Figure~\ref{fig_trace_2} compares the expected and calculated values.
+With the same 5 kW methane flame, we add a second compartment with mechanical ventilation flowing both directions from room to room. Figure~\ref{fig_trace_2} compares the expected and calculated values. Without filtering, one half the trace species mass should ultimately end up in each room (Figure~\ref{fig_trace_2}a).  With 100 \% filtering, the trace species mass should trend to zero (Figure~\ref{fig_trace_2}b).
 
 \begin{figure}[ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/trace_2}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/trace_2} &
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/trace_3} \\
+\centcell{c}{(a) without filtering} & \centcell{c}{(b) with 100 \% filtering} \\
+\end{tabular*}
 \caption[Results of the test case {\ct Trace\_Species\_2.in}]{Expected and CFAST calculated values for the mass of trace species in a two room test case with mechanical ventilation {\ct Trace\_Species\_2.in}.}
 \label{fig_trace_2}
 \end{figure}
-
-Returning to the two room case with the same 5 kW methane flame, we add a 100 \% filtering of the trace species in the mechanical ventilation system. The mass of trace species should asymptote to zero. Figure~\ref{fig_trace_3} compares the expected and calculated values.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/trace_3}
-\caption[Results of the test case {\ct Trace\_Species\_3.in}]{Expected and CFAST calculated values for the mass of trace species in a two room test case with mechanical ventilation filtering {\ct Trace\_Species\_3.in}.}
-\label{fig_trace_3}
-\end{figure}
-\clearpage
-
 
 \section{Ventilation}
 \label{ventilation}

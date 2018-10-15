@@ -47,7 +47,7 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast ventilation_2 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast ventilation_3 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast ventilation_4 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast VVent_Tests -V
-background -u 98 ..\..\Utilities\for_bundle\Bin\cfast surface_opened_fraction_1_d -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast surface_opened_fraction_1 -V
 cd ..
 
 echo Running Sprinkler cases
@@ -67,6 +67,7 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast radiation_5 -V
 cd ..
 cd Target
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast target_1 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast target_2 -V
 cd ..
 
 echo Running Fire Cases

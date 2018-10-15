@@ -41,8 +41,8 @@ module fire_routines
     real(eb), intent(in) :: tsec
     real(eb), intent(out) :: flows_fires(mxrooms,ns+2,2)
 
-    real(eb) :: xntms(2,ns), stmass(2,ns), n_C, n_H, n_O, n_N, n_Cl
-    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, xqfr, xqfc
+    real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
+    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, hrr_r, hrr_c
     real(eb) :: y_soot_flaming, y_soot_smolder
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
@@ -63,19 +63,19 @@ module fire_routines
 
         fireptr%mdot_pyrolysis = omasst
         fireptr%z_offset = ohight
-        stmass(u,1:ns) = roomptr%species_mass(u,1:ns)
-        stmass(l,1:ns) = roomptr%species_mass(l,1:ns)
+        species_mass(u,1:ns) = roomptr%species_mass(u,1:ns)
+        species_mass(l,1:ns) = roomptr%species_mass(l,1:ns)
 
         call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, &
-            y_soot_flaming, y_soot_smolder, y_co, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, stmass, &
+            y_soot_flaming, y_soot_smolder, y_co, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
             fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, oareat, fireptr%mdot_entrained, &
-            fireptr%mdot_plume, oqdott, xntms, xqfc, xqfr, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
+            fireptr%mdot_plume, oqdott, species_mass_rate, hrr_c, hrr_r, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
         
         fireptr%firearea = oareat
         fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
         fireptr%qdot_actual = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
-        fireptr%qdot_convective = xqfc
-        fireptr%qdot_radiative = xqfr
+        fireptr%qdot_convective = hrr_c
+        fireptr%qdot_radiative = hrr_r
 
         ! sum the flows for return to the source routine
         xtl = roomptr%temp(l)
@@ -83,10 +83,10 @@ module fire_routines
         flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
         q_entrained = cp*fireptr%mdot_entrained*xtl
-        flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + xqfc + q_firemass + q_entrained
+        flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
-        flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + xntms(u,1:ns)
-        flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + xntms(l,1:ns)
+        flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + species_mass_rate(u,1:ns)
+        flows_fires(iroom,3:ns+2,l) = flows_fires(iroom,3:ns+2,l) + species_mass_rate(l,1:ns)
     end do
 
     return
@@ -94,45 +94,48 @@ module fire_routines
 
 ! --------------------------- do_fire -------------------------------------------
 
-    subroutine do_fire(ifire,iroom,xemp,xhr,xbr,xdr,hcombt,y_soot,y_soot_flaming, y_soot_smolder,y_co,y_trace,n_C,n_H,n_O,n_N,n_Cl,&
-       mol_mass,stmass,xfx,xfy,xfz,object_area,xeme,xems,xqpyrl,xntms,xqfc,xqfr,xqlp,xqup)
+    subroutine do_fire (ifire, iroom, pyrolysis_rate, room_height, room_width, room_depth, hoc, &
+        y_soot, y_soot_flaming, y_soot_smolder, y_co, y_trace, n_C, n_H, n_O, n_N, n_Cl, molar_mass, species_mass, &
+        x_fire_position, y_fire_position, z_fire_position, fire_area, entrainment_rate, plume_flow_rate, hrr, &
+        species_mass_rate, hrr_c, hrr_r, hrr_lower, hrr_upper)
 
     !     routine: do_fire
     !     purpose: do heat release and species from a fire
     !     arguments:  ifire: fire number (ifire=0 is the main fire)
     !                 iroom: room containing the fire
-    !                 xemp: pyrolysis rate of the fire (kg/s)
-    !                 xhr: height of the room (m)
-    !                 xbr: breadth of the room (m)
-    !                 xdr: Depth of the room (m)
-    !                 hcombt: current heat of combustion (j/kg)
+    !                 pyrolysis_rate: pyrolysis rate of the fire (kg/s)
+    !                 room_height: height of the room (m)
+    !                 room_width: breadth of the room (m)
+    !                 room_depth: Depth of the room (m)
+    !                 hoc: current heat of combustion (j/kg)
     !                 y_soot, y_soot_flaming, y_soot_smolder, y_co, y_trace: species yields for soot, CO, and trace species;
     !                       others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
     !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields
     !                 of O2, HCl, and HCN are determined from this
     !                 molar_mass: molar mass of the fuel (kg/mol)
-    !                 stmass: mass of a species in a layer in the room (kg)
-    !                 xfx: position of the fire in x direction
-    !                 xfy: position of the fire in y direction
-    !                 xfz: position of the fire in z direction
-    !                 object_area: characteristic object diameter for plume models
-    !                 xeme (output): plume entrainment rate (kg/s)
-    !                 xems (output): plume flow rate into the upper layer (kg/s)
-    !                 xqpyrl (output): actual heat release rate of the fire (w)
-    !                 xntms (output): net change in mass of a species in a layer
-    !                 xqfc (output): net convection into upper layer (w)
-    !                 xqfr (output): net radiation from fire (w)
-    !                 xqlp (output): heat release in the lower plume (w)
-    !                 xqup (output): heat release rate in the upper plume (w)
+    !                 species_mass: mass of a species in a layer in the room (kg)
+    !                 x_fire_position: position of the fire in x direction
+    !                 y_fire_position: position of the fire in y direction
+    !                 z_fire_position: position of the fire in z direction
+    !                 fire_area: characteristic object diameter for plume models
+    !                 entrainment_rate (output): plume entrainment rate (kg/s)
+    !                 plume_flow_rate (output): plume flow rate into the upper layer (kg/s)
+    !                 hrr (output): actual heat release rate of the fire (w)
+    !                 species_mass_rate (output): net change in mass of a species in a layer
+    !                 hrr_c (output): net convection into upper layer (w)
+    !                 hrr_r (output): net radiation from fire (w)
+    !                 hrr_lower (output): heat release in the lower plume (w)
+    !                 hrr_upper (output): heat release rate in the upper plume (w)
 
     integer, intent(in) :: ifire, iroom
-    real(eb), intent(in) :: xemp, xhr, xbr, xdr, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, y_trace
+    real(eb), intent(in) :: pyrolysis_rate, room_height, room_width, room_depth, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
+                            y_co, y_trace
     real(eb), intent(in) :: n_C ,n_H, n_O, n_N, n_Cl
-    real(eb), intent(in) :: mol_mass, stmass(2,ns), xfx, xfy, xfz, object_area
-    real(eb), intent(out) :: xeme, xems, xntms(2,ns), xqfc, xqfr, xqlp, xqup
+    real(eb), intent(in) :: molar_mass, species_mass(2,ns), x_fire_position, y_fire_position, z_fire_position, fire_area
+    real(eb), intent(out) :: entrainment_rate, plume_flow_rate, species_mass_rate(2,ns), hrr_c, hrr_r, hrr_lower, hrr_upper
 
     real(eb) :: xmass(ns), xz, xtl, xtu, xxfirel, xxfireu, xntfl, qheatl, qheatl_c, qheatu, qheatu_c
-    real(eb) :: chirad, xqpyrl, source_o2, xtemp, uplmep, uplmes, uplmee, height
+    real(eb) :: chirad, hrr, source_o2, xtemp, uplmep, uplmes, uplmee, height
     real(eb) :: firex, firey
     integer :: ipass, lsp
     type(room_type), pointer :: roomptr
@@ -144,46 +147,46 @@ module fire_routines
     xz = roomptr%depth(u)
     xtl = roomptr%temp(l)
     xtu = roomptr%temp(u)
-    xqfc = 0.0_eb
-    xqlp = 0.0_eb
-    xeme = 0.0_eb
+    hrr_c = 0.0_eb
+    hrr_lower = 0.0_eb
+    entrainment_rate = 0.0_eb
 
     ! these are the lengths ("heights") in the upper and lower layers respectively
     ! if it is negative, then the fire is not in that layer
-    xxfirel = xhr - xz - xfz
-    xxfireu = xhr - xfz
+    xxfirel = room_height - xz - z_fire_position
+    xxfireu = room_height - z_fire_position
     xntfl = 0.0_eb
     qheatl_c = 0.0_eb
     qheatu_c = 0.0_eb
-    xqfr = 0.0_eb
-    xems = 0.0_eb
+    hrr_r = 0.0_eb
+    plume_flow_rate = 0.0_eb
 
-    xntms(u,1:ns) = 0.0_eb
-    xntms(l,1:ns) = 0.0_eb
+    species_mass_rate(u,1:ns) = 0.0_eb
+    species_mass_rate(l,1:ns) = 0.0_eb
     xmass(1:ns) = 0.0_eb
 
     ! the trace species is assumed to be released by the pyrolysis of the burning object regardless of
     ! whether the fuel actually combusts here. this is consistent with the earlier chemistry routine.
     ! release it here and deposit it in the upper layer
-    xntms(u,ts) = xemp*y_trace
+    species_mass_rate(u,ts) = pyrolysis_rate*y_trace
     
     ! fuel released by pyrolysis is put into the upper layer. The fuel that burns in the plume is calculated
     ! in the chemistry routine and then removed from the upper layer
-    xntms(u,fuel) = xemp
+    species_mass_rate(u,fuel) = pyrolysis_rate
 
     ! now do the kinetics scheme
 
     ! divvy up the plume output into radiation and convective energy.
     ! convection drives the plume entrainment
 
-    xqpyrl = xemp*hcombt
+    hrr = pyrolysis_rate*hoc
     chirad = max(min(fireptr%chirad,1.0_eb),0.0_eb)
-    qheatl = xqpyrl
-    qheatl_c = max(xqpyrl*(1.0_eb-chirad),0.0_eb)
+    qheatl = hrr
+    qheatl_c = max(hrr*(1.0_eb-chirad),0.0_eb)
     
     ! set wall or corner fire
-    firex = min(xfx,xbr-xfx)
-    firey = min(xfy,xdr-xfy)
+    firex = min(x_fire_position,room_width-x_fire_position)
+    firey = min(y_fire_position,room_depth-y_fire_position)
     fireptr%modified_plume = 1
     if (firex<=sqrt(fireptr%firearea)/2.or.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 2
     if (firex<=sqrt(fireptr%firearea)/2.and.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 3
@@ -198,103 +201,103 @@ module fire_routines
 
         ! calculate the entrainment rate but constrain the actual amount
         ! of air entrained to that required to produce stable stratification
-        call fire_plume(object_area, qheatl, qheatl_c, xxfirel, interior_ambient_temperature, xemp, xems, xeme, &
-           min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+        call fire_plume(fire_area, qheatl, qheatl_c, xxfirel, interior_ambient_temperature, pyrolysis_rate, plume_flow_rate, &
+            entrainment_rate, min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
         
-        if (roomptr%mass(l)-xeme <= roomptr%vmin*roomptr%rho(l)) then
-            xeme = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
+        if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
+            entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
         end if 
         
         ! check for an upper only layer fire
         if (xxfirel<=0.0_eb) go to 90
-        xeme = min(xeme,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
-        xems = xemp + xeme
+        entrainment_rate = min(entrainment_rate,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
+        plume_flow_rate = pyrolysis_rate + entrainment_rate
 
         source_o2 = roomptr%species_fraction(l,o2)
-        call chemistry (xemp, mol_mass, xeme, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, n_C, n_H, n_O, n_N, &
-            n_Cl, source_o2, lower_o2_limit, xqpyrl, xntfl, xmass)
+        call chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
+            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, xntfl, xmass)
 
         ! limit the amount entrained to that actually entrained by the fuel burned
-        xqpyrl = max(0.0_eb, xqpyrl*(1.0_eb-chirad))
+        hrr = max(0.0_eb, hrr*(1.0_eb-chirad))
 
-        if (xqpyrl<qheatl_c) then
-            xeme = xeme*(xqpyrl/qheatl_c)
-            xmass(1:ns) = (xqpyrl/qheatl_c)*xmass(1:ns)
-            xqpyrl = xqpyrl/qheatl_c*xqpyrl
-            qheatl_c = xqpyrl
+        if (hrr<qheatl_c) then
+            entrainment_rate = entrainment_rate*(hrr/qheatl_c)
+            xmass(1:ns) = (hrr/qheatl_c)*xmass(1:ns)
+            hrr = hrr/qheatl_c*hrr
+            qheatl_c = hrr
             ipass = ipass + 1
             cycle
         end if
         exit
     end do
-    xqpyrl = xqpyrl/(1.0_eb-chirad)
-    qheatl = xqpyrl
-    xems = xemp + xeme
+    hrr = hrr/(1.0_eb-chirad)
+    qheatl = hrr
+    plume_flow_rate = pyrolysis_rate + entrainment_rate
     
-    xntms(u,1:ns) = xmass(1:ns) + xntms(u,1:ns)
+    species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
 
-    xqfr = xqpyrl*chirad
-    xqfc = xqpyrl*(1.0_eb-chirad)
-    xqlp = xqpyrl
+    hrr_r = hrr*chirad
+    hrr_c = hrr*(1.0_eb-chirad)
+    hrr_lower = hrr
 
     ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
     ! heat released in the lower layer and what can be released in the upper layer.
 
     ! start with the fuel removed by lower layer burning, xntfl umplm{ep},{es},and {ee} are equivalent to emp, ems and eme
-90  xqup = 0.0_eb
-    uplmep = max(0.0_eb,xemp-xntfl)
+90  hrr_upper = 0.0_eb
+    uplmep = max(0.0_eb,pyrolysis_rate-xntfl)
 
     if (uplmep>0.0_eb) then
-        qheatu_c = hcombt*uplmep*(1.0_eb-chirad) + qheatl_c
+        qheatu_c = hoc*uplmep*(1.0_eb-chirad) + qheatl_c
         qheatu = qheatu_c/(1.0_eb-chirad)
         height = max (0.0_eb, min(xz,xxfireu))
 
-        call fire_plume (object_area, qheatu, qheatu_c, height, interior_ambient_temperature, uplmep, uplmes, uplmee, &
-           min(xfx,xbr-xfx), min(xfy,xdr-xfy))
+        call fire_plume (fire_area, qheatu, qheatu_c, height, interior_ambient_temperature, uplmep, uplmes, uplmee, &
+           min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
 
         source_o2 = roomptr%species_fraction(u,o2)
-        call chemistry (uplmep, mol_mass, uplmee, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, xqpyrl, xntfl, xmass)
+        call chemistry (uplmep, molar_mass, uplmee, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
+            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, xntfl, xmass)
 
-        xqfr = xqpyrl*chirad + xqfr
-        xqfc = xqpyrl*(1.0_eb-chirad) + xqfc
-        xqup = xqpyrl
-        xntms(u,1:ns) = xmass(1:ns) + xntms(u,1:ns)
+        hrr_r = hrr*chirad + hrr_r
+        hrr_c = hrr*(1.0_eb-chirad) + hrr_c
+        hrr_upper = hrr
+        species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
     end if
     
-    if (xntms(u,fuel)>0.0_eb) then
-        uplmep = xntms(u,fuel)
+    if (species_mass_rate(u,fuel)>0.0_eb) then
+        uplmep = species_mass_rate(u,fuel)
         source_o2 = lower_o2_limit+0.02
-        uplmee = 1000.0_eb*(uplmep*hcombt)/(1.31e7_eb*source_o2)
-        call chemistry (uplmep, mol_mass, uplmee, hcombt, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, xqpyrl, xntfl, xmass)
-        if (uplmep*hcombt>xqpyrl) then
+        uplmee = 1000.0_eb*(uplmep*hoc)/(1.31e7_eb*source_o2)
+        call chemistry (uplmep, molar_mass, uplmee, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
+            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, xntfl, xmass)
+        if (uplmep*hoc>hrr) then
             write(*,*) 'not enough oxygen'
         end if
-        xntms(u,fuel_moles) = uplmep/mol_mass
-        xntms(u,fuel_Q) = xqpyrl
-        xntms(u,fuel_o2) = -xmass(o2)
-        xntms(u,fuel_co2) = xmass(co2)
-        xntms(u,fuel_co) = xmass(co)
-        xntms(u,fuel_hcn) = xmass(hcn)
-        xntms(u,fuel_hcl) = xmass(hcl)
-        xntms(u,fuel_h2o) = xmass(h2o)
-        xntms(u,fuel_soot) = xmass(soot)
+        species_mass_rate(u,fuel_moles) = uplmep/molar_mass
+        species_mass_rate(u,fuel_Q) = hrr
+        species_mass_rate(u,fuel_o2) = -xmass(o2)
+        species_mass_rate(u,fuel_co2) = xmass(co2)
+        species_mass_rate(u,fuel_co) = xmass(co)
+        species_mass_rate(u,fuel_hcn) = xmass(hcn)
+        species_mass_rate(u,fuel_hcl) = xmass(hcl)
+        species_mass_rate(u,fuel_h2o) = xmass(h2o)
+        species_mass_rate(u,fuel_soot) = xmass(soot)
     end if 
     ! add the species flow entrained by the plume to normalize the yields to unity
     xtemp = 0.0_eb
     do lsp = 1, ns_mass
-        xtemp = xtemp + stmass(l,lsp)
+        xtemp = xtemp + species_mass(l,lsp)
     end do
     if (xtemp==0.0_eb) xtemp = 1.0_eb
-    xntms(u,1:ns) = xntms(u,1:ns) + xeme*stmass(l,1:ns)/xtemp
-    xntms(l,1:ns) = xntms(l,1:ns) - xeme*stmass(l,1:ns)/xtemp
+    species_mass_rate(u,1:ns) = species_mass_rate(u,1:ns) + entrainment_rate*species_mass(l,1:ns)/xtemp
+    species_mass_rate(l,1:ns) = species_mass_rate(l,1:ns) - entrainment_rate*species_mass(l,1:ns)/xtemp
     return
     end subroutine do_fire
 
 ! --------------------------- chemistry -------------------------------------------
 
-    subroutine chemistry (pyrolysis_rate, molar_mass,entrainment_rate, h_c, y_soot, y_soot_flaming, y_soot_smolder, &
+    subroutine chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
        y_co,n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, species_rates)
 
     !     routine: chemistry
@@ -307,7 +310,7 @@ module fire_routines
     !                 molar_mass: molar mass of the fuel (kg/mol)
     !                 entrainment_rate: calculated entrainment rate (kg/s)
     !                 source_room: compartment that contains this fire
-    !                 h_c: heat of combustion of the fuel (W/kg)
+    !                 hoc: heat of combustion of the fuel (W/kg)
     !                 y_soot, y_soot_flaming, y_soot_smolder, y_co: species yields for soot and CO; others are calculated from 
     !                        the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
     !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional;
@@ -320,7 +323,7 @@ module fire_routines
     !                 species_rates (output): production rates of species based on calculated yields and constrained
     !                                         pyrolysis rate (kg/s); fuel and oxygen are naturally negative
 
-    real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, h_c, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl
+    real(eb), intent(in) :: pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_co, n_C, n_H, n_O, n_N, n_Cl
     real(eb), intent(in) :: y_soot_flaming, y_soot_smolder
     real(eb), intent(in) :: source_o2, lower_o2_limit
     real(eb), intent(out) :: hrr_constrained, pyrolysis_rate_constrained, species_rates(:)
@@ -340,8 +343,8 @@ module fire_routines
     o2_entrained = entrainment_rate*source_o2
     o2_factor = tanhsmooth(source_o2, lower_o2_limit+0.01_eb, lower_o2_limit, 1.0_eb, 0.0_eb)
     o2_available = o2_entrained*o2_factor
-    hrr_constrained = max(0.0_eb,min(pyrolysis_rate*h_c,o2_available*o2f))
-    pyrolysis_rate_constrained = hrr_constrained/h_c
+    hrr_constrained = max(0.0_eb,min(pyrolysis_rate*hoc,o2_available*o2f))
+    pyrolysis_rate_constrained = hrr_constrained/hoc
 
     ! now do the chemistry balance with supplied inputs.
     nu_soot = molar_mass/0.01201_eb*y_soot
@@ -522,22 +525,22 @@ module fire_routines
 
 ! --------------------------- fire_plume -------------------------------------------
 
-    subroutine fire_plume (object_area, qfire, qfire_c, z, t_inf, xemp, xems, xeme, xfx, xfy)
+    subroutine fire_plume (fire_area, qfire, qfire_c, z, t_inf, pyrolysis_rate, plume_flow_rate, entrainment_rate, x, y)
 
     !     routine: fireplm
     !     purpose: physical interface between do_fire and the plume models
 
-    real(eb), intent(in) :: qfire, qfire_c, z, xemp, xfx, xfy, object_area, t_inf
-    real(eb), intent(out) :: xeme, xems
+    real(eb), intent(in) :: qfire, qfire_c, pyrolysis_rate, x, y, z, fire_area, t_inf
+    real(eb), intent(out) :: entrainment_rate, plume_flow_rate
 
-    call heskestad_plume (qfire, qfire_c,z,t_inf,xemp,xems,xeme,object_area,xfx,xfy)
+    call heskestad_plume (qfire, qfire_c,z,t_inf,pyrolysis_rate,plume_flow_rate,entrainment_rate,fire_area,x ,y)
     return
 
     end subroutine fire_plume
 
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad_plume (q_t, q_c, z, t_inf, emp, ems, eme, area, xfx, xfy)
+    subroutine heskestad_plume (q_t, q_c, z, t_inf, emp, ems, eme, area, x, y)
 
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
     !     inputs:    q_t   fire size (w)
@@ -545,12 +548,12 @@ module fire_routines
     !                t_inf ambient temperature at base of the fire
     !                emp   mass loss rate of the fire (kg/s)
     !                area  is the cross sectional area at the base of the fire
-    !                xfx   distance from fire to wall in x direction (m)
-    !                xfy   distance from fire to wall in y direction (m)
+    !                x   distance from fire to wall in x direction (m)
+    !                y   distance from fire to wall in y direction (m)
     !     outputs:   ems   total mass transfer rate up to height z (kg/s)
     !                eme   net entrainment rate up to height z (kg/s)
 
-    real(eb), intent(in) :: q_t, q_c, z, t_inf, emp, area, xfx, xfy
+    real(eb), intent(in) :: q_t, q_c, z, t_inf, emp, area, x, y
     real(eb), intent(out) :: ems, eme
 
     real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
@@ -562,8 +565,8 @@ module fire_routines
     !                            in a corner, 1/4 the entrainment of a fire 4 times larger
     xf = 1.0_eb
     ! V&V experiments show no effect for walls
-    if (xfx<=sqrt(area)/2.or.xfy<=sqrt(area)/2) xf = 1.0_eb 
-    if (xfx<=sqrt(area)/2.and.xfy<=sqrt(area)/2) xf = 4.0_eb
+    if (x<=sqrt(area)/2.or.y<=sqrt(area)/2) xf = 1.0_eb 
+    if (x<=sqrt(area)/2.and.y<=sqrt(area)/2) xf = 4.0_eb
 
     ! qstar and virtual origin correlation are based on total HRR
     qj = 0.001_eb*q_t*xf
@@ -667,7 +670,7 @@ module fire_routines
     logical, intent(out) :: djetflg
     real(eb), intent(out) :: flows_doorjets(mxrooms,ns+2,2)
 
-    real(eb) :: xntms1(2,ns), xntms2(2,ns), flw1to2, flw2to1, qpyrol1, qpyrol2
+    real(eb) :: species_mass_rate1(2,ns), species_mass_rate2(2,ns), flw1to2, flw2to1, qpyrol1, qpyrol2
     integer :: i, iroom1, iroom2
 
     logical :: dj1flag, dj2flag
@@ -720,17 +723,17 @@ module fire_routines
                 room2ptr => roominfo(iroom2)
                 flw1to2 = room1ptr%species_fraction(u,fuel)*(vss(1,i)+vsa(1,i))
                 flw2to1 = room2ptr%species_fraction(u,fuel)*(vss(2,i)+vsa(2,i))
-                call door_jet_fire (iroom2,iroom1,flw1to2,vsas(2,i),qpyrol2,xntms2,dj2flag)
-                call door_jet_fire (iroom1,iroom2,flw2to1,vsas(1,i),qpyrol1,xntms1,dj1flag)
+                call door_jet_fire (iroom2,iroom1,flw1to2,vsas(2,i),qpyrol2,species_mass_rate2,dj2flag)
+                call door_jet_fire (iroom1,iroom2,flw2to1,vsas(1,i),qpyrol1,species_mass_rate1,dj1flag)
 
                 ! sum the flows for return to the source routine
                 if (dj1flag) then
                     flows_doorjets(iroom1,q,u) = flows_doorjets(iroom1,q,u) + qpyrol1
-                    flows_doorjets(iroom1,3:ns+2,u) = flows_doorjets(iroom1,3:ns+2,u) + xntms1(u,1:ns)
+                    flows_doorjets(iroom1,3:ns+2,u) = flows_doorjets(iroom1,3:ns+2,u) + species_mass_rate1(u,1:ns)
                 end if
                 if (dj2flag) then
                     flows_doorjets(iroom2,q,u) = flows_doorjets(iroom2,q,u) + qpyrol2
-                    flows_doorjets(iroom2,3:ns+2,u) = flows_doorjets(iroom2,3:ns+2,u) + xntms2(u,1:ns)
+                    flows_doorjets(iroom2,3:ns+2,u) = flows_doorjets(iroom2,3:ns+2,u) + species_mass_rate2(u,1:ns)
                 end if
         end do
 
@@ -743,7 +746,7 @@ module fire_routines
 
 ! --------------------------- door_jet_fire -------------------------------------------
 
-    subroutine door_jet_fire (ito,ifrom,xxnetfl,sas,qpyrol,xntms,djflowflg)
+    subroutine door_jet_fire (ito,ifrom,xxnetfl,sas,qpyrol,species_mass_rate,djflowflg)
 
     !     routine: door_jet_fire
     !     purpose: calculate heat and combustion chemistry for a door jet fire
@@ -752,14 +755,14 @@ module fire_routines
     !                 xxnetfl: net fuel available to be burned
     !                 sas: mass flow rate of entrained air in door jet
     !                 qpyrol (output): total heat released by door jet fire
-    !                 xntms (output): net change in mass of species in door jet
+    !                 species_mass_rate (output): net change in mass of species in door jet
 
     integer, intent(in) :: ito, ifrom
     real(eb), intent(in) :: xxnetfl, sas
     logical, intent(out) :: djflowflg
-    real(eb), intent(out) :: qpyrol, xntms(2,ns)
+    real(eb), intent(out) :: qpyrol, species_mass_rate(2,ns)
 
-    real(eb) :: xmass(ns), source_o2, xxmol_mass, xqpyrl, xntfl, tjet, hcombt, flowfrac
+    real(eb) :: xmass(ns), source_o2, xxmolar_mass, hrr, xntfl, tjet, hoc, flowfrac
     real(eb) :: y_soot, y_flaming_soot, y_smolder_soot, y_co
     real(eb) :: nu_o2, nu_co2, nu_co, nu_hcn, nu_hcl, nu_h2o, nu_soot
     real(eb) :: n_n, n_o, n_c, n_cl,n_h
@@ -782,19 +785,19 @@ module fire_routines
         xmass(1:ns) = 0.0_eb
         
         source_o2 = room1ptr%species_fraction(l,o2)
-        hcombt = room2ptr%species_mass(u,fuel_Q)/room2ptr%species_mass(u,fuel)
-        xxmol_mass = room2ptr%species_mass(u,fuel)/room2ptr%species_mass(u,fuel_moles)
+        hoc = room2ptr%species_mass(u,fuel_Q)/room2ptr%species_mass(u,fuel)
+        xxmolar_mass = room2ptr%species_mass(u,fuel)/room2ptr%species_mass(u,fuel_moles)
         y_soot = room2ptr%species_mass(u,fuel_soot)/room2ptr%species_mass(u,fuel)
         y_flaming_soot = y_soot
         y_smolder_soot = 0.0_eb
         y_co = room2ptr%species_mass(u,fuel_co)/room2ptr%species_mass(u,fuel)
-        nu_soot = y_soot*xxmol_mass/0.01201_eb
-        nu_co = y_co*xxmol_mass/0.02801_eb
-        nu_hcn = room2ptr%species_mass(u,fuel_hcn)/room2ptr%species_mass(u,fuel)*xxmol_mass/0.027028_eb
-        nu_hcl = room2ptr%species_mass(u,fuel_hcl)/room2ptr%species_mass(u,fuel)*xxmol_mass/0.036458_eb
-        nu_co2 = room2ptr%species_mass(u,fuel_co2)/room2ptr%species_mass(u,fuel)*xxmol_mass/0.04401_eb
-        nu_h2o = room2ptr%species_mass(u,fuel_h2o)/room2ptr%species_mass(u,fuel)*xxmol_mass/0.018016_eb
-        nu_o2 = room2ptr%species_mass(u,fuel_o2)/room2ptr%species_mass(u,fuel)*xxmol_mass/0.032_eb
+        nu_soot = y_soot*xxmolar_mass/0.01201_eb
+        nu_co = y_co*xxmolar_mass/0.02801_eb
+        nu_hcn = room2ptr%species_mass(u,fuel_hcn)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.027028_eb
+        nu_hcl = room2ptr%species_mass(u,fuel_hcl)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.036458_eb
+        nu_co2 = room2ptr%species_mass(u,fuel_co2)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.04401_eb
+        nu_h2o = room2ptr%species_mass(u,fuel_h2o)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.018016_eb
+        nu_o2 = room2ptr%species_mass(u,fuel_o2)/room2ptr%species_mass(u,fuel)*xxmolar_mass/0.032_eb
         
         n_n = nu_hcn
         n_cl = nu_hcl
@@ -802,21 +805,21 @@ module fire_routines
         n_c = nu_co2 + nu_hcn + nu_co + nu_soot
         n_o = max(0.0_eb,2.0_eb*nu_co2 - 2.0_eb*nu_o2 + nu_h2o + nu_co)
         
-        call chemistry (xxnetfl, xxmol_mass, sas, hcombt, y_soot, y_flaming_soot, y_smolder_soot, y_co, n_c, n_h, n_o, n_n, &
-            n_cl, source_o2, lower_o2_limit, xqpyrl, xntfl, xmass)
-        qpyrol = xqpyrl
+        call chemistry (xxnetfl, xxmolar_mass, sas, hoc, y_soot, y_flaming_soot, y_smolder_soot, y_co, n_c, n_h, n_o, n_n, &
+            n_cl, source_o2, lower_o2_limit, hrr, xntfl, xmass)
+        qpyrol = hrr
         
-        xntms(u,1:ns) = xmass(1:ns)
-        xntms(l,1:ns) = 0.0_eb
+        species_mass_rate(u,1:ns) = xmass(1:ns)
+        species_mass_rate(l,1:ns) = 0.0_eb
         flowfrac = xntfl/room2ptr%species_mass(u,fuel)
-        xntms(u,fuel_moles) = -flowfrac*room2ptr%species_mass(u,fuel_moles)
-        xntms(u,fuel_Q) = -flowfrac*room2ptr%species_mass(u,fuel_Q)
-        xntms(u,fuel_o2) = -flowfrac*room2ptr%species_mass(u,fuel_o2)
-        xntms(u,fuel_co2) = -flowfrac*room2ptr%species_mass(u,fuel_co2)
-        xntms(u,fuel_co) = -flowfrac*room2ptr%species_mass(u,fuel_co)
-        xntms(u,fuel_hcn) = -flowfrac*room2ptr%species_mass(u,fuel_hcn)
-        xntms(u,fuel_hcl) = -flowfrac*room2ptr%species_mass(u,fuel_hcl)
-        xntms(u,fuel_h2o) = -flowfrac*room2ptr%species_mass(u,fuel_h2o)
+        species_mass_rate(u,fuel_moles) = -flowfrac*room2ptr%species_mass(u,fuel_moles)
+        species_mass_rate(u,fuel_Q) = -flowfrac*room2ptr%species_mass(u,fuel_Q)
+        species_mass_rate(u,fuel_o2) = -flowfrac*room2ptr%species_mass(u,fuel_o2)
+        species_mass_rate(u,fuel_co2) = -flowfrac*room2ptr%species_mass(u,fuel_co2)
+        species_mass_rate(u,fuel_co) = -flowfrac*room2ptr%species_mass(u,fuel_co)
+        species_mass_rate(u,fuel_hcn) = -flowfrac*room2ptr%species_mass(u,fuel_hcn)
+        species_mass_rate(u,fuel_hcl) = -flowfrac*room2ptr%species_mass(u,fuel_hcl)
+        species_mass_rate(u,fuel_h2o) = -flowfrac*room2ptr%species_mass(u,fuel_h2o)
     end if
     return
     end subroutine door_jet_fire
@@ -868,7 +871,7 @@ module fire_routines
     real(eb), intent(out) :: tg, vg(4)
 
     real(eb) :: qdot, chirad, area, tu, tl, zfire, zlayer, zceil, r, tplume, vplume, tplume_ceiling, vplume_ceiling, tcj, vcj
-    real(eb) :: xdistance, ydistance, distance, hall_width, xf, xfx, xfy
+    real(eb) :: xdistance, ydistance, distance, hall_width, xf, x_fire_position, y_fire_position
     integer :: i
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -890,12 +893,12 @@ module fire_routines
             ! by reflection, entrainment on a wall is 1/2 the entrainment of a fire 2 times larger;
             !                            in a corner, 1/4 the entrainment of a fire 4 times larger
 
-            xfx = min(fireptr%x_position, roomptr%cwidth-fireptr%x_position)
-            xfy = min(fireptr%y_position, roomptr%cdepth-fireptr%y_position)
+            x_fire_position = min(fireptr%x_position, roomptr%cwidth-fireptr%x_position)
+            y_fire_position = min(fireptr%y_position, roomptr%cdepth-fireptr%y_position)
             xf = 1.0_eb
             ! V&V experiments show no effect for walls
-            if (xfx<=sqrt(fireptr%firearea)/2.or.xfy<=sqrt(fireptr%firearea)/2) xf = 1.0_eb
-            if (xfx<=sqrt(fireptr%firearea)/2.and.xfy<=sqrt(fireptr%firearea)/2) xf = 4.0_eb
+            if (x_fire_position<=sqrt(fireptr%firearea)/2.or.y_fire_position<=sqrt(fireptr%firearea)/2) xf = 1.0_eb
+            if (x_fire_position<=sqrt(fireptr%firearea)/2.and.y_fire_position<=sqrt(fireptr%firearea)/2) xf = 4.0_eb
             qdot = xf*fireptr%qdot_actual
             chirad = fireptr%chirad
             area = xf*fireptr%firearea

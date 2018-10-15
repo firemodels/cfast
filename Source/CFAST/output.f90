@@ -185,7 +185,7 @@ module output_routines
     ! Output the fire environment at the current time
 
     integer i, icomp
-    real(eb) :: fheight, xems, xemp, xqf, xqupr, xqlow
+    real(eb) :: fheight, xems, pyrolysis_rate, xqf, xqupr, xqlow
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -210,7 +210,7 @@ module output_routines
         roomptr => roominfo(icomp)
         if (icomp<nr) then
             xems = 0.0_eb
-            xemp = 0.0_eb
+            pyrolysis_rate = 0.0_eb
             xqf = 0.0_eb
             xqupr = 0.0_eb
             xqlow = 0.0_eb
@@ -218,15 +218,15 @@ module output_routines
                 fireptr => fireinfo(i)
                 if (icomp==fireptr%room) then
                     xems = xems + fireptr%mdot_plume
-                    xemp = xemp + fireptr%mdot_pyrolysis
+                    pyrolysis_rate = pyrolysis_rate + fireptr%mdot_pyrolysis
                     xqf = xqf + fireptr%qdot_actual
                     xqupr = xqupr + fireptr%qdot_layers(u)
                     xqlow = xqlow + fireptr%qdot_layers(l)
                 end if
             end do
             xqf = xqf + roomptr%qdot_doorjet
-            if (xems+xemp+xqf+xqupr+xqlow+roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5030) roomptr%name, &
-                xems, xemp, xqf, xqupr, xqlow, roomptr%qdot_doorjet
+            if (xems+pyrolysis_rate+xqf+xqupr+xqlow+roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5030) roomptr%name, &
+                xems, pyrolysis_rate, xqf, xqupr, xqlow, roomptr%qdot_doorjet
         else 
             if (roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5040) roomptr%qdot_doorjet
         end if
@@ -437,7 +437,7 @@ module output_routines
     integer, intent(in) :: iounit
 
     integer :: i, ir
-    real(eb) :: xemp, xqf
+    real(eb) :: pyrolysis_rate, xqf
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -446,22 +446,22 @@ module output_routines
     do ir = 1, nr
         roomptr => roominfo(ir)
         if (ir<nr) then
-            xemp = 0.0_eb
+            pyrolysis_rate = 0.0_eb
             xqf = 0.0_eb
             do i = 1, n_fires
                 fireptr => fireinfo(i)
                 if (ir==fireptr%room) then
-                    xemp = xemp + fireptr%mdot_pyrolysis
+                    pyrolysis_rate = pyrolysis_rate + fireptr%mdot_pyrolysis
                     xqf = xqf + fireptr%qdot_actual
                 end if
             end do
             xqf = xqf + roomptr%qdot_doorjet
             if (roomptr%shaft) then
-                write (iounit,5040) ir, roomptr%temp(u)-kelvin_c_offset, xemp, xqf, &
+                write (iounit,5040) ir, roomptr%temp(u)-kelvin_c_offset, pyrolysis_rate, xqf, &
                     roomptr%relp - roomptr%interior_relp_initial
             else
                 write (iounit,5030) ir, roomptr%temp(u)-kelvin_c_offset, roomptr%temp(l)-kelvin_c_offset, &
-                    roomptr%depth(l), xemp, xqf, roomptr%relp - roomptr%interior_relp_initial
+                    roomptr%depth(l), pyrolysis_rate, xqf, roomptr%relp - roomptr%interior_relp_initial
             end if
         else
             write (iounit,5020) roomptr%qdot_doorjet

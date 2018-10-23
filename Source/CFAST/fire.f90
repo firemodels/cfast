@@ -14,6 +14,7 @@ module fire_routines
     use option_data
     use setup_data
     use smkview_data
+    use solver_data, only: atol
     use vent_data
 
     implicit none
@@ -191,55 +192,55 @@ module fire_routines
     if (firex<=sqrt(fireptr%firearea)/2.or.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 2
     if (firex<=sqrt(fireptr%firearea)/2.and.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 3
 
-    ! note that the combination of fire_plume and chemistry can be called twice
-    ! in a single iteration to make sure that the plume entrainment is
-    ! consistent with the actual fire size for oxygen limited fires
-    ! this is done by "re-passing" the actual fire size to fire_plume in the
-    ! second pass
-    ipass = 1
-    do while (ipass<=2)
+    ! check for an upper only layer fire
+    if (xxfirel>0.0_eb) then
+        ! note that the combination of fire_plume and chemistry can be called multiple times
+        ! in a single iteration to make sure that the plume entrainment is
+        ! consistent with the actual fire size for oxygen limited fires
+        ! this is done by "re-passing" the actual fire size to fire_plume in the
+        ! next pass. Little seems to be gained by going through loop more than twice
+        ipass = 1
+        do while (ipass<=3)
 
-        ! calculate the entrainment rate but constrain the actual amount
-        ! of air entrained to that required to produce stable stratification
-        call fire_plume(fire_area, qheatl, qheatl_c, xxfirel, interior_ambient_temperature, pyrolysis_rate, plume_flow_rate, &
-            entrainment_rate, min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
-        
-        if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
-            entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
-        end if 
-        
-        ! check for an upper only layer fire
-        if (xxfirel<=0.0_eb) go to 90
-        entrainment_rate = min(entrainment_rate,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
+            ! calculate the entrainment rate but constrain the actual amount
+            ! of air entrained to that required to produce stable stratification
+            call fire_plume(fire_area, qheatl, qheatl_c, xxfirel, interior_ambient_temperature, pyrolysis_rate, plume_flow_rate, &
+                entrainment_rate, min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
+
+            if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
+                entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
+            end if
+
+            entrainment_rate = min(entrainment_rate,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
+            plume_flow_rate = pyrolysis_rate + entrainment_rate
+
+            source_o2 = roomptr%species_fraction(l,o2)
+            call chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
+                n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, xntfl, xmass)
+
+            ! limit the amount entrained to that actually entrained by the fuel burned
+            hrr_c = max(0.0_eb, hrr*(1.0_eb-chirad))
+
+            if (abs(hrr_c-qheatl_c)>atol) then
+                entrainment_rate = entrainment_rate*(hrr_c/qheatl_c)
+                xmass(1:ns) = (hrr_c/qheatl_c)*xmass(1:ns)
+                hrr = hrr_c/qheatl_c*hrr
+                qheatl_c = hrr*(1._eb-chirad)
+                qheatl = hrr
+                ipass = ipass + 1
+                cycle
+            end if
+            exit
+        end do
+        qheatl = hrr
         plume_flow_rate = pyrolysis_rate + entrainment_rate
 
-        source_o2 = roomptr%species_fraction(l,o2)
-        call chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, xntfl, xmass)
+        species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
 
-        ! limit the amount entrained to that actually entrained by the fuel burned
-        hrr = max(0.0_eb, hrr*(1.0_eb-chirad))
-
-        if (hrr<qheatl_c) then
-            entrainment_rate = entrainment_rate*(hrr/qheatl_c)
-            xmass(1:ns) = (hrr/qheatl_c)*xmass(1:ns)
-            hrr = hrr/qheatl_c*hrr
-            qheatl_c = hrr
-            ipass = ipass + 1
-            cycle
-        end if
-        exit
-    end do
-    hrr = hrr/(1.0_eb-chirad)
-    qheatl = hrr
-    plume_flow_rate = pyrolysis_rate + entrainment_rate
-    
-    species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
-
-    hrr_r = hrr*chirad
-    hrr_c = hrr*(1.0_eb-chirad)
-    hrr_lower = hrr
-
+        hrr_r = hrr*chirad
+        hrr_c = hrr*(1.0_eb-chirad)
+        hrr_lower = hrr
+    end if
     ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
     ! heat released in the lower layer and what can be released in the upper layer.
 

@@ -43,7 +43,7 @@ module fire_routines
     real(eb), intent(out) :: flows_fires(mxrooms,ns+2,2)
 
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
-    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, xtl, q_firemass, q_entrained, hrr_r, hrr_c
+    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, t_lower, q_firemass, q_entrained, hrr_r, hrr_c
     real(eb) :: y_soot_flaming, y_soot_smolder
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
@@ -66,7 +66,7 @@ module fire_routines
         fireptr%z_offset = ohight
         species_mass(u,1:ns) = roomptr%species_mass(u,1:ns)
         species_mass(l,1:ns) = roomptr%species_mass(l,1:ns)
-
+        
         call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, &
             y_soot_flaming, y_soot_smolder, y_co, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
             fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, oareat, fireptr%mdot_entrained, &
@@ -79,11 +79,11 @@ module fire_routines
         fireptr%qdot_radiative = hrr_r
 
         ! sum the flows for return to the source routine
-        xtl = roomptr%temp(l)
+        t_lower = roomptr%temp(l)
         flows_fires(iroom,m,u) = flows_fires(iroom,m,u) + fireptr%mdot_plume
         flows_fires(iroom,m,l) = flows_fires(iroom,m,l) - fireptr%mdot_entrained
         q_firemass = cp*fireptr%mdot_pyrolysis*interior_ambient_temperature
-        q_entrained = cp*fireptr%mdot_entrained*xtl
+        q_entrained = cp*fireptr%mdot_entrained*t_lower
         flows_fires(iroom,q,u) = flows_fires(iroom,q,u) + hrr_c + q_firemass + q_entrained
         flows_fires(iroom,q,l) = flows_fires(iroom,q,l) - q_entrained
         flows_fires(iroom,3:ns+2,u) = flows_fires(iroom,3:ns+2,u) + species_mass_rate(u,1:ns)
@@ -135,9 +135,9 @@ module fire_routines
     real(eb), intent(in) :: molar_mass, species_mass(2,ns), x_fire_position, y_fire_position, z_fire_position, fire_area
     real(eb), intent(out) :: entrainment_rate, plume_flow_rate, species_mass_rate(2,ns), hrr_c, hrr_r, hrr_lower, hrr_upper
 
-    real(eb) :: xmass(ns), xz, xtl, xtu, lower_plume_height, upper_plume_height, pyrolysis_rate_constrained
-    real(eb) :: qheatl, qheatl_c, qheatu, qheatu_c
-    real(eb) :: chirad, hrr, source_o2, xtemp, uplmep, uplmes, uplmee, height
+    real(eb) :: xmass(ns), layer_thickness, t_lower, t_upper, lower_plume_height, upper_plume_height
+    real(eb) :: pyrolysis_rate_constrained, hrr_constrained
+    real(eb) :: chirad, hrr, source_o2, xtemp, pyrolysis_rate_upper, plume_flow_rate_upper, entrainment_rate_upper
     real(eb) :: firex, firey
     integer :: ipass, lsp
     type(room_type), pointer :: roomptr
@@ -146,22 +146,16 @@ module fire_routines
     roomptr => roominfo(iroom)
     fireptr => fireinfo(ifire)
 
-    xz = roomptr%depth(u)
-    xtl = roomptr%temp(l)
-    xtu = roomptr%temp(u)
+    layer_thickness = roomptr%depth(u)
+    t_lower = roomptr%temp(l)
+    t_upper = roomptr%temp(u)
+    
     hrr = 0.0_eb
     hrr_c = 0.0_eb
-    hrr_lower = 0.0_eb
+    hrr_r = 0.0_eb
     entrainment_rate = 0.0_eb
 
-    ! these are the lengths ("heights") in the upper and lower layers respectively
-    ! if it is negative, then the fire is not in that layer
-    lower_plume_height = room_height - xz - z_fire_position
-    upper_plume_height = room_height - z_fire_position
     pyrolysis_rate_constrained = 0.0_eb
-    qheatl_c = 0.0_eb
-    qheatu_c = 0.0_eb
-    hrr_r = 0.0_eb
     plume_flow_rate = 0.0_eb
 
     species_mass_rate(u,1:ns) = 0.0_eb
@@ -182,10 +176,10 @@ module fire_routines
     ! divvy up the plume output into radiation and convective energy.
     ! convection drives the plume entrainment
 
+    hrr_lower = 0.0_eb
     hrr = pyrolysis_rate*hoc
     chirad = max(min(fireptr%chirad,1.0_eb),0.0_eb)
-    qheatl = hrr
-    qheatl_c = max(hrr*(1.0_eb-chirad),0.0_eb)
+    hrr_c = max(hrr*(1.0_eb-chirad),0.0_eb)
     
     ! set wall or corner fire
     firex = min(x_fire_position,room_width-x_fire_position)
@@ -194,7 +188,8 @@ module fire_routines
     if (firex<=sqrt(fireptr%firearea)/2.or.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 2
     if (firex<=sqrt(fireptr%firearea)/2.and.firey<=sqrt(fireptr%firearea)/2) fireptr%modified_plume = 3
 
-    ! check for an upper only layer fire
+    lower_plume_height = room_height - layer_thickness - z_fire_position
+    ! lower layer burning
     if (lower_plume_height>0.0_eb) then
         ! note that the combination of fire_plume and chemistry can be called multiple times
         ! in a single iteration to make sure that the plume entrainment is
@@ -202,11 +197,11 @@ module fire_routines
         ! this is done by "re-passing" the actual fire size to fire_plume in the
         ! next pass. Little seems to be gained by going through loop more than twice
         ipass = 1
-        do while (ipass<=3)
+        do while (ipass<=5)
 
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
-            call fire_plume(fire_area, qheatl, qheatl_c, lower_plume_height, interior_ambient_temperature, &
+            call fire_plume(fire_area, hrr, hrr_c, lower_plume_height, interior_ambient_temperature, &
                 pyrolysis_rate, plume_flow_rate, entrainment_rate, min(x_fire_position,room_width-x_fire_position), &
                 min(y_fire_position,room_depth-y_fire_position))
 
@@ -214,24 +209,17 @@ module fire_routines
                 entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
             end if
 
-            entrainment_rate = min(entrainment_rate,qheatl_c/(max((xtu-xtl),1.0_eb)*cp))
+            entrainment_rate = min(entrainment_rate,hrr_c/(max((t_upper-t_lower),1.0_eb)*cp))
             plume_flow_rate = pyrolysis_rate + entrainment_rate
 
             source_o2 = roomptr%species_fraction(l,o2)
             call chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-                n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, pyrolysis_rate_constrained, xmass)
+                n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
 
-            ! limit the amount entrained to that actually entrained by the fuel burned
-
-            if (abs(hrr-qheatl)>atol) then
-                ! these next three lines don't impact the next iteration. They just adjust the last iteration to match the
-                ! constrained hrr
-                entrainment_rate = entrainment_rate*(hrr/qheatl)
-                xmass(1:ns) = (hrr/qheatl)*xmass(1:ns)
-                hrr = hrr/qheatl*hrr
-                ! go with the next guess for the constrained hrr for the plume calculaiton
-                qheatl = hrr
-                qheatl_c = hrr*(1._eb-chirad)
+            ! next guess for plume entrainment just uses the calculated constrained HRR
+            if (abs(hrr-hrr_constrained)>atol) then
+                hrr = hrr_constrained
+                hrr_c = hrr_constrained*(1._eb-chirad)
                 ipass = ipass + 1
                 cycle
             end if
@@ -241,46 +229,43 @@ module fire_routines
 
         species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
 
-        hrr_r = hrr*chirad
-        hrr_c = hrr*(1.0_eb-chirad)
-        hrr_lower = hrr
+        hrr_lower = hrr_constrained
     end if
+    
     ! add burning in the upper layer to the fire. the heat which drives entrainment in the upper layer is the sum of the
     ! heat released in the lower layer and what can be released in the upper layer.
-
-    ! start with the fuel removed by lower layer burning, pyrolysis_rate_
-    ! constrained umplm{ep},{es},and {ee} are equivalent to emp, ems and eme
     hrr_upper = 0.0_eb
-    uplmep = max(0.0_eb,pyrolysis_rate-pyrolysis_rate_constrained)
+    pyrolysis_rate_upper = max(0.0_eb,pyrolysis_rate-pyrolysis_rate_constrained)
 
-    if (uplmep>0.0_eb) then
-        qheatu_c = hoc*uplmep*(1.0_eb-chirad) + hrr_c
-        qheatu = qheatu_c/(1.0_eb-chirad)
-        height = max (0.0_eb, min(xz,upper_plume_height))
+    if (pyrolysis_rate_upper>0.0_eb) then
+        hrr_c = hoc*pyrolysis_rate_upper*(1.0_eb-chirad) + hrr_lower*(1.0_eb-chirad)
+        hrr = hrr_c/(1.0_eb-chirad)
+        upper_plume_height = max (0.0_eb, min(layer_thickness,(room_height - z_fire_position)))
 
-        call fire_plume (fire_area, qheatu, qheatu_c, height, interior_ambient_temperature, uplmep, uplmes, uplmee, &
+        call fire_plume (fire_area, hrr, hrr_c, upper_plume_height, interior_ambient_temperature, pyrolysis_rate_upper, &
+            plume_flow_rate_upper, entrainment_rate_upper, &
            min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
 
         source_o2 = roomptr%species_fraction(u,o2)
-        call chemistry (uplmep, molar_mass, uplmee, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, pyrolysis_rate_constrained, xmass)
+        call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
+            y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
 
-        hrr_r = hrr*chirad + hrr_r
-        hrr_c = hrr*(1.0_eb-chirad) + hrr_c
-        hrr_upper = hrr
         species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
+        hrr_upper = hrr_constrained
     end if
     
+    hrr = hrr_lower + hrr_upper
+    hrr_r = hrr*chirad
+    hrr_c = hrr*(1.0_eb-chirad)
+    
+    ! keep track of unburned fuel composition because it may burn later in a door jet
     if (species_mass_rate(u,fuel)>0.0_eb) then
-        uplmep = species_mass_rate(u,fuel)
+        pyrolysis_rate_upper = species_mass_rate(u,fuel)
         source_o2 = lower_o2_limit+0.02
-        uplmee = 1000.0_eb*(uplmep*hoc)/(1.31e7_eb*source_o2)
-        call chemistry (uplmep, molar_mass, uplmee, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
-            n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, pyrolysis_rate_constrained, xmass)
-        if (uplmep*hoc>hrr) then
-            write(*,*) 'not enough oxygen'
-        end if
-        species_mass_rate(u,fuel_moles) = uplmep/molar_mass
+        entrainment_rate_upper = 1000.0_eb*(pyrolysis_rate_upper*hoc)/(o2f*source_o2)
+        call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
+            y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr, pyrolysis_rate_constrained, xmass)
+        species_mass_rate(u,fuel_moles) = pyrolysis_rate_upper/molar_mass
         species_mass_rate(u,fuel_Q) = hrr
         species_mass_rate(u,fuel_o2) = -xmass(o2)
         species_mass_rate(u,fuel_co2) = xmass(co2)
@@ -299,6 +284,7 @@ module fire_routines
     if (xtemp==0.0_eb) xtemp = 1.0_eb
     species_mass_rate(u,1:ns) = species_mass_rate(u,1:ns) + entrainment_rate*species_mass(l,1:ns)/xtemp
     species_mass_rate(l,1:ns) = species_mass_rate(l,1:ns) - entrainment_rate*species_mass(l,1:ns)/xtemp
+    
     return
     end subroutine do_fire
 
@@ -339,7 +325,6 @@ module fire_routines
     real(eb) :: nu_o2, nu_co2, nu_h2o, nu_co, nu_soot, nu_hcl,nu_hcn, nu_soot_flaming, nu_soot_smolder
     real(eb) :: net_o2, net_co2, net_h2o, net_co, net_soot, net_hcl, net_hcn, net_fuel, net_ct, net_soot_flaming, net_soot_smolder
     real(eb) :: factor
-    real(eb), parameter :: o2f = 1.31e7_eb
 
     ! calculate the actual burning rate constrained by available o2.
 

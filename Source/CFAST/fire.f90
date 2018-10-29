@@ -201,9 +201,9 @@ module fire_routines
 
             ! calculate the entrainment rate but constrain the actual amount
             ! of air entrained to that required to produce stable stratification
-            call fire_plume(fire_area, hrr, hrr_c, lower_plume_height, interior_ambient_temperature, &
-                pyrolysis_rate, plume_flow_rate, entrainment_rate, min(x_fire_position,room_width-x_fire_position), &
-                min(y_fire_position,room_depth-y_fire_position))
+            call heskestad_plume(hrr, hrr_c, lower_plume_height, interior_ambient_temperature, &
+                pyrolysis_rate, plume_flow_rate, entrainment_rate, fire_area, &
+                min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
 
             if (roomptr%mass(l)-entrainment_rate <= roomptr%vmin*roomptr%rho(l)) then
                 entrainment_rate = max(0.0_eb,roomptr%mass(l)-roomptr%vmin*roomptr%rho(l))
@@ -242,8 +242,8 @@ module fire_routines
         hrr = hrr_c/(1.0_eb-chirad)
         upper_plume_height = max (0.0_eb, min(layer_thickness,(room_height - z_fire_position)))
 
-        call fire_plume (fire_area, hrr, hrr_c, upper_plume_height, interior_ambient_temperature, pyrolysis_rate_upper, &
-            plume_flow_rate_upper, entrainment_rate_upper, &
+        call heskestad_plume (hrr, hrr_c, upper_plume_height, interior_ambient_temperature, pyrolysis_rate_upper, &
+            plume_flow_rate_upper, entrainment_rate_upper, fire_area, &
            min(x_fire_position,room_width-x_fire_position), min(y_fire_position,room_depth-y_fire_position))
 
         source_o2 = roomptr%species_fraction(u,o2)
@@ -515,38 +515,23 @@ module fire_routines
     return
     end subroutine interpolate_pyrolysis
 
-! --------------------------- fire_plume -------------------------------------------
-
-    subroutine fire_plume (fire_area, qfire, qfire_c, z, t_inf, pyrolysis_rate, plume_flow_rate, entrainment_rate, x, y)
-
-    !     routine: fireplm
-    !     purpose: physical interface between do_fire and the plume models
-
-    real(eb), intent(in) :: qfire, qfire_c, pyrolysis_rate, x, y, z, fire_area, t_inf
-    real(eb), intent(out) :: entrainment_rate, plume_flow_rate
-
-    call heskestad_plume (qfire, qfire_c,z,t_inf,pyrolysis_rate,plume_flow_rate,entrainment_rate,fire_area,x ,y)
-    return
-
-    end subroutine fire_plume
-
 ! --------------------------- heskestad -------------------------------------------
 
-    subroutine heskestad_plume (q_t, q_c, z, t_inf, emp, ems, eme, area, x, y)
+    subroutine heskestad_plume (q_t, q_c, z, t_inf, pyrolysis_rate, plume_flow_rate, entrainment_rate, fire_area, x, y)
 
     !     purpose: calculates plume entrainment for a fire from heskestad's variant of zukoski's correlation
     !     inputs:    q_t   fire size (w)
     !                z     plume height (m)
     !                t_inf ambient temperature at base of the fire
-    !                emp   mass loss rate of the fire (kg/s)
-    !                area  is the cross sectional area at the base of the fire
+    !                pyrolysis_rate   mass loss rate of the fire (kg/s)
+    !                fire_area  is the cross sectional area at the base of the fire
     !                x   distance from fire to wall in x direction (m)
     !                y   distance from fire to wall in y direction (m)
-    !     outputs:   ems   total mass transfer rate up to height z (kg/s)
-    !                eme   net entrainment rate up to height z (kg/s)
+    !     outputs:   plume_flow_rate   total mass transfer rate up to height z (kg/s)
+    !                entrainment_rate   net entrainment rate up to height z (kg/s)
 
-    real(eb), intent(in) :: q_t, q_c, z, t_inf, emp, area, x, y
-    real(eb), intent(out) :: ems, eme
+    real(eb), intent(in) :: q_t, q_c, z, t_inf, pyrolysis_rate, fire_area, x, y
+    real(eb), intent(out) :: plume_flow_rate, entrainment_rate
 
     real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
     real(eb) :: d, qj, z0, z_l, deltaz, xf, factor, qstar, rho_inf
@@ -557,13 +542,13 @@ module fire_routines
     !                            in a corner, 1/4 the entrainment of a fire 4 times larger
     xf = 1.0_eb
     ! V&V experiments show no effect for walls
-    if (x<=sqrt(area)/2.or.y<=sqrt(area)/2) xf = 1.0_eb 
-    if (x<=sqrt(area)/2.and.y<=sqrt(area)/2) xf = 4.0_eb
+    if (x<=sqrt(fire_area)/2.or.y<=sqrt(fire_area)/2) xf = 1.0_eb 
+    if (x<=sqrt(fire_area)/2.and.y<=sqrt(fire_area)/2) xf = 4.0_eb
 
     ! qstar and virtual origin correlation are based on total HRR
     qj = 0.001_eb*q_t*xf
     if (z>0.0_eb.and.qj>0.0_eb) then
-        d = sqrt(area*xf/pio4)
+        d = sqrt(fire_area*xf/pio4)
         rho_inf = 352.981915_eb/t_inf
         qstar = qj/(rho_inf*cpg*t_inf*gsqrt*d**(2.5_eb))
         z0 = d*(-1.02_eb + 1.4_eb*qstar**0.4_eb)
@@ -580,11 +565,11 @@ module fire_routines
         end if
         c1 = 0.196*(grav_con*rho_inf**2/(cpg*t_inf))**onethird  ! under normal conditions, 0.071_eb
         c2 = 2.9_eb/((gsqrt*cpg*rho_inf*t_inf)**twothirds)      ! under normal conditions, 0.026_eb
-        eme = (c1*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+c2*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
-        ems = emp + eme
+        entrainment_rate = (c1*qj**onethird*deltaz**(5.0_eb/3.0_eb)*(1.0_eb+c2*qj**twothirds*deltaz**(-5.0_eb/3.0_eb)) * factor)/xf
+        plume_flow_rate = pyrolysis_rate + entrainment_rate
     else
-        ems = emp
-        eme = 0.0_eb
+        plume_flow_rate = pyrolysis_rate
+        entrainment_rate = 0.0_eb
     end if
 
     end subroutine heskestad_plume
@@ -818,25 +803,25 @@ module fire_routines
 
 ! --------------------------- flame_height -------------------------------------------
 
-    subroutine flame_height (qdot, area, fheight)
+    subroutine flame_height (qdot, fire_area, fheight)
 
     !     routine: flame_height
-    !     purpose: Calculates flame height for a given fire size and area
+    !     purpose: Calculates flame height for a given fire size and fire_area
     !     arguments:  qdot: Fire Size (W)
-    !                 area: Area of the base of the fire (m^2)
+    !                 fire_area: Area of the base of the fire (m^2)
     !                 fheight (output): Calculated flame height (m)
     !
     !     Source: SFPE handbook, Section 2, Chapter 1
 
-    real(eb), intent(in) :: qdot, area
+    real(eb), intent(in) :: qdot, fire_area
     real(eb), intent(out) :: fheight
 
     real(eb) :: d
 
-    if (area<=0._eb) then
+    if (fire_area<=0._eb) then
         d = pio4*0.2_eb**2
     else
-        d = sqrt(4.0_eb*area/pi)
+        d = sqrt(4.0_eb*fire_area/pi)
     end if
     fheight = -1.02_eb*d + 0.235_eb*(qdot/1.0e3_eb)**0.4_eb
     fheight = max (0.0_eb, fheight)

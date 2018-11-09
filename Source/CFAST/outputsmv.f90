@@ -28,8 +28,7 @@
     subroutine output_smokeview(pabs_ref,pamb,tamb,nrm, n_hvents, n_vvents, nfires, froom_number,&
         fx0,fy0,fz0, n_targets, stime, nscount)
     !
-    ! this routine creates the .smv file used by smokeview to determine size and location of
-    ! rooms, vents, fires etc
+    ! creates the .smv file used by smokeview to determine size and location of rooms, vents, fires etc
     !
     ! this routine is called only once
     !
@@ -232,7 +231,7 @@
 
     subroutine get_vent_info(venttype, ivent, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
 
-    !       This is a routine to get the shape data for mechanical flow vent external connections
+    ! get the shape data for mechanical flow vent external connections
 
     character(len=1), intent(in) :: venttype
     integer, intent(in) :: ivent
@@ -359,16 +358,15 @@
     !
     ! this routine records data for the current time step into the smokeview zone fire data file
     !
-    !     time - current time
-    !   nrm   number of rooms
-    !       pr - real array of size nrm of room pressures
-    !     zlay - real array of size nrm of layer interface heights
-    !       tl - real array of size nrm of lower layer temperatures
-    !       tu - real array of size nrm of upper layer temperatures
-    !   nfires - number of fires
-    !     qdot - real array of size nfires of fire heat release rates
-    !   height - real array of size nfires of fire heights
-    !
+    ! arguments: time current time
+    !            nrm - number of rooms
+    !            pr - real array of size nrm of room pressures
+    !            zlay - real array of size nrm of layer interface heights
+    !            tl - real array of size nrm of lower layer temperatures
+    !            tu - real array of size nrm of upper layer temperatures
+    !            nfires - number of fires
+    !            qdot - real array of size nfires of fire heat release rates
+    !            height - real array of size nfires of fire heights
 
     real(eb), intent(in) :: time
     integer, intent(in) :: nrm
@@ -554,7 +552,7 @@
 
     subroutine getabsdetector(detectornumber, positionvector)
 
-    !	Routine to get the absolute position of a target in the computational space
+    ! get the absolute position of a target in the computational space
 
     !	This is the protocol between cfast and smokeview
 
@@ -580,7 +578,7 @@
 
     subroutine getabstarget(itarg, positionvector)
 
-    !	Routine to get the absolute position of a target in the computational space
+    ! get the absolute position of a target in the computational space
 
     integer, intent(in) :: itarg
     real(eb), intent(out) :: positionvector(*)

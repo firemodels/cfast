@@ -19,13 +19,11 @@
 
     subroutine convection (flows_convection,fluxes_convection)
 
-    !     routine:    convection
-    !     function:   interface between calculate_residuals and convective_flux.  loops over rooms
-    !                 setting up varibles.  passes to convective_flux if ceiling jet for
-    !                 a surface is off, otherwise sets fluxes_convection to 0.0 and then
-    !                 solves for flows_convection
-    !     outputs:    flows_convection       net enthalphy into each layer
-    !                 fluxes_convection       net heat flux onto surface
+    ! interface between calculate_residuals and convective_flux.  loops over rooms setting up varibles.  
+    !   passes to convective_flux if ceiling jet for a surface is off, otherwise sets fluxes_convection to 0.0 and then
+    !   solves for flows_convection
+    ! outputs: flows_convection  net enthalphy into each layer
+    !          fluxes_convection net heat flux onto surface
 
 
     real(eb), intent(out) :: flows_convection(mxrooms,2), fluxes_convection(mxrooms,nwal)
@@ -86,12 +84,11 @@
 
     subroutine convective_flux (iw,tg,tw,qdinl)
 
-    !     routine: convective_flux
-    !     purpose: calculate convective heat transfer for a wall segment.
-    !     arguments:  iw     wall number, standand cfast numbering convention
-    !                 tg     temperature of gas layer adjacent to wall surface
-    !                 tw     wall surface temperature
-    !                 qdinl  convective flux into wall surface iw
+    ! calculate convective heat transfer for a wall segment.
+    ! arguments:  iw     wall number, standand cfast numbering convention
+    !             tg     temperature of gas layer adjacent to wall surface
+    !             tw     wall surface temperature
+    !             qdinl  convective flux into wall surface iw
 
     integer, intent(in) :: iw
     real(eb), intent(in) :: tg, tw

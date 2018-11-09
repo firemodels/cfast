@@ -26,14 +26,10 @@ module radiation_routines
 
     subroutine radiation(flows_radiation,fluxes_radiation)
 
-    !     routine: radiation
-    !     purpose: Interface between calculate_residuals and RAD2 or RAD4.  Loops over
-    !              rooms setting up varibles to pass.  If one or more fires
-    !              are in a room calls RAD4 otherwise RAD2.
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: flows_radiation      net enthalphy into each layer
-    !                fluxes_radiation      net enthalphy flux into surface
+    ! interface between calculate_residuals and RAD2 or RAD4.  Loops over rooms setting up varibles to pass.  If one or more fires
+    !     are in a room calls RAD4 otherwise RAD2.
+    !     arguments: flows_radiation  net enthalphy into each layer
+    !                fluxes_radiation net enthalphy flux into surface
 
     real(eb), intent(out), dimension(mxrooms,2) :: flows_radiation
     real(eb), intent(out), dimension(mxrooms,nwal) :: fluxes_radiation
@@ -119,29 +115,27 @@ module radiation_routines
     subroutine rad4(twall,tlay,emis,absorb,iroom,xroom,yroom,zroom,hlay,qfire,xfire,yfire,zfire,nfire,&
        qflux,qlay,mxfires,taufl,taufu,firang,qout,black)
 
-    !     routine: rad4
-    !     purpose: this routine computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to
-    !              a point source fire, emitting absorbing gas layers (u and l) and heat emitting wall segments.
-    !              this routine also computes the heat absorbed by the lower and upper layers.
-    !     intput arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
-    !                          i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively
-    !                tlay: tlay(i) is the temperature of the i'th layer [k] where i=1,2 denotes the upper, lower layers respectively
-    !                emis: emis(i) is the emisivity of the ceiling (i=1), walls (i=2) and floor (i=3)
-    !                absorb: absorb(i) is the absorbivity [1/m] of the upper (i=1), lower layer (i=2)
-    !                xroom: size of the room [m] in the x'th coordinate direction.
-    !                yroom: size of the room [m] in the y'th coordinate direction.
-    !                zroom: size of the room [m] in the z'th coordinate direction.
-    !                hlay: height of smoke layer interface above the floor [m]
-    !                qfire: array of length nfire, qfire(ifire) is the energy release rate due to radiation of the ifire'th fire [w]
-    !                xfire: x coordinate of fire location [m]
-    !                yfire: y coordinate of fire location [m]
-    !                zfire: z coordinate of fire location [m]
+    ! computes the radiative heat flux to the ceiling, upper wall, lower wall and floor due to
+    ! a point source fire, emitting absorbing gas layers (u and l) and heat emitting wall segments.
+    ! this routine also computes the heat absorbed by the lower and upper layers.
+    ! input arguments: twall(i): twall(i) is the temperature of the i'th surface [k] . where
+    !                       i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively
+    !                  tlay: tlay(i) is the temperature of the i'th layer [k] where i=1,2 denotes the upper, lower layers
+    !                  emis: emis(i) is the emisivity of the ceiling (i=1), walls (i=2) and floor (i=3)
+    !                  absorb: absorb(i) is the absorbivity [1/m] of the upper (i=1), lower layer (i=2)
+    !                  xroom: size of the room [m] in the x'th coordinate direction.
+    !                  yroom: size of the room [m] in the y'th coordinate direction.
+    !                  zroom: size of the room [m] in the z'th coordinate direction.
+    !                  hlay: height of smoke layer interface above the floor [m]
+    !                  qfire: array of length nfire, qfire(i) is the energy release rate due to radiation of the i'th fire [w]
+    !                  xfire: x coordinate of fire location [m]
+    !                  yfire: y coordinate of fire location [m]
+    !                  zfire: z coordinate of fire location [m]
     !      output arguments: qflux (output): qflux(i) is the radiant heat flux [w/m**2] to the i'th surfaces
-    !                                where i=1,2,3,4 denotes the ceiling, the upper wall,
-    !                                the lower wall and the floor respectively
-    !                qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the
+    !                        where i=1,2,3,4 denotes the ceiling, the upper wall, the lower wall and the floor respectively
+    !                        qlay (output): qlay(i) is the heat absorbed by the i'th layer where i=1,2 denotes the
     !                               upper, lower layers respectively
-    !                qout (output): qout(i) is the output flux from the i'th wall
+    !                        qout (output): qout(i) is the output flux from the i'th wall
 
     integer, parameter :: u = 1, l = 2, mxroom = 100
     integer :: ipvt(4), iflag(mxroom), iroom, i, j, k, nfire, info, mxfires
@@ -317,9 +311,8 @@ module radiation_routines
 
     subroutine rdflux(mxfires,nzone,nup,area,hlay,tlay,zfire,qfire,figs,taul,tauu,taufl,taufu,firang,nfire,qllay,qulay,c)
 
-    !     routine: rad4
-    !     purpose: this routine calculates the 'c' vector in the net radiation equations of seigel and howell and the
-    !        heat absorbed by the lower and upper layer fires due to gas layer emission and fires..
+    !routine calculates the 'c' vector in the net radiation equations of seigel and howell and the
+    ! heat absorbed by the lower and upper layer fires due to gas layer emission and fires..
 
     integer, intent(in) :: mxfires, nzone, nfire, nup
     real(eb), intent(in) :: area(*), hlay, tlay(2), zfire(*), qfire(mxfires)
@@ -418,11 +411,10 @@ module radiation_routines
 
     subroutine rabs(nzone,nup,e,dqde,emis2,area,figs,tauu,taul,qllay,qulay)
 
-    !     routine: rabs
-    !     purpose: This routine computes the energy absorbed by the upper and lower layer due to radiation
-    !              given off by heat emiiting rectangles forming the enclosure.  Coming into this routine,
-    !              qllay and qulay were previously defined to be the heat absorbed by the lower and
-    !              upper layers due to gas emissions and fires.  this routine just adds onto these values.
+    ! computes the energy absorbed by the upper and lower layer due to radiation given off by heat 
+    ! emiiting rectangles forming the enclosure.  Coming into this routine,
+    ! qllay and qulay were previously defined to be the heat absorbed by the lower and
+    ! upper layers due to gas emissions and fires.  this routine just adds onto these values.
 
     integer, intent(in) :: nup, nzone
     real(eb), intent(in) :: e(*), emis2(*), area(*),dqde(*), figs(nzone,*), tauu(nzone,*), taul(nzone,*)
@@ -464,9 +456,8 @@ module radiation_routines
 
     real(eb) function rdparfig(x,y,z)
 
-    !     routine: rdparfig
-    !     purpose: This routine calculates the configuration factor between two paralell plates a distance z a part.  Each
-    !          plate has a dimension of x by y.  the units of x, y and z are un-important except that they must be consistent.
+    !  calculates the configuration factor between two paralell plates a distance z a part.  Each
+    !  plate has a dimension of x by y.  the units of x, y and z are un-important except that they must be consistent.
 
     real(eb), intent(in) :: x, y, z
 
@@ -502,9 +493,6 @@ module radiation_routines
 ! --------------------------- rdfang -------------------------------------------
 
     subroutine rdfang(mxfires,xroom,yroom,zroom,hlay,nfire,xfire,yfire,zfire,firang)
-
-    !     routine: rdfang
-    !     purpose:
 
     integer, intent(in) :: mxfires, nfire
     real(eb), intent(in) :: xroom, yroom, zroom, hlay, xfire(*), yfire(*), zfire(*)
@@ -576,9 +564,6 @@ module radiation_routines
 
     subroutine rdftran (mxfires,nzone,nup,absorb,hlay,zz,nfire,zfire,taufu,taufl,black)
 
-    !     routine: rdftran
-    !     purpose:
-
     real(eb), intent(in) :: absorb(*), zz(*), zfire(*)
     integer, intent(in) :: mxfires, nzone, nup, nfire
     logical, intent(in) :: black
@@ -639,9 +624,6 @@ module radiation_routines
 ! --------------------------- rdrtran -------------------------------------------
 
     subroutine rdrtran (nzone,nup,absorb,beam,hlay,zz,tauu,taul,black)
-
-    !     routine: rdftran
-    !     purpose:
 
     integer, intent(in) ::  nup, nzone
     real(eb), intent(in) :: absorb(*), beam(nzone,nzone), zz(*), hlay
@@ -764,7 +746,7 @@ module radiation_routines
 
     subroutine cross_product(c,a,b)
 
-! c = a x b
+    ! c = a x b
 
     real(eb), intent(in) :: a(3),b(3)
     real(eb), intent(out) :: c(3)
@@ -780,7 +762,7 @@ module radiation_routines
 
     real(eb) function absorb(cmpt, layer)
 
-    !  function calculates absorbance, due to gases (co2 and h2o) and soot, for the specified compartment and layer.
+    !  calculates absorbance, due to gases (co2 and h2o) and soot, for the specified compartment and layer.
 
     !  absorbances are assumed to be equal to emissivities. per spfe handbook (1988 ed., pages 1-99 - 1-101),
     !  gas absorbance iscalculated as

@@ -33,10 +33,9 @@ module target_routines
 
     subroutine target(update,dt)
 
-    !     routine: target (main target routine)
-    !     purpose: compute dassl residuals associated with targets
-    !     arguments: update   variable indicating whether temperature profile should be updated
-    !                dt       time step
+    ! compute dassl residuals associated with targets
+    ! arguments: update   variable indicating whether temperature profile should be updated
+    !            dt       time step
 
     integer, intent(in) :: update
     real(eb), intent(in) :: dt
@@ -152,13 +151,12 @@ module target_routines
 
     subroutine target_flux(iter,itarg,ttarg,flux,dflux)
 
-    !     purpose: routine to calculate flux (and later, temperature) of a target.
-
-    !     arguments: iter   iteration number
-    !                itarg  targetnumber
-    !                ttarg  front and back target input temperature
-    !                flux   front and back output flux
-    !                dflux  front and back output flux derivative
+    ! calculate flux (and later, temperature) of a target.
+    ! arguments: iter   iteration number
+    !            itarg  targetnumber
+    !            ttarg  front and back target input temperature
+    !            flux   front and back output flux
+    !            dflux  front and back output flux derivative
 
     integer, intent(in) :: iter, itarg
     real(eb), intent(in) :: ttarg(2)
@@ -386,8 +384,8 @@ module target_routines
 
     subroutine target_nodes (x_node)
 
-    !     purpose: calculate thickness of internal nodes in a plate target
-    !     arguments: x_node  array of node thicknesses from front to back
+    ! calculate thickness of internal nodes in a plate target
+    ! arguments: x_node  array of node thicknesses from front to back
 
         real(eb), intent(out) :: x_node(nnodes_trg)
 
@@ -658,7 +656,7 @@ module target_routines
 
     subroutine get_target_temperatures ()
 
-    !   purpose: updates the internal temperature of each target at the depth(s) specified by the user
+    ! updates the internal temperature of each target at the depth(s) specified by the user
 
     integer itarg
     real(eb) :: diam, dr, r, rint, factor, depth, tempx, x_node(nnodes_trg), targx, targdx(nnodes_trg)
@@ -734,15 +732,14 @@ module target_routines
 
     subroutine update_detectors (imode,tcur,dstep,n_detectors,idset,ifdtect,tdtect)
 
-    !     routine: update_detectors
-    !     purpose: updates the temperature of each detector link.  it also determine whether the
-    !              detector has activated in the time interval (tcur,tcur+dstep).  if this has occured then a
-    !              quenching algorithm will be invoked if the appropriate option has been set.
-    !     arguments: tcur    current time
-    !                dstep   time step size (to next time)
-    !                n_detectors  number of detectors
-    !                ixdtect 2-d array containing integer detector data structures
-    !                idset   room where activated detector resides
+    ! updates the temperature of each detector link.  it also determine whether the
+    ! detector has activated in the time interval (tcur,tcur+dstep).  if this has occured then a
+    ! quenching algorithm will be invoked if the appropriate option has been set.
+    ! arguments: tcur    current time
+    !            dstep   time step size (to next time)
+    !            n_detectors  number of detectors
+    !            ixdtect 2-d array containing integer detector data structures
+    !            idset   room where activated detector resides
 
     integer, intent(in) :: imode, n_detectors
     real(eb), intent(in) :: tcur, dstep
@@ -887,9 +884,7 @@ module target_routines
 
     subroutine get_detector_temp_and_velocity
 
-    !     routine:     get_detector_temp_and_velocity
-
-    !     description:  calculates near-detector gas temperature, velocity, and smoke obscuration
+    ! calculates near-detector gas temperature, velocity, and smoke obscuration
 
     real(eb) :: xloc, yloc, zloc, tg, vg(4)
     integer :: id, iroom
@@ -943,12 +938,11 @@ module target_routines
 
     subroutine device_activated (idtect, tdtect, istate)
 
+    ! records a device activation in the smv file
     !
-    ! this routines records a device activation in the smv file
-    !
-    !   idtect: detector number that activated
-    !   tdtect: activation time
-    !   istate: activation state: 0 for not activated, 1 for activated
+    ! arguments: idtect: detector number that activated
+    !            tdtect: activation time
+    !            istate: activation state: 0 for not activated, 1 for activated
 
     integer, intent(in) :: idtect, istate
     real(eb), intent(in) :: tdtect
@@ -963,7 +957,7 @@ module target_routines
 
     subroutine adiabatic_surface_temperature (emis, h, tg, qinc, AST)
 
-    ! purpose: calculate adiabatic temperature (AST with the unit in Kelvin) for a target
+    ! calculate adiabatic temperature (AST with the unit in Kelvin) for a target
     
     ! Reference:  
     ! M Malendowski (2017). Analytical solution for adiabatic surface temperature (AST). Fire Technology.

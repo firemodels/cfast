@@ -22,17 +22,14 @@ module conduction_routines
 
     subroutine conduction(update,dt,fluxes_total,delta)
 
-    !     routine: conduction (main conduction routine)
-    !     purpose: interface between calculate_residuals and the conduction calculation.
-    !              for each active wall surface in each routine this
-    !              routine calculates the residual function
-    !               q'' + k dt/dx, which when zero is simply fourier's
-    !              law of heat conduction.
-    !     arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then
-    !                        we don't calculate delta or use fluxes_total
-    !                dt time step interval from last valid solution point
-    !                fluxes_total  total flux striking walls
-    !                delta   the residual of q'' + k dt/dx
+    ! interface between calculate_residuals and the conduction calculation. for each active wall surface in each routine this
+    ! routine calculates the residual function
+    !     q'' + k dt/dx, which when zero is simply fourier's law of heat conduction.
+    ! arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then
+    !                    we don't calculate delta or use fluxes_total
+    !            dt time step interval from last valid solution point
+    !            fluxes_total  total flux striking walls
+    !            delta   the residual of q'' + k dt/dx
 
     integer, intent(in) :: update
     real(eb), intent(in) :: dt, fluxes_total(mxrooms,nwal)
@@ -157,8 +154,7 @@ module conduction_routines
        tgrad,tderv)
 
 
-    ! routine:  conductive_flux
-    ! purpose: handles cfast conduction
+    ! handles cfast conduction
     ! arguments: update   we don't keep solution unless update is 1 or 2
     !            tempin   temperature at interior wall
     !            tempout  temperature at exterior wall, not used now
@@ -316,12 +312,13 @@ module conduction_routines
 
     subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nnodes,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
-    !     arguments: wtemp    cable temperature profile
-    !                nnodes       number of nodes
-    !                wfluxin  flux striking cable
-    !                dt       time step interval from last valid solution point
-    !                wrho     cable density
-    !                diam     cable diameter
+    ! handles conduction calculation for cylindrical coordinates (for targets)
+    ! arguments: wtemp    cable temperature profile
+    !            nnodes       number of nodes
+    !            wfluxin  flux striking cable
+    !            dt       time step interval from last valid solution point
+    !            wrho     cable density
+    !            diam     cable diameter
 
     integer, intent(in) :: nnodes, iwbound
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin
@@ -423,6 +420,13 @@ module conduction_routines
 ! --------------------------- get_cylinder_temperature -------------------------------------------
 
     subroutine get_cylinder_temperature(x,wtemp,nx,rad,tempx)
+    
+    ! determines interior temperature of cylindrical target at specified depth
+    ! arguments: x     desired depth for internal temperature
+    !            wtemp temperatures at nx points over radius of cylinder
+    !            nx    number of data points
+    !            rad   radius of cylinder
+    !            tempx (output) internal temperature
 
     real(eb), intent(in) :: x, rad
     integer, intent(in) :: nx

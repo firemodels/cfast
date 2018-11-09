@@ -24,7 +24,7 @@ module spreadsheet_header_routines
 
     subroutine ssheaders_normal
 
-    ! This is the header information for the normal spreadsheet output
+    ! header information for the normal spreadsheet output
 
     integer, parameter :: maxhead = 1+8*mxrooms+5+10*mxfires
     character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(17), LabelsShort(17), LabelUnits(17)
@@ -108,7 +108,7 @@ module spreadsheet_header_routines
 
     subroutine ssheaders_species
 
-    ! This is the header information for the spreadsheet output
+    ! header information for the species spreadsheet output
 
     ! local variables
     integer, parameter :: maxhead = 1+2*ns*mxrooms
@@ -181,7 +181,7 @@ module spreadsheet_header_routines
 
     subroutine ssheaders_speciesMass
 
-    ! This is the header information for the spreadsheet output
+    ! header information for the species mass spreadsheet output
 
     ! local variables
     integer, parameter :: maxhead = 1+2*ns*mxrooms
@@ -249,22 +249,7 @@ module spreadsheet_header_routines
 
     subroutine ssheaders_target
 
-    ! This routine spools the headers for the surface temperature and flux results.
-
-    ! Format
-
-!blank     c1     c1      c1    c1      c1   c1    c1      c1   c1
-    !xxx         c2     c2      c2    c2       c2   c2   c2     c2   c2    ....
-!time   ceiling	u-wall  l-wall floor  flux  fire surface gas convect
-    !xxx   ceiling u-wall  l-wall floor  flux  fire surface gas convect ....
-
-
-    !.....  target number
-    !.....  gas temp, surface temp, center temp, flux, fire, surface, gas, convect
-
-
-    !.....  sensor number
-    !.....  compartment name, type, sensor temperature, activated, smoke temperature, smoke velocity
+    ! header information for the surface temperature and flux results.
 
     integer, parameter :: maxhead = 1+9*mxrooms+16*mxtarg+4*mxdtect
     character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(29), LabelsShort(29), LabelUnits(29), frontorback(2)
@@ -380,8 +365,7 @@ module spreadsheet_header_routines
 
     subroutine ssheaders_flow
 
-    !	This is the header information for the flow spreadsheet and is called once
-    !	The logic is identical to output_spreadsheet_flow so the output should be parallel
+    ! header information for the flow spreadsheet
 
     integer, parameter :: maxhead = 10*mxhvents+10*mxvvents+2*mxmvents
     character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(18), LabelsShort(9), LabelUnits(9)
@@ -673,7 +657,7 @@ module spreadsheet_header_routines
 
     subroutine ssheaders_smv(lMode)
 
-    ! This is the header information for the smokeview spreadsheet output
+    ! header information for the smokeview spreadsheet output
 
     logical, intent(in) :: lmode
 
@@ -851,7 +835,7 @@ module spreadsheet_header_routines
 
  subroutine ssHeaders_resid
 
-    ! This is the header information for the calculate_residuals spreadsheet output
+    ! header information for the calculate_residuals spreadsheet output
 
     integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms
     character(35) :: headertext(3,maxhead), Labels(15), LabelUnits(8), Layers(2), Species(9)
@@ -935,7 +919,7 @@ module spreadsheet_header_routines
 
   subroutine ssHeaders_fslabs
 
-    ! This is the header information for the normal spreadsheet output
+    ! header information for the flow slabs spreadsheet output
 
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
@@ -977,7 +961,7 @@ module spreadsheet_header_routines
 
     subroutine ssheaders_diagnosis
 
-    ! This is the header information for the normal spreadsheet output
+    ! header information for the diagnostic spreadsheet output
 
     integer, parameter :: maxhead = 1+10*mxrooms
     character(35) :: headertext(4,maxhead), cRoom, Labels(11), LabelsShort(11), LabelUnits(11)

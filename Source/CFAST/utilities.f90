@@ -24,7 +24,7 @@
 
     subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
 
-    !	Routine to implement the algorithm to set the heat of combustion for all fires
+    ! set the heat of combustion for all fires
 
     integer, intent(in) :: maxint
     real(eb), intent(in) :: qdot(maxint), hinitial
@@ -56,11 +56,11 @@
 
     subroutine position_object (xyorz,pos_max,defaultposition,minimumseparation)
 
-    !     Position an object in a compartment
-    !     arguments: xyorz: object position in the x, y, or z direction
-    !		         pos_max: the maximum extent
-    !		         defaultposition: to set to zero (base)(2) or midpoint(1)
-    !		         minimumseparation: the closest the object can be to a wall
+    ! Position an object in a compartment
+    ! arguments: xyorz:             object position in the x, y, or z direction
+    !            pos_max:           the maximum extent
+    !		     defaultposition:   to set to zero (base)(2) or midpoint(1)
+    !		     minimumseparation: the closest the object can be to a wall
 
     integer, intent(in) :: defaultposition
     real(eb), intent(in) :: minimumseparation, pos_max
@@ -139,13 +139,12 @@
 
     real(eb) function tanhsmooth (x, xmax, xmin, ymax, ymin)
 
-    !     routine: tanhsmooth
-    !     purpose: calculate a smooth transition from 1 (at xmax) to zero (at xmin)
-    !     arguments: x    current value
-    !                xmax maximum value of independent variable. Return ymax above this value
-    !                xmin minimum value of independent variable. Return ymin below this value
-    !                ymax value returned at or above xmax
-    !                ymin value return at or below xmin
+    ! calculate a smooth transition from 1 (at xmax) to zero (at xmin)
+    ! arguments: x    current value
+    !            xmax maximum value of independent variable. Return ymax above this value
+    !            xmin minimum value of independent variable. Return ymin below this value
+    !            ymax value returned at or above xmax
+    !            ymin value return at or below xmin
 
     real(eb), intent(in) :: x, xmax, xmin, ymax, ymin
     real(eb) :: f
@@ -161,24 +160,21 @@
 
     subroutine xerror(messg,nmessg,nerr,level)
 
-    !     routine: xerror
-    !     purpose: XERROR processes a diagnostic message. It is a stub routine written for the book above.
-    !              Actually, XERROR is a sophisticated error handling package with many options. Our version
-    !              has the same calling sequence but only prints an error message and either returns (if
-    !              the input value of ABS(LEVEL) is less than 2) or stops (if the input value of ABS(LEVEL) equals 2).
-    !     Revision: $Revision$
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
-    !     arguments: MESSG - the Hollerith message to be processed.
-    !                NMESSG- the actual number of characters in MESSG. (this is ignored in this stub routine)
-    !                NERR  - the error number associated with this message. NERR must not be zero. (this is
-    !                        ignored in this stub routine)
-    !                LEVEL - error category.
-    !                       = 2 means this is an unconditionally fatal error.
-    !                       = 1 means this is a recoverable error.  (I.e., it is non-fatal if XSETF has been appropriately called.)
-    !                       = 0 means this is a warning message only.
-    !                       =- 1 means this is a warning message which is to be printed at most once, regardless of how many times
-    !                          this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then
-    !                          a stop. LEVEL=-1,0,1 causes a message to  be printed and then a return.
+    ! processes a diagnostic message. It is a stub routine written for the book above.
+    !          Actually, XERROR is a sophisticated error handling package with many options. Our version
+    !          has the same calling sequence but only prints an error message and either returns (if
+    !          the input value of ABS(LEVEL) is less than 2) or stops (if the input value of ABS(LEVEL) equals 2).
+    ! arguments: MESSG - the Hollerith message to be processed.
+    !            NMESSG- the actual number of characters in MESSG. (this is ignored in this stub routine)
+    !            NERR  - the error number associated with this message. NERR must not be zero. (this is
+    !                    ignored in this stub routine)
+    !            LEVEL - error category.
+    !                   = 2 means this is an unconditionally fatal error.
+    !                   = 1 means this is a recoverable error.  (I.e., it is non-fatal if XSETF has been appropriately called.)
+    !                   = 0 means this is a warning message only.
+    !                   =- 1 means this is a warning message which is to be printed at most once, regardless of how many times
+    !                      this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then
+    !                      a stop. LEVEL=-1,0,1 causes a message to  be printed and then a return.
 
     character(*), intent(in) :: messg
     integer, intent(in) :: nmessg, level, nerr
@@ -216,17 +212,15 @@
 
     subroutine xerrwv(msg,nmes,nerr,level,ni,i1,i2,nnr,r1,r2)
 
-    !     routine: xerrwv
-    !     purpose: xerrwv, as given here, constitutes a simplified version of the slatec error handling package. It just prints
-    !              our error messages with codes as requested
-    !     arguments: msg - the message (character array).
-    !                nmes - the length of msg (number of characters).
-    !                nerr - the error number (not used).
-    !                level - the error level. 0 or 1 means recoverable (control returns to caller). 2 means fatal (run is aborted).
-    !                ni - number of integers (0, 1, or 2) to be printed with message.
-    !                i1,i2 - integers to be printed, depending on ni.
-    !                nnr - number of reals (0, 1, or 2) to be printed with message.
-    !                r1,r2 - reals to be printed, depending on nnr.
+    ! a simplified version of the slatec error handling package. It just prints our error messages with codes as requested
+    ! arguments: msg - the message (character array).
+    !            nmes - the length of msg (number of characters).
+    !            nerr - the error number (not used).
+    !            level - the error level. 0 or 1 means recoverable (control returns to caller). 2 means fatal (run is aborted).
+    !            ni - number of integers (0, 1, or 2) to be printed with message.
+    !            i1,i2 - integers to be printed, depending on ni.
+    !            nnr - number of reals (0, 1, or 2) to be printed with message.
+    !            r1,r2 - reals to be printed, depending on nnr.
 
     integer, intent(in) :: nmes, nerr, level, ni, i1, i2, nnr
     real(eb), intent(in) :: r1, r2
@@ -263,11 +257,10 @@
 
     real(eb) function d1mach (i)
 
-    !     routine: d1mach
-    !     purpose: d1mach can be used to obtain machine-dependent parameters for the local machine environment.
-    !              it is a function subprogram with one (input) argument. reference  p. a. fox, a. d. hall and
-    !              nr. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
-    !              2 (june 1978), pp. 177-188.
+    ! obtain machine-dependent parameters for the local machine environment.
+    ! it is a function subprogram with one (input) argument. reference  p. a. fox, a. d. hall and
+    ! nr. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
+    ! 2 (june 1978), pp. 177-188.
     !     arguments:  i
     !
     !           where i = 1,...,5.  the (output) value of a above is determined by the (input) value of i.  the
@@ -319,14 +312,13 @@
 
     subroutine xerrmod(mesg,nerr,nnr,r1,r2)
 
-    !     routine: xerrmod
-    !     purpose: xerrmod is a simplified version of the slatec error handling package. it just logs our error messages
-    !              with codes as requested. adapted from code written by a. c. hindmarsh and p. nr. brown at llnl.
-    !     arguments: msg - the message (character array).
-    !                nmes - the length of msg (number of characters).
-    !                nerr - the error number (not used).
-    !                nnr - number of reals (0, 1, or 2) to be printed with message.
-    !                r1,r2 - reals to be printed, depending on nnr.
+    ! simplified version of the slatec error handling package. it just logs our error messages
+    !          with codes as requested. adapted from code written by a. c. hindmarsh and p. nr. brown at llnl.
+    ! arguments: msg - the message (character array).
+    !            nmes - the length of msg (number of characters).
+    !            nerr - the error number (not used).
+    !            nnr - number of reals (0, 1, or 2) to be printed with message.
+    !            r1,r2 - reals to be printed, depending on nnr.
 
     integer, intent(in) :: nerr, nnr
     real(eb), intent(in) :: r1, r2
@@ -357,13 +349,12 @@
 
     subroutine cmdline (nargs,strs,iarg,iopt)
 
-    !     routine: cmdline
-    !     purpose: gets argument list and options from command line. options may be of the form c:<string> where <c>
-    !              is the desired option a-z and <string> is a character string associated with that option.
-    !     arguments: nargs maximum number of arguments expected (dimension limit on input, actual number on output.
-    !                strs  returned strings of arguments and options
-    !                iarg  returned list of pointers to elements in strs corresponding to arguments 1..nargs
-    !                iopt  returned list of pointers to elements in strs corresponding to options a-z
+    ! gets argument list and options from command line. options may be of the form c:<string> where <c>
+    !          is the desired option a-z and <string> is a character string associated with that option.
+    ! arguments: nargs maximum number of arguments expected (dimension limit on input, actual number on output.
+    !            strs  returned strings of arguments and options
+    !            iarg  returned list of pointers to elements in strs corresponding to arguments 1..nargs
+    !            iopt  returned list of pointers to elements in strs corresponding to options a-z
 
     integer, intent(inout) :: nargs
     integer, intent(out) :: iarg(nargs), iopt(26)
@@ -455,15 +446,14 @@
 
     subroutine cmove(cmdlin,i1,i2,i3,i4,i5,chr)
 
-    !     routine: cmove
-    !     purpose: move a substring in the command line to remove spaces.
-    !     arguments: cmdlin command line string
-    !                i1     beginning of substring to be moved
-    !                i2     end of substring to be moved
-    !                i3     beginning of destination
-    !                i4     end of destination
-    !                i5     position of newly vacated space in the string
-    !                chr    character to fill that space
+    ! cmove a substring in the command line to remove spaces.
+    ! arguments: cmdlin command line string
+    !            i1     beginning of substring to be moved
+    !            i2     end of substring to be moved
+    !            i3     beginning of destination
+    !            i4     end of destination
+    !            i5     position of newly vacated space in the string
+    !            chr    character to fill that space
 
     character, intent(in) :: chr
     integer, intent(in) :: i1, i2, i3, i4, i5
@@ -483,9 +473,8 @@
 
     subroutine getcl (cmdlin)
 
-    !     routine: getcl
-    !     purpose: get command line as a single string
-    !     arguments: cmdlin - command line
+    ! get command line as a single string
+    ! arguments: cmdlin - command line
 
     character, intent(out) :: cmdlin*127
 
@@ -519,10 +508,9 @@
 
     integer function countargs (lcarray)
 
-    !     routine: countargs
-    !     purpose: Count the number of non-blank arguments on the input line.
-    !     arguments: lcarray - character array of arguments.  There should be tocount non-blank entries
-    !                numc - dimension limit on lcarray
+    ! count the number of non-blank arguments on the input line.
+    ! arguments: lcarray - character array of arguments.  There should be tocount non-blank entries
+    !            numc - dimension limit on lcarray
 
     character(128), intent(in) :: lcarray(ncol)
 
@@ -547,10 +535,8 @@
 
     subroutine cptime (cputim)
 
-    !     routine: cptime
-    !     purpose: routine to calculate amount of computer time (cputim) in seconds used so far.
-    !              this routine will generally be different for each computer.
-    !     arguments: cputim (output) - elapsed cpu time
+    ! calculate amount of computer time (cputim) in seconds used so far
+    ! arguments: cputim (output) - elapsed cpu time
 
     real(eb), intent(out) :: cputim
 
@@ -562,9 +548,8 @@
 
     logical function doesthefileexist (checkfile)
 
-    !     routine: doesthefileexist
-    !     purpose: checks for the existence of given file name
-    !     arguments: checkfile - file name
+    ! checks for the existence of given file name
+    ! arguments: checkfile - file name
 
     character(*), intent(in) :: checkfile
     logical yesorno
@@ -587,8 +572,8 @@
 
     ! get the arguments used to call the main program
     ! arguments: exepath - path (without the name) to the folder where the executable resides
-    !                datapath - path (without a file name) to the folder where the project data file resides
-    !				 project - name of the project - this name cannot exceed 64 charcters. the total lenght of
+    !            datapath - path (without a file name) to the folder where the project data file resides
+    !		     project - name of the project - this name cannot exceed 64 charcters. the total lenght of
     !                          datapath + project cannot exceed 256 characters
 
     character(*), intent(out) :: exepath, datapath, project, extension
@@ -680,14 +665,12 @@
 
     subroutine mat2mult(mat1,mat2,idim,nr)
 
-    !     routine: mat2mult
-    !     purpose: given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix
-    !              mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
-    !     arguments: mat1 - matrix
-    !                mat2 - work array of same size as mat1
-    !                idim - actual dimensino limit on first subscript of mat1
-    !                nr - size of matrix
-    !                matiter - unused
+    ! given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix
+    ! mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
+    ! arguments: mat1 - matrix
+    !            mat2 - work array of same size as mat1
+    !            idim - actual dimensino limit on first subscript of mat1
+    !            nr - size of matrix
 
     integer, intent(in) :: idim, nr
     integer, intent(inout) :: mat1(idim,nr)
@@ -716,13 +699,12 @@
 
     subroutine indexi (nr,arrin,indx)
 
-    !     routine: indexi
-    !     purpose: this routines sorts the array arrin passively via the permuation array indx. the
-    !              elements arrin(indx(i)), i=1, ..., nr are in increasing order. this routine uses a
-    !              bubble sort.  it should not be used for large nr (nr>30), since bubble sorts are not efficient.
-    !     arguments: nr     number of elements in nr
-    !                arrin array to be passively sorted
-    !                indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
+    ! sorts the array arrin passively via the permuation array indx. the elements arrin(indx(i)), i=1, ..., nr 
+    ! are in increasing order. this routine uses a bubble sort.  it should not be used for large nr (nr>30), 
+    ! since bubble sorts are not efficient.
+    ! arguments: nr     number of elements in nr
+    !            arrin array to be passively sorted
+    !            indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
 
     integer, intent(in) :: nr, arrin(*)
     integer, intent(out) :: indx(*)
@@ -760,14 +742,13 @@
 
     subroutine interp (x,y,nr,t,icode,yint)
 
-    !     routine: indexi
-    !     purpose: routine interpolates a table of numbers found in the arrays, x and y.
-    !     arguments: x,y - arrays of size nr to be interpolated at x=t
-    !                icode - code to select how to extrapolate values if t is less than x(1) or greater than x(nr).
-    !                          if icode = 1 then yint = y(1) for t < x(1) and yint = y(nr) for t > x(nr).
-    !                          if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(nr)
-    !                              and by extrapolation if t < x(1) or    t > x(nr)
-    !                yint (output) - interpolated value of the y array at t
+    ! interpolates a table of numbers found in the arrays, x and y.
+    ! arguments: x,y - arrays of size nr to be interpolated at x=t
+    !            icode - code to select how to extrapolate values if t is less than x(1) or greater than x(nr).
+    !                      if icode = 1 then yint = y(1) for t < x(1) and yint = y(nr) for t > x(nr).
+    !                      if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(nr)
+    !                          and by extrapolation if t < x(1) or    t > x(nr)
+    !            yint (output) - interpolated value of the y array at t
 
     real(eb), intent(in) :: x(*), y(*), t
     integer, intent(in) :: nr, icode
@@ -845,9 +826,7 @@
 
     subroutine read_command_options
 
-    !     routine: read_command_options
-    !     purpose:  retrieve and process command line options and date
-    !     arguments: none
+    ! retrieve and process command line options and date
 
     ! unit numbers defined in read_command_options, openoutputfiles, readinputfiles
     !
@@ -940,18 +919,17 @@
 
     subroutine sstrng (string,wcount,sstart,sfirst,slast,svalid)
 
-    !     routine: sstrng
-    !     purpose: this routine finds positions of substrings within a character string.  a space, comma, - , (, or )
-    !              indicates the beginning or end of a substring. when called, the string is passed as an integer(choose)
-    !              along with the number of characters in the string(wcount) and a starting position(sstart).  beginning at
-    !              "sstart", the routine searches for a substring. if a substring is found, its first and last character
-    !              positions are returned along with a true value in "svalid"; otherwise "svalid" is set false.
-    !     arguments: string - the character string
-    !                wcount - number of characters in the string
-    !                sstart - beginning position in string to look for a substring
-    !                sfirst (output) - beginning position of the substring
-    !                slast - ending position of the substring
-    !                svalid - true if a valid substring is found
+    ! finds positions of substrings within a character string.  a space, comma, - , (, or )
+    !          indicates the beginning or end of a substring. when called, the string is passed as an integer(choose)
+    !          along with the number of characters in the string(wcount) and a starting position(sstart).  beginning at
+    !          "sstart", the routine searches for a substring. if a substring is found, its first and last character
+    !          positions are returned along with a true value in "svalid"; otherwise "svalid" is set false.
+    ! arguments: string - the character string
+    !            wcount - number of characters in the string
+    !            sstart - beginning position in string to look for a substring
+    !            sfirst (output) - beginning position of the substring
+    !            slast - ending position of the substring
+    !            svalid - true if a valid substring is found
 
     integer, intent(in) :: sstart, wcount
     character, intent(in) :: string(*)
@@ -999,9 +977,8 @@
 
     subroutine upperall(string)
 
-    !     routine: upperall
-    !     purpose: convert a string to upper case
-    !     arguments: string - string to be converted
+    ! convert a string to upper case
+    ! arguments: string - string to be converted
 
     character, intent(inout) :: string*(*)
 
@@ -1023,9 +1000,8 @@
 
     integer function funit (io)
 
-    !     routine: funit
-    !     purpose: finds first avalable i/o unit starting at unit number io
-    !     arguments: io - beginning unit number for search
+    ! finds first avalable i/o unit starting at unit number io
+    ! arguments: io - beginning unit number for search
 
     integer, intent(in) :: io
 
@@ -1050,10 +1026,9 @@
 
     subroutine opnotpt (filname, iounit)
 
-    !     routine: opnotpt
-    !     purpose: opens a file using the extension to distinguish previous open files
-    !     arguments: filname - base filename for file to be opened
-    !                iounit - desired unit number for file
+    ! opens a file using the extension to distinguish previous open files
+    ! arguments: filname - base filename for file to be opened
+    !            iounit - desired unit number for file
 
     integer, intent(in) :: iounit
     character, intent(in) :: filname*(*)
@@ -1085,11 +1060,10 @@
 
     subroutine xerbla ( srname, info )
 
-    !     routine: xerbla
-    !     purpose: opens a file using the extension to distinguish previous open files
-    !     arguments: srname - specifies the name of the routine which called xerbla
-    !                info - on entry, info specifies the position of the invalid parameter in the
-    !                       parameter-list of the calling routine.
+    ! opens a file using the extension to distinguish previous open files
+    ! arguments: srname - specifies the name of the routine which called xerbla
+    !            info - on entry, info specifies the position of the invalid parameter in the
+    !                   parameter-list of the calling routine.
 
     integer, intent(in) :: info
     character(6), intent(in) :: srname
@@ -1105,11 +1079,10 @@
 
     logical function lsame ( ca, cb )
 
-    !     routine: lsame
-    !     purpose: tests if ca is the same letter as cb regardless of case. cb is assumed to be an upper
-    !              case letter. lsame returns .true. if ca is either the same as cb or the equivalent lower case letter.
-    !     arguments: ca - first character
-    !                cb - second character
+    ! tests if ca is the same letter as cb regardless of case. cb is assumed to be an upper
+    !          case letter. lsame returns .true. if ca is either the same as cb or the equivalent lower case letter.
+    ! arguments: ca - first character
+    !            cb - second character
 
     character(1), intent(in) :: ca, cb
 
@@ -1153,15 +1126,15 @@
 
     module opening_fractions
 
-    !	The following functions implement the simple open/close function for vents.
-    !	This is done with a simple, linear interpolation.
-    !   The opening arrays are built into the vent data structures and are of the form
+    ! implement the simple open/close function for vents.
+    ! This is done with a simple, linear interpolation.
+    ! The opening arrays are built into the vent data structures and are of the form
     !		(1) Is start of time to change
     !		(2) Is the initial fraction (set in HVENT, VVENT and MVENT)
     !		(3) Is the time to complete the change, Time+Decay_time, and
     !		(4) Is the final fraction
 
-    !	The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
+    ! The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
 
     use precision_parameters
     use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux

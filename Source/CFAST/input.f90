@@ -39,7 +39,7 @@
 
     subroutine read_input_file ()
 
-    !	Read the input file and set up the data for processing
+    ! read the input file and set up the data for processing
 
     implicit none
 
@@ -423,10 +423,9 @@
     
     use namelist_data
 
-    !     get the paths and project base name open the input file for reading
-    ! 	         delete the output files
-    ! 	         open the log file
-    ! 	         call the input routines
+    ! get the paths and project base name open the input file for reading
+    ! delete the output files
+    ! open the log file
 
     integer :: lp, ld, le, ios
     character(len=256) :: revision, revision_date, compile_date, buf

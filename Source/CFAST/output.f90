@@ -36,8 +36,7 @@ module output_routines
 
     subroutine output_version (iunit)
 
-    !	a routine to put the header information in the output file.
-    !	we assume the file is open
+    ! put the header information in the output file. we assume the file is open
 
     integer, intent(in) :: iunit
     integer imajor, iminor, iminorrev
@@ -62,6 +61,8 @@ module output_routines
 ! --------------------------- splitversion -------------------------------------------
 
     subroutine splitversion (version,imajor,iminor,iminorrev)
+    
+    ! get program version as integers
 
     integer, intent(in) :: version
     integer, intent(out) :: imajor,iminor,iminorrev
@@ -83,7 +84,7 @@ module output_routines
 
     subroutine output_initial_conditions
 
-    !     Description:  Output initial test case description
+    ! output initial test case description
 
     call output_version (iofilo)
 
@@ -108,15 +109,15 @@ module output_routines
 
     subroutine output_results(time)
 
-    !     Description:  Output the results of the simulation at the current time
-    !                results_layers is the basic environment
-    !                results_fires information on fires
-    !                results_targets targets and walls - temperature, radiation and convective flux
-    !                results_detectors sprinkler and detector information
-    !                RSLTHALL track the nose of the gravity wave
-    !                results_species species
+    ! output the results of the simulation at the current time
+    !   results_layers     basic environment
+    !   results_fires      fires
+    !   results_targets    targets and walls - temperature, radiation and convective flux
+    !   results_detectors  sprinkler and detector information
+    !   results_species    species
+    !   results_vent_flows wall, ceiling/floor, and mechanical vents
 
-    !     Arguments: TIME  Current time (s)
+    ! argument: time  current simulation time (s)
 
     real(eb), intent(in) :: time
 
@@ -144,7 +145,7 @@ module output_routines
 
     subroutine results_layers
 
-    !     Description:  Output the 2 layer environment at the current time
+    ! output the 2 layer environment at the current time
 
     integer :: icomp, izzvol
     type(room_type), pointer :: roomptr
@@ -182,7 +183,7 @@ module output_routines
 
     subroutine results_fires
 
-    ! Output the fire environment at the current time
+    ! output the fire environment at the current time
 
     integer i, icomp
     real(eb) :: fheight, xems, pyrolysis_rate, xqf, xqupr, xqlow
@@ -250,7 +251,7 @@ module output_routines
 
     subroutine results_species
 
-    !     Description:  Output the layer and wall species at the current time
+    ! output the layer and wall species at the current time
 
     character(10), dimension(ns_mass+4) :: stype = &
         (/character(10) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'OD_F', 'OD_S', 'CT', ' TS'/)
@@ -312,7 +313,7 @@ module output_routines
 
     subroutine results_vent_flows ()
 
-    !     Description:  Output the vent flow at the current time
+    ! output the vent flow at the current time
 
     integer :: i, ifrom, ito
     real(eb), dimension(8) :: flow
@@ -432,7 +433,7 @@ module output_routines
 
     subroutine results_compressed (iounit)
 
-    !     Description:  Output a compressed output for 80 column screens
+    ! output a compressed output for 80 column screens
 
     integer, intent(in) :: iounit
 
@@ -482,8 +483,8 @@ module output_routines
 
     subroutine results_targets (itprt)
 
-    !     description:  output the temperatures and fluxes on surfaces and targets at the current time
-    !                itprt 1 if target printout specifically called for, 0 otherwise
+    ! output the temperatures and fluxes on surfaces and targets at the current time
+    ! argument: itprt 1 if target printout specifically called for, 0 otherwise
 
     integer, intent(in) :: itprt
 
@@ -553,7 +554,7 @@ module output_routines
 
     subroutine results_detectors
 
-    !     Description:  Output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
+    ! output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
 
     integer :: i, iroom, itype
     real(eb) :: cjetmin, zdetect, tlay, tjet, vel, obs, tlink
@@ -609,7 +610,7 @@ module output_routines
 
     subroutine output_initial_overview
 
-    !     description:  output initial test case overview
+    ! output initial test case overview
 
     write (iofilo,5000)
     write (iofilo,5010) nrm1, n_hvents, n_vvents, n_mvents
@@ -626,7 +627,7 @@ module output_routines
 
     subroutine output_initial_ambient_conditions
 
-    !     Description:  Output initial test case ambient conditions
+    ! output initial test case ambient conditions
 
     write (iofilo,5000) interior_ambient_temperature-kelvin_c_offset, interior_abs_pressure + pressure_offset, &
        exterior_ambient_temperature-kelvin_c_offset, exterior_abs_pressure + pressure_offset
@@ -644,7 +645,7 @@ module output_routines
 
     subroutine output_initial_compartments
 
-    !     Description:  Output initial test case geometry
+    ! output initial test case geometry
 
     integer i
     type(room_type), pointer :: roomptr
@@ -671,7 +672,7 @@ module output_routines
 
     subroutine output_initial_vents
 
-    !     Description:  Output initial test case vent connections
+    ! output initial test case vent connections
 
     integer :: i, j, iramp
     character :: ciout*14, cjout*14, csout*6, crout*10, ctrigger*4
@@ -866,7 +867,7 @@ module output_routines
 
     subroutine output_initial_thermal_properties
 
-    !     description:  output initial test case thermal properties
+    ! output initial test case thermal properties
 
     integer i, j
     type(room_type), pointer :: roomptr
@@ -918,9 +919,8 @@ module output_routines
 
     subroutine output_initial_fires
 
-    !     routine: output_initial_fires
-    !     purpose: This routine outputs the fire specification for all the object fires
-    !     Arguments: none
+    ! outputs the fire specification for all the object fires
+    ! arguments: none
 
     integer :: io, i, is
     real(eb) :: y_hcn, y_hcl
@@ -973,7 +973,7 @@ module output_routines
 
     subroutine output_initial_targets
 
-    !      description:  output initial test case target specifications
+    ! output initial test case target specifications
 
     integer :: itarg, j
 
@@ -998,7 +998,7 @@ module output_routines
 
     subroutine output_initial_detectors
 
-    !      description:  output initial test case target specifications
+    ! output initial test case target specifications
 
     integer :: idtect, iroom, itype
     character :: outbuf*200
@@ -1045,7 +1045,7 @@ module output_routines
 
     subroutine flwout (outbuf,flow1,flow2,flow3,flow4,flow5,flow6,flow7,flow8)
 
-    !     description:  stuff the flow output after blanking appropriate zeros
+    ! stuff the flow output after blanking appropriate zeros
 
     real(eb), intent(in) :: flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8
     character, intent(out) :: outbuf*(*)

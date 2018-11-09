@@ -24,6 +24,7 @@
     integer, parameter :: mxtabls = mxfires             ! maximum number of table inputs, currently only used for fires
     integer, parameter :: mxtablcols = ns+2             ! maximum columns in a table of fire inputs
     real(eb), parameter :: o2f = 1.31e7_eb              ! HRR by oxygen consumption constant in MJ/kg
+    real(eb), parameter :: t_max = 900._eb              ! maximum flame temperature
 
     integer, parameter :: mxthrmp = mxitems     ! maximum number of thermal properties
     integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names

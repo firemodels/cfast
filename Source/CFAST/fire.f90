@@ -1035,7 +1035,7 @@ module fire_routines
     real(eb), intent(out) :: tplume, uplume
 
     real(eb), parameter :: cpg = cp/1000._eb ! correlation uses different units
-    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u, t_max, u_max
+    real(eb) :: t_inf, rho, qdot_c, qstar, z0, z0_prime, z_flame, deltaz, d, t_excess, sigma_deltat, sigma_u, u_max
 
     ! default is for temperature to be the layer temperature at the desired location
     if (zin<=zlayer) then
@@ -1062,7 +1062,6 @@ module fire_routines
         z_flame = max(0.1_eb,d*(-1.02_eb+3.7_eb*qstar**0.4_eb))
 
         ! plume temperature
-        t_max = 900._eb
         if (zfire<=zlayer.and.zin>zlayer) then
             ! fire is in lower and and target point is in upper layer
             z0_prime = zlayer-(tu/tl)**0.6_eb * (zlayer-z0)

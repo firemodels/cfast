@@ -7,7 +7,6 @@ module spreadsheet_routines
     use opening_fractions, only : get_vent_opening
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
-    use compartment_routines, only: room_connection_distance
 
     use precision_parameters
     use cenviro
@@ -24,24 +23,9 @@ module spreadsheet_routines
 
     private
 
-    public output_connections, output_spreadsheet, output_spreadsheet_smokeview
+    public output_spreadsheet, output_spreadsheet_smokeview
 
     contains
-    
-! --------------------------- output_connections -------------------------------------------
-    
-    subroutine output_connections
-    
-    integer i, j
-    type(room_type), pointer :: roomptr
-    
-    call room_connection_distance
-    call ssheaders_connections
-    do i = 1, nrm1
-        roomptr => roominfo(i)
-        write (20, '(2a,16384(i0,a))') trim(roomptr%name),',',(roomptr%room_connections(j),',',j=1,nr)
-    end do
-    end subroutine output_connections
     
 
 ! --------------------------- output_spreadsheet -------------------------------------------

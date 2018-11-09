@@ -28,11 +28,9 @@ module hflow_routines
 
     subroutine horizontal_flow(tsec,epsp,uflw_hf)
 
-    !     routine: horizontal_flow
-    !     purpose: physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
+    !     physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
     !     it returns rates of mass and energy flows into the layers from all vents in the building.
-    !     revision: $revision: 461 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+
     !     arguments: tsec    current simulation time (s)
     !                epsp    pressure error tolerance
     !                uflw_hf change in mass and energy for each layer of each compartment via flow through horizontal vents
@@ -171,7 +169,7 @@ module hflow_routines
     subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas,vasa)
 
     !     routine: spill_plume
-    !     purpose:
+    !     purpose: calculate lume entrainment for a door mixing
     !     arguments: dirs12 - a measure of the direction of the room 1 to room flow in each slab
     !                yslab  - slab heights in rooms 1,2 above absolute reference elevation [m]
     !                width  - slab width [m]
@@ -307,38 +305,38 @@ module hflow_routines
 
     subroutine ventw(zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,epsp,cslab,pslab,qslab, &
         vss,vsa,vas,vaa,dirs12,dpv1m2,rslab,tslab,yslab,yvelev,xmslab,nslab)
-    !     routine: vent
-    !     purpose: calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
-    !              constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing
-    !              the two-layer environment in each of the two rooms and other input data calculated in subroutine comwl1.
-    !     arguments: zflor - height of floor above absolute reference elevation [m]
-    !                zlay  - height of layer above absolute reference elevation [m]
-    !                tu    - upper layer temperature [k]
-    !                tl    - lower layer temperature [k]
-    !                denl  - lower layer density [kg/m**3]
-    !                denu  - upper layer density [kg/m**3]
-    !                pflor - pressure at floor above absolute reference pressure [kg/(m*s**2) = pascal]
-    !                yvtop - elevation of top of vent above absolute reference elevation [m]
-    !                yvbot - elevation of bottom of vent above absolute reference elevation [m]
-    !                avent - area of the vent [m**2]
-    !                dp1m2 - pressure in room 1 - pressure in room 2 at elevations yelev [kg/(m*s**2) = pascal]
-    !                cp    - specific heat [w*s/(kg*k)]
-    !                conl  - concentration of each product in lower layer [unit of product/(kg layer)]
-    !                conu  - concentration of each product in upper layer [unit of product/(kg layer)]
-    !                mxfslab- maximum number of slabs currently available
-    !                epsp  - error tolerance for pressures at floor
-    !                cslab (output) - concentration of other products in each slab [unit product/(kg slab)]
-    !                pslab (output) - amount of other products in each slab [unit product/s]
-    !                qslab (output) - enthalpy flow rate in each slab [w]
-    !                dirs12 (output) - a measure of the direction of the room 1 to room 2 flow in each slab
-    !                rslab (output) - density of the flow in each slab [kg/m**3]
-    !                tslab (output) - absolute temperature of the flow in each slab [k]
-    !                yslab (output) - elevations above the absolute reference elevation of the centroids of
-    !                                 momentum of each slab [m]
-    !                yvelev - elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes [m]
-    !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
-    !                n_velev - number of unique elevations delineating slabs
-    !                nslab  - number of slabs between bottom and top of the vent
+    
+    ! calculation of the flow of mass, enthalpy, oxygen and other products of combustion through a vertical,
+    !   constant-width vent in a wall segment common to two rooms. the subroutine uses input data describing
+    !   the two-layer environment in each of the two rooms and other input data calculated in subroutine comwl1.
+    !   arguments: zflor - height of floor above absolute reference elevation [m]
+    !               zlay  - height of layer above absolute reference elevation [m]
+    !               tu    - upper layer temperature [k]
+    !               tl    - lower layer temperature [k]
+    !               denl  - lower layer density [kg/m**3]
+    !               denu  - upper layer density [kg/m**3]
+    !               pflor - pressure at floor above absolute reference pressure [kg/(m*s**2) = pascal]
+    !               yvtop - elevation of top of vent above absolute reference elevation [m]
+    !               yvbot - elevation of bottom of vent above absolute reference elevation [m]
+    !               avent - area of the vent [m**2]
+    !               dp1m2 - pressure in room 1 - pressure in room 2 at elevations yelev [kg/(m*s**2) = pascal]
+    !               cp    - specific heat [w*s/(kg*k)]
+    !               conl  - concentration of each product in lower layer [unit of product/(kg layer)]
+    !               conu  - concentration of each product in upper layer [unit of product/(kg layer)]
+    !               mxfslab- maximum number of slabs currently available
+    !               epsp  - error tolerance for pressures at floor
+    !               cslab (output) - concentration of other products in each slab [unit product/(kg slab)]
+    !               pslab (output) - amount of other products in each slab [unit product/s]
+    !               qslab (output) - enthalpy flow rate in each slab [w]
+    !               dirs12 (output) - a measure of the direction of the room 1 to room 2 flow in each slab
+    !               rslab (output) - density of the flow in each slab [kg/m**3]
+    !               tslab (output) - absolute temperature of the flow in each slab [k]
+    !               yslab (output) - elevations above the absolute reference elevation of the centroids of
+    !                                momentum of each slab [m]
+    !               yvelev - elevations above the absolute reference elevations of vent boundaries, layers, and neutral planes [m]
+    !               xmslab - magnitude of the mass flow rate in slabs [kg/s]
+    !               n_velev - number of unique elevations delineating slabs
+    !               nslab  - number of slabs between bottom and top of the vent
 
     integer, intent(in) :: mxfslab
     integer, intent(out) :: nslab, dirs12(*)

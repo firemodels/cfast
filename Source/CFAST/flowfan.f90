@@ -25,8 +25,8 @@ module mflow_routines
 
     subroutine mechanical_flow (tsec, epsp, uflw_mf, uflw_filtered)
 
-    !     physical interface routine to calculate flow through all forced vents (mechanical flow).
-    !     it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
+    ! physical interface routine to calculate flow through all forced vents (mechanical flow).
+    ! it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), uflw_filtered(mxrooms,ns+2,2)
@@ -165,7 +165,7 @@ module mflow_routines
 
     real(eb) function mv_fan (ventptr, epsp, fraction)
     
-    !   calculates the fan flow in m^3/s.  At the moment, it's just a constant flow fan
+    ! calculates the fan flow in m^3/s.  At the moment, it's just a constant flow fan
 
     type(vent_type), intent(in) :: ventptr
     real(eb), intent(in) :: epsp, fraction

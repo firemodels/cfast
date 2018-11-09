@@ -47,14 +47,9 @@ module solve_routines
 
     subroutine initial_solution(t,pdold,pdzero,rpar,ipar)
 
-    !     Routine: Initial_solution
-    !     Purpose: This routine determines an initial solution to
-    !              the zone fire modeling equations.  A non-linear
-    !              algebraic solver (SNSQE) is used to calculate initial
-    !              room pressures that make dP/dt zero.  If an HVAC system
-    !              is modeled then HVAC node pressures and hvac duct
-    !              temperatures are also determined to force mass and energy
-    !              conservation.
+    ! determines an initial solution to the zone fire modeling equations.  A non-linear
+    ! algebraic solver (SNSQE) is used to calculate initial room pressures that make dP/dt zero.  If an HVAC system
+    ! is modeled then HVAC node pressures and hvac duct temperatures are also determined to force mass and energy conservation.
 
     integer, intent(in) :: ipar(*)
     real(eb), intent(in) :: t,pdzero(*), rpar(*)
@@ -132,10 +127,7 @@ module solve_routines
 
     subroutine gres (nnn,hvpsolv,deltamv,iflag)
 
-    !     routine: gres
-    !     purpose: calculates residuals for initial solution by snsqe
-    !     revision: $revision: 352 $
-    !     revision date: $date: 2012-02-02 14:56:39 -0500 (thu, 02 feb 2012) $
+    !  calculates residuals for initial solution by snsqe
     !     arguments: nnn
     !                hvpsolv
     !                deltamv
@@ -192,9 +184,8 @@ module solve_routines
 
     subroutine solve_simulation (tstop)
 
-    !     Routine: solve_simulaiton
-    !     Purpose: main solution loop for the model
-    !     Arguments: TSTOP   The final time to which CFAST should run
+    ! main solution loop for the model
+    ! Arguments: TSTOP   The final time to which CFAST should run
 
     !     The structure of the solver array is
 
@@ -664,8 +655,7 @@ module solve_routines
 
     subroutine update_solution(n_odes, nequals,  t, told, p, pold, pdnew, pdold)
 
-    !     routine: update_solution
-    !     purpose: update solution returned by dassl
+    ! update solution returned by dassl
 
     integer, intent(in) :: n_odes, nequals
     real(eb), intent(in) :: t, told, pdnew(*)
@@ -701,8 +691,7 @@ module solve_routines
 
     subroutine keyboard_interaction (t,icode,tpaws,tout,ieqmax)
 
-    !     routine: keyboard_interaction
-    !     purpose: keyboard routine for user interaction during simulation
+    ! keyboard routine for user interaction during simulation
 
     integer, intent(in) :: ieqmax
     real(eb), intent(in) :: t
@@ -765,8 +754,7 @@ module solve_routines
 
     logical function output_interactive_help()
 
-    !     Routine: output_interactive_help
-    !     Purpose: quick output of keyboard shortcuts available during simulaiton
+    ! quick output of keyboard shortcuts available during simulaiton
 
     integer(2) :: ch, hit
     integer :: ii
@@ -796,8 +784,7 @@ module solve_routines
 
     subroutine set_info_flags (info,rwork)
 
-    !     routine: set_info_flags
-    !     purpose: update solution flags for dassl solver
+    ! update solution flags for dassl solver
 
     integer, intent(out) :: info(*)
     real(eb), intent(out) :: rwork(*)
@@ -829,38 +816,29 @@ module solve_routines
 
     subroutine calculate_residuals (tsec,y_vector,yprime_vector,f_vector,ires,rpar,ipar)
 
-    !     Purpose: Calculates the residual F(t,y,dy/dt) for CFAST
-    !              differential and algebraic equations.  For the gas
-    !              differential equations (pressure, layer volume,
-    !              upper/lower layer temperature) F(t,y,dy/dt) takes
-    !              the form F(t,y,dy/dt) = dy/dt - f(t,y) where f(t,y) is
-    !              related to the conservation of mass and and energy.
-    !              For the wall temperature equations, F is just Fourier's
-    !              law taking the form of
-    !              F(t,y,dy/dt) = q''(t,y) + K dT/dx
-    !              where q'' is the flux striking the wall, K is the wall's
-    !              thermal conductivity and dT/dx is the surface wall
-    !              temperature gradient.
-    !     Arguments: tsec    Current simulation time (T above in s)
-    !                y_vector Current guess at solution vector (Y above)
-    !                yprime_vector Current guess at derivative of solution
-    !                        vector (Y' above)
-    !                f_vector Residual or value of F(t,y,dy/dt)
-    !                ires    Outputs:  IRES    Integer flag which is always equal to
-    !                        zero on input. calculate_residuals should alter IRES
-    !                        only if it encounters an illegal value of Y or
-    !                        a stop condition. Set IRES = -1 if an input
-    !                        value is illegal, and DDASSL will try to solve
-    !                        the problem without getting IRES = -1. If
-    !                        IRES = -2, DASSL return control to the calling
-    !                        program with IDID = -11.
-    !                rpar    real parameter arrays
-    !                ipar    integer parameter arrays
-    !                        These are used for communication between solve_simulation and
-    !                        calculate_residuals via DASSL. They are not altered by DASSL.
-    !                        Currently, only IPAR is used in calculate_residuals to pass
-    !                        a partial/total flag for solution of the
-    !                        species equations.
+    ! Calculates the residual F(t,y,dy/dt) for CFAST differential and algebraic equations.  
+    ! For the gas differential equations (pressure, layer volume, upper/lower layer temperature) F(t,y,dy/dt) takes
+    ! the form F(t,y,dy/dt) = dy/dt - f(t,y) where f(t,y) is related to the conservation of mass and and energy.
+    
+    ! For the wall temperature equations, F is just Fourier's law taking the form of
+    !     F(t,y,dy/dt) = q''(t,y) + K dT/dx
+    ! where q'' is the flux striking the wall, K is the wall's thermal conductivity and dT/dx is the surface wall
+    ! temperature gradient.
+    ! arguments: tsec    Current simulation time (T above in s)
+    !            y_vector Current guess at solution vector (Y above)
+    !            yprime_vector Current guess at derivative of solution vector (Y' above)
+    !            f_vector Residual or value of F(t,y,dy/dt)
+    !            ires    
+    ! Outputs:  ires Integer flag which is always equal to zero on input. calculate_residuals should alter IRES
+    !                   only if it encounters an illegal value of Y or a stop condition. Set IRES = -1 if an input
+    !                   value is illegal, and DDASSL will try to solve the problem without getting IRES = -1. If
+    !                   IRES = -2, DASSL return control to the calling program with IDID = -11.
+    !           rpar    real parameter arrays
+    !           ipar    integer parameter arrays
+    !                   These are used for communication between solve_simulation and
+    !                   calculate_residuals via DASSL. They are not altered by DASSL.
+    !                   Currently, only IPAR is used in calculate_residuals to pass
+    !                   a partial/total flag for solution of the species equations.
 
     real(eb), intent(in) :: tsec, y_vector(*), yprime_vector(*), rpar(*)
     integer, intent(in) :: ipar(*)
@@ -1137,19 +1115,14 @@ module solve_routines
 
     subroutine update_data (y_vector,iflag)
 
-    !     routine: update_data (datacopy)
-    !     purpose: calculate environment variables from the solver vector
+    ! calculate environment variables from the solver vector
 
-    !     arguments: y_vector   solver vector
-    !                iflag  action flag:
-    !     iflag = constvar ==> constant data (data that does not change
-    !                          with time)
-    !     iflag = odevara  ==> ode variables: pressure, temperature and upper
-    !                          layer volume
-    !     iflag = odevarb  ==> species data and wall temperature profile.
-    !                          use yvector_old and pdold to estimate species
-    !     iflag = odevarc  ==> species data and wall temperature profile.
-    !                          use pdif array for species
+    ! arguments: y_vector   solver vector
+    !            iflag  action flag:
+    ! iflag = constvar ==> constant data (data that does not change with time)
+    ! iflag = odevara  ==> ode variables: pressure, temperature and upper layer volume
+    ! iflag = odevarb  ==> species data and wall temperature profile. use yvector_old and pdold to estimate species
+    ! iflag = odevarc  ==> species data and wall temperature profile. use pdif array for species
 
     integer, intent(in) :: iflag
     real(eb), intent(in) :: y_vector(*)

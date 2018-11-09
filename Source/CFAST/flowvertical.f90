@@ -25,11 +25,10 @@ module vflow_routines
 
     subroutine vertical_flow (tsec,epsp,uflw_vf)
 
-    !     routine: vertical_flow
-    !     purpose: interface between cfast and the vertical vent physical routines.
-    !     arguments: tsec    current simulation time
-    !                epsp    pressure error tolerance
-    !                uflw_vf change in mass and energy for each layer of each compartment via flow through vertical vents
+    ! interface between cfast and the vertical vent physical routines.
+    ! arguments: tsec    current simulation time
+    !            epsp    pressure error tolerance
+    !            uflw_vf change in mass and energy for each layer of each compartment via flow through vertical vents
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_vf(mxrooms,ns+2,2)
@@ -186,21 +185,20 @@ module vflow_routines
 
     subroutine ventcf (itop, ibot, avent, nshape, epsp, xmvent, vvent, tmvent)
 
-    !     routine: ventcf
-    !     purpose: this routine calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining
-    !     an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of
-    !     inside rooms and the uniform environment in outside spaces.
-    !     arguments:itop: top room number (physically with respect to the second compartment)
-    !               ibot: bottom room number
-    !               avent: area of the vent [m**2]
-    !               nshape: number characterizing vent shape: 1 = circle, 2 = square
-    !               epsp: error tolerance for dpref [dimensionless]
-    !               vvent(i)    i = 1, velocity of flow from room ibot to room itop
-    !                           i = 2, velocity of flow from toom itop to room ibot
-    !               xmvent(i)   i = 1, mass flow from room ibot to room itop
-    !                           i = 2, mass flow from room itop to room ibot
-    !               tmvent(i)   i = 1, temperature in layer next to vent in top room
-    !                           i = 2, temperature in layer next to vent in bottom room
+    ! calculates the flow of mass, enthalpy, and products of combustion through a horizontal vent joining
+    ! an upper space 1 to a lower space 2. the subroutine uses input data describing the two-layer environment of
+    ! inside rooms and the uniform environment in outside spaces.
+    ! arguments: itop: top room number (physically with respect to the second compartment)
+    !            ibot: bottom room number
+    !            avent: area of the vent [m**2]
+    !            nshape: number characterizing vent shape: 1 = circle, 2 = square
+    !            epsp: error tolerance for dpref [dimensionless]
+    !            vvent(i)    i = 1, velocity of flow from room ibot to room itop
+    !                        i = 2, velocity of flow from toom itop to room ibot
+    !            xmvent(i)   i = 1, mass flow from room ibot to room itop
+    !                        i = 2, mass flow from room itop to room ibot
+    !            tmvent(i)   i = 1, temperature in layer next to vent in top room
+    !                        i = 2, temperature in layer next to vent in bottom room
 
     integer, intent(in) :: itop, ibot, nshape
     real(eb), intent(in) :: avent, epsp

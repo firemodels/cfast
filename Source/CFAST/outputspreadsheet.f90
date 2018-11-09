@@ -49,7 +49,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_normal (time)
 
-    ! This routine writes to the {project}_n.csv file, the compartment information and the fires
+    !  writes to the {project}_n.csv file, the compartment information and the fires
 
     real(eb), intent(in) :: time
 
@@ -142,7 +142,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_flow (time)
 
-    !	Routine to output the flow data to the flow spreadsheet {project}_f.csv
+    ! output the flow data to the flow spreadsheet {project}_f.csv
 
     integer, parameter :: maxoutput = mxhvents*4
 
@@ -262,7 +262,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_target (time)
 
-    !     Output the temperatures and fluxes on surfaces and targets at the current time
+    ! output the temperatures and fluxes on surfaces and targets at the current time
 
     integer, parameter :: maxoutput=4*mxrooms+27*mxtarg+4*mxdtect
     real(eb), intent(in) :: time
@@ -386,7 +386,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_species (time)
 
-    !	Write out the species to the spread sheet file
+    ! write out the species to the spreadsheet file
 
     integer, parameter :: maxhead = 1+2*ns*mxrooms
     real(eb), intent(in) :: time
@@ -447,7 +447,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_species_mass (time)
 
-    !	Write out the species mass to the spread sheet file
+    ! write out the species mass to the spreadsheet file
 
     integer, parameter :: maxhead = 1+2*ns*mxrooms
     real(eb), intent(in) :: time
@@ -501,7 +501,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_smokeview (time)
 
-    ! This routine writes to the {project}_zone.csv file, the smokeview information
+    ! writes to the {project}_zone.csv file, the smokeview information
 
     integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires+mxhvents*(4+10*mxfslab)+10*mxvvents+12*mxmvents
     real(eb), intent(in) :: time
@@ -631,7 +631,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_diag (time)
 
-    ! This routine writes to the {project}_d.csv file, the diagnostic parameters
+    ! writes to the {project}_d.csv file, the diagnostic parameters
 
     real(eb), intent(in) :: time
 

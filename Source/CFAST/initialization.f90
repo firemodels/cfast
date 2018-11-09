@@ -63,7 +63,7 @@ module initialization_routines
 
     subroutine initialize_ambient ()
 
-    ! this routine computes initializations for variables related to ambient conditions.  
+    ! computes initializations for variables related to ambient conditions.  
     ! this initialization is done after we read in the input file
 
     real(eb) :: dummy(1) = (/0.0_eb/), xxpmin, tdspray, tdrate, scale
@@ -198,9 +198,7 @@ module initialization_routines
 
     subroutine initialize_memory
 
-    !     routine: initialize_memory
-    !     purpose: This routine initializes the main memory
-    !     Arguments: none
+    !     initializes main memory
 
     integer i
     type(room_type), pointer :: roomptr
@@ -393,7 +391,7 @@ module initialization_routines
     
     integer i, lsp
 
-    !     this routine initializes the fires
+    ! initializes fires
 
     lower_o2_limit = default_lower_oxygen_limit
     
@@ -446,9 +444,7 @@ module initialization_routines
 
     subroutine initialize_species
 
-    !     routine: initialize_species
-    !     purpose: This routine initializes variables associated with species 
-    !     Arguments: none
+    ! initializes variables associated with species
 
     real(eb) :: xt, xtemp, xh2o, totmass, initialmass(2,mxrooms,ns)
     integer i, j, k, ip, iprod, isof, lsp
@@ -523,8 +519,7 @@ module initialization_routines
 
     subroutine inittarg ()
 
-    !     routine: inittarg
-    !     purpose: Initialize target data structures
+    ! initialize target data structures
 
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: itarg, iroom, iwall, iwall2
@@ -628,9 +623,9 @@ module initialization_routines
 
     subroutine initialize_walls (tstop)
 
-    !     purpose: This routine initializes data structures associated
-    !             with walls and targets
-    !     Arguments: TSTOP
+    ! initializes data structures associated with walls and targets
+    !     Arguments: tstop simulation time. used to estimate a characteristic thermal penetration time and make sure
+    !                      explicit calculation will converge
 
     !        kw = thermal conductivity
     !        cw = specific heat (j/kg)
@@ -790,10 +785,10 @@ module initialization_routines
 
     subroutine offset ()
 
-    ! purpose: offset in the following context is the beginning of the vector for that particular variable minus one.
-    !          thus, the actual pressure array goes from nofp+1 to nofp+nrm1.  the total number of equations to be considered
-    !          is nequals, and is the last element in the last vector. each physical interface routine is responsible for
-    !          the count of the number of elements in the vector for which it is resonsible.
+    ! offset in the following context is the beginning of the vector for that particular variable minus one.
+    !   thus, the actual pressure array goes from nofp+1 to nofp+nrm1.  the total number of equations to be considered
+    !   is nequals, and is the last element in the last vector. each physical interface routine is responsible for
+    !   the count of the number of elements in the vector for which it is resonsible.
 
     ! this set of parameters is set by nputp and is kept in the environment module cenviro.
     ! to index a variable, the list is something like (for temperature in this case)
@@ -858,8 +853,7 @@ module initialization_routines
 
     subroutine wset (numnode,nslab,tstop,walldx,wsplit,wk,wspec,wrho,wthick,wlen,wtemp,tamb,text)
 
-    ! routine: wset
-    ! purpose: initializes temperature profiles, breakpoints used in wall conduction calculations.
+    ! initializes temperature profiles, breakpoints used in wall conduction calculations.
     ! arguments: numnode  number of nodes in each slab
     !            nslab    number of slabs
     !            tstop    final simulation time

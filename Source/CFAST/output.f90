@@ -1346,7 +1346,6 @@ module output_routines
 
     ! the spread sheet files
     if (ss_out_interval>0) then
-        if (validation_flag) open (unit=20, file=ssconnections,form='formatted')
         open (unit=21, file=ssnormal,form='formatted')
         open (unit=22, file=ssflow,form='formatted')
         open (unit=23, file=ssspecies,form='formatted')

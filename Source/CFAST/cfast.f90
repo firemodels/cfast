@@ -31,7 +31,6 @@
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions
-    use spreadsheet_routines, only : output_connections
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
     use radiation_routines, only : radiation
@@ -85,7 +84,6 @@
     call initialize_walls (tstop)
 
     call output_initial_conditions
-    if (validation_flag) call output_connections
 
     call cptime(tbeg)
     call solve_simulation (tstop)
@@ -106,10 +104,9 @@
 
     subroutine cfastexit (name, errorcode)
 
-    !     routine: cfastexit
-    !     purpose: routine is called when CFAST exits, printing an error code if necessary
-    !     arguments: name - routine name calling for exit ... at this point, it's always "CFAST"
-    !                errorcode - numeric code indicating reason for an error exit.  0 for a normal exit
+    ! called when CFAST exits, printing an error code if necessary
+    ! arguments: name - routine name calling for exit ... at this point, it's always "CFAST"
+    !            errorcode - numeric code indicating reason for an error exit.  0 for a normal exit
 
     use output_routines, only : deleteoutputfiles
     use setup_data

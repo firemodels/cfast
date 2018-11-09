@@ -100,33 +100,32 @@ module fire_routines
         x_fire_position, y_fire_position, z_fire_position, fire_area, entrainment_rate, plume_flow_rate, hrr, &
         species_mass_rate, hrr_c, hrr_r, hrr_lower, hrr_upper)
 
-    !     routine: do_fire
-    !     purpose: do heat release and species from a fire
-    !     arguments:  ifire: fire number (ifire=0 is the main fire)
-    !                 iroom: room containing the fire
-    !                 pyrolysis_rate: pyrolysis rate of the fire (kg/s)
-    !                 room_height: height of the room (m)
-    !                 room_width: breadth of the room (m)
-    !                 room_depth: Depth of the room (m)
-    !                 hoc: current heat of combustion (j/kg)
-    !                 y_soot, y_soot_flaming, y_soot_smolder, y_co, y_trace: species yields for soot, CO, and trace species;
-    !                       others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
-    !                 n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields
-    !                 of O2, HCl, and HCN are determined from this
-    !                 molar_mass: molar mass of the fuel (kg/mol)
-    !                 species_mass: mass of a species in a layer in the room (kg)
-    !                 x_fire_position: position of the fire in x direction
-    !                 y_fire_position: position of the fire in y direction
-    !                 z_fire_position: position of the fire in z direction
-    !                 fire_area: characteristic object diameter for plume models
-    !                 entrainment_rate (output): plume entrainment rate (kg/s)
-    !                 plume_flow_rate (output): plume flow rate into the upper layer (kg/s)
-    !                 hrr (output): actual heat release rate of the fire (w)
-    !                 species_mass_rate (output): net change in mass of a species in a layer
-    !                 hrr_c (output): net convection into upper layer (w)
-    !                 hrr_r (output): net radiation from fire (w)
-    !                 hrr_lower (output): heat release in the lower plume (w)
-    !                 hrr_upper (output): heat release rate in the upper plume (w)
+    ! do heat release and species from a fire
+    ! arguments:  ifire: fire number (ifire=0 is the main fire)
+    !             iroom: room containing the fire
+    !             pyrolysis_rate: pyrolysis rate of the fire (kg/s)
+    !             room_height: height of the room (m)
+    !             room_width: breadth of the room (m)
+    !             room_depth: Depth of the room (m)
+    !             hoc: current heat of combustion (j/kg)
+    !             y_soot, y_soot_flaming, y_soot_smolder, y_co, y_trace: species yields for soot, CO, and trace species;
+    !                   others are calculated from the molecular formula of the fuel (kg species produced/kg fuel pyrolyzed)
+    !             n_C, n_H, n_O, n_N, n_Cl: molecular formula for the fuel; these can be fractional; yields
+    !                   of O2, HCl, and HCN are determined from this
+    !             molar_mass: molar mass of the fuel (kg/mol)
+    !             species_mass: mass of a species in a layer in the room (kg)
+    !             x_fire_position: position of the fire in x direction
+    !             y_fire_position: position of the fire in y direction
+    !             z_fire_position: position of the fire in z direction
+    !             fire_area: characteristic object diameter for plume models
+    !             entrainment_rate (output): plume entrainment rate (kg/s)
+    !             plume_flow_rate (output): plume flow rate into the upper layer (kg/s)
+    !             hrr (output): actual heat release rate of the fire (w)
+    !             species_mass_rate (output): net change in mass of a species in a layer
+    !             hrr_c (output): net convection into upper layer (w)
+    !             hrr_r (output): net radiation from fire (w)
+    !             hrr_lower (output): heat release in the lower plume (w)
+    !             hrr_upper (output): heat release rate in the upper plume (w)
 
     integer, intent(in) :: ifire, iroom
     real(eb), intent(in) :: pyrolysis_rate, room_height, room_width, room_depth, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
@@ -629,19 +628,14 @@ module fire_routines
 
     subroutine door_jet (flows_doorjets,djetflg)
 
-    !     routine:  door_jet
-    !     description: physical interface routine to calculate the current
-    !                  rates of mass and energy flows into the layers from
-    !                  all door jet fires in the building.
+    ! physical interface routine to calculate the current
+    ! rates of mass and energy flows into the layers from all door jet fires in the building.
 
-    !                  note that we presume that this calculation is performed
-    !                  after the normal fires and flow through vents so we
-    !                  have a heat of combustion to use for the burning fuel.
-    !                  at present, this heat of combustion is presumed to be
-    !                  that of the main fire.
+    ! note that we presume that this calculation is performed after the normal fires and flow through vents so we
+    ! have a heat of combustion to use for the burning fuel. 
     !
-    !     inputs:   nfire   total number of normal fires
-    !     outputs:  flows_doorjets  mass and energy flows into layers due to fires.
+    ! inputs:   nfire   total number of normal fires
+    ! outputs:  flows_doorjets  mass and energy flows into layers due to fires.
     !                       standard source routine data structure.
 
     logical, intent(out) :: djetflg
@@ -725,14 +719,13 @@ module fire_routines
 
     subroutine door_jet_fire (ito,ifrom,xxnetfl,sas,qpyrol,species_mass_rate,djflowflg)
 
-    !     routine: door_jet_fire
-    !     purpose: calculate heat and combustion chemistry for a door jet fire
-    !     arguments:  ito: room number door jet is flowing into
-    !                 ifrom: room number door jet is flowing from
-    !                 xxnetfl: net fuel available to be burned
-    !                 sas: mass flow rate of entrained air in door jet
-    !                 qpyrol (output): total heat released by door jet fire
-    !                 species_mass_rate (output): net change in mass of species in door jet
+    ! calculate heat and combustion chemistry for a door jet fire
+    ! arguments:  ito: room number door jet is flowing into
+    !             ifrom: room number door jet is flowing from
+    !             xxnetfl: net fuel available to be burned
+    !             sas: mass flow rate of entrained air in door jet
+    !             qpyrol (output): total heat released by door jet fire
+    !             species_mass_rate (output): net change in mass of species in door jet
 
     integer, intent(in) :: ito, ifrom
     real(eb), intent(in) :: xxnetfl, sas
@@ -755,9 +748,6 @@ module fire_routines
     if (xxnetfl>0.0_eb.and.sas>0.0_eb.and.tjet>=tgignt.and.room2ptr%species_mass(u,fuel_Q)>0.0_eb.and. &
         room2ptr%species_mass(u,fuel_moles)>0.0_eb) then
 
-        ! do combustion chemistry assuming complete comversion to co2 & h2o.
-        ! although the real chemistry is more complex, for now we don't know
-        ! how to handle it.
         djflowflg = .true.
         xmass(1:ns) = 0.0_eb
         
@@ -805,13 +795,12 @@ module fire_routines
 
     subroutine flame_height (qdot, fire_area, fheight)
 
-    !     routine: flame_height
-    !     purpose: Calculates flame height for a given fire size and fire_area
-    !     arguments:  qdot: Fire Size (W)
-    !                 fire_area: Area of the base of the fire (m^2)
-    !                 fheight (output): Calculated flame height (m)
+    ! calculates flame height for a given fire size and fire_area
+    ! arguments:  qdot: Fire Size (W)
+    !             fire_area: Area of the base of the fire (m^2)
+    !             fheight (output): Calculated flame height (m)
     !
-    !     Source: SFPE handbook, Section 2, Chapter 1
+    ! Source: SFPE handbook, Section 2, Chapter 1
 
     real(eb), intent(in) :: qdot, fire_area
     real(eb), intent(out) :: fheight
@@ -833,14 +822,11 @@ module fire_routines
 
     subroutine get_gas_temp_velocity(iroom,x,y,z,tg,vg)
 
-    !     routine: get_gas_temp_velocity
-    !     purpose: routine to calculate gas temperature nearby a target
-    !     arguments: iroom  compartment number
-    !                x  x position of target in compartmentnumber
-    !                y  y position of target in compartmentnumber
-    !                z  z position of target in compartment
-    !                tg (output)   calculated gas temperature
-    !                vg (output)   calculated gas velocity
+    ! calculate gas temperature nearby a target
+    ! arguments: iroom  compartment number
+    !            x, y, z  position of target in compartment
+    !            tg (output)   calculated gas temperature
+    !            vg (output)   calculated gas velocity
 
     integer, intent(in) :: iroom
     real(eb), intent(in) :: x, y, z
@@ -924,23 +910,22 @@ module fire_routines
 
     subroutine get_ceilingjet_tempandvelocity (qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w, tcj, vcj)
 
-    !     routine: get_ceilingjet_tempandvelocity
-    !     purpose: Calculates ceiling jet temperature and velocity at a specified height and distance from the fire.
+    ! calculates ceiling jet temperature and velocity at a specified height and distance from the fire.
     !
-    !     Uses Alpert / Heskestad's correlation to calculate plume  temperature
-    !     arguments:  qdot: total heat release rate of the fire (W)
-    !                 tu: upper layer gas temperature (K)
-    !                 tl: lower layer gas temperature (K)
-    !                 tplume: plume temperature at ceiling (K)
-    !                 zfire: height of the base of the fire (m)
-    !                 zlayer: height of the hot/cold gas layer interface (m)
-    !                 zceil: height of the compartment ceiling (m)
-    !                 zin: position to calculate temperature (m)
-    !                 xin: distance to calculate temperature (parallel to long wall ... for hallways) (m)
-    !                 r: horizontal distance from fire centerline (m)
-    !                 w: width of hallway is compartment is designated as a hallway, zero otherwisw
-    !                 tcj (output): temperature at height zin and radius r (K)
-    !                 vcj (output): velocity at height zin and radius r (m/s)
+    ! Uses Alpert / Heskestad's correlation to calculate plume  temperature
+    ! arguments:  qdot: total heat release rate of the fire (W)
+    !             tu: upper layer gas temperature (K)
+    !             tl: lower layer gas temperature (K)
+    !             tplume: plume temperature at ceiling (K)
+    !             zfire: height of the base of the fire (m)
+    !             zlayer: height of the hot/cold gas layer interface (m)
+    !             zceil: height of the compartment ceiling (m)
+    !             zin: position to calculate temperature (m)
+    !             xin: distance to calculate temperature (parallel to long wall ... for hallways) (m)
+    !             r: horizontal distance from fire centerline (m)
+    !             w: width of hallway is compartment is designated as a hallway, zero otherwisw
+    !             tcj (output): temperature at height zin and radius r (K)
+    !             vcj (output): velocity at height zin and radius r (m/s)
 
     real(eb), intent(in) :: qdot, tu, tl, tplume, zfire, zlayer, zceil, zin, xin, r, w
     real(eb), intent(out) :: tcj, vcj
@@ -1013,23 +998,21 @@ module fire_routines
 
     subroutine get_plume_tempandvelocity (qdot, xrad, area, tu, tl, zfire, zlayer, zin, r, tplume, uplume)
 
-    !     routine: get_plume_tempandvelocity
-    !     purpose: Calculates plume centerline temperature at a specified height and distance from the fire.
+    ! calculates plume centerline temperature at a specified height and distance from the fire.
     !
-    !     Uses Heskestad's correlation to calculate plume  temperature
-    !     with Evan's method to determine virtual fire size and fire origin when fire
-    !     is in the lower layer and position is in the upper layer
-    !     arguments:  qdot: total heat release rate of the fire (W)
-    !                 xrad: fraction of fire HRR released as radiation
-    !                 area: fire diamater (m)
-    !                 tu: upper layer gas temperature (K)
-    !                 tl: lower layer gas temperature (K)
-    !                 zfire: height of the base of the fire (m)
-    !                 zlayer: height of the hot/cold gas layer interface (m)
-    !                 zin: position to calculate plume centerline temperature (m)
-    !                 r: horizontal distance from fire centerline (m)
-    !                 tplume (output): plume temperature at height zin and radius r (K)
-    !                 uplume (output): plume velocity at height zin and radius r (m/s)
+    ! Uses Heskestad's correlation to calculate plume  temperature with Evan's method to determine virtual 
+    ! fire size and fire origin when fire is in the lower layer and position is in the upper layer
+    ! arguments:  qdot: total heat release rate of the fire (W)
+    !             xrad: fraction of fire HRR released as radiation
+    !             area: fire diamater (m)
+    !             tu: upper layer gas temperature (K)
+    !             tl: lower layer gas temperature (K)
+    !             zfire: height of the base of the fire (m)
+    !             zlayer: height of the hot/cold gas layer interface (m)
+    !             zin: position to calculate plume centerline temperature (m)
+    !             r: horizontal distance from fire centerline (m)
+    !             tplume (output): plume temperature at height zin and radius r (K)
+    !             uplume (output): plume velocity at height zin and radius r (m/s)
 
     real(eb), intent(in) :: qdot, xrad, area, tu, tl, zfire, zlayer, zin, r
     real(eb), intent(out) :: tplume, uplume
@@ -1098,8 +1081,7 @@ module fire_routines
 
     subroutine update_species (deltt)
 
-    !     routine: update_species
-    !     purpose: calculate species concentrations (ppm), mass density (kg/m^3), opacity (1/m),
+    !     calculate species concentrations (ppm), mass density (kg/m^3), opacity (1/m),
     !              ct (g-min/m^3)
     !     arguments:  deltt  length of the latest time step (s)
 
@@ -1188,8 +1170,7 @@ module fire_routines
 
     subroutine remap_fires (nfires)
 
-    ! this routine is to combine fire objects into a single list
-    ! there does not have to be a fire, so nfires may be zero
+    ! combine fire objects into a single list
 
     integer, intent(out) :: nfires
 
@@ -1216,13 +1197,12 @@ module fire_routines
 
     subroutine update_fire_objects (iflag, told, dt, ifobj, tobj)
 
-    !     routine: update_fire_objects
-    !     purpose: check for and set object fire ignition
-    !     arguments:  iflag   flags if check, set, or update variables
-    !                 told    time previous to this time step
-    !                 dt      length of last time step
-    !                 ifobj   object number that ignites (return)
-    !                 tobj    time object ignites
+    ! check for and set object fire ignition
+    ! arguments:  iflag   flags if check, set, or update variables
+    !             told    time previous to this time step
+    !             dt      length of last time step
+    !             ifobj   object number that ignites (return)
+    !             tobj    time object ignites
 
     integer, intent(in) :: iflag
     integer, intent(out) :: ifobj

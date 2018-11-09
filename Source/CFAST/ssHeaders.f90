@@ -15,37 +15,10 @@ module spreadsheet_header_routines
 
     private
 
-    public ssheaders_connections, ssheaders_normal, ssheaders_species, ssheaders_speciesmass, ssheaders_flow, ssheaders_target, &
+    public ssheaders_normal, ssheaders_species, ssheaders_speciesmass, ssheaders_flow, ssheaders_target, &
         ssheaders_smv, ssHeaders_resid, ssHeaders_fslabs, ssheaders_diagnosis
 
     contains
-    
-! --------------------------- ssheaders_connections --------------------------------------
-    
-    subroutine ssheaders_connections
-    
-    ! this is the header information for the romm connections matrix output
-    
-    character(35) :: headertext(1,mxrooms)
-    integer position, i
-    type(room_type), pointer :: roomptr
-    
-    !spreadsheet header of compartment names
-    headertext(1,1) = ' '
-    position = 2
-    do i = 1, nrm1
-        roomptr => roominfo(i)
-        headertext(1,position) = roomptr%name
-        position = position + 1
-    end do
-    headertext(1,position) = 'Outside'
-    position = position + 1
-    
-    ! write out header
-    write (20,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    
-    return
-    end subroutine ssheaders_connections
 
 ! --------------------------- ssheaders_normal -------------------------------------------
 

@@ -207,6 +207,8 @@ module mflow_routines
     
     real(eb) function mv_fraction (ventptr, ifromto, layer)
     
+    ! calculates the fraction of mechanical flow that come from or goes to a layer
+    
     integer, intent(in) :: ifromto, layer
     type(vent_type), intent(in) :: ventptr
     

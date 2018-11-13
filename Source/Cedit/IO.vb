@@ -2138,7 +2138,7 @@ Module IO
             FileClose(IO)
             If str.Substring(0, 1) = "&" Then
                 FindThermalPropertiesNML(Filename, SomeThermalProperties)
-            ElseIf str.Substring(0, 5) = "VERSN" Then
+            Else
                 Dim csv As New CSVsheet(Filename)
                 FindThermalPropertiesCSV(csv, SomeThermalProperties)
             End If

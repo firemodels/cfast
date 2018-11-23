@@ -381,6 +381,20 @@ Friend Module Data
         Material
     End Enum
 
+    Friend Enum FireSummaryNum
+        Fire = 0
+        Compartment
+        FireID
+        IgnitionType
+        SetPoint
+        Target
+        X
+        Y
+        FirePropertyID
+        Fuel
+        HRR
+    End Enum
+
     Friend Enum InsertThermalNum
         Material = 1
         Conductivity

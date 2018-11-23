@@ -979,9 +979,6 @@ Public Class UpdateGUI
             MainWin.FireCl.Enabled = False
             MainWin.FireHoC.Enabled = False
             MainWin.FireRadiativeFraction.Enabled = False
-            MainWin.FireAdd.Enabled = False
-            MainWin.FireAddt2.Enabled = False
-            MainWin.FireFromFile.Enabled = False
 
             ClearGrid(MainWin.FireSummary)
             ClearGrid(MainWin.FireDataSS)
@@ -994,9 +991,6 @@ Public Class UpdateGUI
             MainWin.FireCl.Enabled = True
             MainWin.FireHoC.Enabled = True
             MainWin.FireRadiativeFraction.Enabled = True
-            MainWin.FireAdd.Enabled = True
-            MainWin.FireAddt2.Enabled = True
-            MainWin.FireFromFile.Enabled = True
 
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(index)
@@ -1026,35 +1020,42 @@ Public Class UpdateGUI
                 For i = 1 To numFires
                     aFireInstance = myFireInstances(i - 1)
 
-                    MainWin.FireSummary(i, 0) = i.ToString
+                    MainWin.FireSummary(i, FireSummaryNum.Fire) = i.ToString
                     If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
-                        MainWin.FireSummary(i, 1) = myCompartments(aFireInstance.Compartment).Name
+                        MainWin.FireSummary(i, FireSummaryNum.Compartment) = myCompartments(aFireInstance.Compartment).Name
                     ElseIf aFireInstance.Compartment = -1 Then
-                        MainWin.FireSummary(i, 1) = "Outside"
+                        MainWin.FireSummary(i, FireSummaryNum.Compartment) = "Outside"
                     Else
-                        MainWin.FireSummary(i, 1) = "Not defined"
+                        MainWin.FireSummary(i, FireSummaryNum.Compartment) = "Not defined"
                     End If
                     If aFireInstance.IgnitionType >= 0 Then
-                        MainWin.FireSummary(i, 4) = IgnitionNames.Substring((aFireInstance.IgnitionType) * 11, 11)
-                        MainWin.FireSummary(i, 5) = aFireInstance.IgnitionValue
+                        MainWin.FireSummary(i, FireSummaryNum.IgnitionType) = IgnitionNames.Substring((aFireInstance.IgnitionType) * 11, 11)
+                        MainWin.FireSummary(i, FireSummaryNum.SetPoint) = aFireInstance.IgnitionValue
+                        If aFireInstance.IgnitionType = Fire.FireIgnitionbyFlux Then
+                            MainWin.FireSummary(i, FireSummaryNum.Target) = aFireInstance.Target
+                        Else
+                            MainWin.FireSummary(i, FireSummaryNum.Target) = ""
+                        End If
                     End If
-                    MainWin.FireSummary(i, 6) = aFireInstance.XPosition.ToString
-                    MainWin.FireSummary(i, 7) = aFireInstance.YPosition.ToString
+                    MainWin.FireSummary(i, FireSummaryNum.X) = aFireInstance.XPosition.ToString
+                    MainWin.FireSummary(i, FireSummaryNum.Y) = aFireInstance.YPosition.ToString
 
                     FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
                     If FireIndex >= 0 Then
+                        MainWin.FireSummary(i, FireSummaryNum.FireID) = aFireInstance.Name
                         aFire = myFires(FireIndex)
-                        MainWin.FireSummary(i, 2) = aFireInstance.Name
-
+                        MainWin.FireSummary(i, FireSummaryNum.FirePropertyID) = aFire.Name
+                        MainWin.FireSummary(i, FireSummaryNum.Fuel) = aFire.ChemicalFormula()
                         PeakHRR = 0.0
                         aFire.GetFireData(afireTimeSeries, NumPoints)
                         For j = 0 To NumPoints
                             If afireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = afireTimeSeries(Fire.FireHRR, j)
                         Next
-                        MainWin.FireSummary(i, 9) = PeakHRR.ToString
+                        MainWin.FireSummary(i, FireSummaryNum.HRR) = PeakHRR.ToString
                     Else
-                        MainWin.FireSummary(i, 2) = ""
-                        MainWin.FireSummary(i, 9) = ""
+                        MainWin.FireSummary(i, FireSummaryNum.FirePropertyID) = ""
+                        MainWin.FireSummary(i, FireSummaryNum.Fuel) = ""
+                        MainWin.FireSummary(i, FireSummaryNum.HRR) = ""
                     End If
                 Next
                 MainWin.FireSummary.Select(index + 1, 0, index + 1, MainWin.FireSummary.Cols.Count - 1, True)

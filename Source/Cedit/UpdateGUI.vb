@@ -979,9 +979,6 @@ Public Class UpdateGUI
             MainWin.FireCl.Enabled = False
             MainWin.FireHoC.Enabled = False
             MainWin.FireRadiativeFraction.Enabled = False
-            MainWin.FireAdd.Enabled = False
-            MainWin.FireAddt2.Enabled = False
-            MainWin.FireFromFile.Enabled = False
 
             ClearGrid(MainWin.FireSummary)
             ClearGrid(MainWin.FireDataSS)
@@ -994,9 +991,6 @@ Public Class UpdateGUI
             MainWin.FireCl.Enabled = True
             MainWin.FireHoC.Enabled = True
             MainWin.FireRadiativeFraction.Enabled = True
-            MainWin.FireAdd.Enabled = True
-            MainWin.FireAddt2.Enabled = True
-            MainWin.FireFromFile.Enabled = True
 
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
             aFireInstance = myFireInstances(index)

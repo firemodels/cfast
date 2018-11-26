@@ -3221,7 +3221,7 @@ Public Class CeditMain
         'Label113
         '
         Me.Label113.AutoSize = True
-        Me.Label113.Location = New System.Drawing.Point(41, 563)
+        Me.Label113.Location = New System.Drawing.Point(45, 563)
         Me.Label113.Name = "Label113"
         Me.Label113.Size = New System.Drawing.Size(96, 13)
         Me.Label113.TabIndex = 124
@@ -3239,7 +3239,7 @@ Public Class CeditMain
         'Label111
         '
         Me.Label111.AutoSize = True
-        Me.Label111.Location = New System.Drawing.Point(125, 486)
+        Me.Label111.Location = New System.Drawing.Point(123, 486)
         Me.Label111.Name = "Label111"
         Me.Label111.Size = New System.Drawing.Size(18, 13)
         Me.Label111.TabIndex = 119
@@ -3273,7 +3273,7 @@ Public Class CeditMain
         'Label109
         '
         Me.Label109.AutoSize = True
-        Me.Label109.Location = New System.Drawing.Point(125, 460)
+        Me.Label109.Location = New System.Drawing.Point(124, 460)
         Me.Label109.Name = "Label109"
         Me.Label109.Size = New System.Drawing.Size(17, 13)
         Me.Label109.TabIndex = 118
@@ -3283,7 +3283,7 @@ Public Class CeditMain
         'FirePlumeType
         '
         Me.FirePlumeType.AutoSize = True
-        Me.FirePlumeType.Location = New System.Drawing.Point(273, 320)
+        Me.FirePlumeType.Location = New System.Drawing.Point(273, 321)
         Me.FirePlumeType.Name = "FirePlumeType"
         Me.FirePlumeType.Size = New System.Drawing.Size(40, 13)
         Me.FirePlumeType.TabIndex = 735
@@ -3324,7 +3324,7 @@ Public Class CeditMain
         'Label108
         '
         Me.Label108.AutoSize = True
-        Me.Label108.Location = New System.Drawing.Point(34, 537)
+        Me.Label108.Location = New System.Drawing.Point(38, 537)
         Me.Label108.Name = "Label108"
         Me.Label108.Size = New System.Drawing.Size(103, 13)
         Me.Label108.TabIndex = 116
@@ -3334,7 +3334,7 @@ Public Class CeditMain
         'Label110
         '
         Me.Label110.AutoSize = True
-        Me.Label110.Location = New System.Drawing.Point(125, 512)
+        Me.Label110.Location = New System.Drawing.Point(123, 512)
         Me.Label110.Name = "Label110"
         Me.Label110.Size = New System.Drawing.Size(18, 13)
         Me.Label110.TabIndex = 122
@@ -3354,7 +3354,7 @@ Public Class CeditMain
         'Label106
         '
         Me.Label106.AutoSize = True
-        Me.Label106.Location = New System.Drawing.Point(253, 486)
+        Me.Label106.Location = New System.Drawing.Point(252, 486)
         Me.Label106.Name = "Label106"
         Me.Label106.Size = New System.Drawing.Size(19, 13)
         Me.Label106.TabIndex = 136
@@ -5334,7 +5334,7 @@ Public Class CeditMain
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
             TotalConnections = myHVents.NumberofConnections(CurrentCompartment) + myVVents.NumberofConnections(CurrentCompartment) + myMVents.NumberofConnections(CurrentCompartment) +
             myDetectors.NumberofConnections(CurrentCompartment) + myTargets.NumberofConnections(CurrentCompartment) + myHHeats.NumberofConnections(CurrentCompartment) +
-            myVHeats.NumberofConnections(CurrentCompartment) + myFires.NumberofConnections(CurrentCompartment) + myVisuals.NumberofConnections(CurrentCompartment)
+            myVHeats.NumberofConnections(CurrentCompartment) + myFireProperties.NumberofConnections(CurrentCompartment) + myVisuals.NumberofConnections(CurrentCompartment)
             If TotalConnections > 0 Then
                 ReturnedButton = MessageBox.Show("Compartment " + (CurrentCompartment + 1).ToString + " has " + TotalConnections.ToString +
                 " connection(s) that will be removed.", Text, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, MessageBoxOptions.DefaultDesktopOnly)
@@ -5346,7 +5346,7 @@ Public Class CeditMain
                     myTargets.RemoveAll(CurrentCompartment) : CurrentTarget = 0
                     myHHeats.RemoveAll(CurrentCompartment) : CurrentHHeat = 0
                     myHHeats.RemoveAll(CurrentCompartment) : CurrentVHeat = 0
-                    myFires.RemoveAll(CurrentCompartment) : CurrentFire = 0
+                    myFireProperties.RemoveAll(CurrentCompartment) : CurrentFire = 0
                     myVisuals.RemoveAll(CurrentCompartment) : CurrentVisual = 0
                     myCompartments.Remove(CurrentCompartment)
                     If CurrentCompartment > 0 Then CurrentCompartment -= 1
@@ -5752,37 +5752,37 @@ Public Class CeditMain
     ' This section of code handles the events related to the fires tab
     ' A fire consists of two parts, a definitions of fire properties (HRR, etc) and a location. A fire definition can be used for more than one fire location
     Private Sub FireAdd_Click(sender As System.Object, e As System.EventArgs) Handles FireAdd.Click, FireAddt2.Click
-        If myFires.Count + 1 <= Fire.MaximumFires Then
+        If myFireProperties.Count + 1 <= Fire.MaximumFires Then
             If sender Is FireAddt2 Then
                 Dim t2FireDialog As New t2Fire
                 Dim iReturn As Integer
                 iReturn = t2FireDialog.ShowDialog(Me)
                 If iReturn = Windows.Forms.DialogResult.OK Then
                     Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
-                    myFires.Add(aFire)
+                    myFireProperties.Add(aFire)
                     Dim aFireInstance As New Fire
                     aFireInstance.ObjectType = Fire.TypeInstance
                     aFireInstance.ReferencedFireDefinition = aFire.Name
-                    myFireInstances.Add(aFireInstance)
-                    CurrentFire = myFireInstances.Count - 1
+                    myFires.Add(aFireInstance)
+                    CurrentFire = myFires.Count - 1
                     UpdateGUI.Fires(CurrentFire)
                 End If
             ElseIf sender Is FireAdd Then
                 Dim aFire As New Fire()
-                myFires.Add(aFire)
+                myFireProperties.Add(aFire)
                 Dim aFireInstance As New Fire
                 aFireInstance.ObjectType = Fire.TypeInstance
                 aFireInstance.ReferencedFireDefinition = aFire.Name
-                myFireInstances.Add(aFireInstance)
-                CurrentFire = myFireInstances.Count - 1
+                myFires.Add(aFireInstance)
+                CurrentFire = myFires.Count - 1
                 UpdateGUI.Fires(CurrentFire)
             End If
         End If
     End Sub
     Private Sub FireRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireRemoveInstance.Click
         ' Remove the current Fire instance from the list of fire instances
-        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
-            myFireInstances.Remove(CurrentFire)
+        If CurrentFire >= 0 And myFires.Count > 0 Then
+            myFires.Remove(CurrentFire)
             If CurrentFire > 0 Then
                 CurrentFire -= 1
             End If
@@ -5794,7 +5794,7 @@ Public Class CeditMain
         ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with a mouse click
         Dim index As Integer
         index = FireSummary.RowSel - 1
-        If index >= 0 And index <= myFireInstances.Count - 1 Then
+        If index >= 0 And index <= myFires.Count - 1 Then
             CurrentFire = index
             UpdateGUI.Fires(CurrentFire)
         End If
@@ -5803,23 +5803,23 @@ Public Class CeditMain
         ' The currently selected Fire has been changed by selecting a row of the summary spreadsheet with the keyboard
         Dim index As Integer
         index = FireSummary.RowSel - 1
-        If index >= 0 And index <= myFireInstances.Count - 1 Then
+        If index >= 0 And index <= myFires.Count - 1 Then
             CurrentFire = index
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
     Private Sub Referenced_Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ReferencedFireDefinition.SelectedIndexChanged
-        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
+        If CurrentFire >= 0 And myFires.Count > 0 Then
             Dim aFireTimeSeries(12, 0) As Single
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
-            aFireInstance = myFireInstances(CurrentFire)
+            aFireInstance = myFires(CurrentFire)
             FireIndex = ReferencedFireDefinition.SelectedIndex - 1
             If FireIndex >= 0 Then
-                aFire = myFires(FireIndex)
+                aFire = myFireProperties(FireIndex)
                 If aFireInstance.ReferencedFireDefinition <> aFire.Name Then
                     aFireInstance.ReferencedFireDefinition = aFire.Name
                     If CurrentFire >= 0 Then
-                        myFireInstances(CurrentFire) = aFireInstance
+                        myFires(CurrentFire) = aFireInstance
                     End If
                     UpdateGUI.Fires(CurrentFire)
                 End If
@@ -5827,10 +5827,10 @@ Public Class CeditMain
         End If
     End Sub
     Private Sub Fire_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FireComp.SelectedIndexChanged, FireIgnitionCriteria.SelectedIndexChanged, FireXPosition.Leave, FireYPosition.Leave, FireIgnitionValue.Leave, FireInstanceName.Leave, FireC.Leave, FireH.Leave, FireO.Leave, FireN.Leave, FireCl.Leave, FireHoC.Leave, FireRadiativeFraction.Leave, FireTarget.SelectedIndexChanged, FireDefinitionName.Leave
-        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
+        If CurrentFire >= 0 And myFires.Count > 0 Then
             Dim aFireTimeSeries(12, 0) As Single
             Dim aFire As New Fire, aFireInstance As New Fire
-            aFireInstance = myFireInstances(CurrentFire)
+            aFireInstance = myFires(CurrentFire)
 
             ' Inputs related to fire instance
 
@@ -5857,9 +5857,9 @@ Public Class CeditMain
 
             ' Inputs related to fire definition
             Dim fireIndex As Integer
-            fireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+            fireIndex = myFireProperties.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             If fireIndex >= 0 Then
-                aFire = myFires(fireIndex)
+                aFire = myFireProperties(fireIndex)
                 If sender Is FireDefinitionName Then
                     aFire.Name = FireDefinitionName.Text
                     aFireInstance.ReferencedFireDefinition = aFire.Name
@@ -5889,20 +5889,20 @@ Public Class CeditMain
                 'End If
                 '    CopyFireData(aFire)
 
-                myFires(fireIndex) = aFire
+                myFireProperties(fireIndex) = aFire
             End If
-            myFireInstances(CurrentFire) = aFireInstance
+            myFires(CurrentFire) = aFireInstance
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
     Private Sub FireData_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles FireDataSS.BeforeRowColChange
-        If CurrentFire >= 0 And myFireInstances.Count > 0 Then
+        If CurrentFire >= 0 And myFires.Count > 0 Then
             Dim aFire As New Fire, aFireInstance As New Fire, fireIndex As Integer
-            aFireInstance = myFireInstances(CurrentFire)
-            fireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
-            aFire = myFires(fireIndex)
+            aFireInstance = myFires(CurrentFire)
+            fireIndex = myFireProperties.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+            aFire = myFireProperties(fireIndex)
             CopyFireData(aFire)
-            myFires(fireIndex) = aFire
+            myFireProperties(fireIndex) = aFire
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
@@ -6021,11 +6021,11 @@ Public Class CeditMain
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 1
                 Else
-                    numFires = myFireInstances.Count
+                    numFires = myFires.Count
                     If numFires > 0 Then
                         Dim aFire As Fire
                         For i = 1 To numFires
-                            aFire = myFireInstances(i - 1)
+                            aFire = myFires(i - 1)
                             If aTarget.Compartment = aFire.Compartment Then
                                 If TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFire.Name Then
                                     Dim Hypotenuse As Single
@@ -6592,7 +6592,7 @@ Public Class CeditMain
                     For i = 1 To InsertDialog.Count
                         If InsertDialog.Selected(i) Then
                             aFire = TempFires.Item(i - 1)
-                            myFires.Add(aFire)
+                            myFireProperties.Add(aFire)
                         End If
                     Next
                 End If
@@ -6618,7 +6618,7 @@ Public Class CeditMain
                 Dim Current As Integer, Count As Integer
                 If sender Is FireDataSS Then
                     Current = CurrentFire
-                    Count = myFires.Count
+                    Count = myFireProperties.Count
                 ElseIf sender Is HVentFractions Then
                     Current = CurrentHVent
                     Count = myHVents.Count
@@ -6645,9 +6645,9 @@ Public Class CeditMain
                         Next
                         If sender Is FireDataSS Then
                             Dim aFire As New Fire
-                            aFire = myFires(CurrentFire)
+                            aFire = myFireProperties(CurrentFire)
                             CopyFireData(aFire)
-                            myFires(CurrentFire) = aFire
+                            myFireProperties(CurrentFire) = aFire
                             UpdateGUI.Fires(CurrentFire)
                         ElseIf sender Is VVentFractions Then
                             Dim aVent As New Vent
@@ -6901,8 +6901,8 @@ Public Class CeditMain
         myVHeats.Clear()
         myTargets.Clear()
         myDetectors.Clear()
-        myFireInstances.Clear()
         myFires.Clear()
+        myFireProperties.Clear()
         TempFires.Clear()
         myVisuals.Clear()
         myThermalProperties.Clear()

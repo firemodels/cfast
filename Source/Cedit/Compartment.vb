@@ -478,7 +478,7 @@ Public Class CompartmentCollection
                     myDetectors.Renumber(i + 1, i)
                     myHHeats.Renumber(i + 1, i)
                     myVHeats.Renumber(i + 1, i)
-                    myFires.Renumber(i + 1, i)
+                    myFireProperties.Renumber(i + 1, i)
                     myVisuals.Renumber(i + 1, i)
                 Next
             End If
@@ -515,7 +515,7 @@ Public Class CompartmentCollection
             myDetectors.Renumber(index1, Compartment.TempCompartment) : myDetectors.Renumber(index2, index1) : myDetectors.Renumber(Compartment.TempCompartment, index2)
             myHHeats.Renumber(index1, Compartment.TempCompartment) : myHHeats.Renumber(index2, index1) : myHHeats.Renumber(Compartment.TempCompartment, index2)
             myVHeats.Renumber(index1, Compartment.TempCompartment) : myVHeats.Renumber(index2, index1) : myVHeats.Renumber(Compartment.TempCompartment, index2)
-            myFires.Renumber(index1, Compartment.TempCompartment) : myFires.Renumber(index2, index1) : myFires.Renumber(Compartment.TempCompartment, index2)
+            myFireProperties.Renumber(index1, Compartment.TempCompartment) : myFireProperties.Renumber(index2, index1) : myFireProperties.Renumber(Compartment.TempCompartment, index2)
             myVisuals.Renumber(index1, Compartment.TempCompartment) : myVisuals.Renumber(index2, index1) : myVisuals.Renumber(Compartment.TempCompartment, index2)
             Dim temp As New Compartment
             temp = CType(List.Item(index2), Compartment)

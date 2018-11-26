@@ -165,9 +165,9 @@ Module IO
                         aFireInstance.ObjectType = Fire.TypeInstance
                         ReadEmbeddedFire(csv, i, aFire, aFireInstance)
                         aFire.Changed = False
-                        myFires.Add(aFire)
+                        myFireProperties.Add(aFire)
                         aFireInstance.Changed = False
-                        myFireInstances.Add(aFireInstance)
+                        myFires.Add(aFireInstance)
                         i += 8
                     Case "GLOBA"
                         If csv.num(i, 0) <= 3 Then
@@ -283,7 +283,7 @@ Module IO
                         'aFire.PlumeType = csv.num(i, fireNum.plumeType) - 1
                         'aFire.FireObject = myFireObjects.GetFireIndex(aFire.Name)
                         'aFire.Changed = False
-                        'myFires.Add(aFire)
+                        'myFireProperties.Add(aFire)
                     Case "MVFAN"        'ignored
                         dataFileComments.Add("!" + csv.strrow(i))
                         myErrors.Add("Keyword MVFAN not supported line " + csv.strrow(i) + " will be commented out", ErrorMessages.TypeWarning)
@@ -330,16 +330,16 @@ Module IO
                     Case "OBJECT"
                         Dim FireFile As String
                         ' First look for the fire object in the current folder (which should be where the .in file is located)
-                        If myFires.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
+                        If myFireProperties.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
                             FireFile = csv.str(i, objfireNum.name) + ".o"
                             readFires(FireFile, InsertDataType.ObjectFile)
                         End If
                         ' If we didn't find it there, look in the CFAST bin directory
-                        If myFires.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
+                        If myFireProperties.GetFireIndex(csv.str(i, objfireNum.name)) < 0 Then
                             FireFile = Application.StartupPath + "\" + csv.str(i, objfireNum.name) + ".o"
                             readFires(FireFile, InsertDataType.ObjectFile)
                         End If
-                        If myFires.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
+                        If myFireProperties.GetFireIndex(csv.str(i, objfireNum.name)) >= 0 Then
                             Dim aFire As New Fire
                             aFire.Name = csv.str(i, objfireNum.name)
                             aFire.SetPosition(csv.num(i, objfireNum.compartment) - 1, csv.num(i, objfireNum.xPosition),
@@ -348,7 +348,7 @@ Module IO
                             aFire.IgnitionType = csv.num(i, objfireNum.ignType) - 1
                             aFire.IgnitionValue = csv.num(i, objfireNum.ignCriterion)
                             aFire.Changed = False
-                            myFires.Add(aFire)
+                            myFireProperties.Add(aFire)
                         Else
                             myErrors.Add("Fire Object " + csv.str(i, objfireNum.name) + " does not exist and will not be added to the simulation", ErrorMessages.TypeError)
                         End If
@@ -661,8 +661,8 @@ Module IO
         ReadInputFileNMLMatl(NMList, myThermalProperties)
         ReadInputFileNMLComp(NMList, myCompartments)
         ReadInputFileNMLDevc(NMList, myDetectors)
-        ReadInputFileNMLChem(NMList, myFires)
-        ReadInputFileNMLFire(NMList, myFireInstances)
+        ReadInputFileNMLChem(NMList, myFireProperties)
+        ReadInputFileNMLFire(NMList, myFires)
         ReadInputFileNMLVent(NMList, myHVents, myMVents, myVVents)
         ReadInputFileNMLConn(NMList, myHHeats, myVHeats)
         ReadInputFileNMLISOF(NMList, myVisuals)
@@ -1399,7 +1399,7 @@ Module IO
                 End If
             End If
         Next
-        Dim test As Integer = myFires.Count
+        Dim test As Integer = myFireProperties.Count
     End Sub
     Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef ErrFlag As Boolean)
         Dim i, j, k, m, n, max As Integer
@@ -2204,7 +2204,7 @@ Module IO
                 For i = 1 To TempFires.Count
                     Dim aFire As New Fire
                     aFire = TempFires.Item(i - 1)
-                    myFires.Add(aFire)
+                    myFireProperties.Add(aFire)
                 Next
             End If
         End If
@@ -2771,7 +2771,7 @@ Module IO
             End If
         Next
         'comment header for fire keywords
-        If myFires.Count > 0 Then AddHeadertoOutput(csv, i, "Fires")
+        If myFireProperties.Count > 0 Then AddHeadertoOutput(csv, i, "Fires")
 
         If myEnvironment.LowerOxygenLimit <> Environment.DefaultLOI Then
             csv.str(i, CFASTlnNum.keyWord) = "LIMO2"
@@ -2780,8 +2780,8 @@ Module IO
         End If
 
         Dim aFire As New Fire, firedata(12, 0) As Single, numFireDataPoints As Integer
-        For j = 0 To myFires.Count - 1
-            aFire = myFires.Item(j)
+        For j = 0 To myFireProperties.Count - 1
+            aFire = myFireProperties.Item(j)
 
             csv.str(i, CFASTlnNum.keyWord) = "!!" + aFire.Name
             i += 1
@@ -3318,13 +3318,13 @@ Module IO
         End If
 
         'Writing Fires
-        If myFireInstances.Count + myFires.Count > 0 Then
+        If myFires.Count + myFireProperties.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Fires "
             PrintLine(IO, ln)
 
-            For i = 0 To myFireInstances.Count - 1
-                aFire = myFireInstances.Item(i)
+            For i = 0 To myFires.Count - 1
+                aFire = myFires.Item(i)
                 ln = "&FIRE ID = '" + aFire.Name + "' "
                 If aFire.Compartment >= 0 And aFire.Compartment <= myCompartments.Count - 1 Then
                     ln += " COMP_ID = '" + myCompartments.Item(aFire.Compartment).Name + "', FIRE_ID = '" + aFire.ReferencedFireDefinition + "' "
@@ -3346,9 +3346,9 @@ Module IO
                 aFire.Changed = False
             Next
 
-            For i = 0 To myFires.Count - 1
-                If myFireInstances.NumberofInstances(myFires.Item(i).Name) > 0 Then
-                    aFire = myFires.Item(i)
+            For i = 0 To myFireProperties.Count - 1
+                If myFires.NumberofInstances(myFireProperties.Item(i).Name) > 0 Then
+                    aFire = myFireProperties.Item(i)
                     ln = "&CHEM ID = '" + aFire.Name + "'"
                     ln += " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString + " HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString + " OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
                     ln += " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString

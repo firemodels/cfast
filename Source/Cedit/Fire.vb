@@ -61,7 +61,7 @@ Public Class Fire
     Private aPlumeType As Integer                   ' Plume for this fire, 0 for Heskestad, 1 for McCaffrey
     Private Const minValuePlumes As Integer = 0
     Private Const maxValuePlumes As Integer = 1
-    Private aReferencedFireDefinition As String      ' Link from a instance in myFireInstances to the fire in the myFires collection
+    Private aReferencedFireDefinition As String      ' Link from a instance in myFires to the fire in the myFireProperties collection
 
     ' Variables for the current fire object definition (that can be used for one or more instances)
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
@@ -236,7 +236,7 @@ Public Class Fire
         Set(ByVal Value As Integer)
             If aCompartment <> Value Then
                 aCompartment = Value
-                If myFires.DoChange Then aChanged = True
+                If myFireProperties.DoChange Then aChanged = True
             End If
         End Set
     End Property
@@ -1141,10 +1141,10 @@ Public Class FireCollection
                 Next
                 ' Cannot have duplicate fire object names
                 If Count > 1 Then
-                    For i = 0 To myFires.Count - 2
-                        aFire1 = myFires(i)
-                        For j = i + 1 To myFires.Count - 1
-                            aFire2 = myFires(j)
+                    For i = 0 To myFireProperties.Count - 2
+                        aFire1 = myFireProperties(i)
+                        For j = i + 1 To myFireProperties.Count - 1
+                            aFire2 = myFireProperties(j)
                             If aFire1.Name = aFire2.Name Then
                                 myErrors.Add(aFire1.Name + " is used more than once as a fire name. Duplicate names are not allowed.", ErrorMessages.TypeFatal)
                                 HasErrors += 1

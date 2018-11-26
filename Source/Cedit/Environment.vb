@@ -324,7 +324,7 @@ Public Class Environment
         Get
             Return myEnvironment.Changed Or myCompartments.Changed Or myHVents.Changed Or myVVents.Changed Or
                     myMVents.Changed Or myHHeats.Changed Or myVHeats.Changed Or myTargets.Changed Or myDetectors.Changed Or
-                    myFires.Changed Or myFireInstances.Changed Or myThermalProperties.Changed Or myVisuals.Changed
+                    myFireProperties.Changed Or myFires.Changed Or myThermalProperties.Changed Or myVisuals.Changed
         End Get
     End Property
     Friend ReadOnly Property IsValid() As Integer

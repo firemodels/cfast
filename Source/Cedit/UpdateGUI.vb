@@ -63,7 +63,7 @@ Public Class UpdateGUI
     Private Sub UpdateErrorCheck()
         Dim ErrorCount As Integer
         ErrorCount = myEnvironment.IsValid + myThermalProperties.IsValid + myCompartments.IsValid + myHVents.IsValid + myVVents.IsValid + myMVents.IsValid + myDetectors.IsValid +
-            myTargets.IsValid + myFires.IsValid + myFireInstances.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
+            myTargets.IsValid + myFireProperties.IsValid + myFires.IsValid + myHHeats.IsValid + myVHeats.IsValid + myVisuals.IsValid
         If ErrorCount > 0 Then
             myErrors.Break(System.IO.Path.GetFileName(myEnvironment.InputFileName))
             MainWin.StatusBar.Panels(0).Text = ErrorCount.ToString + " Errors or Messages: "
@@ -143,7 +143,7 @@ Public Class UpdateGUI
             SaveFireComp = MainWin.FireComp.Text
             myCompartments.DoChange = False
             myTargets.DoChange = False
-            myFires.DoChange = False
+            myFireProperties.DoChange = False
             InitThermalPropertyList(MainWin.CompCeiling)
             InitThermalPropertyList(MainWin.CompWalls)
             InitThermalPropertyList(MainWin.CompFloor)
@@ -153,7 +153,7 @@ Public Class UpdateGUI
             MainWin.FireComp.Text = SaveFireComp
             myCompartments.DoChange = True
             myTargets.DoChange = True
-            myFires.DoChange = True
+            myFireProperties.DoChange = True
         End If
     End Sub
     Public Sub Visuals(ByVal indexVisual As Integer, ByVal indexCompartment As Integer)
@@ -343,7 +343,7 @@ Public Class UpdateGUI
                     MainWin.CompSummary(i, 8) = aCompartment.CeilingMaterial.ToLower
                     MainWin.CompSummary(i, 9) = aCompartment.WallMaterial.ToLower
                     MainWin.CompSummary(i, 10) = aCompartment.FloorMaterial.ToLower
-                    MainWin.CompSummary(i, 11) = myFires.NumberofConnections(i - 1)
+                    MainWin.CompSummary(i, 11) = myFireProperties.NumberofConnections(i - 1)
                     MainWin.CompSummary(i, 12) = myHVents.NumberofConnections(i - 1)
                     MainWin.CompSummary(i, 13) = myVVents.NumberofConnections(i - 1)
                     MainWin.CompSummary(i, 14) = myMVents.NumberofConnections(i - 1)
@@ -970,7 +970,7 @@ Public Class UpdateGUI
         Dim ir, ic As Integer
 
         ' Update fire instances
-        If index < 0 Or index >= myFireInstances.Count Then
+        If index < 0 Or index >= myFires.Count Then
             MainWin.FireDefinitionName.Enabled = False
             MainWin.FireH.Enabled = False
             MainWin.FireC.Enabled = False
@@ -993,8 +993,8 @@ Public Class UpdateGUI
             MainWin.FireRadiativeFraction.Enabled = True
 
             Dim aFire As New Fire, aFireInstance As New Fire, FireIndex As Integer
-            aFireInstance = myFireInstances(index)
-            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+            aFireInstance = myFires(index)
+            FireIndex = myFireProperties.GetFireIndex(aFireInstance.ReferencedFireDefinition)
             MainWin.FireInstanceName.Text = aFireInstance.Name
             MainWin.FireXPosition.Text = aFireInstance.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.FireYPosition.Text = aFireInstance.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
@@ -1014,11 +1014,11 @@ Public Class UpdateGUI
             MainWin.FireIgnitionValue.Text = " "
             If aFireInstance.IgnitionType >= 0 Then MainWin.FireIgnitionValue.Text = aFireInstance.IgnitionValue.ToString + IgnitionTypeLabel
 
-            numFires = myFireInstances.Count
+            numFires = myFires.Count
             ClearGrid(MainWin.FireSummary)
             If numFires > 0 Then
                 For i = 1 To numFires
-                    aFireInstance = myFireInstances(i - 1)
+                    aFireInstance = myFires(i - 1)
 
                     MainWin.FireSummary(i, FireSummaryNum.Fire) = i.ToString
                     If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
@@ -1040,10 +1040,10 @@ Public Class UpdateGUI
                     MainWin.FireSummary(i, FireSummaryNum.X) = aFireInstance.XPosition.ToString
                     MainWin.FireSummary(i, FireSummaryNum.Y) = aFireInstance.YPosition.ToString
 
-                    FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+                    FireIndex = myFireProperties.GetFireIndex(aFireInstance.ReferencedFireDefinition)
                     If FireIndex >= 0 Then
                         MainWin.FireSummary(i, FireSummaryNum.FireID) = aFireInstance.Name
-                        aFire = myFires(FireIndex)
+                        aFire = myFireProperties(FireIndex)
                         MainWin.FireSummary(i, FireSummaryNum.FirePropertyID) = aFire.Name
                         MainWin.FireSummary(i, FireSummaryNum.Fuel) = aFire.ChemicalFormula()
                         PeakHRR = 0.0
@@ -1062,15 +1062,15 @@ Public Class UpdateGUI
             End If
 
             ' Update fire definitions
-            aFireInstance = myFireInstances(index)
-            FireIndex = myFires.GetFireIndex(aFireInstance.ReferencedFireDefinition)
+            aFireInstance = myFires(index)
+            FireIndex = myFireProperties.GetFireIndex(aFireInstance.ReferencedFireDefinition)
 
             If FireIndex = 1 Then
                 Dim dummy As Integer
                 dummy = 1
             End If
 
-            If FireIndex < 0 Or FireIndex >= myFires.Count Then
+            If FireIndex < 0 Or FireIndex >= myFireProperties.Count Then
                 ClearGrid(MainWin.FireDataSS)
             Else
                 MainWin.FireDefinitionName.Enabled = True
@@ -1083,7 +1083,7 @@ Public Class UpdateGUI
                 MainWin.FireRadiativeFraction.Enabled = True
                 ClearGrid(MainWin.FireDataSS)
 
-                aFire = myFires(FireIndex)
+                aFire = myFireProperties(FireIndex)
                 MainWin.FireDefinitionName.Text = aFire.Name
                 MainWin.FireC.Text = aFire.ChemicalFormula(formula.C).ToString
                 MainWin.FireH.Text = aFire.ChemicalFormula(formula.H).ToString
@@ -1154,7 +1154,7 @@ Public Class UpdateGUI
         Dim aFire As New Fire
         Dim aFireData(12, 0) As Single, numPoints As Integer, iSelectedColumn As Integer
         Dim x() As Single, y() As Single, j As Integer
-        aFire = myFires(index)
+        aFire = myFireProperties(index)
         MainWin.FirePlot.Clear()
         aFire.GetFireData(aFireData, numPoints)
         ReDim x(numPoints), y(numPoints)
@@ -1241,10 +1241,10 @@ Public Class UpdateGUI
         obj.Items.Clear()
         obj.Items.Add("New")
         obj.SelectedIndex = 0
-        If myFires.Count > 0 Then
-            For i = 0 To myFires.Count - 1
-                obj.Items.Add(myFires.Item(i).Name)
-                If myFires.Item(i).Name = current Then
+        If myFireProperties.Count > 0 Then
+            For i = 0 To myFireProperties.Count - 1
+                obj.Items.Add(myFireProperties.Item(i).Name)
+                If myFireProperties.Item(i).Name = current Then
                     obj.SelectedIndex = i + 1
                 End If
             Next
@@ -1269,11 +1269,11 @@ Public Class UpdateGUI
         aTarget = myTargets(index)
         MainWin.TargetNormalCalc.Items.Clear()
         MainWin.TargetNormalCalc.Items.Add("User Specified")
-        numFires = myFireInstances.Count
+        numFires = myFires.Count
         If numFires > 0 Then
             Dim aFire As Fire
             For i = 1 To numFires
-                aFire = myFireInstances(i - 1)
+                aFire = myFires(i - 1)
                 If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aTarget.ZPosition <> 0) Then
                     MainWin.TargetNormalCalc.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
                 End If

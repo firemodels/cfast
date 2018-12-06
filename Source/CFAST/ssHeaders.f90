@@ -252,8 +252,8 @@ module spreadsheet_header_routines
     ! header information for the surface temperature and flux results.
 
     integer, parameter :: maxhead = 1+9*mxrooms+16*mxtarg+4*mxdtect
-    character(35) :: headertext(4,maxhead), cTemp, cType, cDet, cRoom, Labels(29), LabelsShort(29), LabelUnits(29), frontorback(2)
-    integer position, i, j, itarg, itype
+    character(35) :: headertext(4,maxhead), cDet, cRoom, Labels(29), LabelsShort(29), LabelUnits(29), frontorback(2)
+    integer position, i, j, itarg
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     type(detector_type), pointer :: dtectptr
@@ -334,20 +334,11 @@ module spreadsheet_header_routines
     do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         call toIntString(i,cDet)
-        itype = dtectptr%dtype
-        if (itype==smoked) then
-            cType = 'Smoke'
-        else if (itype==heatd) then
-            cType = 'Heat'
-        else
-            cType = 'Other'
-        end if
         do j = 1, 4
             position = position + 1
             headertext(1,position) = trim(LabelsShort(j+20))//trim(cDet)
             headertext(2,position) = Labels(j+20)
-            write (cTemp,'(a,1x,a,1x,a)') trim(cType),'Sensor',trim(cDet)
-            headertext(3,position) = cTemp
+            headertext(3,position) = dtectptr%name
             headertext(4,position) = LabelUnits(j+20)
         end do
     end do

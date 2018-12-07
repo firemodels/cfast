@@ -248,7 +248,7 @@ module setup_data
     integer :: iofili=1, iofilo=6, iofill=3, iofilkernel=4, iofilstat=12
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
-    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, ssconnections, &
+    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, ssconnections, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning
 

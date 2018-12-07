@@ -442,6 +442,7 @@
     smvhead = datapath(1:lp) // project(1:ld) // '.smv'
     smvdata = datapath(1:lp) // project(1:ld) // '.plt'
     smvcsv = datapath(1:lp) // project(1:ld) // '_zone.csv'
+    smvsinfo = datapath(1:lp) // project(1:ld) // '.sinfo'
     ssconnections = datapath(1:lp) // project(1:ld) // '_c.csv'
     ssflow = datapath(1:lp) // project(1:ld) // '_f.csv'
     ssnormal = datapath(1:lp) // project(1:ld) // '_n.csv'
@@ -497,6 +498,7 @@
     call deleteoutputfiles (smvhead)
     call deleteoutputfiles (smvdata)
     call deleteoutputfiles (smvcsv)
+    call deleteoutputfiles (smvsinfo)
     call deleteoutputfiles (ssflow)
     call deleteoutputfiles (ssconnections)
     call deleteoutputfiles (ssnormal)

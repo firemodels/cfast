@@ -3163,7 +3163,7 @@ Public Class CeditMain
         'Label60
         '
         Me.Label60.AutoSize = True
-        Me.Label60.Location = New System.Drawing.Point(50, 430)
+        Me.Label60.Location = New System.Drawing.Point(46, 431)
         Me.Label60.Name = "Label60"
         Me.Label60.Size = New System.Drawing.Size(91, 13)
         Me.Label60.TabIndex = 732
@@ -3221,7 +3221,7 @@ Public Class CeditMain
         'Label113
         '
         Me.Label113.AutoSize = True
-        Me.Label113.Location = New System.Drawing.Point(45, 563)
+        Me.Label113.Location = New System.Drawing.Point(41, 564)
         Me.Label113.Name = "Label113"
         Me.Label113.Size = New System.Drawing.Size(96, 13)
         Me.Label113.TabIndex = 124
@@ -3239,7 +3239,7 @@ Public Class CeditMain
         'Label111
         '
         Me.Label111.AutoSize = True
-        Me.Label111.Location = New System.Drawing.Point(123, 486)
+        Me.Label111.Location = New System.Drawing.Point(119, 486)
         Me.Label111.Name = "Label111"
         Me.Label111.Size = New System.Drawing.Size(18, 13)
         Me.Label111.TabIndex = 119
@@ -3273,7 +3273,7 @@ Public Class CeditMain
         'Label109
         '
         Me.Label109.AutoSize = True
-        Me.Label109.Location = New System.Drawing.Point(124, 460)
+        Me.Label109.Location = New System.Drawing.Point(120, 460)
         Me.Label109.Name = "Label109"
         Me.Label109.Size = New System.Drawing.Size(17, 13)
         Me.Label109.TabIndex = 118
@@ -3324,7 +3324,7 @@ Public Class CeditMain
         'Label108
         '
         Me.Label108.AutoSize = True
-        Me.Label108.Location = New System.Drawing.Point(38, 537)
+        Me.Label108.Location = New System.Drawing.Point(34, 538)
         Me.Label108.Name = "Label108"
         Me.Label108.Size = New System.Drawing.Size(103, 13)
         Me.Label108.TabIndex = 116
@@ -3334,7 +3334,7 @@ Public Class CeditMain
         'Label110
         '
         Me.Label110.AutoSize = True
-        Me.Label110.Location = New System.Drawing.Point(123, 512)
+        Me.Label110.Location = New System.Drawing.Point(119, 512)
         Me.Label110.Name = "Label110"
         Me.Label110.Size = New System.Drawing.Size(18, 13)
         Me.Label110.TabIndex = 122

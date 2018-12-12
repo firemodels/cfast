@@ -15,7 +15,7 @@
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|Win32" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="..\Temp" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugLineInfoOnly" Preprocess="preprocessYes" AdditionalIncludeDirectories="..\CFAST\Include" StandardWarnings="standardWarningsF08" DisableSpecificDiagnostics="5268" WarnUnusedVariables="true" FloatingPointModel="strict" FloatingPointExceptionsModel="enable" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugLineInfoOnly" Preprocess="preprocessYes" AdditionalIncludeDirectories="..\CFAST\Include" StandardWarnings="standardWarningsF08" WarnUnusedVariables="true" FloatingPointModel="strict" FloatingPointExceptionsModel="enable" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true"/>
 				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/CFAST.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" HeaderFileName="$(InputName).h" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>

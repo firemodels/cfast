@@ -1202,11 +1202,11 @@ module fire_routines
     subroutine update_fire_objects (iflag, told, dt, ifobj, tobj)
 
     ! check for and set object fire ignition
-    ! arguments:  iflag   flags if check, set, or update variables
-    !             told    time previous to this time step
-    !             dt      length of last time step
-    !             ifobj   object number that ignites (return)
-    !             tobj    time object ignites
+    ! inputs    iflag   flags if check, set, or update variables
+    !           told    time previous to this time step
+    !           dt      length of last time step
+    !           ifobj   object number that ignites (return)
+    !           tobj    time object ignites
 
     integer, intent(in) :: iflag
     integer, intent(out) :: ifobj

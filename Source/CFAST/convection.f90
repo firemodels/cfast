@@ -85,10 +85,10 @@
     subroutine convective_flux (iw,tg,tw,qdinl)
 
     ! calculate convective heat transfer for a wall segment.
-    ! arguments:  iw     wall number, standand cfast numbering convention
-    !             tg     temperature of gas layer adjacent to wall surface
-    !             tw     wall surface temperature
-    !             qdinl  convective flux into wall surface iw
+    ! inputs:  iw     wall number, standand cfast numbering convention
+    !          tg     temperature of gas layer adjacent to wall surface
+    !          tw     wall surface temperature
+    ! output:  qdinl  convective flux into wall surface iw
 
     integer, intent(in) :: iw
     real(eb), intent(in) :: tg, tw

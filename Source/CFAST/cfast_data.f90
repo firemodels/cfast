@@ -72,7 +72,7 @@ module fire_data
     integer :: n_tabls                              ! number of tables of fire data in the current simulation
     type(table_type), allocatable, dimension(:), target :: tablinfo
 
-    integer :: n_furn                                    ! number of data points in furnace temperature curve
+    integer :: n_furn                                   ! number of data points in furnace temperature curve
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 

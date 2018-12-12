@@ -34,7 +34,7 @@ module radiation_routines
     real(eb), intent(out), dimension(mxrooms,2) :: flows_radiation
     real(eb), intent(out), dimension(mxrooms,nwal) :: fluxes_radiation
 
-    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, fheight, rabsorb(2)
+    real(eb) :: qlay(2), qflxw(nwal), twall(nwal), emis(nwal), tg(2), defabsup, defabslow, f_height, rabsorb(2)
     integer :: map(nwal) = (/1, 4, 2, 3/), i, j, iwall, imap, ifire, nrmfire
     logical black
     
@@ -75,13 +75,13 @@ module radiation_routines
                 nrmfire = nrmfire + 1
                 xrfire(nrmfire) = fireptr%x_position
                 yrfire(nrmfire) = fireptr%y_position
-                fheight = 0.0_eb ! This is fire radiation at base of the fire
+                f_height = 0.0_eb ! This is fire radiation at base of the fire
                 ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
-                call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
-                if (fheight+(fireptr%z_position+fireptr%z_offset)>roomptr%cheight) then
-                    fheight = roomptr%cheight-(fireptr%z_position+fireptr%z_offset)
+                f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
+                if (f_height+(fireptr%z_position+fireptr%z_offset)>roomptr%cheight) then
+                    f_height = roomptr%cheight-(fireptr%z_position+fireptr%z_offset)
                 end if
-                zrfire(nrmfire) = fireptr%z_position + fireptr%z_offset + fheight/3.0_eb
+                zrfire(nrmfire) = fireptr%z_position + fireptr%z_offset + f_height/3.0_eb
                 qrfire(nrmfire) = fireptr%qdot_radiative
             end if
         end do

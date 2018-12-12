@@ -162,7 +162,7 @@ module target_routines
     real(eb), intent(in) :: ttarg(2)
     real(eb), intent(out) :: flux(2), dflux(2)
 
-    real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, zfire, fheight
+    real(eb) :: svect(3), qwtsum(2), qgassum(2), absu, absl, cosang, s, zfire, f_height
     real(eb) :: xtarg, ytarg, ztarg, zlay, zl, zu, taul, tauu, qfire, qft, qout, zwall, tl, tu, alphal, alphau
     real(eb) :: qwt, qgas, qgt, zznorm, tg, tgb, vg(4)
     real(eb) :: dttarg, dttargb, temis, q1, q2, q1b, q2b, q1g, dqdtarg, dqdtargb
@@ -196,12 +196,12 @@ module target_routines
                 svect(2) = targptr%center(2) - fireptr%y_position
                 !zfire = fireptr%z_position + fireptr%z_offset
                 ! This is fire radiation at 1/3 the height of the fire (bounded by the ceiling height)
-                call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
-                if (fheight + (fireptr%z_position + fireptr%z_offset)>roomptr%cheight) then
+                f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
+                if (f_height + (fireptr%z_position + fireptr%z_offset)>roomptr%cheight) then
                     zfire = (fireptr%z_position + fireptr%z_offset) + &
                         (roomptr%cheight- (fireptr%z_position + fireptr%z_offset))/3.0_eb
                 else
-                    zfire = (fireptr%z_position + fireptr%z_offset) + fheight/3.0_eb
+                    zfire = (fireptr%z_position + fireptr%z_offset) + f_height/3.0_eb
                 end if
                 svect(3) = targptr%center(3) - zfire
                 cosang = 0.0_eb

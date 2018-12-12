@@ -5,7 +5,7 @@ module solve_routines
     use conduction_routines, only: conduction
     use convection_routines, only: convection
     use debug_routines, only: output_spreadsheet_residuals
-    use fire_routines, only: fire, door_jet, integrate_mass, update_species, remap_fires, update_fire_objects
+    use fire_routines, only: fire, door_jets, integrate_mass, update_species, collect_fire_data_for_smokeview, update_fire_objects
     use isosurface, only: output_isodata
     use hflow_routines, only: horizontal_flow
     use mflow_routines, only: mechanical_flow
@@ -244,7 +244,7 @@ module solve_routines
     firstpassforsmokeview = .true.
     first_time = 1
     
-    ! To run verification cases then exit
+    ! specific verification cases just do a calculation and stop then exit
     if (radi_verification_flag) then
         if (verification_time_step /= 0._eb) then
             dt = verification_time_step
@@ -336,7 +336,7 @@ module solve_routines
     if (initializeonly) then
         ! normally, this only needs to be done while running. however, if we are doing an initialonly run
         ! then we need the output now
-        call remap_fires (nfires)
+        call collect_fire_data_for_smokeview (nfires)
         call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1,  &
              n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, 0.0_eb, 1)
         icode = 0
@@ -419,12 +419,13 @@ module solve_routines
 
         ! smokeview output
         if (t+0.0001_eb>min(tsmv,tstop).and.ismv) then
-            i_time_step = tsmv
-            call remap_fires (nfires)
+            i_time_step = tsmv 
+            ! collect_fire_data_for_smokeview just puts all of the fire information in a single list
+            call collect_fire_data_for_smokeview (nfires)
             if (firstpassforsmokeview) then
                 firstpassforsmokeview = .false.
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
-                ! can have the latest time step information. remap_fires just puts all of the information in a single list
+                ! can have the latest time step information.
                 call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1, &
                     n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, t, i_time_step)
                 call output_smokeview_header (cfast_version,nrm1,nfires)
@@ -916,7 +917,7 @@ module solve_routines
 
     ! calculate heat and mass flows due to fires
     call fire (tsec,flows_fires)
-    call door_jet (flows_doorjets,djetflg)
+    call door_jets (flows_doorjets,djetflg)
     
     ! calculation opening fraction for radiation loss and etc
     call wall_opening_fraction (tsec)

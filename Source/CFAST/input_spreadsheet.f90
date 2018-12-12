@@ -1408,7 +1408,7 @@ module spreadsheet_input_routines
     character(128) :: lcarray(ncol)
     character(5) :: label
     integer :: ir, i, nret
-    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, flamelength
+    real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, f_height
     type(room_type), pointer :: roomptr
 
     ! there are eight required inputs for each fire
@@ -1521,10 +1521,10 @@ module spreadsheet_input_routines
 
     ! diagnostic - check for the maximum heat release per unit volume.
     ! first, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
-    call flame_height(max_hrr, max_area, flamelength)
-    flamelength = max (0.0_eb, flamelength)
+    f_height = flame_height(max_hrr, max_area)
+    f_height = max (0.0_eb, f_height)
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
-    hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
+    hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+f_height))
     if (hrrpm3>4.0e6_eb) then
         write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (*, 5108)

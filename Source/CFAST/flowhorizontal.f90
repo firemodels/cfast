@@ -31,9 +31,9 @@ module hflow_routines
     !     physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
     !     it returns rates of mass and energy flows into the layers from all vents in the building.
 
-    !     arguments: tsec    current simulation time (s)
-    !                epsp    pressure error tolerance
-    !                uflw_hf change in mass and energy for each layer of each compartment via flow through horizontal vents
+    !     inputs:   tsec    current simulation time (s)
+    !               epsp    pressure error tolerance
+    !     output:   uflw_hf change in mass and energy for each layer of each compartment via flow through horizontal vents
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_hf(mxrooms,ns+2,2)
@@ -166,24 +166,26 @@ module hflow_routines
 
     ! --------------------------- spill_plume -------------------------------------------
 
-    subroutine spill_plume(dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas,vasa)
+    subroutine spill_plume (dirs12,yslab,width,xmslab,nslab,tu,tl,cp,zlay,conl,conu,pmix,yvbot,yvtop,uflw3,vsas,vasa)
 
-    !     routine: spill_plume
-    !     purpose: calculate lume entrainment for a door mixing
-    !     arguments: dirs12 - a measure of the direction of the room 1 to room flow in each slab
-    !                yslab  - slab heights in rooms 1,2 above absolute reference elevation [m]
-    !                width  - slab width [m]
-    !                xmslab - magnitude of the mass flow rate in slabs [kg/s]
-    !                nslab  - number of slabs between bottom and top of vent
-    !                tu     - upper layer temperature in each room [k]
-    !                tl     - lower layer temperature in each room [k]
-    !                zlay   - height of layer in each room above absolute reference elevation [m]
-    !                uflw3(i,1,j), i=1 or 2, j=1 or 2 (output) - mass flow rate to upper (j=2) or
-    !                         lower (j=1) layer of room i due to entrainment
-    !                uflw3(i,2,j), i=1 or 2, j=1 or 2 (output) - enthalpy flow rate to upper (j=2) or
-    !                   lower (j=1) layer of room i entrainment
-    !                uflw3(i,2+k,j), i=1 or 2, k=1 to ns, j=1 or 2 (output) - product k flow rate
-    !                      to upper (j=2) or lower (j=1) layer of room i due entrainment
+    ! calculate plume entrainment for a door mixing
+    ! inputs:   dirs12          direction of the room 1 to room flow in each slab
+    !           yslab           slab heights in rooms 1,2 above absolute reference elevation [m]
+    !           width           slab width [m]
+    !           xmslab          magnitude of the mass flow rate in slabs [kg/s]
+    !           nslab           number of slabs between bottom and top of vent
+    !           tu              upper layer temperature in each room [k]
+    !           tl              lower layer temperature in each room [k]
+    !           cp              specific heat of air
+    !           zlay            height of layer in each room above absolute reference elevation [m]
+    !           conl            species concentrations in lower layer of from room
+    !           conu            species concentrations in upper layer of from room
+    !           yvbot           absolute height of vent bottom
+    !           yvtop           absolute height of vent top
+    ! outputs   pmix            species concentrations in plume
+    !           uflw3(i,1:3,j)  mass, enthalpy, and species flows to upper (j=2) or lower (j=1) layer of room i due to entrainment
+    !           vsas            mixing flow mass from upper layer due to entrainment
+    !           vasa            mixing flow mass from lower layer due to entrainment
 
     integer, intent(in) :: dirs12(10), nslab
     real(eb), intent(in) :: yslab(10), xmslab(10), tu(2), tl(2), cp, zlay(2), conl(ns,2), conu(ns,2), yvbot, yvtop, width
@@ -278,26 +280,26 @@ module hflow_routines
 
     ! --------------------------- poreh_plume -------------------------------------------
 
-    subroutine poreh_plume(tu,tl,fmd,zz,w,fm_entrained)
+    subroutine poreh_plume (tu, tl, mdot, z, w, entrainment_rate)
 
     ! doorway plumes are assumed to be spill plumes from poreh, et. al., Fire Safety Journal, 30:1-19, 1998.
     ! At the moment, we do this by flow slab consistent with the original method that used mccaffrey's plume
 
-    !     arguments: tu - upper layer temperature in the from room (input) (K)
-    !                tl - lower layer temperature in the to room (input) (K)
-    !                fmd - mass flow, from room --> to room (input) (kg/s)
-    !                w - vent width (input) (m)
-    !                zz - height over which entrainment takes place (input) (m)
-    !                fm_entrained - mass entrained (output) (kg/s)
+    ! inputs:   tu                  upper layer temperature in the from room (K)
+    !           tl                  lower layer temperature in the to room (K)
+    !           mdot                mass flow, from room --> to room (kg/s)
+    !           w                   vent width (m)
+    !           z                   height over which entrainment takes place (m)
+    ! output:   entrainment_rate    mass entrained (output) (kg/s)
 
-    real(eb), intent(in) :: tu, tl, fmd, zz, w
-    real(eb), intent(out) :: fm_entrained
+    real(eb), intent(in) :: tu, tl, mdot, z, w
+    real(eb), intent(out) :: entrainment_rate
 
     real(eb) :: hdot, rhol
 
-    hdot = cp*(tu-tl)*fmd
+    hdot = cp*(tu-tl)*mdot
     rhol = 352.981915_eb/tl
-    fm_entrained = 0.44_eb * (tl/tu)**twothirds * (grav_con*rhol**2/(cp*tl))**onethird * hdot**onethird * w**twothirds * zz
+    entrainment_rate = 0.44_eb * (tl/tu)**twothirds * (grav_con*rhol**2/(cp*tl))**onethird * hdot**onethird * w**twothirds * z
     return
     end subroutine poreh_plume
 

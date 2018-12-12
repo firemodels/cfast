@@ -27,7 +27,7 @@ module initialization_routines
     private
 
     public get_thermal_property, inittarg, initialize_ambient, offset, initialize_memory, initialize_fire_objects, &
-        initialize_species, initialize_walls
+        initialize_species, setup_walls_and_targets
 
     contains
 
@@ -38,11 +38,15 @@ module initialization_routines
 
     ! check for and return index to a thermal property
     
+    ! input:    name    desired thermal property name
+    ! output:   tp      thermal property number of desired thermal property
+    
     implicit none
     character, intent(in) :: name*(*)
+    integer, intent(out) :: tp
 
     character(mxthrmplen) missingtpp
-    integer tp, i
+    integer i
     type(thermal_type), pointer :: thrmpptr
 
     do i = 1, n_thrmp
@@ -517,7 +521,7 @@ module initialization_routines
 
 ! --------------------------- inittarg -------------------------------------------
 
-    subroutine inittarg ()
+    subroutine inittarg
 
     ! initialize target data structures
 
@@ -619,22 +623,22 @@ module initialization_routines
     return
     end subroutine inittarg
 
-! --------------------------- initialize_walls  -------------------------------------------
+! --------------------------- setup_walls_and_targets  -------------------------------------------
 
-    subroutine initialize_walls (tstop)
+    subroutine setup_walls_and_targets (tstop)
 
     ! initializes data structures associated with walls and targets
-    !     Arguments: tstop simulation time. used to estimate a characteristic thermal penetration time and make sure
-    !                      explicit calculation will converge
+    ! input: tstop  simulation time. used to estimate a characteristic thermal penetration time and make sure
+    !               explicit calculation will converge
 
-    !        kw = thermal conductivity
-    !        cw = specific heat (j/kg)
-    !        rhow = density of the wall (kg/m**3)
-    !        thickw = thickness of the wall (m)
-    !        epsw = emmisivity of the wall
-    !        nslb = discretization of the wall slabs (number of nodes)
-    !        matl contains the name of the thermal data subset in the tpp datafile
-    !        n_thrmp is a count of the number of tpp data sets in the database
+    ! kw = thermal conductivity
+    ! cw = specific heat (j/kg)
+    ! rhow = density of the wall (kg/m**3)
+    ! thickw = thickness of the wall (m)
+    ! epsw = emmisivity of the wall
+    ! nslb = discretization of the wall slabs (number of nodes)
+    ! matl contains the name of the thermal data set in the tpp data structure
+    ! n_thrmp is a count of the number of tpp data sets in the tpp data structure
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
@@ -779,7 +783,7 @@ module initialization_routines
     end do
 
     return
-    end subroutine initialize_walls
+    end subroutine setup_walls_and_targets
 
 ! --------------------------- offset -------------------------------------------
 
@@ -899,7 +903,7 @@ module initialization_routines
     xkrhoc = wk(1)/(wspec(1)*wrho(1))
     alpha = sqrt(xkrhoc)
     xb = 2.0_eb*alpha*sqrt(tstop)*errfc05*wlen
-    if (xb>.50_eb*wlen) xb = 0.5_eb*wlen
+    if (xb>0.50_eb*wlen) xb = 0.5_eb*wlen
     if (nslab==1) then
 
         ! set up wall node locations for 1 slab case, bunch points at interior and exterior boundary

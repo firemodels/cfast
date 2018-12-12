@@ -32,9 +32,10 @@ module spreadsheet_header_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
-    data Labels / 'Simulation Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
-    'HRR Door Jet Fires', 'Ignition', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
-       'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
+    data Labels / 'Simulation Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', &
+        'Upper Layer Volume', 'Pressure', 'HRR Door Jet Fires', 'Ignition', 'Plume Entrainment Rate', 'Pyrolysis Rate', &
+        'HRR', 'HRR Lower', 'HRR Upper','Flame Height', 'Convective HRR', 'Total Pyrolysate Released', &
+        'Total Trace Species Released' /
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'DJET_', 'IGN_', 'PLUM_', 'PYROL_', &
        'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
     data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W', ' ', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
@@ -263,8 +264,8 @@ module spreadsheet_header_routines
         'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG_', 'TRGFLXREG_',  &
         'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_', &
         'TRGFEDG_','TRGDFEDG_','TRGFEDH_','TRGDFEDH_','TRG_OBS' /
-    data Labels / 'Simulation Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
-        'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
+    data Labels / 'Simulation Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', &
+        'Floor Temperature', 'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
         'Target Incident Flux','Target Net Flux', 'Target Radiative Flux', 'Target Convective Flux', &
         'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', &
         'Target Radiative Loss Flux', 'Target Total Gauge Flux', 'Target Radiative Gauge Flux', 'Target Convective Gauge Flux', &

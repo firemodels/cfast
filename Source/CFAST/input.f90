@@ -124,8 +124,8 @@
         if ((fireptr%z_position<0.0_eb).or.(fireptr%z_position>roomptr%cheight)) fireptr%z_position = 0.0_eb
     end do
     if (lower_o2_limit<0.0_eb.or.lower_o2_limit>0.230_eb) then
-        write (*,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0..15 used'
-        write (iofill,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0..15 used'
+        write (*,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
+        write (iofill,*) '***Error: Specified LOI is less than zero or greater than ambient. Default of 0.15 used'
         lower_o2_limit = 0.15_eb
     end if
     

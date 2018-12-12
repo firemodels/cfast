@@ -25,11 +25,11 @@ module conduction_routines
     ! interface between calculate_residuals and the conduction calculation. for each active wall surface in each routine this
     ! routine calculates the residual function
     !     q'' + k dt/dx, which when zero is simply fourier's law of heat conduction.
-    ! arguments: update  we don't keep solution unless update is 1 or 2. if update is 2 then
+    ! inputs:    update: we don't keep solution unless update is 1 or 2. if update is 2 then
     !                    we don't calculate delta or use fluxes_total
-    !            dt time step interval from last valid solution point
-    !            fluxes_total  total flux striking walls
-    !            delta   the residual of q'' + k dt/dx
+    !            dt: time step interval from last valid solution point
+    !            fluxes_total: total flux striking walls
+    ! output:    delta: the residual of q'' + k dt/dx
 
     integer, intent(in) :: update
     real(eb), intent(in) :: dt, fluxes_total(mxrooms,nwal)
@@ -155,33 +155,34 @@ module conduction_routines
 
 
     ! handles cfast conduction
-    ! arguments: update   we don't keep solution unless update is 1 or 2
-    !            tempin   temperature at interior wall
-    !            tempout  temperature at exterior wall, not used now
-    !            dt       time step interval from last valid solution point
-    !            wk       wall thermal conductivity
-    !            wspec    wall specific heat
-    !            wrho     wall density
-    !            wtemp    wall temperature profile
-    !            walldx   wall position points
-    !            numnode  number of nodes in each slab
-    !            nslab    number of slabs
-    !            wfluxin  flux striking interior wall
-    !            wfluxout flux striking exterior wall
-    !            iwbound  type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
-    !                     on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
-    !            tgrad    temperature gradient
-    !            tderv    partial of temperature gradient with respect to wall surface temperature.
-    !                     this number is used to calculate wall jacobian elements.
+    ! inputs: update     we don't keep solution unless update is 1 or 2
+    !           tempin   temperature at interior wall
+    !           tempout  temperature at exterior wall
+    !           dt       time step interval from last valid solution point
+    !           wk       wall thermal conductivity
+    !           wspec    wall specific heat
+    !           wrho     wall density
+    !           walldx   wall position points
+    !           numnode  number of nodes in each slab
+    !           nslab    number of slabs
+    !           wfluxin  flux striking interior wall
+    !           wfluxout flux striking exterior wall
+    !           iwbound  type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
+    !                    on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
+    !           tderv    partial of temperature gradient with respect to wall surface temperature.
+    !                    this number is used to calculate wall jacobian elements.
+    ! outputs: wtemp     wall temperature profile
+    !          tgrad     temperature gradient
 
-    real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*)
-    real(eb), intent(out) :: wtemp(*), tgrad(2)
+    real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*), tempin, tempout, dt, wfluxin, wfluxout
     integer, intent(in) :: update, nslab, iwbound, numnode(*)
+    
+    real(eb), intent(out) :: wtemp(*), tgrad(2), tderv
 
 
     integer :: nx, i, ibeg, iend, islab, nintx, ibreak
     real(eb) :: a(nnodes), b(nnodes), c(nnodes), tnew(nnodes), tderiv(nnodes), ddif(3)
-    real(eb) :: tempin, tempout, wfluxin, wfluxout, xkrhoc, s, dt, hi, him1, tderv
+    real(eb) :: xkrhoc, s, hi, him1
 
     nx = numnode(1)
 
@@ -313,12 +314,17 @@ module conduction_routines
     subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nnodes,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
     ! handles conduction calculation for cylindrical coordinates (for targets)
-    ! arguments: wtemp    cable temperature profile
-    !            nnodes       number of nodes
-    !            wfluxin  flux striking cable
-    !            dt       time step interval from last valid solution point
-    !            wrho     cable density
-    !            diam     cable diameter
+    ! inputs: iwbound  boundary condition. if 3, contstant temperature; otherwise flux
+    !         tempin   temperature at cylinder surface
+    !         wtemp    cable temperature profile
+    !         nnodes   number of nodes
+    !         wfluxin  flux striking cable
+    !         dt       time step interval from last valid solution point
+    !         wk       cable thermal conductivity
+    !         wrho     cable density
+    !         wspec    cable specific heat
+    !         diam     cable diameter
+    ! output: tgrad    temperature gradient
 
     integer, intent(in) :: nnodes, iwbound
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin

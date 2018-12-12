@@ -32,7 +32,7 @@ module spreadsheet_header_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
-    data Labels / 'Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
+    data Labels / 'Simulation Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', 'Upper Layer Volume', 'Pressure', &
     'HRR Door Jet Fires', 'Ignition', 'Plume Entrainment Rate', 'Pyrolysis Rate', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height',&
        'Convective HRR', 'Total Pyrolysate Released', 'Total Trace Species Released' /
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'DJET_', 'IGN_', 'PLUM_', 'PYROL_', &
@@ -42,7 +42,7 @@ module spreadsheet_header_routines
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
     headertext(2,1) = Labels(1)
-    headertext(3,1) = ' '
+    headertext(3,1) = LabelsShort(1)
     headertext(4,1) = LabelUnits(1)
 
     position = 1
@@ -119,7 +119,11 @@ module spreadsheet_header_routines
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
-    data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
+    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_','ULODF_', &
+        'ULODS_', 'ULCT_', 'ULTS_', 'ULFM_','ULPQ_','ULPO2_','ULPCO2_','ULPCO_','ULPHCN_','ULPHCL_','ULPH2O_','ULPSOOT_', &
+        'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_','LLODS_', 'LLCT_', &
+        'LLTS_', 'LLFM_','LLPQ_','LLPO2_','LLPCO2_','LLPCO_','LLPHCN_','LLPHCL_','LLPH2O_','LLPSOOT_'/
+    data Labels / 'Simulation Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
        'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
        'Optical Density Flaming Smoke Upper Layer','Optical Density Smoldering Smoke Upper Layer', &
        'C-T Product Upper Layer', 'Trace Species Upper Layer', 'Moles Fuel Upper Layer', 'Potential Total Heat Upper Layer', &
@@ -131,10 +135,6 @@ module spreadsheet_header_routines
        'C-T Product Lower Layer', 'Trace Species Lower Layer', 'Moles Fuel Lower Layer', 'Potential Total Heat Lower Layer', &
        'Potential O2 Lower Layer', 'Potential CO2 Lower Layer', 'Potential CO Lower Layer', 'Potential HCN Lower Layer', &
        'Potential HCl Lower Layer', 'Potential H2O Lower Layer', 'Potential Soot Lower Layer' /
-    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_', 'ULTUHC_', 'ULH2O_', 'ULOD_','ULODF_', &
-        'ULODS_', 'ULCT_', 'ULTS_', 'ULFM_','ULPQ_','ULPO2_','ULPCO2_','ULPCO_','ULPHCN_','ULPHCL_','ULPH2O_','ULPSOOT_', &
-        'LLN2_', 'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_','LLODS_', 'LLCT_', &
-        'LLTS_', 'LLFM_','LLPQ_','LLPO2_','LLPCO2_','LLPCO_','LLPHCN_','LLPHCL_','LLPH2O_','LLPSOOT_'/
     data LabelUnits / 's', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', '1/m', '1/m','1/m','g-min/m^3',&
        'kg', 'mole', 'j', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', 'mol %', &
        'mol %', 'mol %', '1/m', '1/m', '1/m', 'g-min/m^3', 'kg', 'mole', 'j', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg' /
@@ -142,7 +142,7 @@ module spreadsheet_header_routines
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
     headertext(2,1) = Labels(1)
-    headertext(3,1) = ' '
+    headertext(3,1) = LabelsShort(1)
     headertext(4,1) = LabelUnits(1)
     position = 1
 
@@ -191,7 +191,11 @@ module spreadsheet_header_routines
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
-    data Labels / 'Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
+    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_','ULTUHC_','ULH2O_','ULOD_','ULODF_', &
+       'ULODS_', 'ULCT_', 'ULTS_', 'ULFM_','ULPQ_','ULPO2_','ULPCO2_','ULPCO_','ULPHCN_','ULPHCL_','ULPH2O_','ULPSOOT_', 'LLN2_', &
+       'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_', 'LLODS_', 'LLCT_', 'LLTS_', &
+       'LLFM_','LLPQ_','LLPO2_','LLPCO2_','LLPCO_','LLPHCN_','LLPHCL_','LLPH2O_','LLPSOOT_'/
+    data Labels / 'Simulation Time', 'N2 Upper Layer', 'O2 Upper Layer', 'CO2 Upper Layer', 'CO Upper Layer', 'HCN Upper Layer', &
        'HCL Upper Layer', 'Unburned Hydrocarbons Upper Layer', 'H2O Upper Layer', 'Optical Density Upper Layer', &
        'Optical Density Flaming Smoke Upper Layer','Optical Density Smoldering Smoke Upper Layer', &
        'C-T Product Upper Layer', 'Trace Species Upper Layer', 'Moles Fuel Upper Layer', 'Potential Total Heat Upper Layer', &
@@ -203,10 +207,6 @@ module spreadsheet_header_routines
        'C-T Product Lower Layer', 'Trace Species Lower Layer', 'Moles Fuel Lower Layer', 'Potential Total Heat Lower Layer', &
        'Potential O2 Lower Layer', 'Potential CO2 Lower Layer', 'Potential CO Lower Layer', 'Potential HCN Lower Layer', &
        'Potential HCl Lower Layer', 'Potential H2O Lower Layer', 'Potential Soot Lower Layer' /
-    data LabelsShort / 'Time', 'ULN2_', 'ULO2_', 'ULCO2_', 'ULCO_', 'ULHCN_', 'ULHCL_','ULTUHC_','ULH2O_','ULOD_','ULODF_', &
-       'ULODS_', 'ULCT_', 'ULTS_', 'ULFM_','ULPQ_','ULPO2_','ULPCO2_','ULPCO_','ULPHCN_','ULPHCL_','ULPH2O_','ULPSOOT_', 'LLN2_', &
-       'LLO2_', 'LLCO2_', 'LLCO_', 'LLHCN_', 'LLHCL_', 'LLTUHC_', 'LLH2O_', 'LLOD_', 'LLODF_', 'LLODS_', 'LLCT_', 'LLTS_', &
-       'LLFM_','LLPQ_','LLPO2_','LLPCO2_','LLPCO_','LLPHCN_','LLPHCL_','LLPH2O_','LLPSOOT_'/
     data LabelUnits / 's', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', 'mole', 'j', 'kg', &
        'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'g-min/m^3', 'kg', &
        'mole', 'j', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg', 'kg' /
@@ -214,7 +214,7 @@ module spreadsheet_header_routines
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
     headertext(2,1) = Labels(1)
-    headertext(3,1) = ' '
+    headertext(3,1) = LabelsShort(1)
     headertext(4,1) = LabelUnits(1)
     position = 1
 
@@ -258,7 +258,12 @@ module spreadsheet_header_routines
     type(target_type), pointer :: targptr
     type(detector_type), pointer :: dtectptr
 
-    data Labels / 'Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
+    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', &
+        'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXI_', 'TRGFLXT_', 'TRGFLXR_', &
+        'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG_', 'TRGFLXREG_',  &
+        'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_', &
+        'TRGFEDG_','TRGDFEDG_','TRGFEDH_','TRGDFEDH_','TRG_OBS' /
+    data Labels / 'Simulation Time', 'Ceiling Temperature', 'Upper Wall Temperature', 'Lower Wall Temperature', 'Floor Temperature', &
         'Target Surrounding Gas Temperature', 'Target Surface Temperature', 'Target Center Temperature', &
         'Target Incident Flux','Target Net Flux', 'Target Radiative Flux', 'Target Convective Flux', &
         'Target Fire Radiative Flux', 'Target Surface Radiative Flux', 'Target Gas Radiative Flux', &
@@ -266,20 +271,13 @@ module spreadsheet_header_routines
         'Target Radiative Loss Gauge Flux',  &
         'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity', &
         'Target Gas FED','Target GasFED Increment','Target Heat FED','Target Heat FED Increment','Target Smoke Obscuration'/
-
-    data LabelsShort /'Time', 'CEILT_', 'UWALLT_', 'LWALLT_', 'FLOORT_', &
-        'TRGGAST_', 'TRGSURT_', 'TRGCENT_', 'TRGFLXI_', 'TRGFLXT_', 'TRGFLXR_', &
-        'TRGFLXC_','TRGFLXF_', 'TRGFLXS_', 'TRGFLXG_', 'TRGFLXRE_', 'TRGFLXTG_', 'TRGFLXRG_', 'TRGFLXCG_', 'TRGFLXREG_',  &
-        'SENST_', 'SENSACT_', 'SENSGAST_', 'SENSGASVEL_', &
-        'TRGFEDG_','TRGDFEDG_','TRGFEDH_','TRGDFEDH_','TRG_OBS' /
-
     data LabelUnits / 's', 7*'C', 12*'KW/m^2', 'C', '1=yes', 'C', 'm/s', 4*' ','m-1' /
     data frontorback / '','B_'/
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
     headertext(2,1) = Labels(1)
-    headertext(3,1) = ' '
+    headertext(3,1) = LabelsShort(1)
     headertext(4,1) = LabelUnits(1)
     position = 1
 
@@ -363,20 +361,18 @@ module spreadsheet_header_routines
     integer :: position, i, ii, ifrom, ito, ih
     type(vent_type), pointer :: ventptr
 
-    data Labels / 'Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
+    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_', 'HT_', 'VT_', 'MVT_' /
+    data Labels / 'Simulation Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
        'MVENT Trace Species Filtered', 'HVENT Total Inflow Upper', 'HVENT Total Outflow Upper', &
        'HVENT Total Inflow Lower', 'HVENT Total Outflow Lower', 'VVENT Total Inflow Upper', 'VVENT Total Outflow Upper', &
        'VVENT Total Inflow Lower', 'VVENT Total Outflow Lower', 'MVENT Total Inflow Upper', 'MVENT Total Outflow Upper', &
        'MVENT Total Inflow Lower', 'MVENT Total Outflow Lower'/
-
-    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_', 'HT_', 'VT_', 'MVT_' /
-
     data LabelUnits / 's', 3*'kg/s', 2*'kg', 3*'kg/s'/
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
     headertext(2,1) = Labels(1)
-    headertext(3,1) = ' '
+    headertext(3,1) = LabelsShort(1)
     headertext(4,1) = LabelUnits(1)
     position = 1
 
@@ -842,7 +838,7 @@ module spreadsheet_header_routines
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = Labels(1)
-    headertext(2,1) = ' '
+    headertext(2,1) = Labels(1)
     headertext(3,1) = LabelUnits(1)
 
     position = 1
@@ -921,7 +917,7 @@ module spreadsheet_header_routines
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = Labels(1)
-    headertext(2,1) = ' '
+    headertext(2,1) = Labels(1)
     headertext(3,1) = LabelUnits(1)
 
     position = 1
@@ -969,7 +965,7 @@ module spreadsheet_header_routines
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
     headertext(2,1) = Labels(1)
-    headertext(3,1) = ' '
+    headertext(3,1) = Labels(1)
     headertext(4,1) = LabelUnits(1)
 
     position = 1

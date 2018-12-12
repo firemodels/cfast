@@ -54,7 +54,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfires
-    real(eb) :: outarray(maxhead), fheight, fire_ignition
+    real(eb) :: outarray(maxhead), f_height, fire_ignition
     logical :: firstc = .true.
     integer :: position, i
     type(room_type), pointer :: roomptr
@@ -92,7 +92,7 @@ module spreadsheet_routines
     if (n_fires/=0) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
-            call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+            f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
             if (fireptr%ignited) then
                 fire_ignition = 1
             else
@@ -104,7 +104,7 @@ module spreadsheet_routines
             call ssaddtolist (position,fireptr%qdot_actual,outarray)
             call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
             call ssaddtolist (position,fireptr%qdot_layers(u),outarray)
-            call ssaddtolist (position,fheight,outarray)
+            call ssaddtolist (position,f_height,outarray)
             call ssaddtolist (position,fireptr%qdot_convective,outarray)
             call ssaddtolist (position,fireptr%total_pyrolysate,outarray)
             call ssaddtolist (position,fireptr%total_trace,outarray)
@@ -506,7 +506,7 @@ module spreadsheet_routines
     integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires+mxhvents*(4+10*mxfslab)+10*mxvvents+12*mxmvents
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxhead), fheight, fraction, height, width, avent, slabs, vflow
+    real(eb) :: outarray(maxhead), f_height, fraction, height, width, avent, slabs, vflow
     logical :: firstc
     integer :: position
     integer :: i, j, iroom1, iroom2, ik, im, ix
@@ -548,9 +548,9 @@ module spreadsheet_routines
     if (n_fires/=0) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
-            call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+            f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
             call ssaddtolist (position,fireptr%qdot_actual/1000.,outarray)
-            call ssaddtolist (position,fheight,outarray)
+            call ssaddtolist (position,f_height,outarray)
             call ssaddtolist (position,fireptr%z_position+fireptr%z_offset,outarray)
             call ssaddtolist (position,fireptr%firearea,outarray)
         end do

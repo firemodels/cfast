@@ -1236,7 +1236,7 @@ continue
     integer, intent(in) :: lu
     
     integer :: ios, i, ii, jj, kk, n_defs, ifire, np
-    real(eb) :: tmpcond, max_hrr, flamelength, hrrpm3, max_area, ohcomb
+    real(eb) :: tmpcond, max_hrr, f_height, hrrpm3, max_area, ohcomb
 
     type(room_type),   pointer :: roomptr
     type(fire_type),   pointer :: fireptr
@@ -1438,11 +1438,11 @@ continue
 
                     ! Diagnostic - check for the maximum heat release per unit volume.
                     ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
-                    call flame_height(max_hrr, max_area, flamelength)
-                    flamelength = max (0.0_eb, flamelength)
+                    f_height = flame_height(max_hrr, max_area)
+                    f_height = max (0.0_eb, f_height)
 
                     ! Now the heat release per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
-                    hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+flamelength))
+                    hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+f_height))
                     if (hrrpm3>4.0e6_eb) then
                         write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
                         write (*, 5108)

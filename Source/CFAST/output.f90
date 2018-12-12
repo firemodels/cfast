@@ -186,7 +186,7 @@ module output_routines
     ! output the fire environment at the current time
 
     integer i, icomp
-    real(eb) :: fheight, xems, pyrolysis_rate, xqf, xqupr, xqlow
+    real(eb) :: f_height, xems, pyrolysis_rate, xqf, xqupr, xqlow
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
@@ -196,9 +196,9 @@ module output_routines
         do i = 1, n_fires
             fireptr => fireinfo(i)
             if (fireptr%ignited) then
-                call flame_height (fireptr%qdot_actual,fireptr%firearea,fheight)
+                f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
                 write (iofilo,5010) trim(fireptr%name), 'Y', fireptr%mdot_plume, fireptr%mdot_pyrolysis, fireptr%qdot_actual, &
-                    fheight, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
+                    f_height, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
             else
                 write (iofilo,5010) trim(fireptr%name), 'N'
             end if

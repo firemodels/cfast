@@ -26,8 +26,8 @@ module initialization_routines
 
     private
 
-    public get_thermal_property, inittarg, initialize_ambient, offset, initialize_memory, initialize_fire_objects, &
-        initialize_species, setup_walls_and_targets
+    public get_thermal_property, initialize_targets, initialize_ambient, offset, initialize_memory, initialize_fire_objects, &
+        initialize_species, initialize_walls
 
     contains
 
@@ -519,18 +519,20 @@ module initialization_routines
     return
     end subroutine initialize_species
 
-! --------------------------- inittarg -------------------------------------------
+! --------------------------- initialize_targets -------------------------------------------
 
-    subroutine inittarg
+    subroutine initialize_targets
 
     ! initialize target data structures
 
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
-    integer :: itarg, iroom, iwall, iwall2
+    integer :: itarg, iroom, iwall, iwall2, tp
     integer :: map6(6) = (/1,3,3,3,3,2/)
+    character(mxthrmplen) :: tcname
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
+    type(thermal_type), pointer :: thrmpptr
 
     do itarg = 1, n_targets
 
@@ -618,14 +620,29 @@ module initialization_routines
             write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
             stop
         end if
+        
+        ! set up target thermal properties
+        tcname = targptr%material
+        if (tcname==' ') then
+            tcname = 'DEFAULT'
+            targptr%material = tcname
+        end if
+        call get_thermal_property(tcname,tp)
+        thrmpptr => thermalinfo(tp)
+        targptr%k = thrmpptr%k(1)
+        targptr%c = thrmpptr%c(1)
+        targptr%rho = thrmpptr%rho(1)
+        targptr%thickness = thrmpptr%thickness(1)
+        targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))
+        targptr%emissivity = thrmpptr%eps
     end do
 
     return
-    end subroutine inittarg
+    end subroutine initialize_targets
 
-! --------------------------- setup_walls_and_targets  -------------------------------------------
+! --------------------------- initialize_walls  -------------------------------------------
 
-    subroutine setup_walls_and_targets (tstop)
+    subroutine initialize_walls (tstop)
 
     ! initializes data structures associated with walls and targets
     ! input: tstop  simulation time. used to estimate a characteristic thermal penetration time and make sure
@@ -641,16 +658,15 @@ module initialization_routines
     ! n_thrmp is a count of the number of tpp data sets in the tpp data structure
 
     real(eb), intent(in) :: tstop
-    integer :: i, j, jj, k, itarg, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
+    integer :: i, j, jj, k, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
     integer nslab, numnode(mxslb+1)
-    character(mxthrmplen):: off = 'OFF', none = 'NONE', tcname
+    character(mxthrmplen) :: off = 'OFF', none = 'NONE'
 
     ! tp is the pointer into the data base for each material
     integer tp
 
     type(room_type), pointer :: roomptr, from_roomptr, to_roomptr
-    type(target_type), pointer :: targptr
     type(thermal_type), pointer :: thrmpptr
 
     ! map the thermal data into its appropriate wall specification
@@ -764,26 +780,8 @@ module initialization_routines
         end do
     end do
 
-    ! initialize target data structures
-    do itarg = 1, n_targets
-        targptr => targetinfo(itarg)
-        tcname = targptr%material
-        if (tcname==' ') then
-            tcname = 'DEFAULT'
-            targptr%material = tcname
-        end if
-        call get_thermal_property(tcname,tp)
-        thrmpptr => thermalinfo(tp)
-        targptr%k = thrmpptr%k(1)
-        targptr%c = thrmpptr%c(1)
-        targptr%rho = thrmpptr%rho(1)
-        targptr%thickness = thrmpptr%thickness(1)
-        targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))
-        targptr%emissivity = thrmpptr%eps
-    end do
-
     return
-    end subroutine setup_walls_and_targets
+    end subroutine initialize_walls
 
 ! --------------------------- offset -------------------------------------------
 

@@ -3,7 +3,7 @@ module spreadsheet_input_routines
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use initialization_routines, only : inittarg, initialize_ambient, offset
+    use initialization_routines, only : initialize_targets, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, upperall, exehandle, emix, set_heat_of_combustion, position_object

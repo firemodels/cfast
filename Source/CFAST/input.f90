@@ -3,7 +3,7 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use initialization_routines, only : inittarg, initialize_ambient, offset
+    use initialization_routines, only : initialize_targets, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, upperall, exehandle, emix
@@ -110,7 +110,7 @@
     exterior_rho = exterior_abs_pressure/exterior_ambient_temperature/rgas
 
     ! initialize the targets.
-    call inittarg
+    call initialize_targets
 
     ! now calculate the offsets - the order is important
     call offset

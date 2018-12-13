@@ -28,7 +28,7 @@
     !     other dealings in the software.
 
     use precision_parameters
-    use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, setup_walls_and_targets
+    use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions
     use solve_routines, only : solve_simulation
@@ -81,7 +81,7 @@
     thrmpptr%rho(1) = 800.0_eb
     thrmpptr%thickness(1) = 0.0120_eb
 
-    call setup_walls_and_targets (tstop)
+    call initialize_walls (tstop)
 
     call output_initial_conditions
 

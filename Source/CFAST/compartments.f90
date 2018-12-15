@@ -23,10 +23,11 @@
 
     subroutine layer_mixing (flows_layer_mixing)
 
-    !     interface between calculate_residuals and single line layer mixing model.
-    !     loops over room setting up varibles, does calculation and fills in data
-    !     structures with results.
-    !     outputs:    flows_layer_mixing      net enthalphy and mass into each layer
+    ! interface between calculate_residuals and single line layer mixing model.
+    ! loops over room setting up varibles, does calculation and fills in data
+    ! structures with results.
+    
+    ! outputs     flows_layer_mixing      net enthalphy and mass into each layer
 
 
     real(eb), intent(out) :: flows_layer_mixing(mxrooms, ns+2, 2)
@@ -74,10 +75,10 @@
 
     subroutine synchronize_species_mass (pdif,ibeg)
 
-    !     resyncronize the total mass of the species with that of the total mass to insure overall and individual mass balance
+    ! resyncronize the total mass of the species with that of the total mass to insure overall and individual mass balance
 
-    !     input:  ibeg   the point at which species are started in p array
-    !     output: pdif   the p array to synchronize_species_mass
+    ! input   ibeg   the point at which species are started in p array
+    ! output  pdif   the p array to synchronize_species_mass
 
     integer, intent(in) :: ibeg
     real(eb), intent(out) :: pdif(*)
@@ -168,7 +169,8 @@
     ! determines whether flow from each room can reach the outside (perhaps through intermediate rooms)
     ! via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an
     ! initial pressure solution.
-    ! input: tsec: current simulation time
+    
+    ! input  tsec: current simulation time
 
     real(eb), intent(in) :: tsec
 
@@ -252,7 +254,8 @@
     subroutine wall_opening_fraction (tsec)
 
     ! calculate the opening ratio of a surface
-    ! input: tsec: current simulation time
+    
+    ! input  tsec: current simulation time
 
     !     note:
     !     surface number associated with ceiling, upper front, upper right, upper rear, upper left

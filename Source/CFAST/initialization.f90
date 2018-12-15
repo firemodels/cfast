@@ -38,8 +38,8 @@ module initialization_routines
 
     ! check for and return index to a thermal property
     
-    ! input:    name    desired thermal property name
-    ! output:   tp      thermal property number of desired thermal property
+    ! input     name    desired thermal property name
+    ! output    tp      thermal property number of desired thermal property
     
     implicit none
     character, intent(in) :: name*(*)
@@ -645,7 +645,7 @@ module initialization_routines
     subroutine initialize_walls (tstop)
 
     ! initializes data structures associated with walls and targets
-    ! input: tstop  simulation time. used to estimate a characteristic thermal penetration time and make sure
+    ! input  tstop  simulation time. used to estimate a characteristic thermal penetration time and make sure
     !               explicit calculation will converge
 
     ! kw = thermal conductivity
@@ -783,92 +783,25 @@ module initialization_routines
     return
     end subroutine initialize_walls
 
-! --------------------------- offset -------------------------------------------
-
-    subroutine offset ()
-
-    ! offset in the following context is the beginning of the vector for that particular variable minus one.
-    !   thus, the actual pressure array goes from nofp+1 to nofp+nrm1.  the total number of equations to be considered
-    !   is nequals, and is the last element in the last vector. each physical interface routine is responsible for
-    !   the count of the number of elements in the vector for which it is resonsible.
-
-    ! this set of parameters is set by nputp and is kept in the environment module cenviro.
-    ! to index a variable, the list is something like (for temperature in this case)
-
-    ! noftu+1, noftu+nrm1
-
-    ! the structure of the solver array is
-
-    ! nofp = offset for the main pressure; the array of base pressures for each compartment
-    ! noftu = upper layer temperature
-    ! nofvu = upper layer volume
-    ! noftl = lower layer temperature
-    ! nofwt = wall surface temperatures (equivalent to the number of profiles)
-    ! nofprd = species
-    ! nequals = last element in the array.
-
-    ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
-
-    ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the
-    ! beginning of the species (-1) and the end of the array which is presently used by dassl
-
-    integer :: i, j, noxygen
-    type(room_type), pointer :: roomptr
-
-    ! set the number of compartments and offsets
-    nrm1 = nr - 1
-
-    ! count the number of walls
-    nhcons = 0
-    do i = 1, nrm1
-        roomptr => roominfo(i)
-        do j = 1, nwal
-            if (roomptr%surface_on(j)) then
-                nhcons = nhcons + 1
-            end if
-            if (nwpts/=0) roomptr%nodes_w(1,j) = nwpts
-        end do
-    end do
-    
-    ! set number of implicit oxygen variables
-    if (option(foxygen)==on) then
-        noxygen = nrm1
-    else
-        noxygen = 0
-    end if
-
-    ! now do all the equation offsets
-    nofp = 0
-    noftu = nofp + nrm1
-    nofvu = noftu + nrm1
-    noftl = nofvu + nrm1
-    nofoxyl = noftl + nrm1
-    nofoxyu = nofoxyl + noxygen
-    nofwt = nofoxyu + noxygen
-    nofprd = nofwt + nhcons
-    nequals = nofprd + 2*nrm1*ns
-
-    return
-    end subroutine offset
-
 ! --------------------------- wset -------------------------------------------
 
     subroutine wset (numnode,nslab,tstop,walldx,wsplit,wk,wspec,wrho,wthick,wlen,wtemp,tamb,text)
 
-    ! initializes temperature profiles, breakpoints used in wall conduction calculations.
-    ! arguments: numnode  number of nodes in each slab
-    !            nslab    number of slabs
-    !            tstop    final simulation time
-    !            walldx   wall position points
-    !            wsplit   fraction of points assigned to slabs 1, 2 and 3
-    !            wk       wall thermal conductivity
-    !            wspec    wall specific heat
-    !            wrho     wall density
-    !            wthick   thickness of each slab
-    !            wlen     length of wall
-    !            wtemp    wall temperature profile
-    !            tamb     ambient temperature seen by interior wall
-    !            text     ambient temperature seen by exterior wall
+    ! initializes temperature profiles, breakpoints used in wall conduction calculations
+    
+    ! inputs    numnode     number of nodes in each slab
+    !           nslab       number of slabs
+    !           tstop       final simulation time
+    !           wsplit      fraction of points assigned to slabs 1, 2 and 3
+    !           wk          wall thermal conductivity
+    !           wspec       wall specific heat
+    !           wrho        wall density
+    !           wthick      thickness of each slab
+    !           tamb        ambient temperature seen by interior wall
+    !           text        ambient temperature seen by exterior wall
+    ! outputs   wlen        thickness of wall
+    !           wtemp       wall temperature profile
+    !           walldx      wall position points
 
     integer, intent(in) :: nslab
     real(eb), intent(in) :: tstop, wsplit(*), wk(*), wspec(*), wrho(*), wthick(*), tamb, text
@@ -999,5 +932,73 @@ module initialization_routines
     end do
     return
     end subroutine wset
+
+! --------------------------- offset -------------------------------------------
+
+    subroutine offset ()
+
+    ! offset in the following context is the beginning of the vector for that particular variable minus one.
+    !   thus, the actual pressure array goes from nofp+1 to nofp+nrm1.  the total number of equations to be considered
+    !   is nequals, and is the last element in the last vector. each physical interface routine is responsible for
+    !   the count of the number of elements in the vector for which it is resonsible.
+
+    ! this set of parameters is set by nputp and is kept in the environment module cenviro.
+    ! to index a variable, the list is something like (for temperature in this case)
+
+    ! noftu+1, noftu+nrm1
+
+    ! the structure of the solver array is
+
+    ! nofp = offset for the main pressure; the array of base pressures for each compartment
+    ! noftu = upper layer temperature
+    ! nofvu = upper layer volume
+    ! noftl = lower layer temperature
+    ! nofwt = wall surface temperatures (equivalent to the number of profiles)
+    ! nofprd = species
+    ! nequals = last element in the array.
+
+    ! the arrays which use this structure are vatol, vrtol, p, pdold, pprime and pdzero
+
+    ! an important note - solve_simulation sets the last variable to be solved to nofprd which is the
+    ! beginning of the species (-1) and the end of the array which is presently used by dassl
+
+    integer :: i, j, noxygen
+    type(room_type), pointer :: roomptr
+
+    ! set the number of compartments and offsets
+    nrm1 = nr - 1
+
+    ! count the number of walls
+    nhcons = 0
+    do i = 1, nrm1
+        roomptr => roominfo(i)
+        do j = 1, nwal
+            if (roomptr%surface_on(j)) then
+                nhcons = nhcons + 1
+            end if
+            if (nwpts/=0) roomptr%nodes_w(1,j) = nwpts
+        end do
+    end do
+    
+    ! set number of implicit oxygen variables
+    if (option(foxygen)==on) then
+        noxygen = nrm1
+    else
+        noxygen = 0
+    end if
+
+    ! now do all the equation offsets
+    nofp = 0
+    noftu = nofp + nrm1
+    nofvu = noftu + nrm1
+    noftl = nofvu + nrm1
+    nofoxyl = noftl + nrm1
+    nofoxyu = nofoxyl + noxygen
+    nofwt = nofoxyu + noxygen
+    nofprd = nofwt + nhcons
+    nequals = nofprd + 2*nrm1*ns
+
+    return
+    end subroutine offset
 
 end module initialization_routines

@@ -37,6 +37,8 @@ module output_routines
     subroutine output_version (iunit)
 
     ! put the header information in the output file. we assume the file is open
+    
+    ! input iunit   logical unit number to write output
 
     integer, intent(in) :: iunit
     integer imajor, iminor, iminorrev
@@ -63,6 +65,11 @@ module output_routines
     subroutine splitversion (version,imajor,iminor,iminorrev)
     
     ! get program version as integers
+    
+    ! input     version     integer version number of the code
+    ! outputs   imajor      major version number
+    !           iminor      minor version number
+    !           iminorrev   minor revision number
 
     integer, intent(in) :: version
     integer, intent(out) :: imajor,iminor,iminorrev
@@ -110,14 +117,14 @@ module output_routines
     subroutine output_results(time)
 
     ! output the results of the simulation at the current time
-    !   results_layers     basic environment
-    !   results_fires      fires
-    !   results_targets    targets and walls - temperature, radiation and convective flux
-    !   results_detectors  sprinkler and detector information
-    !   results_species    species
-    !   results_vent_flows wall, ceiling/floor, and mechanical vents
+    !       results_layers      basic environment
+    !       results_fires       fires
+    !       results_targets     targets and walls - temperature, radiation and convective flux
+    !       results_detectors   sprinkler and detector information
+    !       results_species     species
+    !       results_vent_flows  wall, ceiling/floor, and mechanical vents
 
-    ! argument: time  current simulation time (s)
+    ! input time  current simulation time (s)
 
     real(eb), intent(in) :: time
 
@@ -311,7 +318,7 @@ module output_routines
 
 ! --------------------------- results_vent_flows -------------------------------------------
 
-    subroutine results_vent_flows ()
+    subroutine results_vent_flows
 
     ! output the vent flow at the current time
 
@@ -434,6 +441,8 @@ module output_routines
     subroutine results_compressed (iounit)
 
     ! output a compressed output for 80 column screens
+    
+    ! input iounit  logical unit number for output
 
     integer, intent(in) :: iounit
 
@@ -484,7 +493,8 @@ module output_routines
     subroutine results_targets (itprt)
 
     ! output the temperatures and fluxes on surfaces and targets at the current time
-    ! argument: itprt 1 if target printout specifically called for, 0 otherwise
+    
+    ! input     itprt   1 if target printout specifically called for, 0 otherwise
 
     integer, intent(in) :: itprt
 

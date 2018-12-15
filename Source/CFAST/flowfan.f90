@@ -28,10 +28,10 @@ module mflow_routines
     ! physical interface routine to calculate flow through all forced vents (mechanical flow).
     ! it returns rates of mass and energy flows into the layers from all mechancial vents in the simulation.
     
-    !     inputs:   tsec            current simulation time (s)
-    !               epsp            pressure error tolerance
-    !     outputs:  uflw_mf         change in mass and energy for each layer / compartment via flow through mechanical vents
-    !               iflw_filtered   mass and energy removed from system via filtering at mechanical vents
+    ! inputs    tsec            current simulation time (s)
+    !           epsp            pressure error tolerance
+    ! outputs   uflw_mf         change in mass and energy for each layer / compartment via flow through mechanical vents
+    !           iflw_filtered   mass and energy removed from system via filtering at mechanical vents
 
     real(eb), intent(in) :: tsec, epsp
     real(eb), intent(out) :: uflw_mf(mxrooms,ns+2,2), uflw_filtered(mxrooms,ns+2,2)
@@ -172,7 +172,7 @@ module mflow_routines
     
     ! calculates the fan flow in m^3/s.  At the moment, it's just a constant flow fan
     
-    ! inputs:   ventptr     pointer to vent of interest
+    ! inputs    ventptr     pointer to vent of interest
     !           epsp        pressure error tolerance
     !           fraction    current vent opening fraction
 
@@ -192,7 +192,7 @@ module mflow_routines
     
     ! calculates the absolute pressure in the vented compartment at the specified height
     
-    ! inputs:   iroom   compartment number
+    ! inputs    iroom   compartment number
     !           height  height within compartment where pressure is calculated
     
     integer, intent(in) :: iroom
@@ -221,7 +221,7 @@ module mflow_routines
     
     ! calculates the fraction of mechanical flow that come from or goes to a layer
     
-    ! inputs:   ventptr pointer to vent of interest
+    ! inputs    ventptr pointer to vent of interest
     !           ifromto 1 = flow from first compartment from specified layer
     !                   2 = flow into second compartment into specified layer
     !           layer   1 for upper layer, 2 for lower layer

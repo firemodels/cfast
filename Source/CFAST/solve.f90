@@ -830,7 +830,7 @@ module solve_routines
     !            yprime_vector Current guess at derivative of solution vector (Y' above)
     !            f_vector Residual or value of F(t,y,dy/dt)
     !            ires    
-    ! Outputs:  ires Integer flag which is always equal to zero on input. calculate_residuals should alter IRES
+    ! outputs   ires Integer flag which is always equal to zero on input. calculate_residuals should alter IRES
     !                   only if it encounters an illegal value of Y or a stop condition. Set IRES = -1 if an input
     !                   value is illegal, and DDASSL will try to solve the problem without getting IRES = -1. If
     !                   IRES = -2, DASSL return control to the calling program with IDID = -11.

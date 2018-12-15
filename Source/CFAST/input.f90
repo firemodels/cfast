@@ -52,6 +52,7 @@
     type(fire_type), pointer :: fireptr
     type(detector_type), pointer :: dtectptr
     type(vent_type), pointer :: ventptr
+    type(thermal_type), pointer :: thrmpptr
 
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
@@ -74,6 +75,17 @@
     else
         call spreadsheet_input
     end if
+
+    ! add the default thermal property
+    n_thrmp = n_thrmp + 1
+    thrmpptr => thermalinfo(n_thrmp)
+    thrmpptr%name = 'DEFAULT'
+    thrmpptr%eps = 0.90_eb
+    thrmpptr%nslab = 1
+    thrmpptr%k(1) = 0.120_eb
+    thrmpptr%c(1) = 900.0_eb
+    thrmpptr%rho(1) = 800.0_eb
+    thrmpptr%thickness(1) = 0.0120_eb
    
     ! now we can check the input data for consistency
 

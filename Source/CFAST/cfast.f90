@@ -93,7 +93,7 @@
     subroutine cfastexit (name, errorcode)
 
     ! called when CFAST exits, printing an error code if necessary
-    ! inputs:   name        routine name calling for exit ... at this point, it's always "CFAST"
+    ! inputs    name        routine name calling for exit ... at this point, it's always "CFAST"
     !           errorcode   numeric code indicating reason for an error exit.  0 for a normal exit
 
     use output_routines, only : deleteoutputfiles

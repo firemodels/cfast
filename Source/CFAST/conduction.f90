@@ -25,11 +25,12 @@ module conduction_routines
     ! interface between calculate_residuals and the conduction calculation. for each active wall surface in each routine this
     ! routine calculates the residual function
     !     q'' + k dt/dx, which when zero is simply fourier's law of heat conduction.
-    ! inputs:    update: we don't keep solution unless update is 1 or 2. if update is 2 then
+    
+    ! inputs     update: we don't keep solution unless update is 1 or 2. if update is 2 then
     !                    we don't calculate delta or use fluxes_total
     !            dt: time step interval from last valid solution point
     !            fluxes_total: total flux striking walls
-    ! output:    delta: the residual of q'' + k dt/dx
+    ! output     delta: the residual of q'' + k dt/dx
 
     integer, intent(in) :: update
     real(eb), intent(in) :: dt, fluxes_total(mxrooms,nwal)
@@ -154,8 +155,9 @@ module conduction_routines
        tgrad,tderv)
 
 
-    ! handles cfast conduction
-    ! inputs: update     we don't keep solution unless update is 1 or 2
+    ! handles cfast conduction for compartment surfaces and planar targets
+    
+    ! inputs  update     we don't keep solution unless update is 1 or 2
     !           tempin   temperature at interior wall
     !           tempout  temperature at exterior wall
     !           dt       time step interval from last valid solution point
@@ -171,7 +173,7 @@ module conduction_routines
     !                    on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
     !           tderv    partial of temperature gradient with respect to wall surface temperature.
     !                    this number is used to calculate wall jacobian elements.
-    ! outputs: wtemp     wall temperature profile
+    ! outputs  wtemp     wall temperature profile
     !          tgrad     temperature gradient
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*), tempin, tempout, dt, wfluxin, wfluxout
@@ -314,7 +316,8 @@ module conduction_routines
     subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nnodes,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
     ! handles conduction calculation for cylindrical coordinates (for targets)
-    ! inputs: iwbound  boundary condition. if 3, contstant temperature; otherwise flux
+    
+    ! inputs  iwbound  boundary condition. if 3, contstant temperature; otherwise flux
     !         tempin   temperature at cylinder surface
     !         wtemp    cable temperature profile
     !         nnodes   number of nodes
@@ -324,7 +327,7 @@ module conduction_routines
     !         wrho     cable density
     !         wspec    cable specific heat
     !         diam     cable diameter
-    ! output: tgrad    temperature gradient
+    ! output  tgrad    temperature gradient
 
     integer, intent(in) :: nnodes, iwbound
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin
@@ -428,6 +431,7 @@ module conduction_routines
     subroutine get_cylinder_temperature(x,wtemp,nx,rad,tempx)
     
     ! determines interior temperature of cylindrical target at specified depth
+    
     ! arguments: x     desired depth for internal temperature
     !            wtemp temperatures at nx points over radius of cylinder
     !            nx    number of data points

@@ -17,21 +17,23 @@
     integer, parameter :: mxitems = 2500        ! maximum number of vents, targets, etc.
 
     ! fire related input parameters
-    integer, parameter :: mxpts = 200                   ! maximum number of data points in a input curve/ramp
-    integer, parameter :: ns = 22                       ! number of species
-    integer, parameter :: ns_mass = 9                   ! number of species that count toward total mass
-    integer, parameter :: mxfires = mxitems             ! maximum number of fires
-    integer, parameter :: mxtabls = mxfires             ! maximum number of table inputs, currently only used for fires
-    integer, parameter :: mxtablcols = ns+2             ! maximum columns in a table of fire inputs
-    real(eb), parameter :: o2f = 1.31e7_eb              ! HRR by oxygen consumption constant in MJ/kg
-    real(eb), parameter :: t_max = 900._eb              ! maximum flame temperature
+    integer, parameter :: mxpts = 200               ! maximum number of data points in a input curve/ramp
+    integer, parameter :: ns = 22                   ! number of species
+    integer, parameter :: ns_mass = 9               ! number of species that count toward total mass
+    integer, parameter :: mxfires = mxitems         ! maximum number of fires
+    integer, parameter :: mxtabls = mxfires         ! maximum number of table inputs, currently only used for fires
+    integer, parameter :: mxtablcols = ns+2         ! maximum columns in a table of fire inputs
+    real(eb), parameter :: o2f = 1.31e7_eb          ! HRR by oxygen consumption constant in MJ/kg
+    real(eb), parameter :: t_max = 900._eb          ! maximum flame temperature
 
-    integer, parameter :: mxthrmp = mxitems     ! maximum number of thermal properties
-    integer, parameter :: mxthrmplen = 16       ! maximum length for thermal property short names
+    integer, parameter :: mxthrmp = mxitems         ! maximum number of thermal properties
+    integer, parameter :: mxthrmplen = 16           ! maximum length for thermal property short names
 
-    integer, parameter :: trigger_by_time = 1   ! indicies for fire ignition type (also used by vents)
+    integer, parameter :: trigger_by_time = 1       ! indicies for fire ignition type (also used by vents)
     integer, parameter :: trigger_by_temp = 2
     integer, parameter :: trigger_by_flux = 3
+    integer, parameter :: flaming = 1               ! used for specific extinction coefficients
+    integer, parameter :: smoldering = 2    
 
     ! ventilation parameters
     integer, parameter :: mxhvents = mxitems        ! maximum number of horizontal flow vents
@@ -154,6 +156,7 @@
     ! fire-related default values
     real(eb), parameter :: default_lower_oxygen_limit = 0.15_eb
     real(eb), parameter :: default_radiative_fraction = 0.35_eb
+    real(eb), dimension(2), parameter :: default_sigma_s = (/8700._eb, 4400._eb/) ! mulholland, F&M 24, 227(2000)
     
     ! sprinkler/detector defaults
     real(eb), parameter :: default_rti = 50._eb

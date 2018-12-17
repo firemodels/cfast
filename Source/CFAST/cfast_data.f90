@@ -57,19 +57,21 @@ module fire_data
     use precision_parameters
     use cfast_types
     use cparams
+    use defaults
     implicit none
     save
 
     ! fire variables
 
-    real(eb) :: tgignt                              ! gaseous ignition temperature for burning in upper layer and door jets
-    real(eb) :: lower_o2_limit                      ! minimum oxygen level for combustion
-    real(eb) :: tradio     
+    real(eb) :: tgignt                                  ! gaseous ignition temperature for burning in upper layer and door jets
+    real(eb) :: lower_o2_limit                          ! minimum oxygen level for combustion
+    real(eb) :: summed_total_trace                      ! total trace species released by all fires
+    real(eb), dimension(2) :: sigma_s = default_sigma_s ! extinction coefficient for flaming and smoldering smoke
 
-    integer :: n_fires                              ! number of fires in the current simulation
+    integer :: n_fires                                  ! number of fires in the current simulation
     type(fire_type), allocatable, dimension(:), target :: fireinfo
     
-    integer :: n_tabls                              ! number of tables of fire data in the current simulation
+    integer :: n_tabls                                  ! number of tables of fire data in the current simulation
     type(table_type), allocatable, dimension(:), target :: tablinfo
 
     integer :: n_furn                                   ! number of data points in furnace temperature curve

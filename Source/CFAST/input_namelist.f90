@@ -269,8 +269,9 @@
     integer :: ios
 
     real(eb) :: max_time_step, lower_oxygen_limit
+    real(eb), dimension(2) :: specific_extinction_coefficient
     logical :: adiabatic
-    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit
+    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit, specific_extinction_coefficient
 
     ios = 1
 
@@ -302,6 +303,7 @@
         adiabatic_walls=adiabatic
         stpmax = max_time_step
         lower_o2_limit = lower_oxygen_limit
+        sigma_s = specific_extinction_coefficient
 
     end if misc_flag
 
@@ -312,8 +314,9 @@
     ! note actual default values are set in initialize_memory and used here to initialize namelist
 
     adiabatic = .false.
-    max_time_step = stpmax                          ! s
+    max_time_step = stpmax
     lower_oxygen_limit = default_lower_oxygen_limit
+    specific_extinction_coefficient = default_sigma_s
 
     end subroutine set_defaults
 

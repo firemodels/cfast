@@ -1481,7 +1481,7 @@ module isosurface
 
     write (message,'(4a)') 'ERROR: Memory allocation failed for ', trim(varname),' in the routine ',trim(codesect)
     write (*,*) message
-    call cfastexit('CFAST',1)
+    call cfastexit('CFAST',4)
 
     end subroutine chkmemerr
 

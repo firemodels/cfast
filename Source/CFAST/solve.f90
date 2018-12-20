@@ -531,7 +531,7 @@ module solve_routines
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
                     write (iofill,'(i0,a,e11.4,a,e11.4)') &
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
-                    call cfastexit ('CFAST',1)
+                    call cfastexit ('CFAST',4)
                     stop
                 end if
             else
@@ -643,7 +643,7 @@ module solve_routines
         if (stopiter>=0.and.total_steps>stopiter) then
             call deleteoutputfiles (stopfile)
             write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
-            call cfastexit ('CFAST', 0)
+            call cfastexit ('CFAST', 6)
         end if
         go to 10
     end if

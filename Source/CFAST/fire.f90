@@ -39,7 +39,7 @@ module fire_routines
     real(eb), intent(out) :: flows_fires(mxrooms,ns+2,2)
 
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
-    real(eb) :: omasst, oareat, ohight, oqdott, objhct, y_soot, y_co, y_trace, t_lower, q_firemass, q_entrained, hrr_r, hrr_c
+    real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_trace, t_lower, q_firemass, q_entrained, hrr_r, hrr_c
     real(eb) :: y_soot_flaming, y_soot_smolder
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
@@ -55,20 +55,20 @@ module fire_routines
         fireptr => fireinfo(i)
         iroom = fireptr%room
         roomptr => roominfo(iroom)
-        call interpolate_pyrolysis(i,tsec,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_soot_flaming, &
+        call interpolate_pyrolysis(i,tsec,iroom,mdot_t,area_t,height_t,qdot_t,hoc_t,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_soot_flaming, &
             y_soot_smolder,y_co,y_trace)
 
-        fireptr%mdot_pyrolysis = omasst
-        fireptr%z_offset = ohight
+        fireptr%mdot_pyrolysis = mdot_t
+        fireptr%z_offset = height_t
         species_mass(u,1:ns) = roomptr%species_mass(u,1:ns)
         species_mass(l,1:ns) = roomptr%species_mass(l,1:ns)
         
-        call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, objhct, y_soot, &
+        call do_fire(i, iroom, fireptr%mdot_pyrolysis, roomptr%cheight, roomptr%cwidth, roomptr%cdepth, hoc_t, y_soot, &
             y_soot_flaming, y_soot_smolder, y_co, y_trace, n_C, n_H, n_O, n_N, n_Cl, fireptr%molar_mass, species_mass, &
-            fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, oareat, fireptr%mdot_entrained, &
-            fireptr%mdot_plume, oqdott, species_mass_rate, hrr_c, hrr_r, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
+            fireptr%x_position, fireptr%y_position, fireptr%z_position+fireptr%z_offset, area_t, fireptr%mdot_entrained, &
+            fireptr%mdot_plume, qdot_t, species_mass_rate, hrr_c, hrr_r, fireptr%qdot_layers(l), fireptr%qdot_layers(u))
         
-        fireptr%firearea = oareat
+        fireptr%firearea = area_t
         fireptr%mdot_trace = fireptr%mdot_pyrolysis*y_trace
         fireptr%qdot_actual = fireptr%qdot_layers(l) + fireptr%qdot_layers(u)
         fireptr%qdot_convective = hrr_c
@@ -91,27 +91,27 @@ module fire_routines
 
 ! --------------------------- interpolate_pyrolysis -------------------------------------------
 
-    subroutine interpolate_pyrolysis (objn,time,iroom,omasst,oareat,ohight,oqdott,objhct,n_C,n_H,n_O,n_N,n_Cl,y_soot, &
+    subroutine interpolate_pyrolysis (ifire,tsec,iroom,mdot_t,area_t,height_t,qdot_t,hoc_t,n_C,n_H,n_O,n_N,n_Cl,y_soot, &
                                       y_soot_flaming, y_soot_smolder,y_co,y_trace)
 
     ! returns fire yields at current time interpolated from user input
     
-    ! inputs   objn                     fire pointer number
-    !          time                     current simulation time (s)
+    ! inputs   ifire                     fire pointer number
+    !          tsec                     current simulation time (s)
     !          iroom                    room contining the object
-    ! outputs  omasst                   pyrolysis rate of object
-    !          oareat                   area of pyrolysis of object
-    !          ohight                   height of fire
-    !          oqdott                   HRR
-    !          objhct                   heat of combustion
+    ! outputs  mdot_t                   pyrolysis rate of object
+    !          area_t                   area of pyrolysis of object
+    !          height_t                 height of fire
+    !          qdot_t                   HRR
+    !          hoc_t                    heat of combustion
     !          n_C, n_H, n_O, n_N, n_Cl molecular formula for the fuel; these can be fractional;
     !                                   yields of O2, HCl, and HCN are determined from this
     !          y_soot, y_co, y_trace    species yields for soot, CO, and trace species;
     !                                   others are calculated from the molecular formula of the fuel
 
-    integer, intent(in) :: objn, iroom
-    real(eb), intent(in) :: time
-    real(eb), intent(out) :: omasst, oareat, ohight, oqdott, objhct, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_soot_flaming 
+    integer, intent(in) :: ifire, iroom
+    real(eb), intent(in) :: tsec
+    real(eb), intent(out) :: mdot_t, area_t, height_t, qdot_t, hoc_t, n_C, n_H, n_O, n_N, n_Cl, y_soot, y_soot_flaming 
     real(eb), intent(out) :: y_soot_smolder, y_co, y_trace
 
     real(eb) :: xxtime, tdrate, xxtimef, qt, qtf, tfact, factor, tfilter_max
@@ -122,19 +122,19 @@ module fire_routines
     type(fire_type), pointer :: fireptr
 
     roomptr => roominfo(iroom)
-    fireptr => fireinfo(objn)
+    fireptr => fireinfo(ifire)
     
     if (.not.fireptr%ignited) then
-        omasst = 0.0_eb
-        oareat = 0.0_eb
-        ohight = 0.0_eb
-        oqdott = 0.0_eb
+        mdot_t = 0.0_eb
+        area_t = 0.0_eb
+        height_t = 0.0_eb
+        qdot_t = 0.0_eb
         n_C = 1.0_eb
         n_H = 4.0_eb
         n_O = 0.0_eb
         n_N = 0.0_eb
         n_Cl = 0.0_eb
-        objhct = 5.0e7_eb
+        hoc_t = 5.0e7_eb
         y_soot = 0.0_eb
         y_soot_flaming = 0.0_eb
         y_soot_smolder = 0.0_eb
@@ -143,7 +143,7 @@ module fire_routines
         return
     end if
 
-    xxtime = time - fireptr%ignition_time
+    xxtime = tsec - fireptr%ignition_time
 
     id = roomptr%sprinkler_activated
 
@@ -172,9 +172,9 @@ module fire_routines
         end if
     end if
 
-    call interp(fireptr%t_mdot,fireptr%mdot,fireptr%n_mdot,xxtime,1,omasst)
-    call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtime,1,oqdott)
-    call interp(fireptr%t_hoc,fireptr%hoc,fireptr%n_hoc,xxtime,1,objhct)
+    call interp(fireptr%t_mdot,fireptr%mdot,fireptr%n_mdot,xxtime,1,mdot_t)
+    call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtime,1,qdot_t)
+    call interp(fireptr%t_hoc,fireptr%hoc,fireptr%n_hoc,xxtime,1,hoc_t)
     call interp(fireptr%t_soot,fireptr%y_soot,fireptr%n_soot,xxtime,1,y_soot)
     if (xxtime>=fireptr%flaming_transition_time) then
         y_soot_flaming = y_soot
@@ -185,8 +185,8 @@ module fire_routines
     end if
     call interp(fireptr%t_co,fireptr%y_co,fireptr%n_co,xxtime,1,y_co)
     call interp(fireptr%t_trace,fireptr%y_trace,fireptr%n_trace,xxtime,1,y_trace)
-    call interp(fireptr%t_area,fireptr%area,fireptr%n_area,xxtime,1,oareat)
-    call interp(fireptr%t_height,fireptr%height,fireptr%n_height,xxtime,1,ohight)
+    call interp(fireptr%t_area,fireptr%area,fireptr%n_area,xxtime,1,area_t)
+    call interp(fireptr%t_height,fireptr%height,fireptr%n_height,xxtime,1,height_t)
 
     n_C = fireptr%n_C
     n_H = fireptr%n_H
@@ -196,15 +196,15 @@ module fire_routines
 
     ! attenuate mass and energy release rates if there is an active sprinkler in this room
     if (id/=0.and.ifact==1) then
-        omasst = omasst*tfact
-        oqdott = oqdott*tfact
+        mdot_t = mdot_t*tfact
+        qdot_t = qdot_t*tfact
     end if
 
     tfilter_max=1.0_eb
-    if (adiabatic_walls.and.time<tfilter_max) then
-        factor = time/tfilter_max
-        omasst = omasst*factor
-        oqdott = oqdott*factor
+    if (adiabatic_walls.and.tsec<tfilter_max) then
+        factor = tsec/tfilter_max
+        mdot_t = mdot_t*factor
+        qdot_t = qdot_t*factor
     end if
 
     return
@@ -573,15 +573,15 @@ module fire_routines
 
 ! --------------------------- integrate_mass -------------------------------------------
 
-    subroutine integrate_mass (time, deltt)
+    subroutine integrate_mass (tsec, deltt)
 
     ! routine to integrate the pyrolysis rate of species to get total mass. We also integrate the trace species release 
     !   and total for all fires
     
-    ! inputs    time    current simulation time
+    ! inputs    tsec    current simulation time
     !           deltt   current time step
 
-    real(eb), intent(in) :: time, deltt
+    real(eb), intent(in) :: tsec, deltt
 
     integer ::i
     real(eb) :: fraction
@@ -607,7 +607,7 @@ module fire_routines
     do i = 1, n_mvents
         ventptr => mventinfo(i)
         rampid = ventptr%ramp_id
-        call get_vent_opening (rampid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,time,fraction)
+        call get_vent_opening (rampid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
         fraction = (1.0_eb-fraction)
         ventptr%total_flow(u) = ventptr%total_flow(u) + ventptr%mflow(1,u)*deltt
         ventptr%total_flow(l) = ventptr%total_flow(l) + ventptr%mflow(1,l)*deltt

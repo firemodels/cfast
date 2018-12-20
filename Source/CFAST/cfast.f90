@@ -105,6 +105,9 @@
     if (errorcode==0) then
         if (.not.validation_flag) write (*, '(''Normal exit from '',a)') trim(name)
         write (iofill, '(''Normal exit from '',a)') trim(name)
+    elseif (errorcode==6) then
+        if (.not.validation_flag) write (*, '(''Maximum iteration exit from '',a)') trim(name)
+        write (iofill, '(''Maximum iteration exit from '',a)') trim(name)
     else
         write (*,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
         write (iofill,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode

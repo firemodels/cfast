@@ -3287,7 +3287,6 @@ Module IO
                     If numpoints > 1 Then
                         PrintLine(IO, ln)
                         ln = "      CRITERION = 'TIME'"
-                        PrintLine(IO, ln)
                         ln += " T = " + xx(1).ToString
                         For k = 2 To numpoints
                             ln += ", " + xx(k).ToString

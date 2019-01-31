@@ -2042,7 +2042,7 @@ continue
     id                    = 'NULL'
     offset                = 0._eb
     offsets(:)            = 0._eb
-    orientations(:)       = 'NULL'
+    orientations(:)       = 'VERTICAL'
     pre_fraction          = 1._eb
     post_fraction         = 1._eb
     setpoint              = 0._eb

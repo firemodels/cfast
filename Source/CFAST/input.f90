@@ -105,6 +105,8 @@
 
     ! make pressures consistent with temperatures
     interior_abs_pressure = exterior_abs_pressure*interior_ambient_temperature/exterior_ambient_temperature
+    pressure_ref = exterior_abs_pressure
+    pressure_offset = pressure_ref
 
     ! compartment geometry related data
     nrm1 = nr - 1

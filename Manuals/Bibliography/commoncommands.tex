@@ -1,18 +1,29 @@
-\usepackage{mathptm,times,color}
+\usepackage{times,mathptmx}
 \usepackage[pdftex]{graphicx}
 \usepackage{multirow}
-\usepackage{bezier}
+\usepackage{tocloft}
+\usepackage{color}
 \usepackage{rotating}
 \usepackage{lscape}
 \usepackage{longtable}
 \usepackage{amsmath}
+\definecolor{linknavy}{rgb}{0,0,0.50196}
+\definecolor{linkred}{rgb}{1,0,0}
+\definecolor{linkblue}{rgb}{0,0,1}
+\usepackage{float}
+\usepackage{caption}
 \usepackage{xfrac}
 \usepackage{array}
 \usepackage{units}
 \usepackage{fix-cm}
 \usepackage{xspace}
+\usepackage{amssymb}
 \usepackage{makeidx} % Create index at end of document
 \usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography and index in the ToC
+
+\usepackage{tocstyle} % Fix table of contents sections from overlapping section titles
+\usetocstyle{standard}
+
 \usepackage{datetime}
 \newdateformat{mydate}{\monthname[\THEMONTH] \THEYEAR}
 
@@ -86,6 +97,7 @@
 \definecolor{linkblue}{rgb}{0,0,1}
 \definecolor{shadecolor}{rgb}{0.9,0.9,0.9}
 
+\usepackage{xr-hyper}
 \usepackage[pdftex,
         colorlinks=true,
         urlcolor=linkblue,     % \href{...}{...} external (URL)
@@ -109,6 +121,22 @@
     per-mode = fraction,
     separate-uncertainty = true,
 }
+
+\captionsetup[figure]{font=small}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{9.0in}
+\setlength{\topmargin}{0.in}
+\setlength{\headheight}{0.in}
+\setlength{\headsep}{0.in}
+\setlength{\parindent}{0.25in}
+\setlength{\oddsidemargin}{0.0in}
+\setlength{\evensidemargin}{0.0in}
+\setlength{\leftmargini}{\parindent} % Controls the indenting of the "bullets" in a list
+\setlength{\cftsecnumwidth}{0.45in}
+\setlength{\cftsubsecnumwidth}{0.5in}
+\setlength{\cftfignumwidth}{0.45in}
+\setlength{\cfttabnumwidth}{0.45in}
 
 % CFAST Version String
 \newcommand{\cfastversion}{7.3.0}

@@ -14,10 +14,9 @@ module initialization_routines
     use room_data
     use setup_data, only: iofill, debugging, deltat
     use solver_data
-    use target_data
-    use thermal_data
-    use vent_data
-    use wallptrs
+    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
+    use thermal_data, only: n_thrmp, thermalinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
 

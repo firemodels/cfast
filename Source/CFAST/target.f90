@@ -9,7 +9,6 @@ module target_routines
     use radiation_routines, only : absorb, solid_angle_triangle
     use utility_routines, only: xerror
 
-    use detectorptrs
     use diag_data
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off

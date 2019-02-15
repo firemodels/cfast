@@ -5,8 +5,7 @@ module output_routines
     use utility_routines, only: xerror, doesthefileexist, funit
     use opening_fractions, only: find_vent_opening_ramp
 
-    use detectorptrs
-    use diag_data
+    use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data
     use option_data
     use ramp_data
@@ -16,7 +15,6 @@ module output_routines
     use target_data
     use thermal_data
     use vent_data
-    use wallptrs
 
     implicit none
 

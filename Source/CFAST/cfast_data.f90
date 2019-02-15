@@ -4,8 +4,6 @@
 module cenviro
 
     use precision_parameters
-    use cfast_types
-    use cparams
     implicit none
     save
 
@@ -55,8 +53,8 @@ end module diag_data
 module fire_data
 
     use precision_parameters
-    use cfast_types
-    use cparams
+    use cfast_types, only: fire_type, table_type
+    use cparams, only: mxpts
     use defaults
     implicit none
     save

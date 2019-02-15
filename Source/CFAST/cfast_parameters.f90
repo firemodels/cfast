@@ -132,6 +132,18 @@
     integer, parameter :: fuel_h2o = 21
     integer, parameter :: fuel_soot = 22
 
+    ! detector types
+    integer, parameter :: smoked = 1    ! smoke detector
+    integer, parameter :: heatd = 2     ! heat detector
+    integer, parameter :: sprinkd = 3   ! sprinkler
+    
+    ! wall pointers
+    integer, parameter :: w_from_room = 1
+    integer, parameter :: w_from_wall = 2
+    integer, parameter :: w_to_room = 3
+    integer, parameter :: w_to_wall = 4
+    integer, parameter :: w_boundary_condition = 5
+
     end module cparams
 
     ! --------------------------- defaults -------------------------------------------
@@ -164,29 +176,3 @@
     real(eb), parameter :: default_activation_obscuration = 100._eb*(1._eb-(1._eb-8._eb/100._eb)**(1._eb/0.3048_eb))
 
     end module defaults
-    ! --------------------------- detectorptrs -------------------------------------------
-
-    module detectorptrs
-
-    implicit none
-
-    ! detector types
-    integer, parameter :: smoked = 1    ! smoke detector
-    integer, parameter :: heatd = 2     ! heat detector
-    integer, parameter :: sprinkd = 3   ! sprinkler
-
-    end module detectorptrs
-
-    ! --------------------------- wallptrs -------------------------------------------
-
-    module wallptrs
-
-    implicit none
-
-    integer, parameter :: w_from_room=1
-    integer, parameter :: w_from_wall=2
-    integer, parameter :: w_to_room=3
-    integer, parameter :: w_to_wall=4
-    integer, parameter :: w_boundary_condition=5
-
-    end module wallptrs

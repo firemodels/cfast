@@ -1,7 +1,6 @@
  module convection_routines
 
     use precision_parameters
-    use wallptrs
     use fire_data, only: n_fires, fireinfo
     use option_data, only: fconvec, option, on
     use room_data

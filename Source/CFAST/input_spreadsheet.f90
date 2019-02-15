@@ -9,7 +9,6 @@ module spreadsheet_input_routines
     use utility_routines, only: countargs, upperall, exehandle, emix, set_heat_of_combustion, position_object
 
     use defaults
-    use detectorptrs
     use diag_data
     use fire_data
     use namelist_data
@@ -22,7 +21,6 @@ module spreadsheet_input_routines
     use target_data
     use thermal_data
     use vent_data
-    use wallptrs
 
     implicit none
 

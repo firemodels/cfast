@@ -32,7 +32,6 @@ module solve_routines
     use solver_data
     use target_data
     use vent_data
-    use wallptrs
 
     implicit none
 

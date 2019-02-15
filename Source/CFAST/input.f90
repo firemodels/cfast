@@ -12,7 +12,6 @@
 
     use cenviro, only: rgas
     use cparams, only: mx_hsep
-    use detectorptrs
     use diag_data
     use fire_data
     use namelist_data
@@ -24,7 +23,6 @@
     use thermal_data
     use vent_data
     use room_data
-    use wallptrs
 
     implicit none
 

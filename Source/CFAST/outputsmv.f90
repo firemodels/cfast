@@ -6,12 +6,11 @@
     use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: funit
 
-    use detectorptrs
-    use target_data
     use vent_data
     use setup_data
     use smkview_data
     use room_data
+    use target_data, only: n_detectors, detectorinfo, targetinfo
 
     implicit none
 

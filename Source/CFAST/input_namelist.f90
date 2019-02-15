@@ -5,23 +5,21 @@
     use fire_routines, only: flame_height
     use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
-    use wallptrs
-    use cenviro
-    use ramp_data
-    use cparams
     use defaults
-    use setup_data
     use detectorptrs
-    use target_data
+    use diag_data
     use fire_data
+    use namelist_data
+    use option_data
+    use ramp_data
+    use room_data
+    use setup_data
     use solver_data
     use smkview_data
+    use target_data
     use thermal_data
     use vent_data
-    use room_data
-    use namelist_data
-    use diag_data
-    use option_data
+    use wallptrs
 
     implicit none 
     

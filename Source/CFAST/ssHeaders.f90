@@ -1,15 +1,13 @@
 module spreadsheet_header_routines
 
-    use cenviro
-    use room_data
-    use cparams
-    use setup_data
-    use diag_data
-    use detectorptrs
-    use target_data
-    use fire_data
+    use utility_routines, only: tointstring
+
+    use diag_data, only: ioresid, ioslab
+    use fire_data, only: n_fires, fireinfo, fire_type
+    use room_data, only: nr, nrm1, roominfo, room_type
+    use setup_data, only: validation_flag
+    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data
-    use utility_routines
 
     implicit none
 

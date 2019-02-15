@@ -1,13 +1,10 @@
  module convection_routines
 
     use precision_parameters
-    use cparams
     use wallptrs
-    use cenviro
-    use ramp_data
     use fire_data, only: n_fires, fireinfo
+    use option_data, only: fconvec, option, on
     use room_data
-    use option_data
 
     implicit none
 

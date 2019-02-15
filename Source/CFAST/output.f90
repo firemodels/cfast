@@ -5,21 +5,18 @@ module output_routines
     use utility_routines, only: xerror, doesthefileexist, funit
     use opening_fractions, only: find_vent_opening_ramp
 
-    use cenviro
-    use setup_data
-    use solver_data
     use detectorptrs
-    use cparams
-    use target_data
+    use diag_data
     use fire_data
     use option_data
+    use ramp_data
+    use room_data
+    use setup_data
+    use solver_data
+    use target_data
     use thermal_data
     use vent_data
     use wallptrs
-    use room_data
-    use ramp_data
-    use namelist_data
-    use diag_data
 
     implicit none
 

@@ -1,14 +1,12 @@
     module compartment_routines
 
     use precision_parameters
-    use cparams
-    use cenviro
-    use fire_data
+    use cenviro, only: cp
     use room_data
-    use option_data
-    use vent_data
-    use diag_data
-    use utility_routines
+    use vent_data, only: hventinfo, vventinfo, mventinfo, n_hvents, n_vvents, n_mvents
+    use diag_data, only: radi_verification_flag, upper_layer_thickness
+    use option_data, only: flayermixing, option, off
+    use utility_routines, only: tanhsmooth, mat2mult
     use opening_fractions, only : get_vent_opening
 
     implicit none

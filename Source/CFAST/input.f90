@@ -10,22 +10,21 @@
     use namelist_input_routines, only: namelist_input
     use spreadsheet_input_routines, only: spreadsheet_input
 
-    use wallptrs
-    use cenviro
-    use ramp_data
+    use cenviro, only: rgas
     use cparams, only: mx_hsep
-    use setup_data
-    use diag_data
     use detectorptrs
-    use target_data
+    use diag_data
     use fire_data
+    use namelist_data
     use option_data
+    use setup_data
     use solver_data
     use smkview_data
+    use target_data
     use thermal_data
     use vent_data
     use room_data
-    use namelist_data
+    use wallptrs
 
     implicit none
 

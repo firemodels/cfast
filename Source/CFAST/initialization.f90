@@ -7,20 +7,17 @@ module initialization_routines
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror
 
-    use cenviro
-    use ramp_data
-    use cparams
+    use cenviro, only: constvar, odevara
     use defaults
-    use setup_data
-    use solver_data
     use fire_data
-    use cparams
-    use option_data
+    use option_data, only: foxygen, option, on
+    use room_data
+    use setup_data, only: iofill, debugging, deltat
+    use solver_data
     use target_data
     use thermal_data
     use vent_data
     use wallptrs
-    use room_data
 
     implicit none
 

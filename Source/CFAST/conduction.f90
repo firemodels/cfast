@@ -3,12 +3,10 @@ module conduction_routines
     use precision_parameters
 
     use convection_routines, only: convective_flux
-
-    use wallptrs
-    use cenviro
-    use solver_data, only: nofwt, i_wallmap
+    
     use room_data
-    use cparams
+    use solver_data, only: nofwt, i_wallmap
+    use wallptrs
 
     implicit none
 

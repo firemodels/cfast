@@ -8,13 +8,11 @@ module hflow_routines
     use utility_routines, only: tanhsmooth
     
     use precision_parameters
-    use cenviro
-    use ramp_data
-    use cparams
-    use option_data
-    use vent_data
-    use diag_data
+    use cenviro, only: cp
+    use diag_data, only: dbtime, prnslab
+    use option_data, only: fhflow, fentrain, option, on
     use solver_data, only: i_wallmap, i_speciesmap
+    use vent_data
 
     implicit none
 

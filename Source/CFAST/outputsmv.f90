@@ -6,8 +6,6 @@
     use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: funit
 
-    use cenviro
-    use cfast_types
     use detectorptrs
     use target_data
     use vent_data

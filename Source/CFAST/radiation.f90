@@ -6,13 +6,11 @@ module radiation_routines
     use numerics_routines, only : ddot, dnrm2, dgefa, dgesl
 
     use precision_parameters
-    use cenviro
-    use setup_data, only: iofill
-    use cparams
-    use room_data
-    use fire_data, only: n_fires, fireinfo
-    use option_data
     use diag_data
+    use fire_data, only: n_fires, fireinfo
+    use option_data, only: frad, fgasabsorb, option, on, off
+    use room_data
+    use setup_data, only: iofill
 
     implicit none
 

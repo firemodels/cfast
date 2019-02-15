@@ -2,10 +2,7 @@
 
     use precision_parameters
 
-    use cparams
     use setup_data
-    use option_data
-    use solver_data
     use room_data, only: nwpts, wsplit, iwbound
 
     use namelist_data

@@ -5,16 +5,14 @@ module fire_routines
     use opening_fractions, only: get_vent_opening
     use utility_routines, only: tanhsmooth, xerror, interp
 
-    use cenviro
-    use ramp_data
-    use room_data
-    use target_data
-    use cparams
+    use cenviro, only: cp
     use fire_data
-    use option_data
-    use setup_data
+    use option_data, only: ffire, option, fdfire, on, off
+    use room_data
+    use setup_data, only: iofill, iofilo
     use smkview_data
     use solver_data, only: atol
+    use target_data, only: detectorinfo, targetinfo
     use vent_data
 
     implicit none

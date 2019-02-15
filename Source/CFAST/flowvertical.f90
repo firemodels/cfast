@@ -7,10 +7,8 @@ module vflow_routines
     use utility_routines, only: tanhsmooth
     
     use precision_parameters
-    use cenviro
-    use ramp_data
-    use cparams
-    use option_data
+    use cenviro, only: cp
+    use option_data, only: fvflow, option, on
     use vent_data
 
     implicit none

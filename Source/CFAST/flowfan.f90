@@ -6,10 +6,8 @@ module mflow_routines
     use utility_routines, only: d1mach, tanhsmooth
 
     use precision_parameters
-    use ramp_data
-    use cenviro
-    use cparams
-    use option_data
+    use cenviro, only: cp
+    use option_data, only: fmvent, option, off
     use room_data
     use vent_data
 

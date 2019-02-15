@@ -20,20 +20,19 @@ module solve_routines
     use vflow_routines, only: vertical_flow
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
-    use cenviro
-    use ramp_data
-    use setup_data
-    use solver_data
+    use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma
     use diag_data
-    use cparams
-    use target_data
     use fire_data
+    use namelist_data
     use option_data
+    use ramp_data
+    use room_data
+    use setup_data
     use smkview_data
+    use solver_data
+    use target_data
     use vent_data
     use wallptrs
-    use room_data
-    use namelist_data
 
     implicit none
 

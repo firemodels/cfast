@@ -8,22 +8,21 @@ module spreadsheet_input_routines
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, upperall, exehandle, emix, set_heat_of_combustion, position_object
 
-    use wallptrs
-    use cenviro
-    use ramp_data
-    use cparams, only: mx_hsep
-    use setup_data
-    use diag_data
+    use defaults
     use detectorptrs
-    use target_data
+    use diag_data
     use fire_data
+    use namelist_data
     use option_data
+    use ramp_data
+    use room_data
+    use setup_data
     use solver_data
     use smkview_data
+    use target_data
     use thermal_data
     use vent_data
-    use room_data
-    use namelist_data
+    use wallptrs
 
     implicit none
 

@@ -9,15 +9,13 @@ module spreadsheet_routines
     use utility_routines, only: ssaddtolist
 
     use precision_parameters
-    use cenviro
+    use diag_data
+    use fire_data
     use ramp_data
+    use room_data
     use setup_data
     use target_data
-    use fire_data
-    use cparams
     use vent_data
-    use room_data
-    use diag_data
 
     implicit none
 

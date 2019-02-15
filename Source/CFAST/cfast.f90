@@ -35,10 +35,8 @@
     use utility_routines, only : cptime, read_command_options
     use radiation_routines, only : radiation
 
-    use setup_data
-    use thermal_data
+    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag
     use option_data, only: total_steps
-    use namelist_data
 
     implicit none
 

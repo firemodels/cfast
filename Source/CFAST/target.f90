@@ -9,14 +9,12 @@ module target_routines
     use radiation_routines, only : absorb, solid_angle_triangle
     use utility_routines, only: xerror
 
-    use cenviro
     use detectorptrs
-    use target_data
-    use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
-    use cparams
-    use room_data
-    use option_data, only: fcjet, option, off
     use diag_data
+    use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
+    use option_data, only: fcjet, option, off
+    use room_data
+    use target_data
 
     implicit none
 

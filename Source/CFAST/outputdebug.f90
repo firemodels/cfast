@@ -5,11 +5,8 @@ module debug_routines
     use spreadsheet_header_routines, only: ssHeaders_fslabs, ssHeaders_resid
     use utility_routines, only: ssaddtolist
 
-    use cenviro
-    use cfast_types
-    use cparams
-    use diag_data
-    use room_data
+    use diag_data, only: nwline, ioslab, ioresid
+    use room_data, only: roominfo, nrm1
     use vent_data
 
     implicit none

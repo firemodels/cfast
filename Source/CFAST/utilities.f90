@@ -5,6 +5,7 @@
     use setup_data
     use room_data, only: nwpts, wsplit, iwbound
 
+    use cparams, only: lbufln
     use namelist_data
 
     implicit none

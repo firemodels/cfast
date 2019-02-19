@@ -83,7 +83,6 @@ module fire_data
     module namelist_data
 
     use precision_parameters
-    use cparams
 
     implicit none
     save
@@ -114,7 +113,6 @@ module fire_data
 module option_data
 
     use precision_parameters
-    use cparams
     implicit none
     save
 
@@ -167,8 +165,8 @@ module option_data
 
 module ramp_data
     use precision_parameters
-    use cfast_types
-    use cparams
+    use cfast_types, only: ramp_type
+    use cparams, only: mxramps
     implicit none
     save
 

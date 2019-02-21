@@ -1,8 +1,12 @@
     module compartment_routines
 
     use precision_parameters
+    
+    use cfast_types, only: room_type, vent_type
+    
     use cenviro, only: cp
-    use room_data
+    use cparams, only: u, l, q, m, ns_mass, mxrooms
+    use room_data, only: nr, nrm1, roominfo, ns
     use vent_data, only: hventinfo, vventinfo, mventinfo, n_hvents, n_vvents, n_mvents
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use option_data, only: flayermixing, option, off

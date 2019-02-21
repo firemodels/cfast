@@ -2,6 +2,7 @@
 
     use precision_parameters
 
+    use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, thermal_type, vent_type, visual_type
     use fire_routines, only: flame_height
     use initialization_routines, only : initialize_targets, initialize_ambient, offset
     use numerics_routines, only : dnrm2
@@ -11,18 +12,19 @@
     use spreadsheet_input_routines, only: spreadsheet_input
 
     use cenviro, only: rgas
-    use cparams, only: mx_hsep
-    use diag_data
-    use fire_data
-    use namelist_data
-    use option_data
-    use setup_data
-    use solver_data
-    use smkview_data
-    use target_data
-    use thermal_data
-    use vent_data
-    use room_data
+    use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall
+    use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
+    use fire_data, only: n_fires, fireinfo, lower_o2_limit
+    use namelist_data, only: nmlflag
+    use setup_data, only: iofili, inputfile, outputfile, iofill, exepath, datapath, project, extension, smvhead, smvdata, &
+        smvcsv, smvsinfo, ssconnections, ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, &
+        kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile
+    use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
+    use target_data, only: n_detectors, detectorinfo
+    use thermal_data, only: n_thrmp, thermalinfo
+    use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
+    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, i_vconnectinfo
 
     implicit none
 
@@ -183,11 +185,11 @@
 
 
     ! check room to room heat transfer parameters (VHEAT command)
-    nswall2 = nvcons
+    nswall2 = n_vcons
     ii = 0
-    do i = 1, nvcons
-        iroom1 = i_vconnections(i,w_from_room)
-        iroom2 = i_vconnections(i,w_to_room)
+    do i = 1, n_vcons
+        iroom1 = i_vconnectinfo(i,w_from_room)
+        iroom2 = i_vconnectinfo(i,w_to_room)
 
         ! room numbers must be between 1 and nrm1
         if (iroom1<1.or.iroom2<1.or.iroom1>nrm1+1.or.iroom2>nrm1+1) then
@@ -204,10 +206,10 @@
         else
             ii = ii + 1
             if (i/=ii) then
-                i_vconnections(ii,w_from_room) = i_vconnections(i,w_from_room)
-                i_vconnections(ii,w_from_wall) = i_vconnections(i,w_from_wall)
-                i_vconnections(ii,w_to_room) = i_vconnections(i,w_to_room)
-                i_vconnections(ii,w_to_wall) = i_vconnections(i,w_to_wall)
+                i_vconnectinfo(ii,w_from_room) = i_vconnectinfo(i,w_from_room)
+                i_vconnectinfo(ii,w_from_wall) = i_vconnectinfo(i,w_from_wall)
+                i_vconnectinfo(ii,w_to_room) = i_vconnectinfo(i,w_to_room)
+                i_vconnectinfo(ii,w_to_wall) = i_vconnectinfo(i,w_to_wall)
             end if
         end if
 
@@ -216,11 +218,11 @@
         dwall2 = abs(roominfo(iroom2)%z0 - roominfo(iroom1)%z1)
         if (dwall1<mx_vsep.or.dwall2<=mx_vsep) then
             if (dwall1<mx_vsep) then
-                i_vconnections(ii,w_from_wall) = 2
-                i_vconnections(ii,w_to_wall) = 1
+                i_vconnectinfo(ii,w_from_wall) = 2
+                i_vconnectinfo(ii,w_to_wall) = 1
             else
-                i_vconnections(ii,w_from_wall) = 1
-                i_vconnections(ii,w_to_wall) = 2
+                i_vconnectinfo(ii,w_from_wall) = 1
+                i_vconnectinfo(ii,w_to_wall) = 2
             end if
         else
             write (*,202) iroom1, iroom2
@@ -231,8 +233,8 @@
 
         ! walls must be turned on, ie surface_on must be set
         ! for the ceiling in the lower room and the floor of the upper room
-        iwall1 = i_vconnections(ii,w_from_wall)
-        iwall2 = i_vconnections(ii,w_to_wall)
+        iwall1 = i_vconnectinfo(ii,w_from_wall)
+        iwall2 = i_vconnectinfo(ii,w_to_wall)
         if (.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2)) then
             if (.not.roominfo(iroom1)%surface_on(iwall1)) then
                 write (*,204) iwall1, iroom1
@@ -245,7 +247,7 @@
             stop
         end if
     end do
-    nvcons = nswall2
+    n_vcons = nswall2
 
     ! check shafts
     do iroom = nrm1 + 1, mxrooms
@@ -550,15 +552,15 @@
     integer skipslice
 
 
-    nsliceinfo = 0
-    nisoinfo = 0
-    if (nvisualinfo.eq.0)return
+    n_slice = 0
+    n_iso = 0
+    if (n_visual.eq.0)return
 
     nrm = nrm1
 
     ! count number of isosurfaces and slices
 
-    do i = 1, nvisualinfo
+    do i = 1, n_visual
         vptr=>visualinfo(i)
         if (vptr%roomnum.eq.0) then
             ntypes=nrm
@@ -566,14 +568,14 @@
             ntypes=1
         end if
         if (vptr%vtype.eq.1.or.vptr%vtype.eq.2) then
-            nsliceinfo = nsliceinfo + ntypes
+            n_slice = n_slice + ntypes
         else
-            nisoinfo = nisoinfo + ntypes
+            n_iso = n_iso + ntypes
         end if
     end do
-    nsliceinfo = 5*nsliceinfo
-    allocate(sliceinfo(nsliceinfo))
-    allocate(isoinfo(nisoinfo))
+    n_slice = 5*n_slice
+    allocate(sliceinfo(n_slice))
+    allocate(isoinfo(n_iso))
 
     ! setup grid locations for each compartment
 
@@ -612,7 +614,7 @@
 
     islice = 1
 
-    do i = 1, nvisualinfo
+    do i = 1, n_visual
         vptr=>visualinfo(i)
         if (vptr%vtype.eq.3)cycle
         ir = vptr%roomnum
@@ -705,7 +707,7 @@
     ! setup isosurface data structures
 
     i_iso = 1
-    do i = 1, nvisualinfo
+    do i = 1, n_visual
         vptr=>visualinfo(i)
         if (vptr%vtype.ne.3)cycle
         ir = vptr%roomnum

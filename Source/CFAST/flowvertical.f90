@@ -2,14 +2,17 @@ module vflow_routines
 
     use precision_parameters
 
-    use room_data
     use opening_fractions, only: get_vent_opening
     use utility_routines, only: tanhsmooth
     
+    use cfast_types, only: room_type, vent_type
+    
     use precision_parameters
     use cenviro, only: cp
+    use cparams, only: u, l, m, q, deltatemp_min, pp, mxrooms
     use option_data, only: fvflow, option, on
-    use vent_data
+    use room_data, only: nr, nrm1, ns, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_rho
+    use vent_data, only: n_vvents, vventinfo
 
     implicit none
 

@@ -4,15 +4,17 @@ module hflow_routines
 
     use opening_fractions, only: get_vent_opening
     use debug_routines, only: ssprintslab, spreadsheetfslabs
-    use room_data
     use utility_routines, only: tanhsmooth
     
-    use precision_parameters
+    use cfast_types, only: room_type, vent_type
+    
     use cenviro, only: cp
+    use cparams, only: l, u, m, q, mxrooms, mxhvents, mxfslab, deltatemp_min
     use diag_data, only: dbtime, prnslab
     use option_data, only: fhflow, fentrain, option, on
+    use room_data, only: nrm1, ns, roominfo
     use solver_data, only: i_wallmap, i_speciesmap
-    use vent_data
+    use vent_data, only: n_hvents, hventinfo, nvelev, dirs12, dpv1m2, yvelev, vss, vsa, vas, vaa, vsas, vasa
 
     implicit none
 

@@ -2,22 +2,35 @@
 
     use precision_parameters
 
+    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
+        vent_type, visual_type
     use fire_routines, only: flame_height
     use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
-    use defaults
-    use diag_data
-    use fire_data
-    use namelist_data
+    use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
+        mxthrmp, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
+        w_from_room, w_to_room, w_from_wall, w_to_wall
+    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
+        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
+        radiative_incident_flux_ast, radi_verification_flag
+    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag
+    use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
+        default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
+        default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti
+    use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, tablinfo
     use option_data
-    use ramp_data
-    use room_data
-    use setup_data
-    use solver_data
-    use smkview_data
-    use target_data
-    use thermal_data
-    use vent_data
+    use ramp_data, only: n_ramps, rampinfo
+    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, i_vconnectinfo, &
+        relative_humidity, adiabatic_walls
+    use setup_data, only: iofili, iofill, rarray, carray, nrow, ncol, cfast_version, heading, title, time_end, &
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag
+    use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
+    use smkview_data, only: n_visual, visualinfo
+    use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
+    use thermal_data, only: n_thrmp, thermalinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none 
     
@@ -34,7 +47,7 @@
     integer :: ncomp
 
     ncomp = 0
-    nvisualinfo=0
+    n_visual=0
 
     call read_head (iofili)
     call read_time (iofili)
@@ -2084,10 +2097,10 @@ continue
             exit conn_loop
         end if
         read(lu,CONN,err=34,iostat=ios)
-        if (trim(type) == trim('CEILING') .or. trim(type) == trim('FLOOR')) nvcons = nvcons + 1
+        if (trim(type) == trim('CEILING') .or. trim(type) == trim('FLOOR')) n_vcons = n_vcons + 1
         if (trim(type) == trim('WALL')) nmlcount  =nmlcount + 1
 34      if (ios>0) then
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &CONN inputs. Check &CONN input, ' , nvcons+nmlcount
+            write(iofill, '(a,i3)') 'Error: Invalid specification in &CONN inputs. Check &CONN input, ' , n_vcons+nmlcount
             stop
         end if
     end do conn_loop
@@ -2099,7 +2112,7 @@ continue
 
         counter1 = 0
 
-        countloop : do k = 1, nmlcount + nvcons
+        countloop : do k = 1, nmlcount + n_vcons
 
             call checkread('CONN',lu,ios)
             call set_defaults
@@ -2211,10 +2224,10 @@ continue
                     stop
                 end if
 
-                i_vconnections(counter1,w_from_room) = i1
-                i_vconnections(counter1,w_from_wall) = 2
-                i_vconnections(counter1,w_to_room) = i2
-                i_vconnections(counter1,w_to_wall) = 1
+                i_vconnectinfo(counter1,w_from_room) = i1
+                i_vconnectinfo(counter1,w_from_wall) = 2
+                i_vconnectinfo(counter1,w_to_room) = i2
+                i_vconnectinfo(counter1,w_to_wall) = 1
             end if
 
         end do countloop
@@ -2300,8 +2313,8 @@ continue
                 end if
             end do searching
 
-            nvisualinfo = nvisualinfo + 1
-            sliceptr => visualinfo(nvisualinfo)
+            n_visual = n_visual + 1
+            sliceptr => visualinfo(n_visual)
             sliceptr%vtype = 3
             sliceptr%value = value + kelvin_c_offset
             sliceptr%roomnum = icomp
@@ -2381,8 +2394,8 @@ continue
             call set_defaults
             read(lu,SLCF)
 
-            nvisualinfo = nvisualinfo + 1
-            sliceptr => visualinfo(nvisualinfo)
+            n_visual = n_visual + 1
+            sliceptr => visualinfo(n_visual)
             if (trim(domain)=='2-D') then
                 sliceptr%vtype = 1
             else if (trim(domain)=='3-D') then

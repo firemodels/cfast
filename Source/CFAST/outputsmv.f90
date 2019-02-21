@@ -2,15 +2,17 @@
 
     use precision_parameters
 
+    use cfast_types, only: detector_type, target_type
     use fire_routines, only: get_gas_temp_velocity
     use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: funit
 
-    use vent_data
+    use cparams, only: smoked, face_front, face_left, face_back, face_right
     use setup_data
     use smkview_data
     use room_data
     use target_data, only: n_detectors, detectorinfo, targetinfo
+    use vent_data
 
     implicit none
 
@@ -99,7 +101,7 @@
         write (13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%cwidth, roomptr%cdepth, roomptr%cheight
         write (13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%x0, roomptr%y0, roomptr%z0
 
-        if (nsliceinfo.gt.0) then
+        if (n_slice.gt.0) then
             ibar = roomptr%ibar
             jbar = roomptr%jbar
             kbar = roomptr%kbar
@@ -135,7 +137,7 @@
     end do
 
     ! slice files
-    do i = 1, nsliceinfo
+    do i = 1, n_slice
         sf=>sliceinfo(i)
 
         if (sf%skip.eq.1)cycle
@@ -146,7 +148,7 @@
         write (13,"(1x,a)")trim(sf%unit_label)
     end do
 
-    do i = 1, nisoinfo
+    do i = 1, n_iso
         isoptr=>isoinfo(i)
 
         write (13,"(a,1x,i3,' &',6(i4,1x))")"ISOG",isoptr%roomnum
@@ -407,7 +409,7 @@
     real(eb) :: xx, yy, zz, tgas, vgas(4)
     integer :: unit
 
-    do i = 1, nsliceinfo, 5
+    do i = 1, n_slice, 5
         sf => sliceinfo(i)
         roomptr => roominfo(sf%roomnum)
 
@@ -602,6 +604,7 @@ end module smokeview_routines
 module isosurface
 
     use precision_parameters
+    use cfast_types, only: room_type
     use fire_routines, only: get_gas_temp_velocity
     use utility_routines, only : funit
     use room_data, only: roominfo
@@ -638,7 +641,7 @@ module isosurface
     nlevels = 1
     timef = real(time,fb)
 
-    do i = 1, nisoinfo
+    do i = 1, n_iso
         isoptr => isoinfo(i)
 
         levelsf(1) = isoptr%value-273.15_eb

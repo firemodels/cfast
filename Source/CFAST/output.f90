@@ -5,6 +5,7 @@ module output_routines
     use utility_routines, only: xerror, doesthefileexist, funit
     use opening_fractions, only: find_vent_opening_ramp
 
+    use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, w_from_room, w_from_wall, idx_tempf_trg
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data
     use option_data
@@ -1136,8 +1137,8 @@ module output_routines
         end if
     else if (icomp<=nofprd) then
         itmp = icomp - nofwt
-        irm = i_hconnections(itmp,w_from_room)
-        iw = i_hconnections(itmp,w_from_wall)
+        irm = i_hconnectinfo(itmp,w_from_room)
+        iw = i_hconnectinfo(itmp,w_from_wall)
         if (iw==1) then
             write (lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
             call xerror(lbuf,0,1,0)
@@ -1194,7 +1195,7 @@ module output_routines
             do iprod = 1, ns_mass+4
                 write (*,5030) spname(iprod), (roomptr%species_fraction(il,iprod),il= u,l)
             end do
-            if (nhcons/=0) write (*,*) ' Wall temperatures'
+            if (n_hcons/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
                 write (*,5040) roomptr%t_surfaces(1,1)
             end if

@@ -5,11 +5,14 @@ module target_routines
     use conduction_routines, only: conductive_flux, cylindrical_conductive_flux
     use convection_routines, only: convective_flux
     use fire_routines, only: get_gas_temp_velocity, flame_height
+    use cfast_types, only: fire_type
     use numerics_routines, only : ddot, dnrm2
     use radiation_routines, only : absorb, solid_angle_triangle
     use utility_routines, only: xerror
 
     use diag_data
+    use cparams, only: u, l, pde, cylpde, co2, co, hcn, soot, soot_flaming, soot_smolder, nnodes_trg, idx_tempf_trg, &
+        idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off
     use room_data

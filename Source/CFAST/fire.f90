@@ -2,18 +2,22 @@ module fire_routines
 
     use precision_parameters
 
+    use cfast_types, only: detector_type, fire_type, room_type, target_type, vent_type
     use opening_fractions, only: get_vent_opening
     use utility_routines, only: tanhsmooth, xerror, interp
 
     use cenviro, only: cp
-    use fire_data
+    use cparams, only: u, l, m, q, ts, fuel, o2, o2f, mxfires, mxrooms, fuel_moles, fuel_q, fuel_o2, fuel_co2, fuel_co, fuel_hcn, &
+        fuel_hcl, hcl, fuel_h2o, h2o, fuel_soot, co2, co, hcn, soot, soot_flaming, soot_smolder, ct, mx_hsep, t_max, ns_mass, &
+        flaming, smoldering, trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg, check_state, set_state
+    use fire_data, only: n_fires, fireinfo, lower_o2_limit, summed_total_trace, tgignt, sigma_s
     use option_data, only: ffire, option, fdfire, on, off
-    use room_data
+    use room_data, only: nr, nrm1, ns, roominfo, interior_ambient_temperature, adiabatic_walls
     use setup_data, only: iofill, iofilo
-    use smkview_data
+    use smkview_data, only: smv_room, smv_height, smv_qdot, smv_xfire, smv_yfire, smv_zfire
     use solver_data, only: atol
     use target_data, only: detectorinfo, targetinfo
-    use vent_data
+    use vent_data, only: n_hvents, hventinfo, n_mvents, mventinfo, vss, vsa, vsas
 
     implicit none
 

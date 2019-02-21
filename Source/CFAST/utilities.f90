@@ -1133,9 +1133,11 @@
     !		(4) Is the final fraction
 
     ! The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
+    
+    use cfast_types, only: target_type
 
     use precision_parameters
-    use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux
+    use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg
     use ramp_data
     use vent_data
     use room_data, only: roominfo, nrm1

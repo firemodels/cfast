@@ -1,9 +1,13 @@
  module convection_routines
 
     use precision_parameters
+    
+    use cfast_types, only: room_type, fire_type
+    
+    use cparams, only: u, l, w_from_room, w_from_wall, mxrooms, nwal
     use fire_data, only: n_fires, fireinfo
     use option_data, only: fconvec, option, on
-    use room_data
+    use room_data, only: nrm1, roominfo, n_hcons, i_hconnectinfo
 
     implicit none
 
@@ -39,10 +43,10 @@
     if (option(fconvec)/=on) return
 
     ! calculate convection for all surfaces in all rooms
-    do iw = 1, nhcons
-        i = i_hconnections(iw,w_from_room)
+    do iw = 1, n_hcons
+        i = i_hconnectinfo(iw,w_from_room)
         roomptr => roominfo(i)
-        iwall = i_hconnections(iw,w_from_wall)
+        iwall = i_hconnectinfo(iw,w_from_wall)
         if (modulo(iwall,2)==1) then
             ilay = u
         else

@@ -1,7 +1,10 @@
 module spreadsheet_header_routines
 
+    use cfast_types, only: target_type, detector_type
     use utility_routines, only: tointstring
 
+    use cparams, only: u, l, soot, soot_flaming, soot_smolder, mxrooms, mxfires, mxtarg, mxdtect, mxfires, mxhvents, &
+        mxvvents, mxmvents, mxext, ns
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: nr, nrm1, roominfo, room_type

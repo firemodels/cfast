@@ -6,10 +6,14 @@ module mflow_routines
     use utility_routines, only: d1mach, tanhsmooth
 
     use precision_parameters
+    
+    use cfast_types, only: room_type, vent_type
+    
     use cenviro, only: cp
+    use cparams, only: u, l, m, q, soot, soot_flaming, soot_smolder, ts, mxrooms
     use option_data, only: fmvent, option, off
-    use room_data
-    use vent_data
+    use room_data, only: nr, nrm1, ns, roominfo, exterior_rho, interior_rho, exterior_abs_pressure
+    use vent_data, only: n_mvents, mventinfo
 
     implicit none
 

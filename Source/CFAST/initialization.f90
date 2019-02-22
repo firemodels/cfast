@@ -13,7 +13,8 @@ module initialization_routines
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, &
         mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, xlrg, default_grid, face_front, trigger_by_time, &
         h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall
-    use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
+    use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
+        default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
     use cfast_types, only: thermal_type, target_type, detector_type
     use option_data, only: foxygen, option, on
@@ -21,7 +22,8 @@ module initialization_routines
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
         pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, i_vconnectinfo, n_hcons, nnodes, nwpts, wsplit
     use setup_data, only: iofill, debugging, deltat
-    use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
+    use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
+        nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo

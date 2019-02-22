@@ -5,7 +5,8 @@ module output_routines
     use utility_routines, only: xerror, doesthefileexist, funit
     use opening_fractions, only: find_vent_opening_ramp
 
-    use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, w_from_room, w_from_wall, idx_tempf_trg
+    use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
+        w_from_room, w_from_wall, idx_tempf_trg
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data
     use option_data

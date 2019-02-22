@@ -7,7 +7,6 @@ module vflow_routines
     
     use cfast_types, only: room_type, vent_type
     
-    use precision_parameters
     use cenviro, only: cp
     use cparams, only: u, l, m, q, deltatemp_min, pp, mxrooms
     use option_data, only: fvflow, option, on

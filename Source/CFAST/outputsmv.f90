@@ -2,17 +2,17 @@
 
     use precision_parameters
 
-    use cfast_types, only: detector_type, target_type
+    use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
     use fire_routines, only: get_gas_temp_velocity
     use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: funit
 
     use cparams, only: smoked, face_front, face_left, face_back, face_right
-    use setup_data
-    use smkview_data
-    use room_data
-    use target_data, only: n_detectors, detectorinfo, targetinfo
-    use vent_data
+    use setup_data, only: smvcsv
+    use smkview_data, only: n_iso, isoinfo, n_slice, sliceinfo
+    use room_data, only: nrm1, roominfo
+    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
 
@@ -24,8 +24,7 @@
 
     ! --------------------------- output_smokeview -------------------------------------------
 
-    subroutine output_smokeview(pabs_ref,pamb,tamb,nrm, n_hvents, n_vvents, nfires, froom_number,&
-        fx0,fy0,fz0, n_targets, stime, nscount)
+    subroutine output_smokeview (pabs_ref, pamb, tamb, nrm, nfires, froom_number, fx0, fy0, fz0, stime, nscount)
     !
     ! creates the .smv file used by smokeview to determine size and location of rooms, vents, fires etc
     !
@@ -38,7 +37,6 @@
     !  tamb -       ambient temperature
     !  nrm -     number of rooms
     !  x0,y0,z0 -   room origin
-    !  n_hvents -     number of vents
     !  vfrom -      from room number
     !  vto =        to room number
     !  vface -      face number
@@ -50,7 +48,7 @@
     !  fx0,fy0,fz0 - location of fire base
 
     real(eb), intent(in) :: pabs_ref, pamb, tamb, stime
-    integer, intent(in) :: nrm, nscount, n_hvents, nfires, n_vvents, n_targets
+    integer, intent(in) :: nrm, nscount, nfires
     integer, intent(in), dimension(nfires) :: froom_number
     real(eb), intent(in), dimension(nfires) :: fx0, fy0, fz0
 

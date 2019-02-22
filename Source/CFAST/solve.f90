@@ -20,20 +20,22 @@ module solve_routines
     use vflow_routines, only: vertical_flow
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
+    use cfast_types, only: fire_type, ramp_type, room_type, target_type, vent_type
+    
     use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma
-    use cparams, only: u, l, m, q, mxnode, mxbranch, maxeq, check_state, set_state, update_state, nwal, ns_mass, vminfrac, &
+    use cparams, only: u, l, m, q, mxtarg, mxnode, mxbranch, maxeq, check_state, set_state, update_state, nwal, ns_mass, vminfrac, &
         n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition
     use diag_data
-    use fire_data
-    use namelist_data
+    use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
     use option_data
-    use ramp_data
-    use room_data
+    use ramp_data, only: n_ramps, rampinfo
+    use room_data, only: nr, nrm1, roominfo, n_hcons, i_hconnectinfo, n_vcons, i_vconnectinfo, exterior_ambient_temperature, &
+        exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound
     use setup_data
     use smkview_data
     use solver_data
-    use target_data
-    use vent_data
+    use target_data, only: n_detectors, n_targets, targetinfo, idset
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
 
@@ -338,7 +340,7 @@ module solve_routines
         ! then we need the output now
         call collect_fire_data_for_smokeview (nfires)
         call output_smokeview(pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1,  &
-             n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, 0.0_eb, 1)
+             nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, 0.0_eb, 1)
         icode = 0
         write (*, '(a)') 'Initialize only'
         write (iofill, '(a)') 'Initialize only'
@@ -427,7 +429,7 @@ module solve_routines
                 ! note: output_smokeview writes the .smv file. we do not close the file but only rewind so that smokeview
                 ! can have the latest time step information.
                 call output_smokeview (pressure_ref, exterior_abs_pressure, exterior_ambient_temperature, nrm1, &
-                    n_hvents, n_vvents, nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, n_targets, t, i_time_step)
+                    nfires, smv_room, smv_xfire, smv_yfire, smv_zfire, t, i_time_step)
                 call output_smokeview_header (cfast_version,nrm1,nfires)
             end if
             smv_relp(1:nrm1) = roominfo(1:nrm1)%relp
@@ -563,7 +565,7 @@ module solve_routines
         end if
 
         ! object ignition is the first thing to happen
-        if (ifobj>0.and.tobj<=td) then
+        if (ifobj>0.and.ifobj <=n_fires.and.tobj<=td) then
             fireptr => fireinfo(ifobj)
             call update_fire_objects (set_state,told,dt,ifobj,tobj)
             idsave = idset

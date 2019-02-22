@@ -1,22 +1,29 @@
 module output_routines
+    
+    use precision_parameters
 
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
     use utility_routines, only: xerror, doesthefileexist, funit
     use opening_fractions, only: find_vent_opening_ramp
 
+    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
+    
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
         w_from_room, w_from_wall, idx_tempf_trg
     use diag_data, only: radi_verification_flag, upper_layer_thickness
-    use fire_data
-    use option_data
-    use ramp_data
-    use room_data
-    use setup_data
-    use solver_data
-    use target_data
-    use thermal_data
-    use vent_data
+    use fire_data, only: n_fires, fireinfo, lower_o2_limit
+    use option_data, only: on, option, total_steps, foxygen
+    use ramp_data, only: n_ramps, rampinfo
+    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+        interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_hcons, i_hconnectinfo
+    use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, inputfile, outputfile, statusfile, &
+        kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
+        smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswall, ssdiag
+    use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
+    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
+    use thermal_data, only: n_thrmp, thermalinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
 

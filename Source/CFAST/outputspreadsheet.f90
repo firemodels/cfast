@@ -8,7 +8,7 @@ module spreadsheet_routines
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
 
-    use precision_parameters
+    use cparams, only: u, l, mxrooms, mxfires, mxvvents, mxmvents, soot, soot_flaming, soot_smolder
     use diag_data
     use fire_data
     use ramp_data

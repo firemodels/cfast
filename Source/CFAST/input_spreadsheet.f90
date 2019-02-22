@@ -2,25 +2,25 @@ module spreadsheet_input_routines
     
     use precision_parameters
 
+    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type, visual_type
     use fire_routines, only: flame_height
-    use initialization_routines, only : initialize_targets, initialize_ambient, offset
-    use numerics_routines, only : dnrm2
-    use output_routines, only: openoutputfiles, deleteoutputfiles
-    use utility_routines, only: countargs, upperall, exehandle, emix, set_heat_of_combustion, position_object
+    use utility_routines, only: upperall, set_heat_of_combustion, countargs
 
-    use defaults
-    use diag_data
-    use fire_data
-    use namelist_data
-    use option_data
-    use ramp_data
-    use room_data
-    use setup_data
-    use solver_data
-    use smkview_data
-    use target_data
-    use thermal_data
-    use vent_data
+    use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
+        mxthrmp, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, &
+        trigger_by_flux, w_from_room, w_to_room, w_from_wall, w_to_wall
+    use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts
+    use ramp_data, only: n_ramps, rampinfo
+    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, i_vconnectinfo, &
+        relative_humidity, adiabatic_walls
+    use setup_data, only: iofili, iofill, rarray, carray, nrow, ncol, cfast_version, heading, title, time_end, &
+        print_out_interval, smv_out_interval, ss_out_interval
+    use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
+    use smkview_data, only: n_visual, visualinfo
+    use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
+    use thermal_data, only: n_thrmp, thermalinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
 
@@ -995,11 +995,11 @@ module spreadsheet_input_routines
                     stop
                 end if
 
-                nvcons = nvcons + 1
-                i_vconnections(nvcons,w_from_room) = i1
-                i_vconnections(nvcons,w_from_wall) = 2
-                i_vconnections(nvcons,w_to_room) = i2
-                i_vconnections(nvcons,w_to_wall) = 1
+                n_vcons = n_vcons + 1
+                i_vconnectinfo(n_vcons,w_from_room) = i1
+                i_vconnectinfo(n_vcons,w_from_wall) = 2
+                i_vconnectinfo(n_vcons,w_to_room) = i2
+                i_vconnectinfo(n_vcons,w_to_wall) = 1
             else
                 write (*,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
                 write (iofill,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
@@ -1215,15 +1215,15 @@ module spreadsheet_input_routines
             ! SLCF 2-D and 3-D slice files
         case ('SLCF')
             if (countargs(lcarray)>=1) then
-                nvisualinfo = nvisualinfo + 1
-                sliceptr => visualinfo(nvisualinfo)
+                n_visual = n_visual + 1
+                sliceptr => visualinfo(n_visual)
                 if (lcarray(1)=='2-D') then
                     sliceptr%vtype = 1
                 else if (lcarray(1)=='3-D') then
                     sliceptr%vtype = 2
                 else
-                    write (*, 5403) nvisualinfo
-                    write (iofill, 5403) nvisualinfo
+                    write (*, 5403) n_visual
+                    write (iofill, 5403) n_visual
                     stop
                 end if
                 ! 2-D slice file
@@ -1238,8 +1238,8 @@ module spreadsheet_input_routines
                             sliceptr%roomnum = 0
                         end if
                         if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
-                            write (*, 5403) nvisualinfo
-                            write (iofill, 5403) nvisualinfo
+                            write (*, 5403) n_visual
+                            write (iofill, 5403) n_visual
                             stop
                         end if
                         if (lcarray(2) =='X') then
@@ -1247,8 +1247,8 @@ module spreadsheet_input_routines
                             if (sliceptr%roomnum>0) then
                                 roomptr => roominfo(sliceptr%roomnum)
                                 if (sliceptr%position>roomptr%cwidth.or.sliceptr%position<0.0_eb) then
-                                    write (*, 5403) nvisualinfo
-                                    write (iofill, 5403) nvisualinfo
+                                    write (*, 5403) n_visual
+                                    write (iofill, 5403) n_visual
                                     stop
                                 end if
                             end if
@@ -1257,8 +1257,8 @@ module spreadsheet_input_routines
                             if (sliceptr%roomnum>0) then
                                 roomptr => roominfo(sliceptr%roomnum)
                                 if (sliceptr%position>roomptr%cdepth.or.sliceptr%position<0.0_eb) then
-                                    write (*, 5403) nvisualinfo
-                                    write (iofill, 5403) nvisualinfo
+                                    write (*, 5403) n_visual
+                                    write (iofill, 5403) n_visual
                                     stop
                                 end if
                             end if
@@ -1267,19 +1267,19 @@ module spreadsheet_input_routines
                             if (sliceptr%roomnum>0) then
                                 roomptr => roominfo(sliceptr%roomnum)
                                 if (sliceptr%position>roomptr%cheight.or.sliceptr%position<0.0_eb) then
-                                    write (*, 5403) nvisualinfo
-                                    write (iofill, 5403) nvisualinfo
+                                    write (*, 5403) n_visual
+                                    write (iofill, 5403) n_visual
                                     stop
                                 end if
                             end if
                         else
-                            write (*, 5403) nvisualinfo
-                            write (iofill, 5403) nvisualinfo
+                            write (*, 5403) n_visual
+                            write (iofill, 5403) n_visual
                             stop
                         end if
                     else
-                        write (*, 5403) nvisualinfo
-                        write (iofill, 5403) nvisualinfo
+                        write (*, 5403) n_visual
+                        write (iofill, 5403) n_visual
                         stop
                     end if
                     ! 3-D slice
@@ -1290,8 +1290,8 @@ module spreadsheet_input_routines
                         sliceptr%roomnum = 0
                     end if
                     if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
-                        write (*, 5403) nvisualinfo
-                        write (iofill, 5403) nvisualinfo
+                        write (*, 5403) n_visual
+                        write (iofill, 5403) n_visual
                         stop
                     end if
                 end if
@@ -1304,8 +1304,8 @@ module spreadsheet_input_routines
             ! ISOF isosurface of specified temperature in one or all compartments
         case ('ISOF')
             if (countargs(lcarray)>=1) then
-                nvisualinfo = nvisualinfo + 1
-                sliceptr => visualinfo(nvisualinfo)
+                n_visual = n_visual + 1
+                sliceptr => visualinfo(n_visual)
                 sliceptr%vtype = 3
                 sliceptr%value = lrarray(1)
                 if (countargs(lcarray)>1) then
@@ -1314,8 +1314,8 @@ module spreadsheet_input_routines
                     sliceptr%roomnum = 0
                 end if
                 if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
-                    write (*, 5404) nvisualinfo
-                    write (iofill, 5404) nvisualinfo
+                    write (*, 5404) n_visual
+                    write (iofill, 5404) n_visual
                     stop
                 end if
             else

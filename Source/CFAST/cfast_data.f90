@@ -167,6 +167,7 @@ module ramp_data
     use precision_parameters
     use cfast_types, only: ramp_type
     use cparams, only: mxramps
+    
     implicit none
     save
 
@@ -181,8 +182,9 @@ end module ramp_data
 module room_data
 
     use precision_parameters
-    use cfast_types
-    use cparams
+    use cfast_types, only: room_type
+    use cparams, only: nnodes, ns, mxwal
+    
     implicit none
     save
 
@@ -203,15 +205,15 @@ module room_data
     real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
                                                                         ! initial fractions for inner, middle and outer wall slab
     
-    integer :: nhcons
-    integer, dimension(mxwal,5) :: i_hconnections   ! defines all surfaces for conduction routine, 1 entry for each wall that's on
+    integer :: n_hcons
+    integer, dimension(mxwal,5) :: i_hconnectinfo   ! defines all surfaces for conduction routine, 1 entry for each wall that's on
                                                     !   1 = from room number
                                                     !   2 = from wall number (ceiling, upper walls, lower walls, floor)
                                                     !   3 = to room number
                                                     !   4 = to wall number
                                                     !   5 = boundary condition type for exterior surface
-    integer :: nvcons
-    integer, dimension(mxwal,4) :: i_vconnections   ! list of connected compartments for vertical heat transfer
+    integer :: n_vcons
+    integer, dimension(mxwal,4) :: i_vconnectinfo   ! list of connected compartments for vertical heat transfer
                                                     !   1 = from room number
                                                     !   2 = from wall number (ceiling, upper walls, lower walls, floor)
                                                     !   3 = to room number
@@ -226,6 +228,7 @@ end module room_data
 module setup_data
 
     use precision_parameters
+    
     implicit none
     save
     
@@ -262,8 +265,10 @@ end module setup_data
 module smkview_data
 
     use precision_parameters
-    use cfast_types
-    use cparams
+    use cfast_types, only: iso_type, slice_type, visual_type
+    
+    use cparams, only: mxfires, mxrooms, mxslice
+    
     implicit none
     save
 
@@ -272,13 +277,13 @@ module smkview_data
     real(eb), dimension(mxrooms) :: smv_relp,smv_zlay,smv_tl,smv_tu
     
     ! visualization variables
-    integer :: nvisualinfo = 0
+    integer :: n_visual = 0
     type(visual_type), dimension (mxslice), target :: visualinfo
 
-    integer :: nsliceinfo = 0
+    integer :: n_slice = 0
     type(slice_type), allocatable, dimension(:), target :: sliceinfo
 
-    integer :: nisoinfo = 0
+    integer :: n_iso = 0
     type(iso_type), allocatable, dimension(:), target :: isoinfo
 
 end module smkview_data
@@ -288,7 +293,8 @@ end module smkview_data
 module solver_data
 
     use precision_parameters
-    use cparams
+    use cparams, only: nt, maxteq, ns, mxrooms, mxdiscon
+    
     implicit none
     save
     ! default solver tolerences
@@ -374,8 +380,8 @@ module thermal_data
 module vent_data
 
     use precision_parameters
-    use cparams
-    use cfast_types
+    use cparams, only: mxhvents, mxfslab
+    use cfast_types, only: vent_type
     implicit none
     save
 

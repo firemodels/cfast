@@ -7,6 +7,8 @@ module radiation_routines
 
     use precision_parameters
     use diag_data
+    use cfast_types, only: fire_type
+    use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot
     use fire_data, only: n_fires, fireinfo
     use option_data, only: frad, fgasabsorb, option, on, off
     use room_data

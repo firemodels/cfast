@@ -21,6 +21,8 @@ module solve_routines
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
     use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma
+    use cparams, only: u, l, m, q, mxnode, mxbranch, maxeq, check_state, set_state, update_state, nwal, ns_mass, vminfrac, &
+        n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition
     use diag_data
     use fire_data
     use namelist_data
@@ -115,7 +117,7 @@ module solve_routines
     n_odes = nofprd+1
     call synchronize_species_mass (p,n_odes)
 
-    do i = 1, nhcons
+    do i = 1, n_hcons
         pdold(i+nofwt) = 0.0_eb
     end do
     return
@@ -301,7 +303,7 @@ module solve_routines
             vrtol(i+nofoxyl)=rtol
         end if
     end do
-    do i = 1, nhcons
+    do i = 1, n_hcons
         vatol(i+nofwt) = awtol
         vrtol(i+nofwt) = rwtol
     end do
@@ -1302,19 +1304,19 @@ module solve_routines
                     ieq = ieq + 1
                     i_wallmap(iroom,iwall) = ieq
 
-                    ! define i_hconnections, to describe ceiling-floor connections
+                    ! define i_hconnectinfo, to describe ceiling-floor connections
                     ! first assume that walls are connected to the outside
                     ii = ieq - nofwt
-                    i_hconnections(ii,w_from_room) = iroom
-                    i_hconnections(ii,w_from_wall) = iwall
-                    i_hconnections(ii,w_to_room) = nrm1 + 1
+                    i_hconnectinfo(ii,w_from_room) = iroom
+                    i_hconnectinfo(ii,w_from_wall) = iwall
+                    i_hconnectinfo(ii,w_to_room) = nrm1 + 1
                     if (iwall==1.or.iwall==2) then
                         iwfar = 3 - iwall
                     else
                         iwfar = iwall
                     end if
-                    i_hconnections(ii,w_to_wall) = iwfar
-                    i_hconnections(ii,w_boundary_condition) = iwbound
+                    i_hconnectinfo(ii,w_to_wall) = iwfar
+                    i_hconnectinfo(ii,w_boundary_condition) = iwbound
 
                 else
                     i_wallmap(iroom,iwall) = 0
@@ -1322,22 +1324,22 @@ module solve_routines
             end do
         end do
 
-        ! update i_hconnections for ceiling/floors that are connected
-        do i = 1, nvcons
-            ifromr = i_vconnections(i,w_from_room)
-            ifromw = i_vconnections(i,w_from_wall)
-            itor = i_vconnections(i,w_to_room)
-            itow = i_vconnections(i,w_to_wall)
+        ! update i_hconnectinfo for ceiling/floors that are connected
+        do i = 1, n_vcons
+            ifromr = i_vconnectinfo(i,w_from_room)
+            ifromw = i_vconnectinfo(i,w_from_wall)
+            itor = i_vconnectinfo(i,w_to_room)
+            itow = i_vconnectinfo(i,w_to_wall)
             ieqfrom = i_wallmap(ifromr,ifromw) - nofwt
             ieqto = i_wallmap(itor,itow) - nofwt
 
-            i_hconnections(ieqfrom,w_to_room) = itor
-            i_hconnections(ieqfrom,w_to_wall) = itow
-            i_hconnections(ieqfrom,w_boundary_condition) = 1
+            i_hconnectinfo(ieqfrom,w_to_room) = itor
+            i_hconnectinfo(ieqfrom,w_to_wall) = itow
+            i_hconnectinfo(ieqfrom,w_boundary_condition) = 1
 
-            i_hconnections(ieqto,w_to_room) = ifromr
-            i_hconnections(ieqto,w_to_wall) = ifromw
-            i_hconnections(ieqto,w_boundary_condition) = 1
+            i_hconnectinfo(ieqto,w_to_room) = ifromr
+            i_hconnectinfo(ieqto,w_to_wall) = ifromw
+            i_hconnectinfo(ieqto,w_boundary_condition) = 1
         end do
 
         jacdim = nofprd - nofp
@@ -1486,8 +1488,8 @@ module solve_routines
                     else
                         roomptr%t_surfaces(1,iwall) = y_vector(iwalleq)
                         ieqfrom = iwalleq - nofwt
-                        itor = i_hconnections(ieqfrom,w_to_room)
-                        itow = i_hconnections(ieqfrom,w_to_wall)
+                        itor = i_hconnectinfo(ieqfrom,w_to_room)
+                        itow = i_hconnectinfo(ieqfrom,w_to_wall)
                         iwalleq2 = i_wallmap(itor,itow)
                         if (iwalleq2==0) then
                             iinode = roomptr%nodes_w(1,iwall)

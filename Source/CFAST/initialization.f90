@@ -6,14 +6,24 @@ module initialization_routines
     use output_routines, only : deleteoutputfiles
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror
+    
+    use cfast_types, only: room_type
 
     use cenviro, only: constvar, odevara
-    use defaults
-    use fire_data
+    use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, &
+        mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, xlrg, default_grid, face_front, trigger_by_time, &
+        h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall
+    use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
+        default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
+    use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
+    use cfast_types, only: thermal_type, target_type, detector_type
     use option_data, only: foxygen, option, on
-    use room_data
+    use room_data, only: nr, nrm1, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
+        exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
+        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, i_vconnectinfo, n_hcons, nnodes, nwpts, wsplit
     use setup_data, only: iofill, debugging, deltat
-    use solver_data
+    use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
+        nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
@@ -275,7 +285,7 @@ module initialization_routines
     adiabatic_walls = .false.
     
     ! room to room heat transfer
-    nvcons = 0
+    n_vcons = 0
 
     do i = 1, mxrooms
         roomptr => roominfo(i)
@@ -714,11 +724,11 @@ module initialization_routines
     end do
 
     ! concatenate slab properties of wall nodes that are connected to each other
-    do i = 1, nvcons
-        ifromr = i_vconnections(i,w_from_room)
-        ifromw = i_vconnections(i,w_from_wall)
-        itor = i_vconnections(i,w_to_room)
-        itow = i_vconnections(i,w_to_wall)
+    do i = 1, n_vcons
+        ifromr = i_vconnectinfo(i,w_from_room)
+        ifromw = i_vconnectinfo(i,w_from_wall)
+        itor = i_vconnectinfo(i,w_to_room)
+        itow = i_vconnectinfo(i,w_to_wall)
         from_roomptr => roominfo(ifromr)
         to_roomptr => roominfo(itor)
 
@@ -965,12 +975,12 @@ module initialization_routines
     nrm1 = nr - 1
 
     ! count the number of walls
-    nhcons = 0
+    n_hcons = 0
     do i = 1, nrm1
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
-                nhcons = nhcons + 1
+                n_hcons = n_hcons + 1
             end if
             if (nwpts/=0) roomptr%nodes_w(1,j) = nwpts
         end do
@@ -991,7 +1001,7 @@ module initialization_routines
     nofoxyl = noftl + nrm1
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
-    nofprd = nofwt + nhcons
+    nofprd = nofwt + n_hcons
     nequals = nofprd + 2*nrm1*ns
 
     return

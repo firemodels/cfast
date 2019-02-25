@@ -4,7 +4,8 @@
 
     use cparams, only: lbufln
     use room_data, only: nwpts, wsplit, iwbound
-    use setup_data, only: ncol, iofill, rundat, mpsdatc, nokbd, initializeonly, debugging, validation_flag, outputformat, netheatflux
+    use setup_data, only: ncol, iofill, rundat, mpsdatc, nokbd, initializeonly, debugging, validation_flag, outputformat, &
+        netheatflux
 
     implicit none
 

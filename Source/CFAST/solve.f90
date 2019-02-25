@@ -23,17 +23,22 @@ module solve_routines
     use cfast_types, only: fire_type, ramp_type, room_type, target_type, vent_type
     
     use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma
-    use cparams, only: u, l, m, q, mxtarg, mxnode, mxbranch, maxeq, check_state, set_state, update_state, nwal, ns_mass, vminfrac, &
-        n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition
-    use diag_data
+    use cparams, only: u, l, m, q, mxrooms, mxtarg, mxnode, mxbranch, mxdiscon, maxeq, ns, check_state, set_state, update_state, &
+        nwal, ns_mass, vminfrac, n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition
+    use diag_data, only: radi_verification_flag, verification_time_step, upper_layer_thickness, dbtime, gas_temperature, &
+        partial_pressure_co2, partial_pressure_h2o, residfile, ioresid, residcsv, residfirst, residprn, ioslab, slabcsv, prnslab
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
-    use option_data
+    use option_data, only: option, mxopt, on, off, iprtalg, ovtime, tovtime, tottime, prttime, numjac, numstep, numresd, fpdassl, &
+        stptime, total_steps, fpsteady, foxygen, fdebug, fresidprn, fkeyeval
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo, n_hcons, i_hconnectinfo, n_vcons, i_vconnectinfo, exterior_ambient_temperature, &
         exterior_abs_pressure, pressure_ref, pressure_offset, relative_humidity, iwbound
-    use setup_data
-    use smkview_data
-    use solver_data
+    use setup_data, only: iofilo, iofill, initializeonly, stime, i_time_step, time_end, deltat, print_out_interval, &
+        smv_out_interval, ss_out_interval, nokbd, stopfile, queryfile, cfast_version
+    use smkview_data, only: smv_room, smv_xfire, smv_yfire, smv_zfire, smv_relp, smv_zlay, smv_tu, smv_tl, smv_qdot, smv_height
+    use solver_data, only: maxteq, rpar2, ipar2, p, pold, pdold, pinit, told, dt, aptol, atol, rtol, rptol, awtol, rwtol, algtol, &
+        nofp, nequals, nofprd, nofwt, noftu, noftl, nofvu, nofoxyu, nofoxyl, ndisc, discon, stpmin, stpminflag, stpmin_cnt, &
+        stpmin_cnt_max, stpmax, stpfirst, jacdim, i_speciesmap, I_wallmap
     use target_data, only: n_detectors, n_targets, targetinfo, idset
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 

@@ -2,10 +2,11 @@ module fire_routines
 
     use precision_parameters
 
-    use cfast_types, only: detector_type, fire_type, room_type, target_type, vent_type
     use opening_fractions, only: get_vent_opening
     use utility_routines, only: tanhsmooth, xerror, interp
 
+    use cfast_types, only: detector_type, fire_type, room_type, target_type, vent_type
+        
     use cenviro, only: cp
     use cparams, only: u, l, m, q, ts, fuel, o2, o2f, mxfires, mxrooms, fuel_moles, fuel_q, fuel_o2, fuel_co2, fuel_co, fuel_hcn, &
         fuel_hcl, hcl, fuel_h2o, h2o, fuel_soot, co2, co, hcn, soot, soot_flaming, soot_smolder, ct, mx_hsep, t_max, ns_mass, &

@@ -1,16 +1,19 @@
 module spreadsheet_header_routines
 
-    use cfast_types, only: target_type, detector_type
+    use precision_parameters
+    
     use utility_routines, only: tointstring
 
+    use cfast_types, only: target_type, detector_type, vent_type
+    
     use cparams, only: u, l, soot, soot_flaming, soot_smolder, mxrooms, mxfires, mxtarg, mxdtect, mxfires, mxhvents, &
-        mxvvents, mxmvents, mxext, ns
+        mxvvents, mxmvents, mxext, mxfslab, ns
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: nr, nrm1, roominfo, room_type
     use setup_data, only: validation_flag
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
-    use vent_data
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
 

@@ -4,6 +4,7 @@
 module cenviro
 
     use precision_parameters
+    
     implicit none
     save
 
@@ -20,7 +21,9 @@ end module cenviro
 module  diag_data
 
     use precision_parameters
+    
     implicit none
+    save
 
     logical :: residprn, jacprn
     logical :: residfirst = .true.
@@ -53,9 +56,12 @@ end module diag_data
 module fire_data
 
     use precision_parameters
+    
     use cfast_types, only: fire_type, table_type
+    
     use cparams, only: mxpts
-    use defaults
+    use defaults, only: default_sigma_s
+    
     implicit none
     save
 
@@ -113,6 +119,7 @@ module fire_data
 module option_data
 
     use precision_parameters
+    
     implicit none
     save
 
@@ -132,7 +139,7 @@ module option_data
     integer, parameter :: fconduc = 9
     integer, parameter :: fdebug = 10
     integer, parameter :: fgasabsorb = 11
-    integer, parameter :: fmvent = 12
+    integer, parameter :: fmflow = 12
     integer, parameter :: fkeyeval = 13
     integer, parameter :: fpsteady = 14
     integer, parameter :: fpdassl = 15
@@ -164,8 +171,11 @@ module option_data
 ! --------------------------- ramp_data -------------------------------------------
 
 module ramp_data
+
     use precision_parameters
+    
     use cfast_types, only: ramp_type
+    
     use cparams, only: mxramps
     
     implicit none
@@ -182,7 +192,9 @@ end module ramp_data
 module room_data
 
     use precision_parameters
+    
     use cfast_types, only: room_type
+    
     use cparams, only: nnodes, ns, mxwal
     
     implicit none
@@ -265,6 +277,7 @@ end module setup_data
 module smkview_data
 
     use precision_parameters
+    
     use cfast_types, only: iso_type, slice_type, visual_type
     
     use cparams, only: mxfires, mxrooms, mxslice
@@ -293,6 +306,7 @@ end module smkview_data
 module solver_data
 
     use precision_parameters
+    
     use cparams, only: nt, maxteq, ns, mxrooms, mxdiscon
     
     implicit none
@@ -341,9 +355,13 @@ end module solver_data
 ! --------------------------- target_data -------------------------------------------
 
 module target_data
+
     use precision_parameters
-    use cparams, only: mxthrmplen, mxtarg, mxdtect
+
     use  cfast_types, only: target_type, detector_type
+    
+    use cparams, only: mxthrmplen, mxtarg, mxdtect
+    
     implicit none
     save
 
@@ -365,8 +383,11 @@ end module target_data
 module thermal_data
 
     use precision_parameters
-    use cparams, only : mxthrmp
+
     use cfast_types, only: thermal_type
+    
+    use cparams, only : mxthrmp
+    
     implicit none
     save
 
@@ -380,8 +401,11 @@ module thermal_data
 module vent_data
 
     use precision_parameters
-    use cparams, only: mxhvents, mxfslab
+
     use cfast_types, only: vent_type
+    
+    use cparams, only: mxhvents, mxfslab
+    
     implicit none
     save
 

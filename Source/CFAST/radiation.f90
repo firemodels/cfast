@@ -5,13 +5,12 @@ module radiation_routines
     use fire_routines, only: flame_height
     use numerics_routines, only : ddot, dnrm2, dgefa, dgesl
 
-    use precision_parameters
-    use diag_data
-    use cfast_types, only: fire_type
+    use cfast_types, only: fire_type, room_type
+
     use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot
     use fire_data, only: n_fires, fireinfo
     use option_data, only: frad, fgasabsorb, option, on, off
-    use room_data
+    use room_data, only: nrm1, roominfo
     use setup_data, only: iofill
 
     implicit none

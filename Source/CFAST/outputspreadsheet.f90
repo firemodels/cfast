@@ -7,15 +7,18 @@ module spreadsheet_routines
     use opening_fractions, only : get_vent_opening
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
+    
+    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type
 
-    use cparams, only: u, l, mxrooms, mxfires, mxvvents, mxmvents, soot, soot_flaming, soot_smolder
-    use diag_data
-    use fire_data
-    use ramp_data
-    use room_data
-    use setup_data
-    use target_data
-    use vent_data
+    use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, &
+        ns, soot, soot_flaming, soot_smolder
+    use diag_data, only: radi_verification_flag
+    use fire_data, only: n_fires, fireinfo
+    use ramp_data, only: n_ramps, rampinfo
+    use room_data, only: nr, nrm1, roominfo
+    use setup_data, only: validation_flag
+    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
 

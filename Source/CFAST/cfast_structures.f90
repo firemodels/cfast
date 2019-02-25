@@ -1,6 +1,7 @@
 module cfast_types
 
     use precision_parameters
+    
     use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, mxcoeff
 
     ! detector / sprinkler structure

@@ -2,15 +2,16 @@
 
     use precision_parameters
 
-    use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
     use fire_routines, only: get_gas_temp_velocity
     use spreadsheet_header_routines, only: ssheaders_smv
     use utility_routines, only: funit
 
+    use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
+    
     use cparams, only: smoked, face_front, face_left, face_back, face_right
+    use room_data, only: nrm1, roominfo
     use setup_data, only: smvcsv
     use smkview_data, only: n_iso, isoinfo, n_slice, sliceinfo
-    use room_data, only: nrm1, roominfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 

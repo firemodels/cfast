@@ -4,14 +4,12 @@ module mflow_routines
 
     use opening_fractions, only : get_vent_opening
     use utility_routines, only: d1mach, tanhsmooth
-
-    use precision_parameters
     
     use cfast_types, only: room_type, vent_type
     
     use cenviro, only: cp
     use cparams, only: u, l, m, q, soot, soot_flaming, soot_smolder, ts, mxrooms
-    use option_data, only: fmvent, option, off
+    use option_data, only: fmflow, option, off
     use room_data, only: nr, nrm1, ns, roominfo, exterior_rho, interior_rho, exterior_abs_pressure
     use vent_data, only: n_mvents, mventinfo
 
@@ -50,7 +48,7 @@ module mflow_routines
     uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
     uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
     if (n_mvents==0) return
-    if (option(fmvent)==off) return
+    if (option(fmflow)==off) return
 
     do i = 1, n_mvents
         ventptr => mventinfo(i)

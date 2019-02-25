@@ -2,10 +2,11 @@ module debug_routines
 
     use precision_parameters
 
-    use cfast_types, only: room_type, vent_type
     use spreadsheet_header_routines, only: ssHeaders_fslabs, ssHeaders_resid
     use utility_routines, only: ssaddtolist
 
+    use cfast_types, only: room_type, vent_type
+    
     use cparams, only: u, l, mxrooms, mxfslab, ns
     use diag_data, only: nwline, ioslab, ioresid
     use room_data, only: nrm1, roominfo

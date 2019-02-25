@@ -28,6 +28,7 @@
     !     other dealings in the software.
 
     use precision_parameters
+    
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions

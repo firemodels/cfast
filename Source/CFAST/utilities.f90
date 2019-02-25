@@ -2,11 +2,9 @@
 
     use precision_parameters
 
-    use setup_data
-    use room_data, only: nwpts, wsplit, iwbound
-
     use cparams, only: lbufln
-    use namelist_data
+    use room_data, only: nwpts, wsplit, iwbound
+    use setup_data, only: ncol, iofill, rundat, mpsdatc, nokbd, initializeonly, debugging, validation_flag, outputformat, netheatflux
 
     implicit none
 
@@ -1134,12 +1132,12 @@
 
     ! The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
     
-    use cfast_types, only: target_type
+    use cfast_types, only: ramp_type, target_type, vent_type
 
     use precision_parameters
     use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg
-    use ramp_data
-    use vent_data
+    use ramp_data, only: n_ramps, rampinfo
+    use vent_data, only: hventinfo, vventinfo, mventinfo
     use room_data, only: roominfo, nrm1
     use target_data, only: targetinfo
     use setup_data, only: iofilo, iofill

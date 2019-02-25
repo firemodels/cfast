@@ -5,9 +5,9 @@ module initialization_routines
     use numerics_routines, only: dnrm2, dscal
     use output_routines, only : deleteoutputfiles
     use solve_routines, only : update_data
-    use utility_routines, only: indexi, xerror
-    
-    use cfast_types, only: room_type
+    use utility_routines, only: indexi, xerror    
+
+    use cfast_types, only: detector_type, room_type, target_type, thermal_type
 
     use cenviro, only: constvar, odevara
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, &
@@ -16,7 +16,6 @@ module initialization_routines
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
-    use cfast_types, only: thermal_type, target_type, detector_type
     use option_data, only: foxygen, option, on
     use room_data, only: nr, nrm1, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &

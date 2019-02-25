@@ -2,7 +2,6 @@
 
     use precision_parameters
 
-    use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, thermal_type, vent_type, visual_type
     use fire_routines, only: flame_height
     use initialization_routines, only : initialize_targets, initialize_ambient, offset
     use numerics_routines, only : dnrm2
@@ -10,6 +9,8 @@
     use utility_routines, only: countargs, upperall, exehandle, emix
     use namelist_input_routines, only: namelist_input
     use spreadsheet_input_routines, only: spreadsheet_input
+    
+    use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, thermal_type, vent_type, visual_type
 
     use cenviro, only: rgas
     use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall

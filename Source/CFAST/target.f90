@@ -5,18 +5,20 @@ module target_routines
     use conduction_routines, only: conductive_flux, cylindrical_conductive_flux
     use convection_routines, only: convective_flux
     use fire_routines, only: get_gas_temp_velocity, flame_height
-    use cfast_types, only: fire_type
     use numerics_routines, only : ddot, dnrm2
     use radiation_routines, only : absorb, solid_angle_triangle
     use utility_routines, only: xerror
+    
+    use cfast_types, only: fire_type, room_type, target_type, detector_type
 
-    use diag_data
+    use diag_data, only: verification_ast, radiative_incident_flux_ast, radi_verification_flag, partial_pressure_co2, &
+        partial_pressure_h2o, verification_fire_heat_flux
     use cparams, only: u, l, pde, cylpde, co2, co, hcn, soot, soot_flaming, soot_smolder, nnodes_trg, idx_tempf_trg, &
         idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off
-    use room_data
-    use target_data
+    use room_data, only: roominfo, interior_ambient_temperature
+    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
 
     implicit none
 

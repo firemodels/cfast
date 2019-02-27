@@ -184,7 +184,7 @@ module output_routines
 5000 format (' ')
 5010 format ('Compartment    Upper     Lower      Inter.      Upper           Upper      Lower       Pressure')
 5020 format ('               Temp.     Temp       Height      Vol             Absor      Absorb')
-5030 FORMAT ('               (C)       (C)        (m)         (m^3)           (m^-1)     (m^-1)      (Pa)')
+5030 FORMAT ('               (C)       (C)        (m)         (m^3)           (1/m)      (1/m)       (Pa)')
 5040 format (100('-'))
 5070 format (a13,3(1pg11.4),1x,1pg9.2,'(',i3,'%) ',1pg10.3,1x,1pg10.3,3x,1pg10.3)
 5071 format (a13,1pg11.4,11(' '),11(' '),1x,1pg9.2,7(' '),1pg10.3,1x,10(' '),3x,1pg10.3)

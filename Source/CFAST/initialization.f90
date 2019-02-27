@@ -12,7 +12,7 @@ module initialization_routines
     use cenviro, only: constvar, odevara
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, &
         mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, xlrg, default_grid, face_front, trigger_by_time, &
-        h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall
+        h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, smoked
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
@@ -168,8 +168,13 @@ module initialization_routines
         dtectptr%tau = tdrate
 
         ! set initial ceiling jet and detector link temperatures to ambient
-        dtectptr%value = interior_ambient_temperature
-        dtectptr%value_o = interior_ambient_temperature
+        if (dtectptr%dtype==smoked) then
+            dtectptr%value = 0.0_eb
+            dtectptr%value_o = 0.0_eb
+        else
+            dtectptr%value = interior_ambient_temperature
+            dtectptr%value_o = interior_ambient_temperature
+        end if
         dtectptr%temp_gas = interior_ambient_temperature
         dtectptr%temp_gas_o = interior_ambient_temperature
     end do

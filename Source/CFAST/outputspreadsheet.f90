@@ -11,7 +11,7 @@ module spreadsheet_routines
     use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type
 
     use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, &
-        ns, soot, soot_flaming, soot_smolder
+        ns, soot, soot_flaming, soot_smolder, smoked
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
@@ -268,7 +268,7 @@ module spreadsheet_routines
     integer, parameter :: maxoutput=4*mxrooms+27*mxtarg+4*mxdtect
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, tlink, xact
+    real(eb) :: outarray(maxoutput), zdetect, tjet, vel, value, xact
     real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/) 
     integer :: position, i, iw, itarg, iroom
@@ -371,8 +371,9 @@ module spreadsheet_routines
         end if
         tjet = max(dtectptr%temp_gas,tlay)
         vel = max(dtectptr%velocity,cjetmin)
-        tlink =  dtectptr%value
-        call ssaddtolist(position, tlink-kelvin_c_offset, outarray)
+        value =  dtectptr%value
+        if (dtectptr%dtype/=smoked) value = value - kelvin_c_offset
+        call ssaddtolist(position, value, outarray)
         call ssaddtolist(position, xact, outarray)
         call ssaddtolist(position, tjet-kelvin_c_offset, outarray)
         call ssaddtolist(position, vel, outarray)

@@ -24,7 +24,7 @@ module cfast_types
         real(eb) :: value_o             ! link temperature or detector obscuration from previous time step (calculated)
         real(eb) :: value_o_smolder     ! detector obscuration from previous time step for smoldering smoke (calculated)
         real(eb) :: temp_gas            ! current gas temperature near detector (calculated)
-        real(eb) :: temp_gas_o          ! gas temperature neat detector from previous time step (calculated)
+        real(eb) :: temp_gas_o          ! gas temperature near detector from previous time step (calculated)
         real(eb) :: velocity            ! current gas velocity near detector (calculated)
         real(eb) :: velocity_o          ! gas velocity near detector from previous time step (calculated)
         real(eb) :: obscuration         ! total smoke obscuration near detector (calculated)

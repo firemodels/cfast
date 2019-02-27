@@ -7,7 +7,7 @@ module spreadsheet_header_routines
     use cfast_types, only: target_type, detector_type, vent_type
     
     use cparams, only: u, l, soot, soot_flaming, soot_smolder, mxrooms, mxfires, mxtarg, mxdtect, mxfires, mxhvents, &
-        mxvvents, mxmvents, mxext, mxfslab, ns
+        mxvvents, mxmvents, mxext, mxfslab, ns, smoked
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: nr, nrm1, roominfo, room_type
@@ -276,7 +276,7 @@ module spreadsheet_header_routines
         'Target Radiative Loss Gauge Flux',  &
         'Sensor Temperature', 'Sensor Activation', 'Sensor Surrounding Gas Temperature', 'Sensor Surrounding Gas Velocity', &
         'Target Gas FED','Target GasFED Increment','Target Heat FED','Target Heat FED Increment','Target Smoke Obscuration'/
-    data LabelUnits / 's', 7*'C', 12*'KW/m^2', 'C', '1=yes', 'C', 'm/s', 4*' ','m-1' /
+    data LabelUnits / 's', 7*'C', 12*'KW/m^2', 'C', '1=yes', 'C', 'm/s', 4*' ','1/m' /
     data frontorback / '','B_'/
 
     !  spreadsheet header.  Add time first
@@ -339,10 +339,17 @@ module spreadsheet_header_routines
         call toIntString(i,cDet)
         do j = 1, 4
             position = position + 1
-            headertext(1,position) = trim(LabelsShort(j+20))//trim(cDet)
-            headertext(2,position) = Labels(j+20)
-            headertext(3,position) = dtectptr%name
-            headertext(4,position) = LabelUnits(j+20)
+            if (dtectptr%dtype==smoked .and. j == 1) then
+                headertext(1,position) = trim(LabelsShort(j+20))//trim(cDet)
+                headertext(2,position) = 'Sensor Obscuration'
+                headertext(3,position) = dtectptr%name
+                headertext(4,position) = '1/m'
+            else
+                headertext(1,position) = trim(LabelsShort(j+20))//trim(cDet)
+                headertext(2,position) = Labels(j+20)
+                headertext(3,position) = dtectptr%name
+                headertext(4,position) = LabelUnits(j+20)
+            end if
         end do
     end do
 

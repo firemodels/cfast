@@ -734,7 +734,7 @@ module target_routines
 
     subroutine update_detectors (imode,tcur,dstep,n_detectors,idset,ifdtect,tdtect)
 
-    ! updates the temperature of each detector link.  it also determine whether the
+    ! updates the temperature or obscuration of each detector link.  it also determine whether the
     ! detector has activated in the time interval (tcur,tcur+dstep).  if this has occured then a
     ! quenching algorithm will be invoked if the appropriate option has been set.
     ! arguments: tcur    current time

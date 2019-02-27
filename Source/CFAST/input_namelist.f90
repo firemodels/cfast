@@ -280,9 +280,9 @@
     integer :: ios
 
     real(eb) :: max_time_step, lower_oxygen_limit
-    real(eb), dimension(2) :: specific_extinction_coefficient
+    real(eb), dimension(2) :: specific_extinction
     logical :: adiabatic
-    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit, specific_extinction_coefficient
+    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit, specific_extinction
 
     ios = 1
 
@@ -314,7 +314,7 @@
         adiabatic_walls=adiabatic
         stpmax = max_time_step
         lower_o2_limit = lower_oxygen_limit
-        sigma_s = specific_extinction_coefficient
+        sigma_s = specific_extinction
 
     end if misc_flag
 
@@ -327,7 +327,7 @@
     adiabatic = .false.
     max_time_step = stpmax
     lower_oxygen_limit = default_lower_oxygen_limit
-    specific_extinction_coefficient = default_sigma_s
+    specific_extinction = default_sigma_s
 
     end subroutine set_defaults
 

@@ -2078,7 +2078,7 @@ continue
     character(64) :: compartment_id
     integer :: nmlcount                             ! count of number of each namelist type read in so far
 
-    type(room_type), pointer :: roomptr
+    type(room_type), pointer :: roomptrfrm,roomptrto
 
     real(eb), dimension(mxpts) :: f
     character(64), dimension(mxpts) :: comp_ids
@@ -2127,9 +2127,9 @@ continue
                 ifrom = -101
 
                 searching: do jj=1,nr-1
-                    roomptr => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptr%name)) then
-                        ifrom = roomptr%compartment
+                    roomptrfrm => roominfo(jj)
+                    if (trim(compartment_id) == trim(roomptrfrm%name)) then
+                        ifrom = roomptrfrm%compartment
                         exit searching
                     end if
                 end do searching
@@ -2140,8 +2140,8 @@ continue
                     stop
                 end if
 
-                roomptr => roominfo(ifrom)
-                roomptr%iheat = 2
+                roomptrfrm => roominfo(ifrom)
+                roomptrfrm%iheat = 2
 
                 frac(:) = f(:)
 
@@ -2151,13 +2151,13 @@ continue
                     ito=-101
 
                    searching_2: do jj=1,nr-1
-                        roomptr => roominfo(jj)
+                        roomptrto => roominfo(jj)
                         if (trim(compartment_id) == 'OUTSIDE') then
                             ito = nr
                             exit searching_2
                         end if
-                        if (trim(compartment_id) == trim(roomptr%name)) then
-                            ito = roomptr%compartment
+                        if (trim(compartment_id) == trim(roomptrto%name)) then
+                            ito = roomptrto%compartment
                             exit searching_2
                         end if
                     end do searching_2
@@ -2178,7 +2178,7 @@ continue
                         write (iofill, 5357) ifrom,ito,f(i)
                         stop
                     end if
-                    roomptr%heat_frac(ito) = f(i)
+                    roomptrfrm%heat_frac(ito) = f(i)
                 end do
 
             else if (trim(type) == 'CEILING' .or. trim(type) == 'FLOOR') then
@@ -2189,9 +2189,9 @@ continue
                 i1 = -101
 
                 searching_3: do jj = 1, nr-1
-                    roomptr => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptr%name)) then
-                        i1 = roomptr%compartment
+                    roomptrfrm => roominfo(jj)
+                    if (trim(compartment_id) == trim(roomptrfrm%name)) then
+                        i1 = roomptrfrm%compartment
                         exit searching_3
                     end if
                 end do searching_3
@@ -2207,9 +2207,9 @@ continue
                 i2 = -101
 
                 searching_4: do jj = 1, nr-1
-                    roomptr => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptr%name)) then
-                        i2 = roomptr%compartment
+                    roomptrfrm => roominfo(jj)
+                    if (trim(compartment_id) == trim(roomptrfrm%name)) then
+                        i2 = roomptrfrm%compartment
                         exit searching_4
                     end if
                 end do searching_4

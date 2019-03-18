@@ -264,6 +264,9 @@ module cfast_types
         real(eb), dimension(2) :: offset                ! vent offset from wall origin (1 = from room, 2 = to room)
 
         real(eb) :: h_mflow(2,2,2), h_mflow_mix(2,2)    ! (1>2 or 2>1, u or l, in or out)
+        
+        integer :: n_slabs
+        real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
 
         ! These define a ceiling/floor vent
         integer :: shape                                ! vent shape, 1 = circular, 2 = square (from user input)
@@ -318,8 +321,6 @@ module cfast_types
         real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
         real(eb) :: mflow(2,2)                          ! vent mass flow (room1/top,room2/bottom, u,l)
 
-        integer :: n_slabs
-        real(eb) :: temp_slab(mxfslab), flow_slab(mxfslab), ybot_slab(mxfslab), ytop_slab(mxfslab)
     end type vent_type
 
     ! visualization data structure

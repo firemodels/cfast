@@ -7,7 +7,7 @@
     use cparams, only: u, l, w_from_room, w_from_wall, mxrooms, nwal
     use fire_data, only: n_fires, fireinfo
     use option_data, only: fconvec, option, on
-    use room_data, only: nrm1, roominfo, n_hcons, i_hconnectinfo
+    use room_data, only: nrm1, roominfo, n_cons, surface_connections
 
     implicit none
 
@@ -43,10 +43,10 @@
     if (option(fconvec)/=on) return
 
     ! calculate convection for all surfaces in all rooms
-    do iw = 1, n_hcons
-        i = i_hconnectinfo(iw,w_from_room)
+    do iw = 1, n_cons
+        i = surface_connections(iw,w_from_room)
         roomptr => roominfo(i)
-        iwall = i_hconnectinfo(iw,w_from_wall)
+        iwall = surface_connections(iw,w_from_wall)
         if (modulo(iwall,2)==1) then
             ilay = u
         else

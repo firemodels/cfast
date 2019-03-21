@@ -19,7 +19,7 @@ module initialization_routines
     use option_data, only: foxygen, option, on
     use room_data, only: nr, nrm1, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
-        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, i_vconnectinfo, n_hcons, nnodes, nwpts, wsplit
+        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, wsplit
     use setup_data, only: iofill, debugging, deltat
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
@@ -729,10 +729,10 @@ module initialization_routines
 
     ! concatenate slab properties of wall nodes that are connected to each other
     do i = 1, n_vcons
-        ifromr = i_vconnectinfo(i,w_from_room)
-        ifromw = i_vconnectinfo(i,w_from_wall)
-        itor = i_vconnectinfo(i,w_to_room)
-        itow = i_vconnectinfo(i,w_to_wall)
+        ifromr = vertical_connections(i,w_from_room)
+        ifromw = vertical_connections(i,w_from_wall)
+        itor = vertical_connections(i,w_to_room)
+        itow = vertical_connections(i,w_to_wall)
         from_roomptr => roominfo(ifromr)
         to_roomptr => roominfo(itor)
 
@@ -979,12 +979,12 @@ module initialization_routines
     nrm1 = nr - 1
 
     ! count the number of walls
-    n_hcons = 0
+    n_cons = 0
     do i = 1, nrm1
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
-                n_hcons = n_hcons + 1
+                n_cons = n_cons + 1
             end if
             if (nwpts/=0) roomptr%nodes_w(1,j) = nwpts
         end do
@@ -1005,7 +1005,7 @@ module initialization_routines
     nofoxyl = noftl + nrm1
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
-    nofprd = nofwt + n_hcons
+    nofprd = nofwt + n_cons
     nequals = nofprd + 2*nrm1*ns
 
     return

@@ -7,7 +7,7 @@ module conduction_routines
     use cfast_types, only: room_type
 
     use cparams, only: u, l, q, m, w_from_wall, w_from_room, w_boundary_condition, mxrooms, nwal, mxslb, ns_mass
-    use room_data, only: nrm1, roominfo, n_hcons, i_hconnectinfo, nnodes, exterior_ambient_temperature, adiabatic_walls
+    use room_data, only: nrm1, roominfo, n_cons, surface_connections, nnodes, exterior_ambient_temperature, adiabatic_walls
     use solver_data, only: nofwt, i_wallmap
 
     implicit none
@@ -50,13 +50,13 @@ module conduction_routines
     ! solve conduction problem for all walls
 
     ibeg = 1
-    iend = n_hcons
+    iend = n_cons
     wfluxin = 0.0_eb
     wfluxout = 0.0_eb
 
     do iw = ibeg, iend
-        iroom = i_hconnectinfo(iw,w_from_room)
-        iwall = i_hconnectinfo(iw,w_from_wall)
+        iroom = surface_connections(iw,w_from_room)
+        iwall = surface_connections(iw,w_from_wall)
         icond = nofwt + iw
 
         roomptr => roominfo(iroom)
@@ -69,7 +69,7 @@ module conduction_routines
             twext = roomptr%t_surfaces(2,iwall)
             tgas = exterior_ambient_temperature
             iweq = i_wallmap(iroom,iwall) - nofwt
-            iwb = i_hconnectinfo(iweq,w_boundary_condition)
+            iwb = surface_connections(iweq,w_boundary_condition)
 
             ! compute flux seen by exterior of wall
             if (iwb==3) then
@@ -137,11 +137,11 @@ module conduction_routines
 
     ! dassl will try to force delta to be zero, so that fourier's law, q = -k dt/dx, is satisfied at the wall surface
     if (update/=2) then
-        do iw = 1, n_hcons
+        do iw = 1, n_cons
             icond = nofwt + iw
-            iroom = i_hconnectinfo(iw,w_from_room)
+            iroom = surface_connections(iw,w_from_room)
             roomptr => roominfo(iroom)
-            iwall = i_hconnectinfo(iw,w_from_wall)
+            iwall = surface_connections(iw,w_from_wall)
             delta(icond) = fluxes_total(iroom,iwall) + vtgrad(iw)*roomptr%k_w(1,iwall)
         end do
     end if

@@ -25,7 +25,7 @@
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
-        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, i_vconnectinfo
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections
 
     implicit none
 
@@ -189,8 +189,8 @@
     nswall2 = n_vcons
     ii = 0
     do i = 1, n_vcons
-        iroom1 = i_vconnectinfo(i,w_from_room)
-        iroom2 = i_vconnectinfo(i,w_to_room)
+        iroom1 = vertical_connections(i,w_from_room)
+        iroom2 = vertical_connections(i,w_to_room)
 
         ! room numbers must be between 1 and nrm1
         if (iroom1<1.or.iroom2<1.or.iroom1>nrm1+1.or.iroom2>nrm1+1) then
@@ -207,10 +207,10 @@
         else
             ii = ii + 1
             if (i/=ii) then
-                i_vconnectinfo(ii,w_from_room) = i_vconnectinfo(i,w_from_room)
-                i_vconnectinfo(ii,w_from_wall) = i_vconnectinfo(i,w_from_wall)
-                i_vconnectinfo(ii,w_to_room) = i_vconnectinfo(i,w_to_room)
-                i_vconnectinfo(ii,w_to_wall) = i_vconnectinfo(i,w_to_wall)
+                vertical_connections(ii,w_from_room) = vertical_connections(i,w_from_room)
+                vertical_connections(ii,w_from_wall) = vertical_connections(i,w_from_wall)
+                vertical_connections(ii,w_to_room) = vertical_connections(i,w_to_room)
+                vertical_connections(ii,w_to_wall) = vertical_connections(i,w_to_wall)
             end if
         end if
 
@@ -219,11 +219,11 @@
         dwall2 = abs(roominfo(iroom2)%z0 - roominfo(iroom1)%z1)
         if (dwall1<mx_vsep.or.dwall2<=mx_vsep) then
             if (dwall1<mx_vsep) then
-                i_vconnectinfo(ii,w_from_wall) = 2
-                i_vconnectinfo(ii,w_to_wall) = 1
+                vertical_connections(ii,w_from_wall) = 2
+                vertical_connections(ii,w_to_wall) = 1
             else
-                i_vconnectinfo(ii,w_from_wall) = 1
-                i_vconnectinfo(ii,w_to_wall) = 2
+                vertical_connections(ii,w_from_wall) = 1
+                vertical_connections(ii,w_to_wall) = 2
             end if
         else
             write (*,202) iroom1, iroom2
@@ -234,8 +234,8 @@
 
         ! walls must be turned on, ie surface_on must be set
         ! for the ceiling in the lower room and the floor of the upper room
-        iwall1 = i_vconnectinfo(ii,w_from_wall)
-        iwall2 = i_vconnectinfo(ii,w_to_wall)
+        iwall1 = vertical_connections(ii,w_from_wall)
+        iwall2 = vertical_connections(ii,w_to_wall)
         if (.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2)) then
             if (.not.roominfo(iroom1)%surface_on(iwall1)) then
                 write (*,204) iwall1, iroom1

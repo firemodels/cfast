@@ -13,7 +13,7 @@ module spreadsheet_input_routines
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
-        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, i_vconnectinfo, &
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, rarray, carray, nrow, ncol, cfast_version, heading, title, time_end, &
         print_out_interval, smv_out_interval, ss_out_interval
@@ -997,10 +997,10 @@ module spreadsheet_input_routines
                 end if
 
                 n_vcons = n_vcons + 1
-                i_vconnectinfo(n_vcons,w_from_room) = i1
-                i_vconnectinfo(n_vcons,w_from_wall) = 2
-                i_vconnectinfo(n_vcons,w_to_room) = i2
-                i_vconnectinfo(n_vcons,w_to_wall) = 1
+                vertical_connections(n_vcons,w_from_room) = i1
+                vertical_connections(n_vcons,w_from_wall) = 2
+                vertical_connections(n_vcons,w_to_room) = i2
+                vertical_connections(n_vcons,w_to_wall) = 1
             else
                 write (*,*) '***Error: Bad VHEAT input. At least 2 arguments required.'
                 write (iofill,*) '***Error: Bad VHEAT input. At least 2 arguments required.'

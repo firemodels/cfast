@@ -217,21 +217,21 @@ module room_data
     real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
                                                                         ! initial fractions for inner, middle and outer wall slab
     
-    integer :: n_hcons
-    integer, dimension(mxwal,5) :: i_hconnectinfo   ! defines all surfaces for conduction routine, 1 entry for each wall that's on
-                                                    !   1 = from room number
-                                                    !   2 = from wall number (ceiling, upper walls, lower walls, floor)
-                                                    !   3 = to room number
-                                                    !   4 = to wall number
-                                                    !   5 = boundary condition type for exterior surface
+    integer :: n_cons
+    integer, dimension(mxwal,5) :: surface_connections  ! defines all surfaces for conduction, 1 entry for each wall that's on
+                                                        !   1 = from room number
+                                                        !   2 = from wall number (ceiling, upper walls, lower walls, floor)
+                                                        !   3 = to room number
+                                                        !   4 = to wall number
+                                                        !   5 = boundary condition type for exterior surface
     integer :: n_vcons
-    integer, dimension(mxwal,4) :: i_vconnectinfo   ! list of connected compartments for vertical heat transfer
-                                                    !   1 = from room number
-                                                    !   2 = from wall number (ceiling, upper walls, lower walls, floor)
-                                                    !   3 = to room number
-                                                    !   4 = to wall number
+    integer, dimension(mxwal,4) :: vertical_connections ! list of connected compartments for vertical heat transfer
+                                                        !   1 = from room number
+                                                        !   2 = from wall number (ceiling, upper walls, lower walls, floor)
+                                                        !   3 = to room number
+                                                        !   4 = to wall number
 
-    logical :: adiabatic_walls                      ! true if all surfaces are adiabatic
+    logical :: adiabatic_walls  ! true if all surfaces are adiabatic
 
 end module room_data
 

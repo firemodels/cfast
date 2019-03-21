@@ -24,7 +24,7 @@
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
-        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, i_vconnectinfo, &
+        interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, rarray, carray, nrow, ncol, cfast_version, heading, title, time_end, &
         print_out_interval, smv_out_interval, ss_out_interval, validation_flag
@@ -2100,7 +2100,7 @@ continue
         end if
         read(lu,CONN,err=34,iostat=ios)
         if (trim(type) == trim('CEILING') .or. trim(type) == trim('FLOOR')) n_vcons = n_vcons + 1
-        if (trim(type) == trim('WALL')) nmlcount  =nmlcount + 1
+        if (trim(type) == trim('WALL')) nmlcount = nmlcount + 1
 34      if (ios>0) then
             write(iofill, '(a,i3)') 'Error: Invalid specification in &CONN inputs. Check &CONN input, ' , n_vcons+nmlcount
             stop
@@ -2226,10 +2226,10 @@ continue
                     stop
                 end if
 
-                i_vconnectinfo(counter1,w_from_room) = i1
-                i_vconnectinfo(counter1,w_from_wall) = 2
-                i_vconnectinfo(counter1,w_to_room) = i2
-                i_vconnectinfo(counter1,w_to_wall) = 1
+                vertical_connections(counter1,w_from_room) = i1
+                vertical_connections(counter1,w_from_wall) = 2
+                vertical_connections(counter1,w_to_room) = i2
+                vertical_connections(counter1,w_to_wall) = 1
             end if
 
         end do countloop

@@ -16,7 +16,7 @@ module output_routines
     use option_data, only: on, option, total_steps, foxygen
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
-        interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_hcons, i_hconnectinfo
+        interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, inputfile, outputfile, statusfile, &
         kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswall, ssdiag
@@ -1145,8 +1145,8 @@ module output_routines
         end if
     else if (icomp<=nofprd) then
         itmp = icomp - nofwt
-        irm = i_hconnectinfo(itmp,w_from_room)
-        iw = i_hconnectinfo(itmp,w_from_wall)
+        irm = surface_connections(itmp,w_from_room)
+        iw = surface_connections(itmp,w_from_wall)
         if (iw==1) then
             write (lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
             call xerror(lbuf,0,1,0)
@@ -1203,7 +1203,7 @@ module output_routines
             do iprod = 1, ns_mass+4
                 write (*,5030) spname(iprod), (roomptr%species_fraction(il,iprod),il= u,l)
             end do
-            if (n_hcons/=0) write (*,*) ' Wall temperatures'
+            if (n_cons/=0) write (*,*) ' Wall temperatures'
             if (roomptr%surface_on(1)) then
                 write (*,5040) roomptr%t_surfaces(1,1)
             end if

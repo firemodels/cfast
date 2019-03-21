@@ -1,6 +1,6 @@
 ## Introduction 
 
-To keep CFAST consistent and easier to deveop and debug, it is important that we follow some ground rules that will allow us to work together efficiently.  The guidelines below closely align with this article on [Best Practices for Scientific Computing](http://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745).
+To keep CFAST consistent and easier to develop and debug, it is important that we follow some ground rules that will allow us to work together efficiently.  The guidelines below closely align with this article on [Best Practices for Scientific Computing](http://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745).
 
 ## When Should I Submit a Pull Request?
 

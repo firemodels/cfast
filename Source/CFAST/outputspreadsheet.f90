@@ -16,7 +16,7 @@ module spreadsheet_routines
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo
-    use setup_data, only: validation_flag
+    use setup_data, only: validation_flag, iofilsmvzone, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
@@ -112,7 +112,7 @@ module spreadsheet_routines
         end do
     end if
 
-    call ssprintresults (21, position, outarray)
+    call ssprintresults (iofilssn, position, outarray)
 
     return
     end subroutine output_spreadsheet_normal
@@ -254,7 +254,7 @@ module spreadsheet_routines
         end do
     end if
 
-    call ssprintresults(22, position, outarray)
+    call ssprintresults(iofilssf, position, outarray)
     return
 
     end subroutine output_spreadsheet_flow
@@ -379,7 +379,7 @@ module spreadsheet_routines
         call ssaddtolist(position, vel, outarray)
     end do
 
-    call ssprintresults (25, position, outarray)
+    call ssprintresults (iofilssw, position, outarray)
     return
 
     end subroutine output_spreadsheet_target
@@ -439,7 +439,7 @@ module spreadsheet_routines
         end do
     end do
 
-90  call SSprintresults (23,position, outarray)
+90  call SSprintresults (iofilsss ,position, outarray)
 
     return
 
@@ -493,7 +493,7 @@ module spreadsheet_routines
         end do
     end do
 
-90  call SSprintresults (24,position, outarray)
+90  call SSprintresults (iofilssm, position, outarray)
 
     return
 
@@ -624,7 +624,7 @@ module spreadsheet_routines
             end do
         end do
     end if
-    call ssprintresults (15, position, outarray)
+    call ssprintresults (iofilsmvzone, position, outarray)
 
     return
     end subroutine output_spreadsheet_smokeview
@@ -662,7 +662,7 @@ module spreadsheet_routines
         end do
     end do
 
-    call ssprintresults (26, position, outarray)
+    call ssprintresults (iofilssd, position, outarray)
     
     return
     end subroutine output_spreadsheet_diag

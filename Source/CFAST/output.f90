@@ -4,7 +4,7 @@ module output_routines
 
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
-    use utility_routines, only: xerror, doesthefileexist, funit
+    use utility_routines, only: xerror, doesthefileexist
     use opening_fractions, only: find_vent_opening_ramp
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
@@ -17,8 +17,9 @@ module output_routines
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
-    use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, inputfile, outputfile, statusfile, &
-        kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
+    use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
+        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, inputfile, &
+        outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswall, ssdiag
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
@@ -1320,52 +1321,53 @@ module output_routines
     !	Now that we know what output is needed, open the appropriate files
     !	Unit numbers defined here and readinputfiles
 
-    !	Unit numbers defined in read_command_options, openoutputfiles, readinputfiles
+    !	Unit numbers defined for vairous I/O purposes
     !
-    !      1 is for the solver.ini and data files (data file, tpp and objects) (IOFILI)
-    !      3 is for the log file  (iofill)
-    !	   4 is for the indicator that the model is running (kernelisrunning)
-    !      6 is output (iofilo)
-    !     12 is used to write the status file (iofilstat)
-    !     13 smokeview output (header) - note this is rewound each time the plot data is written)
-    !     14 smokeview output (plot data)
-    !     15 smokeview spreadsheet output
-    !     20 spreadsheet output (compartment connections)    
-    !     21 spreadsheet output (normal)
-    !     22 spreadsheet output (flow field)
-    !     23 spreadsheet output (species molar %, etc.)
-    !     24 spreadsheet otuput (species mass)
-    !     25 spreadsheet output (walls and targets)
-    !     26 spreadsheet output (various diagnostics for verification)
-
-    ! Other files may be opened above unit 30 by the routine funit which searches for available open units
+    !     iofili        solver.ini and data files (data file, tpp and objects)
+    !     iofill        log file
+    !	  iofilkernel   indicator that the model is running (kernelisrunning)
+    !     iofilo        output 
+    !     iofilstat     write the status file
+    !     iofilsmv      smokeview output (header) - note this is rewound each time the plot data is written)
+    !     iofilsmvplt   smokeview output (plot data)
+    !     iofilsmvzone  smokeview spreadsheet output   
+    !     iofilssn      spreadsheet output (normal)
+    !     iofilssf      spreadsheet output (flow field)
+    !     iofilsss      spreadsheet output (species molar %, etc.)
+    !     iofilssm      spreadsheet otuput (species mass)
+    !     iofilssw      spreadsheet output (walls and targets)
+    !     iofilssd      spreadsheet output (various diagnostics for verification)
+    !     ioresid       diagnostic file of solution vector
+    !     ioslab        diagnostic file of flow slabs
+    
+    ! other units may be opened with newunit keyword in open statement
 
     !!!! Note that we assume that the default carriage control for formatted files is of type LIST (no fortran controls)
     integer :: ios
 
     ! first the file for "printed" output
-    open (unit=iofilo,file=outputfile,status='new')
+    open (newunit=iofilo,file=outputfile,status='new')
     if (outputformat==0) outputformat = 2
 
     ! the status files
-    open (unit=iofilstat,file=statusfile,access='append',err=81,iostat=ios)
-    open (unit=iofilkernel, file=kernelisrunning)
+    open (newunit=iofilstat,file=statusfile,access='append',err=81,iostat=ios)
+    open (newunit=iofilkernel, file=kernelisrunning)
 
     ! the smokeview files
     if (smv_out_interval>0) then
-        open (unit=13,file=smvhead,form='formatted',err=11,iostat=ios)
-        open (unit=14,file=smvdata,form="unformatted",err=11,iostat=ios)
-        open (unit=15, file=smvcsv,form='formatted')
+        open (newunit=iofilsmv,file=smvhead,form='formatted',err=11,iostat=ios)
+        open (newunit=iofilsmvplt,file=smvdata,form="unformatted",err=11,iostat=ios)
+        open (newunit=iofilsmvzone, file=smvcsv,form='formatted')
     end if
 
     ! the spread sheet files
     if (ss_out_interval>0) then
-        open (unit=21, file=ssnormal,form='formatted')
-        open (unit=22, file=ssflow,form='formatted')
-        open (unit=23, file=ssspecies,form='formatted')
-        open (unit=24, file=ssspeciesmass,form='formatted')
-        open (unit=25, file=sswall,form='formatted')
-        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (unit=26, file=ssdiag,form='formatted')
+        open (newunit=iofilssn, file=ssnormal,form='formatted')
+        open (newunit=iofilssf, file=ssflow,form='formatted')
+        open (unit=iofilsss, file=ssspecies,form='formatted')
+        open (newunit=iofilssm, file=ssspeciesmass,form='formatted')
+        open (newunit=iofilssw, file=sswall,form='formatted')
+        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (newunit=iofilssd, file=ssdiag,form='formatted')
     end if
 
     return
@@ -1393,8 +1395,7 @@ module output_routines
     integer fileunit,ios
 
     if (doesthefileexist(outputfile)) then
-        fileunit=funit(30)
-        open(unit=fileunit, iostat=ios, file=outputfile, status='old')
+        open (newunit=fileunit, iostat=ios, file=outputfile, status='old')
         if (ios==0) then
             close(fileunit, status='delete', iostat=ios)
             if (ios/=0) then

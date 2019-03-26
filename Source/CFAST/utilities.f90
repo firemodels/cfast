@@ -993,66 +993,6 @@
     return
     end subroutine upperall
 
-    ! --------------------------- funit -------------------------------------------
-
-    integer function funit (io)
-
-    ! finds first avalable i/o unit starting at unit number io
-    ! arguments: io - beginning unit number for search
-
-    integer, intent(in) :: io
-
-    integer, parameter :: mxio=32767
-    integer :: itmp
-    logical opend
-
-    itmp = io-1
-10  continue
-    itmp = itmp+1
-    if (itmp>mxio) then
-        funit = -1
-        return
-    end if
-    inquire(unit=itmp,opened = opend)
-    if (opend) go to 10
-    funit = itmp
-    return
-    end function funit
-
-    ! --------------------------- opnotpt -------------------------------------------
-
-    subroutine opnotpt (filname, iounit)
-
-    ! opens a file using the extension to distinguish previous open files
-    ! arguments: filname - base filename for file to be opened
-    !            iounit - desired unit number for file
-
-    integer, intent(in) :: iounit
-    character, intent(in) :: filname*(*)
-
-    integer :: first, last , length, ilen, itmp
-    character :: namefil*60, workfil*60, fmt*14
-    logical :: existed, valid
-
-    length = len (filname)
-    call sstrng (filname, length, 1, first, last, valid)
-    if (.not.valid) stop 'Cannot open debug file'
-    ilen = last - first + 1
-    namefil = ' '
-    namefil(1:ilen) = filname(first:last)
-
-    itmp = 0
-30  continue
-    itmp = itmp + 1
-    write (fmt,10) ilen
-10  format('(a',i2.2,',','','.','',',i3.3)')
-    write (workfil,fmt) namefil, itmp
-    inquire (file = workfil, exist = existed)
-    if (existed) go to 30
-    open (unit = iounit, file = workfil,recl=255)
-    return
-    end subroutine opnotpt
-
     ! --------------------------- xerbla -------------------------------------------
 
     subroutine xerbla ( srname, info )

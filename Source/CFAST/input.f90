@@ -17,7 +17,7 @@
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: nmlflag
-    use setup_data, only: iofili, inputfile, outputfile, iofill, exepath, datapath, project, extension, smvhead, smvdata, &
+    use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, ssconnections, ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, &
         kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
@@ -56,7 +56,7 @@
 
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
-    open (unit=iofili,file=inputfile,status='OLD',iostat=ios)
+    open (newunit=iofili,file=inputfile,status='OLD',iostat=ios)
     if (ios/=0) then
         if (iofill>0) then
             write (*,5050) modulo(ios,256)
@@ -478,9 +478,9 @@
     solverini = datapath(1:lp) // 'solver.ini'
 
     ! open input file and check to see if it's a new (namelist) format file
-    open (unit=1, file=inputfile, action='read', status='old', iostat=ios)
-    read (unit=1,fmt='(a)') buf
-    rewind (unit=1)
+    open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
+    read (unit=iofili,fmt='(a)') buf
+    rewind (unit=iofili)
     if (buf(1:5)==heading) then
         nmlflag = .false.
     else if (buf(1:1)=='&') then
@@ -492,17 +492,17 @@
     ! output the revision for later identification of validation plots
     if (validation_flag) then
         call deleteoutputfiles (gitfile)
-        open (unit=3, file=gitfile, action='write', iostat=ios, status='new')
+        open (newunit=iofilg, file=gitfile, action='write', iostat=ios, status='new')
         if (ios==0) then
             call get_info(revision, revision_date, compile_date)
-            write (3,'(a)') revision
-            close (unit=3)
+            write (iofilg,'(a)') revision
+            close (unit=iofilg)
         end if
     end if
 
     ! open the log file to write error messages and such
     call deleteoutputfiles (errorlogging)
-    open (unit=3, file=errorlogging, action='write', iostat=ios, status='new')
+    open (newunit=iofill, file=errorlogging, action='write', iostat=ios, status='new')
     if (ios/=0) then
         write (*,'(a,i0,a)') 'Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
         stop

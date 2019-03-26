@@ -16,7 +16,7 @@ module solve_routines
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
-    use utility_routines, only: mat2mult, interp, shellsort, cptime, xerror, funit
+    use utility_routines, only: mat2mult, interp, shellsort, cptime, xerror
     use vflow_routines, only: vertical_flow
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
@@ -369,8 +369,7 @@ module solve_routines
     inquire (file=stopfile, exist =exists)
     stopiter=-1
     if (exists) then
-       stopunit=funit(30)
-       open(unit=stopunit,file=stopfile)
+       open (newunit=stopunit,file=stopfile)
        read (stopunit,*,iostat=ios) stopiter
        if (ios.ne.0) stopiter=0
        close(unit=stopunit)
@@ -400,10 +399,8 @@ module solve_routines
         residprn = .true.
         if (residfirst) then
             residfirst = .false.
-            ioresid = funit(30)
-            open(unit=ioresid,file=residcsv)
-            ioslab = funit(30)
-            open(unit = ioslab, file=slabcsv)
+            open (newunit=ioresid,file=residcsv)
+            open (newunit=ioslab, file=slabcsv)
         end if
     else
         residprn = .false.

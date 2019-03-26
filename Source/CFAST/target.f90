@@ -18,6 +18,7 @@ module target_routines
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off
     use room_data, only: roominfo, interior_ambient_temperature
+    use setup_data, only: iofilsmv, iofilsmvplt, iofilsmvzone
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
 
     implicit none
@@ -949,8 +950,8 @@ module target_routines
     integer, intent(in) :: idtect, istate
     real(eb), intent(in) :: tdtect
 
-    write (13, "(a)") "DEVICE_ACT"
-    write (13, "(i6,f10.2,i6)") idtect, tdtect, istate
+    write (iofilsmv, "(a)") "DEVICE_ACT"
+    write (iofilsmv, "(i6,f10.2,i6)") idtect, tdtect, istate
     return
 
     end subroutine device_activated

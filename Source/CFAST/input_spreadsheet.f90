@@ -628,7 +628,8 @@ module spreadsheet_input_routines
                 venttype = lcarray(1)
 
                 if (lrarray(6)<0.0_eb.or.lrarray(6)>1.0_eb) then
-                    write (3,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
+                    write (*,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
+                    write (iofill,*) '****Error: Bad EVENT input. Final_Fraction (6th argument) must be between 0 and 1 inclusive.'
                     stop
                 end if
 

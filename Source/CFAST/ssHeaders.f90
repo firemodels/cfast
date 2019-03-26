@@ -11,7 +11,7 @@ module spreadsheet_header_routines
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: nr, nrm1, roominfo, room_type
-    use setup_data, only: validation_flag
+    use setup_data, only: validation_flag, iofilsmvzone, iofilsmv, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
@@ -102,10 +102,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write (21,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (21,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (21,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
-    write (21,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+    write (iofilssn,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (iofilssn,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (iofilssn,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (iofilssn,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     end subroutine ssheaders_normal
 
@@ -175,10 +175,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write (23,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (23,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (23,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
-    write (23,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+    write (iofilsss,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (iofilsss,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (iofilsss,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (iofilsss,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     end subroutine ssheaders_species
 
@@ -243,10 +243,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write (24,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (24,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (24,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
-    write (24,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+    write (iofilssm,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (iofilssm,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (iofilssm,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (iofilssm,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     end subroutine ssheaders_speciesMass
 
@@ -354,10 +354,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write (25,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (25,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (25,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
-    write (25,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+    write (iofilssw,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (iofilssw,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (iofilssw,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (iofilssw,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     return
     end subroutine ssheaders_target
@@ -643,10 +643,10 @@ module spreadsheet_header_routines
     end if
 
     ! write out header
-    write (22,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (22,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (22,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
-    write (22,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+    write (iofilssf,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (iofilssf,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (iofilssf,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (iofilssf,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     return
 
@@ -812,8 +812,8 @@ module spreadsheet_header_routines
     ! write out header if called from outputspreadsheet
     ! (this is only one once, but smokeview device tags are done each time)
     if (lMode) then
-        write (15,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-        write (15,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+        write (iofilsmvzone,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+        write (iofilsmvzone,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
     end if
 
     end subroutine ssheaders_smv
@@ -824,9 +824,9 @@ module spreadsheet_header_routines
 
     character, intent(in) :: string*(*)
 
-    write (13,'(a)') 'DEVICE'
-    write (13,'(4x,a)') trim(string)
-    write (13,'(1x,3f6.1)') 0.,0.,0.
+    write (iofilsmv,'(a)') 'DEVICE'
+    write (iofilsmv,'(4x,a)') trim(string)
+    write (iofilsmv,'(1x,3f6.1)') 0.,0.,0.
     return
     end subroutine smvDeviceTag
 
@@ -996,10 +996,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write (26,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (26,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (26,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
-    write (26,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+    write (iofilssd,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (iofilssd,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (iofilssd,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (iofilssd,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     end subroutine ssheaders_diagnosis
 

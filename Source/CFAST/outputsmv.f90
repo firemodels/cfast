@@ -4,13 +4,12 @@
 
     use fire_routines, only: get_gas_temp_velocity
     use spreadsheet_header_routines, only: ssheaders_smv
-    use utility_routines, only: funit
 
     use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
     
     use cparams, only: smoked, face_front, face_left, face_back, face_right
     use room_data, only: nrm1, roominfo
-    use setup_data, only: smvcsv
+    use setup_data, only: smvcsv, iofilsmv, iofilsmvplt
     use smkview_data, only: n_iso, isoinfo, n_slice, sliceinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
@@ -74,64 +73,64 @@
     length = splitpathqq(smvcsv, drive, dir, name, ext)
     smokeviewplotfilename = trim(name) // trim(ext)
 
-    rewind (13)
-    write (13,"(a)") "ZONE"
-    write (13,"(1x,a)") trim(smokeviewplotfilename)
-    write (13,"(1x,a)") "PRESSURE"
-    write (13,"(1x,a)") "P"
-    write (13,"(1x,a)") "Pa"
-    write (13,"(1x,a)") "Layer Height"
-    write (13,"(1x,a)") "zlay"
-    write (13,"(1x,a)") "m"
-    write (13,"(1x,a)") "TEMPERATURE"
-    write (13,"(1x,a)") "TEMP"
-    write (13,"(1x,a)") "C"
-    write (13,"(1x,a)") "TEMPERATURE"
-    write (13,"(1x,a)") "TEMP"
-    write (13,"(1x,a)") "C"
-    write (13,"(a)") "AMBIENT"
-    write (13,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
+    rewind (iofilsmv)
+    write (iofilsmv,"(a)") "ZONE"
+    write (iofilsmv,"(1x,a)") trim(smokeviewplotfilename)
+    write (iofilsmv,"(1x,a)") "PRESSURE"
+    write (iofilsmv,"(1x,a)") "P"
+    write (iofilsmv,"(1x,a)") "Pa"
+    write (iofilsmv,"(1x,a)") "Layer Height"
+    write (iofilsmv,"(1x,a)") "zlay"
+    write (iofilsmv,"(1x,a)") "m"
+    write (iofilsmv,"(1x,a)") "TEMPERATURE"
+    write (iofilsmv,"(1x,a)") "TEMP"
+    write (iofilsmv,"(1x,a)") "C"
+    write (iofilsmv,"(1x,a)") "TEMPERATURE"
+    write (iofilsmv,"(1x,a)") "TEMP"
+    write (iofilsmv,"(1x,a)") "C"
+    write (iofilsmv,"(a)") "AMBIENT"
+    write (iofilsmv,"(1x,e13.6,1x,e13.6,1x,e13.6)") pabs_ref,pamb,tamb
 
     ! Compartment geometry
     do i = 1, nrm
         roomptr=>roominfo(i)
 
-        write (13,"(a,1x)")"ROOM"
-        write (13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%cwidth, roomptr%cdepth, roomptr%cheight
-        write (13,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%x0, roomptr%y0, roomptr%z0
+        write (iofilsmv,"(a,1x)")"ROOM"
+        write (iofilsmv,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%cwidth, roomptr%cdepth, roomptr%cheight
+        write (iofilsmv,"(1x,e11.4,1x,e11.4,1x,e11.4)") roomptr%x0, roomptr%y0, roomptr%z0
 
         if (n_slice.gt.0) then
             ibar = roomptr%ibar
             jbar = roomptr%jbar
             kbar = roomptr%kbar
 
-            write (13,"(a,1x)")"GRID"
-            write (13,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
+            write (iofilsmv,"(a,1x)")"GRID"
+            write (iofilsmv,"(1x,i5,1x,i5,1x,i5,1x,i5)")ibar,jbar,kbar,0
 
-            write (13,"(a,1x)")"PDIM"
-            write (13,"(9(f14.5,1x))")roomptr%x0,roomptr%x1,roomptr%y0,roomptr%y1,roomptr%z0,roomptr%z1,0.0_eb,0.0_eb,0.0_eb
-            write (13,"(a,1x)")"TRNX"
-            write (13,"(1x,i1)")0
+            write (iofilsmv,"(a,1x)")"PDIM"
+            write (iofilsmv,"(9(f14.5,1x))")roomptr%x0,roomptr%x1,roomptr%y0,roomptr%y1,roomptr%z0,roomptr%z1,0.0_eb,0.0_eb,0.0_eb
+            write (iofilsmv,"(a,1x)")"TRNX"
+            write (iofilsmv,"(1x,i1)")0
             do j = 0, ibar
-                write (13,"(i5,1x,f14.5)")j,roomptr%xplt(j)
+                write (iofilsmv,"(i5,1x,f14.5)")j,roomptr%xplt(j)
             end do
 
-            write (13,"(a,1x)")"TRNY"
-            write (13,"(1x,i1)")0
+            write (iofilsmv,"(a,1x)")"TRNY"
+            write (iofilsmv,"(1x,i1)")0
             do j = 0, jbar
-                write (13,"(i5,1x,f14.5)")j,roomptr%yplt(j)
+                write (iofilsmv,"(i5,1x,f14.5)")j,roomptr%yplt(j)
             end do
 
-            write (13,"(a,1x)")"TRNZ"
-            write (13,"(1x,i1)")0
+            write (iofilsmv,"(a,1x)")"TRNZ"
+            write (iofilsmv,"(1x,i1)")0
             do j = 0, kbar
-                write (13,"(i5,1x,f14.5)")j,roomptr%zplt(j)
+                write (iofilsmv,"(i5,1x,f14.5)")j,roomptr%zplt(j)
             end do
 
-            write (13,"(a,1x)")"OBST"
-            write (13,"(1x,i1)")0
-            write (13,"(a,1x)")"VENT"
-            write (13,"(1x,i1,1x,i1)")0,0
+            write (iofilsmv,"(a,1x)")"OBST"
+            write (iofilsmv,"(1x,i1)")0
+            write (iofilsmv,"(a,1x)")"VENT"
+            write (iofilsmv,"(1x,i1,1x,i1)")0,0
         end if
     end do
 
@@ -140,53 +139,53 @@
         sf=>sliceinfo(i)
 
         if (sf%skip.eq.1)cycle
-        write (13,"(a,1x,i3,' &',6(i4,1x))")"SLCF",sf%roomnum,sf%ijk(1),sf%ijk(2),sf%ijk(3),sf%ijk(4),sf%ijk(5),sf%ijk(6)
-        write (13,"(1x,a)")trim(sf%filename)
-        write (13,"(1x,a)")trim(sf%menu_label)
-        write (13,"(1x,a)")trim(sf%colorbar_label)
-        write (13,"(1x,a)")trim(sf%unit_label)
+        write (iofilsmv,"(a,1x,i3,' &',6(i4,1x))")"SLCF",sf%roomnum,sf%ijk(1),sf%ijk(2),sf%ijk(3),sf%ijk(4),sf%ijk(5),sf%ijk(6)
+        write (iofilsmv,"(1x,a)")trim(sf%filename)
+        write (iofilsmv,"(1x,a)")trim(sf%menu_label)
+        write (iofilsmv,"(1x,a)")trim(sf%colorbar_label)
+        write (iofilsmv,"(1x,a)")trim(sf%unit_label)
     end do
 
     do i = 1, n_iso
         isoptr=>isoinfo(i)
 
-        write (13,"(a,1x,i3,' &',6(i4,1x))")"ISOG",isoptr%roomnum
-        write (13,"(1x,a)")trim(isoptr%filename)
-        write (13,"(1x,a)")trim(isoptr%menu_label)
-        write (13,"(1x,a)")trim(isoptr%colorbar_label)
-        write (13,"(1x,a)")trim(isoptr%unit_label)
+        write (iofilsmv,"(a,1x,i3,' &',6(i4,1x))")"ISOG",isoptr%roomnum
+        write (iofilsmv,"(1x,a)")trim(isoptr%filename)
+        write (iofilsmv,"(1x,a)")trim(isoptr%menu_label)
+        write (iofilsmv,"(1x,a)")trim(isoptr%colorbar_label)
+        write (iofilsmv,"(1x,a)")trim(isoptr%unit_label)
     end do
 
     ! fires
     do i = 1, nfires
-        write (13,"(a)")"FIRE"
-        write (13,"(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)") froom_number(i),fx0(i),fy0(i),fz0(i)
+        write (iofilsmv,"(a)")"FIRE"
+        write (iofilsmv,"(1x,i3,1x,e11.4,1x,e11.4,1x,e11.4)") froom_number(i),fx0(i),fy0(i),fz0(i)
     end do
 
     ! horizontal vents
     if (n_hvents/=0) then
         do i = 1, n_hvents
-            write (13,"(a)") "HVENTPOS"
+            write (iofilsmv,"(a)") "HVENTPOS"
             call get_vent_info ("H", i, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
-            write (13,"(2(1x,i3),1x,6(e11.4,1x))") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
+            write (iofilsmv,"(2(1x,i3),1x,6(e11.4,1x))") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
     ! vertical vents
     if (n_vvents/=0) then
         do i = 1, n_vvents
-            write (13,"(a)") "VVENTPOS"
+            write (iofilsmv,"(a)") "VVENTPOS"
             call get_vent_info ("V",i , iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
-            write (13,"(2(1x,i3),1x,6(e11.4,1x),1x,i3)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6), vtype
+            write (iofilsmv,"(2(1x,i3),1x,6(e11.4,1x),1x,i3)") iroom1, iroom2, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6), vtype
         end do
     end if
 
     ! mechanical vents
     if (n_mvents/=0) then
         do i = 1, n_mvents
-            write (13,'(a)') "MVENTPOS"
+            write (iofilsmv,'(a)') "MVENTPOS"
             call get_vent_info ("M", i, iroom1, iroom2, xyz, vred, vgreen, vblue, vtype)
-            write (13,"(1x,i3,1x,6(e11.4,1x))") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
+            write (iofilsmv,"(1x,i3,1x,6(e11.4,1x))") iroom1, xyz(1), xyz(2), xyz(3), xyz(4), xyz(5), xyz(6)
         end do
     end if
 
@@ -195,29 +194,29 @@
     if (n_detectors>0) then
         do i = 1, n_detectors
             dtectptr => detectorinfo(i)
-            write (13,"(a)") "DEVICE"
+            write (iofilsmv,"(a)") "DEVICE"
             if (dtectptr%dtype==smoked) then
-                write (13,"(a)") "SMOKE_DETECTOR"
+                write (iofilsmv,"(a)") "SMOKE_DETECTOR"
             else if (dtectptr%quench) then
-                write (13,"(a)") "SPRINKLER_PENDENT"
+                write (iofilsmv,"(a)") "SPRINKLER_PENDENT"
             else
-                write (13,"(a)") "HEAT_DETECTOR"
+                write (iofilsmv,"(a)") "HEAT_DETECTOR"
             end if
             call getabsdetector(i,targetvector)
-            write (13,"(1x,6f10.2,2i6)") targetvector,0,0
+            write (iofilsmv,"(1x,6f10.2,2i6)") targetvector,0,0
         end do
     end if
 
     ! target devices
     do i = 1, n_targets
-        write (13,"(a)") "DEVICE"
-        write (13,"(a)") "TARGET"
+        write (iofilsmv,"(a)") "DEVICE"
+        write (iofilsmv,"(a)") "TARGET"
         call getabstarget(i,targetvector)
-        write (13,"(1x,6f10.2,2i6)") targetvector,0,0
+        write (iofilsmv,"(1x,6f10.2,2i6)") targetvector,0,0
     end do
 
-    write (13,"(a)") "TIME"
-    write (13,"(1x,i6,1x,f11.0)") nscount, stime
+    write (iofilsmv,"(a)") "TIME"
+    write (iofilsmv,"(1x,i6,1x,f11.0)") nscount, stime
 
     ! zone model devices
     call ssheaders_smv(.false.)
@@ -376,20 +375,20 @@
     integer :: i
 
     xxtime = time
-    write (14) xxtime
+    write (iofilsmvplt) xxtime
 
     do i = 1, nrm
         xxpr = pr(i)
         xxylay = zlay(i)
         xxtl = tl(i)
         xxtu = tu(i)
-        write (14) xxpr, xxylay, xxtl, xxtu
+        write (iofilsmvplt) xxpr, xxylay, xxtl, xxtu
     end do
 
     do i = 1, nfires
         xxheight = height(i)
         xxqdot = qdot(i)
-        write (14) xxheight, xxqdot
+        write (iofilsmvplt) xxheight, xxqdot
     end do
 
     end subroutine output_smokeview_plot_data
@@ -439,79 +438,74 @@
             end do
         end do
 
-        unit=funit(30)
         if (first_time.eq.1) then
-            open(unit,file=sf%filename,form='unformatted',status='replace')
+            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((tslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(tslicedata)
         close(unit)
 
-        unit=funit(30)
         sf => sliceinfo(i+1)
         if (first_time.eq.1) then
-            open(unit,file=sf%filename,form='unformatted',status='replace')
+            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open (newunit=unit,file=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((uslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(uslicedata)
         close(unit)
 
-        unit=funit(30)
         sf => sliceinfo(i+2)
         if (first_time.eq.1) then
-            open(unit,file=sf%filename,form='unformatted',status='replace')
+            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((vslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(vslicedata)
         close(unit)
 
-        unit=funit(30)
         sf => sliceinfo(i+3)
         if (first_time.eq.1) then
-            open(unit,file=sf%filename,form='unformatted',status='replace')
+            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((wslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
         deallocate(wslicedata)
         close(unit)
 
-        unit=funit(30)
         sf => sliceinfo(i+4)
         if (first_time.eq.1) then
-            open(unit,file=sf%filename,form='unformatted',status='replace')
+            open (newunit=unit,file=sf%filename,form='unformatted',status='replace')
             write (unit) sf%menu_label(1:30)
             write (unit) sf%colorbar_label(1:30)
             write (unit) sf%unit_label(1:30)
             write (unit) (sf%ijk(ii),ii=1,6)
         else
-            open(unit,FILE=sf%filename,form='unformatted',status='old',position='append')
+            open (newunit=unit,FILE=sf%filename,form='unformatted',status='old',position='append')
         end if
         write (unit) real(time,fb)
         write (unit) (((sslicedata(ii,jj,kk),ii=0,nx-1),jj=0,ny-1),kk=0,nz-1)
@@ -540,9 +534,9 @@
 
     integer, intent(in) :: version, nrm, nfires
 
-    write (14) version
-    write (14) nrm
-    write (14) nfires
+    write (iofilsmvplt) version
+    write (iofilsmvplt) nrm
+    write (iofilsmvplt) nfires
     return
     end subroutine output_smokeview_header
 
@@ -605,7 +599,6 @@ module isosurface
     use precision_parameters
     use cfast_types, only: room_type
     use fire_routines, only: get_gas_temp_velocity
-    use utility_routines, only : funit
     use room_data, only: roominfo
 
     use setup_data
@@ -661,12 +654,12 @@ module isosurface
                 end do
             end do
         end do
-        unit=funit(30)
+
         if (first_time.eq.1) then
-            open(unit,file=isoptr%filename,form='unformatted',status='replace')
+            open (newunit=unit,file=isoptr%filename,form='unformatted',status='replace')
             unit=-unit
         else
-            open(unit,FILE=isoptr%filename,form='unformatted',status='old',position='append')
+            open (newunit=unit,file=isoptr%filename,form='unformatted',status='old',position='append')
         end if
         call iso_to_file(unit,timef,isodataf,levelsf, nlevels, roomptr%xpltf, ibar+1, roomptr%ypltf, jbar+1, roomptr%zpltf, kbar+1)
 

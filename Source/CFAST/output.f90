@@ -1321,7 +1321,7 @@ module output_routines
     !	Now that we know what output is needed, open the appropriate files
     !	Unit numbers defined here and readinputfiles
 
-    !	Unit numbers defined for vairous I/O purposes
+    !	Unit numbers defined for various I/O purposes
     !
     !     iofili        solver.ini and data files (data file, tpp and objects)
     !     iofill        log file

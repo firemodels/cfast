@@ -258,7 +258,7 @@ module setup_data
     character(32) :: mpsdatc
     
     !File descriptors for cfast
-    integer :: iofili, iofill, iofilg, iofilo=6, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension

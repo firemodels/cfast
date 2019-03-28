@@ -159,7 +159,7 @@ module output_routines
 
     ! output the 2 layer environment at the current time
 
-    integer :: icomp, izzvol
+    integer :: icomp, ivolpercent
     type(room_type), pointer :: roomptr
 
 
@@ -170,14 +170,14 @@ module output_routines
     write (iofilo,5040)
     do icomp = 1, nrm1
         roomptr =>roominfo(icomp)
-        izzvol = roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb
+        ivolpercent = roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
             write (iofilo,5071) roomptr%name, roomptr%temp(u)-kelvin_c_offset, roomptr%volume(u), &
                 roomptr%absorb(u),roomptr%relp - roomptr%interior_relp_initial
         else
             write (iofilo,5070) roomptr%name, roomptr%temp(u)-kelvin_c_offset, &
                 roomptr%temp(l)-kelvin_c_offset, roomptr%depth(l), roomptr%volume(u), &
-                izzvol, roomptr%absorb(u),roomptr%absorb(l), roomptr%relp - roomptr%interior_relp_initial
+                ivolpercent, roomptr%absorb(u),roomptr%absorb(l), roomptr%relp - roomptr%interior_relp_initial
         end if
     end do
     return
@@ -736,7 +736,7 @@ module output_routines
         end do
     end if
 5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
-     5010 format (//,'VENT CONNECTIONS',//,'Horizontal Natural Flow Connections (Doors, Windows, ...)',//, &
+5010 format (//,'VENT CONNECTIONS',//,'Wall Vents (Doors, Windows, ...)',//, &
     'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger', &
     '                 Initial     Initial     Final       Final',/, &
     'Compartment    Compartment     Number                Height      Height      Type        Value  ', &
@@ -789,7 +789,7 @@ module output_routines
         end do
     end if
 5030 format (//,'There are no vertical natural flow connections')
-5040 format (//,'Vertical Natural Flow Connections (Ceiling, ...)',//,&
+5040 format (//,'Ceiling and Floor Vents',//,&
          'Top            Bottom         Vent    Shape     Area      ', &
          'Open/Close  Trigger                 Initial     Initial     Final       Final',/, &
          'Compartment    Compartment    Number                      Type        Value       Target      Time        ',&
@@ -839,7 +839,7 @@ module output_routines
         end do
     end if
 5060 format (//,'There are no mechanical flow connections')
-     5120 format (//,'FANS',//,&
+     5120 format (//,'Mechanical Vents (Fans)',//,&
         'From           To              Fan        Area      Flowrate     Open/Close  Trigger                 ', &
         'Initial     Initial     Final       Final',/, &
         'Compartment    Compartment     Number                            Type        Value       Target      ', &

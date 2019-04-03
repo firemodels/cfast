@@ -170,7 +170,6 @@ exit /b 0
    set valid=1
    set rundebug=1
    set DEBUG=_db
-   exit /b
  )
  if /I "%1" EQU "-help" (
    call :usage

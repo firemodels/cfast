@@ -10,14 +10,6 @@ Public Class CeditMain
     CurrentMVent As Integer = 0, CurrentTarget As Integer = 0, CurrentDetector As Integer = 0, CurrentHHeat As Integer = 0,
     CurrentVHeat As Integer = 0, CurrentFire As Integer = 0, CurrentVisual As Integer = 0
     Private Const OK As Integer = 1, Cancel As Integer = 2
-    Friend WithEvents HVentName As TextBox
-    Friend WithEvents VVentName As TextBox
-    Friend WithEvents Label8 As Label
-    Friend WithEvents MVentName As TextBox
-    Friend WithEvents Label24 As Label
-    Friend WithEvents DetectorName As TextBox
-    Friend WithEvents Label67 As Label
-    Friend WithEvents Label6 As Label
 
 #Region " Windows Form Designer generated code "
 
@@ -47,6 +39,14 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents HVentName As TextBox
+    Friend WithEvents VVentName As TextBox
+    Friend WithEvents Label8 As Label
+    Friend WithEvents MVentName As TextBox
+    Friend WithEvents Label24 As Label
+    Friend WithEvents DetectorName As TextBox
+    Friend WithEvents Label67 As Label
+    Friend WithEvents Label6 As Label
     Friend WithEvents Label66 As Label
     Friend WithEvents FireRemoveInstance As Button
     Friend WithEvents Label60 As Label

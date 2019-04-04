@@ -6649,12 +6649,24 @@ Public Class CeditMain
                             CopyFireData(aFire)
                             myFireProperties(CurrentFire) = aFire
                             UpdateGUI.Fires(CurrentFire)
+                        ElseIf sender Is HVentFractions Then
+                            Dim aVent As New Vent
+                            aVent = myHVents(CurrentVVent)
+                            CopyVentData(aVent, sender)
+                            myHVents(CurrentHVent) = aVent
+                            UpdateGUI.HVents(CurrentVVent)
                         ElseIf sender Is VVentFractions Then
                             Dim aVent As New Vent
                             aVent = myVVents(CurrentVVent)
                             CopyVentData(aVent, sender)
                             myVVents(CurrentVVent) = aVent
                             UpdateGUI.VVents(CurrentVVent)
+                        ElseIf sender Is MVentFractions Then
+                            Dim aVent As New Vent
+                            aVent = myMVents(CurrentMVent)
+                            CopyVentData(aVent, sender)
+                            myMVents(CurrentMVent) = aVent
+                            UpdateGUI.MVents(CurrentVVent)
                         End If
                     End If
                 End If

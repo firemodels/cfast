@@ -24,7 +24,7 @@ module fire_routines
 
     private
 
-    public door_jets, fire, flame_height, get_gas_temp_velocity, integrate_mass, collect_fire_data_for_smokeview, &
+    public door_jets, fire, flame_height, get_gas_tempandvelocity, integrate_mass, collect_fire_data_for_smokeview, &
         update_fire_objects, update_species
 
     contains
@@ -165,9 +165,8 @@ module fire_routines
         call interp(fireptr%t_qdot,fireptr%qdot,fireptr%n_qdot,xxtimef,1,qtf)
         tfact = exp(-(xxtime-xxtimef)/tdrate)
         if (qt<tfact*qtf) then
-            ! current time heat release rate is smaller than sprinklerd value
-            ! so use current time and reset ifact to 0 so rates are not
-            ! decreased
+            ! current time HRR is smaller than sprinklerd value
+            ! so use current HRR and reset ifact to 0 so future HRRs are not throttled
             ifact = 0
         else
             xxtime = xxtimef
@@ -292,8 +291,6 @@ module fire_routines
     ! in the chemistry routine and then removed from the upper layer
     species_mass_rate(u,fuel) = pyrolysis_rate
 
-    ! now do the kinetics scheme
-
     ! divvy up the plume output into radiation and convective energy.
     ! convection drives the plume entrainment
 
@@ -333,6 +330,7 @@ module fire_routines
             entrainment_rate = min(entrainment_rate,hrr_c/(max((t_upper-t_lower),1.0_eb)*cp))
             plume_flow_rate = pyrolysis_rate + entrainment_rate
 
+            ! now do the kinetics scheme
             source_o2 = roomptr%species_fraction(l,o2)
             call chemistry (pyrolysis_rate, molar_mass, entrainment_rate, hoc, y_soot, y_soot_flaming, y_soot_smolder, y_co, &
                 n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
@@ -820,9 +818,9 @@ module fire_routines
     end function flame_height
 
 
-! --------------------------- get_gas_temp_velocity -------------------------------------------
+! --------------------------- get_gas_tempandvelocity -------------------------------------------
 
-    subroutine get_gas_temp_velocity (iroom, x, y, z, tg, vg)
+    subroutine get_gas_tempandvelocity (iroom, x, y, z, tg, vg)
 
     ! calculate gas temperature nearby a target
     
@@ -907,7 +905,7 @@ module fire_routines
     vg(4) = sqrt(vg(1)**2+vg(2)**2+vg(3)**2)
     return
 
-    end subroutine get_gas_temp_velocity
+    end subroutine get_gas_tempandvelocity
 
 ! --------------------------- get_ceilingjet_tempandvelocity --------------------------------------
 

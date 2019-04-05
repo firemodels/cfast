@@ -1520,7 +1520,9 @@ Module IO
                 top = -1
                 type = ""
                 width = -1
+                ReDim ff(0), tt(0)
                 For j = 1 To NMList.ForNMListNumVar(i)
+                    max = 0
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "CRITERION" Then

@@ -587,13 +587,14 @@ Public Class Vent
     End Sub
     Public Sub GetRamp(ByRef TimePoints() As Single, ByRef FractionPoints() As Single, ByRef NumPoints As Integer)
         Dim i As Integer
+        NumPoints = 0
         If aRampTimePoints.GetLength(0) = aRampFractionPoints.GetLength(0) Then
             ReDim TimePoints(aRampTimePoints.GetUpperBound(0)), FractionPoints(aRampFractionPoints.GetUpperBound(0))
             For i = 0 To aRampTimePoints.GetUpperBound(0)
                 TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
                 FractionPoints(i) = myUnits.Convert(UnitsNum.Length).FromSI(aRampFractionPoints(i))
-                NumPoints = aRampTimePoints.GetUpperBound(0)
             Next
+            NumPoints = aRampTimePoints.GetUpperBound(0)
         End If
         'If aRampID <> "" Then
         'Dim iramp As Integer = myRamps.GetRampIndex(aRampID)

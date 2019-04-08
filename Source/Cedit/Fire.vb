@@ -104,7 +104,7 @@ Public Class Fire
         aChemicalFormula(1) = 1.0 : aChemicalFormula(2) = 4.0 : aChemicalFormula(3) = 0.0 : aChemicalFormula(4) = 0.0 : aChemicalFormula(5) = 0.0
         aHeatofCombustion = 50000000.0
         aRadiativeFraction = 0.35
-        aArea = 0.3
+        aArea = 0.09
         aHeight = -1.0
         aCOYield = 0.0
         aHClYield = 0.0
@@ -155,21 +155,25 @@ Public Class Fire
         FireTimeSeries(FireTime, 0) = 0.0
         FireTimeSeries(FireMdot, 0) = 0.0
         FireTimeSeries(FireHRR, 0) = 0
+        FireTimeSeries(FireArea, 0) = 0.001 ' set to a small non-zero value because CFAST doesn't like zero fire area
         AlphaGrowth = aPeakHRR / aTimetoPeak ^ 2
         For ir = 1 To 10
             FireTimeSeries(FireTime, ir) = ir / 10.0 * aTimetoPeak
             FireTimeSeries(FireHRR, ir) = AlphaGrowth * FireTimeSeries(FireTime, ir) ^ 2
+            FireTimeSeries(FireArea, ir) = Math.PI * ((FireTimeSeries(FireHRR, ir) / (352.981915 / 293.15 * 1012 * 293.15 * Math.Sqrt(9.80665))) ^ (2 / 5) / 2) ^ 2
             FireTimeSeries(FireMdot, ir) = FireTimeSeries(FireHRR, ir) / aHeatofCombustion
         Next
         AlphaDecay = aPeakHRR / aDecayTime ^ 2
         For ir = 11 To 21
             FireTimeSeries(FireTime, ir) = aTimetoPeak + aSteadyBurningTime + (10 - (21 - ir)) / 10.0 * aDecayTime
             FireTimeSeries(FireHRR, ir) = AlphaDecay * (aTimetoPeak + aSteadyBurningTime + aDecayTime - FireTimeSeries(FireTime, ir)) ^ 2
+            FireTimeSeries(FireArea, ir) = Math.PI * ((FireTimeSeries(FireHRR, ir) / (352.981915 / 293.15 * 1012 * 293.15 * Math.Sqrt(9.80665))) ^ (2 / 5) / 2) ^ 2
             FireTimeSeries(FireMdot, ir) = FireTimeSeries(FireHRR, ir) / aHeatofCombustion
         Next
         FireTimeSeries(FireTime, 22) = aTimetoPeak + aSteadyBurningTime + aDecayTime + 10.0
         FireTimeSeries(FireMdot, 22) = 0.0
         FireTimeSeries(FireHRR, 22) = 0
+        FireTimeSeries(FireArea, 0) = 0.001 ' set to a small non-zero value because CFAST doesn't like zero fire area
         Me.InitilizeFireTimeSeries()
         myUnits.SI = True
         SetFireData(FireTimeSeries)
@@ -660,6 +664,12 @@ Public Class Fire
                     End If
                 Next
             Next
+            For j = 0 To aFireTimeSeries.GetUpperBound(1)
+                If aFireTimeSeries(FireHRR, j) <> 0 And aFireTimeSeries(FireArea, j) = 0 Then
+                    aFireTimeSeries(FireArea, j) = Math.PI * ((aFireTimeSeries(FireHRR, j) / (352.981915 / 293.15 * 1012 * 293.15 * Math.Sqrt(9.80665))) ^ (2 / 5) / 2) ^ 2
+                    aChanged = True
+                End If
+            Next
         End If
     End Sub
     Property Changed() As Boolean
@@ -932,7 +942,7 @@ Public Class Fire
                     If FireCurveErrors(FireHRR) Then myErrors.Add("Fire " + aName + ". One or more heat release rate (HRR) values are less than 0 W, more than " + (MaxHRR / 1000000).ToString + " MW, or more than 2 MW/m^3.", ErrorMessages.TypeWarning)
                     If FireCurveErrors(FireMdot) Then myErrors.Add("Fire " + aName + ". One or more pyrolysis rate (Mdot) values are less than 0 kg/s or greater than " + MaxMdot.ToString + " kg/s.", ErrorMessages.TypeWarning)
                     If FireCurveErrors(FireHeight) Then myErrors.Add("Fire " + aName + ". One or more fire height values are less than 0 m or greater than " + CEdit.Compartment.MaxSize.ToString + " m.", ErrorMessages.TypeWarning)
-                    If FireCurveErrors(FireArea) Then myErrors.Add("Fire " + aName + ". One or more fire area values are less than or equal to " + MinArea.ToString + " m² or greater than " + (CEdit.Compartment.MaxSize ^ 2).ToString + " m². Value reset to minimum area of 0.09 m²", ErrorMessages.TypeWarning)
+                    If FireCurveErrors(FireArea) Then myErrors.Add("Fire " + aName + ". One or more fire area values are less than or equal to " + MinArea.ToString + " m² or greater than " + (CEdit.Compartment.MaxSize ^ 2).ToString + " m².", ErrorMessages.TypeError)
                     If FireCurveErrors(FireCO) Then myErrors.Add("Fire " + aName + ". One or more CO yields are less than 0 or greater than " + MaxCO.ToString + ".", ErrorMessages.TypeWarning)
                     If FireCurveErrors(FireSoot) Then myErrors.Add("Fire " + aName + ". One or more soot yields are less than 0 or greater than " + MaxSoot.ToString + ".", ErrorMessages.TypeWarning)
                     If FireCurveErrors(FireHC) Then myErrors.Add("Fire " + aName + ". One or more H/C ratios are less than 0 or greater than " + MaxHC.ToString + ".", ErrorMessages.TypeWarning)

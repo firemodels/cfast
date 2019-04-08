@@ -5759,8 +5759,10 @@ Public Class CeditMain
                 iReturn = t2FireDialog.ShowDialog(Me)
                 If iReturn = Windows.Forms.DialogResult.OK Then
                     Dim aFire As New Fire(t2FireDialog.GrowthTime, t2FireDialog.PeakHRR, t2FireDialog.SteadyTime, t2FireDialog.DecayTime)
+                    aFire.Name = "New Fire" + (myFireProperties.Count + 1).ToString
                     myFireProperties.Add(aFire)
                     Dim aFireInstance As New Fire
+                    aFireInstance.Name = "New Fire" + (myFires.Count + 1).ToString
                     aFireInstance.ObjectType = Fire.TypeInstance
                     aFireInstance.ReferencedFireDefinition = aFire.Name
                     myFires.Add(aFireInstance)
@@ -5769,8 +5771,10 @@ Public Class CeditMain
                 End If
             ElseIf sender Is FireAdd Then
                 Dim aFire As New Fire()
+                aFire.Name = "New Fire" + (myFireProperties.Count + 1).ToString
                 myFireProperties.Add(aFire)
                 Dim aFireInstance As New Fire
+                aFireInstance.Name = "New Fire" + (myFires.Count + 1).ToString
                 aFireInstance.ObjectType = Fire.TypeInstance
                 aFireInstance.ReferencedFireDefinition = aFire.Name
                 myFires.Add(aFireInstance)

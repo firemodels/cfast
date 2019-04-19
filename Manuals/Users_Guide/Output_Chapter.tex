@@ -7,14 +7,17 @@ The output of CFAST includes the temperatures of the upper and lower gas layers 
 
 The default output to the console is called the compact form, and shows the basic information about a scenario, including layer temperatures and the size of fires. Default text output provides a simple overview for the user to make sure the case runs as expected.
 \begin{lstlisting}[basicstyle=\scriptsize]
- Time =   1800.0 seconds.
+****************************
+* Time =   3600.0 seconds. *
+****************************
 
- Compartment   Upper   Lower   Inter.  Pyrol     Fire      Pressure  Ambient
-               Temp.   Temp.   Height  Rate      Size                Target
-               (C)     (C)     (m)     (kg/s)    (W)       (Pa)      (W/m^2)
- -----------------------------------------------------------------------------
-    1          113.4    33.3    1.4     1.393E-02 3.000E+05-0.790      523.
-  Outside                                         0.00
+Compartment    Upper     Lower      Inter.      Upper           Upper      Lower       Pressure
+               Temp.     Temp       Height      Vol             Absor      Absorb
+               (C)       (C)        (m)         (m^3)           (1/m)      (1/m)       (Pa)
+----------------------------------------------------------------------------------------------------
+Comp 1         48.52      20.89      1.542       36.    ( 49%)  0.172      9.306E-02   -0.570
+Comp 2         138.4      36.39      1.586       35.    ( 47%)  0.171      9.338E-02    -1.86
+Comp 3         103.7      27.50      1.000       50.    ( 67%)  0.161      0.104        0.983
 \end{lstlisting}
 The first column contains the compartment ID.  On each row with its compartment number from left to right is the upper layer temperature, lower layer temperature, the height of the interface between the two layers, the total pyrolysis rate, and finally the total fire size.  The only value given for the outside is the total heat release rate of fires venting to the outside.
 
@@ -32,12 +35,12 @@ The overview gives a general description of the case.  The output is fairly self
 \begin{lstlisting}[basicstyle=\tiny]
 CFAST
 
-Version          : CFAST 7.2.0
-Revision         : Gitv7.0.1-132-gf03a791
-Revision Date    : Tue Feb 2 12:54:53 2016 -0500
-Compilation Date : Tue 02/02/2016  12:55 PM
+Release Version  : CFAST 7.3.1
+Revision         : CFAST7.3.1-0-g6b9b32bb
+Revision Date    : Mon Apr 8 12:38:20 2019 -0400
+Compilation Date : Thu 04/18/2019  12:05 PM
 
-Data file: C:\Users\rpeacoc\Documents\Visual Studio 2013\Projects\cfast\Bin\Data\Users\_Guide\_Example.in
+Data file: C:\Users\rpeacoc\firemodels\cfast\Utilities\for_bundle\Bin\Data\Users_Guide_Example.in
 Title: Users Guide Example Case
 
 
@@ -52,7 +55,7 @@ Simulation     Output         Smokeview      Spreadsheet
 Time           Interval       Interval       Interval
    (s)            (s)            (s)            (s)
 --------------------------------------------------------
-  3600          50             10             10
+   3600.00          60.00          60.00          60.00
 \end{lstlisting}
 
 \subsubsection{Ambient Conditions}
@@ -74,46 +77,47 @@ The compartments section gives a summary of the geometry for the simulation.  A 
 \begin{lstlisting}[basicstyle=\tiny]
 COMPARTMENTS
 
-Compartment  Name                Width        Depth        Height       Floor        Ceiling
+Compartment  Name                Width        Depth        Height       Floor        Ceiling    Shaft    Hall
                                                                         Height       Height
                                  (m)          (m)          (m)          (m)          (m)
-------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
     1               Comp 1        5.00         5.00         3.00         0.00         3.00
     2               Comp 2        5.00         5.00         3.00         0.00         3.00
-    3               Comp 3        5.00         5.00         3.00         3.00         6.00
+    3               Comp 3        5.00         5.00         3.00         3.00         6.00                 
 \end{lstlisting}
 All the information in this table comes from the compartments tab discused in section  \ref{info:COMP}
 
 
-\subsubsection{Horizontal Natural Ventilation}
+\subsubsection{Wall Vents}
 This is the first table in the vent connections section.  Each row in the table characterizes one vent.  The first two columns contain the two compartments connected by the vent. The third column gives the vent number.  Column four is the width of the vent.  The next two columns report the sill and soffit height for the vent relative to the floor of the first compartment.  The seventh and eighth columns have a second listing of the sill and soffit height, this time relative to the base height.
 
 \begin{lstlisting}[basicstyle=\tiny]
 VENT CONNECTIONS
 
-Horizontal Natural Flow Connections (Doors, Windows, ...)
+Wall Vents (Doors, Windows, ...)
 
-From         To           Vent    Width  Sill    Soffit  Open/Close  Trigger           Initial  Initial   Final  Final
-Compartment  Compartment  Number         Height  Height  Type        Value     Target  Time     Fraction  Time   Fraction
-                                  (m)    (m)     (m)     (m)         (C/W/m^2)         (s)                (s)
--------------------------------------------------------------------------------------------------------------------------
-Comp 1       Outside      1       1.00   0.00    2.00    Time                          0.00     1.00      0.00   1.00
-Comp 1       Comp 2       1       1.00   0.00    2.00    Time                          0.00     1.00      0.00   1.00
-Comp 3       Outside      1       1.00   1.00    2.00    Time                          0.00     1.00      0.00   1.00
+From         To           Vent    Width  Sill    Soffit  Open/Close  Trigger             Initial  Initial     Final   Final
+Compartment  Compartment  Number         Height  Height  Type        Value       Target  Time     Fraction    Time    Fraction
+                                  (m)    (m)     (m)     (m)         (C/W/m^2)           (s)                  (s)
+------------------------------------------------------------------------------------------------------------------------------
+Comp 1       Outside      1       1.00   0.00    2.00    Time                            0.00      1.00       0.00    1.00
+Comp 1       Comp 2       2       1.00   0.00    2.00    Time                            0.00      1.00       0.00    1.00
+Comp 3       Outside      3       1.00   1.00    2.00    Time                            0.00      1.00       0.00    1.00
 \end{lstlisting}
 From compartment, to compartment, vent number, width, sill height, and soffit height all come directly from the wall vent tab discussed in section \ref{info:VENT}. Vent opening and closing information can be specified by time, by an associated time / fraction history or by an associated target to trigger a change in the vent opening by temperature or heat flux are all set in the same tab.
 
-\subsubsection{Vertical Natural Ventilation}
+\subsubsection{Ceiling and Floor Vents}
 
 The first column is the upper compartment.  The upper compartment is the compartment where the vent opens into the floor.  The second column is the lower compartment where the vent is in the ceiling. Each vent connection between compartment pairs is also identified by a vent number index beginning with 1. The fourth column describes the shape of the vent, which can be either round or square.  The fifth column gives the area of the vent. Vent opening and closing information can be specified by time, by an associated time / fraction history or by an associated target to trigger a change in the vent opening by temperature or heat flux.
+\newpage
 \begin{lstlisting}[basicstyle=\tiny]
-Vertical Natural Flow Connections (Ceiling, ...)
+Ceiling and Floor Vents
 
-Top           Bottom        Vent    Shape    Area     Open/Close  Trigger               Initial    Initial     Final    Final
-Compartment   Compartment   Number                    Type        Value      Target     Time       Fraction    Time     Fraction
-                                             (m^2)                (C/W/m^2)             (s)                    (s)
+Top          Bottom       Vent    Shape  Area      Open/Close  Trigger                 Initial   Initial     Final     Final
+Compartment  Compartment  Number                   Type        Value       Target      Time      Fraction    Time      Fraction
+                                         (m^2)                 (C/W/m^2)               (s)                   (s)
 --------------------------------------------------------------------------------------------------------------------------------
-Comp 3        Comp 2         1      Round    1.00     RAMP # 1
+Comp 3       Comp 2        1      Round  1.00      RAMP # 1  
 \end{lstlisting}
 Top compartment, bottom compartment, shape, and area come from the Ceiling/Floor Vent tab discuussed in section \ref{info:VENT2}. Relative height is the height of the vent above the floor of the bottom compartment and absolute height is the height of the vent above the base elevation.  Vent opening and closing information can be specified by time, by an associated time / fraction history or by an associated target to trigger a change in the vent opening by temperature or heat flux are all set in the same tab.
 
@@ -122,14 +126,14 @@ Top compartment, bottom compartment, shape, and area come from the Ceiling/Floor
 This section lists all connections to compartments and fans that connect between compartments. The table lists, in order, the compartments connected by the fan, a numeric index assigned to the fan beginning with 1.  A fan actually draws air from the first or ``from'' compartment and pushes it to the second or ``to'' compartment. The fourth column is the cross-sectional area of the duct connection to the chosen compartment. Vent opening and closing information can be specified by time, by an associated time / fraction history or by an associated target to trigger a change in the vent opening by temperature or heat flux.
 
 \begin{lstlisting}[basicstyle=\tiny]
-FANS
+Mechanical Vents (Fans)
 
-From          To            Fan      Area    Flowrate   Open/Close  Trigger             Initial   Initial    Final   Final
-Compartment   Compartment   Number                      Type        Value     Target    Time      Fraction   Time    Fraction
-                                     (m^2)   (m^3/s)                (C/W/m^2)           (s)                  (s)
------------------------------------------------------------------------------------------------------------------------------
-Outside       Comp 1        1        0.00    0.02       Time                            0.00      1.00       0.00    1.00
-Comp 2        Outside       2        0.00    0.02       Time                            0.00      1.00       0.00    1.00
+From         To            Fan      Area    Flowrate   Open/Close  Trigger              Initial   Initial     Final     Final
+Compartment  Compartment   Number                      Type        Value       Target   Time      Fraction    Time      Fraction
+                                    (m^2)   (m^3/s)                (C/W/m^2)            (s)                   (s)
+--------------------------------------------------------------------------------------------------------------------------------
+Outside      Comp 1        1        0.02    0.25       RAMP # 2
+Comp 2       Outside       2        0.02    0.25       RAMP # 3  
 \end{lstlisting}
 From compartment, to compartment, fan number, area, and flowrate are all set in the Mechanical Ventilation tab discussed in sections \ref{info:VENT3} and \ref{info:VENT4}.  Vent opening and closing information can be specified by time, by an associated time / fraction history or by an associated target to trigger a change in the vent opening by temperature or heat flux are all set in the same tab.
 
@@ -140,12 +144,16 @@ Opening and closing of vents in CFAST can be specified by a series of times and 
 \begin{lstlisting}[basicstyle=\tiny]
 VENT RAMPS
 
-Type  From         To            Vent
-      Compartment  Compartment   Number
-                                                    (s)    (s)    (s)    (s)    (s)    (s)    (s)    (s)    (s)    (s)
-----------------------------------------------------------------------------------------------------------------------
-V     Comp 3       Comp 2        1       Time         0    100    500
-                                         Fraction  0.00   0.50   1.00
+Type  From           To              Vent
+      Compartment    Compartment     Number
+                                                          (s)       (s)       (s)  
+-----------------------------------------------------------------------------------
+V     Comp 3         Comp 2          1       Time           0       100       500
+                                             Fraction    0.00      0.50      1.00
+M                    Comp 1          1       Time           0       100       500
+                                             Fraction    0.00      0.50      1.00
+M     Comp 2         Outside         2       Time           0       100       500
+                                             Fraction    0.00      0.50      1.00
 \end{lstlisting}
 
 \subsubsection{Thermal Properties}
@@ -165,7 +173,7 @@ Comp 3       CONCRETE     CONCRETE     CONCRETE
 Name    Conductivity      Specific Heat     Density        Thickness     Emissivity
 -----------------------------------------------------------------------------------
 CONCRETE     1.75           1.000E+03       2.200E+03       0.150           0.940
-DEFAULT     0.120            900.            800.           1.200E-02       0.900
+DEFAULT     0.120            900.            800.           1.200E-02       0.900   
 \end{lstlisting}
 
 Material choices of the ceiling, walls, and floors is discussed in section \ref{info:COMP2}. Setting thermalphysical properties is done in the Thermal Properites tad discussed in section \ref{info:MATL}. Units for thermal properties are standard S.I. units.  For thermal conductivity,  kW/(m$\cdot$K); for specific heat,  kJ/(kg$\cdot$K); for density, kg/m$^3$; for thickness, m; emissivity is dimensionless.
@@ -181,55 +189,34 @@ A table of time history curves for the fire follows.  The table contains all the
 FIRES
 
 
-Name: bunsen   Referenced as object #  1 Normal fire
+Name: Cushion   Referenced as object #  1 Normal fire
 
-Compartment    Fire Type       Position (x,y,z)     Relative    Lower O2    Radiative
-                                                    Humidity    Limit       Fraction
--------------------------------------------------------------------------------------
-Comp 1         Constrained     2.50   2.50   0.00   50.0        15.00        0.33
-
-
-Chemical formula of the fuel
-Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine
---------------------------------------------------
-  1.000     4.000     0.000     0.000     0.000
-
-
-  Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS
-  (s)       (kg/s)    (J/kg)    (W)       (m)       (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)
-------------------------------------------------------------------------------------------------------
-     0.      0.0      5.00E+07   0.0       0.0       0.0      1.05E-03   0.0       0.0       0.0
-    60.     2.00E-03  5.00E+07  1.00E+05   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   120.     3.00E-03  5.00E+07  1.50E+05   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   180.     4.00E-03  5.00E+07  2.00E+05   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   240.     3.00E-03  5.00E+07  1.50E+05   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   300.     2.50E-03  5.00E+07  1.25E+05   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   360.     2.00E-03  5.00E+07  1.00E+05   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   420.     1.80E-03  5.00E+07  9.00E+04   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   480.     1.60E-03  5.00E+07  8.00E+04   0.0       0.0      1.05E-03   0.0       0.0       0.0
-   540.     1.50E-03  5.00E+07  7.50E+04   0.0       0.0      1.05E-03   0.0       0.0       0.0
-  1800.     1.50E-03  5.00E+07  7.50E+04   0.0       0.0      1.05E-03   0.0       0.0       0.0
-
-
-Name: Wood_Wall   Referenced as object #  2 Wall   fire
-
-Compartment    Fire Type       Position (x,y,z)     Relative    Lower O2    Radiative
-                                                    Humidity    Limit       Fraction
--------------------------------------------------------------------------------------
-Comp 2         Constrained     2.50   5.00   0.00   50.0        15.00        0.33
+Compartment    Fire Type       Time to Flaming      Position (x,y,z)     Relative    Lower O2    Radiative
+                                                                         Humidity    Limit       Fraction
+--------------------------------------------------------------------------------------------------------------
+Comp 1         Constrained           0.0           2.50   2.50   0.00     50.0        10.00        0.33
 
 
 Chemical formula of the fuel
 Carbon     Hydrogen  Oxygen    Nitrogen  Chlorine
 --------------------------------------------------
-  6.000    10.000     5.000     0.000     0.000
+  9.000     6.000     2.000     2.000     0.000
 
 
   Time      Mdot      Hcomb     Qdot      Zoffset   Soot      CO        HCN       HCl       TS
   (s)       (kg/s)    (J/kg)    (W)       (m)       (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)   (kg/kg)
 ------------------------------------------------------------------------------------------------------
-     0.      0.0      1.81E+07   0.0       0.0      2.00E-02  2.00E-02   0.0       0.0       0.0
-  8000.     5.52E-02  1.81E+07  1.00E+06   3.0      2.00E-02  2.00E-02   0.0       0.0       0.0
+     0.      0.0      5.00E+07   0.0       0.0      0.23      8.46E-02  0.31       0.0       0.0
+    60.     2.00E-03  5.00E+07  1.00E+05   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   120.     3.00E-03  5.00E+07  1.50E+05   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   180.     4.00E-03  5.00E+07  2.00E+05   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   240.     3.00E-03  5.00E+07  1.50E+05   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   300.     2.50E-03  5.00E+07  1.25E+05   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   360.     2.00E-03  5.00E+07  1.00E+05   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   420.     1.80E-03  5.00E+07  9.00E+04   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   480.     1.60E-03  5.00E+07  8.00E+04   0.0      0.23      8.46E-02  0.31       0.0       0.0
+   540.     1.50E-03  5.00E+07  7.50E+04   0.0      0.23      8.46E-02  0.31       0.0       0.0
+  1800.     1.50E-03  5.00E+07  7.50E+04   0.0      0.23      8.46E-02  0.31       0.0       0.0
 \end{lstlisting}
 All of the inputs for all fires come from the fire specifications set in the Fires tab discussed in section \ref{info:FIRE}.  Units for most values are included in the output.  Fire position is in m, relative humidity is in \%, lower oxygen limit is in volume \%, and pyrolysis temperature is in K.
 
@@ -255,11 +242,13 @@ The entry for each detector or sprinkler shows the compartment and position of t
 
 \begin{lstlisting}[basicstyle=\tiny]
 DETECTORS/ALARMS/SPRINKLERS
-Target  Compartment        Type           Position (x, y, z)            Activation
-                                                                        Obscuration    Temperature   RTI           Spray Density
-                                         (m)      (m)      (m)          (%/m)         (C)           (m s)^1/2     (m/s)
---------------------------------------------------------------------------------------------------------------------------------
-  1     Comp 1             HEAT         2.50     2.50     2.97                         73.89         100.00
+Target Compartment Type   Position (x, y, z) Activation  Flaming     Smoldering
+                                             Obscuration Obscuration Obscuration Temperature RTI        Spray Density
+                          (m)  (m)  (m)      (%/m)       (%/m)       (%/m)       (C)         (m s)^1/2  (mm/s)
+---------------------------------------------------------------------------------------------------------------------
+  1    Comp 1      SPRINK 3.00 3.00 2.97                                         73.89       100.00     7.00E-02
+  2    Comp 1      SMOKE  2.00 2.00 2.97     23.93
+  3    Comp 1      HEAT   2.00 2.00 2.97                                         30.00         5.00
 \end{lstlisting}
 
 All of the inputs for detectors and sprinklers come from the Detector / Surpression tab discussed in section \ref{info:DEVC2}. Units for position are all in m.
@@ -284,17 +273,17 @@ The second table of the normal print out has information about the fires.  In es
 \begin{lstlisting}[basicstyle=\tiny]
 FIRES
 
-Compartment    Fire    Plume     Pyrol     Fire      Flame   Fire in  Fire in   Vent   Convec.  Radiat.   Pyrolysate Trace
-                       Flow      Rate      Size      Height  Upper    Lower     Fire
-                       (kg/s)    (kg/s)    (W)       (m)     (W)      (W)       (W)    (W)      (W)       (kg)       (kg)
- -------------------------------------------------------------------------------------------------------------------------
-                bunsen 8.571E-05 1.440E-07  7.20      0.00                              4.82      2.37     1.02       0.00
-              Wood_Wal 0.974     2.486E-02 4.500E+05 0.382                             3.015E+05 1.485E+05 44.8       0.00
+Compartment Fire      Ign Plume     Pyrol     Fire      Flame  Fire in Fire in   Vent Convec.   Radiat.   Pyrolysate Trace
+                          Flow      Rate      Size      Height Upper   Lower     Fire
+                          (kg/s)    (kg/s)    (W)       (m)    (W)     (W)       (W)  (W)       (W)       kg)        (kg)
+ --------------------------------------------------------------------------------------------------------------------------
+            Cushion   Y   1.802E-04 1.503E-07 7.51      0.00                          5.04      2.48       1.06      0.00
+            Wood_Wall Y   1.57      2.486E-02 4.500E+05 0.382                         3.015E+05 1.485E+05 44.8       0.00
 
-Comp 1                 8.571E-05 1.440E-07  7.20              0.00     7.20      0.00
-Comp 2                 0.974     2.486E-02 4.500E+05          0.00     4.500E+05 0.00
+Comp 1                    1.802E-04 1.503E-07 7.51             0.00    7.51      0.00
+Comp 2                    1.57      2.486E-02 4.500E+05        0.00    4.500E+05 0.00    
 \end{lstlisting}
-% This seems out of place. Like it should be in the technical reference, which it probably is, but not here. 
+% This seems out of place. Like it should be in the technical reference, which it probably is, but not here.
 Flame height is calculated from the work of Heskestad~\cite{Heskestad:2002}. The average flame height is defined as the distance from the fuel source to the top of the visible flame where the intermittency is 0.5.  A flame intermittency of 0.5 means that the visible flame is above the mean 50~\% of the time and below the mean 50~\% of the time.
 
 \subsection{Output for Wall Surfaces, Targets, and Detectors/Sprinklers}
@@ -306,14 +295,15 @@ For smoke detectors, heat detectors, and sprinklers, the temperature of the devi
 \begin{lstlisting}[basicstyle=\tiny]
 SURFACES AND TARGETS
 
-Compartment  Ceiling  Up wall  Low wall  Floor   Target  Gas     Surface  Internal Flux To  Fire    Surface  Gas
-             Temp.    Temp.    Temp.     Temp.           Temp.   Temp.    Temp.    Target   Rad.    Rad.     Rad.     Convect.
-             (C)      (C)      (C)       (C)             (C)     (C)      (C)      (W/m^2)  (W/m^2) (W/m^2)  (W/m^2)  (W/m^2)
-------------------------------------------------------------------------------------------------------------------------------
-Comp 1        31.8     30.8     22.5     23.4
-                                                 Targ 1  78.7    30.4     24.5      503.     0.00    341.     209.     347.
-Comp 2        133.     61.8     86.2     51.3
-Comp 3        34.2     34.2     22.7     23.1
+Compartment Ceiling Up wall Low wall Floor  Target  Gas       Surface   Interior Incident  Net      Gas    Heat
+            Temp.   Temp.   Temp.    Temp.          Temp.     Temp.     Temp.    Flux      Flux     FED    FED
+            (C)     (C)     (C)      (C)            (C)       (C)       (C)      (W/m^2)   (W/m^2)
+-----------------------------------------------------------------------------------------------------------------
+Comp 1       25.7   24.5    21.4     22.0
+                                            Targ 1  48.5      24.5      22.2     451.      190.     94.9   0.134
+Comp 2      129.    51.8    76.4     46.9
+Comp 3       33.8   33.7    22.7     23.1
+
 \end{lstlisting}
 
 \begin{lstlisting}[basicstyle=\tiny]
@@ -322,34 +312,26 @@ DETECTORS/ALARMS/SPRINKLERS
 
 Number  Compartment        Type       Temp (C)       Temp (C)      Vel (m/s)     Obs (1/m)          Activated
 --------------------------------------------------------------------------------------------------------------
-  1     Comp 1             HEAT       7.757E+01      7.870E+01                                      YES
+  1     Comp 1             SPRINK     4.706E+01      4.852E+01     1.194E-01                        YES
+  2     Comp 1             SMOKE                     4.852E+01     1.194E-01     7.875E-01          YES
+  3     Comp 1             HEAT       4.850E+01      4.852E+01                                      YES
 \end{lstlisting}
 In all cases, the flux to/from a target is net radiation or net convection. That is, it is the incoming minus the outgoing. So while a target or object is heating, the flux will be positive, and once it starts to cool, the flux will be negative. Values for radiation from fires (fire rad.), radiation from surfaces (surface rad.), radiation from the gas layers (gas rad.), and convection from surfaces (convect) are expressed as the net flux to target (flux to target). Positive values indicate heat gains by the target and negative values indicate heat losses.
 
 
 \subsection{Output for Gas Species}
 
-The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume \% for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked (Elemental nitrogen, oxygen, carbon dioxide, carbon monoxide, hydrogen cyanide, hydrochloric acid, and water).  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``TS'' is trace species.
+The output has two tables displaying information about the amounts of species in each layer. The species information follows the normal print out.  The first table gives species volume \% for the upper layers of all the compartments and the second reports the same for the lower layers of all the compartments.  Again the compartments are listed down the page and the information across the page.  The species are each given in one of several different terms.  Below each header are the units for the given value.  Most of the headers are simply the chemical formula for the species being tracked (Elemental nitrogen, oxygen, carbon dioxide, carbon monoxide, hydrogen cyanide, hydrochloric acid, and water).  However, several are not obvious.  ``TUHC'' is the total unburned hydrocarbons or the pyrolyzed fuel that hasn't burned yet.  ``OD'' is the optical density, which is a measure of the amount of smoke. ``OD S'' and ``OD F'' and the optical density resulting from only smoldering and flaming smoke production, respectively. ``TS'' is trace species.
 
 \begin{lstlisting}[basicstyle=\tiny]
 UPPER LAYER SPECIES
 
-Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD          TS
-               (%)        (%)        (%)        (%)        (%)        (%)        (%)        (%)        (1/m)       kg
-----------------------------------------------------------------------------------------------------------------------
-Comp 1         76.7       17.8       2.24      4.617E-02   0.00       0.00       0.00       3.13       1.69       0.00
-Comp 2         76.4       17.4       2.58      5.320E-02   0.00       0.00       0.00       3.43       1.53       0.00
-Comp 3         76.5       17.4       2.52      5.205E-02   0.00       0.00       0.00       3.38       1.78       0.00
-
-
-LOWER LAYER SPECIES
-
-Compartment    N2         O2         CO2        CO         HCN        HCL        TUHC       H2O        OD          TS
-               (%)        (%)        (%)        (%)        (%)        (%)        (%)        (%)        (1/m)       kg
-----------------------------------------------------------------------------------------------------------------------
-Comp 1         78.3       20.4      7.400E-02  1.526E-03   0.00       0.00       0.00       1.23      6.656E-02   0.00
-Comp 2         78.3       20.4      8.491E-02  1.751E-03   0.00       0.00       0.00       1.24      7.108E-02   0.00
-Comp 3         78.4       20.5      4.208E-10  8.678E-12   0.00       0.00       0.00       1.16      3.726E-10   0.00
+Compartment N2    O2    CO2   CO         HCN        HCL   TUHC  H2O   OD     OD_F   OD_S   TS
+            (%)   (%)   (%)   (%)        (%)        (%)   (%)   (%)   (1/m)  (1/m)  (1/m)  kg
+-------------------------------------------------------------------------------------------------
+Comp 1      77.3  19.1  1.29  8.077E-03  2.025E-04  0.00  0.00  2.27  0.788  0.788  0.00   0.00
+Comp 2      77.0  18.6  1.71  1.061E-02  2.008E-05  0.00  0.00  2.63  0.808  0.808  0.00   0.00
+Comp 3      77.0  18.7  1.64  1.018E-02  2.190E-05  0.00  0.00  2.57  0.847  0.847  0.00   0.00
 \end{lstlisting}
 
 The report by species are \% by volume. Optical depth per meter is a measure of the visibility in the smoke. Trace species (TS) is the total mass of the trace species that is present in the layer in kilograms. It is an absolute measure and not percent or density.
@@ -365,16 +347,16 @@ A second table shows total (mass) flow through vents. At present this is confine
 \begin{lstlisting}[basicstyle=\tiny]
 FLOW THROUGH VENTS (kg/s)
 
-                            Flow relative to 'From'                        Flow Relative to 'To'
-                            Upper Layer             Lower Layer            Upper Layer            Lower Layer
-Vent   From/Bottom  To/Top  Inflow      Outflow     Inflow     Outflow     Inflow      Outflow    Inflow      Outflow
+                                Flow relative to 'From'                             Flow Relative to 'To'
+                               Upper Layer             Lower Layer              Upper Layer            Lower Layer
+Vent From/Bottom To/Top    Inflow      Outflow    Inflow       Outflow      Inflow      Outflow    Inflow     Outflow
 ------------------------------------------------------------------------------------------------------------------------
-H  1   Comp 1       Comp 2  0.2996E+00  0.5729E-02  0.1406E-01 0.9832E+00  0.1469E-02  0.2904E+00 0.9874E+00  0.2322E-01
-H  2   Comp 1       Outside             0.2891E+00  0.9410E+00             0.2891E+00                         0.9410E+00
-H  3   Comp 3       Outside             0.6894E+00  0.1667E-01 0.1752E-01  0.7069E+00                         0.1667E-01
-V  1   Comp 2       Comp 3              0.6855E+00             0.1217E-02  0.6868E+00
-M  1   Outside      Comp 1                                     0.2391E-01  0.2391E-01
-M  3   Comp 2       Outside             0.1559E-01                                                0.1559E-01
+H 1  Comp 1      Outside  0.5279E-03              0.1480E+01                                                  0.1480E+01
+H 2  Comp 1      Comp 2   0.1093E+00  0.1051E+00              0.1508E+01   0.3196E-03  0.1093E+00  0.1613E+01  
+H 3  Comp 3      Outside              0.1516E+01              0.3120E-03   0.1517E+01
+V 1  Comp 2      Comp 3               0.1461E+01              0.5241E-01   0.1514E+01
+M 1  Outside     Comp 1                                       0.2391E-01   0.2391E-01
+M 2  Comp 2      Outside              0.1703E-01                                                   0.1703E-01
 
 
 TOTAL MASS FLOW THROUGH MECHANICAL VENTS (kg)
@@ -382,12 +364,9 @@ TOTAL MASS FLOW THROUGH MECHANICAL VENTS (kg)
 To             Through              Upper Layer               Lower Layer              Trace Species
 Compartment    Vent             Inflow       Outflow      Inflow       Outflow       Vented    Filtered
 --------------------------------------------------------------------------------------------------------
+Outside        Comp 1                                                 0.8190E+02
+Comp 2         Outside                      0.6667E+02                0.2223E-01
 
-Comp 1         M Node  2       0.8585E+02                0.2200E+00
-
-Comp 2         M Node  3                    0.6754E+02                0.4443E+00
-Outside        M Node  1                                              0.8607E+02
-               M Node  4                                 0.6798E+02
 \end{lstlisting}
 
 

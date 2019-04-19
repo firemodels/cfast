@@ -435,9 +435,9 @@ It is assumed that all the nitrogen and chlorine in the fuel are converted to HC
 \label{sec:fire_inputs}
 Fires in CFAST are defined in two parts: a ``Fire Definition'' that specifies the fuel composition, heat release rate, and species yields for the fire, and a ``Fire Instance'' that specifies the placement of a defined fire within a compartment in the simulation. A single fire definition may be associated with more than one fire instance in a simulation if desired.
 
-For a new fire instance, click on the {\bf Add New} button within the fire instance block of inputs.  For each fire instance, specify the following properties:
+For a new fire , click on the {\bf Add New} button or {\bf Add t$^2$} buttons within the fire definition block of inputs. The latter is useful because it has predefined quadratic growth rate options that are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire instance, specify the following properties:
 \begin{description}
-\item[ID] The selected name must be unique (i.e., not the same as another fire instance in the same simulation).
+\item[Fire ID] The selected name must be unique (i.e., not the same as another fire instance in the same simulation).
 \item[Compartment] Name of the compartment where the fire occurs.
 \item[Position X, Y] (default units: m, default value: compartment center): Position of the center of the base of the fire relative to the front left corner of the compartment.
 \item[Ignition Criterion] The time of ignition can be controlled by a user-specified time, or by a user-specified target's surface temperature or incident heat flux.
@@ -446,9 +446,9 @@ For a new fire instance, click on the {\bf Add New} button within the fire insta
 \item[Referenced Fire] the name of the associated fire definition for this fire instance can be selected from a list of fire definitions. A fire definition must exist before it can be selected.
 \end{description}
 
-Once one or more fire instances have been created, a new fire definition can be created by clicking on the {\bf Add New} or {\bf Add t$^2$} buttons within the fire definition block of inputs. The latter is useful because it has predefined quadratic growth rate options that are commonly used in fire analyses. See Section~\ref{tsq} for details. For each fire definition, specify the following parameters.
+Each instance of a fire can be unique fires with different chemical composition and time-dependent fire properties. Alternatively, two or more fires can reference the same set of fire properties. The following parameters define the composition and burning properties of the fire.
 \begin{description}
-\item[ID] The selected name must be unique (i.e., not the same as another fire definition in the same simulation). IDs for fire definitions can be the same as ones for fire instances.
+\item[Fire Properties ID] The selected name must be unique (i.e., not the same as another fire definition in the same simulation). IDs for fire definitions can be the same as ones for fire instances.
 \item[C, H, O, N, Cl] The number of each atom in the fuel molecule. Burning fuels in CFAST are assumed to be hydrocarbon fuels that contain at least carbon and hydrogen and optionally oxygen, nitrogen, and chlorine. All of the specified nitrogen and chlorine is assumed to completely react to form HCN and HCl.
 \item[Heat of Combustion] (default units: kJ/kg, default value: 50000 kJ/kg): The energy released per unit mass of fuel consumed.
 \item[Radiative Fraction] (default units: none, default value: 0.35): The fraction of the combustion energy that is emitted in the form of thermal radiation. Values for various fuels are suggested by Beyler~\cite{Beyler2:SFPE}.
@@ -463,7 +463,7 @@ Following is a list of fire properties that can be specified as a function of ti
 \item[Time] (default units: s, default values: none): Time from ignition.
 \item[HRR] (default units: kW, default values: none): Heat release rate of the fire.
 \item[Height] (default units: m, default values: 0 m): Height of the base of the fire.
-\item[Area] (default units: m$^2$, default values: 0.3 m$^2$): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
+\item[Area] (default units: m$^2$, default values: calculated from heat release rate such that the fire Froude number is unity\footnote{The Fire Froude Number, $\dot{Q}^*$, is defined as $\dot{Q}^* = \frac{\dot{Q}}{\rho_\infty c_p T_\infty \sqrt{gD} D^2}$. It is essentially the ratio of the fuel gas exit velocity and the buoyancy-induced plume velocity. Jet fires are characterized by large Froude numbers. Typical accidental fires have a Froude number near unity.}): Area of the base of the fire. The plume correlations used in CFAST generally regard the base to be circular. Do not set this value to zero because it is used in the various plume correlations.
 \item[CO Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of CO produced per unit mass of fuel consumed.
 \item[Soot Yield] (default units: kg/kg, default value: 0 kg/kg): Mass of soot produced per unit mass of fuel consumed.
 %Should this still be there if all the N2 in the fuel is assumed to go to HCN.
@@ -534,11 +534,6 @@ A target is any object in the simulation that can heat up via radiative and conv
 
 %What happens to interanl temperatrue when type is cylindrical
 \item[Internal Temperature] (default units: none, default value: 0.5): For each target, CFAST calculates the internal temperature at a number of node points within the target. By default, the reported internal temperature (in the printed and spreadsheet output) is the temperature at the center of the target, e.g., equidistant from the front and back faces of the target. This input allows the user to override this default position. The input represents the position as a fraction of the thickness from the front surface to the back surface of the material.
-
-\item[Adiabatic Target] When this box is checked, the target is assumed to be perfectly insulated. Input for convection coefficient is required. This feature is useful when the adiabatic surface temperature for a target is desired.
-
-\item[Convection Coefficent Front] (default units: kW/(m$^2$$\cdot$K), default value: 0 kW/(m$^2$$\cdot$K): User-defined input for the evaluation of  adiabatic surface temperature for the front side of the target.
-\item[Convection Coefficent Back] (default units: kW/(m$^2$$\cdot$K), default value: 0 kW/(m$^2$$\cdot$K): User-defined input for the evaluation of target adiabatic surface temperature for the back side of the target.
 \end{description}
 
 \graybox{
@@ -668,6 +663,13 @@ Sample visualizations are included below.
 
 \begin{figure}[h!]
 \begin{center}
+\includegraphics[width=6.5in]{FIGURES/SMV_Sample}
+\caption{example Smokeview Visualization for a Three Compartment Test Case with Two Fires (\ct User\_Guide\_Example.in)}
+\end{center}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
 \includegraphics[width=6.5in]{FIGURES/SMV_Temperature}
 \caption{Smokeview Visualization of Gas Temperature with a Single Fire}
 \end{center}
@@ -693,7 +695,6 @@ By default, CFAST generates a set of output files that includes a formatted read
 
 \begin{description}
     \item[CFAST Validation Output] If checked, this item directs the CFAST model to output abbreviated headings for spreadsheet columns that are better for automated processing of the data.
-    \item[Total Mass Output] If checked, this item directs the CFAST model to replace the flow output with total mass flow through (mechanical) vents rather than the default flow rate values.
     \item[Debug Output] If checked, CFAST will create a detailed output spreadsheet that contains values of all the solution variables at each successful solution time step. This file is typically only of use to model developers diagnosing a problem with the model.
     \item[Show CFAST Window] If checked, this item allows the user to see the windows command prompt that is used to execute the CFAST model when the Model Simulation, CFAST menu item is used.  By default, this is not checked.  Normally, this can be left unchecked.  For troubleshooting, this can be selected to see additional details of the calculation as it progresses.
 \end{description}

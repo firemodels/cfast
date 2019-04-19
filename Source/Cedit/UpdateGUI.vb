@@ -1089,30 +1089,8 @@ Public Class UpdateGUI
 
                 If aFireInstance.Compartment >= 0 And aFireInstance.Compartment <= myCompartments.Count - 1 Then
                     MainWin.FireComp.SelectedIndex = aFireInstance.Compartment
-                    Dim aCompartment As New Compartment
-                    aCompartment = myCompartments(aFireInstance.Compartment)
-                    xFire = aFireInstance.XPosition
-                    yFire = aFireInstance.YPosition
-                    xRoom = aCompartment.RoomWidth
-                    yRoom = aCompartment.RoomDepth
-                    xDistance = Math.Min(xFire, Math.Abs(xRoom - xFire))
-                    yDistance = Math.Min(yFire, Math.Abs(yRoom - yFire))
-                    If NumPoints >= 1 Then
-                        firecenterdistance = Math.Sqrt(afireTimeSeries(Fire.FireArea, 1)) / 2
-                        MainWin.FirePlumeType.Text = ""
-                        If xDistance <= firecenterdistance Or yDistance <= firecenterdistance Then
-                            MainWin.FirePlumeType.Text = "Wall Fire"
-                        End If
-                        If xDistance <= fireCenterDistance And yDistance <= fireCenterDistance Then
-                            MainWin.FirePlumeType.Text = "Corner Fire"
-                        End If
-                        If xDistance > fireCenterDistance And yDistance > fireCenterDistance Then
-                            MainWin.FirePlumeType.Text = "Normal"
-                        End If
-                    End If
                 Else
                     MainWin.FireComp.SelectedIndex = -1
-                    MainWin.FirePlumeType.Text = ""
                 End If
 
                 InitFireList(MainWin.ReferencedFireDefinition)

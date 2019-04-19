@@ -133,7 +133,7 @@
     </Reference>
     <Reference Include="NPlot, Version=0.9.10.0, Culture=neutral, PublicKeyToken=4eda430eb4395eb1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\nplot-0.9.10.0\bin\net\2.0\release\NPlot.dll</HintPath>
+      <HintPath>..\..\Utilities\for_bundle\bin\NPlot.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>

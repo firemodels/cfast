@@ -47,14 +47,12 @@ Public Class CeditMain
     Friend WithEvents DetectorName As TextBox
     Friend WithEvents Label67 As Label
     Friend WithEvents Label6 As Label
-    Friend WithEvents Label66 As Label
     Friend WithEvents FireRemoveInstance As Button
     Friend WithEvents Label60 As Label
     Friend WithEvents FireDefinitionName As TextBox
     Friend WithEvents FireDataSS As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents FirePlot As NPlot.Windows.PlotSurface2D
     Friend WithEvents ReferencedFireDefinition As ComboBox
-    Friend WithEvents FirePlumeType As Label
     Friend WithEvents Label36 As Label
     Friend WithEvents Label18 As Label
     Friend WithEvents EnvLOI As TextBox
@@ -680,7 +678,6 @@ Public Class CeditMain
         Me.Label45 = New System.Windows.Forms.Label()
         Me.Label47 = New System.Windows.Forms.Label()
         Me.TabFires = New System.Windows.Forms.TabPage()
-        Me.Label66 = New System.Windows.Forms.Label()
         Me.Label60 = New System.Windows.Forms.Label()
         Me.FireDataSS = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.FireAdd = New System.Windows.Forms.Button()
@@ -692,7 +689,6 @@ Public Class CeditMain
         Me.FireYPosition = New System.Windows.Forms.TextBox()
         Me.FireHoC = New System.Windows.Forms.TextBox()
         Me.Label109 = New System.Windows.Forms.Label()
-        Me.FirePlumeType = New System.Windows.Forms.Label()
         Me.FireC = New System.Windows.Forms.TextBox()
         Me.FireH = New System.Windows.Forms.TextBox()
         Me.FireSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
@@ -3102,7 +3098,6 @@ Public Class CeditMain
         '
         'TabFires
         '
-        Me.TabFires.Controls.Add(Me.Label66)
         Me.TabFires.Controls.Add(Me.Label60)
         Me.TabFires.Controls.Add(Me.FireDataSS)
         Me.TabFires.Controls.Add(Me.FireAdd)
@@ -3114,7 +3109,6 @@ Public Class CeditMain
         Me.TabFires.Controls.Add(Me.FireYPosition)
         Me.TabFires.Controls.Add(Me.FireHoC)
         Me.TabFires.Controls.Add(Me.Label109)
-        Me.TabFires.Controls.Add(Me.FirePlumeType)
         Me.TabFires.Controls.Add(Me.FireC)
         Me.TabFires.Controls.Add(Me.FireH)
         Me.TabFires.Controls.Add(Me.FireSummary)
@@ -3149,16 +3143,6 @@ Public Class CeditMain
         Me.TabFires.TabIndex = 1
         Me.TabFires.Text = "Fires"
         Me.TabFires.Visible = False
-        '
-        'Label66
-        '
-        Me.Label66.AutoSize = True
-        Me.Label66.Location = New System.Drawing.Point(226, 321)
-        Me.Label66.Name = "Label66"
-        Me.Label66.Size = New System.Drawing.Size(39, 13)
-        Me.Label66.TabIndex = 738
-        Me.Label66.Text = "Plume:"
-        Me.Label66.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'Label60
         '
@@ -3279,15 +3263,6 @@ Public Class CeditMain
         Me.Label109.TabIndex = 118
         Me.Label109.Text = "C:"
         Me.Label109.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'FirePlumeType
-        '
-        Me.FirePlumeType.AutoSize = True
-        Me.FirePlumeType.Location = New System.Drawing.Point(273, 321)
-        Me.FirePlumeType.Name = "FirePlumeType"
-        Me.FirePlumeType.Size = New System.Drawing.Size(40, 13)
-        Me.FirePlumeType.TabIndex = 735
-        Me.FirePlumeType.Text = "Normal"
         '
         'FireC
         '

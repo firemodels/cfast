@@ -940,7 +940,7 @@ Public Class UpdateGUI
     Public Sub Fires(ByVal index As Integer)
         General()
         Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
-        Dim PeakHRR As Single, xFire As Single, yFire As Single, xRoom As Single, yRoom As Single, fireCenterDistance As Single, xDistance As Single, yDistance As Single
+        Dim PeakHRR As Single
         Dim IgnitionTypeLabel As String = ""
         Dim ir, ic As Integer
 

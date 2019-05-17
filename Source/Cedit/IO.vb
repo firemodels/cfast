@@ -1694,7 +1694,7 @@ Module IO
                         ElseIf crit = "TEMPERATURE" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyTemperature
-                            aVent.OpenValue = setp
+                            aVent.OpenValue = setp + 273.15
                             aVent.InitialOpening = prefrac
                             aVent.FinalOpening = postfrac
                         End If
@@ -1747,7 +1747,7 @@ Module IO
                         ElseIf crit = "TEMPERATURE" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyTemperature
-                            aVent.OpenValue = setp
+                            aVent.OpenValue = setp + 273.15
                             aVent.InitialOpening = prefrac
                             aVent.FinalOpening = postfrac
                         End If
@@ -1787,7 +1787,7 @@ Module IO
                         ElseIf crit = "TEMPERATURE" Then
                             aVent.Target = devcid
                             aVent.OpenType = Vent.OpenbyTemperature
-                            aVent.OpenValue = setp
+                            aVent.OpenValue = setp + 273.15
                             aVent.InitialOpening = prefrac
                             aVent.FinalOpening = postfrac
                         End If

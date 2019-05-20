@@ -673,9 +673,9 @@ module spreadsheet_header_routines
         'MVENT_','MSLAB_','MSLABT_','MSLABF_','MSLABYB_','MSLABYT_'  /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', 'kg/m^3', 'kg/m^3', '1/m', '1/m', &
         'kW', 'm', 'm', 'm^2', &
-        'm^2', ' ', 'C', 'kg/s', 'm', 'm', &
-        'm^2', ' ', 'C', 'kg/s', 'm', 'm', &
-        'm^2', ' ', 'C', 'kg/s', 'm', 'm' /
+        'm^2', ' ', 'K', 'kg/s', 'm', 'm', &
+        'm^2', ' ', 'K', 'kg/s', 'm', 'm', &
+        'm^2', ' ', 'K', 'kg/s', 'm', 'm' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelUnits(1)

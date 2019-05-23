@@ -1410,7 +1410,9 @@ continue
                                 case ('SOOT_YIELD')
                                     fireptr%y_soot(1:np) = tablptr%data(1:np,i)
                                 case ('HCN_YIELD')
+                                    ! with nothing here, all nitrogen in the fuel is assumed to go to HCN
                                 case ('HCL_YIELD')
+                                    ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
                                 case ('TRACE_YIELD')
                                     fireptr%y_trace(1:np) = tablptr%data(1:np,i)
                                 end select

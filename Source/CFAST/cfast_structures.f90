@@ -58,13 +58,14 @@ module cfast_types
         real(eb) :: flaming_transition_time             ! time in sec at which fire transitions to flaming, realtive to fire start. 
                                                         !                default is 0 (user input)
 
-        integer :: n_mdot, n_qdot, n_area, n_height, n_soot, n_co, n_trace, n_hoc ! number of time points (user input)
+        integer :: n_mdot, n_qdot, n_area, n_height, n_soot, n_co, n_hcn, n_trace, n_hoc ! number of time points (user input)
         real(eb), dimension(mxpts) :: mdot, t_mdot      ! pyrolysis rate (user input)
         real(eb), dimension(mxpts) :: qdot, t_qdot      ! heat release rate of the fire (user input)
         real(eb), dimension(mxpts) :: area, t_area      ! area of the base of the fire (user input)
         real(eb), dimension(mxpts) :: height, t_height  ! height of the base of the fire (user input)
         real(eb), dimension(mxpts) :: y_soot, t_soot    ! soot production rate (user input)
         real(eb), dimension(mxpts) :: y_co, t_co        ! CO production rate (user input)
+        real(eb), dimension(mxpts) :: y_hcn, t_hcn      ! HCN production rate (user input)
         real(eb), dimension(mxpts) :: y_trace, t_trace  ! trace species production rate (user input)
         real(eb), dimension(mxpts) :: hoc, t_hoc        ! heat of combustion
 

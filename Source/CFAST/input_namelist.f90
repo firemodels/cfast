@@ -1365,6 +1365,11 @@ continue
                     fireptr%t_co(1) = 0.0_eb
                     fireptr%y_co(1) = co_yield
 
+                    ! constant hcn
+                    fireptr%n_hcn = 1
+                    fireptr%t_hcn(1) = 0.0_eb
+                    fireptr%y_hcn(1) = hcn_yield
+
                     ! constant trace species
                     fireptr%n_trace = 1
                     fireptr%t_trace(1) = 0.0_eb
@@ -1393,6 +1398,8 @@ continue
                                     fireptr%n_soot = np
                                     fireptr%t_co(1:np) = tablptr%data(1:np,i)
                                     fireptr%n_co = np
+                                    fireptr%t_hcn(1:np) = tablptr%data(1:np,i)
+                                    fireptr%n_hcn = np
                                     fireptr%t_trace(1:np) = tablptr%data(1:np,i)
                                     fireptr%n_trace = np
                                     fireptr%t_area(1:np) = tablptr%data(1:np,i)
@@ -1410,7 +1417,7 @@ continue
                                 case ('SOOT_YIELD')
                                     fireptr%y_soot(1:np) = tablptr%data(1:np,i)
                                 case ('HCN_YIELD')
-                                    ! with nothing here, all nitrogen in the fuel is assumed to go to HCN
+                                    fireptr%y_hcn(1:np) = tablptr%data(1:np,i)
                                 case ('HCL_YIELD')
                                     ! with nothing here, all chlorine in the fuel is assumed to go to HCl.
                                 case ('TRACE_YIELD')

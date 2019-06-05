@@ -397,10 +397,10 @@ module spreadsheet_routines
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput(ns) = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
-          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
+          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
     logical, dimension(ns), parameter :: molfrac(ns) = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false., &
-          .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
+          .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 
@@ -458,7 +458,7 @@ module spreadsheet_routines
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput(ns) = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
-          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
+          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 

@@ -59,6 +59,7 @@ module fire_routines
         fireptr => fireinfo(i)
         iroom = fireptr%room
         roomptr => roominfo(iroom)
+        
         call interpolate_pyrolysis(i,tsec,iroom,mdot_t,area_t,height_t,qdot_t,hoc_t,n_C,n_H,n_O,n_N,n_Cl,y_soot,y_soot_flaming, &
             y_soot_smolder,y_co,y_hcn,y_trace)
 
@@ -374,7 +375,7 @@ module fire_routines
 
         source_o2 = roomptr%species_fraction(u,o2)
         call chemistry (pyrolysis_rate_upper, molar_mass, entrainment_rate_upper, hoc, y_soot, y_soot_flaming, y_soot_smolder, &
-            y_hcn, y_co, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
+            y_co, y_hcn, n_C, n_H, n_O, n_N, n_Cl, source_o2, lower_o2_limit, hrr_constrained, pyrolysis_rate_constrained, xmass)
 
         species_mass_rate(u,1:ns) = xmass(1:ns) + species_mass_rate(u,1:ns)
         hrr_upper = hrr_constrained

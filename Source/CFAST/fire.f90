@@ -43,8 +43,8 @@ module fire_routines
     real(eb), intent(out) :: flows_fires(mxrooms,ns+2,2)
 
     real(eb) :: species_mass_rate(2,ns), species_mass(2,ns), n_C, n_H, n_O, n_N, n_Cl
-    real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_hcn, y_trace, t_lower, q_firemass, q_entrained, hrr_r, hrr_c
-    real(eb) :: y_soot_flaming, y_soot_smolder
+    real(eb) :: mdot_t, area_t, height_t, qdot_t, hoc_t, y_soot, y_co, y_hcn, y_trace, t_lower, q_firemass, &
+        q_entrained, hrr_r, hrr_c, y_soot_flaming, y_soot_smolder
     integer iroom, i, nfire
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr

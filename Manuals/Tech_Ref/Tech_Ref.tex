@@ -293,23 +293,24 @@ CFAST does not include a pyrolysis model to {\em predict}, as opposed to specify
 
  The HRR of the fire is specified by the user, but it may be constrained by the availability of oxygen in the compartment. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
 \begin{eqnarray}
-   \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} &+&  \nu_\OTWO \, \mathrm{O_2}  \rightarrow  \nonumber \\[.1in]
-   \nu_\COTWO \, \mathrm{CO_2} &+& \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO} \; + \; \nu_\So \, \mathrm{Soot} \; + \; \nu_\HCl \mathrm{HCl} \; + \; \nu_\HCN \mathrm{HCN} \label{stoich}
+  \mathrm{C_{n_\C}H_{n_H}O_{n_O}N_{n_N}Cl_{n_{Cl}}} &+&  \nu_\OTWO \, \mathrm{O_2}  \rightarrow \nu_\COTWO \, \mathrm{CO_2} \; + \; \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO} \nonumber \\[.1in]
+  &+& \; \nu_\So \, \mathrm{Soot} \; + \; \nu_\HCl \mathrm{HCl} \; + \; \nu_\HCN \mathrm{HCN} + \nu_\NTWO N_2 \label{stoich}
 \end{eqnarray}
 The user specifies the composition of the fuel molecule and the yields of soot and CO, $y_\So$ and $y_\CO$, which are related to their stoichiometric coefficients as follows:
 \begin{eqnarray}
-   \nu_\So &=& \frac{M_\F}{M_\So} \; y_\So \label{soot_yield} \\[.1in]
-   \nu_\CO &=& \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield}
+  \nu_\So &=& \frac{M_\F}{M_\So} \; y_\So \label{soot_yield} \\[.1in]
+  \nu_\CO &=& \frac{M_\F}{M_\CO} \; y_\CO \label{CO_yield} \\[.1in]
+  \nu_\HCN   &=& \min{\brackets{\mathrm{n_{N},\frac{M_\F}{M_\HCN} \; y_\HCN}}}
 \end{eqnarray}
-Under the assumption that all of the nitrogen and chlorine in the fuel are converted to HCN and HCl, the other stoichiometric coefficients are:
+Under the assumption that all of the chlorine in the fuel is converted to HCl, the other stoichiometric coefficients are:
 \begin{eqnarray}
   \nu_\COTWO &=& \mathrm{n_\C} - \brackets{\nu_\CO + \nu_\HCN + \nu_\So} \\[.1in]
   \nu_\HTWOO &=& \frac{\mathrm{n_\Hy} - \brackets{\nu_\HCl + \nu_\HCN}}{2} \\[.1in]
   \nu_\OTWO  &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO - \mathrm{n_\Oh}}{2} \label{Oxygen_yield} \\[.1in]
   \nu_\HCl   &=& \mathrm{n_{Cl}} \\[.1in]
-  \nu_\HCN   &=& \mathrm{n_{N}}
+  \nu_\NTWO  &=& \frac{\mathrm{n_N} - \nu_\HCN}{2}
 \end{eqnarray}
-Note that the nitrogen in the air acts only as a diluent. The yields of hydrogen cyanide and hydrogen chloride are based solely on the composition of the fuel molecule. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
+Note that the nitrogen in the air acts only as a diluent. The yield of hydrogen chloride is based solely on the composition of the fuel molecule. The yield of hydrogen cyanide is limited by the nitrogen in the fuel molecule and any excess nitrogen in the fuel that is not converted to HCN reverts back to elemental nitrogen. Finally, a user-specified trace species can be specified to follow the transport that results from fire-induced flow for an arbitrary species. This may be of particular interest for radiological releases \cite{Jones:2008}, but may be useful for any trace amounts released by a fire.
 
 
 

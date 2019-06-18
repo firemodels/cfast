@@ -391,6 +391,7 @@ $RUNCFAST -d ../Verification/Mass_Balance species_mass_3.in
 $RUNCFAST -d ../Verification/Mass_Balance species_mass_4.in
 
 $RUNCFAST -d ../Verification/Species methane_flame_simple.in
+$RUNCFAST -d ../Verification/Species species_test.in
 $RUNCFAST -d ../Verification/Species gas_tenability.in
 $RUNCFAST -d ../Verification/Species heat_tenability.in
 $RUNCFAST -d ../Verification/Species Trace_Species_1.in

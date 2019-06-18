@@ -425,6 +425,7 @@ module initialization_routines
     fireinfo(1:mxfires)%reported = .false.
     fireinfo(1:mxfires)%modified_plume = 1
     fireinfo(1:mxfires)%chirad = default_radiative_fraction
+    fireinfo(1:mxfires)%flaming_transition_time = 0._eb
 
     fireinfo(1:mxfires)%qdot_at_activation(u) = 0.0_eb
     fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb

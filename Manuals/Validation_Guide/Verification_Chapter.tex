@@ -258,9 +258,18 @@ With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 
 \label{fig_methane_flame_yields}
 \end{figure}
 
+Adding a yield of HCN to the reaction, a 5 kW fire of C$_3$H$_5$N is burned inside the same 5~m x 5~m x 5~m compartment for 100~s, again with an initial relative humidity of zero.  Yields of soot, CO, and HCN are assumed to be 0.01 kg/kg, 0.1 kg/kg, and 0.05 kg/kg, respectively. With a total mass of fuel burned of 0.01 kg, 0.021 kg of CO$_2$, 0.008 kg of H$_2$O, 0.001 kg of CO, and 0.005 kg of HCN are produced by the fire. The following figure compares the mass of the combustion products to their expected values.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/species_test}
+\caption[Results of the test case {\ct species\_test.in}]{Expected and CFAST calculated values for the masses of CO, CO$_2$, H$_2$O, and HCN in a one room test case {\ct species\_test.in}.}
+\label{fig_species_test_yields}
+\end{figure}
+
 \subsection{Trace Species}
 
-With the same 5 kW methane flame as in the previous example, we add a trace species yield of 0.001 kg/kg. With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), a total mass of 0.00001 kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
+With the same 5 kW methane flame as in the previous section, we add a trace species yield of 0.001 kg/kg. With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), a total mass of 0.00001 kg of trace species is expected. Figure~\ref{fig_trace_1} compares the expected and calculated values.
 
 \begin{figure}[ht]
 \centering

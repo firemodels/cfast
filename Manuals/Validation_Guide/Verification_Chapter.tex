@@ -237,33 +237,26 @@ Four 4~m by 4~m by 4~m compartments are arranged such that two compartments are 
 \subsection{Product Yields}
 \label{methane_flame}
 
-A simple 5 kW methane flame with 10~\% CO yield is burned inside a closed 5~m x 5~m x 5~m compartment for 100~s. Initially, the relative humidity within the compartment is zero. The total mass of CO$_2$, H$_2$O and CO produced is calculated. The combustion of a hydrocarbon fuel is described by the following single-step reaction:
+A simple 5 kW methane flame is burned inside a closed 5~m x 5~m x 5~m compartment for 100~s. Initially, the relative humidity within the compartment is zero. The total mass of carbon dioxide and water produced is calculated. The combustion of a methane is described by the following single-step reaction:
 \be
-   \mathrm{C_{n_\C}H_{n_H}} +  \nu_\OTWO \, \mathrm{O_2}  \rightarrow   \nu_\COTWO \, \mathrm{CO_2} + \nu_\HTWOO \, \mathrm{H_2O} \; + \; \nu_\CO \, \mathrm{CO}
+   \mathrm{CH_4} +  2 \, \mathrm{O_2}  \rightarrow  \mathrm{CO_2} + 2 \, \mathrm{H_2O}
 \ee
-where
-\begin{eqnarray}
-    \nu_\CO &=& \frac{M_\F}{M_\CO} \; y_\CO \\[.1in]
-    \nu_\COTWO &=& \mathrm{n_\C} - \nu_\CO \\[.1in]
-    \nu_\HTWOO &=& \frac{\mathrm{n_\Hy}}{2} \\[.1in]
-    \nu_\OTWO  &=& \nu_\COTWO + \frac{\nu_\HTWOO + \nu_\CO}{2}
-\end{eqnarray}
 
-With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), 0.026 kg of CO$_2$, 0.022 kg of H$_2$O, and 0.001 kg of CO are produced by the fire. The following figure compares the mass of the three combustion products to their expected values.
+With a total mass of methane burned of 0.01 kg (5 kW / 50000 MJ/kg $\times$ 100 s), 0.027 kg of CO$_2$ and 0.022 kg of H$_2$O are produced by the fire. Figure~\ref{fig_methane_flame_yields} compares the mass of the combustion products to their expected values.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/methane_flame}
-\caption[Results of the test case {\ct methane\_flame\_simple.in}]{Expected and CFAST calculated values for the masses of CO, CO$_2$, and H$_2$O in a one room test case {\ct methane\_flame\_simple.in}.}
+\caption[Results of the test case {\ct methane\_flame\_simple.in}]{Expected and CFAST calculated values for the masses of CO$_2$, and H$_2$O in a one room test case {\ct methane\_flame\_simple.in}.}
 \label{fig_methane_flame_yields}
 \end{figure}
 
-Adding a yield of HCN to the reaction, a 5 kW fire of C$_3$H$_5$N is burned inside the same 5~m x 5~m x 5~m compartment for 100~s, again with an initial relative humidity of zero.  Yields of soot, CO, and HCN are assumed to be 0.01 kg/kg, 0.1 kg/kg, and 0.05 kg/kg, respectively. With a total mass of fuel burned of 0.01 kg, 0.021 kg of CO$_2$, 0.008 kg of H$_2$O, 0.001 kg of CO, and 0.005 kg of HCN are produced by the fire. The following figure compares the mass of the combustion products to their expected values.
+For a more complex test, we add non-zero yields of CO, soot, HCN, and HCl to the reaction. A 5~kW fire of C$_{12}$H$_9$O$_3$N$_2$Cl is burned inside the same 5~m x 5~m x 5~m compartment for 100~s, again with an initial relative humidity of zero.  Yields of soot, CO, and HCN are assumed to be 0.186 kg/kg, 0.063 kg/kg, and 0.05 kg/kg, respectively. All chlorine in the fuel is converted to HCl. With a total mass of fuel burned of 0.05 kg, 0.057 kg of CO$_2$, 0.013 kg of H$_2$O, 0.003 kg of CO, 0.0025 kg of HCN, and 0.007 kg of HCl are produced by the fire. Figure~\ref{fig_species_test_yields} compares the mass of the combustion products to their expected values.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/species_test}
-\caption[Results of the test case {\ct species\_test.in}]{Expected and CFAST calculated values for the masses of CO, CO$_2$, H$_2$O, and HCN in a one room test case {\ct species\_test.in}.}
+\caption[Results of the test case {\ct species\_test.in}]{Expected and CFAST calculated values for the masses of Soot, CO, CO$_2$, H$_2$O, and HCN in a one room test case {\ct species\_test.in}.}
 \label{fig_species_test_yields}
 \end{figure}
 

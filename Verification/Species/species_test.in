@@ -12,10 +12,10 @@
  
 !! Fires 
 &FIRE ID = 'Methane_Fire'  COMP_ID = 'Room_1', FIRE_ID = 'Species_Fire'  LOCATION = 0.5, 0.5 / 
-&CHEM ID = 'Species_Fire' CARBON = 3 CHLORINE = 0 HYDROGEN = 5 NITROGEN = 1 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
+&CHEM ID = 'Species_Fire' CARBON = 12 CHLORINE = 1 HYDROGEN = 9 NITROGEN = 2 OXYGEN = 3 HEAT_OF_COMBUSTION = 10000 RADIATIVE_FRACTION = 0.35 / 
 &TABL ID = 'Species_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'Species_Fire', DATA = 0, 5, 0, 0.09, 0.1, 0.01, 0.05, 0, 0 /
-&TABL ID = 'Species_Fire', DATA = 1, 5, 0, 0.09, 0.1, 0.01, 0.05, 0, 0 /
-&TABL ID = 'Species_Fire', DATA = 99.999, 5, 0, 0.09, 0.1, 0.01, 0.05, 0, 0 /
-&TABL ID = 'Species_Fire', DATA = 100.001, 0, 0, 0.09, 0.1, 0.01, 0.05, 0, 0 /
-&TABL ID = 'Species_Fire', DATA = 200, 0, 0, 0.09, 0.1, 0.01, 0.05, 0, 0 /
+&TABL ID = 'Species_Fire', DATA = 0, 5, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /
+&TABL ID = 'Species_Fire', DATA = 1, 5, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /
+&TABL ID = 'Species_Fire', DATA = 99.999, 5, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /
+&TABL ID = 'Species_Fire', DATA = 100.001, 0, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /
+&TABL ID = 'Species_Fire', DATA = 200, 0, 0, 0.09, 0.063, 0.186, 0.05, 0, 0 /

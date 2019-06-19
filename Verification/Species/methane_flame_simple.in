@@ -14,7 +14,7 @@
 &FIRE ID = 'Methane_Fire'  COMP_ID = 'Room_1', FIRE_ID = 'Methane_Fire'  LOCATION = 0.5, 0.5 / 
 &CHEM ID = 'Methane_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
 &TABL ID = 'Methane_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'Methane_Fire', DATA = 0, 0, 0, 0.09, 0.1, 0, 0, 0, 0.001 /
-&TABL ID = 'Methane_Fire', DATA = 1, 5, 0, 0.09, 0.1, 0, 0, 0, 0.001 /
-&TABL ID = 'Methane_Fire', DATA = 100, 5, 0, 0.09, 0.1, 0, 0, 0, 0.001 /
-&TABL ID = 'Methane_Fire', DATA = 101, 0, 0, 0.09, 0.1, 0, 0, 0, 0.001 /
+&TABL ID = 'Methane_Fire', DATA = 0, 0, 0, 0.09, 0, 0, 0, 0, 0 /
+&TABL ID = 'Methane_Fire', DATA = 1, 5, 0, 0.09, 0, 0, 0, 0, 0 /
+&TABL ID = 'Methane_Fire', DATA = 100, 5, 0, 0.09, 0, 0, 0, 0, 0 /
+&TABL ID = 'Methane_Fire', DATA = 101, 0, 0, 0.09, 0, 0, 0, 0, 0 /

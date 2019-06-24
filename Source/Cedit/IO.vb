@@ -756,13 +756,15 @@ Module IO
         someEnvironment.Changed = False
     End Sub
     Private Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
-        Dim i, j As Integer
+        Dim i, j, max As Integer
         Dim adiabatic As Boolean
-        Dim maxts, loxyl As Single
+        Dim maxts, loxyl, extinctionFlaming, extinctionSmoldering As Single
 
         adiabatic = False
         maxts = 2
         loxyl = 0.15
+        extinctionFlaming = 8700
+        extinctionSmoldering = 4400
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "MISC") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
@@ -778,6 +780,14 @@ Module IO
                         maxts = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "LOWER_OXYGEN_LIMIT") Then
                         loxyl = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SPECIFIC_EXTINCTION") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            extinctionFlaming = NMList.ForNMListVarGetNum(i, j, 1)
+                            extinctionSmoldering = NMList.ForNMListVarGetNum(i, j, 2)
+                        Else
+                            myErrors.Add("In MISC namelist for SPECIFIC_EXTINCTION input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
                     Else
                         myErrors.Add("In MISC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -788,6 +798,8 @@ Module IO
         someEnvironment.AdiabaticWalls = adiabatic
         someEnvironment.MaximumTimeStep = maxts
         someEnvironment.LowerOxygenLimit = loxyl
+        someEnvironment.FlamingExtinctionCoefficient = extinctionFlaming
+        someEnvironment.SmolderingExtinctionCoefficient = extinctionSmoldering
         someEnvironment.Changed = False
     End Sub
     Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile, ByRef someThermalProperties As ThermalPropertiesCollection)
@@ -3008,7 +3020,7 @@ Module IO
         PrintLine(IO, ln)
 
         'Writing MISC namelist
-        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Then
+        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Or myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
             ln = "&MISC "
             aFlag = True
         Else
@@ -3022,6 +3034,9 @@ Module IO
         End If
         If myEnvironment.LowerOxygenLimit <> 0.15 Then
             ln += " LOWER_OXYGEN_LIMIT = " + myEnvironment.LowerOxygenLimit.ToString
+        End If
+        If myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
+            ln += " SPECIFIC_EXTINCTION = " + myEnvironment.FlamingExtinctionCoefficient.ToString + ", " + myEnvironment.SmolderingExtinctionCoefficient.ToString
         End If
         If aFlag Then
             ln += " / "

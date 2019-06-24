@@ -8,8 +8,8 @@ Public Class Environment
     Public Const DIAGoff As Integer = 0              ' For DIAG namelist, is the integer value for something being off
 
     ' All units within the class are assumed to be consistent and typically SI
-    Private aTitle As String                        ' Title for the simulation
-    Private aVersion As Integer                     ' CFAST version number
+    Private aTitle As String                       ' Title for the simulation
+    Private aVersion As Integer                    ' CFAST version number
     Private aSimulationTime As Single              ' Total simulation time
     Private aOutputInterval As Single              ' Time interval for printed output, + is compact output and - is full output
     Private aSpreadsheetInterval As Single         ' Time interval for comma-separated output
@@ -29,7 +29,9 @@ Public Class Environment
     Private aMaximumTimeStep As Single              ' Maximum time step for model calculations
     Private aInputFileName As String                ' Current input data file name
     Private aInputFilePath As String                ' Path to current input data file
-    Private aAdiabaticWalls As Boolean               ' True if all walls are adiabatic
+    Private aAdiabaticWalls As Boolean              ' True if all walls are adiabatic
+    Private aExtinctionFlaming As Single = 8700     ' Soot concentration to OD for flaming soot
+    Private aExtinctionSmoldering As Single = 4400  ' Soot concentration to OD for flaming soot
     Private HasErrors As Integer = 0                ' Temporary variable to indicate whether there are errors in the specification
     Private aChanged As Boolean = False             ' True if any values have changed
     ' all variables below are for the &DIAG namelist. 
@@ -300,6 +302,28 @@ Public Class Environment
         Set(ByVal Value As Boolean)
             If aAdiabaticWalls <> Value Then
                 aAdiabaticWalls = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property FlamingExtinctionCoefficient() As Single
+        Get
+            Return aExtinctionFlaming
+        End Get
+        Set(Value As Single)
+            If aExtinctionFlaming <> Value Then
+                aExtinctionFlaming = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property SmolderingExtinctionCoefficient() As Single
+        Get
+            Return aExtinctionSmoldering
+        End Get
+        Set(Value As Single)
+            If aExtinctionSmoldering <> Value Then
+                aExtinctionSmoldering = Value
                 aChanged = True
             End If
         End Set

@@ -454,6 +454,14 @@ Public Class Compartment
                 myErrors.Add(aName + " has an unknown surface material.", ErrorMessages.TypeWarning)
                 HasErrors += 1
             End If
+            ' If surfaces have thermal properties, we cannot also have adiabatic surfaces on
+            If myThermalProperties.GetIndex(aCeilingMaterial) >= 0 Or myThermalProperties.GetIndex(aWallMaterial) >= 0 Or myThermalProperties.GetIndex(aFloorMaterial) >= 0 Then
+                If myEnvironment.AdiabaticWalls = True Then
+                    myErrors.Add(aName + " has surfaces defined but adiabatic surfaces is also turned on. The inputs are incompatible.", ErrorMessages.TypeError)
+                    HasErrors += 1
+                End If
+            End If
+
             Return HasErrors
         End Get
     End Property

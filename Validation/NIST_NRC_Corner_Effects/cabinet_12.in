@@ -16,6 +16,26 @@
       DEPTH = 7 HEIGHT = 3.8 WIDTH = 11 CEILING_MATL_ID = 'Gypsum' WALL_MATL_ID = 'Gypsum' FLOOR_MATL_ID = 'Gypsum'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
+      FACE = 'RIGHT' OFFSET = 2.6 /
+ 
+!! Fires 
+&FIRE ID = 'burner1'  COMP_ID = 'Compartment', FIRE_ID = '25kWto200kW'  LOCATION = 5.45, 2.15 / 
+&FIRE ID = 'burner2'  COMP_ID = 'Compartment', FIRE_ID = '25kWto200kW'  LOCATION = 4.25, 2.15 / 
+&CHEM ID = '25kWto200kW' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.25 / 
+&TABL ID = '25kWto200kW' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = '25kWto200kW', DATA = 0, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 30, 25, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 1800, 25, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 1830, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 2700, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 2730, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 3600, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 3630, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 4500, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '25kWto200kW', DATA = 4530, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+ 
 !! Devices
 &DEVC ID = 'Pl-Up-3' COMP_ID = 'Compartment' LOCATION = 0.3, 0.3, 3.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'Pl-Mid-3' COMP_ID = 'Compartment' LOCATION = 0.3, 0.3, 2.74 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
@@ -187,23 +207,3 @@
 &DEVC ID = 'STC-4' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 1.2 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-5' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 0.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-6' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 0.6 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
- 
-!! Wall Vents
-&VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
-      FACE = 'RIGHT' OFFSET = 2.6 /
- 
-!! Fires 
-&FIRE ID = 'burner1'  COMP_ID = 'Compartment', FIRE_ID = '25kWto200kW'  LOCATION = 5.45, 2.15 / 
-&FIRE ID = 'burner2'  COMP_ID = 'Compartment', FIRE_ID = '25kWto200kW'  LOCATION = 4.25, 2.15 / 
-&CHEM ID = '25kWto200kW' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.25 / 
-&TABL ID = '25kWto200kW' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = '25kWto200kW', DATA = 0, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 30, 25, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 1800, 25, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 1830, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 2700, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 2730, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 3600, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 3630, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 4500, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '25kWto200kW', DATA = 4530, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /

@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 600 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'SteelBE2' MATERIAL = 'Steel ICFMP BE2', 
@@ -13,16 +13,12 @@
 &MATL ID = 'TC' MATERIAL = 'Thermocouple (small steel target for plume temp)', 
       CONDUCTIVITY = 54 DENSITY = 7850 SPECIFIC_HEAT = 0.425, THICKNESS = 0.001 EMISSIVITY = 0.95 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Compartment 1'
       DEPTH = 27 HEIGHT = 19 WIDTH = 13.8 CEILING_MATL_ID = 'SteelBE2' WALL_MATL_ID = 'SteelBE2' FLOOR_MATL_ID = 'ConcreteBE2'
       CROSS_SECT_AREAS = 372.6, 372.6, 51.3, 51.3
       CROSS_SECT_HEIGHTS = 0, 12, 17.1, 19
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
- 
-!! Devices
-&DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 7.2, 16, 6 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'Targ 2' COMP_ID = 'Compartment 1' LOCATION = 7.2, 16, 12 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.71, BOTTOM = 0, WIDTH = 0.71
@@ -45,3 +41,7 @@
 &TABL ID = 'VTT_C1_Fire', DATA = 327, 1783, 0, 1.08, 0.00672363, 0.015, 0, 0, 0 /
 &TABL ID = 'VTT_C1_Fire', DATA = 409, 1356, 0, 1.08, 0.00672363, 0.015, 0, 0, 0 /
 &TABL ID = 'VTT_C1_Fire', DATA = 438, 0, 0, 1.08, 0.00672363, 0.015, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 7.2, 16, 6 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 2' COMP_ID = 'Compartment 1' LOCATION = 7.2, 16, 12 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /

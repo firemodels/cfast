@@ -3,28 +3,22 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 125 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 21.6 EXTERIOR_TEMPERATURE = 21.6 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
-&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)', 
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)', 
       CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
 &MATL ID = 'GYP1/2' MATERIAL = 'Gypsum Board (1/2 in)', 
       CONDUCTIVITY = 0.48 DENSITY = 1440 SPECIFIC_HEAT = 0.84, THICKNESS = 0.012 EMISSIVITY = 0.9 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Compartment 1'
       DEPTH = 5.6 HEIGHT = 2.44 WIDTH = 9.2 CEILING_MATL_ID = 'GYP1/2' WALL_MATL_ID = 'GYP1/2' FLOOR_MATL_ID = 'CONCRETE'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
-!! Devices
-&DEVC ID = 'Sprinkler_1' COMP_ID = 'Compartment 1' LOCATION = 2.4, 1.4, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
-&DEVC ID = 'Sprinkler_2' COMP_ID = 'Compartment 1' LOCATION = 6.8, 1.4, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
-&DEVC ID = 'Sprinkler_3' COMP_ID = 'Compartment 1' LOCATION = 6.8, 4.2, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
-&DEVC ID = 'Sprinkler_4' COMP_ID = 'Compartment 1' LOCATION = 2.4, 4.2, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
- 
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'OUTSIDE', 'Compartment 1' TOP = 2.1, BOTTOM = 0, WIDTH = 0.91
-      CRITERION = 'TIME' T = 0, 0  F = 0, 0  FACE = 'RIGHT' OFFSET = 1.6 /
+      CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'RIGHT' OFFSET = 1.6 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'OUTSIDE', 'Compartment 1' TOP = 0.025, BOTTOM = 0, WIDTH = 0.91
       FACE = 'RIGHT' OFFSET = 1.6 /
  
@@ -110,3 +104,9 @@
 &TABL ID = 'Medium Growth_Fire', DATA = 360, 663.4692, 0.3, 0.36, 0, 0, 0, 0, 0 /
 &TABL ID = 'Medium Growth_Fire', DATA = 365, 663.4692, 0.3, 0.36, 0, 0, 0, 0, 0 /
 &TABL ID = 'Medium Growth_Fire', DATA = 370, 663.4692, 0.3, 0.36, 0, 0, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Sprinkler_1' COMP_ID = 'Compartment 1' LOCATION = 2.4, 1.4, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
+&DEVC ID = 'Sprinkler_2' COMP_ID = 'Compartment 1' LOCATION = 6.8, 1.4, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
+&DEVC ID = 'Sprinkler_3' COMP_ID = 'Compartment 1' LOCATION = 6.8, 4.2, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /
+&DEVC ID = 'Sprinkler_4' COMP_ID = 'Compartment 1' LOCATION = 2.4, 4.2, 2.375 TYPE = 'SPRINKLER' SETPOINT = 68, RTI = 55 SPRAY_DENSITY = 0 /

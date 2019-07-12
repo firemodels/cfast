@@ -3,24 +3,20 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 4800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 5 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
-&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)', 
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)', 
       CONDUCTIVITY = 1.8 DENSITY = 2280 SPECIFIC_HEAT = 1.04, THICKNESS = 0.102 EMISSIVITY = 0.94 /
 &MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board (5/8 in)', 
       CONDUCTIVITY = 0.26 DENSITY = 650 SPECIFIC_HEAT = 1.09, THICKNESS = 0.016 EMISSIVITY = 0.9 /
 &MATL ID = 'TC' MATERIAL = 'Thermocouple (small steel target for plume temp)', 
       CONDUCTIVITY = 54 DENSITY = 7850 SPECIFIC_HEAT = 0.425, THICKNESS = 0.001 EMISSIVITY = 0.95 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Compartment 1'
       DEPTH = 4.3 HEIGHT = 2.4 WIDTH = 6.1 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'CONCRETE'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
- 
-!! Devices
-&DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 0.9, 2.15, 2.1 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'Targ 2' COMP_ID = 'Compartment 1' LOCATION = 5.2, 2.15, 2.1 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.1, BOTTOM = 0, WIDTH = 0.9
@@ -44,3 +40,7 @@
 &TABL ID = 'UL_NIST_Test1_Fire', DATA = 4000, 2188, 0.39, 0.64, 0, 0, 0, 0, 0 /
 &TABL ID = 'UL_NIST_Test1_Fire', DATA = 4294, 2188, 0.39, 0.64, 0, 0, 0, 0, 0 /
 &TABL ID = 'UL_NIST_Test1_Fire', DATA = 4300, 0, 0.39, 0.64, 0, 0, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 0.9, 2.15, 2.1 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 2' COMP_ID = 'Compartment 1' LOCATION = 5.2, 2.15, 2.1 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /

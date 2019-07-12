@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 2400 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 100805 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 25 EXTERIOR_TEMPERATURE = 25 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Wool' MATERIAL = 'Rock Wool', 
@@ -17,13 +17,47 @@
 &MATL ID = 'Steel' MATERIAL = 'Steel', 
       CONDUCTIVITY = 45.8 DENSITY = 7850 SPECIFIC_HEAT = 0.46, THICKNESS = 0.005 EMISSIVITY = 0.9 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Comp 1'
       DEPTH = 6 HEIGHT = 4 WIDTH = 5 CEILING_MATL_ID = 'Wool' WALL_MATL_ID = 'CONCRETE' FLOOR_MATL_ID = 'CONCRETE'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
 &COMP ID = 'Comp 2'
       DEPTH = 6 HEIGHT = 4 WIDTH = 5 CEILING_MATL_ID = 'Wool' WALL_MATL_ID = 'CONCRETE' FLOOR_MATL_ID = 'CONCRETE'
       ORIGIN = 5, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 2.15, BOTTOM = 0, WIDTH = 0.72
+      FACE = 'RIGHT' OFFSET = 2.64 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 0.0068, BOTTOM = 0, WIDTH = 1
+      FACE = 'FRONT' OFFSET = 2.495 /
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Comp 2' 'OUTSIDE'  TOP = 0.0068, BOTTOM = 0, WIDTH = 1
+      FACE = 'FRONT' OFFSET = 2.495 /
+ 
+!! Mechanical Vents
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'
+      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_2' COMP_IDS = 'OUTSIDE', 'Comp 2'
+      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_3' COMP_IDS = 'Comp 1', 'OUTSIDE'
+      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_4' COMP_IDS = 'Comp 2', 'OUTSIDE'
+      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+ 
+!! Fires 
+&FIRE ID = 'Tetra-Propylene'  COMP_ID = 'Comp 1', FIRE_ID = 'Tetra-Propylene_Fire'  LOCATION = 2.5, 3 / 
+&CHEM ID = 'Tetra-Propylene_Fire' CARBON = 12 CHLORINE = 0 HYDROGEN = 26 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 40000 RADIATIVE_FRACTION = 0.35 / 
+&TABL ID = 'Tetra-Propylene_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 0, 0, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 21, 136.008, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 86, 431.028, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 231, 494.028, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 402, 505.044, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 542, 356.04, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 788, 315.036, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 1744, 335.016, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 1794, 298.008, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 1905, 144, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
+&TABL ID = 'Tetra-Propylene_Fire', DATA = 1936, 0, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
  
 !! Devices
 &DEVC ID = 'FLT_L1_NE040' COMP_ID = 'Comp 1' LOCATION = 4, 6, 0.4 TYPE = 'PLATE' MATL_ID = 'ConTarg'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
@@ -85,37 +119,3 @@
 &DEVC ID = 'TG_L2_NE_390' COMP_ID = 'Comp 2' LOCATION = 3.55, 4.5, 3.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TG_L2_CC_390' COMP_ID = 'Comp 2' LOCATION = 2.3, 3, 3.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'TG_L2_SW_390' COMP_ID = 'Comp 2' LOCATION = 1.05, 1.5, 3.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /
- 
-!! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 2.15, BOTTOM = 0, WIDTH = 0.72
-      FACE = 'RIGHT' OFFSET = 2.64 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 0.0068, BOTTOM = 0, WIDTH = 1
-      FACE = 'FRONT' OFFSET = 2.495 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Comp 2' 'OUTSIDE'  TOP = 0.0068, BOTTOM = 0, WIDTH = 1
-      FACE = 'FRONT' OFFSET = 2.495 /
- 
-!! Mechanical Vents
-&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'
-      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
-&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_2' COMP_IDS = 'OUTSIDE', 'Comp 2'
-      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
-&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_3' COMP_IDS = 'Comp 1', 'OUTSIDE'
-      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
-&VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_4' COMP_IDS = 'Comp 2', 'OUTSIDE'
-      AREAS = 0.24, 0.24 HEIGHTS = 4, 4 ORIENTATIONS = 'HORIZONTAL', 'HORIZONTAL'  FLOW = 0.16 CUTOFFS = 200, 300 OFFSETS = 0, 3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
- 
-!! Fires 
-&FIRE ID = 'Tetra-Propylene'  COMP_ID = 'Comp 1', FIRE_ID = 'Tetra-Propylene_Fire'  LOCATION = 2.5, 3 / 
-&CHEM ID = 'Tetra-Propylene_Fire' CARBON = 12 CHLORINE = 0 HYDROGEN = 26 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 40000 RADIATIVE_FRACTION = 0.35 / 
-&TABL ID = 'Tetra-Propylene_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 0, 0, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 21, 136.008, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 86, 431.028, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 231, 494.028, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 402, 505.044, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 542, 356.04, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 788, 315.036, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 1744, 335.016, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 1794, 298.008, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 1905, 144, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /
-&TABL ID = 'Tetra-Propylene_Fire', DATA = 1936, 0, 0.4, 0.36, 0.025, 0.0433, 0, 0, 0 /

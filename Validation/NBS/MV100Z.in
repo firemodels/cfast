@@ -1,9 +1,9 @@
-&HEAD VERSION = 7300, TITLE = 'NBS Test MV100Z, Open Corridor Door, Open Target Room' /
+&HEAD VERSION = 7300, TITLE = '"NBS Test MV100Z, Open Corridor Door, Open Target Room"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1500 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 62 INTERIOR_TEMPERATURE = 22 EXTERIOR_TEMPERATURE = 22 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'FireBrickNBS' MATERIAL = 'Fire Brick NBS', 
@@ -17,7 +17,7 @@
 &MATL ID = 'ConcreteNBS' MATERIAL = 'Concrete NBS', 
       CONDUCTIVITY = 1.8 DENSITY = 2280 SPECIFIC_HEAT = 1.04, THICKNESS = 0.102 EMISSIVITY = 0.95 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Fire Room'
       DEPTH = 2.34 HEIGHT = 2.16 WIDTH = 2.34 CEILING_MATL_ID = 'CeramicNBS' WALL_MATL_ID = 'CeramicNBS' FLOOR_MATL_ID = 'FireBrickNBS'
       ORIGIN = 9.85, 0, 0 GRID = 50, 50, 50 /

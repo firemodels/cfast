@@ -19,6 +19,31 @@
       DEPTH = 0.92 HEIGHT = 2.14 WIDTH = 0.92 CEILING_MATL_ID = 'Steel' WALL_MATL_ID = 'Steel' FLOOR_MATL_ID = 'Steel'
       ORIGIN = 4.3, 1.8, 0 GRID = 50, 50, 50 /
  
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
+      FACE = 'RIGHT' OFFSET = 2.6 /
+&VENT TYPE = 'WALL' ID = 'Vent Bottom' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
+      FACE = 'FRONT' OFFSET = 0.1 /
+&VENT TYPE = 'WALL' ID = 'Vent Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
+      FACE = 'FRONT' OFFSET = 0.1 /
+&VENT TYPE = 'WALL' ID = 'Vent Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
+      FACE = 'REAR' OFFSET = 0.1 /
+ 
+!! Fires 
+&FIRE ID = 'burner1'  COMP_ID = 'Large Cabinet', FIRE_ID = '50kWto400kW'  LOCATION = 0.46, 0.46 / 
+&CHEM ID = '50kWto400kW' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.25 / 
+&TABL ID = '50kWto400kW' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = '50kWto400kW', DATA = 0, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 30, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 1800, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 1830, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 2700, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 2730, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 3600, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 3630, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 4500, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = '50kWto400kW', DATA = 4530, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
+ 
 !! Devices
 &DEVC ID = 'Pl-Up-3' COMP_ID = 'Compartment' LOCATION = 0.3, 0.3, 3.35 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'Pl-Mid-3' COMP_ID = 'Compartment' LOCATION = 0.3, 0.3, 2.74 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
@@ -191,28 +216,3 @@
 &DEVC ID = 'STC-4' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 1.2 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-5' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 0.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
 &DEVC ID = 'STC-6' COMP_ID = 'Compartment' LOCATION = 4.65, 1.95, 0.6 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
- 
-!! Wall Vents
-&VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
-      FACE = 'RIGHT' OFFSET = 2.6 /
-&VENT TYPE = 'WALL' ID = 'Vent Bottom' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
-      FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Vent Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
-      FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Vent Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
-      FACE = 'REAR' OFFSET = 0.1 /
- 
-!! Fires 
-&FIRE ID = 'burner1'  COMP_ID = 'Large Cabinet', FIRE_ID = '50kWto400kW'  LOCATION = 0.46, 0.46 / 
-&CHEM ID = '50kWto400kW' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.25 / 
-&TABL ID = '50kWto400kW' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = '50kWto400kW', DATA = 0, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 30, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 1800, 50, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 1830, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 2700, 100, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 2730, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 3600, 200, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 3630, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 4500, 400, 0.5, 0.36, 0, 0.001, 0, 0, 0 /
-&TABL ID = '50kWto400kW', DATA = 4530, 0, 0.5, 0.36, 0, 0.001, 0, 0, 0 /

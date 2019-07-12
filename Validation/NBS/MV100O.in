@@ -1,9 +1,9 @@
-&HEAD VERSION = 7300, TITLE = 'NBS Test MV100O, Closed Corridor Door, No Target Room' /
+&HEAD VERSION = 7300, TITLE = '"NBS Test MV100O, Closed Corridor Door, No Target Room"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1500 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 45 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'FireBrickNBS' MATERIAL = 'Fire Brick NBS', 
@@ -17,7 +17,7 @@
 &MATL ID = 'ConcreteNBS' MATERIAL = 'Concrete NBS', 
       CONDUCTIVITY = 1.8 DENSITY = 2280 SPECIFIC_HEAT = 1.04, THICKNESS = 0.102 EMISSIVITY = 0.95 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Fire Room'
       DEPTH = 2.34 HEIGHT = 2.16 WIDTH = 2.34 CEILING_MATL_ID = 'CeramicNBS' WALL_MATL_ID = 'CeramicNBS' FLOOR_MATL_ID = 'FireBrickNBS'
       ORIGIN = 9.85, 0, 0 GRID = 50, 50, 50 /
@@ -42,9 +42,9 @@
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Corridor' 'OUTSIDE'  TOP = 2.44, BOTTOM = 2.43, WIDTH = 0.76
       FACE = 'LEFT' OFFSET = 0.84 /
 &VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Corridor', 'Entry to Target Room' TOP = 2.04, BOTTOM = 0, WIDTH = 0.79
-      CRITERION = 'TIME' T = 0, 0  F = 0, 0  FACE = 'FRONT' OFFSET = 2.14 /
+      CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'FRONT' OFFSET = 2.14 /
 &VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Target Room', 'Entry to Target Room' TOP = 2.04, BOTTOM = 0, WIDTH = 0.79
-      CRITERION = 'TIME' T = 0, 0  F = 0, 0  FACE = 'REAR' OFFSET = 0.075 /
+      CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'REAR' OFFSET = 0.075 /
  
 !! Fires 
 &FIRE ID = 'MV100O'  COMP_ID = 'Fire Room', FIRE_ID = 'MV100O_Fire'  LOCATION = 1.17, 0.1 / 

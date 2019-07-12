@@ -1,23 +1,23 @@
-&HEAD VERSION = 7300, TITLE = 'Plaza Hotel Smoke Movement Tests (#7, 6 Room Case)' /
+&HEAD VERSION = 7300, TITLE = '"Plaza Hotel Smoke Movement Tests (#7, 6 Room Case)"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 2000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 15 EXTERIOR_TEMPERATURE = 15 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
-&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)', 
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)', 
       CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
 &MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board (5/8 in)', 
       CONDUCTIVITY = 0.16 DENSITY = 790 SPECIFIC_HEAT = 0.9, THICKNESS = 0.016 EMISSIVITY = 0.9 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Floor 2 Room'
       DEPTH = 6.2 HEIGHT = 2.3 WIDTH = 6.2 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'GYPSUM'
       ORIGIN = 2.5, 0, 5.38 GRID = 50, 50, 50 /
 &COMP ID = 'Floor 2 Hallway'
       DEPTH = 14.6 HEIGHT = 2.6 WIDTH = 1.9 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'GYPSUM' HALL = .TRUE.
-      ORIGIN = 0.6, 1.5, 5.38 GRID = 50, 500, 50 /
+      ORIGIN = 0.6, 1.5, 5.38 GRID = 50, 50, 50 /
 &COMP ID = 'Floor 2 Other'
       DEPTH = 10.3 HEIGHT = 2.7 WIDTH = 10.3 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'GYPSUM'
       ORIGIN = 2.5, 7.7, 5.38 GRID = 50, 50, 50 /
@@ -39,7 +39,7 @@
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Floor 2 Hallway', 'Floor 2 Other' TOP = 2.1, BOTTOM = 0, WIDTH = 0.78
       FACE = 'RIGHT' OFFSET = 6.91 /
 &VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Floor 2 Hallway', 'Stairwell' TOP = 2.1, BOTTOM = 0, WIDTH = 0.95
-      CRITERION = 'TIME' T = 0, 0  F = 0.03, 0.03  FACE = 'REAR' OFFSET = 0.475 /
+      CRITERION = 'TIME' T = 0, 0 F = 0.03, 0.03 FACE = 'REAR' OFFSET = 0.475 /
 &VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Floor 2 Hallway', 'Stairwell' TOP = 0.01, BOTTOM = 0, WIDTH = 0.94
       FACE = 'REAR' OFFSET = 0.48 /
 &VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Floor 2 Hallway', 'Elevator Shaft' TOP = 2.1, BOTTOM = 0, WIDTH = 0.05

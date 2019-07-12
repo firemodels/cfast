@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 500 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 27 EXTERIOR_TEMPERATURE = 27 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'LLNL Walls' MATERIAL = 'Test Cell Walls', 
@@ -11,7 +11,7 @@
 &MATL ID = 'LLNL Ceil' MATERIAL = 'Test Cell Floor and Ceiling', 
       CONDUCTIVITY = 0.63 DENSITY = 1920 SPECIFIC_HEAT = 1, THICKNESS = 0.1 EMISSIVITY = 0.94 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Full Test Cell'
       DEPTH = 6 HEIGHT = 4.5 WIDTH = 4 CEILING_MATL_ID = 'LLNL Ceil' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Ceil'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /

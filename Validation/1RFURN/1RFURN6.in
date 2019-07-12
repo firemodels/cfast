@@ -1,17 +1,17 @@
-&HEAD VERSION = 7300, TITLE = 'Single Room with Furniture (Sect 5, Test 6)' /
+&HEAD VERSION = 7300, TITLE = '"Single Room with Furniture (Sect 5, Test 6)"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 27 EXTERIOR_TEMPERATURE = 27 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
-&MATL ID = 'CONCRETE' MATERIAL = 'Concrete, Normal Weight (6 in)', 
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)', 
       CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
 &MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board (5/8 in)', 
       CONDUCTIVITY = 0.16 DENSITY = 790 SPECIFIC_HEAT = 0.9, THICKNESS = 0.016 EMISSIVITY = 0.9 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Compartment 1'
       DEPTH = 3.94 HEIGHT = 2.31 WIDTH = 2.26 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'CONCRETE'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /

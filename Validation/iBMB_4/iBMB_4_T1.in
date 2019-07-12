@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board (5/8 in)', 
@@ -15,18 +15,10 @@
 &MATL ID = 'LiteConcBE4' MATERIAL = 'Lightweight Concrete ICFMP BE4 and BE5', 
       CONDUCTIVITY = 0.11 DENSITY = 420 SPECIFIC_HEAT = 1.35, THICKNESS = 0.3 EMISSIVITY = 0.95 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Compartment 1'
       DEPTH = 3.6 HEIGHT = 5.7 WIDTH = 3.6 CEILING_MATL_ID = 'ConcreteBE4' WALL_MATL_ID = 'ConcreteBE4' FLOOR_MATL_ID = 'LiteConcBE4'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
- 
-!! Devices
-&DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 3.6, 1.5, 1.8 TYPE = 'PLATE' MATL_ID = 'ConcreteBE4'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'Targ 2' COMP_ID = 'Compartment 1' LOCATION = 0, 2.8, 1.7 TYPE = 'PLATE' MATL_ID = 'SteelBE4'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'Targ 3' COMP_ID = 'Compartment 1' LOCATION = 0, 1.9, 1.7 TYPE = 'PLATE' MATL_ID = 'ConcreteBE4'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'Targ 4' COMP_ID = 'Compartment 1' LOCATION = 0, 0.7, 1.7 TYPE = 'PLATE' MATL_ID = 'LiteConcBE4'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'Targ 5' COMP_ID = 'Compartment 1' LOCATION = 2.45, 3.6, 1.5 TYPE = 'PLATE' MATL_ID = 'GYPSUM'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
-&DEVC ID = 'Targ 6' COMP_ID = 'Compartment 1' LOCATION = 2.45, 3.6, 3.35 TYPE = 'PLATE' MATL_ID = 'GYPSUM'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 3, BOTTOM = 0, WIDTH = 0.7
@@ -51,3 +43,11 @@
 &TABL ID = 'iBMB_4_1_Fire', DATA = 870, 3381.2, 0, 1.08, 0.012, 0.042, 0, 0, 0 /
 &TABL ID = 'iBMB_4_1_Fire', DATA = 1368, 3518.16, 0, 1.08, 0.012, 0.042, 0, 0, 0 /
 &TABL ID = 'iBMB_4_1_Fire', DATA = 1395, 0, 0, 1.08, 0.012, 0.042, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 3.6, 1.5, 1.8 TYPE = 'PLATE' MATL_ID = 'ConcreteBE4'  NORMAL = -1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 2' COMP_ID = 'Compartment 1' LOCATION = 0, 2.8, 1.7 TYPE = 'PLATE' MATL_ID = 'SteelBE4'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 3' COMP_ID = 'Compartment 1' LOCATION = 0, 1.9, 1.7 TYPE = 'PLATE' MATL_ID = 'ConcreteBE4'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 4' COMP_ID = 'Compartment 1' LOCATION = 0, 0.7, 1.7 TYPE = 'PLATE' MATL_ID = 'LiteConcBE4'  NORMAL = 1, 0, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 5' COMP_ID = 'Compartment 1' LOCATION = 2.45, 3.6, 1.5 TYPE = 'PLATE' MATL_ID = 'GYPSUM'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 6' COMP_ID = 'Compartment 1' LOCATION = 2.45, 3.6, 3.35 TYPE = 'PLATE' MATL_ID = 'GYPSUM'  NORMAL = 0, -1, 0 TEMPERATURE_DEPTH = 0.5 /

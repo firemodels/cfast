@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 5000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 18 EXTERIOR_TEMPERATURE = 18 /
-&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'LLNL Walls' MATERIAL = 'Test Cell Walls', 
@@ -13,7 +13,7 @@
 &MATL ID = 'LLNL Marinite' MATERIAL = 'Test Cell Marinite', 
       CONDUCTIVITY = 0.12 DENSITY = 700 SPECIFIC_HEAT = 1.12, THICKNESS = 0.019 EMISSIVITY = 0.94 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Lower Test Cell'
       DEPTH = 6 HEIGHT = 3 WIDTH = 4 CEILING_MATL_ID = 'LLNL Marinite' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Ceil'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /

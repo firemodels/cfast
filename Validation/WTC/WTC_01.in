@@ -15,10 +15,37 @@
 &MATL ID = 'FLANGE' MATERIAL = 'Steel Flange', 
       CONDUCTIVITY = 40 DENSITY = 7850 SPECIFIC_HEAT = 0.6, THICKNESS = 0.01275 EMISSIVITY = 0.9 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Compartment 1'
       DEPTH = 3.6 HEIGHT = 3.82 WIDTH = 7 CEILING_MATL_ID = 'BNZMARI' WALL_MATL_ID = 'BNZMARI' FLOOR_MATL_ID = 'GYP1/2'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
+      FACE = 'LEFT' OFFSET = 0.3 /
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
+      FACE = 'LEFT' OFFSET = 1 /
+&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
+      FACE = 'LEFT' OFFSET = 1.9 /
+&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
+      FACE = 'LEFT' OFFSET = 2.8 /
+&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
+      FACE = 'RIGHT' OFFSET = 0.3 /
+&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
+      FACE = 'RIGHT' OFFSET = 1 /
+&VENT TYPE = 'WALL' ID = 'WallVent_7' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
+      FACE = 'RIGHT' OFFSET = 1.9 /
+&VENT TYPE = 'WALL' ID = 'WallVent_8' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
+      FACE = 'RIGHT' OFFSET = 2.8 /
+ 
+!! Fires 
+&FIRE ID = 'WTC_01'  COMP_ID = 'Compartment 1', FIRE_ID = 'WTC_01_Fire'  LOCATION = 4.02, 1.825 / 
+&CHEM ID = 'WTC_01_Fire' CARBON = 7 CHLORINE = 0 HYDROGEN = 16 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 45000 RADIATIVE_FRACTION = 0.44 / 
+&TABL ID = 'WTC_01_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'WTC_01_Fire', DATA = 0, 0, 0, 2.13, 0.008, 0.015, 0, 0, 0 /
+&TABL ID = 'WTC_01_Fire', DATA = 5, 1950, 0, 2.13, 0.008, 0.015, 0, 0, 0 /
+&TABL ID = 'WTC_01_Fire', DATA = 860, 2048, 0, 2.13, 0.008, 0.015, 0, 0, 0 /
+&TABL ID = 'WTC_01_Fire', DATA = 870, 0, 0, 2.13, 0.008, 0.015, 0, 0, 0 /
  
 !! Devices
 &DEVC ID = 'Targ 1' COMP_ID = 'Compartment 1' LOCATION = 3.49, 2.08, 3.82 TYPE = 'PLATE' MATL_ID = 'BNZMARI'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
@@ -111,30 +138,3 @@
 &DEVC ID = 'HeatDetector_2' COMP_ID = 'Compartment 1' LOCATION = 6.04, 2.33, 3.79 TYPE = 'HEAT_DETECTOR' SETPOINT = 10, RTI = 5 /
 &DEVC ID = 'HeatDetector_3' COMP_ID = 'Compartment 1' LOCATION = 4.56, 3.6, 3.82 TYPE = 'HEAT_DETECTOR' SETPOINT = 10, RTI = 5 /
 &DEVC ID = 'HeatDetector_4' COMP_ID = 'Compartment 1' LOCATION = 4.59, 3.6, 3.78 TYPE = 'HEAT_DETECTOR' SETPOINT = 10, RTI = 5 /
- 
-!! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
-      FACE = 'LEFT' OFFSET = 0.3 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
-      FACE = 'LEFT' OFFSET = 1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
-      FACE = 'LEFT' OFFSET = 1.9 /
-&VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
-      FACE = 'LEFT' OFFSET = 2.8 /
-&VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
-      FACE = 'RIGHT' OFFSET = 0.3 /
-&VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
-      FACE = 'RIGHT' OFFSET = 1 /
-&VENT TYPE = 'WALL' ID = 'WallVent_7' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
-      FACE = 'RIGHT' OFFSET = 1.9 /
-&VENT TYPE = 'WALL' ID = 'WallVent_8' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
-      FACE = 'RIGHT' OFFSET = 2.8 /
- 
-!! Fires 
-&FIRE ID = 'WTC_01'  COMP_ID = 'Compartment 1', FIRE_ID = 'WTC_01_Fire'  LOCATION = 4.02, 1.825 / 
-&CHEM ID = 'WTC_01_Fire' CARBON = 7 CHLORINE = 0 HYDROGEN = 16 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 45000 RADIATIVE_FRACTION = 0.44 / 
-&TABL ID = 'WTC_01_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'WTC_01_Fire', DATA = 0, 0, 0, 2.13, 0.008, 0.015, 0, 0, 0 /
-&TABL ID = 'WTC_01_Fire', DATA = 5, 1950, 0, 2.13, 0.008, 0.015, 0, 0, 0 /
-&TABL ID = 'WTC_01_Fire', DATA = 860, 2048, 0, 2.13, 0.008, 0.015, 0, 0, 0 /
-&TABL ID = 'WTC_01_Fire', DATA = 870, 0, 0, 2.13, 0.008, 0.015, 0, 0, 0 /

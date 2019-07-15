@@ -17,6 +17,7 @@ copy %cfast_root%\..\Extras\nplot\src\bin\NPlot.dll %cfast_root%\Utilities\for_b
 @echo ***     Create CEdit
 cd %cfast_root%\Build\Cedit
 call make_cedit.bat bot
+copy %cfast_root%\Source\Cedit\obj\Release\CEdit.exe %cfast_root%\Utilities\for_bundle\Bin\cEdit.exe /Y
 
 @echo ***     Create CFAST
 call %cfast_root%\Build\scripts\setup_intel_compilers.bat intel64

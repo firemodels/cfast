@@ -39,7 +39,7 @@ Public Class Environment
     Private aDIAGt(0) As Single
     Private aDIAGGasTemp As Single
     Private aDIAGPartPressH2O As Single
-    Private aDIAGPartPressCO As Single
+    Private aDIAGPartPressCO2 As Single
     Private aDIAGRadSolver As String
     Private aDiagAdiabaticTargetVerification As Boolean
     Private aDiagAdiabaticTargetFlux As Single
@@ -87,7 +87,7 @@ Public Class Environment
         aDIAGf(0) = DefaultNonValue
         aDIAGt(0) = DefaultNonValue
         aDIAGGasTemp = DefaultNonValue
-        aDIAGPartPressCO = DefaultNonValue
+        aDIAGPartPressCO2 = DefaultNonValue
         aDIAGPartPressH2O = DefaultNonValue
         aDIAGRadSolver = "DEFAULT"
         aDiagAdiabaticTargetVerification = False
@@ -449,13 +449,13 @@ Public Class Environment
             aDIAGPartPressH2O = value
         End Set
     End Property
-    Friend Property DIAGPartPressCO As Single
+    Friend Property DIAGPartPressCO2 As Single
         Get
-            Return aDIAGPartPressCO
+            Return aDIAGPartPressCO2
         End Get
         Set(value As Single)
-            If aDIAGPartPressCO <> value Then
-                aDIAGPartPressCO = value
+            If aDIAGPartPressCO2 <> value Then
+                aDIAGPartPressCO2 = value
                 aChanged = True
             End If
         End Set

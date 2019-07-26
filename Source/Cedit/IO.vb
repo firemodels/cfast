@@ -1969,7 +1969,7 @@ Module IO
     Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, k, max As Integer
         Dim f(0), t(0) As Single
-        Dim ppco, pph2o, gastemp As Single
+        Dim ppco2, pph2o, gastemp As Single
         Dim radsolv As String
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
         Dim residdbprn, layermixing As Integer
@@ -1981,7 +1981,7 @@ Module IO
                 ReDim f(0), t(0)
                 f(0) = Environment.DefaultNonValue
                 t(0) = Environment.DefaultNonValue
-                ppco = Environment.DefaultNonValue
+                ppco2 = Environment.DefaultNonValue
                 pph2o = Environment.DefaultNonValue
                 gastemp = Environment.DefaultNonValue
                 radsolv = "DEFAULT"
@@ -2019,8 +2019,8 @@ Module IO
                         gastemp = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "PARTIAL_PRESSURE_H2O" Then
                         pph2o = NMList.ForNMListVarGetNum(i, j, 1)
-                    ElseIf NMList.ForNMListGetVar(i, j) = "PARTIAL_PRESSURE_CO" Then
-                        ppco = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "PARTIAL_PRESSURE_CO2" Then
+                        ppco2 = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "T" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 Then
@@ -2101,7 +2101,7 @@ Module IO
                 someEnvironment.SetDIAGf(f)
                 someEnvironment.SetDIAGt(t)
                 someEnvironment.DIAGGasTemp = gastemp
-                someEnvironment.DIAGPartPressCO = ppco
+                someEnvironment.DIAGPartPressCO2 = ppco2
                 someEnvironment.DIAGPartPressH2O = pph2o
                 someEnvironment.DIAGRadSolver = radsolv
                 someEnvironment.DIAGAdiabaticTargetVerification = adiabatic
@@ -3581,7 +3581,7 @@ Module IO
             End If
             ln += "GAS_TEMPERATURE = " + Math.Round(myEnvironment.DIAGGasTemp, 2).ToString
             ln += " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.DIAGPartPressH2O, 2).ToString
-            ln += " PARTIAL_PRESSURE_CO = " + Math.Round(myEnvironment.DIAGPartPressCO, 2).ToString
+            ln += " PARTIAL_PRESSURE_CO2 = " + Math.Round(myEnvironment.DIAGPartPressCO2, 2).ToString
             Print(IO, ln)
         End If
         myEnvironment.GetDIAGf(f)

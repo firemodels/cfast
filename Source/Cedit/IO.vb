@@ -1334,7 +1334,7 @@ Module IO
                     aFire.IgnitionValue = setp + aDummy
                 ElseIf ignitcrit = "FLUX" Then
                     aFire.Target = devcid
-                    aFire.IgnitionValue = Fire.FireIgnitionbyFlux
+                    aFire.IgnitionType = Fire.FireIgnitionbyFlux
                     aFire.IgnitionValue = setp * 1000.0
                 End If
                 aFire.XPosition = loc(0)

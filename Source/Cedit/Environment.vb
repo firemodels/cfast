@@ -40,6 +40,8 @@ Public Class Environment
     Private aDIAGGasTemp As Single
     Private aDIAGPartPressH2O As Single
     Private aDIAGPartPressCO2 As Single
+    Private aDIAGUpperLayerThickness As Single
+    Private aDIAGVerificationTimeStep As Single
     Private aDIAGRadSolver As String
     Private aDiagAdiabaticTargetVerification As Boolean
     Private aDiagAdiabaticTargetFlux As Single
@@ -89,6 +91,8 @@ Public Class Environment
         aDIAGGasTemp = DefaultNonValue
         aDIAGPartPressCO2 = DefaultNonValue
         aDIAGPartPressH2O = DefaultNonValue
+        aDIAGUpperLayerThickness = DefaultNonValue
+        aDIAGVerificationTimeStep = DefaultNonValue
         aDIAGRadSolver = "DEFAULT"
         aDiagAdiabaticTargetVerification = False
         aDiagAdiabaticTargetFlux = 0
@@ -456,6 +460,28 @@ Public Class Environment
         Set(value As Single)
             If aDIAGPartPressCO2 <> value Then
                 aDIAGPartPressCO2 = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property DIAGUpperLayerThickness As Single
+        Get
+            Return aDIAGUpperLayerThickness
+        End Get
+        Set(value As Single)
+            If aDIAGUpperLayerThickness <> value Then
+                aDIAGUpperLayerThickness = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property DIAGVerificationTimeStep As Single
+        Get
+            Return aDIAGVerificationTimeStep
+        End Get
+        Set(value As Single)
+            If aDIAGVerificationTimeStep <> value Then
+                aDIAGVerificationTimeStep = value
                 aChanged = True
             End If
         End Set

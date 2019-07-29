@@ -1969,7 +1969,7 @@ Module IO
     Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, k, max As Integer
         Dim f(0), t(0) As Single
-        Dim ppco2, pph2o, gastemp As Single
+        Dim ppco2, pph2o, gastemp, ULThickness, verificationstep As Single
         Dim radsolv As String
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
         Dim residdbprn, layermixing As Integer
@@ -1984,6 +1984,8 @@ Module IO
                 ppco2 = Environment.DefaultNonValue
                 pph2o = Environment.DefaultNonValue
                 gastemp = Environment.DefaultNonValue
+                ULThickness = Environment.DefaultNonValue
+                verificationstep = Environment.DefaultNonValue
                 radsolv = "DEFAULT"
                 adiabatic = False
                 fluxAST = 0
@@ -2051,6 +2053,10 @@ Module IO
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "RADIATIVE_INCIDENT_FLUX" Then
                         fluxAST = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "UPPER_LAYER_THICKNESS" Then
+                        ULThickness = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "VERIFICATION_TIME_STEP" Then
+                        verificationstep = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_SUB_MODEL" Then
                         ReadINIInput(fire, "FIRE_SUB_MODEL", NMList.ForNMListVarGetStr(i, j, 1))
                     ElseIf NMList.ForNMListGetVar(i, j) = "HORIZONTAL_FLOW_SUB_MODEL" Then
@@ -2103,6 +2109,8 @@ Module IO
                 someEnvironment.DIAGGasTemp = gastemp
                 someEnvironment.DIAGPartPressCO2 = ppco2
                 someEnvironment.DIAGPartPressH2O = pph2o
+                someEnvironment.DIAGUpperLayerThickness = ULThickness
+                someEnvironment.DIAGVerificationTimeStep = verificationstep
                 someEnvironment.DIAGRadSolver = radsolv
                 someEnvironment.DIAGAdiabaticTargetVerification = adiabatic
                 someEnvironment.DIAGAdiabaticTargetFlux = fluxAST
@@ -3565,6 +3573,36 @@ Module IO
                 ln = "     "
             End If
             ln += "ADIABATIC_TARGET_VERIFICATION = 'ON' RADIATIVE_INCIDENT_FLUX = " + myEnvironment.DIAGAdiabaticTargetFlux.ToString
+            Print(IO, ln)
+        End If
+        If myEnvironment.DIAGUpperLayerThickness <> Environment.DefaultNonValue Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = "     "
+            End If
+            ln += "UPPER_LAYER_THICKNESS = " + myEnvironment.DIAGUpperLayerThickness.ToString
+            Print(IO, ln)
+        End If
+        If myEnvironment.DIAGVerificationTimeStep <> Environment.DefaultNonValue Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = "     "
+            End If
+            ln += "VERIFICATION_TIME_STEP = " + myEnvironment.DIAGVerificationTimeStep.ToString
             Print(IO, ln)
         End If
         If myEnvironment.DIAGGasTemp <> Environment.DefaultNonValue Then

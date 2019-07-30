@@ -968,6 +968,7 @@ Public Class CeditMain
         '
         Me.MenuFile.Index = 0
         Me.MenuFile.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuNew, Me.MenuOpen, Me.MenuSave, Me.MenuSaveAs, Me.MenuExit, Me.MenuRecentSeparator, Me.MenuRecent1, Me.MenuRecent2, Me.MenuRecent3, Me.MenuRecent4})
+        Me.MenuFile.Shortcut = System.Windows.Forms.Shortcut.CtrlF
         Me.MenuFile.Text = "File"
         '
         'MenuNew
@@ -1032,6 +1033,7 @@ Public Class CeditMain
         '
         Me.MenuView.Index = 1
         Me.MenuView.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuUnits, Me.MenuItem5, Me.MenuViewInput, Me.MenuViewOutput, Me.MenuViewLog})
+        Me.MenuView.Shortcut = System.Windows.Forms.Shortcut.CtrlV
         Me.MenuView.Text = "View"
         '
         'MenuUnits
@@ -1063,11 +1065,13 @@ Public Class CeditMain
         '
         Me.MenuHelp.Index = 2
         Me.MenuHelp.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuHelpUpdate, Me.MenuShowHelp, Me.MenuCFASTWeb, Me.MenuAbout})
+        Me.MenuHelp.Shortcut = System.Windows.Forms.Shortcut.CtrlH
         Me.MenuHelp.Text = "Help"
         '
         'MenuHelpUpdate
         '
         Me.MenuHelpUpdate.Index = 0
+        Me.MenuHelpUpdate.Shortcut = System.Windows.Forms.Shortcut.CtrlU
         Me.MenuHelpUpdate.Text = "Update Input Files"
         '
         'MenuShowHelp

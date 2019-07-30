@@ -1969,7 +1969,7 @@ Module IO
     Public Sub ReadInputFileNMLDiag(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, k, max As Integer
         Dim f(0), t(0) As Single
-        Dim ppco2, pph2o, gastemp, ULThickness, verificationstep As Single
+        Dim ppco2, pph2o, gastemp, ULThickness, verificationstep, fireheatflux As Single
         Dim radsolv As String
         Dim fire, hflow, entrain, vflow, cjet, dfire, convec, rad, gasabsorp, conduc, debugprn, mflow, keyin, steadyint, dasslprn, oxygen As Integer
         Dim residdbprn, layermixing As Integer
@@ -1986,6 +1986,7 @@ Module IO
                 gastemp = Environment.DefaultNonValue
                 ULThickness = Environment.DefaultNonValue
                 verificationstep = Environment.DefaultNonValue
+                fireheatflux = Environment.DefaultNonValue
                 radsolv = "DEFAULT"
                 adiabatic = False
                 fluxAST = 0
@@ -2055,6 +2056,8 @@ Module IO
                         fluxAST = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "UPPER_LAYER_THICKNESS" Then
                         ULThickness = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "VERIFICATION_FIRE_HEAT_FLUX" Then
+                        fireheatflux = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "VERIFICATION_TIME_STEP" Then
                         verificationstep = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "FIRE_SUB_MODEL" Then
@@ -3052,6 +3055,191 @@ Module IO
         End If
         myEnvironment.Changed = False
 
+        'Writing Diagnostics 
+        Dim wrtDIAG As Boolean
+        Dim wrtSlash As Boolean
+        If myEnvironment.DIAGRadSolver = "DEFAULT" Then
+            wrtDIAG = True
+            wrtSlash = False
+        Else
+            wrtDIAG = False
+            wrtSlash = True
+            ln = " "
+            PrintLine(IO, ln)
+            ln = "!!  Diagnostics"
+            PrintLine(IO, ln)
+            ln = "&DIAG  RADSOLVER = '" + myEnvironment.DIAGRadSolver + "' "
+            PrintLine(IO, ln)
+        End If
+        If myEnvironment.DIAGAdiabaticTargetVerification = True Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = " "
+            End If
+            ln += "ADIABATIC_TARGET_VERIFICATION = 'ON' RADIATIVE_INCIDENT_FLUX = " + myEnvironment.DIAGAdiabaticTargetFlux.ToString
+            Print(IO, ln)
+        End If
+        If myEnvironment.DIAGUpperLayerThickness <> Environment.DefaultNonValue Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = " "
+            End If
+            ln += "UPPER_LAYER_THICKNESS = " + myEnvironment.DIAGUpperLayerThickness.ToString
+            Print(IO, ln)
+        End If
+        If myEnvironment.DIAGFireHeatFlux <> Environment.DefaultNonValue Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = " "
+            End If
+            ln += "VERIFICATION_FIRE_HEAT_FLUX = " + myEnvironment.DIAGFireHeatFlux.ToString
+            Print(IO, ln)
+        End If
+        If myEnvironment.DIAGVerificationTimeStep <> Environment.DefaultNonValue Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = " "
+            End If
+            ln += "VERIFICATION_TIME_STEP = " + myEnvironment.DIAGVerificationTimeStep.ToString
+            Print(IO, ln)
+        End If
+        If myEnvironment.DIAGGasTemp <> Environment.DefaultNonValue Then
+            If wrtDIAG Then
+                ln = " "
+                PrintLine(IO, ln)
+                ln = "!!  Diagnostics"
+                PrintLine(IO, ln)
+                ln = "&DIAG "
+                wrtDIAG = False
+                wrtSlash = True
+            Else
+                ln = " "
+            End If
+            ln += "GAS_TEMPERATURE = " + Math.Round(myEnvironment.DIAGGasTemp, 2).ToString
+            ln += " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.DIAGPartPressH2O, 2).ToString
+            ln += " PARTIAL_PRESSURE_CO2 = " + Math.Round(myEnvironment.DIAGPartPressCO2, 2).ToString
+            Print(IO, ln)
+        End If
+        myEnvironment.GetDIAGf(f)
+        myEnvironment.GetDIAGt(x)
+        If f.GetUpperBound(0) = x.GetUpperBound(0) Then
+            Dim numpoints As Integer = f.GetUpperBound(0)
+            For i = 0 To numpoints
+                If f(i) = Environment.DefaultNonValue Or x(i) = Environment.DefaultNonValue Then
+                    numpoints = -1
+                End If
+            Next
+            If numpoints >= 0 Then
+                If wrtDIAG Then
+                    ln = " "
+                    PrintLine(IO, ln)
+                    ln = "!!  Diagnostics"
+                    PrintLine(IO, ln)
+                    ln = "&DIAG "
+                    wrtDIAG = False
+                    wrtSlash = True
+                Else
+                    ln = " "
+                End If
+                ln += " T = " + x(0).ToString
+                For k = 1 To numpoints
+                    ln += ", " + x(k).ToString
+                Next
+                PrintLine(IO, ln)
+                ln = "      F = " + f(0).ToString
+                For k = 1 To numpoints
+                    ln += ", " + f(k).ToString
+                Next
+                PrintLine(IO, ln)
+            End If
+        End If
+        If myEnvironment.DIAGfire <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "FIRE_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGhflow <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "HORIZONTAL_FLOW_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGentrain <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "ENTRAINMENT_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGvflow <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "VERTICAL_FLOW_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGcjet <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CEILING_JET_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGdfire <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DOOR_JET_FIRE_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGconvec <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CONVECTION_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGrad <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RADIATION_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGgasabsorp <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "GAS_ABSORBTION_SUB_MODEL = 'CONSTANT' ")
+        End If
+        If myEnvironment.DIAGconduc <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CONDUCTION_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGdebugprn <> Environment.DIAGoff Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DEBUG_PRINT = 'ON' ")
+        End If
+        If myEnvironment.DIAGmflow <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "MECHANICAL_FLOW_SUB_MODEL = 'OFF' ")
+        End If
+        If myEnvironment.DIAGkeyin <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "KEYBOARD_INPUT = 'OFF' ")
+        End If
+        If myEnvironment.DIAGsteadyint <> Environment.DIAGoff Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "STEADY_STATE_INITIAL_CONDITIONS = 'ON' ")
+        End If
+        If myEnvironment.DIAGdasslprn <> Environment.DIAGoff Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DASSL_DEBUG_PRINT = 'ON' ")
+        End If
+        If myEnvironment.DIAGoxygen <> Environment.DIAGoff Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "OXYGEN_TRACKING = 'ON' ")
+        End If
+        If myEnvironment.DIAGresiddbprn <> Environment.DIAGoff Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RESIDUAL_DEBUG_PRINT = 'ON' ")
+        End If
+        If myEnvironment.DIAGlayermixing <> Environment.DIAGon Then
+            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "LAYER_MIXING_SUB_MODEL = 'OFF' ")
+        End If
+        If wrtSlash Then
+            ln = "/ "
+            PrintLine(IO, ln)
+        End If
+
         'Writing MATL namelist
         If myThermalProperties.Count > 0 Then
             PrintLine(IO, " ")
@@ -3165,7 +3353,7 @@ Module IO
                 End If
                 ln += " TOP = " + aVent.Soffit.ToString + ", BOTTOM = " + aVent.Sill.ToString + ", WIDTH = " + aVent.Width.ToString
                 PrintLine(IO, ln)
-                ln = "     "
+                ln = " "
                 If aVent.OpenType = Vent.OpenbyTime Then
                     Dim ff(2), xx(2), numpoints As Single
                     aVent.GetRamp(xx, ff, numpoints)
@@ -3544,176 +3732,6 @@ Module IO
             Next
         End If
 
-        'Writing Diagnostics 
-        Dim wrtDIAG As Boolean
-        Dim wrtSlash As Boolean
-        If myEnvironment.DIAGRadSolver = "DEFAULT" Then
-            wrtDIAG = True
-            wrtSlash = False
-        Else
-            wrtDIAG = False
-            wrtSlash = True
-            ln = " "
-            PrintLine(IO, ln)
-            ln = "!!  Diagnostics"
-            PrintLine(IO, ln)
-            ln = "&DIAG  RADSOLVER = '" + myEnvironment.DIAGRadSolver + "' "
-            PrintLine(IO, ln)
-        End If
-        If myEnvironment.DIAGAdiabaticTargetVerification = True Then
-            If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
-                ln = "&DIAG "
-                wrtDIAG = False
-                wrtSlash = True
-            Else
-                ln = "     "
-            End If
-            ln += "ADIABATIC_TARGET_VERIFICATION = 'ON' RADIATIVE_INCIDENT_FLUX = " + myEnvironment.DIAGAdiabaticTargetFlux.ToString
-            Print(IO, ln)
-        End If
-        If myEnvironment.DIAGUpperLayerThickness <> Environment.DefaultNonValue Then
-            If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
-                ln = "&DIAG "
-                wrtDIAG = False
-                wrtSlash = True
-            Else
-                ln = "     "
-            End If
-            ln += "UPPER_LAYER_THICKNESS = " + myEnvironment.DIAGUpperLayerThickness.ToString
-            Print(IO, ln)
-        End If
-        If myEnvironment.DIAGVerificationTimeStep <> Environment.DefaultNonValue Then
-            If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
-                ln = "&DIAG "
-                wrtDIAG = False
-                wrtSlash = True
-            Else
-                ln = "     "
-            End If
-            ln += "VERIFICATION_TIME_STEP = " + myEnvironment.DIAGVerificationTimeStep.ToString
-            Print(IO, ln)
-        End If
-        If myEnvironment.DIAGGasTemp <> Environment.DefaultNonValue Then
-            If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
-                ln = "&DIAG "
-                wrtDIAG = False
-                wrtSlash = True
-            Else
-                ln = "     "
-            End If
-            ln += "GAS_TEMPERATURE = " + Math.Round(myEnvironment.DIAGGasTemp, 2).ToString
-            ln += " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.DIAGPartPressH2O, 2).ToString
-            ln += " PARTIAL_PRESSURE_CO2 = " + Math.Round(myEnvironment.DIAGPartPressCO2, 2).ToString
-            Print(IO, ln)
-        End If
-        myEnvironment.GetDIAGf(f)
-        myEnvironment.GetDIAGt(x)
-        If f.GetUpperBound(0) = x.GetUpperBound(0) Then
-            Dim numpoints As Integer = f.GetUpperBound(0)
-            For i = 0 To numpoints
-                If f(i) = Environment.DefaultNonValue Or x(i) = Environment.DefaultNonValue Then
-                    numpoints = -1
-                End If
-            Next
-            If numpoints >= 0 Then
-                If wrtDIAG Then
-                    ln = " "
-                    PrintLine(IO, ln)
-                    ln = "!!  Diagnostics"
-                    PrintLine(IO, ln)
-                    ln = "&DIAG "
-                    wrtDIAG = False
-                    wrtSlash = True
-                Else
-                    ln = "     "
-                End If
-                ln += " T = " + x(0).ToString
-                For k = 1 To numpoints
-                    ln += ", " + x(k).ToString
-                Next
-                PrintLine(IO, ln)
-                ln = "      F = " + f(0).ToString
-                For k = 1 To numpoints
-                    ln += ", " + f(k).ToString
-                Next
-                PrintLine(IO, ln)
-            End If
-        End If
-        If myEnvironment.DIAGfire <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "FIRE_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGhflow <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "HORIZONTAL_FLOW_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGentrain <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "ENTRAINMENT_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGvflow <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "VERTICAL_FLOW_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGcjet <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CEILING_JET_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGdfire <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DOOR_JET_FIRE_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGconvec <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CONVECTION_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGrad <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RADIATION_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGgasabsorp <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "GAS_ABSORBTION_SUB_MODEL = 'CONSTANT' ")
-        End If
-        If myEnvironment.DIAGconduc <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CONDUCTION_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGdebugprn <> Environment.DIAGoff Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DEBUG_PRINT = 'ON' ")
-        End If
-        If myEnvironment.DIAGmflow <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "MECHANICAL_FLOW_SUB_MODEL = 'OFF' ")
-        End If
-        If myEnvironment.DIAGkeyin <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "KEYBOARD_INPUT = 'OFF' ")
-        End If
-        If myEnvironment.DIAGsteadyint <> Environment.DIAGoff Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "STEADY_STATE_INITIAL_CONDITIONS = 'ON' ")
-        End If
-        If myEnvironment.DIAGdasslprn <> Environment.DIAGoff Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DASSL_DEBUG_PRINT = 'ON' ")
-        End If
-        If myEnvironment.DIAGoxygen <> Environment.DIAGoff Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "OXYGEN_TRACKING = 'ON' ")
-        End If
-        If myEnvironment.DIAGresiddbprn <> Environment.DIAGoff Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RESIDUAL_DEBUG_PRINT = 'ON' ")
-        End If
-        If myEnvironment.DIAGlayermixing <> Environment.DIAGon Then
-            WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "LAYER_MIXING_SUB_MODEL = 'OFF' ")
-        End If
-        If wrtSlash Then
-            ln = "/ "
-            PrintLine(IO, ln)
-        End If
-
         FileClose(IO)
 
     End Sub
@@ -3729,7 +3747,7 @@ Module IO
             wrtDIAG = False
             wrtSlash = True
         Else
-            ln = "     "
+            ln = " "
         End If
         ln += line
         PrintLine(IO, ln)

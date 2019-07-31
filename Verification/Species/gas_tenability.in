@@ -14,9 +14,6 @@
       DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'Steel' WALL_MATL_ID = 'Steel' FLOOR_MATL_ID = 'Steel' SHAFT = .TRUE.
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
-!! Devices
-&DEVC ID = 'Targ 1' COMP_ID = 'Comp 1' LOCATION = 2.5, 2.5, 4.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /
- 
 !! Fires 
 &FIRE ID = 'CO'  COMP_ID = 'Comp 1', FIRE_ID = 'CO_Fire'  LOCATION = 2.5, 2.5 / 
 &CHEM ID = 'CO_Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.35 / 
@@ -25,3 +22,6 @@
 &TABL ID = 'CO_Fire', DATA = 1, 10, 0, 0.36, 0.1, 0, 0, 0, 0 /
 &TABL ID = 'CO_Fire', DATA = 100, 10, 0, 0.36, 0.1, 0, 0, 0, 0 /
 &TABL ID = 'CO_Fire', DATA = 101, 0, 0, 0.36, 0.1, 0, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'Comp 1' LOCATION = 2.5, 2.5, 4.9 TYPE = 'PLATE' MATL_ID = 'Steel'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /

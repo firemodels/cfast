@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 600 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 14 EXTERIOR_TEMPERATURE = 14 /
-&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)', 
@@ -32,17 +32,17 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Bay 1', 'Bay 2' TOP = 13.4, BOTTOM = 0, WIDTH = 45.7
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Bay 2', 'Bay 3' TOP = 13.4, BOTTOM = 0, WIDTH = 45.7
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Bay 3', 'Bay 4' TOP = 13.4, BOTTOM = 0, WIDTH = 45.7
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Bay 4', 'Bay 5' TOP = 13.4, BOTTOM = 0, WIDTH = 45.7
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Bay 1' 'OUTSIDE'  TOP = 10, BOTTOM = 0, WIDTH = 45.7
-      FACE = 'LEFT' OFFSET = 0 /
+  FACE = 'LEFT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Bay 5' 'OUTSIDE'  TOP = 10, BOTTOM = 0, WIDTH = 45.7
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
  
 !! Fires 
 &FIRE ID = 'Iceland_04'  COMP_ID = 'Bay 3', FIRE_ID = 'Iceland_04_Fire'  LOCATION = 7.4, 22.85 / 

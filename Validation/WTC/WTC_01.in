@@ -22,21 +22,21 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
-      FACE = 'LEFT' OFFSET = 0.3 /
+  FACE = 'LEFT' OFFSET = 0.3 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
-      FACE = 'LEFT' OFFSET = 1 /
+  FACE = 'LEFT' OFFSET = 1 /
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.76
-      FACE = 'LEFT' OFFSET = 1.9 /
+  FACE = 'LEFT' OFFSET = 1.9 /
 &VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.98, BOTTOM = 0.28, WIDTH = 0.5
-      FACE = 'LEFT' OFFSET = 2.8 /
+  FACE = 'LEFT' OFFSET = 2.8 /
 &VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
-      FACE = 'RIGHT' OFFSET = 0.3 /
+  FACE = 'RIGHT' OFFSET = 0.3 /
 &VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
-      FACE = 'RIGHT' OFFSET = 1 /
+  FACE = 'RIGHT' OFFSET = 1 /
 &VENT TYPE = 'WALL' ID = 'WallVent_7' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.76
-      FACE = 'RIGHT' OFFSET = 1.9 /
+  FACE = 'RIGHT' OFFSET = 1.9 /
 &VENT TYPE = 'WALL' ID = 'WallVent_8' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.82, BOTTOM = 2.12, WIDTH = 0.5
-      FACE = 'RIGHT' OFFSET = 2.8 /
+  FACE = 'RIGHT' OFFSET = 2.8 /
  
 !! Fires 
 &FIRE ID = 'WTC_01'  COMP_ID = 'Compartment 1', FIRE_ID = 'WTC_01_Fire'  LOCATION = 4.02, 1.825 / 

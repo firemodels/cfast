@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 150 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 1 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 22.9 EXTERIOR_TEMPERATURE = 22.9 /
-&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)', 
@@ -20,9 +20,9 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'OUTSIDE', 'Floor 1' TOP = 2.1, BOTTOM = 0, WIDTH = 0.91
-      CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'RIGHT' OFFSET = 1.6 /
+  CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'RIGHT' OFFSET = 1.6 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'OUTSIDE', 'Floor 1' TOP = 0.025, BOTTOM = 0, WIDTH = 0.91
-      FACE = 'RIGHT' OFFSET = 1.6 /
+  FACE = 'RIGHT' OFFSET = 1.6 /
  
 !! Ceiling and Floor Vents 
 &VENT TYPE = 'CEILING' ID = 'CeilFloorVent_1' COMP_IDS = 'OUTSIDE', 'Floor 1' AREA = 1.5588, SHAPE = 'SQUARE'  OFFSETS = 4.6, 2.8 /

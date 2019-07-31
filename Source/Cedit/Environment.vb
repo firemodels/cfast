@@ -1,19 +1,20 @@
 Public Class Environment
 
-    Public Const MinTemp As Single = 223.15          ' Minimum ambient temperature limit
-    Public Const MaxTemp As Single = 373.15          ' Maximum ambient temperature limit
-    Public Const DefaultLOI As Single = 0.15         ' Default limiting oxygen index. This needs to be consistent with CFAST
-    Public Const DefaultNonValue As Single = -1001.0 ' Default non value
-    Public Const DIAGon As Integer = 1               ' For DIAG namelist, is the integer value for something being on
-    Public Const DIAGoff As Integer = 0              ' For DIAG namelist, is the integer value for something being off
+    Public Const MinTemp As Single = 223.15           ' Minimum ambient temperature limit
+    Public Const MaxTemp As Single = 373.15           ' Maximum ambient temperature limit
+    Public Const DefaultMaximumTimeStep As Single = 2 ' Default maximum solver time step
+    Public Const DefaultLOI As Single = 0.15          ' Default limiting oxygen index. This needs to be consistent with CFAST
+    Public Const DefaultNonValue As Single = -1001.0  ' Default non value
+    Public Const DIAGon As Integer = 1                ' For DIAG namelist, is the integer value for something being on
+    Public Const DIAGoff As Integer = 0               ' For DIAG namelist, is the integer value for something being off
 
     ' All units within the class are assumed to be consistent and typically SI
-    Private aTitle As String                       ' Title for the simulation
-    Private aVersion As Integer                    ' CFAST version number
-    Private aSimulationTime As Single              ' Total simulation time
-    Private aOutputInterval As Single              ' Time interval for printed output, + is compact output and - is full output
-    Private aSpreadsheetInterval As Single         ' Time interval for comma-separated output
-    Private aSmokeviewInterval As Single           ' Time interval for smokeview output
+    Private aTitle As String                        ' Title for the simulation
+    Private aVersion As Integer                     ' CFAST version number
+    Private aSimulationTime As Single               ' Total simulation time
+    Private aOutputInterval As Single               ' Time interval for printed output, + is compact output and - is full output
+    Private aSpreadsheetInterval As Single          ' Time interval for comma-separated output
+    Private aSmokeviewInterval As Single            ' Time interval for smokeview output
     Private aIntAmbTemperature As Single            ' Ambient temperature inside the structure at t=0
     Private aIntAmbPressure As Single               ' Ambient pressure inside the structure at t=0
     Private aIntAmbElevation As Single              ' Reference elevation for measurement of ambients inside the structure
@@ -85,7 +86,7 @@ Public Class Environment
         aExtPowerLawCoefficient = 0.16
         aLowerOxygenLimit = 0.15
         aIgnitionTemp = aIntAmbTemperature + 100.0
-        aMaximumTimeStep = -1.0
+        aMaximumTimeStep = DefaultMaximumTimeStep
         aAdiabaticWalls = False
         aDIAGf(0) = DefaultNonValue
         aDIAGt(0) = DefaultNonValue

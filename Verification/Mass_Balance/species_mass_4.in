@@ -21,9 +21,9 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 4, BOTTOM = 0, WIDTH = 4
-      CRITERION = 'TIME' T = 1000, 1001 F = 0, 1 FACE = 'RIGHT' OFFSET = 0 /
+  CRITERION = 'TIME' T = 1000, 1001 F = 0, 1 FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Comp 3', 'Comp 4' TOP = 4, BOTTOM = 0, WIDTH = 4
-      CRITERION = 'TIME' T = 5000, 5001 F = 0, 1 FACE = 'LEFT' OFFSET = 0 /
+  CRITERION = 'TIME' T = 5000, 5001 F = 0, 1 FACE = 'LEFT' OFFSET = 0 /
  
 !! Ceiling and Floor Vents 
 &VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_1' COMP_IDS = 'Comp 3', 'Comp 2' AREA = 16, SHAPE = 'SQUARE' 

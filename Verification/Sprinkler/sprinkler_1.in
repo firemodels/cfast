@@ -5,13 +5,10 @@
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 0 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
 &MISC  ADIABATIC = .TRUE.  LOWER_OXYGEN_LIMIT = 0.15 / 
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Comp 1'
       DEPTH = 4 HEIGHT = 4 WIDTH = 4 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
- 
-!! Devices
-&DEVC ID = 'Sprinkler_1' COMP_ID = 'Comp 1' LOCATION = 2, 2, 3.96 TYPE = 'SPRINKLER' SETPOINT = 40, RTI = 100 SPRAY_DENSITY = 7E-05 /
  
 !! Fires 
 &FIRE ID = 'New Fire'  COMP_ID = 'Comp 1', FIRE_ID = 'New Fire_Fire'  LOCATION = 2, 2 / 
@@ -19,3 +16,6 @@
 &TABL ID = 'New Fire_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'New Fire_Fire', DATA = 0, 10, 0, 0.09, 0, 0, 0, 0, 0 /
 &TABL ID = 'New Fire_Fire', DATA = 5000, 10, 0, 0.09, 0, 0, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'Sprinkler_1' COMP_ID = 'Comp 1' LOCATION = 2, 2, 3.96 TYPE = 'SPRINKLER' SETPOINT = 40, RTI = 100 SPRAY_DENSITY = 7E-05 /

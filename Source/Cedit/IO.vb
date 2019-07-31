@@ -761,7 +761,7 @@ Module IO
         Dim maxts, loxyl, extinctionFlaming, extinctionSmoldering As Single
 
         adiabatic = False
-        maxts = 2
+        maxts = Environment.DefaultMaximumTimeStep
         loxyl = 0.15
         extinctionFlaming = 8700
         extinctionSmoldering = 4400
@@ -3032,7 +3032,7 @@ Module IO
         PrintLine(IO, ln)
 
         'Writing MISC namelist
-        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Or myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
+        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Or myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
             ln = "&MISC "
             aFlag = True
         Else
@@ -3041,7 +3041,7 @@ Module IO
         If myEnvironment.AdiabaticWalls <> False Then
             ln += " ADIABATIC = .TRUE. "
         End If
-        If myEnvironment.MaximumTimeStep <> 1.0 And myEnvironment.MaximumTimeStep > 0 Then
+        If myEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And myEnvironment.MaximumTimeStep > 0 Then
             ln += " MAX_TIME_STEP = " + myEnvironment.MaximumTimeStep.ToString
         End If
         If myEnvironment.LowerOxygenLimit <> 0.15 Then

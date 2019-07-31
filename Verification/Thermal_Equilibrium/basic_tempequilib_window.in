@@ -9,11 +9,11 @@
 &MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board (5/8 in)', 
       CONDUCTIVITY = 0.16 DENSITY = 790 SPECIFIC_HEAT = 0.9, THICKNESS = 0.016 EMISSIVITY = 0.9 /
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Compartment 1'
       DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 3.5, BOTTOM = 1.5, WIDTH = 1
-      FACE = 'FRONT' OFFSET = 2 /
+  FACE = 'FRONT' OFFSET = 2 /

@@ -5,14 +5,14 @@
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 0 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
 &MISC  ADIABATIC = .TRUE.  LOWER_OXYGEN_LIMIT = 0.15 / 
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Comp 1'
       DEPTH = 5 HEIGHT = 5 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 4, BOTTOM = 0, WIDTH = 1.5
-      FACE = 'RIGHT' OFFSET = 1 /
+  FACE = 'RIGHT' OFFSET = 1 /
  
 !! Fires 
 &FIRE ID = 'simple'  COMP_ID = 'Comp 1', FIRE_ID = 'simple_Fire'  LOCATION = 2.5, 2.5 / 

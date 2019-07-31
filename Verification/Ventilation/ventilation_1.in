@@ -5,14 +5,14 @@
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
 &MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
-!! Comparments 
+!! Compartments 
 &COMP ID = 'Comp 1'
       DEPTH = 5 HEIGHT = 3 WIDTH = 5 CEILING_MATL_ID = 'OFF' WALL_MATL_ID = 'OFF' FLOOR_MATL_ID = 'OFF'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 1.505, BOTTOM = 1.495, WIDTH = 0.01
-      FACE = 'RIGHT' OFFSET = 2.5 /
+  FACE = 'RIGHT' OFFSET = 2.5 /
  
 !! Mechanical Vents
 &VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'OUTSIDE', 'Comp 1'

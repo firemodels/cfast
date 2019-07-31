@@ -40,23 +40,23 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Bedroom 2', 'Kitchen' TOP = 1.98, BOTTOM = 0, WIDTH = 0.61
-      FACE = 'RIGHT' OFFSET = 2.2 /
+  FACE = 'RIGHT' OFFSET = 2.2 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Bath', 'Kitchen' TOP = 0.0254, BOTTOM = 0, WIDTH = 0.61
-      FACE = 'REAR' OFFSET = 0.8 /
+  FACE = 'REAR' OFFSET = 0.8 /
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Bath' 'OUTSIDE'  TOP = 1.1, BOTTOM = 1, WIDTH = 0.6
-      FACE = 'FRONT' OFFSET = 0.8 /
+  FACE = 'FRONT' OFFSET = 0.8 /
 &VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Kitchen', 'Living Room' TOP = 2.4, BOTTOM = 0, WIDTH = 1.83
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_5' COMP_IDS = 'Living Room', 'Hallway' TOP = 1.98, BOTTOM = 0, WIDTH = 0.61
-      FACE = 'RIGHT' OFFSET = 0.1 /
+  FACE = 'RIGHT' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'WallVent_6' COMP_IDS = 'Hallway', 'Bedroom 1' TOP = 0.051, BOTTOM = 0, WIDTH = 0.61
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_7' COMP_IDS = 'Bedroom 1', 'Closet for 1' TOP = 1.98, BOTTOM = 0, WIDTH = 0.61
-      FACE = 'LEFT' OFFSET = 1.3 /
+  FACE = 'LEFT' OFFSET = 1.3 /
 &VENT TYPE = 'WALL' ID = 'WallVent_8' COMP_IDS = 'Bedroom 3', 'Closet for 3' TOP = 1.98, BOTTOM = 0, WIDTH = 0.61
-      FACE = 'RIGHT' OFFSET = 2 /
+  FACE = 'RIGHT' OFFSET = 2 /
 &VENT TYPE = 'WALL' ID = 'WallVent_9' COMP_IDS = 'Bedroom 3', 'Hallway' TOP = 0.0254, BOTTOM = 0, WIDTH = 0.61
-      FACE = 'FRONT' OFFSET = 1 /
+  FACE = 'FRONT' OFFSET = 1 /
  
 !! Fires 
 &FIRE ID = 'Dunes 2000 Mattress 3'  COMP_ID = 'Bedroom 1', FIRE_ID = 'Dunes 2000 Mattress 3_Fire'  LOCATION = 1.3, 3.1 / 

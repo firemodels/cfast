@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Gypsum' MATERIAL = 'Gypsum Board', 
@@ -21,23 +21,23 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
-      FACE = 'RIGHT' OFFSET = 2.6 /
+  FACE = 'RIGHT' OFFSET = 2.6 /
 &VENT TYPE = 'WALL' ID = 'Vent Bottom' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
-      FACE = 'FRONT' OFFSET = 0.1 /
+  FACE = 'FRONT' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'Vent Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
-      FACE = 'FRONT' OFFSET = 0.1 /
+  FACE = 'FRONT' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'Vent Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.04, BOTTOM = 1.94, WIDTH = 0.72
-      FACE = 'REAR' OFFSET = 0.1 /
+  FACE = 'REAR' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'Top Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
-      FACE = 'FRONT' OFFSET = 0.1 /
+  FACE = 'FRONT' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'Top Right' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
-      FACE = 'RIGHT' OFFSET = 0.1 /
+  FACE = 'RIGHT' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'Top Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
-      FACE = 'REAR' OFFSET = 0.1 /
+  FACE = 'REAR' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'Top Left' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
-      FACE = 'LEFT' OFFSET = 0.1 /
+  FACE = 'LEFT' OFFSET = 0.1 /
 &VENT TYPE = 'WALL' ID = 'Cabinet Door' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 1.83, BOTTOM = 0.3, WIDTH = 0.72
-      FACE = 'FRONT' OFFSET = 0.1 /
+  FACE = 'FRONT' OFFSET = 0.1 /
  
 !! Fires 
 &FIRE ID = 'burner1'  COMP_ID = 'Large Cabinet', FIRE_ID = '200kWto1000kW'  LOCATION = 0.46, 0.46 / 

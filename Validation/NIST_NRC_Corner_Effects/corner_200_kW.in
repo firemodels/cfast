@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 7500 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'Gypsum' MATERIAL = 'Gypsum Board', 
@@ -18,7 +18,7 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
-      FACE = 'RIGHT' OFFSET = 2.6 /
+  FACE = 'RIGHT' OFFSET = 2.6 /
  
 !! Fires 
 &FIRE ID = 'burner1'  COMP_ID = 'Comp 1', FIRE_ID = '200kW_1800'  LOCATION = 0.3, 0.3 / 

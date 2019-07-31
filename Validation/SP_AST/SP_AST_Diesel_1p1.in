@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  ADIABATIC = .TRUE.  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  ADIABATIC = .TRUE.  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'STEELSHT' MATERIAL = 'Steel Plain Carbon (1/16 in)', 
@@ -16,13 +16,13 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 100, BOTTOM = 0, WIDTH = 100
-      FACE = 'FRONT' OFFSET = 0 /
+  FACE = 'FRONT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 100, BOTTOM = 0, WIDTH = 100
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 100, BOTTOM = 0, WIDTH = 100
-      FACE = 'REAR' OFFSET = 0 /
+  FACE = 'REAR' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_4' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 100, BOTTOM = 0, WIDTH = 100
-      FACE = 'LEFT' OFFSET = 0 /
+  FACE = 'LEFT' OFFSET = 0 /
  
 !! Fires 
 &FIRE ID = 'n-Decane Test 1'  COMP_ID = 'Compartment 1', FIRE_ID = 'n-Decane Test 1_Fire'  LOCATION = 50, 50 / 

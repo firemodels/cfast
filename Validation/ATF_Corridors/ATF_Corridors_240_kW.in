@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 900 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
-&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'GYPSUM' MATERIAL = 'Gypsum Board ATF', 
@@ -26,11 +26,11 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Lower Corridor', 'Stairwell' TOP = 2.5, BOTTOM = 0, WIDTH = 2.6
-      FACE = 'REAR' OFFSET = 0 /
+  FACE = 'REAR' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Stairwell', 'Upper Corridor' TOP = 5, BOTTOM = 2.5, WIDTH = 2.6
-      FACE = 'FRONT' OFFSET = 0 /
+  FACE = 'FRONT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'WallVent_3' COMP_IDS = 'Upper Corridor' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1.8
-      FACE = 'RIGHT' OFFSET = 0 /
+  FACE = 'RIGHT' OFFSET = 0 /
  
 !! Fires 
 &FIRE ID = 'ATF 240 kW'  COMP_ID = 'Lower Corridor', FIRE_ID = 'ATF 240 kW_Fire'  LOCATION = 15, 0.9 / 

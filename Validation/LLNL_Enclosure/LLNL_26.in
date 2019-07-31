@@ -3,7 +3,7 @@
 !! Scenario Configuration 
 &TIME SIMULATION = 4000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
 &INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 24 EXTERIOR_TEMPERATURE = 24 /
-&MISC  MAX_TIME_STEP = 2 LOWER_OXYGEN_LIMIT = 0.15 / 
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
  
 !! Material Properties 
 &MATL ID = 'LLNL Walls' MATERIAL = 'Test Cell Walls', 
@@ -23,7 +23,7 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Lower Test Cell' 'OUTSIDE'  TOP = 3, BOTTOM = 2.866, WIDTH = 0.175
-      FACE = 'FRONT' OFFSET = 1 /
+  FACE = 'FRONT' OFFSET = 1 /
  
 !! Ceiling and Floor Vents 
 &VENT TYPE = 'FLOOR' ID = 'CeilFloorVent_1' COMP_IDS = 'Plenum', 'Lower Test Cell' AREA = 0.18, SHAPE = 'SQUARE'  OFFSETS = 2, 3 /

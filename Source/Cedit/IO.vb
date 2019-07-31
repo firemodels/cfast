@@ -2113,6 +2113,7 @@ Module IO
                 someEnvironment.DIAGPartPressCO2 = ppco2
                 someEnvironment.DIAGPartPressH2O = pph2o
                 someEnvironment.DIAGUpperLayerThickness = ULThickness
+                someEnvironment.DIAGFireHeatFlux = fireheatflux
                 someEnvironment.DIAGVerificationTimeStep = verificationstep
                 someEnvironment.DIAGRadSolver = radsolv
                 someEnvironment.DIAGAdiabaticTargetVerification = adiabatic
@@ -3064,19 +3065,11 @@ Module IO
         Else
             wrtDIAG = False
             wrtSlash = True
-            ln = " "
-            PrintLine(IO, ln)
-            ln = "!!  Diagnostics"
-            PrintLine(IO, ln)
             ln = "&DIAG  RADSOLVER = '" + myEnvironment.DIAGRadSolver + "' "
             PrintLine(IO, ln)
         End If
         If myEnvironment.DIAGAdiabaticTargetVerification = True Then
             If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
                 ln = "&DIAG "
                 wrtDIAG = False
                 wrtSlash = True
@@ -3088,10 +3081,6 @@ Module IO
         End If
         If myEnvironment.DIAGUpperLayerThickness <> Environment.DefaultNonValue Then
             If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
                 ln = "&DIAG "
                 wrtDIAG = False
                 wrtSlash = True
@@ -3103,10 +3092,6 @@ Module IO
         End If
         If myEnvironment.DIAGFireHeatFlux <> Environment.DefaultNonValue Then
             If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
                 ln = "&DIAG "
                 wrtDIAG = False
                 wrtSlash = True
@@ -3118,10 +3103,6 @@ Module IO
         End If
         If myEnvironment.DIAGVerificationTimeStep <> Environment.DefaultNonValue Then
             If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
                 ln = "&DIAG "
                 wrtDIAG = False
                 wrtSlash = True
@@ -3133,10 +3114,6 @@ Module IO
         End If
         If myEnvironment.DIAGGasTemp <> Environment.DefaultNonValue Then
             If wrtDIAG Then
-                ln = " "
-                PrintLine(IO, ln)
-                ln = "!!  Diagnostics"
-                PrintLine(IO, ln)
                 ln = "&DIAG "
                 wrtDIAG = False
                 wrtSlash = True
@@ -3159,10 +3136,6 @@ Module IO
             Next
             If numpoints >= 0 Then
                 If wrtDIAG Then
-                    ln = " "
-                    PrintLine(IO, ln)
-                    ln = "!!  Diagnostics"
-                    PrintLine(IO, ln)
                     ln = "&DIAG "
                     wrtDIAG = False
                     wrtSlash = True
@@ -3612,7 +3585,7 @@ Module IO
                 ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
                 ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 If aTarg.Adiabatic = True Then
-                    ln += " ADIABTIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString
+                    ln += " ADIABATIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString
                 End If
                 ln += " /"
                 PrintLine(IO, ln)
@@ -3739,10 +3712,6 @@ Module IO
         Dim ln As String
 
         If wrtDIAG Then
-            ln = " "
-            PrintLine(IO, ln)
-            ln = "!!  Diagnostics"
-            PrintLine(IO, ln)
             ln = "&DIAG "
             wrtDIAG = False
             wrtSlash = True

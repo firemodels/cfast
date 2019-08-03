@@ -6711,16 +6711,7 @@ Public Class CeditMain
         If NumPoints = 0 Then
             Dim TimePoints(0) As Single, FractionPoints(0) As Single
             aVent.SetRamp(TimePoints, FractionPoints)
-        ElseIf NumPoints = 1 Then
-            aVent.InitialOpeningTime = Val(ss(1, 0))
-            aVent.InitialOpening = Val(ss(1, 1))
-        ElseIf NumPoints = 2 Then
-            Dim TimePoints(2) As Single, FractionPoints(2) As Single
-            aVent.InitialOpeningTime = Val(ss(1, 0))
-            aVent.FinalOpeningTime = Val(ss(2, 0))
-            aVent.InitialOpening = Val(ss(1, 1))
-            aVent.FinalOpening = Val(ss(2, 1))
-        ElseIf NumPoints > 2 Then
+        Else
             Dim TimePoints(NumPoints) As Single, FractionPoints(NumPoints) As Single
             For ir = 1 To NumPoints
                 TimePoints(ir) = Val(ss(ir, 0))

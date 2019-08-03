@@ -3400,7 +3400,7 @@ Module IO
                 If aVent.OpenType = Vent.OpenbyTime Then
                     Dim ff(2), xx(2), numpoints As Single
                     aVent.GetRamp(xx, ff, numpoints)
-                    If numpoints > 1 Then
+                    If numpoints >= 1 Then
                         PrintLine(IO, ln)
                         ln = "      CRITERION = 'TIME'"
                         ln += " T = " + xx(1).ToString
@@ -3411,11 +3411,6 @@ Module IO
                         For k = 2 To numpoints
                             ln += ", " + ff(k).ToString
                         Next
-                    ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
-                        PrintLine(IO, ln)
-                        ln = "      CRITERION = 'TIME'"
-                        ln += " T = " + aVent.InitialOpeningTime.ToString + ", " + aVent.FinalOpeningTime.ToString
-                        ln += " F = " + aVent.InitialOpening.ToString + ", " + aVent.FinalOpening.ToString
                     End If
                 ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
                     PrintLine(IO, ln)

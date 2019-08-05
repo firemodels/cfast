@@ -1,39 +1,47 @@
-VERSN,7,MCR with no ventilation
-!!
-!!Scenario Configuration
-!!
-TIMES,3600,600,10,10
-EAMB,293.15,101300,0
-TAMB,293.15,101300,0,50
-!!
-!!Material Properties
-!!
-MATL,MCROperator,0.58,4183,998.3,0.2032,0.9,MCR Operator (properties of water at 20 C)
-MATL,MCRConcrete,1.6,750,2400,0.5,0.9,MCR Concrete Floor (user's guide)
-MATL,MCRConcreteW,1.6,750,2400,0.9,0.9,MCR Concrete Wall (user's guide)
-MATL,MCRGypsum,0.17,1100,960,0.015875,0.9,MCR Gypsum Walls (user's guide)
-!!
-!!Compartments
-!!
-COMPA,MCR,27.1,13.8,5.2,0,0,0,MCRConcreteW,MCRConcrete,MCRGypsum,50,50,50
-!!
-!!Vents
-!!
-HVENT,1,2,1,0.91,0.013,0,7,,4,TIME,,,0,1,0,1,0,0
-!!
-!!Fires
-!!
-!!XPE_Neoprene 702 kW
-FIRE,1,2,4,2,1,TIME,0,0,0,0,XPE_Neoprene 702 kW
-CHEMI,3,4.5,0,0,0.5,0.53,1.03E+07
-TIME,0,72,144,216,288,360,432,504,576,648,720,1200,2340,2350
-HRR,0,7020,28080,63180,112320,175500,252720,343980,449280,568620,702000,702000,0,0
-SOOT,0.175,0.175,0.175,0.175,0.175,0.175,0.175,0.175,0.175,0.175,0.175,0.175,0.175,0.175
-CO,0.082,0.082,0.082,0.082,0.082,0.082,0.082,0.082,0.082,0.082,0.082,0.082,0.082,0.082
-TRACE,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-AREA,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12,0.12
-HEIGH,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-!!
-!!Targets and detectors
-!!
-TARGET,1,11.2,5.5,1.524,0,0,1,MCROperator,EXPLICIT,PDE,0.5,Targ 1
+&HEAD VERSION = 7300, TITLE = 'MCR with no ventilation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 3600 PRINT = 600 SMOKEVIEW = 10 SPREADSHEET = 10 / 
+&INIT PRESSURE = 101300 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'MCROperator' MATERIAL = 'MCR Operator (properties of water at 20 C)', 
+      CONDUCTIVITY = 0.58 DENSITY = 998.3 SPECIFIC_HEAT = 4.183, THICKNESS = 0.2032 EMISSIVITY = 0.9 /
+&MATL ID = 'MCRConcrete' MATERIAL = 'MCR Concrete Floor (user''s guide)' 
+      CONDUCTIVITY = 1.6 DENSITY = 2400 SPECIFIC_HEAT = 0.75, THICKNESS = 0.5 EMISSIVITY = 0.9 /
+&MATL ID = 'MCRConcreteW' MATERIAL = 'MCR Concrete Wall (user''s guide)' 
+      CONDUCTIVITY = 1.6 DENSITY = 2400 SPECIFIC_HEAT = 0.75, THICKNESS = 0.9 EMISSIVITY = 0.9 /
+&MATL ID = 'MCRGypsum' MATERIAL = 'MCR Gypsum Walls (user''s guide)' 
+      CONDUCTIVITY = 0.17 DENSITY = 960 SPECIFIC_HEAT = 1.1, THICKNESS = 0.015875 EMISSIVITY = 0.9 /
+ 
+!! Compartments 
+&COMP ID = 'MCR'
+      DEPTH = 13.8 HEIGHT = 5.2 WIDTH = 27.1 CEILING_MATL_ID = 'MCRConcreteW' WALL_MATL_ID = 'MCRGypsum' FLOOR_MATL_ID = 'MCRConcrete'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'MCR' 'OUTSIDE'  TOP = 0.013, BOTTOM = 0, WIDTH = 0.91
+  FACE = 'LEFT' OFFSET = 7 /
+ 
+!! Fires 
+&FIRE ID = 'XPE_Neoprene 702 kW'  COMP_ID = 'MCR', FIRE_ID = 'XPE_Neoprene 702 kW_Fire'  LOCATION = 2, 4 / 
+&CHEM ID = 'XPE_Neoprene 702 kW_Fire' CARBON = 3 CHLORINE = 0.5 HYDROGEN = 4.5 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 10300 RADIATIVE_FRACTION = 0.53 / 
+&TABL ID = 'XPE_Neoprene 702 kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 0, 0, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 72, 7.02, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 144, 28.08, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 216, 63.18, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 288, 112.32, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 360, 175.5, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 432, 252.72, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 504, 343.98, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 576, 449.28, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 648, 568.62, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 720, 702, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 1200, 702, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 2340, 0, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+&TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 2350, 0, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
+ 
+!! Devices
+&DEVC ID = 'Targ 1' COMP_ID = 'MCR' LOCATION = 11.2, 5.5, 1.524 TYPE = 'PLATE' MATL_ID = 'MCROperator'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /

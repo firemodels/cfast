@@ -629,6 +629,8 @@ module isosurface
     real(fb) :: levelsf(1)
     integer :: nlevels
     real(fb) :: timef
+    
+    save unit
 
     nlevels = 1
     timef = real(time,fb)
@@ -657,11 +659,11 @@ module isosurface
 
         if (first_time.eq.1) then
             open (newunit=unit,file=isoptr%filename,form='unformatted',status='replace')
-            unit=-unit
         else
             open (newunit=unit,file=isoptr%filename,form='unformatted',status='old',position='append')
         end if
-        call iso_to_file(unit,timef,isodataf,levelsf, nlevels, roomptr%xpltf, ibar+1, roomptr%ypltf, jbar+1, roomptr%zpltf, kbar+1)
+        call iso_to_file(unit,first_time, timef,isodataf,levelsf, nlevels, roomptr%xpltf, ibar+1, roomptr%ypltf, jbar+1, &
+            roomptr%zpltf, kbar+1)
 
         deallocate(isodataf)
         close(unit)
@@ -671,9 +673,10 @@ module isosurface
 
     ! ------------------ ISO_TO_FILE ------------------------
 
-    SUBROUTINE ISO_TO_FILE(LU_ISO,T,VDATA,&
+    SUBROUTINE ISO_TO_FILE(LU_ISO,FIRST_TIME,T,VDATA,&
         LEVELS, NLEVELS, XPLT, NX, YPLT, NY, ZPLT, NZ)
 
+    INTEGER, INTENT(IN) :: FIRST_TIME
     INTEGER, INTENT(IN) :: NX, NY, NZ
     INTEGER, INTENT(INOUT) :: LU_ISO
     REAL(FB), INTENT(IN) :: T
@@ -720,8 +723,7 @@ module isosurface
     IF (NXYZVERTS_ALL>0.AND.NTRIANGLES_ALL>0) THEN
         CALL REMOVE_DUPLICATE_ISO_VERTS(XYZVERTS_ALL,NXYZVERTS_ALL,TRIANGLES_ALL,NTRIANGLES_ALL)
     end if
-    IF (LU_ISO<0) THEN
-        LU_ISO  = ABS(LU_ISO)
+    IF (FIRST_TIME==1) THEN
         CALL ISO_HEADER_OUT(LU_ISO,LEVELS,NLEVELS)
     end if
     CALL ISO_OUT(LU_ISO,T,XYZVERTS_ALL,NXYZVERTS_ALL,TRIANGLES_ALL,LEVEL_INDICES_ALL,NTRIANGLES_ALL)

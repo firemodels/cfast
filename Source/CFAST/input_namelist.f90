@@ -2281,6 +2281,7 @@ continue
     namelist /ISOF/ comp_id, value
 
     ios = 1
+    counter = 0
 
     rewind (unit=lu)
     input_file_line_number = 0

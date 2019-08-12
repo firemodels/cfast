@@ -5438,7 +5438,7 @@ Public Class CeditMain
     End Sub
 #End Region
 #Region " Wall Vents Tab "
-    ' This section of code handles the events related to the horizontal flow vents tab
+    ' This section of code handles the events related to the Wall vents tab
     Private Sub HVentAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles HVentAdd.Click
         If myHVents.Count + 1 <= Vent.MaximumHVents Then
             Dim aVent As New Vent
@@ -5548,7 +5548,7 @@ Public Class CeditMain
 
 #End Region
 #Region " Floor/Ceiling Vents Tab "
-    ' This section of code handles the events related to the vertical flow vents tab
+    ' This section of code handles the events related to the Ceiling/Floor vents tab
     Private Sub VVentAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles VVentAdd.Click
         If myVVents.Count + 1 <= Vent.MaximumVVents Then
             Dim aVent As New Vent
@@ -5631,7 +5631,7 @@ Public Class CeditMain
 #End Region
 #Region "Mechanical Vents Tab "
 
-    ' This section of code handles the events related to the mechanical flow vents tab
+    ' This section of code handles the events related to the Mechanical vents tab
     Private Sub MVentAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MVentAdd.Click
         If myMVents.Count + 1 <= Vent.MaximumMVents Then
             Dim aVent As New Vent

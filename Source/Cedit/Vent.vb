@@ -22,12 +22,12 @@ Public Class Vent
     Private aVentType As Integer                ' Type of vent; 0 = horizontal flow, 1 = vertical flow, 2 = mechanical flow
     Private aFirstCompartment As Integer        ' First of compartments connected by vent
     Private aSecondCompartment As Integer       ' Second of compartments connected by vent
-    Private aOffset As Single                   ' vent position along wall from end of first compartment for horizontal flow vents
+    Private aOffset As Single                   ' vent position along wall from end of first compartment for Wall vents
     Private aOffsetX As Single                  ' Placement of vent for Smokeview visualization in X (width) direction for vertical and mechanical vents
     Private aOffsetY As Single                  ' Placement of vent for Smokeview visualization in Y (depth) direction for vertical and mechanical vents
-    Private aWidth As Single                    ' Width of the horizontal flow vent
-    Private aSoffit As Single                   ' Soffit (top of vent) height from floor of first compartment for horizontal flow vents
-    Private aSill As Single                     ' Sill (bottom of vent) height from floor of first comparment for horizontal flow vents
+    Private aWidth As Single                    ' Width of the Wall vent
+    Private aSoffit As Single                   ' Soffit (top of vent) height from floor of first compartment for Wall vents
+    Private aSill As Single                     ' Sill (bottom of vent) height from floor of first comparment for Wall vents
     Private aFace As Integer                    ' Defines which wall on which to display vent in Smokeview, 1 for front, 2 for right, 3 for back, 4 for left
     Private aOpenType As Integer                ' Vent opening by time, temperature, or incident heat flux
     Private aOpenValue As Single                ' Vent opening criterion if by temperature or flux
@@ -39,15 +39,15 @@ Public Class Vent
     Private aRampTimePoints(0) As Single        ' Vent opening times from RAMP input
     Private aRampFractionPoints(0) As Single    ' Vent open fractions from RAMP input
     Private aRampID As String                   ' One word name of ramp for RAMP input
-    Private aArea As Single                     ' Cross-sectional area of vent for vertical flow vents
-    Private aShape As Integer                   ' Vertical flow vent shape, 1 for circular and 2 for square
+    Private aArea As Single                     ' Cross-sectional area of vent for Ceiling/Floor vents
+    Private aShape As Integer                   ' Ceiling/Floor vent shape, 1 for circular and 2 for square
     Private aFirstArea As Single                ' Mechanical vent opening size in first compartment
-    Private aFirstCenterHeight As Single        ' Height of center of mechanical flow vent opening
-    Private aFirstOrientation As Integer        ' Orientation of mechanical flow vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
+    Private aFirstCenterHeight As Single        ' Height of center of Mechanical vent opening
+    Private aFirstOrientation As Integer        ' Orientation of Mechanical vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
     Private aSecondArea As Single               ' Mechanical vent opening size in second compartment
-    Private aSecondCenterHeight As Single       ' Height of center of mechanical flow vent opening
-    Private aSecondOrientation As Integer       ' Orientation of mechanical flow vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
-    Private aFlowRate As Single                 ' Fan flow rate for mechanical flow vents
+    Private aSecondCenterHeight As Single       ' Height of center of Mechanical vent opening
+    Private aSecondOrientation As Integer       ' Orientation of Mechanical vent opening, 1 for vertical (on wall) and 2 for horizontal (ceiling or floor)
+    Private aFlowRate As Single                 ' Fan flow rate for Mechanical vents
     Private aBeginFlowDropoff As Single         ' Beginning backward pressure for flow dropoff in mechanical vents
     Private aZeroFlow As Single                 ' Backward pressure for zero flow in mechanical vents
     Private aFilterEfficiency As Single         ' EVENT Fraction of smoke and user-specified species that gets through filter
@@ -506,7 +506,7 @@ Public Class Vent
         aInitialOpening = 1.0
     End Sub
     Public Sub GetVent(ByRef FirstCompartment As Integer, ByRef SecondCompartment As Integer, ByRef Width As Single, ByRef Soffit As Single, ByRef Sill As Single)
-        ' Horizontal flow vent connection
+        ' Wall vent connection
         FirstCompartment = Me.FirstCompartment
         SecondCompartment = Me.SecondCompartment
         Width = Me.Width
@@ -514,7 +514,7 @@ Public Class Vent
         Sill = Me.Sill
     End Sub
     Public Sub SetVent(ByVal FirstCompartment As Integer, ByVal SecondCompartment As Integer, ByVal Width As Single, ByVal Soffit As Single, ByVal Sill As Single)
-        ' Horizontal flow vent connection
+        ' Wall vent connection
         aVentType = TypeHVent
         aFirstCompartment = FirstCompartment
         aOffset = 0.0
@@ -525,14 +525,14 @@ Public Class Vent
         aFace = 1
     End Sub
     Public Sub GetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
-        ' Vertical flow vent connection
+        ' Ceiling/Floor vent connection
         TopCompartment = FirstCompartment
         BottomCompartment = SecondCompartment
         Area = Me.Area
         Shape = Me.Shape
     End Sub
     Public Sub SetVent(ByVal TopCompartment As Integer, ByVal BottomCompartment As Integer, ByVal Area As Single, ByVal Shape As Integer)
-        ' Vertical flow vent connection
+        ' Ceiling/Floor vent connection
         VentType = TypeVVent
         FirstCompartment = TopCompartment
         SecondCompartment = BottomCompartment
@@ -540,7 +540,7 @@ Public Class Vent
         Me.Shape = Shape
     End Sub
     Public Sub GetVent(ByRef FromCompartment As Integer, ByRef FromArea As Single, ByRef FromCenterHeight As Single, ByRef FromOrientation As String, ByRef ToCompartment As Integer, ByRef ToArea As Single, ByRef ToCenterHeight As Single, ByRef ToOrientation As String, ByRef FlowRate As Single, ByRef BeginFlowDropoff As Single, ByRef ZeroFlow As Single)
-        ' Mechanical flow vent connection
+        ' Mechanical vent connection
         aVentType = TypeMVent
         FromCompartment = FirstCompartment
         FromArea = FirstArea
@@ -563,7 +563,7 @@ Public Class Vent
         ZeroFlow = Me.ZeroFlow
     End Sub
     Public Sub SetVent(ByVal FromCompartment As Integer, ByVal FromArea As Single, ByVal FromCenterHeight As Single, ByVal FromOrientation As String, ByVal ToCompartment As Integer, ByVal ToArea As Single, ByVal ToCenterHeight As Single, ByVal ToOrientation As String, ByVal FlowRate As Single, ByVal BeginFlowDropoff As Single, ByVal ZeroFlow As Single)
-        ' Mechanical flow vent connection
+        ' Mechanical vent connection
         aVentType = TypeMVent
         aFirstCompartment = FromCompartment
         aFirstArea = myUnits.Convert(UnitsNum.Area).ToSI(FromArea)
@@ -772,108 +772,114 @@ Public Class Vent
             Select Case aVentType
                 Case TypeHVent
                     If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
-                        myErrors.Add("Horizontal flow vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Wall vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstCompartment = aSecondCompartment Then
-                        myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Wall vent " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    ElseIf aFirstCompartment > aSecondCompartment And aFirstCompartment >= 0 And aSecondCompartment >= 0 Then
+                        myErrors.Add("Wall vent " + VentNumber.ToString + ". Compartment order is incorrect. Wall vents must always be connected with lower numbered vent first.", ErrorMessages.TypeError)
+                        HasErrors += 1
+                    ElseIf aFirstCompartment = -1 And aSecondCompartment >= 0 Then
+                        myErrors.Add("Wall vent " + VentNumber.ToString + ". Compartment order is incorrect. Outside must always be second compartment.", ErrorMessages.TypeError)
                         HasErrors += 1
                     End If
                     If aFirstCompartment >= 0 And aFirstCompartment < myCompartments.Count Then
                         Dim aComp1 As New Compartment
                         aComp1 = myCompartments(aFirstCompartment)
                         If aSill < 0.0 Or aSill > aComp1.RoomHeight Then
-                            myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Sill is below floor level or above ceiling level.", ErrorMessages.TypeFatal)
+                            myErrors.Add("Wall vent " + VentNumber.ToString + ". Sill is below floor level or above ceiling level.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If
                         If aSoffit < 0.0 Or aSoffit <= aSill Or aSoffit > aComp1.RoomHeight Then
-                            myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Soffit is below sill level or above ceiling level of first compartment.", ErrorMessages.TypeFatal)
+                            myErrors.Add("Wall vent " + VentNumber.ToString + ". Soffit is below sill level or above ceiling level of first compartment.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If
                         If aWidth <= 0.0 Or aWidth > Math.Max(aComp1.RoomWidth, aComp1.RoomDepth) Then
-                            myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Width is less than 0 or greater than compartment dimensions.", ErrorMessages.TypeFatal)
+                            myErrors.Add("Wall vent " + VentNumber.ToString + ". Width is less than 0 or greater than compartment dimensions.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If
                         If aSecondCompartment >= 0 And aSecondCompartment < myCompartments.Count Then
                             Dim aComp2 As New Compartment
                             aComp2 = myCompartments(aSecondCompartment)
                             If aSill + aComp1.RoomOriginZ < aComp2.RoomOriginZ Or aSoffit + aComp1.RoomOriginZ > aComp2.RoomOriginZ + aComp2.RoomHeight Then
-                                myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Soffit is below sill level or above ceiling level of second compartment.", ErrorMessages.TypeFatal)
+                                myErrors.Add("Wall vent " + VentNumber.ToString + ". Soffit is below sill level or above ceiling level of second compartment.", ErrorMessages.TypeFatal)
                                 HasErrors += 1
                             End If
                         End If
                     End If
                     If aInitialOpening < 0.0 Or aInitialOpening > 1.0 Then
-                        myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Initial opening fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Wall vent " + VentNumber.ToString + ". Initial opening fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                     If aFinalOpening < 0.0 Or aFinalOpening > 1.0 Then
-                        myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Final opening fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Wall vent " + VentNumber.ToString + ". Final opening fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                     If aFinalOpeningTime < 0.0 Or aFinalOpeningTime > myEnvironment.SimulationTime Then
-                        myErrors.Add("Horizontal flow vent " + VentNumber.ToString + ". Final opening time is less than 0 or greater than simulation time.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Wall vent " + VentNumber.ToString + ". Final opening time is less than 0 or greater than simulation time.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                 Case TypeVVent
                     If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
-                        myErrors.Add("Vertical flow vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Ceiling/Floor vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstCompartment = aSecondCompartment Then
-                        myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Ceiling/Floor vent " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                     If aFirstCompartment >= 0 And aFirstCompartment < myCompartments.Count Then
                         Dim aComp1 As New Compartment
                         aComp1 = myCompartments(aFirstCompartment)
                         If aOffsetX < 0 Or aOffsetX > aComp1.RoomWidth Then
-                            myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Width (X) offset is less than 0 or greater than compartment width.", ErrorMessages.TypeWarning)
+                            myErrors.Add("Ceiling/Floor vent " + VentNumber.ToString + ". Width (X) offset is less than 0 or greater than compartment width.", ErrorMessages.TypeWarning)
                             HasErrors += 1
                         End If
                         If aOffsetY < 0 Or aOffsetY > aComp1.RoomDepth Then
-                            myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Depth (Y) offset is less than 0 or greater than compartment depth.", ErrorMessages.TypeWarning)
+                            myErrors.Add("Ceiling/Floor vent " + VentNumber.ToString + ". Depth (Y) offset is less than 0 or greater than compartment depth.", ErrorMessages.TypeWarning)
                             HasErrors += 1
                         End If
                         If aArea <= 0 Or aArea > aComp1.RoomWidth * aComp1.RoomDepth Then
-                            myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Cross-sectional area is less than 0 or greater than compartment floor area.", ErrorMessages.TypeFatal)
+                            myErrors.Add("Ceiling/Floor vent " + VentNumber.ToString + ". Cross-sectional area is less than 0 or greater than compartment floor area.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If
                         If aSecondCompartment >= 0 And aSecondCompartment < myCompartments.Count Then
                             Dim aComp2 As New Compartment
                             aComp2 = myCompartments(aSecondCompartment)
                             If Math.Abs(aComp1.RoomOriginZ - (aComp2.RoomOriginZ + aComp2.RoomHeight)) > 0.1 Then
-                                myErrors.Add("Vertical flow vent " + VentNumber.ToString + ". Floor of the top compartment is above ceiling of the bottom compartment.", ErrorMessages.TypeFatal)
+                                myErrors.Add("Ceiling/Floor vent " + VentNumber.ToString + ". Floor of the top compartment is above ceiling of the bottom compartment.", ErrorMessages.TypeFatal)
                                 HasErrors += 1
                             End If
                         End If
                     End If
                 Case TypeMVent
                     If aFirstCompartment < -1 Or aSecondCompartment < -1 Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + " is not connected between two existing compartments. Select compartment connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstCompartment = aSecondCompartment Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Compartment is connected to itself. Select two different compartment as connections.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                     If aBeginFlowDropoff < 0.0 Or aBeginFlowDropoff >= MaxPressure Or aZeroFlow < 0 Or aZeroFlow >= MaxPressure Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Fan pressure constants are less than 0 Pa or greater than " + MaxPressure.ToString + " Pa.", ErrorMessages.TypeWarning)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Fan pressure constants are less than 0 Pa or greater than " + MaxPressure.ToString + " Pa.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aBeginFlowDropoff >= aZeroFlow Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Fan pressure constant where flow drop off begins is greater than fan pressure constant at zero flow.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Fan pressure constant where flow drop off begins is greater than fan pressure constant at zero flow.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                     If aFirstArea <= 0.0 Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is less than 0 m� in size in from compartment.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is less than 0 m� in size in from compartment.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aFirstArea > 1.0 Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m� in size in from compartment.", ErrorMessages.TypeWarning)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m� in size in from compartment.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aSecondArea <= 0.0 Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is less than 0 m� in size in to compartment.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is less than 0 m� in size in to compartment.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     ElseIf aSecondArea > 1.0 Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m� in size in to compartment.", ErrorMessages.TypeWarning)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is greater than 1 m� in size in to compartment.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
                     If aFirstCompartment >= 0 And aFirstCompartment < myCompartments.Count Then
@@ -885,17 +891,17 @@ Public Class Vent
                             HasErrors += 1
                         End If
                         If aOffsetY < 0 Or aOffsetY > aComp1.RoomDepth Then
-                            myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Depth (Y) offset is less than 0 or greater than compartment depth.", ErrorMessages.TypeWarning)
+                            myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Depth (Y) offset is less than 0 or greater than compartment depth.", ErrorMessages.TypeWarning)
                             HasErrors += 1
                         End If
                         If aFirstOrientation = 1 Then
                             If aFirstCenterHeight - Math.Sqrt(aFirstArea) / 2 < 0.0 Or Math.Sqrt(aFirstArea) / 2 + aFirstCenterHeight > aComp1.RoomHeight Then
-                                myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser area is below floor level or above ceiling level in from compartment.", ErrorMessages.TypeWarning)
+                                myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser area is below floor level or above ceiling level in from compartment.", ErrorMessages.TypeWarning)
                                 HasErrors += 1
                             End If
                         End If
                         If aFlowRate > 10 * aComp1.RoomWidth * aComp1.RoomDepth * aComp1.RoomHeight / 3600.0 Then
-                            myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour out of compartment.", ErrorMessages.TypeWarning)
+                            myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour out of compartment.", ErrorMessages.TypeWarning)
                             HasErrors += 1
                         End If
                         myUnits.SI = False
@@ -906,22 +912,22 @@ Public Class Vent
                         aComp2 = myCompartments(aSecondCompartment)
                         If aSecondOrientation = 1 Then
                             If aSecondCenterHeight - Math.Sqrt(aSecondArea) / 2 < 0.0 Or Math.Sqrt(aSecondArea) / 2 + aSecondCenterHeight > aComp2.RoomHeight Then
-                                myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Vent diffuser is below floor level or above ceiling level in to compartment.", ErrorMessages.TypeWarning)
+                                myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Vent diffuser is below floor level or above ceiling level in to compartment.", ErrorMessages.TypeWarning)
                                 HasErrors += 1
                             End If
                         End If
                         If aFlowRate > 10 * aComp2.RoomWidth * aComp2.RoomDepth * aComp2.RoomHeight / 3600.0 Then
-                            myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour into compartment.", ErrorMessages.TypeWarning)
+                            myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Flowrate is more than 10 air changes per hour into compartment.", ErrorMessages.TypeWarning)
                             HasErrors += 1
                         End If
                         myUnits.SI = False
                     End If
                     If aFilterEfficiency < 0.0 Or aFilterEfficiency > 1.0 Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Filter transmission fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Filter transmission fraction is less than 0 or greater than 1.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                     If aFilterTime < 0.0 Or aFilterTime > myEnvironment.SimulationTime Then
-                        myErrors.Add("Mechanical flow vent " + VentNumber.ToString + ". Filter operation time is less than 0 or greater than simulation time.", ErrorMessages.TypeFatal)
+                        myErrors.Add("Mechanical vent " + VentNumber.ToString + ". Filter operation time is less than 0 or greater than simulation time.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                 Case TypeHHeat

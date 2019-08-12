@@ -395,10 +395,10 @@ module spreadsheet_routines
 
     real(eb) :: outarray(maxhead), ssvalue
     integer :: position, i, lsp, layer
-    logical, dimension(ns), parameter :: tooutput(ns) = &
+    logical, dimension(ns), parameter :: tooutput = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
           .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
-    logical, dimension(ns), parameter :: molfrac(ns) = &
+    logical, dimension(ns), parameter :: molfrac = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false., &
           .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
     logical :: firstc = .true.

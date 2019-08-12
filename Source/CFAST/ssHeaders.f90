@@ -118,9 +118,12 @@ module spreadsheet_header_routines
     ! local variables
     integer, parameter :: maxhead = 1+2*ns*mxrooms
     character(45) :: headertext(4,maxhead), cRoom, Labels(2*ns+1), LabelsShort(2*ns+1), LabelUnits(2*ns+1)
-    logical tooutput(ns), molfrac(ns)
-    data tooutput /11*.true.,.false.,11*.true./
-    data molfrac /8*.true.,15*.false./
+    logical, dimension(ns), parameter :: tooutput = &
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true.,.true., &
+        .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
+    logical, dimension(ns), parameter :: molfrac = &
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false., &
+          .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
@@ -164,7 +167,7 @@ module spreadsheet_header_routines
                         headertext(2,position) = Labels((j-1)*ns+lsp+1)
                         headertext(3,position) = roomptr%name
                         headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
-                        if (molfrac(lsp)) headertext(4,position) = 'mol frac'
+                        if (validation_flag.and.molfrac(lsp)) headertext(4,position) = 'mol frac'
                         if (validation_flag.and.lsp==soot) headertext(4,position) = 'mg/m^3'
                         if (validation_flag.and.lsp==soot_flaming) headertext(4,position) = 'mg/m^3'
                         if (validation_flag.and.lsp==soot_smolder) headertext(4,position) = 'mg/m^3'

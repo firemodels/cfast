@@ -5,6 +5,10 @@ Public Class Vent
     Friend Const TypeMVent As Integer = 2
     Friend Const TypeVHeat As Integer = 3
     Friend Const TypeHHeat As Integer = 4
+    Friend Const ventFront As Integer = 1
+    Friend Const ventRight As Integer = 2
+    Friend Const ventBack As Integer = 3
+    Friend Const ventLeft As Integer = 4
     Friend Const MaximumHVents As Integer = 10 * Compartment.MaximumCompartments
     Friend Const MaximumVVents As Integer = 10 * Compartment.MaximumCompartments
     Friend Const MaximumMVents As Integer = 10 * Compartment.MaximumCompartments

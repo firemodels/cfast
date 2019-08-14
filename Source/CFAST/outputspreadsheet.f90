@@ -397,7 +397,7 @@ module spreadsheet_routines
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
-          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
+          .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
     logical, dimension(ns), parameter :: molfrac = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false., &
           .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
@@ -483,10 +483,12 @@ module spreadsheet_routines
             do lsp = 1, ns
                 if (layer==u.or..not.roomptr%shaft) then
                     if (tooutput(lsp)) then
-                        ssvalue = roomptr%species_mass(layer,lsp)
-                        call ssaddtolist (position,ssvalue,outarray)
-                        ! we can only output to the maximum array size; this is not deemed to be a fatal error!
-                        if (position>=maxhead) go to 90
+                        if (lsp<13 .or. (lsp>=13.and.validation_flag)) then
+                            ssvalue = roomptr%species_mass(layer,lsp)
+                            call ssaddtolist (position,ssvalue,outarray)
+                            ! we can only output to the maximum array size; this is not deemed to be a fatal error!
+                            if (position>=maxhead) go to 90
+                        end if
                     end if
                 end if
             end do

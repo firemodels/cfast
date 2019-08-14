@@ -119,8 +119,8 @@ module spreadsheet_header_routines
     integer, parameter :: maxhead = 1+2*ns*mxrooms
     character(45) :: headertext(4,maxhead), cRoom, Labels(2*ns+1), LabelsShort(2*ns+1), LabelUnits(2*ns+1)
     logical, dimension(ns), parameter :: tooutput = &
-        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true.,.true., &
-        .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
+          .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
     logical, dimension(ns), parameter :: molfrac = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.false.,.false.,.false.,.false., &
           .false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false.,.false./)
@@ -194,8 +194,9 @@ module spreadsheet_header_routines
     ! local variables
     integer, parameter :: maxhead = 1+2*ns*mxrooms
     character(45) :: headertext(4,maxhead), cRoom, Labels(2*ns+1), LabelsShort(2*ns+1), LabelUnits(2*ns+1)
-    logical tooutput(ns)
-    data tooutput /11*.true.,.false.,11*.true./
+    logical, dimension(ns), parameter :: tooutput = &
+        (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
+          .true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true./)
     integer position, i, j, lsp
     type(room_type), pointer :: roomptr
 
@@ -234,12 +235,14 @@ module spreadsheet_header_routines
             if (j==u.or..not.roomptr%shaft) then
                 do lsp = 1, ns
                     if (tooutput(lsp)) then
-                        position = position + 1
-                        call toIntString(i,cRoom)
-                        headertext(1,position) = trim(LabelsShort((j-1)*ns+lsp+1)) // trim(cRoom)
-                        headertext(2,position) = Labels((j-1)*ns+lsp+1)
-                        headertext(3,position) = roomptr%name
-                        headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
+                        if (lsp<13 .or. (lsp>=13.and.validation_flag)) then
+                            position = position + 1
+                            call toIntString(i,cRoom)
+                            headertext(1,position) = trim(LabelsShort((j-1)*ns+lsp+1)) // trim(cRoom)
+                            headertext(2,position) = Labels((j-1)*ns+lsp+1)
+                            headertext(3,position) = roomptr%name
+                            headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
+                        end if
                     end if
                 end do
             end if

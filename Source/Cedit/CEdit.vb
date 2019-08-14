@@ -5520,30 +5520,36 @@ Public Class CeditMain
             If sender Is HVentOffset Then aVent.Offset = Val(HVentOffset.Text)
             If sender Is HVentSill Then aVent.Sill = Val(HVentSill.Text)
             If sender Is HVentSoffit Then aVent.Soffit = Val(HVentSoffit.Text)
-            If sender Is HVentWidth Then aVent.Width = Val(HVentWidth.Text)
+            If sender Is HVentWidth Then
+                aVent.Width = Val(HVentWidth.Text)
+                aVent.Offset = -1
+            End If
             If sender Is HVentFace Then aVent.Face = HVentFace.SelectedIndex + 1
-            If sender Is HVentComp1 Then aVent.FirstCompartment = HVentComp1.SelectedIndex - 1
-            If sender Is HVentComp2 Then aVent.SecondCompartment = HVentComp2.SelectedIndex - 1
-            ' CFast expects the from compartment to be the lower number of the pair and the outside to be the to compartment
-            If sender Is HVentOpenCriterion Then
-                If aVent.OpenType <> HVentOpenCriterion.SelectedIndex Then
-                    aVent.OpenType = HVentOpenCriterion.SelectedIndex
-                    If aVent.OpenType = Vent.OpenbyTemperature Then
-                        aVent.OpenValue = 0.0
-                        aVent.OpenValue = myEnvironment.IntAmbTemperature
-                    ElseIf aVent.OpenType = Vent.OpenbyFlux Then
-                        aVent.OpenValue = 0.0
+                If sender Is HVentComp1 Then
+                    aVent.FirstCompartment = HVentComp1.SelectedIndex - 1
+                    aVent.Offset = -1
+                End If
+                If sender Is HVentComp2 Then aVent.SecondCompartment = HVentComp2.SelectedIndex - 1
+                ' CFast expects the from compartment to be the lower number of the pair and the outside to be the to compartment
+                If sender Is HVentOpenCriterion Then
+                    If aVent.OpenType <> HVentOpenCriterion.SelectedIndex Then
+                        aVent.OpenType = HVentOpenCriterion.SelectedIndex
+                        If aVent.OpenType = Vent.OpenbyTemperature Then
+                            aVent.OpenValue = 0.0
+                            aVent.OpenValue = myEnvironment.IntAmbTemperature
+                        ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                            aVent.OpenValue = 0.0
+                        End If
                     End If
                 End If
-            End If
-            If sender Is HVentOpenValue Then aVent.OpenValue = Val(HVentOpenValue.Text)
-            If sender Is HVentTarget Then aVent.Target = myTargets.Item(HVentTarget.SelectedIndex).Name
-            If sender Is HVentInitialFraction Then aVent.InitialOpening = Val(HVentInitialFraction.Text)
-            If sender Is HVentFinalFraction Then aVent.FinalOpening = Val(HVentFinalFraction.Text)
+                If sender Is HVentOpenValue Then aVent.OpenValue = Val(HVentOpenValue.Text)
+                If sender Is HVentTarget Then aVent.Target = myTargets.Item(HVentTarget.SelectedIndex).Name
+                If sender Is HVentInitialFraction Then aVent.InitialOpening = Val(HVentInitialFraction.Text)
+                If sender Is HVentFinalFraction Then aVent.FinalOpening = Val(HVentFinalFraction.Text)
 
-            myHVents(CurrentHVent) = aVent
-            UpdateGUI.HVents(CurrentHVent)
-        End If
+                myHVents(CurrentHVent) = aVent
+                UpdateGUI.HVents(CurrentHVent)
+            End If
     End Sub
 
 #End Region

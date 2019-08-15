@@ -184,6 +184,7 @@ Public Class Vent
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Length).ToSI(Value) <> aWidth Then
                 aWidth = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+                Offset = -1
                 aChanged = True
             End If
         End Set

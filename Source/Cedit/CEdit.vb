@@ -5520,16 +5520,10 @@ Public Class CeditMain
             If sender Is HVentOffset Then aVent.Offset = Val(HVentOffset.Text)
             If sender Is HVentSill Then aVent.Sill = Val(HVentSill.Text)
             If sender Is HVentSoffit Then aVent.Soffit = Val(HVentSoffit.Text)
-            If sender Is HVentWidth Then
-                aVent.Width = Val(HVentWidth.Text)
-                aVent.Offset = -1
-            End If
+            If sender Is HVentWidth Then aVent.Width = Val(HVentWidth.Text)
             If sender Is HVentFace Then aVent.Face = HVentFace.SelectedIndex + 1
-                If sender Is HVentComp1 Then
-                    aVent.FirstCompartment = HVentComp1.SelectedIndex - 1
-                    aVent.Offset = -1
-                End If
-                If sender Is HVentComp2 Then aVent.SecondCompartment = HVentComp2.SelectedIndex - 1
+            If sender Is HVentComp1 Then aVent.FirstCompartment = HVentComp1.SelectedIndex - 1
+            If sender Is HVentComp2 Then aVent.SecondCompartment = HVentComp2.SelectedIndex - 1
                 ' CFast expects the from compartment to be the lower number of the pair and the outside to be the to compartment
                 If sender Is HVentOpenCriterion Then
                     If aVent.OpenType <> HVentOpenCriterion.SelectedIndex Then

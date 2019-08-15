@@ -21,6 +21,8 @@ module spreadsheet_routines
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
+    
+    integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 
     private
 
@@ -269,8 +271,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, value, xact
-    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
-    integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/) 
+    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin 
     integer :: position, i, iw, itarg, iroom
 
     type(target_type), pointer :: targptr
@@ -546,6 +547,9 @@ module spreadsheet_routines
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%rho(l),outarray)
         call ssaddtolist(position,roomptr%species_output(u,soot),outarray)
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,soot),outarray)
+        do j = 1, 4
+            call ssaddtolist(position,roomptr%t_surfaces(1,iwptr(j))-kelvin_c_offset,outarray)
+        end do
     end do
 
     ! fires

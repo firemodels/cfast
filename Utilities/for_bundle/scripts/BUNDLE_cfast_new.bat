@@ -42,10 +42,12 @@ echo ***Creating installer
 echo.
 
 cd %DISTDIR%\..
-echo Setup is about to install CFAST 7  > %bundleinfo%\message.txt
-echo Press Setup to begin installation. > %bundleinfo%\main.txt
+echo Unpacking CFAST 7 installation files > %bundleinfo%\unpack.txt
+echo Setup is about to install CFAST 7    > %bundleinfo%\message.txt
+echo Press Setup to begin installation.   > %bundleinfo%\main.txt
 if exist %installerbase%.exe erase %installerbase%.exe
-wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\firemodels\%distname%" -c wrapup_cfast_install.bat
+::wzipse32 %installerbase%.zip -runasadmin -a %bundleinfo%\about.txt -st"cfast 7 Setup" -d "c:\Program Files\firemodels\%distname%" -c wrapup_cfast_install.bat
+wzipse32 %installerbase%.zip -runasadmin -setup -auto -i %bundleinfo%\icon.ico -t %bundleinfo%\unpack.txt -a %bundleinfo%\about.txt -st"CFAST %cfast_version% Setup" -o -c cmd /k setup.bat
 
 echo copying %installerbase%.exe to %cfast_root%\Utilities\uploads\cftest.exe"
 copy %installerbase%.exe %cfast_root%\Utilities\uploads\cftest.exe"

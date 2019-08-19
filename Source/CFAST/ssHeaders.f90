@@ -668,7 +668,7 @@ module spreadsheet_header_routines
     logical, intent(in) :: lmode
 
     integer, parameter :: maxhead = 1+8*mxrooms+4*mxfires+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
-    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(35), LabelUnits(35)
+    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, cTarg, LabelsShort(36), LabelUnits(36)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
@@ -678,13 +678,13 @@ module spreadsheet_header_routines
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
         'HVENT_','HSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_', &
         'VVENT_','VSLAB_','VSLABT_','VSLABF_','VSLABYB_','VSLABYT_', &
-        'MVENT_','MSLAB_','MSLABT_','MSLABF_','MSLABYB_','MSLABYT_'  /
+        'MVENT_','MSLAB_','MSLABT_','MSLABF_','MSLABYB_','MSLABYT_', 'TARGET_'  /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', 'kg/m^3', 'kg/m^3', '1/m', '1/m', &
         'C', 'C', 'C', 'C', &
         'kW', 'm', 'm', 'm^2', &
         'm^2', ' ', 'K', 'kg/s', 'm', 'm', &
         'm^2', ' ', 'K', 'kg/s', 'm', 'm', &
-        'm^2', ' ', 'K', 'kg/s', 'm', 'm' /
+        'm^2', ' ', 'K', 'kg/s', 'm', 'm', 'C' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelUnits(1)
@@ -814,6 +814,15 @@ module spreadsheet_header_routines
             headertext(2,position) = trim(LabelsShort(35))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
         end do
+    end do
+    
+    ! target information
+    do i = 1, n_targets
+        call toIntString(i,cTarg)
+        position = position + 1
+        headertext(1,position) = LabelUnits(36) ! target temperature
+        headertext(2,position) = trim(LabelsShort(36))//trim(cTarg)
+        call smvDeviceTag(headertext(2,position))
     end do
 
 

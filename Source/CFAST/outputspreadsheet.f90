@@ -521,6 +521,7 @@ module spreadsheet_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
+    type(target_type), pointer :: targptr
 
     data firstc/.true./
     save firstc
@@ -628,6 +629,14 @@ module spreadsheet_routines
                 call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
                 call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
             end do
+        end do
+    end if
+    
+    ! target temperature
+    if (n_targets/=0) then
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            call ssaddtolist(position,targptr%temperature(1),outarray)
         end do
     end if
     call ssprintresults (iofilsmvzone, position, outarray)

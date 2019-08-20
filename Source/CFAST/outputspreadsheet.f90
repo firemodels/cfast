@@ -636,7 +636,7 @@ module spreadsheet_routines
     if (n_targets/=0) then
         do i = 1, n_targets
             targptr => targetinfo(i)
-            call ssaddtolist(position,targptr%temperature(1),outarray)
+            call ssaddtolist(position,targptr%tinternal-kelvin_c_offset,outarray)
         end do
     end if
     call ssprintresults (iofilsmvzone, position, outarray)

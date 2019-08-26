@@ -1242,6 +1242,7 @@ module fire_routines
     tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
+    ! here we just check for ignition of a fire
     do i = 1, n_fires
         fireptr => fireinfo(i)
         if (.not.fireptr%ignited) then
@@ -1272,6 +1273,7 @@ module fire_routines
         end if
     end do
 
+    ! here we process the ignition(s) and set properties if ignited
     if (iflag/=check_state) then
         do i = 1, n_fires
             fireptr => fireinfo(i)

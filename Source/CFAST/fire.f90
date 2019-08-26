@@ -1276,6 +1276,7 @@ module fire_routines
         do i = 1, n_fires
             fireptr => fireinfo(i)
             if (.not.fireptr%ignited) then
+                ignflg = fireptr%ignition_type
                 itarg = fireptr%ignition_target
                 if (ignflg/=trigger_by_time) then
                     targptr => targetinfo(itarg)

@@ -1870,9 +1870,14 @@ continue
                             ventptr%opening_final_time = finaltime
                             ventptr%opening_final_fraction = finalfraction
                         else
-                            if (trim(criterion)=='TEMPERAUTRE') ventptr%opening_type = trigger_by_temp
-                            if (trim(criterion)=='FLUX') ventptr%opening_type = trigger_by_flux
-                            ventptr%opening_criterion = setpoint
+                            if (trim(criterion)=='TEMPERATURE') then
+                            ventptr%opening_type = trigger_by_temp
+                            ventptr%opening_criterion = setpoint + kelvin_c_offset
+                        end if
+                        if (criterion=='FLUX') then
+                            ventptr%opening_type = trigger_by_flux
+                            ventptr%opening_criterion = setpoint * 1000._eb
+                        end if
                             ventptr%opening_target = 0
                             do i = 1,n_targets
                                 targptr => targetinfo(i)
@@ -2000,9 +2005,14 @@ continue
                             ventptr%opening_final_time = finaltime
                             ventptr%opening_final_fraction = finalfraction
                         else
-                            if (trim(criterion)=='TEMPERATURE') ventptr%opening_type = trigger_by_temp
-                            if (trim(criterion)=='FLUX') ventptr%opening_type = trigger_by_flux
-                            ventptr%opening_criterion = setpoint
+                            if (trim(criterion)=='TEMPERATURE') then
+                            ventptr%opening_type = trigger_by_temp
+                            ventptr%opening_criterion = setpoint + kelvin_c_offset
+                        end if
+                        if (criterion=='FLUX') then
+                            ventptr%opening_type = trigger_by_flux
+                            ventptr%opening_criterion = setpoint * 1000._eb
+                        end if
                             ventptr%opening_target = 0
                             do i = 1,n_targets
                                 targptr => targetinfo(i)

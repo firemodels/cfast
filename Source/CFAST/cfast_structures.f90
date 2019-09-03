@@ -346,5 +346,22 @@ module cfast_types
         real(eb) :: value       ! for isosurface, temperature for surface (K)
         integer :: roomnum      ! compartment
     end type visual_type
+    
+    type montecarlo_type
+        character(64) :: id                     ! id just in case
+        character(24) :: file_type              ! 'wall' for '_w', 'normal' for '_n', 'flow' for '_f', 'mass' for '_m',
+                                                !'species' for '_s'
+        character(24) :: type_of_analysis       ! 'trigger_greater', 'trigger_lesser', 'min', 'max', 'integrate'
+        character(64) :: column_title           ! Name for spreadsheet column
+        character(64) :: prime_instrument       ! Name of instrument, third row in spreadsheet
+        character(64) :: prime_measurement      ! Name of measurement, second row in spreadsheet
+        character(64) :: second_instrument      ! Name of second instrument, needed for 'trigger_...' and 'integrate',
+                                                ! ignored for 'max' and 'min'
+        character(64) :: second_measurement     ! Name of measure for second instrument, needed for 'trigger_...' 
+                                                ! and 'integrate', ignored for 'max' and 'min'
+        integer :: relative_column              ! Order of columns
+        real(eb) :: criteria                    ! Value used in 'trigger_...' analysis
+        logical :: found                        ! The input channels are found in the csv files
+    end type montecarlo_type
 
    end module cfast_types

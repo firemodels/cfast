@@ -13,12 +13,12 @@
     use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, thermal_type, vent_type, visual_type
 
     use cenviro, only: rgas
-    use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall
+    use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall, mx_monte_carlo
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
-        smvcsv, smvsinfo, ssconnections, ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, &
+        smvcsv, smvsinfo, ssconnections, ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, ssmontecarlo, &
         kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use target_data, only: n_detectors, detectorinfo
@@ -26,6 +26,7 @@
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections
+    use Monte_Carlo_data, only: n_mcarlo, mcarloinfo
 
     implicit none
 
@@ -473,6 +474,7 @@
     statusfile = datapath(1:lp) // project(1:ld) // '.status'
     slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
     kernelisrunning = datapath(1:lp) // project(1:ld) // '.kernelisrunning'
+    ssmontecarlo = datapath(1:lp) // project(1:ld) // '_mc.csv'
 
     lp = len_trim (exepath)
     solverini = datapath(1:lp) // 'solver.ini'

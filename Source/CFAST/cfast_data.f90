@@ -111,6 +111,7 @@ module fire_data
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
     logical :: diagflag=.false.
+    logical :: montflag=.false.
 
     end module namelist_data
     
@@ -251,7 +252,7 @@ module setup_data
     character(128) :: title
 
     logical :: nokbd=.false., initializeonly=.false.
-    logical :: debugging=.false., validation_flag=.false., netheatflux=.false.
+    logical :: debugging=.false., validation_flag=.false., netheatflux=.false., monte_carlo_flag = .false.
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile
@@ -259,12 +260,12 @@ module setup_data
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd
+        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, iofilssmc
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, ssconnections, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
-        queryfile, statusfile, kernelisrunning
+        queryfile, statusfile, kernelisrunning, ssmontecarlo
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100
@@ -430,4 +431,29 @@ module vent_data
     integer :: n_mvents                                                 ! number of mechanical flow vents
     type(vent_type), allocatable, dimension(:), target :: mventinfo 
 
-end module vent_data
+    end module vent_data
+
+! -------------------------Monte_Carlo_data---------------------------------------
+    
+module Monte_Carlo_data
+    
+    use precision_parameters
+    
+    use cfast_types, only: montecarlo_type
+    
+    use cparams, only: mx_monte_carlo, mxitems
+    
+    implicit none
+    save
+    
+    integer, parameter :: num_csvfiles = 5 
+    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvmass = 4, iocsvspecies = 5
+    
+    character(len = 7), parameter, dimension(num_csvfiles) :: csvnames = &
+        (/'WALL   ', 'NORMAL ', 'FLOW   ', 'MASS   ', 'SPECIES'/)
+    integer :: n_mcarlo
+    integer, dimension(num_csvfiles) :: iocsv
+    type (montecarlo_type), allocatable, dimension(:), target :: mcarloinfo
+    
+    end module Monte_Carlo_data
+    

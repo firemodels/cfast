@@ -8,23 +8,26 @@ module spreadsheet_routines
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist
     
-    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type
+    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, montecarlo_type
 
     use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, &
-        ns, soot, soot_flaming, soot_smolder, smoked
+        ns, soot, soot_flaming, soot_smolder, smoked, mx_monte_carlo
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo
-    use setup_data, only: validation_flag, iofilsmvzone, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd
+    use setup_data, only: validation_flag, iofilsmvzone, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd, &
+        iofilssmc, iofill, ss_out_interval, project, extension
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
+    use Monte_Carlo_data, only: n_mcarlo, mcarloinfo, csvnames, num_csvfiles, iocsv
+    use spreadsheet_input_routines, only: readcsvformat
 
     implicit none
 
     private
 
-    public output_spreadsheet, output_spreadsheet_smokeview
+    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_montecarlo
 
     contains
     
@@ -668,5 +671,350 @@ module spreadsheet_routines
     
     return
     end subroutine output_spreadsheet_diag
+    
+    !--------------------------output_spreadsheet_montecarlo-----------------------------------------------------------
+    
+    subroutine output_spreadsheet_montecarlo 
+    
+    integer, parameter :: nr = 2, nc = mx_monte_carlo+1
+    real(eb) :: mcrarray(nr, nc)
+    character(128) :: mccarray(nr, nc)
+    integer :: i, icount, mxcol
+    
+    mcrarray(1, 1:nc) = 0.0
+    mcrarray(2, 2:nc) = -1001
+    mccarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
+    mcrarray(2,1) = 0.0
+    mccarray(1,1) = 'File Name'
+    mccarray(2,1) = trim(project) // trim(extension)
+    mxcol = 0 
+    if (ss_out_interval>0 .and. n_mcarlo > 0) then 
+        icount = n_mcarlo
+        do i = 1, num_csvfiles
+            if (icount>0) then
+                call do_csvfile(nr, nc, mcrarray, mccarray, i, icount, mxcol)
+            else 
+                exit
+            end if
+        end do
+        call writecsvformat(iofilssmc, mcrarray, mccarray, nr, nc, 1, 2, mxcol)
+    end if      
+    
+    return
+    end subroutine output_spreadsheet_montecarlo
+    
+    !--------------------do_csvfile---------------------------------------
+    
+    subroutine do_csvfile(nr, nc, mcrarray, mccarray, idx, icount, mxcol)
+    
+    integer, intent(in) :: nr, nc, idx
+    integer, intent(inout) :: mxcol, icount
+    real(eb), intent(inout) :: mcrarray(nr, nc)
+    character(*), intent(inout) :: mccarray(nr, nc)
+    
+    integer :: i
+    type(montecarlo_type), pointer :: monteptr
+    logical :: first, lend
+    
+    integer, parameter :: numr = 3, numc = 500
+    real(eb) :: lastval(mx_monte_carlo), lasttime(mx_monte_carlo), x(numr, numc)
+    character(128) :: header(numr, numc), c(numr, numc)
+    
+    integer :: relcol, mxhr, mxhc, ic, cols(mx_monte_carlo), icol, num_entries
+    integer :: primecol(mx_monte_carlo), seccol(mx_monte_carlo), mxr, mxc, tmpcount
+    
+    first = .true.
+    num_entries = 0
+    icol = 0
+    do i = 1, n_mcarlo
+        if (icount>0)  then
+            monteptr => mcarloinfo(i)
+            monteptr%found = .false.
+            if (monteptr%file_type==csvnames(idx)) then
+                num_entries = num_entries + 1
+                relcol = monteptr%relative_column + 1
+                icount = icount - 1
+                icol = icol + 1
+                cols(icol) = i
+                mxcol = max(mxcol, relcol)
+                mccarray(1,relcol) = monteptr%column_title
+                if (first) then
+                    rewind(iocsv(idx))
+                    call readcsvformat(iocsv(idx), x, header, numr, numc, 2, 3, mxhr, mxhc, lend, iofill)
+                    first = .false. 
+                    if (lend) then 
+                        return
+                    end if
+                end if 
+                call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%prime_instrument, monteptr%prime_measurement)
+                primecol(cols(icol)) = ic
+                if (ic>0) then
+                    monteptr%found = .true.
+                end if
+                if ((monteptr%type_of_analysis(1:8) == 'TRIGGER_' .or. &
+                        monteptr%type_of_analysis(1:9) == 'INTEGRATE').and.monteptr%found) then 
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%second_instrument, &
+                                    monteptr%second_measurement)
+                    seccol(cols(icol)) = ic
+                    if (ic<1) then
+                        monteptr%found = .false.
+                    end if
+                end if
+            end if
+        end if
+    end do
+    
+    call readcsvformat(iocsv(idx), x, c, numr, numc, 2, 2, mxr, mxc, lend, iofill) 
+    if (.not.lend) then
+        do i = 1, icol
+            monteptr => mcarloinfo(cols(i))
+            if (monteptr%found) then
+                relcol = monteptr%relative_column + 1
+                if (monteptr%type_of_analysis(1:1) == 'M') then
+                    mcrarray(2,relcol) = x(1, primecol(cols(i)))
+                else if (monteptr%type_of_analysis(1:8) == 'TRIGGER_') then
+                    mcrarray(2,relcol) = -1
+                else if (monteptr%type_of_analysis(1:9) == 'INTEGRATE') then
+                    mcrarray(2,relcol) = 0
+                    lasttime(i) = x(1, primecol(cols(i)))
+                    lastval(i) = x(1, seccol(cols(i)))
+                else
+                    mcrarray(2,relcol) = -2000001
+                end if
+            end if 
+        end do 
+    else
+        return
+    end if
+    
+    do while (.not.lend)
+        call readcsvformat(iocsv(idx), x, c, numr, numc, 1, 1, mxr, mxc, lend, iofill)
+        if (.not.lend) then
+            do i = 1, icol
+                monteptr => mcarloinfo(cols(i))
+                if (monteptr%found) then
+                    relcol = monteptr%relative_column + 1
+                    if (monteptr%type_of_analysis(1:3) == 'MAX') then
+                        mcrarray(2,relcol) = max(mcrarray(2,relcol),x(1, primecol(i)))
+                    else if (monteptr%type_of_analysis(1:3) == 'MIN') then
+                        mcrarray(2,relcol) = min(mcrarray(2,relcol),x(1, primecol(i)))
+                    else if (monteptr%type_of_analysis(1:15) == 'TRIGGER_GREATER') then
+                        if (x(1, seccol(i))>=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
+                            mcrarray(2,relcol) = x(1, primecol(i))
+                        end if
+                    else if (monteptr%type_of_analysis(1:14) == 'TRIGGER_LESSER') then
+                        if (x(1, seccol(i))<=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
+                            mcrarray(2,relcol) = x(1, primecol(i))
+                        end if
+                    else if (monteptr%type_of_analysis(1:9) == 'INTEGRATE') then
+                        mcrarray(2,relcol) = mcrarray(2,relcol) + &
+                            (x(1, seccol(cols(i)))+lastval(i))/2*(x(1, primecol(cols(i)))-lasttime(i))
+                        lasttime(i) = x(1, primecol(cols(i)))
+                        lastval(i) = x(1, seccol(cols(i)))
+                    else
+                        mcrarray(2,relcol) = -2000001
+                    end if
+                end if
+            end do
+        end if
+    end do 
+    
+    return
+    end subroutine do_csvfile
+    
+    !-----------------------do_minmax (val, analysis, nr, nc, mxr, mxc, primei, primem)---------------------------------
+    
+    subroutine do_minmax(val, analysis, nr, nc, mxr, mxc, x, c, primei, primem)
+    
+    integer, intent(in) :: nr, nc, mxr, mxc
+    character(*), intent(in) :: analysis, primei, primem, c(nr, nc)
+    real(eb), intent(in) :: x(nr,nc)
+    real(eb), intent(out) :: val
+    
+    integer, parameter :: startrow = 5
+    integer :: i, ic, itime
+    
+    call fnd_col(ic, c, nr, nc, mxr, mxc, primei, primem)
+    
+    itime = mxr
+    val = x(startrow, ic)
+    
+    do i = startrow+1, itime
+        if (trim(analysis) == 'MAX') then
+            val = max(val, x(i, ic))
+        elseif (trim(analysis) == 'MIN') then
+            val = min(val, x(i, ic))
+        endif
+    end do  
+    
+    return
+    end subroutine do_minmax
+    
+    !---------------------------do_trigger (val, analysis, nr, nc, mxr, mxc, x, c, primei, primem, seci, secm, crit)------------
+    
+    subroutine do_trigger(val, analysis, nr, nc, mxr, mxc, x, c, primei, primem, &
+                            seci, secm, crit)
+    
+    integer, intent(in) :: nr, nc, mxr, mxc
+    character(*), intent(in) :: analysis, primei, primem, c(nr, nc)
+    character(*), intent(in) :: seci, secm
+    real(eb), intent(in) :: x(nr,nc), crit
+    real(eb), intent(out) :: val
+    
+    integer :: i, ic, itime, ix
+    
+    call fnd_col(ix, c, nr, nc, mxr, mxc, primei, primem)
+    call fnd_col(ic, c, nr, nc, mxr, mxc, seci, secm)
+    
+    itime = mxr
+    val = -1
+    
+    if (ic>0.and.ix>0) then
+        do i = 5, itime
+            if (trim(analysis) == 'TRIGGER_GREATER') then
+                if (x(i, ic) >= crit) then
+                    val = x(i, ix)
+                    itime = i
+                    exit
+                end if
+            elseif (trim(analysis) == 'TRIGGER_LESSER') then
+                if (x(i, ic) <= crit) then
+                    val = x(i, ix)
+                    itime = i
+                    exit
+                end if
+            else
+                write(*,*) 'failure in DO_TRIGGER, ANALYSIS invalid ',trim(analysis)
+                write(iofill,*) 'failure in DO_TRIGGER, ANALYSIS invalid ',trim(analysis)
+                call cfastexit('SPREADSHEET_ROUTINES:DO_TRIGGER',1)
+            end if
+        end do
+    end if
+    
+    return
+    end subroutine do_trigger
+                            
+    subroutine do_integrate(val, analysis, nr, nc, mxr, mxc, x, c, primei, primem, &
+                            seci, secm)         
+    
+    integer, intent(in) :: nr, nc, mxr, mxc
+    character(*), intent(in) :: analysis, primei, primem, c(nr, nc)
+    character(*), intent(in) :: seci, secm
+    real(eb), intent(in) :: x(nr,nc)
+    real(eb), intent(out) :: val
+    
+    integer :: i, ic, itime, ix
+    
+    call fnd_col(ix, c, nr, nc, mxr, mxc,seci, secm)
+    if(trim(primei)=='Time') then
+        ic = 1
+    else
+        write(*,*)'Currently INTEGRATE only works with PRIME_INSTRUMENT = Time'
+        write(iofill,*)'Currently INTEGRATE only works with PRIME_INSTRUMENT = Time'
+        call cfastexit('SPREADSHEET_ROUTINES:DO_INTEGRATE',1)
+    end if
+    
+    itime = mxr
+    val = -1
+    
+    if (ic>0.and.ix>0) then
+        val = 0
+        do i = 6, itime
+            val = val + (x(ix,i)-x(ix,i-1))/2*(x(ic,i) - x(ic,i-1))
+        end do
+    end if
+    
+    return
+    end subroutine do_integrate    
+    
+    !-------------------get_csvfile (nr, nc, mxr, mxc, x, c, idx)
+                            
+    subroutine get_csvfile (nr, nc, mxr, mxc, x, c, idx)
+    
+    integer, intent(in) :: nr, nc, idx
+    integer, intent(out) :: mxr, mxc
+    character(*), intent(out) :: c(nr, nc)
+    real(eb), intent(out) :: x(nr, nc)
+    logical :: lend
+    
+    rewind(iocsv(idx))
+    call readcsvformat (iocsv(idx), x, c, nr, nc, 1, -1, mxr, mxc, lend, iofill)
+    
+    return
+    end subroutine get_csvfile
+        
+    !-----------------------------fnd_col(ic, c, nr, nc, mxr, mxc, instrument, measurement)-----------------------------------
+    
+    subroutine fnd_col(ic, c, nr, nc, mxr, mxc, instrument, measurement)
+
+    integer, intent(out) :: ic
+    integer, intent(in) :: nr, nc, mxr, mxc
+    character, intent(in) :: c(nr, nc)*(*), instrument*(*), measurement*(*)
+    
+    integer, parameter :: instrumentRow = 2, measurementRow = 1, timeColumn = 1
+    integer :: i
+    
+    ic = -1
+    if (trim(instrument)=='Time') then
+        ic = timeColumn
+        return
+    end if 
+    
+    do i = 1, mxc
+        if (trim(instrument) == trim(c(instrumentRow,i))) then
+            if (trim(measurement) == trim(c(measurementRow,i))) then
+                ic = i
+                return
+            end if
+        end if
+    end do
+    
+    return
+    
+    end subroutine fnd_col
+    
+    
+    ! --------------------------- writecsvformat -------------------------------------------
+
+    subroutine writecsvformat (iunit, x, c, nr, nc, nstart, mxr, mxc)
+
+    !     routine: writecsvformat
+    !     purpose:writess a comma-delimited file as generated by Micorsoft Excel, assuming that all
+    !              the data is in the form of real numbers
+    !     arguments: iunit  = logical unit, already open to .csv file
+    !                x      = array of dimension (numr,numc) for values in spreadsheet
+    !                c      = character array of same dimenaion as x for character values in spreadsheet
+    !                nr     = # of rows of arrays x and c
+    !                nc     = # of columns of arrays x and c
+    !                nstart = starting row of spreadsheet to read
+    !                mxr    = actual number of rows read
+    !                mxc    = actual number of columns read
+    
+    integer, intent(in) :: iunit, nr, nc, nstart, mxr, mxc
+
+    real(eb), intent(in) :: x(nr,nc)
+    character, intent(inout) :: c(nr,nc)*(*)
+
+    character :: buf*204800
+    integer :: i, j, ic, ie
+    
+    do i = nstart, mxr
+        buf = '                    '
+        ic = 1
+        do j = 1, mxc
+            if (x(i,j) /= 0.0) then
+                write(c(i,j),'(e16.9)') x(i,j)
+            end if
+            ie = ic + len_trim(c(i,j))
+            buf(ic:ie) = trim(c(i,j))
+            ic = ie+1
+            buf(ic:ic) = ','
+            ic = ic+1
+        end do
+        write(iunit,'(A)') buf(1:ic)
+    end do
+    
+    return
+    end subroutine writecsvformat
 
 end module spreadsheet_routines

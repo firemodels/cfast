@@ -36,7 +36,8 @@
     use utility_routines, only : cptime, read_command_options
     use radiation_routines, only : radiation
 
-    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag
+    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
+                            monte_carlo_flag
     use option_data, only: total_steps
 
     implicit none
@@ -47,7 +48,7 @@
 
     if (command_argument_count().eq.0) then
         call output_version(0)
-        stop
+        call cfastexit('MAIN',0)
     end if
 
     ! initialize the basic memory configuration
@@ -72,6 +73,7 @@
 
     call output_initial_conditions
 
+    monte_carlo_flag = .true. 
     call cptime(tbeg)
     call solve_simulation (tstop)
     call cptime(tend)
@@ -80,7 +82,7 @@
     if (.not.validation_flag) write (*,5010) total_steps
     write (iofill,5000) tend - tbeg
     write (iofill,5010) total_steps
-    call cfastexit ('CFAST', 0)
+    call cfastexit ('MAIN', 0)
 
 5000 format ('Total execution time = ',1pg10.3,' seconds')
 5010 format ('Total time steps = ',i10)
@@ -92,30 +94,40 @@
     subroutine cfastexit (name, errorcode)
 
     ! called when CFAST exits, printing an error code if necessary
-    ! inputs    name        routine name calling for exit ... at this point, it's always "CFAST"
-    !           errorcode   numeric code indicating reason for an error exit.  0 for a normal exit
+    ! inputs    name        routine name calling for exit
+    !           errorcode   numeric code indicating which call to cfastexit in routine
 
-    use output_routines, only : deleteoutputfiles
+    use output_routines, only : deleteoutputfiles, closeoutputfiles
+    use spreadsheet_routines, only : output_spreadsheet_montecarlo
     use setup_data
 
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
 
     if (errorcode==0) then
-        if (.not.validation_flag) write (*, '(''Normal exit from '',a)') trim(name)
-        write (iofill, '(''Normal exit from '',a)') trim(name)
-    elseif (errorcode==6) then
-        if (.not.validation_flag) write (*, '(''Maximum iteration exit from '',a)') trim(name)
-        write (iofill, '(''Maximum iteration exit from '',a)') trim(name)
+        if (.not.validation_flag) write (*, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
+        write (iofill, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
+    elseif (trim(name)=='SOLVE_SIMMULATION' .and. errorcode==5) then
+        ! validation flag test is for the maximum iteration exit is because of CFASTBot's testing to make
+        !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
+        !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT. 
+        if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
+        write (iofill, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
     else
-        write (*,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
-        write (iofill,'(''***Error exit from '',a,'' code = '',i0)') trim(name), errorcode
+        write (*,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
+        write (iofill,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
     end if
 
+    if (monte_carlo_flag) then
+        monte_carlo_flag = .false.
+        call output_spreadsheet_montecarlo
+    end if
+    call closeoutputfiles 
     close (unit=iofilkernel, status='delete')
     call deleteoutputfiles (stopfile)
 
     stop
 
     end subroutine cfastexit
+    
 

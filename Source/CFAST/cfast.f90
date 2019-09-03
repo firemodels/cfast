@@ -107,7 +107,7 @@
     if (errorcode==0) then
         if (.not.validation_flag) write (*, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
         write (iofill, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
-    elseif (trim(name)=='SOLVE_SIMMULATION' .and. errorcode==5) then
+    elseif (trim(name)=='SOLVE_SIMULATION' .and. errorcode==5) then
         ! validation flag test is for the maximum iteration exit is because of CFASTBot's testing to make
         !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
         !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT. 

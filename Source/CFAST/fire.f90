@@ -64,6 +64,7 @@ module fire_routines
             y_soot_smolder,y_co,y_hcn,y_trace)
 
         fireptr%mdot_pyrolysis = mdot_t
+        fireptr%qdot_theoretical = qdot_t
         fireptr%z_offset = height_t
         species_mass(u,1:ns) = roomptr%species_mass(u,1:ns)
         species_mass(l,1:ns) = roomptr%species_mass(l,1:ns)

@@ -56,7 +56,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfires
+    integer, parameter :: maxhead = 1+8*mxrooms+5+10*mxfires
     real(eb) :: outarray(maxhead), f_height, fire_ignition
     logical :: firstc = .true.
     integer :: position, i
@@ -104,6 +104,7 @@ module spreadsheet_routines
             call ssaddtolist (position,fire_ignition,outarray)
             call ssaddtolist (position,fireptr%mdot_entrained,outarray)
             call ssaddtolist (position,fireptr%mdot_pyrolysis,outarray)
+            call ssaddtolist (position,fireptr%qdot_theoretical,outarray)
             call ssaddtolist (position,fireptr%qdot_actual,outarray)
             call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
             call ssaddtolist (position,fireptr%qdot_layers(u),outarray)

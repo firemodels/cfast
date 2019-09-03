@@ -113,6 +113,13 @@ Public Class Vent
         Set(ByVal Value As Integer)
             If Value <> aSecondCompartment Then
                 aSecondCompartment = Value
+                If aVentType = TypeVVent Then
+                    OffsetX = -1
+                    OffsetY = -1
+                ElseIf aVentType = TypeMVent Then
+                    OffsetX = 0
+                    OffsetY = -1
+                End If
                 aChanged = True
             End If
         End Set
@@ -338,10 +345,6 @@ Public Class Vent
         Set(ByVal Value As Single)
             If myUnits.Convert(UnitsNum.Area).ToSI(Value) <> aArea Then
                 aArea = myUnits.Convert(UnitsNum.Area).ToSI(Value)
-                If aVentType = TypeVVent Then
-                    OffsetX = -1
-                    OffsetY = -1
-                End If
                 aChanged = True
             End If
         End Set

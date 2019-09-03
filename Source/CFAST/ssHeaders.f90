@@ -30,19 +30,19 @@ module spreadsheet_header_routines
 
     ! header information for the normal spreadsheet output
 
-    integer, parameter :: maxhead = 1+8*mxrooms+5+10*mxfires
-    character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(17), LabelsShort(17), LabelUnits(17)
+    integer, parameter :: maxhead = 1+8*mxrooms+5+11*mxfires
+    character(35) :: headertext(4,maxhead), cRoom, cFire, Labels(18), LabelsShort(18), LabelUnits(18)
     integer :: position, i, j
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
     data Labels / 'Simulation Time','Upper Layer Temperature', 'Lower Layer Temperature', 'Layer Height', &
         'Upper Layer Volume', 'Pressure', 'HRR Door Jet Fires', 'Ignition', 'Plume Entrainment Rate', 'Pyrolysis Rate', &
-        'HRR', 'HRR Lower', 'HRR Upper','Flame Height', 'Convective HRR', 'Total Pyrolysate Released', &
+        'HRR Expected', 'HRR', 'HRR Lower', 'HRR Upper','Flame Height', 'Convective HRR', 'Total Pyrolysate Released', &
         'Total Trace Species Released' /
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'VOL_', 'PRS_', 'DJET_', 'IGN_', 'PLUM_', 'PYROL_', &
-       'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
-    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W', ' ', 'kg/s', 'kg/s', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
+       'HRR_E', 'HRR_', 'HRRL_', 'HRRU_', 'FLHGT_', 'HRR_C_', 'PYROL_T_', 'TRACE_T_' /
+    data LabelUnits / 's', 'C', 'C', 'm', 'm^3', 'Pa', 'W', ' ', 'kg/s', 'kg/s', 'W', 'W', 'W', 'W', 'm', 'W', 'kg', 'kg' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
@@ -91,7 +91,7 @@ module spreadsheet_header_routines
     ! Fire variables.
     do j = 1, n_fires
         fireptr => fireinfo(j)
-        do i = 1, 10
+        do i = 1, 11
             position = position + 1
             call toIntString(j,cFire)
             headertext(1,position) = trim(LabelsShort(i+7))//trim(cFire)
@@ -668,21 +668,23 @@ module spreadsheet_header_routines
     logical, intent(in) :: lmode
 
     integer, parameter :: maxhead = 1+8*mxrooms+4*mxfires+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
-    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, LabelsShort(31), LabelUnits(31)
+    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, cTarg, LabelsShort(36), LabelUnits(36)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
 
     data LabelsShort / 'Time', 'ULT_', 'LLT_', 'HGT_', 'PRS_', 'RHOU_', 'RHOL_', 'ULOD_', 'LLOD_', &
+        'CLT_', 'UWT_', 'LWT_', 'FLT_', &
         'HRR_', 'FLHGT_', 'FBASE_', 'FAREA_', &
         'HVENT_','HSLAB_','HSLABT_','HSLABF_','HSLABYB_','HSLABYT_', &
         'VVENT_','VSLAB_','VSLABT_','VSLABF_','VSLABYB_','VSLABYT_', &
-        'MVENT_','MSLAB_','MSLABT_','MSLABF_','MSLABYB_','MSLABYT_'  /
+        'MVENT_','MSLAB_','MSLABT_','MSLABF_','MSLABYB_','MSLABYT_', 'TARGET_'  /
     data LabelUnits / 's', 'C', 'C', 'm', 'Pa', 'kg/m^3', 'kg/m^3', '1/m', '1/m', &
+        'C', 'C', 'C', 'C', &
         'kW', 'm', 'm', 'm^2', &
         'm^2', ' ', 'K', 'kg/s', 'm', 'm', &
         'm^2', ' ', 'K', 'kg/s', 'm', 'm', &
-        'm^2', ' ', 'K', 'kg/s', 'm', 'm' /
+        'm^2', ' ', 'K', 'kg/s', 'm', 'm', 'C' /
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelUnits(1)
@@ -693,14 +695,13 @@ module spreadsheet_header_routines
     ! Compartment variables
     do j = 1, nrm1
         roomptr => roominfo(j)
-        do i = 1, 8
-            if (i==1.or.i==4.or.i==5.or.i==7.or..not.roomptr%shaft) then
+        do i = 1, 12
+            if (i==1.or.i==4.or.i==5.or.i==7.or.i>8.or..not.roomptr%shaft) then
                 position = position + 1
                 call toIntString(j,cRoom)
                 headertext(1,position) = LabelUnits(i+1)
-                headertext(2,position) = trim(LabelsShort(i+1)) //trim(cRoom)
+                headertext(2,position) = trim(LabelsShort(i+1)) // trim(cRoom)
                 call smvDeviceTag(headertext(2,position))
-
             end if
         end do
     end do
@@ -710,8 +711,8 @@ module spreadsheet_header_routines
         do i = 1, 4
             position = position + 1
             call toIntString(j,cFire)
-            headertext(1,position) = LabelUnits(i+9)
-            headertext(2,position) = trim(LabelsShort(i+9))//trim(cFire)
+            headertext(1,position) = LabelUnits(i+13)
+            headertext(2,position) = trim(LabelsShort(i+13))//trim(cFire)
             call smvDeviceTag(headertext(2,position))
         end do
     end do
@@ -720,30 +721,30 @@ module spreadsheet_header_routines
     do j = 1, n_hvents
         position = position + 1
         call toIntString(j,cVent)
-        headertext(1,position) = LabelUnits(14) ! Vent area
-        headertext(2,position) = trim(LabelsShort(14))//trim(cVent)
+        headertext(1,position) = LabelUnits(18) ! Vent area
+        headertext(2,position) = trim(LabelsShort(18))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         position = position + 1
-        headertext(1,position) = LabelUnits(15) ! number of slabs
-        headertext(2,position) = trim(LabelsShort(15))//trim(cVent)
+        headertext(1,position) = LabelUnits(19) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(19))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         do i = 1,mxfslab
             call toIntString(i,cSlab)
             position = position + 1
-            headertext(1,position) = LabelUnits(16) ! slab temperature
-            headertext(2,position) = trim(LabelsShort(16))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(20) ! slab temperature
+            headertext(2,position) = trim(LabelsShort(20))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(17) ! slab flow
-            headertext(2,position) = trim(LabelsShort(17))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(21) ! slab flow
+            headertext(2,position) = trim(LabelsShort(21))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(18) ! slab bottom
-            headertext(2,position) = trim(LabelsShort(18))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(22) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(22))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(19) ! slab top
-            headertext(2,position) = trim(LabelsShort(19))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(23) ! slab top
+            headertext(2,position) = trim(LabelsShort(23))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
         end do
     end do
@@ -752,30 +753,30 @@ module spreadsheet_header_routines
     do j = 1, n_vvents
         position = position + 1
         call toIntString(j,cVent)
-        headertext(1,position) = LabelUnits(20)
-        headertext(2,position) = trim(LabelsShort(20))//trim(cVent)
+        headertext(1,position) = LabelUnits(24)
+        headertext(2,position) = trim(LabelsShort(24))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         position = position + 1
-        headertext(1,position) = LabelUnits(21) ! number of slabs
-        headertext(2,position) = trim(LabelsShort(21))//trim(cVent)
+        headertext(1,position) = LabelUnits(25) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(25))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         do i = 1,2
             call toIntString(i,cSlab)
             position = position + 1
-            headertext(1,position) = LabelUnits(22) ! slab temperature
-            headertext(2,position) = trim(LabelsShort(22))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(26) ! slab temperature
+            headertext(2,position) = trim(LabelsShort(26))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(23) ! slab flow
-            headertext(2,position) = trim(LabelsShort(23))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(27) ! slab flow
+            headertext(2,position) = trim(LabelsShort(27))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(24) ! slab bottom
-            headertext(2,position) = trim(LabelsShort(24))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(28) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(28))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(25) ! slab top
-            headertext(2,position) = trim(LabelsShort(25))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(29) ! slab top
+            headertext(2,position) = trim(LabelsShort(29))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
         end do
     end do
@@ -787,32 +788,41 @@ module spreadsheet_header_routines
         iv = iv + 1
         position = position + 1
         call toIntString(iv,cVent)
-        headertext(1,position) = LabelUnits(26)
-        headertext(2,position) = trim(LabelsShort(26))//trim(cVent)
+        headertext(1,position) = LabelUnits(30)
+        headertext(2,position) = trim(LabelsShort(30))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         position = position + 1
-        headertext(1,position) = LabelUnits(27) ! number of slabs
-        headertext(2,position) = trim(LabelsShort(27))//trim(cVent)
+        headertext(1,position) = LabelUnits(31) ! number of slabs
+        headertext(2,position) = trim(LabelsShort(31))//trim(cVent)
         call smvDeviceTag(headertext(2,position))
         do i = 1,2
             call toIntString(i,cSlab)
             position = position + 1
-            headertext(1,position) = LabelUnits(28) ! slab temperature
-            headertext(2,position) = trim(LabelsShort(28))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(32) ! slab temperature
+            headertext(2,position) = trim(LabelsShort(32))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(29) ! slab flow
-            headertext(2,position) = trim(LabelsShort(29))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(33) ! slab flow
+            headertext(2,position) = trim(LabelsShort(33))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(30) ! slab bottom
-            headertext(2,position) = trim(LabelsShort(30))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(34) ! slab bottom
+            headertext(2,position) = trim(LabelsShort(34))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
             position = position + 1
-            headertext(1,position) = LabelUnits(31) ! slab top
-            headertext(2,position) = trim(LabelsShort(31))//trim(cVent)//'_'//trim(cSlab)
+            headertext(1,position) = LabelUnits(35) ! slab top
+            headertext(2,position) = trim(LabelsShort(35))//trim(cVent)//'_'//trim(cSlab)
             call smvDeviceTag(headertext(2,position))
         end do
+    end do
+    
+    ! target information
+    do i = 1, n_targets
+        call toIntString(i,cTarg)
+        position = position + 1
+        headertext(1,position) = LabelUnits(36) ! target temperature
+        headertext(2,position) = trim(LabelsShort(36))//trim(cTarg)
+        call smvDeviceTag(headertext(2,position))
     end do
 
 

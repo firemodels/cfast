@@ -29,6 +29,8 @@ module output_routines
     use Monte_Carlo_data, only: n_mcarlo, mcarloinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvmass, iocsvspecies
 
     implicit none
+    
+    integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 
     character(lbufln) :: lbuf, cbuf
 
@@ -510,8 +512,6 @@ module output_routines
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
-
-    integer, parameter :: iwptr(4) =(/1, 3, 4, 2/)
 
     if ((itprt==0.and.n_targets<=nrm1).or.n_targets==0) return
     write (iofilo,5000)

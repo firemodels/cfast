@@ -9,7 +9,8 @@ set cfast_root=%CD%
 
 @echo ***     Create NPlot
 cd %cfast_root%\..\Extras\nplot
-"\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe" NPlot.sln /target:NPlot /p:Configuration=Release /p:Platform="Any CPU"
+set MSBUILD="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe"
+%MSBUILD%  NPlot.sln /target:NPlot /p:Configuration=Release /p:Platform="Any CPU"
 copy %cfast_root%\..\Extras\nplot\src\bin\NPlot.dll %cfast_root%\Utilities\for_bundle\Bin\ /Y
 
 @echo *** Create CFAST executables

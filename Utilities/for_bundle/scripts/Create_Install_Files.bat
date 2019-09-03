@@ -91,7 +91,6 @@ call :COPY %bindir%\..\SMV6\smokeview.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\smokezip.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\wind2fds.exe			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\objects.svo				%SMVDISTDIR%\
-call :COPY %bindir%\..\SMV6\smokeview.ini			%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\textures				%SMVDISTDIR%\
 call :COPY %bindir%\..\SMV6\volrender.ssf			%SMVDISTDIR%\
 copy %bindir%\..\SMV6\textures\*.jpg				%SMVDISTDIR%\textures\

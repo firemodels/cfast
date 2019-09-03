@@ -64,6 +64,7 @@ module fire_routines
             y_soot_smolder,y_co,y_hcn,y_trace)
 
         fireptr%mdot_pyrolysis = mdot_t
+        fireptr%qdot_theoretical = qdot_t
         fireptr%z_offset = height_t
         species_mass(u,1:ns) = roomptr%species_mass(u,1:ns)
         species_mass(l,1:ns) = roomptr%species_mass(l,1:ns)
@@ -1242,6 +1243,7 @@ module fire_routines
     tobj = told + 2.0_eb*dt
     tnobj = told + dt
 
+    ! here we just check for ignition of a fire
     do i = 1, n_fires
         fireptr => fireinfo(i)
         if (.not.fireptr%ignited) then
@@ -1272,10 +1274,12 @@ module fire_routines
         end if
     end do
 
+    ! here we process the ignition(s) and set properties if ignited
     if (iflag/=check_state) then
         do i = 1, n_fires
             fireptr => fireinfo(i)
             if (.not.fireptr%ignited) then
+                ignflg = fireptr%ignition_type
                 itarg = fireptr%ignition_target
                 if (ignflg/=trigger_by_time) then
                     targptr => targetinfo(itarg)

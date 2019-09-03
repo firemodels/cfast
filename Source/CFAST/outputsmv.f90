@@ -4,6 +4,7 @@
 
     use fire_routines, only: get_gas_tempandvelocity
     use spreadsheet_header_routines, only: ssheaders_smv
+    use utility_routines, only: tointstring
 
     use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
     
@@ -58,6 +59,7 @@
     integer ::i, iroom1, iroom2
     character(128) :: dir
     character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
+    character(35) :: cTarg
     integer(4) :: length, splitpathqq
     integer :: vtype
 
@@ -209,8 +211,9 @@
 
     ! target devices
     do i = 1, n_targets
+        call toIntString(i,cTarg)
         write (iofilsmv,"(a)") "DEVICE"
-        write (iofilsmv,"(a)") "TARGET"
+        write (iofilsmv,"(a)") "TARGET % % % TARGET_"//trim(cTarg)
         call getabstarget(i,targetvector)
         write (iofilsmv,"(1x,6f10.2,2i6)") targetvector,0,0
     end do

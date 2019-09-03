@@ -24,6 +24,8 @@ module spreadsheet_routines
     use spreadsheet_input_routines, only: readcsvformat
 
     implicit none
+    
+    integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 
     private
 
@@ -57,7 +59,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    integer, parameter :: maxhead = 1+8*mxrooms+5+9*mxfires
+    integer, parameter :: maxhead = 1+8*mxrooms+5+10*mxfires
     real(eb) :: outarray(maxhead), f_height, fire_ignition
     logical :: firstc = .true.
     integer :: position, i
@@ -105,6 +107,7 @@ module spreadsheet_routines
             call ssaddtolist (position,fire_ignition,outarray)
             call ssaddtolist (position,fireptr%mdot_entrained,outarray)
             call ssaddtolist (position,fireptr%mdot_pyrolysis,outarray)
+            call ssaddtolist (position,fireptr%qdot_theoretical,outarray)
             call ssaddtolist (position,fireptr%qdot_actual,outarray)
             call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
             call ssaddtolist (position,fireptr%qdot_layers(u),outarray)
@@ -272,8 +275,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, value, xact
-    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin
-    integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/) 
+    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin 
     integer :: position, i, iw, itarg, iroom
 
     type(target_type), pointer :: targptr
@@ -523,6 +525,7 @@ module spreadsheet_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
+    type(target_type), pointer :: targptr
 
     data firstc/.true./
     save firstc
@@ -549,6 +552,9 @@ module spreadsheet_routines
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%rho(l),outarray)
         call ssaddtolist(position,roomptr%species_output(u,soot),outarray)
         if (.not.roomptr%shaft) call ssaddtolist(position,roomptr%species_output(l,soot),outarray)
+        do j = 1, 4
+            call ssaddtolist(position,roomptr%t_surfaces(1,iwptr(j))-kelvin_c_offset,outarray)
+        end do
     end do
 
     ! fires
@@ -627,6 +633,14 @@ module spreadsheet_routines
                 call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
                 call ssaddtolist(position,ventptr%ytop_slab(j),outarray)
             end do
+        end do
+    end if
+    
+    ! target temperature
+    if (n_targets/=0) then
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            call ssaddtolist(position,targptr%tinternal-kelvin_c_offset,outarray)
         end do
     end if
     call ssprintresults (iofilsmvzone, position, outarray)

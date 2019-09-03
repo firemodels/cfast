@@ -145,6 +145,9 @@
     integer, parameter :: w_to_room = 3
     integer, parameter :: w_to_wall = 4
     integer, parameter :: w_boundary_condition = 5
+    
+    ! Monte Carlo parameters
+    integer, parameter :: mx_monte_carlo = mxitems  ! Maximum number of colomns that will be generated
 
     end module cparams
 

@@ -521,7 +521,7 @@ module solve_routines
             call find_error_component (ieqmax)
             write (*,'(a,i0)') '***Error, dassl - idid = ', idid
             write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
-            call cfastexit ('CFAST', idid)
+            call cfastexit ('SOLVE_SIMULATION', 1)
             stop
         end if
 
@@ -535,7 +535,7 @@ module solve_routines
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
                     write (iofill,'(i0,a,e11.4,a,e11.4)') &
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
-                    call cfastexit ('CFAST',4)
+                    call cfastexit ('SOLVE_SIMULATION',2)
                     stop
                 end if
             else
@@ -603,7 +603,7 @@ module solve_routines
                     write (*,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
                     write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
-                    call cfastexit ('CFAST', idid)
+                    call cfastexit ('SOLVE_SIMULATION', 3)
                     stop
                 end if
 
@@ -628,7 +628,7 @@ module solve_routines
                     t,' Last time = ',told,' need to back step to ',td
                 write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
-                call cfastexit ('CFAST', idid)
+                call cfastexit ('SOLVE_SIMULATION', 4)
                 stop
             end if
         end if
@@ -647,7 +647,7 @@ module solve_routines
         if (stopiter>=0.and.total_steps>stopiter) then
             call deleteoutputfiles (stopfile)
             write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
-            call cfastexit ('CFAST', 6)
+            call cfastexit ('SOLVE_SIMULATION', 5)
         end if
         go to 10
     end if

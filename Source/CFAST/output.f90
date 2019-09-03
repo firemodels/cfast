@@ -10,7 +10,7 @@ module output_routines
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
-        w_from_room, w_from_wall, idx_tempf_trg
+        w_from_room, w_from_wall, idx_tempf_trg, mx_monte_carlo
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
@@ -18,13 +18,15 @@ module output_routines
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, inputfile, &
+        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, inputfile, iofilssmc, &
         outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
-        smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswall, ssdiag
+        smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswall, ssdiag, &
+        ssmontecarlo
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
+    use Monte_Carlo_data, only: n_mcarlo, mcarloinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvmass, iocsvspecies
 
     implicit none
     
@@ -35,7 +37,7 @@ module output_routines
     private
 
     public output_version, output_initial_conditions, output_results, deleteoutputfiles, openoutputfiles, &
-        output_status, output_debug, find_error_component
+        output_status, output_debug, find_error_component, closeoutputfiles
 
     contains
 
@@ -1339,6 +1341,7 @@ module output_routines
     !     iofilssd      spreadsheet output (various diagnostics for verification)
     !     ioresid       diagnostic file of solution vector
     !     ioslab        diagnostic file of flow slabs
+    !     iofilssmc     spreadsheet output (for Monte Carlo analysis)
     
     ! other units may be opened with newunit keyword in open statement
 
@@ -1363,11 +1366,17 @@ module output_routines
     ! the spread sheet files
     if (ss_out_interval>0) then
         open (newunit=iofilssn, file=ssnormal,form='formatted')
+        iocsv(iocsvnormal) = iofilssn
         open (newunit=iofilssf, file=ssflow,form='formatted')
+        iocsv(iocsvflow) = iofilssf
         open (unit=iofilsss, file=ssspecies,form='formatted')
+        iocsv(iocsvspecies) = iofilsss
         open (newunit=iofilssm, file=ssspeciesmass,form='formatted')
+        iocsv(iocsvmass) = iofilssm
         open (newunit=iofilssw, file=sswall,form='formatted')
+        iocsv(iocsvwall) = iofilssw
         if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (newunit=iofilssd, file=ssdiag,form='formatted')
+        open (newunit=iofilssmc, file=ssmontecarlo,form='formatted')
     end if
 
     return
@@ -1377,11 +1386,11 @@ module output_routines
     !	smokeview file
 11  write (*,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
     write (iofill,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
-    stop
+    call cfastexit('OPENOUTPUTFILES',1)
     !	this one comes from writing to the status file
 81  write (*,*) '***Fatal error opening the status file ',ios
     write (iofill,*) '***Fatal error opening the status file ',ios
-    stop
+    call cfastexit('OPENOUTPUTFILES',2)
 
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
 
@@ -1403,12 +1412,105 @@ module output_routines
                     '. File may be in use by another application.'
                 write (*,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
                     '. File may be in use by another application.'
-                stop
+                call cfastexit('DELETEOUTPUTFILES',1)
             end if
         end if
     end if
 
     return
     end subroutine deleteoutputfiles
+    
+    !---------------------closeoutputfiles------------------------------------------------------
+    
+    subroutine closeoutputfiles
+
+    !	closeoutputfile closes units from openoutputfiles
+    !	Unit numbers defined here and readinputfiles
+
+    !	Unit numbers defined for various I/O purposes
+    !
+    !     iofili        solver.ini and data files (data file, tpp and objects)
+    !     iofill        log file
+    !	  iofilkernel   indicator that the model is running (kernelisrunning)
+    !     iofilo        output 
+    !     iofilstat     write the status file
+    !     iofilsmv      smokeview output (header) - note this is rewound each time the plot data is written)
+    !     iofilsmvplt   smokeview output (plot data)
+    !     iofilsmvzone  smokeview spreadsheet output   
+    !     iofilssn      spreadsheet output (normal)
+    !     iofilssf      spreadsheet output (flow field)
+    !     iofilsss      spreadsheet output (species molar %, etc.)
+    !     iofilssm      spreadsheet otuput (species mass)
+    !     iofilssw      spreadsheet output (walls and targets)
+    !     iofilssd      spreadsheet output (various diagnostics for verification)
+    !     ioresid       diagnostic file of solution vector
+    !     ioslab        diagnostic file of flow slabs
+    !     iofilssmc     spredsheet output (for monte carlo analysis)
+    
+    ! other units may be opened with newunit keyword in open statement
+    
+    logical :: openunit
+
+    ! first the file for "printed" output
+    inquire (iofilo, opened=openunit)
+    if(openunit) then
+        close(iofilo)
+    end if
+
+    ! the status files
+    inquire (iofilstat, opened=openunit)
+    if(openunit) then
+        close(iofilstat)
+    end if
+
+    ! the smokeview files
+    if (smv_out_interval>0) then
+        inquire(iofilsmv, opened=openunit)
+        if (openunit) then
+            close(iofilsmv)
+        end if
+        inquire(iofilsmvplt, opened=openunit)
+        if (openunit) then
+            close(iofilsmvplt)
+        end if
+        inquire(iofilsmvzone, opened=openunit)
+        if (openunit) then
+            close(iofilsmvzone)
+        end if
+    end if
+
+    ! the spread sheet files
+    if (ss_out_interval>0) then
+        inquire(iofilssn, opened=openunit)
+        if(openunit) then
+            close(iofilssn)
+        end if
+        inquire(iofilssf, opened=openunit)
+        if (openunit) then 
+            close(iofilssf)
+        end if
+        inquire(iofilsss, opened=openunit)
+        if (openunit) then
+            close(iofilsss)
+        end if
+        inquire(iofilssm, opened=openunit)
+        if (openunit) then
+            close(iofilsss)
+        end if
+        inquire(iofilssw, opened=openunit)
+        if (openunit) then
+            close(iofilssw)
+        end if
+        inquire(iofilssd, opened=openunit)
+        if (openunit) then
+            close(iofilssd)
+        end if
+        inquire(iofilssmc, opened=openunit)
+        if (openunit) then
+            close(iofilssmc)
+        end if
+    end if 
+    
+    end subroutine closeoutputfiles
 
 end module output_routines

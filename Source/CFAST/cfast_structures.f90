@@ -87,6 +87,7 @@ module cfast_types
         real(eb) :: total_pyrolysate                    ! total pyroysate released by fire up to the current time
         real(eb) :: total_trace                         ! total trace species released by fire up to the current time
 
+        real(eb) :: qdot_theoretical                    ! HRR as input by the user, unmodified by available oxygen or sprinklers
         real(eb) :: qdot_actual                         ! actual HRR (limited by available oxygen)
         real(eb) :: qdot_radiative                      ! actual radiative HRR = qdot_actual * chirad
         real(eb) :: qdot_convective                     ! actual convective HRR = qdot_actual * (1 - chirad)

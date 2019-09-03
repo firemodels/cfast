@@ -246,7 +246,7 @@ module setup_data
     save
     
     integer :: i_time_end, i_time_step
-    real(eb) :: ss_out_interval, print_out_interval, smv_out_interval, time_end
+    real(eb) :: ss_out_interval = 0, print_out_interval = 0, smv_out_interval = 0, time_end
     real(eb) :: stime, deltat
 
     character(128) :: title

@@ -6,7 +6,7 @@ module spreadsheet_routines
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : get_vent_opening
     use spreadsheet_header_routines
-    use utility_routines, only: ssaddtolist
+    use utility_routines, only: ssaddtolist, readcsvformat
     
     use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, montecarlo_type
 
@@ -21,7 +21,6 @@ module spreadsheet_routines
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
     use Monte_Carlo_data, only: n_mcarlo, mcarloinfo, csvnames, num_csvfiles, iocsv
-    use spreadsheet_input_routines, only: readcsvformat
 
     implicit none
     

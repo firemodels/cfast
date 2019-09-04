@@ -26,7 +26,7 @@
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections
-    use Monte_Carlo_data, only: n_mcarlo, mcarloinfo
+    use monte_carlo_data, only: n_mcarlo, mcarloinfo
 
     implicit none
 

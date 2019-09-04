@@ -31,13 +31,12 @@
     
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
-    use output_routines, only: output_version, output_initial_conditions
+    use output_routines, only: output_version, output_initial_conditions, deleteoutputfiles, closeoutputfiles
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
     use radiation_routines, only : radiation
 
-    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-                            monte_carlo_flag
+    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag
     use option_data, only: total_steps
 
     implicit none
@@ -73,7 +72,6 @@
 
     call output_initial_conditions
 
-    monte_carlo_flag = .true. 
     call cptime(tbeg)
     call solve_simulation (tstop)
     call cptime(tend)
@@ -97,10 +95,11 @@
     ! inputs    name        routine name calling for exit
     !           errorcode   numeric code indicating which call to cfastexit in routine
 
-    use output_routines, only : deleteoutputfiles, closeoutputfiles
+    use output_routines, only: closeoutputfiles, deleteoutputfiles
     use spreadsheet_routines, only : output_spreadsheet_montecarlo
-    use setup_data
-
+    use monte_carlo_data, only: n_mcarlo
+    use setup_data, only: monte_carlo_flag, validation_flag, iofill, iofilkernel, stopfile, ssmontecarlo, ss_out_interval
+    
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
 
@@ -119,11 +118,16 @@
     end if
 
     if (monte_carlo_flag) then
+        ! this ensures we don't get into aninfinite loop if there's an error exit within the monte carlo output
         monte_carlo_flag = .false.
         call output_spreadsheet_montecarlo
     end if
+    
     call closeoutputfiles 
     close (unit=iofilkernel, status='delete')
+    if (ss_out_interval==0 .or. n_mcarlo == 0) then
+        call deleteoutputfiles (ssmontecarlo)
+    end if
     call deleteoutputfiles (stopfile)
 
     stop

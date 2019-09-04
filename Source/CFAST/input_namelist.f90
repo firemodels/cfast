@@ -33,7 +33,7 @@
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
-    use Monte_Carlo_data, only: n_mcarlo, mcarloinfo
+    use monte_carlo_data, only: n_mcarlo, mcarloinfo
 
     implicit none 
     

@@ -252,7 +252,7 @@ module setup_data
     character(128) :: title
 
     logical :: nokbd=.false., initializeonly=.false.
-    logical :: debugging=.false., validation_flag=.false., netheatflux=.false., monte_carlo_flag = .false.
+    logical :: debugging=.false., validation_flag=.false., netheatflux=.false., monte_carlo_flag = .true.
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile
@@ -433,9 +433,9 @@ module vent_data
 
     end module vent_data
 
-! -------------------------Monte_Carlo_data---------------------------------------
+! -------------------------monte_carlo_data---------------------------------------
     
-module Monte_Carlo_data
+module monte_carlo_data
     
     use precision_parameters
     
@@ -455,5 +455,5 @@ module Monte_Carlo_data
     integer, dimension(num_csvfiles) :: iocsv
     type (montecarlo_type), allocatable, dimension(:), target :: mcarloinfo
     
-    end module Monte_Carlo_data
+    end module monte_carlo_data
     

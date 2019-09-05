@@ -730,11 +730,12 @@ module spreadsheet_routines
     logical :: first, lend
     
     integer, parameter :: numr = 3, numc = 500
-    real(eb) :: lastval(mx_monte_carlo), lasttime(mx_monte_carlo), x(numr, numc)
+    real(eb) :: lastval(2, mx_monte_carlo), lasttime(mx_monte_carlo), x(numr, numc)
     character(128) :: header(numr, numc), c(numr, numc)
     
     integer :: relcol, mxhr, mxhc, ic, cols(mx_monte_carlo), icol, num_entries
-    integer :: primecol(mx_monte_carlo), seccol(mx_monte_carlo), mxr, mxc, tmpcount
+    integer :: primecol(mx_monte_carlo), seccol(2, mx_monte_carlo), mxr, mxc
+    real(eb) :: dummy(2, mx_monte_carlo)
     
     first = .true.
     num_entries = 0
@@ -768,7 +769,20 @@ module spreadsheet_routines
                         monteptr%type_of_analysis(1:9) == 'INTEGRATE').and.monteptr%found) then 
                     call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%second_instrument, &
                                     monteptr%second_measurement)
-                    seccol(cols(icol)) = ic
+                    seccol(1,cols(icol)) = ic
+                    if (ic<1) then
+                        monteptr%found = .false.
+                    end if
+                else if (monteptr%type_of_analysis(1:15) == 'CHECK_TOTAL_HRR'.and.monteptr%found) then
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%second_instrument, &
+                                    monteptr%second_measurement)
+                    seccol(1,cols(icol)) = ic
+                    if (ic<1) then
+                        monteptr%found = .false.
+                    end if
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%second_instrument, &
+                                    'HRR Expected')
+                    seccol(2,cols(icol)) = ic
                     if (ic<1) then
                         monteptr%found = .false.
                     end if
@@ -788,11 +802,16 @@ module spreadsheet_routines
                 else if (monteptr%type_of_analysis(1:8) == 'TRIGGER_') then
                     mcrarray(2,relcol) = -1
                 else if (monteptr%type_of_analysis(1:9) == 'INTEGRATE') then
-                    mcrarray(2,relcol) = 0
+                    mcrarray(2,relcol) = -1
                     lasttime(i) = x(1, primecol(cols(i)))
-                    lastval(i) = x(1, seccol(cols(i)))
+                    lastval(1,i) = x(1, seccol(1,cols(i)))
+                else if (monteptr%type_of_analysis(1:15) == 'CHECK_TOTAL_HRR') then
+                    mcrarray(2,relcol) = -1
+                    dummy(1:2,i) = 0
+                    lasttime(i) = x(1, primecol(cols(i)))
+                    lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
                 else
-                    mcrarray(2,relcol) = -2000001
+                    mcrarray(2,relcol) = -1001
                 end if
             end if 
         end do 
@@ -812,20 +831,28 @@ module spreadsheet_routines
                     else if (monteptr%type_of_analysis(1:3) == 'MIN') then
                         mcrarray(2,relcol) = min(mcrarray(2,relcol),x(1, primecol(i)))
                     else if (monteptr%type_of_analysis(1:15) == 'TRIGGER_GREATER') then
-                        if (x(1, seccol(i))>=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
+                        if (x(1, seccol(1,i))>=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
                             mcrarray(2,relcol) = x(1, primecol(i))
                         end if
                     else if (monteptr%type_of_analysis(1:14) == 'TRIGGER_LESSER') then
-                        if (x(1, seccol(i))<=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
+                        if (x(1, seccol(1,i))<=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
                             mcrarray(2,relcol) = x(1, primecol(i))
                         end if
                     else if (monteptr%type_of_analysis(1:9) == 'INTEGRATE') then
                         mcrarray(2,relcol) = mcrarray(2,relcol) + &
-                            (x(1, seccol(cols(i)))+lastval(i))/2*(x(1, primecol(cols(i)))-lasttime(i))
+                            (x(1, seccol(1,cols(i)))+lastval(1,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
                         lasttime(i) = x(1, primecol(cols(i)))
-                        lastval(i) = x(1, seccol(cols(i)))
+                        lastval(1,i) = x(1, seccol(1,cols(i)))
+                    else if (monteptr%type_of_analysis(1:15) == 'CHECK_TOTAL_HRR') then
+                        dummy(1:2,i) = dummy(1:2,i) + &
+                            (x(1, seccol(1:2,cols(i)))+lastval(1:2,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
+                        if (dummy(2,i)>0) then
+                            mcrarray(2,relcol) = dummy(1,i)/dummy(2,i)*100.0
+                        end if 
+                        lasttime(i) = x(1, primecol(cols(i)))
+                        lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
                     else
-                        mcrarray(2,relcol) = -2000001
+                        mcrarray(2,relcol) = -1001
                     end if
                 end if
             end do

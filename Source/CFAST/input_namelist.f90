@@ -2761,7 +2761,8 @@ continue
                 call cfastexit('READ_MONT',3)
             end if
             if (.not.((type_of_analysis(1:3)=='MIN').or.(type_of_analysis(1:3)=='MAX').or. &
-                    (type_of_analysis(1:8)=='TRIGGER_').or.(type_of_analysis(1:9)=='INTEGRATE'))) then
+                    (type_of_analysis(1:8)=='TRIGGER_').or.(type_of_analysis(1:9)=='INTEGRATE').or. &
+                    (type_of_analysis(1:15)=='CHECK_TOTAL_HRR'))) then
                 write(*,*) 'Error in &MONT: Invalid specification for TYPE_OF_ANALYSIS ',trim(type_of_analysis), &
                     ' number ',counter
                 write(iofill,*) 'Error in &MONT: Invalid specification for TYPE_OF_ANALYSIS ',trim(type_of_analysis), &
@@ -2844,17 +2845,31 @@ continue
                 call cfastexit('READ_MONT',15)
             end if
             mcarloptr => mcarloinfo(n_mcarlo)
-            mcarloptr%id = id
-            mcarloptr%file_type = file_type
-            mcarloptr%column_title = column_title
-            mcarloptr%type_of_analysis = type_of_analysis
-            mcarloptr%prime_instrument = prime_instrument
-            mcarloptr%prime_measurement = prime_measurement
-            mcarloptr%second_instrument = second_instrument
-            mcarloptr%second_measurement = second_measurement
-            mcarloptr%criteria = criteria 
-            mcarloptr%relative_column = relative_column
-            mcarloptr%found = .false.
+            if (type_of_analysis(1:15) == 'CHECK_TOTAL_HRR') then
+                mcarloptr%id = id
+                mcarloptr%file_type = 'NORMAL'
+                mcarloptr%column_title = column_title
+                mcarloptr%type_of_analysis = type_of_analysis
+                mcarloptr%prime_instrument = 'Time'
+                mcarloptr%prime_measurement = 'Simulation Time'
+                mcarloptr%second_instrument = prime_instrument
+                mcarloptr%second_measurement = prime_measurement
+                mcarloptr%criteria = 0 
+                mcarloptr%relative_column = relative_column
+                mcarloptr%found = .false.
+            else
+                mcarloptr%id = id
+                mcarloptr%file_type = file_type
+                mcarloptr%column_title = column_title
+                mcarloptr%type_of_analysis = type_of_analysis
+                mcarloptr%prime_instrument = prime_instrument
+                mcarloptr%prime_measurement = prime_measurement
+                mcarloptr%second_instrument = second_instrument
+                mcarloptr%second_measurement = second_measurement
+                mcarloptr%criteria = criteria 
+                mcarloptr%relative_column = relative_column
+                mcarloptr%found = .false.
+            end if 
 
         end do read_mont_loop
 

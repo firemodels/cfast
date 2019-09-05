@@ -103,27 +103,32 @@
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
 
-    if (errorcode==0) then
-        if (.not.validation_flag) write (*, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
-        write (iofill, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
-    elseif (trim(name)=='SOLVE_SIMULATION' .and. errorcode==5) then
-        ! validation flag test is for the maximum iteration exit is because of CFASTBot's testing to make
-        !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
-        !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT. 
-        if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
-        write (iofill, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
-    else
-        write (*,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
-        write (iofill,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
+
+    if (errorcode/=0) then
+        if (trim(name)=='SOLVE_SIMULATION' .and. errorcode==5) then
+            ! validation flag test is for the maximum iteration exit is because of CFASTBot's testing to make
+            !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
+            !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
+            if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
+            if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
+        else
+            write (*,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
+            if (iofill/=0) write (iofill,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
+        end if
     end if
 
-    if (monte_carlo_flag) then
-        ! this ensures we don't get into aninfinite loop if there's an error exit within the monte carlo output
-        monte_carlo_flag = .false.
+    if (.not.monte_carlo_flag) then
+        ! this ensures we don't get into an infinite loop if there's an error exit within the monte carlo output
+        monte_carlo_flag = .true.
         call output_spreadsheet_montecarlo
     end if
     
-    call closeoutputfiles 
+    if (errorcode==0) then
+        if (.not.validation_flag) write (*, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
+        if (iofill/=0) write (iofill, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
+    end if
+    
+    call closeoutputfiles
     close (unit=iofilkernel, status='delete')
     if (ss_out_interval==0 .or. n_mcarlo == 0) then
         call deleteoutputfiles (ssmontecarlo)

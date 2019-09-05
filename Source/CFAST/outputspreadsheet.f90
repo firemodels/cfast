@@ -861,127 +861,6 @@ module spreadsheet_routines
     
     return
     end subroutine do_csvfile
-    
-    !-----------------------do_minmax (val, analysis, nr, nc, mxr, mxc, primei, primem)---------------------------------
-    
-    subroutine do_minmax(val, analysis, nr, nc, mxr, mxc, x, c, primei, primem)
-    
-    integer, intent(in) :: nr, nc, mxr, mxc
-    character(*), intent(in) :: analysis, primei, primem, c(nr, nc)
-    real(eb), intent(in) :: x(nr,nc)
-    real(eb), intent(out) :: val
-    
-    integer, parameter :: startrow = 5
-    integer :: i, ic, itime
-    
-    call fnd_col(ic, c, nr, nc, mxr, mxc, primei, primem)
-    
-    itime = mxr
-    val = x(startrow, ic)
-    
-    do i = startrow+1, itime
-        if (trim(analysis) == 'MAX') then
-            val = max(val, x(i, ic))
-        elseif (trim(analysis) == 'MIN') then
-            val = min(val, x(i, ic))
-        endif
-    end do  
-    
-    return
-    end subroutine do_minmax
-    
-    !---------------------------do_trigger (val, analysis, nr, nc, mxr, mxc, x, c, primei, primem, seci, secm, crit)------------
-    
-    subroutine do_trigger(val, analysis, nr, nc, mxr, mxc, x, c, primei, primem, &
-                            seci, secm, crit)
-    
-    integer, intent(in) :: nr, nc, mxr, mxc
-    character(*), intent(in) :: analysis, primei, primem, c(nr, nc)
-    character(*), intent(in) :: seci, secm
-    real(eb), intent(in) :: x(nr,nc), crit
-    real(eb), intent(out) :: val
-    
-    integer :: i, ic, itime, ix
-    
-    call fnd_col(ix, c, nr, nc, mxr, mxc, primei, primem)
-    call fnd_col(ic, c, nr, nc, mxr, mxc, seci, secm)
-    
-    itime = mxr
-    val = -1
-    
-    if (ic>0.and.ix>0) then
-        do i = 5, itime
-            if (trim(analysis) == 'TRIGGER_GREATER') then
-                if (x(i, ic) >= crit) then
-                    val = x(i, ix)
-                    itime = i
-                    exit
-                end if
-            elseif (trim(analysis) == 'TRIGGER_LESSER') then
-                if (x(i, ic) <= crit) then
-                    val = x(i, ix)
-                    itime = i
-                    exit
-                end if
-            else
-                write(*,*) 'failure in DO_TRIGGER, ANALYSIS invalid ',trim(analysis)
-                write(iofill,*) 'failure in DO_TRIGGER, ANALYSIS invalid ',trim(analysis)
-                call cfastexit('SPREADSHEET_ROUTINES:DO_TRIGGER',1)
-            end if
-        end do
-    end if
-    
-    return
-    end subroutine do_trigger
-                            
-    subroutine do_integrate(val, analysis, nr, nc, mxr, mxc, x, c, primei, primem, &
-                            seci, secm)         
-    
-    integer, intent(in) :: nr, nc, mxr, mxc
-    character(*), intent(in) :: analysis, primei, primem, c(nr, nc)
-    character(*), intent(in) :: seci, secm
-    real(eb), intent(in) :: x(nr,nc)
-    real(eb), intent(out) :: val
-    
-    integer :: i, ic, itime, ix
-    
-    call fnd_col(ix, c, nr, nc, mxr, mxc,seci, secm)
-    if(trim(primei)=='Time') then
-        ic = 1
-    else
-        write(*,*)'Currently INTEGRATE only works with PRIME_INSTRUMENT = Time'
-        write(iofill,*)'Currently INTEGRATE only works with PRIME_INSTRUMENT = Time'
-        call cfastexit('SPREADSHEET_ROUTINES:DO_INTEGRATE',1)
-    end if
-    
-    itime = mxr
-    val = -1
-    
-    if (ic>0.and.ix>0) then
-        val = 0
-        do i = 6, itime
-            val = val + (x(ix,i)-x(ix,i-1))/2*(x(ic,i) - x(ic,i-1))
-        end do
-    end if
-    
-    return
-    end subroutine do_integrate    
-    
-    !-------------------get_csvfile (nr, nc, mxr, mxc, x, c, idx)
-                            
-    subroutine get_csvfile (nr, nc, mxr, mxc, x, c, idx)
-    
-    integer, intent(in) :: nr, nc, idx
-    integer, intent(out) :: mxr, mxc
-    character(*), intent(out) :: c(nr, nc)
-    real(eb), intent(out) :: x(nr, nc)
-    logical :: lend
-    
-    rewind(iocsv(idx))
-    call readcsvformat (iocsv(idx), x, c, nr, nc, 1, -1, mxr, mxc, lend, iofill)
-    
-    return
-    end subroutine get_csvfile
         
     !-----------------------------fnd_col(ic, c, nr, nc, mxr, mxc, instrument, measurement)-----------------------------------
     
@@ -1000,6 +879,11 @@ module spreadsheet_routines
         return
     end if 
     
+    if (mxr < 2) then
+        write(*,*)'Error: need at least two rows to use fnd_col mxr = ',mxr
+        write(iofill,*)'Error: need at least two rows to use fnd_col mxr = ',mxr
+        call cfastexit('SPREADSHEET_ROUTINES:FND_COL',1)
+    end if
     do i = 1, mxc
         if (trim(instrument) == trim(c(instrumentRow,i))) then
             if (trim(measurement) == trim(c(measurementRow,i))) then

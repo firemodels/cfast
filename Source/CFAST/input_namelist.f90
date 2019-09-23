@@ -1726,10 +1726,14 @@ continue
                         if (trim(criterion)=='TEMPERATURE') then
                             ventptr%opening_type = trigger_by_temp
                             ventptr%opening_criterion = setpoint + kelvin_c_offset
+                            ventptr%opening_initial_fraction = initialfraction
+                            ventptr%opening_final_fraction = finalfraction
                         end if
                         if (criterion=='FLUX') then
                             ventptr%opening_type = trigger_by_flux
                             ventptr%opening_criterion = setpoint * 1000._eb
+                            ventptr%opening_initial_fraction = initialfraction
+                            ventptr%opening_final_fraction = finalfraction
                         end if
                         ventptr%opening_target = 0
                         do i = 1,n_targets
@@ -1875,10 +1879,14 @@ continue
                             if (trim(criterion)=='TEMPERATURE') then
                             ventptr%opening_type = trigger_by_temp
                             ventptr%opening_criterion = setpoint + kelvin_c_offset
+                            ventptr%opening_initial_fraction = initialfraction
+                            ventptr%opening_final_fraction = finalfraction
                         end if
                         if (criterion=='FLUX') then
                             ventptr%opening_type = trigger_by_flux
                             ventptr%opening_criterion = setpoint * 1000._eb
+                            ventptr%opening_initial_fraction = initialfraction
+                            ventptr%opening_final_fraction = finalfraction
                         end if
                             ventptr%opening_target = 0
                             do i = 1,n_targets
@@ -1971,10 +1979,10 @@ continue
                 if (trim(criterion) /='NULL') then
                     if (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
 
-                        initialtime = 0._eb
-                        initialfraction = 1._eb
+                        initialtime = 0._eb       ! in namelist input, these are just placeholders for the older event data
+                        initialfraction = pre_fraction
                         finaltime = 0._eb
-                        finalfraction = 1._eb
+                        finalfraction = post_fraction
 
                         if (t(1)/=-1001._eb) then
                             if (n_ramps<=mxramps) then
@@ -2010,10 +2018,14 @@ continue
                             if (trim(criterion)=='TEMPERATURE') then
                             ventptr%opening_type = trigger_by_temp
                             ventptr%opening_criterion = setpoint + kelvin_c_offset
+                            ventptr%opening_initial_fraction = initialfraction
+                            ventptr%opening_final_fraction = finalfraction
                         end if
                         if (criterion=='FLUX') then
                             ventptr%opening_type = trigger_by_flux
                             ventptr%opening_criterion = setpoint * 1000._eb
+                            ventptr%opening_initial_fraction = initialfraction
+                            ventptr%opening_final_fraction = finalfraction
                         end if
                             ventptr%opening_target = 0
                             do i = 1,n_targets

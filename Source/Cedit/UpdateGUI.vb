@@ -1040,11 +1040,6 @@ Public Class UpdateGUI
             aFireInstance = myFires(index)
             FireIndex = myFireProperties.GetFireIndex(aFireInstance.ReferencedFireDefinition)
 
-            If FireIndex = 1 Then
-                Dim dummy As Integer
-                dummy = 1
-            End If
-
             If FireIndex < 0 Or FireIndex >= myFireProperties.Count Then
                 ClearGrid(MainWin.FireDataSS)
             Else
@@ -1056,7 +1051,6 @@ Public Class UpdateGUI
                 MainWin.FireCl.Enabled = True
                 MainWin.FireHoC.Enabled = True
                 MainWin.FireRadiativeFraction.Enabled = True
-                ClearGrid(MainWin.FireDataSS)
 
                 aFire = myFireProperties(FireIndex)
                 MainWin.FireDefinitionName.Text = aFire.Name

@@ -1033,7 +1033,6 @@ Public Class CeditMain
         '
         Me.MenuView.Index = 1
         Me.MenuView.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.MenuUnits, Me.MenuItem5, Me.MenuViewInput, Me.MenuViewOutput, Me.MenuViewLog})
-        Me.MenuView.Shortcut = System.Windows.Forms.Shortcut.CtrlV
         Me.MenuView.Text = "View"
         '
         'MenuUnits
@@ -5524,26 +5523,25 @@ Public Class CeditMain
             If sender Is HVentFace Then aVent.Face = HVentFace.SelectedIndex + 1
             If sender Is HVentComp1 Then aVent.FirstCompartment = HVentComp1.SelectedIndex - 1
             If sender Is HVentComp2 Then aVent.SecondCompartment = HVentComp2.SelectedIndex - 1
-                ' CFast expects the from compartment to be the lower number of the pair and the outside to be the to compartment
-                If sender Is HVentOpenCriterion Then
-                    If aVent.OpenType <> HVentOpenCriterion.SelectedIndex Then
-                        aVent.OpenType = HVentOpenCriterion.SelectedIndex
-                        If aVent.OpenType = Vent.OpenbyTemperature Then
-                            aVent.OpenValue = 0.0
-                            aVent.OpenValue = myEnvironment.IntAmbTemperature
-                        ElseIf aVent.OpenType = Vent.OpenbyFlux Then
-                            aVent.OpenValue = 0.0
-                        End If
+            ' CFast expects the from compartment to be the lower number of the pair and the outside to be the to compartment
+            If sender Is HVentOpenCriterion Then
+                If aVent.OpenType <> HVentOpenCriterion.SelectedIndex Then
+                    aVent.OpenType = HVentOpenCriterion.SelectedIndex
+                    If aVent.OpenType = Vent.OpenbyTemperature Then
+                        aVent.OpenValue = myEnvironment.IntAmbTemperature
+                    ElseIf aVent.OpenType = Vent.OpenbyFlux Then
+                        aVent.OpenValue = 0.0
                     End If
                 End If
-                If sender Is HVentOpenValue Then aVent.OpenValue = Val(HVentOpenValue.Text)
-                If sender Is HVentTarget Then aVent.Target = myTargets.Item(HVentTarget.SelectedIndex).Name
-                If sender Is HVentInitialFraction Then aVent.InitialOpening = Val(HVentInitialFraction.Text)
-                If sender Is HVentFinalFraction Then aVent.FinalOpening = Val(HVentFinalFraction.Text)
-
-                myHVents(CurrentHVent) = aVent
-                UpdateGUI.HVents(CurrentHVent)
             End If
+            If sender Is HVentOpenValue Then aVent.OpenValue = Val(HVentOpenValue.Text)
+            If sender Is HVentTarget Then aVent.Target = myTargets.Item(HVentTarget.SelectedIndex).Name
+            If sender Is HVentInitialFraction Then aVent.InitialOpening = Val(HVentInitialFraction.Text)
+            If sender Is HVentFinalFraction Then aVent.FinalOpening = Val(HVentFinalFraction.Text)
+
+            myHVents(CurrentHVent) = aVent
+            UpdateGUI.HVents(CurrentHVent)
+        End If
     End Sub
 
 #End Region
@@ -5837,6 +5835,7 @@ Public Class CeditMain
                 aFireInstance.Target = myTargets.Item(FireTarget.SelectedIndex).Name
             End If
             If sender Is FireInstanceName Then aFireInstance.Name = FireInstanceName.Text
+            myFires(CurrentFire) = aFireInstance
 
             ' Inputs related to fire definition
             Dim fireIndex As Integer
@@ -5861,20 +5860,10 @@ Public Class CeditMain
                 If sender Is FireCl Then aFire.ChemicalFormula(formula.Cl) = Val(FireCl.Text)
                 If sender Is FireHoC Then aFire.HeatofCombustion = Val(FireHoC.Text)
                 If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
-
-                ' Dim numPoints As Integer, ir As Integer
-                ' If Val(FireHoC.Text) <> aFire.HeatofCombustion Then
-                ' aFire.HeatofCombustion = Val(FireHoC.Text)
-                ' numPoints = CountGridPoints(FireDataSS)
-                ' For ir = 1 To numPoints
-                ' FireDataSS(ir, Fire.FireMdot) = FireDataSS(ir, Fire.FireHRR) / aFire.HeatofCombustion
-                ' Next
-                'End If
-                '    CopyFireData(aFire)
+                CopyFireData(aFire)
 
                 myFireProperties(fireIndex) = aFire
             End If
-            myFires(CurrentFire) = aFireInstance
             UpdateGUI.Fires(CurrentFire)
         End If
     End Sub
@@ -6686,7 +6675,7 @@ Public Class CeditMain
                 Next
             Next
             aFire.SetFireData(aFireTimeSeries)
-            End If
+        End If
     End Sub
 
     Friend ReadOnly Property CountGridPoints(ByVal obj As C1.Win.C1FlexGrid.C1FlexGrid) As Integer

@@ -375,18 +375,20 @@ module spreadsheet_header_routines
 
     ! header information for the flow spreadsheet
 
-    integer, parameter :: maxhead = 10*mxhvents+10*mxvvents+2*mxmvents
-    character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(18), LabelsShort(9), LabelUnits(9)
+    integer, parameter :: maxhead = 1 + 11*mxhvents + 11*mxvvents + 11*mxmvents
+    
+    character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(21), LabelsShort(12), LabelUnits(12)
     integer :: position, i, ii, ifrom, ito, ih
     type(vent_type), pointer :: ventptr
 
-    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_', 'HT_', 'VT_', 'MVT_' /
+    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_', 'HT_', 'VT_', 'MVT_', 'HF_', 'VF_', 'MF_' /
     data Labels / 'Simulation Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
        'MVENT Trace Species Filtered', 'HVENT Total Inflow Upper', 'HVENT Total Outflow Upper', &
        'HVENT Total Inflow Lower', 'HVENT Total Outflow Lower', 'VVENT Total Inflow Upper', 'VVENT Total Outflow Upper', &
        'VVENT Total Inflow Lower', 'VVENT Total Outflow Lower', 'MVENT Total Inflow Upper', 'MVENT Total Outflow Upper', &
-       'MVENT Total Inflow Lower', 'MVENT Total Outflow Lower'/
-    data LabelUnits / 's', 3*'kg/s', 2*'kg', 3*'kg/s'/
+       'MVENT Total Inflow Lower', 'MVENT Total Outflow Lower', 'HVENT Opening Fraction', 'VVENT Opening Fraction', &
+        'MVENT Opening Fraction'/
+    data LabelUnits / 's', 3*'kg/s', 2*'kg', 3*'kg/s', 3*' '/
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
@@ -395,7 +397,7 @@ module spreadsheet_header_routines
     headertext(4,1) = LabelUnits(1)
     position = 1
 
-    !	Do the output by compartments
+    !	natural flow through vents in walls (doors / windows)
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
 
@@ -481,9 +483,18 @@ module spreadsheet_header_routines
             headertext(4,position) = labelunits(7)
         end if
         
+        position = position + 1
+        call tointstring(ventptr%counter,cvent)
+        write (ctemp,'(6a)') trim(labelsshort(10)),trim(cifrom),'_',trim(cito),'_',trim(cvent)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(19)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ', trim(cifrom),' to ',trim(cito)
+        headertext(3,position) = ctemp
+        headertext(4,position) = labelunits(10)
+        
     end do
 
-    ! Natural flow through horizontal vents (vertical flow)
+    ! natural flow through  vents in ceilings / floors
     do i = 1,n_vvents
 
         call tointstring(i,cvent)
@@ -567,87 +578,104 @@ module spreadsheet_header_routines
             headertext(3,position) = ctemp
             headertext(4,position) = labelunits(8)
         end if
+        
+        position = position + 1
+        call tointstring(ventptr%counter,cvent)
+        write (ctemp,'(6a)') trim(labelsshort(11)),trim(cifrom),'_',trim(cito),'_',trim(cvent)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(20)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ', trim(cifrom),' to ',trim(cito)
+        headertext(3,position) = ctemp
+        headertext(4,position) = labelunits(11)
+        
     end do
 
-    ! Mechanical ventilation
-    if (n_mvents/=0) then
-        do i = 1, n_mvents
-            call tointstring(i,cvent)
-            ventptr => mventinfo(i)
-            ii = ventptr%room1
-            call toIntString(ii,ciFrom)
-            if (ii==nr) cifrom = 'Outside'
-            ii = ventptr%room2
-            call toIntString(ii,ciTo)
-            if (ii==nr) cito = 'Outside'
-            do ih = 1,3
-                position = position + 1
-                headertext(1,position) = trim(LabelsShort(ih+3)) // trim(cifrom) // '_' // trim(cito) // '_' // trim(cvent)
-                headertext(2,position) = Labels(ih+3)
-                headertext(3,position) = 'Fan ' // trim(cvent) // ' from ' // trim(ciFrom) // ' to ' // trim(ciTo)
-                headertext(4,position) = LabelUnits(ih+3)
-            end do
-            
-            if (validation_flag) then
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_u_inflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(15)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cifrom),' upper layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_u_outflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(16)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cifrom),' upper layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_l_inflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(17)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cifrom),' lower layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_l_outflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(18)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cifrom),' lower layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_u_inflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(15)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cito),' upper layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_u_outflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(16)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cito),' upper layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_l_inflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(17)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cito),' lower layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-                position = position + 1
-                write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_l_outflow'
-                headertext(1,position) = ctemp
-                headertext(2,position) = labels(18)
-                write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cito),' lower layer '
-                headertext(3,position) = ctemp
-                headertext(4,position) = labelunits(9)
-            end if 
+    ! Mechanical vents
+    do i = 1, n_mvents
+        call tointstring(i,cvent)
+        ventptr => mventinfo(i)
+        ii = ventptr%room1
+        call toIntString(ii,ciFrom)
+        if (ii==nr) cifrom = 'Outside'
+        ii = ventptr%room2
+        call toIntString(ii,ciTo)
+        if (ii==nr) cito = 'Outside'
+        do ih = 1,3
+            position = position + 1
+            headertext(1,position) = trim(LabelsShort(ih+3)) // trim(cifrom) // '_' // trim(cito) // '_' // trim(cvent)
+            headertext(2,position) = Labels(ih+3)
+            headertext(3,position) = 'Fan ' // trim(cvent) // ' from ' // trim(ciFrom) // ' to ' // trim(ciTo)
+            headertext(4,position) = LabelUnits(ih+3)
         end do
-    end if
+
+        if (validation_flag) then
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_u_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(15)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cifrom),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_u_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(16)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cifrom),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_l_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(17)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cifrom),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cifrom),'_l_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(18)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cifrom),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_u_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(15)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cito),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_u_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(16)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cito),' upper layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_l_inflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(17)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' to ',trim(cito),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+            position = position + 1
+            write(ctemp,'(3a)')trim(labelsshort(9)),trim(cito),'_l_outflow'
+            headertext(1,position) = ctemp
+            headertext(2,position) = labels(18)
+            write(ctemp,'(5a)') 'Fan ',trim(cvent),' from ',trim(cito),' lower layer '
+            headertext(3,position) = ctemp
+            headertext(4,position) = labelunits(9)
+        end if
+
+        position = position + 1
+        call tointstring(ventptr%counter,cvent)
+        write (ctemp,'(6a)') trim(labelsshort(12)),trim(cifrom),'_',trim(cito),'_',trim(cvent)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(21)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ', trim(cifrom),' to ',trim(cito)
+        headertext(3,position) = ctemp
+        headertext(4,position) = labelunits(12)
+    end do
 
     ! write out header
     write (iofilssf,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))

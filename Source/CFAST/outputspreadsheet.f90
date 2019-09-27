@@ -150,7 +150,7 @@ module spreadsheet_routines
 
     ! output the flow data to the flow spreadsheet {project}_f.csv
 
-    integer, parameter :: maxoutput = mxhvents*4
+    integer, parameter :: maxoutput = 1 + 11*mxhvents + 11*mxvvents + 11*mxmvents
 
     real(eb), intent(in) :: time
 
@@ -170,7 +170,7 @@ module spreadsheet_routines
     ! first the time
     call ssaddtolist (position,time,outarray)
 
-    ! next the horizontal flow through vertical vents
+    ! next natural flow through vents in walls (doors / windows)
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
         ifrom = ventptr%room1
@@ -191,9 +191,11 @@ module spreadsheet_routines
             call ssaddtolist(position,ventptr%h_mflow(2,2,2),outarray)
         end if 
         
+        call ssaddtolist (position,ventptr%opening_fraction,outarray)
+        
     end do
 
-    ! next natural flow through horizontal vents (vertical flow)
+    ! next natural flow through vents in ceilings / floors
     do i = 1, n_vvents
 
         ventptr => vventinfo(i)
@@ -224,40 +226,43 @@ module spreadsheet_routines
                 call ssaddtolist(position, flow(j), outarray)
             end do
         end if 
+        
+        call ssaddtolist (position,ventptr%opening_fraction,outarray)
     end do
 
-    ! finally, mechanical ventilation
-    if (n_mvents/=0) then
-        do i = 1, n_mvents
-            ventptr => mventinfo(i)
-            flow = 0.0_eb
+    ! finally, mechanical vents
+    do i = 1, n_mvents
+        ventptr => mventinfo(i)
+        flow = 0.0_eb
 
-            flow = 0.0_eb
-            if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
-            if (ventptr%mflow(2,u)<0.0_eb) flow(6) = -ventptr%mflow(2,u)
-            if (ventptr%mflow(2,l)>=0.0_eb) flow(7) = ventptr%mflow(2,l)
-            if (ventptr%mflow(2,l)<0.0_eb) flow(8) = -ventptr%mflow(2,l)
-            if (ventptr%mflow(1,u)>=0.0_eb) flow(1) = ventptr%mflow(1,u)
-            if (ventptr%mflow(1,u)<0.0_eb) flow(2) = -ventptr%mflow(1,u)
-            if (ventptr%mflow(1,l)>=0.0_eb) flow(3) = ventptr%mflow(1,l)
-            if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
+        flow = 0.0_eb
+        if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
+        if (ventptr%mflow(2,u)<0.0_eb) flow(6) = -ventptr%mflow(2,u)
+        if (ventptr%mflow(2,l)>=0.0_eb) flow(7) = ventptr%mflow(2,l)
+        if (ventptr%mflow(2,l)<0.0_eb) flow(8) = -ventptr%mflow(2,l)
+        if (ventptr%mflow(1,u)>=0.0_eb) flow(1) = ventptr%mflow(1,u)
+        if (ventptr%mflow(1,u)<0.0_eb) flow(2) = -ventptr%mflow(1,u)
+        if (ventptr%mflow(1,l)>=0.0_eb) flow(3) = ventptr%mflow(1,l)
+        if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
 
-            sumin = flow(5) + flow(7)
-            sumout = flow(6) + flow(8)
-            netflow = sumin - sumout
-            call ssaddtolist (position,netflow,outarray)
-            trace =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
-            tracefiltered =abs(ventptr%total_trace_filtered(u))+abs(ventptr%total_trace_filtered(l))
-            call ssaddtolist (position, trace, outarray)
-            call ssaddtolist (position, tracefiltered, outarray)
-        
-            if(validation_flag) then
-                do j = 1, 8
-                    call ssaddtolist(position, flow(j), outarray)
-                end do
-            end if 
-        end do
-    end if
+        sumin = flow(5) + flow(7)
+        sumout = flow(6) + flow(8)
+        netflow = sumin - sumout
+        call ssaddtolist (position,netflow,outarray)
+        trace =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
+        tracefiltered =abs(ventptr%total_trace_filtered(u))+abs(ventptr%total_trace_filtered(l))
+        call ssaddtolist (position, trace, outarray)
+        call ssaddtolist (position, tracefiltered, outarray)
+
+        if(validation_flag) then
+            do j = 1, 8
+                call ssaddtolist(position, flow(j), outarray)
+            end do
+        end if
+
+        call ssaddtolist (position,ventptr%opening_fraction,outarray)
+    end do
+
 
     call ssprintresults(iofilssf, position, outarray)
     return

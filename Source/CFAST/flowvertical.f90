@@ -57,6 +57,7 @@ module vflow_routines
         rampid = ventptr%ramp_id
         call get_vent_opening (rampid,'V',itop,ibot,icount,i,tsec,fraction)
         area = fraction * ventptr%area
+        ventptr%opening_fraction = fraction
         ventptr%current_area = area
         ishape = ventptr%shape
         call ventcf (itop, ibot, area, ishape, epsp, xmvent, vvent, tmvent)

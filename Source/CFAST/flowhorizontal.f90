@@ -105,6 +105,8 @@ module hflow_routines
         height = ventptr%soffit - ventptr%sill
         width = ventptr%width*fraction
         avent = height*width
+        ventptr%opening_fraction = fraction
+        ventptr%current_area = avent
 
         if (avent>=1.0e-10_eb) then
             call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,&

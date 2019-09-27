@@ -353,7 +353,7 @@ module output_routines
         if (ito==nr) cito = 'Outside'
         call flwout(outbuf,ventptr%h_mflow(1,1,1),ventptr%h_mflow(1,1,2),ventptr%h_mflow(1,2,1),ventptr%h_mflow(1,2,2),&
            ventptr%h_mflow(2,1,1),ventptr%h_mflow(2,1,2),ventptr%h_mflow(2,2,1),ventptr%h_mflow(2,2,2))
-        write (iofilo,5010) 'H', i, cifrom, cito, outbuf
+        write (iofilo,5010) 'H', i, cifrom, cito, ventptr%opening_fraction, outbuf
     end do
 
     ! vertical flow natural vents
@@ -378,7 +378,7 @@ module output_routines
         if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
 
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
-        write (iofilo,5010) 'V', i, cifrom, cito, outbuf
+        write (iofilo,5010) 'V', i, cifrom, cito, ventptr%opening_fraction, outbuf
     end do
 
     ! mechanical vents
@@ -403,7 +403,7 @@ module output_routines
         if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
 
         call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
-        write (iofilo,5010) 'M', i, cifrom, cito, outbuf
+        write (iofilo,5010) 'M', i, cifrom, cito, ventptr%opening_fraction, outbuf
     end do
 
     ! Total mass flowing through mechanical vents up to current time
@@ -430,13 +430,14 @@ module output_routines
         write (iofilo,5050) cifrom, cito, outbuf
     end do
 
-5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
-    '                                       Flow relative to ''From''                             Flow Relative to ''To''',/ &
-    '                                      Upper Layer               Lower Layer               Upper Layer',&
-    '               Lower Layer',/, &
-    'Vent   From/Bottom    To/Top           Inflow       Outflow      Inflow       Outflow      Inflow',&
-    '       Outflow      Inflow       Outflow',/,137('-'))
-5010 format (a1,i3,3x,a12,3x,a12,1x,a)
+    5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
+    '                                                    Flow relative to ''From''', &
+    'Flow Relative to ''To''',/ &
+    '                                       Opening      Upper Layer               ', &
+    'Lower Layer               Upper Layer               Lower Layer',/, &
+    'Vent   From/Bottom    To/Top           Fraction     Inflow       Outflow      ', &
+    'Inflow       Outflow      Inflow       Outflow      Inflow       Outflow',/,153('-'))
+5010 format (a1,i3,3x,a12,3x,a12,3x,1pg11.4,1x,a)
 5030 format (//,'TOTAL MASS FLOW THROUGH MECHANICAL VENTS (kg)',//, &
     'To             Through        ','      Upper Layer           ','    Lower Layer           ','   Trace Species',/, &
     'Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/, 104('-'))

@@ -10,10 +10,12 @@
     use namelist_input_routines, only: namelist_input
     use spreadsheet_input_routines, only: spreadsheet_input
     
-    use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, thermal_type, vent_type, visual_type
+    use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, thermal_type, vent_type, &
+        visual_type
 
     use cenviro, only: rgas
-    use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall, mx_monte_carlo
+    use cparams, only: mxpts, mxrooms, mx_hsep, mx_vsep, smoked, w_from_room, w_to_room, w_from_wall, w_to_wall, &
+        mx_monte_carlo, interior, exterior
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: nmlflag
@@ -21,7 +23,7 @@
         smvcsv, smvsinfo, ssconnections, ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, ssmontecarlo, &
         kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
-    use target_data, only: n_detectors, detectorinfo
+    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
@@ -48,12 +50,13 @@
     real(eb) :: xloc, yloc, zloc, zbot, ztop, pyramid_height, dheight, xx, sum
     integer :: ios, i, ii, j, itop, ibot, nswall2, iroom, iroom1, iroom2
     integer :: iwall1, iwall2, itype, npts, ioff, ioff2
-    
-    type(room_type), pointer :: roomptr, roomptr2
-    type(fire_type), pointer :: fireptr
+
     type(detector_type), pointer :: dtectptr
-    type(vent_type), pointer :: ventptr
+    type(fire_type), pointer :: fireptr
+    type(room_type), pointer :: roomptr, roomptr2
+    type(target_type), pointer :: targptr
     type(thermal_type), pointer :: thrmpptr
+    type(vent_type), pointer :: ventptr    
 
     ! deal with opening the data file and assuring ourselves that it is compatible
     close (iofili)
@@ -333,6 +336,23 @@
 
     ! initialize variables that will change when ambient conditions change
     call initialize_ambient
+    
+    ! check targets to set flag for targets exposed to the exterior
+    do i = 1, n_targets
+        targptr => targetinfo(i)
+        iroom = targptr%room
+        if (iroom<1.or.iroom>nrm1) then
+            write (*,110) iroom
+            write (iofill,110) iroom
+110         format('***Error: Invalid TARGET specification. Room ',i3, ' is not a valid')
+            stop
+        end if
+        roomptr => roominfo(iroom)
+        targptr%back = interior
+        if (targptr%center(1)==0.0_eb.or.targptr%center(1)==roomptr%cwidth) targptr%back=exterior
+        if (targptr%center(2)==0.0_eb.or.targptr%center(2)==roomptr%cdepth) targptr%back=exterior
+        if (targptr%center(3)==0.0_eb.or.targptr%center(3)==roomptr%cheight) targptr%back=exterior
+    end do
 
     ! check detectors
     do i = 1, n_detectors

@@ -17,7 +17,7 @@ module target_routines
         idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off
-    use room_data, only: roominfo, interior_ambient_temperature
+    use room_data, only: roominfo, interior_ambient_temperature, exterior_ambient_temperature
     use setup_data, only: iofilsmv, iofilsmvplt, iofilsmvzone
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
 
@@ -309,7 +309,7 @@ module target_routines
         qtgflux(back) = qgassum(back)
 
         ! if the target rear was exterior then calculate the flux assuming ambient outside conditions
-        if (targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*interior_ambient_temperature**4
+        if (targptr%back==exterior.or.qtgflux(back)==0.0) qtgflux(back) = sigma*exterior_ambient_temperature**4
     end if
 
     ! compute convective flux
@@ -334,7 +334,7 @@ module target_routines
     if (targptr%back==interior) then
         tgb = tg
     else
-        tgb = interior_ambient_temperature
+        tgb = exterior_ambient_temperature
     end if
     dttarg = 1.0e-7_eb*ttarg(front)
     dttargb = 1.0e-7_eb*ttarg(back)

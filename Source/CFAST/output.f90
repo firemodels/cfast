@@ -994,20 +994,26 @@ module output_routines
     ! output initial test case target specifications
 
     integer :: itarg, j
+    character :: location_type*8
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
     if (n_targets/=0) write (iofilo,5000)
-5000 format(//,'TARGETS',//,'Target',T29,'Compartment',T44,'Position (x, y, z)',T71,&
-         'Direction (x, y, z)',T96,'Material',/,102('-'))
+5000 format(//,'TARGETS',//,'Target',21x,'Compartment',10x,'Position (x, y, z)',9x,&
+         'Back', 11x, 'Direction (x, y, z)',9x,'Material'/,131('-'))
 
     do itarg = 1, n_targets
         targptr => targetinfo(itarg)
         roomptr => roominfo(targptr%room)
-        write (iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), &
+        if (targptr%back==interior) then
+            location_type = 'Interior'
+        else
+            location_type = 'Exterior'
+        end if
+        write (iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), location_type, &
             (targptr%normal(j),j=1,3), trim(targptr%material)
-5010    format(i5,3x,a15,t31,a14,t41,6(f7.2,2x),t96,a)
+5010    format(i5,3x,a15,4x,a14,4x,3(f7.2,2x),3x,a8,4x,3(f7.2,2x),4x,a)
     end do
     return
     end subroutine output_initial_targets

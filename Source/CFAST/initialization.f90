@@ -664,7 +664,11 @@ module initialization_routines
         targptr%c = thrmpptr%c(1)
         targptr%rho = thrmpptr%rho(1)
         targptr%thickness = thrmpptr%thickness(1)
-        targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))
+        if (targptr%depth_units=='FRACTION') then
+            targptr%depth_loc = max(0.0_eb,min(targptr%thickness*targptr%depth_loc,targptr%thickness))
+        else
+            targptr%depth_loc = max(0.0_eb,min(targptr%depth_loc,targptr%thickness))
+        end if
         targptr%emissivity = thrmpptr%eps
     end do
 

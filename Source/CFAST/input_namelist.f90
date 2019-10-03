@@ -583,12 +583,11 @@
     real(eb) :: temperature_depth,rti,setpoint,spray_density
     real(eb),dimension(3) :: location,normal
     real(eb),dimension(2) :: setpoints
-    character(64) :: comp_id,id,matl_id
-    character(64) :: type
+    character(64) :: comp_id, id, matl_id, type, depth_units
     logical :: adiabatic_target
     real(eb), dimension(2) :: convection_coefficients
-    namelist /DEVC/ comp_id, type, id, temperature_depth, location, matl_id, normal, rti, setpoint, spray_density, setpoints, &
-                    adiabatic_target, convection_coefficients
+    namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, rti, setpoint, &
+        spray_density, setpoints, adiabatic_target, convection_coefficients
 
     ios = 1
 
@@ -678,6 +677,7 @@
                 targptr%normal = normal
 
                 targptr%depth_loc = temperature_depth
+                targptr%depth_units = depth_units
 
                 ! target name
                 targptr%name = id
@@ -828,6 +828,7 @@
     type                            = 'NULL'
     id                              = 'NULL'
     temperature_depth               = 0.5_eb
+    depth_units                     = 'FRACTION'
     location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
     matl_id                         = 'NULL'
     normal(:)                       = (/0., 0., 1./)

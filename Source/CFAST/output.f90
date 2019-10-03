@@ -143,7 +143,7 @@ module output_routines
     if (outputformat>1) then
         call results_layers
         call results_fires
-        call results_targets(1)
+        call results_targets
         call results_detectors
         call results_species
         call results_vent_flows
@@ -500,13 +500,9 @@ module output_routines
 
 ! --------------------------- results_targets -------------------------------------------
 
-    subroutine results_targets (itprt)
+    subroutine results_targets
 
     ! output the temperatures and fluxes on surfaces and targets at the current time
-    
-    ! input     itprt   1 if target printout specifically called for, 0 otherwise
-
-    integer, intent(in) :: itprt
 
     integer :: i, iw, itarg
     real(eb) :: itotal, total, tgtemp, tttemp, tctemp, gasfed, heatfed
@@ -514,47 +510,50 @@ module output_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
 
-    if ((itprt==0.and.n_targets<=nrm1).or.n_targets==0) return
-    write (iofilo,5000)
+    if (n_targets>0) then
+        write (iofilo,5000)
 
-    call get_target_temperatures
+        call get_target_temperatures
 
-    do i=1,nrm1
-        roomptr => roominfo(i)
-        write (iofilo,5010) roomptr%name, (roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,iw=1,4)
+        do i=1,nrm1
+            roomptr => roominfo(i)
+            write (iofilo,5010) roomptr%name, (roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,iw=1,4)
 
-        do itarg = 1, n_targets
-            targptr => targetinfo(itarg)
-            if (targptr%room==i) then
-                tgtemp = targptr%tgas
-                tttemp = targptr%tfront
-                tctemp = targptr%tinternal
-                gasfed = targptr%fed_gas
-                heatfed = targptr%fed_heat
-                if (validation_flag.or.netheatflux) then
-                    itotal = targptr%flux_incident_front
-                    total = targptr%flux_net_gauge(1)
-                else
-                    itotal = targptr%flux_incident_front
-                    total = targptr%flux_net(1)
+            do itarg = 1, n_targets
+                targptr => targetinfo(itarg)
+                if (targptr%room==i) then
+                    tgtemp = targptr%tgas
+                    tttemp = targptr%tfront
+                    tctemp = targptr%tinternal
+                    gasfed = targptr%fed_gas
+                    heatfed = targptr%fed_heat
+                    if (validation_flag.or.netheatflux) then
+                        itotal = targptr%flux_incident_front
+                        total = targptr%flux_net_gauge(1)
+                    else
+                        itotal = targptr%flux_incident_front
+                        total = targptr%flux_net(1)
+                    end if
+                    if (abs(itotal)<=1.0e-10_eb) itotal = 0.0_eb
+                    if (abs(total)<=1.0e-10_eb) total = 0.0_eb
+                    if (total/=0.0_eb) then
+                        write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                            tctemp-kelvin_c_offset, itotal, total, gasfed, heatfed
+                    elseif (itotal/=0.0_eb) then
+                        write (iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                            itotal, gasfed,heatfed
+                    else
+                        write (iofilo,5040) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                            gasfed, heatfed
+                    end if
                 end if
-                if (abs(itotal)<=1.0e-10_eb) itotal = 0.0_eb
-                if (abs(total)<=1.0e-10_eb) total = 0.0_eb
-                if (total/=0.0_eb) then
-                    write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
-                        tctemp-kelvin_c_offset, itotal, total, gasfed, heatfed
-                elseif (itotal/=0.0_eb) then
-                    write (iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
-                        itotal, gasfed,heatfed
-                else
-                    write (iofilo,5040) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
-                        gasfed, heatfed
-                end if
-            end if
+            end do
+
         end do
+    end if
 
-    end do
     return
+    
     5000 format (//,'SURFACES AND TARGETS',//, &
     'Compartment    Ceiling   Up wall   Low wall  Floor    Target        Gas       Surface   Interior Incident     ', &
     'Net          Gas         Heat',/, &
@@ -581,37 +580,41 @@ module output_routines
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
-    if (n_detectors==0)return
-    write (iofilo,5000)
-    cjetmin = 0.10_eb
-    do i = 1, n_detectors
-        dtectptr => detectorinfo(i)
-        iroom = dtectptr%room
-        roomptr => roominfo(iroom)
+    if (n_detectors>0) then
+        write (iofilo,5000)
+        cjetmin = 0.10_eb
+        do i = 1, n_detectors
+            dtectptr => detectorinfo(i)
+            iroom = dtectptr%room
+            roomptr => roominfo(iroom)
 
-        zdetect = dtectptr%center(3)
-        if (zdetect>roomptr%depth(l)) then
-            tlay = roomptr%temp(u)
-        else
-            tlay = roomptr%temp(l)
-        end if
+            zdetect = dtectptr%center(3)
+            if (zdetect>roomptr%depth(l)) then
+                tlay = roomptr%temp(u)
+            else
+                tlay = roomptr%temp(l)
+            end if
 
-        tjet = max(dtectptr%temp_gas,tlay)-kelvin_c_offset
-        vel = max(dtectptr%velocity,cjetmin)
-        obs = dtectptr%obscuration
-        tlink =  dtectptr%value-kelvin_c_offset
+            tjet = max(dtectptr%temp_gas,tlay)-kelvin_c_offset
+            vel = max(dtectptr%velocity,cjetmin)
+            obs = dtectptr%obscuration
+            tlink =  dtectptr%value-kelvin_c_offset
 
-        cact = 'NO'
-        if (dtectptr%activated) cact = 'YES'
+            cact = 'NO'
+            if (dtectptr%activated) cact = 'YES'
 
-        itype = dtectptr%dtype
-        if (itype==smoked) then
-            write (iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
-        else if (itype==heatd) then
-            write (iofilo,5020) i, roomptr%name, 'HEAT  ', tlink, tjet, cact
-        else
-            write (iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
-        end if
+            itype = dtectptr%dtype
+            if (itype==smoked) then
+                write (iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
+            else if (itype==heatd) then
+                write (iofilo,5020) i, roomptr%name, 'HEAT  ', tlink, tjet, cact
+            else
+                write (iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
+            end if
+        end do
+    end if
+
+    return
 
 5000 format(//'DETECTORS/ALARMS/SPRINKLERS',/, &
     '                                      Sensor         Smoke',//, &
@@ -620,8 +623,6 @@ module output_routines
 5010    format(i3,5x,a14,5x,a6,4x,15x,1pe10.3,4x,1pe10.3,4x,1pe10.3,10x,a3)
 5020    format(i3,5x,a14,5x,a6,4x,1pe10.3,5x,1pe10.3,38x,a3)
 5030    format(i3,5x,a14,5x,a6,4x,1pe10.3,5x,1pe10.3,4x,1pe10.3,24x,a3)
-    end do
-    return
     end subroutine results_detectors
 
 ! --------------------------- output_initial_overview -------------------------------------------
@@ -1001,7 +1002,7 @@ module output_routines
 
     if (n_targets/=0) write (iofilo,5000)
 5000 format(//,'TARGETS',//,'Target',21x,'Compartment',10x,'Position (x, y, z)',9x,&
-         'Back', 11x, 'Direction (x, y, z)',9x,'Material'/,131('-'))
+         'Back', 11x, 'Direction (x, y, z)',8x,'Int. Temp. At',4x,'Material'/,149('-'))
 
     do itarg = 1, n_targets
         targptr => targetinfo(itarg)
@@ -1012,8 +1013,8 @@ module output_routines
             location_type = 'Exterior'
         end if
         write (iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), location_type, &
-            (targptr%normal(j),j=1,3), trim(targptr%material)
-5010    format(i5,3x,a15,4x,a14,4x,3(f7.2,2x),3x,a8,4x,3(f7.2,2x),4x,a)
+            (targptr%normal(j),j=1,3), targptr%depth_loc, trim(targptr%material)
+5010    format(i5,3x,a15,4x,a14,4x,3(f7.2,2x),3x,a8,4x,3(f7.2,2x),f8.3,12x,a)
     end do
     return
     end subroutine output_initial_targets

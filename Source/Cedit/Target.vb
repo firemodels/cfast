@@ -497,6 +497,14 @@ Public Class Target
                         myErrors.Add("Target " + TargetNumber.ToString + " has an unknown surface material.", ErrorMessages.TypeWarning)
                         HasErrors += 1
                     End If
+                    Dim thickness As Single = myThermalProperties(myThermalProperties.GetIndex(aMaterial)).Thickness
+                    If aInternalLocation > thickness Then
+                        myErrors.Add("Target " + TargetNumber.ToString + ". Location for internal temperature is greater than target thickness.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    ElseIf aInternalLocation < 0 Then
+                        myErrors.Add("Target " + TargetNumber.ToString + ". Location for internal temperature is less than zero.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    End If
                 Case TypeDetector
                     If aCompartment < 0 Or aCompartment > myCompartments.Count - 1 Then
                         myErrors.Add("Detector " + TargetNumber.ToString + " is not assigned to an existing compartment. Select compartment.", ErrorMessages.TypeFatal)

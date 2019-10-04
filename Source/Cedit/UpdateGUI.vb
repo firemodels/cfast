@@ -731,7 +731,7 @@ Public Class UpdateGUI
             MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
             MainWin.TargetMaterial.Text = myThermalProperties.GetLongName(aTarget.Material)
             MainWin.TargetSolutionType.SelectedIndex = aTarget.SolutionType
-            MainWin.TargetInternalLocation.Text = aTarget.InternalLocation.ToString
+            MainWin.TargetInternalLocation.Text = aTarget.InternalLocation.ToString + myUnits.Convert(UnitsNum.Length).Units
             If aTarget.Material <> "Default" And aTarget.Material <> "Off" Then
                 Dim aThermalProperty As New ThermalProperty
                 aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aTarget.Material))

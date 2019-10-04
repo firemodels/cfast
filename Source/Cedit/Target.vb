@@ -211,11 +211,11 @@ Public Class Target
     End Property
     Public Property InternalLocation() As Single
         Get
-            Return aInternalLocation
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aInternalLocation)
         End Get
         Set(ByVal Value As Single)
-            If Value <> aInternalLocation Then
-                aInternalLocation = Value
+            If aInternalLocation <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                aInternalLocation = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set

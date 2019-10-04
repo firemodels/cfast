@@ -579,6 +579,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct CONVECTION\_COEFFICENTS}  & Real Doublet        & Section \ref{info:DEVC}     &   kW/(m$^2$$\cdot$K)      &       0, 0       \\ \hline
 {\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct DEVC} input included in the input file. Additional inputs may be required depending on the type of device.}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct ID}*      		  & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct DEPTH\_UNITS}  & Character     & Section \ref{info:DEVC}     &  none or m                 &       {\ct FRACTION}       \\ \hline
 {\ct TEMPERATURE\_DEPTH}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
 {\ct LOCATION}*       & Real Triplet  & Section \ref{info:DEVC}     & m                 &                 \\ \hline
 {\ct MATL\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
@@ -591,7 +592,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \end{longtable}
 \end{minipage}
 
-\graybox{{\ct PLATE} and {\ct CYLINDER} targets are defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct TEMPERATURE\_DEPTH}, and {\ct NORMAL}. \\
+\graybox{{\ct PLATE} and {\ct CYLINDER} targets are defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct TEMPERATURE\_DEPTH}, {\ct DEPTH\_UNITS}and {\ct NORMAL}. \\
 
 A sprinkler is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATION}, {\ct RTI}, {\ct SETPOINT}, and {\ct SPRAY\_DENSITY}.  \\
 
@@ -605,7 +606,7 @@ A heat detector is defined by {\ct COMP\_ID}, {\ct TYPE}, {\ct ID}, {\ct LOCATIO
 \begin{lstlisting}
 &DEVC ID = 'Targ 1', COMP_ID = 'Comp 1', TYPE = 'PLATE',
       LOCATION = 2.2, 1.88, 2.34., NORMAL = 0., 0., 1.,
-      MATL_ID = 'CONCRETE', TEMPERATURE_DEPTH = 0.5 /
+      MATL_ID = 'CONCRETE', TEMPERATURE_DEPTH = 0.1, DEPTH_UNITS = 'M' /
 
 &DEVC ID = 'Sprinkler 1', COMP_ID = 'Comp 1',
       TYPE = 'SPRINKLER',

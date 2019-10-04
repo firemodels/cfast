@@ -211,11 +211,11 @@ Public Class Target
     End Property
     Public Property InternalLocation() As Single
         Get
-            Return aInternalLocation
+            Return myUnits.Convert(UnitsNum.Length).FromSI(aInternalLocation)
         End Get
         Set(ByVal Value As Single)
-            If Value <> aInternalLocation Then
-                aInternalLocation = Value
+            If aInternalLocation <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
+                aInternalLocation = myUnits.Convert(UnitsNum.Length).ToSI(Value)
                 aChanged = True
             End If
         End Set
@@ -495,6 +495,14 @@ Public Class Target
                     End If
                     If myThermalProperties.GetIndex(aMaterial) < 0 Then
                         myErrors.Add("Target " + TargetNumber.ToString + " has an unknown surface material.", ErrorMessages.TypeWarning)
+                        HasErrors += 1
+                    End If
+                    Dim thickness As Single = myThermalProperties(myThermalProperties.GetIndex(aMaterial)).Thickness
+                    If aInternalLocation > thickness Then
+                        myErrors.Add("Target " + TargetNumber.ToString + ". Location for internal temperature is greater than target thickness.", ErrorMessages.TypeFatal)
+                        HasErrors += 1
+                    ElseIf aInternalLocation < 0 Then
+                        myErrors.Add("Target " + TargetNumber.ToString + ". Location for internal temperature is less than zero.", ErrorMessages.TypeFatal)
                         HasErrors += 1
                     End If
                 Case TypeDetector

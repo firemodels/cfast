@@ -87,10 +87,11 @@ Module IO
                         type = 0
                     End If
                     aDetect.SetTarget(csv.num(i, targetNum.compartment) - 1, csv.str(i, targetNum.material), type)
+                    Dim thickness As Single = myThermalProperties(myThermalProperties.GetIndex(aDetect.Material)).Thickness
                     If (csv.str(i, targetNum.internalLocation) <> "") Then
-                        aDetect.InternalLocation = csv.num(i, targetNum.internalLocation)
+                        aDetect.InternalLocation = Math.Max(0, Math.Min(csv.num(i, targetNum.internalLocation) * thickness, thickness))
                     Else
-                        aDetect.InternalLocation = 0.5
+                        aDetect.InternalLocation = thickness / 2
                     End If
                     If csv.str(i, targetNum.name).Length > 0 Then
                         aDetect.Name = csv.str(i, targetNum.name)
@@ -1099,6 +1100,7 @@ Module IO
     Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile, ByRef someDetectors As TargetCollection)
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type As String
+        Dim tempdepthunits As String = "FRACTION"
         Dim tempdepth, rti, setp, setps(2), sprayd As Single
         Dim loc(3), norm(3), coeffs(2) As Single
         Dim valid, lvalid, adiabatic As Boolean
@@ -1143,6 +1145,8 @@ Module IO
                         Else
                             myErrors.Add("In DEVC namelist for TYPE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value.", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "DEPTH_UNITS" Then
+                        tempdepthunits = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TEMPERATURE_DEPTH" Then
                         tempdepth = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "RTI" Then
@@ -1238,7 +1242,18 @@ Module IO
                             atype = Target.ThermallyThick
                         End If
                         aDetect.SetTarget(myCompartments.GetCompIndex(compid), matlid, atype)
-                        aDetect.InternalLocation = tempdepth
+                        If tempdepthunits = "FRACTION" Then
+                            Dim MaterialIndex As Integer = myThermalProperties.GetIndex(matlid)
+                            If MaterialIndex >= 0 Then
+                                Dim thickness As Single = myThermalProperties(MaterialIndex).Thickness
+                                aDetect.InternalLocation = Math.Max(0, Math.Min(tempdepth * thickness, thickness))
+                            Else
+                                aDetect.InternalLocation = tempdepth
+                                myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because material ID has not been set", ErrorMessages.TypeFatal)
+                            End If
+                        Else
+                                aDetect.InternalLocation = tempdepth
+                        End If
                         aDetect.Name = id
                         If adiabatic = True Then
                             aDetect.Adiabatic = adiabatic
@@ -3579,6 +3594,7 @@ Module IO
                 ln += " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
                 ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
                 ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
+                ln += " DEPTH_UNITS = " + "'M'"
                 If aTarg.Adiabatic = True Then
                     ln += " ADIABATIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString
                 End If

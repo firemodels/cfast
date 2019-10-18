@@ -734,7 +734,7 @@ module spreadsheet_routines
     type(montecarlo_type), pointer :: monteptr
     logical :: first, lend
     
-    integer, parameter :: numr = 3, numc = 500
+    integer, parameter :: numr = 3, numc = 32000
     real(eb) :: lastval(2, mx_monte_carlo), lasttime(mx_monte_carlo), x(numr, numc)
     character(128) :: header(numr, numc), c(numr, numc)
     

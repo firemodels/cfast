@@ -134,10 +134,10 @@ Public Class Environment
         Get
             Return aVersion
         End Get
-        Set(value As Integer)
-            If value <> aVersion Then
+        Set(Value As Integer)
+            If Value <> Convert.ToInt32(My.Application.Info.Version.Major.ToString) * 1000 + Convert.ToInt32(My.Application.Info.Version.Minor.ToString) * 100 Then
                 aChanged = True
-                aVersion = value
+                aVersion = Convert.ToInt32(My.Application.Info.Version.Major.ToString) * 1000 + Convert.ToInt32(My.Application.Info.Version.Minor.ToString) * 100
             End If
         End Set
     End Property

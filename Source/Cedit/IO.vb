@@ -675,13 +675,13 @@ Module IO
         Dim ver As Integer
         Dim title As String
 
-        ver = 7300
+        someEnvironment.Version = 0
         title = ""
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "HEAD") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "VERSION") Then
-                        ver = NMList.ForNMListVarGetNum(i, j, 1)
+                        ver = someEnvironment.Version
                     ElseIf (NMList.ForNMListGetVar(i, j) = "TITLE") Then
                         title = NMList.ForNMListVarGetStr(i, j, 1)
                     Else

@@ -844,14 +844,14 @@ module spreadsheet_routines
                     if (monteptr%type_of_analysis(1:3) == 'MAX') then
                         mcrarray(2,relcol) = max(mcrarray(2,relcol),x(1, primecol(cols(i))))
                     else if (monteptr%type_of_analysis(1:3) == 'MIN') then
-                        mcrarray(2,relcol) = min(mcrarray(2,relcol),x(1, primecol(i)))
+                        mcrarray(2,relcol) = min(mcrarray(2,relcol),x(1, primecol(cols(i))))
                     else if (monteptr%type_of_analysis(1:15) == 'TRIGGER_GREATER') then
                         if (x(1, seccol(1,cols(i)))>=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
-                            mcrarray(2,relcol) = x(1, primecol(i))
+                            mcrarray(2,relcol) = x(1, primecol(cols(i)))
                         end if
                     else if (monteptr%type_of_analysis(1:14) == 'TRIGGER_LESSER') then
                         if (x(1, seccol(1,i))<=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
-                            mcrarray(2,relcol) = x(1, primecol(i))
+                            mcrarray(2,relcol) = x(1, primecol(cols(i)))
                         end if
                     else if (monteptr%type_of_analysis(1:9) == 'INTEGRATE') then
                         mcrarray(2,relcol) = mcrarray(2,relcol) + &

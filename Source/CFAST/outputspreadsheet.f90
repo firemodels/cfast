@@ -742,6 +742,16 @@ module spreadsheet_routines
     integer :: primecol(mx_monte_carlo), seccol(2, mx_monte_carlo), mxr, mxc
     real(eb) :: dummy(2, mx_monte_carlo)
     
+    lastval = 0.0_eb
+    lasttime = 0.0_eb
+    x = 0.0_eb
+    header = ' '
+    c = ' '
+    cols = 0
+    primecol = 0
+    seccol = 0
+    dummy = 0.0_eb
+    
     first = .true.
     num_entries = 0
     icol = 0

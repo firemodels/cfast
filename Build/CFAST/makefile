@@ -169,7 +169,7 @@ gnu_osx_64_db : $(objfgnu)
 	$(FCOMPL) $(FFLAGS) -o $(obj) $(objfgnu)
 
 # 64 bit
-intel_osx_64 : FFLAGS = -fpp -O2 -save -zero -m64 -heap-arrays -static-intel -fp-model strict $(GITINFO)
+intel_osx_64 : FFLAGS = -fpp -O2 -save -zero -m64 -traceback -heap-arrays -static-intel -fp-model strict $(GITINFO)
 intel_osx_64 : FCOMPL = ifort
 intel_osx_64 : obj = cfast7_osx_64
 intel_osx_64 : $(objf)

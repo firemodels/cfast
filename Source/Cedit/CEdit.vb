@@ -5323,7 +5323,7 @@ Public Class CeditMain
                     myDetectors.RemoveAll(CurrentCompartment) : CurrentDetector = 0
                     myTargets.RemoveAll(CurrentCompartment) : CurrentTarget = 0
                     myHHeats.RemoveAll(CurrentCompartment) : CurrentHHeat = 0
-                    myHHeats.RemoveAll(CurrentCompartment) : CurrentVHeat = 0
+                    myVHeats.RemoveAll(CurrentCompartment) : CurrentVHeat = 0
                     myFireProperties.RemoveAll(CurrentCompartment) : CurrentFire = 0
                     myVisuals.RemoveAll(CurrentCompartment) : CurrentVisual = 0
                     myCompartments.Remove(CurrentCompartment)

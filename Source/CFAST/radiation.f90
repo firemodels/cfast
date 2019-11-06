@@ -455,7 +455,7 @@ module radiation_routines
 
     real(eb) function rdparfig(x,y,z)
 
-    !  calculates the configuration factor between two paralell plates a distance z a part.  Each
+    !  calculates the configuration factor between two parallel plates a distance z a part.  Each
     !  plate has a dimension of x by y.  the units of x, y and z are un-important except that they must be consistent.
 
     real(eb), intent(in) :: x, y, z
@@ -483,9 +483,13 @@ module radiation_routines
 
     real(eb), dimension(3), intent(in) :: v1, vf
     real(eb), dimension(3), intent(out) :: vrel
+    real(eb) :: norm
 
     vrel(1:3) = v1(1:3) - vf(1:3)
-    vrel(1:3) = vrel(1:3)/dnrm2(3,vrel,1)
+    norm = dnrm2(3,vrel,1)
+    if (norm.ne.0._eb) then
+        vrel(1:3) = vrel(1:3)/norm
+    end if
     return
     end subroutine getvrel
 

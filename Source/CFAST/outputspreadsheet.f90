@@ -519,11 +519,10 @@ module spreadsheet_routines
     integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires+mxhvents*(4+10*mxfslab)+10*mxvvents+12*mxmvents
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxhead), f_height, fraction, height, width, avent, slabs, vflow
+    real(eb) :: outarray(maxhead), f_height, avent, slabs, vflow
     logical :: firstc
     integer :: position
-    integer :: i, j, iroom1, iroom2, ik, im, ix
-    character(64) :: rampid
+    integer :: i, j
 
 
     type(vent_type), pointer :: ventptr
@@ -576,18 +575,7 @@ module spreadsheet_routines
     ! horizontal vents
     do i = 1, n_hvents
         ventptr=>hventinfo(i)
-
-        iroom1 = ventptr%room1
-        iroom2 = ventptr%room2
-        ik = ventptr%counter
-        im = min(iroom1,iroom2)
-        ix = max(iroom1,iroom2)
-        rampid = ventptr%ramp_id
-        call get_vent_opening (rampid,'H',im,ix,ik,i,time,fraction)
-        height = ventptr%soffit - ventptr%sill
-        width = ventptr%width
-        avent = fraction*height*width
-        ! first column is just vent area ... it's for backwards compatibility with old vent flow visualization
+        avent = ventptr%current_area
         call ssaddtolist (position,avent,outarray)
         ! flow slabs for the vent
         slabs = ventptr%n_slabs
@@ -622,7 +610,7 @@ module spreadsheet_routines
     if (n_mvents/=0) then
         do i = 1, n_mvents
             ventptr => mventinfo(i)
-            avent = ventptr%diffuser_area(1)
+        avent = ventptr%current_area
             call ssaddtolist (position,avent,outarray)
             ! flow slabs for the vent
             slabs = ventptr%n_slabs

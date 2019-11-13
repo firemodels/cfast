@@ -431,12 +431,13 @@
 
     integer,dimension(3) :: grid
     real(eb) :: depth, height ,width
-    real(eb),dimension(3) :: origin
+    real(eb), dimension(3) :: origin
+    real(eb), dimension(2) :: leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     logical :: hall, shaft
     character(64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, &
-        ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width
+        ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area
 
     ios = 1
 
@@ -535,6 +536,9 @@
             roomptr%hall=.false.
             roomptr%shaft = shaft
             roomptr%hall = hall
+            
+            ! leakage
+            roomptr%leak_areas = leak_area
 
         end do read_comp_loop
 
@@ -557,6 +561,7 @@
     width                   = 0.0_eb
     grid(:)                 = default_grid
     origin(:)               = 0.0_eb
+    leak_area(:)            = 0.0_eb
     hall                    = .false.
     shaft                   = .false.
 
@@ -1681,7 +1686,7 @@ continue
 
                 if  (trim(criterion)=='TIME' .or. trim(criterion)=='TEMPERATURE' .or. trim(criterion)=='FLUX') then
                     ventptr%offset(1) = offset
-                    ventptr%offset(2) = 0
+                    ventptr%offset(2) = 0._eb
 
                     if (trim(face) == 'FRONT') ventptr%face=1
                     if (trim(face) == 'RIGHT') ventptr%face=2
@@ -2112,7 +2117,7 @@ continue
     character(64) :: compartment_id
     integer :: nmlcount                             ! count of number of each namelist type read in so far
 
-    type(room_type), pointer :: roomptrfrm,roomptrto
+    type(room_type), pointer :: roomptrfrm, roomptrto
 
     real(eb), dimension(mxpts) :: f
     character(64), dimension(mxpts) :: comp_ids

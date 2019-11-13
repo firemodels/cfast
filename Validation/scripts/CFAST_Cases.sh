@@ -408,6 +408,8 @@ $RUNCFAST -d ../Verification/Ventilation ventilation_3.in
 $RUNCFAST -d ../Verification/Ventilation ventilation_4.in
 $RUNCFAST -d ../Verification/Ventilation VVent_Tests.in
 $RUNCFAST -d ../Verification/Ventilation surface_opened_fraction_1.in
+$RUNCFAST -d ../Verification/Ventilation Leakage_1
+$RUNCFAST -d ../Verification/Ventilation Leakage_2
 
 $RUNCFAST -d ../Verification/Sprinkler sprinkler_1.in
 

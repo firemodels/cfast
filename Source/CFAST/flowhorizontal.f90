@@ -14,13 +14,13 @@ module hflow_routines
     use option_data, only: fhflow, fentrain, option, on
     use room_data, only: nrm1, ns, roominfo
     use solver_data, only: i_wallmap, i_speciesmap
-    use vent_data, only: n_hvents, hventinfo, nvelev, dirs12, dpv1m2, yvelev, vss, vsa, vas, vaa, vsas, vasa
+    use vent_data, only: n_hvents, hventinfo, n_leaks, leakinfo, nvelev, dirs12, dpv1m2, yvelev, vss, vsa, vas, vaa, vsas, vasa
 
     implicit none
 
     private
 
-    public horizontal_flow
+    public horizontal_flow, leakage_flow
 
     contains
 
@@ -165,6 +165,112 @@ module hflow_routines
     end if
     return
     end subroutine horizontal_flow
+
+    ! --------------------------- leakage_flow -------------------------------------------
+
+    subroutine leakage_flow(epsp,uflw_lk)
+
+    ! physical interface routine to calculate flow through all unforced vertical vents (horizontal flow).
+    ! it returns rates of mass and energy flows into the layers from all vents in the building.
+
+    ! inputs    tsec    current simulation time (s)
+    !           epsp    pressure error tolerance
+    ! output    uflw_lk change in mass and energy for each layer of each compartment via flow through horizontal vents
+
+    real(eb), intent(in) :: epsp
+    real(eb), intent(out) :: uflw_lk(mxrooms,ns+2,2)
+
+    real(eb) :: conl(ns,2), conu(ns,2)
+    real(eb) :: uflw2(2,ns+2,2)
+    real(eb) :: zflor(2), zceil(2), zlay(2), pflor(2)
+    real(eb) :: denl(2), denu(2), tu(2), tl(2)
+    real(eb) :: rslab(mxfslab), tslab(mxfslab), yslab(mxfslab),xmslab(mxfslab), qslab(mxfslab)
+    real(eb) :: cslab(mxfslab,ns),pslab(mxfslab,ns)
+    real(eb) :: height, width
+    integer :: islab, i, iroom1, iroom2, nslab
+    real(eb) :: yvbot, yvtop, avent
+    integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
+    integer :: position
+
+    type(vent_type), pointer :: ventptr
+
+    position = 0
+
+    uflw_lk(1:nrm1,1:ns+2,l) = 0.0_eb
+    uflw_lk(1:nrm1,1:ns+2,u) = 0.0_eb
+
+    
+    if (option(fhflow)/=on) return
+    if (n_leaks==0) return
+
+    do i = 1, n_leaks
+        ventptr=>leakinfo(i)
+
+        iroom1 = ventptr%room1
+        iroom2 = ventptr%room2
+
+        ventptr%h_mflow(1,1:2,1) = 0.0_eb
+        ventptr%h_mflow(2,1:2,1) = 0.0_eb
+        ventptr%h_mflow(1,1:2,2) = 0.0_eb
+        ventptr%h_mflow(2,1:2,2) = 0.0_eb
+        ventptr%h_mflow_mix(1,1:2) = 0.0_eb
+        ventptr%h_mflow_mix(2,1:2) = 0.0_eb
+
+        ventptr%temp_slab(1:mxfslab) = 0.0_eb
+        ventptr%flow_slab(1:mxfslab) = 0.0_eb
+        ventptr%ybot_slab(1:mxfslab) = 0.0_eb
+        ventptr%ytop_slab(1:mxfslab) = 0.0_eb
+
+        ! setup data structures for from and to room
+        call getvars(iroom1,iroom2,zflor,zceil,zlay,pflor,denl,denu,conl,conu,tl,tu)
+
+        ! convert vent dimensions to absolute dimensions
+        yvbot = ventptr%sill + zflor(1)
+        yvtop = ventptr%soffit + zflor(1)
+        zlay(1) = zlay(1) + zflor(1)
+        zlay(2) = zlay(2) + zflor(2)
+
+        height = ventptr%soffit - ventptr%sill
+        width = ventptr%width
+        avent = height*width
+        ventptr%opening_fraction = 1._eb
+        ventptr%current_area = avent
+
+        if (avent>=1.0e-10_eb) then
+            call ventw (zflor,zlay,tu,tl,denl,denu,pflor,yvtop,yvbot,avent,cp,conl,conu,mxfslab,&
+                epsp,cslab,pslab,qslab,vss(1,i),vsa(1,i),vas(1,i),vaa(1,i),dirs12,dpv1m2,rslab,tslab,yslab,&
+                yvelev,xmslab,nslab)
+
+            ventptr%n_slabs = nslab
+            do islab = 1,nslab
+                ventptr%temp_slab(islab) = tslab(islab)
+                ventptr%flow_slab(islab) = xmslab(islab)*dirs12(islab)
+                ventptr%ybot_slab(islab) = yvelev(islab)
+                ventptr%ytop_slab(islab) = yvelev(islab+1)
+            end do
+
+            call flogo(dirs12,yslab,xmslab,tslab,nslab,tu,tl,zlay,qslab,pslab,mxfslab,ventptr%h_mflow,uflw2)
+
+            ventptr%h_mflow_mix(1,1:2) = 0.0_eb
+            ventptr%h_mflow_mix(2,1:2) = 0.0_eb
+
+            ! sum flows from both rooms for each layer and type of product
+            ! (but only if the room is an inside room)
+
+            if (iroom1>=1.and.iroom1<=nrm1) then
+                uflw_lk(iroom1,1:ns+2,l) = uflw_lk(iroom1,1:ns+2,l) + uflw2(1,1:ns+2,l)
+                uflw_lk(iroom1,1:ns+2,u) = uflw_lk(iroom1,1:ns+2,u) + uflw2(1,1:ns+2,u)
+            end if
+            if (iroom2>=1.and.iroom2<=nrm1) then
+                uflw_lk(iroom2,1:ns+2,l) = uflw_lk(iroom2,1:ns+2,l) + uflw2(2,1:ns+2,l)
+                uflw_lk(iroom2,1:ns+2,u) = uflw_lk(iroom2,1:ns+2,u) + uflw2(2,1:ns+2,u)
+            end if
+        end if
+
+    end do
+
+    return
+    end subroutine leakage_flow
 
     ! --------------------------- spill_plume -------------------------------------------
 

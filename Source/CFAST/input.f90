@@ -3,7 +3,7 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use initialization_routines, only : initialize_targets, initialize_ambient, offset
+    use initialization_routines, only : initialize_leakage, initialize_targets, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: openoutputfiles, deleteoutputfiles
     use utility_routines, only: countargs, upperall, exehandle, emix
@@ -160,6 +160,9 @@
             stop
         end if
     end do
+    
+    ! add leakage if it's specified
+    call initialize_leakage
 
     ! make sure ceiling/floor vent specifications are correct -  we have to do this
     ! here rather than right after keywordcases because floor_height and ceiling_height were just defined

@@ -429,7 +429,11 @@ module vent_data
 
     ! hvac variables
     integer :: n_mvents                                                 ! number of mechanical flow vents
-    type(vent_type), allocatable, dimension(:), target :: mventinfo 
+    type(vent_type), allocatable, dimension(:), target :: mventinfo
+    
+    ! leakage variables
+    integer :: n_leaks                                                  ! number of automatically-generated leakage vents
+    type(vent_type), allocatable, dimension(:), target :: leakinfo
 
     end module vent_data
 

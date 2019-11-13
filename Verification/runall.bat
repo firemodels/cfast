@@ -49,6 +49,8 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast ventilation_3 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast ventilation_4 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast VVent_Tests -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast surface_opened_fraction_1 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast Leakage_1 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast Leakage_2 -V
 cd ..
 
 echo Running Sprinkler cases

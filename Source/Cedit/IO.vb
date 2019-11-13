@@ -971,7 +971,7 @@ Module IO
         Dim depth, height, width As Single
         Dim shaft, hall, valid As Boolean
         Dim grid(3) As Integer
-        Dim origin(3), comparea(0), compheight(0) As Single
+        Dim origin(3), leaks(2), comparea(0), compheight(0) As Single
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "COMP") Then
@@ -1051,6 +1051,14 @@ Module IO
                         Else
                             myErrors.Add("In COMP namelist for ORIGIN input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA" Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            leaks(1) = NMList.ForNMListVarGetNum(i, j, 1)
+                            leaks(2) = NMList.ForNMListVarGetNum(i, j, 2)
+                        Else
+                            myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
                     Else
                         myErrors.Add("In COMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1087,6 +1095,12 @@ Module IO
                     End If
                     If shaft Then
                         aComp.Shaft = True
+                    End If
+                    If leaks(1) >= 0 And leaks(2) >= 0 Then
+                        aComp.WallLeak = leaks(1)
+                        aComp.FloorLeak = leaks(2)
+                    Else
+                        myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
                     End If
                     aComp.Changed = False
                 Else
@@ -3314,7 +3328,11 @@ Module IO
                     PrintLine(IO, ln)
                 End If
                 ln = "      ORIGIN = " + aComp.RoomOriginX.ToString + ", " + aComp.RoomOriginY.ToString + ", " + aComp.RoomOriginZ.ToString
-                ln += " GRID = " + aComp.xGrid.ToString + ", " + aComp.yGrid.ToString + ", " + aComp.zGrid.ToString + " /"
+                ln += " GRID = " + aComp.xGrid.ToString + ", " + aComp.yGrid.ToString + ", " + aComp.zGrid.ToString
+                If aComp.WallLeak > 0 Or aComp.FloorLeak > 0 Then
+                    ln += " LEAK_AREA = " + aComp.WallLeak.ToString + ", " + aComp.FloorLeak.ToString
+                End If
+                ln += " /"
                 PrintLine(IO, ln)
                 aComp.Changed = False
             Next

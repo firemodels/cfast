@@ -10,7 +10,7 @@ module spreadsheet_routines
     
     use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, montecarlo_type
 
-    use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, &
+    use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
         ns, soot, soot_flaming, soot_smolder, smoked, mx_monte_carlo
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
@@ -19,7 +19,7 @@ module spreadsheet_routines
     use setup_data, only: validation_flag, iofilsmvzone, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd, &
         iofilssmc, iofill, ss_out_interval, project, extension
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
-    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use monte_carlo_data, only: n_mcarlo, mcarloinfo, csvnames, num_csvfiles, iocsv
 
     implicit none
@@ -150,7 +150,7 @@ module spreadsheet_routines
 
     ! output the flow data to the flow spreadsheet {project}_f.csv
 
-    integer, parameter :: maxoutput = 1 + 11*mxhvents + 11*mxvvents + 11*mxmvents
+    integer, parameter :: maxoutput = 1 + 11*mxhvents + 11*mxvvents + 11*mxmvents + mxleaks
 
     real(eb), intent(in) :: time
 
@@ -230,7 +230,7 @@ module spreadsheet_routines
         call ssaddtolist (position,ventptr%opening_fraction,outarray)
     end do
 
-    ! finally, mechanical vents
+    ! next, mechanical vents
     do i = 1, n_mvents
         ventptr => mventinfo(i)
         flow = 0.0_eb
@@ -263,7 +263,14 @@ module spreadsheet_routines
         call ssaddtolist (position,ventptr%opening_fraction,outarray)
     end do
 
-
+    ! finally, leakage
+    do i = 1, n_leaks
+        ventptr=>leakinfo(i)
+        ifrom = ventptr%room1
+        ito = ventptr%room2
+        netflow = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
+        call ssaddtolist (position,netflow,outarray)
+    end do
     call ssprintresults(iofilssf, position, outarray)
     return
 

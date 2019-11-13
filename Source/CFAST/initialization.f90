@@ -7,12 +7,13 @@ module initialization_routines
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror    
 
-    use cfast_types, only: detector_type, room_type, target_type, thermal_type
+    use cfast_types, only: detector_type, room_type, target_type, thermal_type, vent_type
 
     use cenviro, only: constvar, odevara
-    use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, &
-        mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, xlrg, default_grid, face_front, trigger_by_time, &
-        h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, smoked, mx_monte_carlo
+    use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxleaks, &
+        mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
+        xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
+        smoked, mx_monte_carlo
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
@@ -25,15 +26,15 @@ module initialization_routines
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
-    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use monte_carlo_data, only: n_mcarlo, mcarloinfo, csvnames, iocsvnormal, iocsvflow, iocsvmass, iocsvwall, iocsvspecies
 
     implicit none
 
     private
 
-    public get_thermal_property, initialize_targets, initialize_ambient, offset, initialize_memory, initialize_fire_objects, &
-        initialize_species, initialize_walls
+    public get_thermal_property, initialize_leakage, initialize_targets, initialize_ambient, offset, &
+        initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
 
     contains
 
@@ -196,8 +197,7 @@ module initialization_routines
         call dscal(3,scale,targptr%normal,1)
     end do
 
-    ! initialize solver oxygen values if required.   (must be initialized
-    ! after layer mass is defined)
+    ! initialize solver oxygen values if required.   (must be initialized after layer mass is defined)
     if (option(foxygen)==on) then
         do iroom = 1, nrm1
             roomptr => roominfo(iroom)
@@ -208,6 +208,71 @@ module initialization_routines
 
     return
     end subroutine initialize_ambient
+
+! --------------------------- initialize_leakage -------------------------------------------
+
+    subroutine initialize_leakage
+    
+    ! initializes specified leakage by creating vents adding up to specified area
+    
+    integer iroom, counter
+    real(eb) :: area
+    type(room_type), pointer :: roomptr
+    type(vent_type), pointer :: ventptr
+    
+    counter = 0
+    do iroom = 1, nrm1
+        roomptr => roominfo(iroom)
+        ! wall leakage
+        if (roomptr%leak_areas(1) /= 0.0_eb) then
+            n_leaks = n_leaks + 1
+            counter = counter + 1
+            ventptr => leakinfo(n_leaks)
+            ventptr%room1 = roomptr%compartment
+            ventptr%room2 = nr
+            ventptr%counter = counter
+            ventptr%sill   = roomptr%cheight*0.05
+            ventptr%soffit = roomptr%cheight*0.95
+            area = 2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight
+            ventptr%width  = area*roomptr%leak_areas(1)/(ventptr%soffit-ventptr%sill)
+            ventptr%offset(1) = 0._eb
+            ventptr%offset(2) = 0._eb
+            ventptr%face=1
+            ventptr%opening_type = trigger_by_time
+            ventptr%opening_initial_time = 0._eb
+            ventptr%opening_initial_fraction = 1._eb
+            ventptr%opening_final_time = 0._eb
+            ventptr%opening_final_fraction = 1._eb
+            ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+            ventptr%absolute_sill = ventptr%sill + roomptr%z0
+        end if
+        
+        ! floor leakage
+        if (roomptr%leak_areas(2) /= 0.0_eb) then
+            n_leaks = n_leaks + 1
+            counter = counter + 1
+            ventptr => leakinfo(n_leaks)
+            ventptr%room1 = roomptr%compartment
+            ventptr%room2 = nr
+            ventptr%counter = counter
+            ventptr%sill   = 0._eb
+            ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
+            area = roomptr%cwidth * roomptr%cdepth
+            ventptr%soffit  = area*roomptr%leak_areas(2)/ventptr%width
+            ventptr%offset(1) = 0._eb
+            ventptr%offset(2) = 0._eb
+            ventptr%face=1
+            ventptr%opening_type = trigger_by_time
+            ventptr%opening_initial_time = 0._eb
+            ventptr%opening_initial_fraction = 1._eb
+            ventptr%opening_final_time = 0._eb
+            ventptr%opening_final_fraction = 1._eb
+            ventptr%absolute_soffit = ventptr%soffit + roomptr%z0
+            ventptr%absolute_sill = ventptr%sill + roomptr%z0
+        end if
+    end do
+    
+    end subroutine initialize_leakage
 
 ! --------------------------- initialize_memory -------------------------------------------
 
@@ -329,6 +394,23 @@ module initialization_routines
     hventinfo(1:mxhvents)%opening_initial_fraction = 1.0_eb
     hventinfo(1:mxhvents)%opening_final_time = 0.0_eb
     hventinfo(1:mxhvents)%opening_final_fraction = 1.0_eb
+
+    ! leakage vents
+    n_leaks = 0
+    allocate (leakinfo(mxleaks))
+    leakinfo(1:mxleaks)%width = 0.0_eb
+    leakinfo(1:mxleaks)%soffit = 0.0_eb
+    leakinfo(1:mxleaks)%sill = 0.0_eb
+    leakinfo(1:mxleaks)%absolute_soffit = 0.0_eb
+    leakinfo(1:mxleaks)%absolute_sill = 0.0_eb
+    leakinfo(1:mxleaks)%face = face_front
+    ! start with vents open
+    leakinfo(1:mxleaks)%opening_type = trigger_by_time
+    leakinfo(1:mxleaks)%opening_triggered = .false.
+    leakinfo(1:mxleaks)%opening_initial_time = 0.0_eb
+    leakinfo(1:mxleaks)%opening_initial_fraction = 1.0_eb
+    leakinfo(1:mxleaks)%opening_final_time = 0.0_eb
+    leakinfo(1:mxleaks)%opening_final_fraction = 1.0_eb
 
     ! vertical vents
     n_vvents = 0
@@ -525,6 +607,7 @@ module initialization_routines
             hventinfo(1:mxhvents)%species_fraction(k,lsp) = 0.0_eb
             vventinfo(1:mxvvents)%species_fraction(k,lsp) = 0.0_eb
             mventinfo(1:mxmvents)%species_fraction(k,lsp) = 0.0_eb
+            leakinfo(1:mxleaks)%species_fraction(k,lsp) = 0.0_eb
         end do
     end do
 

@@ -29,6 +29,8 @@ Public Class Compartment
     Private aHeightPoints(0) As Single      ' Vector of room heights corresponding to room areas
     Private aGridCells(3) As Integer        ' Number of grid cells for visualization in x, y, z directions
     Private aAreaRampID As String           ' Name of Ramp for area as a function of height
+    Private aWallLeak As Single             ' Wall leakage per unit area of wall
+    Private aFloorLeak As Single            ' Floor leakage per unit area of floor
     Private aChanged As Boolean = False     ' True once compartment information has changed
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
     Private i As Integer
@@ -45,6 +47,8 @@ Public Class Compartment
         aFloorMaterial = "Off"
         aAreaPoints(0) = aRoomDepth * aRoomWidth
         aHeightPoints(0) = aRoomHeight
+        aWallLeak = 0
+        aFloorLeak = 0
         'New code
         aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
         myRamps.Add(New Ramp)
@@ -236,6 +240,28 @@ Public Class Compartment
             If value <> aAreaRampID Then
                 aChanged = True
                 aAreaRampID = value
+            End If
+        End Set
+    End Property
+    Public Property WallLeak() As Single
+        Get
+            Return aWallLeak
+        End Get
+        Set(value As Single)
+            If value <> aWallLeak Then
+                aChanged = True
+                aWallLeak = value
+            End If
+        End Set
+    End Property
+    Public Property FloorLeak() As Single
+        Get
+            Return aFloorLeak
+        End Get
+        Set(value As Single)
+            If value <> aFloorLeak Then
+                aChanged = True
+                aFloorLeak = value
             End If
         End Set
     End Property
@@ -461,7 +487,11 @@ Public Class Compartment
                     HasErrors += 1
                 End If
             End If
-
+            ' Leakage areas must be between zero and 1
+            If aWallLeak < 0 Or aWallLeak > 1 Or aFloorLeak < 0 Or aFloorLeak > 1 Then
+                myErrors.Add(aName + " has leakage areas less then zero or greater than the total wall area.", ErrorMessages.TypeError)
+                HasErrors += 1
+            End If
             Return HasErrors
         End Get
     End Property

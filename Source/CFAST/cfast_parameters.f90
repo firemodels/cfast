@@ -15,7 +15,7 @@
     integer, parameter :: mxwal = mxrooms*nwal  ! maximum total number of compartment surfaces
     integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation (should be odd number)
     integer, parameter :: mxslice = 5*mxrooms   ! maximum number of slices and isosurfaces in an input file
-    integer, parameter :: mxitems = 2500        ! maximum number of vents, targets, etc.
+    integer, parameter :: mxitems = 25*mxrooms  ! maximum number of vents, targets, etc.
 
     ! fire related input parameters
     integer, parameter :: mxpts = 200               ! maximum number of data points in a input curve/ramp
@@ -39,6 +39,8 @@
     ! ventilation parameters
     integer, parameter :: mxhvents = mxitems        ! maximum number of horizontal flow vents
     integer, parameter :: mxfslab = 10              ! maximum number of slabs in a horizontal flow calculation
+    
+    integer, parameter :: mxleaks = mxitems         ! maximum numer of automatically-generated leakage vents
 
     integer, parameter :: mxvvents=mxitems          ! maximum number of vertical flow vents
 

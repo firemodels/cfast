@@ -151,12 +151,14 @@ module cfast_types
         logical :: is_connection                        ! true if there is a natural flow vent connection in the room that
                                                         ! connects to the outside (perhaps through other intermediate rooms)
         logical :: is_hvac                              ! true if there is an HVAC vent connection in the room
+        
+        real(eb), dimension(2) :: leak_areas            ! leakage area in m^2 for leak_areas(1) walls and leak_areas(2) floor
 
         ! cross-sectional area variables
         integer :: nvars                                ! number of data points for variable cross-secitonal area
-        real(eb), dimension(mxpts) :: var_volume      ! variable cross-secitonal area volume from floor to var_height(i)
-        real(eb), dimension(mxpts) :: var_area        ! variable cross-sectional area base area
-        real(eb), dimension(mxpts) :: var_height      ! variable cross-sectional area heights
+        real(eb), dimension(mxpts) :: var_volume        ! variable cross-secitonal area volume from floor to var_height(i)
+        real(eb), dimension(mxpts) :: var_area          ! variable cross-sectional area base area
+        real(eb), dimension(mxpts) :: var_height        ! variable cross-sectional area heights
 
         ! compartment surfaces
         real(eb), dimension(nwal) :: eps_w              ! emissivity of wall surface

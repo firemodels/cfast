@@ -7,7 +7,7 @@ module solve_routines
     use debug_routines, only: output_spreadsheet_residuals
     use fire_routines, only: fire, door_jets, integrate_mass, update_species, collect_fire_data_for_smokeview, update_fire_objects
     use isosurface, only: output_isodata
-    use hflow_routines, only: horizontal_flow
+    use hflow_routines, only: horizontal_flow, leakage_flow
     use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
     use opening_fractions, only : get_vent_opening
@@ -864,6 +864,7 @@ module solve_routines
 
     ! data structures for flow through vents
     real(eb) :: flows_hvents(mxrooms,ns+2,2)
+    real(eb) :: flows_leaks(mxrooms,ns+2,2)
     real(eb) :: flows_vvents(mxrooms,ns+2,2)
     real(eb) :: flows_mvents(mxrooms,ns+2,2), filtered(mxrooms,ns+2,2)
 
@@ -916,6 +917,7 @@ module solve_routines
     ! calculate flow due to unforced vents (horizontal_flow for doors/windows
     ! and vertical_flow for ceiling/floor vents
     call horizontal_flow (tsec,epsp,flows_hvents)
+    call leakage_flow (epsp,flows_leaks)
     call vertical_flow (tsec,epsp,flows_vvents)
     call mechanical_flow (tsec,epsp,flows_mvents,filtered)
 
@@ -938,8 +940,8 @@ module solve_routines
 
         do iprod = 1, nprod + 2
             ip = i_speciesmap(iprod)
-            flows_total(iroom,iprod,l) = flows_hvents(iroom,iprod,l) + flows_fires(iroom,ip,l)
-            flows_total(iroom,iprod,u) = flows_hvents(iroom,iprod,u) + flows_fires(iroom,ip,u)
+            flows_total(iroom,iprod,l) = flows_hvents(iroom,iprod,l) + flows_leaks(iroom,iprod,l) + flows_fires(iroom,ip,l)
+            flows_total(iroom,iprod,u) = flows_hvents(iroom,iprod,u) + flows_leaks(iroom,iprod,u) + flows_fires(iroom,ip,u)
         end do
         do iprod = 1, nprod + 2
             ip = i_speciesmap(iprod)

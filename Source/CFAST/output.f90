@@ -25,7 +25,7 @@ module output_routines
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
-    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use monte_carlo_data, only: n_mcarlo, mcarloinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvmass, iocsvspecies
 
     implicit none
@@ -331,11 +331,12 @@ module output_routines
 
     ! output the vent flow at the current time
 
-    integer :: i, ifrom, ito
+    integer :: i, j, ifrom, ito
     real(eb), dimension(8) :: flow
+    logical :: hasleak
 
     character outbuf*132, cifrom*12, cito*12
-    type(vent_type), pointer :: ventptr
+    type(vent_type), pointer :: ventptr, leakptr
     type(room_type), pointer :: roomptr
 
     write (iofilo,5000)
@@ -430,9 +431,39 @@ module output_routines
         write (iofilo,5050) cifrom, cito, outbuf
     end do
 
-    5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
+    ! leakage
+    if (n_leaks>0) then
+        write (iofilo,5060)
+        do i = 1, nrm1
+            roomptr => roominfo(i)
+            flow = 0.0_eb
+            hasleak = .false.
+            do j = 1,n_leaks
+                leakptr => leakinfo(j)
+                if (leakptr%room1==i) then
+                    hasleak = .true.
+                    flow(1) = flow(1) + leakptr%h_mflow(1,1,1)
+                    flow(2) = flow(2) + leakptr%h_mflow(1,1,2)
+                    flow(3) = flow(3) + leakptr%h_mflow(1,2,1)
+                    flow(4) = flow(4) + leakptr%h_mflow(1,2,2)
+                    flow(5) = flow(5) + leakptr%h_mflow(2,1,1)
+                    flow(6) = flow(6) + leakptr%h_mflow(2,1,2)
+                    flow(7) = flow(7) + leakptr%h_mflow(2,2,1)
+                    flow(8) = flow(8) + leakptr%h_mflow(2,2,2)
+                end if
+            end do
+            if (hasleak) then
+                write (cifrom,'(a12)') roomptr%name
+                cito = 'Outside'
+                call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
+                write (iofilo,5070) 'Leak', cifrom, cito, outbuf
+            end if
+        end do
+    end if
+
+5000 format (//,'FLOW THROUGH VENTS (kg/s)',//, &
     '                                                    Flow relative to ''From''', &
-    'Flow Relative to ''To''',/ &
+    '                             Flow Relative to ''To''',/ &
     '                                       Opening      Upper Layer               ', &
     'Lower Layer               Upper Layer               Lower Layer',/, &
     'Vent   From/Bottom    To/Top           Fraction     Inflow       Outflow      ', &
@@ -443,6 +474,14 @@ module output_routines
     'Compartment    Vent             ',2('Inflow       Outflow      '),' Vented ', '   Filtered',/, 104('-'))
 5040 format (' ')
 5050 format (a14,1x,a12,1x,a)
+5060 format (//,'LEAKAGE (kg/s)',//, &
+    '                                                    Flow relative to ''From''', &
+    '                             Flow Relative to Outside',/ &
+    '                                       Opening      Upper Layer               ', &
+    'Lower Layer               Upper Layer               Lower Layer',/, &
+    'Vent   From/Bottom    To/Top           Fraction     Inflow       Outflow      ', &
+    'Inflow       Outflow      Inflow       Outflow      Inflow       Outflow',/,153('-'))
+5070 format (a4,3x,a12,3x,a12,15x,a)
 
     end subroutine results_vent_flows
 
@@ -667,6 +706,7 @@ module output_routines
     ! output initial test case geometry
 
     integer i
+    real(eb) :: wallleakarea, floorleakarea
     type(room_type), pointer :: roomptr
     character :: hall, shaft
 
@@ -675,16 +715,20 @@ module output_routines
         roomptr => roominfo(i)
         shaft = '' ; if (roomptr%shaft) shaft = '*'
         hall = '' ; if (roomptr%hall) hall = '*'
+        wallleakarea = (2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight) * roomptr%leak_areas(1)
+        floorleakarea = (roomptr%cwidth * roomptr%cdepth) * roomptr%leak_areas(2)
         write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, &
-            shaft, hall
+            shaft, hall, wallleakarea, floorleakarea
     end do
     if (adiabatic_walls) write (iofilo,*) 'All compartment surfaces are adiabatic'
     return
-5000 format (//,'COMPARTMENTS',//, &
-    'Compartment  Name                Width        Depth        Height       Floor        Ceiling    Shaft    Hall   ',/, &
-    '                                                                        Height       Height    ',/, &
-    33x,5('(m)',10x),/,109('-'))
-5010 format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1)
+    5000 format (//,'COMPARTMENTS',//, &
+    'Compartment  Name                Width        Depth        Height       Floor        Ceiling    ', &
+    'Shaft    Hall   Wall         Floor',/, &
+    '                                                                        Height       Height                     ', &
+    'Leakage      Leakage',/, 33x,5('(m)',10x),14x,2('(m^2)',8x),/,133('-'))
+5010  format (i5,8x,a13,5(f12.2,1x),7x,a1,7x,a1,1x,2(1pG12.2,1x))
+      
     end subroutine output_initial_compartments
 
 ! --------------------------- output_initial_vents -------------------------------------------
@@ -739,6 +783,7 @@ module output_routines
             end if
         end do
     end if
+    
 5000 format (//,'VENT CONNECTIONS',//,'There are no horizontal natural flow connections')
 5010 format (//,'VENT CONNECTIONS',//,'Wall Vents (Doors, Windows, ...)',//, &
     'From           To              Vent      Width       Sill        Soffit      Open/Close  Trigger', &

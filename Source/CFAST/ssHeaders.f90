@@ -7,13 +7,13 @@ module spreadsheet_header_routines
     use cfast_types, only: target_type, detector_type, vent_type
     
     use cparams, only: u, l, soot, soot_flaming, soot_smolder, mxrooms, mxfires, mxtarg, mxdtect, mxfires, mxhvents, &
-        mxvvents, mxmvents, mxext, mxfslab, ns, smoked
+        mxvvents, mxmvents, mxext, mxleaks, mxfslab, ns, smoked
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: nr, nrm1, roominfo, room_type
     use setup_data, only: validation_flag, iofilsmvzone, iofilsmv, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
-    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
 
     implicit none
 
@@ -375,20 +375,20 @@ module spreadsheet_header_routines
 
     ! header information for the flow spreadsheet
 
-    integer, parameter :: maxhead = 1 + 11*mxhvents + 11*mxvvents + 11*mxmvents
+    integer, parameter :: maxhead = 1 + 11*mxhvents + 11*mxvvents + 11*mxmvents + mxleaks
     
-    character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(21), LabelsShort(12), LabelUnits(12)
+    character(35) :: headertext(4,maxhead), cTemp, ciFrom, ciTo, cVent, Labels(22), LabelsShort(13), LabelUnits(13)
     integer :: position, i, ii, ifrom, ito, ih
     type(vent_type), pointer :: ventptr
 
-    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_', 'HT_', 'VT_', 'MVT_', 'HF_', 'VF_', 'MF_' /
+    data LabelsShort /'Time', 'H_', 'V_', 'MV_', 'MV_TRACE_', 'MV_FILTERED_', 'HT_', 'VT_', 'MVT_', 'HF_', 'VF_', 'MF_', 'L_' /
     data Labels / 'Simulation Time', 'HVENT Net Inflow', 'VVENT Net Inflow', 'MVENT Net Inflow', 'MVENT Trace Species Flow', &
        'MVENT Trace Species Filtered', 'HVENT Total Inflow Upper', 'HVENT Total Outflow Upper', &
        'HVENT Total Inflow Lower', 'HVENT Total Outflow Lower', 'VVENT Total Inflow Upper', 'VVENT Total Outflow Upper', &
        'VVENT Total Inflow Lower', 'VVENT Total Outflow Lower', 'MVENT Total Inflow Upper', 'MVENT Total Outflow Upper', &
        'MVENT Total Inflow Lower', 'MVENT Total Outflow Lower', 'HVENT Opening Fraction', 'VVENT Opening Fraction', &
-        'MVENT Opening Fraction'/
-    data LabelUnits / 's', 3*'kg/s', 2*'kg', 3*'kg/s', 3*' '/
+        'MVENT Opening Fraction', 'LEAK Net Inflow'/
+    data LabelUnits / 's', 3*'kg/s', 2*'kg', 3*'kg/s', 3*' ', 'kg/s'/
 
     !  spreadsheet header.  Add time first
     headertext(1,1) = LabelsShort(1)
@@ -675,6 +675,27 @@ module spreadsheet_header_routines
         write (ctemp,'(a,1x,a,1x,4a)') 'Vent ',trim(cvent),' from ', trim(cifrom),' to ',trim(cito)
         headertext(3,position) = ctemp
         headertext(4,position) = labelunits(12)
+    end do
+    
+    ! leakage
+    do i = 1, n_leaks
+        ventptr=>leakinfo(i)
+
+        ifrom = ventptr%room1
+        call tointstring(ifrom,cifrom)
+        if (ifrom==nr) cifrom = 'Outside'
+        ito = ventptr%room2
+        call tointstring(ito,cito)
+        if (ito==nr) cito = 'Outside'
+
+        position = position + 1
+        call tointstring(ventptr%counter,cvent)
+        write (ctemp,'(6a)') trim(labelsshort(13)),trim(cifrom),'_',trim(cito),'_',trim(cvent)
+        headertext(1,position) = ctemp
+        headertext(2,position) = labels(22)
+        write (ctemp,'(a,1x,a,1x,4a)') 'Leak ',trim(cvent),' from ', trim(cifrom),' to ',trim(cito)
+        headertext(3,position) = ctemp
+        headertext(4,position) = labelunits(13)
     end do
 
     ! write out header

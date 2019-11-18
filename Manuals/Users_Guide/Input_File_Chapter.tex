@@ -233,6 +233,54 @@ CFAST uses the variable cross-sectional area inputs to determine the layer heigh
 
 
 
+\section{Modeling Compartment Leakage}
+\label{info:COMP5}
+CFAST can automatically calculate leakage between one or more compartments and the outdoors. Leakage is specified for each desired compartment as a leakage area per unit wall area and/or per unit floor area.
+
+\begin{description}
+\item[Wall Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage are per unit wall area.
+\item[Floor Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage are per unit floor area.
+\end {description}
+
+For wall leakage, the model creates a vent on the wall with a sill height of 5 \% of the compartment ceiling height and a soffit of 95 \% of the the compartment ceiling height.  Width of the vent is determined from a calculated vent area (the specified leakage area ratio times the total wall area of the compartment) divided by the vent height (90 \% of the compartment ceiling height).
+
+For floor leakage, the model creates a vent on the wall with a width of 90 \% of the average wall width (the sum of the compartment width and the compartment depth divided by two) with the sill at the floor and the soffit height from a calculated vent area (the specified leakage area ratio times the total floor area of the compartment) divided by the vent width (90 \% of the average compartment wall width).
+
+For reference, the following table is taken from the \textit{handbook of Smoke Control Engineering} \cite{Klote:2012}.
+
+\begin{table}[ht]
+\begin{center}
+\caption{Sample Flow Area of Walls and Floors of Commercial Buildings from the \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}, used with persmission}
+\label{tbl:leakageareas}
+\begingroup
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|}
+\hline
+Construction Element   & Leakage                        & \shortstack{Leakage Area (m$^2$/m$^2$) \\ Leakage Area per Unit Wall Area}   \\ \hline
+\multirow{4}{*}{\shortstack[l]{\textbf{Exterior building walls} \\ \\ {\small (includes construction cracks} \\ {\small and cracks around windows and doors)}}}             & Tight      & $5.0 \times 10^{-5}$   \\
+                                                                                                                                                                      & Average    & $1.7 \times 10^{-4}$ \\
+                                                                                                                                                                      & Loose      & $3.5 \times 10^{-4}$ \\
+                                                                                                                                                                      & Very Loose & $1.2 \times 10^{-3}$ \\ \hline
+
+\multirow{3}{*}{\shortstack[l]{\textbf{Stairwell walls} \\ \\ {\small (includes construction cracks but} \\ {\small not cracks around windows and doors)}}}                & Tight      & $1.4 \times 10^{-5}$   \\
+                                                                                                                                                                      & Average    & $1.1 \times 10^{-4}$ \\
+                                                                                                                                                                      & Loose      & $3.5 \times 10^{-4}$ \\ \hline
+
+\multirow{3}{*}{\shortstack[l]{\textbf{Elevator shaft walls} \\ \\ {\small (includes construction cracks but} \\ {\small not cracks around doors)}}}                       & Tight      & $1.8 \times 10^{-4}$   \\
+                                                                                                                                                                      & Average    & $8.4 \times 10^{-4}$ \\
+                                                                                                                                                                      & Loose      & $1.8 \times 10^{-3}$ \\ \hline \hline
+Construction Element   & Leakage                        & \shortstack{Leakage Area (m$^2$/m$^2$) \\ Leakage Area per Unit Floor Area}   \\ \hline
+
+\multirow{3}{*}{\shortstack[l]{\textbf{Floors} \\ {\small (includes construction cracks and} \\ {\small gaps around penetrations)}}}                                    & Tight      & $6.6 \times 10^{-6}$   \\
+                                                                                                                                                                      & Average    & $5.2 \times 10^{-5}$ \\
+                                                                                                                                                                      & Loose      & $1.7 \times 10^{-4}$ \\ \hline
+
+\end{tabular}
+\endgroup
+\end{center}
+\end{table}
+
+
 
 \chapter{Vents}
 \section{Natural Ventilation}
@@ -339,7 +387,7 @@ Vertical connections can only be created between compartments that could be phys
 \end{center}
 \end{figure}
 
-Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a system with a single fan. Further information about these systems is presented in  Klote and Milke \cite{Klote:2002} and the American Society of Heating, Refrigerating and Air Conditioning Engineers Handbook \cite{ASHRAE:2001}.
+Fan-duct systems are commonly used in buildings for heating, ventilation, air conditioning, pressurization, and exhaust. Generally, systems that maintain comfortable conditions have either one or two fans.  Residences often have a system with a single fan. Further information about these systems is presented in  Klote and Milke \cite{Klote:2002} and the  \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}.
 
 CFAST models mechanical ventilation in terms of user-specified volume flows at various points in the compartment. The model does not include duct work or fan curves, and thus mechanical ventilation connections are simply described by the connections to the two compartments and a fan whose throughput is a constant volumetric flow up to a user-specified pressure drop across the fan, dropping to zero at high backwards pressure on the fan.
 

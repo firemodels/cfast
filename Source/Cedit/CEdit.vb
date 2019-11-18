@@ -39,6 +39,10 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents CompFloorLeak As TextBox
+    Friend WithEvents Label71 As Label
+    Friend WithEvents CompWallLeak As TextBox
+    Friend WithEvents Label66 As Label
     Friend WithEvents HVentName As TextBox
     Friend WithEvents VVentName As TextBox
     Friend WithEvents Label8 As Label
@@ -601,6 +605,10 @@ Public Class CeditMain
         Me.Label11 = New System.Windows.Forms.Label()
         Me.Label10 = New System.Windows.Forms.Label()
         Me.GroupFlowCharacteristics = New System.Windows.Forms.GroupBox()
+        Me.CompFloorLeak = New System.Windows.Forms.TextBox()
+        Me.Label71 = New System.Windows.Forms.Label()
+        Me.CompWallLeak = New System.Windows.Forms.TextBox()
+        Me.Label66 = New System.Windows.Forms.Label()
         Me.CompNormal = New System.Windows.Forms.RadioButton()
         Me.CompCorridor = New System.Windows.Forms.RadioButton()
         Me.CompShaft = New System.Windows.Forms.RadioButton()
@@ -2103,7 +2111,7 @@ Public Class CeditMain
         Me.CompSummary.Rows.Count = 101
         Me.CompSummary.Rows.DefaultSize = 19
         Me.CompSummary.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.CompSummary.Size = New System.Drawing.Size(902, 161)
+        Me.CompSummary.Size = New System.Drawing.Size(902, 144)
         Me.CompSummary.StyleInfo = resources.GetString("CompSummary.StyleInfo")
         Me.CompSummary.TabIndex = 301
         Me.CompSummary.TabStop = False
@@ -2111,7 +2119,7 @@ Public Class CeditMain
         '
         'CompRemove
         '
-        Me.CompRemove.Location = New System.Drawing.Point(675, 183)
+        Me.CompRemove.Location = New System.Drawing.Point(675, 166)
         Me.CompRemove.Name = "CompRemove"
         Me.CompRemove.Size = New System.Drawing.Size(75, 23)
         Me.CompRemove.TabIndex = 306
@@ -2119,7 +2127,7 @@ Public Class CeditMain
         '
         'CompAdd
         '
-        Me.CompAdd.Location = New System.Drawing.Point(227, 183)
+        Me.CompAdd.Location = New System.Drawing.Point(227, 166)
         Me.CompAdd.Name = "CompAdd"
         Me.CompAdd.Size = New System.Drawing.Size(75, 23)
         Me.CompAdd.TabIndex = 302
@@ -2127,7 +2135,7 @@ Public Class CeditMain
         '
         'CompMoveDown
         '
-        Me.CompMoveDown.Location = New System.Drawing.Point(515, 183)
+        Me.CompMoveDown.Location = New System.Drawing.Point(515, 166)
         Me.CompMoveDown.Name = "CompMoveDown"
         Me.CompMoveDown.Size = New System.Drawing.Size(75, 23)
         Me.CompMoveDown.TabIndex = 305
@@ -2135,7 +2143,7 @@ Public Class CeditMain
         '
         'CompMoveUp
         '
-        Me.CompMoveUp.Location = New System.Drawing.Point(419, 183)
+        Me.CompMoveUp.Location = New System.Drawing.Point(419, 166)
         Me.CompMoveUp.Name = "CompMoveUp"
         Me.CompMoveUp.Size = New System.Drawing.Size(75, 23)
         Me.CompMoveUp.TabIndex = 304
@@ -2143,7 +2151,7 @@ Public Class CeditMain
         '
         'CompDup
         '
-        Me.CompDup.Location = New System.Drawing.Point(323, 183)
+        Me.CompDup.Location = New System.Drawing.Point(323, 166)
         Me.CompDup.Name = "CompDup"
         Me.CompDup.Size = New System.Drawing.Size(75, 23)
         Me.CompDup.TabIndex = 303
@@ -2156,9 +2164,9 @@ Public Class CeditMain
         Me.GroupCompartments.Controls.Add(Me.GroupBox5)
         Me.GroupCompartments.Controls.Add(Me.GroupFlowCharacteristics)
         Me.GroupCompartments.Controls.Add(Me.GroupCompSurfaces)
-        Me.GroupCompartments.Location = New System.Drawing.Point(16, 212)
+        Me.GroupCompartments.Location = New System.Drawing.Point(26, 195)
         Me.GroupCompartments.Name = "GroupCompartments"
-        Me.GroupCompartments.Size = New System.Drawing.Size(944, 368)
+        Me.GroupCompartments.Size = New System.Drawing.Size(944, 381)
         Me.GroupCompartments.TabIndex = 7
         Me.GroupCompartments.TabStop = False
         Me.GroupCompartments.Text = "Compartment 1"
@@ -2195,7 +2203,7 @@ Public Class CeditMain
         Me.GroupBox5.Controls.Add(Me.CompDepth)
         Me.GroupBox5.Controls.Add(Me.Label11)
         Me.GroupBox5.Controls.Add(Me.Label10)
-        Me.GroupBox5.Location = New System.Drawing.Point(32, 48)
+        Me.GroupBox5.Location = New System.Drawing.Point(27, 59)
         Me.GroupBox5.Name = "GroupBox5"
         Me.GroupBox5.Size = New System.Drawing.Size(368, 166)
         Me.GroupBox5.TabIndex = 9
@@ -2309,24 +2317,62 @@ Public Class CeditMain
         '
         'GroupFlowCharacteristics
         '
+        Me.GroupFlowCharacteristics.Controls.Add(Me.CompFloorLeak)
+        Me.GroupFlowCharacteristics.Controls.Add(Me.Label71)
+        Me.GroupFlowCharacteristics.Controls.Add(Me.CompWallLeak)
+        Me.GroupFlowCharacteristics.Controls.Add(Me.Label66)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompNormal)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompCorridor)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompShaft)
         Me.GroupFlowCharacteristics.Controls.Add(Me.Label65)
         Me.GroupFlowCharacteristics.Controls.Add(Me.Label64)
         Me.GroupFlowCharacteristics.Controls.Add(Me.CompVariableArea)
-        Me.GroupFlowCharacteristics.Location = New System.Drawing.Point(480, 48)
+        Me.GroupFlowCharacteristics.Location = New System.Drawing.Point(486, 48)
         Me.GroupFlowCharacteristics.Name = "GroupFlowCharacteristics"
-        Me.GroupFlowCharacteristics.Size = New System.Drawing.Size(432, 166)
+        Me.GroupFlowCharacteristics.Size = New System.Drawing.Size(432, 188)
         Me.GroupFlowCharacteristics.TabIndex = 20
         Me.GroupFlowCharacteristics.TabStop = False
         Me.GroupFlowCharacteristics.Text = "Advanced"
+        '
+        'CompFloorLeak
+        '
+        Me.CompFloorLeak.Location = New System.Drawing.Point(134, 150)
+        Me.CompFloorLeak.Name = "CompFloorLeak"
+        Me.CompFloorLeak.Size = New System.Drawing.Size(96, 20)
+        Me.CompFloorLeak.TabIndex = 321
+        '
+        'Label71
+        '
+        Me.Label71.AutoSize = True
+        Me.Label71.Location = New System.Drawing.Point(17, 153)
+        Me.Label71.Name = "Label71"
+        Me.Label71.Size = New System.Drawing.Size(113, 13)
+        Me.Label71.TabIndex = 320
+        Me.Label71.Text = "Floor Leak Area Ratio:"
+        Me.Label71.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        '
+        'CompWallLeak
+        '
+        Me.CompWallLeak.Location = New System.Drawing.Point(134, 124)
+        Me.CompWallLeak.Name = "CompWallLeak"
+        Me.CompWallLeak.Size = New System.Drawing.Size(96, 20)
+        Me.CompWallLeak.TabIndex = 319
+        '
+        'Label66
+        '
+        Me.Label66.AutoSize = True
+        Me.Label66.Location = New System.Drawing.Point(19, 127)
+        Me.Label66.Name = "Label66"
+        Me.Label66.Size = New System.Drawing.Size(111, 13)
+        Me.Label66.TabIndex = 318
+        Me.Label66.Text = "Wall Leak Area Ratio:"
+        Me.Label66.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
         'CompNormal
         '
         Me.CompNormal.AutoSize = True
         Me.CompNormal.Checked = True
-        Me.CompNormal.Location = New System.Drawing.Point(37, 58)
+        Me.CompNormal.Location = New System.Drawing.Point(37, 40)
         Me.CompNormal.Name = "CompNormal"
         Me.CompNormal.Size = New System.Drawing.Size(145, 17)
         Me.CompNormal.TabIndex = 314
@@ -2337,7 +2383,7 @@ Public Class CeditMain
         'CompCorridor
         '
         Me.CompCorridor.AutoSize = True
-        Me.CompCorridor.Location = New System.Drawing.Point(37, 104)
+        Me.CompCorridor.Location = New System.Drawing.Point(37, 86)
         Me.CompCorridor.Name = "CompCorridor"
         Me.CompCorridor.Size = New System.Drawing.Size(156, 17)
         Me.CompCorridor.TabIndex = 316
@@ -2347,7 +2393,7 @@ Public Class CeditMain
         'CompShaft
         '
         Me.CompShaft.AutoSize = True
-        Me.CompShaft.Location = New System.Drawing.Point(37, 81)
+        Me.CompShaft.Location = New System.Drawing.Point(37, 63)
         Me.CompShaft.Name = "CompShaft"
         Me.CompShaft.Size = New System.Drawing.Size(145, 17)
         Me.CompShaft.TabIndex = 315
@@ -2384,7 +2430,7 @@ Public Class CeditMain
         Me.CompVariableArea.Name = "CompVariableArea"
         Me.CompVariableArea.Rows.DefaultSize = 19
         Me.CompVariableArea.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.CompVariableArea.Size = New System.Drawing.Size(190, 111)
+        Me.CompVariableArea.Size = New System.Drawing.Size(190, 142)
         Me.CompVariableArea.StyleInfo = resources.GetString("CompVariableArea.StyleInfo")
         Me.CompVariableArea.TabIndex = 317
         Me.CompVariableArea.VisualStyle = C1.Win.C1FlexGrid.VisualStyle.System
@@ -2409,9 +2455,9 @@ Public Class CeditMain
         Me.GroupCompSurfaces.Controls.Add(Me.Label21)
         Me.GroupCompSurfaces.Controls.Add(Me.Label22)
         Me.GroupCompSurfaces.Controls.Add(Me.Label20)
-        Me.GroupCompSurfaces.Location = New System.Drawing.Point(32, 220)
+        Me.GroupCompSurfaces.Location = New System.Drawing.Point(27, 242)
         Me.GroupCompSurfaces.Name = "GroupCompSurfaces"
-        Me.GroupCompSurfaces.Size = New System.Drawing.Size(880, 133)
+        Me.GroupCompSurfaces.Size = New System.Drawing.Size(891, 133)
         Me.GroupCompSurfaces.TabIndex = 16
         Me.GroupCompSurfaces.TabStop = False
         Me.GroupCompSurfaces.Text = "Materials"
@@ -2419,7 +2465,7 @@ Public Class CeditMain
         'CompSpecHeatFloor
         '
         Me.CompSpecHeatFloor.AutoSize = True
-        Me.CompSpecHeatFloor.Location = New System.Drawing.Point(642, 66)
+        Me.CompSpecHeatFloor.Location = New System.Drawing.Point(666, 66)
         Me.CompSpecHeatFloor.Name = "CompSpecHeatFloor"
         Me.CompSpecHeatFloor.Size = New System.Drawing.Size(74, 13)
         Me.CompSpecHeatFloor.TabIndex = 52
@@ -2428,7 +2474,7 @@ Public Class CeditMain
         'CompDensityFloor
         '
         Me.CompDensityFloor.AutoSize = True
-        Me.CompDensityFloor.Location = New System.Drawing.Point(642, 87)
+        Me.CompDensityFloor.Location = New System.Drawing.Point(666, 87)
         Me.CompDensityFloor.Name = "CompDensityFloor"
         Me.CompDensityFloor.Size = New System.Drawing.Size(45, 13)
         Me.CompDensityFloor.TabIndex = 51
@@ -2437,7 +2483,7 @@ Public Class CeditMain
         'CompThicknessFloor
         '
         Me.CompThicknessFloor.AutoSize = True
-        Me.CompThicknessFloor.Location = New System.Drawing.Point(642, 108)
+        Me.CompThicknessFloor.Location = New System.Drawing.Point(666, 108)
         Me.CompThicknessFloor.Name = "CompThicknessFloor"
         Me.CompThicknessFloor.Size = New System.Drawing.Size(59, 13)
         Me.CompThicknessFloor.TabIndex = 50
@@ -2446,7 +2492,7 @@ Public Class CeditMain
         'CompConductFloor
         '
         Me.CompConductFloor.AutoSize = True
-        Me.CompConductFloor.Location = New System.Drawing.Point(642, 45)
+        Me.CompConductFloor.Location = New System.Drawing.Point(666, 45)
         Me.CompConductFloor.Name = "CompConductFloor"
         Me.CompConductFloor.Size = New System.Drawing.Size(68, 13)
         Me.CompConductFloor.TabIndex = 49
@@ -2455,7 +2501,7 @@ Public Class CeditMain
         'CompSpecHeatWalls
         '
         Me.CompSpecHeatWalls.AutoSize = True
-        Me.CompSpecHeatWalls.Location = New System.Drawing.Point(349, 65)
+        Me.CompSpecHeatWalls.Location = New System.Drawing.Point(373, 65)
         Me.CompSpecHeatWalls.Name = "CompSpecHeatWalls"
         Me.CompSpecHeatWalls.Size = New System.Drawing.Size(74, 13)
         Me.CompSpecHeatWalls.TabIndex = 48
@@ -2464,7 +2510,7 @@ Public Class CeditMain
         'CompDensityWalls
         '
         Me.CompDensityWalls.AutoSize = True
-        Me.CompDensityWalls.Location = New System.Drawing.Point(349, 86)
+        Me.CompDensityWalls.Location = New System.Drawing.Point(373, 86)
         Me.CompDensityWalls.Name = "CompDensityWalls"
         Me.CompDensityWalls.Size = New System.Drawing.Size(45, 13)
         Me.CompDensityWalls.TabIndex = 47
@@ -2473,7 +2519,7 @@ Public Class CeditMain
         'CompThicknessWalls
         '
         Me.CompThicknessWalls.AutoSize = True
-        Me.CompThicknessWalls.Location = New System.Drawing.Point(349, 107)
+        Me.CompThicknessWalls.Location = New System.Drawing.Point(373, 107)
         Me.CompThicknessWalls.Name = "CompThicknessWalls"
         Me.CompThicknessWalls.Size = New System.Drawing.Size(59, 13)
         Me.CompThicknessWalls.TabIndex = 46
@@ -2482,7 +2528,7 @@ Public Class CeditMain
         'CompConductWalls
         '
         Me.CompConductWalls.AutoSize = True
-        Me.CompConductWalls.Location = New System.Drawing.Point(349, 44)
+        Me.CompConductWalls.Location = New System.Drawing.Point(373, 44)
         Me.CompConductWalls.Name = "CompConductWalls"
         Me.CompConductWalls.Size = New System.Drawing.Size(68, 13)
         Me.CompConductWalls.TabIndex = 45
@@ -2491,7 +2537,7 @@ Public Class CeditMain
         'CompSpecHeatCeiling
         '
         Me.CompSpecHeatCeiling.AutoSize = True
-        Me.CompSpecHeatCeiling.Location = New System.Drawing.Point(58, 65)
+        Me.CompSpecHeatCeiling.Location = New System.Drawing.Point(82, 65)
         Me.CompSpecHeatCeiling.Name = "CompSpecHeatCeiling"
         Me.CompSpecHeatCeiling.Size = New System.Drawing.Size(74, 13)
         Me.CompSpecHeatCeiling.TabIndex = 44
@@ -2500,7 +2546,7 @@ Public Class CeditMain
         'CompDensityCeiling
         '
         Me.CompDensityCeiling.AutoSize = True
-        Me.CompDensityCeiling.Location = New System.Drawing.Point(58, 86)
+        Me.CompDensityCeiling.Location = New System.Drawing.Point(82, 86)
         Me.CompDensityCeiling.Name = "CompDensityCeiling"
         Me.CompDensityCeiling.Size = New System.Drawing.Size(45, 13)
         Me.CompDensityCeiling.TabIndex = 43
@@ -2509,7 +2555,7 @@ Public Class CeditMain
         'CompThicknessCeiling
         '
         Me.CompThicknessCeiling.AutoSize = True
-        Me.CompThicknessCeiling.Location = New System.Drawing.Point(58, 107)
+        Me.CompThicknessCeiling.Location = New System.Drawing.Point(82, 107)
         Me.CompThicknessCeiling.Name = "CompThicknessCeiling"
         Me.CompThicknessCeiling.Size = New System.Drawing.Size(59, 13)
         Me.CompThicknessCeiling.TabIndex = 42
@@ -2518,7 +2564,7 @@ Public Class CeditMain
         'CompConductCeiling
         '
         Me.CompConductCeiling.AutoSize = True
-        Me.CompConductCeiling.Location = New System.Drawing.Point(58, 44)
+        Me.CompConductCeiling.Location = New System.Drawing.Point(82, 44)
         Me.CompConductCeiling.Name = "CompConductCeiling"
         Me.CompConductCeiling.Size = New System.Drawing.Size(68, 13)
         Me.CompConductCeiling.TabIndex = 41
@@ -2527,7 +2573,7 @@ Public Class CeditMain
         'CompFloor
         '
         Me.CompFloor.ItemHeight = 13
-        Me.CompFloor.Location = New System.Drawing.Point(645, 21)
+        Me.CompFloor.Location = New System.Drawing.Point(669, 21)
         Me.CompFloor.Name = "CompFloor"
         Me.CompFloor.Size = New System.Drawing.Size(192, 21)
         Me.CompFloor.TabIndex = 320
@@ -2535,7 +2581,7 @@ Public Class CeditMain
         'CompWalls
         '
         Me.CompWalls.ItemHeight = 13
-        Me.CompWalls.Location = New System.Drawing.Point(350, 20)
+        Me.CompWalls.Location = New System.Drawing.Point(374, 20)
         Me.CompWalls.Name = "CompWalls"
         Me.CompWalls.Size = New System.Drawing.Size(192, 21)
         Me.CompWalls.TabIndex = 319
@@ -2543,7 +2589,7 @@ Public Class CeditMain
         'CompCeiling
         '
         Me.CompCeiling.ItemHeight = 13
-        Me.CompCeiling.Location = New System.Drawing.Point(61, 19)
+        Me.CompCeiling.Location = New System.Drawing.Point(85, 19)
         Me.CompCeiling.Name = "CompCeiling"
         Me.CompCeiling.Size = New System.Drawing.Size(192, 21)
         Me.CompCeiling.TabIndex = 318
@@ -2551,7 +2597,7 @@ Public Class CeditMain
         'Label21
         '
         Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(302, 21)
+        Me.Label21.Location = New System.Drawing.Point(326, 21)
         Me.Label21.Name = "Label21"
         Me.Label21.Size = New System.Drawing.Size(36, 13)
         Me.Label21.TabIndex = 39
@@ -2561,7 +2607,7 @@ Public Class CeditMain
         'Label22
         '
         Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(5, 20)
+        Me.Label22.Location = New System.Drawing.Point(29, 20)
         Me.Label22.Name = "Label22"
         Me.Label22.Size = New System.Drawing.Size(41, 13)
         Me.Label22.TabIndex = 38
@@ -2571,7 +2617,7 @@ Public Class CeditMain
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(597, 22)
+        Me.Label20.Location = New System.Drawing.Point(621, 22)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(33, 13)
         Me.Label20.TabIndex = 40
@@ -5347,7 +5393,7 @@ Public Class CeditMain
             UpdateGUI.Geometry(CurrentCompartment)
         End If
     End Sub
-    Private Sub Comp_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompName.Leave, CompWidth.Leave, CompDepth.Leave, CompHeight.Leave, CompXPosition.Leave, CompYPosition.Leave, CompZPosition.Leave
+    Private Sub Comp_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompName.Leave, CompWidth.Leave, CompDepth.Leave, CompHeight.Leave, CompXPosition.Leave, CompYPosition.Leave, CompZPosition.Leave, CompWallLeak.Leave, CompFloorLeak.Leave
         ' Update stored data and summary spreadsheet with newly typed info
         Dim aCompartment As New Compartment
         If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
@@ -5359,6 +5405,8 @@ Public Class CeditMain
             If sender Is CompXPosition Then aCompartment.RoomOriginX = Val(CompXPosition.Text)
             If sender Is CompYPosition Then aCompartment.RoomOriginY = Val(CompYPosition.Text)
             If sender Is CompZPosition Then aCompartment.RoomOriginZ = Val(CompZPosition.Text)
+            If sender Is CompWallLeak Then aCompartment.WallLeak = Val(CompWallLeak.Text)
+            If sender Is CompFloorLeak Then aCompartment.FloorLeak = Val(CompFloorLeak.Text)
             myCompartments.Item(CurrentCompartment) = aCompartment
             UpdateGUI.Geometry(CurrentCompartment)
         End If

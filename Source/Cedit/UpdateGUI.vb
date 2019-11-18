@@ -259,6 +259,8 @@ Public Class UpdateGUI
             MainWin.CompXPosition.Text = aCompartment.RoomOriginX.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.CompYPosition.Text = aCompartment.RoomOriginY.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.CompZPosition.Text = aCompartment.RoomOriginZ.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.CompWallLeak.Text = aCompartment.WallLeak.ToString + myUnits.Convert(UnitsNum.Area).Units + "/" + myUnits.Convert(UnitsNum.Area).Units
+            MainWin.CompFloorLeak.Text = aCompartment.FloorLeak.ToString + myUnits.Convert(UnitsNum.Area).Units + "/" + myUnits.Convert(UnitsNum.Area).Units
 
             MainWin.CompCeiling.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial)
             If MainWin.CompCeiling.Text <> "Default" And MainWin.CompCeiling.Text <> "Off" Then

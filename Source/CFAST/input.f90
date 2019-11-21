@@ -5,7 +5,7 @@
     use fire_routines, only: flame_height
     use initialization_routines, only : initialize_leakage, initialize_targets, initialize_ambient, offset
     use numerics_routines, only : dnrm2
-    use output_routines, only: openoutputfiles, deleteoutputfiles
+    use output_routines, only: open_output_files, delete_output_files
     use utility_routines, only: countargs, upperall, exehandle, emix
     use namelist_input_routines, only: namelist_input
     use spreadsheet_input_routines, only: spreadsheet_input
@@ -122,7 +122,7 @@
     end do
 
     ! we now know what output is going to be generated, so create the files
-    call openoutputfiles
+    call open_output_files
 
     interior_rho = interior_abs_pressure/interior_ambient_temperature/rgas
     exterior_rho = exterior_abs_pressure/exterior_ambient_temperature/rgas
@@ -516,7 +516,7 @@
  
     ! output the revision for later identification of validation plots
     if (validation_flag) then
-        call deleteoutputfiles (gitfile)
+        call delete_output_files (gitfile)
         open (newunit=iofilg, file=gitfile, action='write', iostat=ios, status='new')
         if (ios==0) then
             call get_info(revision, revision_date, compile_date)
@@ -526,29 +526,29 @@
     end if
 
     ! open the log file to write error messages and such
-    call deleteoutputfiles (errorlogging)
+    call delete_output_files (errorlogging)
     open (newunit=iofill, file=errorlogging, action='write', iostat=ios, status='new')
     if (ios/=0) then
         write (*,'(a,i0,a)') 'Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
         stop
     end if
 
-    call deleteoutputfiles (outputfile)
-    call deleteoutputfiles (smvhead)
-    call deleteoutputfiles (smvdata)
-    call deleteoutputfiles (smvcsv)
-    call deleteoutputfiles (smvsinfo)
-    call deleteoutputfiles (ssflow)
-    call deleteoutputfiles (ssconnections)
-    call deleteoutputfiles (ssnormal)
-    call deleteoutputfiles (ssspecies)
-    call deleteoutputfiles (ssspeciesmass)
-    call deleteoutputfiles (sswall)
-    call deleteoutputfiles (statusfile)
-    call deleteoutputfiles (queryfile)
-    call deleteoutputfiles (residcsv)
-    call deleteoutputfiles (slabcsv)
-    call deleteoutputfiles (kernelisrunning)
+    call delete_output_files (outputfile)
+    call delete_output_files (smvhead)
+    call delete_output_files (smvdata)
+    call delete_output_files (smvcsv)
+    call delete_output_files (smvsinfo)
+    call delete_output_files (ssflow)
+    call delete_output_files (ssconnections)
+    call delete_output_files (ssnormal)
+    call delete_output_files (ssspecies)
+    call delete_output_files (ssspeciesmass)
+    call delete_output_files (sswall)
+    call delete_output_files (statusfile)
+    call delete_output_files (queryfile)
+    call delete_output_files (residcsv)
+    call delete_output_files (slabcsv)
+    call delete_output_files (kernelisrunning)
 
     return
 

@@ -3,7 +3,7 @@ module initialization_routines
     use precision_parameters
 
     use numerics_routines, only: dnrm2, dscal
-    use output_routines, only : deleteoutputfiles
+    use output_routines, only : delete_output_files
     use solve_routines, only : update_data
     use utility_routines, only: indexi, xerror    
 

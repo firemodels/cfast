@@ -11,7 +11,7 @@ module solve_routines
     use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
     use opening_fractions, only : get_vent_opening
-    use output_routines, only: output_results, output_status, output_debug, deleteoutputfiles, find_error_component
+    use output_routines, only: output_results, output_status, output_debug, delete_output_files, find_error_component
     use radiation_routines, only: radiation
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
@@ -377,7 +377,7 @@ module solve_routines
     end if
     ! If the stop file exists or the esc key has been pressed, then quit
     if (icode==1.and.stopiter.eq.0) then
-        call deleteoutputfiles (stopfile)
+        call delete_output_files (stopfile)
         write (*,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
         write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
         return
@@ -389,7 +389,7 @@ module solve_routines
     inquire (file=queryfile, exist = exists)
     if (exists) then
         call output_status (t, dt)
-        call deleteoutputfiles (queryfile)
+        call delete_output_files (queryfile)
     end if
 
     !Check to see if diagnostic files .resid and .jac exist. If they do exist
@@ -521,7 +521,7 @@ module solve_routines
             call find_error_component (ieqmax)
             write (*,'(a,i0)') '***Error, dassl - idid = ', idid
             write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
-            call cfastexit ('SOLVE_SIMULATION', 1)
+            call cfastexit ('solve_simulation', 1)
             stop
         end if
 
@@ -535,7 +535,7 @@ module solve_routines
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
                     write (iofill,'(i0,a,e11.4,a,e11.4)') &
                         '***Error: Consecutive time steps with size below ', stpmin_cnt_max, stpmin, ' at t = ', t
-                    call cfastexit ('SOLVE_SIMULATION',2)
+                    call cfastexit ('solve_simulation',2)
                     stop
                 end if
             else
@@ -603,7 +603,7 @@ module solve_routines
                     write (*,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
                     write (iofill,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
-                    call cfastexit ('SOLVE_SIMULATION', 3)
+                    call cfastexit ('solve_simulation', 3)
                     stop
                 end if
 
@@ -628,7 +628,7 @@ module solve_routines
                     t,' Last time = ',told,' need to back step to ',td
                 write (iofill,'(a,f10.5,a,f10.5,a,f10.5)') '***Error: Back step too large in DASSL, Time = ', &
                     t,' Last time = ',told,' need to back step to ',td
-                call cfastexit ('SOLVE_SIMULATION', 4)
+                call cfastexit ('solve_simulation', 4)
                 stop
             end if
         end if
@@ -645,9 +645,9 @@ module solve_routines
         numstep = numstep + 1
         total_steps = total_steps + 1
         if (stopiter>=0.and.total_steps>stopiter) then
-            call deleteoutputfiles (stopfile)
+            call delete_output_files (stopfile)
             write (iofill,'(a,1pg11.3,a,g11.3)') 'Stopped by request at T = ', t, ' DT = ', dt
-            call cfastexit ('SOLVE_SIMULATION', 5)
+            call cfastexit ('solve_simulation', 5)
         end if
         go to 10
     end if

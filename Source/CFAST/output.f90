@@ -36,7 +36,7 @@ module output_routines
 
     private
 
-    public output_version, output_initial_conditions, output_results, deleteoutputfiles, openoutputfiles, &
+    public output_version, output_initial_conditions, output_results, delete_output_files, open_output_files, &
         output_status, output_debug, find_error_component, closeoutputfiles
 
     contains
@@ -1369,12 +1369,12 @@ module output_routines
 5001 FORMAT('Status at T = ',1pg11.2, ' DT = ',g11.3, ' STEPS = ',i0)
     end subroutine output_status
 
-! --------------------------- openoutputfiles -------------------------------------------
+! --------------------------- open_output_files -------------------------------------------
 
-    subroutine openoutputfiles
+    subroutine open_output_files
 
     !	Now that we know what output is needed, open the appropriate files
-    !	Unit numbers defined here and readinputfiles
+    !	Unit numbers are automatically defined
 
     !	Unit numbers defined for various I/O purposes
     !
@@ -1439,19 +1439,19 @@ module output_routines
     !	smokeview file
 11  write (*,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
     write (iofill,5040) modulo(ios,256),trim(smvhead),trim(smvdata)
-    call cfastexit('OPENOUTPUTFILES',1)
+    call cfastexit('open_output_files',1)
     !	this one comes from writing to the status file
 81  write (*,*) '***Fatal error opening the status file ',ios
     write (iofill,*) '***Fatal error opening the status file ',ios
-    call cfastexit('OPENOUTPUTFILES',2)
+    call cfastexit('open_output_files',2)
 
 5040 FORMAT ('***Error ',i4,' while processing smokeview files -',i3,2x,a,2x,a)
 
-    end subroutine openoutputfiles
+    end subroutine open_output_files
 
-! --------------------------- deleteoutputfiles -------------------------------------------
+! --------------------------- delete_output_files -------------------------------------------
 
-    subroutine deleteoutputfiles (outputfile)
+    subroutine delete_output_files (outputfile)
 
     character(*), intent(in) :: outputfile
     integer fileunit,ios
@@ -1465,20 +1465,20 @@ module output_routines
                     '. File may be in use by another application.'
                 write (*,'(a,i0,a)') 'Error opening output file, returned status = ', ios, &
                     '. File may be in use by another application.'
-                call cfastexit('DELETEOUTPUTFILES',1)
+                call cfastexit('delete_output_files',1)
             end if
         end if
     end if
 
     return
-    end subroutine deleteoutputfiles
+    end subroutine delete_output_files
     
     !---------------------closeoutputfiles------------------------------------------------------
     
     subroutine closeoutputfiles
 
-    !	closeoutputfile closes units from openoutputfiles
-    !	Unit numbers defined here and readinputfiles
+    !	closeoutputfile closes units from open_output_files
+    !	Unit numbers defined here and read_input_file
 
     !	Unit numbers defined for various I/O purposes
     !

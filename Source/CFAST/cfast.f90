@@ -31,7 +31,7 @@
     
     use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
-    use output_routines, only: output_version, output_initial_conditions, deleteoutputfiles, closeoutputfiles
+    use output_routines, only: output_version, output_initial_conditions, delete_output_files, closeoutputfiles
     use solve_routines, only : solve_simulation
     use utility_routines, only : cptime, read_command_options
     use radiation_routines, only : radiation
@@ -47,7 +47,7 @@
 
     if (command_argument_count().eq.0) then
         call output_version(0)
-        call cfastexit('MAIN',0)
+        call cfastexit('CFAST',0)
     end if
 
     ! initialize the basic memory configuration
@@ -80,7 +80,7 @@
     if (.not.validation_flag) write (*,5010) total_steps
     write (iofill,5000) tend - tbeg
     write (iofill,5010) total_steps
-    call cfastexit ('MAIN', 0)
+    call cfastexit ('CFAST', 0)
 
 5000 format ('Total execution time = ',1pg10.3,' seconds')
 5010 format ('Total time steps = ',i10)
@@ -95,7 +95,7 @@
     ! inputs    name        routine name calling for exit
     !           errorcode   numeric code indicating which call to cfastexit in routine
 
-    use output_routines, only: closeoutputfiles, deleteoutputfiles
+    use output_routines, only: closeoutputfiles, delete_output_files
     use spreadsheet_routines, only : output_spreadsheet_montecarlo
     use monte_carlo_data, only: n_mcarlo
     use setup_data, only: monte_carlo_flag, validation_flag, iofill, iofilkernel, stopfile, ssmontecarlo, ss_out_interval
@@ -105,15 +105,15 @@
 
 
     if (errorcode/=0) then
-        if (trim(name)=='SOLVE_SIMULATION' .and. errorcode==5) then
+        if (trim(name)=='solve_simulation' .and. errorcode==5) then
             ! validation flag test is for the maximum iteration exit is because of CFASTBot's testing to make
             !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
             !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
-            if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
-            if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST routine: '',a)') trim(name)
+            if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST'')')
+            if (iofill/=0) write (iofill, '(''Maximum iteration exit from CFAST'')')
         else
-            write (*,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
-            if (iofill/=0) write (iofill,'(''***Error exit from CFAST routine: '',a,'' code = '',i0)') trim(name), errorcode
+            write (*,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
+            if (iofill/=0) write (iofill,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
         end if
     end if
 
@@ -124,16 +124,16 @@
     end if
     
     if (errorcode==0) then
-        if (.not.validation_flag) write (*, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
-        if (iofill/=0) write (iofill, '(''Normal exit from CFAST routine: '',a)') 'CFAST'
+        if (.not.validation_flag) write (*, '(''Normal exit from CFAST'')')
+        if (iofill/=0) write (iofill, '(''Normal exit from CFAST'')')
     end if
     
     call closeoutputfiles
     close (unit=iofilkernel, status='delete')
     if (ss_out_interval==0 .or. n_mcarlo == 0) then
-        call deleteoutputfiles (ssmontecarlo)
+        call delete_output_files (ssmontecarlo)
     end if
-    call deleteoutputfiles (stopfile)
+    call delete_output_files (stopfile)
 
     stop
 

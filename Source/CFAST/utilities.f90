@@ -825,7 +825,7 @@
 
     ! retrieve and process command line options and date
 
-    ! unit numbers defined in read_command_options, openoutputfiles, readinputfiles
+    ! unit numbers defined in read_command_options, open_output_files, read_input_file
     !
     !      1 is for the solver.ini and data files (data file, tpp and objects) (iofili)
     !      3 is for the log file  (iofill)
@@ -1106,7 +1106,7 @@
     else 
         write(*,*) '***Error: nend is less than nstart but >= 0, illogical'
         write(iofill,*)'***Error: nend is less than nstart but >= 0, illogical'
-        call cfastexit('SPREADSHEET_INPUT_ROUTINES:READCSVFORMAT',1)
+        call cfastexit('spreadsheet_input_routines: readcsvformat',1)
     end if
 
     ! if we have header rows, then skip them
@@ -1114,7 +1114,7 @@
         do  i=1,nstart-1
             read (iunit,'(A)', end = 100, iostat=ios) in
             if (ios /= 0) then
-                call cfastexit('SPREADSHEET_INPUT_ROUTINES:READCSVFORMAT',2)
+                call cfastexit('spreadsheet_input_routines: readcsvformat',2)
             end if
         end do
     end if
@@ -1135,7 +1135,7 @@
     if (maxrow>numr) then
         write (*,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
         write (iofill,'(a,i0,1x,i0)') '***Error: Too many rows or columns in input file, r,c = ', maxrow, maxcol
-        call cfastexit('SPREADSHEET_INPUT_ROUTINES:READCSVFORMAT',3)
+        call cfastexit('spreadsheet_input_routines: readcsvformat',3)
     end if
 
     nc=0
@@ -1157,7 +1157,7 @@
         else
             write (*,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
             write (iofill,'(a,i0,a,i0)') 'Too many rows or columns in input file, r,c=', nrcurrent, ' ', nc
-            call cfastexit('SPREADSHEET_INPUT_ROUTINES:READCSVFORMAT',4)
+            call cfastexit('spreadsheet_input_routines: readcsvformat',4)
         end if
         go to 30
     end if

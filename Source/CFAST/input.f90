@@ -7,7 +7,7 @@
     use numerics_routines, only : dnrm2
     use output_routines, only: open_output_files, delete_output_files
     use utility_routines, only: countargs, upperall, exehandle, emix
-    use namelist_input_routines, only: namelist_input
+    use namelist_input_routines, only: namelist_input, read_misc
     use spreadsheet_input_routines, only: spreadsheet_input
     
     use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, thermal_type, vent_type, &
@@ -21,7 +21,8 @@
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, ssconnections, ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, ssmontecarlo, &
-        kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile
+        kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
+        overwrite_testcase
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
@@ -465,6 +466,7 @@
     ! delete the output files
     ! open the log file
 
+    logical ex
     integer :: lp, ld, le, ios
     character(len=256) :: revision, revision_date, compile_date, buf
     
@@ -502,7 +504,7 @@
     lp = len_trim (exepath)
     solverini = datapath(1:lp) // 'solver.ini'
 
-    ! open input file and check to see if it's a new (namelist) format file
+    !open input file and check to see if it's a new (namelist) format file
     open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
     read (unit=iofili,fmt='(a)') buf
     rewind (unit=iofili)
@@ -510,10 +512,19 @@
         nmlflag = .false.
     else if (buf(1:1)=='&') then
         nmlflag = .true.
+        rewind (unit=iofili)
+        call read_misc (iofili)
+        if (.not.overwrite_testcase) then
+            inquire (file=outputfile,exist=ex)
+            if (ex) then
+                write (*,'(a,a,a)') '***Error in &MISC, OVERWRITE=.FALSE. and the file ',trim(outputfile),' exists.'
+                stop
+            end if
+        end if
     else
         write (*,*) ' Input file format not recognized. Check first line of input file.'
     end if
- 
+
     ! output the revision for later identification of validation plots
     if (validation_flag) then
         call delete_output_files (gitfile)
@@ -529,7 +540,7 @@
     call delete_output_files (errorlogging)
     open (newunit=iofill, file=errorlogging, action='write', iostat=ios, status='new')
     if (ios/=0) then
-        write (*,'(a,i0,a)') 'Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
+        write (*,'(a,i0,a)') '***Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
         stop
     end if
 

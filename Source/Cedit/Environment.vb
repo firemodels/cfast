@@ -33,6 +33,7 @@ Public Class Environment
     Private aAdiabaticWalls As Boolean              ' True if all walls are adiabatic
     Private aExtinctionFlaming As Single = 8700     ' Soot concentration to OD for flaming soot
     Private aExtinctionSmoldering As Single = 4400  ' Soot concentration to OD for flaming soot
+    Private aOverwrite As Boolean = True
     Private HasErrors As Integer = 0                ' Temporary variable to indicate whether there are errors in the specification
     Private aChanged As Boolean = False             ' True if any values have changed
     ' all variables below are for the &DIAG namelist. 
@@ -99,6 +100,7 @@ Public Class Environment
         aDIAGRadSolver = "DEFAULT"
         aDiagAdiabaticTargetVerification = False
         aDiagAdiabaticTargetFlux = 0
+        aOverwrite = True
         aDIAGfire = DIAGon
         aDIAGhflow = DIAGon
         aDIAGentrain = DIAGon
@@ -331,6 +333,17 @@ Public Class Environment
         Set(Value As Single)
             If aExtinctionSmoldering <> Value Then
                 aExtinctionSmoldering = Value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Friend Property Overwrite As Boolean
+        Get
+            Return aOverwrite
+        End Get
+        Set(value As Boolean)
+            If Overwrite <> value Then
+                aOverwrite = value
                 aChanged = True
             End If
         End Set

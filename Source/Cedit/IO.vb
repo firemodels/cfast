@@ -758,10 +758,11 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLMisc(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j, max As Integer
-        Dim adiabatic As Boolean
+        Dim adiabatic, overwrite As Boolean
         Dim maxts, loxyl, extinctionFlaming, extinctionSmoldering As Single
 
         adiabatic = False
+        overwrite = True
         maxts = Environment.DefaultMaximumTimeStep
         loxyl = 0.15
         extinctionFlaming = 8700
@@ -789,7 +790,15 @@ Module IO
                         Else
                             myErrors.Add("In MISC namelist for SPECIFIC_EXTINCTION input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
-                    Else
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "OVERWRITE") Then
+                        If NMList.ForNMListVarGetStr(i, j, 1) = ".FALSE." Then
+                            overwrite = False
+                        ElseIf NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
+                            overwrite = True
+                        Else
+                            myErrors.Add("In MISC namelist for OVERWRITE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
+                        End If
+                        Else
                         myErrors.Add("In MISC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
@@ -801,6 +810,7 @@ Module IO
         someEnvironment.LowerOxygenLimit = loxyl
         someEnvironment.FlamingExtinctionCoefficient = extinctionFlaming
         someEnvironment.SmolderingExtinctionCoefficient = extinctionSmoldering
+        someEnvironment.Overwrite = overwrite
         someEnvironment.Changed = False
     End Sub
     Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile, ByRef someThermalProperties As ThermalPropertiesCollection)
@@ -3061,7 +3071,7 @@ Module IO
         PrintLine(IO, ln)
 
         'Writing MISC namelist
-        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Or myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
+        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Or myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Or myEnvironment.Overwrite <> True Then
             ln = "&MISC "
             aFlag = True
         Else
@@ -3078,6 +3088,9 @@ Module IO
         End If
         If myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
             ln += " SPECIFIC_EXTINCTION = " + myEnvironment.FlamingExtinctionCoefficient.ToString + ", " + myEnvironment.SmolderingExtinctionCoefficient.ToString
+        End If
+        If myEnvironment.Overwrite <> True Then
+            ln += " OVERWRITE = .FALSE."
         End If
         If aFlag Then
             ln += " / "

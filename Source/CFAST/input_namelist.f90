@@ -27,7 +27,7 @@
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, rarray, carray, nrow, ncol, cfast_version, heading, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
@@ -39,7 +39,7 @@
     
     private
 
-    public namelist_input
+    public namelist_input, read_misc
 
     contains
     ! --------------------------- namelist_input ----------------------------------
@@ -283,8 +283,8 @@
 
     real(eb) :: max_time_step, lower_oxygen_limit
     real(eb), dimension(2) :: specific_extinction
-    logical :: adiabatic
-    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit, specific_extinction
+    logical :: adiabatic, overwrite
+    namelist /MISC/ adiabatic, max_time_step, lower_oxygen_limit, specific_extinction, overwrite
 
     ios = 1
 
@@ -317,6 +317,7 @@
         stpmax = max_time_step
         lower_o2_limit = lower_oxygen_limit
         sigma_s = specific_extinction
+        overwrite_testcase = overwrite
 
     end if misc_flag
 
@@ -324,8 +325,9 @@
 
     subroutine set_defaults
 
-    ! note actual default values are set in initialize_memory and used here to initialize namelist
+    ! note most default values are set in initialize_memory and used here to initialize namelist
 
+    overwrite = .true.
     adiabatic = .false.
     max_time_step = stpmax
     lower_oxygen_limit = default_lower_oxygen_limit

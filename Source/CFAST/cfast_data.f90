@@ -83,6 +83,31 @@ module fire_data
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
     end module fire_data
+
+! -------------------------monte_carlo_data---------------------------------------
+    
+module monte_carlo_data
+    
+    use precision_parameters
+    
+    use cfast_types, only: montecarlo_type
+    
+    use cparams, only: mx_monte_carlo, mxitems
+    
+    implicit none
+    save
+    
+    integer, parameter :: num_csvfiles = 5 
+    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvmass = 4, iocsvspecies = 5
+    
+    character(len = 7), parameter, dimension(num_csvfiles) :: csvnames = &
+        (/'WALL   ', 'NORMAL ', 'FLOW   ', 'MASS   ', 'SPECIES'/)
+    integer, dimension(num_csvfiles) :: iocsv
+    
+    integer :: n_mcarlo
+    type (montecarlo_type), allocatable, dimension(:), target :: mcarloinfo
+    
+    end module monte_carlo_data
     
 ! --------------------------- namelist_data -------------------------------------------
 
@@ -436,28 +461,4 @@ module vent_data
     type(vent_type), allocatable, dimension(:), target :: leakinfo
 
     end module vent_data
-
-! -------------------------monte_carlo_data---------------------------------------
-    
-module monte_carlo_data
-    
-    use precision_parameters
-    
-    use cfast_types, only: montecarlo_type
-    
-    use cparams, only: mx_monte_carlo, mxitems
-    
-    implicit none
-    save
-    
-    integer, parameter :: num_csvfiles = 5 
-    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvmass = 4, iocsvspecies = 5
-    
-    character(len = 7), parameter, dimension(num_csvfiles) :: csvnames = &
-        (/'WALL   ', 'NORMAL ', 'FLOW   ', 'MASS   ', 'SPECIES'/)
-    integer :: n_mcarlo
-    integer, dimension(num_csvfiles) :: iocsv
-    type (montecarlo_type), allocatable, dimension(:), target :: mcarloinfo
-    
-    end module monte_carlo_data
     

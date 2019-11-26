@@ -540,7 +540,8 @@
     call delete_output_files (errorlogging)
     open (newunit=iofill, file=errorlogging, action='write', iostat=ios, status='new')
     if (ios/=0) then
-        write (*,'(a,i0,a)') '***Error opening log file, returned status = ', ios, '. Log file may be in use by another application.'
+        write (*,'(a,i0,a)') '***Error opening log file, returned status = ', ios, &
+            '. Log file may be in use by another application.'
         stop
     end if
 

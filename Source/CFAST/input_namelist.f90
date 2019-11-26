@@ -2726,14 +2726,13 @@ continue
     integer :: ios, ii, counter
     type(montecarlo_type), pointer :: mcarloptr
     
-    integer :: relative_column
     real(eb) :: criteria
     character(25) :: file_type, type_of_analysis
-    character(64) :: column_title,prime_instrument,prime_measurement,second_instrument, second_measurement
+    character(64) :: column_title, prime_instrument, prime_measurement, second_instrument, second_measurement
     character(64) :: id
 
     namelist /MONT/ id, file_type, column_title, prime_instrument, prime_measurement, second_instrument, &
-                    second_measurement, criteria, type_of_analysis, relative_column
+                    second_measurement, criteria, type_of_analysis
 
     ios = 1
 
@@ -2854,11 +2853,6 @@ continue
                 write(iofill,*) 'Error in  MONT: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
                 call cfastexit('read_mont',13)
             end if
-            if (relative_column <= 0) then
-                write(*,*) 'Error in MONT: RELATIVE_COLUMN must be greater than 0',' number ',counter
-                write(iofill,*) 'Error in MONT: RELATIVE_COLUMN must be greater than 0',' number ',counter
-                call cfastexit('read_mont',14)
-            end if
             
             n_mcarlo = n_mcarlo + 1
             if (n_mcarlo>mx_monte_carlo) then
@@ -2877,7 +2871,7 @@ continue
                 mcarloptr%second_instrument = prime_instrument
                 mcarloptr%second_measurement = prime_measurement
                 mcarloptr%criteria = 0 
-                mcarloptr%relative_column = relative_column
+                mcarloptr%relative_column = n_mcarlo
                 mcarloptr%found = .false.
             else
                 mcarloptr%id = id
@@ -2889,7 +2883,7 @@ continue
                 mcarloptr%second_instrument = second_instrument
                 mcarloptr%second_measurement = second_measurement
                 mcarloptr%criteria = criteria 
-                mcarloptr%relative_column = relative_column
+                mcarloptr%relative_column = n_mcarlo
                 mcarloptr%found = .false.
             end if 
 
@@ -2912,7 +2906,6 @@ continue
     second_measurement = ' '
     type_of_analysis = ' '
     criteria = -1
-    relative_column = -1
     
     end subroutine set_defaults
 

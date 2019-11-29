@@ -148,8 +148,8 @@
     integer, parameter :: w_to_wall = 4
     integer, parameter :: w_boundary_condition = 5
     
-    ! Monte Carlo parameters
-    integer, parameter :: mx_monte_carlo = mxitems  ! Maximum number of colomns that will be generated
+    ! Post-run calculation parameters
+    integer, parameter :: mx_calc = mxitems  ! Maximum number of colomns that will be generated
 
     end module cparams
 

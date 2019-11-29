@@ -13,7 +13,7 @@ module initialization_routines
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
-        smoked, mx_monte_carlo
+        smoked, mx_calc
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
@@ -27,7 +27,7 @@ module initialization_routines
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use monte_carlo_data, only: n_mcarlo, mcarloinfo, csvnames, iocsvnormal, iocsvflow, iocsvmass, iocsvwall, iocsvspecies
+    use calc_data, only: n_mcarlo, calcinfo, csvnames, iocsvnormal, iocsvflow, iocsvmass, iocsvwall, iocsvspecies
 
     implicit none
 
@@ -479,23 +479,17 @@ module initialization_routines
     ! fires
     call initialize_fire_objects
     
-    ! Monte Carlo data
+    ! post-run calculation data
     n_mcarlo = 0
-    allocate (mcarloinfo(mx_monte_carlo))
-    mcarloinfo(1:mx_monte_carlo)%file_type = ' '
-    mcarloinfo(1:mx_monte_carlo)%type_of_analysis = ' '
-    mcarloinfo(1:mx_monte_carlo)%column_title = ' '
-    mcarloinfo(1:mx_monte_carlo)%prime_instrument = ' '
-    mcarloinfo(1:mx_monte_carlo)%prime_measurement = ''
-    mcarloinfo(1:mx_monte_carlo)%second_instrument = ' '
-    mcarloinfo(1:mx_monte_carlo)%second_measurement = ' '
-    mcarloinfo(1:mx_monte_carlo)%relative_column = -1
-    mcarloinfo(1:mx_monte_carlo)%criteria = -1
-    !csvnames(iocsvwall) = 'WALL'
-    !csvnames(iocsvnormal) = 'NORMAL'
-    !csvnames(iocsvflow) = 'FLOW'
-    !csvnames(iocsvmass) = 'MASS'
-    !csvnames(iocsvspecies) = 'SPECIES'
+    allocate (calcinfo(mx_calc))
+    calcinfo(1:mx_calc)%file_type = ' '
+    calcinfo(1:mx_calc)%type = ' '
+    calcinfo(1:mx_calc)%first_name = ' '
+    calcinfo(1:mx_calc)%first_measurement = ''
+    calcinfo(1:mx_calc)%second_name = ' '
+    calcinfo(1:mx_calc)%second_measurement = ' '
+    calcinfo(1:mx_calc)%relative_column = -1
+    calcinfo(1:mx_calc)%criteria = -1
 
     return
     end subroutine initialize_memory

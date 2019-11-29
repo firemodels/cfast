@@ -6,16 +6,16 @@
     use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
-        vent_type, visual_type, montecarlo_type
+        vent_type, visual_type, calc_type
 
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
         mxthrmp, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
-        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_monte_carlo
+        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_calc
     use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
         verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
         radiative_incident_flux_ast, radi_verification_flag
     use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, montflag
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, calcflag
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti
@@ -33,7 +33,7 @@
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
-    use monte_carlo_data, only: n_mcarlo, mcarloinfo
+    use calc_data, only: n_mcarlo, calcinfo
 
     implicit none 
     
@@ -2717,22 +2717,21 @@ continue
 
     end subroutine read_diag
 
-    ! --------------------------- MONT --------------------------------------------
+    ! --------------------------- CALC --------------------------------------------
     
     subroutine read_mont (lu)
 
     integer, intent(in) :: lu
     
     integer :: ios, ii, counter
-    type(montecarlo_type), pointer :: mcarloptr
+    type(calc_type), pointer :: calcptr
     
     real(eb) :: criteria
-    character(25) :: file_type, type_of_analysis
-    character(64) :: column_title, prime_instrument, prime_measurement, second_instrument, second_measurement
-    character(64) :: id
+    character(25) :: file_type, type
+    character(64) :: id, first_name, first_measurement, second_name, second_measurement
 
-    namelist /MONT/ id, file_type, column_title, prime_instrument, prime_measurement, second_instrument, &
-                    second_measurement, criteria, type_of_analysis
+    namelist /CALC/ id, file_type, first_name, first_measurement, second_name, &
+                    second_measurement, criteria, type
 
     ios = 1
 
@@ -2740,23 +2739,23 @@ continue
     input_file_line_number = 0
     counter = 0
 
-    ! Scan entire file to look for 'MONT'   `
+    ! Scan entire file to look for 'CALC'   `
     mont_loop: do
-        call checkread ('MONT',lu,ios)
-        if (ios==0) montflag=.true.
+        call checkread ('CALC',lu,ios)
+        if (ios==0) calcflag=.true.
         if (ios==1) then
             exit mont_loop
         end if
-        read(lu,MONT,err=34,iostat=ios)
+        read(lu,CALC,err=34,iostat=ios)
         counter = counter + 1
 34      if (ios>0) then
-            write(*, '(a,i3)') 'Error: Invalid specification in &MONT inputs. Check &MONT number ' , counter
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &MONT inputs. Check &MONT number ' , counter
+            write(*, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter
+            write(iofill, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter
             call cfastexit('read_mont',1)
         end if
     end do mont_loop
 
-    mont_flag: if (montflag) then
+    mont_flag: if (calcflag) then
 
         rewind (lu)
         input_file_line_number = 0
@@ -2764,134 +2763,132 @@ continue
         ! Assign value to CFAST variables for further calculations
         read_mont_loop: do ii = 1,counter
 
-            call checkread('MONT',lu,ios)
+            call checkread('CALC',lu,ios)
             call set_defaults
-            read(lu,MONT)
+            read(lu,CALC)
             
             if (id == ' ') then
-                write(*,*) 'Error in &MONT: ID must be defined number ', counter
-                write(iofill,*) 'Error in &MONT: ID must be defined number ', counter
+                write(*,*) 'Error in &CALC: ID must be defined number ', counter
+                write(iofill,*) 'Error in &CALC: ID must be defined number ', counter
                 call cfastexit('read_mont',2)
             end if
             if (.not.((file_type(1:4)=='WALL').or.(file_type(1:6)=='NORMAL').or.(file_type(1:4)=='FLOW').or. &
                         (file_type(1:4)=='MASS').or.(file_type(1:7)=='SPECIES'))) then
-                write(*,*) 'Error in &MONT: Invalid specification for FILE_TYPE ',trim(file_type), &
+                write(*,*) 'Error in &CALC: Invalid specification for FILE_TYPE ',trim(file_type), &
                     ' number ',counter
-                write(iofill,*) 'Error in MONT: Invalid specification for FILE_TYPE ',trim(file_type), &
+                write(iofill,*) 'Error in &CALC: Invalid specification for FILE_TYPE ',trim(file_type), &
                     ' number ',counter
                 call cfastexit('read_mont',3)
             end if
-            if (.not.((type_of_analysis(1:3)=='MIN').or.(type_of_analysis(1:3)=='MAX').or. &
-                    (type_of_analysis(1:8)=='TRIGGER_').or.(type_of_analysis(1:9)=='INTEGRATE').or. &
-                    (type_of_analysis(1:15)=='CHECK_TOTAL_HRR'))) then
-                write(*,*) 'Error in &MONT: Invalid specification for TYPE_OF_ANALYSIS ',trim(type_of_analysis), &
+            if (.not.((type(1:3)=='MIN').or.(type(1:3)=='MAX').or. &
+                    (type(1:8)=='TRIGGER_').or.(type(1:9)=='INTEGRATE').or. &
+                    (type(1:15)=='CHECK_TOTAL_HRR'))) then
+                write(*,*) 'Error in &CALC: Invalid specification for type ',trim(type), &
                     ' number ',counter
-                write(iofill,*) 'Error in &MONT: Invalid specification for TYPE_OF_ANALYSIS ',trim(type_of_analysis), &
+                write(iofill,*) 'Error in &CALC: Invalid specification for type ',trim(type), &
                     ' number ',counter
                 call cfastexit('read_mont',4)
             end if
-            if (prime_instrument==' ') then
-                write(*,*) 'Error in MONT: PRIME_INSTRUMENT must be defined', &
+            if (first_name==' ') then
+                write(*,*) 'Error in &CALC: FIRST_NAME must be defined', &
                     ' number ',counter
-                write(iofill,*) 'Error in MONT: PRIME_INSTRUMENT must be defined', &
+                write(iofill,*) 'Error in &CALC: FIRST_NAME must be defined', &
                     ' number ',counter
                 call cfastexit('read_mont',5)
             end if 
-            if (prime_measurement==' ') then
-                write(*,*) 'Error in MONT: PRIME_MEASUREMENT must be define', &
+            if (first_measurement==' ') then
+                write(*,*) 'Error in &CALC: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
-                write(iofill,*) 'Error in MONT: PRIME_MEASUREMENT must be define', &
+                write(iofill,*) 'Error in &CALC: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
                 call cfastexit('read_mont',6)
             end if 
-            if ((type_of_analysis(1:8)=='TRIGGER_').and.(second_instrument==' ')) then
-                write(*,*) 'Error in MONT: SECOND_INSTRUMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis), &
+            if ((type(1:8)=='TRIGGER_').and.(second_name==' ')) then
+                write(*,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+                    trim(type), &
                     ' number ',counter
-                write(iofill,*) 'Error in MONT: SECOND_INSTRUMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis), &
+                write(iofill,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+                    trim(type), &
                     ' number ',counter
                 call cfastexit('read_mont',7)
             end if
-            if ((type_of_analysis(1:8)=='TRIGGER_').and.(second_measurement==' ')) then
-                write(*,*) 'Error in MONT: SECOND_MEASRUUREMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis),' number ',counter
-                write(iofill,*) 'Error in MONT: SECOND_MEASRUUREMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis),' number ',counter
+            if ((type(1:8)=='TRIGGER_').and.(second_measurement==' ')) then
+                write(*,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                    trim(type),' number ',counter
+                write(iofill,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                    trim(type),' number ',counter
                 call cfastexit('read_mont',8)
             end if
-            if ((type_of_analysis(1:9)=='INTEGRATE').and.(second_instrument==' ')) then
-                write(*,*) 'Error in MONT: SECOND_INSTRUMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis)
-                write(iofill,*) 'Error in MONT: SECOND_INSTRUMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis)
+            if ((type(1:9)=='INTEGRATE').and.(second_name==' ')) then
+                write(*,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+                    trim(type)
+                write(iofill,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+                    trim(type)
                 call cfastexit('read_mont',9)
             end if
-            if ((trim(type_of_analysis)=='INTEGRATE').and.(second_measurement==' ')) then
-                write(*,*) 'Error in MONT: SECOND_MEASUREMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis),' number ',counter
-                write(iofill,*) 'Error in MONT: SECOND_MEASUREMENT must be defined for TYPE_OF_ANALYSIS ', &
-                    trim(type_of_analysis),' number ',counter
+            if ((trim(type)=='INTEGRATE').and.(second_measurement==' ')) then
+                write(*,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                    trim(type),' number ',counter
+                write(iofill,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                    trim(type),' number ',counter
                 call cfastexit('read_mont',10)
             end if
-            if ((type_of_analysis(1:9)=='INTEGRATE').and.(prime_instrument(1:4)/='Time')) then
-                write(*,*) 'Error in MONT: PRIME_INSTRUMENT must be defined as Simulation Time for ', &
-                    trim(type_of_analysis),' number ',counter
-                write(iofill,*) 'Error in MONT: PRIME_INSTRUMENT must be defined as Simulation Time for ', &
-                    trim(type_of_analysis),' number ',counter
+            if ((type(1:9)=='INTEGRATE').and.(first_name(1:4)/='Time')) then
+                write(*,*) 'Error in &CALC: FIRST_NAME must be defined as Simulation Time for ', &
+                    trim(type),' number ',counter
+                write(iofill,*) 'Error in &CALC: FIRST_NAME must be defined as Simulation Time for ', &
+                    trim(type),' number ',counter
                 call cfastexit('read_mont',11)
             end if
-            if ((type_of_analysis(1:9)=='INTEGRATE').and.(prime_measurement(1:15)/='Simulation Time')) then
-                write(*,*) 'Error in MONT: PRIME_MEASUREMENT must be defined as Time for ', &
-                    trim(type_of_analysis),' number ',counter
-                write(iofill,*) 'Error in MONT: PRIME_MEASUREMENT must be defined as Time for ', &
-                    trim(type_of_analysis),' number ',counter
+            if ((type(1:9)=='INTEGRATE').and.(first_measurement(1:15)/='Simulation Time')) then
+                write(*,*) 'Error in &CALC: FIRST_MEASUREMENT must be defined as Time for ', &
+                    trim(type),' number ',counter
+                write(iofill,*) 'Error in &CALC: FIRST_MEASUREMENT must be defined as Time for ', &
+                    trim(type),' number ',counter
                 call cfastexit('read_mont',12)
             end if
-            if ((type_of_analysis(1:8)=='TRIGGER_').and.(criteria<=0)) then
-                write(*,*) 'Error in  MONT: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
-                write(iofill,*) 'Error in  MONT: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
+            if ((type(1:8)=='TRIGGER_').and.(criteria<=0)) then
+                write(*,*) 'Error in  &CALC: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
+                write(iofill,*) 'Error in  &CALC: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
                 call cfastexit('read_mont',13)
             end if
             
             n_mcarlo = n_mcarlo + 1
-            if (n_mcarlo>mx_monte_carlo) then
-                write(*,*) 'Error in MONT: Too many MONT entries'
-                write(iofill,*) 'Error in MONT: Too many MONT entries'
+            if (n_mcarlo>mx_calc) then
+                write(*,*) 'Error in &CALC: Too many &CALC entries'
+                write(iofill,*) 'Error in &CALC: Too many &CALC entries'
                 call cfastexit('read_mont',15)
             end if
-            mcarloptr => mcarloinfo(n_mcarlo)
-            if (type_of_analysis(1:15) == 'CHECK_TOTAL_HRR') then
-                mcarloptr%id = id
-                mcarloptr%file_type = 'NORMAL'
-                mcarloptr%column_title = column_title
-                mcarloptr%type_of_analysis = type_of_analysis
-                mcarloptr%prime_instrument = 'Time'
-                mcarloptr%prime_measurement = 'Simulation Time'
-                mcarloptr%second_instrument = prime_instrument
-                mcarloptr%second_measurement = prime_measurement
-                mcarloptr%criteria = 0 
-                mcarloptr%relative_column = n_mcarlo
-                mcarloptr%found = .false.
+            calcptr => calcinfo(n_mcarlo)
+            if (type(1:15) == 'CHECK_TOTAL_HRR') then
+                calcptr%id = id
+                calcptr%file_type = 'NORMAL'
+                calcptr%type = type
+                calcptr%first_name = 'Time'
+                calcptr%first_measurement = 'Simulation Time'
+                calcptr%second_name = first_name
+                calcptr%second_measurement = first_measurement
+                calcptr%criteria = 0 
+                calcptr%relative_column = n_mcarlo
+                calcptr%found = .false.
             else
-                mcarloptr%id = id
-                mcarloptr%file_type = file_type
-                mcarloptr%column_title = column_title
-                mcarloptr%type_of_analysis = type_of_analysis
-                mcarloptr%prime_instrument = prime_instrument
-                mcarloptr%prime_measurement = prime_measurement
-                mcarloptr%second_instrument = second_instrument
-                mcarloptr%second_measurement = second_measurement
-                mcarloptr%criteria = criteria 
-                mcarloptr%relative_column = n_mcarlo
-                mcarloptr%found = .false.
+                calcptr%id = id
+                calcptr%file_type = file_type
+                calcptr%type = type
+                calcptr%first_name = first_name
+                calcptr%first_measurement = first_measurement
+                calcptr%second_name = second_name
+                calcptr%second_measurement = second_measurement
+                calcptr%criteria = criteria 
+                calcptr%relative_column = n_mcarlo
+                calcptr%found = .false.
             end if 
 
         end do read_mont_loop
 
     end if mont_flag
 
-5403 format ('***Error: Bad MONT input. Invalid MONT specification in Monte Carlo input ',i0)
+5403 format ('***Error: Bad &CALC input. Invalid CALC specification in Monte Carlo input ',i0)
 
     contains
 
@@ -2899,12 +2896,11 @@ continue
 
     id = ' '
     file_type = ' '
-    column_title = ' '
-    prime_instrument = ' '
-    prime_measurement = ' '
-    second_instrument = ' '
+    first_name = ' '
+    first_measurement = ' '
+    second_name = ' '
     second_measurement = ' '
-    type_of_analysis = ' '
+    type = ' '
     criteria = -1
     
     end subroutine set_defaults

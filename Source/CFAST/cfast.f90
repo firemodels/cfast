@@ -96,9 +96,9 @@
     !           errorcode   numeric code indicating which call to cfastexit in routine
 
     use output_routines, only: closeoutputfiles, delete_output_files
-    use spreadsheet_routines, only : output_spreadsheet_montecarlo
-    use monte_carlo_data, only: n_mcarlo
-    use setup_data, only: monte_carlo_flag, validation_flag, iofill, iofilkernel, stopfile, ssmontecarlo, ss_out_interval
+    use spreadsheet_routines, only : output_spreadsheet_calc
+    use calc_data, only: n_mcarlo
+    use setup_data, only: calc_flag, validation_flag, iofill, iofilkernel, stopfile, ssmontecarlo, ss_out_interval
     
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
@@ -117,10 +117,10 @@
         end if
     end if
 
-    if (.not.monte_carlo_flag) then
-        ! this ensures we don't get into an infinite loop if there's an error exit within the monte carlo output
-        monte_carlo_flag = .true.
-        call output_spreadsheet_montecarlo
+    if (.not.calc_flag) then
+        ! this ensures we don't get into an infinite loop if there's an error exit within the calculation output
+        calc_flag = .true.
+        call output_spreadsheet_calc
     end if
     
     if (errorcode==0) then

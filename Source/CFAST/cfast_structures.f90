@@ -98,23 +98,24 @@ module cfast_types
         real(eb) :: incident_flux                       ! flux to attached target (only for ignition)
     end type fire_type
     
-    ! post-run monte carlo analysis data structure
-    type montecarlo_type
-        character(64) :: id                     ! id just in case
+    ! post-run calculation data structure
+    type calc_type
+        character(64) :: id                     ! id used a heading for output column
         character(24) :: file_type              ! 'wall' for '_w', 'normal' for '_n', 'flow' for '_f', 'mass' for '_m',
-                                                !'species' for '_s'
-        character(24) :: type_of_analysis       ! 'trigger_greater', 'trigger_lesser', 'min', 'max', 'integrate'
-        character(64) :: column_title           ! Name for spreadsheet column
-        character(64) :: prime_instrument       ! Name of instrument, third row in spreadsheet
-        character(64) :: prime_measurement      ! Name of measurement, second row in spreadsheet
-        character(64) :: second_instrument      ! Name of second instrument, needed for 'trigger_...' and 'integrate',
-                                                ! ignored for 'max' and 'min'
-        character(64) :: second_measurement     ! Name of measure for second instrument, needed for 'trigger_...' 
-                                                ! and 'integrate', ignored for 'max' and 'min'
-        integer :: relative_column              ! Order of columns
+                                                !      'species' for '_s'
+        character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
+                                                !      'check_total_hrr'
         real(eb) :: criteria                    ! Value used in 'trigger_...' analysis
+        
+        character(64) :: first_measurement      ! Name of measurement, second row in spreadsheet
+        character(64) :: first_name             ! Name of instrument, third row in spreadsheet
+        character(64) :: second_measurement     ! Name of measure for second instrument, needed for 'trigger_...' and 'integrate'
+                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        character(64) :: second_name            ! Name of second instrument, needed for 'trigger_...' and 'integrate',
+                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        integer :: relative_column              ! Order of columns. This is just the order in the input file
         logical :: found                        ! The input channels are found in the csv files
-    end type montecarlo_type
+    end type calc_type
 
     ! ramp data structure
     type ramp_type

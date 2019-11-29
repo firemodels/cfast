@@ -54,6 +54,8 @@ Friend Module Data
 
     Friend myRamps As New RampCollection
 
+    Friend myCalcs As New CalculationCollection
+
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)
     Friend dataFileComments As New Collection                       'dead keywords and other comments
     Friend thermalFileComments As New Collection                    'comments in the thermal file

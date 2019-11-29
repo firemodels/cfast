@@ -669,6 +669,7 @@ Module IO
         ReadInputFileNMLISOF(NMList, myVisuals)
         ReadInputFileNMLSLCF(NMList, myVisuals)
         ReadInputFileNMLDiag(NMList, myEnvironment)
+        ReadInputFileNMLCalc(NMList, myCalcs)
     End Sub
     Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
@@ -696,7 +697,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLTime(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
-        Dim print, sim, smoke, ss As Integer
+        Dim print, sim, smoke, ss As Single
 
         print = 60
         sim = 900
@@ -2178,6 +2179,46 @@ Module IO
         Next
         someEnvironment.Changed = False
     End Sub
+    Private Sub ReadInputFileNMLCalc(ByVal NMList As NameListFile, ByRef someCalcs As CalculationCollection)
+        Dim i, j As Integer
+        Dim id, filetype, type, firstmeasurement, secondmeasurement, firstname, secondname As String
+        Dim criteria As Single
+
+        For i = 1 To NMList.TotNMList
+            id = ""
+            filetype = ""
+            type = ""
+            criteria = 0
+            firstmeasurement = ""
+            firstname = ""
+            secondmeasurement = ""
+            secondname = ""
+            If (NMList.GetNMListID(i) = "CALC") Then
+                For j = 1 To NMList.ForNMListNumVar(i)
+                    If (NMList.ForNMListGetVar(i, j) = "ID") Then
+                        id = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FILE_TYPE") Then
+                        filetype = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "TYPE") Then
+                        type = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "CRITERIA") Then
+                        criteria = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_MEASUREMENT") Then
+                        firstmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_NAME") Then
+                        firstname = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_MEASUREMENT") Then
+                        secondmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_NAME") Then
+                        secondname = NMList.ForNMListVarGetStr(i, j, 1)
+                    Else
+                        myErrors.Add("In CALC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                    End If
+                Next
+                someCalcs.Add(New Calculation(id, filetype, type, criteria, firstmeasurement, firstname, secondmeasurement, secondname))
+            End If
+        Next
+    End Sub
     Public Sub ReadINIInput(ByRef x As Integer, ByVal label As String, ByVal value As String)
         If value = "ON" Then
             x = Environment.DIAGon
@@ -3050,6 +3091,7 @@ Module IO
         Dim aVent As Vent
         Dim aFire As Fire
         Dim aVisual As Visual
+        Dim aCalc As Calculation
 
         FileOpen(IO, filename, OpenMode.Output, OpenAccess.Write, OpenShare.Shared)
 
@@ -3744,6 +3786,31 @@ Module IO
                     PrintLine(IO, ln)
                 End If
                 aVisual.Changed = False
+            Next
+        End If
+
+        ' Writing Calculations
+        If myCalcs.Count > 0 Then
+            PrintLine(IO, " ")
+            ln = "!! Calculations"
+            PrintLine(IO, ln)
+
+            For i = 0 To myCalcs.Count - 1
+                aCalc = myCalcs.Item(i)
+
+                ln = "&CALC ID = '" + aCalc.ID + "'"
+                PrintLine(IO, ln)
+                ln = "     FILE_TYPE = '" + aCalc.FileType + "' TYPE = '" + aCalc.Type + "'"
+                If aCalc.Type <> "MINIMUM" And aCalc.Type <> "MAXIMUM" And aCalc.Type <> "CHECK_TOTAL_HRR" Then
+                    ln += " CRITERIA = " + aCalc.Criteria.ToString
+                End If
+                PrintLine(IO, ln)
+                ln = "     FIRST_MEASUREMENT = '" + aCalc.FirstMeasurement + "' FIRST_NAME = '" + aCalc.FirstName + "'"
+                If aCalc.Type <> "MINIMUM" And aCalc.Type <> "MAXIMUM" And aCalc.Type <> "CHECK_TOTAL_HRR" Then
+                    ln += "     SECOND_MEASUREMENT = '" + aCalc.SecondMeasurement + "' SECOND_NAME = '" + aCalc.SecondName + "'"
+                End If
+                ln += " /"
+                PrintLine(IO, ln)
             Next
         End If
 

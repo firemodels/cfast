@@ -8,10 +8,10 @@ module spreadsheet_routines
     use spreadsheet_header_routines
     use utility_routines, only: ssaddtolist, readcsvformat
     
-    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, montecarlo_type
+    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, calc_type
 
     use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
-        ns, soot, soot_flaming, soot_smolder, smoked, mx_monte_carlo
+        ns, soot, soot_flaming, soot_smolder, smoked, mx_calc
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
@@ -20,7 +20,7 @@ module spreadsheet_routines
         iofilssmc, iofill, ss_out_interval, project, extension
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use monte_carlo_data, only: n_mcarlo, mcarloinfo, csvnames, num_csvfiles, iocsv
+    use calc_data, only: n_mcarlo, calcinfo, csvnames, num_csvfiles, iocsv
 
     implicit none
     
@@ -28,7 +28,7 @@ module spreadsheet_routines
 
     private
 
-    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_montecarlo
+    public output_spreadsheet, output_spreadsheet_smokeview, output_spreadsheet_calc
 
     contains
     
@@ -685,57 +685,57 @@ module spreadsheet_routines
     return
     end subroutine output_spreadsheet_diag
     
-    !--------------------------output_spreadsheet_montecarlo-----------------------------------------------------------
+    !--------------------------output_spreadsheet_calc-----------------------------------------------------------
     
-    subroutine output_spreadsheet_montecarlo 
+    subroutine output_spreadsheet_calc 
     
-    integer, parameter :: nr = 2, nc = mx_monte_carlo+1
-    real(eb) :: mcrarray(nr, nc)
-    character(128) :: mccarray(nr, nc)
+    integer, parameter :: nr = 2, nc = mx_calc+1
+    real(eb) :: calcarray(nr, nc)
+    character(128) :: calccarray(nr, nc)
     integer :: i, icount, mxcol
     
-    mcrarray(1, 1:nc) = 0.0
-    mcrarray(2, 2:nc) = -1001
-    mccarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
-    mcrarray(2,1) = 0.0
-    mccarray(1,1) = 'File Name'
-    mccarray(2,1) = trim(project) // trim(extension)
+    calcarray(1, 1:nc) = 0.0
+    calcarray(2, 2:nc) = -1001
+    calccarray(1:nr, 2:nc) = 'NO VALUE ASSIGNED'
+    calcarray(2,1) = 0.0
+    calccarray(1,1) = 'File Name'
+    calccarray(2,1) = trim(project) // trim(extension)
     mxcol = 0 
     if (ss_out_interval>0 .and. n_mcarlo > 0) then 
         icount = n_mcarlo
         do i = 1, num_csvfiles
             if (icount>0) then
-                call do_csvfile(nr, nc, mcrarray, mccarray, i, icount, mxcol)
+                call do_csvfile(nr, nc, calcarray, calccarray, i, icount, mxcol)
             else 
                 exit
             end if
         end do
-        call writecsvformat(iofilssmc, mcrarray, mccarray, nr, nc, 1, 2, mxcol)
+        call writecsvformat(iofilssmc, calcarray, calccarray, nr, nc, 1, 2, mxcol)
     end if      
     
     return
-    end subroutine output_spreadsheet_montecarlo
+    end subroutine output_spreadsheet_calc
     
     !--------------------do_csvfile---------------------------------------
     
-    subroutine do_csvfile(nr, nc, mcrarray, mccarray, idx, icount, mxcol)
+    subroutine do_csvfile(nr, nc, calcarray, calccarray, idx, icount, mxcol)
     
     integer, intent(in) :: nr, nc, idx
     integer, intent(inout) :: mxcol, icount
-    real(eb), intent(inout) :: mcrarray(nr, nc)
-    character(*), intent(inout) :: mccarray(nr, nc)
+    real(eb), intent(inout) :: calcarray(nr, nc)
+    character(*), intent(inout) :: calccarray(nr, nc)
     
     integer :: i
-    type(montecarlo_type), pointer :: monteptr
+    type(calc_type), pointer :: calcptr
     logical :: first, lend
     
     integer, parameter :: numr = 3, numc = 32000
-    real(eb) :: lastval(2, mx_monte_carlo), lasttime(mx_monte_carlo), x(numr, numc)
+    real(eb) :: lastval(2, mx_calc), lasttime(mx_calc), x(numr, numc)
     character(128) :: header(numr, numc), c(numr, numc)
     
-    integer :: relcol, mxhr, mxhc, ic, cols(mx_monte_carlo), icol, num_entries
-    integer :: primecol(mx_monte_carlo), seccol(2, mx_monte_carlo), mxr, mxc
-    real(eb) :: dummy(2, mx_monte_carlo)
+    integer :: relcol, mxhr, mxhc, ic, cols(mx_calc), icol, num_entries
+    integer :: primecol(mx_calc), seccol(2, mx_calc), mxr, mxc
+    real(eb) :: dummy(2, mx_calc)
     
     lastval = 0.0_eb
     lasttime = 0.0_eb
@@ -752,16 +752,16 @@ module spreadsheet_routines
     icol = 0
     do i = 1, n_mcarlo
         if (icount>0)  then
-            monteptr => mcarloinfo(i)
-            monteptr%found = .false.
-            if (monteptr%file_type==csvnames(idx)) then
+            calcptr => calcinfo(i)
+            calcptr%found = .false.
+            if (calcptr%file_type==csvnames(idx)) then
                 num_entries = num_entries + 1
-                relcol = monteptr%relative_column + 1
+                relcol = calcptr%relative_column + 1
                 icount = icount - 1
                 icol = icol + 1
                 cols(icol) = i
                 mxcol = max(mxcol, relcol)
-                mccarray(1,relcol) = monteptr%column_title
+                calccarray(1,relcol) = calcptr%id
                 if (first) then
                     rewind(iocsv(idx))
                     call readcsvformat(iocsv(idx), x, header, numr, numc, 2, 3, mxhr, mxhc, lend, iofill)
@@ -770,31 +770,31 @@ module spreadsheet_routines
                         return
                     end if
                 end if 
-                call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%prime_instrument, monteptr%prime_measurement)
+                call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%first_name, calcptr%first_measurement)
                 primecol(cols(icol)) = ic
                 if (ic>0) then
-                    monteptr%found = .true.
+                    calcptr%found = .true.
                 end if
-                if ((monteptr%type_of_analysis(1:8) == 'TRIGGER_' .or. &
-                        monteptr%type_of_analysis(1:9) == 'INTEGRATE').and.monteptr%found) then 
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%second_instrument, &
-                                    monteptr%second_measurement)
+                if ((calcptr%type(1:8) == 'TRIGGER_' .or. &
+                        calcptr%type(1:9) == 'INTEGRATE').and.calcptr%found) then 
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_name, &
+                                    calcptr%second_measurement)
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
-                        monteptr%found = .false.
+                        calcptr%found = .false.
                     end if
-                else if (monteptr%type_of_analysis(1:15) == 'CHECK_TOTAL_HRR'.and.monteptr%found) then
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%second_instrument, &
-                                    monteptr%second_measurement)
+                else if (calcptr%type(1:15) == 'CHECK_TOTAL_HRR'.and.calcptr%found) then
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_name, &
+                                    calcptr%second_measurement)
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
-                        monteptr%found = .false.
+                        calcptr%found = .false.
                     end if
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, monteptr%second_instrument, &
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_name, &
                                     'HRR Expected')
                     seccol(2,cols(icol)) = ic
                     if (ic<1) then
-                        monteptr%found = .false.
+                        calcptr%found = .false.
                     end if
                 end if
             end if
@@ -804,24 +804,24 @@ module spreadsheet_routines
     call readcsvformat(iocsv(idx), x, c, numr, numc, 2, 2, mxr, mxc, lend, iofill) 
     if (.not.lend) then
         do i = 1, icol
-            monteptr => mcarloinfo(cols(i))
-            if (monteptr%found) then
-                relcol = monteptr%relative_column + 1
-                if (monteptr%type_of_analysis(1:1) == 'M') then
-                    mcrarray(2,relcol) = x(1, primecol(cols(i)))
-                else if (monteptr%type_of_analysis(1:8) == 'TRIGGER_') then
-                    mcrarray(2,relcol) = -1
-                else if (monteptr%type_of_analysis(1:9) == 'INTEGRATE') then
-                    mcrarray(2,relcol) = -1
+            calcptr => calcinfo(cols(i))
+            if (calcptr%found) then
+                relcol = calcptr%relative_column + 1
+                if (calcptr%type(1:1) == 'M') then
+                    calcarray(2,relcol) = x(1, primecol(cols(i)))
+                else if (calcptr%type(1:8) == 'TRIGGER_') then
+                    calcarray(2,relcol) = -1
+                else if (calcptr%type(1:9) == 'INTEGRATE') then
+                    calcarray(2,relcol) = -1
                     lasttime(i) = x(1, primecol(cols(i)))
                     lastval(1,i) = x(1, seccol(1,cols(i)))
-                else if (monteptr%type_of_analysis(1:15) == 'CHECK_TOTAL_HRR') then
-                    mcrarray(2,relcol) = -1
+                else if (calcptr%type(1:15) == 'CHECK_TOTAL_HRR') then
+                    calcarray(2,relcol) = -1
                     dummy(1:2,i) = 0
                     lasttime(i) = x(1, primecol(cols(i)))
                     lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
                 else
-                    mcrarray(2,relcol) = -1001
+                    calcarray(2,relcol) = -1001
                 end if
             end if 
         end do 
@@ -833,36 +833,36 @@ module spreadsheet_routines
         call readcsvformat(iocsv(idx), x, c, numr, numc, 1, 1, mxr, mxc, lend, iofill)
         if (.not.lend) then
             do i = 1, icol
-                monteptr => mcarloinfo(cols(i))
-                if (monteptr%found) then
-                    relcol = monteptr%relative_column + 1
-                    if (monteptr%type_of_analysis(1:3) == 'MAX') then
-                        mcrarray(2,relcol) = max(mcrarray(2,relcol),x(1, primecol(cols(i))))
-                    else if (monteptr%type_of_analysis(1:3) == 'MIN') then
-                        mcrarray(2,relcol) = min(mcrarray(2,relcol),x(1, primecol(cols(i))))
-                    else if (monteptr%type_of_analysis(1:15) == 'TRIGGER_GREATER') then
-                        if (x(1, seccol(1,cols(i)))>=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
-                            mcrarray(2,relcol) = x(1, primecol(cols(i)))
+                calcptr => calcinfo(cols(i))
+                if (calcptr%found) then
+                    relcol = calcptr%relative_column + 1
+                    if (calcptr%type(1:3) == 'MAX') then
+                        calcarray(2,relcol) = max(calcarray(2,relcol),x(1, primecol(cols(i))))
+                    else if (calcptr%type(1:3) == 'MIN') then
+                        calcarray(2,relcol) = min(calcarray(2,relcol),x(1, primecol(cols(i))))
+                    else if (calcptr%type(1:15) == 'TRIGGER_GREATER') then
+                        if (x(1, seccol(1,cols(i)))>=calcptr%criteria.and.calcarray(2,relcol)== -1) then
+                            calcarray(2,relcol) = x(1, primecol(cols(i)))
                         end if
-                    else if (monteptr%type_of_analysis(1:14) == 'TRIGGER_LESSER') then
-                        if (x(1, seccol(1,i))<=monteptr%criteria.and.mcrarray(2,relcol)== -1) then
-                            mcrarray(2,relcol) = x(1, primecol(cols(i)))
+                    else if (calcptr%type(1:14) == 'TRIGGER_LESSER') then
+                        if (x(1, seccol(1,i))<=calcptr%criteria.and.calcarray(2,relcol)== -1) then
+                            calcarray(2,relcol) = x(1, primecol(cols(i)))
                         end if
-                    else if (monteptr%type_of_analysis(1:9) == 'INTEGRATE') then
-                        mcrarray(2,relcol) = mcrarray(2,relcol) + &
+                    else if (calcptr%type(1:9) == 'INTEGRATE') then
+                        calcarray(2,relcol) = calcarray(2,relcol) + &
                             (x(1, seccol(1,cols(i)))+lastval(1,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
                         lasttime(i) = x(1, primecol(cols(i)))
                         lastval(1,i) = x(1, seccol(1,cols(i)))
-                    else if (monteptr%type_of_analysis(1:15) == 'CHECK_TOTAL_HRR') then
+                    else if (calcptr%type(1:15) == 'CHECK_TOTAL_HRR') then
                         dummy(1:2,i) = dummy(1:2,i) + &
                             (x(1, seccol(1:2,cols(i)))+lastval(1:2,i))/2*(x(1, primecol(cols(i)))-lasttime(i))
                         if (dummy(2,i)>0) then
-                            mcrarray(2,relcol) = dummy(1,i)/dummy(2,i)*100.0
+                            calcarray(2,relcol) = dummy(1,i)/dummy(2,i)*100.0
                         end if 
                         lasttime(i) = x(1, primecol(cols(i)))
                         lastval(1:2,i) = x(1, seccol(1:2,cols(i)))
                     else
-                        mcrarray(2,relcol) = -1001
+                        calcarray(2,relcol) = -1001
                     end if
                 end if
             end do

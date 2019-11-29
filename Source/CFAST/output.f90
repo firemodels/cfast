@@ -10,7 +10,7 @@ module output_routines
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
-        w_from_room, w_from_wall, idx_tempf_trg, mx_monte_carlo
+        w_from_room, w_from_wall, idx_tempf_trg, mx_calc
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
@@ -26,7 +26,7 @@ module output_routines
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use monte_carlo_data, only: n_mcarlo, mcarloinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvmass, iocsvspecies
+    use calc_data, only: n_mcarlo, calcinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvmass, iocsvspecies
 
     implicit none
     

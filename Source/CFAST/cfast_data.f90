@@ -84,15 +84,15 @@ module fire_data
 
     end module fire_data
 
-! -------------------------monte_carlo_data---------------------------------------
+! -------------------------calc_data---------------------------------------
     
-module monte_carlo_data
+module calc_data
     
     use precision_parameters
     
-    use cfast_types, only: montecarlo_type
+    use cfast_types, only: calc_type
     
-    use cparams, only: mx_monte_carlo, mxitems
+    use cparams, only: mx_calc, mxitems
     
     implicit none
     save
@@ -105,9 +105,9 @@ module monte_carlo_data
     integer, dimension(num_csvfiles) :: iocsv
     
     integer :: n_mcarlo
-    type (montecarlo_type), allocatable, dimension(:), target :: mcarloinfo
+    type (calc_type), allocatable, dimension(:), target :: calcinfo
     
-    end module monte_carlo_data
+    end module calc_data
     
 ! --------------------------- namelist_data -------------------------------------------
 
@@ -136,7 +136,7 @@ module monte_carlo_data
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
     logical :: diagflag=.false.
-    logical :: montflag=.false.
+    logical :: calcflag=.false.
 
     end module namelist_data
     
@@ -277,7 +277,7 @@ module setup_data
     character(128) :: title
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
-    logical :: debugging=.false., validation_flag=.false., netheatflux=.false., monte_carlo_flag = .false.
+    logical :: debugging=.false., validation_flag=.false., netheatflux=.false., calc_flag = .false.
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile

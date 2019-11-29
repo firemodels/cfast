@@ -499,7 +499,7 @@
     statusfile = datapath(1:lp) // project(1:ld) // '.status'
     slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
     kernelisrunning = datapath(1:lp) // project(1:ld) // '.kernelisrunning'
-    ssmontecarlo = datapath(1:lp) // project(1:ld) // '_mc.csv'
+    ssmontecarlo = datapath(1:lp) // project(1:ld) // '_c.csv'
 
     lp = len_trim (exepath)
     solverini = datapath(1:lp) // 'solver.ini'

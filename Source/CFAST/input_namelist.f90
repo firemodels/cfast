@@ -68,7 +68,7 @@
     call read_isof (iofili)
     call read_slcf (iofili)
     call read_diag (iofili)
-    call read_mont (iofili)
+    call read_calc (iofili)
 
     close (iofili)
     
@@ -2719,7 +2719,7 @@ continue
 
     ! --------------------------- CALC --------------------------------------------
     
-    subroutine read_mont (lu)
+    subroutine read_calc (lu)
 
     integer, intent(in) :: lu
     
@@ -2751,7 +2751,7 @@ continue
 34      if (ios>0) then
             write(*, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter
             write(iofill, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter
-            call cfastexit('read_mont',1)
+            call cfastexit('read_calc',1)
         end if
     end do mont_loop
 
@@ -2770,7 +2770,7 @@ continue
             if (id == ' ') then
                 write(*,*) 'Error in &CALC: ID must be defined number ', counter
                 write(iofill,*) 'Error in &CALC: ID must be defined number ', counter
-                call cfastexit('read_mont',2)
+                call cfastexit('read_calc',2)
             end if
             if (.not.((file_type(1:4)=='WALL').or.(file_type(1:6)=='NORMAL').or.(file_type(1:4)=='FLOW').or. &
                         (file_type(1:4)=='MASS').or.(file_type(1:7)=='SPECIES'))) then
@@ -2778,7 +2778,7 @@ continue
                     ' number ',counter
                 write(iofill,*) 'Error in &CALC: Invalid specification for FILE_TYPE ',trim(file_type), &
                     ' number ',counter
-                call cfastexit('read_mont',3)
+                call cfastexit('read_calc',3)
             end if
             if (.not.((type(1:3)=='MIN').or.(type(1:3)=='MAX').or. &
                     (type(1:8)=='TRIGGER_').or.(type(1:9)=='INTEGRATE').or. &
@@ -2787,21 +2787,21 @@ continue
                     ' number ',counter
                 write(iofill,*) 'Error in &CALC: Invalid specification for type ',trim(type), &
                     ' number ',counter
-                call cfastexit('read_mont',4)
+                call cfastexit('read_calc',4)
             end if
             if (first_name==' ') then
                 write(*,*) 'Error in &CALC: FIRST_NAME must be defined', &
                     ' number ',counter
                 write(iofill,*) 'Error in &CALC: FIRST_NAME must be defined', &
                     ' number ',counter
-                call cfastexit('read_mont',5)
+                call cfastexit('read_calc',5)
             end if 
             if (first_measurement==' ') then
                 write(*,*) 'Error in &CALC: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
                 write(iofill,*) 'Error in &CALC: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
-                call cfastexit('read_mont',6)
+                call cfastexit('read_calc',6)
             end if 
             if ((type(1:8)=='TRIGGER_').and.(second_name==' ')) then
                 write(*,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
@@ -2810,54 +2810,54 @@ continue
                 write(iofill,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
                     trim(type), &
                     ' number ',counter
-                call cfastexit('read_mont',7)
+                call cfastexit('read_calc',7)
             end if
             if ((type(1:8)=='TRIGGER_').and.(second_measurement==' ')) then
                 write(*,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                call cfastexit('read_mont',8)
+                call cfastexit('read_calc',8)
             end if
             if ((type(1:9)=='INTEGRATE').and.(second_name==' ')) then
                 write(*,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
                     trim(type)
                 write(iofill,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
                     trim(type)
-                call cfastexit('read_mont',9)
+                call cfastexit('read_calc',9)
             end if
             if ((trim(type)=='INTEGRATE').and.(second_measurement==' ')) then
                 write(*,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                call cfastexit('read_mont',10)
+                call cfastexit('read_calc',10)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_name(1:4)/='Time')) then
                 write(*,*) 'Error in &CALC: FIRST_NAME must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &CALC: FIRST_NAME must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
-                call cfastexit('read_mont',11)
+                call cfastexit('read_calc',11)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_measurement(1:15)/='Simulation Time')) then
                 write(*,*) 'Error in &CALC: FIRST_MEASUREMENT must be defined as Time for ', &
                     trim(type),' number ',counter
                 write(iofill,*) 'Error in &CALC: FIRST_MEASUREMENT must be defined as Time for ', &
                     trim(type),' number ',counter
-                call cfastexit('read_mont',12)
+                call cfastexit('read_calc',12)
             end if
             if ((type(1:8)=='TRIGGER_').and.(criteria<=0)) then
                 write(*,*) 'Error in  &CALC: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
                 write(iofill,*) 'Error in  &CALC: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
-                call cfastexit('read_mont',13)
+                call cfastexit('read_calc',13)
             end if
             
             n_mcarlo = n_mcarlo + 1
             if (n_mcarlo>mx_calc) then
                 write(*,*) 'Error in &CALC: Too many &CALC entries'
                 write(iofill,*) 'Error in &CALC: Too many &CALC entries'
-                call cfastexit('read_mont',15)
+                call cfastexit('read_calc',15)
             end if
             calcptr => calcinfo(n_mcarlo)
             if (type(1:15) == 'CHECK_TOTAL_HRR') then
@@ -2905,7 +2905,7 @@ continue
     
     end subroutine set_defaults
 
-    end subroutine read_mont
+    end subroutine read_calc
     ! --------------------------- checkread ---------------------------------------
     subroutine checkread(name,lu,ios)
 

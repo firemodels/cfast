@@ -806,10 +806,10 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 {\ct FILE\_TYPE}    & Selection List   &          &         &        \\ \hline
 {\ct TYPE}    & Selection List   &          &         &        \\ \hline
 {\ct CRITERIA}    & Real   &          &         &  {      \\ \hline
+{\ct FIRST\_DEVICE}    & Character   &          &         &        \\ \hline
 {\ct FIRST\_MEASUREMENT}    & Character   &          &         &        \\ \hline
-{\ct FIRST\_NAME}    & Character   &          &         &        \\ \hline
+{\ct SECOND\_DEVICE}    & Character   &          &         &        \\ \hline
 {\ct SECOND\_MEASUREMENT}    & Character   &          &         &        \\ \hline
-{\ct SECOND\_NAME}    & Character   &          &         &        \\ \hline
 \end{longtable}
 \end{minipage}
 
@@ -824,8 +824,8 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 &CALC  ID = 'Fire Room Ion Detector'
     FILE_TYPE = 'WALL'
     TYPE = 'TRIGGER_GREATER'  CRITERION = 1
-    FIRST_MEASUREMENT = 'Simulation Time'  FIRST_NAME = 'Time'
-    SECOND_MEASUREMENT = 'Sensor Activation'  SECOND_NAME = 'Ionization Detector Room 1' /
+    FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
+    SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
 \end{lstlisting}
 
 \clearpage

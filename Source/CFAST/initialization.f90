@@ -484,9 +484,9 @@ module initialization_routines
     allocate (calcinfo(mx_calc))
     calcinfo(1:mx_calc)%file_type = ' '
     calcinfo(1:mx_calc)%type = ' '
-    calcinfo(1:mx_calc)%first_name = ' '
+    calcinfo(1:mx_calc)%first_device = ' '
     calcinfo(1:mx_calc)%first_measurement = ''
-    calcinfo(1:mx_calc)%second_name = ' '
+    calcinfo(1:mx_calc)%second_device = ' '
     calcinfo(1:mx_calc)%second_measurement = ' '
     calcinfo(1:mx_calc)%relative_column = -1
     calcinfo(1:mx_calc)%criteria = -1

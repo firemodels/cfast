@@ -2728,9 +2728,9 @@ continue
     
     real(eb) :: criteria
     character(25) :: file_type, type
-    character(64) :: id, first_name, first_measurement, second_name, second_measurement
+    character(64) :: id, first_device, first_measurement, second_device, second_measurement
 
-    namelist /CALC/ id, file_type, first_name, first_measurement, second_name, &
+    namelist /CALC/ id, file_type, first_device, first_measurement, second_device, &
                     second_measurement, criteria, type
 
     ios = 1
@@ -2749,8 +2749,8 @@ continue
         read(lu,CALC,err=34,iostat=ios)
         counter = counter + 1
 34      if (ios>0) then
-            write(*, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter
+            write(*, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter+1
+            write(iofill, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter+1
             call cfastexit('read_calc',1)
         end if
     end do mont_loop
@@ -2789,10 +2789,10 @@ continue
                     ' number ',counter
                 call cfastexit('read_calc',4)
             end if
-            if (first_name==' ') then
-                write(*,*) 'Error in &CALC: FIRST_NAME must be defined', &
+            if (first_device==' ') then
+                write(*,*) 'Error in &CALC: first_device must be defined', &
                     ' number ',counter
-                write(iofill,*) 'Error in &CALC: FIRST_NAME must be defined', &
+                write(iofill,*) 'Error in &CALC: first_device must be defined', &
                     ' number ',counter
                 call cfastexit('read_calc',5)
             end if 
@@ -2803,11 +2803,11 @@ continue
                     ' number ',counter
                 call cfastexit('read_calc',6)
             end if 
-            if ((type(1:8)=='TRIGGER_').and.(second_name==' ')) then
-                write(*,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+            if ((type(1:8)=='TRIGGER_').and.(second_device==' ')) then
+                write(*,*) 'Error in &CALC: second_device must be defined for type ', &
                     trim(type), &
                     ' number ',counter
-                write(iofill,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+                write(iofill,*) 'Error in &CALC: second_device must be defined for type ', &
                     trim(type), &
                     ' number ',counter
                 call cfastexit('read_calc',7)
@@ -2819,10 +2819,10 @@ continue
                     trim(type),' number ',counter
                 call cfastexit('read_calc',8)
             end if
-            if ((type(1:9)=='INTEGRATE').and.(second_name==' ')) then
-                write(*,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+            if ((type(1:9)=='INTEGRATE').and.(second_device==' ')) then
+                write(*,*) 'Error in &CALC: second_device must be defined for type ', &
                     trim(type)
-                write(iofill,*) 'Error in &CALC: SECOND_NAME must be defined for type ', &
+                write(iofill,*) 'Error in &CALC: second_device must be defined for type ', &
                     trim(type)
                 call cfastexit('read_calc',9)
             end if
@@ -2833,10 +2833,10 @@ continue
                     trim(type),' number ',counter
                 call cfastexit('read_calc',10)
             end if
-            if ((type(1:9)=='INTEGRATE').and.(first_name(1:4)/='Time')) then
-                write(*,*) 'Error in &CALC: FIRST_NAME must be defined as Simulation Time for ', &
+            if ((type(1:9)=='INTEGRATE').and.(first_device(1:4)/='Time')) then
+                write(*,*) 'Error in &CALC: first_device must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
-                write(iofill,*) 'Error in &CALC: FIRST_NAME must be defined as Simulation Time for ', &
+                write(iofill,*) 'Error in &CALC: first_device must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
                 call cfastexit('read_calc',11)
             end if
@@ -2864,9 +2864,9 @@ continue
                 calcptr%id = id
                 calcptr%file_type = 'NORMAL'
                 calcptr%type = type
-                calcptr%first_name = 'Time'
+                calcptr%first_device = 'Time'
                 calcptr%first_measurement = 'Simulation Time'
-                calcptr%second_name = first_name
+                calcptr%second_device = first_device
                 calcptr%second_measurement = first_measurement
                 calcptr%criteria = 0 
                 calcptr%relative_column = n_mcarlo
@@ -2875,9 +2875,9 @@ continue
                 calcptr%id = id
                 calcptr%file_type = file_type
                 calcptr%type = type
-                calcptr%first_name = first_name
+                calcptr%first_device = first_device
                 calcptr%first_measurement = first_measurement
-                calcptr%second_name = second_name
+                calcptr%second_device = second_device
                 calcptr%second_measurement = second_measurement
                 calcptr%criteria = criteria 
                 calcptr%relative_column = n_mcarlo
@@ -2896,9 +2896,9 @@ continue
 
     id = ' '
     file_type = ' '
-    first_name = ' '
+    first_device = ' '
     first_measurement = ' '
-    second_name = ' '
+    second_device = ' '
     second_measurement = ' '
     type = ' '
     criteria = -1

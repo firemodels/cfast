@@ -106,12 +106,12 @@ module cfast_types
         character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
                                                 !      'check_total_hrr'
         real(eb) :: criteria                    ! Value used in 'trigger_...' analysis
-        
-        character(64) :: first_measurement      ! Name of measurement, second row in spreadsheet
-        character(64) :: first_name             ! Name of instrument, third row in spreadsheet
-        character(64) :: second_measurement     ! Name of measure for second instrument, needed for 'trigger_...' and 'integrate'
+
+        character(64) :: first_device           ! Name of instrument, third row in spreadsheet        
+        character(64) :: first_measurement      ! Name of measurement for first device, second row in spreadsheet
+        character(64) :: second_device          ! Name of second instrument, needed for 'trigger_...' and 'integrate',
                                                 !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
-        character(64) :: second_name            ! Name of second instrument, needed for 'trigger_...' and 'integrate',
+        character(64) :: second_measurement     ! Name of measurement for second device, needed for 'trigger_...' and 'integrate'
                                                 !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
         integer :: relative_column              ! Order of columns. This is just the order in the input file
         logical :: found                        ! The input channels are found in the csv files

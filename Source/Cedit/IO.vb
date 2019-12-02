@@ -2181,7 +2181,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLCalc(ByVal NMList As NameListFile, ByRef someCalcs As CalculationCollection)
         Dim i, j As Integer
-        Dim id, filetype, type, firstmeasurement, secondmeasurement, firstname, secondname As String
+        Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice As String
         Dim criteria As Single
 
         For i = 1 To NMList.TotNMList
@@ -2190,9 +2190,9 @@ Module IO
             type = ""
             criteria = 0
             firstmeasurement = ""
-            firstname = ""
+            firstdevice = ""
             secondmeasurement = ""
-            secondname = ""
+            seconddevice = ""
             If (NMList.GetNMListID(i) = "CALC") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "ID") Then
@@ -2203,19 +2203,19 @@ Module IO
                         type = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "CRITERIA") Then
                         criteria = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_DEVICE") Then
+                        firstdevice = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_MEASUREMENT") Then
                         firstmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "FIRST_NAME") Then
-                        firstname = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_DEVICE") Then
+                        seconddevice = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_MEASUREMENT") Then
                         secondmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
-                    ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_NAME") Then
-                        secondname = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In CALC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someCalcs.Add(New Calculation(id, filetype, type, criteria, firstmeasurement, firstname, secondmeasurement, secondname))
+                someCalcs.Add(New Calculation(id, filetype, type, criteria, firstmeasurement, firstdevice, secondmeasurement, seconddevice))
             End If
         Next
     End Sub
@@ -3800,14 +3800,14 @@ Module IO
 
                 ln = "&CALC ID = '" + aCalc.ID + "'"
                 PrintLine(IO, ln)
-                ln = "     FILE_TYPE = '" + aCalc.FileType + "' TYPE = '" + aCalc.Type + "'"
+                ln = "     FILE_TYPE = '" + aCalc.FileType + "'  TYPE = '" + aCalc.Type + "'"
                 If aCalc.Type <> "MINIMUM" And aCalc.Type <> "MAXIMUM" And aCalc.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += " CRITERIA = " + aCalc.Criteria.ToString
+                    ln += "  CRITERIA = " + aCalc.Criteria.ToString
                 End If
                 PrintLine(IO, ln)
-                ln = "     FIRST_MEASUREMENT = '" + aCalc.FirstMeasurement + "' FIRST_NAME = '" + aCalc.FirstName + "'"
+                ln = "     FIRST_DEVICE = '" + aCalc.FirstDevice + "'  FIRST_MEASUREMENT = '" + aCalc.FirstMeasurement + "'"
                 If aCalc.Type <> "MINIMUM" And aCalc.Type <> "MAXIMUM" And aCalc.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += "     SECOND_MEASUREMENT = '" + aCalc.SecondMeasurement + "' SECOND_NAME = '" + aCalc.SecondName + "'"
+                    ln += "  SECOND_DEVICE = '" + aCalc.SecondDevice + "'  SECOND_MEASUREMENT = '" + aCalc.SecondMeasurement + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)

@@ -770,27 +770,27 @@ module spreadsheet_routines
                         return
                     end if
                 end if 
-                call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%first_name, calcptr%first_measurement)
+                call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%first_device, calcptr%first_measurement)
                 primecol(cols(icol)) = ic
                 if (ic>0) then
                     calcptr%found = .true.
                 end if
                 if ((calcptr%type(1:8) == 'TRIGGER_' .or. &
                         calcptr%type(1:9) == 'INTEGRATE').and.calcptr%found) then 
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_name, &
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_device, &
                                     calcptr%second_measurement)
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
                         calcptr%found = .false.
                     end if
                 else if (calcptr%type(1:15) == 'CHECK_TOTAL_HRR'.and.calcptr%found) then
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_name, &
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_device, &
                                     calcptr%second_measurement)
                     seccol(1,cols(icol)) = ic
                     if (ic<1) then
                         calcptr%found = .false.
                     end if
-                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_name, &
+                    call fnd_col(ic, header, numr, numc, mxhr, mxhc, calcptr%second_device, &
                                     'HRR Expected')
                     seccol(2,cols(icol)) = ic
                     if (ic<1) then

@@ -9,9 +9,9 @@ Public Class Calculation
     Private aType As String                 ' 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 'check_total_HRR'
     Private aCriteria As Single             ' Value used in 'trigger_...' analysis
     Private aFirstMeasurement As String     ' Name of measurement, second row in spreadsheet
-    Private aFirstName As String            ' Name of instrument within the measurement, third row in spreadsheet
+    Private aFirstDevice As String            ' Name of instrument within the measurement, third row in spreadsheet
     Private aSecondMeasurement As String    ' Name of measure for second instrument, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
-    Private aSecondName As String           ' Name of second instrument within measurement, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
+    Private aSecondDevice As String           ' Name of second instrument within measurement, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
 
     Public Sub New()
         aID = ""
@@ -19,19 +19,19 @@ Public Class Calculation
         aType = ""
         aCriteria = 0
         aFirstMeasurement = ""
-        aFirstName = ""
+        aFirstDevice = ""
         aSecondMeasurement = ""
-        aSecondName = ""
+        aSecondDevice = ""
     End Sub
-    Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criteria As Single, ByVal FirstMeasurement As String, ByVal FirstName As String, ByVal SecondMeasurement As String, ByVal SecondName As String)
+    Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criteria As Single, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String)
         aID = ID
         aFileType = FileType
         aType = Type
         aCriteria = Criteria
         aFirstMeasurement = FirstMeasurement
-        aFirstName = FirstName
+        aFirstDevice = FirstDevice
         aSecondMeasurement = SecondMeasurement
-        aSecondName = SecondName
+        aSecondDevice = SecondDevice
     End Sub
     Public ReadOnly Property ID As String
         Get
@@ -58,9 +58,9 @@ Public Class Calculation
             Return aFirstMeasurement
         End Get
     End Property
-    Public ReadOnly Property FirstName As String
+    Public ReadOnly Property FirstDevice As String
         Get
-            Return aFirstName
+            Return aFirstDevice
         End Get
     End Property
     Public ReadOnly Property SecondMeasurement As String
@@ -68,20 +68,20 @@ Public Class Calculation
             Return aSecondMeasurement
         End Get
     End Property
-    Public ReadOnly Property SecondName As String
+    Public ReadOnly Property SecondDevice As String
         Get
-            Return aSecondName
+            Return aSecondDevice
         End Get
     End Property
-    Public Sub GetCalc(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criteria As Single, ByRef FirstMeasurement As String, ByRef FirstName As String, ByRef SecondMeasurement As String, ByRef SecondName As String)
+    Public Sub GetCalc(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criteria As Single, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
         aID = ID
         FileType = aFileType
         Type = aType
         Criteria = aCriteria
         FirstMeasurement = aFirstMeasurement
-        FirstName = aFirstName
+        FirstDevice = aFirstDevice
         SecondMeasurement = aSecondMeasurement
-        SecondName = aSecondName
+        SecondDevice = aSecondDevice
     End Sub
 End Class
 Public Class CalculationCollection

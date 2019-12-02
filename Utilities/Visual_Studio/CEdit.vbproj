@@ -177,6 +177,7 @@
     <Compile Include="AssemblyInfo.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Calculation.vb" />
     <Compile Include="CEdit.vb">
       <SubType>Form</SubType>
     </Compile>

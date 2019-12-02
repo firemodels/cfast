@@ -802,14 +802,17 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct ID}    & Character   &          &         &        \\ \hline
-{\ct FILE\_TYPE}    & Selection List   &          &         &        \\ \hline
-{\ct TYPE}    & Selection List   &          &         &        \\ \hline
-{\ct CRITERIA}    & Real   &          &         &  {      \\ \hline
-{\ct FIRST\_DEVICE}    & Character   &          &         &        \\ \hline
-{\ct FIRST\_MEASUREMENT}    & Character   &          &         &        \\ \hline
-{\ct SECOND\_DEVICE}    & Character   &          &         &        \\ \hline
-{\ct SECOND\_MEASUREMENT}    & Character   &          &         &        \\ \hline
+{\ct ID}                    & Character        &          &         &        \\ \hline
+{\ct FILE\_TYPE} \footnote{{\ct FILE\_TYPE} must be one of the CFAST spreadsheet outputs: {\ct NORMAL}, {\ct FLOW}, {\ct MASS}, {\ct SPECIES}, or {\ct WALL}.}
+
+                            & Selection List   &          &         &        \\ \hline
+{\ct TYPE} \footnote{{\ct TYPE} must be {\ct TRIGGER\_GREATER}, {\ct TRIGGER\_LESSER}, {\ct MINIMUM}, {\ct MAXIMUM}, {\ct INTEGRATE}, or {\ct CHECK\_TOTAL\_HRR}}
+                            & Selection List   &          &         &        \\ \hline
+{\ct CRITERIA}              & Real             &          &         &        \\ \hline
+{\ct FIRST\_DEVICE}         & Character        &          &         &        \\ \hline
+{\ct FIRST\_MEASUREMENT}    & Character        &          &         &        \\ \hline
+{\ct SECOND\_DEVICE}        & Character        &          &         &        \\ \hline
+{\ct SECOND\_MEASUREMENT}   & Character        &          &         &        \\ \hline
 \end{longtable}
 \end{minipage}
 

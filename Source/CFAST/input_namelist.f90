@@ -2790,7 +2790,7 @@ continue
                 call cfastexit('read_calc',4)
             end if
             if (first_device==' ') then
-                write(*,*) 'Error in &CALC: first_device must be defined', &
+                write(*,*) 'Error in &CALC: FIRST_DEVICE must be defined', &
                     ' number ',counter
                 write(iofill,*) 'Error in &CALC: first_device must be defined', &
                     ' number ',counter
@@ -2804,7 +2804,7 @@ continue
                 call cfastexit('read_calc',6)
             end if 
             if ((type(1:8)=='TRIGGER_').and.(second_device==' ')) then
-                write(*,*) 'Error in &CALC: second_device must be defined for type ', &
+                write(*,*) 'Error in &CALC: SECOND_DEVICE must be defined for type ', &
                     trim(type), &
                     ' number ',counter
                 write(iofill,*) 'Error in &CALC: second_device must be defined for type ', &

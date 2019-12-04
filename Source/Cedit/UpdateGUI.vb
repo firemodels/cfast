@@ -1023,12 +1023,7 @@ Public Class UpdateGUI
                         aFire = myFireProperties(FireIndex)
                         MainWin.FireSummary(i, FireSummaryNum.FirePropertyID) = aFire.Name
                         MainWin.FireSummary(i, FireSummaryNum.Fuel) = aFire.ChemicalFormula()
-                        PeakHRR = 0.0
-                        aFire.GetFireData(afireTimeSeries, NumPoints)
-                        For j = 0 To NumPoints
-                            If afireTimeSeries(Fire.FireHRR, j) > PeakHRR Then PeakHRR = afireTimeSeries(Fire.FireHRR, j)
-                        Next
-                        MainWin.FireSummary(i, FireSummaryNum.HRR) = PeakHRR.ToString
+                        MainWin.FireSummary(i, FireSummaryNum.HRR) = aFire.Peak(Fire.FireHRR).ToString
                     Else
                         MainWin.FireSummary(i, FireSummaryNum.FirePropertyID) = ""
                         MainWin.FireSummary(i, FireSummaryNum.Fuel) = ""
@@ -1064,7 +1059,6 @@ Public Class UpdateGUI
                 MainWin.FireHoC.Text = aFire.HeatofCombustion.ToString + myUnits.Convert(UnitsNum.HoC).Units
                 MainWin.FireRadiativeFraction.Text = aFire.RadiativeFraction.ToString
 
-                aFire.GetFireData(afireTimeSeries, NumPoints)
                 ClearGrid(MainWin.FireDataSS)
                 MainWin.FireDataSS(0, 0) = "Time" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireTime).Units.Substring(1) + ")"
                 MainWin.FireDataSS(0, 1) = "Mdot" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireMdot).Units.Substring(1) + ")"
@@ -1073,6 +1067,7 @@ Public Class UpdateGUI
                 MainWin.FireDataSS(0, 4) = "Area" + Chr(10) + "(" + myUnits.ConvertFireData(UnitsNum.FireArea).Units.Substring(1) + ")"
                 MainWin.FireDataSS.AutoSizeRow(0)
 
+                aFire.GetFireData(afireTimeSeries, NumPoints)
                 If NumPoints >= 0 Then
                     For ir = 0 To NumPoints
                         For ic = 0 To 12

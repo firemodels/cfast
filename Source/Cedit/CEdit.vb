@@ -5847,9 +5847,6 @@ Public Class CeditMain
                 aFire = myFireProperties(FireIndex)
                 If aFireInstance.ReferencedFireDefinition <> aFire.Name Then
                     aFireInstance.ReferencedFireDefinition = aFire.Name
-                    If CurrentFire >= 0 Then
-                        myFires(CurrentFire) = aFireInstance
-                    End If
                     UpdateGUI.Fires(CurrentFire)
                 End If
             End If
@@ -5908,7 +5905,6 @@ Public Class CeditMain
                 If sender Is FireCl Then aFire.ChemicalFormula(formula.Cl) = Val(FireCl.Text)
                 If sender Is FireHoC Then aFire.HeatofCombustion = Val(FireHoC.Text)
                 If sender Is FireRadiativeFraction Then aFire.RadiativeFraction = Val(FireRadiativeFraction.Text)
-                CopyFireData(aFire)
 
                 myFireProperties(fireIndex) = aFire
             End If

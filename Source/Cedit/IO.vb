@@ -1429,8 +1429,7 @@ Module IO
                 If id = "" Then
                     myErrors.Add("In CHEM namelist ID parameter must be set", ErrorMessages.TypeFatal)
                     valid = False
-                End If
-                If valid Then
+                Else
                     Dim aFireObject As New Fire()
                     aFireObject.ObjectType = Fire.TypeDefinition
                     aFireObject.Name = id
@@ -1446,7 +1445,8 @@ Module IO
                     aFireObject.SetFireData(aFireCurves)
                     aFireObject.Changed = False
                     someFires.Add(aFireObject)
-                Else
+                End If
+                If valid = False Then
                     myErrors.Add("In FIRE namelist " + id + " Is Not fully defined", ErrorMessages.TypeFatal)
                 End If
             End If

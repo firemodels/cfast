@@ -100,7 +100,7 @@ module cfast_types
     
     ! post-run calculation data structure
     type calc_type
-        character(64) :: id                     ! id used a heading for output column
+        character(64) :: id                     ! user selected heading for output column
         character(24) :: file_type              ! 'wall' for '_w', 'normal' for '_n', 'flow' for '_f', 'mass' for '_m',
                                                 !      'species' for '_s'
         character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
@@ -114,7 +114,8 @@ module cfast_types
         character(64) :: second_measurement     ! Name of measurement for second device, needed for 'trigger_...' and 'integrate'
                                                 !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
         integer :: relative_column              ! Order of columns. This is just the order in the input file
-        logical :: found                        ! The input channels are found in the csv files
+        
+        logical :: found                        ! The input channels are found in the requested csv files
     end type calc_type
 
     ! ramp data structure

@@ -1453,13 +1453,13 @@ Module IO
         Next
         Dim test As Integer = myFireProperties.Count
     End Sub
-    Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef ErrFlag As Boolean)
+    Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef Valid As Boolean)
         Dim i, j, k, m, n, max As Integer
         Dim aMap(8) As Integer
         Dim labels(8) As String
         Dim LabelFlag, IDFlag As Boolean
 
-        ErrFlag = False
+        Valid = True
         Dim aFire As New Fire()
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "TABL") Then
@@ -1478,8 +1478,8 @@ Module IO
                                 labels(k - 1) = NMList.ForNMListVarGetStr(i, j, k)
                             Next
                         Else
-                            myErrors.Add("In TABL namelist for LABELS input must be between 2 and 8 labels ", ErrorMessages.TypeFatal)
-                            ErrFlag = True
+                            myErrors.Add("In TABL namelist for LABELS input must include between 2 and 8 labels ", ErrorMessages.TypeFatal)
+                            Valid = False
                         End If
                     End If
                 Next
@@ -1497,8 +1497,8 @@ Module IO
                 Next
             Next
         Else
-            ErrFlag = True
             myErrors.Add("In TABL namelist LABELS keyword not found for FIRE " + id, ErrorMessages.TypeFatal)
+            Valid = False
             Exit Sub
         End If
 

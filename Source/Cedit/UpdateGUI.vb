@@ -942,7 +942,6 @@ Public Class UpdateGUI
     Public Sub Fires(ByVal index As Integer)
         General()
         Dim afireTimeSeries(12, 0) As Single, NumPoints As Integer
-        Dim PeakHRR As Single
         Dim IgnitionTypeLabel As String = ""
         Dim ir, ic As Integer
 
@@ -1188,9 +1187,6 @@ Public Class UpdateGUI
         If myFireProperties.Count > 0 Then
             For i = 0 To myFireProperties.Count - 1
                 obj.Items.Add(myFireProperties.Item(i).Name)
-                If myFireProperties.Item(i).Name = current Then
-                    obj.SelectedIndex = i + 1
-                End If
             Next
         End If
     End Sub

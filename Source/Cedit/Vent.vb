@@ -638,22 +638,6 @@ Public Class Vent
             Next
             aChanged = True
         End If
-        'If TimePoints.GetLength(0) = FractionPoints.GetLength(0) Then
-        'If aRampID = "" Then
-        'aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
-        'myRamps.Add(New Ramp)
-        'myRamps.Item(myRamps.Count - 1).Name = aRampID
-        'myRamps.Item(myRamps.Count - 1).Type = Ramp.TypeFrac
-        'myRamps.Item(myRamps.Count - 1).IsT = True
-        'End If
-        'Dim idx As Integer = myRamps.GetRampIndex(aRampID)
-        'myRamps.Item(idx).DimF = FractionPoints.GetUpperBound(0) - 1
-        'For i = 0 To TimePoints.GetUpperBound(0) - 1
-        'myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(TimePoints(i + 1))
-        'myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i + 1))
-        'Next
-        'aChanged = True
-        'End If
     End Sub
     Public Sub GetRampFractions(ByRef FractionPoints() As Single)
         Dim i As Integer
@@ -661,15 +645,6 @@ Public Class Vent
         For i = 0 To FractionPoints.GetUpperBound(0)
             FractionPoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampFractionPoints(i))
         Next
-        'If aRampID <> "" Then
-        'Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
-        'ReDim FractionPoints(myRamps.Item(iramp).DimF + 1)
-        'For i = 0 To myRamps.Item(iramp).DimF
-        'FractionPoints(i + 1) = myUnits.Convert(UnitsNum.Area).FromSI(myRamps.Item(iramp).F(i))
-        'Next
-        'Else
-        'ReDim FractionPoints(0)
-        'End If
     End Sub
     Public Sub GetRampTimes(ByRef TimePoints() As Single)
         Dim i As Integer
@@ -677,15 +652,6 @@ Public Class Vent
         For i = 0 To TimePoints.GetUpperBound(0)
             TimePoints(i) = myUnits.Convert(UnitsNum.Area).FromSI(aRampTimePoints(i))
         Next
-        'If aRampID <> "" Then
-        'Dim iramp As Integer = myRamps.GetRampIndex(aRampID)
-        'ReDim TimePoints(myRamps.Item(iramp).DimX + 1)
-        'For i = 0 To myRamps.Item(iramp).DimX
-        'TimePoints(i + 1) = myUnits.Convert(UnitsNum.Length).FromSI(myRamps.Item(iramp).X(i))
-        'Next
-        'Else
-        'ReDim TimePoints(0)
-        'End If
     End Sub
     Public Sub SetRampFractions(ByVal FractionPoints() As Single)
         Dim i As Integer
@@ -694,17 +660,6 @@ Public Class Vent
             aRampFractionPoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i))
         Next
         aChanged = True
-        'If aRampID = "" Then
-        'aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
-        'myRamps.Add(New Ramp)
-        'myRamps.Item(myRamps.Count - 1).Name = aRampID
-        'End If
-        'Dim idx As Integer = myRamps.GetRampIndex(aRampID)
-        'myRamps.Item(idx).DimF = FractionPoints.GetUpperBound(0) - 1
-        'For i = 0 To FractionPoints.GetUpperBound(0) - 1
-        'myRamps.Item(idx).F(i) = myUnits.Convert(UnitsNum.Area).ToSI(FractionPoints(i + 1))
-        'Next
-        'aChanged = True
     End Sub
     Public Sub SetRampTimes(ByVal TimePoints() As Single)
         Dim i As Integer
@@ -713,17 +668,6 @@ Public Class Vent
             aRampTimePoints(i) = myUnits.Convert(UnitsNum.Area).ToSI(TimePoints(i))
         Next
         aChanged = True
-        'If aRampID = "" Then
-        'aRampID = "VentFraction_" + (myRamps.Count + 1).ToString
-        'myRamps.Add(New Ramp)
-        'myRamps.Item(myRamps.Count - 1).Name = aRampID
-        'End If
-        'Dim idx As Integer = myRamps.GetRampIndex(aRampID)
-        'myRamps.Item(idx).DimX = TimePoints.GetUpperBound(0) - 1
-        'For i = 0 To TimePoints.GetUpperBound(0) - 1
-        'myRamps.Item(idx).X(i) = myUnits.Convert(UnitsNum.Length).ToSI(TimePoints(i + 1))
-        'Next
-        'aChanged = True
     End Sub
     Public ReadOnly Property IsValid(ByVal VentNumber As Integer) As Integer
         Get
@@ -1239,7 +1183,7 @@ Public Class VentCollection
     End Property
     Public ReadOnly Property IsValid() As Integer
         Get
-            Dim FractionTotal As Single
+            Dim FractionTotal As Single, i As Integer
             HasError = 0
             If Count > 0 Then
                 Dim aVent As Vent

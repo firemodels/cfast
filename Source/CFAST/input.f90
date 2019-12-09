@@ -152,12 +152,20 @@
     do i = 1,n_hvents
         ventptr => hventinfo(i)
         roomptr => roominfo(ventptr%room1)
+        ! wall vent must be completely within the wall of the from compartment
         zbot = ventptr%sill
         ztop = ventptr%soffit
         if (zbot<0.0_eb.or.zbot>roomptr%cheight.or.ztop<0.0_eb.or.ztop>roomptr%cheight.or.ztop<zbot) then
-            write (*,203) zbot, ztop
-            write (iofill,203) zbot, ztop
-203         format('***Error: Invalid HVENT specification. sill and/or soffit height =',2e11.4,' out of bounds')
+            write (*,'(a,2e11.4,a)') '***Error: Invalid HVENT specification. sill and/or soffit height =',&
+                zbot, ztop,' out of bounds'
+            write (iofill,'(a,2e11.4,a)') '***Error: Invalid HVENT specification. sill and/or soffit height =',&
+                zbot, ztop,' out of bounds'
+            stop
+        end if
+        ! outside must always be second compartment
+        if (ventptr%room1==nrm1+1) then
+            write (*,'(a)') '***Error: Compartment order is incorrect. Outside must always be second compartment.'
+            write (iofill,'(a)') '***Error: Compartment order is incorrect. Outside must always be second compartment.'
             stop
         end if
     end do
@@ -202,9 +210,10 @@
 
         ! room numbers must be between 1 and nrm1
         if (iroom1<1.or.iroom2<1.or.iroom1>nrm1+1.or.iroom2>nrm1+1) then
-            write (*,201) iroom1, iroom2
-            write (iofill,201) iroom1, iroom2
-201         format('***Error: Invalid VHEAT specification:',' one or both of rooms ',i0,'-',i0,' do not exist')
+            write (*,'(a,i0,a,i0,a)')  '***Error: Invalid VHEAT specification:',' one or both of rooms ', &
+                iroom1,'-',iroom2,' do not exist'
+            write (iofill,'(a,i0,a,i0,a)')  '***Error: Invalid VHEAT specification:',' one or both of rooms ', &
+                iroom1,'-',iroom2,' do not exist'
             stop
         end if
 
@@ -234,9 +243,10 @@
                 vertical_connections(ii,w_to_wall) = 2
             end if
         else
-            write (*,202) iroom1, iroom2
-            write (iofill,202) iroom1, iroom2
-202         format('***Error: Invalid VHEAT specification:'' ceiling and floor of rooms',i0,'-',i0,' are not connectetd')
+            write (*,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification: ceiling and floor of rooms', &
+                iroom1,'-',iroom2,' are not connectetd'
+            write (iofill,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification: ceiling and floor of rooms', &
+                iroom1,'-',iroom2,' are not connectetd'
             stop
         end if
 
@@ -246,12 +256,15 @@
         iwall2 = vertical_connections(ii,w_to_wall)
         if (.not.roominfo(iroom1)%surface_on(iwall1).or..not.roominfo(iroom2)%surface_on(iwall2)) then
             if (.not.roominfo(iroom1)%surface_on(iwall1)) then
-                write (*,204) iwall1, iroom1
-                write (iofill,204) iwall1, iroom1
-204             format('***Error: Invalid VHEAT specification. Wall ',i0,' of room ',i0,' is adiabatic')
+                write (*,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall1,' of room ', &
+                    iroom1,' is adiabatic'
+                write (iofill,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall1,' of room ', &
+                    iroom1,' is adiabatic'
             else
-                write (*,204) iwall2, iroom2
-                write (iofill,204) iwall2, iroom2
+                write (*,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall2,' of room ', &
+                    iroom2,' is adiabatic'
+                write (iofill,'(a,i0,a,i0,a)') '***Error: Invalid VHEAT specification. Wall ',iwall2,' of room ', &
+                    iroom2,' is adiabatic'
             end if
             stop
         end if

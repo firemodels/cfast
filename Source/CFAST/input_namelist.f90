@@ -1768,7 +1768,7 @@ continue
                     call cfastexit('read_vent',10)
                 end if
 
-                ! Avoiding referring "OUTSIDE"
+                ! absolute positions are always relative to the floor of the "inside" room
                 if (i == nr) then
                     roomptr => roominfo(j)
                 else

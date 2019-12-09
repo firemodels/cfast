@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Vettori_Flat_Test_32' /
+&HEAD VERSION = 7500, TITLE = 'Vettori_Flat_Test_32' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 100 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 1 / 
@@ -17,9 +17,9 @@
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'OUTSIDE', 'Compartment 1' TOP = 2.1, BOTTOM = 0, WIDTH = 0.91
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 2.1, BOTTOM = 0, WIDTH = 0.91
   CRITERION = 'TIME' T = 0, 0 F = 0, 0 FACE = 'RIGHT' OFFSET = 1.6 /
-&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'OUTSIDE', 'Compartment 1' TOP = 0.025, BOTTOM = 0, WIDTH = 0.91
+&VENT TYPE = 'WALL' ID = 'WallVent_2' COMP_IDS = 'Compartment 1' 'OUTSIDE'  TOP = 0.025, BOTTOM = 0, WIDTH = 0.91
   FACE = 'RIGHT' OFFSET = 1.6 /
  
 !! Ceiling and Floor Vents 

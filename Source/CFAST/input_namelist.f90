@@ -437,8 +437,8 @@
     real(eb), dimension(2) :: leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     logical :: hall, shaft
-    character(64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
-    namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, &
+    character(64) :: id, type, ceiling_matl_id, floor_matl_id, wall_matl_id
+    namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, type, &
         ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area
 
     ios = 1
@@ -500,6 +500,7 @@
 
             roomptr%compartment    = ii
             roomptr%name    = id
+            roomptr%type    = type
             roomptr%cwidth  = width
             roomptr%cdepth  = depth
             roomptr%cheight = height
@@ -556,6 +557,7 @@
     cross_sect_areas        = -1001._eb
     cross_sect_heights      = -1001._eb
     id                      = 'NULL'
+    type                    = 'NULL'
     depth                   = 0.0_eb
     floor_matl_id           = 'OFF'
     height                  = 0.0_eb

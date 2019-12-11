@@ -131,6 +131,8 @@ module cfast_types
         ! These are room definitions from or calculated from user input
         character(64) :: name                           ! user selected name for the compartment
         character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
+        character(64) :: type                           ! identifier for compartment type for later analyses ... fro exampel
+                                                        ! "Office", "Bedroom", "Hallway". etc
 
         integer :: compartment                          ! compartment number assigned automatically for namelist inputs
         integer :: ibar, jbar, kbar                     ! number of grids in x, y, and z direction in compartment

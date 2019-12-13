@@ -973,12 +973,11 @@ Module IO
                 End If
             End If
         Next
-        Dim test As Integer = myRamps.Count
 
     End Sub
     Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
-        Dim ceilid, wallid, floorid, rampid, id As String
+        Dim ceilid, wallid, floorid, rampid, id, comptype As String
         Dim depth, height, width As Single
         Dim shaft, hall, valid As Boolean
         Dim grid(3) As Integer
@@ -996,6 +995,7 @@ Module IO
                 floorid = ""
                 wallid = ""
                 rampid = ""
+                comptype = ""
                 ReDim comparea(0), compheight(0)
                 For k = 0 To 2
                     grid(k) = 50
@@ -1070,6 +1070,8 @@ Module IO
                         Else
                             myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "TYPE" Then
+                        comptype = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In COMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1113,13 +1115,13 @@ Module IO
                     Else
                         myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
                     End If
+                    aComp.Type = comptype
                     aComp.Changed = False
                 Else
                     myErrors.Add("In COMP namelist " + id + " is not fully defined", ErrorMessages.TypeWarning)
                 End If
             End If
         Next
-        Dim test As Integer = myCompartments.Count
 
     End Sub
     Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile, ByRef someDetectors As TargetCollection)
@@ -1451,7 +1453,7 @@ Module IO
                 End If
             End If
         Next
-        Dim test As Integer = myFireProperties.Count
+
     End Sub
     Private Sub ReadInputFileNMLTabl(ByVal NMList As NameListFile, ByVal id As String, ByRef aFireCurves(,) As Single, ByRef Valid As Boolean)
         Dim i, j, k, m, n, max As Integer
@@ -3386,6 +3388,9 @@ Module IO
                 ln += " GRID = " + aComp.xGrid.ToString + ", " + aComp.yGrid.ToString + ", " + aComp.zGrid.ToString
                 If aComp.WallLeak > 0 Or aComp.FloorLeak > 0 Then
                     ln += " LEAK_AREA = " + aComp.WallLeak.ToString + ", " + aComp.FloorLeak.ToString
+                End If
+                If aComp.Type <> "" Then
+                    ln += " TYPE = '" + aComp.Type + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)

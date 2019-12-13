@@ -276,7 +276,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \footnote{For compartments where the cross-sectional area varies with height, the inputs, {\ct CROSS\_SECT\_AREAS} and {\ct CROSS\_SECT\_HEIGHTS} can be used.}
                             & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
 {\ct CROSS\_SECT\_HEIGHTS}  & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
-{\ct DEPTH}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least on {\ct COMP} input must be included in an input file.}                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
+{\ct DEPTH}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least one {\ct COMP} input must be included in an input file.}                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
 {\ct FLOOR\_MATL\_ID}       & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
 {\ct GRID}             & Integer Triplet& Section \ref{info:SLCF2}               &           & 50,50,50                \\ \hline
 {\ct HALL}                  & Logical  		 & Section \ref{info:COMP3}               &           & {\ct .FALSE.}   \\ \hline
@@ -285,6 +285,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct LEAK\_AREA}               & Real Doublet      & Section \ref{info:COMP}                & m$^2$/m$^2$          &          \\ \hline
 {\ct ORIGIN}           & Real Triplet   & Section \ref{info:COMP}                & m         & 0,0,0                \\ \hline
 {\ct SHAFT}                 & Logical  		 & Section \ref{info:COMP3}                 &           & {\ct .FALSE.}   \\ \hline
+{\ct TYPE}                  & Character      & Section \ref{info:COMP}                &           &          \\ \hline
 {\ct WALL\_MATL\_ID}        & Character		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
 {\ct WIDTH}*                 & Real               & Section \ref{info:COMP}                  & m         &                 \\ \hline
 \end{longtable}

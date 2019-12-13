@@ -13,7 +13,7 @@ Public Class Compartment
     Public Const MaxPosition As Single = 10000.0
 
     ' All units within the class are assumed to be consistent and typically SI
-    Private aName As String                 ' One word name for compartment
+    Private aName As String                 ' Name for compartment
     Private aRoomHeight As Single           ' Height (highest point) of compartment ceiling relative to compartment floor
     Private aRoomWidth As Single            ' Width of the compartment
     Private aRoomDepth As Single            ' Depth of the compartment
@@ -31,6 +31,7 @@ Public Class Compartment
     Private aAreaRampID As String           ' Name of Ramp for area as a function of height
     Private aWallLeak As Single             ' Wall leakage per unit area of wall
     Private aFloorLeak As Single            ' Floor leakage per unit area of floor
+    Private aType As String                 ' Compartment type for post run analysis of multiple runs, i.e., "Office", "Bedroom", ...
     Private aChanged As Boolean = False     ' True once compartment information has changed
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
     Private i As Integer
@@ -49,7 +50,7 @@ Public Class Compartment
         aHeightPoints(0) = aRoomHeight
         aWallLeak = 0
         aFloorLeak = 0
-        'New code
+        aType = ""
         aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
         myRamps.Add(New Ramp)
         myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
@@ -59,7 +60,6 @@ Public Class Compartment
             myRamps.Item(idx).X(i) = aHeightPoints(i)
             myRamps.Item(idx).F(i) = aAreaPoints(i)
         Next
-        'End New code
         aShaft = False
         aHall = False
         aGridCells = {50, 50, 50, 50}
@@ -262,6 +262,17 @@ Public Class Compartment
             If value <> aFloorLeak Then
                 aChanged = True
                 aFloorLeak = value
+            End If
+        End Set
+    End Property
+    Public Property Type() As String
+        Get
+            Return aType
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aType Then
+                aChanged = True
+                aType = Value
             End If
         End Set
     End Property

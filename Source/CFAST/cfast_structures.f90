@@ -3,6 +3,26 @@ module cfast_types
     use precision_parameters
     
     use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, mxcoeff
+    
+    ! post-run calculation data structure
+    type calc_type
+        character(64) :: id                     ! user selected heading for output column
+        character(24) :: file_type              ! 'wall' for '_w', 'normal' for '_n', 'flow' for '_f', 'mass' for '_m',
+                                                !      'species' for '_s'
+        character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
+                                                !      'check_total_hrr'
+        real(eb) :: criteria                    ! Value used in 'trigger_...' analysis
+
+        character(64) :: first_device           ! Name of instrument, third row in spreadsheet        
+        character(64) :: first_measurement      ! Name of measurement for first device, second row in spreadsheet
+        character(64) :: second_device          ! Name of second instrument, needed for 'trigger_...' and 'integrate',
+                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        character(64) :: second_measurement     ! Name of measurement for second device, needed for 'trigger_...' and 'integrate'
+                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        integer :: relative_column              ! Order of columns. This is just the order in the input file
+        
+        logical :: found                        ! The input channels are found in the requested csv files
+    end type calc_type
 
     ! detector / sprinkler structure
     type detector_type
@@ -97,26 +117,6 @@ module cfast_types
         real(eb) :: temperature                         ! surface temperature on attached target (only for ignition)
         real(eb) :: incident_flux                       ! flux to attached target (only for ignition)
     end type fire_type
-    
-    ! post-run calculation data structure
-    type calc_type
-        character(64) :: id                     ! user selected heading for output column
-        character(24) :: file_type              ! 'wall' for '_w', 'normal' for '_n', 'flow' for '_f', 'mass' for '_m',
-                                                !      'species' for '_s'
-        character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
-                                                !      'check_total_hrr'
-        real(eb) :: criteria                    ! Value used in 'trigger_...' analysis
-
-        character(64) :: first_device           ! Name of instrument, third row in spreadsheet        
-        character(64) :: first_measurement      ! Name of measurement for first device, second row in spreadsheet
-        character(64) :: second_device          ! Name of second instrument, needed for 'trigger_...' and 'integrate',
-                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
-        character(64) :: second_measurement     ! Name of measurement for second device, needed for 'trigger_...' and 'integrate'
-                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
-        integer :: relative_column              ! Order of columns. This is just the order in the input file
-        
-        logical :: found                        ! The input channels are found in the requested csv files
-    end type calc_type
 
     ! ramp data structure
     type ramp_type
@@ -131,7 +131,7 @@ module cfast_types
         ! These are room definitions from or calculated from user input
         character(64) :: name                           ! user selected name for the compartment
         character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
-        character(64) :: type                           ! identifier for compartment type for later analyses ... fro exampel
+        character(64) :: group                          ! identifier for compartment grouping for later analyses ... for example
                                                         ! "Office", "Bedroom", "Hallway". etc
 
         integer :: compartment                          ! compartment number assigned automatically for namelist inputs
@@ -210,10 +210,9 @@ module cfast_types
         real(eb), dimension(2,nwal) :: t_surfaces       ! compartment surface temperatures (interior, exterior)
         real(eb), dimension(nwal) :: rad_qout           ! flux radiated from compartment surfaces
         real(eb) :: qdot_doorjet                        ! HRR of door jet fires at the current time
-
     end type room_type
     
-    ! time-dependent fire parameters table input data sctructure
+    ! time-dependent fire parameters table input data structure
     type table_type
         character(64) :: name                           ! user selected name for the table (normally this would match the fire name)
         character(64), dimension(ns+3) :: labels        ! column labels for columns of data in the table
@@ -238,11 +237,6 @@ module cfast_types
         real(eb) :: thickness           ! target thickness (from matching thermal properties input)
         real(eb) :: depth_loc           ! depth location for output of internal temperature
                                         !       (from user input with default of 0.5*thickness)
-        real(eb) :: flux_incident_front ! incident heat flux to front surface of target (calculated)
-        real(eb) :: flux_incident_back  ! incident heat flux to back surface of target (calculated)
-        real(eb) :: flux_net_front      ! net heat flux to front surface of target (calculated)
-        real(eb) :: flux_net_back       ! net heat flux to back surface of target (calculated)
-        real(eb), dimension(nnodes_trg) :: temperature  ! target temperatures from front to back
 
         integer :: room                 ! compartment where the target is located (user input)
         integer :: equaton_type         ! equation type for calculation (ODE, PDE) (user input)
@@ -250,6 +244,12 @@ module cfast_types
         integer :: wall                 ! wall surface the target is located on. Normal wall numbering
 
         ! These are calculated results for the current time step
+        real(eb) :: flux_incident_front ! incident heat flux to front surface of target (calculated)
+        real(eb) :: flux_incident_back  ! incident heat flux to back surface of target (calculated)
+        real(eb) :: flux_net_front      ! net heat flux to front surface of target (calculated)
+        real(eb) :: flux_net_back       ! net heat flux to back surface of target (calculated)
+        real(eb), dimension(nnodes_trg) :: temperature  ! target temperatures from front to back
+        
         integer :: layer                ! layer (within the compartment) where the target is located (calculated)
         real(eb) :: tgas                ! gas temperature near target
         real(eb) :: tinternal           ! target temperature at depth_loc
@@ -266,7 +266,6 @@ module cfast_types
         real(eb), dimension(2) :: flux_net_gauge, flux_radiation_gauge, flux_convection_gauge, flux_target_gauge
         real(eb), dimension(2) :: h_conv ! user-defined convective heat transfer coefficient for adiabatic surface temperature
         logical  :: adiabatic           ! true if target is adiabatic
-
     end type target_type
 
     ! thermal properties structure
@@ -349,10 +348,16 @@ module cfast_types
         real(eb) :: opening_fraction                    ! fraction vent is open at current time step (0 --> 1)
         real(eb) :: current_area                        ! vent area at current time step accounting for opening fraction
         real(eb) :: mflow(2,2)                          ! vent mass flow (room1/top,room2/bottom, u,l)
-
     end type vent_type
 
-    ! visualization data structure
+    ! output and visualization data structure
+    type ssout_type
+        character(50) :: short              ! short name for output column that includes both device and measurement
+        character(50) :: measurement        ! identifies which measurement within a device (i.e., upper layer temperature)
+        character(50) :: device             ! identifies where the measurements are coming from (i.e., Room 1 or Target 1)
+        character(50) :: units              ! identifies the measurement units for the output
+    end type ssout_type
+    
     type slice_type
        character(256) :: filename
        character(64) :: menu_label, colorbar_label, unit_label
@@ -375,4 +380,4 @@ module cfast_types
         integer :: roomnum      ! compartment
     end type visual_type
 
-   end module cfast_types
+end module cfast_types

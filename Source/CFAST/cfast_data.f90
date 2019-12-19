@@ -285,12 +285,13 @@ module setup_data
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, iofilssmc
+        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssdiag, iofilcalc, &
+        iofilssc, iofilssd
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
-    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, ssconnections, &
+    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
-        queryfile, statusfile, kernelisrunning, ssmontecarlo
+        queryfile, statusfile, kernelisrunning, sscalculation
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100
@@ -378,6 +379,24 @@ module solver_data
     real(eb), dimension(0:mxdiscon) :: discon    ! list of discontinuities fed to DASSL to ease solution
 
 end module solver_data
+
+! --------------------------- smkview_data -------------------------------------------
+
+module spreadsheet_output_data
+    
+    use precision_parameters
+    use cfast_types, only: ssout_type
+    use cparams, only: mxss
+    
+    integer :: n_sscomp = 0
+    type(ssout_type), allocatable, dimension(:), target :: sscompinfo
+    
+    integer :: n_ssdevice = 0
+    type(ssout_type), allocatable, dimension(:), target :: ssdeviceinfo
+    
+    real(eb) :: outarray(mxss)
+    
+end module spreadsheet_output_data
 
 ! --------------------------- target_data -------------------------------------------
 

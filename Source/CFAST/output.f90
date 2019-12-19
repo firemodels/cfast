@@ -18,10 +18,11 @@ module output_routines
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, inputfile, iofilssmc, &
+        iofilssc, iofilssd, &
+        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswall, ssdiag, &
-        ssmontecarlo
+        sscalculation, sscompartment, ssdevice
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
@@ -1391,10 +1392,10 @@ module output_routines
     !     iofilsss      spreadsheet output (species molar %, etc.)
     !     iofilssm      spreadsheet otuput (species mass)
     !     iofilssw      spreadsheet output (walls and targets)
-    !     iofilssd      spreadsheet output (various diagnostics for verification)
+    !     iofilssdiag      spreadsheet output (various diagnostics for verification)
     !     ioresid       diagnostic file of solution vector
     !     ioslab        diagnostic file of flow slabs
-    !     iofilssmc     spreadsheet output (for Monte Carlo analysis)
+    !     iofilcalc     spreadsheet output (post-run calculations)
     
     ! other units may be opened with newunit keyword in open statement
 
@@ -1418,6 +1419,10 @@ module output_routines
 
     ! the spread sheet files
     if (ss_out_interval>0) then
+        open(newunit=iofilssc, file=sscompartment,form='formatted')
+        !iocsv(iocsvcompartment) = iofilssc
+        open(newunit=iofilssd, file=ssdevice,form='formatted')
+        !iocsv(iocsvdevice) = iofilssd
         open (newunit=iofilssn, file=ssnormal,form='formatted')
         iocsv(iocsvnormal) = iofilssn
         open (newunit=iofilssf, file=ssflow,form='formatted')
@@ -1428,8 +1433,8 @@ module output_routines
         iocsv(iocsvmass) = iofilssm
         open (newunit=iofilssw, file=sswall,form='formatted')
         iocsv(iocsvwall) = iofilssw
-        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (newunit=iofilssd, file=ssdiag,form='formatted')
-        open (newunit=iofilssmc, file=ssmontecarlo,form='formatted')
+        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (newunit=iofilssdiag, file=ssdiag,form='formatted')
+        open (newunit=iofilcalc, file=sscalculation,form='formatted')
     end if
 
     return
@@ -1495,10 +1500,10 @@ module output_routines
     !     iofilsss      spreadsheet output (species molar %, etc.)
     !     iofilssm      spreadsheet otuput (species mass)
     !     iofilssw      spreadsheet output (walls and targets)
-    !     iofilssd      spreadsheet output (various diagnostics for verification)
+    !     iofilssdiag      spreadsheet output (various diagnostics for verification)
     !     ioresid       diagnostic file of solution vector
     !     ioslab        diagnostic file of flow slabs
-    !     iofilssmc     spredsheet output (for monte carlo analysis)
+    !     iofilcalc     spredsheet output (for monte carlo analysis)
     
     ! other units may be opened with newunit keyword in open statement
     
@@ -1554,13 +1559,13 @@ module output_routines
         if (openunit) then
             close(iofilssw)
         end if
-        inquire(iofilssd, opened=openunit)
+        inquire(iofilssdiag, opened=openunit)
         if (openunit) then
-            close(iofilssd)
+            close(iofilssdiag)
         end if
-        inquire(iofilssmc, opened=openunit)
+        inquire(iofilcalc, opened=openunit)
         if (openunit) then
-            close(iofilssmc)
+            close(iofilcalc)
         end if
     end if 
     

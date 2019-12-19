@@ -13,6 +13,7 @@ module hflow_routines
     use diag_data, only: dbtime, prnslab
     use option_data, only: fhflow, fentrain, option, on
     use room_data, only: nrm1, ns, roominfo
+    use spreadsheet_output_data, only: outarray
     use solver_data, only: i_wallmap, i_speciesmap
     use vent_data, only: n_hvents, hventinfo, n_leaks, leakinfo, nvelev, dirs12, dpv1m2, yvelev, vss, vsa, vas, vaa, vsas, vasa
 
@@ -47,8 +48,6 @@ module hflow_routines
     real(eb) :: fraction, height, width
     integer :: islab, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
-    integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
-    real(eb) :: outarray(maxhead)
     integer :: position
     character(64) :: rampid
 
@@ -189,7 +188,6 @@ module hflow_routines
     real(eb) :: height, width
     integer :: islab, i, iroom1, iroom2, nslab
     real(eb) :: yvbot, yvtop, avent
-    integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
     integer :: position
 
     type(vent_type), pointer :: ventptr

@@ -437,8 +437,8 @@
     real(eb), dimension(2) :: leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     logical :: hall, shaft
-    character(64) :: id, type, ceiling_matl_id, floor_matl_id, wall_matl_id
-    namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, type, &
+    character(64) :: id, group, ceiling_matl_id, floor_matl_id, wall_matl_id
+    namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, group, &
         ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area
 
     ios = 1
@@ -455,6 +455,7 @@
         end if
         read(lu,COMP,iostat=ios)
         if (ios>0) then
+            write(*, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , ncomp
             write(iofill, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , ncomp
             call cfastexit('read_comp',1)
         end if
@@ -500,13 +501,13 @@
 
             roomptr%compartment    = ii
             roomptr%name    = id
-            roomptr%type    = type
+            roomptr%group   = group
             roomptr%cwidth  = width
             roomptr%cdepth  = depth
             roomptr%cheight = height
-            roomptr%x0 = origin(1)
-            roomptr%y0 = origin(2)
-            roomptr%z0 = origin(3)
+            roomptr%x0      = origin(1)
+            roomptr%y0      = origin(2)
+            roomptr%z0      = origin(3)
 
             ! ceiling
             tcname = ceiling_matl_id
@@ -557,7 +558,7 @@
     cross_sect_areas        = -1001._eb
     cross_sect_heights      = -1001._eb
     id                      = 'NULL'
-    type                    = 'NULL'
+    group                   = 'NULL'
     depth                   = 0.0_eb
     floor_matl_id           = 'OFF'
     height                  = 0.0_eb
@@ -2890,7 +2891,7 @@ continue
 
     end if mont_flag
 
-5403 format ('***Error: Bad &CALC input. Invalid CALC specification in Monte Carlo input ',i0)
+5403 format ('***Error: Bad &CALC input. Invalid &CALC specification in post-run calculation input ',i0)
 
     contains
 

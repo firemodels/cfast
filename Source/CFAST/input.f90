@@ -20,7 +20,7 @@
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
-        smvcsv, smvsinfo, ssconnections, ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, ssmontecarlo, &
+        smvcsv, smvsinfo, ssflow, sscompartment, ssdevice, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, sscalculation, &
         kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
@@ -496,7 +496,8 @@
     smvdata = datapath(1:lp) // project(1:ld) // '.plt'
     smvcsv = datapath(1:lp) // project(1:ld) // '_zone.csv'
     smvsinfo = datapath(1:lp) // project(1:ld) // '.sinfo'
-    ssconnections = datapath(1:lp) // project(1:ld) // '_c.csv'
+    sscompartment = datapath(1:lp) // project(1:ld) // '_compartments.csv'
+    ssdevice = datapath(1:lp) // project(1:ld) // '_devices.csv'
     ssflow = datapath(1:lp) // project(1:ld) // '_f.csv'
     ssnormal = datapath(1:lp) // project(1:ld) // '_n.csv'
     ssspecies = datapath(1:lp) // project(1:ld) // '_s.csv'
@@ -512,7 +513,7 @@
     statusfile = datapath(1:lp) // project(1:ld) // '.status'
     slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
     kernelisrunning = datapath(1:lp) // project(1:ld) // '.kernelisrunning'
-    ssmontecarlo = datapath(1:lp) // project(1:ld) // '_c.csv'
+    sscalculation = datapath(1:lp) // project(1:ld) // '_c.csv'
 
     lp = len_trim (exepath)
     solverini = datapath(1:lp) // 'solver.ini'
@@ -564,7 +565,8 @@
     call delete_output_files (smvcsv)
     call delete_output_files (smvsinfo)
     call delete_output_files (ssflow)
-    call delete_output_files (ssconnections)
+    call delete_output_files (sscompartment)
+    call delete_output_files (ssdevice)
     call delete_output_files (ssnormal)
     call delete_output_files (ssspecies)
     call delete_output_files (ssspeciesmass)

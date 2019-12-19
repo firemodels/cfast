@@ -11,7 +11,7 @@ module spreadsheet_header_routines
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: nr, nrm1, roominfo, room_type
-    use setup_data, only: validation_flag, iofilsmvzone, iofilsmv, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd
+    use setup_data, only: validation_flag, iofilsmvzone, iofilsmv, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssdiag
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
 
@@ -1062,10 +1062,10 @@ module spreadsheet_header_routines
     end do
 
     ! write out header
-    write (iofilssd,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
-    write (iofilssd,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
-    write (iofilssd,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
-    write (iofilssd,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
+    write (iofilssdiag,"(16384a)") (trim(headertext(1,i)) // ',',i=1,position-1),trim(headertext(1,position))
+    write (iofilssdiag,"(16384a)") (trim(headertext(2,i)) // ',',i=1,position-1),trim(headertext(2,position))
+    write (iofilssdiag,"(16384a)") (trim(headertext(3,i)) // ',',i=1,position-1),trim(headertext(3,position))
+    write (iofilssdiag,"(16384a)") (trim(headertext(4,i)) // ',',i=1,position-1),trim(headertext(4,position))
 
     end subroutine ssheaders_diagnosis
 

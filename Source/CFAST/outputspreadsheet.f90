@@ -6,18 +6,20 @@ module spreadsheet_routines
     use target_routines, only: get_target_temperatures
     use opening_fractions, only : get_vent_opening
     use spreadsheet_header_routines
-    use utility_routines, only: ssaddtolist, readcsvformat
+    use utility_routines, only: ssaddtolist, readcsvformat, tointstring
     
-    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, calc_type
+    use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, calc_type, ssout_type
 
     use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
-        ns, soot, soot_flaming, soot_smolder, smoked, mx_calc
+        ns, soot, soot_flaming, soot_smolder, smoked, mx_calc, mxss, &
+        n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo
-    use setup_data, only: validation_flag, iofilsmvzone, iofilssn, iofilssf, iofilssm, iofilsss, iofilssw, iofilssd, &
-        iofilssmc, iofill, ss_out_interval, project, extension
+    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssn, iofilssf, iofilssm, iofilsss, &
+        iofilssw, iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
+    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, outarray
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use calc_data, only: n_mcarlo, calcinfo, csvnames, num_csvfiles, iocsv
@@ -39,6 +41,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
+    call output_spreadsheet_compartments (time)
     call output_spreadsheet_normal (time)
     call output_spreadsheet_species (time)
     call output_spreadsheet_species_mass (time)
@@ -50,6 +53,568 @@ module spreadsheet_routines
 
     end subroutine output_spreadsheet
 
+! --------------------------- output_spreadsheet_compartments ------------------------------------
+
+    subroutine output_spreadsheet_compartments (time)
+    
+    ! writes compartment-related results to the {project}_compartments.csv file
+    
+    real(eb), intent(in) :: time
+    
+    logical :: firstc = .true.
+    integer :: position, i
+    character(35) :: cRoom, cFire, species_units, smoke_units
+    type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
+    type(ssout_type), pointer :: ssptr
+    
+    save firstc
+    
+    !initialize header data for spreadsheet
+    if (firstc) then
+        n_sscomp = 0
+        call ssaddtoheader (sscompinfo, n_sscomp, 'Time', 'Simulation Time', 'Time', 's')
+            
+        ! Compartment results
+        do i = 1, nrm1
+            roomptr => roominfo(i)
+            call toIntString(i,cRoom)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULT_'//trim(cRoom), 'Upper Layer Temperature', roomptr%name, 'C')
+            if (.not. roomptr%shaft) then
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLT_'//trim(cRoom), 'Lower Layer Temperature', roomptr%name, 'C')
+                call ssaddtoheader (sscompinfo, n_sscomp, 'HGT_'//trim(cRoom), 'Layer Height', roomptr%name, 'm')
+            end if
+            call ssaddtoheader (sscompinfo, n_sscomp, 'VOL_'//trim(cRoom), 'Upper Layer Volume', roomptr%name, 'm^3')
+            call ssaddtoheader (sscompinfo, n_sscomp, 'PRS_'//trim(cRoom), 'Pressure', roomptr%name, 'Pa')
+            if (validation_flag) then
+                species_units = 'mol_frac'
+                smoke_units = 'mg/m^3'
+            else
+                species_units = 'mol %'
+                smoke_units = '1/m'
+            end if 
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULN2_'//trim(cRoom), 'N2 Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULO2_'//trim(cRoom), 'O2 Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULCO2_'//trim(cRoom), 'CO2 Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULCO_'//trim(cRoom), 'CO Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULHCN_'//trim(cRoom), 'HCN Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULHCL_'//trim(cRoom), 'HCL Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer', roomptr%name, &
+                species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULH2O_'//trim(cRoom), 'H2O Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULOD_'//trim(cRoom), 'Optical Density Upper Layer', roomptr%name, &
+                smoke_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULODF_'//trim(cRoom), 'OD from Flaming Upper Layer', &
+                roomptr%name, smoke_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULODS_'//trim(cRoom), 'OD from Smoldering Upper Layer', &
+                roomptr%name,smoke_units)
+            if (.not. roomptr%shaft) then
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLN2_'//trim(cRoom), 'N2 Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLO2_'//trim(cRoom), 'O2 Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLCO2_'//trim(cRoom), 'CO2 Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLCO_'//trim(cRoom), 'CO Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLHCN_'//trim(cRoom), 'HCN Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLHCL_'//trim(cRoom), 'HCL Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer', roomptr%name, &
+                    species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLH2O_'//trim(cRoom), 'H2O Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLOD_'//trim(cRoom), 'Optical Density Lower Layer', roomptr%name, &
+                    smoke_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLODF_'//trim(cRoom), 'OD from Flaming Lower Layer', roomptr%name, &
+                    smoke_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLODS_'//trim(cRoom), 'OD from Smoldering Lower Layer', roomptr%name, &
+                    smoke_units)
+            end if
+        end do
+        
+        ! Fire results
+        do i = 1, n_fires
+            fireptr => fireinfo(i)
+            call toIntString(i,cFire)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'IGN_'//trim(cFire), 'Ignition', fireptr%name, ' ')
+            call ssaddtoheader (sscompinfo, n_sscomp, 'PLUM_'//trim(cFire), 'Plume Entrainment Rate', fireptr%name, 'kg/s')
+            call ssaddtoheader (sscompinfo, n_sscomp, 'PYROL_'//trim(cFire), 'Pyrolysis Rate', fireptr%name, 'kg/s')
+            call ssaddtoheader (sscompinfo, n_sscomp, 'HRR_E'//trim(cFire), 'HRR Expected', fireptr%name, 'W')
+            call ssaddtoheader (sscompinfo, n_sscomp, 'HRR_'//trim(cFire), 'HRR Actual', fireptr%name, 'W')
+            call ssaddtoheader (sscompinfo, n_sscomp, 'HRRC_'//trim(cFire), 'HRR Convective Actual', fireptr%name, 'W')
+            roomptr => roominfo(fireptr%room)
+            if (.not. roomptr%shaft) then
+                call ssaddtoheader (sscompinfo, n_sscomp, 'HRRL_'//trim(cFire), 'HRR Lower Actual', fireptr%name, 'W')
+                call ssaddtoheader (sscompinfo, n_sscomp, 'HRRU_'//trim(cFire), 'HRR Upper Actual', fireptr%name, 'W')
+            end if
+            call ssaddtoheader (sscompinfo, n_sscomp, 'FLHGT_'//trim(cFire), 'Flame Height', fireptr%name, 'm')
+        end do
+        
+        ! Door jet fire results
+        do i = 1, nr
+            if (i==nr) then
+                call ssaddtoheader (sscompinfo, n_sscomp, 'DJET_'//'Outside', 'HRR Door Jet Fires', 'Outside', 'W')
+            else
+                call toIntString(i,cRoom)
+                roomptr => roominfo(i)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'DJET_'//trim(cRoom), 'HRR Door Jet Fires', roomptr%name, 'W')
+            end if
+        end do
+        
+        ! write out header
+        write (iofilssc,"(32767a)") (trim(sscompinfo(i)%short) // ',',i=1,n_sscomp-1),trim(sscompinfo(n_sscomp)%short)
+        write (iofilssc,"(32767a)") (trim(sscompinfo(i)%measurement) // ',',i=1,n_sscomp-1),trim(sscompinfo(n_sscomp)%measurement)
+        write (iofilssc,"(32767a)") (trim(sscompinfo(i)%device) // ',',i=1,n_sscomp-1),trim(sscompinfo(n_sscomp)%device)
+        write (iofilssc,"(32767a)") (trim(sscompinfo(i)%units) // ',',i=1,n_sscomp-1),trim(sscompinfo(n_sscomp)%units)
+        firstc = .false.
+    end if
+
+    !write out spreadsheet values for the current time step
+    position = 0
+    outarray = 0._eb
+    do i = 1, n_sscomp
+        ssptr => sscompinfo(i)
+        call ssaddvaluetooutput (ssptr%measurement, ssptr%device, time, position, outarray)
+    end do
+    
+    call ssprintresults (iofilssc, position, outarray)
+    return
+    
+    end subroutine output_spreadsheet_compartments
+
+! --------------------------- output_spreadsheet_devices ------------------------------------
+
+    subroutine output_spreadsheet_devices (time)
+    
+    ! writes device-related results to the {project}_devices.csv file
+
+    real(eb), intent(in) :: time
+
+    logical :: firstc = .true.
+    integer :: position, i
+    character(35) :: cDet
+    type(ssout_type), pointer :: ssptr
+    type(target_type), pointer :: targptr
+
+    save firstc
+
+    !initialize header data for spreadsheet
+    if (firstc) then
+        n_ssdevice = 0
+        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'Time', 'Simulation Time', 'Time', 's')
+
+        ! Targets
+        do i = 1, n_targets
+            call toIntString(i,cDet)
+            targptr => targetinfo(i)
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGGAST_'//trim(cDet), 'Target Surrounding Gas Temperature', targptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGSURT_'//trim(cDet), 'Target Surface Temperature', targptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGCENT_'//trim(cDet), 'Target Center Temperature', targptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXI_'//trim(cDet), 'Target Incident Flux', targptr%name, 'kW/m^2')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXT_'//trim(cDet), 'Target Net Flux', targptr%name, 'kW/m^2')
+            if (validation_flag) then
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXC_'//trim(cDet), 'Target Convective Flux', targptr%name, 'kW/m^2')
+            end if
+        end do
+
+        ! write out header
+        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%short) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%short)
+        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%measurement) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%measurement)
+        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%device) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%device)
+        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%units) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%units)
+
+        firstc = .false.
+    end if
+
+    !write out spreadsheet values for the current time step
+    position = 0
+    outarray = 0._eb
+    do i = 1, n_ssdevice
+        ssptr => ssdeviceinfo(i)
+        call ssaddvaluetooutput (ssptr%measurement, ssptr%device, time, position, outarray)
+    end do
+
+    call ssprintresults (iofilssc, position, outarray)
+    return
+
+    end subroutine output_spreadsheet_devices
+
+! --------------------------- ssaddtoheader ------------------------------------
+
+    subroutine ssaddtoheader (ssheaderinfo, i, short, long, location, units)
+    
+    integer, intent(inout) :: i
+    type(ssout_type), intent(inout), target :: ssheaderinfo(*)
+    type(ssout_type), pointer :: ssptr
+    
+    character(*), intent(in) :: short, long, location, units
+    
+    if (i<mxss) then
+        i = i + 1
+        ssptr => ssheaderinfo(i)
+        ssptr%short = short
+        ssptr%measurement = long
+        ssptr%device = location
+        ssptr%units = units
+    end if
+    
+    return
+    
+    end subroutine ssaddtoheader
+
+! --------------------------- ssaddvaluetooutput ------------------------------------
+
+    subroutine ssaddvaluetooutput (measurement, device, time, position, outarray)
+    
+    ! finds values for output in spreadsheet. Used by all main spreadsheet output routines
+    
+    character(*), intent(in) :: measurement, device
+    integer, intent(inout) :: position
+    real(eb), intent(in) :: time
+    real(eb), intent(out) :: outarray(*)
+    
+    integer i
+    real(eb) :: fire_ignition, f_height, ssvalue
+    type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
+
+    select case (measurement)
+    case ('Simulation Time')
+        call ssaddtolist (position, time, outarray)
+
+        ! compartment related outputs
+    case ('Upper Layer Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%temp(u), outarray)
+            end if
+        end do
+    case ('Lower Layer Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%temp(l), outarray)
+            end if
+        end do
+    case ('Layer Height')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%depth(l), outarray)
+            end if
+        end do
+    case ('Upper Layer Volume')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%volume(u), outarray)
+            end if
+        end do
+    case ('Pressure')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
+            end if
+        end do
+    case ('N2 Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,n2)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('N2 Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,n2)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('O2 Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,o2)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('O2 Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,o2)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('CO2 Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,co2)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('CO2 Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,co2)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('CO Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,co)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('CO Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,co)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('HCN Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,hcn)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('HCN Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,hcn)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('HCL Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,hcl)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('HCL Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,hcl)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('Unburned Fuel Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,fuel)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('Unburned Fuel Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,fuel)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('H2O Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,h2o)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('H2O Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,h2o)
+                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('Optical Density Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,soot)
+                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('Optical Density Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,soot)
+                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('OD from Flaming Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,soot_flaming)
+                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('OD from Flaming Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,soot_flaming)
+                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('OD from Smoldering Upper Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(u,soot_smolder)
+                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('OD from Smoldering Lower Layer')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(l,soot_smolder)
+                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+        
+        !do i = 1, nrm1
+        !roomptr => roominfo(i)
+        !do layer = u, l
+        !    do lsp = 1, ns
+        !        if (layer==u.or..not.roomptr%shaft) then
+        !            if (tooutput(lsp)) then
+        !                ssvalue = roomptr%species_output(layer,lsp)
+        !                if (validation_flag.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+        !                if (validation_flag.and.lsp==soot) ssvalue = ssvalue*264.6903_eb ! converts od to mg/m^3
+        !                if (validation_flag.and.lsp==soot_flaming) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3
+        !                if (validation_flag.and.lsp==soot_smolder) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3
+        !                call ssaddtolist (position,ssvalue,outarray)
+        ! ...
+
+        ! fire-related outputs
+    case ('Ignition')
+        do i = 1, n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                if (fireptr%ignited) then
+                    fire_ignition = 1
+                else
+                    fire_ignition = 0
+                end if
+                call ssaddtolist (position,fire_ignition,outarray)
+            end if
+        end do
+    case ('Plume Entrainment Rate')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%mdot_entrained,outarray)
+            end if
+        end do
+    case ('Pyrolysis Rate')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%mdot_pyrolysis,outarray)
+            end if
+        end do
+    case ('HRR Expected')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%qdot_theoretical,outarray)
+            end if
+        end do
+    case ('HRR Actual')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%qdot_actual,outarray)
+            end if
+        end do
+    case ('HRR Convective Actual')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%qdot_convective,outarray)
+            end if
+        end do
+    case ('HRR Upper Actual')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%qdot_layers(u),outarray)
+            end if
+        end do
+    case ('HRR Lower Actual')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
+            end if
+        end do
+    case ('Flame Height')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
+                call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
+            end if
+        end do
+    case ('HRR Door Jet Fires')
+            do i = 1, nr
+                roomptr => roominfo(i)
+                if (i<nr.and.roomptr%name==device) then
+                    call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
+                else if (i==nr.and.device=='Outside') then
+                    call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
+                end if
+            end do
+    case default
+        write(*, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
+        write(iofill, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
+        call cfastexit('outputspreasheet',1)
+        stop
+    end select
+
+    end subroutine ssaddvaluetooutput
+
 ! --------------------------- output_spreadsheet_normal ------------------------------------
 
     subroutine output_spreadsheet_normal (time)
@@ -58,8 +623,7 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    integer, parameter :: maxhead = 1+8*mxrooms+5+10*mxfires
-    real(eb) :: outarray(maxhead), f_height, fire_ignition
+    real(eb) :: f_height, fire_ignition
     logical :: firstc = .true.
     integer :: position, i
     type(room_type), pointer :: roomptr
@@ -150,11 +714,9 @@ module spreadsheet_routines
 
     ! output the flow data to the flow spreadsheet {project}_f.csv
 
-    integer, parameter :: maxoutput = 1 + 11*mxhvents + 11*mxvvents + 11*mxmvents + mxleaks
-
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxoutput),flow(8), sumin, sumout, netflow, trace, tracefiltered
+    real(eb) :: flow(8), sumin, sumout, netflow, trace, tracefiltered
     integer :: position, i, ifrom, ito, j
     type(vent_type), pointer :: ventptr
     logical :: firstc = .true.
@@ -406,10 +968,9 @@ module spreadsheet_routines
 
     ! write out the species to the spreadsheet file
 
-    integer, parameter :: maxhead = 1+2*ns*mxrooms
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxhead), ssvalue
+    real(eb) :: ssvalue
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
@@ -420,7 +981,7 @@ module spreadsheet_routines
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 
-    save outarray, firstc
+    save firstc
 
     ! If there are no species, then don't do the output
     if (ns==0) return
@@ -448,15 +1009,17 @@ module spreadsheet_routines
                         if (validation_flag.and.lsp==soot_smolder) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3
                         call ssaddtolist (position,ssvalue,outarray)
                         ! we can only output to the maximum array size; this is not deemed to be a fatal error!
-                        if (position>=maxhead) go to 90
+                        if (position>=mxss) then
+                            call SSprintresults (iofilsss ,position, outarray)
+                            return
+                        end if
                     end if
                 end if
             end do
         end do
     end do
 
-90  call SSprintresults (iofilsss ,position, outarray)
-
+    call SSprintresults (iofilsss ,position, outarray)
     return
 
     end subroutine output_spreadsheet_species
@@ -467,10 +1030,9 @@ module spreadsheet_routines
 
     ! write out the species mass to the spreadsheet file
 
-    integer, parameter :: maxhead = 1+2*ns*mxrooms
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxhead), ssvalue
+    real(eb) :: ssvalue
     integer :: position, i, lsp, layer
     logical, dimension(ns), parameter :: tooutput(ns) = &
         (/.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.true.,.false.,.true., &
@@ -478,7 +1040,7 @@ module spreadsheet_routines
     logical :: firstc = .true.
     type(room_type), pointer :: roomptr
 
-    save outarray, firstc
+    save firstc
 
     ! If there are no species, then don't do the output
     if (ns==0) return
@@ -503,7 +1065,10 @@ module spreadsheet_routines
                             ssvalue = roomptr%species_mass(layer,lsp)
                             call ssaddtolist (position,ssvalue,outarray)
                             ! we can only output to the maximum array size; this is not deemed to be a fatal error!
-                            if (position>=maxhead) go to 90
+                            if (position>=mxss) then
+                                call SSprintresults (iofilssm, position, outarray)
+                                return
+                            end if
                         end if
                     end if
                 end if
@@ -511,7 +1076,7 @@ module spreadsheet_routines
         end do
     end do
 
-90  call SSprintresults (iofilssm, position, outarray)
+    call SSprintresults (iofilssm, position, outarray)
 
     return
 
@@ -523,10 +1088,9 @@ module spreadsheet_routines
 
     ! writes to the {project}_zone.csv file, the smokeview information
 
-    integer, parameter :: maxhead = 1+7*mxrooms+5+7*mxfires+mxhvents*(4+10*mxfslab)+10*mxvvents+12*mxmvents
     real(eb), intent(in) :: time
 
-    real(eb) :: outarray(maxhead), f_height, avent, slabs, vflow
+    real(eb) :: f_height, avent, slabs, vflow
     logical :: firstc
     integer :: position
     integer :: i, j
@@ -655,8 +1219,6 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    integer, parameter :: maxhead = 1+10*mxrooms
-    real(eb) :: outarray(maxhead)
     logical :: firstc = .true.
     integer :: position, i, j
     type(room_type), pointer :: roomptr
@@ -680,7 +1242,7 @@ module spreadsheet_routines
         end do
     end do
 
-    call ssprintresults (iofilssd, position, outarray)
+    call ssprintresults (iofilssdiag, position, outarray)
     
     return
     end subroutine output_spreadsheet_diag
@@ -710,7 +1272,7 @@ module spreadsheet_routines
                 exit
             end if
         end do
-        call writecsvformat(iofilssmc, calcarray, calccarray, nr, nc, 1, 2, mxcol)
+        call writecsvformat(iofilcalc, calcarray, calccarray, nr, nc, 1, 2, mxcol)
     end if      
     
     return

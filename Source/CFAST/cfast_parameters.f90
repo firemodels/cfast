@@ -16,6 +16,7 @@
     integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation (should be odd number)
     integer, parameter :: mxslice = 5*mxrooms   ! maximum number of slices and isosurfaces in an input file
     integer, parameter :: mxitems = 25*mxrooms  ! maximum number of vents, targets, etc.
+    integer, parameter :: mxss = 32767          ! maximum number of spreadsheet columns for output
 
     ! fire related input parameters
     integer, parameter :: mxpts = 200               ! maximum number of data points in a input curve/ramp

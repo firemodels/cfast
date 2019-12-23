@@ -11,15 +11,15 @@ module spreadsheet_routines
     use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, calc_type, ssout_type
 
     use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
-        ns, soot, soot_flaming, soot_smolder, smoked, mx_calc, mxss, &
+        ns, soot, soot_flaming, soot_smolder, smoked, mx_calc, mxss, cjetvelocitymin, &
         n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo
-    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssn, iofilssf, iofilssm, iofilsss, &
-        iofilssw, iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
-    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, outarray
+    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssn, iofilssf, iofilsssspeciesmass, iofilsss, &
+        iofilsswt, iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
+    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, ssmassinfo, outarray
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use calc_data, only: n_mcarlo, calcinfo, csvnames, num_csvfiles, iocsv
@@ -42,6 +42,9 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     call output_spreadsheet_compartments (time)
+    call output_spreadsheet_devices (time)
+    call output_spreadsheet_walls (time)
+    
     call output_spreadsheet_normal (time)
     call output_spreadsheet_species (time)
     call output_spreadsheet_species_mass (time)
@@ -206,7 +209,7 @@ module spreadsheet_routines
             ! front surface
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGGAST_'//trim(cDet), 'Target Surrounding Gas Temperature', targptr%name, 'C')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGSURT_'//trim(cDet), 'Target Surface Temperature', targptr%name, 'C')
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGCENT_'//trim(cDet), 'Target Center Temperature', targptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGINT_'//trim(cDet), 'Target Internal Temperature', targptr%name, 'C')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXI_'//trim(cDet), 'Target Incident Flux', targptr%name, 'kW/m^2')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXT_'//trim(cDet), 'Target Net Flux', targptr%name, 'kW/m^2')
             if (validation_flag) then
@@ -276,10 +279,172 @@ module spreadsheet_routines
         call ssaddvaluetooutput (ssptr%measurement, ssptr%device, time, position, outarray)
     end do
 
-    call ssprintresults (iofilssc, position, outarray)
+    call ssprintresults (iofilssd, position, outarray)
     return
 
     end subroutine output_spreadsheet_devices
+
+! --------------------------- output_spreadsheet_walls ------------------------------------
+
+    subroutine output_spreadsheet_walls (time)
+    
+    ! writes wall surface-related results to the {project}_walls.csv file
+
+    real(eb), intent(in) :: time
+
+    logical :: firstc = .true.
+    integer :: position, i
+    character(35) :: cRoom
+    type(room_type), pointer :: roomptr
+    type(ssout_type), pointer :: ssptr
+
+    save firstc
+
+    ! initialize header data for spreadsheet
+    if (firstc) then
+        n_sswall = 0
+        call ssaddtoheader (sswallinfo, n_sswall, 'Time', 'Simulation Time', 'Time', 's')
+
+        ! compartment surface temperatures
+        do i = 1, nrm1
+            call toIntString(i,cRoom)
+            roomptr => roominfo(i)
+            call ssaddtoheader (sswallinfo, n_sswall, 'CEILT_'//trim(cRoom), 'Ceiling Temperature', roomptr%name, 'C')
+            call ssaddtoheader (sswallinfo, n_sswall, 'UWALLT_'//trim(cRoom), 'Upper Wall Temperature', roomptr%name, 'C')
+            call ssaddtoheader (sswallinfo, n_sswall, 'LWALLT_'//trim(cRoom), 'Lower Wall Temperature', roomptr%name, 'C')
+            call ssaddtoheader (sswallinfo, n_sswall, 'FLOORT_'//trim(cRoom), 'Floor Temperature', roomptr%name, 'C')
+        end do
+
+        ! write out header
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%short) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%short)
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%measurement) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%measurement)
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%device) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%device)
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%units) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%units)
+
+        firstc = .false.
+    end if
+
+    ! write out spreadsheet values for the current time step
+    position = 0
+    outarray = 0._eb
+    do i = 1, n_sswall
+        ssptr => sswallinfo(i)
+        call ssaddvaluetooutput (ssptr%measurement, ssptr%device, time, position, outarray)
+    end do
+
+    call ssprintresults (iofilssw, position, outarray)
+    return
+
+    end subroutine output_spreadsheet_walls
+
+! --------------------------- output_spreadsheet_masses ------------------------------------
+
+    subroutine output_spreadsheet_masses (time)
+    
+    ! writes layer mass-related results to the {project}_masses.csv file
+    
+    real(eb), intent(in) :: time
+    
+    logical :: firstc = .true.
+    integer :: position, i
+    character(35) :: cRoom, cFire
+    type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
+    type(ssout_type), pointer :: ssptr
+    
+    save firstc
+    
+    !initialize header data for spreadsheet
+    if (firstc) then
+        n_ssmass = 0
+        call ssaddtoheader (ssmassinfo, n_ssmass, 'Time', 'Simulation Time', 'Time', 's')
+            
+        ! layer mass results
+        do i = 1, nrm1
+            roomptr => roominfo(i)
+            call toIntString(i,cRoom)
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMN2_'//trim(cRoom), 'N2 Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMO2_'//trim(cRoom), 'O2 Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMCO2_'//trim(cRoom), 'CO2 Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMCO_'//trim(cRoom), 'CO Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCN_'//trim(cRoom), 'HCN Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCL_'//trim(cRoom), 'HCL Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMH2O_'//trim(cRoom), 'H2O Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Optical Density Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODF_'//trim(cRoom), 'OD from Flaming Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODS_'//trim(cRoom), 'OD from Smoldering Upper Layer Mass', roomptr%name,'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTS_'//trim(cRoom), 'Trace Species Upper Layer Mass', roomptr%name,'kg')
+            if (validation_flag) then
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMF_'//trim(cRoom), 'Fuel Upper Layer Mass', roomptr%name, 'mole')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPQ_'//trim(cRoom), 'Potential Total Heat Upper Layer', roomptr%name, 'J')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMN2_'//trim(cRoom), 'Potential N2 Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMO2_'//trim(cRoom), 'Potential O2 Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO2_'//trim(cRoom), 'Potential CO2 Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO_'//trim(cRoom), 'Potential CO Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCN_'//trim(cRoom), 'Potential HCN Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCL_'//trim(cRoom), 'Potential HCL Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMPH2O_'//trim(cRoom), 'Potential H2O Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMSoot_'//trim(cRoom), 'Potential Soot Upper Layer Mass', roomptr%name, 'kg')
+            end if
+            if (.not. roomptr%shaft) then
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMN2_'//trim(cRoom), 'N2 Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMO2_'//trim(cRoom), 'O2 Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMCO2_'//trim(cRoom), 'CO2 Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMCO_'//trim(cRoom), 'CO Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCN_'//trim(cRoom), 'HCN Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCL_'//trim(cRoom), 'HCL Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMH2O_'//trim(cRoom), 'H2O Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMOD_'//trim(cRoom), 'Optical Density Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODF_'//trim(cRoom), 'OD from Flaming Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODS_'//trim(cRoom), 'OD from Smoldering Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTS_'//trim(cRoom), 'Trace Species Lower Layer Mass', roomptr%name,'kg')
+                if (validation_flag) then
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMF_'//trim(cRoom), 'Fuel Lower Layer Mass', roomptr%name, 'mole')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPQ_'//trim(cRoom), 'Potential Total Heat Lower Layer', roomptr%name, 'J')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMN2_'//trim(cRoom), 'Potential N2 Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMO2_'//trim(cRoom), 'Potential O2 Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO2_'//trim(cRoom), 'Potential CO2 Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO_'//trim(cRoom), 'Potential CO Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCN_'//trim(cRoom), 'Potential HCN Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCL_'//trim(cRoom), 'Potential HCL Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMPH2O_'//trim(cRoom), 'Potential H2O Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMSoot_'//trim(cRoom), 'Potential Soot Lower Layer Mass', roomptr%name, 'kg')
+                end if
+            end if
+        end do
+        
+        ! total pyrolysate and trace species results
+        do i = 1, n_fires
+            fireptr => fireinfo(i)
+            call toIntString(i,cFire)
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'PYTOL_T_'//trim(cFire), 'Total Pyrolysate Released', fireptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'TRACE_T_'//trim(cFire), 'Total Trace Species Released', fireptr%name, 'kg')
+        end do
+            
+        
+        ! write out header
+        write (iofilssm,"(32767a)") (trim(ssmassinfo(i)%short) // ',',i=1,n_ssmass-1),trim(ssmassinfo(n_ssmass)%short)
+        write (iofilssm,"(32767a)") (trim(ssmassinfo(i)%measurement) // ',',i=1,n_ssmass-1),trim(ssmassinfo(n_ssmass)%measurement)
+        write (iofilssm,"(32767a)") (trim(ssmassinfo(i)%device) // ',',i=1,n_ssmass-1),trim(ssmassinfo(n_ssmass)%device)
+        write (iofilssm,"(32767a)") (trim(ssmassinfo(i)%units) // ',',i=1,n_ssmass-1),trim(ssmassinfo(n_ssmass)%units)
+        
+        firstc = .false.
+    end if
+
+    !write out spreadsheet values for the current time step
+    position = 0
+    outarray = 0._eb
+    do i = 1, n_ssmass
+        ssptr => ssmassinfo(i)
+        call ssaddvaluetooutput (ssptr%measurement, ssptr%device, time, position, outarray)
+    end do
+    
+    call ssprintresults (iofilssm, position, outarray)
+    return
+    
+    end subroutine output_spreadsheet_masses
 
 ! --------------------------- ssaddtoheader ------------------------------------
 
@@ -315,28 +480,25 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
     real(eb), intent(out) :: outarray(*)
     
-    integer i
-    real(eb) :: fire_ignition, f_height, ssvalue
+    integer i, layer
+    real(eb) :: fire_ignition, f_height, ssvalue, tjet
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
+    type(target_type), pointer :: targptr
+    type(detector_type), pointer :: dtectptr
 
     select case (measurement)
     case ('Simulation Time')
         call ssaddtolist (position, time, outarray)
 
         ! compartment related outputs
-    case ('Upper Layer Temperature')
+    case ('Upper Layer Temperature', 'Lower Layer Temperature')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                call ssaddtolist (position, roomptr%temp(u), outarray)
-            end if
-        end do
-    case ('Lower Layer Temperature')
-        do i = 1, nr
-            roomptr => roominfo(i)
-            if (roomptr%name==device) then
-                call ssaddtolist (position, roomptr%temp(l), outarray)
+                call ssaddtolist (position, roomptr%temp(layer), outarray)
             end if
         end do
     case ('Layer Height')
@@ -360,111 +522,93 @@ module spreadsheet_routines
                 call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
             end if
         end do
-    case ('N2 Upper Layer')
+    case ('N2 Upper Layer', 'N2 Upper Layer Mass', 'N2 Lower Layer', 'N2 Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,n2)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,n2)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,n2)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('N2 Lower Layer')
+    case ('O2 Upper Layer', 'O2 Upper Layer Mass', 'O2 Lower Layer', 'O2 Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,n2)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,o2)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,o2)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('O2 Upper Layer')
+    case ('CO2 Upper Layer', 'CO2 Upper Layer Mass', 'CO2 Lower Layer', 'CO2 Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,o2)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,co2)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,co2)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('O2 Lower Layer')
+    case ('CO Upper Layer', 'CO Upper Layer Mass', 'CO Lower Layer', 'CO Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,o2)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,co)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,co)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('CO2 Upper Layer')
+    case ('HCN Upper Layer', 'HCN Upper Layer Mass', 'HCN Lower Layer', 'HCN Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,co2)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,hcn)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,hcn)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('CO2 Lower Layer')
+    case ('HCl Upper Layer', 'HCl Upper Layer Mass', 'HCl Lower Layer', 'HCl Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,co2)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('CO Upper Layer')
-        do i = 1, nr
-            roomptr => roominfo(i)
-            if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,co)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('CO Lower Layer')
-        do i = 1, nr
-            roomptr => roominfo(i)
-            if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,co)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('HCN Upper Layer')
-        do i = 1, nr
-            roomptr => roominfo(i)
-            if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,hcn)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('HCN Lower Layer')
-        do i = 1, nr
-            roomptr => roominfo(i)
-            if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,hcn)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('HCL Upper Layer')
-        do i = 1, nr
-            roomptr => roominfo(i)
-            if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,hcl)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-                call ssaddtolist (position,ssvalue ,outarray)
-            end if
-        end do
-    case ('HCL Lower Layer')
-        do i = 1, nr
-            roomptr => roominfo(i)
-            if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,hcl)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,hcl)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,hcl)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
@@ -558,20 +702,34 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-        
-        !do i = 1, nrm1
-        !roomptr => roominfo(i)
-        !do layer = u, l
-        !    do lsp = 1, ns
-        !        if (layer==u.or..not.roomptr%shaft) then
-        !            if (tooutput(lsp)) then
-        !                ssvalue = roomptr%species_output(layer,lsp)
-        !                if (validation_flag.and.molfrac(lsp)) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
-        !                if (validation_flag.and.lsp==soot) ssvalue = ssvalue*264.6903_eb ! converts od to mg/m^3
-        !                if (validation_flag.and.lsp==soot_flaming) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3
-        !                if (validation_flag.and.lsp==soot_smolder) ssvalue =ssvalue*264.6903_eb !converts od to mg/m^3
-        !                call ssaddtolist (position,ssvalue,outarray)
-        ! ...
+    case ('Ceiling Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(1))-kelvin_c_offset, outarray)
+            end if
+        end do
+    case ('Upper Wall Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(2))-kelvin_c_offset, outarray)
+            end if
+        end do
+    case ('Lower Wall Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(3))-kelvin_c_offset, outarray)
+            end if
+        end do
+    case ('Floor Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(4))-kelvin_c_offset, outarray)
+            end if
+        end do
 
         ! fire-related outputs
     case ('Ignition')
@@ -644,14 +802,234 @@ module spreadsheet_routines
             end if
         end do
     case ('HRR Door Jet Fires')
-            do i = 1, nr
-                roomptr => roominfo(i)
-                if (i<nr.and.roomptr%name==device) then
-                    call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
-                else if (i==nr.and.device=='Outside') then
-                    call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (i<nr.and.roomptr%name==device) then
+                call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
+            else if (i==nr.and.device=='Outside') then
+                call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
+            end if
+        end do
+    
+        ! device-related outputs
+    case ('Target Surrounding Gas Temperature')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%tgas-kelvin_c_offset,outarray)
+            end if
+        end do
+    case ('Target Surface Temperature')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%tfront-kelvin_c_offset,outarray)
+            end if
+        end do
+    case ('Target Internal Temperature')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%tinternal-kelvin_c_offset,outarray)
+            end if
+        end do
+    case ('Target Incident Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%flux_incident_front/1000._eb,outarray)
+            end if
+        end do
+    case ('Target Net Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%flux_net(1)/1000._eb,outarray)
+            end if
+        end do
+    case ('Target Gas FED')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%fed_gas,outarray)
+            end if
+        end do
+    case ('Target Gas FED Increment')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%dfed_gas,outarray)
+            end if
+        end do
+    case ('Target Heat FED')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%fed_heat,outarray)
+            end if
+        end do
+    case ('Target Heat FED Increment')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%dfed_heat,outarray)
+            end if
+        end do
+    case ('Target Obscuration')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                call ssaddtolist (position,targptr%fed_obs,outarray)
+            end if
+        end do
+    case ('Target Radiative Flux','Back Target Radiative Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_radiation(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_radiation(2)/1000._eb,outarray)
                 end if
-            end do
+            end if
+        end do
+    case ('Target Convective Flux','Back Target Convective Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_convection(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_convection(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Fire Radiative Flux','Back Target Fire Radiative Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_fire(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_fire(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Surface Radiative Flux','Back Surface Fire Radiative Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_surface(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_surface(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Gas Radiative Flux','Back Target Gas Radiative Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_gas(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_gas(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Radiative Loss Flux','Back Target Radiative Loss Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_target(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_target(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Radiative Gauge Flux','Back Target Radiative Guage Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_radiation_gauge(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_radiation_gauge(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Convective Gauge Flux','Back Target Convective Guage Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_convection_gauge(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_convection_gauge(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Radiative Loss Gauge Flux','Back Target Radiative Loss Guage Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_target_gauge(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_target_gauge(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+        
+        ! detectors
+    case ('Sensor Obscuration')
+        do i = 1, n_detectors
+            dtectptr =>detectorinfo(i)
+            if (dtectptr%name==device) then
+                call ssaddtolist (position, dtectptr%value,outarray)
+            end if
+        end do
+    case ('Sensor Temperature')
+        do i = 1, n_detectors
+            dtectptr =>detectorinfo(i)
+            if (dtectptr%name==device) then
+                call ssaddtolist (position, dtectptr%value-kelvin_c_offset,outarray)
+            end if
+        end do
+    case ('Sensor Activation')
+        do i = 1, n_detectors
+            dtectptr =>detectorinfo(i)
+            if (dtectptr%name==device) then
+                if (dtectptr%activated) then
+                    call ssaddtolist (position, 1._eb,outarray)
+                else
+                    call ssaddtolist (position, 0._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Sensor Surrounding Gas Temperature')
+        do i = 1, n_detectors
+            dtectptr =>detectorinfo(i)
+            if (dtectptr%name==device) then
+                roomptr => roominfo(dtectptr%room)
+                if (dtectptr%center(3)>roomptr%depth(l)) then
+                    tjet = max(dtectptr%temp_gas,roomptr%temp(u))
+                else
+                    tjet = max(dtectptr%temp_gas,roomptr%temp(l))
+                end if
+                call ssaddtolist (position, tjet-kelvin_c_offset,outarray)
+            end if
+        end do
+    case ('Sensor Surrounding Gas Velocity')
+        do i = 1, n_detectors
+            dtectptr =>detectorinfo(i)
+            if (dtectptr%name==device) then
+                call ssaddtolist (position,max(dtectptr%velocity,cjetvelocitymin),outarray)
+            end if
+        end do
+        
+        ! output not found. this is an internal error and cause for alarm
     case default
         write(*, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
         write(iofill, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
@@ -894,7 +1272,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     real(eb) :: outarray(maxoutput), zdetect, tjet, vel, value, xact
-    real(eb) :: tttemp, tctemp, tlay, tgtemp, cjetmin 
+    real(eb) :: tttemp, tctemp, tlay, tgtemp 
     integer :: position, i, iw, itarg, iroom
 
     type(target_type), pointer :: targptr
@@ -977,7 +1355,6 @@ module spreadsheet_routines
     end do
 
     ! detectors (including sprinklers)
-    cjetmin = 0.10_eb
     do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         zdetect = dtectptr%center(3)
@@ -994,7 +1371,7 @@ module spreadsheet_routines
             xact = 0.0_eb
         end if
         tjet = max(dtectptr%temp_gas,tlay)
-        vel = max(dtectptr%velocity,cjetmin)
+        vel = max(dtectptr%velocity,cjetvelocitymin)
         value =  dtectptr%value
         if (dtectptr%dtype/=smoked) value = value - kelvin_c_offset
         call ssaddtolist(position, value, outarray)
@@ -1003,7 +1380,7 @@ module spreadsheet_routines
         call ssaddtolist(position, vel, outarray)
     end do
 
-    call ssprintresults (iofilssw, position, outarray)
+    call ssprintresults (iofilsswt, position, outarray)
     return
 
     end subroutine output_spreadsheet_target
@@ -1112,7 +1489,7 @@ module spreadsheet_routines
                             call ssaddtolist (position,ssvalue,outarray)
                             ! we can only output to the maximum array size; this is not deemed to be a fatal error!
                             if (position>=mxss) then
-                                call SSprintresults (iofilssm, position, outarray)
+                                call SSprintresults (iofilsssspeciesmass, position, outarray)
                                 return
                             end if
                         end if
@@ -1122,7 +1499,7 @@ module spreadsheet_routines
         end do
     end do
 
-    call SSprintresults (iofilssm, position, outarray)
+    call SSprintresults (iofilsssspeciesmass, position, outarray)
 
     return
 

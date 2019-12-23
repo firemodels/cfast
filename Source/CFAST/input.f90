@@ -20,7 +20,8 @@
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
-        smvcsv, smvsinfo, ssflow, sscompartment, ssdevice, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, sscalculation, &
+        smvcsv, smvsinfo, ssflow, sscompartment, ssdevice, sswall, ssmasses, &
+        ssnormal, ssspecies, ssspeciesmass, sswallandtarget, ssdiag, sscalculation, &
         kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
@@ -496,13 +497,20 @@
     smvdata = datapath(1:lp) // project(1:ld) // '.plt'
     smvcsv = datapath(1:lp) // project(1:ld) // '_zone.csv'
     smvsinfo = datapath(1:lp) // project(1:ld) // '.sinfo'
+    
+    ! new format spreadsheet output files
     sscompartment = datapath(1:lp) // project(1:ld) // '_compartments.csv'
     ssdevice = datapath(1:lp) // project(1:ld) // '_devices.csv'
+    sswall = datapath(1:lp) // project(1:ld) // '_walls.csv'
+    ssmasses = datapath(1:lp) // project(1:ld) // '_masses.csv'
+    
+    ! old format spreadsheet output files
     ssflow = datapath(1:lp) // project(1:ld) // '_f.csv'
     ssnormal = datapath(1:lp) // project(1:ld) // '_n.csv'
     ssspecies = datapath(1:lp) // project(1:ld) // '_s.csv'
     ssspeciesmass = datapath(1:lp) // project(1:ld) // '_m.csv'
-    sswall = datapath(1:lp) // project(1:ld) // '_w.csv'
+    sswallandtarget = datapath(1:lp) // project(1:ld) // '_w.csv'
+    
     ssdiag = datapath(1:lp) // project(1:ld) // '_d.csv'
     gitfile = datapath(1:lp) // project(1:ld) // '_git.txt'
     errorlogging = datapath(1:lp) // project(1:ld) // '.log'
@@ -567,10 +575,12 @@
     call delete_output_files (ssflow)
     call delete_output_files (sscompartment)
     call delete_output_files (ssdevice)
+    call delete_output_files (sswall)
+    call delete_output_files (ssmasses)
     call delete_output_files (ssnormal)
     call delete_output_files (ssspecies)
     call delete_output_files (ssspeciesmass)
-    call delete_output_files (sswall)
+    call delete_output_files (sswallandtarget)
     call delete_output_files (statusfile)
     call delete_output_files (queryfile)
     call delete_output_files (residcsv)

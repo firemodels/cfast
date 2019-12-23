@@ -24,11 +24,11 @@ module initialization_routines
     use setup_data, only: iofill, debugging, deltat
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
-    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo
+    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, ssmassinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use calc_data, only: n_mcarlo, calcinfo, csvnames, iocsvnormal, iocsvflow, iocsvmass, iocsvwall, iocsvspecies
+    use calc_data, only: n_mcarlo, calcinfo, csvnames, iocsvnormal, iocsvflow, iocsvspmass, iocsvwall, iocsvspecies
 
     implicit none
 
@@ -485,6 +485,10 @@ module initialization_routines
     allocate (sscompinfo(mxss))
     n_ssdevice = 0
     allocate (ssdeviceinfo(mxss))
+    n_sswall = 0
+    allocate (sswallinfo(mxss))
+    n_ssmass = 0
+    allocate (ssmassinfo(mxss))
     
     ! post-run calculation data
     n_mcarlo = 0

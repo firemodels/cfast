@@ -98,7 +98,7 @@ module calc_data
     save
     
     integer, parameter :: num_csvfiles = 5 
-    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvmass = 4, iocsvspecies = 5
+    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvspmass = 4, iocsvspecies = 5
     
     character(len = 7), parameter, dimension(num_csvfiles) :: csvnames = &
         (/'WALL   ', 'NORMAL ', 'FLOW   ', 'MASS   ', 'SPECIES'/)
@@ -285,12 +285,13 @@ module setup_data
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssdiag, iofilcalc, &
-        iofilssc, iofilssd
+        iofilssn, iofilssf, iofilsss, iofilsssspeciesmass, iofilsswt, iofilssdiag, iofilcalc, &
+        iofilssc, iofilssd, iofilssw, iofilssm
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
-        ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
+        sswall, ssmasses, &
+        ssflow, ssnormal, ssspecies, ssspeciesmass, sswallandtarget, ssdiag, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning, sscalculation
 
     ! Work arrays for the csv input routines
@@ -393,6 +394,12 @@ module spreadsheet_output_data
     
     integer :: n_ssdevice = 0
     type(ssout_type), allocatable, dimension(:), target :: ssdeviceinfo
+    
+    integer :: n_sswall = 0
+    type(ssout_type), allocatable, dimension(:), target :: sswallinfo
+    
+    integer :: n_ssmass = 0
+    type(ssout_type), allocatable, dimension(:), target :: ssmassinfo
     
     real(eb) :: outarray(mxss)
     

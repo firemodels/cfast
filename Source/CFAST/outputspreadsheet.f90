@@ -190,18 +190,20 @@ module spreadsheet_routines
     character(35) :: cDet
     type(ssout_type), pointer :: ssptr
     type(target_type), pointer :: targptr
+    type(detector_type), pointer :: dtectptr
 
     save firstc
 
-    !initialize header data for spreadsheet
+    ! initialize header data for spreadsheet
     if (firstc) then
         n_ssdevice = 0
         call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'Time', 'Simulation Time', 'Time', 's')
 
-        ! Targets
+        ! targets
         do i = 1, n_targets
             call toIntString(i,cDet)
             targptr => targetinfo(i)
+            ! front surface
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGGAST_'//trim(cDet), 'Target Surrounding Gas Temperature', targptr%name, 'C')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGSURT_'//trim(cDet), 'Target Surface Temperature', targptr%name, 'C')
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGCENT_'//trim(cDet), 'Target Center Temperature', targptr%name, 'C')
@@ -210,19 +212,63 @@ module spreadsheet_routines
             if (validation_flag) then
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', targptr%name, 'kW/m^2')
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXC_'//trim(cDet), 'Target Convective Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXF_'//trim(cDet), 'Target Fire Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXS_'//trim(cDet), 'Target Surface Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXG_'//trim(cDet), 'Target Gas Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXRE_'//trim(cDet), 'Target Radiative Loss Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXTG_'//trim(cDet), 'Target Total Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXRG_'//trim(cDet), 'Target Radiative Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXCG_'//trim(cDet), 'Target Convective Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXREG_'//trim(cDet), 'Target Radiative Loss Gauge Flux', targptr%name, 'kW/m^2')
             end if
+            ! back surface
+            if (validation_flag) then
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXI_'//trim(cDet), 'Back Target Incident Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXT_'//trim(cDet), 'Back Target Net Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXR_'//trim(cDet), 'Back Target Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXC_'//trim(cDet), 'Back Target Convective Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXF_'//trim(cDet), 'Back Target Fire Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXS_'//trim(cDet), 'Back Target Surface Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXG_'//trim(cDet), 'Back Target Gas Radiative Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXRE_'//trim(cDet), 'Back Target Radiative Loss Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXTG_'//trim(cDet), 'Back Target Total Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXRG_'//trim(cDet), 'Back Target Radiative Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXCG_'//trim(cDet), 'Back Target Convective Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXREG_'//trim(cDet), 'Back Target Radiative Loss Gauge Flux', targptr%name, 'kW/m^2')
+            end if
+            ! tenability
+        end do
+        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFEDG_'//trim(cDet), 'Target Gas FED', targptr%name, '')
+        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGDFEDG_'//trim(cDet), 'Target Gas FED Increment', targptr%name, '')
+        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFEDH_'//trim(cDet), 'Target Heat FED', targptr%name, '')
+        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGDFEDH_'//trim(cDet), 'Target Heat FED Increment', targptr%name, '')
+        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGOBS_'//trim(cDet), 'Target Obscuration', targptr%name, '1/m')
+        
+        
+        ! detectors
+        do i = 1, n_detectors
+            call toIntString(i,cDet)
+            dtectptr => detectorinfo(i)
+            if (dtectptr%dtype==smoked) then
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSOD_'//trim(cDet), 'Sensor Obscuration', dtectptr%name, '1/m')
+            else
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENST_'//trim(cDet), 'Sensor Temperature', dtectptr%name, 'C')
+            end if
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSACT_'//trim(cDet), 'Sensor Activation', dtectptr%name, '1=yes')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSGAST_'//trim(cDet), 'Sensor Surrounding Gas Temperature', dtectptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSGASV_'//trim(cDet), 'Sensor Surrounding Gas Velocity', dtectptr%name, 'm/s')
         end do
 
         ! write out header
-        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%short) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%short)
-        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%measurement) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%measurement)
-        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%device) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%device)
-        write (iofilssc,"(32767a)") (trim(ssdeviceinfo(i)%units) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%units)
+        write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%short) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%short)
+        write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%measurement) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%measurement)
+        write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%device) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%device)
+        write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%units) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%units)
 
         firstc = .false.
     end if
 
-    !write out spreadsheet values for the current time step
+    ! write out spreadsheet values for the current time step
     position = 0
     outarray = 0._eb
     do i = 1, n_ssdevice

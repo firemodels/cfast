@@ -101,7 +101,7 @@ module spreadsheet_routines
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULCO2_'//trim(cRoom), 'CO2 Upper Layer', roomptr%name, species_units)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULCO_'//trim(cRoom), 'CO Upper Layer', roomptr%name, species_units)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULHCN_'//trim(cRoom), 'HCN Upper Layer', roomptr%name, species_units)
-            call ssaddtoheader (sscompinfo, n_sscomp, 'ULHCL_'//trim(cRoom), 'HCL Upper Layer', roomptr%name, species_units)
+            call ssaddtoheader (sscompinfo, n_sscomp, 'ULHCL_'//trim(cRoom), 'HCl Upper Layer', roomptr%name, species_units)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer', roomptr%name, &
                 species_units)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULH2O_'//trim(cRoom), 'H2O Upper Layer', roomptr%name, species_units)
@@ -117,7 +117,7 @@ module spreadsheet_routines
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLCO2_'//trim(cRoom), 'CO2 Lower Layer', roomptr%name, species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLCO_'//trim(cRoom), 'CO Lower Layer', roomptr%name, species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLHCN_'//trim(cRoom), 'HCN Lower Layer', roomptr%name, species_units)
-                call ssaddtoheader (sscompinfo, n_sscomp, 'LLHCL_'//trim(cRoom), 'HCL Lower Layer', roomptr%name, species_units)
+                call ssaddtoheader (sscompinfo, n_sscomp, 'LLHCL_'//trim(cRoom), 'HCl Lower Layer', roomptr%name, species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer', roomptr%name, &
                     species_units)
                 call ssaddtoheader (sscompinfo, n_sscomp, 'LLH2O_'//trim(cRoom), 'H2O Lower Layer', roomptr%name, species_units)
@@ -240,12 +240,12 @@ module spreadsheet_routines
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXREG_'//trim(cDet), 'Back Target Radiative Loss Gauge Flux', targptr%name, 'kW/m^2')
             end if
             ! tenability
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFEDG_'//trim(cDet), 'Target Gas FED', targptr%name, '')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGDFEDG_'//trim(cDet), 'Target Gas FED Increment', targptr%name, '')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFEDH_'//trim(cDet), 'Target Heat FED', targptr%name, '')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGDFEDH_'//trim(cDet), 'Target Heat FED Increment', targptr%name, '')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGOBS_'//trim(cDet), 'Target Obscuration', targptr%name, '1/m')
         end do
-        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFEDG_'//trim(cDet), 'Target Gas FED', targptr%name, '')
-        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGDFEDG_'//trim(cDet), 'Target Gas FED Increment', targptr%name, '')
-        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFEDH_'//trim(cDet), 'Target Heat FED', targptr%name, '')
-        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGDFEDH_'//trim(cDet), 'Target Heat FED Increment', targptr%name, '')
-        call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGOBS_'//trim(cDet), 'Target Obscuration', targptr%name, '1/m')
         
         
         ! detectors
@@ -368,7 +368,7 @@ module spreadsheet_routines
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMCO2_'//trim(cRoom), 'CO2 Upper Layer Mass', roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMCO_'//trim(cRoom), 'CO Upper Layer Mass', roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCN_'//trim(cRoom), 'HCN Upper Layer Mass', roomptr%name, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCL_'//trim(cRoom), 'HCL Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCl_'//trim(cRoom), 'HCl Upper Layer Mass', roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer Mass', roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMH2O_'//trim(cRoom), 'H2O Upper Layer Mass', roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Optical Density Upper Layer Mass', roomptr%name, 'kg')
@@ -383,7 +383,7 @@ module spreadsheet_routines
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO2_'//trim(cRoom), 'Potential CO2 Upper Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO_'//trim(cRoom), 'Potential CO Upper Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCN_'//trim(cRoom), 'Potential HCN Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCL_'//trim(cRoom), 'Potential HCL Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCl_'//trim(cRoom), 'Potential HCl Upper Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMPH2O_'//trim(cRoom), 'Potential H2O Upper Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMSoot_'//trim(cRoom), 'Potential Soot Upper Layer Mass', roomptr%name, 'kg')
             end if
@@ -393,7 +393,7 @@ module spreadsheet_routines
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMCO2_'//trim(cRoom), 'CO2 Lower Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMCO_'//trim(cRoom), 'CO Lower Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCN_'//trim(cRoom), 'HCN Lower Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCL_'//trim(cRoom), 'HCL Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCl_'//trim(cRoom), 'HCl Lower Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMH2O_'//trim(cRoom), 'H2O Lower Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMOD_'//trim(cRoom), 'Optical Density Lower Layer Mass', roomptr%name, 'kg')
@@ -408,7 +408,7 @@ module spreadsheet_routines
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO2_'//trim(cRoom), 'Potential CO2 Lower Layer Mass', roomptr%name, 'kg')
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO_'//trim(cRoom), 'Potential CO Lower Layer Mass', roomptr%name, 'kg')
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCN_'//trim(cRoom), 'Potential HCN Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCL_'//trim(cRoom), 'Potential HCL Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCl_'//trim(cRoom), 'Potential HCl Lower Layer Mass', roomptr%name, 'kg')
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMPH2O_'//trim(cRoom), 'Potential H2O Lower Layer Mass', roomptr%name, 'kg')
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMSoot_'//trim(cRoom), 'Potential Soot Lower Layer Mass', roomptr%name, 'kg')
                 end if
@@ -833,18 +833,26 @@ module spreadsheet_routines
                 call ssaddtolist (position,targptr%tinternal-kelvin_c_offset,outarray)
             end if
         end do
-    case ('Target Incident Flux')
+    case ('Target Incident Flux', 'Back Target Incident Flux')
         do i = 1, n_targets
             targptr => targetinfo(i)
             if (targptr%name==device) then
-                call ssaddtolist (position,targptr%flux_incident_front/1000._eb,outarray)
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_incident_front/1000._eb,outarray)
+                else
+                    call ssaddtolist (position, targptr%flux_incident_back/1000._eb,outarray)
+                end if
             end if
         end do
-    case ('Target Net Flux')
+    case ('Target Net Flux','Back Target Net Flux')
         do i = 1, n_targets
             targptr => targetinfo(i)
             if (targptr%name==device) then
-                call ssaddtolist (position,targptr%flux_net(1)/1000._eb,outarray)
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_net(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_net(2)/1000._eb,outarray)
+                end if
             end if
         end do
     case ('Target Gas FED')
@@ -915,7 +923,7 @@ module spreadsheet_routines
                 end if
             end if
         end do
-    case ('Target Surface Radiative Flux','Back Surface Fire Radiative Flux')
+    case ('Target Surface Radiative Flux','Back Target Surface Radiative Flux')
         do i = 1, n_targets
             targptr => targetinfo(i)
             if (targptr%name==device) then
@@ -948,7 +956,18 @@ module spreadsheet_routines
                 end if
             end if
         end do
-    case ('Target Radiative Gauge Flux','Back Target Radiative Guage Flux')
+    case ('Target Total Gauge Flux','Back Target Total Gauge Flux')
+        do i = 1, n_targets
+            targptr => targetinfo(i)
+            if (targptr%name==device) then
+                if (index(measurement,'Back')==0) then
+                    call ssaddtolist (position,targptr%flux_net_gauge(1)/1000._eb,outarray)
+                else
+                    call ssaddtolist (position,targptr%flux_net_gauge(2)/1000._eb,outarray)
+                end if
+            end if
+        end do
+    case ('Target Radiative Gauge Flux','Back Target Radiative Gauge Flux')
         do i = 1, n_targets
             targptr => targetinfo(i)
             if (targptr%name==device) then
@@ -959,7 +978,7 @@ module spreadsheet_routines
                 end if
             end if
         end do
-    case ('Target Convective Gauge Flux','Back Target Convective Guage Flux')
+    case ('Target Convective Gauge Flux','Back Target Convective Gauge Flux')
         do i = 1, n_targets
             targptr => targetinfo(i)
             if (targptr%name==device) then
@@ -970,7 +989,7 @@ module spreadsheet_routines
                 end if
             end if
         end do
-    case ('Target Radiative Loss Gauge Flux','Back Target Radiative Loss Guage Flux')
+    case ('Target Radiative Loss Gauge Flux','Back Target Radiative Loss Gauge Flux')
         do i = 1, n_targets
             targptr => targetinfo(i)
             if (targptr%name==device) then

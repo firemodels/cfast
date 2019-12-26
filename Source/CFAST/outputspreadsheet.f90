@@ -12,7 +12,8 @@ module spreadsheet_routines
 
     use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
         ns, soot, soot_flaming, soot_smolder, smoked, mx_calc, mxss, cjetvelocitymin, &
-        n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts
+        n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts, &
+        fuel_moles, fuel_Q, fuel_n2, fuel_o2, fuel_co2, fuel_co, fuel_hcn, fuel_hcl, fuel_h2o, fuel_soot
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
@@ -42,6 +43,7 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     call output_spreadsheet_compartments (time)
+    call output_spreadsheet_masses (time)
     call output_spreadsheet_devices (time)
     call output_spreadsheet_walls (time)
     
@@ -522,6 +524,38 @@ module spreadsheet_routines
                 call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
             end if
         end do
+        
+        ! compartment surfaces
+    case ('Ceiling Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(1))-kelvin_c_offset, outarray)
+            end if
+        end do
+    case ('Upper Wall Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(2))-kelvin_c_offset, outarray)
+            end if
+        end do
+    case ('Lower Wall Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(3))-kelvin_c_offset, outarray)
+            end if
+        end do
+    case ('Floor Temperature')
+        do i = 1, nr
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(4))-kelvin_c_offset, outarray)
+            end if
+        end do
+        
+        ! species
     case ('N2 Upper Layer', 'N2 Upper Layer Mass', 'N2 Lower Layer', 'N2 Lower Layer Mass')
         do i = 1, nr
             layer = u
@@ -612,124 +646,194 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Unburned Fuel Upper Layer')
+    case ('Unburned Fuel Upper Layer', 'Unburned Fuel Upper Layer Mass', 'Unburned Fuel Lower Layer', 'Unburned Fuel Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,fuel)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,fuel)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,fuel)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Unburned Fuel Lower Layer')
+    case ('H2O Upper Layer', 'H2O Upper Layer Mass', 'H2O Lower Layer', 'H2O Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,fuel)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,h2o)
+                    if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                else
+                    ssvalue = roomptr%species_mass(layer,h2o)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('H2O Upper Layer')
+    case ('Optical Density Upper Layer', 'Optical Density Upper Layer Mass', 'Optical Density Lower Layer', 'Optical Density Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,h2o)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,soot)
+                    if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                else
+                    ssvalue = roomptr%species_mass(layer,soot)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('H2O Lower Layer')
+    case ('OD from Flaming Upper Layer', 'OD from Flaming Upper Layer Mass', 'OD from Flaming Lower Layer', 'OD from Flaming Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,h2o)
-                if (validation_flag) ssvalue = ssvalue*0.01_eb ! converts molar % to  molar fraction
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,soot_flaming)
+                    if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                else
+                    ssvalue = roomptr%species_mass(layer,soot_flaming)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Optical Density Upper Layer')
+    case ('OD from Smoldering Upper Layer', 'OD from Smoldering Upper Layer Mass', 'OD from Smoldering Lower Layer', 'OD from Smoldering Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,soot)
-                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                if (index(measurement,'Mass')==0) then
+                    ssvalue = roomptr%species_output(layer,soot_smolder)
+                    if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                else
+                    ssvalue = roomptr%species_mass(layer,soot_smolder)
+                end if
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Optical Density Lower Layer')
+    case ('Trace Species Upper Layer Mass', 'Trace Species Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,soot)
-                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                ssvalue = roomptr%species_mass(layer,ts)
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Flaming Upper Layer')
+        
+        ! unburned fuel-related outputs
+    case ('Fuel Upper Layer Mass', 'Fuel Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,soot_flaming)
-                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                ssvalue = roomptr%species_output(layer,fuel_moles)
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Flaming Lower Layer')
+    case ('Potential Total Heat Upper Layer', 'Potential Total Heat Lower Layer')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,soot_flaming)
-                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                ssvalue = roomptr%species_output(layer,fuel_Q)
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Smoldering Upper Layer')
+    case ('Potential N2 Upper Layer Mass', 'Potential N2 Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(u,soot_smolder)
-                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                ssvalue = roomptr%species_output(layer,fuel_n2)
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Smoldering Lower Layer')
+    case ('Potential O2 Upper Layer Mass', 'Potential O2 Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                ssvalue = roomptr%species_output(l,soot_smolder)
-                if (validation_flag) ssvalue = ssvalue*264.6903_eb ! converts converts od to mg/m^3
+                ssvalue = roomptr%species_output(layer,fuel_o2)
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Ceiling Temperature')
+    case ('Potential CO2 Upper Layer Mass', 'Potential CO2 Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(1))-kelvin_c_offset, outarray)
+                ssvalue = roomptr%species_output(layer,fuel_co2)
+                call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Upper Wall Temperature')
+    case ('Potential CO Upper Layer Mass', 'Potential CO Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(2))-kelvin_c_offset, outarray)
+                ssvalue = roomptr%species_output(layer,fuel_co)
+                call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Lower Wall Temperature')
+    case ('Potential HCN Upper Layer Mass', 'Potential HCN Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(3))-kelvin_c_offset, outarray)
+                ssvalue = roomptr%species_output(layer,fuel_hcn)
+                call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Floor Temperature')
+    case ('Potential HCl Upper Layer Mass', 'Potential HCl Lower Layer Mass')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%name==device) then
-                call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(4))-kelvin_c_offset, outarray)
+                ssvalue = roomptr%species_output(layer,fuel_hcl)
+                call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
+    case ('Potential H2O Upper Layer Mass', 'Potential H2O Lower Layer Mass')
+        do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(layer,fuel_h2o)
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+    case ('Potential Soot Upper Layer Mass', 'Potential Soot Lower Layer Mass')
+        do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
+            roomptr => roominfo(i)
+            if (roomptr%name==device) then
+                ssvalue = roomptr%species_output(layer,fuel_soot)
+                call ssaddtolist (position,ssvalue ,outarray)
+            end if
+        end do
+
 
         ! fire-related outputs
     case ('Ignition')
@@ -808,6 +912,20 @@ module spreadsheet_routines
                 call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
             else if (i==nr.and.device=='Outside') then
                 call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
+            end if
+        end do
+    case ('Total Pyrolysate Released')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%total_pyrolysate,outarray)
+            end if
+        end do
+    case ('Total Trace Species Released')
+        do i = 1,n_fires
+            fireptr => fireinfo(i)
+            if (fireptr%name==device) then
+                call ssaddtolist (position,fireptr%total_trace,outarray)
             end if
         end do
     

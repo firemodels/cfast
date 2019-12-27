@@ -286,11 +286,11 @@ module setup_data
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssn, iofilssf, iofilsss, iofilsssspeciesmass, iofilsswt, iofilssdiag, iofilcalc, &
-        iofilssc, iofilssd, iofilssw, iofilssm
+        iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
-        sswall, ssmasses, &
+        sswall, ssmasses, ssvent, &
         ssflow, ssnormal, ssspecies, ssspeciesmass, sswallandtarget, ssdiag, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning, sscalculation
 
@@ -400,6 +400,9 @@ module spreadsheet_output_data
     
     integer :: n_ssmass = 0
     type(ssout_type), allocatable, dimension(:), target :: ssmassinfo
+    
+    integer :: n_ssvent = 0
+    type(ssout_type), allocatable, dimension (:), target :: ssventinfo
     
     real(eb) :: outarray(mxss)
     

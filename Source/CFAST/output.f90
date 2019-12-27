@@ -18,11 +18,11 @@ module output_routines
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssc, iofilssd, iofilssw, iofilssm, &
+        iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssn, iofilssf, iofilsss, iofilsssspeciesmass, iofilsswt, iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswallandtarget, ssdiag, &
-        sscalculation, sscompartment, ssdevice, sswall, ssmasses
+        sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
@@ -1426,6 +1426,8 @@ module output_routines
         !iocsv(iocsvwall) = iofilssw
         open(newunit=iofilssm, file=ssmasses,form='formatted')
         !iocsv(iocsvmass) = iofilssm
+        open(newunit=iofilssv, file=ssvent,form='formatted')
+        !iocsv(iocsvvent) = iofilssv
         open (newunit=iofilssn, file=ssnormal,form='formatted')
         iocsv(iocsvnormal) = iofilssn
         open (newunit=iofilssf, file=ssflow,form='formatted')

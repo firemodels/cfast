@@ -20,7 +20,7 @@
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
-        smvcsv, smvsinfo, ssflow, sscompartment, ssdevice, sswall, ssmasses, &
+        smvcsv, smvsinfo, ssflow, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
         ssnormal, ssspecies, ssspeciesmass, sswallandtarget, ssdiag, sscalculation, &
         kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase
@@ -503,6 +503,7 @@
     ssdevice = datapath(1:lp) // project(1:ld) // '_devices.csv'
     sswall = datapath(1:lp) // project(1:ld) // '_walls.csv'
     ssmasses = datapath(1:lp) // project(1:ld) // '_masses.csv'
+    ssvent = datapath(1:lp) // project(1:ld) // '_vents.csv'
     
     ! old format spreadsheet output files
     ssflow = datapath(1:lp) // project(1:ld) // '_f.csv'
@@ -577,6 +578,7 @@
     call delete_output_files (ssdevice)
     call delete_output_files (sswall)
     call delete_output_files (ssmasses)
+    call delete_output_files (ssvent)
     call delete_output_files (ssnormal)
     call delete_output_files (ssspecies)
     call delete_output_files (ssspeciesmass)

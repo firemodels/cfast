@@ -18,9 +18,9 @@ module spreadsheet_routines
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo
-    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssn, iofilssf, iofilsssspeciesmass, iofilsss, &
+    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, iofilssn, iofilssf, iofilsssspeciesmass, iofilsss, &
         iofilsswt, iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
-    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, ssmassinfo, outarray
+    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, ssmassinfo, n_ssvent, ssventinfo, outarray
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use calc_data, only: n_mcarlo, calcinfo, csvnames, num_csvfiles, iocsv

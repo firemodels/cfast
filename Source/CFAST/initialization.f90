@@ -24,7 +24,8 @@ module initialization_routines
     use setup_data, only: iofill, debugging, deltat
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
-    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, ssmassinfo
+    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &
+        n_ssmass, ssmassinfo, n_ssvent, ssventinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
@@ -489,6 +490,8 @@ module initialization_routines
     allocate (sswallinfo(mxss))
     n_ssmass = 0
     allocate (ssmassinfo(mxss))
+    n_ssvent = 0
+    allocate (ssventinfo(mxss))
     
     ! post-run calculation data
     n_mcarlo = 0

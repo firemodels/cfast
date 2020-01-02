@@ -356,6 +356,10 @@ module cfast_types
         character(50) :: measurement        ! identifies which measurement within a device (i.e., upper layer temperature)
         character(50) :: device             ! identifies where the measurements are coming from (i.e., Room 1 or Target 1)
         character(50) :: units              ! identifies the measurement units for the output
+        character(5) :: venttype            ! WVENT, CFVENT, MVENT, or LEAK. Only needed for vents
+        integer :: room1                    ! from or top room number. Only needed for vents
+        integer :: room2                    ! to or bottom room number. Only needed for vents
+        integer :: ventnumber               ! vent number to distiguish multiple vents between a room pair. Only needed for vents
     end type ssout_type
     
     type slice_type

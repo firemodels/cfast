@@ -10,7 +10,7 @@ module spreadsheet_routines
     
     use cfast_types, only: fire_type, ramp_type, room_type, detector_type, target_type, vent_type, calc_type, ssout_type, vent_type
 
-    use cparams, only: u, l, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
+    use cparams, only: u, l, in, out, mxrooms, mxfires, mxdtect, mxtarg, mxhvents, mxfslab, mxvvents, mxmvents, mxleaks, &
         ns, soot, soot_flaming, soot_smolder, smoked, mx_calc, mxss, cjetvelocitymin, &
         n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts, &
         fuel_moles, fuel_Q, fuel_n2, fuel_o2, fuel_co2, fuel_co, fuel_hcn, fuel_hcl, fuel_h2o, fuel_soot
@@ -515,16 +515,16 @@ module spreadsheet_routines
             end if
         end do 
         
-        ! ceiling/floor vent results
+        ! ceiling/floor vent results. note it's with respect to the bottom room, room 2
         do i = 1, n_vvents
             ventptr => vventinfo(i)
-            ifrom = ventptr%room1
+            ifrom = ventptr%room2
             call tointstring(ifrom,cifrom)
             if (ifrom==nr) cifrom = 'Outside'
             clfrom = 'Room '//cifrom
             if (ifrom==nr) clfrom = 'Outside'
             
-            ito = ventptr%room2
+            ito = ventptr%room1
             call tointstring(ito,cito)
             if (ito==nr) cito = 'Outside'
             clto = 'Room '//cito
@@ -549,13 +549,13 @@ module spreadsheet_routines
                 call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower','CFVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
                 
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper','CFVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')   
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_inflow','Total Inflow Upper','CFVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')   
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper','CFVent '//trim(cvent)//' from '//trim(clto)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_outflow','Total Outflow Upper','CFVent '//trim(cvent)//' from '//trim(clto)//' upper layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower','CFVent '//trim(cvent)//' to '//trim(clto)//' lower Layer','kg/s')   
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_inflow','Total Inflow Lower','CFVent '//trim(cvent)//' to '//trim(clto)//' lower Layer','kg/s')   
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower','CFVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_outflow','Total Outflow Lower','CFVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
             end if
         end do  
@@ -645,8 +645,9 @@ module spreadsheet_routines
         ssptr => ssventinfo(i)
         call ssaddvaluetooutput (ssptr, time, position, outarray)
     end do
-    
+
     call ssprintresults (iofilssv, position, outarray)
+    
     return
     
     end subroutine output_spreadsheet_vents
@@ -1145,8 +1146,8 @@ module spreadsheet_routines
         ivent = ssptr%counter
         layer = u
         if (index(measurement,'Upper')==0) layer = l
-        idir = 1
-        if (index(measurement,'Inflow')==0) idir = 2
+        idir = in
+        if (index(measurement,'Inflow')==0) idir = out
         if (venttype=='WVENT') then
             do i = 1, n_hvents
                 ventptr => hventinfo(i)
@@ -1168,23 +1169,21 @@ module spreadsheet_routines
             do i = 1, n_vvents
                 ventptr => vventinfo(i)
                 ssvalue = 0.0_eb
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
-                    if (idir==2) then
-                        if (ventptr%mflow(idir,layer)>0) ssvalue = ventptr%mflow(1,layer)
-                        call ssaddtolist (position, ventptr%mflow(idir,layer), outarray)
+                ! note that flows are relative to the bottom compartment
+                if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
+                    if (idir==in) then
+                        ssvalue = max(0._eb,ventptr%mflow(1,layer))
                     else
-                        if (ventptr%mflow(idir,layer)<0) ssvalue = -ventptr%mflow(1,layer)
-                        call ssaddtolist (position, ventptr%mflow(idir,layer), outarray)
+                        ssvalue = max(0._eb,-ventptr%mflow(1,layer))
                     end if
-                else if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
-                    if (idir==2) then
-                        if (ventptr%mflow(idir,layer)>0) ssvalue = ventptr%mflow(2,layer)
-                        call ssaddtolist (position, -ventptr%mflow(idir,layer), outarray)
+                else if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                    if (idir==in) then
+                        ssvalue = max(0._eb,ventptr%mflow(2,layer))
                     else
-                        if (ventptr%mflow(idir,layer)<0) ssvalue = -ventptr%mflow(2,layer)
-                        call ssaddtolist (position, -ventptr%mflow(idir,layer), outarray)
+                        ssvalue = max(0._eb,-ventptr%mflow(2,layer))
                     end if
                 end if
+                call ssaddtolist (position, ssvalue, outarray)
             end do
         else if (venttype=='MVENT') then
             do i = 1, n_mvents
@@ -1214,7 +1213,7 @@ module spreadsheet_routines
         else if (venttype=='CFVENT') then
             do i = 1, n_vvents
                 ventptr => vventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
                     call ssaddtolist (position, ventptr%opening_fraction, outarray)
                     exit
                 end if

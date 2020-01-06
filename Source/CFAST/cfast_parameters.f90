@@ -112,6 +112,8 @@
     integer, parameter :: m = 1     ! mass
     integer, parameter :: q = 2     ! energy
     integer, parameter :: pp = 3    ! beginning of species
+    integer, parameter :: in = 1    ! flow into compartment
+    integer, parameter :: out = 2   ! flow out of compartment
 
     ! define indicies for species arrays
     integer, parameter :: n2 = 1

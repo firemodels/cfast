@@ -18,9 +18,11 @@ module spreadsheet_routines
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: nr, nrm1, roominfo
-    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, iofilssn, iofilssf, iofilsssspeciesmass, iofilsss, &
+    use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, iofilssn, iofilssf, &
+        iofilsssspeciesmass, iofilsss, &
         iofilsswt, iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
-    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, ssmassinfo, n_ssvent, ssventinfo, outarray
+    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
+        ssmassinfo, n_ssvent, ssventinfo, outarray
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use calc_data, only: n_mcarlo, calcinfo, csvnames, num_csvfiles, iocsv
@@ -210,37 +212,64 @@ module spreadsheet_routines
             call toIntString(i,cDet)
             targptr => targetinfo(i)
             ! front surface
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGGAST_'//trim(cDet), 'Target Surrounding Gas Temperature', targptr%name, 'C')
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGSURT_'//trim(cDet), 'Target Surface Temperature', targptr%name, 'C')
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGINT_'//trim(cDet), 'Target Internal Temperature', targptr%name, 'C')
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXI_'//trim(cDet), 'Target Incident Flux', targptr%name, 'kW/m^2')
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXT_'//trim(cDet), 'Target Net Flux', targptr%name, 'kW/m^2')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGGAST_'//trim(cDet), 'Target Surrounding Gas Temperature', &
+                targptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGSURT_'//trim(cDet), 'Target Surface Temperature', &
+                targptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGINT_'//trim(cDet), 'Target Internal Temperature', &
+                targptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXI_'//trim(cDet), 'Target Incident Flux', &
+                targptr%name, 'kW/m^2')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXT_'//trim(cDet), 'Target Net Flux', &
+                targptr%name, 'kW/m^2')
             if (validation_flag) then
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXC_'//trim(cDet), 'Target Convective Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXF_'//trim(cDet), 'Target Fire Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXS_'//trim(cDet), 'Target Surface Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXG_'//trim(cDet), 'Target Gas Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXRE_'//trim(cDet), 'Target Radiative Loss Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXTG_'//trim(cDet), 'Target Total Gauge Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXRG_'//trim(cDet), 'Target Radiative Gauge Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXCG_'//trim(cDet), 'Target Convective Gauge Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXREG_'//trim(cDet), 'Target Radiative Loss Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXR_'//trim(cDet), 'Target Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXC_'//trim(cDet), 'Target Convective Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXF_'//trim(cDet), 'Target Fire Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXS_'//trim(cDet), 'Target Surface Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXG_'//trim(cDet), 'Target Gas Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXRE_'//trim(cDet), 'Target Radiative Loss Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXTG_'//trim(cDet), 'Target Total Gauge Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXRG_'//trim(cDet), 'Target Radiative Gauge Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXCG_'//trim(cDet), 'Target Convective Gauge Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFLXREG_'//trim(cDet), 'Target Radiative Loss Gauge Flux', &
+                    targptr%name, 'kW/m^2')
             end if
             ! back surface
             if (validation_flag) then
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXI_'//trim(cDet), 'Back Target Incident Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXT_'//trim(cDet), 'Back Target Net Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXR_'//trim(cDet), 'Back Target Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXC_'//trim(cDet), 'Back Target Convective Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXF_'//trim(cDet), 'Back Target Fire Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXS_'//trim(cDet), 'Back Target Surface Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXG_'//trim(cDet), 'Back Target Gas Radiative Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXRE_'//trim(cDet), 'Back Target Radiative Loss Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXTG_'//trim(cDet), 'Back Target Total Gauge Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXRG_'//trim(cDet), 'Back Target Radiative Gauge Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXCG_'//trim(cDet), 'Back Target Convective Gauge Flux', targptr%name, 'kW/m^2')
-                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXREG_'//trim(cDet), 'Back Target Radiative Loss Gauge Flux', targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXI_'//trim(cDet), 'Back Target Incident Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXT_'//trim(cDet), 'Back Target Net Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXR_'//trim(cDet), 'Back Target Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXC_'//trim(cDet), 'Back Target Convective Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXF_'//trim(cDet), 'Back Target Fire Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXS_'//trim(cDet), 'Back Target Surface Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXG_'//trim(cDet), 'Back Target Gas Radiative Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXRE_'//trim(cDet), 'Back Target Radiative Loss Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXTG_'//trim(cDet), 'Back Target Total Gauge Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXRG_'//trim(cDet), 'Back Target Radiative Gauge Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXCG_'//trim(cDet), 'Back Target Convective Gauge Flux', &
+                    targptr%name, 'kW/m^2')
+                call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'B_TRGFLXREG_'//trim(cDet), 'Back Target Radiative Loss Gauge Flux', &
+                    targptr%name, 'kW/m^2')
             end if
             ! tenability
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'TRGFEDG_'//trim(cDet), 'Target Gas FED', targptr%name, '')
@@ -261,13 +290,16 @@ module spreadsheet_routines
                 call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENST_'//trim(cDet), 'Sensor Temperature', dtectptr%name, 'C')
             end if
             call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSACT_'//trim(cDet), 'Sensor Activation', dtectptr%name, '1=yes')
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSGAST_'//trim(cDet), 'Sensor Surrounding Gas Temperature', dtectptr%name, 'C')
-            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSGASV_'//trim(cDet), 'Sensor Surrounding Gas Velocity', dtectptr%name, 'm/s')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSGAST_'//trim(cDet), 'Sensor Surrounding Gas Temperature', &
+                dtectptr%name, 'C')
+            call ssaddtoheader (ssdeviceinfo, n_ssdevice, 'SENSGASV_'//trim(cDet), 'Sensor Surrounding Gas Velocity', &
+                dtectptr%name, 'm/s')
         end do
 
         ! write out header
         write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%short) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%short)
-        write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%measurement) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%measurement)
+        write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%measurement) // ',',i=1,n_ssdevice-1),&
+            trim(ssdeviceinfo(n_ssdevice)%measurement)
         write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%device) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%device)
         write (iofilssd,"(32767a)") (trim(ssdeviceinfo(i)%units) // ',',i=1,n_ssdevice-1),trim(ssdeviceinfo(n_ssdevice)%units)
 
@@ -372,23 +404,37 @@ module spreadsheet_routines
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMCO_'//trim(cRoom), 'CO Upper Layer Mass', roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCN_'//trim(cRoom), 'HCN Upper Layer Mass', roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCl_'//trim(cRoom), 'HCl Upper Layer Mass', roomptr%name, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer Mass', roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer Mass', &
+                roomptr%name, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMH2O_'//trim(cRoom), 'H2O Upper Layer Mass', roomptr%name, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Optical Density Upper Layer Mass', roomptr%name, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODF_'//trim(cRoom), 'OD from Flaming Upper Layer Mass', roomptr%name, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODS_'//trim(cRoom), 'OD from Smoldering Upper Layer Mass', roomptr%name,'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTS_'//trim(cRoom), 'Trace Species Upper Layer Mass', roomptr%name,'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Optical Density Upper Layer Mass', &
+                roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODF_'//trim(cRoom), 'OD from Flaming Upper Layer Mass', &
+                roomptr%name, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODS_'//trim(cRoom), 'OD from Smoldering Upper Layer Mass', &
+                roomptr%name,'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTS_'//trim(cRoom), 'Trace Species Upper Layer Mass', &
+                roomptr%name,'kg')
             if (validation_flag) then
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMF_'//trim(cRoom), 'Fuel Upper Layer Mass', roomptr%name, 'mole')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPQ_'//trim(cRoom), 'Potential Total Heat Upper Layer', roomptr%name, 'J')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMN2_'//trim(cRoom), 'Potential N2 Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMO2_'//trim(cRoom), 'Potential O2 Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO2_'//trim(cRoom), 'Potential CO2 Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO_'//trim(cRoom), 'Potential CO Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCN_'//trim(cRoom), 'Potential HCN Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCl_'//trim(cRoom), 'Potential HCl Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMPH2O_'//trim(cRoom), 'Potential H2O Upper Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMSoot_'//trim(cRoom), 'Potential Soot Upper Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPQ_'//trim(cRoom), 'Potential Total Heat Upper Layer', &
+                    roomptr%name, 'J')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMN2_'//trim(cRoom), 'Potential N2 Upper Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMO2_'//trim(cRoom), 'Potential O2 Upper Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO2_'//trim(cRoom), 'Potential CO2 Upper Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMCO_'//trim(cRoom), 'Potential CO Upper Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCN_'//trim(cRoom), 'Potential HCN Upper Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCl_'//trim(cRoom), 'Potential HCl Upper Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMPH2O_'//trim(cRoom), 'Potential H2O Upper Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMSoot_'//trim(cRoom), 'Potential Soot Upper Layer Mass', &
+                    roomptr%name, 'kg')
             end if
             if (.not. roomptr%shaft) then
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMN2_'//trim(cRoom), 'N2 Lower Layer Mass', roomptr%name, 'kg')
@@ -397,23 +443,37 @@ module spreadsheet_routines
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMCO_'//trim(cRoom), 'CO Lower Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCN_'//trim(cRoom), 'HCN Lower Layer Mass', roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCl_'//trim(cRoom), 'HCl Lower Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer Mass', roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer Mass', &
+                    roomptr%name, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMH2O_'//trim(cRoom), 'H2O Lower Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMOD_'//trim(cRoom), 'Optical Density Lower Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODF_'//trim(cRoom), 'OD from Flaming Lower Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODS_'//trim(cRoom), 'OD from Smoldering Lower Layer Mass', roomptr%name, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTS_'//trim(cRoom), 'Trace Species Lower Layer Mass', roomptr%name,'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMOD_'//trim(cRoom), 'Optical Density Lower Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODF_'//trim(cRoom), 'OD from Flaming Lower Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODS_'//trim(cRoom), 'OD from Smoldering Lower Layer Mass', &
+                    roomptr%name, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTS_'//trim(cRoom), 'Trace Species Lower Layer Mass', &
+                    roomptr%name,'kg')
                 if (validation_flag) then
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMF_'//trim(cRoom), 'Fuel Lower Layer Mass', roomptr%name, 'mole')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPQ_'//trim(cRoom), 'Potential Total Heat Lower Layer', roomptr%name, 'J')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMN2_'//trim(cRoom), 'Potential N2 Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMO2_'//trim(cRoom), 'Potential O2 Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO2_'//trim(cRoom), 'Potential CO2 Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO_'//trim(cRoom), 'Potential CO Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCN_'//trim(cRoom), 'Potential HCN Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCl_'//trim(cRoom), 'Potential HCl Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMPH2O_'//trim(cRoom), 'Potential H2O Lower Layer Mass', roomptr%name, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMSoot_'//trim(cRoom), 'Potential Soot Lower Layer Mass', roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPQ_'//trim(cRoom), 'Potential Total Heat Lower Layer', &
+                        roomptr%name, 'J')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMN2_'//trim(cRoom), 'Potential N2 Lower Layer Mass', &
+                        roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMO2_'//trim(cRoom), 'Potential O2 Lower Layer Mass', &
+                        roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO2_'//trim(cRoom), 'Potential CO2 Lower Layer Mass', &
+                        roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMCO_'//trim(cRoom), 'Potential CO Lower Layer Mass', &
+                        roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCN_'//trim(cRoom), 'Potential HCN Lower Layer Mass', &
+                        roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCl_'//trim(cRoom), 'Potential HCl Lower Layer Mass', &
+                        roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMPH2O_'//trim(cRoom), 'Potential H2O Lower Layer Mass', &
+                        roomptr%name, 'kg')
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMSoot_'//trim(cRoom), 'Potential Soot Lower Layer Mass', &
+                        roomptr%name, 'kg')
                 end if
             end if
         end do
@@ -488,29 +548,40 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow','WVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
+                'WVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Net Inflow','WVent '//trim(cvent)//' from '//trim(clto)//' to '//trim(clfrom),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Net Inflow',&
+                'WVent '//trim(cvent)//' from '//trim(clto)//' to '//trim(clfrom),'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'WF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Opening Fraction','WVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
+            call ssaddtoheader (ssventinfo, n_ssvent,'WF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),&
+                'Opening Fraction','WVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
             call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
             if (validation_flag) then
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper','WVent '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
+                    'WVent '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper','WVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
+                    'WVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower','WVent '//trim(cvent)//' to '//trim(clfrom)//' upper Layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
+                    'WVent '//trim(cvent)//' to '//trim(clfrom)//' upper Layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower','WVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s')
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
+                    'WVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s')
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
                 
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper','WVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
+                    'WVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper','WVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')   
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
+                    'WVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')   
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower','WVent '//trim(cvent)//' to '//trim(clto)//' upper Layer','kg/s')    
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
+                    'WVent '//trim(cvent)//' to '//trim(clto)//' upper Layer','kg/s')    
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower','WVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
+                    'WVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
             end if
         end do 
@@ -533,29 +604,40 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow','CFVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
+                'CFVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Net Inflow','CFVent '//trim(cvent)//' from '//trim(clto)//' to '//trim(clfrom),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Net Inflow',&
+                'CFVent '//trim(cvent)//' from '//trim(clto)//' to '//trim(clfrom),'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'CFF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Opening Fraction','CFVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
+            call ssaddtoheader (ssventinfo, n_ssvent,'CFF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Opening Fraction',&
+                'CFVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
             call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
             if (validation_flag) then
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper','CFVent '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
+                    'CFVent '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper','CFVent '//trim(cvent)//' from '//trim(clfrom)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
+                    'CFVent '//trim(cvent)//' from '//trim(clfrom)//' upper layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower','CFVent '//trim(cvent)//' to '//trim(clfrom)//' lower Layer','kg/s')   
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
+                    'CFVent '//trim(cvent)//' to '//trim(clfrom)//' lower Layer','kg/s')   
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower','CFVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
+                    'CFVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
                 
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_inflow','Total Inflow Upper','CFVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')   
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_inflow','Total Inflow Upper',&
+                    'CFVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')   
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_outflow','Total Outflow Upper','CFVent '//trim(cvent)//' from '//trim(clto)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_outflow','Total Outflow Upper',&
+                    'CFVent '//trim(cvent)//' from '//trim(clto)//' upper layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_inflow','Total Inflow Lower','CFVent '//trim(cvent)//' to '//trim(clto)//' lower Layer','kg/s')   
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_inflow','Total Inflow Lower',&
+                    'CFVent '//trim(cvent)//' to '//trim(clto)//' lower Layer','kg/s')   
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_outflow','Total Outflow Lower','CFVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_outflow','Total Outflow Lower',&
+                    'CFVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
             end if
         end do  
@@ -578,31 +660,43 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'M_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'M_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
+                'Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'M_TRACE__'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Trace Species Flow','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg')
+            call ssaddtoheader (ssventinfo, n_ssvent,'M_TRACE__'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),&
+                'Trace Species Flow','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'M_FILTERED_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Trace Species Filtered','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg')
+            call ssaddtoheader (ssventinfo, n_ssvent,'M_FILTERED_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),&
+                'Trace Species Filtered','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'MF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Opening Fraction','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
+            call ssaddtoheader (ssventinfo, n_ssvent,'MF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Opening Fraction',&
+                'Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             if (validation_flag) then
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper','Fan '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
+                    'Fan '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper','Fan '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
+                    'Fan '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower','Fan '//trim(cvent)//' to '//trim(clfrom)//' upper Layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
+                    'Fan '//trim(cvent)//' to '//trim(clfrom)//' upper Layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower','Fan '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s')
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
+                    'Fan '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s')
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
                 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper','Fan '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
+                    'Fan '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper','Fan '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
+                    'Fan '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower','Fan '//trim(cvent)//' to '//trim(clto)//' upper Layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
+                    'Fan '//trim(cvent)//' to '//trim(clto)//' upper Layer','kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower','Fan '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
+                    'Fan '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
             end if
         end do  
@@ -625,7 +719,8 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow','Leak '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
+                'Leak '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'LEAK', ifrom, ito, counter) 
         end do       
 
@@ -886,7 +981,8 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Unburned Fuel Upper Layer', 'Unburned Fuel Upper Layer Mass', 'Unburned Fuel Lower Layer', 'Unburned Fuel Lower Layer Mass')
+    case ('Unburned Fuel Upper Layer', 'Unburned Fuel Upper Layer Mass', 'Unburned Fuel Lower Layer', &
+          'Unburned Fuel Lower Layer Mass')
         do i = 1, nr
             layer = u
             if (index(measurement,'Upper')==0) layer = l
@@ -916,7 +1012,8 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Optical Density Upper Layer', 'Optical Density Upper Layer Mass', 'Optical Density Lower Layer', 'Optical Density Lower Layer Mass')
+    case ('Optical Density Upper Layer', 'Optical Density Upper Layer Mass', 'Optical Density Lower Layer', &
+          'Optical Density Lower Layer Mass')
         do i = 1, nr
             layer = u
             if (index(measurement,'Upper')==0) layer = l
@@ -931,7 +1028,8 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Flaming Upper Layer', 'OD from Flaming Upper Layer Mass', 'OD from Flaming Lower Layer', 'OD from Flaming Lower Layer Mass')
+    case ('OD from Flaming Upper Layer', 'OD from Flaming Upper Layer Mass', 'OD from Flaming Lower Layer', &
+          'OD from Flaming Lower Layer Mass')
         do i = 1, nr
             layer = u
             if (index(measurement,'Upper')==0) layer = l
@@ -946,7 +1044,8 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Smoldering Upper Layer', 'OD from Smoldering Upper Layer Mass', 'OD from Smoldering Lower Layer', 'OD from Smoldering Lower Layer Mass')
+    case ('OD from Smoldering Upper Layer', 'OD from Smoldering Upper Layer Mass', 'OD from Smoldering Lower Layer', &
+          'OD from Smoldering Lower Layer Mass')
         do i = 1, nr
             layer = u
             if (index(measurement,'Upper')==0) layer = l

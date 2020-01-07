@@ -44,11 +44,11 @@ module spreadsheet_routines
 
     real(eb), intent(in) :: time
 
-    call output_spreadsheet_compartments (time)
-    call output_spreadsheet_masses (time)
-    call output_spreadsheet_devices (time)
-    call output_spreadsheet_walls (time)
-    call output_spreadsheet_vents (time)
+    !call output_spreadsheet_compartments (time)
+    !call output_spreadsheet_masses (time)
+    !call output_spreadsheet_devices (time)
+    !call output_spreadsheet_walls (time)
+    !call output_spreadsheet_vents (time)
     
     call output_spreadsheet_normal (time)
     call output_spreadsheet_species (time)

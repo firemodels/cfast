@@ -177,10 +177,10 @@ module output_routines
         roomptr =>roominfo(icomp)
         ivolpercent = roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
-            write (iofilo,5071) roomptr%name, roomptr%temp(u)-kelvin_c_offset, roomptr%volume(u), &
+            write (iofilo,5071) roomptr%id, roomptr%temp(u)-kelvin_c_offset, roomptr%volume(u), &
                 roomptr%absorb(u),roomptr%relp - roomptr%interior_relp_initial
         else
-            write (iofilo,5070) roomptr%name, roomptr%temp(u)-kelvin_c_offset, &
+            write (iofilo,5070) roomptr%id, roomptr%temp(u)-kelvin_c_offset, &
                 roomptr%temp(l)-kelvin_c_offset, roomptr%depth(l), roomptr%volume(u), &
                 ivolpercent, roomptr%absorb(u),roomptr%absorb(l), roomptr%relp - roomptr%interior_relp_initial
         end if
@@ -214,10 +214,10 @@ module output_routines
             fireptr => fireinfo(i)
             if (fireptr%ignited) then
                 f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
-                write (iofilo,5010) trim(fireptr%name), 'Y', fireptr%mdot_plume, fireptr%mdot_pyrolysis, fireptr%qdot_actual, &
+                write (iofilo,5010) trim(fireptr%id), 'Y', fireptr%mdot_plume, fireptr%mdot_pyrolysis, fireptr%qdot_actual, &
                     f_height, fireptr%qdot_convective, fireptr%qdot_radiative, fireptr%total_pyrolysate, fireptr%total_trace
             else
-                write (iofilo,5010) trim(fireptr%name), 'N'
+                write (iofilo,5010) trim(fireptr%id), 'N'
             end if
         end do
     end if
@@ -243,7 +243,7 @@ module output_routines
                 end if
             end do
             xqf = xqf + roomptr%qdot_doorjet
-            if (xems+pyrolysis_rate+xqf+xqupr+xqlow+roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5030) roomptr%name, &
+            if (xems+pyrolysis_rate+xqf+xqupr+xqlow+roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5030) roomptr%id, &
                 xems, pyrolysis_rate, xqf, xqupr, xqlow, roomptr%qdot_doorjet
         else 
             if (roomptr%qdot_doorjet/=0.0_eb) write (iofilo,5040) roomptr%qdot_doorjet
@@ -300,7 +300,7 @@ module output_routines
             write (ciout,5010)
             do icomp = 1, nrm1
                 roomptr => roominfo(icomp)
-                write (ciout,5060) roomptr%name
+                write (ciout,5060) roomptr%id
                 ic = 14
                 if (layer==u.or..not.roomptr%shaft) then
                     do lsp = 1, ns_mass+4
@@ -347,11 +347,11 @@ module output_routines
         ventptr=>hventinfo(i)
         ifrom = ventptr%room1
         roomptr => roominfo(ifrom)
-        write (cifrom,'(a12)') roomptr%name
+        write (cifrom,'(a12)') roomptr%id
         if (ifrom==nr) cifrom = 'Outside'
         ito = ventptr%room2
         roomptr => roominfo(ito)
-        write (cito,'(a12)') roomptr%name
+        write (cito,'(a12)') roomptr%id
         if (ito==nr) cito = 'Outside'
         call flwout(outbuf,ventptr%h_mflow(1,1,1),ventptr%h_mflow(1,1,2),ventptr%h_mflow(1,2,1),ventptr%h_mflow(1,2,2),&
            ventptr%h_mflow(2,1,1),ventptr%h_mflow(2,1,2),ventptr%h_mflow(2,2,1),ventptr%h_mflow(2,2,2))
@@ -363,11 +363,11 @@ module output_routines
         ventptr => vventinfo(i)
         ifrom = ventptr%room2
         roomptr => roominfo(ifrom)
-        write (cifrom,'(a12)') roomptr%name
+        write (cifrom,'(a12)') roomptr%id
         if (ifrom==nr) cifrom = 'Outside'
         ito = ventptr%room1
         roomptr => roominfo(ito)
-        write (cito,'(a12)') roomptr%name
+        write (cito,'(a12)') roomptr%id
         if (ito==nr) cito = 'Outside'
         flow = 0.0_eb
         if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
@@ -388,11 +388,11 @@ module output_routines
         ventptr => mventinfo(i)
         ifrom = ventptr%room1
         roomptr => roominfo(ifrom)
-        write (cifrom,'(a12)') roomptr%name
+        write (cifrom,'(a12)') roomptr%id
         if (ifrom==nr) cifrom = 'Outside'
         ito = ventptr%room2
         roomptr => roominfo(ito)
-        write (cito,'(a12)') roomptr%name
+        write (cito,'(a12)') roomptr%id
         if (ito==nr) cito = 'Outside'
         flow = 0.0_eb
         if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
@@ -415,11 +415,11 @@ module output_routines
         ventptr => mventinfo(i)
         ifrom = ventptr%room1
         roomptr => roominfo(ifrom)
-        write (cifrom,'(a12)') roomptr%name
+        write (cifrom,'(a12)') roomptr%id
         if (ifrom==nr) cifrom = 'Outside'
         ito = ventptr%room2
         roomptr => roominfo(ito)
-        write (cito,'(a12)') roomptr%name
+        write (cito,'(a12)') roomptr%id
         if (ito==nr) cito = 'Outside'
         flow = 0.0_eb
         if (ventptr%total_flow(u)>=0.0_eb) flow(1) = ventptr%total_flow(u)
@@ -454,7 +454,7 @@ module output_routines
                 end if
             end do
             if (hasleak) then
-                write (cifrom,'(a12)') roomptr%name
+                write (cifrom,'(a12)') roomptr%id
                 cito = 'Outside'
                 call flwout(outbuf,flow(1),flow(2),flow(3),flow(4),flow(5),flow(6),flow(7),flow(8))
                 write (iofilo,5070) 'Leak', cifrom, cito, outbuf
@@ -557,7 +557,7 @@ module output_routines
 
         do i=1,nrm1
             roomptr => roominfo(i)
-            write (iofilo,5010) roomptr%name, (roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,iw=1,4)
+            write (iofilo,5010) roomptr%id, (roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,iw=1,4)
 
             do itarg = 1, n_targets
                 targptr => targetinfo(itarg)
@@ -577,13 +577,13 @@ module output_routines
                     if (abs(itotal)<=1.0e-10_eb) itotal = 0.0_eb
                     if (abs(total)<=1.0e-10_eb) total = 0.0_eb
                     if (total/=0.0_eb) then
-                        write (iofilo,5020) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
+                        write (iofilo,5020) targptr%id, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, &
                             tctemp-kelvin_c_offset, itotal, total, gasfed, heatfed
                     elseif (itotal/=0.0_eb) then
-                        write (iofilo,5030) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                        write (iofilo,5030) targptr%id, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
                             itotal, gasfed,heatfed
                     else
-                        write (iofilo,5040) targptr%name, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
+                        write (iofilo,5040) targptr%id, tgtemp-kelvin_c_offset, tttemp-kelvin_c_offset, tctemp-kelvin_c_offset, &
                             gasfed, heatfed
                     end if
                 end if
@@ -644,11 +644,11 @@ module output_routines
 
             itype = dtectptr%dtype
             if (itype==smoked) then
-                write (iofilo,5010) i, roomptr%name, 'SMOKE ', tjet, vel, obs, cact
+                write (iofilo,5010) i, roomptr%id, 'SMOKE ', tjet, vel, obs, cact
             else if (itype==heatd) then
-                write (iofilo,5020) i, roomptr%name, 'HEAT  ', tlink, tjet, cact
+                write (iofilo,5020) i, roomptr%id, 'HEAT  ', tlink, tjet, cact
             else
-                write (iofilo,5030) i, roomptr%name, 'SPRINK', tlink, tjet, vel, cact
+                write (iofilo,5030) i, roomptr%id, 'SPRINK', tlink, tjet, vel, cact
             end if
         end do
     end if
@@ -717,7 +717,7 @@ module output_routines
         hall = '' ; if (roomptr%hall) hall = '*'
         wallleakarea = (2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight) * roomptr%leak_areas(1)
         floorleakarea = (roomptr%cwidth * roomptr%cdepth) * roomptr%leak_areas(2)
-        write (iofilo,5010) i, trim(roomptr%name), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, &
+        write (iofilo,5010) i, trim(roomptr%id), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, &
             shaft, hall, wallleakarea, floorleakarea
     end do
     if (adiabatic_walls) write (iofilo,*) 'All compartment surfaces are adiabatic'
@@ -753,7 +753,7 @@ module output_routines
         do i = 1, n_hvents
             ventptr => hventinfo(i)
             roomptr => roominfo(ventptr%room2)
-            write (cjout,'(a14)') roomptr%name
+            write (cjout,'(a14)') roomptr%id
             if (ventptr%room2==nr) cjout = 'Outside'
             roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
@@ -761,24 +761,24 @@ module output_routines
                 rampid = ventptr%ramp_id
                 iramp = find_vent_opening_ramp(rampid,'H',ventptr%room1,ventptr%room2,ventptr%counter)
                 if (iramp==0) then
-                    write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                    write (iofilo,5020) roomptr%id, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
                         ctrigger, ventptr%opening_initial_time, ventptr%opening_initial_fraction, &
                         ventptr%opening_final_time, ventptr%opening_final_fraction
                 else
                     write (crout,'(a6,1x,i0)') 'RAMP #',iramp
-                    write (iofilo,5020) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, crout
+                    write (iofilo,5020) roomptr%id, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, crout
                 end if
             else if (ventptr%opening_type==trigger_by_temp) then
                 ctrigger = 'Temp'
                 targptr => targetinfo(ventptr%opening_target)
-                write (iofilo,5025) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%name, ventptr%opening_initial_fraction, &
+                write (iofilo,5025) roomptr%id, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%id, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             else
                 ctrigger = 'Flux'
                 targptr => targetinfo(ventptr%opening_target)
-                write (iofilo,5025) roomptr%name, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
-                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_fraction, &
+                write (iofilo,5025) roomptr%id, cjout, ventptr%counter, ventptr%width, ventptr%sill, ventptr%soffit, &
+                    ctrigger, ventptr%opening_criterion, targptr%id, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             end if
         end do
@@ -802,10 +802,10 @@ module output_routines
         do i = 1, n_vvents
             ventptr => vventinfo(i)
             roomptr => roominfo(ventptr%room1)
-            write (ciout,'(a14)') roomptr%name
+            write (ciout,'(a14)') roomptr%id
             if (ventptr%room1==nr) ciout = 'Outside'
             roomptr => roominfo(ventptr%room2)
-            write (cjout,'(a14)') roomptr%name
+            write (cjout,'(a14)') roomptr%id
             if (ventptr%room2==nr) cjout = 'Outside'
             csout = 'Round'
             if (ventptr%shape==2) csout = 'Square'
@@ -826,13 +826,13 @@ module output_routines
                 ctrigger = 'Temp'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5055) ciout, cjout, ventptr%counter, csout, ventptr%area, &
-                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%name, ventptr%opening_initial_fraction, &
+                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%id, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             else 
                 ctrigger = 'Flux'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5055) ciout, cjout, ventptr%counter, csout, ventptr%area, &
-                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_fraction, &
+                    ctrigger, ventptr%opening_criterion, targptr%id, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             end if
         end do
@@ -855,10 +855,10 @@ module output_routines
         do i = 1, n_mvents
             ventptr => mventinfo(i)
             roomptr => roominfo(ventptr%room1)
-            write (ciout,'(a14)') roomptr%name
+            write (ciout,'(a14)') roomptr%id
             if (ventptr%room1==nr) ciout = 'Outside'
             roomptr => roominfo(ventptr%room2)
-            write (cjout,'(a14)') roomptr%name
+            write (cjout,'(a14)') roomptr%id
             if (ventptr%room2==nr) cjout = 'Outside'
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
@@ -876,13 +876,13 @@ module output_routines
                 ctrigger = 'Temp'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5135) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
-                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%name, ventptr%opening_initial_fraction, &
+                    ctrigger, ventptr%opening_criterion-kelvin_c_offset, targptr%id, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             else 
                 ctrigger = 'Flux'
                 targptr => targetinfo(ventptr%opening_target)
                 write (iofilo,5135) ciout, cjout, ventptr%counter, ventptr%area, ventptr%coeff(1), &
-                    ctrigger, ventptr%opening_criterion, targptr%name, ventptr%opening_initial_fraction, &
+                    ctrigger, ventptr%opening_criterion, targptr%id, ventptr%opening_initial_fraction, &
                     ventptr%opening_final_fraction
             end if
         end do
@@ -906,10 +906,10 @@ module output_routines
          do i = 1, n_ramps
              rampptr => rampinfo(i)
              roomptr => roominfo(rampptr%room2)
-             write (cjout,'(a14)') roomptr%name
+             write (cjout,'(a14)') roomptr%id
              if (rampptr%room2==nr) cjout = 'Outside'
              roomptr => roominfo(rampptr%room1)
-             write (iofilo,5170) rampptr%type, roomptr%name, cjout, rampptr%counter, 'Time      ', &
+             write (iofilo,5170) rampptr%type, roomptr%id, cjout, rampptr%counter, 'Time      ', &
                  (int(rampptr%x(j)),j=1,rampptr%npoints)
              write (iofilo,5180) 'Fraction', (rampptr%f_of_x(j),j=1,rampptr%npoints)
          end do
@@ -953,14 +953,14 @@ module output_routines
 30  write (iofilo,5010)
     do  i = 1, nrm1
         roomptr => roominfo(i)
-        write (iofilo,5020) roomptr%name, roomptr%matl(1), roomptr%matl(3), roomptr%matl(2)
+        write (iofilo,5020) roomptr%id, roomptr%matl(1), roomptr%matl(3), roomptr%matl(2)
     end do
 
     ! print out the properties of the materials used
     write (iofilo,5030)
     do i = 1, n_thrmp
         thrmpptr => thermalinfo(i)
-        write (iofilo,5040) thrmpptr%name, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
+        write (iofilo,5040) thrmpptr%id, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
         do j = 2, thrmpptr%nslab
             write (iofilo,5050) thrmpptr%k(j), thrmpptr%c(j), thrmpptr%rho(j), thrmpptr%thickness(j)
         end do
@@ -1001,8 +1001,8 @@ module output_routines
         do io = 1, n_fires
             fireptr => fireinfo(io)
             roomptr => roominfo(fireptr%room)
-            write (iofilo,5020) trim(fireptr%name), io, fire_geometry(fireptr%modified_plume)
-            write (iofilo,5030) roomptr%name, ftype(fireptr%chemistry_type), fireptr%flaming_transition_time, fireptr%x_position, &
+            write (iofilo,5020) trim(fireptr%id), io, fire_geometry(fireptr%modified_plume)
+            write (iofilo,5030) roomptr%id, ftype(fireptr%chemistry_type), fireptr%flaming_transition_time, fireptr%x_position, &
                 fireptr%y_position, fireptr%z_position+fireptr%height(1), relative_humidity*100., lower_o2_limit*100.,fireptr%chirad
             write (iofilo,5031) fireptr%n_C, fireptr%n_H, fireptr%n_O, fireptr%n_N, fireptr%n_Cl
             write (cbuf,5040)
@@ -1057,7 +1057,7 @@ module output_routines
         else
             location_type = 'Exterior'
         end if
-        write (iofilo,5010) itarg, targptr%name, roomptr%name, (targptr%center(j),j=1,3), location_type, &
+        write (iofilo,5010) itarg, targptr%id, roomptr%id, (targptr%center(j),j=1,3), location_type, &
             (targptr%normal(j),j=1,3), targptr%depth_loc, trim(targptr%material)
 5010    format(i5,3x,a15,4x,a14,4x,3(f7.2,2x),3x,a8,4x,3(f7.2,2x),f8.3,12x,a)
     end do
@@ -1092,14 +1092,14 @@ module output_routines
         itype = dtectptr%dtype
         if (itype==smoked) then
             if (dtectptr%dual_detector) then
-                write (outbuf,5015) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger, dtectptr%trigger_smolder
+                write (outbuf,5015) idtect, roomptr%id, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger, dtectptr%trigger_smolder
             else
-                write (outbuf,5010) idtect, roomptr%name, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
+                write (outbuf,5010) idtect, roomptr%id, 'SMOKE ', dtectptr%center(1:3), dtectptr%trigger
             end if
         else if (itype==heatd) then
-            write (outbuf,5020) idtect, roomptr%name, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-kelvin_c_offset, dtectptr%rti
+            write (outbuf,5020) idtect, roomptr%id, 'HEAT  ', dtectptr%center(1:3), dtectptr%trigger-kelvin_c_offset, dtectptr%rti
         else
-            write (outbuf,5020) idtect, roomptr%name, 'SPRINK', dtectptr%center(1:3), &
+            write (outbuf,5020) idtect, roomptr%id, 'SPRINK', dtectptr%center(1:3), &
                 dtectptr%trigger-kelvin_c_offset, dtectptr%rti, dtectptr%spray_density
         end if
 5010    format(i3,5x,a14,5x,a6,4x,3(f7.2,2x),3x,f10.2)

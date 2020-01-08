@@ -391,7 +391,7 @@
             call set_defaults
             read(lu,MATL)
 
-            thrmpptr%name          = id
+            thrmpptr%id          = id
             thrmpptr%nslab         = 1
             thrmpptr%k(1)          = conductivity
             thrmpptr%c(1)          = specific_heat*1e3
@@ -500,7 +500,7 @@
             end do
 
             roomptr%compartment    = ii
-            roomptr%name    = id
+            roomptr%id    = id
             roomptr%group   = group
             roomptr%cwidth  = width
             roomptr%cdepth  = depth
@@ -661,7 +661,7 @@
                 idcheck=.false.
                 searching: do jj = 1, nr-1
                     roomptr => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptr%name)) then
+                    if (trim(compartment_id) == trim(roomptr%id)) then
                         iroom = roomptr%compartment
                         idcheck = .true.
                         exit searching
@@ -690,7 +690,7 @@
                 targptr%depth_units = depth_units
 
                 ! target name
-                targptr%name = id
+                targptr%id = id
 
                 ! material type
                 tcname = matl_id
@@ -743,7 +743,7 @@
                 idcheck=.false.
                 searching_2: do jj = 1, nr-1
                     roomptr => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptr%name)) then
+                    if (trim(compartment_id) == trim(roomptr%id)) then
                         iroom = roomptr%compartment
                         idcheck = .true.
                         exit searching_2
@@ -763,7 +763,7 @@
                     call cfastexit('read_devc',8)
                 end if
 
-                dtectptr%name = id
+                dtectptr%id = id
                 if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT_DETECTOR') then
                     if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint + 273.15_eb
@@ -811,8 +811,8 @@
 
                 if (dtectptr%center(1)>roomptr%cwidth.or. &
                     dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
-                write (*,5339) n_detectors,roomptr%name
-                write (iofill,5339) n_detectors,roomptr%name
+                write (*,5339) n_detectors,roomptr%id
+                write (iofill,5339) n_detectors,roomptr%id
                 call cfastexit('read_devc',9)
                 end if
 
@@ -996,7 +996,7 @@
         end if
         do i = 1, n_tabls
             tablptr => tablinfo(i)
-            if(id==tablptr%name) then
+            if(id==tablptr%id) then
                 n_tabl_lines = n_tabl_lines +1
                 cycle search_loop
             end if
@@ -1009,7 +1009,7 @@
         end if
         n_tabl_lines = n_tabl_lines +1
         tablptr => tablinfo(n_tabls)
-        tablptr%name = id
+        tablptr%id = id
         tablptr%n_points = 0
 
     enddo search_loop
@@ -1025,7 +1025,7 @@
                 call checkread('TABL',lu,ios)
                 call set_defaults
                 read(lu,TABL)
-                if (id==tablptr%name) then
+                if (id==tablptr%id) then
                     if(labels(1)/='NULL') then
                         ! input is column headings
                         tablptr%n_columns = 0
@@ -1132,7 +1132,7 @@ continue
 
             searching: do jj = 1, nr-1
                 roomptr => roominfo(jj)
-                if (trim(compartment_id) == trim(roomptr%name)) then
+                if (trim(compartment_id) == trim(roomptr%id)) then
                     iroom = roomptr%compartment
                     exit searching
                 end if
@@ -1146,8 +1146,8 @@ continue
             roomptr => roominfo(iroom)
 
             fireptr%room = iroom
-            fireptr%name = id
-            fireptr%fire_name = fire_id
+            fireptr%id = id
+            fireptr%fire_id = fire_id
 
             fireptr%x_position = location(1)
             fireptr%y_position = location(2)
@@ -1170,7 +1170,7 @@ continue
                     if (trim(ignition_criterion)=='TEMPERATURE' .or. trim(ignition_criterion)=='FLUX') then
                         do i = 1,n_targets
                             targptr => targetinfo(i)
-                            if (trim(targptr%name)==trim(devc_id)) fireptr%ignition_target = i
+                            if (trim(targptr%id)==trim(devc_id)) fireptr%ignition_target = i
                         end do
                         if (fireptr%ignition_target==0) then
                             write (*,5324) n_fires
@@ -1324,7 +1324,7 @@ continue
             ! find all fires that this definition applies to
             searching: do jj = 1, n_fires
                 fireptr => fireinfo(jj)
-                if (trim(id) == trim(fireptr%fire_name)) then
+                if (trim(id) == trim(fireptr%fire_id)) then
                     ifire =jj
 
 
@@ -1401,7 +1401,7 @@ continue
 
                     tabl_search: do kk = 1, n_tabls
                         tablptr=>tablinfo(kk)
-                        if (trim(tablptr%name)==trim(fireptr%fire_name)) then
+                        if (trim(tablptr%id)==trim(fireptr%fire_id)) then
                             np = tablptr%n_points
                             do i = 1,mxtablcols
                                 select case (trim(tablptr%labels(i)))
@@ -1481,15 +1481,15 @@ continue
                     ! Now the heat release per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
                     hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+f_height))
                     if (hrrpm3>4.0e6_eb) then
-                        write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (*,5106) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
                         write (*, 5108)
-                        write (iofill,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (iofill,5106) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
                         write (iofill, 5108)
                         call cfastexit('read_chem',6)
                     else if (hrrpm3>2.0e6_eb) then
-                        write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (*,5107) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
                         write (*, 5108)
-                        write (iofill,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+                        write (iofill,5107) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
                         write (iofill, 5108)
                     end if
                 end if
@@ -1650,7 +1650,7 @@ continue
                             iroom = nr
                             exit searching
                         end if
-                        if (trim(compartment_id) == trim(roomptr%name)) then
+                        if (trim(compartment_id) == trim(roomptr%id)) then
                             iroom = roomptr%compartment
                             exit searching
                         end if
@@ -1750,7 +1750,7 @@ continue
                         ventptr%opening_target = 0
                         do i = 1,n_targets
                             targptr => targetinfo(i)
-                            if (trim(targptr%name)==trim(devc_id)) ventptr%opening_target = i
+                            if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
                         end do
                         if (ventptr%opening_target==0) then
                             write (*,*) '***Error: Vent opening specification requires an associated target.'
@@ -1798,7 +1798,7 @@ continue
                             iroom = nr
                             exit searching_2
                         end if
-                        if (trim(compartment_id) == trim(roomptr%name)) then
+                        if (trim(compartment_id) == trim(roomptr%id)) then
                             iroom = roomptr%compartment
                             exit searching_2
                         end if
@@ -1903,7 +1903,7 @@ continue
                             ventptr%opening_target = 0
                             do i = 1,n_targets
                                 targptr => targetinfo(i)
-                                if (trim(targptr%name)==trim(devc_id)) ventptr%opening_target = i
+                                if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
                             end do
                             if (ventptr%opening_target==0) then
                                 write (*,*) '***Error: Vent opening specification requires an associated target.'
@@ -1945,7 +1945,7 @@ continue
                             iroom = nr
                             exit searching_3
                         end if
-                        if (trim(compartment_id) == trim(roomptr%name)) then
+                        if (trim(compartment_id) == trim(roomptr%id)) then
                             iroom = roomptr%compartment
                             exit searching_3
                         end if
@@ -2043,7 +2043,7 @@ continue
                             ventptr%opening_target = 0
                             do i = 1,n_targets
                                 targptr => targetinfo(i)
-                                if (trim(targptr%name)==trim(devc_id)) ventptr%opening_target = i
+                                if (trim(targptr%id)==trim(devc_id)) ventptr%opening_target = i
                             end do
                             if (ventptr%opening_target==0) then
                                 write (*,*) '***Error: Vent opening specification requires an associated target.'
@@ -2174,7 +2174,7 @@ continue
 
                 searching: do jj=1,nr-1
                     roomptrfrm => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptrfrm%name)) then
+                    if (trim(compartment_id) == trim(roomptrfrm%id)) then
                         ifrom = roomptrfrm%compartment
                         exit searching
                     end if
@@ -2202,7 +2202,7 @@ continue
                             ito = nr
                             exit searching_2
                         end if
-                        if (trim(compartment_id) == trim(roomptrto%name)) then
+                        if (trim(compartment_id) == trim(roomptrto%id)) then
                             ito = roomptrto%compartment
                             exit searching_2
                         end if
@@ -2236,7 +2236,7 @@ continue
 
                 searching_3: do jj = 1, nr-1
                     roomptrfrm => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptrfrm%name)) then
+                    if (trim(compartment_id) == trim(roomptrfrm%id)) then
                         i1 = roomptrfrm%compartment
                         exit searching_3
                     end if
@@ -2254,7 +2254,7 @@ continue
 
                 searching_4: do jj = 1, nr-1
                     roomptrfrm => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptrfrm%name)) then
+                    if (trim(compartment_id) == trim(roomptrfrm%id)) then
                         i2 = roomptrfrm%compartment
                         exit searching_4
                     end if
@@ -2356,7 +2356,7 @@ continue
 
             searching: do jj = 1, nr-1
                 roomptr => roominfo(jj)
-                if (trim(compartment_id) == trim(roomptr%name)) then
+                if (trim(compartment_id) == trim(roomptr%id)) then
                     icomp = roomptr%compartment
                     exit searching
                 end if
@@ -2462,7 +2462,7 @@ continue
             if (trim(compartment_id) /= 'NULL') then
                 searching: do jj = 1, nr-1
                     roomptr => roominfo(jj)
-                    if (trim(compartment_id) == trim(roomptr%name)) then
+                    if (trim(compartment_id) == trim(roomptr%id)) then
                         icomp = roomptr%compartment
                         exit searching
                     end if

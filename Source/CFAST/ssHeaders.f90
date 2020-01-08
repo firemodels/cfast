@@ -63,7 +63,7 @@ module spreadsheet_header_routines
                     call toIntString(j,cRoom)
                     headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
                     headertext(2,position) = Labels(i+1)
-                    headertext(3,position) = roomptr%name
+                    headertext(3,position) = roomptr%id
                     headertext(4,position) = LabelUnits(i+1)
                 end if
             end if
@@ -84,7 +84,7 @@ module spreadsheet_header_routines
         if (i==nr) then
             headertext(3,position) = 'Outside'
         else
-            headertext(3,position) = roomptr%name
+            headertext(3,position) = roomptr%id
         end if
         headertext(4,position) = LabelUnits(7)
     end do
@@ -97,7 +97,7 @@ module spreadsheet_header_routines
             call toIntString(j,cFire)
             headertext(1,position) = trim(LabelsShort(i+7))//trim(cFire)
             headertext(2,position) = Labels(i+7)
-            headertext(3,position) = fireptr%name
+            headertext(3,position) = fireptr%id
             headertext(4,position) = LabelUnits(i+7)
         end do
     end do
@@ -166,7 +166,7 @@ module spreadsheet_header_routines
                         call toIntString(i,cRoom)
                         headertext(1,position) = trim(LabelsShort((j-1)*ns+lsp+1)) // trim(cRoom)
                         headertext(2,position) = Labels((j-1)*ns+lsp+1)
-                        headertext(3,position) = roomptr%name
+                        headertext(3,position) = roomptr%id
                         headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
                         if (validation_flag.and.molfrac(lsp)) headertext(4,position) = 'mol frac'
                         if (validation_flag.and.lsp==soot) headertext(4,position) = 'mg/m^3'
@@ -241,7 +241,7 @@ module spreadsheet_header_routines
                             call toIntString(i,cRoom)
                             headertext(1,position) = trim(LabelsShort((j-1)*ns+lsp+1)) // trim(cRoom)
                             headertext(2,position) = Labels((j-1)*ns+lsp+1)
-                            headertext(3,position) = roomptr%name
+                            headertext(3,position) = roomptr%id
                             headertext(4,position) = LabelUnits((j-1)*ns+lsp+1)
                         end if
                     end if
@@ -302,7 +302,7 @@ module spreadsheet_header_routines
             call toIntString(i,cRoom)
             headertext(1,position) = trim(LabelsShort(j+1))//trim(cRoom)
             headertext(2,position) = Labels(j+1)
-            headertext(3,position) = roomptr%name
+            headertext(3,position) = roomptr%id
             headertext(4,position) = LabelUnits(j+1)
         end do
     end do
@@ -317,7 +317,7 @@ module spreadsheet_header_routines
                 position = position + 1
                 headertext(1,position) = trim(frontorback(1)) // trim(LabelsShort(j+5)) // trim(cDet)
                 headertext(2,position) = Labels(j+5)
-                headertext(3,position) = targptr%name
+                headertext(3,position) = targptr%id
                 headertext(4,position) = LabelUnits(j+5)
             end if
         end do
@@ -328,7 +328,7 @@ module spreadsheet_header_routines
                 position = position + 1
                 headertext(1,position) = trim(frontorback(2)) // trim(LabelsShort(j+5)) // trim(cDet)
                 headertext(2,position) = 'Back ' // Labels(j+5)
-                headertext(3,position) = targptr%name
+                headertext(3,position) = targptr%id
                 headertext(4,position) = LabelUnits(j+5)
             end do
         end if
@@ -336,7 +336,7 @@ module spreadsheet_header_routines
             position = position + 1
             headertext(1,position) = trim(LabelsShort(j+24)) // trim(cDet)
             headertext(2,position) = Labels(j+24)
-            headertext(3,position) = targptr%name
+            headertext(3,position) = targptr%id
             headertext(4,position) = LabelUnits(j+24)
         end do
     end do
@@ -350,12 +350,12 @@ module spreadsheet_header_routines
             if (dtectptr%dtype==smoked .and. j == 1) then
                 headertext(1,position) = trim(LabelsShort(j+20))//trim(cDet)
                 headertext(2,position) = 'Sensor Obscuration'
-                headertext(3,position) = dtectptr%name
+                headertext(3,position) = dtectptr%id
                 headertext(4,position) = '1/m'
             else
                 headertext(1,position) = trim(LabelsShort(j+20))//trim(cDet)
                 headertext(2,position) = Labels(j+20)
-                headertext(3,position) = dtectptr%name
+                headertext(3,position) = dtectptr%id
                 headertext(4,position) = LabelUnits(j+20)
             end if
         end do
@@ -927,36 +927,36 @@ module spreadsheet_header_routines
         roomptr => roominfo(j)
         position = position + 1
         headertext(1,position) = trim(Labels(2))
-        headertext(2,position) = roomptr%name
+        headertext(2,position) = roomptr%id
         headertext(3,position) = LabelUnits(2)
         position = position + 1
         headertext(1,position) = trim(Labels(3))
-        headertext(2,position) = roomptr%name
+        headertext(2,position) = roomptr%id
         headertext(3,position) = LabelUnits(3)
         position = position + 1
         headertext(1,position) = trim(Labels(4))
-        headertext(2,position) = roomptr%name
+        headertext(2,position) = roomptr%id
         headertext(3,position) = LabelUnits(4)
         position = position + 1
         headertext(1,position) = trim(Labels(5))
-        headertext(2,position) = roomptr%name
+        headertext(2,position) = roomptr%id
         headertext(3,position) = LabelUnits(5)
         do i = 1, 2
             do k = 1, 2
                 do l = 2, 9
                     position = position + 1
                     headertext(1,position) = trim(Labels(l+4))//trim(Layers(i))
-                    headertext(2,position) = roomptr%name
+                    headertext(2,position) = roomptr%id
                     headertext(3,position) = LabelUnits(k+5)
                 end do
             end do
             position = position + 1
             headertext(1,position) = trim(Labels(14))//trim(Layers(i))
-            headertext(2,position) = roomptr%name
+            headertext(2,position) = roomptr%id
             headertext(3,position) = LabelUnits(7)
             position = position + 1
             headertext(1,position) = trim(Labels(15))//trim(Layers(i))
-            headertext(2,position) = roomptr%name
+            headertext(2,position) = roomptr%id
             headertext(3,position) = LabelUnits(7)
         end do
     end do
@@ -968,7 +968,7 @@ module spreadsheet_header_routines
             do k = 1, 9
                 position = position + 1
                 headertext(1,position) = trim(Species(k))//trim(Layers(i))
-                headertext(2,position) = roomptr%name
+                headertext(2,position) = roomptr%id
                 headertext(3,position) = LabelUnits(8)
             end do
         end do
@@ -1057,7 +1057,7 @@ module spreadsheet_header_routines
             call toIntString(j,cRoom)
             headertext(1,position) = trim(LabelsShort(i+1)) // trim(cRoom)
             headertext(2,position) = Labels(i+1)
-            headertext(3,position) = roomptr%name
+            headertext(3,position) = roomptr%id
             headertext(4,position) = LabelUnits(i+1)
         end do
     end do

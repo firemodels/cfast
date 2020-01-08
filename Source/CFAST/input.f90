@@ -85,7 +85,7 @@
     ! add the default thermal property
     n_thrmp = n_thrmp + 1
     thrmpptr => thermalinfo(n_thrmp)
-    thrmpptr%name = 'DEFAULT'
+    thrmpptr%id = 'DEFAULT'
     thrmpptr%eps = 0.90_eb
     thrmpptr%nslab = 1
     thrmpptr%k(1) = 0.120_eb

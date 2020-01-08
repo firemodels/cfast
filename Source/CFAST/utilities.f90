@@ -1364,9 +1364,9 @@
                 ventptr%opening_final_time = time + 1.0_eb
                 ventptr%opening_type = trigger_by_time
                 ventptr%opening_triggered = .true.
-                room1c = roominfo(ventptr%room1)%name
+                room1c = roominfo(ventptr%room1)%id
                 if (ventptr%room1>nrm1) room1c = 'Outside'
-                room2c = roominfo(ventptr%room2)%name
+                room2c = roominfo(ventptr%room2)%id
                 if (ventptr%room2>nrm1) room2c = 'Outside'
                 vtypec = 'Unknown '
                 if (vtype=='H') vtypec = 'Wall'
@@ -1387,9 +1387,9 @@
                 ventptr%opening_final_time = time + 1.0_eb
                 ventptr%opening_type = trigger_by_time
                 ventptr%opening_triggered = .true.
-                room1c = roominfo(ventptr%room1)%name
+                room1c = roominfo(ventptr%room1)%id
                 if (ventptr%room1>nrm1) room1c = 'Outside'
-                room2c = roominfo(ventptr%room2)%name
+                room2c = roominfo(ventptr%room2)%id
                 if (ventptr%room2>nrm1) room2c = 'Outside'
                 vtypec = 'Unknown '
                 if (vtype=='H') vtypec = 'Wall'

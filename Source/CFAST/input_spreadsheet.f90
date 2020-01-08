@@ -152,7 +152,7 @@ module spreadsheet_input_routines
                     stop
                 end if
                 thrmpptr => thermalinfo(n_thrmp)
-                thrmpptr%name = lcarray(1)
+                thrmpptr%id = lcarray(1)
                 thrmpptr%nslab = 1
                 thrmpptr%k(1) = lrarray(2)
                 thrmpptr%c(1) = lrarray(3)
@@ -192,7 +192,7 @@ module spreadsheet_input_routines
 
                 roomptr => roominfo(ncomp)
                 ! Name
-                roomptr%name = lcarray(1)
+                roomptr%id = lcarray(1)
 
                 ! Size
                 roomptr%cwidth = lrarray(2)
@@ -285,9 +285,9 @@ module spreadsheet_input_routines
 
                 ! target name
                 if (countargs(lcarray)>=12) then
-                    targptr%name = lcarray(12)
+                    targptr%id = lcarray(12)
                 else
-                    write (targptr%name,'(a5,i0)') 'Targ ', n_targets
+                    write (targptr%id,'(a5,i0)') 'Targ ', n_targets
                 end if
 
                 ! material type
@@ -392,7 +392,7 @@ module spreadsheet_input_routines
                 if (lcarray(6)=='TEMP' .or. lcarray(6)=='FLUX') then
                     do i = 1,n_targets
                         targptr => targetinfo(i)
-                        if (targptr%name==lcarray(8)) fireptr%ignition_target = i
+                        if (targptr%id==lcarray(8)) fireptr%ignition_target = i
                     end do
                     if (fireptr%ignition_target==0) then
                         write (*,5324) n_fires
@@ -406,7 +406,7 @@ module spreadsheet_input_routines
                 stop
             end if
             fireptr%room = iroom
-            fireptr%name = lcarray(11)
+            fireptr%id = lcarray(11)
             ! Note that ignition type 1 is time, type 2 is temperature and 3 is flux
             if (tmpcond>0.0_eb) then
                 fireptr%ignited = .false.
@@ -567,7 +567,7 @@ module spreadsheet_input_routines
                     ventptr%opening_target = 0
                     do i = 1,n_targets
                         targptr => targetinfo(i)
-                        if (targptr%name==lcarray(12)) ventptr%opening_target = i
+                        if (targptr%id==lcarray(12)) ventptr%opening_target = i
                     end do
                     if (ventptr%opening_target==0) then
                         write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
@@ -775,7 +775,7 @@ module spreadsheet_input_routines
                         ventptr%opening_target = 0
                         do i = 1,n_targets
                             targptr => targetinfo(i)
-                            if (targptr%name==lcarray(8)) ventptr%opening_target = i
+                            if (targptr%id==lcarray(8)) ventptr%opening_target = i
                         end do
                         if (ventptr%opening_target==0) then
                             write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
@@ -873,7 +873,7 @@ module spreadsheet_input_routines
                         ventptr%opening_target = 0
                         do i = 1,n_targets
                             targptr => targetinfo(i)
-                            if (targptr%name==lcarray(15)) ventptr%opening_target = i
+                            if (targptr%id==lcarray(15)) ventptr%opening_target = i
                         end do
                         if (ventptr%opening_target==0) then
                             write (*,*) '***Error: Bad HVENT input. Vent opening specification requires an associated target.'
@@ -968,7 +968,7 @@ module spreadsheet_input_routines
                     end if
                 end if
                 roomptr => roominfo(iroom)
-                if (roomptr%name==' ') then
+                if (roomptr%id==' ') then
                     write (*,5344) i2
                     write (iofill,5344) i2
                     stop
@@ -976,8 +976,8 @@ module spreadsheet_input_routines
 
                 if (dtectptr%center(1)>roomptr%cwidth.or. &
                     dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
-                write (*,5339) n_detectors,roomptr%name
-                write (iofill,5339) n_detectors,roomptr%name
+                write (*,5339) n_detectors,roomptr%id
+                write (iofill,5339) n_detectors,roomptr%id
                 stop
                 end if
 
@@ -1526,15 +1526,15 @@ module spreadsheet_input_routines
     ! now the heat realease per cubic meter of the flame - we know that the size is larger than 1.0d-6 m^3 - enforced above
     hrrpm3 = max_hrr/(pio4*fireptr%characteristic_length**2*(fireptr%characteristic_length+f_height))
     if (hrrpm3>4.0e6_eb) then
-        write (*,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+        write (*,5106) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (*, 5108)
-        write (iofill,5106) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+        write (iofill,5106) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (iofill, 5108)
         stop
     else if (hrrpm3>2.0e6_eb) then
-        write (*,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+        write (*,5107) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (*, 5108)
-        write (iofill,5107) trim(fireptr%name),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
+        write (iofill,5107) trim(fireptr%id),fireptr%x_position,fireptr%y_position,fireptr%z_position,hrrpm3
         write (iofill, 5108)
     end if
 

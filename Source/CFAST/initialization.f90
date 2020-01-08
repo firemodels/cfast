@@ -60,7 +60,7 @@ module initialization_routines
 
     do i = 1, n_thrmp
         thrmpptr => thermalinfo(i)
-        if (name==thrmpptr%name) then
+        if (name==thrmpptr%id) then
             tp = i
             return
         end if
@@ -316,7 +316,7 @@ module initialization_routines
     !thermal properties. initialize to nothing
     n_thrmp = 0
     allocate (thermalinfo(mxthrmp))
-    thermalinfo(1:mxthrmp)%name          = ' '
+    thermalinfo(1:mxthrmp)%id          = ' '
     thermalinfo(1:mxthrmp)%nslab         = 1
     thermalinfo(1:mxthrmp)%k(1)          = 0.0_eb
     thermalinfo(1:mxthrmp)%c(1)          = 0.0_eb
@@ -526,7 +526,7 @@ module initialization_routines
     fireinfo(1:mxfires)%y_position = -1.0_eb
     fireinfo(1:mxfires)%z_position = -1.0_eb
     fireinfo(1:mxfires)%room = 0
-    fireinfo(1:mxfires)%name = ' '
+    fireinfo(1:mxfires)%id = ' '
     fireinfo(1:mxfires)%chemistry_type = 2
     fireinfo(1:mxfires)%ignition_type = trigger_by_time
     fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
@@ -550,7 +550,7 @@ module initialization_routines
     ! no data for fires without user input
     n_tabls = 0
     allocate (tablinfo(mxtabls))
-    tablinfo(1:mxtabls)%name = ' '
+    tablinfo(1:mxtabls)%id = ' '
     do lsp = 1, ns+3
         tablinfo(1:mxtabls)%labels(lsp) = ' '
     end do

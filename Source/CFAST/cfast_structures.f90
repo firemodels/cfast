@@ -26,7 +26,7 @@ module cfast_types
 
     ! detector / sprinkler structure
     type detector_type
-        character(64) :: name           ! user selected name for the detector (user input)
+        character(64) :: id           ! user selected name for the detector (user input)
         real(eb) :: center(3)           ! position of detector center (user input)
         real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
         real(eb) :: trigger_smolder     ! activation value for dual_detector smoke for the smoldering smoke % obscuration 
@@ -62,8 +62,8 @@ module cfast_types
     ! fire data structure
     type fire_type
         ! These are the fire definitions from the input
-        character(64) :: name                           ! user selected name for the fire instance (user input)
-        character(64) :: fire_name                      ! user selected name for the data associated with this fire instance
+        character(64) :: id                           ! user selected name for the fire instance (user input)
+        character(64) :: fire_id                      ! user selected name for the data associated with this fire instance
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
         integer :: ignition_type                        ! ignition type for fire (user input)
@@ -129,7 +129,7 @@ module cfast_types
     ! room data structure
     type room_type
         ! These are room definitions from or calculated from user input
-        character(64) :: name                           ! user selected name for the compartment
+        character(64) :: id                           ! user selected name for the compartment
         character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
         character(64) :: group                          ! identifier for compartment grouping for later analyses ... for example
                                                         ! "Office", "Bedroom", "Hallway". etc
@@ -214,7 +214,7 @@ module cfast_types
     
     ! time-dependent fire parameters table input data structure
     type table_type
-        character(64) :: name                           ! user selected name for the table (normally this would match the fire name)
+        character(64) :: id                           ! user selected name for the table (normally this would match the fire name)
         character(64), dimension(ns+3) :: labels        ! column labels for columns of data in the table
         real(eb), dimension(mxpts,ns+3) :: data         ! actual input data for the table
         integer :: n_points                             ! number of data points (rows) in the table
@@ -223,7 +223,7 @@ module cfast_types
 
     ! target data structure
     type target_type
-        character(64) :: name           ! user selected name for the target
+        character(64) :: id           ! user selected name for the target
         character(64) :: material       ! material for the target (used to match materials properties)
         character(64) :: depth_units    ! specify units for temperature depth location, 'FRACTION' or 'M'
                                         ! default is 'FRACTION' for backwards compatibility
@@ -270,7 +270,7 @@ module cfast_types
 
     ! thermal properties structure
     type thermal_type
-        character(64) :: name                           ! user selected name for the material
+        character(64) :: id                           ! user selected name for the material
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
         real(eb), dimension(mxslb) :: rho               ! density of each slab

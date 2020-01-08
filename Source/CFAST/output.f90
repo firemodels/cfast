@@ -10,7 +10,7 @@ module output_routines
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
-        w_from_room, w_from_wall, idx_tempf_trg, mx_calc
+        w_from_room, w_from_wall, idx_tempf_trg, mx_calc, cjetvelocitymin
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
@@ -18,15 +18,16 @@ module output_routines
     use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, inputfile, iofilssmc, &
+        iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
+        iofilssn, iofilssf, iofilsss, iofilsssspeciesmass, iofilsswt, iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
-        smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswall, ssdiag, &
-        ssmontecarlo
+        smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswallandtarget, &
+        ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use calc_data, only: n_mcarlo, calcinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvmass, iocsvspecies
+    use calc_data, only: n_mcarlo, calcinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvspmass, iocsvspecies
 
     implicit none
     
@@ -613,7 +614,7 @@ module output_routines
     ! output the conditions of and at a sprinkler location (temperature, velocities etc) at the current time
 
     integer :: i, iroom, itype
-    real(eb) :: cjetmin, zdetect, tlay, tjet, vel, obs, tlink
+    real(eb) :: zdetect, tlay, tjet, vel, obs, tlink
 
     character(3) :: cact
     type(room_type), pointer :: roomptr
@@ -621,7 +622,6 @@ module output_routines
 
     if (n_detectors>0) then
         write (iofilo,5000)
-        cjetmin = 0.10_eb
         do i = 1, n_detectors
             dtectptr => detectorinfo(i)
             iroom = dtectptr%room
@@ -635,7 +635,7 @@ module output_routines
             end if
 
             tjet = max(dtectptr%temp_gas,tlay)-kelvin_c_offset
-            vel = max(dtectptr%velocity,cjetmin)
+            vel = max(dtectptr%velocity,cjetvelocitymin)
             obs = dtectptr%obscuration
             tlink =  dtectptr%value-kelvin_c_offset
 
@@ -1389,12 +1389,12 @@ module output_routines
     !     iofilssn      spreadsheet output (normal)
     !     iofilssf      spreadsheet output (flow field)
     !     iofilsss      spreadsheet output (species molar %, etc.)
-    !     iofilssm      spreadsheet otuput (species mass)
-    !     iofilssw      spreadsheet output (walls and targets)
-    !     iofilssd      spreadsheet output (various diagnostics for verification)
+    !     iofilsssspeciesmass      spreadsheet otuput (species mass)
+    !     iofilsswt      spreadsheet output (walls and targets)
+    !     iofilssdiag      spreadsheet output (various diagnostics for verification)
     !     ioresid       diagnostic file of solution vector
     !     ioslab        diagnostic file of flow slabs
-    !     iofilssmc     spreadsheet output (for Monte Carlo analysis)
+    !     iofilcalc     spreadsheet output (post-run calculations)
     
     ! other units may be opened with newunit keyword in open statement
 
@@ -1418,18 +1418,28 @@ module output_routines
 
     ! the spread sheet files
     if (ss_out_interval>0) then
+        open(newunit=iofilssc, file=sscompartment,form='formatted')
+        !iocsv(iocsvcompartment) = iofilssc
+        open(newunit=iofilssd, file=ssdevice,form='formatted')
+        !iocsv(iocsvdevice) = iofilssd
+        open(newunit=iofilssw, file=sswall,form='formatted')
+        !iocsv(iocsvwall) = iofilssw
+        open(newunit=iofilssm, file=ssmasses,form='formatted')
+        !iocsv(iocsvmass) = iofilssm
+        open(newunit=iofilssv, file=ssvent,form='formatted')
+        !iocsv(iocsvvent) = iofilssv
         open (newunit=iofilssn, file=ssnormal,form='formatted')
         iocsv(iocsvnormal) = iofilssn
         open (newunit=iofilssf, file=ssflow,form='formatted')
         iocsv(iocsvflow) = iofilssf
         open (unit=iofilsss, file=ssspecies,form='formatted')
         iocsv(iocsvspecies) = iofilsss
-        open (newunit=iofilssm, file=ssspeciesmass,form='formatted')
-        iocsv(iocsvmass) = iofilssm
-        open (newunit=iofilssw, file=sswall,form='formatted')
-        iocsv(iocsvwall) = iofilssw
-        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (newunit=iofilssd, file=ssdiag,form='formatted')
-        open (newunit=iofilssmc, file=ssmontecarlo,form='formatted')
+        open (newunit=iofilsssspeciesmass, file=ssspeciesmass,form='formatted')
+        iocsv(iocsvspmass) = iofilsssspeciesmass
+        open (newunit=iofilsswt, file=sswallandtarget,form='formatted')
+        iocsv(iocsvwall) = iofilsswt
+        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (newunit=iofilssdiag, file=ssdiag,form='formatted')
+        open (newunit=iofilcalc, file=sscalculation,form='formatted')
     end if
 
     return
@@ -1493,12 +1503,12 @@ module output_routines
     !     iofilssn      spreadsheet output (normal)
     !     iofilssf      spreadsheet output (flow field)
     !     iofilsss      spreadsheet output (species molar %, etc.)
-    !     iofilssm      spreadsheet otuput (species mass)
-    !     iofilssw      spreadsheet output (walls and targets)
-    !     iofilssd      spreadsheet output (various diagnostics for verification)
+    !     iofilsssspeciesmass      spreadsheet otuput (species mass)
+    !     iofilsswt      spreadsheet output (walls and targets)
+    !     iofilssdiag      spreadsheet output (various diagnostics for verification)
     !     ioresid       diagnostic file of solution vector
     !     ioslab        diagnostic file of flow slabs
-    !     iofilssmc     spredsheet output (for monte carlo analysis)
+    !     iofilcalc     spredsheet output (for monte carlo analysis)
     
     ! other units may be opened with newunit keyword in open statement
     
@@ -1546,21 +1556,21 @@ module output_routines
         if (openunit) then
             close(iofilsss)
         end if
-        inquire(iofilssm, opened=openunit)
+        inquire(iofilsssspeciesmass, opened=openunit)
         if (openunit) then
             close(iofilsss)
         end if
-        inquire(iofilssw, opened=openunit)
+        inquire(iofilsswt, opened=openunit)
         if (openunit) then
-            close(iofilssw)
+            close(iofilsswt)
         end if
-        inquire(iofilssd, opened=openunit)
+        inquire(iofilssdiag, opened=openunit)
         if (openunit) then
-            close(iofilssd)
+            close(iofilssdiag)
         end if
-        inquire(iofilssmc, opened=openunit)
+        inquire(iofilcalc, opened=openunit)
         if (openunit) then
-            close(iofilssmc)
+            close(iofilcalc)
         end if
     end if 
     

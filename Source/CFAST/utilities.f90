@@ -2,7 +2,7 @@
 
     use precision_parameters
 
-    use cparams, only: lbufln
+    use cparams, only: lbufln, mxss
     use room_data, only: nwpts, wsplit, iwbound
     use setup_data, only: ncol, iofill, rundat, mpsdatc, nokbd, initializeonly, debugging, validation_flag, outputformat, &
         netheatflux
@@ -94,7 +94,7 @@
 
     ic = ic + 1
     ! We are imposing an arbitrary limit of 32000 columns
-    if (ic>32000) return
+    if (ic>mxss) return
     if (abs(valu)<=1.0e-100_eb) then
         array(ic) = 0.0_eb
     else

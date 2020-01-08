@@ -14,7 +14,7 @@ module target_routines
     use diag_data, only: verification_ast, radiative_incident_flux_ast, radi_verification_flag, partial_pressure_co2, &
         partial_pressure_h2o, verification_fire_heat_flux
     use cparams, only: u, l, pde, cylpde, co2, co, hcn, soot, soot_flaming, soot_smolder, nnodes_trg, idx_tempf_trg, &
-        idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd
+        idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd, cjetvelocitymin
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off
     use room_data, only: roominfo, interior_ambient_temperature, exterior_ambient_temperature
@@ -750,7 +750,7 @@ module target_routines
     integer, intent(out) :: idset, ifdtect
     real(eb), intent(out) :: tdtect
 
-    real(eb) :: cjetmin, tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
+    real(eb) :: tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
        bnp1, denom, fact1, fact2, delta, tmp, tlink_smld, tlinko_smld, delta_smld, trig_smld
     integer :: i, iroom, idold, iqu
     character(133) :: messg
@@ -761,7 +761,6 @@ module target_routines
     idset = 0
     ifdtect = 0
     tdtect = tcur+2*dstep
-    cjetmin = 0.10_eb
     do i = 1, n_detectors
         dtectptr => detectorinfo(i)
 
@@ -777,8 +776,8 @@ module target_routines
 
         tjet = max(dtectptr%temp_gas,tlay)
         tjeto = max(dtectptr%temp_gas_o,tlay)
-        vel = max(dtectptr%velocity,cjetmin)
-        velo = max(dtectptr%velocity_o,cjetmin)
+        vel = max(dtectptr%velocity,cjetvelocitymin)
+        velo = max(dtectptr%velocity_o,cjetvelocitymin)
 
         if (dtectptr%dtype==smoked .and. .not.dtectptr%dual_detector) then
             trig = log10(1._eb/(1._eb-dtectptr%trigger/100._eb))

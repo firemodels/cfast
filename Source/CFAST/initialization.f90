@@ -13,7 +13,7 @@ module initialization_routines
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
-        smoked, mx_calc
+        smoked, mx_calc, mxss
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
@@ -24,10 +24,12 @@ module initialization_routines
     use setup_data, only: iofill, debugging, deltat
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
+    use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &
+        n_ssmass, ssmassinfo, n_ssvent, ssventinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use calc_data, only: n_mcarlo, calcinfo, csvnames, iocsvnormal, iocsvflow, iocsvmass, iocsvwall, iocsvspecies
+    use calc_data, only: n_mcarlo, calcinfo, csvnames, iocsvnormal, iocsvflow, iocsvspmass, iocsvwall, iocsvspecies
 
     implicit none
 
@@ -478,6 +480,18 @@ module initialization_routines
     
     ! fires
     call initialize_fire_objects
+    
+    ! spreadsheet output data
+    n_sscomp = 0
+    allocate (sscompinfo(mxss))
+    n_ssdevice = 0
+    allocate (ssdeviceinfo(mxss))
+    n_sswall = 0
+    allocate (sswallinfo(mxss))
+    n_ssmass = 0
+    allocate (ssmassinfo(mxss))
+    n_ssvent = 0
+    allocate (ssventinfo(mxss))
     
     ! post-run calculation data
     n_mcarlo = 0

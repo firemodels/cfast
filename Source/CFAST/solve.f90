@@ -146,7 +146,7 @@ module solve_routines
     real(eb), intent(out) :: deltamv(*)
 
     integer :: nalg, i, ires
-    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), T
+    real(eb) :: p2(maxteq), delta(maxteq), pdzero(maxteq), t
 
     type(room_type), pointer :: roomptr
 

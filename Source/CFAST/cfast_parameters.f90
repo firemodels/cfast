@@ -16,6 +16,7 @@
     integer, parameter :: nnodes = 61           ! number of nodes in a material for conduction calculation (should be odd number)
     integer, parameter :: mxslice = 5*mxrooms   ! maximum number of slices and isosurfaces in an input file
     integer, parameter :: mxitems = 25*mxrooms  ! maximum number of vents, targets, etc.
+    integer, parameter :: mxss = 32767          ! maximum number of spreadsheet columns for output
 
     ! fire related input parameters
     integer, parameter :: mxpts = 200               ! maximum number of data points in a input curve/ramp
@@ -66,6 +67,7 @@
     integer, parameter :: face_left = 4
 
     ! room related parameters
+    real(eb), parameter :: cjetvelocitymin = 0.1_eb ! default minimum ceiling jet velocity
     real(eb), parameter :: vminfrac = 1.0e-4_eb     ! minimum layer volume as a fraction of room volume
 
     real(eb), parameter :: mx_vsep=0.01_eb          ! maximum vertical distance between elements before they are considered
@@ -110,6 +112,8 @@
     integer, parameter :: m = 1     ! mass
     integer, parameter :: q = 2     ! energy
     integer, parameter :: pp = 3    ! beginning of species
+    integer, parameter :: in = 1    ! flow into compartment
+    integer, parameter :: out = 2   ! flow out of compartment
 
     ! define indicies for species arrays
     integer, parameter :: n2 = 1

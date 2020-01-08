@@ -98,7 +98,7 @@ module calc_data
     save
     
     integer, parameter :: num_csvfiles = 5 
-    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvmass = 4, iocsvspecies = 5
+    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvspmass = 4, iocsvspecies = 5
     
     character(len = 7), parameter, dimension(num_csvfiles) :: csvnames = &
         (/'WALL   ', 'NORMAL ', 'FLOW   ', 'MASS   ', 'SPECIES'/)
@@ -285,12 +285,14 @@ module setup_data
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilssm, iofilssw, iofilssd, iofilssmc
+        iofilssn, iofilssf, iofilsss, iofilsssspeciesmass, iofilsswt, iofilssdiag, iofilcalc, &
+        iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension
-    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, ssconnections, &
-        ssflow, ssnormal, ssspecies, ssspeciesmass, sswall, ssdiag, gitfile, errorlogging, stopfile, solverini, &
-        queryfile, statusfile, kernelisrunning, ssmontecarlo
+    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
+        sswall, ssmasses, ssvent, &
+        ssflow, ssnormal, ssspecies, ssspeciesmass, sswallandtarget, ssdiag, gitfile, errorlogging, stopfile, solverini, &
+        queryfile, statusfile, kernelisrunning, sscalculation
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100
@@ -378,6 +380,33 @@ module solver_data
     real(eb), dimension(0:mxdiscon) :: discon    ! list of discontinuities fed to DASSL to ease solution
 
 end module solver_data
+
+! --------------------------- smkview_data -------------------------------------------
+
+module spreadsheet_output_data
+    
+    use precision_parameters
+    use cfast_types, only: ssout_type
+    use cparams, only: mxss
+    
+    integer :: n_sscomp = 0
+    type(ssout_type), allocatable, dimension(:), target :: sscompinfo
+    
+    integer :: n_ssdevice = 0
+    type(ssout_type), allocatable, dimension(:), target :: ssdeviceinfo
+    
+    integer :: n_sswall = 0
+    type(ssout_type), allocatable, dimension(:), target :: sswallinfo
+    
+    integer :: n_ssmass = 0
+    type(ssout_type), allocatable, dimension(:), target :: ssmassinfo
+    
+    integer :: n_ssvent = 0
+    type(ssout_type), allocatable, dimension (:), target :: ssventinfo
+    
+    real(eb) :: outarray(mxss)
+    
+end module spreadsheet_output_data
 
 ! --------------------------- target_data -------------------------------------------
 

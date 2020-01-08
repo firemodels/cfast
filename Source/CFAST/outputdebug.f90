@@ -10,6 +10,7 @@ module debug_routines
     use cparams, only: u, l, mxrooms, mxfslab, ns
     use diag_data, only: nwline, ioslab, ioresid
     use room_data, only: nrm1, roominfo
+    use spreadsheet_output_data, only: outarray
     use vent_data, only: dirs12
 
     implicit none
@@ -62,12 +63,12 @@ module debug_routines
 
 ! --------------------------- ssprintslab -------------------------------------------
 
-    subroutine ssprintslab (position, outarray)
+    subroutine ssprintslab (position, array)
 
-    real(eb), intent(in) :: outarray(*)
+    real(eb), intent(in) :: array(*)
     integer, intent(in) :: position
 
-    call ssprintresid (ioslab, position, outarray)
+    call ssprintresid (ioslab, position, array)
     nwline = .true.
 
     return
@@ -116,8 +117,6 @@ module debug_routines
     
     real(eb), intent(in) :: flows_convection_layers(mxrooms,ns+2,2)
 
-    integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms
-    real(eb) :: outarray(maxhead)
     logical :: firstc
     integer :: position, i, j, k
     data firstc/.true./

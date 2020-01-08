@@ -1710,6 +1710,7 @@ module spreadsheet_routines
     end if
 
     position = 0
+    outarray = 0._eb
     call ssaddtolist (position,time,outarray)
 
     ! compartment information
@@ -1804,6 +1805,7 @@ module spreadsheet_routines
     end if
 
     position = 0
+    outarray = 0._eb
 
     ! first the time
     call ssaddtolist (position,time,outarray)
@@ -1940,6 +1942,7 @@ module spreadsheet_routines
     end if
 
     position = 0
+    outarray = 0._eb
 
     !	First the time
 
@@ -2069,6 +2072,7 @@ module spreadsheet_routines
 
     ! From now on, just the data, please
     position = 0
+    outarray = 0._eb
     call ssaddtolist (position,time,outarray)
 
     do i = 1, nrm1
@@ -2128,6 +2132,7 @@ module spreadsheet_routines
 
     ! From now on, just the data, please
     position = 0
+    outarray = 0._eb
     call ssaddtolist (position,time,outarray)
 
     do i = 1, nrm1

@@ -835,7 +835,7 @@ module spreadsheet_routines
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%id==device) then
-                call ssaddtolist (position, roomptr%temp(layer), outarray)
+                call ssaddtolist (position, roomptr%temp(layer)-kelvin_c_offset, outarray)
             end if
         end do
     case ('Layer Height')

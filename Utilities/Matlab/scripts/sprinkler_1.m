@@ -16,13 +16,13 @@ RTI = 100;%ms^0.5
 
 %Read in the _w.csv file for the case
 filename = [data_dir 'sprinkler_1'];
-filenamew = [filename '_w.csv'];
+filenamew = [filename '_devices.csv'];
 Z = importdata(filenamew,',',5);
 W = strsplit(Z.textdata{1,1},',');
 
 %find the locations for all of the variable columns
 colTime = find(strncmpi(W,'Time',4))';
-colv = find(strncmpi(W,'SENSGASVEL_1',12))';
+colv = find(strncmpi(W,'SENSGASV_1',12))';
 colTg = find(strncmpi(W,'SENSGAST_1',10))';
 colTL = find(strncmpi(W,'SENST_1',7))';
 v_vec = Z.data(:,colv);
@@ -56,7 +56,7 @@ ylabel 'Link Temperature'
 legend('theoretical','CFAST','Location','SouthEast')
 %%
 %Read in the n.csv file for the case
-filenameZone = [filename '_n.csv'];
+filenameZone = [filename '_compartments.csv'];
 Q = importdata(filenameZone,',',5);
 F = strsplit(Q.textdata{1,1},',');
 

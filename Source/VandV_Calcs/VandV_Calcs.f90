@@ -36,7 +36,7 @@
 
     real :: temperature_profile_data(ntests,3)          ! for temperature profile calculation
     character :: temperature_profile_name(ntests)*30
-    integer ::  ntest_temperature_profile
+    integer ::  ntest_temperature_profile, iloc
 
     real :: pressure_correction_data(ntests,nrow,2)     ! for pressure correction calculation
     real :: tu1, tl1, h1, delta_pf1, rhou1, rhol1, delta_p1, tu2, tl2, h2, delta_pf2, rhou2, rhol2, delta_p2
@@ -187,8 +187,8 @@
                     temperature_profile_data(ntest_temperature_profile,2) = d2ys(d2ys_len(2),2)
                     temperature_profile_data(ntest_temperature_profile,3) = d2ys(d2ys_len(3),3)
                     ! This works for a 3 digit filename numbering (as the Steckler Compartment tests are done)
-                    temperature_profile_name(ntest_temperature_profile) = 'Test_' // &
-                        trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-6)) 
+                    iloc = index(d2_filename,'_compartments.csv')
+                    temperature_profile_name(ntest_temperature_profile) = 'Test_' // trim(d2_filename(iloc-3:iloc-1)) 
                 else
                     write (*,*) 'Data error, x and y lengths are not equal', d2x_len, d2y_len
                     stop
@@ -235,14 +235,13 @@
                         end if
                         pressure_correction_data(ntest_pressure_correction,irr,2) = delta_py
                     end do  
-                    if (index(d2_filename,'p_n.csv')/=0) then
+                    iloc = index(d2_filename,'_compartments.csv')
+                    if (index(d2_filename,'p_compartments.csv')/=0) then
                         ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
-                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // &
-                            trim(d2_filename(len_trim(d2_filename)-8:len_trim(d2_filename)-7)) 
+                        pressure_correction_name(ntest_pressure_correction) = 'Test_' //  trim(d2_filename(iloc-2:iloc-1)) 
                     else
                         ! This works for a 2 digit filename numbering (as the LLNL Enclosure tests are done)
-                        pressure_correction_name(ntest_pressure_correction) = 'Test_' // &
-                            trim(d2_filename(len_trim(d2_filename)-7:len_trim(d2_filename)-6)) 
+                        pressure_correction_name(ntest_pressure_correction) = 'Test_' //  trim(d2_filename(iloc-2:iloc-1)) 
                     end if
                 end if
                 

@@ -23,8 +23,8 @@ qrdot = emiss * (radfrac*Qdot)/(4*pi*r^2);
 
 %Read in the _n and _w files
 filename = 'radiation_1';
-filenamew = [filename '_w.csv'];
-filenamen = [filename '_n.csv'];
+filenamew = [filename '_devices.csv'];
+filenamen = [filename '_compartments.csv'];
 Z = importdata(filenamew,',',2);
 W = strsplit(Z.textdata{1,1},',');
 Q = importdata(filenamen,',',2);

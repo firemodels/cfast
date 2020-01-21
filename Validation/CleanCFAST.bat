@@ -1,4 +1,9 @@
 @echo off
+del *_compartments.csv /s/q >nul 2>&1
+del *_devices.csv /s/q >nul 2>&1
+del *_masses.csv /s/q >nul 2>&1
+del *_vents.csv /s/q >nul 2>&1
+del *_walls.csv /s/q >nul 2>&1
 del *_n.csv /s/q >nul 2>&1
 del *_s.csv /s/q >nul 2>&1
 del *_f.csv /s/q >nul 2>&1
@@ -18,4 +23,5 @@ del *.log /s/q >nul 2>&1
 del *.sf /s/q >nul 2>&1
 del *_slice.info /s/q >nul 2>&1
 del *.iso /s/q >nul 2>&1
+del *.sinfo /s/q >nul 2>&1
 del *.err /s/q >nul 2>&1

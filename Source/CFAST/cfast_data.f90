@@ -285,7 +285,7 @@ module setup_data
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssn, iofilssf, iofilsss, iofilsssspeciesmass, iofilsswt, iofilssdiag, iofilcalc, &
+        iofilssdiag, iofilcalc, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
     character(6), parameter :: heading="VERSN"
     character(64) :: project, extension

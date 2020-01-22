@@ -1423,7 +1423,7 @@ module output_routines
         !iocsv(iocsvmass) = iofilssm
         open(newunit=iofilssv, file=ssvent,form='formatted')
         !iocsv(iocsvvent) = iofilssv
-        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) then
+        if (radi_verification_flag) then
             open (newunit=iofilssdiag, file=ssdiag,form='formatted')
         end if
         open (newunit=iofilcalc, file=sscalculation,form='formatted')

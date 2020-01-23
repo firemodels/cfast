@@ -397,7 +397,7 @@ module spreadsheet_routines
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMCO2_'//trim(cRoom), 'CO2 Upper Layer Mass', roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMCO_'//trim(cRoom), 'CO Upper Layer Mass', roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCN_'//trim(cRoom), 'HCN Upper Layer Mass', roomptr%id, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCl_'//trim(cRoom), 'HCl Upper Layer Mass', roomptr%id, 'kg')
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMHCL_'//trim(cRoom), 'HCl Upper Layer Mass', roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer Mass', &
                 roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMH2O_'//trim(cRoom), 'H2O Upper Layer Mass', roomptr%id, 'kg')
@@ -423,7 +423,7 @@ module spreadsheet_routines
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCN_'//trim(cRoom), 'Potential HCN Upper Layer Mass', &
                     roomptr%id, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCl_'//trim(cRoom), 'Potential HCl Upper Layer Mass', &
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'ULPMHCL_'//trim(cRoom), 'Potential HCl Upper Layer Mass', &
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMPH2O_'//trim(cRoom), 'Potential H2O Upper Layer Mass', &
                     roomptr%id, 'kg')
@@ -436,7 +436,7 @@ module spreadsheet_routines
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMCO2_'//trim(cRoom), 'CO2 Lower Layer Mass', roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMCO_'//trim(cRoom), 'CO Lower Layer Mass', roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCN_'//trim(cRoom), 'HCN Lower Layer Mass', roomptr%id, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCl_'//trim(cRoom), 'HCl Lower Layer Mass', roomptr%id, 'kg')
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMHCL_'//trim(cRoom), 'HCl Lower Layer Mass', roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer Mass', &
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMH2O_'//trim(cRoom), 'H2O Lower Layer Mass', roomptr%id, 'kg')
@@ -462,7 +462,7 @@ module spreadsheet_routines
                         roomptr%id, 'kg')
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCN_'//trim(cRoom), 'Potential HCN Lower Layer Mass', &
                         roomptr%id, 'kg')
-                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCl_'//trim(cRoom), 'Potential HCl Lower Layer Mass', &
+                    call ssaddtoheader (ssmassinfo, n_ssmass, 'LLPMHCL_'//trim(cRoom), 'Potential HCl Lower Layer Mass', &
                         roomptr%id, 'kg')
                     call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMPH2O_'//trim(cRoom), 'Potential H2O Lower Layer Mass', &
                         roomptr%id, 'kg')
@@ -530,13 +530,13 @@ module spreadsheet_routines
             ifrom = ventptr%room1
             call tointstring(ifrom,cifrom)
             if (ifrom==nr) cifrom = 'Outside'
-            clfrom = 'Room '//cifrom
+            clfrom = 'Room_' //cifrom
             if (ifrom==nr) clfrom = 'Outside'
             
             ito = ventptr%room2
             call tointstring(ito,cito)
             if (ito==nr) cito = 'Outside'
-            clto = 'Room '//cito
+            clto = 'Room_' //cito
             if (ito==nr) clto = 'Outside'
             
             counter = ventptr%counter
@@ -586,13 +586,13 @@ module spreadsheet_routines
             ifrom = ventptr%room2
             call tointstring(ifrom,cifrom)
             if (ifrom==nr) cifrom = 'Outside'
-            clfrom = 'Room '//cifrom
+            clfrom = 'Room_' //cifrom
             if (ifrom==nr) clfrom = 'Outside'
             
             ito = ventptr%room1
             call tointstring(ito,cito)
             if (ito==nr) cito = 'Outside'
-            clto = 'Room '//cito
+            clto = 'Room_' //cito
             if (ito==nr) clto = 'Outside'
             
             counter = ventptr%counter
@@ -642,13 +642,13 @@ module spreadsheet_routines
             ifrom = ventptr%room1
             call tointstring(ifrom,cifrom)
             if (ifrom==nr) cifrom = 'Outside'
-            clfrom = 'Room '//cifrom
+            clfrom = 'Room_' //cifrom
             if (ifrom==nr) clfrom = 'Outside'
             
             ito = ventptr%room2
             call tointstring(ito,cito)
             if (ito==nr) cito = 'Outside'
-            clto = 'Room '//cito
+            clto = 'Room_' //cito
             if (ito==nr) clto = 'Outside'
             
             counter = ventptr%counter
@@ -701,13 +701,13 @@ module spreadsheet_routines
             ifrom = ventptr%room1
             call tointstring(ifrom,cifrom)
             if (ifrom==nr) cifrom = 'Outside'
-            cifrom = 'Room '//cifrom
+            cifrom = 'Room_' //cifrom
             if (ifrom==nr) cifrom = 'Outside'
             
             ito = ventptr%room2
             call tointstring(ito,cito)
             if (ito==nr) cito = 'Outside'
-            clto = 'Room '//cito
+            clto = 'Room_' //cito
             if (ito==nr) clto = 'Outside'
             
             counter = ventptr%counter

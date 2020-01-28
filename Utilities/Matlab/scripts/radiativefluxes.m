@@ -10,7 +10,7 @@ function [] = radiativefluxes(data_dir)
 %column of values. Thus, a transpose of matrix is needed.
 
 %% Case 1: radiation_3.in
-filename = [data_dir 'radiation_3_w.csv'];
+filename = [data_dir 'radiation_3_devices.csv'];
 X1 = [0.0909,0.2727,0.4545,0.6364,0.8182,1.0000,1.1818,1.3636,1.5455,1.7273,1.9091]';
 X2 = [0.125,0.375,0.625,0.875,1.125,1.375,1.625,1.875,2.125,2.375,2.625,2.875,3.125,3.375,3.625,3.875]';
 Z = importdata(filename,',',5);
@@ -52,7 +52,7 @@ fprintf(outid,'%s',header2);
 fclose(outid);
 dlmwrite ([data_dir 'radiation_3_w_side.csv'],data2,'roffset',1,'-append');
 %% Case 2: radiation_4.in
-filename = [data_dir 'radiation_4_w.csv'];
+filename = [data_dir 'radiation_4_devices.csv'];
 X1 = [0.0909,0.2727,0.4545,0.6364,0.8182,1.0000,1.1818,1.3636,1.5455,1.7273,1.9091]';
 X2 = [0.125,0.375,0.625,0.875,1.125,1.375,1.625,1.875,2.125,2.375,2.625,2.875,3.125,3.375,3.625,3.875]';
 Z = importdata(filename,',',5);
@@ -92,7 +92,7 @@ dlmwrite ([data_dir 'radiation_4_a_top.csv'],data3,'roffset',1,'-append');
 %fclose(outid);
 %dlmwrite ([data_dir 'radiation_4_a_side.csv'],data4,'roffset',1,'-append');
 %% Case 3: radiation_5.in
-filename = [data_dir 'radiation_5_w.csv'];
+filename = [data_dir 'radiation_5_devices.csv'];
 X1 = [0.0909,0.2727,0.4545,0.6364,0.8182,1.0000,1.1818,1.3636,1.5455,1.7273,1.9091]';
 X2 = [0.125,0.375,0.625,0.875,1.125,1.375,1.625,1.875,2.125,2.375,2.625,2.875,3.125,3.375,3.625,3.875]';
 Z = importdata(filename,',',5);

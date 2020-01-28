@@ -27,7 +27,7 @@ casename{18} = 'cabinet_12';
 
 for j=1:18
 try
-M = importdata([outdir,casename{j},'_w.csv'],',',5);
+M = importdata([outdir,casename{j},'_devices.csv'],',',5);
 W = strsplit(M.textdata{1,1},',');%find the locations for all of the variable columns
 col = find(strncmpi(W,'TRGGAST',7))';
 t = M.data(:,col);

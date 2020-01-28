@@ -19,7 +19,7 @@ module output_routines
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
-        iofilssn, iofilssf, iofilsss, iofilsssspeciesmass, iofilsswt, iofilssdiag, inputfile, iofilcalc, &
+        iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswallandtarget, &
         ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent
@@ -1385,12 +1385,7 @@ module output_routines
     !     iofilstat     write the status file
     !     iofilsmv      smokeview output (header) - note this is rewound each time the plot data is written)
     !     iofilsmvplt   smokeview output (plot data)
-    !     iofilsmvzone  smokeview spreadsheet output   
-    !     iofilssn      spreadsheet output (normal)
-    !     iofilssf      spreadsheet output (flow field)
-    !     iofilsss      spreadsheet output (species molar %, etc.)
-    !     iofilsssspeciesmass      spreadsheet otuput (species mass)
-    !     iofilsswt      spreadsheet output (walls and targets)
+    !     iofilsmvzone  smokeview spreadsheet output 
     !     iofilssdiag      spreadsheet output (various diagnostics for verification)
     !     ioresid       diagnostic file of solution vector
     !     ioslab        diagnostic file of flow slabs
@@ -1428,17 +1423,9 @@ module output_routines
         !iocsv(iocsvmass) = iofilssm
         open(newunit=iofilssv, file=ssvent,form='formatted')
         !iocsv(iocsvvent) = iofilssv
-        open (newunit=iofilssn, file=ssnormal,form='formatted')
-        iocsv(iocsvnormal) = iofilssn
-        open (newunit=iofilssf, file=ssflow,form='formatted')
-        iocsv(iocsvflow) = iofilssf
-        open (unit=iofilsss, file=ssspecies,form='formatted')
-        iocsv(iocsvspecies) = iofilsss
-        open (newunit=iofilsssspeciesmass, file=ssspeciesmass,form='formatted')
-        iocsv(iocsvspmass) = iofilsssspeciesmass
-        open (newunit=iofilsswt, file=sswallandtarget,form='formatted')
-        iocsv(iocsvwall) = iofilsswt
-        if (radi_verification_flag .and. upper_layer_thickness /=-1001._eb) open (newunit=iofilssdiag, file=ssdiag,form='formatted')
+        if (radi_verification_flag) then
+            open (newunit=iofilssdiag, file=ssdiag,form='formatted')
+        end if
         open (newunit=iofilcalc, file=sscalculation,form='formatted')
     end if
 
@@ -1499,13 +1486,12 @@ module output_routines
     !     iofilstat     write the status file
     !     iofilsmv      smokeview output (header) - note this is rewound each time the plot data is written)
     !     iofilsmvplt   smokeview output (plot data)
-    !     iofilsmvzone  smokeview spreadsheet output   
-    !     iofilssn      spreadsheet output (normal)
-    !     iofilssf      spreadsheet output (flow field)
-    !     iofilsss      spreadsheet output (species molar %, etc.)
-    !     iofilsssspeciesmass      spreadsheet otuput (species mass)
-    !     iofilsswt      spreadsheet output (walls and targets)
-    !     iofilssdiag      spreadsheet output (various diagnostics for verification)
+    !     iofilsmvzone  smokeview spreadsheet output 
+    !     iofilssc      spreadsheet output (compartment and layer related data)
+    !     iofilsswd     spreadsheet output (measurement and trigger devices)
+    !     iofilssm      spreadsheet output (layer masses)
+    !     iofilssv      spreadsheet output (vent flows)
+    !     iofilssdiag   spreadsheet output (various diagnostics for verification)
     !     ioresid       diagnostic file of solution vector
     !     ioslab        diagnostic file of flow slabs
     !     iofilcalc     spredsheet output (for monte carlo analysis)
@@ -1544,30 +1530,32 @@ module output_routines
 
     ! the spread sheet files
     if (ss_out_interval>0) then
-        inquire(iofilssn, opened=openunit)
+        ! compartments spreadsheet
+        inquire(iofilssc, opened=openunit)
         if(openunit) then
-            close(iofilssn)
+            close(iofilssc)
         end if
-        inquire(iofilssf, opened=openunit)
+        ! devices spreadsheet
+        inquire(iofilssd, opened=openunit)
+        if (openunit) then
+            close(iofilssd)
+        end if
+        ! masses spreadsheet
+        inquire(iofilssm, opened=openunit)
+        if (openunit) then
+            close(iofilssm)
+        end if
+        ! vents spreadsheet
+        inquire(iofilssv, opened=openunit)
         if (openunit) then 
-            close(iofilssf)
+            close(iofilssv)
         end if
-        inquire(iofilsss, opened=openunit)
-        if (openunit) then
-            close(iofilsss)
-        end if
-        inquire(iofilsssspeciesmass, opened=openunit)
-        if (openunit) then
-            close(iofilsss)
-        end if
-        inquire(iofilsswt, opened=openunit)
-        if (openunit) then
-            close(iofilsswt)
-        end if
+        ! diagnostic spreadsheet
         inquire(iofilssdiag, opened=openunit)
         if (openunit) then
             close(iofilssdiag)
         end if
+        ! calculations spreadhseet
         inquire(iofilcalc, opened=openunit)
         if (openunit) then
             close(iofilcalc)

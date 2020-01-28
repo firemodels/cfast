@@ -5,7 +5,7 @@ function [] = fire_ignition(data_dir)
 %v&v plotting
 
 %first the normal output file with heat release rates and ignition times
-filename = [data_dir 'Ignition_Test_n.csv'];
+filename = [data_dir 'Ignition_Test_compartments.csv'];
 [Fn Qn] = dvcread(filename,1,5);
     
 %Find the locations of each of the data columns
@@ -17,7 +17,7 @@ colhrr2 = find(strncmpi(Fn,'HRR_3',5));
 
 %then the target output file with heat flux and temperature for
 %targets associated with each fire ignition
-filename = [data_dir 'Ignition_Test_w.csv'];
+filename = [data_dir 'Ignition_Test_devices.csv'];
 [Ft Qt] = dvcread(filename,1,5);
     
 %Find the locations of each of the data columns

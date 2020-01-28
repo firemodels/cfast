@@ -52,7 +52,7 @@ fclose(outid);
 dlmwrite ([data_dir 'species_mass.csv'],data,'roffset',1,'-append');
 
 %% Case 1: Single compartment. There is a fire in the center of the compartment consistent with the above theoretical calculation
-filename = [data_dir 'species_mass_1_m.csv'];
+filename = [data_dir 'species_mass_1_masses.csv'];
 [Time,mCO2,mH2O] = csvreaderALL(filename,'_1');
 
 header = ['Time , mCO2 , mH2O'];
@@ -67,7 +67,7 @@ dlmwrite ([data_dir 'species_mass_1.csv'],data,'roffset',1,'-append');
 %Theoretical Mass calculations will be exactly the same as above. Same fire
 %and same fuel source, so the mass of CO2 and H2O produced should
 %theoretically still be the same.
-filename = [data_dir 'species_mass_2_m.csv'];
+filename = [data_dir 'species_mass_2_masses.csv'];
 [Time,mCO21,mH2O1] = csvreaderALL(filename,'_1');
 [Time,mCO22,mH2O2] = csvreaderALL(filename,'_2');
 mCO2 = mCO21 + mCO22;
@@ -85,7 +85,7 @@ dlmwrite ([data_dir 'species_mass_2.csv'],data,'roffset',1,'-append');
 %Theoretical Mass calculations will be exactly the same as above. Same fire
 %and same fuel source, so the mass of CO2 and H2O produced should
 %theoretically still be the same.
-filename = [data_dir 'species_mass_3_m.csv'];
+filename = [data_dir 'species_mass_3_masses.csv'];
 [Time,mCO21,mH2O1] = csvreaderALL(filename,'_1');
 [Time,mCO22,mH2O2] = csvreaderALL(filename,'_2');
 mCO2 = mCO21 + mCO22;
@@ -99,7 +99,7 @@ fclose(outid);
 dlmwrite ([data_dir 'species_mass_3.csv'],data,'roffset',1,'-append');
 
 %% Case 4:
-filename = [data_dir 'species_mass_4_m.csv'];
+filename = [data_dir 'species_mass_4_masses.csv'];
 [Time,mCO21,mH2O1] = csvreaderALL(filename,'_1');
 [Time,mCO22,mH2O2] = csvreaderALL(filename,'_2');
 [Time,mCO23,mH2O3] = csvreaderALL(filename,'_3');

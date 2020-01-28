@@ -9,7 +9,7 @@ function [] = target_2(data_dir)
 %column of values. Thus, a transpose of matrix is needed.
 
 %% Case 1: target_2.in
-filename = [data_dir 'target_2_w.csv'];
+filename = [data_dir 'target_2_devices.csv'];
 X1 = [8, 6, 5, 4.5, 4.4, 4.3, 4.2, 4.1]';
 Z = importdata(filename,',',5);
 W = strsplit(Z.textdata{1,1},',');

@@ -44,6 +44,28 @@ strip_extension=0
 erroptionfile=
 VOPT=
 
+# determine which resource manager is running (or none)
+
+missing_slurm=`srun -V |& tail -1 | grep "not found" | wc -l`
+RESOURCE_MANAGER="NONE"
+if [ $missing_slurm -eq 0 ]; then
+  RESOURCE_MANAGER="SLURM"
+else
+  missing_torque=`echo | qmgr -n |& tail -1 | grep "not found" | wc -l`
+  if [ $missing_torque -eq 0 ]; then
+    RESOURCE_MANAGER="TORQUE"
+  fi
+fi
+if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
+  if [ "$SLURM_MEM" != "" ]; then
+   SLURM_MEM="#SBATCH --mem=$SLURM_MEM"
+  fi
+  if [ "$SLURM_MEMPERCPU" != "" ]; then
+   SLURM_MEM="#SBATCH --mem-per-cpu=$SLURM_MEMPERCPU"
+  fi
+fi
+
+
 # read in parameters from command line
 
 while getopts 'bB:cd:Ee:j:q:sw:vV' OPTION
@@ -154,6 +176,9 @@ if [ "$STOPFDSMAXITER" == "" ]; then
 fi
 
 QSUB="qsub -q $queue "
+if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
+  QSUB="sbatch -p $queue --ignore-pbs"
+fi
 
 if [ "$queue" == "terminal" ] ; then
   QSUB=
@@ -186,12 +211,25 @@ cat << EOF > $scriptfile
 EOF
 
 if [ "$queue" != "none" ] ; then
+if [ "$RESOURCE_MANAGER" == "TORQUE" ]; then
 cat << EOF >> $scriptfile
 #PBS -N $JOBPREFIX$TITLE
 #PBS -e $outerr
 #PBS -o $outlog
 #PBS -l nodes=1:ppn=1
 EOF
+fi
+if [ "$RESOURCE_MANAGER" == "SLURM" ]; then
+cat << EOF >> $scriptfile
+#SBATCH -J $JOBPREFIX$TITLE
+#SBATCH -e $outerr
+#SBATCH -o $outlog
+#SBATCH -p $queue
+#SBATCH -n 1
+####SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+EOF
+fi
 fi
 
 cat << EOF >> $scriptfile

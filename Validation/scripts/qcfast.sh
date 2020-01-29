@@ -126,6 +126,7 @@ fulldir=`pwd`
 
 outerr=$fulldir/$infile.err
 outlog=$fulldir/$infile.log
+scriptlog=$fulldir/$infile.slog
 stopfile=$fulldir/$infile.stop
 in_full_file=$fulldir/$in
 
@@ -234,9 +235,10 @@ fi
 
 cat << EOF >> $scriptfile
 cd $fulldir
-echo Start time: \`date\`
-echo Running $infile on \`hostname\`
-echo Directory: \`pwd\`
+echo Running $infile on \`hostname\` 
+echo       Start time: \`date\`
+echo        Directory: \`pwd\`
+echo Resource Manager: $RESOURCE_MANAGER
 $exe $in $errfileoption $VOPT
 EOF
 if [ "$queue" == "none" ] ; then
@@ -256,15 +258,17 @@ fi
 # output info to screen
 
 if [ "$queue" != "none" ] ; then
-  echo "         Input file:$in"
-  echo "         Executable:$exe"
-  echo "              Queue:$queue"
+  echo "         Input file: $in"
+  echo "         Executable: $exe"
+  echo "              Queue: $queue"
+  echo "   Resource Manager: $RESOURCE_MANAGER"
 fi
 
 # run script
 
 chmod +x $scriptfile
 $QSUB $scriptfile
+cp $scriptfile $scriptlog
 if [ "$queue" != "none" ] ; then
   rm $scriptfile
 fi

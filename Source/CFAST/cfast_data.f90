@@ -51,6 +51,31 @@ module  diag_data
 
 end module diag_data
 
+! -------------------------dump_data---------------------------------------
+    
+module dump_data
+    
+    use precision_parameters
+    
+    use cfast_types, only: dump_type
+    
+    use cparams, only: mx_dumps, mxitems
+    
+    implicit none
+    save
+    
+    integer, parameter :: num_csvfiles = 5 
+    integer, parameter :: iocsv_compartments = 1, iocsv_devices = 2, iocsv_masses = 3, iocsv_vents = 4, iocsv_walls = 5
+    
+    character(len = 24), parameter, dimension(num_csvfiles) :: csvnames = &
+        (/'COMPARTMENTS', 'DEVICES     ', 'MASSES      ', 'VENTS       ', 'WALLS       '/)
+    integer, dimension(num_csvfiles) :: iocsv
+    
+    integer :: n_dumps
+    type (dump_type), allocatable, dimension(:), target :: dumpinfo
+    
+    end module dump_data
+
 ! --------------------------- fire_data -------------------------------------------
 
 module fire_data
@@ -83,31 +108,6 @@ module fire_data
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
     end module fire_data
-
-! -------------------------dump_data---------------------------------------
-    
-module dump_data
-    
-    use precision_parameters
-    
-    use cfast_types, only: dump_type
-    
-    use cparams, only: mx_dumps, mxitems
-    
-    implicit none
-    save
-    
-    integer, parameter :: num_csvfiles = 5 
-    integer, parameter :: iocsv_compartments = 1, iocsv_devices = 2, iocsv_masses = 3, iocsv_vents = 4, iocsv_walls = 5
-    
-    character(len = 24), parameter, dimension(num_csvfiles) :: csvnames = &
-        (/'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', 'WALLS'/)
-    integer, dimension(num_csvfiles) :: iocsv
-    
-    integer :: n_dumps
-    type (dump_type), allocatable, dimension(:), target :: dumpinfo
-    
-    end module dump_data
     
 ! --------------------------- namelist_data -------------------------------------------
 

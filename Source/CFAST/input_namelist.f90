@@ -6,16 +6,16 @@
     use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
-        vent_type, visual_type, calc_type
+        vent_type, visual_type, dump_type
 
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
         mxthrmp, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
-        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_calc
+        w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
     use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
         verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
         radiative_incident_flux_ast, radi_verification_flag
     use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, calcflag
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti
@@ -33,7 +33,7 @@
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
-    use calc_data, only: n_mcarlo, calcinfo
+    use dump_data, only: n_dumps, dumpinfo
 
     implicit none 
     
@@ -68,7 +68,7 @@
     call read_isof (iofili)
     call read_slcf (iofili)
     call read_diag (iofili)
-    call read_calc (iofili)
+    call read_dump (iofili)
 
     close (iofili)
     
@@ -2720,20 +2720,20 @@ continue
 
     end subroutine read_diag
 
-    ! --------------------------- CALC --------------------------------------------
+    ! --------------------------- DUMP --------------------------------------------
     
-    subroutine read_calc (lu)
+    subroutine read_dump (lu)
 
     integer, intent(in) :: lu
     
     integer :: ios, ii, counter
-    type(calc_type), pointer :: calcptr
+    type(dump_type), pointer :: dumpptr
     
     real(eb) :: criteria
     character(25) :: file_type, type
     character(64) :: id, first_device, first_measurement, second_device, second_measurement
 
-    namelist /CALC/ id, file_type, first_device, first_measurement, second_device, &
+    namelist /DUMP/ id, file_type, first_device, first_measurement, second_device, &
                     second_measurement, criteria, type
 
     ios = 1
@@ -2742,156 +2742,156 @@ continue
     input_file_line_number = 0
     counter = 0
 
-    ! Scan entire file to look for 'CALC'   `
-    mont_loop: do
-        call checkread ('CALC',lu,ios)
-        if (ios==0) calcflag=.true.
+    ! Scan entire file to look for 'DUMP'   `
+    dump_loop: do
+        call checkread ('DUMP',lu,ios)
+        if (ios==0) dumpflag=.true.
         if (ios==1) then
-            exit mont_loop
+            exit dump_loop
         end if
-        read(lu,CALC,err=34,iostat=ios)
+        read(lu,DUMP,err=34,iostat=ios)
         counter = counter + 1
 34      if (ios>0) then
-            write(*, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter+1
-            write(iofill, '(a,i3)') 'Error: Invalid specification in &CALC inputs. Check &CALC number ' , counter+1
-            call cfastexit('read_calc',1)
+            write(*, '(a,i3)') 'Error: Invalid specification in &DUMP inputs. Check &DUMP number ' , counter+1
+            write(iofill, '(a,i3)') 'Error: Invalid specification in &DUMP inputs. Check &DUMP number ' , counter+1
+            call cfastexit('read_dump',1)
         end if
-    end do mont_loop
+    end do dump_loop
 
-    mont_flag: if (calcflag) then
+    if (dumpflag) then
 
         rewind (lu)
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_mont_loop: do ii = 1,counter
+        read_dump_loop: do ii = 1,counter
 
-            call checkread('CALC',lu,ios)
+            call checkread('DUMP',lu,ios)
             call set_defaults
-            read(lu,CALC)
+            read(lu,DUMP)
             
             if (id == ' ') then
-                write(*,*) 'Error in &CALC: ID must be defined number ', counter
-                write(iofill,*) 'Error in &CALC: ID must be defined number ', counter
-                call cfastexit('read_calc',2)
+                write(*,*) 'Error in &DUMP: ID must be defined number ', counter
+                write(iofill,*) 'Error in &DUMP: ID must be defined number ', counter
+                call cfastexit('read_dump',2)
             end if
-            if (.not.((file_type(1:4)=='WALL').or.(file_type(1:6)=='NORMAL').or.(file_type(1:4)=='FLOW').or. &
-                        (file_type(1:4)=='MASS').or.(file_type(1:7)=='SPECIES'))) then
-                write(*,*) 'Error in &CALC: Invalid specification for FILE_TYPE ',trim(file_type), &
+            if (.not.((file_type(1:4)=='COMP').or.(file_type(1:4)=='DEVI').or.(file_type(1:4)=='MASS').or. &
+                        (file_type(1:4)=='VENT').or.(file_type(1:4)=='WALL'))) then
+                write(*,*) 'Error in &DUMP: Invalid specification for FILE_TYPE ',trim(file_type), &
                     ' number ',counter
-                write(iofill,*) 'Error in &CALC: Invalid specification for FILE_TYPE ',trim(file_type), &
+                write(iofill,*) 'Error in &DUMP: Invalid specification for FILE_TYPE ',trim(file_type), &
                     ' number ',counter
-                call cfastexit('read_calc',3)
+                call cfastexit('read_dump',3)
             end if
             if (.not.((type(1:3)=='MIN').or.(type(1:3)=='MAX').or. &
                     (type(1:8)=='TRIGGER_').or.(type(1:9)=='INTEGRATE').or. &
                     (type(1:15)=='CHECK_TOTAL_HRR'))) then
-                write(*,*) 'Error in &CALC: Invalid specification for type ',trim(type), &
+                write(*,*) 'Error in &DUMP: Invalid specification for type ',trim(type), &
                     ' number ',counter
-                write(iofill,*) 'Error in &CALC: Invalid specification for type ',trim(type), &
+                write(iofill,*) 'Error in &DUMP: Invalid specification for type ',trim(type), &
                     ' number ',counter
-                call cfastexit('read_calc',4)
+                call cfastexit('read_dump',4)
             end if
             if (first_device==' ') then
-                write(*,*) 'Error in &CALC: FIRST_DEVICE must be defined', &
+                write(*,*) 'Error in &DUMP: FIRST_DEVICE must be defined', &
                     ' number ',counter
-                write(iofill,*) 'Error in &CALC: first_device must be defined', &
+                write(iofill,*) 'Error in &DUMP: first_device must be defined', &
                     ' number ',counter
-                call cfastexit('read_calc',5)
+                call cfastexit('read_dump',5)
             end if 
             if (first_measurement==' ') then
-                write(*,*) 'Error in &CALC: FIRST_MEASUREMENT must be define', &
+                write(*,*) 'Error in &DUMP: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
-                write(iofill,*) 'Error in &CALC: FIRST_MEASUREMENT must be define', &
+                write(iofill,*) 'Error in &DUMP: FIRST_MEASUREMENT must be define', &
                     ' number ',counter
-                call cfastexit('read_calc',6)
+                call cfastexit('read_dump',6)
             end if 
             if ((type(1:8)=='TRIGGER_').and.(second_device==' ')) then
-                write(*,*) 'Error in &CALC: SECOND_DEVICE must be defined for type ', &
+                write(*,*) 'Error in &DUMP: SECOND_DEVICE must be defined for type ', &
                     trim(type), &
                     ' number ',counter
-                write(iofill,*) 'Error in &CALC: second_device must be defined for type ', &
+                write(iofill,*) 'Error in &DUMP: second_device must be defined for type ', &
                     trim(type), &
                     ' number ',counter
-                call cfastexit('read_calc',7)
+                call cfastexit('read_dump',7)
             end if
             if ((type(1:8)=='TRIGGER_').and.(second_measurement==' ')) then
-                write(*,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                write(*,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                write(iofill,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                write(iofill,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                call cfastexit('read_calc',8)
+                call cfastexit('read_dump',8)
             end if
             if ((type(1:9)=='INTEGRATE').and.(second_device==' ')) then
-                write(*,*) 'Error in &CALC: second_device must be defined for type ', &
+                write(*,*) 'Error in &DUMP: second_device must be defined for type ', &
                     trim(type)
-                write(iofill,*) 'Error in &CALC: second_device must be defined for type ', &
+                write(iofill,*) 'Error in &DUMP: second_device must be defined for type ', &
                     trim(type)
-                call cfastexit('read_calc',9)
+                call cfastexit('read_dump',9)
             end if
             if ((trim(type)=='INTEGRATE').and.(second_measurement==' ')) then
-                write(*,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                write(*,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                write(iofill,*) 'Error in &CALC: SECOND_MEASUREMENT must be defined for type ', &
+                write(iofill,*) 'Error in &DUMP: SECOND_MEASUREMENT must be defined for type ', &
                     trim(type),' number ',counter
-                call cfastexit('read_calc',10)
+                call cfastexit('read_dump',10)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_device(1:4)/='Time')) then
-                write(*,*) 'Error in &CALC: first_device must be defined as Simulation Time for ', &
+                write(*,*) 'Error in &DUMP: first_device must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
-                write(iofill,*) 'Error in &CALC: first_device must be defined as Simulation Time for ', &
+                write(iofill,*) 'Error in &DUMP: first_device must be defined as Simulation Time for ', &
                     trim(type),' number ',counter
-                call cfastexit('read_calc',11)
+                call cfastexit('read_dump',11)
             end if
             if ((type(1:9)=='INTEGRATE').and.(first_measurement(1:15)/='Simulation Time')) then
-                write(*,*) 'Error in &CALC: FIRST_MEASUREMENT must be defined as Time for ', &
+                write(*,*) 'Error in &DUMP: FIRST_MEASUREMENT must be defined as Time for ', &
                     trim(type),' number ',counter
-                write(iofill,*) 'Error in &CALC: FIRST_MEASUREMENT must be defined as Time for ', &
+                write(iofill,*) 'Error in &DUMP: FIRST_MEASUREMENT must be defined as Time for ', &
                     trim(type),' number ',counter
-                call cfastexit('read_calc',12)
+                call cfastexit('read_dump',12)
             end if
             if ((type(1:8)=='TRIGGER_').and.(criteria<=0)) then
-                write(*,*) 'Error in  &CALC: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
-                write(iofill,*) 'Error in  &CALC: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
-                call cfastexit('read_calc',13)
+                write(*,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
+                write(iofill,*) 'Error in  &DUMP: for a TRIGGER analysis CRITERIA must be > 0',' number ',counter
+                call cfastexit('read_dump',13)
             end if
             
-            n_mcarlo = n_mcarlo + 1
-            if (n_mcarlo>mx_calc) then
-                write(*,*) 'Error in &CALC: Too many &CALC entries'
-                write(iofill,*) 'Error in &CALC: Too many &CALC entries'
-                call cfastexit('read_calc',15)
+            n_dumps = n_dumps + 1
+            if (n_dumps>mx_dumps) then
+                write(*,*) 'Error in &DUMP: Too many &DUMP entries'
+                write(iofill,*) 'Error in &DUMP: Too many &DUMP entries'
+                call cfastexit('read_dump',15)
             end if
-            calcptr => calcinfo(n_mcarlo)
+            dumpptr => dumpinfo(n_dumps)
             if (type(1:15) == 'CHECK_TOTAL_HRR') then
-                calcptr%id = id
-                calcptr%file_type = 'NORMAL'
-                calcptr%type = type
-                calcptr%first_device = 'Time'
-                calcptr%first_measurement = 'Simulation Time'
-                calcptr%second_device = first_device
-                calcptr%second_measurement = first_measurement
-                calcptr%criteria = 0 
-                calcptr%relative_column = n_mcarlo
-                calcptr%found = .false.
+                dumpptr%id = id
+                dumpptr%file_type = 'NORMAL'
+                dumpptr%type = type
+                dumpptr%first_device = 'Time'
+                dumpptr%first_measurement = 'Simulation Time'
+                dumpptr%second_device = first_device
+                dumpptr%second_measurement = first_measurement
+                dumpptr%criteria = 0 
+                dumpptr%relative_column = n_dumps
+                dumpptr%found = .false.
             else
-                calcptr%id = id
-                calcptr%file_type = file_type
-                calcptr%type = type
-                calcptr%first_device = first_device
-                calcptr%first_measurement = first_measurement
-                calcptr%second_device = second_device
-                calcptr%second_measurement = second_measurement
-                calcptr%criteria = criteria 
-                calcptr%relative_column = n_mcarlo
-                calcptr%found = .false.
+                dumpptr%id = id
+                dumpptr%file_type = file_type
+                dumpptr%type = type
+                dumpptr%first_device = first_device
+                dumpptr%first_measurement = first_measurement
+                dumpptr%second_device = second_device
+                dumpptr%second_measurement = second_measurement
+                dumpptr%criteria = criteria 
+                dumpptr%relative_column = n_dumps
+                dumpptr%found = .false.
             end if 
 
-        end do read_mont_loop
+        end do read_dump_loop
 
-    end if mont_flag
+    end if
 
-5403 format ('***Error: Bad &CALC input. Invalid &CALC specification in post-run calculation input ',i0)
+5403 format ('***Error: Bad &DUMP input. Invalid &DUMP specification in post-run calculation input ',i0)
 
     contains
 
@@ -2908,7 +2908,7 @@ continue
     
     end subroutine set_defaults
 
-    end subroutine read_calc
+    end subroutine read_dump
     ! --------------------------- checkread ---------------------------------------
     subroutine checkread(name,lu,ios)
 

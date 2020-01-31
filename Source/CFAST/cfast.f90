@@ -96,9 +96,9 @@
     !           errorcode   numeric code indicating which call to cfastexit in routine
 
     use output_routines, only: closeoutputfiles, delete_output_files
-    use spreadsheet_routines, only : output_spreadsheet_calc
-    use calc_data, only: n_mcarlo
-    use setup_data, only: calc_flag, validation_flag, iofill, iofilkernel, stopfile, sscalculation, ss_out_interval
+    use spreadsheet_routines, only : output_spreadsheet_dump
+    use dump_data, only: n_dumps
+    use setup_data, only: dump_flag, validation_flag, iofill, iofilkernel, stopfile, sscalculation, ss_out_interval
     
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
@@ -117,10 +117,10 @@
         end if
     end if
 
-    if (.not.calc_flag) then
+    if (.not.dump_flag) then
         ! this ensures we don't get into an infinite loop if there's an error exit within the calculation output
-        calc_flag = .true.
-        call output_spreadsheet_calc
+        dump_flag = .true.
+        call output_spreadsheet_dump
     end if
     
     if (errorcode==0) then
@@ -130,7 +130,7 @@
     
     call closeoutputfiles
     close (unit=iofilkernel, status='delete')
-    if (ss_out_interval==0 .or. n_mcarlo == 0) then
+    if (ss_out_interval==0 .or. n_dumps == 0) then
         call delete_output_files (sscalculation)
     end if
     call delete_output_files (stopfile)

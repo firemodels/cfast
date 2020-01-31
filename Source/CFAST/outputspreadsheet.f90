@@ -44,10 +44,10 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
 
     call output_spreadsheet_compartments (time)
-    call output_spreadsheet_masses (time)
     call output_spreadsheet_devices (time)
-    call output_spreadsheet_walls (time)
+    call output_spreadsheet_masses (time)
     call output_spreadsheet_vents (time)
+    call output_spreadsheet_walls (time)
     
     if (radi_verification_flag) call output_spreadsheet_diag(time)
 
@@ -312,59 +312,6 @@ module spreadsheet_routines
     return
 
     end subroutine output_spreadsheet_devices
-
-! --------------------------- output_spreadsheet_walls ------------------------------------
-
-    subroutine output_spreadsheet_walls (time)
-    
-    ! writes wall surface-related results to the {project}_walls.csv file
-
-    real(eb), intent(in) :: time
-
-    logical :: firstc = .true.
-    integer :: position, i
-    character(35) :: cRoom
-    type(room_type), pointer :: roomptr
-    type(ssout_type), pointer :: ssptr
-
-    save firstc
-
-    ! initialize header data for spreadsheet
-    if (firstc) then
-        n_sswall = 0
-        call ssaddtoheader (sswallinfo, n_sswall, 'Time', 'Simulation Time', 'Time', 's')
-
-        ! compartment surface temperatures
-        do i = 1, nrm1
-            call toIntString(i,cRoom)
-            roomptr => roominfo(i)
-            call ssaddtoheader (sswallinfo, n_sswall, 'CEILT_'//trim(cRoom), 'Ceiling Temperature', roomptr%id, 'C')
-            call ssaddtoheader (sswallinfo, n_sswall, 'UWALLT_'//trim(cRoom), 'Upper Wall Temperature', roomptr%id, 'C')
-            call ssaddtoheader (sswallinfo, n_sswall, 'LWALLT_'//trim(cRoom), 'Lower Wall Temperature', roomptr%id, 'C')
-            call ssaddtoheader (sswallinfo, n_sswall, 'FLOORT_'//trim(cRoom), 'Floor Temperature', roomptr%id, 'C')
-        end do
-
-        ! write out header
-        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%short) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%short)
-        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%measurement) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%measurement)
-        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%device) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%device)
-        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%units) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%units)
-
-        firstc = .false.
-    end if
-
-    ! write out spreadsheet values for the current time step
-    position = 0
-    outarray = 0._eb
-    do i = 1, n_sswall
-        ssptr => sswallinfo(i)
-        call ssaddvaluetooutput (ssptr, time, position, outarray)
-    end do
-
-    call ssprintresults (iofilssw, position, outarray)
-    return
-
-    end subroutine output_spreadsheet_walls
 
 ! --------------------------- output_spreadsheet_masses ------------------------------------
 
@@ -740,7 +687,59 @@ module spreadsheet_routines
     return
     
     end subroutine output_spreadsheet_vents
+
+! --------------------------- output_spreadsheet_walls ------------------------------------
+
+    subroutine output_spreadsheet_walls (time)
     
+    ! writes wall surface-related results to the {project}_walls.csv file
+
+    real(eb), intent(in) :: time
+
+    logical :: firstc = .true.
+    integer :: position, i
+    character(35) :: cRoom
+    type(room_type), pointer :: roomptr
+    type(ssout_type), pointer :: ssptr
+
+    save firstc
+
+    ! initialize header data for spreadsheet
+    if (firstc) then
+        n_sswall = 0
+        call ssaddtoheader (sswallinfo, n_sswall, 'Time', 'Simulation Time', 'Time', 's')
+
+        ! compartment surface temperatures
+        do i = 1, nrm1
+            call toIntString(i,cRoom)
+            roomptr => roominfo(i)
+            call ssaddtoheader (sswallinfo, n_sswall, 'CEILT_'//trim(cRoom), 'Ceiling Temperature', roomptr%id, 'C')
+            call ssaddtoheader (sswallinfo, n_sswall, 'UWALLT_'//trim(cRoom), 'Upper Wall Temperature', roomptr%id, 'C')
+            call ssaddtoheader (sswallinfo, n_sswall, 'LWALLT_'//trim(cRoom), 'Lower Wall Temperature', roomptr%id, 'C')
+            call ssaddtoheader (sswallinfo, n_sswall, 'FLOORT_'//trim(cRoom), 'Floor Temperature', roomptr%id, 'C')
+        end do
+
+        ! write out header
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%short) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%short)
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%measurement) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%measurement)
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%device) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%device)
+        write (iofilssw,"(32767a)") (trim(sswallinfo(i)%units) // ',',i=1,n_sswall-1),trim(sswallinfo(n_sswall)%units)
+
+        firstc = .false.
+    end if
+
+    ! write out spreadsheet values for the current time step
+    position = 0
+    outarray = 0._eb
+    do i = 1, n_sswall
+        ssptr => sswallinfo(i)
+        call ssaddvaluetooutput (ssptr, time, position, outarray)
+    end do
+
+    call ssprintresults (iofilssw, position, outarray)
+    return
+
+    end subroutine output_spreadsheet_walls
 
 ! --------------------------- ssaddtoheader ------------------------------------
 

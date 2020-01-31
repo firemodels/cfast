@@ -277,7 +277,7 @@ module setup_data
     character(128) :: title
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
-    logical :: debugging=.false., validation_flag=.false., netheatflux=.false., dump_flag = .false.
+    logical :: debugging=.false., validation_flag=.false., netheatflux=.false.
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile

@@ -116,7 +116,7 @@
 
     if (errorcode/=0) then
         if (trim(name)=='solve_simulation' .and. errorcode==5) then
-            ! validation flag test is for the maximum iteration exit is because of CFASTBot's testing to make
+            ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
             !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
             !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
             if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST'')')

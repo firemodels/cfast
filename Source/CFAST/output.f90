@@ -10,7 +10,7 @@ module output_routines
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
-        w_from_room, w_from_wall, idx_tempf_trg, mx_calc, cjetvelocitymin
+        w_from_room, w_from_wall, idx_tempf_trg, mx_dumps, cjetvelocitymin
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
@@ -21,13 +21,13 @@ module output_routines
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, &
         outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
-        smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, ssnormal, ssflow, ssspecies, ssspeciesmass, sswallandtarget, &
+        smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use calc_data, only: n_mcarlo, calcinfo, iocsv, iocsvwall, iocsvnormal, iocsvflow, iocsvspmass, iocsvspecies
+    use dump_data, only: n_dumps, dumpinfo, iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
 
     implicit none
     
@@ -1414,19 +1414,20 @@ module output_routines
     ! the spread sheet files
     if (ss_out_interval>0) then
         open(newunit=iofilssc, file=sscompartment,form='formatted')
-        !iocsv(iocsvcompartment) = iofilssc
+        iocsv(iocsv_compartments) = iofilssc
         open(newunit=iofilssd, file=ssdevice,form='formatted')
-        !iocsv(iocsvdevice) = iofilssd
-        open(newunit=iofilssw, file=sswall,form='formatted')
-        !iocsv(iocsvwall) = iofilssw
+        iocsv(iocsv_devices) = iofilssd
         open(newunit=iofilssm, file=ssmasses,form='formatted')
-        !iocsv(iocsvmass) = iofilssm
+        iocsv(iocsv_masses) = iofilssm
         open(newunit=iofilssv, file=ssvent,form='formatted')
-        !iocsv(iocsvvent) = iofilssv
+        iocsv(iocsv_vents) = iofilssv
+        open(newunit=iofilssw, file=sswall,form='formatted')
+        iocsv(iocsv_walls) = iofilssw
+        open (newunit=iofilcalc, file=sscalculation,form='formatted')
+        
         if (radi_verification_flag) then
             open (newunit=iofilssdiag, file=ssdiag,form='formatted')
         end if
-        open (newunit=iofilcalc, file=sscalculation,form='formatted')
     end if
 
     return

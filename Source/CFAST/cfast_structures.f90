@@ -4,11 +4,11 @@ module cfast_types
     
     use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, mxcoeff
     
-    ! post-run calculation data structure
-    type calc_type
+    ! user-customized data and calculation output data structure
+    type dump_type
+        ! these are for user-specified calculations on data. output goes to _calculations.csv
         character(64) :: id                     ! user selected heading for output column
-        character(24) :: file_type              ! 'wall' for '_w', 'normal' for '_n', 'flow' for '_f', 'mass' for '_m',
-                                                !      'species' for '_s'
+        character(24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
         character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
                                                 !      'check_total_hrr'
         real(eb) :: criteria                    ! Value used in 'trigger_...' analysis
@@ -22,7 +22,7 @@ module cfast_types
         integer :: relative_column              ! Order of columns. This is just the order in the input file
         
         logical :: found                        ! The input channels are found in the requested csv files
-    end type calc_type
+    end type dump_type
 
     ! detector / sprinkler structure
     type detector_type

@@ -51,6 +51,31 @@ module  diag_data
 
 end module diag_data
 
+! -------------------------dump_data---------------------------------------
+    
+module dump_data
+    
+    use precision_parameters
+    
+    use cfast_types, only: dump_type
+    
+    use cparams, only: mx_dumps, mxitems
+    
+    implicit none
+    save
+    
+    integer, parameter :: num_csvfiles = 5 
+    integer, parameter :: iocsv_compartments = 1, iocsv_devices = 2, iocsv_masses = 3, iocsv_vents = 4, iocsv_walls = 5
+    
+    character(len = 24), parameter, dimension(num_csvfiles) :: csvnames = &
+        (/'COMPARTMENTS', 'DEVICES     ', 'MASSES      ', 'VENTS       ', 'WALLS       '/)
+    integer, dimension(num_csvfiles) :: iocsv
+    
+    integer :: n_dumps
+    type (dump_type), allocatable, dimension(:), target :: dumpinfo
+    
+    end module dump_data
+
 ! --------------------------- fire_data -------------------------------------------
 
 module fire_data
@@ -83,31 +108,6 @@ module fire_data
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
     end module fire_data
-
-! -------------------------calc_data---------------------------------------
-    
-module calc_data
-    
-    use precision_parameters
-    
-    use cfast_types, only: calc_type
-    
-    use cparams, only: mx_calc, mxitems
-    
-    implicit none
-    save
-    
-    integer, parameter :: num_csvfiles = 5 
-    integer, parameter :: iocsvwall = 1, iocsvnormal = 2, iocsvflow = 3, iocsvspmass = 4, iocsvspecies = 5
-    
-    character(len = 7), parameter, dimension(num_csvfiles) :: csvnames = &
-        (/'WALL   ', 'NORMAL ', 'FLOW   ', 'MASS   ', 'SPECIES'/)
-    integer, dimension(num_csvfiles) :: iocsv
-    
-    integer :: n_mcarlo
-    type (calc_type), allocatable, dimension(:), target :: calcinfo
-    
-    end module calc_data
     
 ! --------------------------- namelist_data -------------------------------------------
 
@@ -136,7 +136,7 @@ module calc_data
     logical :: timeflag=.false.
     logical :: ventflag=.false. 
     logical :: diagflag=.false.
-    logical :: calcflag=.false.
+    logical :: dumpflag=.false.
 
     end module namelist_data
     
@@ -277,7 +277,7 @@ module setup_data
     character(128) :: title
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
-    logical :: debugging=.false., validation_flag=.false., netheatflux=.false., calc_flag = .false.
+    logical :: debugging=.false., validation_flag=.false., netheatflux=.false.
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(60) :: nnfile=" ", datafile
@@ -291,7 +291,7 @@ module setup_data
     character(64) :: project, extension
     character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
         sswall, ssmasses, ssvent, &
-        ssflow, ssnormal, ssspecies, ssspeciesmass, sswallandtarget, ssdiag, gitfile, errorlogging, stopfile, solverini, &
+        ssdiag, gitfile, errorlogging, stopfile, solverini, &
         queryfile, statusfile, kernelisrunning, sscalculation
 
     ! Work arrays for the csv input routines

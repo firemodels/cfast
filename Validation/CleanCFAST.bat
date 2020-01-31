@@ -4,6 +4,7 @@ del *_devices.csv /s/q >nul 2>&1
 del *_masses.csv /s/q >nul 2>&1
 del *_vents.csv /s/q >nul 2>&1
 del *_walls.csv /s/q >nul 2>&1
+del *_calculations.csv /s/q >nul 2>&1
 del *_n.csv /s/q >nul 2>&1
 del *_s.csv /s/q >nul 2>&1
 del *_f.csv /s/q >nul 2>&1

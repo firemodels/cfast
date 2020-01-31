@@ -33,11 +33,14 @@
     use input_routines, only : open_files, read_input_file
     use output_routines, only: output_version, output_initial_conditions, delete_output_files, closeoutputfiles
     use solve_routines, only : solve_simulation
+    use spreadsheet_routines, only : output_spreadsheet_dump
     use utility_routines, only : cptime, read_command_options
     use radiation_routines, only : radiation
 
-    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag
+    use dump_data, only: n_dumps
     use option_data, only: total_steps
+    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
+        sscalculation, ss_out_interval
 
     implicit none
 
@@ -80,6 +83,15 @@
     if (.not.validation_flag) write (*,5010) total_steps
     write (iofill,5000) tend - tbeg
     write (iofill,5010) total_steps
+
+
+    ! create the spreadsheet file of calculation results if necessary
+    if (n_dumps/=0.and.ss_out_interval/=0.) then
+        call output_spreadsheet_dump
+    else
+        call delete_output_files (sscalculation)
+    end if
+
     call cfastexit ('CFAST', 0)
 
 5000 format ('Total execution time = ',1pg10.3,' seconds')
@@ -96,9 +108,7 @@
     !           errorcode   numeric code indicating which call to cfastexit in routine
 
     use output_routines, only: closeoutputfiles, delete_output_files
-    use spreadsheet_routines, only : output_spreadsheet_calc
-    use calc_data, only: n_mcarlo
-    use setup_data, only: calc_flag, validation_flag, iofill, iofilkernel, stopfile, sscalculation, ss_out_interval
+    use setup_data, only: validation_flag, iofill, iofilkernel, stopfile
     
     character, intent(in) :: name*(*)
     integer, intent(in) :: errorcode
@@ -106,7 +116,7 @@
 
     if (errorcode/=0) then
         if (trim(name)=='solve_simulation' .and. errorcode==5) then
-            ! validation flag test is for the maximum iteration exit is because of CFASTBot's testing to make
+            ! validation flag test for the maximum iteration exit is because of CFASTBot's testing to make
             !   sure that CFAST can initialize and run a few steps of all the cases in debug mode but doesn't run
             !   to completion. DO NOT CHANGE WITHOUT CHANGING CFASTBOT.
             if (.not.validation_flag) write (*, '(''Maximum iteration exit from CFAST'')')
@@ -115,24 +125,13 @@
             write (*,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
             if (iofill/=0) write (iofill,'(''***Error exit from CFAST, error '',i0,'' from routine '',a)') errorcode, trim(name)
         end if
-    end if
-
-    if (.not.calc_flag) then
-        ! this ensures we don't get into an infinite loop if there's an error exit within the calculation output
-        calc_flag = .true.
-        call output_spreadsheet_calc
-    end if
-    
-    if (errorcode==0) then
+    else
         if (.not.validation_flag) write (*, '(''Normal exit from CFAST'')')
         if (iofill/=0) write (iofill, '(''Normal exit from CFAST'')')
     end if
     
     call closeoutputfiles
     close (unit=iofilkernel, status='delete')
-    if (ss_out_interval==0 .or. n_mcarlo == 0) then
-        call delete_output_files (sscalculation)
-    end if
     call delete_output_files (stopfile)
 
     stop

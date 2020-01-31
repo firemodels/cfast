@@ -13,7 +13,7 @@ module initialization_routines
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
-        smoked, mx_calc, mxss
+        smoked, mx_dumps, mxss
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
@@ -29,7 +29,7 @@ module initialization_routines
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use calc_data, only: n_mcarlo, calcinfo, csvnames, iocsvnormal, iocsvflow, iocsvspmass, iocsvwall, iocsvspecies
+    use dump_data, only: n_dumps, dumpinfo, csvnames, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_walls, iocsv_devices
 
     implicit none
 
@@ -494,16 +494,16 @@ module initialization_routines
     allocate (ssventinfo(mxss))
     
     ! post-run calculation data
-    n_mcarlo = 0
-    allocate (calcinfo(mx_calc))
-    calcinfo(1:mx_calc)%file_type = ' '
-    calcinfo(1:mx_calc)%type = ' '
-    calcinfo(1:mx_calc)%first_device = ' '
-    calcinfo(1:mx_calc)%first_measurement = ''
-    calcinfo(1:mx_calc)%second_device = ' '
-    calcinfo(1:mx_calc)%second_measurement = ' '
-    calcinfo(1:mx_calc)%relative_column = -1
-    calcinfo(1:mx_calc)%criteria = -1
+    n_dumps = 0
+    allocate (dumpinfo(mx_dumps))
+    dumpinfo(1:mx_dumps)%file_type = ' '
+    dumpinfo(1:mx_dumps)%type = ' '
+    dumpinfo(1:mx_dumps)%first_device = ' '
+    dumpinfo(1:mx_dumps)%first_measurement = ''
+    dumpinfo(1:mx_dumps)%second_device = ' '
+    dumpinfo(1:mx_dumps)%second_measurement = ' '
+    dumpinfo(1:mx_dumps)%relative_column = -1
+    dumpinfo(1:mx_dumps)%criteria = -1
 
     return
     end subroutine initialize_memory

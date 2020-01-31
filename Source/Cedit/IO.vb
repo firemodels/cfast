@@ -82,7 +82,7 @@ Module IO
                         type = 1
                     ElseIf csv.str(i, targetNum.equationType) = "ODE" Then
                         type = 0    ' ODE is only for older files.  Automatically convert it to thermally thick
-                        myErrors.Add("Target " + (myTargets.Count + 1).ToString + " specified no longer supported thermmaly thin calculation. Converted to thermally thick", ErrorMessages.TypeWarning)
+                        myErrors.Add("Target " + (myTargets.Count + 1).ToString + " specified no longer supported thermmaly thin Dump. Converted to thermally thick", ErrorMessages.TypeWarning)
                     Else ' PDE
                         type = 0
                     End If
@@ -669,7 +669,7 @@ Module IO
         ReadInputFileNMLISOF(NMList, myVisuals)
         ReadInputFileNMLSLCF(NMList, myVisuals)
         ReadInputFileNMLDiag(NMList, myEnvironment)
-        ReadInputFileNMLCalc(NMList, myCalcs)
+        ReadInputFileNMLDump(NMList, myDumps)
     End Sub
     Private Sub ReadInputFileNMLHead(ByVal NMList As NameListFile, ByRef someEnvironment As Environment)
         Dim i, j As Integer
@@ -799,7 +799,7 @@ Module IO
                         Else
                             myErrors.Add("In MISC namelist for OVERWRITE " + NMList.ForNMListVarGetStr(i, j, 1) + " is not a valid value. Must be either .TRUE. or .FALSE.", ErrorMessages.TypeFatal)
                         End If
-                        Else
+                    Else
                         myErrors.Add("In MISC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
@@ -1279,7 +1279,7 @@ Module IO
                                 myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because material ID has not been set", ErrorMessages.TypeFatal)
                             End If
                         Else
-                                aDetect.InternalLocation = tempdepth
+                            aDetect.InternalLocation = tempdepth
                         End If
                         aDetect.Name = id
                         If adiabatic = True Then
@@ -1288,9 +1288,9 @@ Module IO
                             aDetect.Convection_Coefficient(2) = coeffs(2)
                         End If
                         aDetect.Changed = False
-                            myTargets.Add(aDetect)
-                        Else
-                            aDetect.Type = Target.TypeDetector
+                        myTargets.Add(aDetect)
+                    Else
+                        aDetect.Type = Target.TypeDetector
                         aDetect.Name = id
                         aDetect.Compartment = myCompartments.GetCompIndex(compid)
                         If type = "HEAT_DETECTOR" Then
@@ -2181,7 +2181,7 @@ Module IO
         Next
         someEnvironment.Changed = False
     End Sub
-    Private Sub ReadInputFileNMLCalc(ByVal NMList As NameListFile, ByRef someCalcs As CalculationCollection)
+    Private Sub ReadInputFileNMLDump(ByVal NMList As NameListFile, ByRef someDumps As DumpCollection)
         Dim i, j As Integer
         Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice As String
         Dim criteria As Single
@@ -2195,7 +2195,7 @@ Module IO
             firstdevice = ""
             secondmeasurement = ""
             seconddevice = ""
-            If (NMList.GetNMListID(i) = "CALC") Then
+            If (NMList.GetNMListID(i) = "DUMP") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "ID") Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
@@ -2214,10 +2214,10 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_MEASUREMENT") Then
                         secondmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
-                        myErrors.Add("In CALC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
+                        myErrors.Add("In DUMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someCalcs.Add(New Calculation(id, filetype, type, criteria, firstmeasurement, firstdevice, secondmeasurement, seconddevice))
+                someDumps.Add(New Dump(id, filetype, type, criteria, firstmeasurement, firstdevice, secondmeasurement, seconddevice))
             End If
         Next
     End Sub
@@ -3093,7 +3093,7 @@ Module IO
         Dim aVent As Vent
         Dim aFire As Fire
         Dim aVisual As Visual
-        Dim aCalc As Calculation
+        Dim aDump As Dump
 
         FileOpen(IO, filename, OpenMode.Output, OpenAccess.Write, OpenShare.Shared)
 
@@ -3794,25 +3794,25 @@ Module IO
             Next
         End If
 
-        ' Writing Calculations
-        If myCalcs.Count > 0 Then
+        ' Writing Dumps
+        If myDumps.Count > 0 Then
             PrintLine(IO, " ")
-            ln = "!! Calculations"
+            ln = "!! Dumps"
             PrintLine(IO, ln)
 
-            For i = 0 To myCalcs.Count - 1
-                aCalc = myCalcs.Item(i)
+            For i = 0 To myDumps.Count - 1
+                aDump = myDumps.Item(i)
 
-                ln = "&CALC ID = '" + aCalc.ID + "'"
+                ln = "&DUMP ID = '" + aDump.ID + "'"
                 PrintLine(IO, ln)
-                ln = "     FILE_TYPE = '" + aCalc.FileType + "'  TYPE = '" + aCalc.Type + "'"
-                If aCalc.Type <> "MINIMUM" And aCalc.Type <> "MAXIMUM" And aCalc.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += "  CRITERIA = " + aCalc.Criteria.ToString
+                ln = "     FILE_TYPE = '" + aDump.FileType + "'  TYPE = '" + aDump.Type + "'"
+                If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
+                    ln += "  CRITERIA = " + aDump.Criteria.ToString
                 End If
                 PrintLine(IO, ln)
-                ln = "     FIRST_DEVICE = '" + aCalc.FirstDevice + "'  FIRST_MEASUREMENT = '" + aCalc.FirstMeasurement + "'"
-                If aCalc.Type <> "MINIMUM" And aCalc.Type <> "MAXIMUM" And aCalc.Type <> "CHECK_TOTAL_HRR" Then
-                    ln += "  SECOND_DEVICE = '" + aCalc.SecondDevice + "'  SECOND_MEASUREMENT = '" + aCalc.SecondMeasurement + "'"
+                ln = "     FIRST_DEVICE = '" + aDump.FirstDevice + "'  FIRST_MEASUREMENT = '" + aDump.FirstMeasurement + "'"
+                If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
+                    ln += "  SECOND_DEVICE = '" + aDump.SecondDevice + "'  SECOND_MEASUREMENT = '" + aDump.SecondMeasurement + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)

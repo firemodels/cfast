@@ -1,7 +1,7 @@
-Public Class Calculation
+Public Class Dump
 
 
-    Friend Const MaximumCalculations As Integer = 1000
+    Friend Const MaximumDumps As Integer = 1000
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aID As String                   ' id used a heading for output column
@@ -73,7 +73,7 @@ Public Class Calculation
             Return aSecondDevice
         End Get
     End Property
-    Public Sub GetCalc(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criteria As Single, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
+    Public Sub GetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criteria As Single, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
         aID = ID
         FileType = aFileType
         Type = aType
@@ -84,25 +84,25 @@ Public Class Calculation
         SecondDevice = aSecondDevice
     End Sub
 End Class
-Public Class CalculationCollection
+Public Class DumpCollection
     Inherits System.Collections.CollectionBase
-    Friend ReadOnly Maximum As Integer = Calculation.MaximumCalculations
+    Friend ReadOnly Maximum As Integer = Dump.MaximumDumps
 
-    Public Sub Add(ByVal aCalculation As Calculation)
-        List.Add(aCalculation)
+    Public Sub Add(ByVal aDump As Dump)
+        List.Add(aDump)
     End Sub
-    Default Public Property Item(ByVal index As Integer) As Calculation
+    Default Public Property Item(ByVal index As Integer) As Dump
         Get
             If index > Count - 1 Or index < 0 Then
-                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Calculation number not found.")
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Dump number not found.")
                 ' These are just to eliminate a compile warning.  If we get here, we're in trouble anyway
-                Dim aCalculation As New Calculation
-                Return aCalculation
+                Dim aDump As New Dump
+                Return aDump
             Else
-                Return CType(List.Item(index), Calculation)
+                Return CType(List.Item(index), Dump)
             End If
         End Get
-        Set(ByVal Value As Calculation)
+        Set(ByVal Value As Dump)
             List.Item(index) = Value
         End Set
     End Property

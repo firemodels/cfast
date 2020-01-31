@@ -783,7 +783,7 @@ These inputs are for internal diagnostic purposes used to test and verify specif
 
 \clearpage
 
-\section{Post-run Calculations}
+\section{Custom Output and Post-run Calculations}
 
 CFAST has the ability to calculate user-specified summary statistics at the end of a model run. These are intended for large sets of similar runs where the user wants to perform comparative analyses on the results of hundreds or thousands of calculations. Although not supported for detailed input in CEdit, they can be added to a file and preserved when read and write in CEdit.
 
@@ -791,15 +791,15 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \begin{minipage}{6.5in}
 \renewcommand\footnoterule{}
 \begin{longtable}{@{\extracolsep{\fill}}|l|l|l|l|l|}
-\caption[Diagnostic parameters ({\ct CALC} namelist group)]{}
-\label{tbl:CALC} \\
+\caption[Output and Post-Run Calculation parameters ({\ct DUMP} namelist group)]{}
+\label{tbl:DUMP} \\
 \hline
-\multicolumn{5}{|c|}{{\ct CALC} (Post-Run Calculaiton Parameters)} \\
+\multicolumn{5}{|c|}{{\ct DUMP} (Output and Post-Run Calculation Parameters)} \\
 \hline \hline
 \endfirsthead
 \caption[]{Continued} \\
 \hline
-\multicolumn{5}{|c|}{{\ct DIAG} (CALCULATION Parameters)} \\
+\multicolumn{5}{|c|}{{\ct DUMP} (CALCULATION Parameters)} \\
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{0.8in}{\bf Reference}  & \parbox{0.8in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
@@ -820,16 +820,13 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&CALC ID = 'Total Time Completed',
-    FILE_TYPE = 'WALL'
-	TYPE = 'MAXIMUM'
-	FIRST_MEASUREMENT = 'Simulation Time'  FIRST_NAME = 'Time' /
-
-&CALC  ID = 'Fire Room Ion Detector'
-    FILE_TYPE = 'WALL'
-    TYPE = 'TRIGGER_GREATER'  CRITERION = 1
-    FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
-    SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
+&DUMP ID = 'Total Time Completed'
+     FILE_TYPE = 'DEVICES'  TYPE = 'MAXIMUM'
+     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
+&DUMP ID = 'Fire Room Ion Detector'
+     FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
+     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'  
+     SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
 \end{lstlisting}
 
 \clearpage

@@ -452,7 +452,7 @@ Public Class CeditMain
     Friend WithEvents MenuSMVSimulation As System.Windows.Forms.MenuItem
     Friend WithEvents MenuItem1 As System.Windows.Forms.MenuItem
     Friend WithEvents ErrorProvider1 As System.Windows.Forms.ErrorProvider
-    Friend WithEvents TargetNormalCalc As System.Windows.Forms.ComboBox
+    Friend WithEvents TargetNormalType As System.Windows.Forms.ComboBox
     Friend WithEvents MainView As System.Windows.Forms.Button
     Friend WithEvents MainSave As System.Windows.Forms.Button
     Friend WithEvents MainRun As System.Windows.Forms.Button
@@ -775,7 +775,7 @@ Public Class CeditMain
         Me.GroupBox28 = New System.Windows.Forms.GroupBox()
         Me.Label57 = New System.Windows.Forms.Label()
         Me.Label56 = New System.Windows.Forms.Label()
-        Me.TargetNormalCalc = New System.Windows.Forms.ComboBox()
+        Me.TargetNormalType = New System.Windows.Forms.ComboBox()
         Me.TargetZPosition = New System.Windows.Forms.TextBox()
         Me.TargetZNormal = New System.Windows.Forms.TextBox()
         Me.Label75 = New System.Windows.Forms.Label()
@@ -4060,7 +4060,7 @@ Public Class CeditMain
         '
         Me.GroupBox28.Controls.Add(Me.Label57)
         Me.GroupBox28.Controls.Add(Me.Label56)
-        Me.GroupBox28.Controls.Add(Me.TargetNormalCalc)
+        Me.GroupBox28.Controls.Add(Me.TargetNormalType)
         Me.GroupBox28.Controls.Add(Me.TargetZPosition)
         Me.GroupBox28.Controls.Add(Me.TargetZNormal)
         Me.GroupBox28.Controls.Add(Me.Label75)
@@ -4098,14 +4098,14 @@ Public Class CeditMain
         Me.Label56.TabIndex = 32
         Me.Label56.Text = "Normal Vector Points to"
         '
-        'TargetNormalCalc
+        'TargetNormalType
         '
-        Me.TargetNormalCalc.Items.AddRange(New Object() {"User Specified"})
-        Me.TargetNormalCalc.Location = New System.Drawing.Point(203, 41)
-        Me.TargetNormalCalc.Name = "TargetNormalCalc"
-        Me.TargetNormalCalc.Size = New System.Drawing.Size(157, 21)
-        Me.TargetNormalCalc.TabIndex = 814
-        Me.TargetNormalCalc.Text = "User Specified"
+        Me.TargetNormalType.Items.AddRange(New Object() {"User Specified"})
+        Me.TargetNormalType.Location = New System.Drawing.Point(203, 41)
+        Me.TargetNormalType.Name = "TargetNormalType"
+        Me.TargetNormalType.Size = New System.Drawing.Size(157, 21)
+        Me.TargetNormalType.TabIndex = 814
+        Me.TargetNormalType.Text = "User Specified"
         '
         'TargetZPosition
         '
@@ -5979,7 +5979,7 @@ Public Class CeditMain
             UpdateGUI.Targets(CurrentTarget)
         End If
     End Sub
-    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalCalc.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
+    Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalType.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
         Dim aTarget As New Target, numFires As Integer, i As Integer
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
@@ -6011,28 +6011,28 @@ Public Class CeditMain
             If sender Is TargetXNormal Then aTarget.XNormal = Val(TargetXNormal.Text)
             If sender Is TargetYNormal Then aTarget.YNormal = Val(TargetYNormal.Text)
             If sender Is TargetZNormal Then aTarget.ZNormal = Val(TargetZNormal.Text)
-            If sender Is TargetNormalCalc Then
-                If TargetNormalCalc.Text = "Right Wall" Then
+            If sender Is TargetNormalType Then
+                If TargetNormalType.Text = "Right Wall" Then
                     aTarget.XNormal = 1
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 0
-                ElseIf TargetNormalCalc.Text = "Left Wall" Then
+                ElseIf TargetNormalType.Text = "Left Wall" Then
                     aTarget.XNormal = -1
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 0
-                ElseIf TargetNormalCalc.Text = "Rear Wall" Then
+                ElseIf TargetNormalType.Text = "Rear Wall" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = 1
                     aTarget.ZNormal = 0
-                ElseIf TargetNormalCalc.Text = "Front Wall" Then
+                ElseIf TargetNormalType.Text = "Front Wall" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = -1
                     aTarget.ZNormal = 0
-                ElseIf TargetNormalCalc.Text = "Floor" Then
+                ElseIf TargetNormalType.Text = "Floor" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = 0
                     aTarget.ZNormal = -1
-                ElseIf TargetNormalCalc.Text = "Ceiling" Then
+                ElseIf TargetNormalType.Text = "Ceiling" Then
                     aTarget.XNormal = 0
                     aTarget.YNormal = 0
                     aTarget.ZNormal = 1
@@ -6043,7 +6043,7 @@ Public Class CeditMain
                         For i = 1 To numFires
                             aFire = myFires(i - 1)
                             If aTarget.Compartment = aFire.Compartment Then
-                                If TargetNormalCalc.Text = "Fire " + i.ToString + ", " + aFire.Name Then
+                                If TargetNormalType.Text = "Fire " + i.ToString + ", " + aFire.Name Then
                                     Dim Hypotenuse As Single
                                     Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (aFire.Height - aTarget.ZPosition) ^ 2)
                                     If Hypotenuse <> 0 Then

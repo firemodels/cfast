@@ -54,7 +54,7 @@ Friend Module Data
 
     Friend myRamps As New RampCollection
 
-    Friend myCalcs As New CalculationCollection
+    Friend myDumps As New DumpCollection
 
     Friend dataFileHeader As New Collection                         'comments for the header of a datafile (indicated as !*)
     Friend dataFileComments As New Collection                       'dead keywords and other comments
@@ -64,7 +64,7 @@ Friend Module Data
     Friend CommandWindowVisible As Boolean = False
     Friend NetHeatFluxCFASTOutput As Boolean = True                 ' True if heat flux output is to be net heat flux rather than incident heat flux (adds -N option to CFAST execution command)
     Friend ValidationOutput As Boolean = False                      ' True if heat flux output is to be net heat flux (adds -V option to CFAST execution command)
-    Friend DebugOutput As Boolean = False                           ' True if CFAST is to output debug file from successful RESID calculations (creates casename.resid file when checked)
+    Friend DebugOutput As Boolean = False                           ' True if CFAST is to output debug file from successful RESID Dumps (creates casename.resid file when checked)
     Friend Enum BaseUnitsNum    ' Provides an index into the array of base units conversion by type of conversion
         Length = 0
         Mass

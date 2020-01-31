@@ -1207,29 +1207,29 @@ Public Class UpdateGUI
     Public Sub InitTargetNormalList(ByVal index As Integer)
         Dim aTarget As Target
         aTarget = myTargets(index)
-        MainWin.TargetNormalCalc.Items.Clear()
-        MainWin.TargetNormalCalc.Items.Add("User Specified")
+        MainWin.TargetNormalType.Items.Clear()
+        MainWin.TargetNormalType.Items.Add("User Specified")
         numFires = myFires.Count
         If numFires > 0 Then
             Dim aFire As Fire
             For i = 1 To numFires
                 aFire = myFires(i - 1)
                 If aTarget.Compartment = aFire.Compartment And (aFire.XPosition - aTarget.XPosition <> 0 Or aFire.YPosition - aTarget.YPosition <> 0 Or aTarget.ZPosition <> 0) Then
-                    MainWin.TargetNormalCalc.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
+                    MainWin.TargetNormalType.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
                 End If
             Next
         End If
-        If aTarget.XPosition <> 0 Then MainWin.TargetNormalCalc.Items.Add("Left Wall")
+        If aTarget.XPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Left Wall")
         If aTarget.Compartment >= 0 Then
-            If aTarget.XPosition <> myCompartments(aTarget.Compartment).RoomWidth Then MainWin.TargetNormalCalc.Items.Add("Right Wall")
+            If aTarget.XPosition <> myCompartments(aTarget.Compartment).RoomWidth Then MainWin.TargetNormalType.Items.Add("Right Wall")
         End If
-        If aTarget.YPosition <> 0 Then MainWin.TargetNormalCalc.Items.Add("Front Wall")
+        If aTarget.YPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Front Wall")
         If aTarget.Compartment >= 0 Then
-            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalCalc.Items.Add("Rear Wall")
+            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalType.Items.Add("Rear Wall")
         End If
-        If aTarget.ZPosition <> 0 Then MainWin.TargetNormalCalc.Items.Add("Floor")
+        If aTarget.ZPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Floor")
         If aTarget.Compartment >= 0 Then
-            If aTarget.ZPosition <> myCompartments(aTarget.Compartment).RoomHeight Then MainWin.TargetNormalCalc.Items.Add("Ceiling")
+            If aTarget.ZPosition <> myCompartments(aTarget.Compartment).RoomHeight Then MainWin.TargetNormalType.Items.Add("Ceiling")
         End If
     End Sub
     Public Sub UpdateLogFile(LogTextBox As TextBox)

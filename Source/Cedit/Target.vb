@@ -22,8 +22,8 @@ Public Class Target
     Friend Const ActivationbyObscuration As Integer = 1
 
     ' All units within the class are assumed to be consistent and typically SI
-    Private aAdiabaticTarget As Boolean = False ' True for calculation of adiabatic surface temperature of target
-    Private aConvectionCoefficients(2) As Single ' Front(1) and back(2) convection coefficients for calculation of adiabatic target temperature 
+    Private aAdiabaticTarget As Boolean = False ' True for Dump of adiabatic surface temperature of target
+    Private aConvectionCoefficients(2) As Single ' Front(1) and back(2) convection coefficients for Dump of adiabatic target temperature 
     Private aType As Integer                    ' 0 for target and 1 for detector
     Private aName As String                     ' Target name (at the moment, only used for targets, not detectors)
     Private aCompartment As Integer             ' Compartment number where target or detector is located

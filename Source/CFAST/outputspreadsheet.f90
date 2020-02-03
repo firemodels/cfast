@@ -1624,6 +1624,26 @@ module spreadsheet_routines
         end do
         
         ! detectors
+    case ('Sensor Surrounding Gas Temperature')
+        do i = 1, n_detectors
+            dtectptr =>detectorinfo(i)
+            if (dtectptr%id==device) then
+                roomptr => roominfo(dtectptr%room)
+                if (dtectptr%center(3)>roomptr%depth(l)) then
+                    tjet = max(dtectptr%temp_gas,roomptr%temp(u))
+                else
+                    tjet = max(dtectptr%temp_gas,roomptr%temp(l))
+                end if
+                call ssaddtolist (position, tjet-kelvin_c_offset,outarray)
+            end if
+        end do
+    case ('Sensor Surrounding Gas Velocity')
+        do i = 1, n_detectors
+            dtectptr =>detectorinfo(i)
+            if (dtectptr%id==device) then
+                call ssaddtolist (position,max(dtectptr%velocity,cjetvelocitymin),outarray)
+            end if
+        end do
     case ('Sensor Obscuration')
         do i = 1, n_detectors
             dtectptr =>detectorinfo(i)
@@ -1647,26 +1667,6 @@ module spreadsheet_routines
                 else
                     call ssaddtolist (position, 0._eb,outarray)
                 end if
-            end if
-        end do
-    case ('Sensor Surrounding Gas Temperature')
-        do i = 1, n_detectors
-            dtectptr =>detectorinfo(i)
-            if (dtectptr%id==device) then
-                roomptr => roominfo(dtectptr%room)
-                if (dtectptr%center(3)>roomptr%depth(l)) then
-                    tjet = max(dtectptr%temp_gas,roomptr%temp(u))
-                else
-                    tjet = max(dtectptr%temp_gas,roomptr%temp(l))
-                end if
-                call ssaddtolist (position, tjet-kelvin_c_offset,outarray)
-            end if
-        end do
-    case ('Sensor Surrounding Gas Velocity')
-        do i = 1, n_detectors
-            dtectptr =>detectorinfo(i)
-            if (dtectptr%id==device) then
-                call ssaddtolist (position,max(dtectptr%velocity,cjetvelocitymin),outarray)
             end if
         end do
         

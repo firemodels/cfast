@@ -350,9 +350,9 @@ module spreadsheet_routines
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMH2O_'//trim(cRoom), 'H2O Upper Layer Mass', roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Optical Density Upper Layer Mass', &
                 roomptr%id, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODF_'//trim(cRoom), 'OD from Flaming Upper Layer Mass', &
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODF_'//trim(cRoom), 'Soot from Flaming Upper Layer Mass', &
                 roomptr%id, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODS_'//trim(cRoom), 'OD from Smoldering Upper Layer Mass', &
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODS_'//trim(cRoom), 'Soot from Smoldering Upper Layer Mass', &
                 roomptr%id,'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTS_'//trim(cRoom), 'Trace Species Upper Layer Mass', &
                 roomptr%id,'kg')
@@ -387,11 +387,11 @@ module spreadsheet_routines
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTUHC_'//trim(cRoom), 'Unburned Fuel Lower Layer Mass', &
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMH2O_'//trim(cRoom), 'H2O Lower Layer Mass', roomptr%id, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMOD_'//trim(cRoom), 'Optical Density Lower Layer Mass', &
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMOD_'//trim(cRoom), 'Soot Lower Layer Mass', &
                     roomptr%id, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODF_'//trim(cRoom), 'OD from Flaming Lower Layer Mass', &
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODF_'//trim(cRoom), 'Soot from Flaming Lower Layer Mass', &
                     roomptr%id, 'kg')
-                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODS_'//trim(cRoom), 'OD from Smoldering Lower Layer Mass', &
+                call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMODS_'//trim(cRoom), 'Soot from Smoldering Lower Layer Mass', &
                     roomptr%id, 'kg')
                 call ssaddtoheader (ssmassinfo, n_ssmass, 'LLMTS_'//trim(cRoom), 'Trace Species Lower Layer Mass', &
                     roomptr%id,'kg')
@@ -838,11 +838,13 @@ module spreadsheet_routines
                 call ssaddtolist (position, roomptr%depth(l), outarray)
             end if
         end do
-    case ('Upper Layer Volume')
+    case ('Upper Layer Volume', 'Lower Layer Volume')
         do i = 1, nr
+            layer = u
+            if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
             if (roomptr%id==device) then
-                call ssaddtolist (position, roomptr%volume(u), outarray)
+                call ssaddtolist (position, roomptr%volume(layer), outarray)
             end if
         end do
     case ('Pressure')
@@ -1005,8 +1007,8 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('Optical Density Upper Layer', 'Optical Density Upper Layer Mass', 'Optical Density Lower Layer', &
-          'Optical Density Lower Layer Mass')
+    case ('Optical Density Upper Layer', 'Soot Upper Layer Mass', 'Optical Density Lower Layer', &
+          'Soot Lower Layer Mass')
         do i = 1, nr
             layer = u
             if (index(measurement,'Upper')==0) layer = l
@@ -1021,8 +1023,8 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Flaming Upper Layer', 'OD from Flaming Upper Layer Mass', 'OD from Flaming Lower Layer', &
-          'OD from Flaming Lower Layer Mass')
+    case ('OD from Flaming Upper Layer', 'Soot from Flaming Upper Layer Mass', 'OD from Flaming Lower Layer', &
+          'Soot from Flaming Lower Layer Mass')
         do i = 1, nr
             layer = u
             if (index(measurement,'Upper')==0) layer = l
@@ -1037,8 +1039,8 @@ module spreadsheet_routines
                 call ssaddtolist (position,ssvalue ,outarray)
             end if
         end do
-    case ('OD from Smoldering Upper Layer', 'OD from Smoldering Upper Layer Mass', 'OD from Smoldering Lower Layer', &
-          'OD from Smoldering Lower Layer Mass')
+    case ('OD from Smoldering Upper Layer', 'Soot from Smoldering Upper Layer Mass', 'OD from Smoldering Lower Layer', &
+          'Soot from Smoldering Lower Layer Mass')
         do i = 1, nr
             layer = u
             if (index(measurement,'Upper')==0) layer = l

@@ -348,7 +348,7 @@ module spreadsheet_routines
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMTUHC_'//trim(cRoom), 'Unburned Fuel Upper Layer Mass', &
                 roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMH2O_'//trim(cRoom), 'H2O Upper Layer Mass', roomptr%id, 'kg')
-            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Optical Density Upper Layer Mass', &
+            call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMOD_'//trim(cRoom), 'Soot Upper Layer Mass', &
                 roomptr%id, 'kg')
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMODF_'//trim(cRoom), 'Soot from Flaming Upper Layer Mass', &
                 roomptr%id, 'kg')

@@ -825,9 +825,177 @@ CFAST has the ability to calculate user-specified summary statistics at the end 
      FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time' /
 &DUMP ID = 'Fire Room Ion Detector'
      FILE_TYPE = 'DEVICES'  TYPE = 'TRIGGER_GREATER'  CRITERIA = 1
-     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'  
+     FIRST_DEVICE = 'Time'  FIRST_MEASUREMENT = 'Simulation Time'
      SECOND_DEVICE = 'Ionization Detector Room 1'  SECOND_MEASUREMENT = 'Sensor Activation' /
 \end{lstlisting}
+
+\clearpage
+
+
+
+\chapter{CFAST Spreadsheet Outputs}
+
+At the user's option, CFAST outputs simulation results to one or more comma-delimited spreadsheets for further analysis by the user. The following table details all the possible outputs categorized by the physical object that is being represented in the model (here termed measurement `devices') and one or more measurements associated with that device.
+
+\clearpage
+
+\begin{landscape}
+\noindent
+\setlength\LTleft{0.5in}
+\setlength\LTright{0.5in}
+\begin{longtable}{|l|l|p{2.0in}|l|}
+\caption[Spreadsheet Outputs ({\ct DUMP} namelist group)]{}
+\label{tbl:custom_outputs} \\
+\hline
+\multicolumn{4}{|c|}{{\ct DUMP} (Spreadsheet Outputs)} \\
+\hline \hline
+\endfirsthead
+\caption[]{Continued} \\
+\hline
+\multicolumn{4}{|c|}{{\ct DUMP} (Spreadsheet Outputs)} \\
+\hline \hline
+\endhead
+{\bf Device}    & {\bf Measurement}  & {\bf Notes}  & {\bf Default Spreadsheet} \\ \hline
+Compartments     & Upper Layer Temperature   & Device is identified by user-specified compartment ID    & \_compartments.csv         \\ \hline
+& Lower Layer Temperature   &     &          \\ \hline
+& Layer Height   &     &          \\ \hline
+& Upper Layer Volume   &     &          \\ \hline
+& Lower Layer Volume   &     &          \\ \hline
+& Pressure   &     &          \\ \hline
+& Ceiling Temperature   &     &          \\ \hline
+& Upper Wall Temperature   &     &          \\ \hline
+& Lower Wall Temperature   &     &          \\ \hline
+& Floor Temperature   &     &          \\ \hline
+& CO2 Upper Layer   &     &          \\ \hline
+& CO2 Lower Layer   &     &          \\ \hline
+& CO Upper Layer  &     &          \\ \hline
+& CO Lower Layer   &     &          \\ \hline
+& HCN Upper Layer   &     &          \\ \hline
+& HCN Lower Layer   &     &          \\ \hline
+& HCL Upper Layer   &     &          \\ \hline
+& HCL Lower Layer   &     &          \\ \hline
+& Unburned Fuel Upper Layer   &     &          \\ \hline
+& Unburned Fuel Lower Layer   &     &          \\ \hline
+& H2O Upper Layer   &     &          \\ \hline
+& H2O Lower Layer   &     &          \\ \hline
+& Optical Density Upper Layer   &     &          \\ \hline
+& Optical Density Lower Layer   &     &          \\ \hline
+& OD from Flaming Upper Layer   &     &          \\ \hline
+& OD from Flaming Lower Layer   &     &          \\ \hline
+& OD from Smoldering Upper Layer   &     &          \\ \hline
+& OD from Smoldering Lower Layer   &     &          \\ \hline \hline
+
+& CO2 Upper Layer Mass  &     &          \\ \hline
+& CO2 Lower Layer Mass   &     &          \\ \hline
+& CO Upper Layer Mass  &     &          \\ \hline
+& CO Lower Layer Mass   &     &          \\ \hline
+& HCN Upper Layer Mass   &     &          \\ \hline
+& HCN Lower Layer Mass   &     &          \\ \hline
+& HCL Upper Layer Mass   &     &          \\ \hline
+& HCL Lower Layer Mass   &     &          \\ \hline
+& Unburned Fuel Upper Layer Mass   &     &          \\ \hline
+& Unburned Fuel Lower Layer Mass   &     &          \\ \hline
+& H2O Upper Layer Mass   &     &          \\ \hline
+& H2O Lower Layer Mass   &     &          \\ \hline
+& Soot Upper Layer Mass   &     &          \\ \hline
+& Soot Lower Layer Mass   &     &          \\ \hline
+& Soot from Flaming Upper Layer Mass   &     &          \\ \hline
+& Soot from Flaming Lower Layer Mass   &     &          \\ \hline
+& Soot from Smoldering Upper Layer Mass   &     &          \\ \hline
+& Soot from Smoldering Lower Layer Mass   &     &          \\ \hline \hline
+
+& Potential Total Heat Upper Layer   & -V option only    &          \\ \hline
+& Potential Total Heat Lower Layer   & -V option only    &          \\ \hline
+& Potential CO2 Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential CO2 Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential CO Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential CO Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential Total Heat Upper Layer   & -V option only    &          \\ \hline
+& Potential Total Heat Lower Layer   & -V option only    &          \\ \hline
+& Potential HCN Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential HCN Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential HCL Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential HCL Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential H2O Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential H2O Lower Layer Mass  & -V option only    &          \\ \hline
+& Potential Soot Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Flaming Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Flaming Lower Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Smoldering Upper Layer Mass   & -V option only    &          \\ \hline
+& Potential Soot from Smoldering Lower Layer Mass   & -V option only    &          \\  \hline
+
+\newpage
+
+Vents& Net Inflow   &     & \_vents         \\ \hline
+& Total Inflow Upper  &     &          \\ \hline
+& Total Inflow Lower  &     &          \\ \hline
+& Total Outflow Upper  &     &          \\ \hline
+& Total Outflow Lower  &     &          \\ \hline
+& Opening Fraction  &     &          \\ \hline
+& Trace Species Flow  &     &          \\ \hline
+& Trace Species Filtered  &     &          \\ \hline
+
+\newpage
+
+Fires& Ignition   & Device is identified by user-specified fire ID    & \_fires         \\ \hline
+&Plume Entrainment Rate & & \\ \hline
+&Pyrolysis Rate & & \\ \hline
+&HRR Expected & & \\ \hline
+&HRR Actual & & \\ \hline
+&HRR Convective Actual & & \\ \hline
+&HRR Upper Actual & & \\ \hline
+&HRR Lower Actual & & \\ \hline
+&Flame Height & & \\ \hline
+&HRR Door Jet Fires & & \\ \hline
+&Total Pyrolysate Released & & \\ \hline
+&Total Trace Species Released & & \\ \hline
+
+\newpage
+
+Targets& Target Surrounding Gas Temperature   & Device is identified by user-specified target ID    & \_devices         \\ \hline
+&Target Surface Temperature & & \\ \hline
+&Target Internal Temperature & & \\ \hline
+&Target Incident Flux & & \\ \hline
+&Back Target Incident Flux & & \\ \hline
+&Target Net Flux & & \\ \hline
+&Back Target Net Flux & & \\ \hline
+&Target Gas FED & & \\ \hline
+&Target Gas FED Increment & & \\ \hline
+&Target Heat FED & & \\ \hline
+&Target Heat FED Increment & & \\ \hline
+&Target Obscuration & & \\ \hline
+&Target Radiative Flux & & \\ \hline
+&Back Target Radiative Flux & & \\ \hline
+&Target Convective Flux & & \\ \hline
+&Back Target Convective Flux & & \\ \hline
+&Target Radiative Fire Flux & & \\ \hline
+&Back Target Radiative Fire Flux & & \\ \hline
+&Target Surface Radiative Flux & & \\ \hline
+&Back Target Surface Radiative Flux & & \\ \hline
+&Target Gas Radiative Flux & & \\ \hline
+&Back Gas Target Radiative Flux & & \\ \hline
+&Target Radiative Loss Flux & & \\ \hline
+&Back Target Radiative Loss Flux & & \\ \hline
+&Target Total Gauge Flux & & \\ \hline
+&Back Target Total Gauge Flux & & \\ \hline
+&Target Radiative Gauge Flux & & \\ \hline
+&Back Target Radiative Gauge Flux & & \\ \hline
+&Target Convective Gauge Flux & & \\ \hline
+&Back Target Convective Gauge Flux & & \\ \hline
+&Target Radiative Loss Gauge Flux & & \\ \hline
+&Back Target Radiative Loss Gauge Flux & & \\ \hline \\hline
+
+Detectors& Sensor Surrounding Gas Temperature   & Device is identified by user-specified detector ID    & \_devices         \\ \hline
+&Sensor Surrounding Gas Velocity & & \\ \hline
+&Sensor Obscuration & & \\ \hline
+&Sensor Temperature & & \\ \hline
+&Sensor Activation & & \\ \hline
+
+
+\end{longtable}
+\end{landscape}
+
 
 \clearpage
 

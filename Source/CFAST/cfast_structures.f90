@@ -322,6 +322,7 @@ module cfast_types
 
         ! These are common to more than one vent types
 
+        character(64) :: id                 ! user selected name for the vent
         character(64) :: ramp_id            ! ramp id assocated with vent
         character(64) :: filter_id          ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent

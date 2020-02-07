@@ -1676,6 +1676,7 @@ continue
                 end if
 
                 ventptr => hventinfo(counter1)
+                ventptr%id = id
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter1
@@ -1709,7 +1710,7 @@ continue
                             n_ramps = n_ramps + 1
                             rampptr=>rampinfo(n_ramps)
                             rampptr%type = 'H'
-                            rampptr%id = 'NULL'
+                            rampptr%id = ventptr%id
                             rampptr%room1 = ventptr%room1
                             rampptr%room2 = ventptr%room2
                             rampptr%counter = ventptr%counter
@@ -1822,6 +1823,7 @@ continue
                 end if
 
                 ventptr => mventinfo(counter2)
+                ventptr%id = id
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter2
@@ -1862,7 +1864,7 @@ continue
                                 n_ramps = n_ramps + 1
                                 rampptr=>rampinfo(n_ramps)
                                 rampptr%type = 'M'
-                                rampptr%id = 'NULL'
+                                rampptr%id = ventptr%id
                                 rampptr%room1 = ventptr%room1
                                 rampptr%room2 = ventptr%room2
                                 rampptr%counter = ventptr%counter
@@ -1971,6 +1973,7 @@ continue
                 end if
 
                 ventptr => vventinfo(counter3)
+                ventptr%id = id
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter3
@@ -2002,7 +2005,7 @@ continue
                                 n_ramps = n_ramps + 1
                                 rampptr=>rampinfo(n_ramps)
                                 rampptr%type = 'V'
-                                rampptr%id = 'NULL'
+                                rampptr%id = ventptr%id
                                 rampptr%room1 = ventptr%room1
                                 rampptr%room2 = ventptr%room2
                                 rampptr%counter = ventptr%counter

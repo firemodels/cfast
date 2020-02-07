@@ -1423,7 +1423,10 @@ module output_routines
         iocsv(iocsv_vents) = iofilssv
         open(newunit=iofilssw, file=sswall,form='formatted')
         iocsv(iocsv_walls) = iofilssw
-        open (newunit=iofilcalc, file=sscalculation,form='formatted')
+        
+        if (n_dumps/=0) then
+            open (newunit=iofilcalc, file=sscalculation,form='formatted')
+        end if
         
         if (radi_verification_flag) then
             open (newunit=iofilssdiag, file=ssdiag,form='formatted')

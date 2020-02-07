@@ -489,41 +489,25 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
-                'WVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
+                'Net Inflow',ventptr%id,'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Net Inflow',&
-                'WVent '//trim(cvent)//' from '//trim(clto)//' to '//trim(clfrom),'kg/s')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'WF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),&
-                'Opening Fraction','WVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
+            call ssaddtoheader (ssventinfo, n_ssvent,'WF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
+                'Opening Fraction',ventptr%id,'')
             call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
             if (validation_flag) then
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
-                    'WVent '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
+                    'Total Inflow Upper',ventptr%id,'kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
-                    'WVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
+                    'Total Outflow Upper',ventptr%id,'kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
-                    'WVent '//trim(cvent)//' to '//trim(clfrom)//' upper Layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow'//'_'//trim(cvent), &
+                    'Total Inflow Lower',ventptr%id,'kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
-                    'WVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s')
+                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow'//'_'//trim(cvent), &
+                    'Total Outflow Lower',ventptr%id,'kg/s')
                 call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
-                
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
-                    'WVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
-                    'WVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')   
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
-                    'WVent '//trim(cvent)//' to '//trim(clto)//' upper Layer','kg/s')    
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
-                    'WVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ito, ifrom, counter)
             end if
         end do 
         
@@ -545,41 +529,25 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
-                'CFVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
+                'Net Inflow',ventptr%id,'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Net Inflow',&
-                'CFVent '//trim(cvent)//' from '//trim(clto)//' to '//trim(clfrom),'kg/s')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'CFF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Opening Fraction',&
-                'CFVent '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
+            call ssaddtoheader (ssventinfo, n_ssvent,'CFF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
+                'Opening Fraction',ventptr%id,'')
             call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
             if (validation_flag) then
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
-                    'CFVent '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
+                    'Total Inflow Upper',ventptr%id,'kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
-                    'CFVent '//trim(cvent)//' from '//trim(clfrom)//' upper layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
+                    'Total Outflow Upper',ventptr%id,'kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
-                    'CFVent '//trim(cvent)//' to '//trim(clfrom)//' lower Layer','kg/s')   
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_inflow'//'_'//trim(cvent), &
+                    'Total Inflow Lower',ventptr%id,'kg/s')   
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
-                    'CFVent '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_outflow'//'_'//trim(cvent), &
+                    'Total Outflow Lower',ventptr%id,'kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
-                
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_inflow','Total Inflow Upper',&
-                    'CFVent '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')   
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_u_outflow','Total Outflow Upper',&
-                    'CFVent '//trim(cvent)//' from '//trim(clto)//' upper layer','kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_inflow','Total Inflow Lower',&
-                    'CFVent '//trim(cvent)//' to '//trim(clto)//' lower Layer','kg/s')   
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
-                call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cito)//'_l_outflow','Total Outflow Lower',&
-                    'CFVent '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ito, ifrom, counter)
             end if
         end do  
         
@@ -601,44 +569,31 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'M_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
-                'Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+            call ssaddtoheader (ssventinfo, n_ssvent,'M_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
+                'Net Inflow',ventptr%id,'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'M_TRACE__'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),&
-                'Trace Species Flow','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg')
+            call ssaddtoheader (ssventinfo, n_ssvent,'M_TRACE__'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
+                'Trace Species Flow',ventptr%id,'kg')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'M_FILTERED_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),&
-                'Trace Species Filtered','Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg')
+            call ssaddtoheader (ssventinfo, n_ssvent,'M_FILTERED_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
+                'Trace Species Filtered',ventptr%id,'kg')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
-            call ssaddtoheader (ssventinfo, n_ssvent,'MF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent),'Opening Fraction',&
-                'Fan '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'')
+            call ssaddtoheader (ssventinfo, n_ssvent,'MF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
+                'Opening Fraction',ventptr%id,'')
             call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             if (validation_flag) then
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
-                    'Fan '//trim(cvent)//' to '//trim(clfrom)//' upper layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
+                    'Total Inflow Upper',ventptr%id,'kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
-                    'Fan '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s') 
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
+                    'Total Outflow Upper',ventptr%id,'kg/s') 
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
-                    'Fan '//trim(cvent)//' to '//trim(clfrom)//' upper Layer','kg/s')  
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow'//'_'//trim(cvent), &
+                    'Total Inflow Lower',ventptr%id,'kg/s')  
                 call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
-                    'Fan '//trim(cvent)//' from '//trim(clfrom)//' lower layer','kg/s')
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow','Total Inflow Upper',&
-                    'Fan '//trim(cvent)//' to '//trim(clto)//' upper layer','kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow','Total Outflow Upper',&
-                    'Fan '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s') 
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow','Total Inflow Lower',&
-                    'Fan '//trim(cvent)//' to '//trim(clto)//' upper Layer','kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
-                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow','Total Outflow Lower',&
-                    'Fan '//trim(cvent)//' from '//trim(clto)//' lower layer','kg/s')
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
+                call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow'//'_'//trim(cvent), &
+                    'Total Outflow Lower',ventptr%id,'kg/s')
+                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             end if
         end do  
         
@@ -660,7 +615,7 @@ module spreadsheet_routines
             counter = ventptr%counter
             call tointstring(counter,cvent)
 
-            call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow',&
+            call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow', &
                 'Leak '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'LEAK', ifrom, ito, counter) 
         end do       
@@ -1177,20 +1132,15 @@ module spreadsheet_routines
         if (venttype=='WVENT') then
             do i = 1, n_hvents
                 ventptr => hventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     ssvalue = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
                     call ssaddtolist (position, ssvalue ,outarray)
-                    exit
-                else if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
-                    ssvalue = ventptr%h_mflow(1,1,1) - ventptr%h_mflow(1,1,2) + ventptr%h_mflow(1,2,1) - ventptr%h_mflow(1,2,2)
-                    call ssaddtolist (position, ssvalue ,outarray)
-                    exit
                 end if
             end do
         else if (venttype=='CFVENT') then
             do i = 1, n_vvents
                 ventptr => vventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     flow = 0.0_eb
                     if (ventptr%mflow(2,u)>=0.0_eb) flow(1) = ventptr%mflow(2,u)
                     if (ventptr%mflow(2,u)<0.0_eb) flow(2) = -ventptr%mflow(2,u)
@@ -1198,22 +1148,12 @@ module spreadsheet_routines
                     if (ventptr%mflow(2,l)<0.0_eb) flow(4) = -ventptr%mflow(2,l)
                     ssvalue = flow(1) + flow(3) - flow(2) - flow(4)
                     call ssaddtolist (position, ssvalue, outarray)
-                    exit
-                else if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
-                    flow = 0.0_eb
-                    if (ventptr%mflow(1,u)>=0.0_eb) flow(1) = ventptr%mflow(1,u)
-                    if (ventptr%mflow(1,u)<0.0_eb) flow(2) = -ventptr%mflow(1,u)
-                    if (ventptr%mflow(1,l)>=0.0_eb) flow(3) = ventptr%mflow(1,l)
-                    if (ventptr%mflow(1,l)<0.0_eb) flow(4) = -ventptr%mflow(1,l)
-                    ssvalue = flow(1) + flow(3) - flow(2) - flow(4)
-                    call ssaddtolist (position, ssvalue, outarray)
-                    exit
                 end if
             end do
         else if (venttype=='MVENT') then
             do i = 1, n_mvents
                 ventptr => mventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     flow = 0.0_eb
                     if (ventptr%mflow(2,u)>=0.0_eb) flow(1) = ventptr%mflow(2,u)
                     if (ventptr%mflow(2,u)<0.0_eb) flow(2) = -ventptr%mflow(2,u)
@@ -1221,7 +1161,6 @@ module spreadsheet_routines
                     if (ventptr%mflow(2,l)<0.0_eb) flow(4) = -ventptr%mflow(2,l)
                     ssvalue = flow(1) + flow(3) - flow(2) - flow(4)
                     call ssaddtolist (position, ssvalue, outarray)
-                    exit
                 end if
             end do
         else if (venttype=='LEAK') then
@@ -1245,18 +1184,9 @@ module spreadsheet_routines
         if (venttype=='WVENT') then
             do i = 1, n_hvents
                 ventptr => hventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
-                    if (index(device,' to ')/=0) then
-                        call ssaddtolist (position, ventptr%h_mflow(1,layer,idir), outarray)
-                    else
-                        call ssaddtolist (position, ventptr%h_mflow(1,layer,idir), outarray)
-                    end if
-                else if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
-                    if (index(device,' to ')/=0) then
-                        call ssaddtolist (position, ventptr%h_mflow(2,layer,idir), outarray)
-                    else
-                        call ssaddtolist (position, ventptr%h_mflow(2,layer,idir), outarray)
-                    end if
+                ! note that flows are relative to the first compartment
+                if (ventptr%id==device) then
+                    call ssaddtolist (position, ventptr%h_mflow(1,layer,idir), outarray)
                 end if
             end do
         else if (venttype=='CFVENT') then
@@ -1264,30 +1194,26 @@ module spreadsheet_routines
                 ventptr => vventinfo(i)
                 ssvalue = 0.0_eb
                 ! note that flows are relative to the bottom compartment
-                if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     if (idir==in) then
                         ssvalue = max(0._eb,ventptr%mflow(1,layer))
                     else
                         ssvalue = max(0._eb,-ventptr%mflow(1,layer))
                     end if
-                else if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
-                    if (idir==in) then
-                        ssvalue = max(0._eb,ventptr%mflow(2,layer))
-                    else
-                        ssvalue = max(0._eb,-ventptr%mflow(2,layer))
-                    end if
+                    call ssaddtolist (position, ssvalue, outarray)
                 end if
-                call ssaddtolist (position, ssvalue, outarray)
             end do
         else if (venttype=='MVENT') then
             do i = 1, n_mvents
                 ventptr => mventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
-                    if (index(device,' to ')/=0) then
-                        call ssaddtolist (position, ventptr%mflow(idir,layer), outarray)
+                ! note that flows are relative to the from compartment
+                if (ventptr%id==device) then
+                    if (idir==in) then
+                        ssvalue = max(0._eb,ventptr%mflow(1,layer))
                     else
-                        call ssaddtolist (position, ventptr%mflow(idir,layer), outarray)
+                        ssvalue = max(0._eb,-ventptr%mflow(1,layer))
                     end if
+                    call ssaddtolist (position, ssvalue, outarray)
                 end if
             end do
          end if   
@@ -1299,25 +1225,22 @@ module spreadsheet_routines
         if (venttype=='WVENT') then
             do i = 1, n_hvents
                 ventptr => hventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     call ssaddtolist (position, ventptr%opening_fraction, outarray)
-                    exit
                 end if
             end do
         else if (venttype=='CFVENT') then
             do i = 1, n_vvents
                 ventptr => vventinfo(i)
-                if (ventptr%room1==room2.and.ventptr%room2==room1.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     call ssaddtolist (position, ventptr%opening_fraction, outarray)
-                    exit
                 end if
             end do
         else if (venttype=='MVENT') then
             do i = 1, n_mvents
                 ventptr => mventinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     call ssaddtolist (position, ventptr%opening_fraction, outarray)
-                    exit
                 end if
             end do
         end if
@@ -1327,14 +1250,13 @@ module spreadsheet_routines
         room2 = ssptr%room2
         ivent = ssptr%counter
         do i = 1, n_mvents
-            if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+            if (ventptr%id==device) then
                 if (measurement=='Trace Species Flow') then
                     ssvalue =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
                 else
                     ssvalue =abs(ventptr%total_trace_filtered(u))+abs(ventptr%total_trace_filtered(l))
                 end if
                 call ssaddtolist (position, ssvalue, outarray)
-                exit
             end if
         end do
 
@@ -1841,7 +1763,7 @@ module spreadsheet_routines
 
     subroutine output_spreadsheet_diag (time)
 
-    ! writes to the {project}_d.csv file, the diagnostic parameters
+    ! writes to the {project}_diagnostics.csv file, the diagnostic parameters
 
     real(eb), intent(in) :: time
 
@@ -1858,6 +1780,7 @@ module spreadsheet_routines
     end if
 
     position = 0
+    outarray = 0._eb
     call ssaddtolist (position,time,outarray)
 
     ! compartment information

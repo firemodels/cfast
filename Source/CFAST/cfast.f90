@@ -40,11 +40,11 @@
     use dump_data, only: n_dumps
     use option_data, only: total_steps
     use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        sscalculation, ss_out_interval
+        ss_out_interval
 
     implicit none
 
-    real(eb) :: xdelt, tstop, tbeg, tend
+    real(eb) :: xdelt, tstop, tbeg, tend 
 
     cfast_version = 7500        ! Current CFAST version number
 
@@ -88,8 +88,6 @@
     ! create the spreadsheet file of calculation results if necessary
     if (n_dumps/=0.and.ss_out_interval/=0.) then
         call output_spreadsheet_dump
-    else
-        call delete_output_files (sscalculation)
     end if
 
     call cfastexit ('CFAST', 0)

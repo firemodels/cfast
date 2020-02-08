@@ -22,7 +22,7 @@
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
         ssdiag, sscalculation, &
-        kernelisrunning, solverini, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
+        kernelisrunning, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
@@ -505,7 +505,7 @@
     ssmasses = datapath(1:lp) // project(1:ld) // '_masses.csv'
     ssvent = datapath(1:lp) // project(1:ld) // '_vents.csv'
     
-    ssdiag = datapath(1:lp) // project(1:ld) // '_d.csv'
+    ssdiag = datapath(1:lp) // project(1:ld) // '_diagnostics.csv'
     gitfile = datapath(1:lp) // project(1:ld) // '_git.txt'
     errorlogging = datapath(1:lp) // project(1:ld) // '.log'
     stopfile = datapath(1:lp) // project(1:ld) // '.stop'
@@ -516,9 +516,6 @@
     slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
     kernelisrunning = datapath(1:lp) // project(1:ld) // '.kernelisrunning'
     sscalculation = datapath(1:lp) // project(1:ld) // '_calculations.csv'
-
-    lp = len_trim (exepath)
-    solverini = datapath(1:lp) // 'solver.ini'
 
     !open input file and check to see if it's a new (namelist) format file
     open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)

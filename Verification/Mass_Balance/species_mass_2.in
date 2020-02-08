@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Default example fire for user guide' /
+&HEAD VERSION = 7500, TITLE = 'Default example fire for user guide' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 2000 PRINT = 120 SMOKEVIEW = 10 SPREADSHEET = 30 / 
@@ -14,8 +14,8 @@
       ORIGIN = 0, 5, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
-&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 2', 'Comp 1' TOP = 6, BOTTOM = 0, WIDTH = 1
-  FACE = 'REAR' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 6, BOTTOM = 0, WIDTH = 1
+  FACE = 'REAR' OFFSET = 0.5 /
  
 !! Fires 
 &FIRE ID = 'simple burner'  COMP_ID = 'Comp 1', FIRE_ID = 'simple burner_Fire'  LOCATION = 1, 2.5 / 

@@ -230,6 +230,7 @@ module initialization_routines
             n_leaks = n_leaks + 1
             counter = counter + 1
             ventptr => leakinfo(n_leaks)
+            ventptr%id = 'Wall Leak ' // trim(roomptr%id)
             ventptr%room1 = roomptr%compartment
             ventptr%room2 = nr
             ventptr%counter = counter
@@ -254,6 +255,7 @@ module initialization_routines
             n_leaks = n_leaks + 1
             counter = counter + 1
             ventptr => leakinfo(n_leaks)
+            ventptr%id = 'Floor Leak ' // trim(roomptr%id)
             ventptr%room1 = roomptr%compartment
             ventptr%room2 = nr
             ventptr%counter = counter

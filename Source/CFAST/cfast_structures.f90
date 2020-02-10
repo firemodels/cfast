@@ -281,6 +281,28 @@ module cfast_types
 
     ! vent data structure
     type vent_type
+        character(64) :: id                 ! user selected name for the vent
+        character(64) :: ramp_id            ! ramp id assocated with vent
+        character(64) :: filter_id          ! filter id assocated with vent
+        integer :: room1                    ! first or top compartment for connecting vent
+        integer :: room2                    ! second or bottom compartment for connecting vent
+        integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
+        integer :: opening_target           ! target number associated with vent (user input)
+        integer :: opening_type             ! open/close type for fire (user input)
+                                            ! (1 = time, 2 = temperature, 3 = heat flux)
+        real(eb) :: opening_criterion       ! open/close criteria for vent change based on temperature or flux
+        logical :: opening_triggered        ! true if opening_criterion has been met
+        real(eb) :: opening_temperature     ! current temeprature of target associate with vent
+        real(eb) :: opening_flux            ! current incident flux of target associate with vent
+        real(eb) :: opening_initial_time    ! beginning time of vent opening fraction change
+        real(eb) :: opening_initial_fraction! beginning fraction for vent opening (vent fraction up to initial time)
+        real(eb) :: opening_final_time      ! ending time for vent opening fraction change
+        real(eb) :: opening_final_fraction  ! final fraction for vent opening (vent fraction after final time)
+                                            ! between initial and final, open fraction changes linearly
+        real(eb) :: area                    ! cross-sectional area of vent
+        real(eb) :: xoffset                 ! offset from origin to vent center in width (x) direction
+        real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction
+        
         ! These define a wall vent
         real(eb) :: sill                                ! height of vent bottom relative to compartment floor
         real(eb) :: soffit                              ! height of vent top relative to compartment floor
@@ -319,30 +341,6 @@ module cfast_types
         real(eb), dimension(2) :: total_trace_flow      ! total trace species flow up to current time  (u,l)
         real(eb), dimension(2) :: total_trace_filtered  ! total trace species filtered out up to current time  (u,l)
         real(eb), dimension(2,ns) :: species_fraction   ! species fraction at compartment connection (<-> u, <-> l)
-
-        ! These are common to more than one vent types
-
-        character(64) :: id                 ! user selected name for the vent
-        character(64) :: ramp_id            ! ramp id assocated with vent
-        character(64) :: filter_id          ! filter id assocated with vent
-        integer :: room1                    ! first or top compartment for connecting vent
-        integer :: room2                    ! second or bottom compartment for connecting vent
-        integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
-        integer :: opening_target           ! target number associated with vent (user input)
-        integer :: opening_type             ! open/close type for fire (user input)
-                                            ! (1 = time, 2 = temperature, 3 = heat flux)
-        real(eb) :: opening_criterion       ! open/close criteria for vent change based on temperature or flux
-        logical :: opening_triggered        ! true if opening_criterion has been met
-        real(eb) :: opening_temperature     ! current temeprature of target associate with vent
-        real(eb) :: opening_flux            ! current incident flux of target associate with vent
-        real(eb) :: opening_initial_time    ! beginning time of vent opening fraction change
-        real(eb) :: opening_initial_fraction! beginning fraction for vent opening (vent fraction up to initial time)
-        real(eb) :: opening_final_time      ! ending time for vent opening fraction change
-        real(eb) :: opening_final_fraction  ! final fraction for vent opening (vent fraction after final time)
-                                            ! between initial and final, open fraction changes linearly
-        real(eb) :: area                    ! cross-sectional area of vent
-        real(eb) :: xoffset                 ! offset from origin to vent center in width (x) direction
-        real(eb) :: yoffset                 ! offset from origin to vent center in depth (y) direction
 
         ! These are calculated results for the current time step
 

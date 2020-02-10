@@ -616,7 +616,7 @@ module spreadsheet_routines
             call tointstring(counter,cvent)
 
             call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow', &
-                'Leak '//trim(cvent)//' from '//trim(clfrom)//' to '//trim(clto),'kg/s')
+                ventptr%id,'kg/s')
             call ssaddventinfo (ssventinfo, n_ssvent, 'LEAK', ifrom, ito, counter) 
         end do       
 
@@ -1166,7 +1166,7 @@ module spreadsheet_routines
         else if (venttype=='LEAK') then
             do i = 1, n_leaks
                 ventptr => leakinfo(i)
-                if (ventptr%room1==room1.and.ventptr%room2==room2.and.ventptr%counter==ivent) then
+                if (ventptr%id==device) then
                     ssvalue = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
                     call ssaddtolist (position, ssvalue ,outarray)
                 end if

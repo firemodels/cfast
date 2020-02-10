@@ -491,23 +491,17 @@ module spreadsheet_routines
 
             call ssaddtoheader (ssventinfo, n_ssvent,'W_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
                 'Net Inflow',ventptr%id,'kg/s')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
             call ssaddtoheader (ssventinfo, n_ssvent,'WF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
                 'Opening Fraction',ventptr%id,'')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
             if (validation_flag) then
                 call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
                     'Total Inflow Upper',ventptr%id,'kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
                 call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
                     'Total Outflow Upper',ventptr%id,'kg/s') 
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
                 call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_inflow'//'_'//trim(cvent), &
                     'Total Inflow Lower',ventptr%id,'kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
                 call ssaddtoheader (ssventinfo, n_ssvent,'WT_'//trim(cifrom)//'_l_outflow'//'_'//trim(cvent), &
                     'Total Outflow Lower',ventptr%id,'kg/s')
-                call ssaddventinfo (ssventinfo, n_ssvent, 'WVENT', ifrom, ito, counter)
             end if
         end do 
         
@@ -531,23 +525,17 @@ module spreadsheet_routines
 
             call ssaddtoheader (ssventinfo, n_ssvent,'CF_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
                 'Net Inflow',ventptr%id,'kg/s')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
             call ssaddtoheader (ssventinfo, n_ssvent,'CFF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
                 'Opening Fraction',ventptr%id,'')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
             if (validation_flag) then
                 call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
                     'Total Inflow Upper',ventptr%id,'kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
                 call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
                     'Total Outflow Upper',ventptr%id,'kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
                 call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_inflow'//'_'//trim(cvent), &
                     'Total Inflow Lower',ventptr%id,'kg/s')   
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
                 call ssaddtoheader (ssventinfo, n_ssvent,'CFT_'//trim(cifrom)//'_l_outflow'//'_'//trim(cvent), &
                     'Total Outflow Lower',ventptr%id,'kg/s') 
-                call ssaddventinfo (ssventinfo, n_ssvent, 'CFVENT', ifrom, ito, counter)
             end if
         end do  
         
@@ -571,29 +559,21 @@ module spreadsheet_routines
 
             call ssaddtoheader (ssventinfo, n_ssvent,'M_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
                 'Net Inflow',ventptr%id,'kg/s')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             call ssaddtoheader (ssventinfo, n_ssvent,'M_TRACE__'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
                 'Trace Species Flow',ventptr%id,'kg')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             call ssaddtoheader (ssventinfo, n_ssvent,'M_FILTERED_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent), &
                 'Trace Species Filtered',ventptr%id,'kg')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             call ssaddtoheader (ssventinfo, n_ssvent,'MF_'//trim(cito)//'_'//trim(cifrom)//'_'//trim(cvent), &
                 'Opening Fraction',ventptr%id,'')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             if (validation_flag) then
                 call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_inflow'//'_'//trim(cvent), &
                     'Total Inflow Upper',ventptr%id,'kg/s') 
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
                 call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_u_outflow'//'_'//trim(cvent), &
                     'Total Outflow Upper',ventptr%id,'kg/s') 
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
                 call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_inflow'//'_'//trim(cvent), &
-                    'Total Inflow Lower',ventptr%id,'kg/s')  
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter) 
+                    'Total Inflow Lower',ventptr%id,'kg/s')   
                 call ssaddtoheader (ssventinfo, n_ssvent,'MT_'//trim(cifrom)//'_l_outflow'//'_'//trim(cvent), &
                     'Total Outflow Lower',ventptr%id,'kg/s')
-                call ssaddventinfo (ssventinfo, n_ssvent, 'MVENT', ifrom, ito, counter)
             end if
         end do  
         
@@ -617,7 +597,6 @@ module spreadsheet_routines
 
             call ssaddtoheader (ssventinfo, n_ssvent,'L_'//trim(cifrom)//'_'//trim(cito)//'_'//trim(cvent),'Net Inflow', &
                 ventptr%id,'kg/s')
-            call ssaddventinfo (ssventinfo, n_ssvent, 'LEAK', ifrom, ito, counter) 
         end do       
 
         ! write out header
@@ -721,31 +700,6 @@ module spreadsheet_routines
     
     end subroutine ssaddtoheader
 
-! --------------------------- ssaddventinfo ------------------------------------
-
-    subroutine ssaddventinfo (ssheaderinfo, i, venttype, ifrom, ito, counter)
-    
-    ! vent ininformation to spreadsheet output data structure for vents so we don't have to decode it later
-    
-    integer, intent(in) :: i
-    type(ssout_type), intent(inout), target :: ssheaderinfo(*)
-    integer, intent(in) :: ifrom, ito, counter
-    character(*), intent(in) :: venttype
-    
-    type(ssout_type), pointer :: ssptr
-    
-    if (i<=mxss) then
-        ssptr => ssheaderinfo(i)
-        ssptr%venttype = venttype
-        ssptr%room1 = ifrom
-        ssptr%room2 = ito
-        ssptr%counter = counter
-    end if
-    
-    return
-
-    end subroutine ssaddventinfo
-
 ! --------------------------- ssaddvaluetooutput ------------------------------------
 
     subroutine ssaddvaluetooutput (ssptr, time, position, outarray)
@@ -757,9 +711,8 @@ module spreadsheet_routines
     real(eb), intent(in) :: time
     real(eb), intent(out) :: outarray(*)
     
-    integer i, idir, layer, room1, room2, ivent
+    integer i, idir, layer
     real(eb) :: fire_ignition, f_height, ssvalue, tjet, flow(4)
-    character(10) :: venttype
     
     character(50) :: measurement, device
     
@@ -1125,131 +1078,116 @@ module spreadsheet_routines
 
         ! vent-related outputs
     case ('Net Inflow')
-        venttype = ssptr%venttype
-        room1 = ssptr%room1
-        room2 = ssptr%room2
-        ivent = ssptr%counter
-        if (venttype=='WVENT') then
-            do i = 1, n_hvents
-                ventptr => hventinfo(i)
-                if (ventptr%id==device) then
-                    ssvalue = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
-                    call ssaddtolist (position, ssvalue ,outarray)
-                end if
-            end do
-        else if (venttype=='CFVENT') then
-            do i = 1, n_vvents
-                ventptr => vventinfo(i)
-                if (ventptr%id==device) then
-                    flow = 0.0_eb
-                    if (ventptr%mflow(2,u)>=0.0_eb) flow(1) = ventptr%mflow(2,u)
-                    if (ventptr%mflow(2,u)<0.0_eb) flow(2) = -ventptr%mflow(2,u)
-                    if (ventptr%mflow(2,l)>=0.0_eb) flow(3) = ventptr%mflow(2,l)
-                    if (ventptr%mflow(2,l)<0.0_eb) flow(4) = -ventptr%mflow(2,l)
-                    ssvalue = flow(1) + flow(3) - flow(2) - flow(4)
-                    call ssaddtolist (position, ssvalue, outarray)
-                end if
-            end do
-        else if (venttype=='MVENT') then
-            do i = 1, n_mvents
-                ventptr => mventinfo(i)
-                if (ventptr%id==device) then
-                    flow = 0.0_eb
-                    if (ventptr%mflow(2,u)>=0.0_eb) flow(1) = ventptr%mflow(2,u)
-                    if (ventptr%mflow(2,u)<0.0_eb) flow(2) = -ventptr%mflow(2,u)
-                    if (ventptr%mflow(2,l)>=0.0_eb) flow(3) = ventptr%mflow(2,l)
-                    if (ventptr%mflow(2,l)<0.0_eb) flow(4) = -ventptr%mflow(2,l)
-                    ssvalue = flow(1) + flow(3) - flow(2) - flow(4)
-                    call ssaddtolist (position, ssvalue, outarray)
-                end if
-            end do
-        else if (venttype=='LEAK') then
-            do i = 1, n_leaks
-                ventptr => leakinfo(i)
-                if (ventptr%id==device) then
-                    ssvalue = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
-                    call ssaddtolist (position, ssvalue ,outarray)
-                end if
-            end do
-        end if
+        ! wall vents
+        do i = 1, n_hvents
+            ventptr => hventinfo(i)
+            if (ventptr%id==device) then
+                ssvalue = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
+                call ssaddtolist (position, ssvalue ,outarray)
+            end if
+        end do
+        
+        ! ceiling/floor vents
+        do i = 1, n_vvents
+            ventptr => vventinfo(i)
+            if (ventptr%id==device) then
+                flow = 0.0_eb
+                if (ventptr%mflow(2,u)>=0.0_eb) flow(1) = ventptr%mflow(2,u)
+                if (ventptr%mflow(2,u)<0.0_eb) flow(2) = -ventptr%mflow(2,u)
+                if (ventptr%mflow(2,l)>=0.0_eb) flow(3) = ventptr%mflow(2,l)
+                if (ventptr%mflow(2,l)<0.0_eb) flow(4) = -ventptr%mflow(2,l)
+                ssvalue = flow(1) + flow(3) - flow(2) - flow(4)
+                call ssaddtolist (position, ssvalue, outarray)
+            end if
+        end do
+
+        ! mechanical vents
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            if (ventptr%id==device) then
+                flow = 0.0_eb
+                if (ventptr%mflow(2,u)>=0.0_eb) flow(1) = ventptr%mflow(2,u)
+                if (ventptr%mflow(2,u)<0.0_eb) flow(2) = -ventptr%mflow(2,u)
+                if (ventptr%mflow(2,l)>=0.0_eb) flow(3) = ventptr%mflow(2,l)
+                if (ventptr%mflow(2,l)<0.0_eb) flow(4) = -ventptr%mflow(2,l)
+                ssvalue = flow(1) + flow(3) - flow(2) - flow(4)
+                call ssaddtolist (position, ssvalue, outarray)
+            end if
+        end do
+
+        !leaks
+        do i = 1, n_leaks
+            ventptr => leakinfo(i)
+            if (ventptr%id==device) then
+                ssvalue = ventptr%h_mflow(2,1,1) - ventptr%h_mflow(2,1,2) + ventptr%h_mflow(2,2,1) - ventptr%h_mflow(2,2,2)
+                call ssaddtolist (position, ssvalue ,outarray)
+            end if
+        end do
     case ('Total Inflow Upper', 'Total Inflow Lower','Total Outflow Upper', 'Total Outflow Lower')
-        venttype = ssptr%venttype
-        room1 = ssptr%room1
-        room2 = ssptr%room2
-        ivent = ssptr%counter
         layer = u
         if (index(measurement,'Upper')==0) layer = l
         idir = in
         if (index(measurement,'Inflow')==0) idir = out
-        if (venttype=='WVENT') then
-            do i = 1, n_hvents
-                ventptr => hventinfo(i)
-                ! note that flows are relative to the first compartment
-                if (ventptr%id==device) then
-                    call ssaddtolist (position, ventptr%h_mflow(1,layer,idir), outarray)
+        ! wall vents
+        do i = 1, n_hvents
+            ventptr => hventinfo(i)
+            ! note that flows are relative to the first compartment
+            if (ventptr%id==device) then
+                call ssaddtolist (position, ventptr%h_mflow(1,layer,idir), outarray)
+            end if
+        end do
+        ! ceiling / floor vents
+        do i = 1, n_vvents
+            ventptr => vventinfo(i)
+            ssvalue = 0.0_eb
+            ! note that flows are relative to the bottom compartment
+            if (ventptr%id==device) then
+                if (idir==in) then
+                    ssvalue = max(0._eb,ventptr%mflow(1,layer))
+                else
+                    ssvalue = max(0._eb,-ventptr%mflow(1,layer))
                 end if
-            end do
-        else if (venttype=='CFVENT') then
-            do i = 1, n_vvents
-                ventptr => vventinfo(i)
-                ssvalue = 0.0_eb
-                ! note that flows are relative to the bottom compartment
-                if (ventptr%id==device) then
-                    if (idir==in) then
-                        ssvalue = max(0._eb,ventptr%mflow(1,layer))
-                    else
-                        ssvalue = max(0._eb,-ventptr%mflow(1,layer))
-                    end if
-                    call ssaddtolist (position, ssvalue, outarray)
-                end if
-            end do
-        else if (venttype=='MVENT') then
-            do i = 1, n_mvents
-                ventptr => mventinfo(i)
-                ! note that flows are relative to the from compartment
-                if (ventptr%id==device) then
-                    if (idir==in) then
-                        ssvalue = max(0._eb,ventptr%mflow(1,layer))
-                    else
-                        ssvalue = max(0._eb,-ventptr%mflow(1,layer))
-                    end if
-                    call ssaddtolist (position, ssvalue, outarray)
-                end if
-            end do
-         end if   
-    case ('Opening Fraction')
-        venttype = ssptr%venttype
-        room1 = ssptr%room1
-        room2 = ssptr%room2
-        ivent = ssptr%counter
-        if (venttype=='WVENT') then
-            do i = 1, n_hvents
-                ventptr => hventinfo(i)
-                if (ventptr%id==device) then
-                    call ssaddtolist (position, ventptr%opening_fraction, outarray)
-                end if
-            end do
-        else if (venttype=='CFVENT') then
-            do i = 1, n_vvents
-                ventptr => vventinfo(i)
-                if (ventptr%id==device) then
-                    call ssaddtolist (position, ventptr%opening_fraction, outarray)
-                end if
-            end do
-        else if (venttype=='MVENT') then
-            do i = 1, n_mvents
-                ventptr => mventinfo(i)
-                if (ventptr%id==device) then
-                    call ssaddtolist (position, ventptr%opening_fraction, outarray)
-                end if
-            end do
-        end if
-    case ('Trace Species Flow', 'Trace Species Filtered')
-        venttype = ssptr%venttype
-        room1 = ssptr%room1
-        room2 = ssptr%room2
-        ivent = ssptr%counter
+                call ssaddtolist (position, ssvalue, outarray)
+            end if
+        end do
+        ! mechanical vents
         do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            ! note that flows are relative to the from compartment
+            if (ventptr%id==device) then
+                if (idir==in) then
+                    ssvalue = max(0._eb,ventptr%mflow(1,layer))
+                else
+                    ssvalue = max(0._eb,-ventptr%mflow(1,layer))
+                end if
+                call ssaddtolist (position, ssvalue, outarray)
+            end if
+        end do
+    case ('Opening Fraction')
+        ! wall vents
+        do i = 1, n_hvents
+            ventptr => hventinfo(i)
+            if (ventptr%id==device) then
+                call ssaddtolist (position, ventptr%opening_fraction, outarray)
+            end if
+        end do
+        ! ceiling / floor vents
+        do i = 1, n_vvents
+            ventptr => vventinfo(i)
+            if (ventptr%id==device) then
+                call ssaddtolist (position, ventptr%opening_fraction, outarray)
+            end if
+        end do
+        ! mechanical vents
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
+            if (ventptr%id==device) then
+                call ssaddtolist (position, ventptr%opening_fraction, outarray)
+            end if
+        end do
+    case ('Trace Species Flow', 'Trace Species Filtered')
+        do i = 1, n_mvents
+            ventptr => mventinfo(i)
             if (ventptr%id==device) then
                 if (measurement=='Trace Species Flow') then
                     ssvalue =abs(ventptr%total_trace_flow(u))+abs(ventptr%total_trace_flow(l))
@@ -1259,7 +1197,6 @@ module spreadsheet_routines
                 call ssaddtolist (position, ssvalue, outarray)
             end if
         end do
-
         
         ! fire-related outputs
     case ('Ignition')
@@ -1596,7 +1533,7 @@ module spreadsheet_routines
     case default
         write(*, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
         write(iofill, '(2a)') '***Error in spreadsheet output: Output measurement not found, ' , trim(measurement)
-        call cfastexit('outputspreasheet',1)
+        call cfastexit('outputspreadsheet',1)
         stop
     end select
     

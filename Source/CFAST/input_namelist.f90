@@ -23,10 +23,10 @@
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
-    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+    use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
-    use setup_data, only: iofili, iofill, rarray, carray, nrow, ncol, cfast_version, heading, title, time_end, &
+    use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
         print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
@@ -58,7 +58,7 @@
     call read_misc (iofili)
     call read_matl (iofili)
     call read_ramp (iofili)
-    call read_comp (iofili,ncomp)
+    call read_comp (iofili)
     call read_devc (iofili)
     call read_tabl (iofili)
     call read_fire (iofili)
@@ -421,10 +421,9 @@
 
 
     ! --------------------------- COMP -------------------------------------------
-    subroutine read_comp(lu,ncomp)
+    subroutine read_comp (lu)
 
     integer, intent(in) :: lu
-    integer, intent(inout) :: ncomp
     
     integer :: ios, ii, kk
     character :: tcname*64
@@ -455,14 +454,14 @@
         end if
         read(lu,COMP,iostat=ios)
         if (ios>0) then
-            write(*, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , ncomp
-            write(iofill, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , ncomp
+            write(*, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , n_rooms
+            write(iofill, '(a,i3)') '***Error in &COMP: Invalid specification for inputs. Check &COMP input, ' , n_rooms
             call cfastexit('read_comp',1)
         end if
-        ncomp = ncomp + 1
+        n_rooms = n_rooms + 1
     end do comp_loop
 
-    if (ncomp>mxrooms) then
+    if (n_rooms>mxrooms) then
         write (*,'(a,i3)') '***Error: Too many compartments in input data file. Limit is ', mxrooms
         write (iofill,'(a,i3)') '***Error: Too many compartments in input data file. Limit is ', mxrooms
         call cfastexit('read_comp',2)
@@ -480,7 +479,7 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_comp_loop: do ii = 1, ncomp
+        read_comp_loop: do ii = 1, n_rooms
 
             roomptr => roominfo(ii)
 
@@ -545,8 +544,6 @@
             roomptr%leak_areas = leak_area
 
         end do read_comp_loop
-
-        nr = ncomp + 1
 
     end if comp_flag
 
@@ -659,7 +656,7 @@
                 compartment_id = trim(comp_id)
 
                 idcheck=.false.
-                searching: do jj = 1, nr-1
+                searching: do jj = 1, n_rooms
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%id)) then
                         iroom = roomptr%compartment
@@ -674,7 +671,7 @@
                     call cfastexit('read_devc',4)
                 end if
 
-                if (iroom<1.or.iroom>nr) then
+                if (iroom<1.or.iroom>n_rooms+1) then
                     write (*,5003) iroom
                     write (iofill,5003) iroom
                     call cfastexit('read_devc',5)
@@ -741,7 +738,7 @@
                 compartment_id = trim(comp_id)
 
                 idcheck=.false.
-                searching_2: do jj = 1, nr-1
+                searching_2: do jj = 1, n_rooms
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%id)) then
                         iroom = roomptr%compartment
@@ -1130,7 +1127,7 @@ continue
             compartment_id = ' '
             compartment_id = trim(comp_id)
 
-            searching: do jj = 1, nr-1
+            searching: do jj = 1, n_rooms
                 roomptr => roominfo(jj)
                 if (trim(compartment_id) == trim(roomptr%id)) then
                     iroom = roomptr%compartment
@@ -1138,7 +1135,7 @@ continue
                 end if
             end do searching
 
-            if (iroom<1.or.iroom>nr-1) then
+            if (iroom<1.or.iroom>n_rooms) then
                 write (*,5320) iroom
                 write (iofill,5320) iroom
                 call cfastexit('read_tabl',3)
@@ -1644,10 +1641,10 @@ continue
                     compartment_id=' '
                     compartment_id=trim(comp_ids(mm))
 
-                    searching: do jj=1,nr-1
+                    searching: do jj=1,n_rooms
                         roomptr => roominfo(jj)
                         if (trim(compartment_id) == 'OUTSIDE') then
-                            iroom = nr
+                            iroom = n_rooms+1
                             exit searching
                         end if
                         if (trim(compartment_id) == trim(roomptr%id)) then
@@ -1773,7 +1770,7 @@ continue
                 end if
 
                 ! absolute positions are always relative to the floor of the "inside" room
-                if (i == nr) then
+                if (i == n_rooms+1) then
                     roomptr => roominfo(j)
                 else
                     roomptr => roominfo(i)
@@ -1793,10 +1790,10 @@ continue
                     compartment_id=' '
                     compartment_id=trim(comp_ids(mm))
 
-                    searching_2: do jj=1,nr-1
+                    searching_2: do jj=1,n_rooms
                         roomptr => roominfo(jj)
                         if (trim(compartment_id) == 'OUTSIDE') then
-                            iroom = nr
+                            iroom = n_rooms+1
                             exit searching_2
                         end if
                         if (trim(compartment_id) == trim(roomptr%id)) then
@@ -1816,7 +1813,7 @@ continue
                 end do
 
                 k = counter2
-                if (i>nr.or.j>nr) then
+                if (i>n_rooms+1.or.j>n_rooms+1) then
                     write (*,5191) i, j
                     write (iofill,5191) i, j
                     call cfastexit('read_vent',12)
@@ -1941,10 +1938,10 @@ continue
                     compartment_id = ' '
                     compartment_id = trim(comp_ids(mm))
 
-                    searching_3: do jj=1,nr-1
+                    searching_3: do jj=1,n_rooms
                         roomptr => roominfo(jj)
                         if (trim(compartment_id) == 'OUTSIDE') then
-                            iroom = nr
+                            iroom = n_rooms+1
                             exit searching_3
                         end if
                         if (trim(compartment_id) == trim(roomptr%id)) then
@@ -2175,7 +2172,7 @@ continue
                 compartment_id = comp_id
                 ifrom = -101
 
-                searching: do jj=1,nr-1
+                searching: do jj=1,n_rooms
                     roomptrfrm => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptrfrm%id)) then
                         ifrom = roomptrfrm%compartment
@@ -2199,10 +2196,10 @@ continue
                     compartment_id = comp_ids(i)
                     ito=-101
 
-                   searching_2: do jj=1,nr-1
+                   searching_2: do jj=1,n_rooms
                         roomptrto => roominfo(jj)
                         if (trim(compartment_id) == 'OUTSIDE') then
-                            ito = nr
+                            ito = n_rooms+1
                             exit searching_2
                         end if
                         if (trim(compartment_id) == trim(roomptrto%id)) then
@@ -2217,7 +2214,7 @@ continue
                         call cfastexit('read_conn',3)
                     end if
 
-                    if (ito<1.or.ito==ifrom.or.ito>nr) then
+                    if (ito<1.or.ito==ifrom.or.ito>n_rooms+1) then
                         write (*, 5356) ifrom,ito
                         write (iofill, 5356) ifrom,ito
                         call cfastexit('read_conn',4)
@@ -2237,7 +2234,7 @@ continue
                 compartment_id = comp_id
                 i1 = -101
 
-                searching_3: do jj = 1, nr-1
+                searching_3: do jj = 1, n_rooms
                     roomptrfrm => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptrfrm%id)) then
                         i1 = roomptrfrm%compartment
@@ -2255,7 +2252,7 @@ continue
                 compartment_id = comp_ids(1)
                 i2 = -101
 
-                searching_4: do jj = 1, nr-1
+                searching_4: do jj = 1, n_rooms
                     roomptrfrm => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptrfrm%id)) then
                         i2 = roomptrfrm%compartment
@@ -2269,7 +2266,7 @@ continue
                     call cfastexit('read_conn',7)
                 end if
 
-                if (i1<1.or.i2<1.or.i1>nr.or.i2>nr) then
+                if (i1<1.or.i2<1.or.i1>n_rooms+1.or.i2>n_rooms+1) then
                     write (*,5345) i1, i2
                     write (iofill,5345) i1, i2
                     call cfastexit('read_conn',8)
@@ -2357,7 +2354,7 @@ continue
             compartment_id = comp_id
             icomp = 0
 
-            searching: do jj = 1, nr-1
+            searching: do jj = 1, n_rooms
                 roomptr => roominfo(jj)
                 if (trim(compartment_id) == trim(roomptr%id)) then
                     icomp = roomptr%compartment
@@ -2371,7 +2368,7 @@ continue
             sliceptr%value = value + kelvin_c_offset
             sliceptr%roomnum = icomp
 
-            if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+            if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
                 write (*, 5404) counter
                 write (iofill, 5404) counter
                 call cfastexit('read_isof',2)
@@ -2463,7 +2460,7 @@ continue
             icomp = 0
 
             if (trim(compartment_id) /= 'NULL') then
-                searching: do jj = 1, nr-1
+                searching: do jj = 1, n_rooms
                     roomptr => roominfo(jj)
                     if (trim(compartment_id) == trim(roomptr%id)) then
                         icomp = roomptr%compartment
@@ -2478,7 +2475,7 @@ continue
                 ! desired position is within the compartment(s)
                 sliceptr%position = position
                 sliceptr%roomnum  = icomp
-                if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
                     write (*, 5403) counter
                     write (iofill, 5403) counter
                     call cfastexit('read_slcf',3)
@@ -2522,7 +2519,7 @@ continue
                 ! 3-D slice
             else if (sliceptr%vtype==2) then
                 sliceptr%roomnum = icomp
-                if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
                     write (*, 5403) counter
                     write (iofill, 5403) counter
                     call cfastexit('read_slcf',7)

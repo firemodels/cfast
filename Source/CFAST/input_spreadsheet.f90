@@ -12,7 +12,7 @@ module spreadsheet_input_routines
         trigger_by_flux, w_from_room, w_to_room, w_from_wall, w_to_wall
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts
     use ramp_data, only: n_ramps, rampinfo
-    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+    use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, rarray, carray, nrow, ncol, cfast_version, heading, title, time_end, &
@@ -183,14 +183,14 @@ module spreadsheet_input_routines
         if (label=='COMPA') then
             if (countargs(lcarray)>=10) then
 
-                ncomp = ncomp + 1
-                if (ncomp>mxrooms) then
-                    write (*, 5062) ncomp
-                    write (iofill, 5062) ncomp
+                n_rooms = n_rooms+1 + 1
+                if (n_rooms+1>mxrooms) then
+                    write (*, 5062) n_rooms+1
+                    write (iofill, 5062) n_rooms+1
                     stop
                 end if
 
-                roomptr => roominfo(ncomp)
+                roomptr => roominfo(n_rooms+1)
                 ! Name
                 roomptr%id = lcarray(1)
 
@@ -231,9 +231,6 @@ module spreadsheet_input_routines
                     roomptr%jbar = lrarray(12)
                     roomptr%kbar = lrarray(13)
                 end if
-
-                ! Reset this each time in case this is the last entry
-                nr = ncomp + 1
             else
                 write (*,*) '***Error: Bad COMPA input. At least 10 arguments required.'
                 write (iofill,*) '***Error: Bad COMPA input. At least 10 arguments required.'
@@ -265,7 +262,7 @@ module spreadsheet_input_routines
                 ! The target can exist, now for the compartment
                 n_targets = n_targets + 1
                 iroom = lrarray(1)
-                if (iroom<1.or.iroom>nr) then
+                if (iroom<1.or.iroom>n_rooms+1) then
                     write (*,5003) iroom
                     write (iofill,5003) iroom
                     stop
@@ -351,7 +348,7 @@ module spreadsheet_input_routines
                 stop
             end if
             iroom = lrarray(1)
-            if (iroom<1.or.iroom>nr-1) then
+            if (iroom<1.or.iroom>n_rooms) then
                 write (*,5320) iroom
                 write (iofill,5320) iroom
                 stop
@@ -796,7 +793,7 @@ module spreadsheet_input_routines
                     ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_fraction = lrarray(icfraction)
                     ventptr%opening_final_fraction = lrarray(icfraction)
-                    if (ventptr%room1<=nr-1) then
+                    if (ventptr%room1<=n_rooms) then
                         roomptr => roominfo(ventptr%room1)
                         ventptr%xoffset = roomptr%cwidth/2
                         ventptr%yoffset = roomptr%cdepth/2
@@ -825,7 +822,7 @@ module spreadsheet_input_routines
                 i = lrarray(1)
                 j = lrarray(2)
                 k = lrarray(3)
-                if (i>nr.or.j>nr) then
+                if (i>n_rooms+1.or.j>n_rooms+1) then
                     write (*,5191) i, j
                     write (iofill,5191) i, j
                     stop
@@ -894,7 +891,7 @@ module spreadsheet_input_routines
                     ventptr%opening_type = trigger_by_time
                     ventptr%opening_initial_fraction = lrarray(13)
                     ventptr%opening_final_fraction = lrarray(13)
-                    if (ventptr%room1<=nr-1) then
+                    if (ventptr%room1<=n_rooms) then
                         roomptr => roominfo(ventptr%room1)
                         ventptr%xoffset = 0.0_eb
                         ventptr%yoffset = roomptr%cdepth/2
@@ -992,7 +989,7 @@ module spreadsheet_input_routines
             if (countargs(lcarray)>=2) then
                 i1 = lrarray(1)
                 i2 = lrarray(2)
-                if (i1<1.or.i2<1.or.i1>nr.or.i2>nr) then
+                if (i1<1.or.i2<1.or.i1>n_rooms+1.or.i2>n_rooms+1) then
                     write (*,5345) i1, i2
                     write (iofill,5345) i1, i2
                     stop
@@ -1013,7 +1010,7 @@ module spreadsheet_input_routines
         case ('ONEZ')
             if (countargs(lcarray)>=1) then
                 iroom = lrarray(1)
-                if (iroom<1.or.iroom>nr) then
+                if (iroom<1.or.iroom>n_rooms) then
                     write (*, 5001) i1
                     write (iofill, 5001) i1
                     stop
@@ -1032,7 +1029,7 @@ module spreadsheet_input_routines
                 iroom = lrarray(1)
 
                 ! check that specified room is valid
-                if (iroom<0.or.iroom>nr) then
+                if (iroom<0.or.iroom>n_rooms+1) then
                     write (*,5346) iroom
                     write (iofill,5346) iroom
                     stop
@@ -1058,7 +1055,7 @@ module spreadsheet_input_routines
                 roomptr => roominfo(iroom)
 
                 ! make sure the room number is valid
-                if (iroom<1.or.iroom>nr) then
+                if (iroom<1.or.iroom>n_rooms+1) then
                     write (*,5347) iroom
                     write (iofill,5347) iroom
                     stop
@@ -1101,7 +1098,7 @@ module spreadsheet_input_routines
                 roomptr => roominfo(iroom)
 
                 ! make sure the room number is valid
-                if (iroom<1.or.iroom>nr) then
+                if (iroom<1.or.iroom>n_rooms+1) then
                     write (*,5349) iroom
                     write (iofill,5349) iroom
                     stop
@@ -1150,11 +1147,11 @@ module spreadsheet_input_routines
                 stop
             end if
 
-            ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts nr pairs of {Second_Compartment, Fraction}
+            ! Horizontal heat flow, HHEAT First_Compartment Number_of_Parts n pairs of {Second_Compartment, Fraction}
 
             ! There are two forms of the command
             !   The first (single entry of the room number) - all connections based on horizontal flow
-            !   The second is the compartment number followed by nr pairs of compartments to which the heat
+            !   The second is the compartment number followed by n pairs of compartments to which the heat
             !   will flow and the fraction of the vertical surface of the compartment that loses heat
         case ('HHEAT')
             if (countargs(lcarray)>=1) then
@@ -1166,7 +1163,7 @@ module spreadsheet_input_routines
                     cycle
                 else
                     nto = lrarray(2)
-                    if (nto<1.or.nto>nr) then
+                    if (nto<1.or.nto>n_rooms+1) then
                         write (*,5354) nto
                         write (iofill,5354) nto
                         stop
@@ -1180,7 +1177,7 @@ module spreadsheet_input_routines
                         i2 = 2*i+2
                         ito = lrarray(i1)
                         frac = lrarray(i2)
-                        if (ito<1.or.ito==ifrom.or.ito>nr) then
+                        if (ito<1.or.ito==ifrom.or.ito>n_rooms+1) then
                             write (*, 5356) ifrom,ito
                             write (iofill, 5356) ifrom,ito
                             stop
@@ -1240,7 +1237,7 @@ module spreadsheet_input_routines
                         else
                             sliceptr%roomnum = 0
                         end if
-                        if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                        if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
                             write (*, 5403) n_visual
                             write (iofill, 5403) n_visual
                             stop
@@ -1292,7 +1289,7 @@ module spreadsheet_input_routines
                     else
                         sliceptr%roomnum = 0
                     end if
-                    if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                    if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
                         write (*, 5403) n_visual
                         write (iofill, 5403) n_visual
                         stop
@@ -1316,7 +1313,7 @@ module spreadsheet_input_routines
                 else
                     sliceptr%roomnum = 0
                 end if
-                if (sliceptr%roomnum<0.or.sliceptr%roomnum>nr-1) then
+                if (sliceptr%roomnum<0.or.sliceptr%roomnum>n_rooms) then
                     write (*, 5404) n_visual
                     write (iofill, 5404) n_visual
                     stop

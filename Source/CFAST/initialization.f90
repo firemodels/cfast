@@ -18,7 +18,7 @@ module initialization_routines
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
     use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
     use option_data, only: foxygen, option, on
-    use room_data, only: nr, nrm1, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
+    use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
         pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, wsplit
     use setup_data, only: iofill, debugging, deltat
@@ -92,23 +92,23 @@ module initialization_routines
     ! an initial solution.  the initial temperature values calculated by atmosp
     ! at the top of the empire state building (about 400 m above base) is only
     ! about 0.2 k different that at the base.
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         roomptr%interior_relp_initial = -interior_rho*grav_con*roomptr%z0
         roomptr%exterior_relp_initial = -exterior_rho*grav_con*roomptr%z0
     end do
-    roomptr => roominfo(nr)
+    roomptr => roominfo(n_rooms+1)
     roomptr%exterior_relp_initial = 0.0_eb
 
 
     ! normalize pressures so that the smallest pressure is zero
     roomptr => roominfo(1)
     xxpmin = min(roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
-    do i = 2, nrm1
+    do i = 2, n_rooms
         roomptr => roominfo(i)
         xxpmin = max(xxpmin,roomptr%interior_relp_initial,roomptr%exterior_relp_initial)
     end do
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         roomptr%interior_relp_initial = roomptr%interior_relp_initial - xxpmin
         roomptr%exterior_relp_initial = roomptr%exterior_relp_initial - xxpmin
@@ -121,7 +121,7 @@ module initialization_routines
     call update_data (dummy,constvar)
 
     ! define the p array, the solution to the ode
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         p(i) = roomptr%interior_relp_initial
         p(i+noftu) = interior_ambient_temperature
@@ -132,7 +132,7 @@ module initialization_routines
 
     ! define interior surface wall temperatures
     ii = nofwt
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         do iwall = 1, nwal
             if (roomptr%surface_on(iwall)) then
@@ -201,7 +201,7 @@ module initialization_routines
 
     ! initialize solver oxygen values if required.   (must be initialized after layer mass is defined)
     if (option(foxygen)==on) then
-        do iroom = 1, nrm1
+        do iroom = 1, n_rooms
             roomptr => roominfo(iroom)
             p(iroom+nofoxyu)=0.23_eb*roomptr%mass(u)
             p(iroom+nofoxyl)=0.23_eb*roomptr%mass(l)
@@ -223,7 +223,7 @@ module initialization_routines
     type(vent_type), pointer :: ventptr
     
     counter = 0
-    do iroom = 1, nrm1
+    do iroom = 1, n_rooms
         roomptr => roominfo(iroom)
         ! wall leakage
         if (roomptr%leak_areas(1) /= 0.0_eb) then
@@ -232,7 +232,7 @@ module initialization_routines
             ventptr => leakinfo(n_leaks)
             ventptr%id = 'Wall Leak ' // trim(roomptr%id)
             ventptr%room1 = roomptr%compartment
-            ventptr%room2 = nr
+            ventptr%room2 = n_rooms+1
             ventptr%counter = counter
             ventptr%sill   = roomptr%cheight*0.05
             ventptr%soffit = roomptr%cheight*0.95
@@ -257,7 +257,7 @@ module initialization_routines
             ventptr => leakinfo(n_leaks)
             ventptr%id = 'Floor Leak ' // trim(roomptr%id)
             ventptr%room1 = roomptr%compartment
-            ventptr%room2 = nr
+            ventptr%room2 = n_rooms+1
             ventptr%counter = counter
             ventptr%sill   = 0._eb
             ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
@@ -327,7 +327,7 @@ module initialization_routines
     thermalinfo(1:mxthrmp)%eps           = 0.0_eb
 
     ! rooms
-    nr = 0
+    n_rooms = 0
     allocate (roominfo(mxrooms))
     roominfo(1:mxrooms)%cwidth = xlrg
     roominfo(1:mxrooms)%cdepth = xlrg
@@ -583,7 +583,7 @@ module initialization_routines
     initial_mass_fraction(1) = 0.770_eb
     initial_mass_fraction(2) = 0.230_eb
     
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         roomptr%species_mass(u:l,1:ns) = 0.0_eb
         roomptr%species_fraction(u:l,1:ns) = 0.0_eb
@@ -623,7 +623,7 @@ module initialization_routines
 
     isof = nofprd
     do lsp = 1, ns
-        do i = 1, nrm1
+        do i = 1, n_rooms
             do k = u, l
                 isof = isof + 1
                 p(isof) = initialmass(k,i,lsp)
@@ -660,10 +660,10 @@ module initialization_routines
 
     do itarg = 1, n_targets
 
-        ! room number must be between 1 and nrm1
+        ! room number must be between 1 and n_rooms
         targptr => targetinfo(itarg)
         iroom = targptr%room
-        if (iroom<1.or.iroom>nrm1) then
+        if (iroom<1.or.iroom>n_rooms) then
             write (*,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             write (iofill,'(a,i0)') '***Error: Target assigned to non-existent compartment',iroom
             stop
@@ -800,7 +800,7 @@ module initialization_routines
     ! map the thermal data into its appropriate wall specification
     ! if name is "OFF" or "NONE" then just turn all off
     do i = 1, nwal
-        do j = 1, nrm1
+        do j = 1, n_rooms
             roomptr => roominfo(j)
             if (roomptr%surface_on(i)) then
                 if (roomptr%matl(i)==off.or.roomptr%matl(i)==none) then
@@ -822,7 +822,7 @@ module initialization_routines
     end do
 
     ! initialize temperature profile data structures
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         do j = 1, nwal
             roomptr%t_profile(1:nnodes,j) = interior_ambient_temperature
@@ -1066,14 +1066,14 @@ module initialization_routines
     subroutine offset ()
 
     ! offset in the following context is the beginning of the vector for that particular variable minus one.
-    !   thus, the actual pressure array goes from nofp+1 to nofp+nrm1.  the total number of equations to be considered
+    !   thus, the actual pressure array goes from nofp+1 to nofp+n_rooms.  the total number of equations to be considered
     !   is nequals, and is the last element in the last vector. each physical interface routine is responsible for
     !   the count of the number of elements in the vector for which it is resonsible.
 
     ! this set of parameters is set by nputp and is kept in the environment module cenviro.
     ! to index a variable, the list is something like (for temperature in this case)
 
-    ! noftu+1, noftu+nrm1
+    ! noftu+1, noftu+n_rooms
 
     ! the structure of the solver array is
 
@@ -1093,12 +1093,9 @@ module initialization_routines
     integer :: i, j, noxygen
     type(room_type), pointer :: roomptr
 
-    ! set the number of compartments and offsets
-    nrm1 = nr - 1
-
     ! count the number of walls
     n_cons = 0
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         do j = 1, nwal
             if (roomptr%surface_on(j)) then
@@ -1110,21 +1107,21 @@ module initialization_routines
     
     ! set number of implicit oxygen variables
     if (option(foxygen)==on) then
-        noxygen = nrm1
+        noxygen = n_rooms
     else
         noxygen = 0
     end if
 
     ! now do all the equation offsets
     nofp = 0
-    noftu = nofp + nrm1
-    nofvu = noftu + nrm1
-    noftl = nofvu + nrm1
-    nofoxyl = noftl + nrm1
+    noftu = nofp + n_rooms
+    nofvu = noftu + n_rooms
+    noftl = nofvu + n_rooms
+    nofoxyl = noftl + n_rooms
     nofoxyu = nofoxyl + noxygen
     nofwt = nofoxyu + noxygen
     nofprd = nofwt + n_cons
-    nequals = nofprd + 2*nrm1*ns
+    nequals = nofprd + 2*n_rooms*ns
 
     return
     end subroutine offset

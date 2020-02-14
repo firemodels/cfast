@@ -7,7 +7,7 @@ module conduction_routines
     use cfast_types, only: room_type
 
     use cparams, only: u, l, q, m, w_from_wall, w_from_room, w_boundary_condition, mxrooms, nwal, mxslb, ns_mass
-    use room_data, only: nrm1, roominfo, n_cons, surface_connections, nnodes, exterior_ambient_temperature, adiabatic_walls
+    use room_data, only: n_rooms, roominfo, n_cons, surface_connections, nnodes, exterior_ambient_temperature, adiabatic_walls
     use solver_data, only: nofwt, i_wallmap
 
     implicit none
@@ -94,7 +94,7 @@ module conduction_routines
                         end if
                         dflor = roominfo(j)%z0 - roomptr%z0
                         yy = roominfo(j)%depth(l) + dflor
-                        if (j/=nrm1+1) then
+                        if (j/=n_rooms+1) then
                             if (yy>yt) then
                                 fu = 0.0_eb
                             else if (yy<yb) then

@@ -9,7 +9,7 @@ module debug_routines
     
     use cparams, only: u, l, mxrooms, mxfslab, ns
     use diag_data, only: nwline, ioslab, ioresid
-    use room_data, only: nrm1, roominfo
+    use room_data, only: n_rooms, roominfo
     use spreadsheet_output_data, only: outarray
     use vent_data, only: dirs12
 
@@ -133,7 +133,7 @@ module debug_routines
     call ssaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         call ssaddtolist (position,roomptr%relp,outarray)
         call ssaddtolist (position,roomptr%volume(u),outarray)
@@ -155,7 +155,7 @@ module debug_routines
         end do
     end do
     ! species mass flow
-    do i = 1, nrm1
+    do i = 1, n_rooms
         do j = 1, 2
             do k = 1, 9
                 !call ssaddtolist (position,flows_total(i,k+2,j),outarray)

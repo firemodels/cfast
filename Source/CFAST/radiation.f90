@@ -10,7 +10,7 @@ module radiation_routines
     use cparams, only: u, l, mxrooms, nwal, mxfires, co2, h2o, soot
     use fire_data, only: n_fires, fireinfo
     use option_data, only: frad, fgasabsorb, option, on, off
-    use room_data, only: nrm1, roominfo
+    use room_data, only: n_rooms, roominfo
     use setup_data, only: iofill
 
     implicit none
@@ -45,8 +45,8 @@ module radiation_routines
     real(eb) :: taufl(mxfires,nwal), taufu(mxfires,nwal), firang(nwal,mxfires)
     real(eb) :: xrfire(mxfires), yrfire(mxfires), zrfire(mxfires), qrfire(mxfires)
 
-    fluxes_radiation(1:nrm1,1:nwal) = 0.0_eb
-    flows_radiation(1:nrm1,1:2) = 0.0_eb
+    fluxes_radiation(1:n_rooms,1:nwal) = 0.0_eb
+    flows_radiation(1:n_rooms,1:2) = 0.0_eb
 
     if (option(frad)==off) return
     black = .false.
@@ -54,7 +54,7 @@ module radiation_routines
     defabsup = 0.50_eb
     defabslow = 0.01_eb
 
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         tg(u) = roomptr%temp(u)
         tg(l) = roomptr%temp(l)
@@ -239,7 +239,7 @@ module radiation_routines
 
     !     note: we want to solve the linear system
     !         a*dq = b*e + c
-    !         where a and b are nxn matrices, q, e and c are nr vectors
+    !         where a and b are nxn matrices, q, e and c are n vectors
 
     ! define e vector
     do i = 1, 4

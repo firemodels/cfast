@@ -6,7 +6,7 @@
     
     use cenviro, only: cp
     use cparams, only: u, l, q, m, ns_mass, mxrooms
-    use room_data, only: nr, nrm1, roominfo, ns
+    use room_data, only: n_rooms, roominfo, ns
     use vent_data, only: hventinfo, vventinfo, mventinfo, n_hvents, n_vvents, n_mvents
     use diag_data, only: radi_verification_flag, upper_layer_thickness
     use option_data, only: flayermixing, option, off
@@ -40,12 +40,12 @@
     type(room_type), pointer :: roomptr
 
 
-    flows_layer_mixing(1:nrm1,1:ns+2,u) = 0.0_eb
-    flows_layer_mixing(1:nrm1,1:ns+2,l) = 0.0_eb
+    flows_layer_mixing(1:n_rooms,1:ns+2,u) = 0.0_eb
+    flows_layer_mixing(1:n_rooms,1:ns+2,l) = 0.0_eb
 
     if (option(flayermixing)==off) return
 
-    do iroom = 1, nrm1
+    do iroom = 1, n_rooms
         roomptr => roominfo(iroom)
         if (roomptr%temp(l) > roomptr%temp(u)) then
             flows_layer_mixing(iroom,q,u) = 1000.0_eb*(roomptr%temp(l) - roomptr%temp(u))**2
@@ -88,13 +88,13 @@
     real(eb) :: factor(mxrooms,2), smoke(mxrooms,2)
     integer :: iroom, isof, iprod
 
-    factor(1:nrm1,u) = 0.0_eb
-    factor(1:nrm1,l) = 0.0_eb
-    smoke(1:nrm1,1:2) = 0.0_eb
+    factor(1:n_rooms,u) = 0.0_eb
+    factor(1:n_rooms,l) = 0.0_eb
+    smoke(1:n_rooms,1:2) = 0.0_eb
 
-    isof = ibeg + 2*nrm1
+    isof = ibeg + 2*n_rooms
     do iprod = 2, ns_mass
-        do iroom = 1, nrm1
+        do iroom = 1, n_rooms
             if (pdif(isof) >= 0.0_eb) then
                 factor(iroom,u) = factor(iroom,u) + pdif(isof)
             else
@@ -111,7 +111,7 @@
     end do
 
     do iprod = 1, 2
-        do iroom = 1, nrm1
+        do iroom = 1, n_rooms
             if (pdif(isof) >= 0.0_eb) then
                 smoke(iroom, u) = smoke(iroom,u) + pdif(isof)
             else
@@ -128,15 +128,15 @@
     end do
 
     isof = ibeg
-    do iroom = 1, nrm1
+    do iroom = 1, n_rooms
         pdif(isof) = roominfo(iroom)%mass(u) - factor(iroom,u)
         isof = isof + 1
         pdif(isof) = roominfo(iroom)%mass(l) - factor(iroom,l)
         isof = isof + 1
     end do
 
-    isof = ibeg + 2*(ns_mass - 1)*nrm1
-    do iroom = 1, nrm1
+    isof = ibeg + 2*(ns_mass - 1)*n_rooms
+    do iroom = 1, n_rooms
         if (smoke(iroom,u) > 0.0_eb) then
             smoke(iroom,u) = pdif(isof)/smoke(iroom,u)
         else
@@ -152,7 +152,7 @@
     end do
 
     do iprod = 1, 2
-        do iroom = 1, nrm1
+        do iroom = 1, n_rooms
             pdif(isof) = pdif(isof) * smoke(iroom,u)
             isof  = isof + 1
             pdif(isof) = pdif(isof) * smoke(iroom,l)
@@ -185,8 +185,8 @@
     type(room_type), pointer :: roomptr
 
     ! initially assume that no rooms are connected
-    roomc(1:nr,1:nr) = 0
-    do i = 1, nr
+    roomc(1:n_rooms+1,1:n_rooms+1) = 0
+    do i = 1, n_rooms+1
         roomc(i,i) = 1
     end do
 
@@ -225,23 +225,23 @@
         end if
     end do
 
-    ! construct roomc**matiter where matiter > nr
+    ! construct roomc**matiter where matiter > n_rooms+1
     ! note:  roomc is a transitiion matrix (from markov chain theory). that is, roomc(i,j) is zero if there no connection
     !        between room and room j.  similarly, roomc(i,j) is one if there is a connection between these two rooms.
     !        roomc is symmetric. the matrix roomc**2 is tells us whether flow can get from room i to room j in two steps.
-    !        since there are only nr rooms, roomc**nr tells us whether any given room is connected to any
-    !        other room in nr steps. the entries roomc**nr(i,nr) then indicates whether a room is connected
+    !        since there are only n_rooms+1 rooms, roomc**(n_rooms+1) tells us whether any given room is connected to any
+    !        other room in n_rooms+1 steps. the entries roomc**(n_rooms+1)(i,n_rooms+1) then indicates whether a room is connected
     !        to the outside (perhaps through several other intermediate rooms).
     matiter = 1
-    do i = 1, nr
-        if (nr<=matiter) exit
-        call mat2mult(roomc,tempmat,mxrooms,nr)
+    do i = 1, n_rooms+1
+        if (n_rooms+1<=matiter) exit
+        call mat2mult(roomc,tempmat,mxrooms,n_rooms+1)
         matiter = matiter*2
     end do
 
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
-        if (roomc(i,nr)/=0) then
+        if (roomc(i,n_rooms+1)/=0) then
             roomptr%is_connection = .true.
         else
             roomptr%is_connection = .false.
@@ -281,7 +281,7 @@
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    do i = 1, nrm1
+    do i = 1, n_rooms
         a_opening(:) = 0._eb
         a_total (:)  = 0._eb
 
@@ -311,7 +311,7 @@
                 call get_vent_opening (ventptr%ramp_id,'H',ventptr%room1,ventptr%room2,ventptr%counter,j,tsec,fraction)
 
                 ! identify surface number
-                if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                if (ventptr%room1 == i .or. ventptr%room1 == n_rooms+1) then
                     side = ventptr%face
                 else if (ventptr%room2 == i) then
                     ! correct location for vent in room i because vent info is given as it is in room2
@@ -366,13 +366,13 @@
                 to = ventptr%room2
 
                 side = 0
-                if (from <= nrm1 .and. to == nrm1 + 1) then
+                if (from <= n_rooms .and. to == n_rooms + 1) then
                     side = 1
-                else if (to <= nrm1 .and. from == nrm1 + 1) then
+                else if (to <= n_rooms .and. from == n_rooms + 1) then
                     side = 10
                 else if (roominfo(from)%z0 > roominfo(to)%z0) then
                     side = 10
-                    if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                    if (ventptr%room1 == i .or. ventptr%room1 == n_rooms+1) then
                         continue
                     else if (ventptr%room2 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
@@ -384,7 +384,7 @@
                     end if
                 else if (roominfo(from)%z0 < roominfo(to)%z0) then
                     side = 1
-                    if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                    if (ventptr%room1 == i .or. ventptr%room1 == n_rooms+1) then
                         continue
                     else if (ventptr%room2 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
@@ -414,7 +414,7 @@
                 if (ventptr%xoffset .eq. 0._eb) side = 4
 
                 if (side .ne. 0) then
-                    if (ventptr%room1 == i .or. ventptr%room1 == nrm1+1) then
+                    if (ventptr%room1 == i .or. ventptr%room1 == n_rooms+1) then
                         continue
                     else if (ventptr%room2 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
@@ -469,13 +469,13 @@
                 bottom = ventptr%room2
 
                 side = 0
-                if (top <= nrm1 .and. bottom == nrm1 +1 ) then
+                if (top <= n_rooms .and. bottom == n_rooms +1 ) then
                     side = 10
-                else if (bottom <= nrm1 .and. top == nrm1 + 1) then
+                else if (bottom <= n_rooms .and. top == n_rooms + 1) then
                     side = 1
                 else if (roominfo(top)%z0 > roominfo(bottom)%z0) then
                     side = 1
-                    if (ventptr%room2 == i .or. ventptr%room2 == nrm1+1) then
+                    if (ventptr%room2 == i .or. ventptr%room2 == n_rooms+1) then
                         continue
                     else if (ventptr%room1 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2
@@ -487,7 +487,7 @@
                     end if
                 else if (roominfo(top)%z0 < roominfo(bottom)%z0) then
                     side = 10
-                    if (ventptr%room2 == i .or. ventptr%room2 == nrm1+1) then
+                    if (ventptr%room2 == i .or. ventptr%room2 == n_rooms+1) then
                         continue
                     else if (ventptr%room1 == i) then
                         ! correct location for vent in room i because vent info is given as it is in room2

@@ -10,7 +10,7 @@ module spreadsheet_header_routines
         mxvvents, mxmvents, mxext, mxleaks, mxfslab, ns, smoked
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
-    use room_data, only: nr, nrm1, roominfo, room_type
+    use room_data, only: n_rooms, roominfo, room_type
     use setup_data, only: validation_flag, iofilsmvzone, iofilsmv, iofilssdiag
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
@@ -57,7 +57,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Compartment variables
-    do j = 1, nrm1
+    do j = 1, n_rooms
         roomptr => roominfo(j)
         do i = 1, 12
             if (i==1.or.i==4.or.i==5.or.i==7.or.i>8.or..not.roomptr%shaft) then
@@ -237,7 +237,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Compartment variables
-    do j = 1, nrm1
+    do j = 1, n_rooms
         roomptr => roominfo(j)
         position = position + 1
         headertext(1,position) = trim(Labels(2))
@@ -276,7 +276,7 @@ module spreadsheet_header_routines
     end do
 
     ! Species
-    do j = 1, nrm1
+    do j = 1, n_rooms
         roomptr => roominfo(j)
         do i = 1, 2
             do k = 1, 9
@@ -364,7 +364,7 @@ module spreadsheet_header_routines
     position = 1
 
     ! Compartment variables
-    do j = 1, nrm1
+    do j = 1, n_rooms
         roomptr => roominfo(j)
         do i = 1, 10
             position = position + 1

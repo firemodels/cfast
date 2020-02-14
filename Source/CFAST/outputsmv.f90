@@ -979,7 +979,7 @@ module isosurface
     REAL(FB), DIMENSION(:), POINTER :: NODES_FROM
     INTEGER, INTENT(IN) :: NTRIS_FROM,NNODES_FROM
 
-    INTEGER :: NNODES_NEW, NTRIS_NEW, nr
+    INTEGER :: NNODES_NEW, NTRIS_NEW, n
 
     NNODES_NEW = NNODES_TO + NNODES_FROM
     NTRIS_NEW = NTRIS_TO + NTRIS_FROM
@@ -992,8 +992,8 @@ module isosurface
     TRIS_TO(1+3*NTRIS_TO:3*NTRIS_NEW) = TRIS_FROM(1:3*NTRIS_FROM)
     SURFACES_TO(1+NTRIS_TO:NTRIS_NEW) = SURFACES_FROM(1:NTRIS_FROM)
 
-    DO nr=1,3*NTRIS_FROM
-        TRIS_TO(3*NTRIS_TO+nr) = TRIS_TO(3*NTRIS_TO+nr) + NNODES_TO
+    DO n=1,3*NTRIS_FROM
+        TRIS_TO(3*NTRIS_TO+n) = TRIS_TO(3*NTRIS_TO+n) + NNODES_TO
     END DO
     NNODES_TO = NNODES_NEW
     NTRIS_TO = NTRIS_NEW
@@ -1239,7 +1239,7 @@ module isosurface
         /
 
     REAL(FB) :: VMIN, VMAX
-    INTEGER :: CASENUM, BIGGER, SIGN, nr
+    INTEGER :: CASENUM, BIGGER, SIGN, n
     INTEGER, DIMENSION(0:7) :: PRODS=(/1,2,4,8,16,32,64,128/);
     REAL(FB), DIMENSION(0:7) :: XXVAL,YYVAL,ZZVAL
     INTEGER, DIMENSION(0:3) :: IXMIN=(/0,1,4,5/), IXMAX=(/2,3,6,7/)
@@ -1272,10 +1272,10 @@ module isosurface
     BIGGER=0
     SIGN=1
 
-    DO nr = 0, 7
-        IF (VALS(nr)>LEVEL) THEN
+    DO n = 0, 7
+        IF (VALS(n)>LEVEL) THEN
             BIGGER=BIGGER+1
-            CASENUM = CASENUM + PRODS(nr);
+            CASENUM = CASENUM + PRODS(n);
         end if
     END DO
 
@@ -1285,9 +1285,9 @@ module isosurface
     IF (BIGGER > 4) THEN
         SIGN=-1
         CASENUM=0
-        DO nr=0, 7
-            IF (VALS(nr)<LEVEL) THEN
-                CASENUM = CASENUM + PRODS(nr)
+        DO n=0, 7
+            IF (VALS(n)<LEVEL) THEN
+                CASENUM = CASENUM + PRODS(n)
             end if
         END DO
     end if
@@ -1306,13 +1306,13 @@ module isosurface
     !  0--X-----3
 
 
-    DO nr=0, 3
-        XXVAL(IXMIN(nr)) = X(0);
-        XXVAL(IXMAX(nr)) = X(1);
-        YYVAL(IYMIN(nr)) = Y(0);
-        YYVAL(IYMAX(nr)) = Y(1);
-        ZZVAL(IZMIN(nr)) = Z(0);
-        ZZVAL(IZMAX(nr)) = Z(1);
+    DO n=0, 3
+        XXVAL(IXMIN(n)) = X(0);
+        XXVAL(IXMAX(n)) = X(1);
+        YYVAL(IYMIN(n)) = Y(0);
+        YYVAL(IYMAX(n)) = Y(1);
+        ZZVAL(IZMIN(n)) = Z(0);
+        ZZVAL(IZMAX(n)) = Z(1);
     END DO
 
     IF (CASENUM<=0.OR.CASENUM>=255) THEN ! NO ISO-SURFACE
@@ -1358,8 +1358,8 @@ module isosurface
     NEDGES = EDGES(-1);
 
     OUTOFBOUNDS=0
-    DO nr=0,NEDGES-1
-        EDGE = EDGES(nr)
+    DO n=0,NEDGES-1
+        EDGE = EDGES(n)
         V1 = CASE2(EDGE2VERTEX(EDGE,0));
         V2 = CASE2(EDGE2VERTEX(EDGE,1));
         VAL1 = VALS(V1)-LEVEL
@@ -1370,9 +1370,9 @@ module isosurface
         XX = FMIX(FACTOR,XXVAL(V1),XXVAL(V2));
         YY = FMIX(FACTOR,YYVAL(V1),YYVAL(V2));
         ZZ = FMIX(FACTOR,ZZVAL(V1),ZZVAL(V2));
-        XYZV_LOCAL(3*nr) = XX;
-        XYZV_LOCAL(3*nr+1) = YY;
-        XYZV_LOCAL(3*nr+2) = ZZ;
+        XYZV_LOCAL(3*n) = XX;
+        XYZV_LOCAL(3*n+1) = YY;
+        XYZV_LOCAL(3*n+2) = ZZ;
 
     END DO
 

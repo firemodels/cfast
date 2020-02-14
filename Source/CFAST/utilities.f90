@@ -256,7 +256,7 @@
 
     ! obtain machine-dependent parameters for the local machine environment.
     ! it is a function subprogram with one (input) argument. reference  p. a. fox, a. d. hall and
-    ! nr. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
+    ! n. l. schryer, framework for a portable library, acm transactions on mathematical software 4,
     ! 2 (june 1978), pp. 177-188.
     !     arguments:  i
     !
@@ -310,7 +310,7 @@
     subroutine xerrmod(mesg,nerr,nnr,r1,r2)
 
     ! simplified version of the slatec error handling package. it just logs our error messages
-    !          with codes as requested. adapted from code written by a. c. hindmarsh and p. nr. brown at llnl.
+    !          with codes as requested. adapted from code written by a. c. hindmarsh and p. n. brown at llnl.
     ! arguments: msg - the message (character array).
     !            nmes - the length of msg (number of characters).
     !            nerr - the error number (not used).
@@ -660,32 +660,32 @@
 
     ! --------------------------- mat2mult -------------------------------------------
 
-    subroutine mat2mult(mat1,mat2,idim,nr)
+    subroutine mat2mult(mat1,mat2,idim,n)
 
     ! given an nxn matrix mat1 whose elements are either 0 or 1, this routine computes the matrix
     ! mat1**2 and returns the results in mat1 (after scaling non-zero entries to 1).
     ! arguments: mat1 - matrix
     !            mat2 - work array of same size as mat1
     !            idim - actual dimensino limit on first subscript of mat1
-    !            nr - size of matrix
+    !            n - size of matrix
 
-    integer, intent(in) :: idim, nr
-    integer, intent(inout) :: mat1(idim,nr)
-    integer, intent(out) :: mat2(idim,nr)
+    integer, intent(in) :: idim, n
+    integer, intent(inout) :: mat1(idim,n)
+    integer, intent(out) :: mat2(idim,n)
 
     integer :: i, j, k
 
-    do i = 1, nr
-        do j = 1, nr
+    do i = 1, n
+        do j = 1, n
             mat2(i,j) = 0
-            do k = 1, nr
+            do k = 1, n
                 mat2(i,j) = mat2(i,j)+mat1(i,k)*mat1(k,j)
             end do
             if (mat2(i,j)>=1) mat2(i,j) = 1
         end do
     end do
-    do i = 1, nr
-        do j = 1, nr
+    do i = 1, n
+        do j = 1, n
             mat1(i,j) = mat2(i,j)
         end do
     end do
@@ -694,26 +694,26 @@
 
     ! --------------------------- indexi -------------------------------------------
 
-    subroutine indexi (nr,arrin,indx)
+    subroutine indexi (n,arrin,indx)
 
-    ! sorts the array arrin passively via the permuation array indx. the elements arrin(indx(i)), i=1, ..., nr 
-    ! are in increasing order. this routine uses a bubble sort.  it should not be used for large nr (nr>30), 
+    ! sorts the array arrin passively via the permuation array indx. the elements arrin(indx(i)), i=1, ..., n 
+    ! are in increasing order. this routine uses a bubble sort.  it should not be used for large n (n>30), 
     ! since bubble sorts are not efficient.
-    ! arguments: nr     number of elements in nr
+    ! arguments: n     number of elements in arrin
     !            arrin array to be passively sorted
     !            indx  permuation vector containing ordering such that arrin(indx) is in increasing order.
 
-    integer, intent(in) :: nr, arrin(*)
+    integer, intent(in) :: n, arrin(*)
     integer, intent(out) :: indx(*)
 
     integer ai, aip1, i, iswitch, itemp
 
-    do i = 1, nr
+    do i = 1, n
         indx(i) = i
     end do
 5   continue
     iswitch = 0
-    do i = 1, nr-1, 2
+    do i = 1, n-1, 2
         ai = arrin(indx(i))
         aip1 = arrin(indx(i+1))
         if (ai<=aip1) cycle
@@ -722,7 +722,7 @@
         indx(i) = indx(i+1)
         indx(i+1) = itemp
     end do
-    do  i = 2, nr-1, 2
+    do  i = 2, n-1, 2
         ai = arrin(indx(i))
         aip1 = arrin(indx(i+1))
         if (ai<=aip1) cycle
@@ -737,18 +737,18 @@
 
     ! --------------------------- interp -------------------------------------------
 
-    subroutine interp (x,y,nr,t,icode,yint)
+    subroutine interp (x,y,n,t,icode,yint)
 
     ! interpolates a table of numbers found in the arrays, x and y.
-    ! arguments: x,y - arrays of size nr to be interpolated at x=t
-    !            icode - code to select how to extrapolate values if t is less than x(1) or greater than x(nr).
-    !                      if icode = 1 then yint = y(1) for t < x(1) and yint = y(nr) for t > x(nr).
-    !                      if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(nr)
-    !                          and by extrapolation if t < x(1) or    t > x(nr)
+    ! arguments: x,y - arrays of size n to be interpolated at x=t
+    !            icode - code to select how to extrapolate values if t is less than x(1) or greater than x(n).
+    !                      if icode = 1 then yint = y(1) for t < x(1) and yint = y(n) for t > x(n).
+    !                      if icode = 2 then yint is evaluated by interpolation if x(1) < t < x(n)
+    !                          and by extrapolation if t < x(1) or    t > x(n)
     !            yint (output) - interpolated value of the y array at t
 
     real(eb), intent(in) :: x(*), y(*), t
-    integer, intent(in) :: nr, icode
+    integer, intent(in) :: n, icode
 
     real(eb) :: yint
 
@@ -758,7 +758,7 @@
 
     save
     data ilast /1/
-    if (nr==1) then
+    if (n==1) then
         yint = y(1)
         return
     end if
@@ -771,25 +771,25 @@
             go to 20
         end if
     end if
-    if (t>=x(nr)) then
+    if (t>=x(n)) then
         if (icode==1) then
-            yint = y(nr)
+            yint = y(n)
             return
         else
-            imid = nr - 1
+            imid = n - 1
             go to 20
         end if
     end if
-    if (ilast+1<=nr) then
+    if (ilast+1<=n) then
         imid = ilast
         if (x(imid)<=t.and.t<=x(imid+1)) go to 20
     end if
-    if (ilast+2<=nr) then
+    if (ilast+2<=n) then
         imid = ilast + 1
         if (x(imid)<=t.and.t<=x(imid+1)) go to 20
     end if
     ia = 1
-    iz = nr - 1
+    iz = n - 1
 10  continue
     imid = (ia+iz)/2
     if (t<x(imid)) then
@@ -843,7 +843,7 @@
     !     d to turn on debugging writes
     !     t to output trace species mass
     !     v to output target fluxes relative to an ambient target (incident flux - sigma*eps*tamb**4) and smoke in mg/m^3
-    !     nr to output just target fluxes relative to ambient (smoke still in od)
+    !     n to output just target fluxes relative to ambient (smoke still in od)
 
     integer :: year, month, day, iarg(8), iopt(26), nargs, values(8)
     character :: strs(8)*60
@@ -884,20 +884,20 @@
 
     ! --------------------------- shellsort -------------------------------------------
 
-    subroutine shellsort (ra, nr)
+    subroutine shellsort (ra, n)
 
-    integer, intent(in) :: nr
-    real(eb), intent(inout) :: ra(nr)
+    integer, intent(in) :: n
+    real(eb), intent(inout) :: ra(n)
 
     integer j, i, inc
     real(eb) rra
 
     inc = 1
 1   inc = 3*inc+1
-    if (inc<=nr) go to 1
+    if (inc<=n) go to 1
 2   continue
     inc = inc/3
-    do i = inc+1, nr
+    do i = inc+1, n
         rra = ra(i)
         j = i
 3       if (ra(j-inc)>rra) then
@@ -979,11 +979,11 @@
 
     character, intent(inout) :: string*(*)
 
-    integer nr, i
+    integer n, i
     character :: c
 
-    nr = len_trim(string)
-    do i = 1, nr
+    n = len_trim(string)
+    do i = 1, n
         c = string(i:i)
         if (c>='a'.and.c<='z') then
             c = char(ichar(c) + ichar('A')-ichar('a'))

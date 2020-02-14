@@ -791,22 +791,22 @@
 
     ! ------------------ get_igrid ------------------------
 
-    integer function get_igrid (x,xgrid,nr)
+    integer function get_igrid (x,xgrid,n)
 
-    integer, intent(in) :: nr
-    real(eb), intent(in), dimension(0:nr) :: xgrid
+    integer, intent(in) :: n
+    real(eb), intent(in), dimension(0:n) :: xgrid
     real(eb), intent(in) :: x
 
     integer :: i
 
-    do i = 0, nr-1
+    do i = 0, n-1
         if (xgrid(i).le.x.and.x.lt.xgrid(i+1)) then
             get_igrid=i
             return
         end if
     end do
-    if (xgrid(nr).eq.x) then
-        get_igrid=nr
+    if (xgrid(n).eq.x) then
+        get_igrid=n
     else
         get_igrid=-1
     end if
@@ -815,25 +815,25 @@
 
     ! --------------------------- set_grid -------------------------------------------
 
-    subroutine set_grid (xgrid,nr,xmin,xsplit,xmax,nsplit)
+    subroutine set_grid (xgrid,n,xmin,xsplit,xmax,nsplit)
 
-    integer, intent(in) :: nr, nsplit
-    real(eb), dimension(nr), intent(out) :: xgrid
+    integer, intent(in) :: n, nsplit
+    real(eb), dimension(n), intent(out) :: xgrid
     real(eb), intent(in) :: xmin, xsplit, xmax
 
     real(eb) :: factor
     integer :: i
 
-    !   1            nr-nsplit          nr
+    !   1            n-nsplit          n
     !  xmin          xsplit          xmax
 
-    do i = 1, nr-nsplit
-        factor = real(i-1,eb)/real(nr-nsplit-1,eb)
+    do i = 1, n-nsplit
+        factor = real(i-1,eb)/real(n-nsplit-1,eb)
         xgrid(i) = emix(factor,xmin,xsplit)
     end do
 
-    do i = nr-nsplit+1, nr
-        factor = real(i-(nr-nsplit),eb)/real(nsplit,eb)
+    do i = n-nsplit+1, n
+        factor = real(i-(n-nsplit),eb)/real(nsplit,eb)
         xgrid(i) = emix(factor,xsplit,xmax)
     end do
 

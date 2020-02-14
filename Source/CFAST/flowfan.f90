@@ -10,7 +10,7 @@ module mflow_routines
     use cenviro, only: cp
     use cparams, only: u, l, m, q, soot, soot_flaming, soot_smolder, ts, mxrooms
     use option_data, only: fmflow, option, off
-    use room_data, only: nr, nrm1, ns, roominfo, exterior_rho, interior_rho, exterior_abs_pressure
+    use room_data, only: n_rooms, ns, roominfo, exterior_rho, interior_rho, exterior_abs_pressure
     use vent_data, only: n_mvents, mventinfo
 
     implicit none
@@ -43,10 +43,10 @@ module mflow_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    uflw_mf(1:nr,1:ns+2,u) = 0.0_eb
-    uflw_mf(1:nr,1:ns+2,l) = 0.0_eb
-    uflw_filtered(1:nr,1:ns+2,u) = 0.0_eb
-    uflw_filtered(1:nr,1:ns+2,l) = 0.0_eb
+    uflw_mf(1:n_rooms+1,1:ns+2,u) = 0.0_eb
+    uflw_mf(1:n_rooms+1,1:ns+2,l) = 0.0_eb
+    uflw_filtered(1:n_rooms+1,1:ns+2,u) = 0.0_eb
+    uflw_filtered(1:n_rooms+1,1:ns+2,l) = 0.0_eb
     if (n_mvents==0) return
     if (option(fmflow)==off) return
 
@@ -79,7 +79,7 @@ module mflow_routines
                 roomptr%species_fraction(l,k)*ventptr%mflow(1,l))
         end do
         call get_vent_opening (filterid,'F',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,filter)
-        if (iroom<=nrm1) then
+        if (iroom<=n_rooms) then
             uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + ventptr%mflow(1,u)
             uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + ventptr%mflow(1,l)
             uflw_mf(iroom,q,u) = uflw_mf(iroom,q,u) + ventptr%mflow(1,u)*cp*roomptr%temp(u)
@@ -112,7 +112,7 @@ module mflow_routines
         ventptr%mflow(2,u) = fu*uflw_totals(m)
         ventptr%mflow(2,l) = fl*uflw_totals(m)
 
-        if (iroom<=nrm1) then
+        if (iroom<=n_rooms) then
             uflw_mf(iroom,m,u) = uflw_mf(iroom,m,u) + fu*uflw_totals(m)
             uflw_mf(iroom,m,l) = uflw_mf(iroom,m,l) + fl*uflw_totals(m)
             uflw_mf(iroom,q,u) = uflw_mf(iroom,q,u) + fu*uflw_totals(q)
@@ -203,7 +203,7 @@ module mflow_routines
     real(eb) :: z, hl, hu, rhol, rhou
     type(room_type), pointer :: roomptr
 
-    if (iroom<nr) then
+    if (iroom<n_rooms+1) then
         roomptr => roominfo(iroom)
         z = roomptr%depth(l)
         hl = min(z,height)

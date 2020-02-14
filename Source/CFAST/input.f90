@@ -28,7 +28,7 @@
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
-    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+    use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections
     use dump_data, only: n_dumps, dumpinfo
 
@@ -115,8 +115,7 @@
     pressure_offset = pressure_ref
 
     ! compartment geometry related data
-    nrm1 = nr - 1
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         roomptr%x1 = roomptr%x0 + roomptr%cwidth
         roomptr%y1 = roomptr%y0 + roomptr%cdepth
@@ -164,7 +163,7 @@
             stop
         end if
         ! outside must always be second compartment
-        if (ventptr%room1==nrm1+1) then
+        if (ventptr%room1==n_rooms+1) then
             write (*,'(a)') '***Error: Compartment order is incorrect. Outside must always be second compartment.'
             write (iofill,'(a)') '***Error: Compartment order is incorrect. Outside must always be second compartment.'
             stop
@@ -187,7 +186,7 @@
         itop = ventptr%room1
         ibot = ventptr%room2
         deps1 = roominfo(itop)%z0 - roominfo(ibot)%z1
-        if (itop/=nr.and.ibot/=nr.and.abs(deps1)>=mx_vsep) then
+        if (itop/=n_rooms+1.and.ibot/=n_rooms+1.and.abs(deps1)>=mx_vsep) then
             write (*,*) '***Error: Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
             write (iofill,*) '***Error: Vertical vent from ', itop,' to ', ibot, 'Separation between floor and ceiling too large.'
             stop
@@ -195,7 +194,7 @@
     end do
 
     ! Compartment area and volume
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
         roomptr%cvolume = roomptr%floor_area*roomptr%cheight
@@ -209,8 +208,8 @@
         iroom1 = vertical_connections(i,w_from_room)
         iroom2 = vertical_connections(i,w_to_room)
 
-        ! room numbers must be between 1 and nrm1
-        if (iroom1<1.or.iroom2<1.or.iroom1>nrm1+1.or.iroom2>nrm1+1) then
+        ! room numbers must be between 1 and n_rooms. outside is n_rooms+1
+        if (iroom1<1.or.iroom2<1.or.iroom1>n_rooms+1.or.iroom2>n_rooms+1) then
             write (*,'(a,i0,a,i0,a)')  '***Error: Invalid VHEAT specification:',' one or both of rooms ', &
                 iroom1,'-',iroom2,' do not exist'
             write (iofill,'(a,i0,a,i0,a)')  '***Error: Invalid VHEAT specification:',' one or both of rooms ', &
@@ -219,7 +218,7 @@
         end if
 
         ! if room is connected to the outside then ignore it
-        if (iroom1==nrm1+1.or.iroom2==nrm1+1) then
+        if (iroom1==n_rooms+1.or.iroom2==n_rooms+1) then
             nswall2 = nswall2 - 1
             cycle
         else
@@ -272,20 +271,8 @@
     end do
     n_vcons = nswall2
 
-    ! check shafts
-    do iroom = nrm1 + 1, mxrooms
-        roomptr => roominfo(iroom)
-        if (roomptr%shaft) then
-            write (*,'(a,i0,a,i0)') &
-                '***Error: Invalid SHAFT specification. Room',iroom,'must be less than or equal to ',nrm1
-            write (iofill,'(a,i0,a,i0)') &
-                '***Error: Invalid SHAFT specification. Room',iroom,'must be less than or equal to ',nrm1
-            stop
-        end if
-    end do
-
     ! check variable cross-sectional area specs and convert to volume
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         npts = roomptr%nvars
         if (npts/=0) then
@@ -359,7 +346,7 @@
     do i = 1, n_targets
         targptr => targetinfo(i)
         iroom = targptr%room
-        if (iroom<1.or.iroom>nrm1) then
+        if (iroom<1.or.iroom>n_rooms) then
             write (*,110) iroom
             write (iofill,110) iroom
 110         format('***Error: Invalid TARGET specification. Room ',i3, ' is not a valid')
@@ -376,7 +363,7 @@
     do i = 1, n_detectors
         dtectptr => detectorinfo(i)
         iroom = dtectptr%room
-        if (iroom<1.or.iroom>nrm1) then
+        if (iroom<1.or.iroom>n_rooms) then
             write (*,104) iroom
             write (iofill,104) iroom
 104         format('***Error: Invalid DETECTOR specification. Room ',i3, ' is not a valid')
@@ -421,7 +408,7 @@
     ! by vents then the first row of heat_frac will have the values
     ! 0. .25 .25 .25 .25
 
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         ! force heat transfer between rooms connected by vents.
         if (roomptr%iheat==1) then
@@ -430,7 +417,7 @@
                 if (ventptr%room2==j) then
                     roomptr2 => roominfo(j)
                     ! if the back wall of to room is not active then don't consider its contribution
-                    if (j<nr.and.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 1.0_eb
+                    if (j<n_rooms+1.and.roomptr2%surface_on(3)) roomptr%heat_frac(j) = 1.0_eb
                 end if
             end do
         end if
@@ -438,17 +425,17 @@
         ! normalize heat_frac fraction matrix so that rows sum to one
         if (roomptr%iheat/=0) then
             sum = 0.0_eb
-            do j = 1, nrm1+1
+            do j = 1, n_rooms+1
                 sum = sum + roomptr%heat_frac(j)
             end do
             if (sum<1.e-5_eb) then
-                roomptr%heat_frac(1:nrm1) = 0.0_eb
-                roomptr%heat_frac(nr) = 1.0_eb
+                roomptr%heat_frac(1:n_rooms) = 0.0_eb
+                roomptr%heat_frac(n_rooms+1) = 1.0_eb
             else
-                roomptr%heat_frac(1:nr) = roomptr%heat_frac(1:nr)/sum
+                roomptr%heat_frac(1:n_rooms+1) = roomptr%heat_frac(1:n_rooms+1)/sum
             end if
             roomptr%nheats = 0
-            do j = 1, nrm1
+            do j = 1, n_rooms
                 if (roomptr%heat_frac(j)/=0.0_eb) then
                     roomptr%nheats = roomptr%nheats + 1
                     roomptr%hheat_connections(roomptr%nheats) = j
@@ -606,7 +593,7 @@
     n_iso = 0
     if (n_visual.eq.0)return
 
-    nrm = nrm1
+    nrm = n_rooms
 
     ! count number of isosurfaces and slices
 

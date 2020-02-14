@@ -227,11 +227,11 @@ module room_data
     save
 
     ! compartment variables
-    integer nr, nrm1
 
     real(eb) :: relative_humidity, interior_abs_pressure, exterior_abs_pressure, pressure_offset, pressure_ref, t_ref, &
         initial_mass_fraction(ns), interior_rho, exterior_rho, interior_ambient_temperature, exterior_ambient_temperature
     
+    integer :: n_rooms
     type(room_type), allocatable, dimension(:), target :: roominfo
 
     ! wall variables

@@ -12,7 +12,7 @@ module hflow_routines
     use cparams, only: l, u, m, q, mxrooms, mxhvents, mxfslab, deltatemp_min
     use diag_data, only: dbtime, prnslab
     use option_data, only: fhflow, fentrain, option, on
-    use room_data, only: nrm1, ns, roominfo
+    use room_data, only: n_rooms, ns, roominfo
     use spreadsheet_output_data, only: outarray
     use solver_data, only: i_wallmap, i_speciesmap
     use vent_data, only: n_hvents, hventinfo, n_leaks, leakinfo, nvelev, dirs12, dpv1m2, yvelev, vss, vsa, vas, vaa, vsas, vasa
@@ -55,8 +55,8 @@ module hflow_routines
 
     position = 0
 
-    uflw_hf(1:nrm1,1:ns+2,l) = 0.0_eb
-    uflw_hf(1:nrm1,1:ns+2,u) = 0.0_eb
+    uflw_hf(1:n_rooms,1:ns+2,l) = 0.0_eb
+    uflw_hf(1:n_rooms,1:ns+2,u) = 0.0_eb
     
     vss(1:2,1:mxhvents) = 0.0_eb
     vsa(1:2,1:mxhvents) = 0.0_eb
@@ -139,7 +139,7 @@ module hflow_routines
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
 
-            if (iroom1>=1.and.iroom1<=nrm1) then
+            if (iroom1>=1.and.iroom1<=n_rooms) then
                 uflw_hf(iroom1,1:ns+2,l) = uflw_hf(iroom1,1:ns+2,l) + uflw2(1,1:ns+2,l)
                 uflw_hf(iroom1,1:ns+2,u) = uflw_hf(iroom1,1:ns+2,u) + uflw2(1,1:ns+2,u)
                 if (option(fentrain)==on) then
@@ -147,7 +147,7 @@ module hflow_routines
                     uflw_hf(iroom1,1:ns+2,u) = uflw_hf(iroom1,1:ns+2,u) + uflw3(1,1:ns+2,u)
                 end if
             end if
-            if (iroom2>=1.and.iroom2<=nrm1) then
+            if (iroom2>=1.and.iroom2<=n_rooms) then
                 uflw_hf(iroom2,1:ns+2,l) = uflw_hf(iroom2,1:ns+2,l) + uflw2(2,1:ns+2,l)
                 uflw_hf(iroom2,1:ns+2,u) = uflw_hf(iroom2,1:ns+2,u) + uflw2(2,1:ns+2,u)
                 if (option(fentrain)==on) then
@@ -194,8 +194,8 @@ module hflow_routines
 
     position = 0
 
-    uflw_lk(1:nrm1,1:ns+2,l) = 0.0_eb
-    uflw_lk(1:nrm1,1:ns+2,u) = 0.0_eb
+    uflw_lk(1:n_rooms,1:ns+2,l) = 0.0_eb
+    uflw_lk(1:n_rooms,1:ns+2,u) = 0.0_eb
 
     
     if (option(fhflow)/=on) return
@@ -255,11 +255,11 @@ module hflow_routines
             ! sum flows from both rooms for each layer and type of product
             ! (but only if the room is an inside room)
 
-            if (iroom1>=1.and.iroom1<=nrm1) then
+            if (iroom1>=1.and.iroom1<=n_rooms) then
                 uflw_lk(iroom1,1:ns+2,l) = uflw_lk(iroom1,1:ns+2,l) + uflw2(1,1:ns+2,l)
                 uflw_lk(iroom1,1:ns+2,u) = uflw_lk(iroom1,1:ns+2,u) + uflw2(1,1:ns+2,u)
             end if
-            if (iroom2>=1.and.iroom2<=nrm1) then
+            if (iroom2>=1.and.iroom2<=n_rooms) then
                 uflw_lk(iroom2,1:ns+2,l) = uflw_lk(iroom2,1:ns+2,l) + uflw2(2,1:ns+2,l)
                 uflw_lk(iroom2,1:ns+2,u) = uflw_lk(iroom2,1:ns+2,u) + uflw2(2,1:ns+2,u)
             end if

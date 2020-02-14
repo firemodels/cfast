@@ -10,7 +10,7 @@ module vflow_routines
     use cenviro, only: cp
     use cparams, only: u, l, m, q, deltatemp_min, pp, mxrooms
     use option_data, only: fvflow, option, on
-    use room_data, only: nr, nrm1, ns, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_rho
+    use room_data, only: n_rooms, ns, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_rho
     use vent_data, only: n_vvents, vventinfo
 
     implicit none
@@ -43,8 +43,8 @@ module vflow_routines
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr
 
-    uflw_vf(1:nr,1:ns+2,u) = 0.0_eb
-    uflw_vf(1:nr,1:ns+2,l) = 0.0_eb
+    uflw_vf(1:n_rooms+1,1:ns+2,u) = 0.0_eb
+    uflw_vf(1:n_rooms+1,1:ns+2,l) = 0.0_eb
     if (option(fvflow)/=on) return
     if (n_vvents==0) return
 
@@ -85,7 +85,7 @@ module vflow_routines
             end if
 
             ! determine mass and enthalpy fractions for the from room
-            if (ifrm<=nrm1) then
+            if (ifrm<=n_rooms) then
                 roomptr => roominfo(ifrm)
                 if (tmvent(iflow)>interior_ambient_temperature) then
                     zlayer = roomptr%depth(ilay)
@@ -124,7 +124,7 @@ module vflow_routines
             fromtq = fromqu + fromql
 
             ! extract mass and enthalpy from "from" room (not from outside)
-            if (ifrm<=nrm1) then
+            if (ifrm<=n_rooms) then
                 uflw_vf(ifrm,m,u) = uflw_vf(ifrm,m,u) - frommu
                 uflw_vf(ifrm,m,l) = uflw_vf(ifrm,m,l) - fromml
                 uflw_vf(ifrm,q,u) = uflw_vf(ifrm,q,u) - fromqu
@@ -146,7 +146,7 @@ module vflow_routines
             toql = fl*fromtq
 
             ! deposit mass and enthalpy into "to" room varibles (not outside)
-            if (ito<=nrm1) then
+            if (ito<=n_rooms) then
                 uflw_vf(ito,m,u) = uflw_vf(ito,m,u) + tomu
                 uflw_vf(ito,m,l) = uflw_vf(ito,m,l) + toml
                 uflw_vf(ito,q,u) = uflw_vf(ito,q,u) + toqu
@@ -163,13 +163,13 @@ module vflow_routines
                 speciesu = roomptr%species_fraction(u,lsp)*frommu
 
                 ! extract mass and enthalpy from "from" room (not from the outside)
-                if (ifrm<=nrm1) then
+                if (ifrm<=n_rooms) then
                     uflw_vf(ifrm,index,u) = uflw_vf(ifrm,index,u) - speciesu
                     uflw_vf(ifrm,index,l) = uflw_vf(ifrm,index,l) - speciesl
                 end if
 
                 ! deposit mass and enthalphy into "to" room variables (not outside)
-                if (ito<=nrm1) then
+                if (ito<=n_rooms) then
                     pmtoup = (speciesu + speciesl)*fu
                     pmtolp = (speciesu + speciesl)*fl
                     uflw_vf(ito,index,u) = uflw_vf(ito,index,u) + pmtoup
@@ -217,7 +217,7 @@ module vflow_routines
     botroomptr => roominfo(ibot)
     ! calculate delp, the other properties adjacent to the two sides of the vent, and delden.
     ! dp at top of bottom room and bottom of top room
-    if (ibot<=nrm1) then
+    if (ibot<=n_rooms) then
         dp(2) = -grav_con*(botroomptr%rho(l)*botroomptr%depth(l)+botroomptr%rho(u)*botroomptr%depth(u))
         relp(2) = botroomptr%relp
     else
@@ -225,7 +225,7 @@ module vflow_routines
         relp(2) = toproomptr%exterior_relp_initial
     end if
 
-    if (itop<=nrm1) then
+    if (itop<=n_rooms) then
         dp(1) = 0.0_eb
         relp(1) = toproomptr%relp
     else
@@ -255,12 +255,12 @@ module vflow_routines
     end if
 
     ! delden is density immediately above the vent less density immediately below the vent
-    if (itop<=nrm1) then
+    if (itop<=n_rooms) then
         den(1) = toproomptr%rho(ilay(1))
     else
         den(1) = exterior_rho
     end if
-    if (ibot<=nrm1) then
+    if (ibot<=n_rooms) then
         den(2) = botroomptr%rho(ilay(2))
     else
         den(2) = exterior_rho
@@ -324,7 +324,7 @@ module vflow_routines
     do i = 1, 2
         vvent(i) = vst(i) + vex
         xmvent(i) = denvnt(i)*vvent(i)
-        if (iroom(i)<=nrm1) then
+        if (iroom(i)<=n_rooms) then
             ! iroom(i) is an inside room so use the appropriate layer temperature
             roomptr => roominfo(iroom(i))
             tmvent(i) = roomptr%temp(ilay(3-i))

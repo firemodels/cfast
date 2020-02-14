@@ -17,7 +17,7 @@ module spreadsheet_routines
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
-    use room_data, only: nr, nrm1, roominfo
+    use room_data, only: n_rooms, roominfo
     use setup_data, only: validation_flag, iofilsmvzone, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
@@ -78,7 +78,7 @@ module spreadsheet_routines
         call ssaddtoheader (sscompinfo, n_sscomp, 'Time', 'Simulation Time', 'Time', 's')
             
         ! Compartment results
-        do i = 1, nrm1
+        do i = 1, n_rooms
             roomptr => roominfo(i)
             call toIntString(i,cRoom)
             call ssaddtoheader (sscompinfo, n_sscomp, 'ULT_'//trim(cRoom), 'Upper Layer Temperature', roomptr%id, 'C')
@@ -148,8 +148,8 @@ module spreadsheet_routines
         end do
         
         ! Door jet fire results
-        do i = 1, nr
-            if (i==nr) then
+        do i = 1, n_rooms+1
+            if (i==n_rooms+1) then
                 call ssaddtoheader (sscompinfo, n_sscomp, 'DJET_'//'Outside', 'HRR Door Jet Fires', 'Outside', 'W')
             else
                 call toIntString(i,cRoom)
@@ -336,7 +336,7 @@ module spreadsheet_routines
         call ssaddtoheader (ssmassinfo, n_ssmass, 'Time', 'Simulation Time', 'Time', 's')
             
         ! layer mass results
-        do i = 1, nrm1
+        do i = 1, n_rooms
             roomptr => roominfo(i)
             call toIntString(i,cRoom)
             call ssaddtoheader (ssmassinfo, n_ssmass, 'ULMN2_'//trim(cRoom), 'N2 Upper Layer Mass', roomptr%id, 'kg')
@@ -476,15 +476,15 @@ module spreadsheet_routines
             ventptr => hventinfo(i)
             ifrom = ventptr%room1
             call tointstring(ifrom,cifrom)
-            if (ifrom==nr) cifrom = 'Outside'
+            if (ifrom==n_rooms+1) cifrom = 'Outside'
             clfrom = 'Room_' //cifrom
-            if (ifrom==nr) clfrom = 'Outside'
+            if (ifrom==n_rooms+1) clfrom = 'Outside'
             
             ito = ventptr%room2
             call tointstring(ito,cito)
-            if (ito==nr) cito = 'Outside'
+            if (ito==n_rooms+1) cito = 'Outside'
             clto = 'Room_' //cito
-            if (ito==nr) clto = 'Outside'
+            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)
@@ -510,15 +510,15 @@ module spreadsheet_routines
             ventptr => vventinfo(i)
             ifrom = ventptr%room2
             call tointstring(ifrom,cifrom)
-            if (ifrom==nr) cifrom = 'Outside'
+            if (ifrom==n_rooms+1) cifrom = 'Outside'
             clfrom = 'Room_' //cifrom
-            if (ifrom==nr) clfrom = 'Outside'
+            if (ifrom==n_rooms+1) clfrom = 'Outside'
             
             ito = ventptr%room1
             call tointstring(ito,cito)
-            if (ito==nr) cito = 'Outside'
+            if (ito==n_rooms+1) cito = 'Outside'
             clto = 'Room_' //cito
-            if (ito==nr) clto = 'Outside'
+            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)
@@ -544,15 +544,15 @@ module spreadsheet_routines
             ventptr => mventinfo(i)
             ifrom = ventptr%room1
             call tointstring(ifrom,cifrom)
-            if (ifrom==nr) cifrom = 'Outside'
+            if (ifrom==n_rooms+1) cifrom = 'Outside'
             clfrom = 'Room_' //cifrom
-            if (ifrom==nr) clfrom = 'Outside'
+            if (ifrom==n_rooms+1) clfrom = 'Outside'
             
             ito = ventptr%room2
             call tointstring(ito,cito)
-            if (ito==nr) cito = 'Outside'
+            if (ito==n_rooms+1) cito = 'Outside'
             clto = 'Room_' //cito
-            if (ito==nr) clto = 'Outside'
+            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)
@@ -582,15 +582,15 @@ module spreadsheet_routines
             ventptr => leakinfo(i)
             ifrom = ventptr%room1
             call tointstring(ifrom,cifrom)
-            if (ifrom==nr) cifrom = 'Outside'
+            if (ifrom==n_rooms+1) cifrom = 'Outside'
             cifrom = 'Room_' //cifrom
-            if (ifrom==nr) cifrom = 'Outside'
+            if (ifrom==n_rooms+1) cifrom = 'Outside'
             
             ito = ventptr%room2
             call tointstring(ito,cito)
-            if (ito==nr) cito = 'Outside'
+            if (ito==n_rooms+1) cito = 'Outside'
             clto = 'Room_' //cito
-            if (ito==nr) clto = 'Outside'
+            if (ito==n_rooms+1) clto = 'Outside'
             
             counter = ventptr%counter
             call tointstring(counter,cvent)
@@ -644,7 +644,7 @@ module spreadsheet_routines
         call ssaddtoheader (sswallinfo, n_sswall, 'Time', 'Simulation Time', 'Time', 's')
 
         ! compartment surface temperatures
-        do i = 1, nrm1
+        do i = 1, n_rooms
             call toIntString(i,cRoom)
             roomptr => roominfo(i)
             call ssaddtoheader (sswallinfo, n_sswall, 'CEILT_'//trim(cRoom), 'Ceiling Temperature', roomptr%id, 'C')
@@ -731,7 +731,7 @@ module spreadsheet_routines
 
         ! compartment related outputs
     case ('Upper Layer Temperature', 'Lower Layer Temperature')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -740,14 +740,14 @@ module spreadsheet_routines
             end if
         end do
     case ('Layer Height')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             roomptr => roominfo(i)
             if (roomptr%id==device) then
                 call ssaddtolist (position, roomptr%depth(l), outarray)
             end if
         end do
     case ('Upper Layer Volume', 'Lower Layer Volume')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -756,7 +756,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Pressure')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             roomptr => roominfo(i)
             if (roomptr%id==device) then
                 call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
@@ -765,28 +765,28 @@ module spreadsheet_routines
         
         ! compartment surfaces
     case ('Ceiling Temperature')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             roomptr => roominfo(i)
             if (roomptr%id==device) then
                 call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(1))-kelvin_c_offset, outarray)
             end if
         end do
     case ('Upper Wall Temperature')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             roomptr => roominfo(i)
             if (roomptr%id==device) then
                 call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(2))-kelvin_c_offset, outarray)
             end if
         end do
     case ('Lower Wall Temperature')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             roomptr => roominfo(i)
             if (roomptr%id==device) then
                 call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(3))-kelvin_c_offset, outarray)
             end if
         end do
     case ('Floor Temperature')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             roomptr => roominfo(i)
             if (roomptr%id==device) then
                 call ssaddtolist (position, roomptr%t_surfaces(1,iwptr(4))-kelvin_c_offset, outarray)
@@ -795,7 +795,7 @@ module spreadsheet_routines
         
         ! species
     case ('N2 Upper Layer', 'N2 Upper Layer Mass', 'N2 Lower Layer', 'N2 Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -810,7 +810,7 @@ module spreadsheet_routines
             end if
         end do
     case ('O2 Upper Layer', 'O2 Upper Layer Mass', 'O2 Lower Layer', 'O2 Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -825,7 +825,7 @@ module spreadsheet_routines
             end if
         end do
     case ('CO2 Upper Layer', 'CO2 Upper Layer Mass', 'CO2 Lower Layer', 'CO2 Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -840,7 +840,7 @@ module spreadsheet_routines
             end if
         end do
     case ('CO Upper Layer', 'CO Upper Layer Mass', 'CO Lower Layer', 'CO Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -855,7 +855,7 @@ module spreadsheet_routines
             end if
         end do
     case ('HCN Upper Layer', 'HCN Upper Layer Mass', 'HCN Lower Layer', 'HCN Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -870,7 +870,7 @@ module spreadsheet_routines
             end if
         end do
     case ('HCl Upper Layer', 'HCl Upper Layer Mass', 'HCl Lower Layer', 'HCl Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -886,7 +886,7 @@ module spreadsheet_routines
         end do
     case ('Unburned Fuel Upper Layer', 'Unburned Fuel Upper Layer Mass', 'Unburned Fuel Lower Layer', &
           'Unburned Fuel Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -901,7 +901,7 @@ module spreadsheet_routines
             end if
         end do
     case ('H2O Upper Layer', 'H2O Upper Layer Mass', 'H2O Lower Layer', 'H2O Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -917,7 +917,7 @@ module spreadsheet_routines
         end do
     case ('Optical Density Upper Layer', 'Soot Upper Layer Mass', 'Optical Density Lower Layer', &
           'Soot Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -933,7 +933,7 @@ module spreadsheet_routines
         end do
     case ('OD from Flaming Upper Layer', 'Soot from Flaming Upper Layer Mass', 'OD from Flaming Lower Layer', &
           'Soot from Flaming Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -949,7 +949,7 @@ module spreadsheet_routines
         end do
     case ('OD from Smoldering Upper Layer', 'Soot from Smoldering Upper Layer Mass', 'OD from Smoldering Lower Layer', &
           'Soot from Smoldering Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -964,7 +964,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Trace Species Upper Layer Mass', 'Trace Species Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -976,7 +976,7 @@ module spreadsheet_routines
         
         ! unburned fuel-related outputs
     case ('Fuel Upper Layer Mass', 'Fuel Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -986,7 +986,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential Total Heat Upper Layer', 'Potential Total Heat Lower Layer')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -996,7 +996,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential N2 Upper Layer Mass', 'Potential N2 Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1006,7 +1006,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential O2 Upper Layer Mass', 'Potential O2 Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1016,7 +1016,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential CO2 Upper Layer Mass', 'Potential CO2 Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1026,7 +1026,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential CO Upper Layer Mass', 'Potential CO Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1036,7 +1036,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential HCN Upper Layer Mass', 'Potential HCN Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1046,7 +1046,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential HCl Upper Layer Mass', 'Potential HCl Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1056,7 +1056,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential H2O Upper Layer Mass', 'Potential H2O Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1066,7 +1066,7 @@ module spreadsheet_routines
             end if
         end do
     case ('Potential Soot Upper Layer Mass', 'Potential Soot Lower Layer Mass')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             layer = u
             if (index(measurement,'Upper')==0) layer = l
             roomptr => roominfo(i)
@@ -1269,11 +1269,11 @@ module spreadsheet_routines
             end if
         end do
     case ('HRR Door Jet Fires')
-        do i = 1, nr
+        do i = 1, n_rooms+1
             roomptr => roominfo(i)
-            if (i<nr.and.roomptr%id==device) then
+            if (i<n_rooms+1.and.roomptr%id==device) then
                 call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
-            else if (i==nr.and.device=='Outside') then
+            else if (i==n_rooms+1.and.device=='Outside') then
                 call ssaddtolist (position,roomptr%qdot_doorjet,outarray)
             end if
         end do
@@ -1599,7 +1599,7 @@ module spreadsheet_routines
     call ssaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         call ssaddtolist(position,roomptr%temp(u)-kelvin_c_offset,outarray)
         if (.not.roomptr%shaft) then
@@ -1654,7 +1654,7 @@ module spreadsheet_routines
         call ssaddtolist (position,slabs,outarray)
         do j = 2, 1, -1
             vflow = ventptr%flow_slab(j)
-            if (ventptr%room1<=nrm1.and.j==1) vflow = -vflow
+            if (ventptr%room1<=n_rooms.and.j==1) vflow = -vflow
             call ssaddtolist(position,ventptr%temp_slab(j),outarray)
             call ssaddtolist(position,vflow,outarray)
             call ssaddtolist(position,ventptr%ybot_slab(j),outarray)
@@ -1673,7 +1673,7 @@ module spreadsheet_routines
             call ssaddtolist (position,slabs,outarray)
             do j = 1, 2
                 call ssaddtolist(position,ventptr%temp_slab(j),outarray)
-                if (ventptr%room1<=nrm1) then
+                if (ventptr%room1<=n_rooms) then
                 call ssaddtolist(position,-ventptr%flow_slab(j),outarray)
                 else
                 call ssaddtolist(position,ventptr%flow_slab(j),outarray)
@@ -1721,7 +1721,7 @@ module spreadsheet_routines
     call ssaddtolist (position,time,outarray)
 
     ! compartment information
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         do j = 1, 10
             call ssaddtolist (position,roomptr%chi(j),outarray)

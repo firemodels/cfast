@@ -1199,7 +1199,7 @@
     use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg
     use ramp_data, only: n_ramps, rampinfo
     use vent_data, only: hventinfo, vventinfo, mventinfo
-    use room_data, only: roominfo, nrm1
+    use room_data, only: roominfo, n_rooms
     use target_data, only: targetinfo
     use setup_data, only: iofilo, iofill
     use namelist_data
@@ -1365,9 +1365,9 @@
                 ventptr%opening_type = trigger_by_time
                 ventptr%opening_triggered = .true.
                 room1c = roominfo(ventptr%room1)%id
-                if (ventptr%room1>nrm1) room1c = 'Outside'
+                if (ventptr%room1>n_rooms) room1c = 'Outside'
                 room2c = roominfo(ventptr%room2)%id
-                if (ventptr%room2>nrm1) room2c = 'Outside'
+                if (ventptr%room2>n_rooms) room2c = 'Outside'
                 vtypec = 'Unknown '
                 if (vtype=='H') vtypec = 'Wall'
                 if (vtype=='V') vtypec = 'Ceiling/Floor'
@@ -1388,9 +1388,9 @@
                 ventptr%opening_type = trigger_by_time
                 ventptr%opening_triggered = .true.
                 room1c = roominfo(ventptr%room1)%id
-                if (ventptr%room1>nrm1) room1c = 'Outside'
+                if (ventptr%room1>n_rooms) room1c = 'Outside'
                 room2c = roominfo(ventptr%room2)%id
-                if (ventptr%room2>nrm1) room2c = 'Outside'
+                if (ventptr%room2>n_rooms) room2c = 'Outside'
                 vtypec = 'Unknown '
                 if (vtype=='H') vtypec = 'Wall'
                 if (vtype=='V') vtypec = 'Ceiling/Floor'

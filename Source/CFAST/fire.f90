@@ -14,7 +14,7 @@ module fire_routines
         check_state, set_state
     use fire_data, only: n_fires, fireinfo, lower_o2_limit, summed_total_trace, tgignt, sigma_s
     use option_data, only: ffire, option, fdfire, on, off
-    use room_data, only: nr, nrm1, ns, roominfo, interior_ambient_temperature, adiabatic_walls
+    use room_data, only: n_rooms, ns, roominfo, interior_ambient_temperature, adiabatic_walls
     use setup_data, only: iofill, iofilo
     use smkview_data, only: smv_room, smv_height, smv_qdot, smv_xfire, smv_yfire, smv_zfire
     use solver_data, only: atol
@@ -49,8 +49,8 @@ module fire_routines
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
 
-    flows_fires(1:nr,1:ns+2,u) = 0.0_eb
-    flows_fires(1:nr,1:ns+2,l) = 0.0_eb
+    flows_fires(1:n_rooms+1,1:ns+2,u) = 0.0_eb
+    flows_fires(1:n_rooms+1,1:ns+2,l) = 0.0_eb
     nfire = 0
 
     if (option(ffire)==off) return
@@ -664,9 +664,9 @@ module fire_routines
 
     ! initialize summations and local data
 
-    flows_doorjets(1:nr,1:ns+2,l) = 0.0_eb
-    flows_doorjets(1:nr,1:ns+2,u) = 0.0_eb
-    roominfo(1:nr)%qdot_doorjet = 0.0_eb
+    flows_doorjets(1:n_rooms+1,1:ns+2,l) = 0.0_eb
+    flows_doorjets(1:n_rooms+1,1:ns+2,u) = 0.0_eb
+    roominfo(1:n_rooms+1)%qdot_doorjet = 0.0_eb
     djetflg = .false.
     if (option(fdfire)/=on.or.n_fires<=0) return
 
@@ -722,7 +722,7 @@ module fire_routines
                 end if
         end do
 
-    do i = 1, nr
+    do i = 1, n_rooms+1
         roomptr => roominfo(i)
         roomptr%qdot_doorjet = flows_doorjets(i,q,u) + flows_doorjets(i,q,l)
     end do
@@ -1119,7 +1119,7 @@ module fire_routines
     integer i, layer, lsp
     type(room_type), pointer :: roomptr
 
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         v(u) = roomptr%volume(u)
         v(l) = roomptr%volume(l)

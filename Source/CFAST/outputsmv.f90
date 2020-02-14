@@ -9,7 +9,7 @@
     use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
     
     use cparams, only: smoked, face_front, face_left, face_back, face_right
-    use room_data, only: nrm1, roominfo
+    use room_data, only: n_rooms, roominfo
     use setup_data, only: smvcsv, iofilsmv, iofilsmvplt
     use smkview_data, only: n_iso, isoinfo, n_slice, sliceinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
@@ -246,7 +246,7 @@
     vtype = 2
     if (venttype=='H') then
         ventptr=>hventinfo(ivent)
-        if (ventptr%room1<=nrm1) then
+        if (ventptr%room1<=n_rooms) then
             iroom1 =ventptr%room1
             iroom2 = ventptr%room2
             voffset = ventptr%offset(1)
@@ -281,7 +281,7 @@
         xyz(6) = ventptr%sill
     else if (venttype=='V') then
         ventptr => vventinfo(ivent)
-        if (ventptr%room1<=nrm1) then
+        if (ventptr%room1<=n_rooms) then
             iroom1 = ventptr%room1
             iroom2 = ventptr%room2
             roomptr => roominfo(iroom1)
@@ -302,7 +302,7 @@
         vtype = ventptr%shape
     else if (venttype=='M') then
         ventptr => mventinfo(ivent)
-        if (ventptr%room1<=nrm1) then
+        if (ventptr%room1<=n_rooms) then
             iroom1 =ventptr%room1
             iroom2 = ventptr%room2
             roomptr => roominfo(iroom1)

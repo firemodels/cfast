@@ -15,7 +15,7 @@ module output_routines
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
     use option_data, only: on, option, total_steps, foxygen
     use ramp_data, only: n_ramps, rampinfo
-    use room_data, only: nr, nrm1, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
+    use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
     use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
@@ -173,7 +173,7 @@ module output_routines
     write (iofilo,5020)
     write (iofilo,5030)
     write (iofilo,5040)
-    do icomp = 1, nrm1
+    do icomp = 1, n_rooms
         roomptr =>roominfo(icomp)
         ivolpercent = roomptr%volume(u)/roomptr%cvolume*100.0_eb+0.5_eb
         if (roomptr%shaft) then
@@ -224,9 +224,9 @@ module output_routines
 
     ! door jet fires
     write (iofilo,'(a)') ' '
-    do icomp = 1, nr
+    do icomp = 1, n_rooms+1
         roomptr => roominfo(icomp)
-        if (icomp<nr) then
+        if (icomp<n_rooms+1) then
             xems = 0.0_eb
             pyrolysis_rate = 0.0_eb
             xqf = 0.0_eb
@@ -298,7 +298,7 @@ module output_routines
             write (iofilo,5020) cjout(1:len_trim(cjout))
             write (iofilo,5030) ('-',i = 1,ic)
             write (ciout,5010)
-            do icomp = 1, nrm1
+            do icomp = 1, n_rooms
                 roomptr => roominfo(icomp)
                 write (ciout,5060) roomptr%id
                 ic = 14
@@ -348,11 +348,11 @@ module output_routines
         ifrom = ventptr%room1
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%id
-        if (ifrom==nr) cifrom = 'Outside'
+        if (ifrom==n_rooms+1) cifrom = 'Outside'
         ito = ventptr%room2
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%id
-        if (ito==nr) cito = 'Outside'
+        if (ito==n_rooms+1) cito = 'Outside'
         call flwout(outbuf,ventptr%h_mflow(1,1,1),ventptr%h_mflow(1,1,2),ventptr%h_mflow(1,2,1),ventptr%h_mflow(1,2,2),&
            ventptr%h_mflow(2,1,1),ventptr%h_mflow(2,1,2),ventptr%h_mflow(2,2,1),ventptr%h_mflow(2,2,2))
         write (iofilo,5010) 'H', i, cifrom, cito, ventptr%opening_fraction, outbuf
@@ -364,11 +364,11 @@ module output_routines
         ifrom = ventptr%room2
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%id
-        if (ifrom==nr) cifrom = 'Outside'
+        if (ifrom==n_rooms+1) cifrom = 'Outside'
         ito = ventptr%room1
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%id
-        if (ito==nr) cito = 'Outside'
+        if (ito==n_rooms+1) cito = 'Outside'
         flow = 0.0_eb
         if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
         if (ventptr%mflow(2,u)<0.0_eb) flow(6) = -ventptr%mflow(2,u)
@@ -389,11 +389,11 @@ module output_routines
         ifrom = ventptr%room1
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%id
-        if (ifrom==nr) cifrom = 'Outside'
+        if (ifrom==n_rooms+1) cifrom = 'Outside'
         ito = ventptr%room2
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%id
-        if (ito==nr) cito = 'Outside'
+        if (ito==n_rooms+1) cito = 'Outside'
         flow = 0.0_eb
         if (ventptr%mflow(2,u)>=0.0_eb) flow(5) = ventptr%mflow(2,u)
         if (ventptr%mflow(2,u)<0.0_eb) flow(6) = -ventptr%mflow(2,u)
@@ -416,11 +416,11 @@ module output_routines
         ifrom = ventptr%room1
         roomptr => roominfo(ifrom)
         write (cifrom,'(a12)') roomptr%id
-        if (ifrom==nr) cifrom = 'Outside'
+        if (ifrom==n_rooms+1) cifrom = 'Outside'
         ito = ventptr%room2
         roomptr => roominfo(ito)
         write (cito,'(a12)') roomptr%id
-        if (ito==nr) cito = 'Outside'
+        if (ito==n_rooms+1) cito = 'Outside'
         flow = 0.0_eb
         if (ventptr%total_flow(u)>=0.0_eb) flow(1) = ventptr%total_flow(u)
         if (ventptr%total_flow(u)<0.0_eb) flow(2) = -ventptr%total_flow(u)
@@ -435,7 +435,7 @@ module output_routines
     ! leakage
     if (n_leaks>0) then
         write (iofilo,5060)
-        do i = 1, nrm1
+        do i = 1, n_rooms
             roomptr => roominfo(i)
             flow = 0.0_eb
             hasleak = .false.
@@ -503,9 +503,9 @@ module output_routines
 
     write (iounit,5000)
     write (iounit,5010)
-    do ir = 1, nr
+    do ir = 1, n_rooms+1
         roomptr => roominfo(ir)
-        if (ir<nr) then
+        if (ir<n_rooms+1) then
             pyrolysis_rate = 0.0_eb
             xqf = 0.0_eb
             do i = 1, n_fires
@@ -555,7 +555,7 @@ module output_routines
 
         call get_target_temperatures
 
-        do i=1,nrm1
+        do i=1,n_rooms
             roomptr => roominfo(i)
             write (iofilo,5010) roomptr%id, (roomptr%t_surfaces(1,iwptr(iw))-kelvin_c_offset,iw=1,4)
 
@@ -671,7 +671,7 @@ module output_routines
     ! output initial test case overview
 
     write (iofilo,5000)
-    write (iofilo,5010) nrm1, n_hvents, n_vvents, n_mvents
+    write (iofilo,5010) n_rooms, n_hvents, n_vvents, n_mvents
     write (iofilo,5020) time_end, print_out_interval, smv_out_interval, ss_out_interval
 
 5000 format (//,'OVERVIEW',/)
@@ -711,7 +711,7 @@ module output_routines
     character :: hall, shaft
 
     write (iofilo,5000)
-    do i = 1, nrm1
+    do i = 1, n_rooms
         roomptr => roominfo(i)
         shaft = '' ; if (roomptr%shaft) shaft = '*'
         hall = '' ; if (roomptr%hall) hall = '*'
@@ -754,7 +754,7 @@ module output_routines
             ventptr => hventinfo(i)
             roomptr => roominfo(ventptr%room2)
             write (cjout,'(a14)') roomptr%id
-            if (ventptr%room2==nr) cjout = 'Outside'
+            if (ventptr%room2==n_rooms+1) cjout = 'Outside'
             roomptr => roominfo(ventptr%room1)
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
@@ -803,10 +803,10 @@ module output_routines
             ventptr => vventinfo(i)
             roomptr => roominfo(ventptr%room1)
             write (ciout,'(a14)') roomptr%id
-            if (ventptr%room1==nr) ciout = 'Outside'
+            if (ventptr%room1==n_rooms+1) ciout = 'Outside'
             roomptr => roominfo(ventptr%room2)
             write (cjout,'(a14)') roomptr%id
-            if (ventptr%room2==nr) cjout = 'Outside'
+            if (ventptr%room2==n_rooms+1) cjout = 'Outside'
             csout = 'Round'
             if (ventptr%shape==2) csout = 'Square'
             roomptr => roominfo(ventptr%room2)
@@ -856,10 +856,10 @@ module output_routines
             ventptr => mventinfo(i)
             roomptr => roominfo(ventptr%room1)
             write (ciout,'(a14)') roomptr%id
-            if (ventptr%room1==nr) ciout = 'Outside'
+            if (ventptr%room1==n_rooms+1) ciout = 'Outside'
             roomptr => roominfo(ventptr%room2)
             write (cjout,'(a14)') roomptr%id
-            if (ventptr%room2==nr) cjout = 'Outside'
+            if (ventptr%room2==n_rooms+1) cjout = 'Outside'
             if (ventptr%opening_type==trigger_by_time) then
                 ctrigger = 'Time'
                 rampid = ventptr%ramp_id
@@ -907,7 +907,7 @@ module output_routines
              rampptr => rampinfo(i)
              roomptr => roominfo(rampptr%room2)
              write (cjout,'(a14)') roomptr%id
-             if (rampptr%room2==nr) cjout = 'Outside'
+             if (rampptr%room2==n_rooms+1) cjout = 'Outside'
              roomptr => roominfo(rampptr%room1)
              write (iofilo,5170) rampptr%type, roomptr%id, cjout, rampptr%counter, 'Time      ', &
                  (int(rampptr%x(j)),j=1,rampptr%npoints)
@@ -939,7 +939,7 @@ module output_routines
 
     ! check to see if any heat transfer is on
     if (.not.adiabatic_walls) then
-        do i = 1, nrm1
+        do i = 1, n_rooms
             roomptr => roominfo(i)
             do j = 1, nwal
                 if (roomptr%surface_on(j).and.roomptr%matl(j)/=' ') go to 30
@@ -951,7 +951,7 @@ module output_routines
 
     ! some surfaces are on, do the printout of the surfaces
 30  write (iofilo,5010)
-    do  i = 1, nrm1
+    do  i = 1, n_rooms
         roomptr => roominfo(i)
         write (iofilo,5020) roomptr%id, roomptr%matl(1), roomptr%matl(3), roomptr%matl(2)
     end do
@@ -1176,11 +1176,11 @@ module output_routines
 
     write (lbuf,*)'Solution component with the greatest error is'
     call xerror(lbuf,0,1,0)
-    if (icomp<=nofp+nrm1) then
+    if (icomp<=nofp+n_rooms) then
         write (lbuf,'(a,i2)')' pressure in room ',icomp
         call xerror(lbuf,0,1,0)
     else if (icomp<=noftu) then
-        write (lbuf,'(a,i2)')' either hvac or fsm ',icomp-nrm1
+        write (lbuf,'(a,i2)')' either hvac or fsm ',icomp-n_rooms
         call xerror(lbuf,0,1,0)
     else if (icomp<=nofvu) then
         write (lbuf,'(a,i2)')' upper layer temp in room ',icomp-noftu
@@ -1188,7 +1188,7 @@ module output_routines
     else if (icomp<=noftl) then
         write (lbuf,'(a,i2)')' upper layer vol in room ',icomp-nofvu
         call xerror(lbuf,0,1,0)
-    else if (icomp<=noftl+nrm1) then
+    else if (icomp<=noftl+n_rooms) then
         write (lbuf,'(a,i2)')' lower layer temp in room ',icomp-noftl
         call xerror(lbuf,0,1,0)
     else if (icomp<=nofwt) then
@@ -1248,7 +1248,7 @@ module output_routines
         write (*,*)
     else if (ikey==2) then
         write (iofilo,5000) t, dt
-        do i = 1, nrm1
+        do i = 1, n_rooms
             roomptr => roominfo(i)
             write (*,5010) i
             write (*,5020) '   Upper temp(K)', roomptr%temp(u)
@@ -1277,7 +1277,7 @@ module output_routines
         if (n_detectors/=0) then
             write (*,*)'Detector info'
             write (*,100)
-100         format('  nr ',3X,'D temp',6X,'J temp',6X,' Act')
+100         format('  #  ',3X,'D temp',6X,'J temp',6X,' Act')
             do i = 1, n_detectors
                 dtectptr => detectorinfo(i)
                 iroom = dtectptr%room
@@ -1296,13 +1296,13 @@ module output_routines
         write (*,5090) t, dt
         call find_error_component (ieqmax)
         write (*,6030)
-        do iroom = 1, nrm1
+        do iroom = 1, n_rooms
             roomptr => roominfo(iroom)
             write (*,6000) iroom, roomptr%relp, roomptr%depth(l), roomptr%temp(l), roomptr%temp(u), &
                roomptr%species_fraction(l,2), roomptr%species_fraction(u,2)
         end do
         write (*,6070)
-        do iroom = 1, nrm1
+        do iroom = 1, n_rooms
             roomptr => roominfo(iroom)
             xqf = 0.
             do iobj = 1, n_fires

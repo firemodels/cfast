@@ -33,7 +33,7 @@
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
-    use dump_data, only: n_dumps, dumpinfo
+    use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
 
     implicit none 
     
@@ -2726,7 +2726,8 @@ continue
 
     integer, intent(in) :: lu
     
-    integer :: ios, ii, counter
+    integer :: ios, i, ii, counter
+    logical found
     type(dump_type), pointer :: dumpptr
     
     real(eb) :: criteria
@@ -2775,8 +2776,13 @@ continue
                 write(iofill,*) 'Error in &DUMP: ID must be defined number ', counter
                 call cfastexit('read_dump',2)
             end if
-            if (.not.((file_type(1:4)=='COMP').or.(file_type(1:4)=='DEVI').or.(file_type(1:4)=='MASS').or. &
-                        (file_type(1:4)=='VENT').or.(file_type(1:4)=='WALL'))) then
+            found = .false.
+            do i = 1, num_csvfiles
+                if (trim(file_type)==trim(csvnames(1))) then
+                    found = .true.
+                end if
+            end do
+            if (.not.found) then
                 write(*,*) 'Error in &DUMP: Invalid specification for FILE_TYPE ',trim(file_type), &
                     ' number ',counter
                 write(iofill,*) 'Error in &DUMP: Invalid specification for FILE_TYPE ',trim(file_type), &
@@ -2890,6 +2896,7 @@ continue
         end do read_dump_loop
 
     end if
+    return
 
 5403 format ('***Error: Bad &DUMP input. Invalid &DUMP specification in post-run calculation input ',i0)
 

@@ -472,6 +472,7 @@ module initialization_routines
     ! targets
     n_targets = 0
     allocate (targetinfo(mxtarg))
+    targetinfo(1:mxtarg)%room = 0
     targetinfo(1:mxtarg)%equaton_type = pde
     targetinfo(1:mxtarg)%back = interior
     targetinfo(1:mxtarg)%material = 'DEFAULT'

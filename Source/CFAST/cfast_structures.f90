@@ -8,6 +8,7 @@ module cfast_types
     type dump_type
         ! these are for user-specified calculations on data. output goes to _calculations.csv
         character(64) :: id                     ! user selected heading for output column
+        character(256) :: fyi                   ! line available for comments or extra input
         character(24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
         character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
                                                 !      'check_total_hrr'
@@ -27,6 +28,7 @@ module cfast_types
     ! detector / sprinkler structure
     type detector_type
         character(64) :: id             ! user selected name for the detector (user input)
+        character(256) :: fyi           ! line available for comments or extra input
         real(eb) :: center(3)           ! position of detector center (user input)
         real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
         real(eb) :: trigger_smolder     ! activation value for dual_detector smoke for the smoldering smoke % obscuration 
@@ -63,6 +65,7 @@ module cfast_types
     type fire_type
         ! These are the fire definitions from the input
         character(64) :: id                             ! user selected name for the fire instance (user input)
+        character(256) :: fyi                           ! line available for comments or extra input
         character(64) :: fire_id                        ! user selected name for the data associated with this fire instance
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
@@ -130,9 +133,10 @@ module cfast_types
     type room_type
         ! These are room definitions from or calculated from user input
         character(64) :: id                             ! user selected name for the compartment
-        character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
-        character(64) :: group                          ! identifier for compartment grouping for later analyses ... for example
+        character(256) :: fyi                           ! line available for comments or extra input
+                                                        ! identifier for compartment grouping for later analyses ... for example
                                                         ! "Office", "Bedroom", "Hallway". etc
+        character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
 
         integer :: compartment                          ! compartment number assigned automatically for namelist inputs
         integer :: ibar, jbar, kbar                     ! number of grids in x, y, and z direction in compartment
@@ -224,6 +228,7 @@ module cfast_types
     ! target data structure
     type target_type
         character(64) :: id             ! user selected name for the target
+        character(256) :: fyi           ! line available for comments or extra input
         character(64) :: material       ! material for the target (used to match materials properties)
         character(64) :: depth_units    ! specify units for temperature depth location, 'FRACTION' or 'M'
                                         ! default is 'FRACTION' for backwards compatibility
@@ -271,6 +276,7 @@ module cfast_types
     ! thermal properties structure
     type thermal_type
         character(64) :: id                             ! user selected name for the material
+        character(256) :: fyi                           ! line available for comments or extra input
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
         real(eb), dimension(mxslb) :: rho               ! density of each slab
@@ -282,6 +288,7 @@ module cfast_types
     ! vent data structure
     type vent_type
         character(64) :: id                 ! user selected name for the vent
+        character(256) :: fyi               ! line available for comments or extra input
         character(64) :: ramp_id            ! ramp id assocated with vent
         character(64) :: filter_id          ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent

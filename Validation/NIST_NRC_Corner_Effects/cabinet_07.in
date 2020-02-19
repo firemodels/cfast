@@ -22,9 +22,9 @@
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
   FACE = 'RIGHT' OFFSET = 2.6 /
-&VENT TYPE = 'WALL' ID = 'Bottom Opening' COMP_IDS = 'Medium Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.41
+&VENT TYPE = 'WALL' ID = 'Bottom Opening' COMP_IDS = 'Compartment', 'Medium Cabinet' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.41
   FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Top Grill' COMP_IDS = 'Medium Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.36
+&VENT TYPE = 'WALL' ID = 'Top Grill' COMP_IDS = 'Compartment', 'Medium Cabinet' TOP = 2, BOTTOM = 1.97, WIDTH = 0.36
   FACE = 'FRONT' OFFSET = 0.1 /
  
 !! Fires 

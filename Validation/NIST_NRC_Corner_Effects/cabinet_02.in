@@ -22,23 +22,23 @@
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'Door' COMP_IDS = 'Compartment' 'OUTSIDE'  TOP = 2.4, BOTTOM = 0, WIDTH = 1.8
   FACE = 'RIGHT' OFFSET = 2.6 /
-&VENT TYPE = 'WALL' ID = 'Bottom Vent' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Bottom Vent' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 0.2, BOTTOM = 0.1, WIDTH = 0.72
   FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Grill Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+&VENT TYPE = 'WALL' ID = 'Grill Front' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
   FACE = 'FRONT' OFFSET = 0.155 /
-&VENT TYPE = 'WALL' ID = 'Grill Right' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+&VENT TYPE = 'WALL' ID = 'Grill Right' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
   FACE = 'RIGHT' OFFSET = 0.155 /
-&VENT TYPE = 'WALL' ID = 'Gilll Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+&VENT TYPE = 'WALL' ID = 'Gilll Rear' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
   FACE = 'REAR' OFFSET = 0.155 /
-&VENT TYPE = 'WALL' ID = 'Grill Left' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
+&VENT TYPE = 'WALL' ID = 'Grill Left' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2, BOTTOM = 1.97, WIDTH = 0.61
   FACE = 'LEFT' OFFSET = 0.155 /
-&VENT TYPE = 'WALL' ID = 'Top Front' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Top Front' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
   FACE = 'FRONT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Top Right' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Top Right' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
   FACE = 'RIGHT' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Top Rear' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Top Rear' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
   FACE = 'REAR' OFFSET = 0.1 /
-&VENT TYPE = 'WALL' ID = 'Top Left' COMP_IDS = 'Large Cabinet', 'Compartment' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
+&VENT TYPE = 'WALL' ID = 'Top Left' COMP_IDS = 'Compartment', 'Large Cabinet' TOP = 2.14, BOTTOM = 2.10875, WIDTH = 0.72
   FACE = 'LEFT' OFFSET = 0.1 /
  
 !! Fires 

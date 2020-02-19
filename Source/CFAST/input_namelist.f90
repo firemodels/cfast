@@ -32,7 +32,7 @@
     use smkview_data, only: n_visual, visualinfo
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
     use thermal_data, only: n_thrmp, thermalinfo
-    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
 
     implicit none 
@@ -46,11 +46,6 @@
     subroutine namelist_input
 
     implicit none
-
-    integer :: ncomp
-
-    ncomp = 0
-    n_visual=0
 
     call read_head (iofili)
     call read_time (iofili)
@@ -348,7 +343,8 @@
 
     real(eb) :: conductivity, density, emissivity, specific_heat, thickness
     character(64) :: id, material
-    namelist /MATL/ conductivity, density, emissivity, id, material, specific_heat, thickness
+    character(256) :: fyi
+    namelist /MATL/ conductivity, density, emissivity, id, material, specific_heat, thickness, fyi
 
     ios = 1
 
@@ -366,6 +362,7 @@
         read(lu,MATL,iostat=ios)
         n_thrmp = n_thrmp + 1
         if (ios>0) then
+            write(*, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_thrmp
             write(iofill, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_thrmp
             call cfastexit('read_matl',1)
         end if
@@ -391,7 +388,13 @@
             call set_defaults
             read(lu,MATL)
 
-            thrmpptr%id          = id
+            if (.not.newid(id)) then
+                write(*,'(a48,a64)') '****Error: Not a unique identifier for material ',trim(id)
+                write(iofill,'(a48,a64)') '****Error: Not a unique identifier for material ',trim(id)
+                call cfastexit('read_matl', 3)
+            end if
+            thrmpptr%id            = id
+            thrmpptr%fyi           = fyi
             thrmpptr%nslab         = 1
             thrmpptr%k(1)          = conductivity
             thrmpptr%c(1)          = specific_heat*1e3
@@ -411,6 +414,7 @@
     specific_heat          = 0.0_eb        !j/kg-k
     emissivity             = 0.9_eb
     conductivity           = 0.0_eb        !w/m-k
+    id                     = 'NULL'
     id                     = 'NULL'
     density                = 0.0_eb        !kg/m3
     thickness              = 0.0_eb        !m
@@ -436,8 +440,9 @@
     real(eb), dimension(2) :: leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     logical :: hall, shaft
-    character(64) :: id, group, ceiling_matl_id, floor_matl_id, wall_matl_id
-    namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, group, &
+    character(64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
+    character(256) :: fyi
+    namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
         ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area
 
     ios = 1
@@ -498,9 +503,15 @@
                 end if
             end do
 
+            if (.not.newid(id)) then
+                write(*,'(a)') '**** Error &COMP id not unique ',trim(id)
+                write(iofill,'(a)') '**** Error &COMP id not unique ', trim(id)
+                call cfastexit('read_comp',4)
+            end if
+
             roomptr%compartment    = ii
-            roomptr%id    = id
-            roomptr%group   = group
+            roomptr%id      = id
+            roomptr%fyi     = fyi
             roomptr%cwidth  = width
             roomptr%cdepth  = depth
             roomptr%cheight = height
@@ -555,7 +566,7 @@
     cross_sect_areas        = -1001._eb
     cross_sect_heights      = -1001._eb
     id                      = 'NULL'
-    group                   = 'NULL'
+    fyi                     = 'NULL'
     depth                   = 0.0_eb
     floor_matl_id           = 'OFF'
     height                  = 0.0_eb
@@ -591,10 +602,11 @@
     real(eb),dimension(3) :: location,normal
     real(eb),dimension(2) :: setpoints
     character(64) :: comp_id, id, matl_id, type, depth_units
+    character(256) :: fyi
     logical :: adiabatic_target
     real(eb), dimension(2) :: convection_coefficients
     namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, rti, setpoint, &
-        spray_density, setpoints, adiabatic_target, convection_coefficients
+        spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
 
     ios = 1
 
@@ -687,7 +699,14 @@
                 targptr%depth_units = depth_units
 
                 ! target name
+                if (.not.newid(id)) then
+                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &DEVC ',trim(id), 'Check target ',counter1
+                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &DEVC ',trim(id),'Check target ',counter1
+                    call cfastexit('read_devc', 6)
+                end if
                 targptr%id = id
+                
+                targptr%fyi = fyi
 
                 ! material type
                 tcname = matl_id
@@ -703,7 +722,7 @@
                 else
                     write (*,913) 'Error',type
                     write (iofill,913) 'Error',type
-                    call cfastexit('read_devc',6)
+                    call cfastexit('read_devc',7)
                 end if
                 
                 ! adiabatic condition
@@ -729,6 +748,7 @@
                 else
                     write (*,'(a,a)') '***Error in &DEVC: Bad type. Not known for ', type
                     write (iofill,'(a,a)') '***Error in &DEVC: Bad type. Not known for ', type
+                    call cfastexit('read_devc',8)
                 end if
 
                 dtectptr%dtype = i1
@@ -750,17 +770,23 @@
                 if (.not. idcheck) then
                     write (*,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
                     write (iofill,'(a,a,a,i3)') '***Error in &DEVC: COMP_ID: ', id, ', not found. Check device, ', counter2
-                    call cfastexit('read_devc',7)
+                    call cfastexit('read_devc',9)
                 end if
 
                 dtectptr%room = iroom
                 if (iroom<1.or.iroom>mxrooms) then
                     write (*,5342) iroom
                     write (iofill,5342) iroom
-                    call cfastexit('read_devc',8)
+                    call cfastexit('read_devc',10)
                 end if
 
+                if (.not.newid(id)) then
+                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &DEVC ',trim(id), 'Check detector ',counter2
+                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &DEVC ',trim(id),'Check detector ',counter2
+                    call cfastexit('read_devc', 11)
+                end if
                 dtectptr%id = id
+                dtectptr%fyi = fyi
                 if (trim(type) == 'SPRINKLER' .or. trim(type) == 'HEAT_DETECTOR') then
                     if (setpoint/=-1001._eb) then
                         dtectptr%trigger = setpoint + 273.15_eb
@@ -810,7 +836,7 @@
                     dtectptr%center(2)>roomptr%cdepth.or.dtectptr%center(3)>roomptr%cheight) then
                 write (*,5339) n_detectors,roomptr%id
                 write (iofill,5339) n_detectors,roomptr%id
-                call cfastexit('read_devc',9)
+                call cfastexit('read_devc',12)
                 end if
 
             end if
@@ -833,6 +859,7 @@
 
     comp_id                         = 'NULL'
     type                            = 'NULL'
+    fyi                             = 'NULL'
     id                              = 'NULL'
     temperature_depth               = 0.5_eb
     depth_units                     = 'FRACTION'
@@ -1077,9 +1104,10 @@ continue
 
     real(eb) setpoint
     character(64) :: comp_id, devc_id, fire_id, id, ignition_criterion
+    character(256) :: fyi
     real(eb), dimension(2) :: location
     
-    namelist /FIRE/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint
+    namelist /FIRE/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint, fyi
 
     ios = 1
     tmpcond = 0.0
@@ -1143,7 +1171,13 @@ continue
             roomptr => roominfo(iroom)
 
             fireptr%room = iroom
+            if (.not.newid(id)) then
+                write(*,'(a,a,a,i3)') '****Error: Not a unique identifier for &DEVC ',trim(id), 'Check target ',ii
+                write(iofill,'(a,a,a,i3)')'****Error: Not a unique identifier for &DEVC ',trim(id),'Check target ',ii
+                call cfastexit('read_fire', 4)
+            end if
             fireptr%id = id
+            fireptr%fyi = fyi
             fireptr%fire_id = fire_id
 
             fireptr%x_position = location(1)
@@ -1246,6 +1280,7 @@ continue
     devc_id                 = 'NULL'
     fire_id                 = 'NULL'
     id                      = 'NULL'
+    fyi                     = 'NULL'
     ignition_criterion      = 'TIME'
     location(:)             = 0._eb
     setpoint                  = 0._eb
@@ -1563,9 +1598,10 @@ continue
     real(eb), dimension(mxpts) :: t, f
     character(64),dimension(2) :: comp_ids, orientations
     character(64) :: criterion, devc_id, face, id, shape, type
+    character(256) :: fyi
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, f, face, filter_efficiency, &
         filter_time, flow, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
-        setpoint, shape, t, top, type, width
+        setpoint, shape, t, top, type, width, fyi
 
     ios = 1
 
@@ -1673,7 +1709,14 @@ continue
                 end if
 
                 ventptr => hventinfo(counter1)
+
+                if (.not.newid(id)) then
+                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check wall v ',counter1
+                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check wall v ',counter1
+                    call cfastexit('read_vent', 7)
+                end if
                 ventptr%id = id
+                ventptr%fyi = fyi
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter1
@@ -1681,7 +1724,7 @@ continue
                 if (n_hvents>mxhvents) then
                     write (*,5081) i,j,k
                     write (iofill,5081) i,j,k
-                    call cfastexit('read_vent',7)
+                    call cfastexit('read_vent',8)
                 end if
 
                 ventptr%width  = width
@@ -1722,7 +1765,7 @@ continue
                         else
                             write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
                             write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                            call cfastexit('read_vent',8)
+                            call cfastexit('read_vent',9)
                         end if
                     end if
 
@@ -1753,7 +1796,7 @@ continue
                         if (ventptr%opening_target==0) then
                             write (*,*) '***Error: Vent opening specification requires an associated target.'
                             write (iofill,*) '***Error: Vent opening specification requires an associated target.'
-                            call cfastexit('read_vent',9)
+                            call cfastexit('read_vent',10)
                         end if
                         ventptr%opening_initial_fraction = initialfraction
                         ventptr%opening_final_fraction = finalfraction
@@ -1766,7 +1809,7 @@ continue
                 else
                     write (*,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
                     write (iofill,*) '***Error: Inputs for wall vent: criterion has to be "TIME", "TEMPERATURE", or "FLUX".'
-                    call cfastexit('read_vent',10)
+                    call cfastexit('read_vent',11)
                 end if
 
                 ! absolute positions are always relative to the floor of the "inside" room
@@ -1805,7 +1848,7 @@ continue
                     if (iroom == -101) then
                         write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
                         write (iofill,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
-                        call cfastexit('read_vent',11)
+                        call cfastexit('read_vent',12)
                     end if
 
                     if (mm == 1) i=iroom
@@ -1816,11 +1859,18 @@ continue
                 if (i>n_rooms+1.or.j>n_rooms+1) then
                     write (*,5191) i, j
                     write (iofill,5191) i, j
-                    call cfastexit('read_vent',12)
+                    call cfastexit('read_vent',13)
                 end if
 
                 ventptr => mventinfo(counter2)
+
+                if (.not.newid(id)) then
+                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check mech v ',counter1
+                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check mech v ',counter1
+                    call cfastexit('read_ven7', 14)
+                end if
                 ventptr%id = id
+                ventptr%fyi = fyi
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter2
@@ -1953,7 +2003,7 @@ continue
                     if (iroom == -101) then
                         write (*,'(a,a)') '***Error: COMP_IDS do not specify existing compartments. ', comp_ids(mm)
                         write (iofill,'(a,a)') '***Error: COMP_IDS do specify existing compartments. ', comp_ids(mm)
-                        call cfastexit('read_vent',16)
+                        call cfastexit('read_vent',18)
                     end if
 
                     if (mm == 1) i = iroom
@@ -1966,11 +2016,18 @@ continue
                 if (i>mxrooms.or.j>mxrooms) then
                     write (*,5070) i, j
                     write (iofill,5070) i, j
-                    call cfastexit('read_vent',17)
+                    call cfastexit('read_vent',19)
                 end if
 
                 ventptr => vventinfo(counter3)
+
+                if (.not.newid(id)) then
+                    write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check wall v ',counter3
+                    write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check wall v ',counter3
+                    call cfastexit('read_vent', 20)
+                end if
                 ventptr%id = id
+                ventptr%fyi = fyi
                 ventptr%room1 = i
                 ventptr%room2 = j
                 ventptr%counter = counter3
@@ -1986,7 +2043,7 @@ continue
                 else
                     write (*,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
                     write (iofill,'(a,a)') '***Error: SHAPE must be SQUARE or ROUND. ', shape
-                    call cfastexit('read_vent',18)
+                    call cfastexit('read_vent',21)
                 end if
 
                 if (trim(criterion) /='NULL') then
@@ -2017,7 +2074,7 @@ continue
                             else
                                 write (*,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
                                 write (iofill,'(a,i0)') '***Error: Too many RAMPs created. Maximum is ', mxramps
-                                call cfastexit('read_vent',19)
+                                call cfastexit('read_vent',22)
                             end if
                         end if
 
@@ -2048,7 +2105,7 @@ continue
                             if (ventptr%opening_target==0) then
                                 write (*,*) '***Error: Vent opening specification requires an associated target.'
                                 write (iofill,*) '***Error: Vent opening specification requires an associated target.'
-                                call cfastexit('read_vent',20)
+                                call cfastexit('read_vent',23)
                             end if
                             ventptr%opening_initial_fraction = initialfraction
                             ventptr%opening_final_fraction = finalfraction
@@ -2095,6 +2152,7 @@ continue
     filter_time           = 0._eb
     filter_efficiency     = 0._eb
     flow                  = 0._eb
+    fyi                   = 'NULL'
     heights(:)            = 0._eb
     id                    = 'NULL'
     offset                = 0._eb
@@ -2727,15 +2785,16 @@ continue
     integer, intent(in) :: lu
     
     integer :: ios, i, ii, counter
-    logical found
     type(dump_type), pointer :: dumpptr
+    logical :: found
     
     real(eb) :: criteria
     character(25) :: file_type, type
     character(64) :: id, first_device, first_measurement, second_device, second_measurement
+    character(256) :: fyi
 
     namelist /DUMP/ id, file_type, first_device, first_measurement, second_device, &
-                    second_measurement, criteria, type
+                    second_measurement, criteria, type, fyi
 
     ios = 1
 
@@ -2775,6 +2834,12 @@ continue
                 write(*,*) 'Error in &DUMP: ID must be defined number ', counter
                 write(iofill,*) 'Error in &DUMP: ID must be defined number ', counter
                 call cfastexit('read_dump',2)
+            end if
+
+            if (.not.newid(id)) then
+                write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &DUMP ',trim(id), 'Check dump ',counter
+                write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check dump ',counter
+                call cfastexit('read_dump',3)
             end if
             found = .false.
             do i = 1, num_csvfiles
@@ -2869,8 +2934,9 @@ continue
                 call cfastexit('read_dump',15)
             end if
             dumpptr => dumpinfo(n_dumps)
+            dumpptr%id = id
+            dumpptr%fyi = fyi
             if (type(1:15) == 'CHECK_TOTAL_HRR') then
-                dumpptr%id = id
                 dumpptr%file_type = 'NORMAL'
                 dumpptr%type = type
                 dumpptr%first_device = 'Time'
@@ -2881,7 +2947,6 @@ continue
                 dumpptr%relative_column = n_dumps
                 dumpptr%found = .false.
             else
-                dumpptr%id = id
                 dumpptr%file_type = file_type
                 dumpptr%type = type
                 dumpptr%first_device = first_device
@@ -2948,5 +3013,70 @@ continue
 10  return
 
     end subroutine checkread
+    !-------------------------------newid--------------------------------------
+    logical function newid(id)
+    character(*), intent(in) :: id
+    
+    integer :: i
+    
+    do i = 1, n_rooms
+        if (trim(id)==trim(roominfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    do i = 1, n_thrmp
+        if (trim(id)==trim(thermalinfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    do i = 1, n_hvents
+        if (trim(id)==trim(hventinfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    do i = 1, n_leaks
+        if (trim(id)==trim(leakinfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    do i = 1, n_vvents
+        if (trim(id)==trim(vventinfo(i)%id)) then
+            newid = .false.
+            return
+    end if
+    enddo
+    do i = 1, n_mvents
+        if (trim(id)==trim(mventinfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    do i = 1, n_detectors
+        if (trim(id)==trim(detectorinfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    do i = 1, n_targets
+        if (trim(id)==trim(targetinfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    do i = 1, n_fires
+        if (trim(id)==trim(fireinfo(i)%id)) then
+            newid = .false.
+            return
+        end if
+    enddo
+    
+    newid = .true.
+    return
+    
+    end function newid
 
     end module namelist_input_routines

@@ -2843,7 +2843,7 @@ continue
             end if
             found = .false.
             do i = 1, num_csvfiles
-                if (trim(file_type)==trim(csvnames(1))) then
+                if (trim(file_type)==trim(csvnames(i))) then
                     found = .true.
                 end if
             end do

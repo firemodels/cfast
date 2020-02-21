@@ -5,13 +5,14 @@ Public Class Dump
 
     ' All units within the class are assumed to be consistent and typically SI
     Private aID As String                   ' id used a heading for output column
-    Private aFileType As String             ' 'wall' for '_w', 'normal' for '_n', 'flow' for '_f', 'mass' for '_m', 'species' for '_s'
+    Private aFileType As String             ' 'COMPARTMENTS', 'DEVICES', 'MASSES', 'VENTS', or 'WALLS'
     Private aType As String                 ' 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 'check_total_HRR'
     Private aCriteria As Single             ' Value used in 'trigger_...' analysis
     Private aFirstMeasurement As String     ' Name of measurement, second row in spreadsheet
     Private aFirstDevice As String            ' Name of instrument within the measurement, third row in spreadsheet
     Private aSecondMeasurement As String    ' Name of measure for second instrument, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
     Private aSecondDevice As String           ' Name of second instrument within measurement, needed for 'trigger_...' and 'integrate'; ignored for 'maximum', 'minimum', 'check_total_hrr'
+    Private aFYI As String                  ' Descriptor for additional user supplied information
 
     Public Sub New()
         aID = ""
@@ -22,8 +23,9 @@ Public Class Dump
         aFirstDevice = ""
         aSecondMeasurement = ""
         aSecondDevice = ""
+        aFYI = ""
     End Sub
-    Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criteria As Single, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String)
+    Public Sub New(ByVal ID As String, ByVal FileType As String, ByVal Type As String, ByVal Criteria As Single, ByVal FirstMeasurement As String, ByVal FirstDevice As String, ByVal SecondMeasurement As String, ByVal SecondDevice As String, fyi As String)
         aID = ID
         aFileType = FileType
         aType = Type
@@ -32,6 +34,7 @@ Public Class Dump
         aFirstDevice = FirstDevice
         aSecondMeasurement = SecondMeasurement
         aSecondDevice = SecondDevice
+        aFYI = fyi
     End Sub
     Public ReadOnly Property ID As String
         Get
@@ -72,6 +75,16 @@ Public Class Dump
         Get
             Return aSecondDevice
         End Get
+    End Property
+    Public Property FYI() As String
+        Get
+            Return aFYI
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aFYI Then
+                aFYI = Value
+            End If
+        End Set
     End Property
     Public Sub GetDump(ByRef ID As String, ByRef FileType As String, ByRef Type As String, ByRef Criteria As Single, ByRef FirstMeasurement As String, ByRef FirstDevice As String, ByRef SecondMeasurement As String, ByRef SecondDevice As String)
         aID = ID

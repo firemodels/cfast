@@ -58,7 +58,8 @@ Public Class Vent
     Private aFilterTime As Single               ' EVENT begin filter operation time
     Private aChanged As Boolean = False         ' True once compartment information has changed
     Private HasErrors As Integer = 0            ' Temporary variable to indicate whether there are errors in the specification
-    Private aName As String                     ' One word name for vent 
+    Private aName As String                     ' User supplied vent name 
+    Private aFYI As String                      ' Descriptor for additional user supplied information
 
     Public Sub New()
         aFirstCompartment = -2
@@ -74,6 +75,7 @@ Public Class Vent
         aFace = 1
         aInitialOpening = 1.0
         aFilterEfficiency = 0.0
+        aFYI = ""
     End Sub
     Public Property VentType() As Integer
         Get
@@ -508,6 +510,17 @@ Public Class Vent
             If value <> aRampID Then
                 aRampID = value
                 aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property FYI() As String
+        Get
+            Return aFYI
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aFYI Then
+                aChanged = True
+                aFYI = Value
             End If
         End Set
     End Property

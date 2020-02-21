@@ -14,9 +14,11 @@ Public Class ThermalProperty
     Private aEmissivity As Single               ' Emissivity
     Private Const HClDim As Integer = 6              '
     Private aHClDeposition(HClDim) As Single    ' HCl Deposition Coefficients
+    Private aFYI As String                  ' Descriptor for additional user supplied information
     Public Sub New()
         aShortName = ""
         aName = ""
+        aFYI = ""
         aConductivity = 0.16
         aSpecificHeat = 900.0
         aDensity = 790.0
@@ -138,6 +140,17 @@ Public Class ThermalProperty
             If myUnits.Convert(UnitsNum.Conductivity).ToSI(Value) <> aConductivity Then
                 aConductivity = myUnits.Convert(UnitsNum.Conductivity).ToSI(Value)
                 aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property FYI() As String
+        Get
+            Return aFYI
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aFYI Then
+                aChanged = True
+                aFYI = Value
             End If
         End Set
     End Property

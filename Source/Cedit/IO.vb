@@ -817,7 +817,7 @@ Module IO
     Private Sub ReadInputFileNMLMatl(ByVal NMList As NameListFile, ByRef someThermalProperties As ThermalPropertiesCollection)
         Dim i, j As Integer
         Dim conduct, dens, emiss, spech, thick As Single
-        Dim id, matl As String
+        Dim id, matl, fyi As String
         Dim valid As Boolean
         Dim hcl() As Single = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
         Dim iProp As Integer
@@ -831,6 +831,7 @@ Module IO
                 thick = -1
                 id = ""
                 matl = ""
+                fyi = ""
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "CONDUCTIVITY") Then
                         conduct = NMList.ForNMListVarGetNum(i, j, 1)
@@ -846,6 +847,8 @@ Module IO
                         id = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "MATERIAL") Then
                         matl = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
+                        fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In MATL namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -871,16 +874,19 @@ Module IO
                             Else
                                 someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
                                 someThermalProperties.Item(someThermalProperties.Count - 1).SetHCl(hcl)
+                                someThermalProperties.Item(someThermalProperties.Count - 1).FYI = fyi
                                 someThermalProperties.Item(someThermalProperties.Count - 1).Changed = False
                             End If
                         Else
                             someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
                             someThermalProperties.Item(someThermalProperties.Count - 1).SetHCl(hcl)
+                            someThermalProperties.Item(someThermalProperties.Count - 1).FYI = fyi
                             someThermalProperties.Item(someThermalProperties.Count - 1).Changed = False
                         End If
                     Else
                         someThermalProperties.Add(New ThermalProperty(id, matl, conduct, spech, dens, thick, emiss))
                         someThermalProperties.Item(someThermalProperties.Count - 1).SetHCl(hcl)
+                        someThermalProperties.Item(someThermalProperties.Count - 1).FYI = fyi
                         someThermalProperties.Item(someThermalProperties.Count - 1).Changed = False
                     End If
                 End If
@@ -977,7 +983,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
-        Dim ceilid, wallid, floorid, rampid, id, comptype As String
+        Dim ceilid, wallid, floorid, rampid, id, fyi As String
         Dim depth, height, width As Single
         Dim shaft, hall, valid As Boolean
         Dim grid(3) As Integer
@@ -995,7 +1001,7 @@ Module IO
                 floorid = ""
                 wallid = ""
                 rampid = ""
-                comptype = ""
+                fyi = ""
                 ReDim comparea(0), compheight(0)
                 For k = 0 To 2
                     grid(k) = 50
@@ -1070,8 +1076,8 @@ Module IO
                         Else
                             myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
-                    ElseIf NMList.ForNMListGetVar(i, j) = "TYPE" Then
-                        comptype = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
+                        fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In COMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1115,7 +1121,7 @@ Module IO
                     Else
                         myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
                     End If
-                    aComp.Type = comptype
+                    aComp.FYI = fyi
                     aComp.Changed = False
                 Else
                     myErrors.Add("In COMP namelist " + id + " is not fully defined", ErrorMessages.TypeWarning)
@@ -1126,7 +1132,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile, ByRef someDetectors As TargetCollection)
         Dim i, j, k, max As Integer
-        Dim compid, matlid, id, type As String
+        Dim compid, matlid, id, type, fyi As String
         Dim tempdepthunits As String = "FRACTION"
         Dim tempdepth, rti, setp, setps(2), sprayd As Single
         Dim loc(3), norm(3), coeffs(2) As Single
@@ -1145,6 +1151,7 @@ Module IO
                 type = ""
                 compid = ""
                 matlid = ""
+                fyi = ""
                 For k = 0 To 2
                     loc(k) = -1
                     norm(k) = 0
@@ -1227,6 +1234,8 @@ Module IO
                         Else
                             myErrors.Add("In DEVC namelist for CONVECTION_COEFFICIENTS input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
+                        fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In DEVC namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1282,6 +1291,7 @@ Module IO
                             aDetect.InternalLocation = tempdepth
                         End If
                         aDetect.Name = id
+                        aDetect.FYI = fyi
                         If adiabatic = True Then
                             aDetect.Adiabatic = adiabatic
                             aDetect.Convection_Coefficient(1) = coeffs(1)
@@ -1292,6 +1302,7 @@ Module IO
                     Else
                         aDetect.Type = Target.TypeDetector
                         aDetect.Name = id
+                        aDetect.FYI = fyi
                         aDetect.Compartment = myCompartments.GetCompIndex(compid)
                         If type = "HEAT_DETECTOR" Then
                             aDetect.DetectorType = Target.TypeHeatDetector
@@ -1321,7 +1332,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLFire(ByVal NMList As NameListFile, ByRef someFireInstances As FireCollection)
         Dim i, j, k, max As Integer
-        Dim compid, id, devcid, ignitcrit, fireid As String
+        Dim compid, id, devcid, ignitcrit, fireid, fyi As String
         Dim setp As Single
         Dim loc(1) As Single
         Dim aDummy As Single = 273.15
@@ -1336,6 +1347,7 @@ Module IO
                 setp = 0
                 loc(0) = -1.0
                 loc(1) = -1.0
+                fyi = ""
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
@@ -1358,6 +1370,8 @@ Module IO
                         Else
                             myErrors.Add("In FIRE namelist for LOCATION input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
+                        fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In FIRE namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1366,6 +1380,7 @@ Module IO
                 aFire.ObjectType = Fire.TypeInstance
                 someFireInstances.Add(aFire)
                 aFire.Name = id
+                aFire.FYI = fyi
                 aFire.Compartment = myCompartments.GetCompIndex(compid)
                 If ignitcrit = "TIME" Then
                     aFire.IgnitionType = Fire.FireIgnitionbyTime
@@ -1540,7 +1555,7 @@ Module IO
         Dim i, j, k, max As Integer
         Dim area, areas(2), bot, cutoffs(2), flow, heights(2), offset, offsets(2), top, width, setp, prefrac, postfrac, filttime, filteff As Single
         Dim tt(0), ff(0) As Single
-        Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id, crit, devcid As String
+        Dim compids(2), filtramp, openramp, face, orien(2), shape, type, id, crit, devcid, fyi As String
         Dim valid As Boolean
         Dim comp0dx, comp1dx As Integer
 
@@ -1563,6 +1578,7 @@ Module IO
                 filteff = 0.0
                 flow = -1
                 id = ""
+                fyi = ""
                 For k = 0 To 1
                     areas(k) = -1
                     cutoffs(k) = -1
@@ -1689,6 +1705,8 @@ Module IO
                         Else
                             myErrors.Add("In VENT namelist for F input must be at least 1 positive number", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
+                        fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In VENT namelist " + NMList.ForNMListGetVar(i, j) + " Is Not a valid parameter", ErrorMessages.TypeFatal)
                     End If
@@ -1713,6 +1731,7 @@ Module IO
                     If type = "WALL" Then
                         aVent.VentType = Vent.TypeHVent
                         aVent.Name = id
+                        aVent.FYI = fyi
                         If compids(0) = "OUTSIDE" Then
                             comp0dx = -1
                         Else
@@ -1757,6 +1776,7 @@ Module IO
                     ElseIf type = "MECHANICAL" Then
                         aVent.VentType = Vent.TypeMVent
                         aVent.Name = id
+                        aVent.FYI = fyi
                         If compids(0) = "OUTSIDE" Then
                             aVent.FirstCompartment = -1
                         Else
@@ -1810,6 +1830,7 @@ Module IO
                     ElseIf type = "CEILING" Or type = "FLOOR" Then
                         aVent.VentType = Vent.TypeVVent
                         aVent.Name = id
+                        aVent.FYI = fyi
                         aVent.Area = area
                         If compids(0) = "OUTSIDE" Then
                             aVent.FirstCompartment = -1
@@ -2183,7 +2204,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLDump(ByVal NMList As NameListFile, ByRef someDumps As DumpCollection)
         Dim i, j As Integer
-        Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice As String
+        Dim id, filetype, type, firstmeasurement, secondmeasurement, firstdevice, seconddevice, fyi As String
         Dim criteria As Single
 
         For i = 1 To NMList.TotNMList
@@ -2195,6 +2216,7 @@ Module IO
             firstdevice = ""
             secondmeasurement = ""
             seconddevice = ""
+            fyi = ""
             If (NMList.GetNMListID(i) = "DUMP") Then
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If (NMList.ForNMListGetVar(i, j) = "ID") Then
@@ -2213,11 +2235,13 @@ Module IO
                         seconddevice = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf (NMList.ForNMListGetVar(i, j) = "SECOND_MEASUREMENT") Then
                         secondmeasurement = NMList.ForNMListVarGetStr(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
+                        fyi = NMList.ForNMListVarGetStr(i, j, 1)
                     Else
                         myErrors.Add("In DUMP namelist " + NMList.ForNMListGetVar(i, j) + " is not a valid parameter", ErrorMessages.TypeFatal)
                     End If
                 Next
-                someDumps.Add(New Dump(id, filetype, type, criteria, firstmeasurement, firstdevice, secondmeasurement, seconddevice))
+                someDumps.Add(New Dump(id, filetype, type, criteria, firstmeasurement, firstdevice, secondmeasurement, seconddevice, fyi))
             End If
         Next
     End Sub
@@ -3326,7 +3350,13 @@ Module IO
                         End If
                     End If
                     PrintLine(IO, ln)
-                    ln = "      CONDUCTIVITY = " + aThermalProperty.Conductivity.ToString + " DENSITY = " + aThermalProperty.Density.ToString + " SPECIFIC_HEAT = " + (aThermalProperty.SpecificHeat / 1000.0).ToString + ", THICKNESS = " + aThermalProperty.Thickness.ToString + " EMISSIVITY = " + aThermalProperty.Emissivity.ToString + " /"
+                    ln = "      CONDUCTIVITY = " + aThermalProperty.Conductivity.ToString + " DENSITY = " + aThermalProperty.Density.ToString + " SPECIFIC_HEAT = " + (aThermalProperty.SpecificHeat / 1000.0).ToString + ", THICKNESS = " + aThermalProperty.Thickness.ToString + " EMISSIVITY = " + aThermalProperty.Emissivity.ToString
+                    If aThermalProperty.FYI <> "" Then
+                        ln += " /"
+                        PrintLine(IO, ln)
+                        ln = " FYI = '" + aThermalProperty.FYI + "'"
+                    End If
+                    ln += " /"
                     PrintLine(IO, ln)
                 End If
                 aThermalProperty.Changed = False
@@ -3389,8 +3419,8 @@ Module IO
                 If aComp.WallLeak > 0 Or aComp.FloorLeak > 0 Then
                     ln += " LEAK_AREA = " + aComp.WallLeak.ToString + ", " + aComp.FloorLeak.ToString
                 End If
-                If aComp.Type <> "" Then
-                    ln += " TYPE = '" + aComp.Type + "'"
+                If aComp.FYI <> "" Then
+                    ln += " FYI = '" + aComp.FYI + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)
@@ -3454,7 +3484,11 @@ Module IO
                 Else
                     ln += " FACE = 'FRONT'"
                 End If
-                ln += " OFFSET = " + aVent.Offset.ToString + " /"
+                ln += " OFFSET = " + aVent.Offset.ToString
+                If aVent.FYI <> "" Then
+                    ln += " FYI = '" + aVent.FYI + "'"
+                End If
+                ln += " /"
                 PrintLine(IO, ln)
                 aVent.Changed = False
             Next
@@ -3514,7 +3548,10 @@ Module IO
                     ln = " CRITERION = 'FLUX', SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + ", DEVC_ID = '" + aVent.Target + "'"
                     ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + ", POST_FRACTION = " + aVent.FinalOpening.ToString
                 End If
-                ln += " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString + " /"
+                ln += " OFFSETS = " + aVent.OffsetX.ToString + ", " + aVent.OffsetY.ToString
+                If aVent.FYI <> "" Then
+                    ln += " FYI = '" + aVent.FYI + "'"
+                End If
                 PrintLine(IO, ln)
                 aVent.Changed = False
             Next
@@ -3584,7 +3621,10 @@ Module IO
                     ln = "      CRITERION = 'FLUX' SETPOINT = " + (aVent.OpenValue / 1000.0).ToString + " DEVC_ID = '" + aVent.Target + "'"
                     ln += " PRE_FRACTION = " + aVent.InitialOpening.ToString + " POST_FRACTION = " + aVent.FinalOpening.ToString
                 End If
-                ln += " FILTER_TIME = " + aVent.FilterTime.ToString + " FILTER_EFFICIENCY = " + aVent.FilterEfficiency.ToString + " / "
+                ln += " FILTER_TIME = " + aVent.FilterTime.ToString + " FILTER_EFFICIENCY = " + aVent.FilterEfficiency.ToString
+                If aVent.FYI <> "" Then
+                    ln += " FYI = '" + aVent.FYI + "'"
+                End If
                 PrintLine(IO, ln)
                 aVent.Changed = False
             Next
@@ -3613,6 +3653,9 @@ Module IO
                     ln += " IGNITION_CRITERION = 'TEMPERATURE', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + Math.Round((aFire.IgnitionValue - 273.15), 2).ToString
                 ElseIf aFire.IgnitionType = Fire.FireIgnitionbyFlux Then
                     ln += " IGNITION_CRITERION = 'FLUX', DEVC_ID = '" + aFire.Target + "', SETPOINT = " + (aFire.IgnitionValue / 1000.0).ToString
+                End If
+                If aFire.FYI <> "" Then
+                    ln += " FYI = '" + aFire.FYI + "'"
                 End If
                 ln += " / "
                 PrintLine(IO, ln)
@@ -3676,6 +3719,9 @@ Module IO
                 If aTarg.Adiabatic = True Then
                     ln += " ADIABATIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString
                 End If
+                If aTarg.FYI <> "" Then
+                    ln += " FYI = '" + aTarg.FYI + "'"
+                End If
                 ln += " /"
                 PrintLine(IO, ln)
                 aTarg.Changed = False
@@ -3703,7 +3749,11 @@ Module IO
                         ln += "  TYPE = 'SMOKE_DETECTOR' SETPOINTS = " + aTarg.ActivationObscurationSmoldering.ToString + ", " + aTarg.ActivationObscurationFlaming.ToString + " /"
                     End If
                 Else
-                    ln += " TYPE = 'SPRINKLER' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " SPRAY_DENSITY = " + aTarg.SprayDensity.ToString + " /"
+                    ln += " TYPE = 'SPRINKLER' SETPOINT = " + Math.Round((aTarg.ActivationTemperature - 273.15), 2).ToString + ", RTI = " + aTarg.RTI.ToString + " SPRAY_DENSITY = " + aTarg.SprayDensity.ToString
+                    If aTarg.FYI <> "" Then
+                        ln += " FYI = '" + aTarg.FYI + "'"
+                    End If
+                    ln += " /"
                 End If
                 PrintLine(IO, ln)
                 aTarg.Changed = False
@@ -3813,6 +3863,9 @@ Module IO
                 ln = "     FIRST_DEVICE = '" + aDump.FirstDevice + "'  FIRST_MEASUREMENT = '" + aDump.FirstMeasurement + "'"
                 If aDump.Type <> "MINIMUM" And aDump.Type <> "MAXIMUM" And aDump.Type <> "CHECK_TOTAL_HRR" Then
                     ln += "  SECOND_DEVICE = '" + aDump.SecondDevice + "'  SECOND_MEASUREMENT = '" + aDump.SecondMeasurement + "'"
+                End If
+                If aDump.FYI <> "" Then
+                    ln += " FYI = '" + aDump.FYI + "'"
                 End If
                 ln += " /"
                 PrintLine(IO, ln)

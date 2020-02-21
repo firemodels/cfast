@@ -31,7 +31,7 @@ Public Class Compartment
     Private aAreaRampID As String           ' Name of Ramp for area as a function of height
     Private aWallLeak As Single             ' Wall leakage per unit area of wall
     Private aFloorLeak As Single            ' Floor leakage per unit area of floor
-    Private aType As String                 ' Compartment type for post run analysis of multiple runs, i.e., "Office", "Bedroom", ...
+    Private aFYI As String                  ' Descriptor for additional user supplied information
     Private aChanged As Boolean = False     ' True once compartment information has changed
     Private HasErrors As Integer = 0        ' Temporary variable to indicate whether there are errors in the specification
     Private i As Integer
@@ -50,7 +50,7 @@ Public Class Compartment
         aHeightPoints(0) = aRoomHeight
         aWallLeak = 0
         aFloorLeak = 0
-        aType = ""
+        aFYI = ""
         aAreaRampID = "RoomArea_" + (myRamps.Count + 1).ToString
         myRamps.Add(New Ramp)
         myRamps.Item(myRamps.Count - 1).Name = aAreaRampID
@@ -265,14 +265,14 @@ Public Class Compartment
             End If
         End Set
     End Property
-    Public Property Type() As String
+    Public Property FYI() As String
         Get
-            Return aType
+            Return aFYI
         End Get
         Set(ByVal Value As String)
-            If Value <> aType Then
+            If Value <> aFYI Then
                 aChanged = True
-                aType = Value
+                aFYI = Value
             End If
         End Set
     End Property

@@ -65,6 +65,7 @@ Public Class Fire
 
     ' Variables for the current fire object definition (that can be used for one or more instances)
     Private aName As String                         ' Single word name for the fire ... used as a filename for the fire as an object
+    Private aFYI As String                          ' Descriptor for additional user supplied information
     Private aChemicalFormula(5) As Single           ' Chemical formula, C atoms, H atoms, O atoms, N atoms, Cl atoms
     Private aMolarMass As Single                    ' Molecular weight of the fuel
     Private aHRR As Single                          ' Constant heat release rate
@@ -101,6 +102,7 @@ Public Class Fire
         aCommentsIndex = -1
         ' New definitions for a fire object
         aName = "New Fire"
+        aFYI = ""
         aChemicalFormula(1) = 1.0 : aChemicalFormula(2) = 4.0 : aChemicalFormula(3) = 0.0 : aChemicalFormula(4) = 0.0 : aChemicalFormula(5) = 0.0
         aHeatofCombustion = 50000000.0
         aRadiativeFraction = 0.35
@@ -621,6 +623,17 @@ Public Class Fire
         Get
             Return aColNames.GetUpperBound(0)
         End Get
+    End Property
+    Public Property FYI() As String
+        Get
+            Return aFYI
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aFYI Then
+                aChanged = True
+                aFYI = Value
+            End If
+        End Set
     End Property
     Public Sub SetPosition(ByVal index As Integer)
         Dim tmpCompartment As New Compartment

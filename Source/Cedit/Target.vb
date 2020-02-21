@@ -43,11 +43,13 @@ Public Class Target
     Private aActivationObscurationSmoldering As Single ' Activation obscuration for smoke detectors from smoldering smoke
     Private aRTI As Single                      ' Detector RTI value
     Private aSprayDensity As Single             ' Sprinkler spray density
+    Private aFYI As String                  ' Descriptor for additional user supplied information
     Private aChanged As Boolean = False         ' True once compartment information has changed
     Private HasErrors As Integer                ' Temp variable that holds error count during error check
 
     Public Sub New()
         aName = ""
+        aFYI = ""
         aCompartment = -2
         aXPosition = -1.0
         aYPosition = -1.0
@@ -348,6 +350,17 @@ Public Class Target
             If myUnits.Convert(UnitsNum.Velocity).ToSI(Value) <> aSprayDensity Then
                 aSprayDensity = myUnits.Convert(UnitsNum.Velocity).ToSI(Value)
                 aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property FYI() As String
+        Get
+            Return aFYI
+        End Get
+        Set(ByVal Value As String)
+            If Value <> aFYI Then
+                aChanged = True
+                aFYI = Value
             End If
         End Set
     End Property

@@ -1928,7 +1928,7 @@ module spreadsheet_routines
     integer, intent(in) :: nr, nc, mxr, mxc
     character, intent(in) :: c(nr, nc)*(128), instrument*(*), measurement*(*)
     
-    integer, parameter :: instrumentRow = 3, measurementRow = 2, timeColumn = 1
+    integer, parameter :: instrumentRow = 2, measurementRow = 1, timeColumn = 1
     integer :: i
     
     ic = -1

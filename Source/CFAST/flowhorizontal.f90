@@ -49,7 +49,7 @@ module hflow_routines
     integer :: islab, i, iroom1, iroom2, ik, im, ix, nslab
     real(eb) :: yvbot, yvtop, avent
     integer :: position
-    character(64) :: rampid
+    character(len=128) :: rampid
 
     type(vent_type), pointer :: ventptr
 

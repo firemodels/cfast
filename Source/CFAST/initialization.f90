@@ -51,10 +51,10 @@ module initialization_routines
     ! output    tp      thermal property number of desired thermal property
     
     implicit none
-    character, intent(in) :: name*(*)
+    character(len=*), intent(in) :: name
     integer, intent(out) :: tp
 
-    character(mxthrmplen) missingtpp
+    character(len=mxthrmplen) missingtpp
     integer i
     type(thermal_type), pointer :: thrmpptr
 
@@ -653,7 +653,7 @@ module initialization_routines
     real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
     integer :: itarg, iroom, iwall, iwall2, tp
     integer :: map6(6) = (/1,3,3,3,3,2/)
-    character(mxthrmplen) :: tcname
+    character(len=mxthrmplen) :: tcname
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -790,7 +790,7 @@ module initialization_routines
     integer :: i, j, jj, k, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
     integer nslab, numnode(mxslb+1)
-    character(mxthrmplen) :: off = 'OFF', none = 'NONE'
+    character(len=mxthrmplen) :: off = 'OFF', none = 'NONE'
 
     ! tp is the pointer into the data base for each material
     integer tp

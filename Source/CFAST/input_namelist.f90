@@ -342,8 +342,8 @@
     type(thermal_type), pointer :: thrmpptr
 
     real(eb) :: conductivity, density, emissivity, specific_heat, thickness
-    character(64) :: id, material
-    character(256) :: fyi
+    character(len=64) :: id, material
+    character(len=128) :: fyi
     namelist /MATL/ conductivity, density, emissivity, id, material, specific_heat, thickness, fyi
 
     ios = 1
@@ -430,7 +430,7 @@
     integer, intent(in) :: lu
     
     integer :: ios, ii, kk
-    character :: tcname*64
+    character(len=64) :: tcname
 
     type(room_type), pointer :: roomptr
 
@@ -440,8 +440,8 @@
     real(eb), dimension(2) :: leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     logical :: hall, shaft
-    character(64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
-    character(256) :: fyi
+    character(len=64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
+    character(len=128) :: fyi
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
         ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area
 
@@ -590,8 +590,8 @@
     
     integer :: ios
     integer :: iroom, ii, jj ,i1, counter1, counter2
-    character(64) :: compartment_id
-    character :: tcname*64
+    character(len=64) :: compartment_id
+    character(len=64) :: tcname
     logical :: idcheck
 
     type(room_type), pointer :: roomptr
@@ -601,8 +601,8 @@
     real(eb) :: temperature_depth,rti,setpoint,spray_density
     real(eb),dimension(3) :: location,normal
     real(eb),dimension(2) :: setpoints
-    character(64) :: comp_id, id, matl_id, type, depth_units
-    character(256) :: fyi
+    character(len=64) :: comp_id, id, matl_id, type, depth_units
+    character(len=128) :: fyi
     logical :: adiabatic_target
     real(eb), dimension(2) :: convection_coefficients
     namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, rti, setpoint, &
@@ -888,8 +888,8 @@
     type(ramp_type), pointer :: rampptr
 
     real(eb), dimension(mxpts) :: f, t, z
-    character(64) :: type,id
-    character(64), dimension(2) :: comp_ids
+    character(len=64) :: type,id
+    character(len=64), dimension(2) :: comp_ids
     namelist /RAMP/ f, id ,t, z, type, comp_ids
 
     ios = 1
@@ -995,8 +995,8 @@
 
     type(table_type),   pointer :: tablptr
 
-    character(64) :: id
-    character(64), dimension(mxtablcols) :: labels
+    character(len=64) :: id
+    character(len=64), dimension(mxtablcols) :: labels
     real(eb), dimension(mxtablcols) :: data
     
     namelist /TABL/ id, labels, data
@@ -1096,15 +1096,15 @@ continue
     
     integer :: ios, i, ii, jj, iroom
     real(eb) :: tmpcond
-    character(64) :: compartment_id
+    character(len=64) :: compartment_id
 
     type(room_type),   pointer :: roomptr
     type(fire_type),   pointer :: fireptr
     type(target_type), pointer :: targptr
 
     real(eb) setpoint
-    character(64) :: comp_id, devc_id, fire_id, id, ignition_criterion
-    character(256) :: fyi
+    character(len=64) :: comp_id, devc_id, fire_id, id, ignition_criterion
+    character(len=128) :: fyi
     real(eb), dimension(2) :: location
     
     namelist /FIRE/ comp_id, devc_id, fire_id, id, ignition_criterion, location, setpoint, fyi
@@ -1305,7 +1305,7 @@ continue
     real(eb) :: carbon, chlorine, hydrogen, nitrogen, oxygen
     real(eb) :: area, co_yield, hcl_yield, hcn_yield, heat_of_combustion, hrr, radiative_fraction, &
         soot_yield, trace_yield, flaming_transition_time
-    character(64) :: comp_id, id, table_id
+    character(len=64) :: comp_id, id, table_id
     namelist /CHEM/ area, carbon, chlorine, comp_id, co_yield, heat_of_combustion, &
         hcl_yield, hcn_yield, hrr, hydrogen, id, nitrogen, oxygen, radiative_fraction, soot_yield, &
         table_id, trace_yield, flaming_transition_time
@@ -1585,7 +1585,7 @@ continue
 
     integer :: i, ii, j, jj, k, mm, imin, jmax, counter1, counter2, counter3, iroom, iramp
     integer :: ios
-    character(64) :: compartment_id
+    character(len=64) :: compartment_id
     real(eb) :: initialtime, initialfraction, finaltime, finalfraction
 
     type(room_type), pointer :: roomptr
@@ -1596,9 +1596,9 @@ continue
     real(eb) :: area, bottom, flow, offset, setpoint, top, width, pre_fraction, post_fraction, filter_time, filter_efficiency
     real(eb), dimension(2) :: areas, cutoffs, heights, offsets
     real(eb), dimension(mxpts) :: t, f
-    character(64),dimension(2) :: comp_ids, orientations
-    character(64) :: criterion, devc_id, face, id, shape, type
-    character(256) :: fyi
+    character(len=64),dimension(2) :: comp_ids, orientations
+    character(len=64) :: criterion, devc_id, face, id, shape, type
+    character(len=128) :: fyi
     namelist /VENT/ area, areas, bottom, comp_ids, criterion, cutoffs, devc_id, f, face, filter_efficiency, &
         filter_time, flow, heights, id, offset, offsets, orientations, pre_fraction, post_fraction, &
         setpoint, shape, t, top, type, width, fyi
@@ -2179,14 +2179,14 @@ continue
 
     integer :: ios, ifrom, ito, i, k, jj, i1, i2, counter1
     real(eb), dimension(mxpts) :: frac
-    character(64) :: compartment_id
+    character(len=64) :: compartment_id
     integer :: nmlcount                             ! count of number of each namelist type read in so far
 
     type(room_type), pointer :: roomptrfrm, roomptrto
 
     real(eb), dimension(mxpts) :: f
-    character(64), dimension(mxpts) :: comp_ids
-    character(64) :: comp_id, type
+    character(len=64), dimension(mxpts) :: comp_ids
+    character(len=64) :: comp_id, type
     namelist /CONN/ comp_id, comp_ids, f, type
 
     ios = 1
@@ -2366,13 +2366,13 @@ continue
     integer, intent(in) :: lu
 
     integer :: ios, ii, icomp, jj, counter
-    character(64) :: compartment_id
+    character(len=64) :: compartment_id
 
     type(visual_type), pointer :: sliceptr
     type(room_type), pointer :: roomptr
 
     real(eb) :: value
-    character(64) :: comp_id
+    character(len=64) :: comp_id
     namelist /ISOF/ comp_id, value
 
     ios = 1
@@ -2458,14 +2458,14 @@ continue
     integer, intent(in) :: lu
     
     integer :: ios, ii, jj, icomp, counter
-    character(64) :: compartment_id
+    character(len=64) :: compartment_id
 
     type(room_type), pointer :: roomptr
     type(visual_type), pointer :: sliceptr
 
     real(eb) :: position
-    character(64) :: domain,plane
-    character(64) :: comp_id
+    character(len=64) :: domain,plane
+    character(len=64) :: comp_id
     namelist /SLCF/ domain, plane, position, comp_id
 
     ios = 1
@@ -2611,22 +2611,22 @@ continue
     integer :: ios, i
     integer, intent(in) :: lu
 
-    character(8) :: mode
-    character(3) :: horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
-                    ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
-                    conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
-                    steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, residual_debug_print, &
-                    layer_mixing_sub_model, adiabatic_target_verification
-    character(10) :: gas_absorbtion_sub_model
+    character(len=8) :: mode
+    character(len=3) :: horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
+        ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
+        conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
+        steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, residual_debug_print, &
+        layer_mixing_sub_model, adiabatic_target_verification
+    character(len=10) :: gas_absorbtion_sub_model
     real(eb), dimension(mxpts) :: t, f
     real(eb) :: radiative_incident_flux
     namelist /DIAG/ mode, rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, t, f,  &
-                    horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
-                    ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
-                    conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
-                    steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model, &
-                    residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_flux, &
-                    upper_layer_thickness, verification_time_step, verification_fire_heat_flux
+        horizontal_flow_sub_model, fire_sub_model, entrainment_sub_model, vertical_flow_sub_model, &
+        ceiling_jet_sub_model, door_jet_fire_sub_model, convection_sub_model, radiation_sub_model, &
+        conduction_sub_model, debug_print, mechanical_flow_sub_model, keyboard_input, &
+        steady_state_initial_conditions, dassl_debug_print, oxygen_tracking, gas_absorbtion_sub_model, &
+        residual_debug_print, layer_mixing_sub_model, adiabatic_target_verification, radiative_incident_flux, &
+        upper_layer_thickness, verification_time_step, verification_fire_heat_flux
 
     ios = 1
 
@@ -2789,9 +2789,9 @@ continue
     logical :: found
     
     real(eb) :: criteria
-    character(25) :: file_type, type
-    character(64) :: id, first_device, first_measurement, second_device, second_measurement
-    character(256) :: fyi
+    character(len=25) :: file_type, type
+    character(len=64) :: id, first_device, first_measurement, second_device, second_measurement
+    character(len=128) :: fyi
 
     namelist /DUMP/ id, file_type, first_device, first_measurement, second_device, &
                     second_measurement, criteria, type, fyi
@@ -2989,8 +2989,8 @@ continue
     integer :: ii
     integer, intent(out) :: ios
     integer, intent(in) :: lu
-    character(4), intent(in) :: name
-    character(80) text
+    character(len=4), intent(in) :: name
+    character(len=80) text
     ios = 1
 
     readloop: do
@@ -3015,7 +3015,7 @@ continue
     end subroutine checkread
     !-------------------------------newid--------------------------------------
     logical function newid(id)
-    character(*), intent(in) :: id
+    character(len=*), intent(in) :: id
     
     integer :: i
     

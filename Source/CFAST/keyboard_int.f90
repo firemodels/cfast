@@ -12,7 +12,7 @@
 
     integer(2), intent(out) :: ich, hit
 
-    character(1) :: ch, getcharqq
+    character(len=1) :: ch, getcharqq
     logical :: peekcharqq
 
     ich = 0

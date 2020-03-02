@@ -40,7 +40,7 @@ module spreadsheet_input_routines
 
     integer :: numr, numc
     integer :: ivers, iversion
-    character :: aversion*5
+    character(len=5) :: aversion
     logical :: lend
       
         ! read in the entire input file as a spreadsheet array of numbers and/or character strings
@@ -96,8 +96,11 @@ module spreadsheet_input_routines
     integer :: iijk, jmax, npts, nto, ifrom, ito, imin, iroom, iramp, ncomp
     real(eb) :: initialopening, lrarray(ncol)
     real(eb) :: frac, tmpcond
-    character :: label*5, tcname*64, eqtype*3, venttype
-    character(128) :: lcarray(ncol)
+    character(len=5) :: label
+    character(len=64) :: tcname
+    character(len=3) :: eqtype
+    character :: venttype
+    character(len=128), dimension(ncol) :: lcarray
     type(room_type), pointer :: roomptr
     type(target_type), pointer :: targptr
     type(detector_type), pointer :: dtectptr
@@ -1402,8 +1405,8 @@ module spreadsheet_input_routines
     integer, intent(in) :: inumc, lrowcount
     type(fire_type), intent(inout), pointer :: fireptr
 
-    character(128) :: lcarray(ncol)
-    character(5) :: label
+    character(len=128), dimension(28) :: lcarray(ncol)
+    character(len=5) :: label
     integer :: ir, i, nret
     real(eb) :: lrarray(ncol), ohcomb, max_area, max_hrr, hrrpm3, f_height
     type(room_type), pointer :: roomptr

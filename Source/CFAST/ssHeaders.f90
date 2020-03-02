@@ -32,7 +32,7 @@ module spreadsheet_header_routines
     logical, intent(in) :: lmode
 
     integer, parameter :: maxhead = 1+8*mxrooms+4*mxfires+2*mxhvents+3*mxfslab*mxhvents+2*mxvvents+2*mxext
-    character(35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, cTarg, LabelsShort(36), LabelUnits(36)
+    character(len=35) :: headertext(2,maxhead), cRoom, cFire, cVent, cSlab, cTarg, LabelsShort(36), LabelUnits(36)
     integer position, i, j, iv
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
@@ -203,7 +203,7 @@ module spreadsheet_header_routines
 
     subroutine smvDeviceTag(string)
 
-    character, intent(in) :: string*(*)
+    character(len=*), intent(in) :: string
 
     write (iofilsmv,'(a)') 'DEVICE'
     write (iofilsmv,'(4x,a)') trim(string)
@@ -218,7 +218,7 @@ module spreadsheet_header_routines
     ! header information for the calculate_residuals spreadsheet output
 
     integer, parameter :: maxhead = 1+2*(8*(ns+2)+3)*mxrooms + 4*mxrooms
-    character(35) :: headertext(3,maxhead), Labels(15), LabelUnits(8), Layers(2), Species(9)
+    character(len=35) :: headertext(3,maxhead), Labels(15), LabelUnits(8), Layers(2), Species(9)
     integer position, i, j, k, l
     type(room_type), pointer :: roomptr
 
@@ -302,7 +302,7 @@ module spreadsheet_header_routines
     ! header information for the flow slabs spreadsheet output
 
     integer, parameter :: maxhead = 1 + mxhvents*(4 + mxfslab)
-    character(35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
+    character(len=35) :: headertext(3,maxhead), Labels(6), LabelUnits(2)
     integer :: position, i, j
 
     data Labels / 'time', 'Room 1','Room 2', 'Vent Num', 'Num Slabs', 'Slab'/
@@ -344,7 +344,7 @@ module spreadsheet_header_routines
     ! header information for the diagnostic spreadsheet output
 
     integer, parameter :: maxhead = 1+10*mxrooms
-    character(35) :: headertext(4,maxhead), cRoom, Labels(11), LabelsShort(11), LabelUnits(11)
+    character(len=35) :: headertext(4,maxhead), cRoom, Labels(11), LabelsShort(11), LabelUnits(11)
     integer :: position, i, j
     type(room_type), pointer :: roomptr
 

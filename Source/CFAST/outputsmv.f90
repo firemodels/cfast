@@ -57,9 +57,9 @@
     real(eb) :: targetvector(6)
     real(eb) :: xyz(6)
     integer ::i, iroom1, iroom2
-    character(128) :: dir
-    character(64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
-    character(35) :: cTarg
+    character(len=128) :: dir
+    character(len=64) :: smokeviewplotfilename, drive, ext, name ! the extension is .plt
+    character(len=35) :: cTarg
     integer(4) :: length, splitpathqq
     integer :: vtype
 
@@ -1419,7 +1419,7 @@ module isosurface
     ! ------------------ REALLOCATE_I ------------------------
 
     SUBROUTINE REALLOCATE_I(ROUTINE,VAR,VALS,OLDSIZE,NEWSIZE)
-    CHARACTER(*), INTENT(IN) :: ROUTINE, VAR
+    CHARACTER(LEN=*), INTENT(IN) :: ROUTINE, VAR
     INTEGER, DIMENSION(:), POINTER :: VALS
     INTEGER, INTENT(IN) :: OLDSIZE, NEWSIZE
     INTEGER, DIMENSION(:), ALLOCATABLE :: VALS_TEMP
@@ -1443,7 +1443,7 @@ module isosurface
     ! ------------------ REALLOCATE_F ------------------------
 
     SUBROUTINE REALLOCATE_F(ROUTINE,VAR,VALS,OLDSIZE,NEWSIZE)
-    CHARACTER(*), INTENT(IN) :: ROUTINE,VAR
+    CHARACTER(LEN=*), INTENT(IN) :: ROUTINE,VAR
     REAL(FB), INTENT(INOUT), DIMENSION(:), POINTER :: VALS
     INTEGER, INTENT(IN) :: OLDSIZE, NEWSIZE
     REAL(FB), DIMENSION(:), ALLOCATABLE :: VALS_TEMP
@@ -1470,9 +1470,9 @@ module isosurface
 
     ! memory checking routine
 
-    character(*), intent(in) :: codesect, varname
+    character(len=*), intent(in) :: codesect, varname
     integer izero
-    character(256) message
+    character(len=256) message
 
     if (izero==0) return
 

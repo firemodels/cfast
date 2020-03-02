@@ -9,7 +9,7 @@
 
     implicit none
 
-    character(lbufln) :: lbuf
+    character(len=lbufln) :: lbuf
 
     ! unlike most other routines, this one does not have the private specifier since all routines here are intended to be
     ! used by other routines
@@ -111,7 +111,7 @@
     integer, intent(in) :: i
     character(len=*), intent(out) :: istring
 
-    character :: string*256
+    character(len=256) :: string
 
     if (i<10) then
         write (string,'(i1)') i
@@ -173,10 +173,10 @@
     !                      this call is executed. (in this stub routine, LEVEL=2 causes a message to be printed and then
     !                      a stop. LEVEL=-1,0,1 causes a message to  be printed and then a return.
 
-    character(*), intent(in) :: messg
+    character(len=*), intent(in) :: messg
     integer, intent(in) :: nmessg, level, nerr
 
-    character(32) :: error_label
+    character(len=32) :: error_label
 
     integer :: nmess
 
@@ -221,7 +221,7 @@
 
     integer, intent(in) :: nmes, nerr, level, ni, i1, i2, nnr
     real(eb), intent(in) :: r1, r2
-    character, intent(in) :: msg(nmes)*1
+    character(len=1), intent(in) :: msg(nmes)*1
 
     integer :: i, lunit, mesflg
 
@@ -319,7 +319,7 @@
 
     integer, intent(in) :: nerr, nnr
     real(eb), intent(in) :: r1, r2
-    character, intent(in) :: mesg*(*)
+    character(len=*), intent(in) :: mesg
 
     integer :: lm
 
@@ -355,10 +355,11 @@
 
     integer, intent(inout) :: nargs
     integer, intent(out) :: iarg(nargs), iopt(26)
-    character, intent(out) :: strs(nargs)*(*)
+    character(len=*), intent(out) :: strs(nargs)
 
     integer :: ic, ia, i
-    character :: cmdlin*127, optsep
+    character(len=127) :: cmdlin
+    character(len=1) :: optsep
 
     optsep = '-'
 
@@ -452,12 +453,12 @@
     !            i5     position of newly vacated space in the string
     !            chr    character to fill that space
 
-    character, intent(in) :: chr
+    character(len=1), intent(in) :: chr
     integer, intent(in) :: i1, i2, i3, i4, i5
 
-    character, intent(inout) :: cmdlin*(*)
+    character(len=*), intent(inout) :: cmdlin
 
-    character :: temp*127
+    character(len=127) :: temp
 
     temp = cmdlin
     temp(i1:i2) = cmdlin(i3:i4)
@@ -473,7 +474,7 @@
     ! get command line as a single string
     ! arguments: cmdlin - command line
 
-    character, intent(out) :: cmdlin*127
+    character(len=*), intent(out) :: cmdlin
 
     integer first, last, lpoint
     integer maxarg, iar, i, ic
@@ -509,7 +510,7 @@
     ! arguments: lcarray - character array of arguments.  There should be tocount non-blank entries
     !            numc - dimension limit on lcarray
 
-    character(128), intent(in) :: lcarray(ncol)
+    character(len=128), intent(in) :: lcarray(ncol)
 
     integer :: i, nret
 
@@ -548,7 +549,7 @@
     ! checks for the existence of given file name
     ! arguments: checkfile - file name
 
-    character(*), intent(in) :: checkfile
+    character(len=*), intent(in) :: checkfile
     logical yesorno
 
 
@@ -573,16 +574,15 @@
     !		     project - name of the project - this name cannot exceed 64 charcters. the total lenght of
     !                          datapath + project cannot exceed 256 characters
 
-    character(*), intent(out) :: exepath, datapath, project, extension
+    character(len=*), intent(out) :: exepath, datapath, project, extension
 
     integer :: i, loop, status, nargs, ld(2), li(2), ln(2), le(2), lb
-    character(256) :: buf, xname
-    character (64) :: name(2)
-
-    character(3) :: drive(2)
-    character(256) :: dir(2)
-    character(64) :: ext(2)
-    integer(4) :: length, pathcount, splitpathqq, ilen
+    character(len=256) :: buf, xname
+    character (len=64) :: name(2)
+    character(len=3) :: drive(2)
+    character(len=256) :: dir(2)
+    character(len=64) :: ext(2)
+    integer(kind=4) :: length, pathcount, splitpathqq, ilen
 
     nargs = command_argument_count() + 1
     project = ' '
@@ -812,7 +812,7 @@
 
     integer function cmdflag (ic,iopt)
 
-    character(1), intent(in) :: ic
+    character(len=1), intent(in) :: ic
     integer, intent(in) :: iopt(26)
 
     cmdflag = iopt(ichar(ic)-ichar('A')+1)
@@ -846,8 +846,8 @@
     !     n to output just target fluxes relative to ambient (smoke still in od)
 
     integer :: year, month, day, iarg(8), iopt(26), nargs, values(8)
-    character :: strs(8)*60
-    character(10) :: big_ben(3)
+    character(len=60) :: strs(8)
+    character(len=10) :: big_ben(3)
 
     ! current date
     call date_and_time(big_ben(1),big_ben(2),big_ben(3),values)
@@ -929,13 +929,13 @@
     !            svalid - true if a valid substring is found
 
     integer, intent(in) :: sstart, wcount
-    character, intent(in) :: string(*)
+    character(len=1), intent(in) :: string(*)
     logical, intent(out) :: svalid
 
     integer, intent(out) :: sfirst, slast
 
     integer :: endstr, i, j
-    character :: space = ' ', comma = ','
+    character(len=1) :: space = ' ', comma = ','
 
     svalid = .true.
 
@@ -977,10 +977,10 @@
     ! convert a string to upper case
     ! arguments: string - string to be converted
 
-    character, intent(inout) :: string*(*)
+    character(len=*), intent(inout) :: string
 
     integer n, i
-    character :: c
+    character(len=1) :: c
 
     n = len_trim(string)
     do i = 1, n
@@ -995,7 +995,7 @@
 
     ! --------------------------- xerbla -------------------------------------------
 
-    subroutine xerbla ( srname, info )
+    subroutine xerbla (srname, info )
 
     ! opens a file using the extension to distinguish previous open files
     ! arguments: srname - specifies the name of the routine which called xerbla
@@ -1003,7 +1003,7 @@
     !                   parameter-list of the calling routine.
 
     integer, intent(in) :: info
-    character(6), intent(in) :: srname
+    character(len=6), intent(in) :: srname
 
     write (*,99999) srname, info
     stop
@@ -1021,7 +1021,7 @@
     ! arguments: ca - first character
     !            cb - second character
 
-    character(1), intent(in) :: ca, cb
+    character(len=1), intent(in) :: ca, cb
 
     integer, parameter :: ioff = 32
     intrinsic ichar
@@ -1083,11 +1083,11 @@
 
     integer, intent(out) :: maxrow, maxcol
     real(eb), intent(out) :: x(numr,numc)
-    character, intent(out) :: c(numr,numc)*(*)
+    character(len=*), intent(out) :: c(numr,numc)
     logical, intent(out) :: lend
 
-    character :: in*64500, token*128                ! 500 cells (for species with 10 rooms) times 129 characters &
-                                                    !      (128 characters per token plus 1 for comma)
+    character(len=64500) :: in*64500                ! 500 cells (for species with 10 rooms) times 129 characters 
+    character(len=128) :: token*128                 !      (128 characters per token plus 1 for comma)
     integer :: i, j, nrcurrent, ic, icomma, ios, nc, lastrow
 
     maxrow = 0

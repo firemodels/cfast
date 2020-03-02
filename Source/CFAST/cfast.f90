@@ -108,7 +108,7 @@
     use output_routines, only: closeoutputfiles, delete_output_files
     use setup_data, only: validation_flag, iofill, iofilkernel, stopfile
     
-    character, intent(in) :: name*(*)
+    character(len=*), intent(in) :: name
     integer, intent(in) :: errorcode
 
 

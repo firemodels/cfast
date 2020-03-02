@@ -179,7 +179,7 @@
     real(eb) :: fraction, height, width, avent
     integer roomc(mxrooms,mxrooms), tempmat(mxrooms,mxrooms), i, iroom1, iroom2, ik, im, ix, matiter
     integer, parameter :: toprm = 1, botrm = 2
-    character(64) :: rampid
+    character(len=128) :: rampid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr

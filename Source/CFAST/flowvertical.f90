@@ -38,7 +38,7 @@ module vflow_routines
     integer ::  ilay, i, itop, ibot, iflow, ifrm, ito, lsp, index, ishape, icount
     real(eb) :: area, fraction, froude(2), alpha, zlayer, temp_upper, temp_lower
     
-    character(64) :: rampid
+    character(len=128) :: rampid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr

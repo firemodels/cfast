@@ -65,7 +65,7 @@ module spreadsheet_routines
     
     logical :: firstc = .true.
     integer :: position, i
-    character(35) :: cRoom, cFire, species_units, smoke_units
+    character(len=35) :: cRoom, cFire, species_units, smoke_units
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
     type(ssout_type), pointer :: ssptr
@@ -189,7 +189,7 @@ module spreadsheet_routines
 
     logical :: firstc = .true.
     integer :: position, i
-    character(35) :: cDet
+    character(len=35) :: cDet
     type(ssout_type), pointer :: ssptr
     type(target_type), pointer :: targptr
     type(detector_type), pointer :: dtectptr
@@ -323,7 +323,7 @@ module spreadsheet_routines
     
     logical :: firstc = .true.
     integer :: position, i
-    character(35) :: cRoom, cFire
+    character(len=35) :: cRoom, cFire
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
     type(ssout_type), pointer :: ssptr
@@ -460,7 +460,7 @@ module spreadsheet_routines
     
     logical :: firstc = .true.
     integer :: position, i, ifrom, ito, counter
-    character(35) :: cifrom, cito, clfrom, clto, cvent
+    character(len=35) :: cifrom, cito, clfrom, clto, cvent
     type(vent_type), pointer :: ventptr
     type(ssout_type), pointer :: ssptr
     
@@ -632,7 +632,7 @@ module spreadsheet_routines
 
     logical :: firstc = .true.
     integer :: position, i
-    character(35) :: cRoom
+    character(len=35) :: cRoom
     type(room_type), pointer :: roomptr
     type(ssout_type), pointer :: ssptr
 
@@ -683,7 +683,7 @@ module spreadsheet_routines
     
     integer, intent(inout) :: i
     type(ssout_type), intent(inout), target :: ssheaderinfo(*)
-    character(*), intent(in) :: short, long, location, units
+    character(len=*), intent(in) :: short, long, location, units
     
     type(ssout_type), pointer :: ssptr
     
@@ -714,7 +714,7 @@ module spreadsheet_routines
     integer i, idir, layer
     real(eb) :: fire_ignition, f_height, ssvalue, tjet, flow(4)
     
-    character(50) :: measurement, device
+    character(len=50) :: measurement, device
     
     type(detector_type), pointer :: dtectptr
     type(fire_type), pointer :: fireptr
@@ -1549,7 +1549,7 @@ module spreadsheet_routines
     integer, intent(in) :: iounit, ic
 
     integer i
-    character(35), dimension(16384) :: out
+    character(len=35), dimension(16384) :: out
     
     if (ic>0) then
         out = ' '
@@ -1739,7 +1739,7 @@ module spreadsheet_routines
     
     integer, parameter :: nr = 2, nc = mx_dumps+1
     real(eb) :: dumparray(nr, nc)
-    character(128) :: dumpcarray(nr, nc)
+    character(len=128) :: dumpcarray(nr, nc)
     integer :: i, icount, mxcol
     
     dumparray(1, 1:nc) = 0.0
@@ -1771,7 +1771,7 @@ module spreadsheet_routines
     integer, intent(in) :: nr, nc, idx
     integer, intent(inout) :: mxcol, icount
     real(eb), intent(inout) :: dumparray(nr, nc)
-    character(*), intent(inout) :: dumpcarray(nr, nc)
+    character(len=*), intent(inout) :: dumpcarray(nr, nc)
     
     integer :: i
     type(dump_type), pointer :: dumpptr
@@ -1779,7 +1779,7 @@ module spreadsheet_routines
     
     integer, parameter :: numr = 3, numc = 32000
     real(eb) :: lastval(2, mx_dumps), lasttime(mx_dumps), x(numr, numc)
-    character(128) :: header(numr, numc), c(numr, numc)
+    character(len=128) :: header(numr, numc), c(numr, numc)
     
     integer :: relcol, mxhr, mxhc, ic, cols(mx_dumps), icol, num_entries
     integer :: primecol(mx_dumps), seccol(2, mx_dumps), mxr, mxc
@@ -1926,8 +1926,9 @@ module spreadsheet_routines
 
     integer, intent(out) :: ic
     integer, intent(in) :: nr, nc, mxr, mxc
-    character, intent(in) :: c(nr, nc)*(128), instrument*(*), measurement*(*)
+    character(len=*), intent(in) :: c(nr, nc), instrument, measurement
     
+    ! note that we read in the headers ignoring the first row (short names) so the row below are one less that the actual row
     integer, parameter :: instrumentRow = 2, measurementRow = 1, timeColumn = 1
     integer :: i
     
@@ -1975,9 +1976,9 @@ module spreadsheet_routines
     integer, intent(in) :: iunit, nr, nc, nstart, mxr, mxc
 
     real(eb), intent(in) :: x(nr,nc)
-    character, intent(inout) :: c(nr,nc)*(*)
+    character(len=*), intent(inout) :: c(nr,nc)
 
-    character :: buf*204800
+    character(len=204800) :: buf
     integer :: i, j, ic, ie
     
     do i = nstart, mxr

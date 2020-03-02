@@ -575,13 +575,13 @@
     type(slice_type), pointer :: sliceptr
     type(room_type), pointer :: roomptr
     real(eb) :: xb(6)
-    character(256) :: slicefilename
+    character(len=256) :: slicefilename
     integer :: ijkslice(6)
     real(eb), parameter :: dxyz=0.01_eb
-    character(60) :: menu_label, colorbar_label, unit_label
+    character(len=60) :: menu_label, colorbar_label, unit_label
     integer :: i_iso
     type(iso_type), pointer :: isoptr
-    character(256) :: isofilename
+    character(len=256) :: isofilename
     real(eb) :: ceiljet_depth
     type(visual_type), pointer :: vptr
     integer :: ntypes, ir, ibeg, iend

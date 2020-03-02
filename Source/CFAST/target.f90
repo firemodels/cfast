@@ -753,8 +753,8 @@ module target_routines
     real(eb) :: tlink, tlinko, zdetect, tlay, tjet, tjeto, vel, velo, rti, trig, an, bn, anp1, &
        bnp1, denom, fact1, fact2, delta, tmp, tlink_smld, tlinko_smld, delta_smld, trig_smld
     integer :: i, iroom, idold, iqu
-    character(133) :: messg
-    character(11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm ','Sprinkler  '/)
+    character(len=133) :: messg
+    character(len=11) :: detector_names(3) = (/'Smoke Alarm','Heat Alarm ','Sprinkler  '/)
     type(detector_type), pointer :: dtectptr, previous_activation
     type(room_type), pointer :: roomptr
 

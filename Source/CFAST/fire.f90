@@ -603,7 +603,7 @@ module fire_routines
 
     integer ::i
     real(eb) :: fraction
-    character(64) :: rampid
+    character(len=128) :: rampid
     type(fire_type), pointer :: fireptr
     type(vent_type), pointer :: ventptr
 

@@ -7,28 +7,28 @@ module cfast_types
     ! user-customized data and calculation output data structure
     type dump_type
         ! these are for user-specified calculations on data. output goes to _calculations.csv
-        character(64) :: id                     ! user selected heading for output column
-        character(256) :: fyi                   ! line available for comments or extra input
-        character(24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
-        character(24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
-                                                !      'check_total_hrr'
-        real(eb) :: criteria                    ! Value used in 'trigger_...' analysis
+        character(len=128) :: id                    ! user selected heading for output column
+        character(len=128) :: fyi                   ! line available for comments or extra input
+        character(len=24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
+        character(len=24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
+                                                    !      'check_total_hrr'
+        real(eb) :: criteria                        ! Value used in 'trigger_...' analysis
 
-        character(64) :: first_device           ! Name of instrument, third row in spreadsheet        
-        character(64) :: first_measurement      ! Name of measurement for first device, second row in spreadsheet
-        character(64) :: second_device          ! Name of second instrument, needed for 'trigger_...' and 'integrate',
-                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
-        character(64) :: second_measurement     ! Name of measurement for second device, needed for 'trigger_...' and 'integrate'
-                                                !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
-        integer :: relative_column              ! Order of columns. This is just the order in the input file
+        character(len=128) :: first_device          ! Name of instrument, third row in spreadsheet        
+        character(len=128) :: first_measurement     ! Name of measurement for first device, second row in spreadsheet
+        character(len=128) :: second_device         ! Name of second instrument, needed for 'trigger' and 'integrate',
+                                                    !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        character(len=128) :: second_measurement    ! Name of measurement for second device, needed for 'trigger' and 'integrate'
+                                                    !      ignored for 'maximum', 'minimum', and 'check_total_hrr'
+        integer :: relative_column                  ! Order of columns. This is just the order in the input file
         
-        logical :: found                        ! The input channels are found in the requested csv files
+        logical :: found                            ! The input channels are found in the requested csv files
     end type dump_type
 
     ! detector / sprinkler structure
     type detector_type
-        character(64) :: id             ! user selected name for the detector (user input)
-        character(256) :: fyi           ! line available for comments or extra input
+        character(len=128) :: id        ! user selected name for the detector (user input)
+        character(len=128) :: fyi       ! line available for comments or extra input
         real(eb) :: center(3)           ! position of detector center (user input)
         real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
         real(eb) :: trigger_smolder     ! activation value for dual_detector smoke for the smoldering smoke % obscuration 
@@ -64,9 +64,9 @@ module cfast_types
     ! fire data structure
     type fire_type
         ! These are the fire definitions from the input
-        character(64) :: id                             ! user selected name for the fire instance (user input)
-        character(256) :: fyi                           ! line available for comments or extra input
-        character(64) :: fire_id                        ! user selected name for the data associated with this fire instance
+        character(len=128) :: id                        ! user selected name for the fire instance (user input)
+        character(len=128) :: fyi                       ! line available for comments or extra input
+        character(len=128) :: fire_id                   ! user selected name for the data associated with this fire instance
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
         integer :: ignition_type                        ! ignition type for fire (user input)
@@ -123,8 +123,8 @@ module cfast_types
 
     ! ramp data structure
     type ramp_type
-        character(64) :: id  
-        character(64) :: type  
+        character(len=128) :: id  
+        character(len=128) :: type  
         integer :: room1, room2, counter, npoints
         real(eb) :: x(mxpts), f_of_x(mxpts)
     end type ramp_type
@@ -132,8 +132,8 @@ module cfast_types
     ! room data structure
     type room_type
         ! These are room definitions from or calculated from user input
-        character(64) :: id                             ! user selected name for the compartment
-        character(256) :: fyi                           ! line available for comments or extra input
+        character(len=128) :: id                        ! user selected name for the compartment
+        character(len=128) :: fyi                       ! line available for comments or extra input
                                                         ! identifier for compartment grouping for later analyses ... for example
                                                         ! "Office", "Bedroom", "Hallway". etc
         character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
@@ -218,8 +218,8 @@ module cfast_types
     
     ! time-dependent fire parameters table input data structure
     type table_type
-        character(64) :: id                             ! user selected name for the table (normally this would match the fire name)
-        character(64), dimension(ns+3) :: labels        ! column labels for columns of data in the table
+        character(len=128) :: id                        ! user selected name for the table; normally this would match the fire name
+        character(len=128), dimension(ns+3) :: labels   ! column labels for columns of data in the table
         real(eb), dimension(mxpts,ns+3) :: data         ! actual input data for the table
         integer :: n_points                             ! number of data points (rows) in the table
         integer :: n_columns                            ! number of columns of data in the table
@@ -227,11 +227,11 @@ module cfast_types
 
     ! target data structure
     type target_type
-        character(64) :: id             ! user selected name for the target
-        character(256) :: fyi           ! line available for comments or extra input
-        character(64) :: material       ! material for the target (used to match materials properties)
-        character(64) :: depth_units    ! specify units for temperature depth location, 'FRACTION' or 'M'
-                                        ! default is 'FRACTION' for backwards compatibility
+        character(len=128) :: id            ! user selected name for the target
+        character(len=128) :: fyi           ! line available for comments or extra input
+        character(len=128) :: material      ! material for the target (used to match materials properties)
+        character(len=128) :: depth_units   ! specify units for temperature depth location, 'FRACTION' or 'M'
+                                            ! default is 'FRACTION' for backwards compatibility
 
         real(eb) :: center(3)           ! position of target center
         real(eb) :: normal(3)           ! target normal vector
@@ -275,8 +275,8 @@ module cfast_types
 
     ! thermal properties structure
     type thermal_type
-        character(64) :: id                             ! user selected name for the material
-        character(256) :: fyi                           ! line available for comments or extra input
+        character(len=128) :: id                        ! user selected name for the material
+        character(len=128) :: fyi                       ! line available for comments or extra input
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
         real(eb), dimension(mxslb) :: rho               ! density of each slab
@@ -287,10 +287,10 @@ module cfast_types
 
     ! vent data structure
     type vent_type
-        character(64) :: id                 ! user selected name for the vent
-        character(256) :: fyi               ! line available for comments or extra input
-        character(64) :: ramp_id            ! ramp id assocated with vent
-        character(64) :: filter_id          ! filter id assocated with vent
+        character(len=128) :: id            ! user selected name for the vent
+        character(len=128) :: fyi           ! line available for comments or extra input
+        character(len=128) :: ramp_id       ! ramp id assocated with vent
+        character(len=128) :: filter_id     ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent
         integer :: room2                    ! second or bottom compartment for connecting vent
         integer :: counter                  ! counter for vents connecting the same two compartments, 1, 2, ...
@@ -358,22 +358,22 @@ module cfast_types
 
     ! output and visualization data structure
     type ssout_type
-        character(50) :: short              ! short name for output column that includes both device and measurement
-        character(50) :: measurement        ! identifies which measurement within a device (i.e., upper layer temperature)
-        character(50) :: device             ! identifies where the measurements are coming from (i.e., Room 1 or Target 1)
-        character(50) :: units              ! identifies the measurement units for the output
+        character(len=128) :: short         ! short name for output column that includes both device and measurement
+        character(len=128) :: measurement   ! identifies which measurement within a device (i.e., upper layer temperature)
+        character(len=128) :: device        ! identifies where the measurements are coming from (i.e., Room 1 or Target 1)
+        character(len=128) :: units         ! identifies the measurement units for the output
     end type ssout_type
     
     type slice_type
-       character(256) :: filename
-       character(64) :: menu_label, colorbar_label, unit_label
+       character(len=256) :: filename
+       character(len=64) :: menu_label, colorbar_label, unit_label
        real(eb) :: xb(6)
        integer :: ijk(6), roomnum, skip
     end type slice_type
 
     type iso_type
-       character(256) :: filename
-       character(64) :: menu_label, colorbar_label, unit_label
+       character(len=256) :: filename
+       character(len=64) :: menu_label, colorbar_label, unit_label
        integer :: roomnum
        real(eb) :: value
     end type iso_type

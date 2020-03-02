@@ -33,7 +33,7 @@ module output_routines
     
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 
-    character(lbufln) :: lbuf, cbuf
+    character(len=lbufln) :: lbuf, cbuf
 
     private
 
@@ -52,7 +52,7 @@ module output_routines
 
     integer, intent(in) :: iunit
     integer imajor, iminor, iminorrev
-    character(256) :: revision, revision_date, compile_date
+    character(len=256) :: revision, revision_date, compile_date
 
     call get_info(revision, revision_date, compile_date)
 
@@ -270,12 +270,12 @@ module output_routines
 
     ! output the layer and wall species at the current time
 
-    character(10), dimension(ns_mass+4) :: stype = &
-        (/character(10) :: 'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'OD_F', 'OD_S', 'CT', ' TS'/)
-    character(10), dimension(ns_mass+4) :: sunits = &
-        (/character(10) :: '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(1/m)', '(1/m)', '(g-min/m3)', ' kg '/)
-    character(5), dimension(2) :: lnames = (/character(5) :: 'UPPER', 'LOWER'/)
-    character :: ciout*255, cjout*255
+    character(len=10), dimension(ns_mass+4) :: stype = (/character(len=10) :: &
+        'N2', 'O2', 'CO2', 'CO', 'HCN', 'HCL', 'TUHC', 'H2O','OD', 'OD_F', 'OD_S', 'CT', ' TS'/)
+    character(len=10), dimension(ns_mass+4) :: sunits = (/character(len=10) :: &
+        '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(%)', '(1/m)', '(1/m)', '(1/m)', '(g-min/m3)', ' kg '/)
+    character(len=5), dimension(2) :: lnames = (/character(len=5) :: 'UPPER', 'LOWER'/)
+    character(len=255) :: ciout, cjout
     integer :: i, icomp, layer, ic, lsp
     type(room_type), pointer :: roomptr
 
@@ -336,7 +336,8 @@ module output_routines
     real(eb), dimension(8) :: flow
     logical :: hasleak
 
-    character outbuf*132, cifrom*12, cito*12
+    character(len=132) :: outbuf*132
+    character(len=12) :: cifrom, cito
     type(vent_type), pointer :: ventptr, leakptr
     type(room_type), pointer :: roomptr
 
@@ -616,7 +617,7 @@ module output_routines
     integer :: i, iroom, itype
     real(eb) :: zdetect, tlay, tjet, vel, obs, tlink
 
-    character(3) :: cact
+    character(len=3) :: cact
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
 
@@ -738,8 +739,11 @@ module output_routines
     ! output initial test case vent connections
 
     integer :: i, j, iramp
-    character :: ciout*14, cjout*14, csout*6, crout*10, ctrigger*4
-    character(64) :: rampid
+    character(len=14) :: ciout, cjout 
+    character(len=6) :: csout
+    character(len=10) :: crout
+    character(len=4) :: ctrigger
+    character(len=64) :: rampid
     type(room_type), pointer :: roomptr
     type(vent_type), pointer :: ventptr
     type(ramp_type), pointer :: rampptr
@@ -989,9 +993,9 @@ module output_routines
     integer :: io, i, is
     real(eb) :: y_hcn, y_hcl
 
-    character(13), dimension(0:4) :: ftype = &
-        (/character(13) :: 'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
-    character(6), dimension(1:3) :: fire_geometry = (/character(6) :: 'Normal', 'Wall', 'Corner'/)
+    character(len=13), dimension(0:4) :: ftype = &
+        (/character(len=13) :: 'Undefined', 'Unconstrained', 'Constrained','Pool Fire', 'Furniture'/)
+    character(len=6), dimension(1:3) :: fire_geometry = (/character(6) :: 'Normal', 'Wall', 'Corner'/)
 
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -1040,7 +1044,7 @@ module output_routines
     ! output initial test case target specifications
 
     integer :: itarg, j
-    character :: location_type*8
+    character(len=8) :: location_type
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
@@ -1071,7 +1075,7 @@ module output_routines
     ! output initial test case target specifications
 
     integer :: idtect, iroom, itype
-    character :: outbuf*200
+    character(len=200) :: outbuf
 
     type(room_type), pointer :: roomptr
     type(detector_type), pointer :: dtectptr
@@ -1118,7 +1122,7 @@ module output_routines
     ! stuff the flow output after blanking appropriate zeros
 
     real(eb), intent(in) :: flow1, flow2, flow3, flow4, flow5, flow6, flow7, flow8
-    character, intent(out) :: outbuf*(*)
+    character(len=*), intent(out) :: outbuf
 
     real :: flow(8),  x1000,x100,x10,x1,x01
 
@@ -1231,8 +1235,9 @@ module output_routines
     real(eb) :: xqf
     integer :: i, iprod, il, iroom, iobj, itarg
     integer(2) :: ch, hit
-    character(5) :: spname(ns_mass+4) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
-       '   OD', ' OD_f', ' OD_s', '   CT', '   TS'/), ccc*3
+    character(len=5) :: spname(ns_mass+4) = (/'  N2%', '  O2%', ' CO2%', '  CO%', ' HCN%', ' HCL%','  TUH', ' H2O%',&
+       '   OD', ' OD_f', ' OD_s', '   CT', '   TS'/)
+    character(len=3) :: ccc
 
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
@@ -1454,7 +1459,7 @@ module output_routines
 
     subroutine delete_output_files (outputfile)
 
-    character(*), intent(in) :: outputfile
+    character(len=*), intent(in) :: outputfile
     integer fileunit,ios
 
     if (doesthefileexist(outputfile)) then

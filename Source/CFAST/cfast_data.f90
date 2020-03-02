@@ -31,7 +31,7 @@ module  diag_data
     logical :: prnslab
     integer :: ioresid, ioslab
     real(eb) ::   dbtime
-    character(256) :: residfile, residcsv, slabcsv
+    character(len=256) :: residfile, residcsv, slabcsv
     
     ! Verification flag
     logical :: radi_verification_flag = .false.
@@ -39,7 +39,7 @@ module  diag_data
     ! Diagnostic variables for radiative properties
     real(eb) :: partial_pressure_h2o, partial_pressure_co2, gas_temperature
     ! Diagnostic veriables for radiation solver
-    character(64) :: rad_solver
+    character(len=64) :: rad_solver
     logical :: radi_radnnet_flag = .false.
     ! Diagnostic variables for adiabatic target surface temperature
     logical :: verification_ast=.false.
@@ -67,7 +67,7 @@ module dump_data
     integer, parameter :: num_csvfiles = 5 
     integer, parameter :: iocsv_compartments = 1, iocsv_devices = 2, iocsv_masses = 3, iocsv_vents = 4, iocsv_walls = 5
     
-    character(len = 24), parameter, dimension(num_csvfiles) :: csvnames = &
+    character(len=24), parameter, dimension(num_csvfiles) :: csvnames = &
         (/'COMPARTMENTS', 'DEVICES     ', 'MASSES      ', 'VENTS       ', 'WALLS       '/)
     integer, dimension(num_csvfiles) :: iocsv
     
@@ -274,22 +274,22 @@ module setup_data
     real(eb) :: ss_out_interval = 0, print_out_interval = 0, smv_out_interval = 0, time_end
     real(eb) :: stime, deltat
 
-    character(128) :: title
+    character(len=128) :: title
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
     logical :: debugging=.false., validation_flag=.false., netheatflux=.false.
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
-    character(60) :: nnfile=" ", datafile
-    character(32) :: mpsdatc
+    character(len=60) :: nnfile=" ", datafile
+    character(len=32) :: mpsdatc
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssdiag, iofilcalc, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
-    character(6), parameter :: heading="VERSN"
-    character(64) :: project, extension
-    character(256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
+    character(len=6), parameter :: heading="VERSN"
+    character(len=64) :: project, extension
+    character(len=256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
         sswall, ssmasses, ssvent, &
         ssdiag, gitfile, errorlogging, stopfile, &
         queryfile, statusfile, kernelisrunning, sscalculation
@@ -297,7 +297,7 @@ module setup_data
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100
     real(eb) :: rarray(nrow,ncol)
-    character(128) :: carray(nrow,ncol)
+    character(len=128) :: carray(nrow,ncol)
 
 end module setup_data
 

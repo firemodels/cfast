@@ -38,7 +38,7 @@ module mflow_routines
 
     real(eb) :: filter, vheight, layer_height, hvfan, fraction, fu, fl, uflw_totals(2+ns)
     integer :: i, j, k, iroom
-    character(64) :: rampid, filterid
+    character(len=128) :: rampid, filterid
 
     type(vent_type), pointer :: ventptr
     type(room_type), pointer :: roomptr

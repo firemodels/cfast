@@ -61,7 +61,7 @@ module mflow_routines
         call get_vent_opening (rampid,'M',ventptr%room1,ventptr%room2,ventptr%counter,i,tsec,fraction)
         ventptr%relp = mv_pressure(ventptr%room2,ventptr%height(2)) - mv_pressure(ventptr%room1,ventptr%height(1))
         ventptr%opening_fraction = fraction
-        ventptr%current_area = ventptr%area*fraction
+        ventptr%current_area = ventptr%diffuser_area(1)*fraction
         hvfan = mv_fan(ventptr, epsp, fraction)
 
         ! calculate mass and enthapy flows for the from room

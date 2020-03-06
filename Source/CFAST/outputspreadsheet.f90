@@ -1666,7 +1666,7 @@ module spreadsheet_routines
     if (n_mvents/=0) then
         do i = 1, n_mvents
             ventptr => mventinfo(i)
-        avent = ventptr%current_area
+            avent = ventptr%current_area
             call ssaddtolist (position,avent,outarray)
             ! flow slabs for the vent
             slabs = ventptr%n_slabs

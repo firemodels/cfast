@@ -6044,12 +6044,13 @@ Public Class CeditMain
                             aFire = myFires(i - 1)
                             If aTarget.Compartment = aFire.Compartment Then
                                 If TargetNormalType.Text = "Fire " + i.ToString + ", " + aFire.Name Then
-                                    Dim Hypotenuse As Single
-                                    Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (aFire.Height - aTarget.ZPosition) ^ 2)
+                                    Dim Hypotenuse As Single, FHeight As Single
+                                    FHeight = Me.FireDataSS(1, 3) ' this should be fire height @ t=0
+                                    Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (FHeight - aTarget.ZPosition) ^ 2)
                                     If Hypotenuse <> 0 Then
                                         aTarget.XNormal = (aFire.XPosition - aTarget.XPosition) / Hypotenuse
                                         aTarget.YNormal = (aFire.YPosition - aTarget.YPosition) / Hypotenuse
-                                        aTarget.ZNormal = (aFire.Height - aTarget.ZPosition) / Hypotenuse
+                                        aTarget.ZNormal = (FHeight - aTarget.ZPosition) / Hypotenuse
                                     End If
                                 End If
                             End If

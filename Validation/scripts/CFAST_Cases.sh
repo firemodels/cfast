@@ -221,15 +221,6 @@ $RUNCFAST -d PRISME PRS_D4.in
 $RUNCFAST -d PRISME PRS_D5.in
 $RUNCFAST -d PRISME PRS_D6.in
 
-$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_1
-$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_2
-$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_5
-
-$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_1.in
-$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_2.in
-$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_3.in
-$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_4.in
-
 $RUNCFAST -d SP_AST SP_AST_Test_1.in
 $RUNCFAST -d SP_AST SP_AST_Test_2.in
 $RUNCFAST -d SP_AST SP_AST_Test_3.in
@@ -328,6 +319,15 @@ $RUNCFAST -d UL_NFPRF UL_NFPRF_2_09.in
 $RUNCFAST -d UL_NFPRF UL_NFPRF_2_10.in
 $RUNCFAST -d UL_NFPRF UL_NFPRF_2_11.in
 $RUNCFAST -d UL_NFPRF UL_NFPRF_2_12.in
+
+$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_1.in
+$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_2.in
+$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_5.in
+
+$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_1.in
+$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_2.in
+$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_3.in
+$RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_4.in
 
 $RUNCFAST -d Vettori_Flat Test_1.in
 $RUNCFAST -d Vettori_Flat Test_2.in

@@ -221,6 +221,10 @@ $RUNCFAST -d PRISME PRS_D4.in
 $RUNCFAST -d PRISME PRS_D5.in
 $RUNCFAST -d PRISME PRS_D6.in
 
+$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_1
+$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_2
+$RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_5
+
 $RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_1.in
 $RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_2.in
 $RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_3.in

@@ -21,6 +21,7 @@ if %1==PRISME goto PRISME
 if %1==SP_AST goto SP_AST
 if %1==Steckler_Compartment goto Steckler
 if %1==UL_NFPRF goto UL_NFPRF
+if %1==UL_NIJ_Houses goto UL_NIJ_Houses
 if %1==UL_NIST_Vents goto UL_NIST_Vents
 if %1==Vettori_Flat goto Vettori_Flat
 if %1==VTT goto VTT
@@ -28,7 +29,7 @@ if %1==WTC goto WTC
 :Help
 echo Choose ALL, ATF, Dunes_2000, FLeury_Heat_Flux, FM_NBS, FM_SNL, High_Bay, iBMB, LLNL_Enclosure,
 echo        NBS, NBS_1Room, NIST_NRC, NIST_Corner_Effects, NIST_Vent_Study, PLAZA, PRISME, 
-echo        Steckler_Compartment, UL_NFPRF, UL_NIST_Vents, Vettori_Flat, VTT, or WTC
+echo        Steckler_Compartment, UL_NFPRF, UL_NIJ_Houses, UL_NIST_Vents, Vettori_Flat, VTT, or WTC
 goto end
 :ALL
 call cleanall.bat
@@ -467,6 +468,16 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_2_11 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe UL_NFPRF_2_12 -V
 cd ..
 if %1==UL_NFPRF goto end
+
+:UL_NIJ_Houses
+echo UL_NIJ
+cd UL_NIJ_Houses
+call ..\cleancfast.bat
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Single_Story_Gas_1 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Single_Story_Gas_2 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Single_Story_Gas_5 -V
+cd ..
+if %1==UL_NIJ_Houses goto end
 
 :UL_NIST_Vents
 echo UL_NIST_Vents

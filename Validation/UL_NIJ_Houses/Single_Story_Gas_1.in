@@ -1,0 +1,87 @@
+&HEAD VERSION = 7500, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 1800 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 20 EXTERIOR_TEMPERATURE = 20 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'Gyp' MATERIAL = 'Gypsum Board', 
+      CONDUCTIVITY = 0.16 DENSITY = 480 SPECIFIC_HEAT = 1, THICKNESS = 0.025 EMISSIVITY = 0.9 /
+&MATL ID = 'TC' MATERIAL = 'Thermocouple (small steel target for plume temp)', 
+      CONDUCTIVITY = 54 DENSITY = 7850 SPECIFIC_HEAT = 0.425, THICKNESS = 0.001 EMISSIVITY = 0.95 /
+ 
+!! Compartments 
+&COMP ID = 'Dining Room'
+      DEPTH = 3.96 HEIGHT = 2.4 WIDTH = 2.72 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+&COMP ID = 'Kitchen'
+      DEPTH = 3.58 HEIGHT = 2.4 WIDTH = 6.4 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 0, 3.96, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+&COMP ID = 'DR LR Hall'
+      DEPTH = 0.96 HEIGHT = 2.4 WIDTH = 1.0925 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 2.72, 3, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+&COMP ID = 'Living Room'
+      DEPTH = 3.96 HEIGHT = 2.4 WIDTH = 5.56 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 3.61, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+&COMP ID = 'Bedroom 1'
+      DEPTH = 3.63 HEIGHT = 2.4 WIDTH = 3.78 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 10.14, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+&COMP ID = 'Bedroom 2'
+      DEPTH = 3.92 HEIGHT = 2.4 WIDTH = 2.74 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 11.19, 3.63, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+&COMP ID = 'Bedroom 3'
+      DEPTH = 2.9 HEIGHT = 2.4 WIDTH = 3.02 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 6.4, 4.64, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+&COMP ID = 'LR BR Hall'
+      DEPTH = 1 HEIGHT = 2.4 WIDTH = 3.2 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 8.06, 3.63, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.000858 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'Front Door' COMP_IDS = 'Living Room' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.89
+  CRITERION = 'TIME' T = 0, 300, 301 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 0.1 /
+&VENT TYPE = 'WALL' ID = 'Kitchen Door' COMP_IDS = 'Kitchen' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 1.8
+  CRITERION = 'TIME' T = 0, 1320, 1321 F = 0, 0, 1 FACE = 'REAR' OFFSET = 0.5 /
+&VENT TYPE = 'WALL' ID = 'Kitchen Window' COMP_IDS = 'Kitchen' 'OUTSIDE'  TOP = 1.92, BOTTOM = 1.07, WIDTH = 0.85
+  CRITERION = 'TIME' T = 0, 1260, 1261 F = 0, 0, 1 FACE = 'REAR' OFFSET = 4.48 /
+&VENT TYPE = 'WALL' ID = 'Dining Room Window' COMP_IDS = 'Dining Room' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 1.78
+  CRITERION = 'TIME' T = 0, 1275, 1276 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 0.47 /
+&VENT TYPE = 'WALL' ID = 'Living Room Window' COMP_IDS = 'Living Room' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 2.67
+  CRITERION = 'TIME' T = 0, 1200, 1201 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 2.05 /
+&VENT TYPE = 'WALL' ID = 'Bedroom 1 Front Window' COMP_IDS = 'Bedroom 1' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+  CRITERION = 'TIME' T = 0, 600, 601 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 1.49 /
+&VENT TYPE = 'WALL' ID = 'Bedroom 1 Side Window' COMP_IDS = 'Bedroom 1' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+  CRITERION = 'TIME' T = 0, 1220, 1221 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 1.4 /
+&VENT TYPE = 'WALL' ID = 'Bedroom 2 Back Window' COMP_IDS = 'Bedroom 2' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+  CRITERION = 'TIME' T = 0, 1230, 1231 F = 0, 0, 1 FACE = 'REAR' OFFSET = 0.92 /
+&VENT TYPE = 'WALL' ID = 'Bedroom 3 Back Window' COMP_IDS = 'Bedroom 3' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
+  CRITERION = 'TIME' T = 0, 1250, 1251 F = 0, 0, 1 FACE = 'REAR' OFFSET = 0.79 /
+&VENT TYPE = 'WALL' ID = 'DR LR 1' COMP_IDS = 'Dining Room', 'DR LR Hall' TOP = 2.4, BOTTOM = 0, WIDTH = 0.96
+  FACE = 'RIGHT' OFFSET = 3 /
+&VENT TYPE = 'WALL' ID = 'DR LR 2' COMP_IDS = 'DR LR Hall', 'Living Room' TOP = 2.4, BOTTOM = 0, WIDTH = 0.96
+  FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'DR Kit' COMP_IDS = 'Dining Room', 'Kitchen' TOP = 2.4, BOTTOM = 0, WIDTH = 1.3
+  FACE = 'REAR' OFFSET = 1.42 /
+&VENT TYPE = 'WALL' ID = 'KIt LR' COMP_IDS = 'Kitchen', 'Living Room' TOP = 2, BOTTOM = 0, WIDTH = 0.8
+  FACE = 'FRONT' OFFSET = 4.9 /
+&VENT TYPE = 'WALL' ID = 'LR to BR Hall' COMP_IDS = 'Living Room', 'LR BR Hall' TOP = 2.4, BOTTOM = 0, WIDTH = 1.1
+  FACE = 'REAR' OFFSET = 4.46 /
+&VENT TYPE = 'WALL' ID = 'Bedroom 1 Door' COMP_IDS = 'Bedroom 1', 'LR BR Hall' TOP = 2.1, BOTTOM = 0, WIDTH = 0.7
+  FACE = 'REAR' OFFSET = 0.1 /
+&VENT TYPE = 'WALL' ID = 'Bedroom 2 Door' COMP_IDS = 'Bedroom 2', 'LR BR Hall' TOP = 2.1, BOTTOM = 0, WIDTH = 0.7
+  FACE = 'LEFT' OFFSET = 0.1 /
+&VENT TYPE = 'WALL' ID = 'Bedroom 3 Door' COMP_IDS = 'Bedroom 3', 'LR BR Hall' TOP = 2.1, BOTTOM = 0, WIDTH = 0.7
+  FACE = 'FRONT' OFFSET = 1.92 /
+ 
+!! Fires 
+&FIRE ID = 'Gas Burner'  COMP_ID = 'Living Room', FIRE_ID = 'Gas Burner Fire'  LOCATION = 5.38, 1.9 / 
+&CHEM ID = 'Gas Burner Fire' CARBON = 1 CHLORINE = 0 HYDROGEN = 4 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 50000 RADIATIVE_FRACTION = 0.2 / 
+&TABL ID = 'Gas Burner Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Gas Burner Fire', DATA = 0, 0, 0.6, 0, 0, 0.001, 0, 0, 0 /
+&TABL ID = 'Gas Burner Fire', DATA = 5, 250, 0.6, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = 'Gas Burner Fire', DATA = 900, 250, 0.6, 0.36, 0, 0.001, 0, 0, 0 /
+&TABL ID = 'Gas Burner Fire', DATA = 905, 0, 0.6, 0, 0, 0.001, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = '4TC' COMP_ID = 'Living Room' LOCATION = 5.41, 3.96, 2.39 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = '5TC' COMP_ID = 'Living Room' LOCATION = 2.53, 1.98, 2.39 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /

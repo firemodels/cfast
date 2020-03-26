@@ -86,6 +86,8 @@
     n_thrmp = n_thrmp + 1
     thrmpptr => thermalinfo(n_thrmp)
     thrmpptr%id = 'DEFAULT'
+    thrmpptr%material = 'Default values assined to surfaces that do no have a material assigned'
+    thrmpptr%fyi = 'It is best to not use this material '
     thrmpptr%eps = 0.90_eb
     thrmpptr%nslab = 1
     thrmpptr%k(1) = 0.120_eb

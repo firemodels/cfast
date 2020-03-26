@@ -276,6 +276,7 @@ module cfast_types
     ! thermal properties structure
     type thermal_type
         character(len=128) :: id                        ! user selected name for the material
+        character(len=128) :: material                  ! long descripter for material 
         character(len=128) :: fyi                       ! line available for comments or extra input
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab

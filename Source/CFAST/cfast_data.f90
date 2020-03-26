@@ -337,6 +337,7 @@ module solver_data
     use precision_parameters
     
     use cparams, only: nt, maxteq, ns, mxrooms, mxdiscon
+    use defaults, only: default_stpmax  
     
     implicit none
     save
@@ -358,7 +359,7 @@ module solver_data
     integer, dimension(3) :: ipar2
     
     ! time step setup values
-    real(eb) :: stpmax = 1.0_eb                 ! maximum solver time step, if negative, then solver will decide
+    real(eb) :: stpmax = default_stpmax         ! maximum solver time step, if negative, then solver will decide
     real(eb) :: stpfirst = 0.005_eb             ! first time step for DASSL
     logical :: stpminflag                       ! true if CFAST should check for too small time steps
     real(eb) :: stpmin                          ! minimum time step below which DASSL may be failing to find a solution.

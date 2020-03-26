@@ -18,7 +18,8 @@
         rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
-        default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti
+        default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
+        default_min_cutoff_relp, default_max_cutoff_relp
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, tablinfo
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
@@ -394,6 +395,7 @@
                 call cfastexit('read_matl', 3)
             end if
             thrmpptr%id            = id
+            thrmpptr%material      = material 
             thrmpptr%fyi           = fyi
             thrmpptr%nslab         = 1
             thrmpptr%k(1)          = conductivity
@@ -415,7 +417,8 @@
     emissivity             = 0.9_eb
     conductivity           = 0.0_eb        !w/m-k
     id                     = 'NULL'
-    id                     = 'NULL'
+    material               = 'NULL' 
+    fyi                    = ' '
     density                = 0.0_eb        !kg/m3
     thickness              = 0.0_eb        !m
 
@@ -2145,7 +2148,8 @@ continue
     bottom                = 0._eb
     comp_ids(:)           = 'NULL'
     criterion             = 'TIME'
-    cutoffs(:)            = 0._eb
+    cutoffs(1)            = default_min_cutoff_relp
+    cutoffs(2)            = default_max_cutoff_relp
     devc_id               = 'NULL'
     f(:)                  = -1001._eb
     face                  = 'NULL'

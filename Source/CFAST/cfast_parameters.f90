@@ -170,6 +170,7 @@
     real(eb), parameter :: default_print_out_interval = 60._eb
     real(eb), parameter :: default_smv_out_interval = 15._eb
     real(eb), parameter :: default_ss_out_interval = 15._eb
+    real(eb), parameter :: default_stpmax = 1._eb
 
     ! ambient condition default values
     real(eb), parameter :: default_temperature = 293.15_eb
@@ -185,5 +186,8 @@
     real(eb), parameter :: default_rti = 50._eb
     real(eb), parameter :: default_activation_temperature = (135._eb - 32._eb)/1.8_eb
     real(eb), parameter :: default_activation_obscuration = 100._eb*(1._eb-(1._eb-8._eb/100._eb)**(1._eb/0.3048_eb))
+    
+    ! vents defaults
+    real(eb), parameter :: default_min_cutoff_relp = 200._eb, default_max_cutoff_relp = 300._eb
 
     end module defaults

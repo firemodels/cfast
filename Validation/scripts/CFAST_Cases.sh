@@ -323,6 +323,9 @@ $RUNCFAST -d UL_NFPRF UL_NFPRF_2_12.in
 $RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_1.in
 $RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_2.in
 $RUNCFAST -d UL_NIJ_Houses Single_Story_Gas_5.in
+$RUNCFAST -d UL_NIJ_Houses Two_Story_Gas_1.in
+$RUNCFAST -d UL_NIJ_Houses Two_Story_Gas_4.in
+$RUNCFAST -d UL_NIJ_Houses Two_Story_Gas_6.in
 
 $RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_1.in
 $RUNCFAST -d UL_NIST_Vents UL_NIST_Vents_Test_2.in

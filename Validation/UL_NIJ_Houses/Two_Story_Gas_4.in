@@ -13,56 +13,56 @@
  
 !! Compartments 
 &COMP ID = 'Kitchen'
-      DEPTH = 4.85 HEIGHT = 2.4 WIDTH = 6.04 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 4.85 HEIGHT = 2.5 WIDTH = 6.04 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 0, 5.13, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'K LR Hall'
-      DEPTH = 2.74 HEIGHT = 2.4 WIDTH = 1.12 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 2.74 HEIGHT = 2.5 WIDTH = 1.12 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 1.02, 2.39, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Laundry Room'
-      DEPTH = 2.39 HEIGHT = 2.4 WIDTH = 2.86 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 2.39 HEIGHT = 2.5 WIDTH = 2.86 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Dining Room'
-      DEPTH = 5.13 HEIGHT = 2.4 WIDTH = 3.92 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 5.13 HEIGHT = 2.5 WIDTH = 3.92 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 2.86, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Foyer Low'
-      DEPTH = 1.65 HEIGHT = 2.4 WIDTH = 1.83 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 1.65 HEIGHT = 2.5 WIDTH = 1.83 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 6.78, 3.48, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Foyer High'
-      DEPTH = 3.48 HEIGHT = 4.8 WIDTH = 1.83 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 3.48 HEIGHT = 5.2 WIDTH = 1.83 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 6.78, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Stairs Low'
-      DEPTH = 1.65 HEIGHT = 2.4 WIDTH = 2.54 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 1.65 HEIGHT = 2.5 WIDTH = 2.54 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 8.61, 3.48, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Stairs'
-      DEPTH = 3.48 HEIGHT = 4.8 WIDTH = 2.54 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 3.48 HEIGHT = 5.2 WIDTH = 2.54 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 8.61, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Living Room'
-      DEPTH = 5.13 HEIGHT = 2.4 WIDTH = 3.77 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 5.13 HEIGHT = 2.5 WIDTH = 3.77 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 11.15, 0, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Family Room'
-      DEPTH = 4.85 HEIGHT = 4.8 WIDTH = 5.8 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 4.85 HEIGHT = 5.2 WIDTH = 5.8 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 6.04, 5.28, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Den'
-      DEPTH = 4.85 HEIGHT = 2.4 WIDTH = 3.02 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      DEPTH = 4.85 HEIGHT = 2.5 WIDTH = 3.02 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
       ORIGIN = 11.84, 5.13, 0 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'WIC'
-      DEPTH = 10.13 HEIGHT = 2.4 WIDTH = 1.94 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
-      ORIGIN = 0, 0, 2.4 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
+      DEPTH = 10.13 HEIGHT = 2.8 WIDTH = 1.94 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 0, 0, 2.5 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Master Bedroom'
-      DEPTH = 6.8 HEIGHT = 2.4 WIDTH = 3.95 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
-      ORIGIN = 1.94, 3.33, 2.4 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
+      DEPTH = 6.8 HEIGHT = 2.8 WIDTH = 3.95 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 1.94, 3.33, 2.5 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Upstairs Hallway'
-      DEPTH = 1.67 HEIGHT = 2.4 WIDTH = 7.04 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
-      ORIGIN = 4.84, 3.33, 2.4 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
+      DEPTH = 1.67 HEIGHT = 2.8 WIDTH = 7.04 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 4.84, 3.33, 2.5 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Bedroom 4'
-      DEPTH = 3.33 HEIGHT = 2.4 WIDTH = 3.03 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
-      ORIGIN = 2.86, 0, 2.4 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
+      DEPTH = 3.33 HEIGHT = 2.8 WIDTH = 3.03 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 2.86, 0, 2.5 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Bedroom 3'
-      DEPTH = 3.02 HEIGHT = 2.4 WIDTH = 3.77 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
-      ORIGIN = 11.15, 0, 2.4 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
+      DEPTH = 3.02 HEIGHT = 2.8 WIDTH = 3.77 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 11.15, 0, 2.5 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
 &COMP ID = 'Bedroom 2'
-      DEPTH = 4.57 HEIGHT = 2.4 WIDTH = 3.02 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
-      ORIGIN = 11.84, 5.41, 2.4 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
+      DEPTH = 4.57 HEIGHT = 2.8 WIDTH = 3.02 CEILING_MATL_ID = 'Gyp' WALL_MATL_ID = 'Gyp' FLOOR_MATL_ID = 'Gyp'
+      ORIGIN = 11.84, 5.41, 2.5 GRID = 50, 50, 50 LEAK_AREA = 0, 0.001251 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'Front Door' COMP_IDS = 'Foyer High' 'OUTSIDE'  TOP = 2.05, BOTTOM = 0, WIDTH = 0.88
@@ -83,29 +83,29 @@
   FACE = 'FRONT' OFFSET = 6.2 /
 &VENT TYPE = 'WALL' ID = 'Bedroom 4 Door' COMP_IDS = 'Upstairs Hallway', 'Bedroom 4' TOP = 2.05, BOTTOM = 0, WIDTH = 0.75
   FACE = 'FRONT' OFFSET = 0.08 /
-&VENT TYPE = 'WALL' ID = 'Foyer Low to Foyer High' COMP_IDS = 'Foyer Low', 'Foyer High' TOP = 2.4, BOTTOM = 0, WIDTH = 1.83
+&VENT TYPE = 'WALL' ID = 'Foyer Low to Foyer High' COMP_IDS = 'Foyer Low', 'Foyer High' TOP = 2.5, BOTTOM = 0, WIDTH = 1.83
   FACE = 'FRONT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Stair Low to Stairs' COMP_IDS = 'Stairs Low', 'Stairs' TOP = 2.4, BOTTOM = 0, WIDTH = 1.04
+&VENT TYPE = 'WALL' ID = 'Stair Low to Stairs' COMP_IDS = 'Stairs Low', 'Stairs' TOP = 2.5, BOTTOM = 0, WIDTH = 1.04
   FACE = 'FRONT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Stairs to Upstairs Hall' COMP_IDS = 'Stairs', 'Upstairs Hallway' TOP = 4.8, BOTTOM = 2.4, WIDTH = 1.04
+&VENT TYPE = 'WALL' ID = 'Stairs to Upstairs Hall' COMP_IDS = 'Stairs', 'Upstairs Hallway' TOP = 5.2, BOTTOM = 2.5, WIDTH = 1.04
   FACE = 'REAR' OFFSET = 1.19 /
-&VENT TYPE = 'WALL' ID = 'Dining to Foyer High' COMP_IDS = 'Dining Room', 'Foyer High' TOP = 2.4, BOTTOM = 0, WIDTH = 2.13
+&VENT TYPE = 'WALL' ID = 'Dining to Foyer High' COMP_IDS = 'Dining Room', 'Foyer High' TOP = 2.5, BOTTOM = 0, WIDTH = 2.13
   FACE = 'RIGHT' OFFSET = 1.35 /
-&VENT TYPE = 'WALL' ID = 'Dining to Foyer Low' COMP_IDS = 'Dining Room', 'Foyer Low' TOP = 2.4, BOTTOM = 0, WIDTH = 1
+&VENT TYPE = 'WALL' ID = 'Dining to Foyer Low' COMP_IDS = 'Dining Room', 'Foyer Low' TOP = 2.5, BOTTOM = 0, WIDTH = 1
   FACE = 'RIGHT' OFFSET = 3.5 /
-&VENT TYPE = 'WALL' ID = 'Kitchen to Family Room' COMP_IDS = 'Kitchen', 'Family Room' TOP = 2.4, BOTTOM = 0, WIDTH = 2
+&VENT TYPE = 'WALL' ID = 'Kitchen to Family Room' COMP_IDS = 'Kitchen', 'Family Room' TOP = 2.5, BOTTOM = 0, WIDTH = 2
   FACE = 'RIGHT' OFFSET = 0.5 /
-&VENT TYPE = 'WALL' ID = 'Kithcen to K LR Hall' COMP_IDS = 'Kitchen', 'K LR Hall' TOP = 2.4, BOTTOM = 0, WIDTH = 1.12
+&VENT TYPE = 'WALL' ID = 'Kithcen to K LR Hall' COMP_IDS = 'Kitchen', 'K LR Hall' TOP = 2.5, BOTTOM = 0, WIDTH = 1.12
   FACE = 'FRONT' OFFSET = 1.02 /
-&VENT TYPE = 'WALL' ID = 'Stairs to Living Room' COMP_IDS = 'Stairs Low', 'Living Room' TOP = 2.4, BOTTOM = 0, WIDTH = 1.65
+&VENT TYPE = 'WALL' ID = 'Stairs to Living Room' COMP_IDS = 'Stairs Low', 'Living Room' TOP = 2.5, BOTTOM = 0, WIDTH = 1.65
   FACE = 'LEFT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Stairs to Den' COMP_IDS = 'Stairs Low', 'Den' TOP = 2.4, BOTTOM = 0, WIDTH = 2.54
+&VENT TYPE = 'WALL' ID = 'Stairs to Den' COMP_IDS = 'Stairs Low', 'Den' TOP = 2.5, BOTTOM = 0, WIDTH = 2.54
   FACE = 'REAR' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Stairs to Foyer Low' COMP_IDS = 'Foyer Low', 'Stairs Low' TOP = 2.4, BOTTOM = 0, WIDTH = 1.65
+&VENT TYPE = 'WALL' ID = 'Stairs to Foyer Low' COMP_IDS = 'Foyer Low', 'Stairs Low' TOP = 2.5, BOTTOM = 0, WIDTH = 1.65
   FACE = 'RIGHT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Foyer to Living Room' COMP_IDS = 'Foyer Low', 'Living Room' TOP = 2.4, BOTTOM = 0, WIDTH = 1.83
+&VENT TYPE = 'WALL' ID = 'Foyer to Living Room' COMP_IDS = 'Foyer Low', 'Living Room' TOP = 2.5, BOTTOM = 0, WIDTH = 1.83
   FACE = 'REAR' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Kitchen to Dining Room' COMP_IDS = 'Kitchen', 'Dining Room' TOP = 2.4, BOTTOM = 0, WIDTH = 1.04
+&VENT TYPE = 'WALL' ID = 'Kitchen to Dining Room' COMP_IDS = 'Kitchen', 'Dining Room' TOP = 2.5, BOTTOM = 0, WIDTH = 1.04
   FACE = 'FRONT' OFFSET = 5 /
 &VENT TYPE = 'WALL' ID = 'Window A' COMP_IDS = 'Kitchen' 'OUTSIDE'  TOP = 2.07, BOTTOM = 1.22, WIDTH = 0.85
   CRITERION = 'TIME' T = 0, 1800 F = 0, 0 FACE = 'REAR' OFFSET = 0.21 /
@@ -133,11 +133,11 @@
   CRITERION = 'TIME' T = 0, 1200, 1201 F = 0, 0, 1 FACE = 'FRONT' OFFSET = 0.66 /
 &VENT TYPE = 'WALL' ID = 'Window M' COMP_IDS = 'WIC' 'OUTSIDE'  TOP = 2.07, BOTTOM = 0.61, WIDTH = 0.85
   CRITERION = 'TIME' T = 0, 1800 F = 0, 0 FACE = 'FRONT' OFFSET = 0.545 /
-&VENT TYPE = 'WALL' ID = 'Window N' COMP_IDS = 'Family Room', 'Upstairs Hallway' TOP = 4.61, BOTTOM = 3.35, WIDTH = 1.88
+&VENT TYPE = 'WALL' ID = 'Window N' COMP_IDS = 'Family Room', 'Upstairs Hallway' TOP = 4.71, BOTTOM = 3.45, WIDTH = 1.88
   FACE = 'FRONT' OFFSET = 0 /
-&VENT TYPE = 'WALL' ID = 'Window O' COMP_IDS = 'Family Room', 'Upstairs Hallway' TOP = 4.61, BOTTOM = 3.35, WIDTH = 1.9
+&VENT TYPE = 'WALL' ID = 'Window O' COMP_IDS = 'Family Room', 'Upstairs Hallway' TOP = 4.71, BOTTOM = 3.45, WIDTH = 1.9
   FACE = 'FRONT' OFFSET = 2.02 /
-&VENT TYPE = 'WALL' ID = 'Window P' COMP_IDS = 'Family Room', 'Upstairs Hallway' TOP = 4.61, BOTTOM = 3.35, WIDTH = 1.51
+&VENT TYPE = 'WALL' ID = 'Window P' COMP_IDS = 'Family Room', 'Upstairs Hallway' TOP = 4.71, BOTTOM = 3.45, WIDTH = 1.51
   FACE = 'FRONT' OFFSET = 4.06 /
  
 !! Fires 
@@ -150,5 +150,5 @@
 &TABL ID = 'Gas Burner Fire', DATA = 1505, 0, 0.6, 0, 0, 0.001, 0, 0, 0 /
  
 !! Devices
-&DEVC ID = '8TC' COMP_ID = 'Family Room' LOCATION = 2.11, 1.97, 4.795 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
-&DEVC ID = '12TC' COMP_ID = 'Foyer High' LOCATION = 0.915, 0.95, 4.795 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = '8TC' COMP_ID = 'Family Room' LOCATION = 2.11, 1.97, 5.195 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = '12TC' COMP_ID = 'Foyer High' LOCATION = 0.915, 0.95, 5.195 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /

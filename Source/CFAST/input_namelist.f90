@@ -36,7 +36,8 @@
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
 
-    implicit none 
+    implicit none
+    external cfastexit
     
     private
 

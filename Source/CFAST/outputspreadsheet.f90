@@ -27,6 +27,7 @@ module spreadsheet_routines
     use dump_data, only: n_dumps, dumpinfo, csvnames, num_csvfiles, iocsv
 
     implicit none
+    external cfastexit
     
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 

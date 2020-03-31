@@ -8,6 +8,7 @@
         netheatflux
 
     implicit none
+    external cfastexit
 
     character(len=lbufln) :: lbuf
 

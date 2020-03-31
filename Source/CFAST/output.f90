@@ -30,6 +30,7 @@ module output_routines
     use dump_data, only: n_dumps, dumpinfo, iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
 
     implicit none
+    external cfastexit, grabky, get_info
     
     integer, dimension(4), parameter :: iwptr = (/1, 3, 4, 2/)
 

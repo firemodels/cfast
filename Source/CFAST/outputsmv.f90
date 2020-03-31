@@ -16,6 +16,7 @@
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
+    external cfastexit
 
     private
 
@@ -1469,6 +1470,8 @@ module isosurface
     subroutine chkmemerr(codesect,varname,izero)
 
     ! memory checking routine
+    
+    external cfastexit
 
     character(len=*), intent(in) :: codesect, varname
     integer izero

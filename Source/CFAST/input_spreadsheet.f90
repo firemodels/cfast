@@ -24,6 +24,7 @@ module spreadsheet_input_routines
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none
+    external cfastexit
 
     logical :: exset = .false.
 

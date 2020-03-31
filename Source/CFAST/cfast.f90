@@ -43,6 +43,7 @@
         ss_out_interval
 
     implicit none
+    external cfastexit
 
     real(eb) :: xdelt, tstop, tbeg, tend 
 

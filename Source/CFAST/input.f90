@@ -33,6 +33,7 @@
     use dump_data, only: n_dumps, dumpinfo
 
     implicit none
+    external get_info
 
     private
 

@@ -5268,6 +5268,7 @@ Public Class CeditMain
             myThermalProperties.Add(aProperty)
             CurrentThermalProperty = myThermalProperties.Count - 1
             UpdateGUI.Thermals(CurrentThermalProperty)
+            ThermalLongName.Select()
         Else
             MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5281,6 +5282,7 @@ Public Class CeditMain
             myThermalProperties(myThermalProperties.Count - 1).Name = "New Material " + myThermalProperties.Count.ToString
             myThermalProperties(myThermalProperties.Count - 1).ShortName = "NM " + (myThermalProperties.Count).ToString
             UpdateGUI.Thermals(CurrentThermalProperty)
+            ThermalLongName.Select()
         ElseIf CurrentThermalProperty + 1 >= myThermalProperties.Maximum Then
             MessageBox.Show("A maximum of " + ThermalProperty.MaximumProperties.ToString + " thermal properties are allowed. New property not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5318,6 +5320,7 @@ Public Class CeditMain
             myCompartments.Add(aCompartment)
             CurrentCompartment = myCompartments.Count - 1
             UpdateGUI.Geometry(CurrentCompartment)
+            CompName.Select()
         Else
             MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5330,6 +5333,7 @@ Public Class CeditMain
             CurrentCompartment = myCompartments.Count - 1
             myCompartments(myCompartments.Count - 1).Name = "Comp " + myCompartments.Count.ToString
             UpdateGUI.Geometry(CurrentCompartment)
+            CompName.Select()
         ElseIf CurrentCompartment + 1 >= Compartment.MaximumCompartments Then
             MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5493,6 +5497,7 @@ Public Class CeditMain
             myHVents.Add(aVent)
             CurrentHVent = myHVents.Count - 1
             UpdateGUI.HVents(CurrentHVent)
+            HVentName.Select()
         Else
             MessageBox.Show("A maximum of " + Vent.MaximumHVents.ToString + " vents are allowed. New vent was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5504,6 +5509,7 @@ Public Class CeditMain
             myHVents.Copy(CurrentHVent, myHVents.Count - 1)
             CurrentHVent = myHVents.Count - 1
             UpdateGUI.HVents(CurrentHVent)
+            HVentName.Select()
         Else
             MessageBox.Show("A maximum of " + myHVents.Maximum.ToString + " vents are allowed. New vent not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5602,6 +5608,7 @@ Public Class CeditMain
             myVVents.Add(aVent)
             CurrentVVent = myVVents.Count - 1
             UpdateGUI.VVents(CurrentVVent)
+            VVentName.Select()
         Else
             MessageBox.Show("A maximum of " + myVVents.Maximum.ToString + " vents are allowed. New vent was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5613,6 +5620,7 @@ Public Class CeditMain
             myVVents.Copy(CurrentVVent, myVVents.Count - 1)
             CurrentVVent = myVVents.Count - 1
             UpdateGUI.VVents(CurrentVVent)
+            VVentName.Select()
         Else
             MessageBox.Show("A maximum of " + myVVents.Maximum.ToString + " vents are allowed. New vent not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5685,6 +5693,7 @@ Public Class CeditMain
             myMVents.Add(aVent)
             CurrentMVent = myMVents.Count - 1
             UpdateGUI.MVents(CurrentMVent)
+            MVentName.Select()
         Else
             MessageBox.Show("A maximum of " + myMVents.Maximum.ToString + " vents are allowed. New vent was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5696,6 +5705,7 @@ Public Class CeditMain
             myMVents.Copy(CurrentMVent, myMVents.Count - 1)
             CurrentMVent = myMVents.Count - 1
             UpdateGUI.MVents(CurrentMVent)
+            MVentName.Select()
         Else
             MessageBox.Show("A maximum of " + myMVents.Maximum.ToString + " vents are allowed. New vent not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5793,6 +5803,7 @@ Public Class CeditMain
                     myFires.Add(aFireInstance)
                     CurrentFire = myFires.Count - 1
                     UpdateGUI.Fires(CurrentFire)
+                    FireInstanceName.Select()
                 End If
             ElseIf sender Is FireAdd Then
                 Dim aFire As New Fire()
@@ -5805,6 +5816,7 @@ Public Class CeditMain
                 myFires.Add(aFireInstance)
                 CurrentFire = myFires.Count - 1
                 UpdateGUI.Fires(CurrentFire)
+                FireInstanceName.Select()
             End If
         End If
     End Sub
@@ -5936,6 +5948,7 @@ Public Class CeditMain
             myTargets.Add(aTarget)
             CurrentTarget = myTargets.Count - 1
             UpdateGUI.Targets(CurrentTarget)
+            TargetName.Select()
         Else
             MessageBox.Show("A maximum of " + myTargets.Maximum.ToString + " targets are allowed. New target was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -5948,6 +5961,7 @@ Public Class CeditMain
             CurrentTarget = myTargets.Count - 1
             myTargets(myTargets.Count - 1).Name = "Targ " + myTargets.Count.ToString
             UpdateGUI.Targets(CurrentTarget)
+            TargetName.Select()
         Else
             MessageBox.Show("A maximum of " + myTargets.Maximum.ToString + " Targets are allowed. New Target not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -6072,6 +6086,7 @@ Public Class CeditMain
             myDetectors.Add(aDetector)
             CurrentDetector = myDetectors.Count - 1
             UpdateGUI.Detectors(CurrentDetector)
+            DetectorName.Select()
         Else
             MessageBox.Show("A maximum of " + myDetectors.Maximum.ToString + " Detectors are allowed. New Detector was not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
@@ -6083,6 +6098,7 @@ Public Class CeditMain
             myDetectors.Copy(CurrentDetector, myDetectors.Count - 1)
             CurrentDetector = myDetectors.Count - 1
             UpdateGUI.Detectors(CurrentDetector)
+            DetectorName.Select()
         Else
             MessageBox.Show("A maximum of " + myDetectors.Maximum.ToString + " Detectors are allowed. New Detector not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If

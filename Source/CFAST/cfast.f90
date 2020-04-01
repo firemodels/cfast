@@ -1,10 +1,7 @@
 
-! --------------------------- cfast -------------------------------------------
+    !> \brief   main program for cfast
 
     program cfast
-
-    !     Routine: cfast (main program)
-    !     Purpose: main program for the model
 
     !     Permission is hereby granted, free of charge, to any person
     !     obtaining a copy of this software and associated documentation
@@ -97,14 +94,14 @@
 5010 format ('Total time steps = ',i10)
 
     end program cfast
-
+    
 ! --------------------------- cfastexit -------------------------------------------
 
-    subroutine cfastexit (name, errorcode)
+!> \brief   called when CFAST exits, printing an error code if necessary
+!> \param   name        routine name calling for exit
+!> \param   errorcode   numeric code indicating which call to cfastexit in routine
 
-    ! called when CFAST exits, printing an error code if necessary
-    ! inputs    name        routine name calling for exit
-    !           errorcode   numeric code indicating which call to cfastexit in routine
+    subroutine cfastexit (name, errorcode)
 
     use output_routines, only: closeoutputfiles, delete_output_files
     use setup_data, only: validation_flag, iofill, iofilkernel, stopfile

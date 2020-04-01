@@ -20,17 +20,16 @@ module conduction_routines
 
 ! --------------------------- conduction -------------------------------------------
 
-    subroutine conduction(update,dt,fluxes_total,delta)
-
-    ! interface between calculate_residuals and the conduction calculation. for each active wall surface in each routine this
-    ! routine calculates the residual function
-    !     q'' + k dt/dx, which when zero is simply fourier's law of heat conduction.
+!> \brief   interface between calculate_residuals and the conduction calculation. for each active wall surface in each routine this
+!>          routine calculates the residual function
+!> \brief   q'' + k dt/dx, which when zero is simply fourier's law of heat conduction.
     
-    ! inputs     update: we don't keep solution unless update is 1 or 2. if update is 2 then
-    !                    we don't calculate delta or use fluxes_total
-    !            dt: time step interval from last valid solution point
-    !            fluxes_total: total flux striking walls
-    ! output     delta: the residual of q'' + k dt/dx
+!> \param   update (input): keep solution if update is 1 or 2. if update is 2 then we don't calculate delta or use fluxes_total
+!> \param   dt (input): time step interval from last valid solution point
+!> \param   fluxes_total (output): total flux striking walls
+!> \param   delta: (output): the residual of q'' + k dt/dx
+    
+    subroutine conduction(update,dt,fluxes_total,delta)
 
     integer, intent(in) :: update
     real(eb), intent(in) :: dt, fluxes_total(mxrooms,nwal)
@@ -155,26 +154,26 @@ module conduction_routines
        tgrad,tderv)
 
 
-    ! handles cfast conduction for compartment surfaces and planar targets
+!> \brief   handles cfast conduction for compartment surfaces and planar targets
     
-    ! inputs  update     we don't keep solution unless update is 1 or 2
-    !           tempin   temperature at interior wall
-    !           tempout  temperature at exterior wall
-    !           dt       time step interval from last valid solution point
-    !           wk       wall thermal conductivity
-    !           wspec    wall specific heat
-    !           wrho     wall density
-    !           walldx   wall position points
-    !           numnode  number of nodes in each slab
-    !           nslab    number of slabs
-    !           wfluxin  flux striking interior wall
-    !           wfluxout flux striking exterior wall
-    !           iwbound  type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
-    !                    on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
-    !           tderv    partial of temperature gradient with respect to wall surface temperature.
-    !                    this number is used to calculate wall jacobian elements.
-    ! outputs  wtemp     wall temperature profile
-    !          tgrad     temperature gradient
+!> \param   update (input): we don't keep solution unless update is 1 or 2
+!> \param   tempin (input): temperature at interior wall
+!> \param   tempout (input): temperature at exterior wall
+!> \param   dt (input):  time step interval from last valid solution point
+!> \param   wk (input): wall thermal conductivity
+!> \param   wspec (input): wall specific heat
+!> \param   wrho (input): wall density
+!> \param   walldx (input): wall position points
+!> \param   numnode (input): number of nodes in each slab
+!> \param   nslab (input): number of slabs
+!> \param   wfluxin (input): flux striking interior wall
+!> \param   wfluxout (input): flux striking exterior wall
+!> \param   iwbound (input): type of boundary condition for exterior wall (1=constant temperature, 2=insulated, 3=flux based
+!>                           on ambient temperature on outside wall, 4=flux on both interior and exterior walls)
+!> \param   tderv (input): partial of temperature gradient with respect to wall surface temperature.
+!>                         this number is used to calculate wall jacobian elements.
+!> \param   wtemp (output): wall temperature profile
+!> \param   tgrad (output): temperature gradient
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*), tempin, tempout, dt, wfluxin, wfluxout
     integer, intent(in) :: update, nslab, iwbound, numnode(*)

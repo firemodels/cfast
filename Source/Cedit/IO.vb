@@ -3553,6 +3553,8 @@ Module IO
                     ln += " FYI = '" + aVent.FYI + "'"
                 End If
                 PrintLine(IO, ln)
+                ln += " /"
+                PrintLine(IO, ln)
                 aVent.Changed = False
             Next
         End If

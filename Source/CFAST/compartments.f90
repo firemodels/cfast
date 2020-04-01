@@ -23,14 +23,13 @@
 
 ! --------------------------- layer_mixing -------------------------------------------
 
-    subroutine layer_mixing (flows_layer_mixing)
-
-    ! interface between calculate_residuals and single line layer mixing model.
-    ! loops over room setting up varibles, does calculation and fills in data
-    ! structures with results.
+!> \brief   interface between calculate_residuals and single line layer mixing model.
+!> \brief   loops over room setting up varibles, does calculation and fills in data structures with results.
     
-    ! outputs     flows_layer_mixing      net enthalphy and mass into each layer
+!> \param   flows_layer_mixing (output): net enthalphy and mass into each layer
 
+
+    subroutine layer_mixing (flows_layer_mixing)
 
     real(eb), intent(out) :: flows_layer_mixing(mxrooms, ns+2, 2)
 
@@ -75,13 +74,12 @@
 
 ! --------------------------- synchronize_species_mass -------------------------------------------
 
+!> \brief   resyncronize the total mass of the species with that of the total mass to insure overall and individual mass balance
+
+!> \param   ibeg (input): the point at which species are started in solver array
+!> \param   pdif (output): the solver array to synchronize_species_mass
+
     subroutine synchronize_species_mass (pdif,ibeg)
-
-    ! resyncronize the total mass of the species with that of the total mass to insure overall and individual mass balance
-
-    ! input   ibeg   the point at which species are started in p array
-    ! output  pdif   the p array to synchronize_species_mass
-
     integer, intent(in) :: ibeg
     real(eb), intent(out) :: pdif(*)
 
@@ -166,14 +164,14 @@
 
 ! --------------------------- room_connections -------------------------------------------
 
-    subroutine room_connections (tsec)
-
-    ! determines whether flow from each room can reach the outside (perhaps through intermediate rooms)
-    ! via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an
-    ! initial pressure solution.
+!> \brief   determines whether flow from each room can reach the outside (perhaps through intermediate rooms)
+!> \        via horizontal or vertical vents.  if a room is isolated from the outside then snsqe has trouble finding an
+!> \        initial pressure solution.
     
-    ! input  tsec: current simulation time
+!> \param   tsec (input): current simulation time
 
+    subroutine room_connections (tsec)
+    
     real(eb), intent(in) :: tsec
 
     real(eb) :: fraction, height, width, avent
@@ -253,18 +251,18 @@
 
 ! ---------------------------- wall_opening_fraction -------------------------------------------
 
-    subroutine wall_opening_fraction (tsec)
-
-    ! calculate the opening ratio of a surface
+!> \brief   calculate the ratio of opening area to surface area for a surface
     
-    ! input  tsec: current simulation time
+!> \param   tsec (input): current simulation time
+
+    subroutine wall_opening_fraction (tsec)
 
     !     note:
     !     surface number associated with ceiling, upper front, upper right, upper rear, upper left
     !                                       lower front, lower right, lower rear, lower left, floor
     !     is denoted as 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 and this is different than logic in target subroutine
 
-    real(eb), intent(in) :: tsec          ! current simulation
+    real(eb), intent(in) :: tsec          ! current simulation time
     integer :: i, j, k                    ! counter
     integer :: side                       ! surface number (10 surfaces in total)
     integer :: map(4) = (/3, 4, 1, 2/)    ! surface correction mapping

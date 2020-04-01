@@ -312,21 +312,21 @@ module conduction_routines
 
 ! --------------------------- cylindrical_conductive_flux -------------------------------------------
 
-    subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nnodes,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
-
-    ! handles conduction calculation for cylindrical coordinates (for targets)
+!> \brief   handles conduction calculation for cylindrical coordinates (for targets)
     
-    ! inputs  iwbound  boundary condition. if 3, contstant temperature; otherwise flux
-    !         tempin   temperature at cylinder surface
-    !         wtemp    cable temperature profile
-    !         nnodes   number of nodes
-    !         wfluxin  flux striking cable
-    !         dt       time step interval from last valid solution point
-    !         wk       cable thermal conductivity
-    !         wrho     cable density
-    !         wspec    cable specific heat
-    !         diam     cable diameter
-    ! output  tgrad    temperature gradient
+!> \param   iwbound (input): boundary condition. if 3, contstant temperature; otherwise flux
+!> \param   tempin (input): temperature at cylinder surface
+!> \param   wtemp (input): cable temperature profile
+!> \param   nnodes (input): number of nodes
+!> \param   wfluxin (input): flux striking cable
+!> \param   dt (input): time step interval from last valid solution point
+!> \param   wk (input): cable thermal conductivity
+!> \param   wrho (input): cable density
+!> \param   wspec (input): cable specific heat
+!> \param   diam (input): cable diameter
+!> \param   tgrad (output): temperature gradient
+
+    subroutine cylindrical_conductive_flux (iwbound,tempin,wtemp,nnodes,wfluxin,dt,wk,wrho,wspec,diam,tgrad)
 
     integer, intent(in) :: nnodes, iwbound
     real(eb), intent(in)  :: dt, wrho, wk, wspec, diam, tempin
@@ -429,13 +429,13 @@ module conduction_routines
 
     subroutine get_cylinder_temperature(x,wtemp,nx,rad,tempx)
     
-    ! determines interior temperature of cylindrical target at specified depth
+!> \brief   determines interior temperature of cylindrical target at specified depth
     
-    ! arguments: x     desired depth for internal temperature
-    !            wtemp temperatures at nx points over radius of cylinder
-    !            nx    number of data points
-    !            rad   radius of cylinder
-    !            tempx (output) internal temperature
+!> \param   x (input): desired depth for internal temperature
+!> \param   wtemp (input):temperatures at nx points over radius of cylinder
+!> \param   nx (input):number of data points
+!> \param   rad (input):radius of cylinder
+!> \param   tempx (output): internal temperature
 
     real(eb), intent(in) :: x, rad
     integer, intent(in) :: nx

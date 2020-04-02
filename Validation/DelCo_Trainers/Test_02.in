@@ -26,7 +26,7 @@
 &VENT TYPE = 'WALL' ID = 'East North Door' COMP_IDS = 'Comp 3' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
   CRITERION = 'TIME' T = 0, 538, 539 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.05 /
 &VENT TYPE = 'WALL' ID = 'South Door' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 604, 605 F = 0, 0, 1 FACE = 'LEFT' OFFSET = 2.6 /
+  CRITERION = 'TIME' T = 0, 604, 605 F = 0.15, 0.15, 1 FACE = 'LEFT' OFFSET = 2.6 /
 &VENT TYPE = 'WALL' ID = 'North East Door' COMP_IDS = 'Comp 2', 'Comp 3' TOP = 2, BOTTOM = 0, WIDTH = 0.9
   FACE = 'RIGHT' OFFSET = 1.075 /
 &VENT TYPE = 'WALL' ID = 'South East Door' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 2, BOTTOM = 0, WIDTH = 0.9

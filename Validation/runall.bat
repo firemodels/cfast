@@ -4,6 +4,7 @@ echo Running CFAST simulations
 if "%1"=="" goto Help
 if %1==ALL goto ALL
 if %1==ATF goto ATF
+if %1==DelCo_Trainers goto DelCo_Trainers
 if %1==Dunes_2000 goto Dunes2000
 if %1==Fleury_Heat_Flux goto FLeury_Heat_Flux
 if %1==FM_NBS goto FM_NBS
@@ -46,6 +47,14 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe ATF_Corridors_500_kW -
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe ATF_Corridors_Mix_kW -V
 cd ..
 if %1==ATF goto end
+
+:DelCo_Trainers
+echo DelCo Trainers Tests
+cd DelCo_Trainers
+call ..\cleancfast.bat
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_02 -V
+cd ..
+if %1==DelCo_Trainers goto end
 
 :Fleury_Heat_Flux
 echo Fleury Heat Flux Tests

@@ -24,11 +24,11 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'West Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 418, 419 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2.15 /
+  CRITERION = 'TIME' T = 0, 416, 417 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2.15 /
 &VENT TYPE = 'WALL' ID = 'East Double Door' COMP_IDS = 'Comp 3' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 538, 539 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.05 /
+  CRITERION = 'TIME' T = 0, 536, 537 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.05 /
 &VENT TYPE = 'WALL' ID = 'South Door' COMP_IDS = 'Comp 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 604, 605 F = 0.15, 0.15, 1 FACE = 'LEFT' OFFSET = 2.6 /
+  CRITERION = 'TIME' T = 0, 597, 598 F = 0.15, 0.15, 1 FACE = 'LEFT' OFFSET = 2.6 /
 &VENT TYPE = 'WALL' ID = 'North East Door' COMP_IDS = 'Comp 2', 'Comp 3' TOP = 2, BOTTOM = 0, WIDTH = 0.9
   FACE = 'RIGHT' OFFSET = 1.075 /
 &VENT TYPE = 'WALL' ID = 'South East Door' COMP_IDS = 'Comp 1', 'Comp 2' TOP = 2, BOTTOM = 0, WIDTH = 0.9
@@ -46,23 +46,23 @@
 &CHEM ID = 'Propane Fire 1' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 1' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 1', DATA = 0, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 5, 441.5558, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 961, 441.5558, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 960, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 5, 521.8, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 1018, 521.8, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 1019, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 2' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 2' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 2', DATA = 0, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
 &TABL ID = 'Propane Fire 2', DATA = 181, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 186, 441.4498, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 840, 441.4498, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 841, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 186, 411.4498, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 898, 411.4, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 899, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 3' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 3' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 3', DATA = 0, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 261, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 366, 100.4, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 720, 100.4, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 721, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 361, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 366, 170.6, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 778, 170.6, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 779, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
  
 !! Devices
 &DEVC ID = 'TC_A1_1' COMP_ID = 'Comp 1' LOCATION = 1.8, 1.3, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.2329293, 0.8540741, -0.4650822 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /

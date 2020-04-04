@@ -53,6 +53,8 @@ echo DelCo Trainers Tests
 cd DelCo_Trainers
 call ..\cleancfast.bat
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_02 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_03 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_04 -V
 cd ..
 if %1==DelCo_Trainers goto end
 

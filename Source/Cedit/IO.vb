@@ -3552,7 +3552,6 @@ Module IO
                 If aVent.FYI <> "" Then
                     ln += " FYI = '" + aVent.FYI + "'"
                 End If
-                PrintLine(IO, ln)
                 ln += " /"
                 PrintLine(IO, ln)
                 aVent.Changed = False
@@ -3627,6 +3626,7 @@ Module IO
                 If aVent.FYI <> "" Then
                     ln += " FYI = '" + aVent.FYI + "'"
                 End If
+                ln += " /"
                 PrintLine(IO, ln)
                 aVent.Changed = False
             Next
@@ -3873,6 +3873,12 @@ Module IO
                 PrintLine(IO, ln)
             Next
         End If
+
+        ' Writing end of file
+
+        PrintLine(IO, " ")
+        ln = "&TAIL /"
+        PrintLine(IO, ln)
 
         FileClose(IO)
 

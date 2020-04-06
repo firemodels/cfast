@@ -69,8 +69,7 @@ Public Class Environment
 
     Public Sub New()
         aTitle = "CFAST Simulation"
-        aVersion = 7300
-
+        aVersion = Convert.ToInt32(My.Application.Info.Version.Major.ToString) * 1000 + Convert.ToInt32(My.Application.Info.Version.Minor.ToString) * 100
         aSimulationTime = 3600
         aOutputInterval = 60
         aSpreadsheetInterval = 15

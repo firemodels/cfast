@@ -160,7 +160,8 @@ module cfast_types
                                                         ! connects to the outside (perhaps through other intermediate rooms)
         logical :: is_hvac                              ! true if there is an HVAC vent connection in the room
         
-        real(eb), dimension(2) :: leak_areas            ! leakage area in m^2 for leak_areas(1) walls and leak_areas(2) floor
+        real(eb), dimension(2) :: leak_area_ratios      ! leakage area ratio in m^2/m^2; (1) walls and (2) floor
+        real(eb), dimension(2) :: leak_areas            ! leakage area in m^2; (1) walls and (2) floor
 
         ! cross-sectional area variables
         integer :: nvars                                ! number of data points for variable cross-secitonal area

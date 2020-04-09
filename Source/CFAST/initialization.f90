@@ -226,7 +226,7 @@ module initialization_routines
     do iroom = 1, n_rooms
         roomptr => roominfo(iroom)
         ! wall leakage
-        if (roomptr%leak_areas(1) /= 0.0_eb) then
+        if (roomptr%leak_area_ratios(1) /= 0.0_eb) then
             n_leaks = n_leaks + 1
             counter = counter + 1
             ventptr => leakinfo(n_leaks)
@@ -237,7 +237,7 @@ module initialization_routines
             ventptr%sill   = roomptr%cheight*0.05
             ventptr%soffit = roomptr%cheight*0.95
             area = 2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight
-            ventptr%width  = area*roomptr%leak_areas(1)/(ventptr%soffit-ventptr%sill)
+            ventptr%width  = area*roomptr%leak_area_ratios(1)/(ventptr%soffit-ventptr%sill)
             ventptr%offset(1) = 0._eb
             ventptr%offset(2) = 0._eb
             ventptr%face=1
@@ -251,7 +251,7 @@ module initialization_routines
         end if
         
         ! floor leakage
-        if (roomptr%leak_areas(2) /= 0.0_eb) then
+        if (roomptr%leak_area_ratios(2) /= 0.0_eb) then
             n_leaks = n_leaks + 1
             counter = counter + 1
             ventptr => leakinfo(n_leaks)
@@ -262,7 +262,7 @@ module initialization_routines
             ventptr%sill   = 0._eb
             ventptr%width = 0.9_eb * (roomptr%cwidth + roomptr%cdepth)/2
             area = roomptr%cwidth * roomptr%cdepth
-            ventptr%soffit  = area*roomptr%leak_areas(2)/ventptr%width
+            ventptr%soffit  = area*roomptr%leak_area_ratios(2)/ventptr%width
             ventptr%offset(1) = 0._eb
             ventptr%offset(2) = 0._eb
             ventptr%face=1

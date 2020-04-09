@@ -242,11 +242,7 @@ CFAST can automatically calculate leakage between one or more compartments and t
 \item[Floor Leakage] (default units: m$^2$/m$^2$): Leakage area ratio input as the leakage are per unit floor area.
 \end {description}
 
-For wall leakage, the model creates a vent on the wall with a sill height of 5 \% of the compartment ceiling height and a soffit of 95 \% of the the compartment ceiling height.  Width of the vent is determined from a calculated vent area (the specified leakage area ratio times the total wall area of the compartment) divided by the vent height (90 \% of the compartment ceiling height).
-
-For floor leakage, the model creates a vent on the wall with a width of 90 \% of the average wall width (the sum of the compartment width and the compartment depth divided by two) with the sill at the floor and the soffit height from a calculated vent area (the specified leakage area ratio times the total floor area of the compartment) divided by the vent width (90 \% of the average compartment wall width).
-
-For reference, the following table is taken from the \textit{handbook of Smoke Control Engineering} \cite{Klote:2012}.
+For reference, the following table is taken from the \textit{Handbook of Smoke Control Engineering} \cite{Klote:2012}.
 
 \begin{table}[ht]
 \begin{center}

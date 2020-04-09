@@ -441,13 +441,13 @@
     integer,dimension(3) :: grid
     real(eb) :: depth, height ,width
     real(eb), dimension(3) :: origin
-    real(eb), dimension(2) :: leak_area
+    real(eb), dimension(2) :: leak_area_ratio, leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
     logical :: hall, shaft
     character(len=64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
     character(len=128) :: fyi
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
-        ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area
+        ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area_ratio, leak_area
 
     ios = 1
 
@@ -556,6 +556,7 @@
             roomptr%hall = hall
             
             ! leakage
+            roomptr%leak_area_ratios = leak_area_ratio
             roomptr%leak_areas = leak_area
 
         end do read_comp_loop
@@ -578,7 +579,8 @@
     width                   = 0.0_eb
     grid(:)                 = default_grid
     origin(:)               = 0.0_eb
-    leak_area(:)            = 0.0_eb
+    leak_area_ratio(:)      = 0.0_eb
+    leak_area(:)            = 0.0
     hall                    = .false.
     shaft                   = .false.
 

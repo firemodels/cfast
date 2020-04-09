@@ -717,8 +717,8 @@ module output_routines
         roomptr => roominfo(i)
         shaft = '' ; if (roomptr%shaft) shaft = '*'
         hall = '' ; if (roomptr%hall) hall = '*'
-        wallleakarea = (2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight) * roomptr%leak_areas(1)
-        floorleakarea = (roomptr%cwidth * roomptr%cdepth) * roomptr%leak_areas(2)
+        wallleakarea = (2 * (roomptr%cwidth + roomptr%cdepth) * roomptr%cheight) * roomptr%leak_area_ratios(1)
+        floorleakarea = (roomptr%cwidth * roomptr%cdepth) * roomptr%leak_area_ratios(2)
         write (iofilo,5010) i, trim(roomptr%id), roomptr%cwidth, roomptr%cdepth, roomptr%cheight, roomptr%z0, roomptr%z1, &
             shaft, hall, wallleakarea, floorleakarea
     end do

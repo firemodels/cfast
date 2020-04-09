@@ -1068,13 +1068,13 @@ Module IO
                         Else
                             myErrors.Add("In COMP namelist for ORIGIN input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
-                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA" Then
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA_RATIO" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 2 And max <= 2 Then
                             leaks(1) = NMList.ForNMListVarGetNum(i, j, 1)
                             leaks(2) = NMList.ForNMListVarGetNum(i, j, 2)
                         Else
-                            myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                            myErrors.Add("In COMP namelist for LEAK_AREA_RATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
                     ElseIf NMList.ForNMListGetVar(i, j) = "FYI" Then
                         fyi = NMList.ForNMListVarGetStr(i, j, 1)
@@ -1119,7 +1119,7 @@ Module IO
                         aComp.WallLeak = leaks(1)
                         aComp.FloorLeak = leaks(2)
                     Else
-                        myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        myErrors.Add("In COMP namelist for LEAK_AREARATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
                     End If
                     aComp.FYI = fyi
                     aComp.Changed = False
@@ -3417,7 +3417,7 @@ Module IO
                 ln = "      ORIGIN = " + aComp.RoomOriginX.ToString + ", " + aComp.RoomOriginY.ToString + ", " + aComp.RoomOriginZ.ToString
                 ln += " GRID = " + aComp.xGrid.ToString + ", " + aComp.yGrid.ToString + ", " + aComp.zGrid.ToString
                 If aComp.WallLeak > 0 Or aComp.FloorLeak > 0 Then
-                    ln += " LEAK_AREA = " + aComp.WallLeak.ToString + ", " + aComp.FloorLeak.ToString
+                    ln += " LEAK_AREA_RATIO = " + aComp.WallLeak.ToString + ", " + aComp.FloorLeak.ToString
                 End If
                 If aComp.FYI <> "" Then
                     ln += " FYI = '" + aComp.FYI + "'"

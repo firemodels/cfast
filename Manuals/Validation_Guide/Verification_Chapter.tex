@@ -283,6 +283,8 @@ With the same 5 kW methane flame, we add a second compartment with mechanical ve
 \label{fig_trace_2}
 \end{figure}
 
+\FloatBarrier
+
 \section{Ventilation}
 \label{ventilation}
 
@@ -306,6 +308,7 @@ Figure~\ref{fig:vent1} shows how the pressure changes as air flows through the c
 \label{fig:vent1}
 \end{figure}
 
+\FloatBarrier
 
 \subsection{Steady-State Air Flow}
 \label{sec:vent2}
@@ -322,6 +325,7 @@ A similar setup to the one used in Section~\ref{sec:specmass4} is employed here.
 \label{ventilation_2TP}
 \end{figure}
 
+\FloatBarrier
 
 \subsection{Non Steady-State Air Flow}
 \label{ventilation_3}
@@ -336,6 +340,8 @@ The same setup that was constructed in Section~\ref{sec:vent2} is used again in 
 \caption[Results of the test case {\ct ventilation\_3.in}]{Expected and CFAST calculated values for pressure and temperature of the first compartment for the case {\ct ventilation\_3.in}.}
 \label{ventilation_3TP}
 \end{figure}
+
+\FloatBarrier
 
 \subsection{Velocity Profile of Air Flowing Through a Doorway}
 \label{ventilation_4}
@@ -362,6 +368,7 @@ where $\delta A$ represents the infinitesimal area of the door segment and $\rho
 \label{fig:vel}
 \end{figure}
 
+\FloatBarrier
 
 \subsection{Flow Through Different Vent Types}
 \label{VVent_Tests}
@@ -377,6 +384,7 @@ A fan is supplies air into a compartment at a constant rate of 0.1 m$^3$/s (0.12
 \label{fig:vvent}
 \end{figure}
 
+\FloatBarrier
 
 \subsection{Surface Opening Fraction for Vents}
 \label{Surface_Opening_Fraction}
@@ -387,7 +395,7 @@ This case tests the computation of the surface opening fraction. A three-compart
 \end{equation}
 where \textit{N} is the total number of vents, \textit{A\textsubscript{opening}} is the opening area associated with a vent, \textit{A\textsubscript{total}} is the total surface area. It should be noted that each compartment has 10 surfaces.
 
-For this verification case, the upper layer thickness for each compartment is set to be 1~m and the vent opening fraction for all vents is set to be 0, 0.5, and 1 at  0~sec, 0.5~sec, and 1~sec, respectively. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figures~\ref{SOF_Result_1}, \ref{SOF_Result_2}, \ref{SOF_Result_3}, and \ref{SOF_Result_4}, respectively. Note that vent opening fraction is different than surface opening fraction.
+For this verification case, the upper layer thickness for each compartment is set to be 1~m and the vent opening fraction for all vents is set to be 0, 0.5, and 1 at  0~sec, 0.5~sec, and 1~sec, respectively. The analytical solutions and CFAST results associated with Compartment 1 (upper and lower layers), Compartment 2, and Compartment 3 are shown in Figure~\ref{SOF_Result_1}. Note that the vent opening fraction is different than surface opening fraction.
 
 \begin{figure}[!ht]
 \centering
@@ -396,55 +404,36 @@ For this verification case, the upper layer thickness for each compartment is se
 \label{SOF_GEO}
 \end{figure}
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_1}
-\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 1 upper layer.}
+\begin{figure}[p]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_1} &
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_2} \\
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_3} &
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_4} \\
+\end{tabular*}
+\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in}.}
 \label{SOF_Result_1}
 \end{figure}
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_2}
-\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 1 lower layer.}
-\label{SOF_Result_2}
-\end{figure}
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_3}
-\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 2.}
-\label{SOF_Result_3}
-\end{figure}
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/surface_opening_fraction_4}
-\caption[Results of the test case {\ct surface\_opening\_fraction\_1.in}]{Expected and CFAST calculated surface opening fraction values for the case {\ct surface\_opening\_fraction\_1.in} associated with the Compartment 3.}
-\label{SOF_Result_4}
-\end{figure}
+\FloatBarrier
 
 \subsection{Leakage}
 \label{Leakage}
 
-Air is supplied to a single compartment at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Wall or floor leakage is specified in two test cases. Flow out the leak should equal the specified flow in through the mechanical vent.  The expected mass flow rate is just the specified volumetric flow times the density of air at ambient conditions for an expecte value of 0.012 kg/s. The expected results and CFAST results for the wall leak and floor leaks are shown in Figures~\ref{Leak_Result_1} and \ref{Leak_Result_2}, respectively.
+Air is supplied to a single compartment (1 m x 1 m x 1 m) at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Floor leakage is specified as 0.01 m$^2$/m$^2$. Flow out the leak should equal the specified flow in through the mechanical vent. The expected mass flow rate is just the specified volumetric flow (0.01~m$^3$/s) times the density of air at ambient conditions (1.2 kg/m$^3$) for an expected value of 0.012 kg/s. With a small leak at the floor, Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_7} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dv = C A \sqrt{2 \Delta P}$ or $\Delta P = \rho/2 \times \left( \dv/(C A) \right)^2 = 1.2/2 \times \left( 0.01/(0.7 0.01) \right)^2 = 1.22$ Pa. In CFAST, the vent flow coefficient is taken to be 0.7.
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/Leakage_1}
+The expected results and CFAST results s are shown in Figures~\ref{Leak_Results}.
+
+\begin{figure}[h]
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Leakage_2_Flow} &
+\includegraphics[height=2.15in]{SCRIPT_FIGURES/Verification/Leakage_2_Pressure} \\
+\end{tabular*}
 \caption[Results of the test case {\ct Leakage\_1.in}]{Expected and CFAST calculated wall leakage for the case {\ct Leakage\_1.in}.}
-\label{Leak_Result_1}
+\label{Leak_Results}
 \end{figure}
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=3.0in]{SCRIPT_FIGURES/Verification/Leakage_2}
-\caption[Results of the test case {\ct Leakage\_2.in}]{Expected and CFAST calculated floor leakage for the case {\ct Leakage\_2.in}.}
-\label{Leak_Result_2}
-\end{figure}
-
-
-\clearpage
+\FloatBarrier
 
 
 \section{Heat Transfer}

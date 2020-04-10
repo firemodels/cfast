@@ -420,9 +420,9 @@ For this verification case, the upper layer thickness for each compartment is se
 \subsection{Leakage}
 \label{Leakage}
 
-Air is supplied to a single compartment (1 m x 1 m x 1 m) at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Floor leakage is specified as 0.01 m$^2$/m$^2$. Flow out the leak should equal the specified flow in through the mechanical vent. The expected mass flow rate is just the specified volumetric flow (0.01~m$^3$/s) times the density of air at ambient conditions (1.2 kg/m$^3$) for an expected value of 0.012 kg/s. With a small leak at the floor, Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_7} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dv = C A \sqrt{2 \Delta P}$ or $\Delta P = \rho/2 \times \left( \dv/(C A) \right)^2 = 1.2/2 \times \left( 0.01/(0.7 0.01) \right)^2 = 1.22$ Pa. In CFAST, the vent flow coefficient is taken to be 0.7.
+Air is supplied to a single compartment (1 m x 1 m x 1 m) at ambient conditions via a single mechanical vent with a flowrate of 0.01 m$^3$/s. Floor leakage is specified as 0.01 m$^2$/m$^2$. Flow out the leak should equal the specified flow in through the mechanical vent. The expected mass flow rate is just the specified volumetric flow (0.01~m$^3$/s) times the density of air at ambient conditions (1.2 kg/m$^3$) for an expected value of 0.012 kg/s. With a small leak at the floor, Equation 4.5 from the Technical Reference Guide \cite{CFAST_Tech_Guide_7} can be simplified since $\Delta P_t \approxeq \Delta P_b$ so that $\dv = C A \sqrt{2 \Delta P/\rho}$ or $\Delta P = \rho/2 \times \left( \dv/(C A) \right)^2 = 1.2/2 \times \left( 0.01/(0.7 \times 0.01) \right)^2 = 1.22$ Pa. In CFAST, the vent flow coefficient is taken to be 0.7.
 
-The expected results and CFAST results s are shown in Figures~\ref{Leak_Results}.
+The expected results and CFAST results are shown in Figures~\ref{Leak_Results}.
 
 \begin{figure}[h]
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}

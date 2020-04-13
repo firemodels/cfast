@@ -7,7 +7,7 @@ This chapter contains a brief description of the experiments that were used for 
 Much of the content follows the FDS Validation Guide \cite{FDS_Validation_Guide_6} and the verification and validation guide for nuclear power plants developed by the US NRC \cite{NRCNUREG1824}. This study focused on the predicted results of the CFAST fire model and did not include an assessment of the user interface for the model.  However, all input files used for the simulations were prepared using the CFAST graphical user interface (GUI) and reviewed for correctness prior to the simulations.  The comparisons between the experiments and model predictions were characterized as open calculations, i.e., the modelers were given detailed descriptions of the test conditions, test geometry, and fire source, but did not modify model inputs from these given conditions to improve model predictions.  As such, the comparisons in this report provide an assessment of the predictive capability of the model, but not an assessment of the ability of different modelers to develop appropriate model inputs.
 
 
-\newpage
+\FloatBarrier
 
 \section{ATF Corridors Experiments}
 
@@ -37,6 +37,30 @@ The burner was located near the end of the first floor away from the stairs. A d
 \end{center}
 \caption{Geometry of the ATF Corridors Experiments.}
 \label{ATF Drawing}
+\end{figure}
+
+\FloatBarrier
+
+
+\section{DelCo Trainer Experiments}
+\label{DelCo_Description}
+
+The NIST Fire Fighting Technology Group conducted a series of experiments in two structures of similar design located at the Delaware County (``DelCo'') Emergency Services Training Center in Sharon Hill, Pennsylvania~\cite{DelCo_TN}. Three propane burners were used to provide the fire source for all experiments, and various sensors were used to collect gas temperature, gas velocity, heat flux, and gas concentration measurements throughout the structure.
+
+The single level structure was instrumented with five bare-bead thermocouple arrays and two gas sample inlet pipes at the locations shown in Fig.~\ref{fig:east_instrumentation}. Both floors of the two level structure were instrumented with three bare-bead thermocouple arrays and one gas sample inlet pipe at the locations shown in Fig.~\ref{fig:west_instrumentation}.
+
+\begin{figure}[!ht]
+\includegraphics[width=\columnwidth]{FIGURES/DelCo_Trainers/East_Structure_Dimensioned_Instrumentation}
+\caption[Instrumentation of the single level DelCo training structure]{Instrumentation of the single level DelCo training structure. The thermocouple arrays are denoted by crossed circles and the gas sampling measurement locations are denoted by hexagons at locations A1 and A4. The burner is denoted by three cross-hatched squares.}
+\label{fig:east_instrumentation}
+\end{figure}
+
+\begin{figure}[p]
+\includegraphics[width=0.94\columnwidth]{FIGURES/DelCo_Trainers/West_Structure_2nd_Floor_Dimensioned_Instrumentation}
+\\~\\
+\includegraphics[width=\columnwidth]{FIGURES/DelCo_Trainers/West_Structure_1st_Floor_Dimensioned_Instrumentation}
+\caption[Instrumentation of the two level DelCo training structure]{Instrumentation of the second floor (top) and first floor (bottom) of the two level DelCo training structure. The thermocouple arrays are denoted by crossed circles and the gas sampling measurement locations are denoted by hexagons at locations A1 and A10. The burner is denoted by three cross-hatched squares.}
+\label{fig:west_instrumentation}
 \end{figure}
 
 \FloatBarrier

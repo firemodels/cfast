@@ -374,6 +374,16 @@ Comp 2         Outside                      0.6667E+02                0.2223E-01
 
 CFAST generates a number of output files in a plain text spreadsheet format.  These files capture a snap shot of the modeling data at an instant of time. This instance is on the Simulation tab discussed in section \ref{info:TIME}. \emph{However}, there are events which can occur in between these reporting periods. Examples are the ignition of objects and the activation of detectors or sprinklers. These are \emph{not} reported in these output files.
 
+Several spreadsheet files are generated with each CFAST simulation:
+
+\begin{enumerate}
+\item \textbf{project\_compartments.csv} contains layer temperature and height, species concentrations, and fire-related outputs.
+\item \textbf{project\_devices.csv} contains outputs for targets and detectors (detailed target info with -V option)
+\item \textbf{project\_masses.csv} contains mass of species in compartment layers and total trace species masses (detailed unburned fuel info with -V flag)
+\item \textbf{project\_vents.csv} contains vent flows (additional flow details with -V option)
+\item \textbf{project\_walls.csv} contains compartment surface temperatures
+\end{enumerate}
+
 \subsection{Primary Output Variables (project\_compartments.csv)}
 
 There are three sets of information in this file. The first includes compartment information such as layer temperature. This is output by compartment and there are entries for each compartment plus a column that indicates the current simulation time:
@@ -477,7 +487,7 @@ The second set of columns pertain to the detector/sprinkler output.
 
 \subsection{Vent Flow (project\_vents.csv)}
 
-The entries in this file pertain to the flow vents such as windows/doors, ceiling/floor vents, mechanical vents, and compartment leakage. 
+The entries in this file pertain to the flow vents such as windows/doors, ceiling/floor vents, mechanical vents, and compartment leakage.
 \begin{description}
 \item[Time] (s)
 \item[Net Inflow] (kg/s): net mass flow into the current compartment through the current horizontal flow (door/windows) vent connected to the current compartment.

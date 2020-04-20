@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = '"Single Room with Furniture (Sect 5, Test 1)"' /
+&HEAD VERSION = 7500, TITLE = '"Single Room with Furniture (Sect 5, Test 1)"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 2000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -38,3 +38,5 @@
 &TABL ID = '1RFURN1_Fire', DATA = 960, 120, 0, 1.12, 0.07490011, 0.2, 0.1158509, 0, 0 /
 &TABL ID = '1RFURN1_Fire', DATA = 1380, 40, 0, 1.12, 0.07490011, 0.2, 0.1158509, 0, 0 /
 &TABL ID = '1RFURN1_Fire', DATA = 2000, 0, 0, 1.12, 0.07490011, 0.2, 0.1158509, 0, 0 /
+ 
+&TAIL /

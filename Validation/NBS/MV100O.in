@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = '"NBS Test MV100O, Closed Corridor Door, No Target Room"' /
+&HEAD VERSION = 7500, TITLE = '"NBS Test MV100O, Closed Corridor Door, No Target Room"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1500 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 1 / 
@@ -54,3 +54,5 @@
 &TABL ID = 'MV100O_Fire', DATA = 10, 110, 0, 0.1156, 0.004747221, 0.01, 0, 0, 0 /
 &TABL ID = 'MV100O_Fire', DATA = 890, 110, 0, 0.1156, 0.004747221, 0.01, 0, 0, 0 /
 &TABL ID = 'MV100O_Fire', DATA = 900, 0, 0, 0.1156, 0.004747221, 0.01, 0, 0, 0 /
+ 
+&TAIL /

@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = '"Plaza Hotel Smoke Movement Tests (#7, 6 Room Case)"' /
+&HEAD VERSION = 7500, TITLE = '"Plaza Hotel Smoke Movement Tests (#7, 6 Room Case)"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 2000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -63,9 +63,9 @@
  
 !! Mechanical Vents
 &VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_1' COMP_IDS = 'Floor 2 Hallway', 'OUTSIDE'
-      AREAS = 0.13, 0.2 HEIGHTS = 0.5, 5.88 FLOW = 0.94 CUTOFFS = 200, 300 OFFSETS = 0, 7.3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+      AREAS = 0.13, 0.2 HEIGHTS = 0.5, 5.88 FLOW = 0.94 CUTOFFS = 200, 300 OFFSETS = 0, 7.3 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
 &VENT TYPE = 'MECHANICAL' ID = 'MechanicalVent_2' COMP_IDS = 'OUTSIDE', 'Elevator Shaft'
-      AREAS = 0.66, 0.66 HEIGHTS = 1, 1 FLOW = 0.33 CUTOFFS = 200, 300 OFFSETS = 0, 0.75 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 / 
+      AREAS = 0.66, 0.66 HEIGHTS = 1, 1 FLOW = 0.33 CUTOFFS = 200, 300 OFFSETS = 0, 0.75 FILTER_TIME = 0 FILTER_EFFICIENCY = 0 /
  
 !! Fires 
 &FIRE ID = 'MULTI'  COMP_ID = 'Floor 2 Hallway', FIRE_ID = 'MULTI_Fire'  LOCATION = 0.95, 14 / 
@@ -76,3 +76,5 @@
 &TABL ID = 'MULTI_Fire', DATA = 420, 1130, 0.25, 0.74, 0.006171682, 0.015, 0, 0, 0 /
 &TABL ID = 'MULTI_Fire', DATA = 1170, 1130, 0.25, 0.74, 0.006171682, 0.015, 0, 0, 0 /
 &TABL ID = 'MULTI_Fire', DATA = 1180, 0, 0.25, 0.74, 0.006171682, 0.015, 0, 0, 0 /
+ 
+&TAIL /

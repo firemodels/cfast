@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'HawaiiTest 2' /
+&HEAD VERSION = 7500, TITLE = 'HawaiiTest 2' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 750 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -26,4 +26,6 @@
 &TABL ID = 'Hawaii_02_Fire', DATA = 728, 0, 0.5, 0.36, 0.016, 0.04, 0, 0, 0 /
  
 !! Devices
-&DEVC ID = 'Targ 1' COMP_ID = 'Bay 1' LOCATION = 36.7, 39.9, 14.7 TYPE = 'PLATE' MATL_ID = 'STEELSHT'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 1' COMP_ID = 'Bay 1' LOCATION = 36.7, 39.9, 14.7 TYPE = 'PLATE' MATL_ID = 'STEELSHT'  NORMAL = 0, 0, -1 TEMPERATURE_DEPTH = 0.00075 DEPTH_UNITS = 'M' /
+ 
+&TAIL /

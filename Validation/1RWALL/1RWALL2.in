@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Single room with wall burn (Test 2)' /
+&HEAD VERSION = 7500, TITLE = 'Single room with wall burn (Test 2)' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 600 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -38,3 +38,5 @@
 &TABL ID = '1RWALL2_Fire', DATA = 480, 2500, 0.5, 2.89, 0.07490011, 0.2, 0.1158509, 0, 0 /
 &TABL ID = '1RWALL2_Fire', DATA = 510, 500, 0.5, 2.89, 0.07490011, 0.2, 0.1158509, 0, 0 /
 &TABL ID = '1RWALL2_Fire', DATA = 530, 0, 0.5, 2.89, 0.07490011, 0.2, 0.1158509, 0, 0 /
+ 
+&TAIL /

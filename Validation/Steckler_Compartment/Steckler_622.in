@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Steckler Compartment Test 622' /
+&HEAD VERSION = 7500, TITLE = 'Steckler Compartment Test 622' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -24,3 +24,5 @@
 &TABL ID = 'Steckler 62 kW_Fire' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Steckler 62 kW_Fire', DATA = 0, 62.9, 0.02, 0.09, 0, 0, 0, 0, 0 /
 &TABL ID = 'Steckler 62 kW_Fire', DATA = 1800, 62.9, 0.02, 0.09, 0, 0, 0, 0, 0 /
+ 
+&TAIL /

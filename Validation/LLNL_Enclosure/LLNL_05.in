@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = '5_TL_50kW' /
+&HEAD VERSION = 7500, TITLE = '5_TL_50kW' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 2500 PRINT = 10 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -30,3 +30,5 @@
 &TABL ID = '50kW_Fire', DATA = 10, 50, 0.2, 0.25, 0.000381965, 0, 0, 0, 0 /
 &TABL ID = '50kW_Fire', DATA = 3000, 50, 0.2, 0.25, 0.000381965, 0, 0, 0, 0 /
 &TABL ID = '50kW_Fire', DATA = 3001, 0, 0.2, 0.25, 0.000381965, 0, 0, 0, 0 /
+ 
+&TAIL /

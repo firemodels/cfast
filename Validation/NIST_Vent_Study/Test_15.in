@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Test_15' /
+&HEAD VERSION = 7500, TITLE = 'Test_15' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 6068 PRINT = 1 SMOKEVIEW = 1 SPREADSHEET = 1 / 
@@ -48,3 +48,5 @@
  
 !! Surface Connections
 &CONN TYPE = 'FLOOR' COMP_ID = 'Comp 2' COMP_IDS = 'Comp 1' / 
+ 
+&TAIL /

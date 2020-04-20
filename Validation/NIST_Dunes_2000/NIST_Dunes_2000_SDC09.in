@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7500, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 180 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -109,3 +109,5 @@
 &DEVC ID = 'SmokeDetector_8' COMP_ID = 'Kitchen' LOCATION = 0.38, 0.38, 2.28  TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
 &DEVC ID = 'SmokeDetector_9' COMP_ID = 'Hallway' LOCATION = 3.64, 0.38, 2.19  TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
 &DEVC ID = 'SmokeDetector_10' COMP_ID = 'Living Room' LOCATION = 6.88, 1.6, 2.28  TYPE = 'SMOKE_DETECTOR' SETPOINT = 23.93346 /
+ 
+&TAIL /

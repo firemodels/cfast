@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = '51_PNE_200kW' /
+&HEAD VERSION = 7500, TITLE = '51_PNE_200kW' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 3000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -43,3 +43,5 @@
  
 !! Surface Connections
 &CONN TYPE = 'FLOOR' COMP_ID = 'Plenum' COMP_IDS = 'Lower Test Cell' / 
+ 
+&TAIL /

@@ -443,11 +443,14 @@
     real(eb), dimension(3) :: origin
     real(eb), dimension(2) :: leak_area_ratio, leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
+    real(eb), dimension(3) :: ceiling_thickness, floor_thickness, wall_thickness
     logical :: hall, shaft
-    character(len=64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
+    character(len=64) :: id
+    character(len=64), dimension(3) :: ceiling_matl_id, floor_matl_id, wall_matl_id
     character(len=128) :: fyi
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
-        ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area_ratio, leak_area
+        ceiling_matl_id, floor_matl_id, wall_matl_id,ceiling_thickness, floor_thickness, wall_thickness, &
+        origin, shaft, width, leak_area_ratio, leak_area
 
     ios = 1
 
@@ -524,21 +527,21 @@
             roomptr%z0      = origin(3)
 
             ! ceiling
-            tcname = ceiling_matl_id
+            tcname = ceiling_matl_id(1)
             if (trim(tcname)/='OFF') then
                 roomptr%surface_on(1) = .true.
                 roomptr%matl(1) = tcname
             end if
 
             ! floor
-            tcname = floor_matl_id
+            tcname = floor_matl_id(1)
             if (trim(tcname)/='OFF') then
                 roomptr%surface_on(2) = .true.
                 roomptr%matl(2) = tcname
             end if
 
             ! walls
-            tcname = wall_matl_id
+            tcname = wall_matl_id(1)
             if (trim(tcname)/='OFF') then
                 roomptr%surface_on(3) = .true.
                 roomptr%matl(3) = tcname

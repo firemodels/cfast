@@ -377,9 +377,11 @@ Public Class ThermalPropertiesCollection
                 Dim aCompartment As Compartment
                 For i = 0 To myCompartments.Count - 1
                     aCompartment = myCompartments.Item(i)
-                    If aCompartment.CeilingMaterial = aShortName Then numUses += 1
-                    If aCompartment.FloorMaterial = aShortName Then numUses += 1
-                    If aCompartment.WallMaterial = aShortName Then numUses += 1
+                    For j = 1 To 3
+                        If aCompartment.CeilingMaterial(j) = aShortName Then numUses += 1
+                        If aCompartment.FloorMaterial(j) = aShortName Then numUses += 1
+                        If aCompartment.WallMaterial(j) = aShortName Then numUses += 1
+                    Next
                 Next
             End If
             If myTargets.Count > 0 Then

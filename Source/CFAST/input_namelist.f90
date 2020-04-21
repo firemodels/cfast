@@ -2980,6 +2980,7 @@ continue
     subroutine set_defaults
 
     id = ' '
+    fyi = ' '
     file_type = ' '
     first_device = ' '
     first_measurement = ' '

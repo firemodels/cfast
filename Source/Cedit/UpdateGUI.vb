@@ -138,17 +138,17 @@ Public Class UpdateGUI
             End If
 
             Dim SaveCompCeiling As String, SaveTargetMaterial As String, SaveFireComp As String
-            SaveCompCeiling = MainWin.CompCeiling.Text
+            SaveCompCeiling = MainWin.CompCeiling1.Text
             SaveTargetMaterial = MainWin.TargetMaterial.Text
             SaveFireComp = MainWin.FireComp.Text
             myCompartments.DoChange = False
             myTargets.DoChange = False
             myFireProperties.DoChange = False
-            InitThermalPropertyList(MainWin.CompCeiling)
-            InitThermalPropertyList(MainWin.CompWalls)
-            InitThermalPropertyList(MainWin.CompFloor)
+            InitThermalPropertyList(MainWin.CompCeiling1)
+            InitThermalPropertyList(MainWin.CompWalls1)
+            InitThermalPropertyList(MainWin.CompFloor1)
             InitThermalPropertyList(MainWin.TargetMaterial)
-            MainWin.CompCeiling.Text = SaveCompCeiling
+            MainWin.CompCeiling1.Text = SaveCompCeiling
             MainWin.TargetMaterial.Text = SaveTargetMaterial
             MainWin.FireComp.Text = SaveFireComp
             myCompartments.DoChange = True
@@ -262,49 +262,46 @@ Public Class UpdateGUI
             MainWin.CompWallLeak.Text = aCompartment.WallLeak.ToString + myUnits.Convert(UnitsNum.Area).Units + "/" + myUnits.Convert(UnitsNum.Area).Units
             MainWin.CompFloorLeak.Text = aCompartment.FloorLeak.ToString + myUnits.Convert(UnitsNum.Area).Units + "/" + myUnits.Convert(UnitsNum.Area).Units
 
-            MainWin.CompCeiling.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial)
-            If MainWin.CompCeiling.Text <> "Default" And MainWin.CompCeiling.Text <> "Off" Then
-                Dim aThermalProperty As New ThermalProperty
-                aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aCompartment.CeilingMaterial))
-                MainWin.CompConductCeiling.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
-                MainWin.CompSpecHeatCeiling.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
-                MainWin.CompDensityCeiling.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
-                MainWin.CompThicknessCeiling.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.CompCeiling1.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(1))
+            If MainWin.CompCeilingOn2.Checked = True Then
+                MainWin.CompCeiling2.Enabled = True
+                MainWin.CompCeiling2.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(2))
             Else
-                MainWin.CompConductCeiling.Text = "Conductivity:"
-                MainWin.CompSpecHeatCeiling.Text = "Specific Heat: "
-                MainWin.CompDensityCeiling.Text = "Density: "
-                MainWin.CompThicknessCeiling.Text = "Thickness: "
+                MainWin.CompCeiling2.Enabled = False
+            End If
+            If MainWin.CompCeilingOn3.Checked = True Then
+                MainWin.CompCeiling3.Enabled = True
+                MainWin.CompCeiling3.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(3))
+            Else
+                MainWin.CompCeiling2.Enabled = False
             End If
 
-            MainWin.CompWalls.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial)
-            If MainWin.CompWalls.Text <> "Default" And MainWin.CompWalls.Text <> "Off" Then
-                Dim aThermalProperty As New ThermalProperty
-                aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aCompartment.WallMaterial))
-                MainWin.CompConductWalls.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
-                MainWin.CompSpecHeatWalls.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
-                MainWin.CompDensityWalls.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
-                MainWin.CompThicknessWalls.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.CompWalls1.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(1))
+            If MainWin.CompWallsOn2.Checked = True Then
+                MainWin.CompWalls2.Enabled = True
+                MainWin.CompWalls2.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(2))
             Else
-                MainWin.CompConductWalls.Text = "Conductivity:"
-                MainWin.CompSpecHeatWalls.Text = "Specific Heat: "
-                MainWin.CompDensityWalls.Text = "Density: "
-                MainWin.CompThicknessWalls.Text = "Thickness: "
+                MainWin.CompWalls2.Enabled = False
+            End If
+            If MainWin.CompWallsOn3.Checked = True Then
+                MainWin.CompWalls3.Enabled = True
+                MainWin.CompWalls3.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(3))
+            Else
+                MainWin.CompWalls2.Enabled = False
             End If
 
-            MainWin.CompFloor.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial)
-            If MainWin.CompFloor.Text <> "Default" And MainWin.CompFloor.Text <> "Off" Then
-                Dim aThermalProperty As New ThermalProperty
-                aThermalProperty = myThermalProperties(myThermalProperties.GetIndex(aCompartment.FloorMaterial))
-                MainWin.CompConductFloor.Text = "Conductivity: " + aThermalProperty.Conductivity.ToString + myUnits.Convert(UnitsNum.Conductivity).Units
-                MainWin.CompSpecHeatFloor.Text = "Specific Heat: " + aThermalProperty.SpecificHeat.ToString + myUnits.Convert(UnitsNum.SpecificHeat).Units
-                MainWin.CompDensityFloor.Text = "Density: " + aThermalProperty.Density.ToString + myUnits.Convert(UnitsNum.Density).Units
-                MainWin.CompThicknessFloor.Text = "Thickness: " + aThermalProperty.Thickness.ToString + myUnits.Convert(UnitsNum.Length).Units
+            MainWin.CompFloor1.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(1))
+            If MainWin.CompCeilingOn2.Checked = True Then
+                MainWin.CompCeiling2.Enabled = True
+                MainWin.CompCeiling2.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(2))
             Else
-                MainWin.CompConductFloor.Text = "Conductivity:"
-                MainWin.CompSpecHeatFloor.Text = "Specific Heat: "
-                MainWin.CompDensityFloor.Text = "Density: "
-                MainWin.CompThicknessFloor.Text = "Thickness: "
+                MainWin.CompCeiling2.Enabled = False
+            End If
+            If MainWin.CompCeilingOn3.Checked = True Then
+                MainWin.CompCeiling3.Enabled = True
+                MainWin.CompCeiling3.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(3))
+            Else
+                MainWin.CompCeiling2.Enabled = False
             End If
 
             If myEnvironment.AdiabaticWalls Then
@@ -342,9 +339,9 @@ Public Class UpdateGUI
                     MainWin.CompSummary(i, 5) = aCompartment.RoomOriginX.ToString
                     MainWin.CompSummary(i, 6) = aCompartment.RoomOriginY.ToString
                     MainWin.CompSummary(i, 7) = aCompartment.RoomOriginZ.ToString
-                    MainWin.CompSummary(i, 8) = aCompartment.CeilingMaterial.ToLower
-                    MainWin.CompSummary(i, 9) = aCompartment.WallMaterial.ToLower
-                    MainWin.CompSummary(i, 10) = aCompartment.FloorMaterial.ToLower
+                    MainWin.CompSummary(i, 8) = aCompartment.CeilingMaterial(1).ToLower
+                    MainWin.CompSummary(i, 9) = aCompartment.WallMaterial(1).ToLower
+                    MainWin.CompSummary(i, 10) = aCompartment.FloorMaterial(1).ToLower
                     MainWin.CompSummary(i, 11) = myFireProperties.NumberofConnections(i - 1)
                     MainWin.CompSummary(i, 12) = myHVents.NumberofConnections(i - 1)
                     MainWin.CompSummary(i, 13) = myVVents.NumberofConnections(i - 1)

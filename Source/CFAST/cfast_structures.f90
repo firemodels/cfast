@@ -4,11 +4,15 @@ module cfast_types
     
     use cparams, only: mxpts, ns, mxfslab, nnodes_trg, mxthrmplen, nwal, mxpts, mxslb, nnodes, mxrooms, mxcoeff
     
-    ! user-customized data and calculation output data structure
-    type dump_type
-        ! these are for user-specified calculations on data. output goes to _calculations.csv
+    ! base type that all other types extend
+    type cfast_type
         character(len=128) :: id                    ! user selected heading for output column
         character(len=128) :: fyi                   ! line available for comments or extra input
+    end type cfast_type
+    
+    ! user-customized data and calculation output data structure
+    type, extends(cfast_type) :: dump_type
+        ! these are for user-specified calculations on data. output goes to _calculations.csv
         character(len=24) :: file_type              ! 'compartments', 'devices', 'masses', 'vents', or 'walls'
         character(len=24) :: type                   ! 'trigger_greater', 'trigger_lesser', 'minimum', 'maximum', 'integrate', 
                                                     !      'check_total_hrr'
@@ -26,9 +30,7 @@ module cfast_types
     end type dump_type
 
     ! detector / sprinkler structure
-    type detector_type
-        character(len=128) :: id        ! user selected name for the detector (user input)
-        character(len=128) :: fyi       ! line available for comments or extra input
+    type, extends(cfast_type) :: detector_type
         real(eb) :: center(3)           ! position of detector center (user input)
         real(eb) :: trigger             ! activation value for detector; % obscuration or temperature (user input)
         real(eb) :: trigger_smolder     ! activation value for dual_detector smoke for the smoldering smoke % obscuration 
@@ -62,10 +64,8 @@ module cfast_types
     end type detector_type
 
     ! fire data structure
-    type fire_type
+    type, extends(cfast_type) :: fire_type
         ! These are the fire definitions from the input
-        character(len=128) :: id                        ! user selected name for the fire instance (user input)
-        character(len=128) :: fyi                       ! line available for comments or extra input
         character(len=128) :: fire_id                   ! user selected name for the data associated with this fire instance
         integer :: room                                 ! compartment where the fire is located (user input)
         integer :: ignition_target                      ! target number associated with fire (user input)
@@ -122,20 +122,15 @@ module cfast_types
     end type fire_type
 
     ! ramp data structure
-    type ramp_type
-        character(len=128) :: id  
+    type, extends(cfast_type) :: ramp_type
         character(len=128) :: type  
         integer :: room1, room2, counter, npoints
         real(eb) :: x(mxpts), f_of_x(mxpts)
     end type ramp_type
 
     ! room data structure
-    type room_type
+    type, extends(cfast_type) :: room_type
         ! These are room definitions from or calculated from user input
-        character(len=128) :: id                        ! user selected name for the compartment
-        character(len=128) :: fyi                       ! line available for comments or extra input
-                                                        ! identifier for compartment grouping for later analyses ... for example
-                                                        ! "Office", "Bedroom", "Hallway". etc
         character(64), dimension(nwal) :: matl          ! surface materials for ceiling, floor, upper wall, lower wall
 
         integer :: compartment                          ! compartment number assigned automatically for namelist inputs
@@ -218,8 +213,7 @@ module cfast_types
     end type room_type
     
     ! time-dependent fire parameters table input data structure
-    type table_type
-        character(len=128) :: id                        ! user selected name for the table; normally this would match the fire name
+    type, extends(cfast_type) :: table_type
         character(len=128), dimension(ns+3) :: labels   ! column labels for columns of data in the table
         real(eb), dimension(mxpts,ns+3) :: data         ! actual input data for the table
         integer :: n_points                             ! number of data points (rows) in the table
@@ -227,9 +221,7 @@ module cfast_types
     end type table_type
 
     ! target data structure
-    type target_type
-        character(len=128) :: id            ! user selected name for the target
-        character(len=128) :: fyi           ! line available for comments or extra input
+    type, extends(cfast_type) :: target_type
         character(len=128) :: material      ! material for the target (used to match materials properties)
         character(len=128) :: depth_units   ! specify units for temperature depth location, 'FRACTION' or 'M'
                                             ! default is 'FRACTION' for backwards compatibility
@@ -275,10 +267,8 @@ module cfast_types
     end type target_type
 
     ! thermal properties structure
-    type thermal_type
-        character(len=128) :: id                        ! user selected name for the material
+    type, extends(cfast_type) :: thermal_type
         character(len=128) :: material                  ! long descripter for material 
-        character(len=128) :: fyi                       ! line available for comments or extra input
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
         real(eb), dimension(mxslb) :: rho               ! density of each slab
@@ -288,9 +278,7 @@ module cfast_types
     end type thermal_type
 
     ! vent data structure
-    type vent_type
-        character(len=128) :: id            ! user selected name for the vent
-        character(len=128) :: fyi           ! line available for comments or extra input
+    type, extends(cfast_type) :: vent_type
         character(len=128) :: ramp_id       ! ramp id assocated with vent
         character(len=128) :: filter_id     ! filter id assocated with vent
         integer :: room1                    ! first or top compartment for connecting vent

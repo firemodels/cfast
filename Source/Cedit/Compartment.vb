@@ -442,6 +442,22 @@ Public Class Compartment
         End If
         aChanged = True
     End Sub
+    Public Sub SetThickness(Surface As String, ByVal aThickness1 As String, ByVal aThickness2 As String, ByVal aThickness3 As String)
+        If Surface = "Ceiling" Then
+            CeilingThickness(1) = aThickness1
+            CeilingThickness(2) = aThickness2
+            CeilingThickness(3) = aThickness3
+        ElseIf Surface = "Walls" Then
+            WallThickness(1) = aThickness1
+            WallThickness(2) = aThickness2
+            WallThickness(3) = aThickness3
+        ElseIf Surface = "Floor" Then
+            FloorThickness(1) = aThickness1
+            FloorThickness(2) = aThickness2
+            FloorThickness(3) = aThickness3
+        End If
+        aChanged = True
+    End Sub
     Public Sub GetVariableArea(ByRef AreaPoints() As Single, ByRef HeightPoints() As Single, ByRef NumAreaPoints As Integer)
         Dim i As Integer
         If aAreaPoints.GetLength(0) = aHeightPoints.GetLength(0) Then

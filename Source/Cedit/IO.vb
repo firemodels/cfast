@@ -350,7 +350,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
-        Dim ceilid(3), wallid(3), floorid(3), rampid, id, fyi As String
+        Dim rampid, id, fyi As String
         Dim depth, height, width As Single
         Dim shaft, hall, valid As Boolean
         Dim grid(3) As Integer
@@ -364,11 +364,14 @@ Module IO
                 width = -1
                 height = -1
                 id = ""
-                ceilid = {"", "", "", ""}
-                floorid = {"", "", "", ""}
-                wallid = {"", "", "", ""}
                 rampid = ""
                 fyi = ""
+                Dim ceilid As String() = {"", "", "", ""}
+                Dim floorid As String() = {"", "", "", ""}
+                Dim wallid As String() = {"", "", "", ""}
+                Dim ceilthick As Single() = {0.0, 0.0, 0.0, 0.0}
+                Dim floorthick As Single() = {0.0, 0.0, 0.0, 0.0}
+                Dim wallthick As Single() = {0.0, 0.0, 0.0, 0.0}
                 ReDim comparea(0), compheight(0)
                 For k = 0 To 2
                     grid(k) = 50
@@ -391,6 +394,21 @@ Module IO
                         max = NMList.ForNMListVarNumVal(i, j)
                         For k = 1 To max
                             wallid(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "CEILING_THICKNESS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        For k = 1 To max
+                            ceilthick(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLOOR_THICKNESS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        For k = 1 To max
+                            floorthick(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "WALL_THICKNESS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        For k = 1 To max
+                            wallthick(k) = NMList.ForNMListVarGetNum(i, j, k)
                         Next
                     ElseIf (NMList.ForNMListGetVar(i, j) = "HALL") Then
                         If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
@@ -491,6 +509,9 @@ Module IO
                     aComp.SetMaterial("Ceiling", ceilid(1), ceilid(2), ceilid(3))
                     aComp.SetMaterial("Walls", wallid(1), wallid(2), wallid(3))
                     aComp.SetMaterial("Floor", floorid(1), floorid(2), floorid(3))
+                    aComp.SetThickness("Ceiling", ceilthick(1), ceilthick(2), ceilthick(3))
+                    aComp.SetThickness("Walls", wallthick(1), wallthick(2), wallthick(3))
+                    aComp.SetThickness("Floor", floorthick(1), floorthick(2), floorthick(3))
                     aComp.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
                     If comparea.GetUpperBound(0) > 0 Then
                         aComp.SetVariableArea(comparea, compheight)

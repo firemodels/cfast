@@ -32,7 +32,7 @@
     use dump_data, only: n_dumps, dumpinfo
 
     implicit none
-    external get_info
+    external get_info, cfastexit
 
     private
 

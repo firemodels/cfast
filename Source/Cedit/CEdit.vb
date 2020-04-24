@@ -5603,17 +5603,23 @@ Public Class CeditMain
                     CompFloorOn3.Checked = False
                 End If
             End If
-            If CompCeilingOn3.Checked = False Then
-                aCompartment.CeilingMaterial(3) = ""
-                aCompartment.CeilingThickness(3) = 0
+            If sender Is CompCeilingOn3 Then
+                If CompCeilingOn3.Checked = False Then
+                    aCompartment.CeilingMaterial(3) = ""
+                    aCompartment.CeilingThickness(3) = 0
+                End If
             End If
-            If CompWallOn3.Checked = False Then
-                aCompartment.WallMaterial(3) = ""
-                aCompartment.WallThickness(3) = 0
+            If sender Is CompWallOn3 Then
+                If CompWallOn3.Checked = False Then
+                    aCompartment.WallMaterial(3) = ""
+                    aCompartment.WallThickness(3) = 0
+                End If
             End If
-            If CompFloorOn3.Checked = False Then
-                aCompartment.WallMaterial(3) = ""
-                aCompartment.FloorThickness(3) = 0
+            If sender Is CompFloorOn3 Then
+                If CompFloorOn3.Checked = False Then
+                    aCompartment.FloorMaterial(3) = ""
+                    aCompartment.FloorThickness(3) = 0
+                End If
             End If
             myCompartments.Item(CurrentCompartment) = aCompartment
             UpdateGUI.Compartment(CurrentCompartment)

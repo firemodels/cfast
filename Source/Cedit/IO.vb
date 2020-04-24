@@ -491,18 +491,24 @@ Module IO
                             If myThermalProperties.GetIndex(ceilid(k)) < 0 And ceilid(k) <> "OFF" Then
                                 ceilid(k) = "OFF"
                                 myErrors.Add("In COMP namelist " + id + " CEILING_MATL_ID " + ceilid(k) + " is not valid; switching ceiling to OFF", ErrorMessages.TypeWarning)
-                            End If
-                        End If
-                        If floorid(k) <> "" Then
-                            If myThermalProperties.GetIndex(wallid(k)) < 0 And wallid(k) <> "OFF" Then
-                                wallid(k) = "OFF"
-                                myErrors.Add("In COMP namelist " + id + " WALL_MATL_ID " + wallid(k) + " is not valid; switching wall to OFF", ErrorMessages.TypeWarning)
+                            Else
+                                If ceilthick(k) = 0 Then ceilthick(k) = myThermalProperties(myThermalProperties.GetIndex(ceilid(k))).Thickness
                             End If
                         End If
                         If wallid(k) <> "" Then
+                            If myThermalProperties.GetIndex(wallid(k)) < 0 And wallid(k) <> "OFF" Then
+                                wallid(k) = "OFF"
+                                myErrors.Add("In COMP namelist " + id + " WALL_MATL_ID " + wallid(k) + " is not valid; switching wall to OFF", ErrorMessages.TypeWarning)
+                            Else
+                                If wallthick(k) = 0 Then wallthick(k) = myThermalProperties(myThermalProperties.GetIndex(wallid(k))).Thickness
+                            End If
+                        End If
+                        If floorid(k) <> "" Then
                             If myThermalProperties.GetIndex(floorid(k)) < 0 And floorid(k) <> "OFF" Then
                                 floorid(k) = "OFF"
                                 myErrors.Add("In COMP namelist " + id + "FLOOR_MATL_ID " + floorid(k) + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
+                            Else
+                                If floorthick(k) = 0 Then floorthick(k) = myThermalProperties(myThermalProperties.GetIndex(floorid(k))).Thickness
                             End If
                         End If
                     Next

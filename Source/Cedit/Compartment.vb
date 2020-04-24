@@ -164,6 +164,8 @@ Public Class Compartment
                 If Value <> aCeilingMaterial(index) And Value <> "" Then
                     If myCompartments.DoChange Then aChanged = True
                     aCeilingMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Ceiling Material")
+                ElseIf Value = "" Then
+                    aCeilingMaterial(index) = ""
                 End If
             Else
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
@@ -173,11 +175,7 @@ Public Class Compartment
     Public Property CeilingThickness(index As Integer) As Single
         Get
             If index >= 1 And index <= 3 Then
-                If aCeilingThickness(index) <> 0.0 Then
-                    Return myUnits.Convert(UnitsNum.Length).FromSI(aCeilingThickness(index))
-                Else
-                    Return myThermalProperties(myThermalProperties.GetIndex(aCeilingMaterial(index))).Thickness
-                End If
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aCeilingThickness(index))
             Else
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
                 Return 0.0
@@ -209,6 +207,8 @@ Public Class Compartment
                 If Value <> aWallMaterial(index) And Value <> "" Then
                     If myCompartments.DoChange Then aChanged = True
                     aWallMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Wall Material")
+                ElseIf Value = "" Then
+                    aWallMaterial(index) = ""
                 End If
             Else
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
@@ -218,11 +218,7 @@ Public Class Compartment
     Public Property WallThickness(index As Integer) As Single
         Get
             If index >= 1 And index <= 3 Then
-                If aWallThickness(index) <> 0.0 Then
-                    Return myUnits.Convert(UnitsNum.Length).FromSI(aWallThickness(index))
-                Else
-                    Return myThermalProperties(myThermalProperties.GetIndex(aWallMaterial(index))).Thickness
-                End If
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aWallThickness(index))
             Else
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
                 Return 0.0
@@ -254,6 +250,8 @@ Public Class Compartment
                 If Value <> aFloorMaterial(index) And Value <> "" Then
                     If myCompartments.DoChange Then aChanged = True
                     aFloorMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Floor Material")
+                ElseIf Value = "" Then
+                    aFloorMaterial(index) = ""
                 End If
             Else
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
@@ -263,11 +261,7 @@ Public Class Compartment
     Public Property FloorThickness(index As Integer) As Single
         Get
             If index >= 1 And index <= 3 Then
-                If aFloorThickness(index) <> 0.0 Then
-                    Return myUnits.Convert(UnitsNum.Length).FromSI(aFloorThickness(index))
-                Else
-                    Return myThermalProperties(myThermalProperties.GetIndex(aFloorMaterial(index))).Thickness
-                End If
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aFloorThickness(index))
             Else
                 System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
                 Return 0.0

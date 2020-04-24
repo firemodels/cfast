@@ -295,16 +295,30 @@ Public Class UpdateGUI
                     MainWin.CompCeiling3.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(3))
                     MainWin.CompCeilingThickness3.Text = aCompartment.CeilingThickness(3)
                 Else
-                    MainWin.CompCeiling3.Enabled = False
-                    MainWin.CompCeilingThickness3.Enabled = False
+                    If MainWin.CompCeilingOn3.Checked = True Then
+                        MainWin.CompCeiling3.Enabled = True
+                        MainWin.CompCeilingThickness3.Enabled = True
+                    Else
+                        MainWin.CompCeiling3.Enabled = False
+                        MainWin.CompCeilingThickness3.Enabled = False
+                        MainWin.CompCeiling3.Text = ""
+                        MainWin.CompCeilingThickness3.Text = ""
+                    End If
                 End If
             Else
-                MainWin.CompCeiling2.Enabled = False
-                MainWin.CompCeilingThickness2.Enabled = False
                 MainWin.CompCeilingOn3.Checked = False
                 MainWin.CompCeilingOn3.Enabled = False
                 MainWin.CompCeiling3.Enabled = False
                 MainWin.CompCeilingThickness3.Enabled = False
+                If MainWin.CompCeilingOn2.Checked = True Then
+                    MainWin.CompCeiling2.Enabled = True
+                    MainWin.CompCeilingThickness2.Enabled = True
+                Else
+                    MainWin.CompCeiling2.Enabled = False
+                    MainWin.CompCeilingThickness2.Enabled = False
+                    MainWin.CompCeiling2.Text = ""
+                    MainWin.CompCeilingThickness2.Text = ""
+                End If
             End If
 
             MainWin.CompWall1.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(1))
@@ -314,7 +328,7 @@ Public Class UpdateGUI
                 MainWin.CompWall2.Enabled = True
                 MainWin.CompWallThickness2.Enabled = True
                 MainWin.CompWall2.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(2))
-                MainWin.CompCeilingThickness2.Text = aCompartment.WallThickness(2)
+                MainWin.CompWallThickness2.Text = aCompartment.WallThickness(2)
                 MainWin.CompWallOn3.Enabled = True
                 If aCompartment.WallMaterial(3) <> "" Then
                     MainWin.CompWallOn3.Checked = True
@@ -323,16 +337,30 @@ Public Class UpdateGUI
                     MainWin.CompWall3.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(3))
                     MainWin.CompWallThickness3.Text = aCompartment.WallThickness(3)
                 Else
-                    MainWin.CompWall3.Enabled = False
-                    MainWin.CompWallThickness3.Enabled = False
+                    If MainWin.CompWallOn3.Checked = True Then
+                        MainWin.CompWall3.Enabled = True
+                        MainWin.CompWallThickness3.Enabled = True
+                    Else
+                        MainWin.CompWall3.Enabled = False
+                        MainWin.CompWallThickness3.Enabled = False
+                        MainWin.CompWall3.Text = ""
+                        MainWin.CompWallThickness3.Text = ""
+                    End If
                 End If
             Else
-                MainWin.CompWall2.Enabled = False
-                MainWin.CompWallThickness2.Enabled = False
                 MainWin.CompWallOn3.Checked = False
                 MainWin.CompWallOn3.Enabled = False
                 MainWin.CompWall3.Enabled = False
                 MainWin.CompWallThickness3.Enabled = False
+                If MainWin.CompWallOn2.Checked = True Then
+                    MainWin.CompWall2.Enabled = True
+                    MainWin.CompWallThickness2.Enabled = True
+                Else
+                    MainWin.CompWall2.Enabled = False
+                    MainWin.CompWallThickness2.Enabled = False
+                    MainWin.CompWall2.Text = ""
+                    MainWin.CompWallThickness2.Text = ""
+                End If
             End If
 
             MainWin.CompFloor1.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(1))
@@ -351,16 +379,30 @@ Public Class UpdateGUI
                     MainWin.CompFloor3.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(3))
                     MainWin.CompFloorThickness3.Text = aCompartment.FloorThickness(3)
                 Else
-                    MainWin.CompFloor3.Enabled = False
-                    MainWin.CompFloorThickness3.Enabled = False
+                    If MainWin.CompFloorOn3.Checked = True Then
+                        MainWin.CompFloor3.Enabled = True
+                        MainWin.CompFloorThickness3.Enabled = True
+                    Else
+                        MainWin.CompFloor3.Enabled = False
+                        MainWin.CompFloorThickness3.Enabled = False
+                        MainWin.CompFloor3.Text = ""
+                        MainWin.CompFloorThickness3.Text = ""
+                    End If
                 End If
             Else
-                MainWin.CompFloor2.Enabled = False
-                MainWin.CompFloorThickness2.Enabled = False
                 MainWin.CompFloorOn3.Checked = False
                 MainWin.CompFloorOn3.Enabled = False
                 MainWin.CompFloor3.Enabled = False
                 MainWin.CompFloorThickness3.Enabled = False
+                If MainWin.CompFloorOn2.Checked = True Then
+                    MainWin.CompFloor2.Enabled = True
+                    MainWin.CompFloorThickness2.Enabled = True
+                Else
+                    MainWin.CompFloor2.Enabled = False
+                    MainWin.CompFloorThickness2.Enabled = False
+                    MainWin.CompFloor2.Text = ""
+                    MainWin.CompFloorThickness2.Text = ""
+                End If
             End If
 
             If myEnvironment.AdiabaticWalls Then

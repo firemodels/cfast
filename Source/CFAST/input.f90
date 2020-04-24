@@ -8,7 +8,6 @@
     use output_routines, only: open_output_files, delete_output_files
     use utility_routines, only: countargs, upperall, exehandle, emix
     use namelist_input_routines, only: namelist_input, read_misc
-    use spreadsheet_input_routines, only: spreadsheet_input
     
     use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, thermal_type, vent_type, &
         visual_type
@@ -33,7 +32,7 @@
     use dump_data, only: n_dumps, dumpinfo
 
     implicit none
-    external get_info
+    external get_info, cfastexit
 
     private
 
@@ -80,14 +79,16 @@
     if (nmlflag) then
         call namelist_input
     else
-        call spreadsheet_input
+        write(*, '(a,i3)') '***Error: This version of CFAST will only read the newer namelist input format' 
+        write(iofill, '(a,i3)') '***Error: This version of CFAST will only read the newer namelist input format'
+        call cfastexit('input',1)
     end if
 
     ! add the default thermal property
     n_thrmp = n_thrmp + 1
     thrmpptr => thermalinfo(n_thrmp)
     thrmpptr%id = 'DEFAULT'
-    thrmpptr%material = 'Default values assined to surfaces that do no have a material assigned'
+    thrmpptr%material = 'Default values assigned to surfaces that do no have a material assigned'
     thrmpptr%fyi = 'It is best to not use this material '
     thrmpptr%eps = 0.90_eb
     thrmpptr%nslab = 1

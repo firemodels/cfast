@@ -433,8 +433,7 @@
 
     integer, intent(in) :: lu
     
-    integer :: ios, ii, kk
-    character(len=64) :: tcname
+    integer :: ios, i, k
 
     type(room_type), pointer :: roomptr
 
@@ -491,9 +490,9 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_comp_loop: do ii = 1, n_rooms
+        read_comp_loop: do i = 1, n_rooms
 
-            roomptr => roominfo(ii)
+            roomptr => roominfo(i)
 
             call checkread('COMP',lu,ios)
             call set_defaults
@@ -502,11 +501,11 @@
             roomptr%nvars = 0
             roomptr%var_area = 0.0_eb
             roomptr%var_height = 0.0_eb
-            do kk = 1, mxpts
-                if (cross_sect_areas(kk)/=-1001._eb) then
+            do k = 1, mxpts
+                if (cross_sect_areas(k)/=-1001._eb) then
                     roomptr%nvars = roomptr%nvars + 1
-                    roomptr%var_area(roomptr%nvars) = cross_sect_areas(kk)
-                    roomptr%var_height(roomptr%nvars) = cross_sect_heights(kk)
+                    roomptr%var_area(roomptr%nvars) = cross_sect_areas(k)
+                    roomptr%var_height(roomptr%nvars) = cross_sect_heights(k)
                 end if
             end do
 
@@ -516,7 +515,7 @@
                 call cfastexit('read_comp',4)
             end if
 
-            roomptr%compartment    = ii
+            roomptr%compartment    = i
             roomptr%id      = id
             roomptr%fyi     = fyi
             roomptr%cwidth  = width
@@ -526,28 +525,40 @@
             roomptr%y0      = origin(2)
             roomptr%z0      = origin(3)
 
+            roomptr%nslab_w = 0
             ! ceiling
-            tcname = ceiling_matl_id(1)
-            if (trim(tcname)/='OFF') then
-                roomptr%surface_on(1) = .true.
-                roomptr%matl(1) = tcname
-            end if
+            do k = 1, 3
+                if (trim(ceiling_matl_id(k))/='OFF'.and.trim(ceiling_matl_id(k))/='NULL') then
+                    roomptr%surface_on(1) = .true.
+                    roomptr%matl(k,1) = ceiling_matl_id(k)
+                    roomptr%thick_w(k,1) = ceiling_thickness(k)
+                    roomptr%nslab_w(1) = roomptr%nslab_w(1) + 1
+                end if
+            end do
 
             ! floor
-            tcname = floor_matl_id(1)
-            if (trim(tcname)/='OFF') then
-                roomptr%surface_on(2) = .true.
-                roomptr%matl(2) = tcname
-            end if
+            do k = 1, 3
+                if (trim(floor_matl_id(k))/='OFF'.and.trim(floor_matl_id(k))/='NULL') then
+                    roomptr%surface_on(2) = .true.
+                    roomptr%matl(k,2) = floor_matl_id(k)
+                    roomptr%thick_w(k,2) = floor_thickness(k)
+                    roomptr%nslab_w(2) = roomptr%nslab_w(2) + 1
+                end if
+            end do
 
-            ! walls
-            tcname = wall_matl_id(1)
-            if (trim(tcname)/='OFF') then
-                roomptr%surface_on(3) = .true.
-                roomptr%matl(3) = tcname
-                roomptr%surface_on(4) = .true.
-                roomptr%matl(4) = tcname
-            end if
+                ! walls
+            do k = 1, 3
+                if (trim(wall_matl_id(k))/='OFF'.and.trim(wall_matl_id(k))/='NULL') then
+                    roomptr%surface_on(3) = .true.
+                    roomptr%matl(k,3) = wall_matl_id(k)
+                    roomptr%thick_w(k,3) = wall_thickness(k)
+                    roomptr%nslab_w(3) = roomptr%nslab_w(3) + 1
+                    roomptr%surface_on(4) = .true.
+                    roomptr%matl(k,4) = wall_matl_id(k)
+                    roomptr%thick_w(k,4) = wall_thickness(k)
+                    roomptr%nslab_w(4) = roomptr%nslab_w(4) + 1
+                end if
+            end do
 
             roomptr%ibar = grid(1)
             roomptr%jbar = grid(2)
@@ -570,15 +581,18 @@
 
     subroutine set_defaults
 
-    ceiling_matl_id         = 'OFF'
+    ceiling_matl_id         = 'NULL'
+    wall_matl_id            = 'NULL'
+    floor_matl_id           = 'NULL'
+    ceiling_thickness       = 0.0_eb
+    wall_thickness          = 0.0_eb
+    floor_thickness         = 0.0_eb
     cross_sect_areas        = -1001._eb
     cross_sect_heights      = -1001._eb
     id                      = 'NULL'
     fyi                     = 'NULL'
     depth                   = 0.0_eb
-    floor_matl_id           = 'OFF'
     height                  = 0.0_eb
-    wall_matl_id            = 'OFF'
     width                   = 0.0_eb
     grid(:)                 = default_grid
     origin(:)               = 0.0_eb

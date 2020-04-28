@@ -811,9 +811,9 @@ module initialization_routines
                         call get_thermal_property(roomptr%matl(k,i),tp)
                         thrmpptr => thermalinfo(tp)
                         if (k==1) roomptr%eps_w(i) = thrmpptr%eps
-                        roomptr%k_w(k,i) = thrmpptr%k(k)
-                        roomptr%c_w(k,i) = thrmpptr%c(k)
-                        roomptr%rho_w(k,i) = thrmpptr%rho(k)
+                        roomptr%k_w(k,i) = thrmpptr%k(1)
+                        roomptr%c_w(k,i) = thrmpptr%c(1)
+                        roomptr%rho_w(k,i) = thrmpptr%rho(1)
                         if (roomptr%thick_w(k,i)==0.0_eb) then
                             roomptr%thick_w(k,i) = thrmpptr%thickness(1)
                         end if

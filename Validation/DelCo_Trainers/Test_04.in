@@ -10,16 +10,23 @@
       CONDUCTIVITY = 1.8 DENSITY = 2280 SPECIFIC_HEAT = 1.04, THICKNESS = 0.61 EMISSIVITY = 0.9 /
 &MATL ID = 'TC' MATERIAL = 'Thermocouple (small steel target for plume temp)', 
       CONDUCTIVITY = 54 DENSITY = 7850 SPECIFIC_HEAT = 0.425, THICKNESS = 0.001 EMISSIVITY = 0.95 /
+&MATL ID = 'FiberCem' MATERIAL = 'Fiber Cement', 
+      CONDUCTIVITY = 0.15 DENSITY = 1300 SPECIFIC_HEAT = 1, THICKNESS = 0.013 EMISSIVITY = 0.9 /
+&MATL ID = 'Gypsum' MATERIAL = 'Gypsum (NBSIR 88-3752)', 
+      CONDUCTIVITY = 1.8 DENSITY = 650 SPECIFIC_HEAT = 1.09, THICKNESS = 0.03 EMISSIVITY = 0.9 /
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7 CEILING_MATL_ID = 'Concrete' WALL_MATL_ID = 'Concrete' FLOOR_MATL_ID = 'Concrete'
+      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7
+      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.013 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.03, 0.61 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000486399 /
 &COMP ID = 'Comp 2'
-      DEPTH = 3.05 HEIGHT = 2.4 WIDTH = 3.4 CEILING_MATL_ID = 'Concrete' WALL_MATL_ID = 'Concrete' FLOOR_MATL_ID = 'Concrete'
+      DEPTH = 3.05 HEIGHT = 2.4 WIDTH = 3.4
+      CEILING_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' CEILING_THICKNESS = 0.013, 0.03, 0.61 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.03, 0.61 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
       ORIGIN = 3.7, 3.05, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000486399 /
 &COMP ID = 'Comp 3'
-      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7 CEILING_MATL_ID = 'Concrete' WALL_MATL_ID = 'Concrete' FLOOR_MATL_ID = 'Concrete'
+      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7
+      CEILING_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' CEILING_THICKNESS = 0.013, 0.03, 0.61 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.03, 0.61 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
       ORIGIN = 7.1, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000486399 /
  
 !! Wall Vents

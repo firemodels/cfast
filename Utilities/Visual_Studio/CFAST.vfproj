@@ -5,7 +5,7 @@
 		<Platform Name="x64"/></Platforms>
 	<Configurations>
 		<Configuration Name="Debug|Win32" OutputDirectory="..\..\Utilities\for_bundle\bin" IntermediateDirectory="..\Temp" DeleteExtensionsOnClean="*.obj;*.mod;*.pdb;*.asm;*.map;*.dyn;*.dpi;*.tmp;*.log;*.ilk;*.exe;$(TargetPath)">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" AdditionalIncludeDirectories="..\CFAST\Include" WarnUnusedVariables="true" WarnTruncateSource="true" WarnInterfaces="true" InitLocalVarToNAN="true" LocalSavedScalarsSNaN="true" FloatingPointModel="strict" FloatingPointExceptionsModel="enable" ExtendSinglePrecisionConstants="true" IEEEMinusZero="true" FloatingPointStackCheck="true" FloatingPointSpeculation="fpSpeculationStrict" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true" RuntimeChecks="rtChecksAll" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Preprocess="preprocessYes" WarnUnusedVariables="true" WarnTruncateSource="true" WarnInterfaces="true" InitLocalVarToNAN="true" LocalSavedScalarsSNaN="true" FloatingPointModel="strict" FloatingPointExceptionsModel="enable" ExtendSinglePrecisionConstants="true" IEEEMinusZero="true" FloatingPointStackCheck="true" FloatingPointSpeculation="fpSpeculationStrict" ModulePath="$(INTDIR)/" ObjectFile="$(INTDIR)/" Traceback="true" RuntimeChecks="rtChecksAll" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
 				<Tool Name="VFLinkerTool" OutputFile="$(OUTDIR)/CFAST.exe" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" ProgramDatabaseFile="$(OUTDIR)/CFAST6.0.6.51220.pdb" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true" HeaderFileName="$(InputName).h" TypeLibraryName="$(IntDir)/$(InputName).tlb"/>
@@ -83,7 +83,6 @@
 		<File RelativePath=".\initialization.f90"/>
 		<File RelativePath=".\input.f90"/>
 		<File RelativePath=".\input_namelist.f90"/>
-		<File RelativePath=".\input_spreadsheet.f90"/>
 		<File RelativePath=".\keyboard_int.f90"/>
 		<File RelativePath=".\numerics.f90"/>
 		<File RelativePath=".\output.f90"/>

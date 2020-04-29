@@ -16,6 +16,7 @@ $RUNCFAST -d ATF_Corridors ATF_Corridors_Mix_kW.in
 $RUNCFAST -d DelCo_Trainers Test_02.in
 $RUNCFAST -d DelCo_Trainers Test_03.in
 $RUNCFAST -d DelCo_Trainers Test_04.in
+$RUNCFAST -d DelCo_Trainers Test_05.in
 
 $RUNCFAST -d Fleury_Heat_Flux Fleury_1t1_100_kW.in
 $RUNCFAST -d Fleury_Heat_Flux Fleury_1t1_150_kW.in

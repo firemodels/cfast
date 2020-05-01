@@ -16,10 +16,10 @@
 !! Compartments 
 &COMP ID = 'Lower Test Cell'
       DEPTH = 6 HEIGHT = 3 WIDTH = 4 CEILING_MATL_ID = 'LLNL Marinite' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Ceil'
-      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0001375 /
 &COMP ID = 'Plenum'
       DEPTH = 6 HEIGHT = 1.5 WIDTH = 4 CEILING_MATL_ID = 'LLNL Ceil' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Marinite'
-      ORIGIN = 0, 0, 3 GRID = 50, 50, 50 /
+      ORIGIN = 0, 0, 3 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0001375 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Lower Test Cell' 'OUTSIDE'  TOP = 0.567, BOTTOM = 0.433, WIDTH = 0.175

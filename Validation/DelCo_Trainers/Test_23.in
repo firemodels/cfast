@@ -98,20 +98,20 @@
 &CHEM ID = 'Propane Fire 1' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 1' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 1', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 5, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 794, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 5, 430, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 794, 430, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 1', DATA = 830, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 2' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 2' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 2', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 5, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 5, 430, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 2', DATA = 794, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 2', DATA = 830, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 3' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 3' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 3', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 5, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 794, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 5, 430, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 794, 430, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 3', DATA = 795, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
  
 !! Devices

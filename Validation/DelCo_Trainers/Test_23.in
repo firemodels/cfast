@@ -61,15 +61,15 @@
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'First Floor East Double Door A6' COMP_IDS = 'Floor 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 450, 451 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 1.1 /
+  CRITERION = 'TIME' T = 0, 371, 372 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 1.1 /
 &VENT TYPE = 'WALL' ID = 'First Floor West Double Door A5' COMP_IDS = 'Floor 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 314, 315 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2 /
+  CRITERION = 'TIME' T = 0, 252, 253 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2 /
 &VENT TYPE = 'WALL' ID = 'Second Floor South Door A11' COMP_IDS = 'Floor 2 Hallway' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 511, 512, 899, 900, 1176, 1177 F = 1, 1, 0, 0, 1, 1, 0 FACE = 'LEFT' OFFSET = 0.15 /
+  CRITERION = 'TIME' T = 0, 849, 850 F = 0, 0, 1 FACE = 'LEFT' OFFSET = 0.15 /
 &VENT TYPE = 'WALL' ID = 'Second Floor West Double Door A13' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 194, 195 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.1 /
+  CRITERION = 'TIME' T = 0, 130, 131 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.1 /
 &VENT TYPE = 'WALL' ID = 'Second Floor East Double Door A14' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
-  CRITERION = 'TIME' T = 0, 585, 586 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2.2 /
+  CRITERION = 'TIME' T = 0, 498, 499 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2.2 /
 &VENT TYPE = 'WALL' ID = 'Floor 2 Stairwell Door' COMP_IDS = 'Stairwell', 'Floor 2 North Room Front' TOP = 4.4, BOTTOM = 2.4, WIDTH = 0.9
   FACE = 'RIGHT' OFFSET = 0 /
 &VENT TYPE = 'WALL' ID = 'Floor 1 Room to Vestibule' COMP_IDS = 'Floor 1', 'Floor 1 Vestibule' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
@@ -99,20 +99,20 @@
 &TABL ID = 'Propane Fire 1' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 1', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 1', DATA = 5, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 829, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 794, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 1', DATA = 830, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 2' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 2' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 2', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 2', DATA = 5, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 829, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 794, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 2', DATA = 830, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 3' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 3' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
 &TABL ID = 'Propane Fire 3', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
 &TABL ID = 'Propane Fire 3', DATA = 5, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 829, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 830, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 794, 413.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 795, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
  
 !! Devices
 &DEVC ID = 'A1' COMP_ID = 'Floor 1 Vestibule' LOCATION = 0.4, 0.4, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /

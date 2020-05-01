@@ -352,14 +352,16 @@ Module IO
         Dim i, j, k, max As Integer
         Dim rampid, id, fyi As String
         Dim depth, height, width As Single
-        Dim shaft, hall, valid As Boolean
+        Dim shaft, hall, valid, leakasarea, leakasratio As Boolean
         Dim grid(3) As Integer
-        Dim origin(3), leaks(2), comparea(0), compheight(0) As Single
+        Dim origin(3), leakareas(2), leakratios(2), comparea(0), compheight(0) As Single
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "COMP") Then
                 hall = False
                 shaft = False
+                leakasarea = False
+                leakasratio = False
                 depth = -1
                 width = -1
                 height = -1
@@ -462,11 +464,21 @@ Module IO
                         Else
                             myErrors.Add("In COMP namelist for ORIGIN input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
-                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA_RATIO" Then
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA" Then
+                        leakasarea = True
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 2 And max <= 2 Then
-                            leaks(1) = NMList.ForNMListVarGetNum(i, j, 1)
-                            leaks(2) = NMList.ForNMListVarGetNum(i, j, 2)
+                            leakareas(1) = NMList.ForNMListVarGetNum(i, j, 1)
+                            leakareas(2) = NMList.ForNMListVarGetNum(i, j, 2)
+                        Else
+                            myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA_RATIO" Then
+                        leakasratio = True
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            leakratios(1) = NMList.ForNMListVarGetNum(i, j, 1)
+                            leakratios(2) = NMList.ForNMListVarGetNum(i, j, 2)
                         Else
                             myErrors.Add("In COMP namelist for LEAK_AREA_RATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
@@ -492,7 +504,7 @@ Module IO
                                 ceilid(k) = "OFF"
                                 myErrors.Add("In COMP namelist " + id + " CEILING_MATL_ID " + ceilid(k) + " is not valid; switching ceiling to OFF", ErrorMessages.TypeWarning)
                             Else
-                                If ceilthick(k) = 0 Then ceilthick(k) = myThermalProperties(myThermalProperties.GetIndex(ceilid(k))).Thickness
+                                If ceilid(k) <> "OFF" And ceilthick(k) = 0 Then ceilthick(k) = myThermalProperties(myThermalProperties.GetIndex(ceilid(k))).Thickness
                             End If
                         End If
                         If wallid(k) <> "" Then
@@ -500,7 +512,7 @@ Module IO
                                 wallid(k) = "OFF"
                                 myErrors.Add("In COMP namelist " + id + " WALL_MATL_ID " + wallid(k) + " is not valid; switching wall to OFF", ErrorMessages.TypeWarning)
                             Else
-                                If wallthick(k) = 0 Then wallthick(k) = myThermalProperties(myThermalProperties.GetIndex(wallid(k))).Thickness
+                                If wallid(k) <> "OFF" And wallthick(k) = 0 Then wallthick(k) = myThermalProperties(myThermalProperties.GetIndex(wallid(k))).Thickness
                             End If
                         End If
                         If floorid(k) <> "" Then
@@ -508,7 +520,7 @@ Module IO
                                 floorid(k) = "OFF"
                                 myErrors.Add("In COMP namelist " + id + "FLOOR_MATL_ID " + floorid(k) + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
                             Else
-                                If floorthick(k) = 0 Then floorthick(k) = myThermalProperties(myThermalProperties.GetIndex(floorid(k))).Thickness
+                                If floorid(k) <> "OFF" And floorthick(k) = 0 Then floorthick(k) = myThermalProperties(myThermalProperties.GetIndex(floorid(k))).Thickness
                             End If
                         End If
                     Next
@@ -528,10 +540,16 @@ Module IO
                     If shaft Then
                         aComp.Shaft = True
                     End If
-                    If leaks(1) >= 0 And leaks(2) >= 0 Then
-                        aComp.WallLeak = leaks(1)
-                        aComp.FloorLeak = leaks(2)
-                    Else
+                    If leakasarea = True And leakareas(1) >= 0 And leakareas(2) >= 0 Then
+                        aComp.WallLeak = leakareas(1) / (2 * height * (width + depth))
+                        aComp.FloorLeak = leakareas(2) / (width * depth)
+                    ElseIf leakasarea = True Then
+                        myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                    End If
+                    If leakasratio = True And leakratios(1) >= 0 And leakratios(2) >= 0 Then
+                        aComp.WallLeak = leakratios(1)
+                        aComp.FloorLeak = leakratios(2)
+                    ElseIf leakasratio = True Then
                         myErrors.Add("In COMP namelist for LEAK_AREA_RATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
                     End If
                     aComp.FYI = fyi

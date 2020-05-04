@@ -58,6 +58,8 @@ background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_04 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_05 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_06 -V
 background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_22 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_23 -V
+background -u 98 ..\..\Utilities\for_bundle\Bin\cfast.exe Test_24 -V
 cd ..
 if %1==DelCo_Trainers goto end
 

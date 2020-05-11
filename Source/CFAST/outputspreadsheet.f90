@@ -89,6 +89,7 @@ module spreadsheet_routines
             end if
             call ssaddtoheader (sscompinfo, n_sscomp, 'VOL_'//trim(cRoom), 'Upper Layer Volume', roomptr%id, 'm^3')
             call ssaddtoheader (sscompinfo, n_sscomp, 'PRS_'//trim(cRoom), 'Pressure', roomptr%id, 'Pa')
+            call ssaddtoheader (sscompinfo, n_sscomp, 'APRS_'//trim(cRoom), 'Absolute Pressure', roomptr%id, 'Pa')
             if (validation_flag) then
                 species_units = 'mol_frac'
                 smoke_units = 'mg/m^3'
@@ -762,6 +763,13 @@ module spreadsheet_routines
             roomptr => roominfo(i)
             if (roomptr%id==device) then
                 call ssaddtolist (position,roomptr%relp - roomptr%interior_relp_initial ,outarray)
+            end if
+        end do
+    case ('Absolute Pressure')
+        do i = 1, n_rooms+1
+            roomptr => roominfo(i)
+            if (roomptr%id==device) then
+                call ssaddtolist (position,roomptr%absp ,outarray)
             end if
         end do
         

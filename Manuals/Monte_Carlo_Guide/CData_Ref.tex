@@ -1,0 +1,171 @@
+\documentclass[12pt,twoside]{book}
+
+\input{../Bibliography/commoncommands}
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\frontmatter
+
+\pagestyle{empty}
+
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v5\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ and Smoke Transport \\
+ (Version 7) \\
+ Volume 5: Monte Carlo Tools for CFAST \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Stanley W. Gilbert \\
+   Thomas G. Cleary \\
+}
+
+\vfill
+
+\headerD{1889v5}
+
+\vfill
+
+\logosigs
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v1\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ And Smoke Transport \\
+ (Version 7) \\
+ Volume 5: Monte Carlo Tools for CFAST \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Stanley W. Gilbert \\
+   Thomas G. Cleary \\
+
+{\em Fire Research Division, Engineering Laboratory, Gaithersburg, Maryland} \\
+}
+
+\headerD{1889v5}
+
+\headerC{
+\flushright{\mydate\today\\
+CFAST Version \cfastversion \\
+\emph{GIT Revision:}~\gitrevision}}
+
+\vfill
+
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
+
+\titlesigs
+
+\end{minipage}
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+\setcounter{page}{3}
+
+\input{../Bibliography/authors}
+
+%
+% -------------------  Preface ------------------------
+%
+
+\chapter{Preface}
+
+This document provides the theoretical basis for the Consolidated Fire And Smoke Transport (CFAST) model, following the general framework set forth in the ``Standard Guide for Evaluating the Predictive Capability of Deterministic Fire Models,'' ASTM~E~1355~\cite{CFAST:ASTM:E1355}. Instructions for using CFAST are contained in a separate user's guide, and model assessment information is contained in a separate verification and validation guide.
+
+%
+% -------------------  Disclaimer ------------------------
+%
+
+\chapter{Disclaimer}
+
+The US Department of Commerce makes no warranty, expressed or implied, to users of CFAST, and accepts no responsibility for its use. Users of CFAST assume sole responsibility under Federal law for determining the appropriateness of its use in any particular application; for any conclusions drawn from the results of its use; and for any actions taken or not taken as a result of analysis performed using these tools.
+
+Users are warned that CFAST is intended for use only by those competent in the fields of fluid dynamics, thermodynamics, heat transfer, combustion, and fire science, and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model that may or may not have predictive capability when applied to a specific set of factual circumstances. Lack of accurate predictions by the model could lead to erroneous conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+Throughout this document, the mention of computer hardware or commercial software does not constitute endorsement by the National Institute of Standards and Technology, nor does it indicate that the products are necessarily those best suited for the intended purpose.
+
+\coden{1889v5}
+
+%
+% -------------------  Acknowledgments ------------------------
+%
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+CFAST was originally developed by Walter Jones, formerly of NIST.
+
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
+
+\cleardoublepage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+
+\mainmatter
+
+%
+% -------------------  Overview ------------------------
+%
+
+\chapter{Introduction}
+
+
+
+\bibliography{../Bibliography/CFAST_refs}
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendices}
+
+%
+% -------------------  Nomenclature ------------------------
+%
+
+\chapter{Nomenclature}
+\label{nomenclature}
+
+Note that the units associated with a given symbol are sometimes changed upon input to and output from the program. In particular, temperatures are typically input in degrees Celsius, converted to Kelvin, and then converted back to Celsius on output. Energy units involving Joules or Watts are typically input as kJ or kW, converted to J or W, then converted back to kJ or kW.
+
+\begin{center}
+\begin{longtable}{p{1in}  p{5.5 in}}
+
+$A$                 & area, m$^2$ \\
+\end{longtable}
+
+\end{center}
+
+
+
+
+\label{last_page}
+
+\end{document}

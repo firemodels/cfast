@@ -1,4 +1,4 @@
-&HEAD VERSION = 7500, TITLE = 'CFAST Simulation' /
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
@@ -10,16 +10,23 @@
       CONDUCTIVITY = 1.8 DENSITY = 2280 SPECIFIC_HEAT = 1.04, THICKNESS = 0.61 EMISSIVITY = 0.9 /
 &MATL ID = 'TC' MATERIAL = 'Thermocouple (small steel target for plume temp)', 
       CONDUCTIVITY = 54 DENSITY = 7850 SPECIFIC_HEAT = 0.425, THICKNESS = 0.001 EMISSIVITY = 0.95 /
+&MATL ID = 'FiberCem' MATERIAL = 'Fiber Cement', 
+      CONDUCTIVITY = 0.15 DENSITY = 1300 SPECIFIC_HEAT = 1, THICKNESS = 0.013 EMISSIVITY = 0.9 /
+&MATL ID = 'Gypsum' MATERIAL = 'Gypsum (NBSIR 88-3752)', 
+      CONDUCTIVITY = 1.8 DENSITY = 650 SPECIFIC_HEAT = 1.09, THICKNESS = 0.03 EMISSIVITY = 0.9 /
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7 CEILING_MATL_ID = 'Concrete' WALL_MATL_ID = 'Concrete' FLOOR_MATL_ID = 'Concrete'
+      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7
+      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.013 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.03, 0.61 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000486399 /
 &COMP ID = 'Comp 2'
-      DEPTH = 3.05 HEIGHT = 2.4 WIDTH = 3.4 CEILING_MATL_ID = 'Concrete' WALL_MATL_ID = 'Concrete' FLOOR_MATL_ID = 'Concrete'
+      DEPTH = 3.05 HEIGHT = 2.4 WIDTH = 3.4
+      CEILING_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' CEILING_THICKNESS = 0.013, 0.03, 0.61 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.03, 0.61 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
       ORIGIN = 3.7, 3.05, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000486399 /
 &COMP ID = 'Comp 3'
-      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7 CEILING_MATL_ID = 'Concrete' WALL_MATL_ID = 'Concrete' FLOOR_MATL_ID = 'Concrete'
+      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7
+      CEILING_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' CEILING_THICKNESS = 0.013, 0.03, 0.61 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.03, 0.61 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
       ORIGIN = 7.1, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000486399 /
  
 !! Wall Vents
@@ -44,30 +51,30 @@
 &FIRE ID = 'Center Burner'  COMP_ID = 'Comp 1', FIRE_ID = 'Propane Fire 3'  LOCATION = 0.9, 4 / 
 &CHEM ID = 'Propane Fire 1' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 1' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'Propane Fire 1', DATA = 0, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 5, 551.9, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 1019, 551.9, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 1', DATA = 1020, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 0, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 5, 551.9, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 1019, 551.9, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 1020, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 2' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 2' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'Propane Fire 2', DATA = 0, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 179, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 184, 421.5, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 897, 421.5, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 2', DATA = 898, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 0, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 179, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 184, 421.5, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 897, 421.5, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 898, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
 &CHEM ID = 'Propane Fire 3' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
 &TABL ID = 'Propane Fire 3' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
-&TABL ID = 'Propane Fire 3', DATA = 0, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 360, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 361, 160.6, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 778, 160.6, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
-&TABL ID = 'Propane Fire 3', DATA = 779, 0, 0.6, 0.36, 0.02, 0.01, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 0, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 360, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 361, 160.6, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 778, 160.6, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 779, 0, 0.14, 0.36, 0.024, 0.005, 0, 0, 0 /
  
 !! Devices
-&DEVC ID = 'TC_A1_1' COMP_ID = 'Comp 1' LOCATION = 1.8, 1.3, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.2329293, 0.8540741, -0.4650822 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
-&DEVC ID = 'TC_A1_3' COMP_ID = 'Comp 1' LOCATION = 1.8, 1.3, 1.79 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.2485079, 0.9111955, -0.3285826 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
-&DEVC ID = 'TC_A1_5' COMP_ID = 'Comp 1' LOCATION = 1.8, 1.3, 1.18 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.2594145, 0.9511864, -0.1671782 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
-&DEVC ID = 'TC_A2_1' COMP_ID = 'Comp 1' LOCATION = 1.8, 4.6, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.4478105, 0, -0.8941284 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'TC_A1_1' COMP_ID = 'Comp 1' LOCATION = 1.8, 1.5, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.2284967, 0.7870442, -0.573019 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'TC_A2_1' COMP_ID = 'Comp 1' LOCATION = 1.8, 4.6, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.370397, 0, -0.9288735 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'TC_A3_1' COMP_ID = 'Comp 2' LOCATION = 1.7, 1.5, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
 &DEVC ID = 'TC_A4_1' COMP_ID = 'Comp 3' LOCATION = 1.8, 4.6, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
- 
+&DEVC ID = 'TC_A5_1' COMP_ID = 'Comp 3' LOCATION = 1.8, 1.3, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+   
 &TAIL /

@@ -226,7 +226,7 @@
                             end if
                         else if (y<=h2) then
                             delta_p1 = delta_pf1 - rhol1*g*h1 - rhou1*g*(hflr-h1) + rhoinf*g*hflr
-                            delta_p2 = -rhol1*g*y + rhoinf*g*y
+                            delta_p2 = -rhol2*g*y + rhoinf*g*y
                             delta_py = delta_p1 + delta_p2
                         else if (y>h2) then
                             delta_p1 = delta_pf1 - rhol1*g*h1 - rhou1*g*(hflr-h1) + rhoinf*g*hflr

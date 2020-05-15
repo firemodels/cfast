@@ -350,25 +350,30 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLComp(ByVal NMList As NameListFile, ByRef someCompartments As CompartmentCollection)
         Dim i, j, k, max As Integer
-        Dim ceilid(3), wallid(3), floorid(3), rampid, id, fyi As String
+        Dim rampid, id, fyi As String
         Dim depth, height, width As Single
-        Dim shaft, hall, valid As Boolean
+        Dim shaft, hall, valid, leakasarea, leakasratio As Boolean
         Dim grid(3) As Integer
-        Dim origin(3), leaks(2), comparea(0), compheight(0) As Single
+        Dim origin(3), leakareas(2), leakratios(2), comparea(0), compheight(0) As Single
 
         For i = 1 To NMList.TotNMList
             If (NMList.GetNMListID(i) = "COMP") Then
                 hall = False
                 shaft = False
+                leakasarea = False
+                leakasratio = False
                 depth = -1
                 width = -1
                 height = -1
                 id = ""
-                ceilid = {"", "", ""}
-                floorid = {"", "", ""}
-                wallid = {"", "", ""}
                 rampid = ""
                 fyi = ""
+                Dim ceilid As String() = {"", "", "", ""}
+                Dim floorid As String() = {"", "", "", ""}
+                Dim wallid As String() = {"", "", "", ""}
+                Dim ceilthick As Single() = {0.0, 0.0, 0.0, 0.0}
+                Dim floorthick As Single() = {0.0, 0.0, 0.0, 0.0}
+                Dim wallthick As Single() = {0.0, 0.0, 0.0, 0.0}
                 ReDim comparea(0), compheight(0)
                 For k = 0 To 2
                     grid(k) = 50
@@ -380,17 +385,32 @@ Module IO
                     ElseIf (NMList.ForNMListGetVar(i, j) = "CEILING_MATL_ID") Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         For k = 1 To max
-                            ceilid(k) = NMList.ForNMListVarGetNum(i, j, k)
+                            ceilid(k) = NMList.ForNMListVarGetStr(i, j, k)
                         Next
                     ElseIf (NMList.ForNMListGetVar(i, j) = "FLOOR_MATL_ID") Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         For k = 1 To max
-                            floorid(k) = NMList.ForNMListVarGetNum(i, j, k)
+                            floorid(k) = NMList.ForNMListVarGetStr(i, j, k)
                         Next
                     ElseIf (NMList.ForNMListGetVar(i, j) = "WALL_MATL_ID") Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         For k = 1 To max
-                            wallid(k) = NMList.ForNMListVarGetNum(i, j, k)
+                            wallid(k) = NMList.ForNMListVarGetStr(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "CEILING_THICKNESS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        For k = 1 To max
+                            ceilthick(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "FLOOR_THICKNESS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        For k = 1 To max
+                            floorthick(k) = NMList.ForNMListVarGetNum(i, j, k)
+                        Next
+                    ElseIf (NMList.ForNMListGetVar(i, j) = "WALL_THICKNESS") Then
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        For k = 1 To max
+                            wallthick(k) = NMList.ForNMListVarGetNum(i, j, k)
                         Next
                     ElseIf (NMList.ForNMListGetVar(i, j) = "HALL") Then
                         If NMList.ForNMListVarGetStr(i, j, 1) = ".TRUE." Then
@@ -444,11 +464,21 @@ Module IO
                         Else
                             myErrors.Add("In COMP namelist for ORIGIN input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
-                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA_RATIO" Then
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA" Then
+                        leakasarea = True
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 2 And max <= 2 Then
-                            leaks(1) = NMList.ForNMListVarGetNum(i, j, 1)
-                            leaks(2) = NMList.ForNMListVarGetNum(i, j, 2)
+                            leakareas(1) = NMList.ForNMListVarGetNum(i, j, 1)
+                            leakareas(2) = NMList.ForNMListVarGetNum(i, j, 2)
+                        Else
+                            myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                        End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "LEAK_AREA_RATIO" Then
+                        leakasratio = True
+                        max = NMList.ForNMListVarNumVal(i, j)
+                        If max >= 2 And max <= 2 Then
+                            leakratios(1) = NMList.ForNMListVarGetNum(i, j, 1)
+                            leakratios(2) = NMList.ForNMListVarGetNum(i, j, 2)
                         Else
                             myErrors.Add("In COMP namelist for LEAK_AREA_RATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
                         End If
@@ -473,24 +503,33 @@ Module IO
                             If myThermalProperties.GetIndex(ceilid(k)) < 0 And ceilid(k) <> "OFF" Then
                                 ceilid(k) = "OFF"
                                 myErrors.Add("In COMP namelist " + id + " CEILING_MATL_ID " + ceilid(k) + " is not valid; switching ceiling to OFF", ErrorMessages.TypeWarning)
-                            End If
-                        End If
-                        If floorid(k) <> "" Then
-                            If myThermalProperties.GetIndex(wallid(k)) < 0 And wallid(k) <> "OFF" Then
-                                wallid(k) = "OFF"
-                                myErrors.Add("In COMP namelist " + id + " WALL_MATL_ID " + wallid(k) + " is not valid; switching wall to OFF", ErrorMessages.TypeWarning)
+                            Else
+                                If ceilid(k) <> "OFF" And ceilthick(k) = 0 Then ceilthick(k) = myThermalProperties(myThermalProperties.GetIndex(ceilid(k))).Thickness
                             End If
                         End If
                         If wallid(k) <> "" Then
+                            If myThermalProperties.GetIndex(wallid(k)) < 0 And wallid(k) <> "OFF" Then
+                                wallid(k) = "OFF"
+                                myErrors.Add("In COMP namelist " + id + " WALL_MATL_ID " + wallid(k) + " is not valid; switching wall to OFF", ErrorMessages.TypeWarning)
+                            Else
+                                If wallid(k) <> "OFF" And wallthick(k) = 0 Then wallthick(k) = myThermalProperties(myThermalProperties.GetIndex(wallid(k))).Thickness
+                            End If
+                        End If
+                        If floorid(k) <> "" Then
                             If myThermalProperties.GetIndex(floorid(k)) < 0 And floorid(k) <> "OFF" Then
                                 floorid(k) = "OFF"
                                 myErrors.Add("In COMP namelist " + id + "FLOOR_MATL_ID " + floorid(k) + " is not valid switching floor to OFF", ErrorMessages.TypeWarning)
+                            Else
+                                If floorid(k) <> "OFF" And floorthick(k) = 0 Then floorthick(k) = myThermalProperties(myThermalProperties.GetIndex(floorid(k))).Thickness
                             End If
                         End If
                     Next
                     aComp.SetMaterial("Ceiling", ceilid(1), ceilid(2), ceilid(3))
                     aComp.SetMaterial("Walls", wallid(1), wallid(2), wallid(3))
                     aComp.SetMaterial("Floor", floorid(1), floorid(2), floorid(3))
+                    aComp.SetThickness("Ceiling", ceilthick(1), ceilthick(2), ceilthick(3))
+                    aComp.SetThickness("Walls", wallthick(1), wallthick(2), wallthick(3))
+                    aComp.SetThickness("Floor", floorthick(1), floorthick(2), floorthick(3))
                     aComp.SetPosition(origin(LocationNum.x), origin(LocationNum.y), origin(LocationNum.z))
                     If comparea.GetUpperBound(0) > 0 Then
                         aComp.SetVariableArea(comparea, compheight)
@@ -501,11 +540,17 @@ Module IO
                     If shaft Then
                         aComp.Shaft = True
                     End If
-                    If leaks(1) >= 0 And leaks(2) >= 0 Then
-                        aComp.WallLeak = leaks(1)
-                        aComp.FloorLeak = leaks(2)
-                    Else
-                        myErrors.Add("In COMP namelist for LEAK_AREARATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                    If leakasarea = True And leakareas(1) >= 0 And leakareas(2) >= 0 Then
+                        aComp.WallLeak = leakareas(1) / (2 * height * (width + depth))
+                        aComp.FloorLeak = leakareas(2) / (width * depth)
+                    ElseIf leakasarea = True Then
+                        myErrors.Add("In COMP namelist for LEAK_AREA input must be 2 positive numbers", ErrorMessages.TypeFatal)
+                    End If
+                    If leakasratio = True And leakratios(1) >= 0 And leakratios(2) >= 0 Then
+                        aComp.WallLeak = leakratios(1)
+                        aComp.FloorLeak = leakratios(2)
+                    ElseIf leakasratio = True Then
+                        myErrors.Add("In COMP namelist for LEAK_AREA_RATIO input must be 2 positive numbers", ErrorMessages.TypeFatal)
                     End If
                     aComp.FYI = fyi
                     aComp.Changed = False
@@ -2251,15 +2296,27 @@ Module IO
                 ln = "&COMP " + "ID = '" + aComp.Name + "'"
                 PrintLine(IO, ln)
                 ln = "      DEPTH = " + aComp.RoomDepth.ToString + " HEIGHT = " + aComp.RoomHeight.ToString + " WIDTH = " + aComp.RoomWidth.ToString
+                If aComp.Hall Then
+                    ln += " HALL = .TRUE."
+                ElseIf aComp.Shaft Then
+                    ln += " SHAFT = .TRUE."
+                End If
+                PrintLine(IO, ln)
                 If aComp.CeilingMaterial(1) <> "" Then
                     If aComp.CeilingMaterial(1) = "Off" Then
-                        ln += " CEILING_MATL_ID = 'OFF'"
+                        ln = "      CEILING_MATL_ID = 'OFF'"
                     Else
-                        ln += " CEILING_MATL_ID = '" + aComp.CeilingMaterial(1) + "'"
+                        ln = "      CEILING_MATL_ID = '" + aComp.CeilingMaterial(1) + "'"
                         If aComp.CeilingMaterial(2) <> "" Then ln += ", '" + aComp.CeilingMaterial(2) + "'"
                         If aComp.CeilingMaterial(3) <> "" Then ln += ", '" + aComp.CeilingMaterial(3) + "'"
                     End If
+                    If aComp.CeilingThickness(1) <> 0 Then
+                        ln += " CEILING_THICKNESS = " + aComp.CeilingThickness(1).ToString
+                        If aComp.CeilingMaterial(2) <> "" Then ln += ", " + aComp.CeilingThickness(2).ToString
+                        If aComp.CeilingMaterial(3) <> "" Then ln += ", " + aComp.CeilingThickness(3).ToString
                     End If
+                End If
+
                 If aComp.WallMaterial(1) <> "" Then
                     If aComp.WallMaterial(1) = "Off" Then
                         ln += " WALL_MATL_ID = 'OFF'"
@@ -2267,6 +2324,11 @@ Module IO
                         ln += " WALL_MATL_ID = '" + aComp.WallMaterial(1) + "'"
                         If aComp.WallMaterial(2) <> "" Then ln += ", '" + aComp.WallMaterial(2) + "'"
                         If aComp.WallMaterial(3) <> "" Then ln += ", '" + aComp.WallMaterial(3) + "'"
+                    End If
+                    If aComp.WallThickness(1) <> 0 Then
+                        ln += " WALL_THICKNESS = " + aComp.WallThickness(1).ToString
+                        If aComp.WallMaterial(2) <> "" Then ln += ", " + aComp.WallThickness(2).ToString
+                        If aComp.WallMaterial(3) <> "" Then ln += ", " + aComp.WallThickness(3).ToString
                     End If
                 End If
                 If aComp.FloorMaterial(1) <> "" Then
@@ -2277,11 +2339,11 @@ Module IO
                         If aComp.FloorMaterial(2) <> "" Then ln += ", '" + aComp.FloorMaterial(2) + "'"
                         If aComp.FloorMaterial(3) <> "" Then ln += ", '" + aComp.FloorMaterial(3) + "'"
                     End If
-                End If
-                If aComp.Hall Then
-                    ln += " HALL = .TRUE."
-                ElseIf aComp.Shaft Then
-                    ln += " SHAFT = .TRUE."
+                    If aComp.FloorThickness(1) <> 0 Then
+                        ln += " FLOOR_THICKNESS = " + aComp.FloorThickness(1).ToString
+                        If aComp.FloorMaterial(2) <> "" Then ln += ", " + aComp.FloorThickness(2).ToString
+                        If aComp.FloorMaterial(3) <> "" Then ln += ", " + aComp.FloorThickness(3).ToString
+                    End If
                 End If
                 PrintLine(IO, ln)
                 aComp.GetVariableArea(f, x, j)

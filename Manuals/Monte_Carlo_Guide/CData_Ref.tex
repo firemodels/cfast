@@ -1,0 +1,257 @@
+\documentclass[12pt,twoside]{book}
+
+\input{../Bibliography/commoncommands}
+
+\begin{document}
+
+\bibliographystyle{unsrt}
+
+\frontmatter
+
+\pagestyle{empty}
+
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v5\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ and Smoke Transport \\
+ (Version 7) \\
+ Volume 5: Monte Carlo Tools for CFAST \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Stanley W. Gilbert \\
+   Thomas G. Cleary \\
+}
+
+\vfill
+
+\headerD{1889v5}
+
+\vfill
+
+\logosigs
+
+\end{minipage}
+
+\newpage
+
+\hspace{5in}
+
+\newpage
+
+\begin{minipage}[t][9in][s]{6.5in}
+
+\headerA{1889v5\\}
+
+\headerB{
+CFAST -- Consolidated Fire \\
+ And Smoke Transport \\
+ (Version 7) \\
+ Volume 5: Monte Carlo Tools for CFAST \\
+}
+
+\headerC{
+   Paul A. Reneke \\
+   Richard D. Peacock \\
+   Stanley W. Gilbert \\
+   Thomas G. Cleary \\
+
+{\em Fire Research Division, Engineering Laboratory, Gaithersburg, Maryland} \\
+}
+
+\headerD{1889v5}
+
+\headerC{
+\flushright{\mydate\today\\
+CFAST Version \cfastversion \\
+\emph{GIT Revision:}~\gitrevision}}
+
+\vfill
+
+\flushright{\includegraphics[width=1.2in]{FIGURES/doc} }
+
+\titlesigs
+
+\end{minipage}
+
+
+\newpage
+
+\frontmatter
+
+\pagestyle{plain}
+\setcounter{page}{3}
+
+%
+% -------------------  Preface ------------------------
+%
+
+\chapter{Preface}
+
+This document provides ...
+
+%
+% -------------------  Disclaimer ------------------------
+%
+
+\chapter{Disclaimer}
+
+The US Department of Commerce makes no warranty, expressed or implied, to users of CFAST, and accepts no responsibility for its use. Users of CFAST assume sole responsibility under Federal law for determining the appropriateness of its use in any particular application; for any conclusions drawn from the results of its use; and for any actions taken or not taken as a result of analysis performed using these tools.
+
+Users are warned that CFAST is intended for use only by those competent in the fields of fluid dynamics, thermodynamics, heat transfer, combustion, and fire science, and is intended only to supplement the informed judgment of the qualified user. The software package is a computer model that may or may not have predictive capability when applied to a specific set of factual circumstances. Lack of accurate predictions by the model could lead to erroneous conclusions with regard to fire safety. All results should be evaluated by an informed user.
+
+Throughout this document, the mention of computer hardware or commercial software does not constitute endorsement by the National Institute of Standards and Technology, nor does it indicate that the products are necessarily those best suited for the intended purpose.
+
+\coden{1889v5}
+
+%
+% -------------------  Acknowledgments ------------------------
+%
+
+\chapter{Acknowledgments}
+
+\label{acksection}
+
+CFAST was originally developed by Walter Jones, formerly of NIST.
+
+Continuing support for CFAST is via internal funding at NIST. In addition, support is provided by other agencies of the U.S. Federal Government, most notably the Nuclear Regulatory Commission (NRC) and the Department of Energy (DOE). The NRC Office of Research has funded key validation experiments, the preparation of the CFAST manuals, and the continuing development of sub-models that are of importance in the area of nuclear power plant safety. Special thanks to Mark Salley and David Stroup for their support. Support to refine the software development and quality assurance process for CFAST has been provided by the DOE. The assistance of Subir Sen and Debra Sparkman is gratefully acknowledged.
+
+\cleardoublepage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+
+\mainmatter
+
+%
+% -------------------  Introduction ------------------------
+%
+
+\chapter{Introduction}
+
+In the 80’s and before research was on going to make use of Monte Carlo idea as a part of the move toward performance-based designs in fire safety engineering. Bukowski \cite{Bukowski_1985}, Clarke et al. \cite{Clarke_1990}, and more recently, building codes \cite{NFPA_5000} and engineering handbooks \cite{Hurley_2016} provide a structure for a fire hazard analysis that can be used to characterize the relative performance of two sets of fire scenarios. However, one of the limiting factors in a more widespread adoption of Monte Carlo analysis has been the large amount of data that needs to be generated and processed.
+
+While at one time the issue was one of both computational power and tools designed to do the analysis that is not as true anymore. With the inexorable power of Moore’s Law, it is now relatively easy to obtain the computational power and storage to generate and analysis huge amounts of data. What is still largely lacking are the tools to make the process tenable. To that end the Fire Research Division at the National Institute of Standards and Technology has been exploring the process \cite{NIST_TN_2041,Reneke_2017,Reneke_2018,Cleary_2019} in order to develop tools that will make Monte Carlo analysis a more widely used form of analysis.
+
+%
+% -------------------  Defining the Analysis ------------------------
+%
+
+\chapter{Defining the Question and the Analysis}
+
+As briefly discussed in the introduction a significant amount of work has gone into understanding the basic requirements for a Monte Carlo analysis[1,2]. They outline several key areas that need to be addressed in the analysis.  These include definition of:
+
+\begin{enumerate}
+  \item Community / Building / Occupant characteristics
+  \item Fire scenarios
+  \item Analysis variables / Criteria for comparisons
+  \item Statistical analysis of calculation results
+\end{enumerate}
+
+Community, building, and fire characteristics define the physical geometries of the model simulations (the range of building geometries, vents between compartments and the outside, and the range of fires to be studied). Occupant characteristics and criteria for comparisons define additional model inputs that may be necessary for analysis of calculation results (fire detection devices, the choice of additional model outputs to study tenability of egress paths, fire severity, or building structural integrity, for example). All of these may be defined by a single deterministic set of inputs (a single building geometry or desired fire for study), a collection of different, specific inputs (such as a set of specific building designs of interest), or a statistically-determined range of inputs (for example, defining compartment sizes or smoke detector activation from experimentally-determined distributions). This section details the process for defining a series of input files for analysis with examples for each major step in the process.
+
+\section{Defining Compartment Geometry}
+
+In CFAST, compartment geometry includes definition of the number of compartments, their size (length, width, and height), and their placement in relation to other compartments. In the study of a single structure, this is simply an enumeration of each compartment. Figure \ref{sample_visualization} shows the compartments in a single structure in a CFAST simulation.  Example compartment definitions that include the size and placement of each compartment is shown below.
+
+\begin{figure}[h!]
+\includegraphics[width=6.5in]{FIGURES/Sample_Visualization.png}
+\caption{Sample CFAST visualization of a single structure subject to a fire.}
+\label{sample_visualization}
+\end{figure}
+
+\lstset{backgroundcolor=\color{light-gray}}
+\begin{lstlisting}[basicstyle=\small\ttfamily,stringstyle=\ttfamily,numberstyle=\ttfamily,language=,frame=single, framerule=0pt]
+!! Compartments
+&COMP ID = 'Living Room'
+      DEPTH = 4.672 HEIGHT = 2.4384 WIDTH = 3.3798
+      CEILING_MATL_ID = 'GYPSUM' CEILING_THICKNESS = 0.016
+      WALL_MATL_ID = 'GYPSUM' WALL_THICKNESS = 0.016
+      FLOOR_MATL_ID = 'SOFTWOOD' FLOOR_THICKNESS = 0.019
+      ORIGIN = 0, 0, 2.4384 GRID = 50, 50, 50 /
+&COMP ID = 'Kitchen'
+      DEPTH = 2.74 HEIGHT = 2.4384 WIDTH = 5.1514
+      CEILING_MATL_ID = 'GYPSUM' CEILING_THICKNESS = 0.016
+      WALL_MATL_ID = 'GYPSUM' WALL_THICKNESS = 0.016
+      FLOOR_MATL_ID = 'SOFTWOOD' FLOOR_THICKNESS = 0.019
+      ORIGIN = 0, 4.672, 2.4384 GRID = 50, 50, 50 /
+\end{lstlisting}
+
+Of course, if it is desired to study the impact of fires in a set of more than one specific building, the compartment geometry and placement could be defined by multiple individual buildings with the specific building chosen for an individual scenario chosen at random or from a distribution representing the population of each building type in the community under study.
+
+The set of buildings for study can also be chosen from distributions of building and room 
+
+\section{Defining Data for Analysis}
+
+\section{PreProcessor}
+
+\subsection{Commands}
+
+\subsection{Running PreProcessor}
+
+\subsection{The Issue of Storage}
+
+%
+% -------------------  Running CFAST ------------------------
+%
+
+\chapter{Running CFAST}
+
+\section{Running on Different Machines and Operating Systems}
+
+\section{Summary of Results from CFAST Runs}
+
+%
+% -------------------  Analysis ------------------------
+%
+
+\chapter{Analysis of Data}
+
+\section{Determining If Enough Runs Have Been Made}
+
+\section{Correlation Trees}
+
+%
+% -------------------  Summary ------------------------
+%
+
+\chapter{Summary and Future Work}
+
+\bibliography{../Bibliography/CFAST_refs}
+
+\appendix
+\addcontentsline{toc}{chapter}{Appendices}
+
+%
+% -------------------  Nomenclature ------------------------
+%
+
+\chapter{Nomenclature}
+\label{nomenclature}
+
+Note that the units associated with a given symbol are sometimes changed upon input to and output from the program. In particular, temperatures are typically input in degrees Celsius, converted to Kelvin, and then converted back to Celsius on output. Energy units involving Joules or Watts are typically input as kJ or kW, converted to J or W, then converted back to kJ or kW.
+
+\begin{center}
+\begin{longtable}{p{1in}  p{5.5 in}}
+
+$A$                 & area, m$^2$ \\
+\end{longtable}
+
+\end{center}
+
+\chapter{Supplemental Material}
+
+\chapter{Change Log}
+
+
+\label{last_page}
+
+\end{document}

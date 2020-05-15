@@ -14,7 +14,7 @@
 !! Compartments 
 &COMP ID = 'Full Test Cell'
       DEPTH = 6 HEIGHT = 4.5 WIDTH = 4 CEILING_MATL_ID = 'LLNL Ceil' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Ceil'
-      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0001375 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Full Test Cell' 'OUTSIDE'  TOP = 2.06, BOTTOM = 0, WIDTH = 0.76

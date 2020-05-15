@@ -351,7 +351,7 @@ module initialization_routines
         roomptr => roominfo(i)
         roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
         roomptr%cvolume = roomptr%cheight*roomptr%floor_area
-        roomptr%matl(1:nwal) = 'OFF'
+        roomptr%matl(1,1:nwal) = 'OFF'
         roomptr%surface_on(1:nwal) = .false.
         roomptr%eps_w(1:nwal) = 0.0_eb
     end do
@@ -733,7 +733,7 @@ module initialization_routines
             zloc = zz
             iwall2 = map6(iwall)
             if (roomptr%surface_on(iwall2)) then
-                targptr%material = roomptr%matl(iwall2)
+                targptr%material = roomptr%matl(1,iwall2)
             else
                 targptr%material = ' '
             end if
@@ -804,18 +804,19 @@ module initialization_routines
         do j = 1, n_rooms
             roomptr => roominfo(j)
             if (roomptr%surface_on(i)) then
-                if (roomptr%matl(i)==off.or.roomptr%matl(i)==none) then
+                if (roomptr%matl(1,i)==off.or.roomptr%matl(1,i)==none) then
                     roomptr%surface_on(i) = .false.
                 else
-                    call get_thermal_property(roomptr%matl(i),tp)
-                    thrmpptr => thermalinfo(tp)
-                    roomptr%eps_w(i) = thrmpptr%eps
-                    roomptr%nslab_w(i) = thrmpptr%nslab
                     do k = 1, roomptr%nslab_w(i)
-                        roomptr%k_w(k,i) = thrmpptr%k(k)
-                        roomptr%c_w(k,i) = thrmpptr%c(k)
-                        roomptr%rho_w(k,i) = thrmpptr%rho(k)
-                        roomptr%thick_w(k,i) = thrmpptr%thickness(k)
+                        call get_thermal_property(roomptr%matl(k,i),tp)
+                        thrmpptr => thermalinfo(tp)
+                        if (k==1) roomptr%eps_w(i) = thrmpptr%eps
+                        roomptr%k_w(k,i) = thrmpptr%k(1)
+                        roomptr%c_w(k,i) = thrmpptr%c(1)
+                        roomptr%rho_w(k,i) = thrmpptr%rho(1)
+                        if (roomptr%thick_w(k,i)==0.0_eb) then
+                            roomptr%thick_w(k,i) = thrmpptr%thickness(1)
+                        end if
                     end do
                 end if
             end if

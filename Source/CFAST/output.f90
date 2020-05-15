@@ -938,7 +938,7 @@ module output_routines
 
     ! output initial test case thermal properties
 
-    integer i, j
+    integer i, j, k
     type(room_type), pointer :: roomptr
     type(thermal_type), pointer :: thrmpptr
 
@@ -947,7 +947,9 @@ module output_routines
         do i = 1, n_rooms
             roomptr => roominfo(i)
             do j = 1, nwal
-                if (roomptr%surface_on(j).and.roomptr%matl(j)/=' ') go to 30
+                do k = 1,3
+                    if (roomptr%surface_on(j).and.roomptr%matl(k,j)/=' ') go to 30
+                end do
             end do
         end do
     end if
@@ -958,7 +960,7 @@ module output_routines
 30  write (iofilo,5010)
     do  i = 1, n_rooms
         roomptr => roominfo(i)
-        write (iofilo,5020) roomptr%id, roomptr%matl(1), roomptr%matl(3), roomptr%matl(2)
+        write (iofilo,5020) roomptr%id, roomptr%matl(1,1), roomptr%matl(1,3), roomptr%matl(1,2)
     end do
 
     ! print out the properties of the materials used

@@ -1,3 +1,4 @@
+Imports System.Reflection
 Imports C1.Win.C1FlexGrid
 Public Class UpdateGUI
     Public DoErrorCheck As Boolean = True
@@ -137,18 +138,34 @@ Public Class UpdateGUI
                 MainWin.ThermalSummary.Select(index + 1, 0, index + 1, MainWin.ThermalSummary.Cols.Count - 1, True)
             End If
 
-            Dim SaveCompCeiling As String, SaveTargetMaterial As String, SaveFireComp As String
-            SaveCompCeiling = MainWin.CompCeiling1.Text
+            Dim SaveCompCeiling(3) As String, SaveCompWall(3) As String, SaveCompFloor(3) As String, SaveTargetMaterial As String, SaveFireComp As String
+            SaveCompCeiling = {"", MainWin.CompCeiling1.Text, MainWin.CompCeiling2.Text, MainWin.CompCeiling3.Text}
+            SaveCompWall = {"", MainWin.CompWall1.Text, MainWin.CompWall2.Text, MainWin.CompWall3.Text}
+            SaveCompFloor = {"", MainWin.CompFloor1.Text, MainWin.CompFloor2.Text, MainWin.CompFloor3.Text}
             SaveTargetMaterial = MainWin.TargetMaterial.Text
             SaveFireComp = MainWin.FireComp.Text
             myCompartments.DoChange = False
             myTargets.DoChange = False
             myFireProperties.DoChange = False
             InitThermalPropertyList(MainWin.CompCeiling1)
-            InitThermalPropertyList(MainWin.CompWalls1)
+            InitThermalPropertyList(MainWin.CompWall1)
             InitThermalPropertyList(MainWin.CompFloor1)
+            InitThermalPropertyList(MainWin.CompCeiling2)
+            InitThermalPropertyList(MainWin.CompWall2)
+            InitThermalPropertyList(MainWin.CompFloor2)
+            InitThermalPropertyList(MainWin.CompCeiling3)
+            InitThermalPropertyList(MainWin.CompWall3)
+            InitThermalPropertyList(MainWin.CompFloor3)
             InitThermalPropertyList(MainWin.TargetMaterial)
-            MainWin.CompCeiling1.Text = SaveCompCeiling
+            MainWin.CompCeiling1.Text = SaveCompCeiling(1)
+            MainWin.CompCeiling2.Text = SaveCompCeiling(2)
+            MainWin.CompCeiling3.Text = SaveCompCeiling(3)
+            MainWin.CompWall1.Text = SaveCompWall(1)
+            MainWin.CompWall2.Text = SaveCompWall(2)
+            MainWin.CompWall3.Text = SaveCompWall(3)
+            MainWin.CompFloor1.Text = SaveCompFloor(1)
+            MainWin.CompFloor2.Text = SaveCompFloor(2)
+            MainWin.CompFloor3.Text = SaveCompFloor(3)
             MainWin.TargetMaterial.Text = SaveTargetMaterial
             MainWin.FireComp.Text = SaveFireComp
             myCompartments.DoChange = True
@@ -224,7 +241,7 @@ Public Class UpdateGUI
             End If
         End If
     End Sub
-    Public Sub Geometry(ByVal index As Integer)
+    Public Sub Compartment(ByVal index As Integer)
         General()
         If index < 0 Or myCompartments.Count = 0 Then
             ClearGrid(MainWin.CompSummary)
@@ -238,6 +255,12 @@ Public Class UpdateGUI
             MainWin.TabFires.Enabled = False
             MainWin.TabOutput.Enabled = False
             MainWin.GroupCompartments.Enabled = False
+            MainWin.CompCeilingOn3.Checked = False
+            MainWin.CompWallOn3.Checked = False
+            MainWin.CompFloorOn3.Checked = False
+            MainWin.CompCeilingOn2.Checked = False
+            MainWin.CompWallOn2.Checked = False
+            MainWin.CompFloorOn2.Checked = False
         Else
             Dim aCompartment As New Compartment
             aCompartment = myCompartments.Item(index)
@@ -263,109 +286,196 @@ Public Class UpdateGUI
             MainWin.CompFloorLeak.Text = aCompartment.FloorLeak.ToString + myUnits.Convert(UnitsNum.Area).Units + "/" + myUnits.Convert(UnitsNum.Area).Units
 
             MainWin.CompCeiling1.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(1))
-            If MainWin.CompCeilingOn2.Checked = True Then
+            If MainWin.CompCeiling1.Text = "Off" Then MainWin.CompCeiling1.Text = ""
+            If aCompartment.CeilingMaterial(1) <> "Off" Then MainWin.CompCeilingThickness1.Text = aCompartment.CeilingThickness(1)
+            If aCompartment.CeilingMaterial(2) <> "" Then
+                MainWin.CompCeilingOn2.Checked = True
                 MainWin.CompCeiling2.Enabled = True
+                MainWin.CompCeilingThickness2.Enabled = True
                 MainWin.CompCeiling2.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(2))
+                MainWin.CompCeilingThickness2.Text = aCompartment.CeilingThickness(2)
+                MainWin.CompCeilingOn3.Enabled = True
+                If aCompartment.CeilingMaterial(3) <> "" Then
+                    MainWin.CompCeilingOn3.Checked = True
+                    MainWin.CompCeiling3.Enabled = True
+                    MainWin.CompCeilingThickness3.Enabled = True
+                    MainWin.CompCeiling3.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(3))
+                    MainWin.CompCeilingThickness3.Text = aCompartment.CeilingThickness(3)
+                Else
+                    If MainWin.CompCeilingOn3.Checked = True Then
+                        MainWin.CompCeiling3.Enabled = True
+                        MainWin.CompCeilingThickness3.Enabled = True
+                    Else
+                        MainWin.CompCeiling3.Enabled = False
+                        MainWin.CompCeilingThickness3.Enabled = False
+                        MainWin.CompCeiling3.Text = ""
+                        MainWin.CompCeilingThickness3.Text = ""
+                    End If
+                End If
             Else
-                MainWin.CompCeiling2.Enabled = False
-            End If
-            If MainWin.CompCeilingOn3.Checked = True Then
-                MainWin.CompCeiling3.Enabled = True
-                MainWin.CompCeiling3.Text = myThermalProperties.GetLongName(aCompartment.CeilingMaterial(3))
-            Else
-                MainWin.CompCeiling2.Enabled = False
+                MainWin.CompCeilingOn3.Checked = False
+                MainWin.CompCeilingOn3.Enabled = False
+                MainWin.CompCeiling3.Enabled = False
+                MainWin.CompCeilingThickness3.Enabled = False
+                If MainWin.CompCeilingOn2.Checked = True Then
+                    MainWin.CompCeiling2.Enabled = True
+                    MainWin.CompCeilingThickness2.Enabled = True
+                Else
+                    MainWin.CompCeiling2.Enabled = False
+                    MainWin.CompCeilingThickness2.Enabled = False
+                    MainWin.CompCeiling2.Text = ""
+                    MainWin.CompCeilingThickness2.Text = ""
+                End If
             End If
 
-            MainWin.CompWalls1.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(1))
-            If MainWin.CompWallsOn2.Checked = True Then
-                MainWin.CompWalls2.Enabled = True
-                MainWin.CompWalls2.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(2))
+            MainWin.CompWall1.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(1))
+            If MainWin.CompWall1.Text = "Off" Then MainWin.CompWall1.Text = ""
+            If aCompartment.WallMaterial(1) <> "Off" Then MainWin.CompWallThickness1.Text = aCompartment.WallThickness(1)
+            If aCompartment.WallMaterial(2) <> "" Then
+                MainWin.CompWallOn2.Checked = True
+                MainWin.CompWall2.Enabled = True
+                MainWin.CompWallThickness2.Enabled = True
+                MainWin.CompWall2.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(2))
+                MainWin.CompWallThickness2.Text = aCompartment.WallThickness(2)
+                MainWin.CompWallOn3.Enabled = True
+                If aCompartment.WallMaterial(3) <> "" Then
+                    MainWin.CompWallOn3.Checked = True
+                    MainWin.CompWall3.Enabled = True
+                    MainWin.CompWallThickness3.Enabled = True
+                    MainWin.CompWall3.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(3))
+                    MainWin.CompWallThickness3.Text = aCompartment.WallThickness(3)
+                Else
+                    If MainWin.CompWallOn3.Checked = True Then
+                        MainWin.CompWall3.Enabled = True
+                        MainWin.CompWallThickness3.Enabled = True
+                    Else
+                        MainWin.CompWall3.Enabled = False
+                        MainWin.CompWallThickness3.Enabled = False
+                        MainWin.CompWall3.Text = ""
+                        MainWin.CompWallThickness3.Text = ""
+                    End If
+                End If
             Else
-                MainWin.CompWalls2.Enabled = False
-            End If
-            If MainWin.CompWallsOn3.Checked = True Then
-                MainWin.CompWalls3.Enabled = True
-                MainWin.CompWalls3.Text = myThermalProperties.GetLongName(aCompartment.WallMaterial(3))
-            Else
-                MainWin.CompWalls2.Enabled = False
+                MainWin.CompWallOn3.Checked = False
+                MainWin.CompWallOn3.Enabled = False
+                MainWin.CompWall3.Enabled = False
+                MainWin.CompWallThickness3.Enabled = False
+                If MainWin.CompWallOn2.Checked = True Then
+                    MainWin.CompWall2.Enabled = True
+                    MainWin.CompWallThickness2.Enabled = True
+                Else
+                    MainWin.CompWall2.Enabled = False
+                    MainWin.CompWallThickness2.Enabled = False
+                    MainWin.CompWall2.Text = ""
+                    MainWin.CompWallThickness2.Text = ""
+                End If
             End If
 
             MainWin.CompFloor1.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(1))
-            If MainWin.CompCeilingOn2.Checked = True Then
-                MainWin.CompCeiling2.Enabled = True
-                MainWin.CompCeiling2.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(2))
-            Else
-                MainWin.CompCeiling2.Enabled = False
-            End If
-            If MainWin.CompCeilingOn3.Checked = True Then
-                MainWin.CompCeiling3.Enabled = True
-                MainWin.CompCeiling3.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(3))
-            Else
-                MainWin.CompCeiling2.Enabled = False
-            End If
+            If MainWin.CompFloor1.Text = "Off" Then MainWin.CompFloor1.Text = ""
+            If aCompartment.FloorMaterial(1) <> "Off" Then MainWin.CompFloorThickness1.Text = aCompartment.FloorThickness(1)
+                If aCompartment.FloorMaterial(2) <> "" Then
+                    MainWin.CompFloorOn2.Checked = True
+                    MainWin.CompFloor2.Enabled = True
+                    MainWin.CompFloorThickness2.Enabled = True
+                    MainWin.CompFloor2.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(2))
+                    MainWin.CompFloorThickness2.Text = aCompartment.FloorThickness(2)
+                    MainWin.CompFloorOn3.Enabled = True
+                    If aCompartment.FloorMaterial(3) <> "" Then
+                        MainWin.CompFloorOn3.Checked = True
+                        MainWin.CompFloor3.Enabled = True
+                        MainWin.CompFloorThickness3.Enabled = True
+                        MainWin.CompFloor3.Text = myThermalProperties.GetLongName(aCompartment.FloorMaterial(3))
+                        MainWin.CompFloorThickness3.Text = aCompartment.FloorThickness(3)
+                    Else
+                        If MainWin.CompFloorOn3.Checked = True Then
+                            MainWin.CompFloor3.Enabled = True
+                            MainWin.CompFloorThickness3.Enabled = True
+                        Else
+                            MainWin.CompFloor3.Enabled = False
+                            MainWin.CompFloorThickness3.Enabled = False
+                            MainWin.CompFloor3.Text = ""
+                            MainWin.CompFloorThickness3.Text = ""
+                        End If
+                    End If
+                Else
+                    MainWin.CompFloorOn3.Checked = False
+                MainWin.CompFloorOn3.Enabled = False
+                MainWin.CompFloor3.Enabled = False
+                    MainWin.CompFloorThickness3.Enabled = False
+                    If MainWin.CompFloorOn2.Checked = True Then
+                        MainWin.CompFloor2.Enabled = True
+                        MainWin.CompFloorThickness2.Enabled = True
+                    Else
+                        MainWin.CompFloor2.Enabled = False
+                        MainWin.CompFloorThickness2.Enabled = False
+                        MainWin.CompFloor2.Text = ""
+                        MainWin.CompFloorThickness2.Text = ""
+                    End If
+                End If
 
-            If myEnvironment.AdiabaticWalls Then
-                MainWin.GroupCompSurfaces.Enabled = False
-            Else
-                MainWin.GroupCompSurfaces.Enabled = True
-            End If
+                If myEnvironment.AdiabaticWalls Then
+                    MainWin.GroupCompSurfaces.Enabled = False
+                Else
+                    MainWin.GroupCompSurfaces.Enabled = True
+                End If
 
-            If aCompartment.Shaft = True Then
-                MainWin.CompShaft.Checked = True
-            ElseIf aCompartment.Hall = True Then
-                MainWin.CompCorridor.Checked = True
-            Else
-                MainWin.CompNormal.Checked = True
-            End If
+                If aCompartment.Shaft = True Then
+                    MainWin.CompShaft.Checked = True
+                ElseIf aCompartment.Hall = True Then
+                    MainWin.CompCorridor.Checked = True
+                Else
+                    MainWin.CompNormal.Checked = True
+                End If
 
-            aCompartment.GetVariableArea(AreaPoints, HeightPoints, NumPoints)
-            ClearGrid(MainWin.CompVariableArea)
-            If NumPoints > 0 Then
-                For i = 1 To NumPoints
-                    MainWin.CompVariableArea(i, 0) = HeightPoints(i).ToString + myUnits.Convert(UnitsNum.Length).Units
-                    MainWin.CompVariableArea(i, 1) = AreaPoints(i).ToString + myUnits.Convert(UnitsNum.Area).Units
-                Next
+                aCompartment.GetVariableArea(AreaPoints, HeightPoints, NumPoints)
+                ClearGrid(MainWin.CompVariableArea)
+                If NumPoints > 0 Then
+                    For i = 1 To NumPoints
+                        MainWin.CompVariableArea(i, 0) = HeightPoints(i).ToString + myUnits.Convert(UnitsNum.Length).Units
+                        MainWin.CompVariableArea(i, 1) = AreaPoints(i).ToString + myUnits.Convert(UnitsNum.Area).Units
+                    Next
+                End If
+                NumCompartments = myCompartments.Count
+                ClearGrid(MainWin.CompSummary)
+                If NumCompartments > 0 Then
+                    For i = 1 To NumCompartments
+                        aCompartment = myCompartments.Item(i - 1)
+                        MainWin.CompSummary(i, 0) = aCompartment.Name
+                        MainWin.CompSummary(i, 1) = i.ToString
+                        MainWin.CompSummary(i, 2) = aCompartment.RoomWidth.ToString
+                        MainWin.CompSummary(i, 3) = aCompartment.RoomDepth.ToString
+                        MainWin.CompSummary(i, 4) = aCompartment.RoomHeight.ToString
+                        MainWin.CompSummary(i, 5) = aCompartment.RoomOriginX.ToString
+                        MainWin.CompSummary(i, 6) = aCompartment.RoomOriginY.ToString
+                        MainWin.CompSummary(i, 7) = aCompartment.RoomOriginZ.ToString
+                        MainWin.CompSummary(i, 8) = aCompartment.CeilingMaterial(1).ToLower
+                        MainWin.CompSummary(i, 9) = aCompartment.WallMaterial(1).ToLower
+                        MainWin.CompSummary(i, 10) = aCompartment.FloorMaterial(1).ToLower
+                        MainWin.CompSummary(i, 11) = myFireProperties.NumberofConnections(i - 1)
+                        MainWin.CompSummary(i, 12) = myHVents.NumberofConnections(i - 1)
+                        MainWin.CompSummary(i, 13) = myVVents.NumberofConnections(i - 1)
+                        MainWin.CompSummary(i, 14) = myMVents.NumberofConnections(i - 1)
+                        MainWin.CompSummary(i, 15) = myDetectors.NumberofConnections(i - 1)
+                        MainWin.CompSummary(i, 16) = myTargets.NumberofConnections(i - 1)
+                    Next
+                    MainWin.CompSummary.Select(index + 1, 0, index + 1, MainWin.CompSummary.Cols.Count - 1, True)
+                    InitCompartmentList(MainWin.HVentComp1)
+                    InitCompartmentList(MainWin.HVentComp2)
+                    InitCompartmentList(MainWin.VVentCompTop)
+                    InitCompartmentList(MainWin.VVentCompBottom)
+                    InitCompartmentList(MainWin.MVentFromComp)
+                    InitCompartmentList(MainWin.MventToComp)
+                    InitCompartmentList(MainWin.TargetComp)
+                    InitCompartmentList(MainWin.DetectorComp)
+                    InitCompartmentList(MainWin.HHeatComp1)
+                    InitCompartmentList(MainWin.HHeatComp2)
+                    InitCompartmentList(MainWin.VHeatComp1)
+                    InitCompartmentList(MainWin.VHeatComp2)
+                    InitCompartmentList(MainWin.FireComp)
+                    InitCompartmentList(MainWin.VisualizationComp)
+                End If
             End If
-            NumCompartments = myCompartments.Count
-            ClearGrid(MainWin.CompSummary)
-            If NumCompartments > 0 Then
-                For i = 1 To NumCompartments
-                    aCompartment = myCompartments.Item(i - 1)
-                    MainWin.CompSummary(i, 0) = aCompartment.Name
-                    MainWin.CompSummary(i, 1) = i.ToString
-                    MainWin.CompSummary(i, 2) = aCompartment.RoomWidth.ToString
-                    MainWin.CompSummary(i, 3) = aCompartment.RoomDepth.ToString
-                    MainWin.CompSummary(i, 4) = aCompartment.RoomHeight.ToString
-                    MainWin.CompSummary(i, 5) = aCompartment.RoomOriginX.ToString
-                    MainWin.CompSummary(i, 6) = aCompartment.RoomOriginY.ToString
-                    MainWin.CompSummary(i, 7) = aCompartment.RoomOriginZ.ToString
-                    MainWin.CompSummary(i, 8) = aCompartment.CeilingMaterial(1).ToLower
-                    MainWin.CompSummary(i, 9) = aCompartment.WallMaterial(1).ToLower
-                    MainWin.CompSummary(i, 10) = aCompartment.FloorMaterial(1).ToLower
-                    MainWin.CompSummary(i, 11) = myFireProperties.NumberofConnections(i - 1)
-                    MainWin.CompSummary(i, 12) = myHVents.NumberofConnections(i - 1)
-                    MainWin.CompSummary(i, 13) = myVVents.NumberofConnections(i - 1)
-                    MainWin.CompSummary(i, 14) = myMVents.NumberofConnections(i - 1)
-                    MainWin.CompSummary(i, 15) = myDetectors.NumberofConnections(i - 1)
-                    MainWin.CompSummary(i, 16) = myTargets.NumberofConnections(i - 1)
-                Next
-                MainWin.CompSummary.Select(index + 1, 0, index + 1, MainWin.CompSummary.Cols.Count - 1, True)
-                InitCompartmentList(MainWin.HVentComp1)
-                InitCompartmentList(MainWin.HVentComp2)
-                InitCompartmentList(MainWin.VVentCompTop)
-                InitCompartmentList(MainWin.VVentCompBottom)
-                InitCompartmentList(MainWin.MVentFromComp)
-                InitCompartmentList(MainWin.MventToComp)
-                InitCompartmentList(MainWin.TargetComp)
-                InitCompartmentList(MainWin.DetectorComp)
-                InitCompartmentList(MainWin.HHeatComp1)
-                InitCompartmentList(MainWin.HHeatComp2)
-                InitCompartmentList(MainWin.VHeatComp1)
-                InitCompartmentList(MainWin.VHeatComp2)
-                InitCompartmentList(MainWin.FireComp)
-                InitCompartmentList(MainWin.VisualizationComp)
-            End If
-        End If
     End Sub
     Public Sub HVents(ByVal index As Integer)
         General()
@@ -1150,7 +1260,7 @@ Public Class UpdateGUI
         current = obj.Text
         obj.Items.Clear()
         obj.Items.Add("Off")
-        obj.SelectedIndex = 0
+        'obj.SelectedIndex = 0
         If myThermalProperties.Count > 0 Then
             For i = 0 To myThermalProperties.Count - 1
                 obj.Items.Add(myThermalProperties.Item(i).Name)

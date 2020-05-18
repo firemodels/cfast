@@ -1314,7 +1314,6 @@ continue
     integer :: ios, i, ii, jj, kk, n_defs, ifire, np
     real(eb) :: tmpcond, max_hrr, f_height, hrrpm3, max_area, ohcomb
 
-    type(room_type),   pointer :: roomptr
     type(fire_type),   pointer :: fireptr
     type(table_type),   pointer :: tablptr
 

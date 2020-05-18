@@ -4,7 +4,7 @@ module output_routines
 
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
-    use utility_routines, only: xerror, doesthefileexist
+    use utility_routines, only: xerror
     use opening_fractions, only: find_vent_opening_ramp
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
@@ -1463,9 +1463,11 @@ module output_routines
     subroutine delete_output_files (outputfile)
 
     character(len=*), intent(in) :: outputfile
-    integer fileunit,ios
+    integer :: fileunit, ios
+    logical doesthefileexist
 
-    if (doesthefileexist(outputfile)) then
+    inquire (file=outputfile, exist=doesthefileexist)
+    if (DoesTheFileExist) then
         open (newunit=fileunit, iostat=ios, file=outputfile, status='old')
         if (ios==0) then
             close(fileunit, status='delete', iostat=ios)

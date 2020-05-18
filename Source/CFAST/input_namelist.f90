@@ -3,7 +3,6 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
         vent_type, visual_type, dump_type
@@ -1270,12 +1269,6 @@ continue
                 fireptr%ignited  = .true.
                 fireptr%reported = .true.
             end if
-            
-            ! Position the fire
-            roomptr => roominfo(fireptr%room)
-            !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-            !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-            !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
         end do read_insf_loop
 
@@ -1519,14 +1512,8 @@ continue
 
                     ! calculate a characteristic length of an object (we assume the diameter).
                     ! this is used for point source radiation fire to target calculation as a minimum effective
-                    ! distance between the fire and the target which only impact very small fire to target distances
+                    ! distance between the fire and the target which only impacts very small fire to target distances
                     fireptr%characteristic_length = sqrt(max_area/pio4)
-
-                    ! Position the object
-                    roomptr => roominfo(fireptr%room)
-                    !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-                    !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-                    !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
                     ! Diagnostic - check for the maximum heat release per unit volume.
                     ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -1597,6 +1584,36 @@ continue
     flaming_transition_time   = 0._eb
 
     end subroutine set_defaults
+
+    ! --------------------------- set_heat_of_combustion -------------------------------------------
+
+    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
+
+    ! set the heat of combustion for all fires
+
+    integer, intent(in) :: maxint
+    real(eb), intent(in) :: qdot(maxint), hinitial
+    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
+
+    integer :: i
+    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
+
+    do i = 1, maxint
+        if (i>1) then
+            if (mdot(i)*qdot(i)<=0.0_eb) then
+                hdot(i) = hinitial
+            else
+                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
+                mdot(i) = qdot(i)/hdot(i)
+            end if
+        else
+            hdot(1) = hinitial
+        end if
+    end do
+
+    return
+
+    end subroutine set_heat_of_combustion
 
     end subroutine read_chem
 

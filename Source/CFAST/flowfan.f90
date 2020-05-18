@@ -3,7 +3,7 @@ module mflow_routines
     use precision_parameters
 
     use opening_fractions, only : get_vent_opening
-    use utility_routines, only: d1mach, tanhsmooth
+    use utility_routines, only: tanhsmooth
     
     use cfast_types, only: room_type, vent_type
     

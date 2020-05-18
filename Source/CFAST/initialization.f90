@@ -5,7 +5,7 @@ module initialization_routines
     use numerics_routines, only: dnrm2, dscal
     use output_routines, only : delete_output_files
     use solve_routines, only : update_data
-    use utility_routines, only: indexi, xerror    
+    use utility_routines, only: indexi    
 
     use cfast_types, only: detector_type, room_type, target_type, thermal_type, vent_type
 

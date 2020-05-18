@@ -40,7 +40,7 @@
     
     private
 
-    public namelist_input, read_misc
+    public namelist_input, read_misc, checkread
 
     contains
     ! --------------------------- namelist_input ----------------------------------

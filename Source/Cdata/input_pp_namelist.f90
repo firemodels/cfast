@@ -3,7 +3,6 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
         vent_type, visual_type, dump_type, cfast_type

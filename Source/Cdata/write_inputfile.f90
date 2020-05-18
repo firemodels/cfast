@@ -3,7 +3,6 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
         vent_type, visual_type, dump_type
@@ -291,8 +290,10 @@
     
     type(room_type), pointer :: roomptr
     character :: buf*(128), tbuf*(11)
+    character(len=64), dimension(3) :: mat
+    real(eb), dimension(3) :: thick
     real(eb) :: tmp(3)
-    integer :: i
+    integer :: i, j
     
     if (n_rooms > 0) then
         do i = 1, n_rooms
@@ -305,17 +306,35 @@
             call add_token_val(iounit,buf,'HEIGHT = ', roomptr%cheight)
             call add_token_val(iounit, buf, 'WIDTH =', roomptr%cwidth)
             if (roomptr%surface_on(1)) then
-                call add_token_str(iounit, buf, 'CEILING_MATL_ID = ', roomptr%matl(1))
+                do j = 1, roomptr%nslab_w(1)
+                    mat(j) = " "
+                    mat(j) = trim(roomptr%matl(j,1))
+                    thick(j) = roomptr%thick_w(j,1)
+                end do
+                call add_token_carray(iounit, buf, 'CEILING_MATL_ID = ', mat, roomptr%nslab_w(1))
+                call add_token_rarray(iounit, buf, 'CEILING_THICKNESS = ',thick, roomptr%nslab_w(1))
             else
                 call add_token_str(iounit, buf, 'CEILING_MATL_ID = ', 'OFF')
             end if
             if (roomptr%surface_on(3)) then
-                call add_token_str(iounit, buf, 'WALL_MATL_ID = ', roomptr%matl(1))
+                do j = 1, roomptr%nslab_w(3)
+                    mat(j) = " "
+                    mat(j) = trim(roomptr%matl(j,3))
+                    thick(j) = roomptr%thick_w(j,3)
+                end do
+                call add_token_carray(iounit, buf, 'WALL_MATL_ID = ', mat, roomptr%nslab_w(3))
+                call add_token_rarray(iounit, buf, 'WALL_THICKNESS = ',thick, roomptr%nslab_w(3))
             else
                 call add_token_str(iounit, buf, 'WALL_MATL_ID = ', 'OFF')
             end if
-            if (roomptr%surface_on(1)) then
-                call add_token_str(iounit, buf, 'FLOOR_MATL_ID = ', roomptr%matl(1))
+            if (roomptr%surface_on(2)) then
+                do j = 1, roomptr%nslab_w(2)
+                    mat(j) = " "
+                    mat(j) = trim(roomptr%matl(j,2))
+                    thick(j) = roomptr%thick_w(j,2)
+                end do
+                call add_token_carray(iounit, buf, 'FLOOR_MATL_ID = ', mat, roomptr%nslab_w(2))
+                call add_token_rarray(iounit, buf, 'FLOOR_THICKNESS = ',thick, roomptr%nslab_w(2))
             else
                 call add_token_str(iounit, buf, 'FLOOR_MATL_ID = ', 'OFF')
             end if

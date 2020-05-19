@@ -1214,7 +1214,12 @@ continue
             fireptr%id = id
             fireptr%fyi = fyi
             fireptr%fire_id = fire_id
-
+            
+            ! position
+            if (convert_negative_distances) then
+                if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+            end if
             fireptr%x_position = location(1)
             fireptr%y_position = location(2)
             fireptr%z_position = 0.0_eb
@@ -1778,8 +1783,14 @@ continue
                     write (iofill,5081) i,j,k
                     call cfastexit('read_vent',8)
                 end if
-
+                
+                ! position
                 ventptr%width  = width
+                if (convert_negative_distances) then
+                    roomptr => roominfo(ventptr%room1)
+                    if (top<0._eb) top = roomptr%cheight + top
+                    if (bottom<0._eb) bottom = roomptr%cheight + bottom
+                end if
                 ventptr%soffit = top
                 ventptr%sill   = bottom
 
@@ -1919,7 +1930,7 @@ continue
                 if (.not.newid(id)) then
                     write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check mech v ',counter1
                     write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check mech v ',counter1
-                    call cfastexit('read_ven7', 14)
+                    call cfastexit('read_vent', 14)
                 end if
                 ventptr%id = id
                 ventptr%fyi = fyi
@@ -1938,6 +1949,17 @@ continue
                     end if 
                 end do 
 
+                ! diffuser locations
+                if (convert_negative_distances) then
+                    if (ventptr%room1<n_rooms) then
+                        roomptr => roominfo(ventptr%room1)
+                        if (heights(1)<0._eb) heights(1) = roomptr%cheight + heights(1)
+                    end if
+                    if (ventptr%room2<n_rooms) then
+                        roomptr => roominfo(ventptr%room2)
+                        if (heights(2)<0._eb) heights(2) = roomptr%cheight + heights(2)
+                    end if
+                end if
                 ventptr%height(1) = heights(1)
                 ventptr%diffuser_area(1) = areas(1)
                 ventptr%height(2) = heights(2)

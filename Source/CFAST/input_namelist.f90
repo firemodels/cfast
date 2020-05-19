@@ -14,7 +14,8 @@
         verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
         radiative_incident_flux_ast, radi_verification_flag
     use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag, &
+        convert_negative_distances
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
@@ -714,6 +715,11 @@
                 targptr%room = iroom
 
                 ! position and normal vector
+                if (convert_negative_distances) then
+                    if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                    if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(1)
+                end if
                 targptr%center = location
                 targptr%normal = normal
 
@@ -828,9 +834,17 @@
                         dtectptr%dual_detector = .FALSE. 
                     end if
                 end if
-                dtectptr%center = location
-                dtectptr%rti =  rti
 
+                ! position and normal vector
+                if (convert_negative_distances) then
+                    if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                    if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(1)
+                end if
+                dtectptr%center = location
+                
+                ! detector response and sprinkler flowrate
+                dtectptr%rti =  rti
                 if (trim(type) == 'SPRINKLER') then
                     if (rti>0) then
                         dtectptr%quench = .true.
@@ -840,7 +854,6 @@
                 end if
 
                 dtectptr%spray_density = spray_density*1000.0_eb
-
                 ! if spray density is zero, then turn off the sprinkler
                 if (dtectptr%spray_density <= 0.0_eb) then
                     dtectptr%quench = .false.

@@ -22,6 +22,7 @@ module fire_routines
     use vent_data, only: n_hvents, hventinfo, n_mvents, mventinfo, vss, vsa, vsas
 
     implicit none
+    external cfastexit
 
     private
 

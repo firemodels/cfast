@@ -33,9 +33,7 @@ Friend Module Data
     Friend Const SolutionMethodNames As String = "ImplicitExplicitSteady  "
     Friend Const SolutionTypeNames As String = "Plate      Cylindrical"
     Friend Const DetectorTypes As String = "Smoke    Heat     Sprinkler"
-    Friend Const NormalPointsTo As String = "User SpecifiedRear Wall     Front Wall    Right Wall    Left Wall     Ceiling       Floor         "
-    Friend NormalPointsToData() As Single = {0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0}
-
+    Friend Const NormalPointsTo As String = "Ceiling    Floor      Front Wall Rear Wall  Right Wall Left Wall  "
     Friend myFireProperties As New FireCollection                   ' fire properties (HRR, etc) defined for this test case
     Friend myFires As New FireCollection                            ' fires defined for this test case (location, ignition criteria and link to fire properties for each
     Friend TempFires As New FireCollection

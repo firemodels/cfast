@@ -30,6 +30,7 @@ Public Class Target
     Private aXPosition As Single                ' X Position of target or detector
     Private aYPosition As Single                ' Y Position of target or detector
     Private aZPosition As Single                ' Z Position of target or detector
+    Private aTargetFacing As String             ' Front face orientation of target: UP, DOWN, FRONT, BACK, LEFT, RIGHT, or a fire ID
     Private aXNormal As Single                  ' X component of normal vector from chosen surface of target
     Private aYNormal As Single                  ' Y component of normal vector from chosen surface of target
     Private aZNormal As Single                  ' Z component of normal vector from chosen surface of target
@@ -43,7 +44,7 @@ Public Class Target
     Private aActivationObscurationSmoldering As Single ' Activation obscuration for smoke detectors from smoldering smoke
     Private aRTI As Single                      ' Detector RTI value
     Private aSprayDensity As Single             ' Sprinkler spray density
-    Private aFYI As String                  ' Descriptor for additional user supplied information
+    Private aFYI As String                      ' Descriptor for additional user supplied information
     Private aChanged As Boolean = False         ' True once compartment information has changed
     Private HasErrors As Integer                ' Temp variable that holds error count during error check
 
@@ -55,6 +56,7 @@ Public Class Target
         aYPosition = -1.0
         aZPosition = -1.0
         aType = TypeTarget
+        aTargetFacing = "-"
         aXNormal = 0.0
         aYNormal = 0.0
         aZNormal = 1.0
@@ -177,6 +179,63 @@ Public Class Target
                 End If
             End If
         End Set
+    End Property
+    Public Property TargetFacing() As String
+        Get
+            Return aTargetFacing
+        End Get
+        Set(value As String)
+            If CheckTargetFacing(value) Then
+                If value <> aTargetFacing Then
+                    aTargetFacing = value
+                    aChanged = True
+                End If
+            Else
+                aTargetFacing = "-"
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property TargetFacingNoCheck() As String
+        Get
+            Return aTargetFacing
+        End Get
+        Set(value As String)
+            If value <> aTargetFacing Then
+                aTargetFacing = value
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public ReadOnly Property CheckTargetFacing(aValue As String) As Boolean
+        Get
+            If InStr(Data.NormalPointsTo, aValue, CompareMethod.Text) > 0 Then
+                Return True
+            Else
+                Dim numFires As Integer, i As Integer
+                numFires = myFires.Count
+                If numFires > 0 Then
+                    Dim aFire As Fire
+                    For i = 1 To numFires
+                        aFire = myFires(i - 1)
+                        If aCompartment = aFire.Compartment Then
+                            If aValue = "Fire " + i.ToString + ", " + aFire.Name Then
+                                Return True
+                                ' Dim Hypotenuse As Single, FHeight As Single
+                                'FHeight = Me.FireDataSS(1, 3) ' this should be fire height @ t=0
+                                'Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (FHeight - aTarget.ZPosition) ^ 2)
+                                'If Hypotenuse <> 0 Then
+                                ' aTarget.XNormal = (aFire.XPosition - aTarget.XPosition) / Hypotenuse
+                                ' aTarget.YNormal = (aFire.YPosition - aTarget.YPosition) / Hypotenuse
+                                ' aTarget.ZNormal = (FHeight - aTarget.ZPosition) / Hypotenuse
+                                ' End If
+                            End If
+                        End If
+                    Next
+                End If
+            End If
+            Return False
+        End Get
     End Property
     Public Property XNormal() As Single
         Get
@@ -518,6 +577,15 @@ Public Class Target
                         ElseIf aInternalLocation < 0 Then
                             myErrors.Add("Target " + TargetNumber.ToString + ". Location for internal temperature is less than zero.", ErrorMessages.TypeFatal)
                             HasErrors += 1
+                        End If
+                    End If
+                    If aTargetFacing <> "-" Then
+                        If CheckTargetFacing(aTargetFacing) = False Then
+                            myErrors.Add("Target " + TargetNumber.ToString + ". Front face orientation is not valid: " + aTargetFacing, ErrorMessages.TypeFatal)
+                        Else
+                            If aXNormal <> 0 Or aYNormal <> 0 Or aZNormal <> 0 Then
+                                myErrors.Add("Target " + TargetNumber.ToString + ". Cannot specify both front face orientation and normal vector.", ErrorMessages.TypeFatal)
+                            End If
                         End If
                     End If
                 Case TypeDetector

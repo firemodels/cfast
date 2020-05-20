@@ -6226,7 +6226,7 @@ Public Class CeditMain
         End If
     End Sub
     Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalType.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
-        Dim aTarget As New Target, numFires As Integer, i As Integer
+        Dim aTarget As New Target
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
             If sender Is TargetName Then aTarget.Name = TargetName.Text
@@ -6258,52 +6258,13 @@ Public Class CeditMain
             If sender Is TargetYNormal Then aTarget.YNormal = Val(TargetYNormal.Text)
             If sender Is TargetZNormal Then aTarget.ZNormal = Val(TargetZNormal.Text)
             If sender Is TargetNormalType Then
-                If TargetNormalType.Text = "Right Wall" Then
-                    aTarget.XNormal = 1
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Left Wall" Then
-                    aTarget.XNormal = -1
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Rear Wall" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = 1
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Front Wall" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = -1
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Floor" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = -1
-                ElseIf TargetNormalType.Text = "Ceiling" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = 1
+                If aTarget.CheckTargetFacing(TargetNormalType.Text) Then
+                    aTarget.TargetFacing = TargetNormalType.Text
                 Else
-                    numFires = myFires.Count
-                    If numFires > 0 Then
-                        Dim aFire As Fire
-                        For i = 1 To numFires
-                            aFire = myFires(i - 1)
-                            If aTarget.Compartment = aFire.Compartment Then
-                                If TargetNormalType.Text = "Fire " + i.ToString + ", " + aFire.Name Then
-                                    Dim Hypotenuse As Single, FHeight As Single
-                                    FHeight = Me.FireDataSS(1, 3) ' this should be fire height @ t=0
-                                    Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (FHeight - aTarget.ZPosition) ^ 2)
-                                    If Hypotenuse <> 0 Then
-                                        aTarget.XNormal = (aFire.XPosition - aTarget.XPosition) / Hypotenuse
-                                        aTarget.YNormal = (aFire.YPosition - aTarget.YPosition) / Hypotenuse
-                                        aTarget.ZNormal = (FHeight - aTarget.ZPosition) / Hypotenuse
-                                    End If
-                                End If
-                            End If
-                        Next
-                    End If
+                    aTarget.TargetFacing = "-"
                 End If
             End If
+
             myTargets(CurrentTarget) = aTarget
             UpdateGUI.Targets(CurrentTarget)
         End If

@@ -1,5 +1,7 @@
 Imports System
 Imports System.IO
+Imports System.Xml
+
 Module IO
 #Region "Read Routines"
     Public Sub ReadInputFile(ByVal Filename As String)
@@ -563,7 +565,7 @@ Module IO
     End Sub
     Private Sub ReadInputFileNMLDevc(ByVal NMList As NameListFile, ByRef someDetectors As TargetCollection)
         Dim i, j, k, max As Integer
-        Dim compid, matlid, id, type, fyi As String
+        Dim compid, matlid, id, type, fyi, targetfacing As String
         Dim tempdepthunits As String = "FRACTION"
         Dim tempdepth, rti, setp, setps(2), sprayd As Single
         Dim loc(3), norm(3), coeffs(2) As Single
@@ -583,11 +585,11 @@ Module IO
                 compid = ""
                 matlid = ""
                 fyi = ""
+                targetfacing = ""
                 For k = 0 To 2
                     loc(k) = -1
                     norm(k) = 0
                 Next
-                norm(2) = 1
                 For j = 1 To NMList.ForNMListNumVar(i)
                     If NMList.ForNMListGetVar(i, j) = "ID" Then
                         id = NMList.ForNMListVarGetStr(i, j, 1)
@@ -639,6 +641,8 @@ Module IO
                         Else
                             myErrors.Add("In DEVC namelist for LOCATION input must be 3 positive numbers", ErrorMessages.TypeFatal)
                         End If
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FRONT_SURFACE_ORIENTATION" Then
+                        targetfacing = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "NORMAL" Then
                         max = NMList.ForNMListVarNumVal(i, j)
                         If max >= 1 And max <= 3 Then
@@ -702,6 +706,13 @@ Module IO
                     If type = "PLATE" Or type = "CYLINDER" Then
                         aDetect.Type = Target.TypeTarget
                         aDetect.SetPosition(loc(LocationNum.x), loc(LocationNum.y), loc(LocationNum.z), norm(LocationNum.x), norm(LocationNum.y), norm(LocationNum.z))
+                        If targetfacing.ToUpper = "CEILING" Then aDetect.TargetFacing = "Ceiling"
+                        If targetfacing.ToUpper = "FLOOR" Then aDetect.TargetFacing = "Floor"
+                        If targetfacing.ToUpper = "FRONT WALL" Then aDetect.TargetFacing = "Front Wall"
+                        If targetfacing.ToUpper = "BACK WALL" Then aDetect.TargetFacing = "Back Wall"
+                        If targetfacing.ToUpper = "LEFT WALL" Then aDetect.TargetFacing = "Left Wall"
+                        If targetfacing.ToUpper = "RIGHT WALL" Then aDetect.TargetFacing = "Right Wall"
+                        If InStr(targetfacing, "Fire", CompareMethod.Text) > 0 Then aDetect.TargetFacingNoCheck = targetfacing ' for now, assume it's a valid fire name.  Check comes later
                         Dim atype As Integer
                         If type = "CYLINDER" Then
                             atype = Target.Cylindrical
@@ -2660,7 +2671,25 @@ Module IO
                     ln += " TYPE = 'CYLINDER'"
                 End If
                 ln += " MATL_ID = '" + myThermalProperties.Item(myThermalProperties.GetIndex(aTarg.Material)).ShortName + "' "
-                ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
+                If aTarg.TargetFacing = "-" Then
+                    If aTarg.XNormal = 0 And aTarg.YNormal = 0 And aTarg.ZNormal = 1 Then
+                        ln += "FRONT_SURFACE_ORIENTATION = 'CEILING'"
+                    ElseIf aTarg.XNormal = 0 And aTarg.YNormal = 0 And aTarg.ZNormal = -1 Then
+                        ln += "FRONT_SURFACE_ORIENTATION = 'FLOOR'"
+                    ElseIf aTarg.XNormal = 1 And aTarg.YNormal = 0 And aTarg.ZNormal = 0 Then
+                        ln += "FRONT_SURFACE_ORIENTATION = 'FRONT WALL'"
+                    ElseIf aTarg.XNormal = -1 And aTarg.YNormal = 0 And aTarg.ZNormal = 0 Then
+                        ln += "FRONT_SURFACE_ORIENTATION = 'BACK WALL'"
+                    ElseIf aTarg.XNormal = 0 And aTarg.YNormal = 1 And aTarg.ZNormal = 0 Then
+                        ln += "FRONT_SURFACE_ORIENTATION = 'RIGHT WALL'"
+                    ElseIf aTarg.XNormal = 0 And aTarg.YNormal = -1 And aTarg.ZNormal = 0 Then
+                        ln += "FRONT_SURFACE_ORIENTATION = 'LEFT WALL'"
+                    Else
+                        ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
+                    End If
+                Else
+                        ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing.ToUpper + "'"
+                End If
                 ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 ln += " DEPTH_UNITS = " + "'M'"
                 If aTarg.Adiabatic = True Then

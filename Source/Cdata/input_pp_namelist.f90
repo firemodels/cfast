@@ -353,6 +353,7 @@
     field_name = 'NULL'
     rand_id = 'NULL'
     add_to_parameters = .false.
+    parameter_header = 'NULL'
     
 
     end subroutine set_defaults

@@ -650,9 +650,7 @@ module initialization_routines
 
     ! initialize target data structures
 
-    real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
-    integer :: itarg, iroom, iwall, iwall2, tp
-    integer :: map6(6) = (/1,3,3,3,3,2/)
+    integer :: itarg, iroom, tp
     character(len=mxthrmplen) :: tcname
 
     type(target_type), pointer :: targptr
@@ -670,82 +668,38 @@ module initialization_routines
             stop
         end if
         roomptr => roominfo(iroom)
-        iwall = targptr%wall
-        xloc = targptr%center(1)
-        yloc = targptr%center(2)
-        zloc = targptr%center(3)
-        xxnorm = targptr%normal(1)
-        yynorm = targptr%normal(2)
-        zznorm = targptr%normal(3)
-        xsize = roomptr%cwidth
-        ysize = roomptr%cdepth
-        zsize = roomptr%cheight
 
         ! if the locator is -1, set to center of room on the floor
-        if (xloc==-1.0_eb) xloc = 0.5_eb*xsize
-        if (yloc==-1.0_eb) yloc = 0.5_eb*ysize
-        if (zloc==-1.0_eb) zloc = 0.0_eb
-        if (iwall/=0) then
-            xxnorm = 0.0_eb
-            yynorm = 0.0_eb
-            zznorm = 0.0_eb
-        end if
-        if (iwall==1) then
-            zznorm = -1.0_eb
-            xx = xloc
-            yy = yloc
-            zz = zsize
-        else if (iwall==2) then
-            yynorm = -1.0_eb
-            xx = xsize
-            yy = ysize
-            zz = yloc
-        else if (iwall==3) then
-            xxnorm = -1.0_eb
-            xx = xsize
-            yy = xloc
-            zz = yloc
-        else if (iwall==4) then
-            yynorm = 1.0_eb
-            xx = xloc
-            yy = 0.0_eb
-            zz = yloc
-        else if (iwall==5) then
-            xxnorm = 1.0_eb
-            xx = 0.0_eb
-            yy = ysize
-            zz = yloc
-        else if (iwall==6) then
-            zznorm = 1.0_eb
-            xx = xloc
-            yy = ysize
-            zz = 0.0_eb
-        end if
-        if (iwall/=0) then
-            targptr%center(1) = xx
-            targptr%center(2) = yy
-            targptr%center(3) = zz
-            targptr%normal(1) = xxnorm
-            targptr%normal(2) = yynorm
-            targptr%normal(3) = zznorm
-            xloc = xx
-            yloc = yy
-            zloc = zz
-            iwall2 = map6(iwall)
-            if (roomptr%surface_on(iwall2)) then
-                targptr%material = roomptr%matl(1,iwall2)
-            else
-                targptr%material = ' '
-            end if
-        end if
+        if (targptr%center(1)==-1.0_eb) targptr%center(1) = 0.5_eb*roomptr%cwidth
+        if (targptr%center(2)==-1.0_eb) targptr%center(2) = 0.5_eb*roomptr%cdepth
+        if (targptr%center(3)==-1.0_eb) targptr%center(3) = 0.0_eb
 
         ! center coordinates need to be within room
-        if (xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize) then
-            write (*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
-            write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
+        if (targptr%center(1)<0.0_eb.or.targptr%center(1)>roomptr%cwidth.or. &
+            targptr%center(2)<0.0_eb.or.targptr%center(2)>roomptr%cdepth.or. &
+            targptr%center(3)<0.0_eb.or.targptr%center(3)>roomptr%cheight) then
+            write (*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, &
+                targptr%center(1), targptr%center(2), targptr%center(3)
+            write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, &
+                targptr%center(1), targptr%center(2), targptr%center(3)
             stop
         end if
-        
+
+        ! set up normal vector
+        if (targptr%front_surface_orientation == "CEILING") then
+            targptr%normal = (/0._eb, 0._eb, 1._eb/)
+        else if (targptr%front_surface_orientation == "FLOOR") then
+            targptr%normal = (/0._eb, 0._eb, -1._eb/)
+        else if (targptr%front_surface_orientation == "FRONT WALL") then
+            targptr%normal = (/1._eb, 0._eb, 0._eb/)
+        else if (targptr%front_surface_orientation == "BACK WALL") then
+            targptr%normal = (/-1._eb, 0._eb, 0._eb/)
+        else if (targptr%front_surface_orientation == "RIGHT WALL") then
+            targptr%normal = (/0._eb, 1._eb, 0._eb/)
+        else if (targptr%front_surface_orientation == "LEFT WALL") then
+            targptr%normal = (/0._eb, -1._eb, 0._eb/)
+        end if
+
         ! set up target thermal properties
         tcname = targptr%material
         if (tcname==' ') then

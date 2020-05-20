@@ -45,7 +45,7 @@ module preprocessor_types
         logical :: add_to_parameters
         logical :: parameter_field_set = .false. 
         character(len=128) :: parameter_header
-        character, pointer :: paramptr
+        character(len=128), pointer :: paramptr
     
     contains
         procedure :: add_header
@@ -192,6 +192,8 @@ module preprocessor_types
     end subroutine add_header
     
     subroutine write_value(me)
+    
+        character(len=100) :: buf
     
         class(value_wrapper_type), intent(inout) :: me
     

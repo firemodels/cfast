@@ -1,19 +1,26 @@
 module preprocessor_routines
 
     use precision_parameters
+    
+    use setup_data, only: datapath, project, extension
+    
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds
+    use preprocessor_output_routines, only: flush_parameters_buffer, setup_col_parameters_output, &
+        open_preprocessor_outputfiles, initialize_preprocessor_output_routines, &
+        add_filename_to_parameters
     
     implicit none
     external cfastexit
     
     private
 
-    public preprocessor_initialize, create_case
+    public preprocessor_initialize, create_case, initialize_output_files
 
     contains
     
-    ! --------------------------- namelist_pp_input ----------------------------------
+    ! --------------------------- preprocessor_initialize ----------------------------------
+    
     subroutine preprocessor_initialize
     
     integer :: i
@@ -73,16 +80,43 @@ module preprocessor_routines
     
     end subroutine preprocessor_initialize
     
-    subroutine create_case
+    !
+    !-------------------create_case---------------------------
+    !
     
+    subroutine create_case(filename)
+    
+    character(len=*), intent(in) :: filename
     integer :: i
     
+    call add_filename_to_parameters(filename)
     do i = 1, n_fields
         call fieldinfo(i)%genptr%rand(fieldinfo(i)%valptr)
         call fieldinfo(i)%write_value
     end do 
     
     end subroutine create_case
+    
+    !
+    !------------------initialize_output_files
+    !
+    
+    subroutine initialize_output_files
+    
+    integer :: ios, i
+    
+    call initialize_preprocessor_output_routines(mxfields, mxseeds)
+    call open_preprocessor_outputfiles(datapath, project, ios)
+    if (ios /= 0) then
+        call cfastexit('initialize_output_files',1)
+    end if
+    do i = 1, n_fields
+        call setup_col_parameters_output(fieldinfo(i))
+    end do
+    call flush_parameters_buffer
+    return
+    
+    end subroutine initialize_output_files
     
     end module preprocessor_routines
         

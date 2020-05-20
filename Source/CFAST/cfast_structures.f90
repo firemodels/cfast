@@ -225,6 +225,7 @@ module cfast_types
         character(len=128) :: material      ! material for the target (used to match materials properties)
         character(len=128) :: depth_units   ! specify units for temperature depth location, 'FRACTION' or 'M'
                                             ! default is 'FRACTION' for backwards compatibility
+        character(len=128) :: front_surface_orientation
 
         real(eb) :: center(3)           ! position of target center
         real(eb) :: normal(3)           ! target normal vector

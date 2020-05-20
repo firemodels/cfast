@@ -835,9 +835,20 @@ Public Class UpdateGUI
             MainWin.TargetXPosition.Text = aTarget.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.TargetYPosition.Text = aTarget.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.TargetZPosition.Text = aTarget.ZPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
-            MainWin.TargetXNormal.Text = aTarget.XNormal.ToString
-            MainWin.TargetYNormal.Text = aTarget.YNormal.ToString
-            MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
+            If aTarget.CheckTargetFacing(aTarget.TargetFacing) Then
+                Dim i As Integer = MainWin.TargetNormalType.FindString(aTarget.TargetFacing)
+                MainWin.TargetXNormal.Enabled = False
+                MainWin.TargetYNormal.Enabled = False
+                MainWin.TargetZNormal.Enabled = False
+                MainWin.TargetNormalType.SelectedIndex = i
+            Else
+                MainWin.TargetXNormal.Enabled = True
+                MainWin.TargetXNormal.Text = aTarget.XNormal.ToString
+                MainWin.TargetYNormal.Enabled = True
+                MainWin.TargetYNormal.Text = aTarget.YNormal.ToString
+                MainWin.TargetZNormal.Enabled = True
+                MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
+            End If
             MainWin.TargetMaterial.Text = myThermalProperties.GetLongName(aTarget.Material)
             MainWin.TargetSolutionType.SelectedIndex = aTarget.SolutionType
             MainWin.TargetInternalLocation.Text = aTarget.InternalLocation.ToString + myUnits.Convert(UnitsNum.Length).Units
@@ -1316,6 +1327,18 @@ Public Class UpdateGUI
         aTarget = myTargets(index)
         MainWin.TargetNormalType.Items.Clear()
         MainWin.TargetNormalType.Items.Add("User Specified")
+        If aTarget.Compartment >= 0 Then
+            If aTarget.ZPosition <> myCompartments(aTarget.Compartment).RoomHeight Then MainWin.TargetNormalType.Items.Add("Ceiling")
+        End If
+        If aTarget.ZPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Floor")
+        If aTarget.YPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Front Wall")
+        If aTarget.Compartment >= 0 Then
+            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalType.Items.Add("Rear Wall")
+        End If
+        If aTarget.XPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Left Wall")
+        If aTarget.Compartment >= 0 Then
+            If aTarget.XPosition <> myCompartments(aTarget.Compartment).RoomWidth Then MainWin.TargetNormalType.Items.Add("Right Wall")
+        End If
         numFires = myFires.Count
         If numFires > 0 Then
             Dim aFire As Fire
@@ -1325,18 +1348,6 @@ Public Class UpdateGUI
                     MainWin.TargetNormalType.Items.Add("Fire " + i.ToString + ", " + aFire.Name)
                 End If
             Next
-        End If
-        If aTarget.XPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Left Wall")
-        If aTarget.Compartment >= 0 Then
-            If aTarget.XPosition <> myCompartments(aTarget.Compartment).RoomWidth Then MainWin.TargetNormalType.Items.Add("Right Wall")
-        End If
-        If aTarget.YPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Front Wall")
-        If aTarget.Compartment >= 0 Then
-            If aTarget.YPosition <> myCompartments(aTarget.Compartment).RoomDepth Then MainWin.TargetNormalType.Items.Add("Rear Wall")
-        End If
-        If aTarget.ZPosition <> 0 Then MainWin.TargetNormalType.Items.Add("Floor")
-        If aTarget.Compartment >= 0 Then
-            If aTarget.ZPosition <> myCompartments(aTarget.Compartment).RoomHeight Then MainWin.TargetNormalType.Items.Add("Ceiling")
         End If
     End Sub
     Public Sub UpdateLogFile(LogTextBox As TextBox)

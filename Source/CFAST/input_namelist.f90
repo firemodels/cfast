@@ -624,12 +624,12 @@
     real(eb) :: temperature_depth,rti,setpoint,spray_density
     real(eb),dimension(3) :: location,normal
     real(eb),dimension(2) :: setpoints
-    character(len=64) :: comp_id, id, matl_id, type, depth_units
+    character(len=64) :: comp_id, id, matl_id, type, depth_units, front_surface_orientation
     character(len=128) :: fyi
     logical :: adiabatic_target
     real(eb), dimension(2) :: convection_coefficients
-    namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, rti, setpoint, &
-        spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
+    namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, front_surface_orientation, &
+        rti, setpoint, spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
 
     ios = 1
 
@@ -722,6 +722,7 @@
                 end if
                 targptr%center = location
                 targptr%normal = normal
+                targptr%front_surface_orientation = front_surface_orientation
 
                 targptr%depth_loc = temperature_depth
                 targptr%depth_units = depth_units
@@ -901,6 +902,7 @@
     location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
     matl_id                         = 'NULL'
     normal(:)                       = (/0., 0., 1./)
+    front_surface_orientation       = "NULL"
     rti                             = default_rti
     setpoint                        = -1001._eb
     setpoints                       = (/-1001._eb, -1001._eb/)

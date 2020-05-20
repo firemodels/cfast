@@ -22,7 +22,7 @@
                                                             'CHARACTER', &
                                                             'LOGICAL  '/)
     
-    integer :: rnd_seeds(2)
+    integer :: rnd_seeds(mxseeds)
     integer :: restart_values(9)
     
     end module pp_params

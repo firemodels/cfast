@@ -6,16 +6,17 @@ module preprocessor_routines
     
     use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values
     use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds
+    use preprocessor_types, only: random_generator_type
     use preprocessor_output_routines, only: flush_parameters_buffer, setup_col_parameters_output, &
         open_preprocessor_outputfiles, initialize_preprocessor_output_routines, &
-        add_filename_to_parameters
+        add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer
     
     implicit none
     external cfastexit
     
     private
 
-    public preprocessor_initialize, create_case, initialize_output_files
+    public preprocessor_initialize, create_case, initialize_output_files, write_seeds_outputfile
 
     contains
     
@@ -105,7 +106,7 @@ module preprocessor_routines
     
     integer :: ios, i
     
-    call initialize_preprocessor_output_routines(mxfields, mxseeds)
+    call initialize_preprocessor_output_routines(mxfields, mxseeds, mxgenerators)
     call open_preprocessor_outputfiles(datapath, project, ios)
     if (ios /= 0) then
         call cfastexit('initialize_output_files',1)
@@ -117,6 +118,23 @@ module preprocessor_routines
     return
     
     end subroutine initialize_output_files
+    
+    !
+    !---------write_seeds_outputfile-------------------
+    !
+    
+    subroutine write_seeds_outputfile
+    
+    integer :: i
+    type(random_generator_type), pointer :: genptr
+    
+    do i = 1, n_generators
+        genptr => generatorinfo(i)
+        call add_seeds_to_seeds_buffer(genptr%id, genptr%base_seeds)
+    end do
+    call flush_seeds_buffer
+    
+    end subroutine write_seeds_outputfile
     
     end module preprocessor_routines
         

@@ -35,6 +35,7 @@ module preprocessor_types
         logical :: first                                ! logical used in conjunction with 
         logical :: use_seeds                            ! determines if seeds have been supplied. 
         integer :: seeds(mxseeds)                       ! seed values
+        integer :: base_seeds(mxseeds)                  ! first seeds used 
         real(eb) :: range
         
     contains
@@ -131,7 +132,7 @@ module preprocessor_types
         if (me%first) then
             me%first = .false.
             if (me%use_seeds) then
-                
+                me%seeds = me%base_seeds
             else
                 call RANDOM_NUMBER(x)
                 call RANDOM_SEED(GET=tmpseeds)
@@ -139,6 +140,7 @@ module preprocessor_types
                 me%seeds(2) = mod((tmpseeds(2) + 1303)*104173,1073916995)
                 me%seeds(2) = mod((me%seeds(1) + 1301)*104179,1073916995)
                 me%seeds(1) = mod((me%seeds(2) + 1303)*104173,1073916995)
+                me%base_seeds = me%seeds
             end if
         end if
         if (me%value_type == val_types(idx_real)) then

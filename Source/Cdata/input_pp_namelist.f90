@@ -211,6 +211,10 @@
             
             genptr%id = id
             genptr%fyi = fyi
+            if (initial_seed_values(1) /= -1001 .and. initial_seed_values(2) /= -1001) then
+                genptr%base_seeds = initial_seed_values
+                genptr%use_seeds = .true. 
+            end if 
         
             if (type_dist == rand_dist(idx_uniform)) then
                 if (maximum<minimum) then
@@ -242,7 +246,7 @@
     stdev = -1001._eb
     alpha = -1001._eb
     beta = -1001._eb
-    initial_seed_values(1:mxseeds) = -1001._eb
+    initial_seed_values(1:mxseeds) = -1001
 
     end subroutine set_defaults
 

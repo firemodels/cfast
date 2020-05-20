@@ -29,7 +29,7 @@
     use write_inputfile_routines, only: write_cfast_infile
     use montecarlo_data, only: mc_number_of_cases
     use montecarlo_routines, only: create_mc_filename, process_mc_filename_pattern
-    use preprocessor_routines, only: create_case, initialize_output_files
+    use preprocessor_routines, only: create_case, initialize_output_files, write_seeds_outputfile
     use namelist_input_pp_routines, only: namelist_pp_input
     use preprocessor_output_routines, only: flush_parameters_buffer
 
@@ -62,6 +62,7 @@
         call write_cfast_infile(infilecase)
         call flush_parameters_buffer
     end do
+    call write_seeds_outputfile
 
     call cfastexit ('PreProcessor', 0)
 

@@ -835,12 +835,38 @@ Public Class UpdateGUI
             MainWin.TargetXPosition.Text = aTarget.XPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.TargetYPosition.Text = aTarget.YPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
             MainWin.TargetZPosition.Text = aTarget.ZPosition.ToString + myUnits.Convert(UnitsNum.Length).Units
-            If aTarget.CheckTargetFacing(aTarget.TargetFacing) Then
+            If aTarget.CheckTargetFacing(aTarget.TargetFacing) <> "-" Then
                 Dim i As Integer = MainWin.TargetNormalType.FindString(aTarget.TargetFacing)
-                MainWin.TargetXNormal.Enabled = False
-                MainWin.TargetYNormal.Enabled = False
-                MainWin.TargetZNormal.Enabled = False
-                MainWin.TargetNormalType.SelectedIndex = i
+                If i > 0 Then
+                    MainWin.TargetXNormal.Enabled = False
+                    MainWin.TargetYNormal.Enabled = False
+                    MainWin.TargetZNormal.Enabled = False
+                    MainWin.TargetNormalType.SelectedIndex = i
+                Else
+                    numFires = myFires.Count
+                    If numFires > 0 Then
+                        Dim aFire As Fire
+                        For j = 1 To numFires
+                            aFire = myFires(j - 1)
+                            If aTarget.Compartment = aFire.Compartment Then
+                                If aFire.Name = aTarget.CheckTargetFacing("Fire " + j.ToString + ", " + aFire.Name) Then
+                                    i = MainWin.TargetNormalType.FindString("Fire " + j.ToString + ", " + aFire.Name)
+                                    MainWin.TargetXNormal.Enabled = False
+                                    MainWin.TargetYNormal.Enabled = False
+                                    MainWin.TargetZNormal.Enabled = False
+                                    MainWin.TargetNormalType.SelectedIndex = i
+                                Else
+                                    MainWin.TargetXNormal.Enabled = True
+                                    MainWin.TargetXNormal.Text = aTarget.XNormal.ToString
+                                    MainWin.TargetYNormal.Enabled = True
+                                    MainWin.TargetYNormal.Text = aTarget.YNormal.ToString
+                                    MainWin.TargetZNormal.Enabled = True
+                                    MainWin.TargetZNormal.Text = aTarget.ZNormal.ToString
+                                End If
+                            End If
+                        Next
+                    End If
+                End If
             Else
                 MainWin.TargetXNormal.Enabled = True
                 MainWin.TargetXNormal.Text = aTarget.XNormal.ToString

@@ -7,7 +7,7 @@ module initialization_routines
     use solve_routines, only : update_data
     use utility_routines, only: indexi    
 
-    use cfast_types, only: detector_type, room_type, target_type, thermal_type, vent_type
+    use cfast_types, only: detector_type, fire_type, room_type, target_type, thermal_type, vent_type
 
     use cenviro, only: constvar, odevara
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxleaks, &
@@ -650,11 +650,13 @@ module initialization_routines
 
     ! initialize target data structures
 
-    integer :: itarg, iroom, tp
+    real(eb) :: hypotenuse
+    integer :: itarg, iroom, tp, j
     character(len=mxthrmplen) :: tcname
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
     type(thermal_type), pointer :: thrmpptr
 
     do itarg = 1, n_targets
@@ -698,7 +700,29 @@ module initialization_routines
             targptr%normal = (/0._eb, 1._eb, 0._eb/)
         else if (targptr%front_surface_orientation == "LEFT WALL") then
             targptr%normal = (/0._eb, -1._eb, 0._eb/)
+        else
+            do j = 1, n_fires
+                fireptr => fireinfo(j)
+                if (targptr%front_surface_orientation == fireptr%id) then
+                    hypotenuse = sqrt((fireptr%x_position-targptr%center(1))**2 + &
+                        (fireptr%y_position-targptr%center(2))**2 + &
+                        (fireptr%height(1)-targptr%center(3))**2)
+                    If (Hypotenuse /= 0._eb) Then
+                        targptr%normal(1) = (fireptr%x_position - targptr%center(1)) / hypotenuse
+                        targptr%normal(2) = (fireptr%y_position - targptr%center(2)) / hypotenuse
+                        targptr%normal(3) = (fireptr%height(1) - targptr%center(3)) / hypotenuse
+                    else
+                        write(*, '(a,i3)') '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ' , &
+                            itarg
+                        write(iofill, '(a,i3)') '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ',&
+                            itarg
+                        stop
+                    end if
+                end if
+            end do
         end if
+
+
 
         ! set up target thermal properties
         tcname = targptr%material

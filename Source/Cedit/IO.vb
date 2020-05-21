@@ -2688,9 +2688,13 @@ Module IO
                         ln += " NORMAL = " + aTarg.XNormal.ToString + ", " + aTarg.YNormal.ToString + ", " + aTarg.ZNormal.ToString
                     End If
                 Else
+                    If InStr(aTarg.TargetFacing.ToUpper, Data.NormalPointsTo.ToUpper, CompareMethod.Text) > 0 Then
                         ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing.ToUpper + "'"
+                    Else
+                        ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing + "'"
+                    End If
                 End If
-                ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
+                    ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 ln += " DEPTH_UNITS = " + "'M'"
                 If aTarg.Adiabatic = True Then
                     ln += " ADIABATIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString

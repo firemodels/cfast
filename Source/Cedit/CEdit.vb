@@ -6257,13 +6257,7 @@ Public Class CeditMain
             If sender Is TargetXNormal Then aTarget.XNormal = Val(TargetXNormal.Text)
             If sender Is TargetYNormal Then aTarget.YNormal = Val(TargetYNormal.Text)
             If sender Is TargetZNormal Then aTarget.ZNormal = Val(TargetZNormal.Text)
-            If sender Is TargetNormalType Then
-                If aTarget.CheckTargetFacing(TargetNormalType.Text) Then
-                    aTarget.TargetFacing = TargetNormalType.Text
-                Else
-                    aTarget.TargetFacing = "-"
-                End If
-            End If
+            If sender Is TargetNormalType Then aTarget.TargetFacing = aTarget.CheckTargetFacing(TargetNormalType.Text)
 
             myTargets(CurrentTarget) = aTarget
             UpdateGUI.Targets(CurrentTarget)

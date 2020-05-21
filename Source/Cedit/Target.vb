@@ -185,13 +185,8 @@ Public Class Target
             Return aTargetFacing
         End Get
         Set(value As String)
-            If CheckTargetFacing(value) Then
-                If value <> aTargetFacing Then
-                    aTargetFacing = value
-                    aChanged = True
-                End If
-            Else
-                aTargetFacing = "-"
+            If CheckTargetFacing(value) <> aTargetFacing Then
+                aTargetFacing = value
                 aChanged = True
             End If
         End Set
@@ -207,10 +202,10 @@ Public Class Target
             End If
         End Set
     End Property
-    Public ReadOnly Property CheckTargetFacing(aValue As String) As Boolean
+    Public ReadOnly Property CheckTargetFacing(aValue As String) As String
         Get
             If InStr(Data.NormalPointsTo, aValue, CompareMethod.Text) > 0 Then
-                Return True
+                Return aValue
             Else
                 Dim numFires As Integer, i As Integer
                 numFires = myFires.Count
@@ -220,7 +215,9 @@ Public Class Target
                         aFire = myFires(i - 1)
                         If aCompartment = aFire.Compartment Then
                             If aValue = "Fire " + i.ToString + ", " + aFire.Name Then
-                                Return True
+                                Return aFire.Name
+                            ElseIf aValue = aFire.Name Then
+                                Return aFire.Name
                                 ' Dim Hypotenuse As Single, FHeight As Single
                                 'FHeight = Me.FireDataSS(1, 3) ' this should be fire height @ t=0
                                 'Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (FHeight - aTarget.ZPosition) ^ 2)
@@ -234,7 +231,7 @@ Public Class Target
                     Next
                 End If
             End If
-            Return False
+            Return "-"
         End Get
     End Property
     Public Property XNormal() As Single
@@ -579,13 +576,13 @@ Public Class Target
                             HasErrors += 1
                         End If
                     End If
-                    If aTargetFacing <> "-" Then
-                        If CheckTargetFacing(aTargetFacing) = False Then
-                            myErrors.Add("Target " + TargetNumber.ToString + ". Front face orientation is not valid: " + aTargetFacing, ErrorMessages.TypeFatal)
-                        Else
+                    If aXNormal <> 0 Or aYNormal <> 0 Or aZNormal <> 0 Then
+                        If CheckTargetFacing(aTargetFacing) <> "-" Then
                             If aXNormal <> 0 Or aYNormal <> 0 Or aZNormal <> 0 Then
                                 myErrors.Add("Target " + TargetNumber.ToString + ". Cannot specify both front face orientation and normal vector.", ErrorMessages.TypeFatal)
                             End If
+                        Else
+                            myErrors.Add("Target " + TargetNumber.ToString + ". Front face orientation is not valid: " + aTargetFacing, ErrorMessages.TypeFatal)
                         End If
                     End If
                 Case TypeDetector

@@ -581,7 +581,9 @@ Public Class Target
                             If aXNormal <> 0 Or aYNormal <> 0 Or aZNormal <> 0 Then
                                 myErrors.Add("Target " + TargetNumber.ToString + ". Cannot specify both front face orientation and normal vector.", ErrorMessages.TypeFatal)
                             End If
-                        Else
+                        End If
+                    Else
+                        If CheckTargetFacing(aTargetFacing) = "-" Then
                             myErrors.Add("Target " + TargetNumber.ToString + ". Front face orientation is not valid: " + aTargetFacing, ErrorMessages.TypeFatal)
                         End If
                     End If

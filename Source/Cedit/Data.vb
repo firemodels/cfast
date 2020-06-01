@@ -103,99 +103,6 @@ Friend Module Data
         FireSpeciesYields = 5
     End Enum
 
-    Friend Enum compaNum
-        Name = 2
-        Width
-        Depth
-        Height
-        AbsXPos
-        AbsYPos
-        FlrHeight
-        CeilingMat
-        FloorMat
-        WallMat
-        xGrid
-        yGrid
-        zGrid
-    End Enum
-
-    Friend Enum hventNum
-        firstcompartment = 2
-        secondcompartment
-        ventnumber
-        width
-        soffit
-        sill
-        hall1
-        hall2
-        face
-        initialfraction
-        openingtype = 11
-        opencriterion
-        opentarget
-        openinitialtime
-        openinitialfraction
-        openfinaltime
-        openfinalfraction
-        xoffset
-        yoffset
-    End Enum
-
-    Friend Enum hallNum
-        compartment = 2
-        vel
-        depth
-        DecayDist
-    End Enum
-
-    Friend Enum vventNum
-        firstcompartment = 2
-        secondcompartment
-        ventnumber
-        area
-        shape
-        intialfraction
-        openingtype = 7
-        opencriterion
-        opentarget
-        openinitialtime
-        openinitialfraction
-        openfinaltime
-        openfinalfraction
-        xoffset
-        yoffset
-    End Enum
-
-    Friend Enum vheatNum
-        firstcompartment = 2
-        secondcompartment
-    End Enum
-
-    Friend Enum mventNum
-        fromCompartment = 2
-        toCompartment
-        IDNumber
-        fromOpenOrien
-        fromHeight
-        fromArea
-        toOpenOrien
-        toHeight
-        toArea
-        flow
-        beginFlowDrop
-        flowZero
-        initialfraction
-        openingtype = 14
-        opencriterion
-        opentarget
-        openinitialtime
-        openinitialfraction
-        openfinaltime
-        openfinalfraction
-        xoffset
-        yoffset
-    End Enum
-
     Friend Enum fireNum
         compartment = 2
         xPosition
@@ -220,48 +127,6 @@ Friend Module Data
         Cl
     End Enum
 
-    Friend Enum objfireNum
-        name = 2
-        compartment
-        xPosition
-        yPosition
-        zposition
-        plumeType
-        ignType
-        ignCriterion
-        xNormal
-        yNormal
-        zNormal
-    End Enum
-
-    Friend Enum ambNum
-        ambTemp = 2
-        ambPress
-        refHeight
-        relHumidity
-    End Enum
-
-    Friend Enum timesNum
-        simTime = 2
-        printInterval
-        smokeviewInterval
-        spreadsheetInterval
-    End Enum
-
-    Friend Enum windNum
-        velocity = 2
-        refHeight
-        expLapseRate
-    End Enum
-
-    Friend Enum cjetNum
-        type = 2
-    End Enum
-
-    Friend Enum djignNum
-        igntemp = 2
-    End Enum
-
     Friend Enum chemieNum
         limo2 = 2
         igntemp
@@ -274,41 +139,6 @@ Friend Module Data
         chiR
         HoC
         Material
-    End Enum
-
-    Friend Enum detectNum
-        type = 2
-        compartment
-        activationTemp
-        ActivationObscuration = 4
-        xPosition
-        yPosition
-        zPosition
-        RTI
-        suppression
-        sprayDensity
-    End Enum
-
-    Friend Enum targetNum
-        compartment = 2
-        xPosition
-        yPosition
-        zPosition
-        xNormal
-        yNormal
-        zNormal
-        material
-        method
-        equationType
-        internalLocation
-        name
-    End Enum
-
-    Friend Enum hheatNum
-        firstCompartment = 2
-        num
-        secondCompartment
-        fraction
     End Enum
 
     Friend Enum CFASTlnNum
@@ -336,37 +166,6 @@ Friend Module Data
         thickness
         emissivity
         longName
-    End Enum
-
-    Friend Enum eventNum
-        ventType = 2
-        firstCompartment
-        secondCompartment
-        ventNumber
-        time
-        finalFraction
-        decaytime
-        filterEfficiency = 7
-    End Enum
-
-    Friend Enum rampNum
-        ventType = 2
-        firstcompartment
-        secondcompartment
-        ventnumber
-        numpoints
-        time
-        fraction
-    End Enum
-
-    Friend Enum visualNum
-        sliceType = 2
-        slice2DAxis
-        slice2DPosition
-        slice2DCompartment
-        slice3DCompartment = 3
-        isoValue = 2
-        isoCompartment
     End Enum
 
     Friend Enum InsertFireNum
@@ -417,9 +216,13 @@ Friend Module Data
         z
     End Enum
 
-    Friend Enum IgnitionCriteriaNum
-        time
-        temp
-        flux
+    Friend Enum CompMaterialsColNum
+        Layer = 1
+        CeilingMaterial
+        CeilingThickness
+        WallMaterial
+        WallThickness
+        FloorMaterial
+        FloorThickness
     End Enum
 End Module

@@ -325,6 +325,18 @@ Public Class ThermalPropertiesCollection
             End If
         End Set
     End Property
+    Friend ReadOnly Property MaterialsList() As String
+        Get
+            Dim list As String = ""
+            If Count > 0 Then
+                For i = 0 To Count - 1
+                    list += Item(i).Name
+                    If i < Count - 1 Then list += "|"
+                Next
+            End If
+            Return list
+        End Get
+    End Property
     Public ReadOnly Property GetLongName(ByVal Shortname As String) As String
         Get
             If Count > 0 Then

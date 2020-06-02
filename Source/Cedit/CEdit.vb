@@ -5235,33 +5235,33 @@ Public Class CeditMain
             End If
         End If
     End Sub
-    Private Sub _Flex_Before_Click(sender As Object, e As C1.Win.C1FlexGrid.RowColEventArgs) Handles CompMaterials.BeforeEdit
+    Private Sub CompMaterials_Before_Click(sender As Object, e As C1.Win.C1FlexGrid.RowColEventArgs) Handles CompMaterials.BeforeEdit
         Dim r As Integer = CompMaterials.Row, c As Integer = CompMaterials.Col
         If CurrentCompartment >= 0 And CurrentCompartment <= myCompartments.Count - 1 Then
             Dim aCompartment As New Compartment
             aCompartment = myCompartments.Item(CurrentCompartment)
-            If c = CompMaterialsColNum.CeilingThickness Or c = CompMaterialsColNum.WallMaterial Or c = CompMaterialsColNum.FloorMaterial Then
+            If c = CompMaterialsColNum.CeilingThickness Or c = CompMaterialsColNum.WallThickness Or c = CompMaterialsColNum.FloorThickness Then
                 CompMaterials.ComboList = Nothing
             Else
                 CompMaterials.ComboList = myThermalProperties.MaterialsList
             End If
         End If
     End Sub
-    Private Sub _Flex_After_Click(sender As Object, e As EventArgs) Handles CompMaterials.LeaveCell
+    Private Sub CompMaterials_After_Click(sender As Object, e As EventArgs) Handles CompMaterials.LeaveCell
         Dim r As Integer = CompMaterials.Row, c As Integer = CompMaterials.Col
         If CurrentCompartment >= 0 And CurrentCompartment <= myCompartments.Count - 1 Then
             Dim aCompartment As New Compartment
             aCompartment = myCompartments.Item(CurrentCompartment)
             If c = CompMaterialsColNum.CeilingMaterial Then
-                aCompartment.CeilingMaterial(r) = CompMaterials(r, c)
+                aCompartment.CeilingMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.CeilingThickness Then
                 aCompartment.CeilingThickness(r) = Val(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.WallMaterial Then
-                aCompartment.WallMaterial(r) = CompMaterials(r, c)
+                aCompartment.WallMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.WallThickness Then
                 aCompartment.WallThickness(r) = Val(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.FloorMaterial Then
-                aCompartment.FloorMaterial(r) = CompMaterials(r, c)
+                aCompartment.FloorMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.FloorThickness Then
                 aCompartment.FloorThickness(r) = Val(CompMaterials(r, c))
             End If

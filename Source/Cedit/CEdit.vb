@@ -5253,15 +5253,15 @@ Public Class CeditMain
             Dim aCompartment As New Compartment
             aCompartment = myCompartments.Item(CurrentCompartment)
             If c = CompMaterialsColNum.CeilingMaterial Then
-                aCompartment.CeilingMaterial(r) = CompMaterials(r, c)
+                aCompartment.CeilingMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.CeilingThickness Then
                 aCompartment.CeilingThickness(r) = Val(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.WallMaterial Then
-                aCompartment.WallMaterial(r) = CompMaterials(r, c)
+                aCompartment.WallMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.WallThickness Then
                 aCompartment.WallThickness(r) = Val(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.FloorMaterial Then
-                aCompartment.FloorMaterial(r) = CompMaterials(r, c)
+                aCompartment.FloorMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
             ElseIf c = CompMaterialsColNum.FloorThickness Then
                 aCompartment.FloorThickness(r) = Val(CompMaterials(r, c))
             End If

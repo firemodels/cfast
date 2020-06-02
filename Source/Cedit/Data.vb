@@ -217,7 +217,7 @@ Friend Module Data
     End Enum
 
     Friend Enum CompMaterialsColNum
-        Layer = 1
+        Layer = 0
         CeilingMaterial
         CeilingThickness
         WallMaterial

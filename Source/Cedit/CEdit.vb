@@ -599,6 +599,7 @@ Public Class CeditMain
         Me.Label64 = New System.Windows.Forms.Label()
         Me.CompVariableArea = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupCompSurfaces = New System.Windows.Forms.GroupBox()
+        Me.CompMaterials = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.MainView = New System.Windows.Forms.Button()
         Me.TabMechanicalFlow = New System.Windows.Forms.TabPage()
         Me.MVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
@@ -838,7 +839,6 @@ Public Class CeditMain
         Me.MainGeometry = New System.Windows.Forms.Button()
         Me.MainOpen = New System.Windows.Forms.Button()
         Me.C1SizerLight1 = New C1.Win.C1Sizer.C1SizerLight(Me.components)
-        Me.CompMaterials = New C1.Win.C1FlexGrid.C1FlexGrid()
         CType(Me.Errors, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Message, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Output, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -866,6 +866,7 @@ Public Class CeditMain
         Me.GroupFlowCharacteristics.SuspendLayout()
         CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupCompSurfaces.SuspendLayout()
+        CType(Me.CompMaterials, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabMechanicalFlow.SuspendLayout()
         CType(Me.MVentSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupMVents.SuspendLayout()
@@ -902,7 +903,6 @@ Public Class CeditMain
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.CompMaterials, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'StatusBar
@@ -2411,6 +2411,19 @@ Public Class CeditMain
         Me.GroupCompSurfaces.TabIndex = 16
         Me.GroupCompSurfaces.TabStop = False
         Me.GroupCompSurfaces.Text = "Materials"
+        '
+        'CompMaterials
+        '
+        Me.CompMaterials.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.CompMaterials.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.CompMaterials.ColumnInfo = resources.GetString("CompMaterials.ColumnInfo")
+        Me.CompMaterials.ExtendLastCol = True
+        Me.CompMaterials.Location = New System.Drawing.Point(19, 26)
+        Me.CompMaterials.Name = "CompMaterials"
+        Me.CompMaterials.Rows.Count = 4
+        Me.CompMaterials.ScrollBars = System.Windows.Forms.ScrollBars.None
+        Me.CompMaterials.Size = New System.Drawing.Size(852, 80)
+        Me.CompMaterials.TabIndex = 318
         '
         'MainView
         '
@@ -4826,19 +4839,6 @@ Public Class CeditMain
         Me.MainOpen.TabIndex = 1
         Me.MainOpen.Text = "Open"
         '
-        'CompMaterials
-        '
-        Me.CompMaterials.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
-        Me.CompMaterials.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
-        Me.CompMaterials.ColumnInfo = resources.GetString("CompMaterials.ColumnInfo")
-        Me.CompMaterials.ExtendLastCol = True
-        Me.CompMaterials.Location = New System.Drawing.Point(19, 26)
-        Me.CompMaterials.Name = "CompMaterials"
-        Me.CompMaterials.Rows.Count = 4
-        Me.CompMaterials.ScrollBars = System.Windows.Forms.ScrollBars.None
-        Me.CompMaterials.Size = New System.Drawing.Size(852, 80)
-        Me.CompMaterials.TabIndex = 318
-        '
         'CeditMain
         '
         Me.C1SizerLight1.SetAutoResize(Me, True)
@@ -4897,6 +4897,7 @@ Public Class CeditMain
         Me.GroupFlowCharacteristics.PerformLayout()
         CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupCompSurfaces.ResumeLayout(False)
+        CType(Me.CompMaterials, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabMechanicalFlow.ResumeLayout(False)
         CType(Me.MVentSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupMVents.ResumeLayout(False)
@@ -4948,7 +4949,6 @@ Public Class CeditMain
         CType(Me.VisualSummary, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.ErrorProvider1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.C1SizerLight1, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.CompMaterials, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub

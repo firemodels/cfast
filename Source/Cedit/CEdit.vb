@@ -6682,6 +6682,7 @@ Public Class CeditMain
         UpdateGUI.General()
         UpdateGUI.DoErrorCheck = False
         UpdateGUI.Environment()
+        UpdateGUI.InitCompartmentList(Me.TargetComp)
         UpdateGUI.Thermals(CurrentThermalProperty)
         UpdateGUI.Compartment(CurrentCompartment)
         UpdateGUI.Targets(CurrentTarget)
@@ -6697,24 +6698,24 @@ Public Class CeditMain
     Private Sub InitNew()
         ' Start with a clean slate and a default set of inputs
         myEnvironment = New Environment
-        Text = "CEdit"
-        myCompartments.Clear()
         myEnvironment.AdiabaticWalls = False
-        myHVents.Clear()
-        myVVents.Clear()
-        myMVents.Clear()
-        myHHeats.Clear()
-        myVHeats.Clear()
-        myTargets.Clear()
-        myDetectors.Clear()
-        myFires.Clear()
-        myFireProperties.Clear()
-        TempFires.Clear()
-        myVisuals.Clear()
-        myThermalProperties.Clear()
-        TempThermalProperties.Clear()
+        Text = "CEdit"
+        myThermalProperties = New ThermalPropertiesCollection
+        TempThermalProperties = New ThermalPropertiesCollection
+        myCompartments = New CompartmentCollection
+        myHVents = New VentCollection
+        myVVents = New VentCollection
+        myMVents = New VentCollection
+        myHHeats = New VentCollection
+        myVHeats = New VentCollection
+        myTargets = New TargetCollection
+        myDetectors = New TargetCollection
+        myFires = New FireCollection
+        myFireProperties = New FireCollection
+        TempFires = New FireCollection
+        myVisuals = New VisualCollection
         myErrors.Queue.Clear()
-        myRamps.Clear()
+        myRamps = New RampCollection
         Do While (dataFileHeader.Count > 0)
             dataFileHeader.Remove(dataFileHeader.Count)
         Loop

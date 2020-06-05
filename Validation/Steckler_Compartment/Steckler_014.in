@@ -1,4 +1,4 @@
-&HEAD VERSION = 7500, TITLE = 'Steckler Compartment Test 14' /
+&HEAD VERSION = 7600, TITLE = 'Steckler Compartment Test 14' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -11,7 +11,8 @@
  
 !! Compartments 
 &COMP ID = 'Compartment 1'
-      DEPTH = 2.8 HEIGHT = 2.13 WIDTH = 2.8 CEILING_MATL_ID = 'Fiberboard' WALL_MATL_ID = 'Fiberboard' FLOOR_MATL_ID = 'Fiberboard'
+      DEPTH = 2.8 HEIGHT = 2.13 WIDTH = 2.8
+      CEILING_MATL_ID = 'Fiberboard' CEILING_THICKNESS = 0.013 WALL_MATL_ID = 'Fiberboard' WALL_THICKNESS = 0.013 FLOOR_MATL_ID = 'Fiberboard' FLOOR_THICKNESS = 0.013
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents

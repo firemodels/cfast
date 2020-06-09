@@ -325,6 +325,18 @@ Public Class ThermalPropertiesCollection
             End If
         End Set
     End Property
+    Friend ReadOnly Property MaterialsList() As String
+        Get
+            Dim list As String = ""
+            If Count > 0 Then
+                For i = 0 To Count - 1
+                    list += Item(i).Name
+                    If i < Count - 1 Then list += "|"
+                Next
+            End If
+            Return list
+        End Get
+    End Property
     Public ReadOnly Property GetLongName(ByVal Shortname As String) As String
         Get
             If Count > 0 Then
@@ -377,9 +389,11 @@ Public Class ThermalPropertiesCollection
                 Dim aCompartment As Compartment
                 For i = 0 To myCompartments.Count - 1
                     aCompartment = myCompartments.Item(i)
-                    If aCompartment.CeilingMaterial = aShortName Then numUses += 1
-                    If aCompartment.FloorMaterial = aShortName Then numUses += 1
-                    If aCompartment.WallMaterial = aShortName Then numUses += 1
+                    For j = 1 To 3
+                        If aCompartment.CeilingMaterial(j) = aShortName Then numUses += 1
+                        If aCompartment.FloorMaterial(j) = aShortName Then numUses += 1
+                        If aCompartment.WallMaterial(j) = aShortName Then numUses += 1
+                    Next
                 Next
             End If
             If myTargets.Count > 0 Then

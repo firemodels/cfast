@@ -11,12 +11,12 @@ module solve_routines
     use mflow_routines, only: mechanical_flow
     use numerics_routines, only : ddassl, jac, setderv, snsqe, gjac
     use opening_fractions, only : get_vent_opening
-    use output_routines, only: output_results, output_status, output_debug, delete_output_files, find_error_component
+    use output_routines, only: output_results, output_status, output_debug, delete_output_files, write_error_component
     use radiation_routines, only: radiation
     use smokeview_routines, only: output_smokeview, output_smokeview_header, output_smokeview_plot_data, output_slicedata
     use spreadsheet_routines, only: output_spreadsheet, output_spreadsheet_smokeview
     use target_routines, only: target, update_detectors, get_detector_temp_and_velocity
-    use utility_routines, only: mat2mult, interp, shellsort, cptime, xerror
+    use utility_routines, only: mat2mult, interp, shellsort, cptime
     use vflow_routines, only: vertical_flow
     use compartment_routines, only: layer_mixing, synchronize_species_mass, room_connections, wall_opening_fraction
 
@@ -105,10 +105,11 @@ module solve_routines
     if (info/=1) then
         if (option(fpsteady)/=off) then
             option(fpsteady) = off
-            call xerror('Trying non-steady initial guess' ,0,101,0)
+            write(iofill, '(a)') '***Error in initial_solution: Trying non-steady initial guess.'
             go to 1
         end if
-        call xerror('Solver could not find an initial solution' ,0,102,2)
+        write(iofill, '(a)') '***Error in initial_solution: Solver could not find an initial solution.'
+        call cfastexit('initial_solution',1)
     end if
 
     ! if a room is not connected to any other room via a horizontal or
@@ -519,7 +520,7 @@ module solve_routines
 
         ! make sure dassl is happy
         if (idid<0) then
-            call find_error_component (ieqmax)
+            call write_error_component (ieqmax)
             write (*,'(a,i0)') '***Error, dassl - idid = ', idid
             write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid
             call cfastexit ('solve_simulation', 1)
@@ -599,7 +600,7 @@ module solve_routines
 
                 ! make sure dassl is happy (again)
                 if (idid<0) then
-                    call find_error_component (ipar(3))
+                    call write_error_component (ipar(3))
                     write (*,'(a,i0)') '***Error, dassl - idid = ', idid
                     write (*,'(a,f10.5,1x,a,f10.5)') '***Error: Problem in DASSL backing from ',t,'to time ',tdout
                     write (iofill,'(a,i0)') '***Error, dassl - idid = ', idid

@@ -6,7 +6,7 @@
 &MISC  LOWER_OXYGEN_LIMIT = 0.1 / 
  
 !! Material Properties 
-&MATL ID = 'CONCRETE' MATERIAL = '"Concrete, Normal Weight (6 in)"', 
+&MATL ID = 'CONCRETE' MATERIAL = 'Concrete Normal Weight (6 in)', 
       CONDUCTIVITY = 1.75 DENSITY = 2200 SPECIFIC_HEAT = 1, THICKNESS = 0.15 EMISSIVITY = 0.94 /
  
 !! Compartments 

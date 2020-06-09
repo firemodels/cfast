@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = '62_TN_400kW' /
+&HEAD VERSION = 7600, TITLE = '62_TN_400kW' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 2000 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -13,8 +13,9 @@
  
 !! Compartments 
 &COMP ID = 'Full Test Cell'
-      DEPTH = 6 HEIGHT = 4.5 WIDTH = 4 CEILING_MATL_ID = 'LLNL Ceil' WALL_MATL_ID = 'LLNL Walls' FLOOR_MATL_ID = 'LLNL Ceil'
-      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
+      DEPTH = 6 HEIGHT = 4.5 WIDTH = 4
+      CEILING_MATL_ID = 'LLNL Ceil' CEILING_THICKNESS = 0.1 WALL_MATL_ID = 'LLNL Walls' WALL_THICKNESS = 0.1 FLOOR_MATL_ID = 'LLNL Ceil' FLOOR_THICKNESS = 0.1
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0001375 /
  
 !! Wall Vents
 &VENT TYPE = 'WALL' ID = 'WallVent_1' COMP_IDS = 'Full Test Cell' 'OUTSIDE'  TOP = 2.06, BOTTOM = 0, WIDTH = 0.76
@@ -28,3 +29,5 @@
 &TABL ID = '400kW_Fire', DATA = 10, 400, 0.2, 0.25, 0, 0, 0, 0, 0 /
 &TABL ID = '400kW_Fire', DATA = 2000, 400, 0.2, 0.25, 0, 0, 0, 0, 0 /
 &TABL ID = '400kW_Fire', DATA = 2001, 0, 0.2, 0.25, 0, 0, 0, 0, 0 /
+ 
+&TAIL /

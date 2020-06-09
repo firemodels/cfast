@@ -26,13 +26,12 @@
 
     use precision_parameters
     
-    use initialization_routines, only : initialize_memory, initialize_fire_objects, initialize_species, initialize_walls
+    use initialization_routines, only : initialize_memory, initialize_species, initialize_walls
     use input_routines, only : open_files, read_input_file
-    use output_routines, only: output_version, output_initial_conditions, delete_output_files, closeoutputfiles
+    use output_routines, only: output_version, output_initial_conditions
     use solve_routines, only : solve_simulation
     use spreadsheet_routines, only : output_spreadsheet_dump
     use utility_routines, only : cptime, read_command_options
-    use radiation_routines, only : radiation
 
     use dump_data, only: n_dumps
     use option_data, only: total_steps
@@ -44,7 +43,7 @@
 
     real(eb) :: xdelt, tstop, tbeg, tend 
 
-    cfast_version = 7502        ! Current CFAST version number
+    cfast_version = 7600        ! Current CFAST version number
 
     if (command_argument_count().eq.0) then
         call output_version(0)

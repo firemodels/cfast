@@ -118,7 +118,9 @@ module fire_data
     implicit none
     save
     
-    logical :: nmlflag = .false.                    ! true if input file is in namelist format
+    logical :: convert_negative_distances = .true.  ! true to convert negative vent, fire, and target locations
+                                                    ! to distance from compartment origin
+    logical :: nmlflag = .true.                     ! true if input file is in namelist format
     integer :: input_file_line_number               ! current line read in a namelist-format input file
     logical :: compflag=.false.                     ! true if each namelist type has been read in
     logical :: connflag=.false.

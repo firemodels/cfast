@@ -3,7 +3,7 @@ module fire_routines
     use precision_parameters
 
     use opening_fractions, only: get_vent_opening
-    use utility_routines, only: tanhsmooth, xerror, interp
+    use utility_routines, only: tanhsmooth, interp
 
     use cfast_types, only: detector_type, fire_type, room_type, target_type, vent_type
         
@@ -22,6 +22,7 @@ module fire_routines
     use vent_data, only: n_hvents, hventinfo, n_mvents, mventinfo, vss, vsa, vsas
 
     implicit none
+    external cfastexit
 
     private
 
@@ -1268,7 +1269,8 @@ module fire_routines
                 call check_object_ignition (told,dt,targptr%flux_incident_front,fireptr%ignition_criterion, &
                     fireptr%incident_flux,i,ifobj,tobj,tmpob(1,i))
             else
-                call xerror('Update_fire_objects-incorrectly defined ignition type in input file',0,1,1)
+                write(iofill, '(a)') '***Error in Update_fire_objects: Incorrectly defined ignition type in input file.'
+                call cfastexit('update_fire_objects',1)
                 stop
             end if
         end if

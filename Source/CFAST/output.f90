@@ -4,7 +4,6 @@ module output_routines
 
     use fire_routines, only : flame_height
     use target_routines, only: get_target_temperatures
-    use utility_routines, only: xerror, doesthefileexist
     use opening_fractions, only: find_vent_opening_ramp
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
@@ -39,7 +38,7 @@ module output_routines
     private
 
     public output_version, output_initial_conditions, output_results, delete_output_files, open_output_files, &
-        output_status, output_debug, find_error_component, closeoutputfiles
+        output_status, output_debug, write_error_component, closeoutputfiles
 
     contains
 
@@ -938,7 +937,7 @@ module output_routines
 
     ! output initial test case thermal properties
 
-    integer i, j
+    integer i, j, k
     type(room_type), pointer :: roomptr
     type(thermal_type), pointer :: thrmpptr
 
@@ -947,7 +946,9 @@ module output_routines
         do i = 1, n_rooms
             roomptr => roominfo(i)
             do j = 1, nwal
-                if (roomptr%surface_on(j).and.roomptr%matl(j)/=' ') go to 30
+                do k = 1,3
+                    if (roomptr%surface_on(j).and.roomptr%matl(k,j)/=' ') go to 30
+                end do
             end do
         end do
     end if
@@ -958,7 +959,7 @@ module output_routines
 30  write (iofilo,5010)
     do  i = 1, n_rooms
         roomptr => roominfo(i)
-        write (iofilo,5020) roomptr%id, roomptr%matl(1), roomptr%matl(3), roomptr%matl(2)
+        write (iofilo,5020) roomptr%id, roomptr%matl(1,1), roomptr%matl(1,3), roomptr%matl(1,2)
     end do
 
     ! print out the properties of the materials used
@@ -1171,60 +1172,48 @@ module output_routines
     end subroutine flwout
 
 
-! --------------------------- find_error_component -------------------------------------------
+! --------------------------- write_error_component -------------------------------------------
 
-    subroutine find_error_component (icomp)
+    subroutine write_error_component (icomp)
 
     integer, intent(in) :: icomp
 
     integer :: itmp, irm, iw
 
-    write (lbuf,*)'Solution component with the greatest error is'
-    call xerror(lbuf,0,1,0)
+    write (*,'(a)')'Solution component with the greatest error is'
     if (icomp<=nofp+n_rooms) then
-        write (lbuf,'(a,i2)')' pressure in room ',icomp
-        call xerror(lbuf,0,1,0)
+        write (*,'(a,i2)')' pressure in room ',icomp
     else if (icomp<=noftu) then
-        write (lbuf,'(a,i2)')' either hvac or fsm ',icomp-n_rooms
-        call xerror(lbuf,0,1,0)
+        write (*,'(a,i2)')' either hvac or fsm ',icomp-n_rooms
     else if (icomp<=nofvu) then
-        write (lbuf,'(a,i2)')' upper layer temp in room ',icomp-noftu
-        call xerror(lbuf,0,1,0)
+        write (*,'(a,i2)')' upper layer temp in room ',icomp-noftu
     else if (icomp<=noftl) then
-        write (lbuf,'(a,i2)')' upper layer vol in room ',icomp-nofvu
-        call xerror(lbuf,0,1,0)
+        write (*,'(a,i2)')' upper layer vol in room ',icomp-nofvu
     else if (icomp<=noftl+n_rooms) then
-        write (lbuf,'(a,i2)')' lower layer temp in room ',icomp-noftl
-        call xerror(lbuf,0,1,0)
+        write (*,'(a,i2)')' lower layer temp in room ',icomp-noftl
     else if (icomp<=nofwt) then
         if (option(foxygen)==on) then
-            write (lbuf,'(a,i2)')' oxygen component ',icomp-nofoxyl
-            call xerror(lbuf,0,1,0)
+            write (*,'(a,i2)')' oxygen component ',icomp-nofoxyl
         else
-            write (lbuf,'(a,i2)')' target number ',icomp
-            call xerror(lbuf,0,1,0)
+            write (*,'(a,i2)')' target number ',icomp
         end if
     else if (icomp<=nofprd) then
         itmp = icomp - nofwt
         irm = surface_connections(itmp,w_from_room)
         iw = surface_connections(itmp,w_from_wall)
         if (iw==1) then
-            write (lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
-            call xerror(lbuf,0,1,0)
+            write (*,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' ceiling '
         else if (iw==2) then
-            write (lbuf,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' floor   '
-            call xerror(lbuf,0,1,0)
+            write (*,'(a18,i2,a9,i1)') ' wall temp in room ',irm,' floor   '
         else if (iw==3) then
-            write (lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' upper wall '
-            call xerror(lbuf,0,1,0)
+            write (*,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' upper wall '
         else if (iw==4) then
-            write (lbuf,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
-            call xerror(lbuf,0,1,0)
+            write (*,'(a18,i2,a12,i1)') ' wall temp in room ',irm,' lower wall '
         end if
     end if
 
     return
-    end subroutine find_error_component
+    end subroutine write_error_component
 
 ! --------------------------- output_debug -------------------------------------------
 
@@ -1300,7 +1289,7 @@ module output_routines
         write (*,*) ' '
     else if (ikey==3) then
         write (*,5090) t, dt
-        call find_error_component (ieqmax)
+        call write_error_component (ieqmax)
         write (*,6030)
         do iroom = 1, n_rooms
             roomptr => roominfo(iroom)
@@ -1461,9 +1450,11 @@ module output_routines
     subroutine delete_output_files (outputfile)
 
     character(len=*), intent(in) :: outputfile
-    integer fileunit,ios
+    integer :: fileunit, ios
+    logical doesthefileexist
 
-    if (doesthefileexist(outputfile)) then
+    inquire (file=outputfile, exist=doesthefileexist)
+    if (DoesTheFileExist) then
         open (newunit=fileunit, iostat=ios, file=outputfile, status='old')
         if (ios==0) then
             close(fileunit, status='delete', iostat=ios)

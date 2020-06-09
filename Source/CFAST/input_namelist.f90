@@ -3,7 +3,6 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
-    use utility_routines, only: upperall, set_heat_of_combustion, position_object
 
     use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
         vent_type, visual_type, dump_type
@@ -15,7 +14,8 @@
         verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
         radiative_incident_flux_ast, radi_verification_flag
     use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag, &
+        convert_negative_distances
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
@@ -41,7 +41,7 @@
     
     private
 
-    public namelist_input, read_misc
+    public namelist_input, read_misc, checkread
 
     contains
     ! --------------------------- namelist_input ----------------------------------
@@ -433,8 +433,7 @@
 
     integer, intent(in) :: lu
     
-    integer :: ios, ii, kk
-    character(len=64) :: tcname
+    integer :: ios, i, k
 
     type(room_type), pointer :: roomptr
 
@@ -443,11 +442,14 @@
     real(eb), dimension(3) :: origin
     real(eb), dimension(2) :: leak_area_ratio, leak_area
     real(eb), dimension(mxpts) :: cross_sect_areas, cross_sect_heights
+    real(eb), dimension(3) :: ceiling_thickness, floor_thickness, wall_thickness
     logical :: hall, shaft
-    character(len=64) :: id, ceiling_matl_id, floor_matl_id, wall_matl_id
+    character(len=64) :: id
+    character(len=64), dimension(3) :: ceiling_matl_id, floor_matl_id, wall_matl_id
     character(len=128) :: fyi
     namelist /COMP/ cross_sect_areas, cross_sect_heights, depth, grid, hall, height, id, fyi, &
-        ceiling_matl_id, floor_matl_id, wall_matl_id, origin, shaft, width, leak_area_ratio, leak_area
+        ceiling_matl_id, floor_matl_id, wall_matl_id,ceiling_thickness, floor_thickness, wall_thickness, &
+        origin, shaft, width, leak_area_ratio, leak_area
 
     ios = 1
 
@@ -488,9 +490,9 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_comp_loop: do ii = 1, n_rooms
+        read_comp_loop: do i = 1, n_rooms
 
-            roomptr => roominfo(ii)
+            roomptr => roominfo(i)
 
             call checkread('COMP',lu,ios)
             call set_defaults
@@ -499,11 +501,11 @@
             roomptr%nvars = 0
             roomptr%var_area = 0.0_eb
             roomptr%var_height = 0.0_eb
-            do kk = 1, mxpts
-                if (cross_sect_areas(kk)/=-1001._eb) then
+            do k = 1, mxpts
+                if (cross_sect_areas(k)/=-1001._eb) then
                     roomptr%nvars = roomptr%nvars + 1
-                    roomptr%var_area(roomptr%nvars) = cross_sect_areas(kk)
-                    roomptr%var_height(roomptr%nvars) = cross_sect_heights(kk)
+                    roomptr%var_area(roomptr%nvars) = cross_sect_areas(k)
+                    roomptr%var_height(roomptr%nvars) = cross_sect_heights(k)
                 end if
             end do
 
@@ -513,7 +515,7 @@
                 call cfastexit('read_comp',4)
             end if
 
-            roomptr%compartment    = ii
+            roomptr%compartment    = i
             roomptr%id      = id
             roomptr%fyi     = fyi
             roomptr%cwidth  = width
@@ -523,28 +525,40 @@
             roomptr%y0      = origin(2)
             roomptr%z0      = origin(3)
 
+            roomptr%nslab_w = 0
             ! ceiling
-            tcname = ceiling_matl_id
-            if (trim(tcname)/='OFF') then
-                roomptr%surface_on(1) = .true.
-                roomptr%matl(1) = tcname
-            end if
+            do k = 1, 3
+                if (trim(ceiling_matl_id(k))/='OFF'.and.trim(ceiling_matl_id(k))/='NULL') then
+                    roomptr%surface_on(1) = .true.
+                    roomptr%matl(k,1) = ceiling_matl_id(k)
+                    roomptr%thick_w(k,1) = ceiling_thickness(k)
+                    roomptr%nslab_w(1) = roomptr%nslab_w(1) + 1
+                end if
+            end do
 
             ! floor
-            tcname = floor_matl_id
-            if (trim(tcname)/='OFF') then
-                roomptr%surface_on(2) = .true.
-                roomptr%matl(2) = tcname
-            end if
+            do k = 1, 3
+                if (trim(floor_matl_id(k))/='OFF'.and.trim(floor_matl_id(k))/='NULL') then
+                    roomptr%surface_on(2) = .true.
+                    roomptr%matl(k,2) = floor_matl_id(k)
+                    roomptr%thick_w(k,2) = floor_thickness(k)
+                    roomptr%nslab_w(2) = roomptr%nslab_w(2) + 1
+                end if
+            end do
 
-            ! walls
-            tcname = wall_matl_id
-            if (trim(tcname)/='OFF') then
-                roomptr%surface_on(3) = .true.
-                roomptr%matl(3) = tcname
-                roomptr%surface_on(4) = .true.
-                roomptr%matl(4) = tcname
-            end if
+                ! walls
+            do k = 1, 3
+                if (trim(wall_matl_id(k))/='OFF'.and.trim(wall_matl_id(k))/='NULL') then
+                    roomptr%surface_on(3) = .true.
+                    roomptr%matl(k,3) = wall_matl_id(k)
+                    roomptr%thick_w(k,3) = wall_thickness(k)
+                    roomptr%nslab_w(3) = roomptr%nslab_w(3) + 1
+                    roomptr%surface_on(4) = .true.
+                    roomptr%matl(k,4) = wall_matl_id(k)
+                    roomptr%thick_w(k,4) = wall_thickness(k)
+                    roomptr%nslab_w(4) = roomptr%nslab_w(4) + 1
+                end if
+            end do
 
             roomptr%ibar = grid(1)
             roomptr%jbar = grid(2)
@@ -567,15 +581,18 @@
 
     subroutine set_defaults
 
-    ceiling_matl_id         = 'OFF'
+    ceiling_matl_id         = 'NULL'
+    wall_matl_id            = 'NULL'
+    floor_matl_id           = 'NULL'
+    ceiling_thickness       = 0.0_eb
+    wall_thickness          = 0.0_eb
+    floor_thickness         = 0.0_eb
     cross_sect_areas        = -1001._eb
     cross_sect_heights      = -1001._eb
     id                      = 'NULL'
     fyi                     = 'NULL'
     depth                   = 0.0_eb
-    floor_matl_id           = 'OFF'
     height                  = 0.0_eb
-    wall_matl_id            = 'OFF'
     width                   = 0.0_eb
     grid(:)                 = default_grid
     origin(:)               = 0.0_eb
@@ -607,12 +624,12 @@
     real(eb) :: temperature_depth,rti,setpoint,spray_density
     real(eb),dimension(3) :: location,normal
     real(eb),dimension(2) :: setpoints
-    character(len=64) :: comp_id, id, matl_id, type, depth_units
+    character(len=64) :: comp_id, id, matl_id, type, depth_units, front_surface_orientation
     character(len=128) :: fyi
     logical :: adiabatic_target
     real(eb), dimension(2) :: convection_coefficients
-    namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, rti, setpoint, &
-        spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
+    namelist /DEVC/ comp_id, type, id, temperature_depth, depth_units, location, matl_id, normal, front_surface_orientation, &
+        rti, setpoint, spray_density, setpoints, adiabatic_target, convection_coefficients, fyi
 
     ios = 1
 
@@ -698,8 +715,14 @@
                 targptr%room = iroom
 
                 ! position and normal vector
+                if (convert_negative_distances) then
+                    if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                    if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(1)
+                end if
                 targptr%center = location
                 targptr%normal = normal
+                targptr%front_surface_orientation = front_surface_orientation
 
                 targptr%depth_loc = temperature_depth
                 targptr%depth_units = depth_units
@@ -812,9 +835,17 @@
                         dtectptr%dual_detector = .FALSE. 
                     end if
                 end if
-                dtectptr%center = location
-                dtectptr%rti =  rti
 
+                ! position and normal vector
+                if (convert_negative_distances) then
+                    if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                    if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+                    if (location(3)<0._eb) location(3) = roomptr%cheight + location(1)
+                end if
+                dtectptr%center = location
+                
+                ! detector response and sprinkler flowrate
+                dtectptr%rti =  rti
                 if (trim(type) == 'SPRINKLER') then
                     if (rti>0) then
                         dtectptr%quench = .true.
@@ -824,7 +855,6 @@
                 end if
 
                 dtectptr%spray_density = spray_density*1000.0_eb
-
                 ! if spray density is zero, then turn off the sprinkler
                 if (dtectptr%spray_density <= 0.0_eb) then
                     dtectptr%quench = .false.
@@ -872,6 +902,7 @@
     location(:)                     = (/-1.0_eb, -1.0_eb, -3.0_eb/39.37_eb/)
     matl_id                         = 'NULL'
     normal(:)                       = (/0., 0., 1./)
+    front_surface_orientation       = "NULL"
     rti                             = default_rti
     setpoint                        = -1001._eb
     setpoints                       = (/-1001._eb, -1001._eb/)
@@ -1185,7 +1216,12 @@ continue
             fireptr%id = id
             fireptr%fyi = fyi
             fireptr%fire_id = fire_id
-
+            
+            ! position
+            if (convert_negative_distances) then
+                if (location(1)<0._eb) location(1) = roomptr%cwidth + location(1)
+                if (location(2)<0._eb) location(2) = roomptr%cdepth + location(2)
+            end if
             fireptr%x_position = location(1)
             fireptr%y_position = location(2)
             fireptr%z_position = 0.0_eb
@@ -1253,12 +1289,6 @@ continue
                 fireptr%ignited  = .true.
                 fireptr%reported = .true.
             end if
-            
-            ! Position the fire
-            roomptr => roominfo(fireptr%room)
-            !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-            !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-            !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
         end do read_insf_loop
 
@@ -1304,7 +1334,6 @@ continue
     integer :: ios, i, ii, jj, kk, n_defs, ifire, np
     real(eb) :: tmpcond, max_hrr, f_height, hrrpm3, max_area, ohcomb
 
-    type(room_type),   pointer :: roomptr
     type(fire_type),   pointer :: fireptr
     type(table_type),   pointer :: tablptr
 
@@ -1502,14 +1531,8 @@ continue
 
                     ! calculate a characteristic length of an object (we assume the diameter).
                     ! this is used for point source radiation fire to target calculation as a minimum effective
-                    ! distance between the fire and the target which only impact very small fire to target distances
+                    ! distance between the fire and the target which only impacts very small fire to target distances
                     fireptr%characteristic_length = sqrt(max_area/pio4)
-
-                    ! Position the object
-                    roomptr => roominfo(fireptr%room)
-                    !call position_object (fireptr%x_position,roomptr%cwidth,midpoint,mx_hsep)
-                    !call position_object (fireptr%y_position,roomptr%cdepth,midpoint,mx_hsep)
-                    !call position_object (fireptr%z_position,roomptr%cheight,base,mx_hsep)
 
                     ! Diagnostic - check for the maximum heat release per unit volume.
                     ! First, estimate the flame length - we want to get an idea of the size of the volume over which the energy will be released
@@ -1580,6 +1603,36 @@ continue
     flaming_transition_time   = 0._eb
 
     end subroutine set_defaults
+
+    ! --------------------------- set_heat_of_combustion -------------------------------------------
+
+    subroutine set_heat_of_combustion (maxint, mdot, qdot, hdot, hinitial)
+
+    ! set the heat of combustion for all fires
+
+    integer, intent(in) :: maxint
+    real(eb), intent(in) :: qdot(maxint), hinitial
+    real(eb), intent(out) :: mdot(maxint), hdot(maxint)
+
+    integer :: i
+    real(eb) :: hcmax = 1.0e8_eb, hcmin = 1.0e6_eb
+
+    do i = 1, maxint
+        if (i>1) then
+            if (mdot(i)*qdot(i)<=0.0_eb) then
+                hdot(i) = hinitial
+            else
+                hdot(i) = min(hcmax,max(qdot(i)/mdot(i),hcmin))
+                mdot(i) = qdot(i)/hdot(i)
+            end if
+        else
+            hdot(1) = hinitial
+        end if
+    end do
+
+    return
+
+    end subroutine set_heat_of_combustion
 
     end subroutine read_chem
 
@@ -1732,8 +1785,14 @@ continue
                     write (iofill,5081) i,j,k
                     call cfastexit('read_vent',8)
                 end if
-
+                
+                ! position
                 ventptr%width  = width
+                if (convert_negative_distances) then
+                    roomptr => roominfo(ventptr%room1)
+                    if (top<0._eb) top = roomptr%cheight + top
+                    if (bottom<0._eb) bottom = roomptr%cheight + bottom
+                end if
                 ventptr%soffit = top
                 ventptr%sill   = bottom
 
@@ -1873,7 +1932,7 @@ continue
                 if (.not.newid(id)) then
                     write(*,'(a,a,a,i3)') '***Error: Not a unique identifier for &VENT ',trim(id), 'Check mech v ',counter1
                     write(iofill,'(a,a,a,i3)')'***Error: Not a unique identifier for &VENT ',trim(id),'Check mech v ',counter1
-                    call cfastexit('read_ven7', 14)
+                    call cfastexit('read_vent', 14)
                 end if
                 ventptr%id = id
                 ventptr%fyi = fyi
@@ -1892,6 +1951,17 @@ continue
                     end if 
                 end do 
 
+                ! diffuser locations
+                if (convert_negative_distances) then
+                    if (ventptr%room1<n_rooms) then
+                        roomptr => roominfo(ventptr%room1)
+                        if (heights(1)<0._eb) heights(1) = roomptr%cheight + heights(1)
+                    end if
+                    if (ventptr%room2<n_rooms) then
+                        roomptr => roominfo(ventptr%room2)
+                        if (heights(2)<0._eb) heights(2) = roomptr%cheight + heights(2)
+                    end if
+                end if
                 ventptr%height(1) = heights(1)
                 ventptr%diffuser_area(1) = areas(1)
                 ventptr%height(2) = heights(2)
@@ -2977,6 +3047,7 @@ continue
     subroutine set_defaults
 
     id = ' '
+    fyi = ' '
     file_type = ' '
     first_device = ' '
     first_measurement = ' '

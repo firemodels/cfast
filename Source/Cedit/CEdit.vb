@@ -39,6 +39,7 @@ Public Class CeditMain
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
+    Friend WithEvents CompMaterials As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents CompFloorLeak As TextBox
     Friend WithEvents Label71 As Label
     Friend WithEvents CompWallLeak As TextBox
@@ -182,18 +183,6 @@ Public Class CeditMain
     Friend WithEvents Label59 As System.Windows.Forms.Label
     Friend WithEvents Label65 As System.Windows.Forms.Label
     Friend WithEvents Label64 As System.Windows.Forms.Label
-    Friend WithEvents CompSpecHeatFloor As System.Windows.Forms.Label
-    Friend WithEvents CompDensityFloor As System.Windows.Forms.Label
-    Friend WithEvents CompThicknessFloor As System.Windows.Forms.Label
-    Friend WithEvents CompConductFloor As System.Windows.Forms.Label
-    Friend WithEvents CompSpecHeatWalls As System.Windows.Forms.Label
-    Friend WithEvents CompDensityWalls As System.Windows.Forms.Label
-    Friend WithEvents CompThicknessWalls As System.Windows.Forms.Label
-    Friend WithEvents CompConductWalls As System.Windows.Forms.Label
-    Friend WithEvents CompSpecHeatCeiling As System.Windows.Forms.Label
-    Friend WithEvents CompDensityCeiling As System.Windows.Forms.Label
-    Friend WithEvents CompThicknessCeiling As System.Windows.Forms.Label
-    Friend WithEvents CompConductCeiling As System.Windows.Forms.Label
     Friend WithEvents MainOpen As System.Windows.Forms.Button
     Friend WithEvents FireAddt2 As System.Windows.Forms.Button
     Friend WithEvents FireAdd As System.Windows.Forms.Button
@@ -394,12 +383,6 @@ Public Class CeditMain
     Friend WithEvents GroupFlowCharacteristics As System.Windows.Forms.GroupBox
     Friend WithEvents CompSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents CompVariableArea As C1.Win.C1FlexGrid.C1FlexGrid
-    Friend WithEvents CompFloor As System.Windows.Forms.ComboBox
-    Friend WithEvents CompWalls As System.Windows.Forms.ComboBox
-    Friend WithEvents CompCeiling As System.Windows.Forms.ComboBox
-    Friend WithEvents Label21 As System.Windows.Forms.Label
-    Friend WithEvents Label22 As System.Windows.Forms.Label
-    Friend WithEvents Label20 As System.Windows.Forms.Label
     Friend WithEvents HVentSummary As C1.Win.C1FlexGrid.C1FlexGrid
     Friend WithEvents GroupHVentGeometry As System.Windows.Forms.GroupBox
     Friend WithEvents VVentSummary As C1.Win.C1FlexGrid.C1FlexGrid
@@ -616,24 +599,7 @@ Public Class CeditMain
         Me.Label64 = New System.Windows.Forms.Label()
         Me.CompVariableArea = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.GroupCompSurfaces = New System.Windows.Forms.GroupBox()
-        Me.CompSpecHeatFloor = New System.Windows.Forms.Label()
-        Me.CompDensityFloor = New System.Windows.Forms.Label()
-        Me.CompThicknessFloor = New System.Windows.Forms.Label()
-        Me.CompConductFloor = New System.Windows.Forms.Label()
-        Me.CompSpecHeatWalls = New System.Windows.Forms.Label()
-        Me.CompDensityWalls = New System.Windows.Forms.Label()
-        Me.CompThicknessWalls = New System.Windows.Forms.Label()
-        Me.CompConductWalls = New System.Windows.Forms.Label()
-        Me.CompSpecHeatCeiling = New System.Windows.Forms.Label()
-        Me.CompDensityCeiling = New System.Windows.Forms.Label()
-        Me.CompThicknessCeiling = New System.Windows.Forms.Label()
-        Me.CompConductCeiling = New System.Windows.Forms.Label()
-        Me.CompFloor = New System.Windows.Forms.ComboBox()
-        Me.CompWalls = New System.Windows.Forms.ComboBox()
-        Me.CompCeiling = New System.Windows.Forms.ComboBox()
-        Me.Label21 = New System.Windows.Forms.Label()
-        Me.Label22 = New System.Windows.Forms.Label()
-        Me.Label20 = New System.Windows.Forms.Label()
+        Me.CompMaterials = New C1.Win.C1FlexGrid.C1FlexGrid()
         Me.MainView = New System.Windows.Forms.Button()
         Me.TabMechanicalFlow = New System.Windows.Forms.TabPage()
         Me.MVentSummary = New C1.Win.C1FlexGrid.C1FlexGrid()
@@ -900,6 +866,7 @@ Public Class CeditMain
         Me.GroupFlowCharacteristics.SuspendLayout()
         CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupCompSurfaces.SuspendLayout()
+        CType(Me.CompMaterials, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabMechanicalFlow.SuspendLayout()
         CType(Me.MVentSummary, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupMVents.SuspendLayout()
@@ -2339,7 +2306,7 @@ Public Class CeditMain
         Me.CompFloorLeak.Location = New System.Drawing.Point(134, 150)
         Me.CompFloorLeak.Name = "CompFloorLeak"
         Me.CompFloorLeak.Size = New System.Drawing.Size(96, 20)
-        Me.CompFloorLeak.TabIndex = 321
+        Me.CompFloorLeak.TabIndex = 319
         '
         'Label71
         '
@@ -2356,7 +2323,7 @@ Public Class CeditMain
         Me.CompWallLeak.Location = New System.Drawing.Point(134, 124)
         Me.CompWallLeak.Name = "CompWallLeak"
         Me.CompWallLeak.Size = New System.Drawing.Size(96, 20)
-        Me.CompWallLeak.TabIndex = 319
+        Me.CompWallLeak.TabIndex = 318
         '
         'Label66
         '
@@ -2437,24 +2404,7 @@ Public Class CeditMain
         '
         'GroupCompSurfaces
         '
-        Me.GroupCompSurfaces.Controls.Add(Me.CompSpecHeatFloor)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompDensityFloor)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompThicknessFloor)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompConductFloor)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompSpecHeatWalls)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompDensityWalls)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompThicknessWalls)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompConductWalls)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompSpecHeatCeiling)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompDensityCeiling)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompThicknessCeiling)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompConductCeiling)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompFloor)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompWalls)
-        Me.GroupCompSurfaces.Controls.Add(Me.CompCeiling)
-        Me.GroupCompSurfaces.Controls.Add(Me.Label21)
-        Me.GroupCompSurfaces.Controls.Add(Me.Label22)
-        Me.GroupCompSurfaces.Controls.Add(Me.Label20)
+        Me.GroupCompSurfaces.Controls.Add(Me.CompMaterials)
         Me.GroupCompSurfaces.Location = New System.Drawing.Point(27, 242)
         Me.GroupCompSurfaces.Name = "GroupCompSurfaces"
         Me.GroupCompSurfaces.Size = New System.Drawing.Size(891, 133)
@@ -2462,167 +2412,18 @@ Public Class CeditMain
         Me.GroupCompSurfaces.TabStop = False
         Me.GroupCompSurfaces.Text = "Materials"
         '
-        'CompSpecHeatFloor
+        'CompMaterials
         '
-        Me.CompSpecHeatFloor.AutoSize = True
-        Me.CompSpecHeatFloor.Location = New System.Drawing.Point(666, 66)
-        Me.CompSpecHeatFloor.Name = "CompSpecHeatFloor"
-        Me.CompSpecHeatFloor.Size = New System.Drawing.Size(74, 13)
-        Me.CompSpecHeatFloor.TabIndex = 52
-        Me.CompSpecHeatFloor.Text = "Specific Heat:"
-        '
-        'CompDensityFloor
-        '
-        Me.CompDensityFloor.AutoSize = True
-        Me.CompDensityFloor.Location = New System.Drawing.Point(666, 87)
-        Me.CompDensityFloor.Name = "CompDensityFloor"
-        Me.CompDensityFloor.Size = New System.Drawing.Size(45, 13)
-        Me.CompDensityFloor.TabIndex = 51
-        Me.CompDensityFloor.Text = "Density:"
-        '
-        'CompThicknessFloor
-        '
-        Me.CompThicknessFloor.AutoSize = True
-        Me.CompThicknessFloor.Location = New System.Drawing.Point(666, 108)
-        Me.CompThicknessFloor.Name = "CompThicknessFloor"
-        Me.CompThicknessFloor.Size = New System.Drawing.Size(59, 13)
-        Me.CompThicknessFloor.TabIndex = 50
-        Me.CompThicknessFloor.Text = "Thickness:"
-        '
-        'CompConductFloor
-        '
-        Me.CompConductFloor.AutoSize = True
-        Me.CompConductFloor.Location = New System.Drawing.Point(666, 45)
-        Me.CompConductFloor.Name = "CompConductFloor"
-        Me.CompConductFloor.Size = New System.Drawing.Size(68, 13)
-        Me.CompConductFloor.TabIndex = 49
-        Me.CompConductFloor.Text = "Conductivity:"
-        '
-        'CompSpecHeatWalls
-        '
-        Me.CompSpecHeatWalls.AutoSize = True
-        Me.CompSpecHeatWalls.Location = New System.Drawing.Point(373, 65)
-        Me.CompSpecHeatWalls.Name = "CompSpecHeatWalls"
-        Me.CompSpecHeatWalls.Size = New System.Drawing.Size(74, 13)
-        Me.CompSpecHeatWalls.TabIndex = 48
-        Me.CompSpecHeatWalls.Text = "Specific Heat:"
-        '
-        'CompDensityWalls
-        '
-        Me.CompDensityWalls.AutoSize = True
-        Me.CompDensityWalls.Location = New System.Drawing.Point(373, 86)
-        Me.CompDensityWalls.Name = "CompDensityWalls"
-        Me.CompDensityWalls.Size = New System.Drawing.Size(45, 13)
-        Me.CompDensityWalls.TabIndex = 47
-        Me.CompDensityWalls.Text = "Density:"
-        '
-        'CompThicknessWalls
-        '
-        Me.CompThicknessWalls.AutoSize = True
-        Me.CompThicknessWalls.Location = New System.Drawing.Point(373, 107)
-        Me.CompThicknessWalls.Name = "CompThicknessWalls"
-        Me.CompThicknessWalls.Size = New System.Drawing.Size(59, 13)
-        Me.CompThicknessWalls.TabIndex = 46
-        Me.CompThicknessWalls.Text = "Thickness:"
-        '
-        'CompConductWalls
-        '
-        Me.CompConductWalls.AutoSize = True
-        Me.CompConductWalls.Location = New System.Drawing.Point(373, 44)
-        Me.CompConductWalls.Name = "CompConductWalls"
-        Me.CompConductWalls.Size = New System.Drawing.Size(68, 13)
-        Me.CompConductWalls.TabIndex = 45
-        Me.CompConductWalls.Text = "Conductivity:"
-        '
-        'CompSpecHeatCeiling
-        '
-        Me.CompSpecHeatCeiling.AutoSize = True
-        Me.CompSpecHeatCeiling.Location = New System.Drawing.Point(82, 65)
-        Me.CompSpecHeatCeiling.Name = "CompSpecHeatCeiling"
-        Me.CompSpecHeatCeiling.Size = New System.Drawing.Size(74, 13)
-        Me.CompSpecHeatCeiling.TabIndex = 44
-        Me.CompSpecHeatCeiling.Text = "Specific Heat:"
-        '
-        'CompDensityCeiling
-        '
-        Me.CompDensityCeiling.AutoSize = True
-        Me.CompDensityCeiling.Location = New System.Drawing.Point(82, 86)
-        Me.CompDensityCeiling.Name = "CompDensityCeiling"
-        Me.CompDensityCeiling.Size = New System.Drawing.Size(45, 13)
-        Me.CompDensityCeiling.TabIndex = 43
-        Me.CompDensityCeiling.Text = "Density:"
-        '
-        'CompThicknessCeiling
-        '
-        Me.CompThicknessCeiling.AutoSize = True
-        Me.CompThicknessCeiling.Location = New System.Drawing.Point(82, 107)
-        Me.CompThicknessCeiling.Name = "CompThicknessCeiling"
-        Me.CompThicknessCeiling.Size = New System.Drawing.Size(59, 13)
-        Me.CompThicknessCeiling.TabIndex = 42
-        Me.CompThicknessCeiling.Text = "Thickness:"
-        '
-        'CompConductCeiling
-        '
-        Me.CompConductCeiling.AutoSize = True
-        Me.CompConductCeiling.Location = New System.Drawing.Point(82, 44)
-        Me.CompConductCeiling.Name = "CompConductCeiling"
-        Me.CompConductCeiling.Size = New System.Drawing.Size(68, 13)
-        Me.CompConductCeiling.TabIndex = 41
-        Me.CompConductCeiling.Text = "Conductivity:"
-        '
-        'CompFloor
-        '
-        Me.CompFloor.ItemHeight = 13
-        Me.CompFloor.Location = New System.Drawing.Point(669, 21)
-        Me.CompFloor.Name = "CompFloor"
-        Me.CompFloor.Size = New System.Drawing.Size(192, 21)
-        Me.CompFloor.TabIndex = 320
-        '
-        'CompWalls
-        '
-        Me.CompWalls.ItemHeight = 13
-        Me.CompWalls.Location = New System.Drawing.Point(374, 20)
-        Me.CompWalls.Name = "CompWalls"
-        Me.CompWalls.Size = New System.Drawing.Size(192, 21)
-        Me.CompWalls.TabIndex = 319
-        '
-        'CompCeiling
-        '
-        Me.CompCeiling.ItemHeight = 13
-        Me.CompCeiling.Location = New System.Drawing.Point(85, 19)
-        Me.CompCeiling.Name = "CompCeiling"
-        Me.CompCeiling.Size = New System.Drawing.Size(192, 21)
-        Me.CompCeiling.TabIndex = 318
-        '
-        'Label21
-        '
-        Me.Label21.AutoSize = True
-        Me.Label21.Location = New System.Drawing.Point(326, 21)
-        Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(36, 13)
-        Me.Label21.TabIndex = 39
-        Me.Label21.Text = "Walls:"
-        Me.Label21.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label22
-        '
-        Me.Label22.AutoSize = True
-        Me.Label22.Location = New System.Drawing.Point(29, 20)
-        Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(41, 13)
-        Me.Label22.TabIndex = 38
-        Me.Label22.Text = "Ceiling:"
-        Me.Label22.TextAlign = System.Drawing.ContentAlignment.MiddleRight
-        '
-        'Label20
-        '
-        Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(621, 22)
-        Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(33, 13)
-        Me.Label20.TabIndex = 40
-        Me.Label20.Text = "Floor:"
-        Me.Label20.TextAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.CompMaterials.AllowResizing = C1.Win.C1FlexGrid.AllowResizingEnum.None
+        Me.CompMaterials.AllowSorting = C1.Win.C1FlexGrid.AllowSortingEnum.None
+        Me.CompMaterials.ColumnInfo = resources.GetString("CompMaterials.ColumnInfo")
+        Me.CompMaterials.ExtendLastCol = True
+        Me.CompMaterials.Location = New System.Drawing.Point(19, 26)
+        Me.CompMaterials.Name = "CompMaterials"
+        Me.CompMaterials.Rows.Count = 4
+        Me.CompMaterials.ScrollBars = System.Windows.Forms.ScrollBars.None
+        Me.CompMaterials.Size = New System.Drawing.Size(852, 80)
+        Me.CompMaterials.TabIndex = 318
         '
         'MainView
         '
@@ -4995,7 +4796,7 @@ Public Class CeditMain
         'SaveDataFileDialog
         '
         Me.SaveDataFileDialog.DefaultExt = "cfast"
-        Me.SaveDataFileDialog.Filter = "CFAST files|*.in|CFAST files (Old format)|*.in|All files|*.*"
+        Me.SaveDataFileDialog.Filter = "CFAST files|*.in|All files|*.*"
         Me.SaveDataFileDialog.Title = "Save As"
         '
         'HelpProvider
@@ -5096,7 +4897,7 @@ Public Class CeditMain
         Me.GroupFlowCharacteristics.PerformLayout()
         CType(Me.CompVariableArea, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupCompSurfaces.ResumeLayout(False)
-        Me.GroupCompSurfaces.PerformLayout()
+        CType(Me.CompMaterials, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabMechanicalFlow.ResumeLayout(False)
         CType(Me.MVentSummary, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupMVents.ResumeLayout(False)
@@ -5214,12 +5015,12 @@ Public Class CeditMain
                 If EnvAdiabatic.Checked Then
                     CurrentCompartment = ir
                     aCompartment = myCompartments.Item(ir)
-                    aCompartment.SetMaterial("OFF", "OFF", "OFF")
+                    aCompartment.SetMaterial(1, "OFF", "OFF", "OFF")
                     myCompartments.Item(CurrentCompartment) = aCompartment
                 End If
             Next
             CurrentCompartment = SavedCompartment
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
         End If
         UpdateGUI.Environment()
     End Sub
@@ -5319,7 +5120,7 @@ Public Class CeditMain
             aCompartment.Name = "Comp " + (myCompartments.Count + 1).ToString
             myCompartments.Add(aCompartment)
             CurrentCompartment = myCompartments.Count - 1
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
             CompName.Select()
         Else
             MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -5332,7 +5133,7 @@ Public Class CeditMain
             myCompartments.Copy(CurrentCompartment, myCompartments.Count - 1)
             CurrentCompartment = myCompartments.Count - 1
             myCompartments(myCompartments.Count - 1).Name = "Comp " + myCompartments.Count.ToString
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
             CompName.Select()
         ElseIf CurrentCompartment + 1 >= Compartment.MaximumCompartments Then
             MessageBox.Show("A maximum of " + Compartment.MaximumCompartments.ToString + " compartments are allowed. New compartment not added.", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -5344,7 +5145,7 @@ Public Class CeditMain
             myCompartments.Swap(CurrentCompartment, CurrentCompartment - 1)
             CurrentCompartment -= 1
             myEnvironment.Changed = True
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
         End If
     End Sub
     Private Sub CompMoveDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompMoveDown.Click
@@ -5353,7 +5154,7 @@ Public Class CeditMain
             myCompartments.Swap(CurrentCompartment, CurrentCompartment + 1)
             CurrentCompartment += 1
             myEnvironment.Changed = True
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
         End If
     End Sub
     Private Sub CompRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompRemove.Click
@@ -5385,7 +5186,7 @@ Public Class CeditMain
                 If CurrentCompartment > 0 Then CurrentCompartment -= 1
                 myEnvironment.Changed = True
             End If
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
         End If
     End Sub
     Private Sub CompSummary_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompSummary.Click, CompSummary.AfterSelChange
@@ -5394,7 +5195,7 @@ Public Class CeditMain
         index = CompSummary.RowSel - 1
         If index >= 0 And index <= myCompartments.Count - 1 Then
             CurrentCompartment = index
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
         End If
     End Sub
     Private Sub Comp_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompName.Leave, CompWidth.Leave, CompDepth.Leave, CompHeight.Leave, CompXPosition.Leave, CompYPosition.Leave, CompZPosition.Leave, CompWallLeak.Leave, CompFloorLeak.Leave
@@ -5412,22 +5213,7 @@ Public Class CeditMain
             If sender Is CompWallLeak Then aCompartment.WallLeak = Val(CompWallLeak.Text)
             If sender Is CompFloorLeak Then aCompartment.FloorLeak = Val(CompFloorLeak.Text)
             myCompartments.Item(CurrentCompartment) = aCompartment
-            UpdateGUI.Geometry(CurrentCompartment)
-        End If
-    End Sub
-    Private Sub Comp_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CompCeiling.SelectedIndexChanged, CompWalls.SelectedIndexChanged, CompFloor.SelectedIndexChanged
-        Dim aCompartment As New Compartment
-        If CurrentCompartment >= 0 And myCompartments.Count > 0 Then
-            aCompartment = myCompartments.Item(CurrentCompartment)
-            If sender Is CompCeiling Then
-                aCompartment.CeilingMaterial = myThermalProperties.GetShortName(sender.text)
-            ElseIf sender Is CompWalls Then
-                aCompartment.WallMaterial = myThermalProperties.GetShortName(sender.text)
-            ElseIf sender Is CompFloor Then
-                aCompartment.FloorMaterial = myThermalProperties.GetShortName(sender.text)
-            End If
-            myCompartments.Item(CurrentCompartment) = aCompartment
-            UpdateGUI.Geometry(CurrentCompartment)
+            UpdateGUI.Compartment(CurrentCompartment)
         End If
     End Sub
     Private Sub CompNormal_CheckedChanged(sender As Object, e As EventArgs) Handles CompNormal.CheckedChanged, CompShaft.CheckedChanged, CompCorridor.CheckedChanged
@@ -5449,6 +5235,40 @@ Public Class CeditMain
             End If
         End If
     End Sub
+    Private Sub CompMaterials_Before_Click(sender As Object, e As C1.Win.C1FlexGrid.RowColEventArgs) Handles CompMaterials.BeforeEdit
+        Dim r As Integer = CompMaterials.Row, c As Integer = CompMaterials.Col
+        If CurrentCompartment >= 0 And CurrentCompartment <= myCompartments.Count - 1 Then
+            Dim aCompartment As New Compartment
+            aCompartment = myCompartments.Item(CurrentCompartment)
+            If c = CompMaterialsColNum.CeilingThickness Or c = CompMaterialsColNum.WallThickness Or c = CompMaterialsColNum.FloorThickness Then
+                CompMaterials.ComboList = Nothing
+            Else
+                CompMaterials.ComboList = myThermalProperties.MaterialsList
+            End If
+        End If
+    End Sub
+    Private Sub CompMaterials_After_Click(sender As Object, e As EventArgs) Handles CompMaterials.LeaveCell
+        Dim r As Integer = CompMaterials.Row, c As Integer = CompMaterials.Col
+        If CurrentCompartment >= 0 And CurrentCompartment <= myCompartments.Count - 1 Then
+            Dim aCompartment As New Compartment
+            aCompartment = myCompartments.Item(CurrentCompartment)
+            If c = CompMaterialsColNum.CeilingMaterial Then
+                aCompartment.CeilingMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
+            ElseIf c = CompMaterialsColNum.CeilingThickness Then
+                aCompartment.CeilingThickness(r) = Val(CompMaterials(r, c))
+            ElseIf c = CompMaterialsColNum.WallMaterial Then
+                aCompartment.WallMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
+            ElseIf c = CompMaterialsColNum.WallThickness Then
+                aCompartment.WallThickness(r) = Val(CompMaterials(r, c))
+            ElseIf c = CompMaterialsColNum.FloorMaterial Then
+                aCompartment.FloorMaterial(r) = myThermalProperties.GetShortName(CompMaterials(r, c))
+            ElseIf c = CompMaterialsColNum.FloorThickness Then
+                aCompartment.FloorThickness(r) = Val(CompMaterials(r, c))
+            End If
+        End If
+        'Selected_Material.Text = CompMaterials(r, c)
+
+    End Sub
     Private Sub CompVariableArea_BeforeRowColChange(ByVal sender As Object, ByVal e As C1.Win.C1FlexGrid.RangeEventArgs) Handles CompVariableArea.BeforeRowColChange
         Dim aCompartment As New Compartment
         Dim numPoints As Integer, ir As Integer
@@ -5468,7 +5288,7 @@ Public Class CeditMain
                 Dim AreaPoints(0) As Single, HeightPoints(0) As Single
                 aCompartment.SetVariableArea(AreaPoints, HeightPoints)
                 myCompartments.Item(CurrentCompartment) = aCompartment
-                UpdateGUI.Geometry(CurrentCompartment)
+                UpdateGUI.Compartment(CurrentCompartment)
             ElseIf numPoints > 0 Then
                 Dim AreaPoints(numPoints) As Single, HeightPoints(numPoints) As Single
                 For ir = 1 To numPoints
@@ -5483,7 +5303,7 @@ Public Class CeditMain
                 Next
                 aCompartment.SetVariableArea(AreaPoints, HeightPoints)
                 myCompartments.Item(CurrentCompartment) = aCompartment
-                UpdateGUI.Geometry(CurrentCompartment)
+                UpdateGUI.Compartment(CurrentCompartment)
             End If
         End If
     End Sub
@@ -5994,7 +5814,7 @@ Public Class CeditMain
         End If
     End Sub
     Private Sub Target_Changed(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles TargetComp.SelectedIndexChanged, TargetMaterial.SelectedIndexChanged, TargetSolutionType.SelectedIndexChanged, TargetXPosition.Leave, TargetYPosition.Leave, TargetZPosition.Leave, TargetXNormal.Leave, TargetYNormal.Leave, TargetZNormal.Leave, TargetNormalType.SelectedIndexChanged, TargetInternalLocation.Leave, TargetName.Leave
-        Dim aTarget As New Target, numFires As Integer, i As Integer
+        Dim aTarget As New Target
         If CurrentTarget >= 0 And myTargets.Count > 0 Then
             aTarget = myTargets.Item(CurrentTarget)
             If sender Is TargetName Then aTarget.Name = TargetName.Text
@@ -6025,53 +5845,8 @@ Public Class CeditMain
             If sender Is TargetXNormal Then aTarget.XNormal = Val(TargetXNormal.Text)
             If sender Is TargetYNormal Then aTarget.YNormal = Val(TargetYNormal.Text)
             If sender Is TargetZNormal Then aTarget.ZNormal = Val(TargetZNormal.Text)
-            If sender Is TargetNormalType Then
-                If TargetNormalType.Text = "Right Wall" Then
-                    aTarget.XNormal = 1
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Left Wall" Then
-                    aTarget.XNormal = -1
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Rear Wall" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = 1
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Front Wall" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = -1
-                    aTarget.ZNormal = 0
-                ElseIf TargetNormalType.Text = "Floor" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = -1
-                ElseIf TargetNormalType.Text = "Ceiling" Then
-                    aTarget.XNormal = 0
-                    aTarget.YNormal = 0
-                    aTarget.ZNormal = 1
-                Else
-                    numFires = myFires.Count
-                    If numFires > 0 Then
-                        Dim aFire As Fire
-                        For i = 1 To numFires
-                            aFire = myFires(i - 1)
-                            If aTarget.Compartment = aFire.Compartment Then
-                                If TargetNormalType.Text = "Fire " + i.ToString + ", " + aFire.Name Then
-                                    Dim Hypotenuse As Single, FHeight As Single
-                                    FHeight = Me.FireDataSS(1, 3) ' this should be fire height @ t=0
-                                    Hypotenuse = Math.Sqrt((aFire.XPosition - aTarget.XPosition) ^ 2 + (aFire.YPosition - aTarget.YPosition) ^ 2 + (FHeight - aTarget.ZPosition) ^ 2)
-                                    If Hypotenuse <> 0 Then
-                                        aTarget.XNormal = (aFire.XPosition - aTarget.XPosition) / Hypotenuse
-                                        aTarget.YNormal = (aFire.YPosition - aTarget.YPosition) / Hypotenuse
-                                        aTarget.ZNormal = (FHeight - aTarget.ZPosition) / Hypotenuse
-                                    End If
-                                End If
-                            End If
-                        Next
-                    End If
-                End If
-            End If
+            If sender Is TargetNormalType Then aTarget.TargetFacing = aTarget.CheckTargetFacing(TargetNormalType.Text)
+
             myTargets(CurrentTarget) = aTarget
             UpdateGUI.Targets(CurrentTarget)
         End If
@@ -6372,7 +6147,7 @@ Public Class CeditMain
                 If sender Is VisualizationZ Then aCompartment.zGrid = Val(VisualizationZ.Text)
                 myCompartments.Item(CurrentCompartment) = aCompartment
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
-                UpdateGUI.Geometry(CurrentCompartment)
+                UpdateGUI.Compartment(CurrentCompartment)
             End If
         End If
     End Sub
@@ -6423,7 +6198,7 @@ Public Class CeditMain
             If index >= 0 And index <= myCompartments.Count - 1 Then
                 CurrentCompartment = index
                 UpdateGUI.Visuals(CurrentVisual, CurrentCompartment)
-                UpdateGUI.Geometry(CurrentCompartment)
+                UpdateGUI.Compartment(CurrentCompartment)
             End If
         End If
     End Sub
@@ -6497,13 +6272,8 @@ Public Class CeditMain
         SaveDataFileDialog.OverwritePrompt = True
         If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
             If SaveDataFileDialog.FileName <> " " Then
-                If SaveDataFileDialog.FilterIndex = 1 Then
-                    WriteInputFileNML(SaveDataFileDialog.FileName)
-                    FileExtension = ".in"
-                Else
-                    WriteInputFileCSV(SaveDataFileDialog.FileName)
-                    FileExtension = ".in"
-                End If
+                WriteInputFileNML(SaveDataFileDialog.FileName)
+                FileExtension = ".in"
                 myEnvironment.InputFileName = SaveDataFileDialog.FileName
                 myEnvironment.InputFilePath = SaveDataFileDialog.FileName
                 Text = "CEdit (" + System.IO.Path.GetFileName(SaveDataFileDialog.FileName) + ")"
@@ -6912,10 +6682,11 @@ Public Class CeditMain
         UpdateGUI.General()
         UpdateGUI.DoErrorCheck = False
         UpdateGUI.Environment()
-        UpdateGUI.Geometry(CurrentCompartment)
+        UpdateGUI.InitCompartmentList(Me.TargetComp)
+        UpdateGUI.Thermals(CurrentThermalProperty)
+        UpdateGUI.Compartment(CurrentCompartment)
         UpdateGUI.Targets(CurrentTarget)
         UpdateGUI.Fires(CurrentFire)
-        UpdateGUI.Thermals(CurrentThermalProperty)
         UpdateGUI.HVents(CurrentHVent)
         UpdateGUI.VVents(CurrentVVent)
         UpdateGUI.MVents(CurrentMVent)
@@ -6927,24 +6698,24 @@ Public Class CeditMain
     Private Sub InitNew()
         ' Start with a clean slate and a default set of inputs
         myEnvironment = New Environment
-        Text = "CEdit"
-        myCompartments.Clear()
         myEnvironment.AdiabaticWalls = False
-        myHVents.Clear()
-        myVVents.Clear()
-        myMVents.Clear()
-        myHHeats.Clear()
-        myVHeats.Clear()
-        myTargets.Clear()
-        myDetectors.Clear()
-        myFires.Clear()
-        myFireProperties.Clear()
-        TempFires.Clear()
-        myVisuals.Clear()
-        myThermalProperties.Clear()
-        TempThermalProperties.Clear()
+        Text = "CEdit"
+        myThermalProperties = New ThermalPropertiesCollection
+        TempThermalProperties = New ThermalPropertiesCollection
+        myCompartments = New CompartmentCollection
+        myHVents = New VentCollection
+        myVVents = New VentCollection
+        myMVents = New VentCollection
+        myHHeats = New VentCollection
+        myVHeats = New VentCollection
+        myTargets = New TargetCollection
+        myDetectors = New TargetCollection
+        myFires = New FireCollection
+        myFireProperties = New FireCollection
+        TempFires = New FireCollection
+        myVisuals = New VisualCollection
         myErrors.Queue.Clear()
-        myRamps.Clear()
+        myRamps = New RampCollection
         Do While (dataFileHeader.Count > 0)
             dataFileHeader.Remove(dataFileHeader.Count)
         Loop
@@ -6967,9 +6738,6 @@ Public Class CeditMain
         CurrentVHeat = 0
         CurrentFire = 0
 
-        UpdateGUI.InitThermalPropertyList(CompCeiling)
-        UpdateGUI.InitThermalPropertyList(CompWalls)
-        UpdateGUI.InitThermalPropertyList(CompFloor)
         UpdateGUI.InitThermalPropertyList(TargetMaterial)
 
         ' Initialize spreadsheets for input or no input (summary tables) as appropriate

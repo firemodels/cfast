@@ -20,9 +20,12 @@ Public Class Compartment
     Private aRoomOriginX As Single          ' Absolute X position of lower left corner of room
     Private aRoomOriginY As Single          ' Absolute Y position of lower left corner of room
     Private aRoomOriginZ As Single          ' Absolute Z position (height) of the floor of the compartment
-    Private aCeilingMaterial As String      ' Named material for ceiling from Thermal.df
-    Private aWallMaterial As String         ' Named material for walls from Thermal.df
-    Private aFloorMaterial As String        ' Named material for floor from Thermal.df
+    Private aCeilingMaterial(3) As String   ' Named material for ceiling from Thermal.df
+    Private aWallMaterial(3) As String      ' Named material for walls from Thermal.df
+    Private aFloorMaterial(3) As String     ' Named material for floor from Thermal.df
+    Private aCeilingThickness(3) As Single  ' Ceiling layer thickness
+    Private aWallThickness(3) As Single     ' Wall layer thickness
+    Private aFloorThickness(3) As Single    ' Floor layer thickness
     Private aShaft As Boolean               ' True if compartment is a aShaft
     Private aHall As Boolean                ' True if compartment is a aHallway
     Private aAreaPoints(0) As Single        ' Vector of room areas as a function of height
@@ -43,9 +46,14 @@ Public Class Compartment
         aRoomOriginX = 0.0
         aRoomOriginY = 0.0
         aRoomOriginZ = 0.0
-        aCeilingMaterial = "Off"
-        aWallMaterial = "Off"
-        aFloorMaterial = "Off"
+        For i = 1 To 3
+            aCeilingMaterial(i) = ""
+            aWallMaterial(i) = ""
+            aFloorMaterial(i) = ""
+            aCeilingThickness(i) = 0.0
+            aWallThickness(i) = 0.0
+            aFloorThickness(i) = 0.0
+        Next
         aAreaPoints(0) = aRoomDepth * aRoomWidth
         aHeightPoints(0) = aRoomHeight
         aWallLeak = 0
@@ -142,37 +150,133 @@ Public Class Compartment
             End If
         End Set
     End Property
-    Public Property CeilingMaterial() As String
+    Public Property CeilingMaterial(index As Integer) As String
         Get
-            Return aCeilingMaterial
+            If index >= 1 And index <= 3 Then
+                Return aCeilingMaterial(index)
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+                Return "Off"
+            End If
         End Get
         Set(ByVal Value As String)
-            If Value <> aCeilingMaterial And Value <> " " Then
-                If myCompartments.DoChange Then aChanged = True
-                aCeilingMaterial = myThermalProperties.ValidThermalProperty(Value, "Ceiling Material")
+            If index >= 1 And index <= 3 Then
+                If Value <> aCeilingMaterial(index) And Value <> "" Then
+                    If myCompartments.DoChange Then aChanged = True
+                    aCeilingMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Ceiling Material")
+                ElseIf Value = "" Then
+                    aCeilingMaterial(index) = ""
+                End If
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
             End If
         End Set
     End Property
-    Public Property WallMaterial() As String
+    Public Property CeilingThickness(index As Integer) As Single
         Get
-            Return aWallMaterial
+            If index >= 1 And index <= 3 Then
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aCeilingThickness(index))
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+                Return 0.0
+            End If
+        End Get
+        Set(value As Single)
+            If index >= 1 And index <= 3 Then
+                If value <> aCeilingThickness(index) And value >= 0 Then
+                    If myCompartments.DoChange Then aChanged = True
+                    aCeilingThickness(index) = myUnits.Convert(UnitsNum.Length).ToSI(value)
+                End If
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+            End If
+
+        End Set
+    End Property
+    Public Property WallMaterial(index As Integer) As String
+        Get
+            If index >= 1 And index <= 3 Then
+                Return aWallMaterial(index)
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+                Return "Off"
+            End If
         End Get
         Set(ByVal Value As String)
-            If Value <> aWallMaterial And Value <> " " Then
-                If myCompartments.DoChange Then aChanged = True
-                aWallMaterial = myThermalProperties.ValidThermalProperty(Value, "Wall Material")
+            If index >= 1 And index <= 3 Then
+                If Value <> aWallMaterial(index) And Value <> "" Then
+                    If myCompartments.DoChange Then aChanged = True
+                    aWallMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Wall Material")
+                ElseIf Value = "" Then
+                    aWallMaterial(index) = ""
+                End If
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
             End If
         End Set
     End Property
-    Public Property FloorMaterial() As String
+    Public Property WallThickness(index As Integer) As Single
         Get
-            Return aFloorMaterial
+            If index >= 1 And index <= 3 Then
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aWallThickness(index))
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+                Return 0.0
+            End If
+        End Get
+        Set(value As Single)
+            If index >= 1 And index <= 3 Then
+                If value <> aWallThickness(index) And value >= 0 Then
+                    If myCompartments.DoChange Then aChanged = True
+                    aWallThickness(index) = myUnits.Convert(UnitsNum.Length).ToSI(value)
+                End If
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+            End If
+
+        End Set
+    End Property
+    Public Property FloorMaterial(index As Integer) As String
+        Get
+            If index >= 1 And index <= 3 Then
+                Return aFloorMaterial(index)
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+                Return "Off"
+            End If
         End Get
         Set(ByVal Value As String)
-            If Value <> aFloorMaterial And Value <> " " Then
-                If myCompartments.DoChange Then aChanged = True
-                aFloorMaterial = myThermalProperties.ValidThermalProperty(Value, "Floor Material")
+            If index >= 1 And index <= 3 Then
+                If Value <> aFloorMaterial(index) And Value <> "" Then
+                    If myCompartments.DoChange Then aChanged = True
+                    aFloorMaterial(index) = myThermalProperties.ValidThermalProperty(Value, "Floor Material")
+                ElseIf Value = "" Then
+                    aFloorMaterial(index) = ""
+                End If
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
             End If
+        End Set
+    End Property
+    Public Property FloorThickness(index As Integer) As Single
+        Get
+            If index >= 1 And index <= 3 Then
+                Return myUnits.Convert(UnitsNum.Length).FromSI(aFloorThickness(index))
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+                Return 0.0
+            End If
+        End Get
+        Set(value As Single)
+            If index >= 1 And index <= 3 Then
+                If value <> aFloorThickness(index) And value >= 0 Then
+                    If myCompartments.DoChange Then aChanged = True
+                    aFloorThickness(index) = myUnits.Convert(UnitsNum.Length).ToSI(value)
+                End If
+            Else
+                System.Windows.Forms.MessageBox.Show("Internal Error (User should not see this). Surface material number not found.")
+            End If
+
         End Set
     End Property
     Public Property Shaft() As Boolean
@@ -316,15 +420,36 @@ Public Class Compartment
         RoomOriginZ = aRoomOriginZ
         aChanged = True
     End Sub
-    Public Sub GetMaterial(ByRef aCeilingMaterial As String, ByRef aWallMaterial As String, ByRef aFloorMaterial As String)
-        aCeilingMaterial = CeilingMaterial
-        aWallMaterial = WallMaterial
-        aFloorMaterial = FloorMaterial
+    Public Sub SetMaterial(Surface As String, ByVal aMaterial1 As String, ByVal aMaterial2 As String, ByVal aMaterial3 As String)
+        If Surface = "Ceiling" Then
+            CeilingMaterial(1) = aMaterial1
+            CeilingMaterial(2) = aMaterial2
+            CeilingMaterial(3) = aMaterial3
+        ElseIf Surface = "Walls" Then
+            WallMaterial(1) = aMaterial1
+            WallMaterial(2) = aMaterial2
+            WallMaterial(3) = aMaterial3
+        ElseIf Surface = "Floor" Then
+            FloorMaterial(1) = aMaterial1
+            FloorMaterial(2) = aMaterial2
+            FloorMaterial(3) = aMaterial3
+        End If
+        aChanged = True
     End Sub
-    Public Sub SetMaterial(ByVal aCeilingMaterial As String, ByVal aWallMaterial As String, ByVal aFloorMaterial As String)
-        CeilingMaterial = aCeilingMaterial
-        WallMaterial = aWallMaterial
-        FloorMaterial = aFloorMaterial
+    Public Sub SetThickness(Surface As String, ByVal aThickness1 As String, ByVal aThickness2 As String, ByVal aThickness3 As String)
+        If Surface = "Ceiling" Then
+            CeilingThickness(1) = aThickness1
+            CeilingThickness(2) = aThickness2
+            CeilingThickness(3) = aThickness3
+        ElseIf Surface = "Walls" Then
+            WallThickness(1) = aThickness1
+            WallThickness(2) = aThickness2
+            WallThickness(3) = aThickness3
+        ElseIf Surface = "Floor" Then
+            FloorThickness(1) = aThickness1
+            FloorThickness(2) = aThickness2
+            FloorThickness(3) = aThickness3
+        End If
         aChanged = True
     End Sub
     Public Sub GetVariableArea(ByRef AreaPoints() As Single, ByRef HeightPoints() As Single, ByRef NumAreaPoints As Integer)
@@ -487,12 +612,28 @@ Public Class Compartment
                 Next
             End If
             ' Thermal properties have to exist
-            If myThermalProperties.GetIndex(aCeilingMaterial) < -1 Or myThermalProperties.GetIndex(aWallMaterial) < -1 Or myThermalProperties.GetIndex(aFloorMaterial) < -1 Then
-                myErrors.Add(aName + " has an unknown surface material.", ErrorMessages.TypeWarning)
-                HasErrors += 1
-            End If
+            For i = 1 To 3
+                If aCeilingMaterial(i) <> "" Then
+                    If myThermalProperties.GetIndex(aCeilingMaterial(i)) < -1 Then
+                        myErrors.Add(aName + " has an unknown ceiling material.", ErrorMessages.TypeWarning)
+                        HasErrors += 1
+                    End If
+                End If
+                If aWallMaterial(i) <> "" Then
+                    If myThermalProperties.GetIndex(WallMaterial(i)) < -1 Then
+                        myErrors.Add(aName + " has an unknown wall material.", ErrorMessages.TypeWarning)
+                        HasErrors += 1
+                    End If
+                End If
+                If aFloorMaterial(i) <> "" Then
+                    If myThermalProperties.GetIndex(aFloorMaterial(i)) < -1 Then
+                        myErrors.Add(aName + " has an unknown floor material.", ErrorMessages.TypeWarning)
+                        HasErrors += 1
+                    End If
+                End If
+            Next
             ' If surfaces have thermal properties, we cannot also have adiabatic surfaces on
-            If myThermalProperties.GetIndex(aCeilingMaterial) >= 0 Or myThermalProperties.GetIndex(aWallMaterial) >= 0 Or myThermalProperties.GetIndex(aFloorMaterial) >= 0 Then
+            If myThermalProperties.GetIndex(aCeilingMaterial(1)) >= 0 Or myThermalProperties.GetIndex(aWallMaterial(1)) >= 0 Or myThermalProperties.GetIndex(aFloorMaterial(1)) >= 0 Then
                 If myEnvironment.AdiabaticWalls = True Then
                     myErrors.Add(aName + " has surfaces defined but adiabatic surfaces is also turned on. The inputs are incompatible.", ErrorMessages.TypeError)
                     HasErrors += 1
@@ -544,9 +685,11 @@ Public Class CompartmentCollection
         ToCompartment.RoomOriginX = FromCompartment.RoomOriginX
         ToCompartment.RoomOriginY = FromCompartment.RoomOriginY
         ToCompartment.RoomOriginZ = FromCompartment.RoomOriginZ
-        ToCompartment.CeilingMaterial = FromCompartment.CeilingMaterial
-        ToCompartment.WallMaterial = FromCompartment.WallMaterial
-        ToCompartment.FloorMaterial = FromCompartment.FloorMaterial
+        For i = 1 To 3
+            ToCompartment.CeilingMaterial(i) = FromCompartment.CeilingMaterial(i)
+            ToCompartment.WallMaterial(i) = FromCompartment.WallMaterial(i)
+            ToCompartment.FloorMaterial(i) = FromCompartment.FloorMaterial(i)
+        Next
         Dim Vector1() As Single = {0}, Vector2() As Single = {0}, aNum As Integer
         FromCompartment.GetVariableArea(Vector1, Vector2, aNum)
         ToCompartment.SetVariableArea(Vector1, Vector2)

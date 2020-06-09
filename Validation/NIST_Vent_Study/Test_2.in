@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'Test_2' /
+&HEAD VERSION = 7600, TITLE = 'Test_2' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 6154 PRINT = 1 SMOKEVIEW = 1 SPREADSHEET = 1 / 
@@ -13,10 +13,12 @@
  
 !! Compartments 
 &COMP ID = 'Comp 1'
-      DEPTH = 1.2192 HEIGHT = 0.587375 WIDTH = 1.1938 CEILING_MATL_ID = 'Thingyp' WALL_MATL_ID = 'Gypboard' FLOOR_MATL_ID = 'Gypboard'
+      DEPTH = 1.2192 HEIGHT = 0.587375 WIDTH = 1.1938
+      CEILING_MATL_ID = 'Thingyp' CEILING_THICKNESS = 0.0079375 WALL_MATL_ID = 'Gypboard' WALL_THICKNESS = 0.015875 FLOOR_MATL_ID = 'Gypboard' FLOOR_THICKNESS = 0.015875
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
 &COMP ID = 'Comp 2'
-      DEPTH = 1.2192 HEIGHT = 0.6096 WIDTH = 1.1938 CEILING_MATL_ID = 'Thingyp' WALL_MATL_ID = 'Gypboard' FLOOR_MATL_ID = 'Gypboard'
+      DEPTH = 1.2192 HEIGHT = 0.6096 WIDTH = 1.1938
+      CEILING_MATL_ID = 'Thingyp' CEILING_THICKNESS = 0.0079375 WALL_MATL_ID = 'Gypboard' WALL_THICKNESS = 0.015875 FLOOR_MATL_ID = 'Gypboard' FLOOR_THICKNESS = 0.015875
       ORIGIN = 0, 0, 0.587375 GRID = 50, 50, 50 /
  
 !! Wall Vents
@@ -44,3 +46,5 @@
  
 !! Surface Connections
 &CONN TYPE = 'FLOOR' COMP_ID = 'Comp 2' COMP_IDS = 'Comp 1' / 
+ 
+&TAIL /

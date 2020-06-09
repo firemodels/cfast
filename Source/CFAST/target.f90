@@ -7,7 +7,6 @@ module target_routines
     use fire_routines, only: get_gas_tempandvelocity, flame_height
     use numerics_routines, only : ddot, dnrm2
     use radiation_routines, only : absorb, solid_angle_triangle
-    use utility_routines, only: xerror
     
     use cfast_types, only: fire_type, room_type, target_type, detector_type
 
@@ -18,7 +17,7 @@ module target_routines
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off
     use room_data, only: roominfo, interior_ambient_temperature, exterior_ambient_temperature
-    use setup_data, only: iofilsmv, iofilsmvplt, iofilsmvzone
+    use setup_data, only: iofill, iofilsmv, iofilsmvplt, iofilsmvzone
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
 
     implicit none
@@ -850,7 +849,7 @@ module target_routines
                     call device_activated (i, tdtect, 1)
                     write (messg,'(2a,i0,a,i0,a,i0)') trim(detector_names(dtectptr%dtype)),' (Sensor ',i, ') has activated at ', &
                         int(tdtect+0.5_eb), ' s in compartment ',dtectptr%room
-                    call xerror(messg,0,1,-3)
+                    write (iofill,'(a)') messg
                 end if
 
                 ! determine if this is the first detector to have activated in this room

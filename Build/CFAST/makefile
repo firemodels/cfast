@@ -34,14 +34,14 @@ GITINFOGNU=-cpp $(GITINFO_BASE) -DBUILDDATE_PP=\""$(BUILD_DATE)\""
 
 objf = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o keyboard_int.o \
        srev.o utilities.o ssHeaders.o outputdebug.o compartments.o conduction.o flowfan.o flowhorizontal.o flowvertical.o fire.o \
-       numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o input_spreadsheet.o input_namelist.o input.o \
+       numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o input_namelist.o input.o \
        cfast.o 
 
 objwin = $(objf:.o=.obj)
 
 objfgnu = prec.o cfast_parameters.o cfast_structures.o cfast_data.o convection.o keyboard_gnu.o \
        srev.o utilities.o ssHeaders.o outputdebug.o compartments.o conduction.o flowfan.o flowhorizontal.o flowvertical.o fire.o \
-       numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o input_spreadsheet.o input_namelist.o input.o cfast.o  
+       numerics.o radiation.o target.o outputsmv.o outputspreadsheet.o output.o solve.o initialization.o  input_namelist.o input.o cfast.o  
 
 
 # General Purpose Rules
@@ -185,13 +185,13 @@ intel_osx_64_db : $(objf)
 # *** Object Dependencies ***
 
 
-cfast.o : utilities.o initialization.o input_spreadsheet.o input_namelist.o input.o numerics.o \
+cfast.o : utilities.o initialization.o input_namelist.o input.o numerics.o \
               output.o outputsmv.o outputspreadsheet.o ssHeaders.o \
               compartments.o conduction.o convection.o radiation.o target.o \
               fire.o flowfan.o flowhorizontal.o flowvertical.o solve.o
 
 
-cfast.obj : utilities.obj initialization.obj input_spreadsheet.o input_namelist.o input.obj numerics.obj \
+cfast.obj : utilities.obj initialization.obj input_namelist.o input.obj numerics.obj \
               output.obj outputsmv.obj outputspreadsheet.obj ssHeaders.obj \
               compartments.obj conduction.obj convection.obj radiation.obj target.obj \
               fire.obj flowfan.obj flowhorizontal.obj flowvertical.obj solve.o

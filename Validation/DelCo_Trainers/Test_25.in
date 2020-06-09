@@ -1,0 +1,125 @@
+&HEAD VERSION = 7600, TITLE = 'CFAST Simulation' /
+ 
+!! Scenario Configuration 
+&TIME SIMULATION = 960 PRINT = 60 SMOKEVIEW = 15 SPREADSHEET = 15 / 
+&INIT PRESSURE = 101325 RELATIVE_HUMIDITY = 50 INTERIOR_TEMPERATURE = 32 EXTERIOR_TEMPERATURE = 32 /
+&MISC  LOWER_OXYGEN_LIMIT = 0.15 / 
+ 
+!! Material Properties 
+&MATL ID = 'Concrete' MATERIAL = 'Concrete (NBS88-3752)', 
+      CONDUCTIVITY = 1.8 DENSITY = 2280 SPECIFIC_HEAT = 1.04, THICKNESS = 0.61 EMISSIVITY = 0.9 /
+&MATL ID = 'TC' MATERIAL = 'Thermocouple (small steel target for plume temp)', 
+      CONDUCTIVITY = 54 DENSITY = 7850 SPECIFIC_HEAT = 0.425, THICKNESS = 0.001 EMISSIVITY = 0.95 /
+&MATL ID = 'FiberCem' MATERIAL = 'Fiber Cement', 
+      CONDUCTIVITY = 0.15 DENSITY = 1300 SPECIFIC_HEAT = 1, THICKNESS = 0.013 EMISSIVITY = 0.9 /
+&MATL ID = 'Gypsum' MATERIAL = 'Gypsum (NBSIR 88-3752)', 
+      CONDUCTIVITY = 1.8 DENSITY = 650 SPECIFIC_HEAT = 1.09, THICKNESS = 0.03 EMISSIVITY = 0.9 /
+ 
+!! Compartments 
+&COMP ID = 'Floor 1'
+      DEPTH = 5.8 HEIGHT = 2.4 WIDTH = 10.7
+      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.013 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.013, 0.6 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
+      ORIGIN = 0.6, 1.5, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000407855 /
+&COMP ID = 'Floor 1 Vestibule'
+      DEPTH = 0.9 HEIGHT = 2.4 WIDTH = 0.9
+      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.013 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.013, 0.6 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
+      ORIGIN = 0.6, 0.6, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000407855 /
+&COMP ID = 'Stairwell'
+      DEPTH = 0.9 HEIGHT = 4.8 WIDTH = 3.7
+      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.013 WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' WALL_THICKNESS = 0.013, 0.013, 0.6 FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete' FLOOR_THICKNESS = 0.013, 0.03, 0.61
+      CROSS_SECT_AREAS = 0.63, 3.33, 3.33
+      CROSS_SECT_HEIGHTS = 0, 2.4, 4.8
+      ORIGIN = 1.5, 0.6, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000407855 /
+&COMP ID = 'Floor 2 Nook'
+      DEPTH = 1.2 HEIGHT = 2.4 WIDTH = 0.9
+      CEILING_MATL_ID = 'FiberCem', 'FiberCem' CEILING_THICKNESS = 0.013, 0.013 WALL_MATL_ID = 'Gypsum', 'FiberCem' WALL_THICKNESS = 0.026, 0.013 FLOOR_MATL_ID = 'FiberCem' FLOOR_THICKNESS = 0.013
+      ORIGIN = 0.6, 0.6, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
+&COMP ID = 'Floor 2 Hallway'
+      DEPTH = 1.2 HEIGHT = 2.4 WIDTH = 4.2
+      CEILING_MATL_ID = 'FiberCem', 'FiberCem' CEILING_THICKNESS = 0.013, 0.013 WALL_MATL_ID = 'Gypsum', 'FiberCem' WALL_THICKNESS = 0.026, 0.013 FLOOR_MATL_ID = 'FiberCem' FLOOR_THICKNESS = 0.013
+      ORIGIN = 0.6, 1.8, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
+&COMP ID = 'Floor 2 North Room Front'
+      DEPTH = 4 HEIGHT = 2.4 WIDTH = 6.7
+      CEILING_MATL_ID = 'FiberCem', 'FiberCem' CEILING_THICKNESS = 0.013, 0.013 WALL_MATL_ID = 'Gypsum', 'FiberCem' WALL_THICKNESS = 0.026, 0.013 FLOOR_MATL_ID = 'FiberCem' FLOOR_THICKNESS = 0.013
+      ORIGIN = 4.8, 0.6, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
+&COMP ID = 'Floor 2 North Room Rear'
+      DEPTH = 2 HEIGHT = 2.4 WIDTH = 5
+      CEILING_MATL_ID = 'FiberCem', 'FiberCem' CEILING_THICKNESS = 0.013, 0.013 WALL_MATL_ID = 'Gypsum', 'FiberCem' WALL_THICKNESS = 0.026, 0.013 FLOOR_MATL_ID = 'FiberCem' FLOOR_THICKNESS = 0.013
+      ORIGIN = 6.5, 4.6, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
+&COMP ID = 'Floor 2 South Room Rear'
+      DEPTH = 2 HEIGHT = 2.4 WIDTH = 5.9
+      CEILING_MATL_ID = 'FiberCem', 'FiberCem' CEILING_THICKNESS = 0.013, 0.013 WALL_MATL_ID = 'Gypsum', 'FiberCem' WALL_THICKNESS = 0.026, 0.013 FLOOR_MATL_ID = 'FiberCem' FLOOR_THICKNESS = 0.013
+      ORIGIN = 0.6, 4.6, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
+&COMP ID = 'Floor 2 South Room Front'
+      DEPTH = 0.9 HEIGHT = 2.4 WIDTH = 2.8
+      CEILING_MATL_ID = 'FiberCem', 'FiberCem' CEILING_THICKNESS = 0.013, 0.013 WALL_MATL_ID = 'Gypsum', 'FiberCem' WALL_THICKNESS = 0.026, 0.013 FLOOR_MATL_ID = 'FiberCem' FLOOR_THICKNESS = 0.013
+      ORIGIN = 0.6, 3.7, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
+&COMP ID = 'Floor 2 South Room Nook'
+      DEPTH = 0.7 HEIGHT = 2.4 WIDTH = 0.9
+      CEILING_MATL_ID = 'FiberCem', 'FiberCem' CEILING_THICKNESS = 0.013, 0.013 WALL_MATL_ID = 'Gypsum', 'FiberCem' WALL_THICKNESS = 0.026, 0.013 FLOOR_MATL_ID = 'FiberCem' FLOOR_THICKNESS = 0.013
+      ORIGIN = 2.5, 3, 2.4 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.000466563 /
+ 
+!! Wall Vents
+&VENT TYPE = 'WALL' ID = 'First Floor East Double Door A6' COMP_IDS = 'Floor 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+  CRITERION = 'TIME' T = 0, 836, 837 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 1.1 /
+&VENT TYPE = 'WALL' ID = 'First Floor West Double Door A5' COMP_IDS = 'Floor 1' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+  CRITERION = 'TIME' T = 0, 244, 245 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 2 /
+&VENT TYPE = 'WALL' ID = 'Second Floor South Door A11' COMP_IDS = 'Floor 2 Hallway' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+  CRITERION = 'TIME' T = 0, 474, 475 F = 0, 0, 1 FACE = 'LEFT' OFFSET = 0.15 /
+&VENT TYPE = 'WALL' ID = 'Second Floor West Double Door A13' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+  CRITERION = 'TIME' T = 0, 353, 354 F = 0, 0, 1 FACE = 'RIGHT' OFFSET = 3.1 /
+&VENT TYPE = 'WALL' ID = 'Second Floor East Double Door A14' COMP_IDS = 'Floor 2 North Room Front' 'OUTSIDE'  TOP = 2, BOTTOM = 0, WIDTH = 0.9
+  CRITERION = 'TIME' T = 0, 930 F = 0, 0 FACE = 'RIGHT' OFFSET = 2.2 /
+&VENT TYPE = 'WALL' ID = 'Floor 2 Stairwell Door' COMP_IDS = 'Stairwell', 'Floor 2 North Room Front' TOP = 4.4, BOTTOM = 2.4, WIDTH = 0.9
+  CRITERION = 'TIME' T = 0, 112, 113 F = 0.19, 0.19, 1 FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'Floor 1 Room to Vestibule' COMP_IDS = 'Floor 1', 'Floor 1 Vestibule' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+  FACE = 'FRONT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'Floor 1 Vestibule to Stairwell' COMP_IDS = 'Floor 1 Vestibule', 'Stairwell' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+  FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'Floor 2 Nook to Hallway' COMP_IDS = 'Floor 2 Nook', 'Floor 2 Hallway' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+  FACE = 'REAR' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'Floor 2 Hallway to North Room' COMP_IDS = 'Floor 2 Hallway', 'Floor 2 North Room Front' TOP = 2.4, BOTTOM = 0, WIDTH = 1.2
+  FACE = 'RIGHT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'FLoor 2 Hallway to South Room' COMP_IDS = 'Floor 2 Hallway', 'Floor 2 South Room Nook' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+  FACE = 'REAR' OFFSET = 1.9 /
+&VENT TYPE = 'WALL' ID = 'Floor 2 North Front to Rear' COMP_IDS = 'Floor 2 North Room Front', 'Floor 2 North Room Rear' TOP = 2.4, BOTTOM = 0, WIDTH = 5
+  FACE = 'REAR' OFFSET = 1.7 /
+&VENT TYPE = 'WALL' ID = 'Floor 2 North to South' COMP_IDS = 'Floor 2 North Room Rear', 'Floor 2 South Room Rear' TOP = 2.4, BOTTOM = 0, WIDTH = 1.2
+  FACE = 'LEFT' OFFSET = 0.4 /
+&VENT TYPE = 'WALL' ID = 'Floor South Rear to Front' COMP_IDS = 'Floor 2 South Room Rear', 'Floor 2 South Room Front' TOP = 2.4, BOTTOM = 0, WIDTH = 2.8
+  FACE = 'FRONT' OFFSET = 0 /
+&VENT TYPE = 'WALL' ID = 'Floor 2 South to Nook' COMP_IDS = 'Floor 2 South Room Front', 'Floor 2 South Room Nook' TOP = 2.4, BOTTOM = 0, WIDTH = 0.9
+  FACE = 'FRONT' OFFSET = 1.9 /
+ 
+!! Fires 
+&FIRE ID = 'Corner Burner'  COMP_ID = 'Floor 1', FIRE_ID = 'Propane Fire 1'  LOCATION = 0.9, 5.2 / 
+&FIRE ID = 'Middle Burner'  COMP_ID = 'Floor 1', FIRE_ID = 'Propane Fire 2'  LOCATION = 0.9, 4.6 / 
+&FIRE ID = 'Center Burner'  COMP_ID = 'Floor 1', FIRE_ID = 'Propane Fire 3'  LOCATION = 0.9, 4 / 
+&CHEM ID = 'Propane Fire 1' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
+&TABL ID = 'Propane Fire 1' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Propane Fire 1', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 5, 423.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 721, 423.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 1', DATA = 747, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&CHEM ID = 'Propane Fire 2' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
+&TABL ID = 'Propane Fire 2' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Propane Fire 2', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 5, 423.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 721, 423.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 2', DATA = 746, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&CHEM ID = 'Propane Fire 3' CARBON = 3 CHLORINE = 0 HYDROGEN = 8 NITROGEN = 0 OXYGEN = 0 HEAT_OF_COMBUSTION = 46460 RADIATIVE_FRACTION = 0.3 / 
+&TABL ID = 'Propane Fire 3' LABELS = 'TIME', 'HRR' , 'HEIGHT' , 'AREA' , 'CO_YIELD' , 'SOOT_YIELD' , 'HCN_YIELD' , 'HCL_YIELD' , 'TRACE_YIELD'  /
+&TABL ID = 'Propane Fire 3', DATA = 0, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 5, 423.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 721, 423.3333, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+&TABL ID = 'Propane Fire 3', DATA = 722, 0, 0.6, 0.36, 0.024, 0.005, 0, 0, 0 /
+ 
+!! Devices
+&DEVC ID = 'A1' COMP_ID = 'Floor 1 Vestibule' LOCATION = 0.4, 0.4, 2.397 TYPE = 'PLATE' MATL_ID = 'TC' FRONT_SURFACE_ORIENTATION = 'CEILING' TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'A2' COMP_ID = 'Floor 1' LOCATION = 3.6, 2, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.6495339, 0.6254771, -0.432301 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'A3' COMP_ID = 'Floor 1' LOCATION = 7.1, 2, 2.397 TYPE = 'PLATE' MATL_ID = 'TC'  NORMAL = -0.8909185, 0.373611, -0.2582227 TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'A7' COMP_ID = 'Floor 2 South Room Rear' LOCATION = 2.3, 0.6, 2.397 TYPE = 'PLATE' MATL_ID = 'TC' FRONT_SURFACE_ORIENTATION = 'CEILING' TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'A8' COMP_ID = 'Floor 2 North Room Rear' LOCATION = 1.92, 0.6, 2.395 TYPE = 'PLATE' MATL_ID = 'TC' FRONT_SURFACE_ORIENTATION = 'CEILING' TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+&DEVC ID = 'A9' COMP_ID = 'Floor 2 North Room Front' LOCATION = 3.6, 1.5, 2.395 TYPE = 'PLATE' MATL_ID = 'TC' FRONT_SURFACE_ORIENTATION = 'CEILING' TEMPERATURE_DEPTH = 0.0005 DEPTH_UNITS = 'M' /
+ 
+&TAIL /

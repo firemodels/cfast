@@ -6,9 +6,8 @@
     use initialization_routines, only : initialize_leakage, initialize_targets, initialize_ambient, offset
     use numerics_routines, only : dnrm2
     use output_routines, only: open_output_files, delete_output_files
-    use utility_routines, only: countargs, upperall, exehandle, emix
+    use utility_routines, only: emix
     use namelist_input_routines, only: namelist_input, read_misc
-    use spreadsheet_input_routines, only: spreadsheet_input
     
     use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, thermal_type, vent_type, &
         visual_type
@@ -33,7 +32,7 @@
     use dump_data, only: n_dumps, dumpinfo
 
     implicit none
-    external get_info
+    external get_info, cfastexit
 
     private
 
@@ -80,14 +79,16 @@
     if (nmlflag) then
         call namelist_input
     else
-        call spreadsheet_input
+        write(*, '(a,i3)') '***Error: This version of CFAST will only read the newer namelist input format' 
+        write(iofill, '(a,i3)') '***Error: This version of CFAST will only read the newer namelist input format'
+        call cfastexit('input',1)
     end if
 
     ! add the default thermal property
     n_thrmp = n_thrmp + 1
     thrmpptr => thermalinfo(n_thrmp)
     thrmpptr%id = 'DEFAULT'
-    thrmpptr%material = 'Default values assined to surfaces that do no have a material assigned'
+    thrmpptr%material = 'Default values assigned to surfaces that do no have a material assigned'
     thrmpptr%fyi = 'It is best to not use this material '
     thrmpptr%eps = 0.90_eb
     thrmpptr%nslab = 1
@@ -567,6 +568,100 @@
     return
 
     end subroutine open_files
+
+    ! --------------------------- exehandle -------------------------------------------
+
+    subroutine exehandle (exepath, datapath, project, extension)
+
+    ! get the arguments used to call the main program
+    ! arguments: exepath - path (without the name) to the folder where the executable resides
+    !            datapath - path (without a file name) to the folder where the project data file resides
+    !		     project - name of the project - this name cannot exceed 64 charcters. the total lenght of
+    !                          datapath + project cannot exceed 256 characters
+
+    character(len=*), intent(out) :: exepath, datapath, project, extension
+
+    integer :: i, loop, status, nargs, ld(2), li(2), ln(2), le(2)
+    character(len=256) :: buf, xname
+    character (len=64) :: name(2)
+    character(len=3) :: drive(2)
+    character(len=256) :: dir(2)
+    character(len=64) :: ext(2)
+    integer(kind=4) :: length, pathcount, splitpathqq, ilen
+    logical :: DoesTheFileExist
+
+    nargs = command_argument_count() + 1
+    project = ' '
+    exepath = ' '
+    datapath = ' '
+
+    if (nargs<2) then
+        write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
+        stop
+    end if
+
+    ! get the calling program and arguments
+
+    exepath = ' '
+    datapath = ' '
+    project = ' '
+    extension = ' '
+
+    ! only look at the first two arguments (1 = executable name, 2 =cfast input file name)
+    do i = 1, 2
+        loop = i - 1
+        call get_command_argument(loop, buf, ilen, status)
+        if (ilen>0) then
+            xname = buf
+
+            !	Split out the components
+            drive(i) = ' '
+            dir(i) = ' '
+            name(i) = ' '
+            ext(i) = ' '
+            length = splitpathqq(xname, drive(i), dir(i), name(i), ext(i))
+            ld(i) = len_trim(drive(i))
+            li(i) = len_trim(dir(i))
+            ln(i) = len_trim(name(i))
+            le(i) = len_trim(ext(i))
+
+            pathcount = 5 + ln(i) + li(i) +ld(i) + le(i)
+
+            if (pathcount>255.or.ln(i)>64) then
+                write (*,'(a,/,a)') 'Total file name length including path must be less than 256 characters.', &
+                    'Individual filenames must be less than 64 characters.'
+                stop
+            end if
+        end if
+    end do
+
+    ! Now check that the cfast input file exists = this is the data file
+    buf = ' '
+    if (le(2)/=0) then
+        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // ext(2)(1:le(2))
+    else
+        buf = drive(2)(1:ld(2)) // dir(2)(1:li(2)) // name(2)(1:ln(2)) // '.in'
+    end if
+
+    inquire (file=buf(1:len_trim(buf)), exist=doesthefileexist)
+    if (doesthefileexist) then
+        !	The project file exists
+        exepath = drive(1)(1:ld(1)) // dir(1)(1:li(1))
+        datapath = drive(2)(1:ld(2)) // dir(2)(1:li(2))
+        project = name(2)(1:ln(2))
+        if (le(2)/=0) then
+            extension = ext(2)(1:le(2))
+        else
+            extension = '.in'
+        end if
+    else
+        write (*,*) ' Input file does not exist: ', trim(buf)
+        stop
+    end if
+    
+    return
+
+    end subroutine exehandle
 
     ! --------------------------- setup_slice_iso -------------------------------------------
 

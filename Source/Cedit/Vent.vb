@@ -918,7 +918,7 @@ Public Class Vent
                     Else
                         cFirst = myCompartments(aFirstCompartment)
                         cSecond = myCompartments(aSecondCompartment)
-                        If cFirst.WallMaterial = "Off" Or cSecond.WallMaterial = "Off" Then
+                        If cFirst.WallMaterial(1) = "Off" Or cSecond.WallMaterial(1) = "Off" Then
                             myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Thermal properties for wall surfaces cannot be set to Off.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If
@@ -938,7 +938,7 @@ Public Class Vent
                     Else
                         cTop = myCompartments(aFirstCompartment)
                         cBottom = myCompartments(aSecondCompartment)
-                        If cTop.FloorMaterial = "Off" Or cBottom.CeilingMaterial = "Off" Then
+                        If cTop.FloorMaterial(1) = "Off" Or cBottom.CeilingMaterial(1) = "Off" Then
                             myErrors.Add("Heat transfer connection " + VentNumber.ToString + ". Thermal properties for floor and ceiling surfaces cannot be set to Off.", ErrorMessages.TypeFatal)
                             HasErrors += 1
                         End If

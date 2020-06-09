@@ -156,6 +156,9 @@
   <data name="CompVariableArea.StyleInfo" xml:space="preserve">
     <value>Normal{Font:Microsoft Sans Serif, 8.25pt;Margins:1, 1, 1, 1;}	Alternate{}	Fixed{BackColor:236, 233, 216;ForeColor:ControlText;Border:Flat,1,ControlDark,Both;BackgroundImageLayout:Hide;}	Highlight{BackColor:Highlight;ForeColor:HighlightText;}	Focus{}	Editor{}	Search{BackColor:Highlight;ForeColor:HighlightText;}	Frozen{BackColor:Beige;}	FrozenAlternate{}	NewRow{ForeColor:GrayText;}	EmptyArea{BackColor:AppWorkspace;Border:Flat,1,ControlDarkDark,Both;}	SelectedColumnHeader{}	SelectedRowHeader{}	GrandTotal{BackColor:Black;ForeColor:White;}	Subtotal0{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal1{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal2{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal3{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal4{BackColor:ControlDarkDark;ForeColor:White;}	Subtotal5{BackColor:ControlDarkDark;ForeColor:White;}	FilterEditor{}	Footer{BackColor:Control;ForeColor:ControlText;Border:Flat,1,ControlDark,Both;BackgroundImageLayout:Hide;}	FirstCustomStyle{}	</value>
   </data>
+  <data name="CompMaterials.ColumnInfo" xml:space="preserve">
+    <value>7,1,0,0,0,-1,Columns:0{Width:30;}	1{Width:174;AllowSorting:False;Caption:"Ceiling Material";AllowDragging:False;AllowResizing:False;}	2{Caption:"Ceiling Thickness";}	3{Width:174;Caption:"Wall Material";}	4{Caption:"Wall Thickness";}	5{Width:174;Caption:"Floor Material";}	6{Caption:"Floor Thickness";}	</value>
+  </data>
   <data name="MVentSummary.ColumnInfo" xml:space="preserve">
     <value>13,1,0,0,0,85,Columns:0{Width:40;Caption:"Num";Style:"TextAlign:CenterTop;";StyleFixed:"TextAlign:CenterCenter;";}	1{Width:87;Caption:"ID";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	2{Width:106;Caption:"From Compartment";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	3{Width:63;Caption:"From Area";}	4{Width:70;Caption:"From Height";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	5{Width:60;Caption:"From Type";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	6{Width:120;Caption:"To Compartment";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	7{Width:60;Caption:"To Area";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	8{Width:70;Caption:"To Height";Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	9{Width:60;Caption:"To Type";}	10{Width:60;Caption:"Flow";}	11{Width:60;Caption:"Dropoff";Visible:False;Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	12{Width:60;Caption:"Zero Flow";Visible:False;Style:"TextAlign:CenterCenter;";StyleFixed:"TextAlign:CenterCenter;";}	</value>
   </data>
@@ -229,7 +232,7 @@
     <value>530, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>62</value>
+    <value>59</value>
   </metadata>
   <metadata name="C1SizerLight1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>660, 17</value>

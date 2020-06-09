@@ -5,9 +5,9 @@ module initialization_routines
     use numerics_routines, only: dnrm2, dscal
     use output_routines, only : delete_output_files
     use solve_routines, only : update_data
-    use utility_routines, only: indexi, xerror    
+    use utility_routines, only: indexi    
 
-    use cfast_types, only: detector_type, room_type, target_type, thermal_type, vent_type
+    use cfast_types, only: detector_type, fire_type, room_type, target_type, thermal_type, vent_type
 
     use cenviro, only: constvar, odevara
     use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxleaks, &
@@ -351,7 +351,7 @@ module initialization_routines
         roomptr => roominfo(i)
         roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
         roomptr%cvolume = roomptr%cheight*roomptr%floor_area
-        roomptr%matl(1:nwal) = 'OFF'
+        roomptr%matl(1,1:nwal) = 'OFF'
         roomptr%surface_on(1:nwal) = .false.
         roomptr%eps_w(1:nwal) = 0.0_eb
     end do
@@ -650,13 +650,13 @@ module initialization_routines
 
     ! initialize target data structures
 
-    real(eb) :: xloc, yloc, zloc, xxnorm, yynorm, zznorm, xsize, ysize, zsize, xx, yy, zz
-    integer :: itarg, iroom, iwall, iwall2, tp
-    integer :: map6(6) = (/1,3,3,3,3,2/)
+    real(eb) :: hypotenuse
+    integer :: itarg, iroom, tp, j
     character(len=mxthrmplen) :: tcname
 
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
+    type(fire_type), pointer :: fireptr
     type(thermal_type), pointer :: thrmpptr
 
     do itarg = 1, n_targets
@@ -670,82 +670,60 @@ module initialization_routines
             stop
         end if
         roomptr => roominfo(iroom)
-        iwall = targptr%wall
-        xloc = targptr%center(1)
-        yloc = targptr%center(2)
-        zloc = targptr%center(3)
-        xxnorm = targptr%normal(1)
-        yynorm = targptr%normal(2)
-        zznorm = targptr%normal(3)
-        xsize = roomptr%cwidth
-        ysize = roomptr%cdepth
-        zsize = roomptr%cheight
 
         ! if the locator is -1, set to center of room on the floor
-        if (xloc==-1.0_eb) xloc = 0.5_eb*xsize
-        if (yloc==-1.0_eb) yloc = 0.5_eb*ysize
-        if (zloc==-1.0_eb) zloc = 0.0_eb
-        if (iwall/=0) then
-            xxnorm = 0.0_eb
-            yynorm = 0.0_eb
-            zznorm = 0.0_eb
-        end if
-        if (iwall==1) then
-            zznorm = -1.0_eb
-            xx = xloc
-            yy = yloc
-            zz = zsize
-        else if (iwall==2) then
-            yynorm = -1.0_eb
-            xx = xsize
-            yy = ysize
-            zz = yloc
-        else if (iwall==3) then
-            xxnorm = -1.0_eb
-            xx = xsize
-            yy = xloc
-            zz = yloc
-        else if (iwall==4) then
-            yynorm = 1.0_eb
-            xx = xloc
-            yy = 0.0_eb
-            zz = yloc
-        else if (iwall==5) then
-            xxnorm = 1.0_eb
-            xx = 0.0_eb
-            yy = ysize
-            zz = yloc
-        else if (iwall==6) then
-            zznorm = 1.0_eb
-            xx = xloc
-            yy = ysize
-            zz = 0.0_eb
-        end if
-        if (iwall/=0) then
-            targptr%center(1) = xx
-            targptr%center(2) = yy
-            targptr%center(3) = zz
-            targptr%normal(1) = xxnorm
-            targptr%normal(2) = yynorm
-            targptr%normal(3) = zznorm
-            xloc = xx
-            yloc = yy
-            zloc = zz
-            iwall2 = map6(iwall)
-            if (roomptr%surface_on(iwall2)) then
-                targptr%material = roomptr%matl(iwall2)
-            else
-                targptr%material = ' '
-            end if
-        end if
+        if (targptr%center(1)==-1.0_eb) targptr%center(1) = 0.5_eb*roomptr%cwidth
+        if (targptr%center(2)==-1.0_eb) targptr%center(2) = 0.5_eb*roomptr%cdepth
+        if (targptr%center(3)==-1.0_eb) targptr%center(3) = 0.0_eb
 
         ! center coordinates need to be within room
-        if (xloc<0.0_eb.or.xloc>xsize.or.yloc<0.0_eb.or.yloc>ysize.or.zloc<0.0_eb.or.zloc>zsize) then
-            write (*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
-            write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, xloc, yloc, zloc
+        if (targptr%center(1)<0.0_eb.or.targptr%center(1)>roomptr%cwidth.or. &
+            targptr%center(2)<0.0_eb.or.targptr%center(2)>roomptr%cdepth.or. &
+            targptr%center(3)<0.0_eb.or.targptr%center(3)>roomptr%cheight) then
+            write (*,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, &
+                targptr%center(1), targptr%center(2), targptr%center(3)
+            write (iofill,'(a,i0,1x,3f10.3)') '***Error: Target located outside of compartment', iroom, &
+                targptr%center(1), targptr%center(2), targptr%center(3)
             stop
         end if
-        
+
+        ! set up normal vector
+        if (targptr%front_surface_orientation == "CEILING") then
+            targptr%normal = (/0._eb, 0._eb, 1._eb/)
+        else if (targptr%front_surface_orientation == "FLOOR") then
+            targptr%normal = (/0._eb, 0._eb, -1._eb/)
+        else if (targptr%front_surface_orientation == "FRONT WALL") then
+            targptr%normal = (/1._eb, 0._eb, 0._eb/)
+        else if (targptr%front_surface_orientation == "BACK WALL") then
+            targptr%normal = (/-1._eb, 0._eb, 0._eb/)
+        else if (targptr%front_surface_orientation == "RIGHT WALL") then
+            targptr%normal = (/0._eb, 1._eb, 0._eb/)
+        else if (targptr%front_surface_orientation == "LEFT WALL") then
+            targptr%normal = (/0._eb, -1._eb, 0._eb/)
+        else
+            do j = 1, n_fires
+                fireptr => fireinfo(j)
+                if (targptr%front_surface_orientation == fireptr%id) then
+                    hypotenuse = sqrt((fireptr%x_position-targptr%center(1))**2 + &
+                        (fireptr%y_position-targptr%center(2))**2 + &
+                        (fireptr%height(1)-targptr%center(3))**2)
+                    If (Hypotenuse /= 0._eb) Then
+                        targptr%normal(1) = (fireptr%x_position - targptr%center(1)) / hypotenuse
+                        targptr%normal(2) = (fireptr%y_position - targptr%center(2)) / hypotenuse
+                        targptr%normal(3) = (fireptr%height(1) - targptr%center(3)) / hypotenuse
+                    else
+                        write(*, '(a,i3)') '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ' , &
+                            itarg
+                        write(iofill, '(a,i3)') '***Error in &DEVC: Invalid specification for normal vector. Check &DEVC input, ',&
+                            itarg
+                        stop
+                    end if
+                end if
+            end do
+        end if
+
+
+
         ! set up target thermal properties
         tcname = targptr%material
         if (tcname==' ') then
@@ -804,18 +782,19 @@ module initialization_routines
         do j = 1, n_rooms
             roomptr => roominfo(j)
             if (roomptr%surface_on(i)) then
-                if (roomptr%matl(i)==off.or.roomptr%matl(i)==none) then
+                if (roomptr%matl(1,i)==off.or.roomptr%matl(1,i)==none) then
                     roomptr%surface_on(i) = .false.
                 else
-                    call get_thermal_property(roomptr%matl(i),tp)
-                    thrmpptr => thermalinfo(tp)
-                    roomptr%eps_w(i) = thrmpptr%eps
-                    roomptr%nslab_w(i) = thrmpptr%nslab
                     do k = 1, roomptr%nslab_w(i)
-                        roomptr%k_w(k,i) = thrmpptr%k(k)
-                        roomptr%c_w(k,i) = thrmpptr%c(k)
-                        roomptr%rho_w(k,i) = thrmpptr%rho(k)
-                        roomptr%thick_w(k,i) = thrmpptr%thickness(k)
+                        call get_thermal_property(roomptr%matl(k,i),tp)
+                        thrmpptr => thermalinfo(tp)
+                        if (k==1) roomptr%eps_w(i) = thrmpptr%eps
+                        roomptr%k_w(k,i) = thrmpptr%k(1)
+                        roomptr%c_w(k,i) = thrmpptr%c(1)
+                        roomptr%rho_w(k,i) = thrmpptr%rho(1)
+                        if (roomptr%thick_w(k,i)==0.0_eb) then
+                            roomptr%thick_w(k,i) = thrmpptr%thickness(1)
+                        end if
                     end do
                 end if
             end if

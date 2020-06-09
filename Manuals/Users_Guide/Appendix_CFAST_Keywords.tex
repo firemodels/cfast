@@ -238,15 +238,15 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct ID}*                 & Character    & Section \ref{info:MATL}                 &                    &                 \\ \hline
 {\ct MATERIAL}*           & Character    & Section \ref{info:MATL}                 &                    &                 \\ \hline
 {\ct SPECIFIC\_HEAT}*     & Real	 & Section \ref{info:MATL}                 & kJ/(kg$\cdot$K)    &                 \\ \hline
-{\ct THICKNESS}*          & Real  	 & Section \ref{info:MATL}                 & m     	        &                 \\ \hline
+{\ct THICKNESS}*\footnote{ THICKNESS provides a default value for the material. It can be overridden for a specific compartment surface. For targets, the default value is used.}          & Real  	 & Section \ref{info:MATL}                 & m     	        &                 \\ \hline
 \end{longtable}
 \end{minipage}
 
 \vspace{\baselineskip}
-%This example doesn't have the MATERIAL parameter. It needs to be added if it is a required input.
 \noindent Example:
 \begin{lstlisting}
-&MATL ID = 'CONCRETE', CONDUCTIVITY = 1.75, SPECIFIC_HEAT = 1.,
+&MATL ID = 'CONCRETE', MATERIAL = 'Light weight concrete',
+      CONDUCTIVITY = 1.75, SPECIFIC_HEAT = 1.,
       DENSITY = 2200., EMISSIVITY = 0.94, THICKNESS = 0.15 /
 \end{lstlisting}
 
@@ -271,13 +271,15 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \hline \hline
 \endhead
 \parbox{1.5in}{\bf Parameter}    & \parbox{1in}{\bf Type}  & \parbox{1in}{\bf Reference}  & \parbox{1in}{\bf Units}  & \parbox{1in}{\bf Default Value} \\ \hline
-{\ct CEILING\_MATL\_ID}     & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct CEILING\_MATL\_ID}\footnote{ If included, from 1 to 3 material ids can each be input for the ceiling, floor, and walls.}     & Character Triplet		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct CEILING\_THICKNESS}\footnote{ If included, from 1 to 3 material thicknesses can each be input for the ceiling, floor, and walls. If a zero value is input, the default thickness for the material is used.}        & Real Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
 {\ct CROSS\_SECT\_AREAS}
 \footnote{For compartments where the cross-sectional area varies with height, the inputs, {\ct CROSS\_SECT\_AREAS} and {\ct CROSS\_SECT\_HEIGHTS} can be used.}
                             & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
 {\ct CROSS\_SECT\_HEIGHTS}  & Real Array          & Section \ref{info:COMP4}                 &           &                 \\ \hline
 {\ct DEPTH}*\footnote{ * indicates a required input for each {\ct COMP} input included in the input file. At least one {\ct COMP} input must be included in an input file.}                 & Real     		 & Section \ref{info:COMP}                & m         &  		\\ \hline
-{\ct FLOOR\_MATL\_ID}       & Character		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct FLOOR\_MATL\_ID}       & Character Triplet		 & Section \ref{info:COMP2}               &           &                 \\ \hline
+{\ct FLOOR\_THICKNESS}        & Real Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
 {\ct GRID}             & Integer Triplet& Section \ref{info:SLCF2}               &           & 50,50,50                \\ \hline
 {\ct HALL}                  & Logical  		 & Section \ref{info:COMP3}               &           & {\ct .FALSE.}   \\ \hline
 {\ct HEIGHT}*                & Real     		 & Section \ref{info:COMP}   	          & m         &                 \\ \hline
@@ -286,7 +288,8 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct ORIGIN}           & Real Triplet   & Section \ref{info:COMP}                & m         & 0,0,0                \\ \hline
 {\ct SHAFT}                 & Logical  		 & Section \ref{info:COMP3}                 &           & {\ct .FALSE.}   \\ \hline
 {\ct TYPE}                  & Character      & Section \ref{info:COMP}                &           &          \\ \hline
-{\ct WALL\_MATL\_ID}        & Character		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
+{\ct WALL\_MATL\_ID}        & Character Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
+{\ct WALL\_THICKNESS}        & Real Triplet		 & Section \ref{info:COMP2}                 &           &                 \\ \hline
 {\ct WIDTH}*                 & Real               & Section \ref{info:COMP}                  & m         &                 \\ \hline
 \end{longtable}
 \end{minipage}
@@ -294,10 +297,14 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 \vspace{\baselineskip}
 \noindent Example:
 \begin{lstlisting}
-&COMP ID = 'Comp 1', WIDTH = 5., DEPTH = 5., HEIGHT = 3.,
-      ORIGIN = 0., 0., 0., CEILING_MATL_ID = 'CONCRETE',
-      WALL_MATL_ID = 'CONCRETE', FLOOR_MATL_ID = 'CONCRETE',
-      GRID = 50, 50, 50 /
+&COMP ID = 'Comp 1'
+      DEPTH = 6.1 HEIGHT = 2.4 WIDTH = 3.7
+      CEILING_MATL_ID = 'FiberCem' CEILING_THICKNESS = 0.025
+      WALL_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete'
+      WALL_THICKNESS = 0.013, 0.03, 0.61
+      FLOOR_MATL_ID = 'FiberCem', 'Gypsum', 'Concrete'
+      FLOOR_THICKNESS = 0.013, 0.03, 0.61
+      ORIGIN = 0, 0, 0 GRID = 50, 50, 50 LEAK_AREA_RATIO = 0, 0.0005 /
 \end{lstlisting}
 
 
@@ -581,9 +588,9 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct ADIABATIC\_TARGET}\footnote{If included, inputs for {\ct CONVECTION\_COEFFICENTS} are required.}           					 & Logical  		  & Section \ref{info:DEVC}      &                             &  {\ct .FALSE.}     \\ \hline
 {\ct CONVECTION\_COEFFICENTS}  & Real Doublet        & Section \ref{info:DEVC}     &   kW/(m$^2$$\cdot$K)      &       0, 0       \\ \hline
 {\ct COMP\_ID}*\footnote{ * indicates a required input for each {\ct DEVC} input included in the input file. Additional inputs may be required depending on the type of device.}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
+{\ct FRONT\_SURFACE\_ORIENTATION}      		  & Selection List   & Section \ref{info:DEVC}     &  see footnote\footnote{Indicates where the front surface of the target is facing. Allowable input are UP, DOWN, FRONT, BACK, LEFT, RIGHT to indicate one of the compartment surfaces or a FIRE\_ID for a fire contained within the compartment. With a FIRE\_ID, the normal vector is calculated from a vector pointing towards a point 1/3 of the flame height above the base of the fire at the peak heat release rate of the fire.}                 &                 \\ \hline
 {\ct ID}*      		  & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct DEPTH\_UNITS}  & Character     & Section \ref{info:DEVC}     &  none or m                 &       {\ct FRACTION}       \\ \hline
-{\ct TEMPERATURE\_DEPTH}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
 {\ct LOCATION}*       & Real Triplet  & Section \ref{info:DEVC}     & m                 &                 \\ \hline
 {\ct MATL\_ID}            & Character   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 {\ct NORMAL}         & Real Triplet  & Section \ref{info:DEVC}     &                   & 0,0,1                \\ \hline
@@ -591,6 +598,7 @@ Examples of each of the inputs are included in the sections that follow.  All ex
 {\ct SETPOINT}            & Real        & Section \ref{info:DEVC}     & \degc or \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft); for heat detectors, temperature with a default value of 57 \degc (135 \degf); and for sprinklers, temperature with a default value of 74 \degc (165 \degf).}  \\ \hline
 {\ct SETPOINTS}            & Real Doublet       & Section \ref{info:DEVC}     & \%/m &     see footnote\footnote{For smoke detectors, the input is obscuration with a default value of 23.93 \%/m (8 \%/ft) for both smoldering and flaming smoke.}  \\ \hline
 {\ct SPRAY\_DENSITY}      & Real        & Section \ref{info:DEVC2}    & m/s               &                 \\ \hline
+{\ct TEMPERATURE\_DEPTH}  & Real        & Section \ref{info:DEVC}     &                   &       0.5       \\ \hline
 {\ct TYPE}*               & Selection List   & Section \ref{info:DEVC}     &                   &                 \\ \hline
 \end{longtable}
 \end{minipage}

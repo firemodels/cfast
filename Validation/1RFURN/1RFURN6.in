@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = '"Single Room with Furniture (Sect 5, Test 6)"' /
+&HEAD VERSION = 7600, TITLE = '"Single Room with Furniture (Sect 5, Test 6)"' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 1800 PRINT = 50 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -13,7 +13,8 @@
  
 !! Compartments 
 &COMP ID = 'Compartment 1'
-      DEPTH = 3.94 HEIGHT = 2.31 WIDTH = 2.26 CEILING_MATL_ID = 'GYPSUM' WALL_MATL_ID = 'GYPSUM' FLOOR_MATL_ID = 'CONCRETE'
+      DEPTH = 3.94 HEIGHT = 2.31 WIDTH = 2.26
+      CEILING_MATL_ID = 'GYPSUM' CEILING_THICKNESS = 0.016 WALL_MATL_ID = 'GYPSUM' WALL_THICKNESS = 0.016 FLOOR_MATL_ID = 'CONCRETE' FLOOR_THICKNESS = 0.15
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
@@ -37,3 +38,5 @@
 &TABL ID = '1RFURN6_Fire', DATA = 780, 240, 0, 1.12, 0.07490011, 0.2, 0.1158509, 0, 0 /
 &TABL ID = '1RFURN6_Fire', DATA = 1290, 80, 0, 1.12, 0.07490011, 0.2, 0.1158509, 0, 0 /
 &TABL ID = '1RFURN6_Fire', DATA = 1800, 35, 0, 1.12, 0.07490011, 0.2, 0.1158509, 0, 0 /
+ 
+&TAIL /

@@ -304,6 +304,7 @@ module spreadsheet_routines
     ! write out spreadsheet values for the current time step
     position = 0
     outarray = 0._eb
+    call get_target_temperatures
     do i = 1, n_ssdevice
         ssptr => ssdeviceinfo(i)
         call ssaddvaluetooutput (ssptr, time, position, outarray)
@@ -1266,7 +1267,7 @@ module spreadsheet_routines
             fireptr => fireinfo(i)
             if (fireptr%id==device) then
                 f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
-                call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
+                call ssaddtolist (position,f_height,outarray)
             end if
         end do
     case ('HRR Door Jet Fires')

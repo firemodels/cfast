@@ -1275,7 +1275,7 @@ module spreadsheet_routines
             fireptr => fireinfo(i)
             if (fireptr%id==device) then
                 f_height = flame_height (fireptr%qdot_actual,fireptr%firearea)
-                call ssaddtolist (position,fireptr%qdot_layers(l),outarray)
+                call ssaddtolist (position,f_height,outarray)
             end if
         end do
     case ('HRR Door Jet Fires')

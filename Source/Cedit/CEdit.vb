@@ -4468,11 +4468,11 @@ Public Class CeditMain
         'Label102
         '
         Me.Label102.AutoSize = True
-        Me.Label102.Location = New System.Drawing.Point(320, 79)
+        Me.Label102.Location = New System.Drawing.Point(285, 79)
         Me.Label102.Name = "Label102"
-        Me.Label102.Size = New System.Drawing.Size(59, 13)
+        Me.Label102.Size = New System.Drawing.Size(96, 13)
         Me.Label102.TabIndex = 11
-        Me.Label102.Text = "Thickness:"
+        Me.Label102.Text = "Default Thickness:"
         Me.Label102.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'Label103

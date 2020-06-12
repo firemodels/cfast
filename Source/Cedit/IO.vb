@@ -2039,79 +2039,109 @@ Module IO
 #Region "Write Routines"
     Public Sub WriteInputFileNML(ByVal filename As String)
         Dim IO As Integer = 1
-        Dim ln As String, field As String
-        Dim i, j, k, l As Integer
-        Dim aFlag As Boolean
-        Dim x(0), f(0) As Single
-        Dim aFireCurves(12, 0) As Single
-        Dim aThermalProperty As New ThermalProperty
-        Dim aComp As Compartment
-        Dim aTarg As Target
-        Dim aVent As Vent
-        Dim aFire As Fire
-        Dim aVisual As Visual
-        Dim aDump As Dump
+        Dim ln As String
 
         FileOpen(IO, filename, OpenMode.Output, OpenAccess.Write, OpenShare.Shared)
 
+        WriteOutputFileNMLHead(IO, myEnvironment)
+        WriteOutputFileNMLTime(IO, myEnvironment)
+        WriteOutputFileNMLInit(IO, myEnvironment)
+        WriteOutputFileNMLMisc(IO, myEnvironment)
+        WriteOutputFileNMLDiag(IO, myEnvironment)
+        WriteOutputFileNMLMatl(IO, myThermalProperties)
+        WriteOutputFileNMLComp(IO, myCompartments)
+        WriteOutputFileNMLVent(IO, myHVents, myVVents, myMVents)
+        WriteOutputFileNMLFire(IO, myFireProperties)
+        WriteOutputFileNMLDevc(IO, myTargets, myDetectors)
+        WriteOutputFileNMLConn(IO, myCompartments, myHHeats, myVHeats)
+        WriteOutputFileNMLIsoSlcf(IO, myVisuals)
+        WriteOutputFileNMLDump(IO, myDumps)
+
+        PrintLine(IO, " ")
+        ln = "&TAIL /"
+        PrintLine(IO, ln)
+
+        FileClose(IO)
+
+    End Sub
+
+    Private Sub WriteOutputFileNMLHead(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+        Dim ln As String
+
         'Writing HEAD namelist
-        ln = "&HEAD VERSION = " + myEnvironment.Version.ToString + ", " + "TITLE = " + "'" + myEnvironment.Title + "' /"
+        ln = "&HEAD VERSION = " + MyEnvironment.Version.ToString + ", " + "TITLE = " + "'" + MyEnvironment.Title + "' /"
         PrintLine(IO, ln)
         PrintLine(IO, " ")
         ln = "!! Scenario Configuration "
         PrintLine(IO, ln)
+    End Sub
+
+    Private Sub WriteOutputFileNMLTime(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+        Dim ln As String
 
         'Writing TIME namelist
-        ln = "&TIME SIMULATION = " + myEnvironment.SimulationTime.ToString + " PRINT = " + myEnvironment.OutputInterval.ToString + " SMOKEVIEW = " + myEnvironment.SmokeviewInterval.ToString + " SPREADSHEET = " + myEnvironment.SpreadsheetInterval.ToString + " / "
+        ln = "&TIME SIMULATION = " + MyEnvironment.SimulationTime.ToString + " PRINT = " + MyEnvironment.OutputInterval.ToString + " SMOKEVIEW = " + MyEnvironment.SmokeviewInterval.ToString + " SPREADSHEET = " + MyEnvironment.SpreadsheetInterval.ToString + " / "
         PrintLine(IO, ln)
+    End Sub
+
+    Private Sub WriteOutputFileNMLInit(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+        Dim ln As String
 
         'Writing INIT namelist
-        ln = "&INIT " + "PRESSURE = " + myEnvironment.ExtAmbPressure.ToString + " RELATIVE_HUMIDITY = " + myEnvironment.IntAmbRH.ToString
-        ln += " INTERIOR_TEMPERATURE = " + Math.Round((myEnvironment.IntAmbTemperature - 273.15), 2).ToString
-        ln += " EXTERIOR_TEMPERATURE = " + Math.Round((myEnvironment.ExtAmbTemperature - 273.15), 2).ToString + " /"
+        ln = "&INIT " + "PRESSURE = " + MyEnvironment.ExtAmbPressure.ToString + " RELATIVE_HUMIDITY = " + MyEnvironment.IntAmbRH.ToString
+        ln += " INTERIOR_TEMPERATURE = " + Math.Round((MyEnvironment.IntAmbTemperature - 273.15), 2).ToString
+        ln += " EXTERIOR_TEMPERATURE = " + Math.Round((MyEnvironment.ExtAmbTemperature - 273.15), 2).ToString + " /"
         PrintLine(IO, ln)
+    End Sub
+
+    Private Sub WriteOutputFileNMLMisc(ByVal IO As Integer, ByRef MyEnvironment As Environment)
+        Dim ln As String, aFlag As Boolean
 
         'Writing MISC namelist
-        If myEnvironment.AdiabaticWalls Or (myEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And myEnvironment.MaximumTimeStep > 0.0) Or myEnvironment.LowerOxygenLimit <> 0.15 Or myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Or myEnvironment.Overwrite <> True Then
-            ln = "&MISC "
+        ln = "&MISC "
+        If MyEnvironment.AdiabaticWalls Or (MyEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And MyEnvironment.MaximumTimeStep > 0.0) Or MyEnvironment.LowerOxygenLimit <> 0.15 Or MyEnvironment.FlamingExtinctionCoefficient <> 8700 Or MyEnvironment.SmolderingExtinctionCoefficient <> 4400 Or MyEnvironment.Overwrite <> True Then
             aFlag = True
         Else
             aFlag = False
         End If
-        If myEnvironment.AdiabaticWalls <> False Then
+        If MyEnvironment.AdiabaticWalls <> False Then
             ln += " ADIABATIC = .TRUE. "
         End If
-        If myEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And myEnvironment.MaximumTimeStep > 0 Then
-            ln += " MAX_TIME_STEP = " + myEnvironment.MaximumTimeStep.ToString
+        If MyEnvironment.MaximumTimeStep <> Environment.DefaultMaximumTimeStep And MyEnvironment.MaximumTimeStep > 0 Then
+            ln += " MAX_TIME_STEP = " + MyEnvironment.MaximumTimeStep.ToString
         End If
-        If myEnvironment.LowerOxygenLimit <> 0.15 Then
-            ln += " LOWER_OXYGEN_LIMIT = " + myEnvironment.LowerOxygenLimit.ToString
+        If MyEnvironment.LowerOxygenLimit <> 0.15 Then
+            ln += " LOWER_OXYGEN_LIMIT = " + MyEnvironment.LowerOxygenLimit.ToString
         End If
-        If myEnvironment.FlamingExtinctionCoefficient <> 8700 Or myEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
-            ln += " SPECIFIC_EXTINCTION = " + myEnvironment.FlamingExtinctionCoefficient.ToString + ", " + myEnvironment.SmolderingExtinctionCoefficient.ToString
+        If MyEnvironment.FlamingExtinctionCoefficient <> 8700 Or MyEnvironment.SmolderingExtinctionCoefficient <> 4400 Then
+            ln += " SPECIFIC_EXTINCTION = " + MyEnvironment.FlamingExtinctionCoefficient.ToString + ", " + MyEnvironment.SmolderingExtinctionCoefficient.ToString
         End If
-        If myEnvironment.Overwrite <> True Then
+        If MyEnvironment.Overwrite <> True Then
             ln += " OVERWRITE = .FALSE."
         End If
         If aFlag Then
             ln += " / "
             PrintLine(IO, ln)
         End If
-        myEnvironment.Changed = False
+        MyEnvironment.Changed = False
+
+    End Sub
+
+    Private Sub WriteOutputFileNMLDiag(ByVal IO As Integer, ByRef Myenvironment As Environment)
+        Dim ln As String, wrtDIAG As Boolean, wrtSlash As Boolean
+        Dim x(0), f(0) As Single, i As Integer
 
         'Writing Diagnostics 
-        Dim wrtDIAG As Boolean
-        Dim wrtSlash As Boolean
-        If myEnvironment.DIAGRadSolver = "DEFAULT" Then
+        If Myenvironment.DIAGRadSolver = "DEFAULT" Then
             wrtDIAG = True
             wrtSlash = False
         Else
             wrtDIAG = False
             wrtSlash = True
-            ln = "&DIAG  RADSOLVER = '" + myEnvironment.DIAGRadSolver + "' "
+            ln = "&DIAG  RADSOLVER = '" + Myenvironment.DIAGRadSolver + "' "
             PrintLine(IO, ln)
         End If
-        If myEnvironment.DIAGAdiabaticTargetVerification = True Then
+        If Myenvironment.DIAGAdiabaticTargetVerification = True Then
             If wrtDIAG Then
                 ln = "&DIAG "
                 wrtDIAG = False
@@ -2119,10 +2149,10 @@ Module IO
             Else
                 ln = " "
             End If
-            ln += "ADIABATIC_TARGET_VERIFICATION = 'ON' RADIATIVE_INCIDENT_FLUX = " + myEnvironment.DIAGAdiabaticTargetFlux.ToString
+            ln += "ADIABATIC_TARGET_VERIFICATION = 'ON' RADIATIVE_INCIDENT_FLUX = " + Myenvironment.DIAGAdiabaticTargetFlux.ToString
             Print(IO, ln)
         End If
-        If myEnvironment.DIAGUpperLayerThickness <> Environment.DefaultNonValue Then
+        If Myenvironment.DIAGUpperLayerThickness <> Environment.DefaultNonValue Then
             If wrtDIAG Then
                 ln = "&DIAG "
                 wrtDIAG = False
@@ -2130,10 +2160,10 @@ Module IO
             Else
                 ln = " "
             End If
-            ln += "UPPER_LAYER_THICKNESS = " + myEnvironment.DIAGUpperLayerThickness.ToString
+            ln += "UPPER_LAYER_THICKNESS = " + Myenvironment.DIAGUpperLayerThickness.ToString
             Print(IO, ln)
         End If
-        If myEnvironment.DIAGFireHeatFlux <> Environment.DefaultNonValue Then
+        If Myenvironment.DIAGFireHeatFlux <> Environment.DefaultNonValue Then
             If wrtDIAG Then
                 ln = "&DIAG "
                 wrtDIAG = False
@@ -2141,10 +2171,10 @@ Module IO
             Else
                 ln = " "
             End If
-            ln += "VERIFICATION_FIRE_HEAT_FLUX = " + myEnvironment.DIAGFireHeatFlux.ToString
+            ln += "VERIFICATION_FIRE_HEAT_FLUX = " + Myenvironment.DIAGFireHeatFlux.ToString
             Print(IO, ln)
         End If
-        If myEnvironment.DIAGVerificationTimeStep <> Environment.DefaultNonValue Then
+        If Myenvironment.DIAGVerificationTimeStep <> Environment.DefaultNonValue Then
             If wrtDIAG Then
                 ln = "&DIAG "
                 wrtDIAG = False
@@ -2152,10 +2182,10 @@ Module IO
             Else
                 ln = " "
             End If
-            ln += "VERIFICATION_TIME_STEP = " + myEnvironment.DIAGVerificationTimeStep.ToString
+            ln += "VERIFICATION_TIME_STEP = " + Myenvironment.DIAGVerificationTimeStep.ToString
             Print(IO, ln)
         End If
-        If myEnvironment.DIAGGasTemp <> Environment.DefaultNonValue Then
+        If Myenvironment.DIAGGasTemp <> Environment.DefaultNonValue Then
             If wrtDIAG Then
                 ln = "&DIAG "
                 wrtDIAG = False
@@ -2163,13 +2193,13 @@ Module IO
             Else
                 ln = " "
             End If
-            ln += "GAS_TEMPERATURE = " + Math.Round(myEnvironment.DIAGGasTemp, 2).ToString
-            ln += " PARTIAL_PRESSURE_H2O = " + Math.Round(myEnvironment.DIAGPartPressH2O, 2).ToString
-            ln += " PARTIAL_PRESSURE_CO2 = " + Math.Round(myEnvironment.DIAGPartPressCO2, 2).ToString
+            ln += "GAS_TEMPERATURE = " + Math.Round(Myenvironment.DIAGGasTemp, 2).ToString
+            ln += " PARTIAL_PRESSURE_H2O = " + Math.Round(Myenvironment.DIAGPartPressH2O, 2).ToString
+            ln += " PARTIAL_PRESSURE_CO2 = " + Math.Round(Myenvironment.DIAGPartPressCO2, 2).ToString
             Print(IO, ln)
         End If
-        myEnvironment.GetDIAGf(f)
-        myEnvironment.GetDIAGt(x)
+        Myenvironment.GetDIAGf(f)
+        Myenvironment.GetDIAGt(x)
         If f.GetUpperBound(0) = x.GetUpperBound(0) Then
             Dim numpoints As Integer = f.GetUpperBound(0)
             For i = 0 To numpoints
@@ -2186,69 +2216,69 @@ Module IO
                     ln = " "
                 End If
                 ln += " T = " + x(0).ToString
-                For k = 1 To numpoints
-                    ln += ", " + x(k).ToString
+                For i = 1 To numpoints
+                    ln += ", " + x(i).ToString
                 Next
                 PrintLine(IO, ln)
                 ln = "      F = " + f(0).ToString
-                For k = 1 To numpoints
-                    ln += ", " + f(k).ToString
+                For i = 1 To numpoints
+                    ln += ", " + f(i).ToString
                 Next
                 PrintLine(IO, ln)
             End If
         End If
-        If myEnvironment.DIAGfire <> Environment.DIAGon Then
+        If Myenvironment.DIAGfire <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "FIRE_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGhflow <> Environment.DIAGon Then
+        If Myenvironment.DIAGhflow <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "HORIZONTAL_FLOW_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGentrain <> Environment.DIAGon Then
+        If Myenvironment.DIAGentrain <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "ENTRAINMENT_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGvflow <> Environment.DIAGon Then
+        If Myenvironment.DIAGvflow <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "VERTICAL_FLOW_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGcjet <> Environment.DIAGon Then
+        If Myenvironment.DIAGcjet <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CEILING_JET_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGdfire <> Environment.DIAGon Then
+        If Myenvironment.DIAGdfire <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DOOR_JET_FIRE_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGconvec <> Environment.DIAGon Then
+        If Myenvironment.DIAGconvec <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CONVECTION_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGrad <> Environment.DIAGon Then
+        If Myenvironment.DIAGrad <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RADIATION_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGgasabsorp <> Environment.DIAGon Then
+        If Myenvironment.DIAGgasabsorp <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "GAS_ABSORBTION_SUB_MODEL = 'CONSTANT' ")
         End If
-        If myEnvironment.DIAGconduc <> Environment.DIAGon Then
+        If Myenvironment.DIAGconduc <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "CONDUCTION_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGdebugprn <> Environment.DIAGoff Then
+        If Myenvironment.DIAGdebugprn <> Environment.DIAGoff Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DEBUG_PRINT = 'ON' ")
         End If
-        If myEnvironment.DIAGmflow <> Environment.DIAGon Then
+        If Myenvironment.DIAGmflow <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "MECHANICAL_FLOW_SUB_MODEL = 'OFF' ")
         End If
-        If myEnvironment.DIAGkeyin <> Environment.DIAGon Then
+        If Myenvironment.DIAGkeyin <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "KEYBOARD_INPUT = 'OFF' ")
         End If
-        If myEnvironment.DIAGsteadyint <> Environment.DIAGoff Then
+        If Myenvironment.DIAGsteadyint <> Environment.DIAGoff Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "STEADY_STATE_INITIAL_CONDITIONS = 'ON' ")
         End If
-        If myEnvironment.DIAGdasslprn <> Environment.DIAGoff Then
+        If Myenvironment.DIAGdasslprn <> Environment.DIAGoff Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "DASSL_DEBUG_PRINT = 'ON' ")
         End If
-        If myEnvironment.DIAGoxygen <> Environment.DIAGoff Then
+        If Myenvironment.DIAGoxygen <> Environment.DIAGoff Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "OXYGEN_TRACKING = 'ON' ")
         End If
-        If myEnvironment.DIAGresiddbprn <> Environment.DIAGoff Then
+        If Myenvironment.DIAGresiddbprn <> Environment.DIAGoff Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "RESIDUAL_DEBUG_PRINT = 'ON' ")
         End If
-        If myEnvironment.DIAGlayermixing <> Environment.DIAGon Then
+        If Myenvironment.DIAGlayermixing <> Environment.DIAGon Then
             WriteDIAGsimpleln(IO, wrtDIAG, wrtSlash, "LAYER_MIXING_SUB_MODEL = 'OFF' ")
         End If
         If wrtSlash Then
@@ -2256,15 +2286,20 @@ Module IO
             PrintLine(IO, ln)
         End If
 
+    End Sub
+
+    Private Sub WriteOutputFileNMLMatl(ByVal IO As Integer, ByVal MyThermalProperties As ThermalPropertiesCollection)
+        Dim ln, field As String, i, j As Integer, aThermalProperty As New ThermalProperty
+
         'Writing MATL namelist
-        If myThermalProperties.Count > 0 Then
+        If MyThermalProperties.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Material Properties "
             PrintLine(IO, ln)
 
-            For i = 0 To myThermalProperties.Count - 1
-                aThermalProperty = myThermalProperties.Item(i)
-                If myThermalProperties.NumberofConnections(aThermalProperty.ShortName) > 0 Then
+            For i = 0 To MyThermalProperties.Count - 1
+                aThermalProperty = MyThermalProperties.Item(i)
+                If MyThermalProperties.NumberofConnections(aThermalProperty.ShortName) > 0 Then
                     ln = "&MATL" + " ID = '" + aThermalProperty.ShortName + "'"
                     If aThermalProperty.Name <> "" Then
                         If aThermalProperty.Name.IndexOf("'") > 0 Then
@@ -2296,14 +2331,20 @@ Module IO
             Next
         End If
 
+    End Sub
+
+    Private Sub WriteOutputFileNMLComp(ByVal IO As Integer, MyCompartments As CompartmentCollection)
+        Dim ln As String, aComp As Compartment, i, j, k As Integer
+        Dim x(0), f(0) As Single
+
         ' Writing COMP namelist
-        If myCompartments.Count > 0 Then
+        If MyCompartments.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Compartments "
             PrintLine(IO, ln)
 
-            For i = 0 To myCompartments.Count - 1
-                aComp = myCompartments.Item(i)
+            For i = 0 To MyCompartments.Count - 1
+                aComp = MyCompartments.Item(i)
                 ln = "&COMP " + "ID = '" + aComp.Name + "'"
                 PrintLine(IO, ln)
                 ln = "      DEPTH = " + aComp.RoomDepth.ToString + " HEIGHT = " + aComp.RoomHeight.ToString + " WIDTH = " + aComp.RoomWidth.ToString
@@ -2384,14 +2425,19 @@ Module IO
             Next
         End If
 
+    End Sub
+
+    Private Sub WriteOutputFileNMLVent(ByVal IO As Integer, ByRef myHvents As VentCollection, ByRef MyVVents As VentCollection, MyMVents As VentCollection)
+        Dim ln As String, i, j As Integer, aVent As Vent
+
         ' Writing VENT namelist for wall vents
-        If myHVents.Count > 0 Then
+        If myHvents.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Wall Vents"
             PrintLine(IO, ln)
 
-            For i = 0 To myHVents.Count - 1
-                aVent = myHVents.Item(i)
+            For i = 0 To myHvents.Count - 1
+                aVent = myHvents.Item(i)
                 If aVent.Name = "" Then
                     aVent.Name = "WallVent_" + (i + 1).ToString
                 End If
@@ -2412,12 +2458,12 @@ Module IO
                     If numpoints > 1 Then
                         ln += " CRITERION = 'TIME'"
                         ln += " T = " + xx(1).ToString
-                        For k = 2 To numpoints
-                            ln += ", " + xx(k).ToString
+                        For j = 2 To numpoints
+                            ln += ", " + xx(j).ToString
                         Next
                         ln += " F = " + ff(1).ToString
-                        For k = 2 To numpoints
-                            ln += ", " + ff(k).ToString
+                        For j = 2 To numpoints
+                            ln += ", " + ff(j).ToString
                         Next
                     ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
                         ln += " CRITERION = 'TIME'"
@@ -2451,13 +2497,13 @@ Module IO
         End If
 
         'Writing VENT namelist for ceiling/floor vents
-        If myVVents.Count > 0 Then
+        If MyVVents.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Ceiling and Floor Vents "
             PrintLine(IO, ln)
 
-            For i = 0 To myVVents.Count - 1
-                aVent = myVVents.Item(i)
+            For i = 0 To MyVVents.Count - 1
+                aVent = MyVVents.Item(i)
                 If aVent.Name = "" Then
                     aVent.Name = "CeilFloorVent_" + (i + 1).ToString
                 End If
@@ -2487,12 +2533,12 @@ Module IO
                         PrintLine(IO, ln)
                         ln = "      CRITERION = 'TIME'"
                         ln += " T = " + xx(1).ToString
-                        For k = 2 To numpoints
-                            ln += ", " + xx(k).ToString
+                        For j = 2 To numpoints
+                            ln += ", " + xx(j).ToString
                         Next
                         ln += " F = " + ff(1).ToString
-                        For k = 2 To numpoints
-                            ln += ", " + ff(k).ToString
+                        For j = 2 To numpoints
+                            ln += ", " + ff(j).ToString
                         Next
                     End If
                 ElseIf aVent.OpenType = Vent.OpenbyTemperature Then
@@ -2515,13 +2561,13 @@ Module IO
         End If
 
         'Writing VENT namelist for mechanical vents
-        If myMVents.Count > 0 Then
+        If MyMVents.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Mechanical Vents"
             PrintLine(IO, ln)
 
-            For i = 0 To myMVents.Count - 1
-                aVent = myMVents.Item(i)
+            For i = 0 To MyMVents.Count - 1
+                aVent = MyMVents.Item(i)
                 If aVent.Name = "" Then
                     aVent.Name = "MechanicalVent_" + (i + 1).ToString
                 End If
@@ -2556,12 +2602,12 @@ Module IO
                         PrintLine(IO, ln)
                         ln = "      CRITERION = 'TIME'"
                         ln += " T = " + xx(1).ToString
-                        For k = 2 To numpoints
-                            ln += ", " + xx(k).ToString
+                        For j = 2 To numpoints
+                            ln += ", " + xx(j).ToString
                         Next
                         ln += " F = " + ff(1).ToString
-                        For k = 2 To numpoints
-                            ln += ", " + ff(k).ToString
+                        For j = 2 To numpoints
+                            ln += ", " + ff(j).ToString
                         Next
                     ElseIf aVent.InitialOpening <> 1 Or aVent.FinalOpening <> 1 Then
                         PrintLine(IO, ln)
@@ -2588,8 +2634,14 @@ Module IO
             Next
         End If
 
+    End Sub
+
+    Private Sub WriteOutputFileNMLFire(ByVal IO As Integer, ByRef MyFireProperties As FireCollection)
+        Dim ln As String, aFire As Fire, i, j, k, l As Integer
+        Dim aFireCurves(12, 0) As Single
+
         'Writing Fires
-        If myFires.Count + myFireProperties.Count > 0 Then
+        If myFires.Count + MyFireProperties.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Fires "
             PrintLine(IO, ln)
@@ -2620,9 +2672,9 @@ Module IO
                 aFire.Changed = False
             Next
 
-            For i = 0 To myFireProperties.Count - 1
-                If myFires.NumberofInstances(myFireProperties.Item(i).Name) > 0 Then
-                    aFire = myFireProperties.Item(i)
+            For i = 0 To MyFireProperties.Count - 1
+                If myFires.NumberofInstances(MyFireProperties.Item(i).Name) > 0 Then
+                    aFire = MyFireProperties.Item(i)
                     ln = "&CHEM ID = '" + aFire.Name + "'"
                     ln += " CARBON = " + aFire.ChemicalFormula(formula.C).ToString + " CHLORINE = " + aFire.ChemicalFormula(formula.Cl).ToString + " HYDROGEN = " + aFire.ChemicalFormula(formula.H).ToString + " NITROGEN = " + aFire.ChemicalFormula(formula.N).ToString + " OXYGEN = " + aFire.ChemicalFormula(formula.O).ToString
                     ln += " HEAT_OF_COMBUSTION = " + (aFire.HeatofCombustion / 1000).ToString
@@ -2654,15 +2706,19 @@ Module IO
                 End If
             Next
         End If
+    End Sub
+
+    Private Sub WriteOutputFileNMLDevc(ByVal IO As Integer, ByRef MyTargets As TargetCollection, ByRef MyDetectors As TargetCollection)
+        Dim ln As String, i As Integer, aTarg As Target
 
         ' Writing devices (targets, detectors, sprinklers)
-        If myTargets.Count + myDetectors.Count > 0 Then
+        If MyTargets.Count + MyDetectors.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Devices"
             PrintLine(IO, ln)
 
-            For i = 0 To myTargets.Count - 1
-                aTarg = myTargets.Item(i)
+            For i = 0 To MyTargets.Count - 1
+                aTarg = MyTargets.Item(i)
                 ln = "&DEVC ID = '" + aTarg.Name + "' COMP_ID = '" + myCompartments.Item(aTarg.Compartment).Name + "'"
                 ln += " LOCATION = " + aTarg.XPosition.ToString + ", " + aTarg.YPosition.ToString + ", " + aTarg.ZPosition.ToString
                 If aTarg.SolutionType = Target.ThermallyThick Then
@@ -2694,7 +2750,7 @@ Module IO
                         ln += "FRONT_SURFACE_ORIENTATION = '" + aTarg.TargetFacing + "'"
                     End If
                 End If
-                    ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
+                ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 ln += " DEPTH_UNITS = " + "'M'"
                 If aTarg.Adiabatic = True Then
                     ln += " ADIABATIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString
@@ -2707,8 +2763,8 @@ Module IO
                 aTarg.Changed = False
             Next
 
-            For i = 0 To myDetectors.Count - 1
-                aTarg = myDetectors.Item(i)
+            For i = 0 To MyDetectors.Count - 1
+                aTarg = MyDetectors.Item(i)
                 If aTarg.Name = "" Then
                     If aTarg.DetectorType = Target.TypeHeatDetector Then
                         aTarg.Name = "HeatDetector_" + (i + 1).ToString
@@ -2740,26 +2796,31 @@ Module IO
             Next
         End If
 
+    End Sub
+
+    Private Sub WriteOutputFileNMLConn(ByVal IO As Integer, ByRef MyCompartments As CompartmentCollection, MyHHeats As VentCollection, MyVHeats As VentCollection)
+        Dim ln As String, i, j As Integer, aVent As Vent
+
         'Writing Surface Connections
-        If myHHeats.Count + myVHeats.Count > 0 Then
+        If MyHHeats.Count + MyVHeats.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Surface Connections"
             PrintLine(IO, ln)
 
             Dim fracln As String
-            For i = 0 To myCompartments.Count - 1
-                If myHHeats.FromConnections(i) > 0 Then
+            For i = 0 To MyCompartments.Count - 1
+                If MyHHeats.FromConnections(i) > 0 Then
                     ln = "&CONN TYPE = 'WALL'"
-                    ln += " COMP_ID = '" + myCompartments.Item(i).Name + "' "
+                    ln += " COMP_ID = '" + MyCompartments.Item(i).Name + "' "
                     fracln = "      F = "
                     ln += " COMP_IDS = "
-                    For j = 0 To myHHeats.Count - 1
-                        aVent = myHHeats.Item(j)
+                    For j = 0 To MyHHeats.Count - 1
+                        aVent = MyHHeats.Item(j)
                         If aVent.FirstCompartment = i Then
                             If aVent.SecondCompartment = -1 Then
                                 ln += " 'OUTSIDE'"
                             Else
-                                ln += "  '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                                ln += "  '" + MyCompartments.Item(aVent.SecondCompartment).Name + "'"
                             End If
                             fracln = fracln + aVent.InitialOpening.ToString + " "
                         End If
@@ -2771,9 +2832,9 @@ Module IO
                 End If
             Next
 
-            For i = 0 To myVHeats.Count - 1
+            For i = 0 To MyVHeats.Count - 1
                 ln = "&CONN"
-                aVent = myVHeats.Item(i)
+                aVent = MyVHeats.Item(i)
                 If aVent.FirstCompartment = -1 Then
                     ln += " TYPE = 'CEILING'"
                 Else
@@ -2782,27 +2843,30 @@ Module IO
                 If aVent.FirstCompartment = -1 Then
                     ln += " COMP_ID = 'OUTSIDE'"
                 Else
-                    ln += " COMP_ID = '" + myCompartments.Item(aVent.FirstCompartment).Name + "'"
+                    ln += " COMP_ID = '" + MyCompartments.Item(aVent.FirstCompartment).Name + "'"
                 End If
                 If aVent.SecondCompartment = -1 Then
                     ln += " COMP_IDS = 'OUTSIDE' "
                 Else
-                    ln += " COMP_IDS = '" + myCompartments.Item(aVent.SecondCompartment).Name + "'"
+                    ln += " COMP_IDS = '" + MyCompartments.Item(aVent.SecondCompartment).Name + "'"
                 End If
                 ln += " / "
                 PrintLine(IO, ln)
                 aVent.Changed = False
             Next
         End If
+    End Sub
 
-        'Writing Visualizations
-        If myVisuals.Count > 0 Then
+    Private Sub WriteOutputFileNMLIsoSlcf(IO As Integer, ByRef MyVisuals As VisualCollection)
+        Dim ln As String, i As Integer, aVisual As Visual
+
+        If MyVisuals.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Visualizations"
             PrintLine(IO, ln)
 
-            For i = 0 To myVisuals.Count - 1
-                aVisual = myVisuals.Item(i)
+            For i = 0 To MyVisuals.Count - 1
+                aVisual = MyVisuals.Item(i)
                 If aVisual.Type = Visual.IsoSurface Then
                     ln = "&ISOF VALUE = " + Math.Round((aVisual.Value - 273.15), 2).ToString + " /"
                     PrintLine(IO, ln)
@@ -2823,15 +2887,19 @@ Module IO
                 aVisual.Changed = False
             Next
         End If
+    End Sub
+
+    Private Sub WriteOutputFileNMLDump(ByVal IO As Integer, MyDumps As DumpCollection)
+        Dim ln As String, i As Integer, adump As Dump
 
         ' Writing Dumps
-        If myDumps.Count > 0 Then
+        If MyDumps.Count > 0 Then
             PrintLine(IO, " ")
             ln = "!! Dumps"
             PrintLine(IO, ln)
 
-            For i = 0 To myDumps.Count - 1
-                aDump = myDumps.Item(i)
+            For i = 0 To MyDumps.Count - 1
+                aDump = MyDumps.Item(i)
 
                 ln = "&DUMP ID = '" + aDump.ID + "'"
                 PrintLine(IO, ln)
@@ -2851,15 +2919,6 @@ Module IO
                 PrintLine(IO, ln)
             Next
         End If
-
-        ' Writing end of file
-
-        PrintLine(IO, " ")
-        ln = "&TAIL /"
-        PrintLine(IO, ln)
-
-        FileClose(IO)
-
     End Sub
     Public Sub WriteDIAGsimpleln(ByVal IO As Integer, ByRef wrtDIAG As Boolean, ByRef wrtSlash As Boolean, ByVal line As String)
         Dim ln As String

@@ -567,7 +567,7 @@ Module IO
         Dim i, j, k, max As Integer
         Dim compid, matlid, id, type, fyi, targetfacing As String
         Dim tempdepthunits As String = "FRACTION"
-        Dim tempdepth, rti, setp, setps(2), sprayd As Single
+        Dim fixedtemperature, tempdepth, rti, setp, setps(2), sprayd As Single
         Dim loc(3), norm(3), coeffs(2) As Single
         Dim valid, lvalid, adiabatic As Boolean
         Dim aTempOffset As Single = 273.15
@@ -578,6 +578,7 @@ Module IO
                 coeffs(1) = 0
                 coeffs(2) = 0
                 tempdepth = 0.5
+                fixedtemperature = 0
                 rti = 130
                 setp = -1
                 id = ""
@@ -586,6 +587,8 @@ Module IO
                 matlid = ""
                 fyi = ""
                 targetfacing = ""
+                fixedtemperature = -1001
+
                 For k = 0 To 2
                     loc(k) = -1
                     norm(k) = 0
@@ -616,6 +619,8 @@ Module IO
                         tempdepthunits = NMList.ForNMListVarGetStr(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "TEMPERATURE_DEPTH" Then
                         tempdepth = NMList.ForNMListVarGetNum(i, j, 1)
+                    ElseIf NMList.ForNMListGetVar(i, j) = "FRONT_SURFACE_TEMPERATURE" Then
+                        fixedtemperature = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "RTI" Then
                         rti = NMList.ForNMListVarGetNum(i, j, 1)
                     ElseIf NMList.ForNMListGetVar(i, j) = "SETPOINT" Then
@@ -732,6 +737,11 @@ Module IO
                         Else
                             aDetect.InternalLocation = tempdepth
                         End If
+                        If (fixedtemperature <= -273.15) Or (fixedtemperature > 1000) Then
+                            If fixedtemperature <> -1001 Then myErrors.Add("DEVC namelist " + id + " is not a valid DEVC because front surface temperature is out of range", ErrorMessages.TypeFatal)
+                        Else
+                            aDetect.FixedTemperature = fixedtemperature
+                        End If
                         aDetect.Name = id
                         aDetect.FYI = fyi
                         If adiabatic = True Then
@@ -739,6 +749,7 @@ Module IO
                             aDetect.Convection_Coefficient(1) = coeffs(1)
                             aDetect.Convection_Coefficient(2) = coeffs(2)
                         End If
+
                         aDetect.Changed = False
                         myTargets.Add(aDetect)
                     Else
@@ -2752,6 +2763,9 @@ Module IO
                 End If
                 ln += " TEMPERATURE_DEPTH = " + aTarg.InternalLocation.ToString
                 ln += " DEPTH_UNITS = " + "'M'"
+                If aTarg.FixedTemperature <> myEnvironment.IntAmbTemperature And aTarg.FixedTemperature <> -1001 Then
+                    ln += " FRONT_SURFACE_TEMPERATURE = " + aTarg.FixedTemperature.ToString
+                End If
                 If aTarg.Adiabatic = True Then
                     ln += " ADIABATIC_TARGET = .TRUE. CONVECTION_COEFFICIENTS = " + aTarg.Convection_Coefficient(1).ToString + ", " + aTarg.Convection_Coefficient(2).ToString
                 End If

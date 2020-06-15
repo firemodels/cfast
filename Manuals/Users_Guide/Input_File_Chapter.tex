@@ -173,17 +173,22 @@ ation in Smokeview.
 \section{Materials}
 \label{info:COMP2}
 To calculate heat loss through the ceiling, walls, and floor of a compartment, the properties of the bounding surfaces must be known. This includes the thermophysical properties of the surfaces and the arrangement of adjacent compartments if inter-compartment heat transfer is to be calculated.
-%In following paragraph is that supposed to be "convection" and not "conduction" or maybe "convection" should be added
-The bounding surfaces are the ceilings, walls and floors that define a compartment. These are referred to as thermophysical boundaries, since each participates in conduction and radiation as well as defining the compartments, unless these phenomena are explicitly turned off.
+The bounding surfaces are the ceilings, walls and floors that define a compartment. These are referred to as thermophysical boundaries, since each participates in conduction, convection, and radiation as well as defining the compartments, unless these phenomena are explicitly turned off.
 
 The thermophysical properties of the materials to be used to define the surfaces are defined in the Thermal Propertied tab described in section \ref{info:MATL}. The materials are then assigned to the ceiling, wall, and floor surfaces by use of the material ID
 
 \begin{description}
-\item[Ceiling Material ID] (default value: Off): material name from the thermal properties from the Materials tab used for the ceiling surface of the compartment.
+\item[Ceiling Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the ceiling surface of the compartment. The innermost layer is specified first.
+    
+\item[Ceiling Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the ceiling surface.
 
-\item[Wall Material ID] (default value: Off): material name from the thermal properties from the Materials tab used for the wall surfaces of the compartment.
+\item[Wall Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the wall surface of the compartment.  The innermost layer is specified first.
 
-\item[Floor Material ID] (default value: Off): material name from the thermal properties from the Materials tab used for the floor surface of the compartment.
+\item[Wall Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the ceiling surface. 
+
+\item[Floor Material] (default value: Off): up to three materials from the thermal properties from the Materials tab can be used to define the layer(s) of the floor surface of the compartment.  The innermost layer is specified first.
+
+\item[Floor Thickness] (default units: m, default value: thickness of material specified on the Materials tab): thickness of each of the layers of the floor surface. 
 \end{description}
 
 \graybox{

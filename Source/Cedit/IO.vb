@@ -2933,53 +2933,6 @@ Module IO
         ln += line
         PrintLine(IO, ln)
     End Sub
-    Public Sub WriteRamp(ByVal IO As Integer, ByVal name As String, ByRef doneRamps As RampCollection, ByVal StartValue As Integer)
-        Dim ln As String
-        Dim aRamp As Ramp
-        Dim idx As Integer
-        Dim aDenom As Single
-
-        If myRamps.GetRampIndex(name) >= 0 And doneRamps.GetRampIndex(name) < 0 Then
-            aRamp = myRamps.Item(myRamps.GetRampIndex(name))
-            doneRamps.Add(aRamp)
-            ln = "&RAMP "
-            PrintLine(IO, ln)
-            ln = " ID = '" + aRamp.Name + "' "
-            PrintLine(IO, ln)
-            ln = " TYPE = '" + aRamp.Type + "' "
-            If aRamp.Type = "HRR" Then
-                aDenom = 1000.0
-            Else
-                aDenom = 1.0
-            End If
-            PrintLine(IO, ln)
-            If aRamp.DimF >= StartValue Then
-                ln = " F = " + (aRamp.F(StartValue) / aDenom).ToString
-                If aRamp.DimF > StartValue Then
-                    For idx = StartValue + 1 To aRamp.DimF
-                        ln = ln + ", " + (aRamp.F(idx) / aDenom).ToString
-                    Next
-                End If
-                PrintLine(IO, ln)
-            End If
-            If aRamp.DimX >= StartValue Then
-                If aRamp.IsT Then
-                    ln = " T = " + aRamp.X(StartValue).ToString
-                Else
-                    ln = " Z = " + aRamp.X(StartValue).ToString
-                End If
-                If aRamp.DimX > StartValue Then
-                    For idx = StartValue + 1 To aRamp.DimX
-                        ln = ln + ", " + aRamp.X(idx).ToString
-                    Next
-                End If
-                PrintLine(IO, ln)
-            End If
-            ln = " / "
-            PrintLine(IO, ln)
-        End If
-
-    End Sub
 #End Region
 #Region "Support Routines"
     Private Sub AddHeadertoOutput(ByRef csv As CSVsheet, ByRef i As Integer, ByVal header As String)

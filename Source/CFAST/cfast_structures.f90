@@ -226,7 +226,8 @@ module cfast_types
         character(len=128) :: depth_units   ! specify units for temperature depth location, 'FRACTION' or 'M'
                                             ! default is 'FRACTION' for backwards compatibility
         character(len=128) :: front_surface_orientation
-
+        
+        real(eb) :: front_surface_temperature   ! fixed front surface temperature for calculation of gauge heat flux.
         real(eb) :: center(3)           ! position of target center
         real(eb) :: normal(3)           ! target normal vector
         real(eb) :: k                   ! target thermal conductivity (from matching thermal properties input)

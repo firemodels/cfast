@@ -16,7 +16,7 @@ module target_routines
         idx_tempb_trg, t_max, mx_hsep, interior, exterior, smoked, heatd, cjetvelocitymin
     use fire_data, only: n_furn, qfurnout, n_fires, fireinfo
     use option_data, only: fcjet, option, off
-    use room_data, only: roominfo, interior_ambient_temperature, exterior_ambient_temperature
+    use room_data, only: roominfo, exterior_ambient_temperature
     use setup_data, only: iofill, iofilsmv, iofilsmvplt, iofilsmvzone
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
 
@@ -370,9 +370,9 @@ module target_routines
         targptr%flux_net(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_convection(i) + targptr%flux_target(i)
 
-        call convective_flux (iw,tg,interior_ambient_temperature,q1g)
+        call convective_flux (iw,tg,targptr%front_surface_temperature,q1g)
         targptr%flux_convection_gauge = q1g
-        targptr%flux_target_gauge(i) = -temis*sigma*interior_ambient_temperature**4
+        targptr%flux_target_gauge(i) = -temis*sigma*targptr%front_surface_temperature**4
         targptr%flux_radiation_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &
             targptr%flux_target_gauge(i)
         targptr%flux_net_gauge(i) = targptr%flux_fire(i) + targptr%flux_gas(i) + targptr%flux_surface(i) + &

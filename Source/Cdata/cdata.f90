@@ -12,64 +12,46 @@
 !
 !****************************************************************************
 
-    program PreProcessor
+    program CData
 
     use precision_parameters
     
-    use initialization_routines, only : initialize_memory
-    use input_routines, only : open_files, read_input_file
-    use output_routines, only: delete_output_files, closeoutputfiles
-    use utility_routines, only : read_command_options
-
-    use dump_data, only: n_dumps
-    use option_data, only: total_steps
-    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
-        ss_out_interval, inputfile
-    
-    use write_inputfile_routines, only: write_cfast_infile
     use montecarlo_data, only: mc_number_of_cases
-    use montecarlo_routines, only: create_mc_filename, process_mc_filename_pattern
-    use preprocessor_routines, only: create_case, initialize_output_files, write_seeds_outputfile
-    use namelist_input_pp_routines, only: namelist_pp_input
+    use preprocessor_routines, only: preprocessor
+    use accumulator_routines, only: accumulator
+    use correlationtree_routines, only: correlationtree
+    use enoughdone_routines, only: enoughdone 
     use preprocessor_output_routines, only: flush_parameters_buffer
 
     implicit none
-
-    integer :: i
-    real(eb) :: xdelt, tstop, tbeg, tend 
-    character :: infilecase*(256)
-
-    cfast_version = 7500        ! Current CFAST version number
+    
+    integer :: i, loop, status, ilen
+    character(len = 255) :: buf
 
     if (command_argument_count().eq.0) then
-        call cfastexit('PreProcessor',1)
+        call cfastexit('CData Main',1)
+    else
+        loop = 2
+        call get_command_argument(loop, buf, ilen, status)
+        if (ilen > 0) then
+            select case (trim(buf))
+                case ('preprocessor')
+                    call preprocessor 
+                case ('accumulator')
+                    call accumulator
+                case ('correlationtree')
+                    call correlationtree
+                case ('enoughdone') 
+                    call enoughdone
+                case default 
+                    call cfastexit('CData Main', 2)
+            end select 
+        end if
     end if
 
-    ! initialize the basic memory configuration
+    call cfastexit ('CData', 0)
 
-    call initialize_memory
-    call read_command_options
-    call open_files
-
-    call read_input_file
-    
-    call namelist_pp_input
-    call process_mc_filename_pattern
-    call initialize_output_files
-    do i = 1, mc_number_of_cases
-        call create_mc_filename(i, infilecase)
-        call create_case(infilecase)
-        call write_cfast_infile(infilecase)
-        call flush_parameters_buffer
-    end do
-    call write_seeds_outputfile
-
-    call cfastexit ('PreProcessor', 0)
-
-5000 format ('Total execution time = ',1pg10.3,' seconds')
-5010 format ('Total time steps = ',i10)
-
-    end program PreProcessor
+    end program CData
     
 ! --------------------------- cfastexit -------------------------------------------
 

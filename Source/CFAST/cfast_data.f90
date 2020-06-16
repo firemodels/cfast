@@ -109,6 +109,19 @@ module fire_data
 
     end module fire_data
     
+!-----------------------------general_data-----------------------------------------
+    
+module general_data
+    
+    use precision_parameters
+    
+    implicit none
+    save
+    
+    integer :: cfast_input_file_position = 2
+    
+end module
+    
 ! --------------------------- namelist_data -------------------------------------------
 
     module namelist_data

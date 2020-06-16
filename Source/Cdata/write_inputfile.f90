@@ -346,11 +346,14 @@
             tmp(2) = roomptr%jbar
             tmp(3) = roomptr%kbar
             call add_token_rarray(iounit, buf, 'GRID = ', tmp, 3)
-            call add_token_rarray(iounit, buf, 'LEAK_AREA = ', roomptr%leak_areas, 2)
+            if ((roomptr%leak_area_ratios(1)+roomptr%leak_area_ratios(2)) > 0.0) then 
+                call add_token_rarray(iounit, buf, 'LEAK_AREA_RATIO = ', roomptr%leak_area_ratios, 2)
+            else
+                call add_token_rarray(iounit, buf, 'LEAK_AREA = ', roomptr%leak_areas, 2)
+            end if
             if (roomptr%hall) then
                 call add_token_bool(iounit, buf, 'HALL = ', roomptr%hall)
-            endif
-            if (roomptr%shaft) then
+            elseif (roomptr%shaft) then
                 call add_token_bool(iounit, buf, 'SHAFT = ', roomptr%shaft)
             endif
             call end_namelist(iounit, buf)

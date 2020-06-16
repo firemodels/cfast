@@ -4,7 +4,8 @@
     use precision_parameters
     save
     
-    integer, parameter :: mxpntsarray = 50, mxranddists = 7, mxgenerators = 10, mxvaltypes = 4, mxseeds = 2
+    integer, parameter :: mxpntsarray = 50, mxranddists = 7, mxgenerators = 100, mxvaltypes = 4, mxseeds = 2
+    integer, parameter :: mxfiresections = 50, mxrandfires = 50
     integer, parameter :: idx_uniform = 1, idx_trangle = 2, idx_user_defined_discrete = 3
     integer, parameter :: idx_user_defined_continous_interval = 4, idx_beta = 5, idx_normal = 6
     integer, parameter :: idx_log_normal = 7, mxfields = 10

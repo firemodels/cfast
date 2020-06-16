@@ -37,10 +37,9 @@
     use utility_routines, only: d1mach
     
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
-                idx_char, idx_int, idx_logic, rnd_seeds, restart_values
+                idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections
     use preprocessor_types, only: random_generator_type, field_pointer
     use montecarlo_data, only: mc_number_of_cases, generatorinfo, n_generators, n_fields, fieldinfo, mc_write_seeds
-    use preprocessor_routines, only: preprocessor_initialize
     
     use namelist_input_routines, only: checkread
 
@@ -61,11 +60,10 @@
     integer :: ios
     
     open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
-
-    call preprocessor_initialize
     call read_mhdr(iofili)
     call read_mrnd(iofili)
     call read_mfld(iofili)
+    call read_mfir(iofili)
 
     close (iofili)
     
@@ -364,7 +362,79 @@
 
     end subroutine read_mfld
     
+    !
+    !--------read_mfir--------
+    !
+    
+    subroutine read_mfir(lu)
+    
+    integer, intent(in) :: lu
+    
+    integer :: ios
+    logical :: mfirflag
+    character(len=128) :: id, fire_id
+    
+    logical :: first_section_smoldering
+    integer, dimension(mxfiresections) :: number_of_points_for_section, final_hrr_for_section
+    real(eb), dimension(mxfiresections) :: exponent_for_section, time_for_section
+    logical :: include_hrr_parameters, include_time_parameters, include_flaming_ignition_time
+    real(eb), dimension(mxfiresections) :: fire_area, calculated_fire_area, fire_height, co_yield, soot_yield, &
+        hcn_yield, hcl_yield, trace_yield
+
+    namelist /MFIR/ id, fire_id, first_section_smoldering, number_of_points_for_section, exponent_for_section, &
+        time_for_section, final_hrr_for_section, include_hrr_parameters, include_time_parameters, &
+        include_flaming_ignition_time, fire_area, calculated_fire_area, fire_height, co_yield, soot_yield, &
+        hcn_yield, hcl_yield, trace_yield
+    
+    ios = 1
+
+    rewind (unit=lu)
+    input_file_line_number = 0
+
+    ! scan entire file to look for &HEAD input
+    mfir_loop: do
+        call checkread ('MFIR', lu, ios)
+        if (ios==0) mfirflag=.true.
+        if (ios==1) then
+            exit mfir_loop
+        end if
+        read(lu,MFIR,iostat=ios)
+        n_fields = n_fields + 1
+        if (ios>0) then
+            write(iofill, '(a)') '***Error in &MFIR: Invalid specification for inputs.'
+            call cfastexit('read_mfir',1)
+        end if
+    end do mfir_loop
+
+    
+    contains
+    
+    subroutine set_defaults
+    
+    id = 'NULL'
+    fire_id = 'NULL' 
+    first_section_smoldering = .false.
+    number_of_points_for_section = 0
+    exponent_for_section = 1._eb
+    time_for_section = -1001._eb
+    final_hrr_for_section = -1001._eb
+    include_hrr_parameters = .false.
+    include_time_parameters = .false.
+    include_flaming_ignition_time = .false. 
+    fire_area = -1001._eb
+    calculated_fire_area = 1._eb
+    co_yield = 0._eb
+    soot_yield = 0._eb
+    hcn_yield = 0._eb
+    hcl_yield = 0._eb
+    trace_yield = 0._eb
+    
+    end subroutine set_defaults
+    
+    end subroutine read_mfir
+    
     !-------------------------------find_object--------------------------------------
+    
     subroutine find_object(id, field, flag)
     character(len=*), intent(in) :: id
     type(field_pointer), intent(out) :: field

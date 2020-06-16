@@ -18,7 +18,7 @@ module ppfilehandeling
     
     use precision_parameters
     
-    use preprocessor_types, only: random_generator_type, field_pointer
+    use preprocessor_types, only: random_generator_type, field_pointer, fire_generator_type
     
     implicit none
     save
@@ -33,6 +33,9 @@ module ppfilehandeling
     
     integer :: n_fields
     type (field_pointer), allocatable, dimension(:), target :: fieldinfo
+    
+    integer :: n_rndfires
+    type (fire_generator_type), allocatable, dimension(:), target :: randfireinfo
     
     end module montecarlo_data
     

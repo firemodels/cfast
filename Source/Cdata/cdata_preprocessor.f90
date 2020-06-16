@@ -2,23 +2,67 @@ module preprocessor_routines
 
     use precision_parameters
     
-    use setup_data, only: datapath, project, extension
+    use initialization_routines, only : initialize_memory
+    use input_routines, only : open_files, read_input_file
+    use output_routines, only: delete_output_files, closeoutputfiles
+    use utility_routines, only : read_command_options
+
+    use dump_data, only: n_dumps
+    use option_data, only: total_steps
+    use setup_data, only: cfast_version, stime, iofill, i_time_step, time_end, deltat, i_time_end, validation_flag, &
+        ss_out_interval, inputfile, datapath, project, extension
+    use write_inputfile_routines, only: write_cfast_infile
     
-    use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values
-    use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds
+    use pp_params, only: mxgenerators, mxpntsarray, mxseeds, mxfields, rnd_seeds, restart_values, mxrandfires
+    use montecarlo_data, only: generatorinfo, n_generators, fieldinfo, n_fields, mc_write_seeds, mc_number_of_cases, &
+        n_rndfires, randfireinfo
+    use montecarlo_routines, only: create_mc_filename, process_mc_filename_pattern
     use preprocessor_types, only: random_generator_type
     use preprocessor_output_routines, only: flush_parameters_buffer, setup_col_parameters_output, &
         open_preprocessor_outputfiles, initialize_preprocessor_output_routines, &
         add_filename_to_parameters, add_seeds_to_seeds_buffer, flush_seeds_buffer
+    use namelist_input_pp_routines, only: namelist_pp_input
     
     implicit none
     external cfastexit
     
     private
 
-    public preprocessor_initialize, create_case, initialize_output_files, write_seeds_outputfile
+    public preprocessor_initialize, create_case, initialize_output_files, write_seeds_outputfile, &
+        preprocessor 
 
     contains
+    
+    !-----------------------------preprocessor----------------------------------------------
+    
+    subroutine preprocessor
+
+    integer :: i
+    character(len=256) :: infilecase
+
+    cfast_version = 7500        ! Current CFAST version number
+    
+     ! initialize the basic memory configuration
+
+    call initialize_memory
+    call read_command_options
+    call open_files
+
+    call read_input_file
+    
+    call preprocessor_initialize
+    call namelist_pp_input
+    call process_mc_filename_pattern
+    call initialize_output_files
+    do i = 1, mc_number_of_cases
+        call create_mc_filename(i, infilecase)
+        call create_case(infilecase)
+        call write_cfast_infile(infilecase)
+        call flush_parameters_buffer
+    end do
+    call write_seeds_outputfile
+    
+    end subroutine preprocessor 
     
     ! --------------------------- preprocessor_initialize ----------------------------------
     
@@ -76,6 +120,13 @@ module preprocessor_routines
     fieldinfo(1:mxfields)%id = 'NULL'
     fieldinfo(1:mxfields)%add_to_parameters = .false.
     fieldinfo(1:mxfields)%parameter_header = 'NULL'
+    
+    n_rndfires = 0
+    allocate(randfireinfo(mxrandfires))
+    randfireinfo(1:mxrandfires)%id = 'NULL'
+    randfireinfo(1:mxrandfires)%fireid = 'NULL'
+    randfireinfo(1:mxrandfires)%num_sections = 0
+    
     
     return
     

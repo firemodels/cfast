@@ -9,17 +9,23 @@ module preprocessor_types
     
     intrinsic random_seed, random_number
     
-    type preprocessor_type
-        character(len=128) :: id = 'NULL'
-        
+    !
+    !------preprocessor_type---------
+    !
+    
+    type preprocessor_type                              !Base type all other types extend 
+        character(len=128) :: id = 'NULL'               ! Name of a particulear intant of an object
+        character(len=128) :: fyi                       ! line available for comments or extra input
     contains
         procedure errorcall
     end type preprocessor_type
     
+    !
+    !-----------random_generator_type--------
+    !
+    
     type, extends(preprocessor_type) :: random_generator_type
-        
-        character(len=128) :: fyi                       ! line available for comments or extra input
-        character(len=35) :: type_dist                 ! only accepts a defined list of elements: UNIFORM, DISCRETE_UNIFORM, TRIANGLE, 
+        character(len=35) :: type_dist                  ! only accepts a defined list of elements: UNIFORM, DISCRETE_UNIFORM, TRIANGLE, 
                                                         !                       USER_DEFINED_DISCRETE, USER_DEFINED_CONTINOUS_INTERVAL,
                                                         !                       BETA, NORMAL, LOG_NORMAL
         character(len=9) :: value_type                  ! what value type the generator produces: CHARACTER, REAL(eb), INTEGER, LOGICAL
@@ -37,42 +43,40 @@ module preprocessor_types
         integer :: seeds(mxseeds)                       ! seed values
         integer :: base_seeds(mxseeds)                  ! first seeds used 
         real(eb) :: range
-        
     contains
         procedure :: rand
     end type random_generator_type
+    
+    !
+    !--------value_wrapper_type--------
+    !
     
     type, extends(preprocessor_type) :: value_wrapper_type
         logical :: add_to_parameters
         logical :: parameter_field_set = .false. 
         character(len=128) :: parameter_header
         character(len=128), pointer :: paramptr
-    
     contains
         procedure :: add_header
         procedure :: write_value
     end type value_wrapper_type
     
     type, extends(value_wrapper_type) :: random_char_type
-        
         character(len=9) :: value_type = val_types(idx_char)
         character, pointer :: val
     end type random_char_type
     
     type, extends(value_wrapper_type) :: random_real_type
-        
         character(len=9) :: value_type = val_types(idx_real)
         real(eb), pointer :: val
     end type random_real_type
     
     type, extends(value_wrapper_type) :: random_int_type
-        
         character(len=9) :: value_type = val_types(idx_int)
         integer, pointer :: val
     end type random_int_type
     
     type, extends(value_wrapper_type) :: random_logic_type
-        
         character(len=9) :: value_type = val_types(idx_logic)
         logical, pointer :: val
     end type random_logic_type
@@ -88,7 +92,46 @@ module preprocessor_types
         type(random_logic_type) :: logicval
     end type
     
+    !
+    !-----------------------fire_generator_type---------
+    !
+    
+    type, extends(preprocessor_type) :: fire_generator_type
+        character(len=90) :: fireid
+        integer :: num_sections
+        logical :: first_section_smoldering 
+        integer, allocatable, dimension(:) :: time_points
+        character(len=128), allocatable, dimension(:,:) :: rand_gen
+        real(eb), allocatable, dimension(:) :: fix_final_hrr
+        real(eb), allocatable, dimension(:) :: fix_times
+        real(eb), allocatable, dimension(:) :: fix_powers
+        real(eb), allocatable, dimension(:) :: area
+        real(eb), allocatable, dimension(:) :: rel_area
+        real(eb), allocatable, dimension(:) :: height
+        real(eb), allocatable, dimension(:) :: co_yield
+        real(eb), allocatable, dimension(:) :: soot_yield
+        real(eb), allocatable, dimension(:) :: hcn_yield
+        real(eb), allocatable, dimension(:) :: hcl_yield
+        real(eb), allocatable, dimension(:) :: trace_yield
+        logical :: add_flaming_start
+        logical :: add_hrr
+        logical :: add_times
+        character(len=128), pointer :: flamingptr
+        character(len=128), dimension(:,:), pointer :: paramptrs
     contains
+        procedure :: add_fire_headers
+        procedure :: write_fire_values
+    end type
+    
+    !
+    !-----CONTAINS--------
+    !
+    
+    contains
+    
+    !
+    !--------------errorcall-----------------
+    !
     
     subroutine errorcall(me, location, number)
         class (preprocessor_type), intent(in) :: me
@@ -120,7 +163,10 @@ module preprocessor_types
         call cfastexit(buf,number)
         
     end subroutine errorcall
-        
+    
+    !
+    !--------rand---------------
+    !
     
     subroutine rand(me, val)
     
@@ -179,6 +225,10 @@ module preprocessor_types
         return
     end subroutine rand
     
+    !
+    !---------add_header-----------
+    !
+    
     subroutine add_header(me, icol, array)
     
         class(value_wrapper_type), intent(inout) :: me
@@ -192,6 +242,10 @@ module preprocessor_types
         end if 
         
     end subroutine add_header
+    
+    !
+    !--------write_value---------
+    !
     
     subroutine write_value(me)
     
@@ -239,5 +293,19 @@ module preprocessor_types
             end select
         end if
     end subroutine write_value
+    
+    subroutine add_fire_headers(me, icol, array)
+    
+        class(fire_generator_type), intent(inout) :: me
+        integer, intent(inout) :: icol
+        character(len=*), intent(out), target :: array(*)
+        
+    end subroutine add_fire_headers
+    
+    subroutine write_fire_values(me)
+    
+        class(fire_generator_type), intent(inout) :: me
+        
+    end subroutine write_fire_values 
     
     end module preprocessor_types

@@ -17,6 +17,7 @@
         mx_dumps, interior, exterior
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
+    use general_data, only: cfast_input_file_position
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
@@ -581,7 +582,7 @@
 
     character(len=*), intent(out) :: exepath, datapath, project, extension
 
-    integer :: i, loop, status, nargs, ld(2), li(2), ln(2), le(2)
+    integer :: i, loop, status, nargs, ld(2), li(2), ln(2), le(2), idx(2)
     character(len=256) :: buf, xname
     character (len=64) :: name(2)
     character(len=3) :: drive(2)
@@ -595,9 +596,15 @@
     exepath = ' '
     datapath = ' '
 
-    if (nargs<2) then
-        write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
-        stop
+    if (nargs<cfast_input_file_position) then
+        if (cfast_input_file_position == 2) then
+            write (*,*) 'CFAST was called with no arguments on the command line.  At least an input file is required.'
+            call cfastexit('exehandle',1)
+        else
+            write(*,*) 'CData was called with insufficent arguments on the command line.', &
+                'Input file should be in position ', cfast_input_file_position
+            call cfastexit('exehandle', 2)
+        end if 
     end if
 
     ! get the calling program and arguments
@@ -606,10 +613,12 @@
     datapath = ' '
     project = ' '
     extension = ' '
+    idx(1) = 1
+    idx(2) = cfast_input_file_position
 
     ! only look at the first two arguments (1 = executable name, 2 =cfast input file name)
     do i = 1, 2
-        loop = i - 1
+        loop = idx(i) - 1
         call get_command_argument(loop, buf, ilen, status)
         if (ilen>0) then
             xname = buf
@@ -630,7 +639,7 @@
             if (pathcount>255.or.ln(i)>64) then
                 write (*,'(a,/,a)') 'Total file name length including path must be less than 256 characters.', &
                     'Individual filenames must be less than 64 characters.'
-                stop
+                call cfastexit('exehandle',3)
             end if
         end if
     end do

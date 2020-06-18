@@ -122,23 +122,23 @@ module fire_data
                                                     ! to distance from compartment origin
     logical :: nmlflag = .true.                     ! true if input file is in namelist format
     integer :: input_file_line_number               ! current line read in a namelist-format input file
-    logical :: compflag=.false.                     ! true if each namelist type has been read in
-    logical :: connflag=.false.
-    logical :: devcflag=.false.
-    logical :: tablflag=.false.
-    logical :: insfflag=.false.
-    logical :: fireflag=.false.
-    logical :: headflag=.false.
-    logical :: initflag=.false.
-    logical :: isofflag=.false.
-    logical :: matlflag=.false.
-    logical :: miscflag=.false.
-    logical :: rampflag=.false.
-    logical :: slcfflag=.false.
-    logical :: timeflag=.false.
-    logical :: ventflag=.false. 
-    logical :: diagflag=.false.
-    logical :: dumpflag=.false.
+    logical :: compflag = .false.                     ! true if each namelist type has been read in
+    logical :: connflag = .false.
+    logical :: devcflag = .false.
+    logical :: tablflag = .false.
+    logical :: insfflag = .false.
+    logical :: fireflag = .false.
+    logical :: headflag = .false.
+    logical :: initflag = .false.
+    logical :: isofflag = .false.
+    logical :: matlflag = .false.
+    logical :: miscflag = .false.
+    logical :: rampflag = .false.
+    logical :: slcfflag = .false.
+    logical :: timeflag = .false.
+    logical :: ventflag = .false. 
+    logical :: diagflag = .false.
+    logical :: dumpflag = .false.
 
     end module namelist_data
     
@@ -241,7 +241,7 @@ module room_data
     integer :: iwbound = 3                                              ! boundary condition type 
                                                                         !   1 = constant exterior surface temperature, 
                                                                         !   2 = insulated exterior surface, 
-                                                                        !   3 =radiates to ambient
+                                                                        !   3 = radiates to ambient
     real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
                                                                         ! initial fractions for inner, middle and outer wall slab
     
@@ -294,7 +294,7 @@ module setup_data
         sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, kernelisrunning, sscalculation
 
     ! Work arrays for the csv input routines
-    integer, parameter :: nrow=10000, ncol=100
+    integer, parameter :: nrow = 10000, ncol = 100
     real(eb) :: rarray(nrow,ncol)
     character(len=128) :: carray(nrow,ncol)
 

@@ -4,7 +4,7 @@
 
     use cparams, only: lbufln, mxss
     use room_data, only: nwpts, wsplit, iwbound
-    use setup_data, only: ncol, iofill, rundat, mpsdatc, nokbd, initializeonly, debugging, validation_flag, outputformat, &
+    use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
         netheatflux
 
     implicit none
@@ -513,7 +513,6 @@
     rundat(3) = day
     rundat(2) = month
     rundat(1) = year
-    write (mpsdatc,5010) rundat(1), rundat(2), rundat(3)
 
     ! command line arguments
     nargs = 8
@@ -535,7 +534,6 @@
 
     return
 
-5010 format (i4.4,'/',i2.2,'/',i2.2)
     end   subroutine read_command_options
 
     ! --------------------------- shellsort -------------------------------------------

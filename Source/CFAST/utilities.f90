@@ -3,7 +3,7 @@
     use precision_parameters
 
     use cparams, only: lbufln, mxss
-    use room_data, only: nwpts, wsplit, iwbound
+    use room_data, only: nwpts, slab_splits, iwbound
     use setup_data, only: ncol, iofill, rundat, nokbd, initializeonly, debugging, validation_flag, outputformat, &
         netheatflux
 

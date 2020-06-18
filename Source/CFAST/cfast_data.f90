@@ -283,7 +283,6 @@ module setup_data
     integer :: cfast_version, outputformat=0
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile=" ", datafile
-    character(len=32) :: mpsdatc
     integer :: cfast_input_file_position = 2
     
     !File descriptors for cfast

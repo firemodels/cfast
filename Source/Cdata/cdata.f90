@@ -31,21 +31,20 @@
     if (command_argument_count().eq.0) then
         call cfastexit('CData Main',1)
     else
-        loop = 2
+        loop = 1
         call get_command_argument(loop, buf, ilen, status)
         if (ilen > 0) then
-            select case (trim(buf))
-                case ('preprocessor')
-                    call preprocessor 
-                case ('accumulator')
-                    call accumulator
-                case ('correlationtree')
-                    call correlationtree
-                case ('enoughdone') 
-                    call enoughdone
-                case default 
-                    call cfastexit('CData Main', 2)
-            end select 
+            if (trim(buf) =='preprocessor') then
+                call preprocessor 
+            elseif (trim(buf) == 'accumulator') then
+                call accumulator
+            elseif (trim(buf) == 'correlationtree') then
+                call correlationtree
+            elseif (trim(buf) == 'enoughdone') then
+                call enoughdone
+            else 
+                call cfastexit('CData Main', 2)
+            end if  
         end if
     end if
 

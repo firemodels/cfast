@@ -17,13 +17,12 @@
         mx_dumps, interior, exterior
     use diag_data, only: radi_verification_flag, residfile, residcsv, slabcsv
     use fire_data, only: n_fires, fireinfo, lower_o2_limit
-    use general_data, only: cfast_input_file_position
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
         ssdiag, sscalculation, &
         kernelisrunning, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
-        overwrite_testcase
+        overwrite_testcase, cfast_input_file_position
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use thermal_data, only: n_thrmp, thermalinfo
@@ -37,7 +36,7 @@
 
     private
 
-    public read_input_file, open_files
+    public read_input_file, open_files, exehandle
 
     contains
 
@@ -592,9 +591,6 @@
     logical :: DoesTheFileExist
 
     nargs = command_argument_count() + 1
-    project = ' '
-    exepath = ' '
-    datapath = ' '
 
     if (nargs<cfast_input_file_position) then
         if (cfast_input_file_position == 2) then

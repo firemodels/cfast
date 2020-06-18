@@ -20,7 +20,7 @@ module initialization_routines
     use option_data, only: foxygen, option, on
     use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
-        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, wsplit
+        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, slab_splits
     use setup_data, only: iofill, debugging, deltat
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
@@ -767,7 +767,7 @@ module initialization_routines
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb), thick_w(mxslb), thick, wtemps(nnodes), walldx(nnodes)
-    integer nslab, numnode(mxslb+1)
+    integer nslab, n_nodes(mxslb+1)
     character(len=mxthrmplen) :: off = 'OFF', none = 'NONE'
 
     ! tp is the pointer into the data base for each material
@@ -813,14 +813,15 @@ module initialization_routines
                 thick_w(1:mxslb) = roomptr%thick_w(1:mxslb,j)
                 nslab = roomptr%nslab_w(j)
                 thick = roomptr%total_thick_w(j)
-                numnode = roomptr%nodes_w(1:mxslb+1,j)
+                n_nodes = roomptr%nodes_w(1:mxslb+1,j)
                 wtemps = roomptr%t_profile(1:nnodes,j)
                 walldx = roomptr%walldx(1:nnodes,j)
-                call wset(numnode,nslab,tstop,walldx,wsplit,k_w,c_w,rho_w,thick_w,&
+                call wset(n_nodes,nslab,tstop,walldx,slab_splits,k_w,c_w,rho_w,thick_w,&
                    thick,wtemps,interior_ambient_temperature,exterior_ambient_temperature)
-                roomptr%nodes_w(1:mxslb+1,j) = numnode
+                roomptr%nodes_w(1:mxslb+1,j) = n_nodes
                 roomptr%t_profile(1:nnodes,j) = wtemps
                 roomptr%walldx(1:nnodes,j) = walldx
+                roomptr%total_thick_w(j) = thick
             end if
         end do
     end do
@@ -893,56 +894,56 @@ module initialization_routines
 
 ! --------------------------- wset -------------------------------------------
 
-    subroutine wset (numnode,nslab,tstop,walldx,wsplit,wk,wspec,wrho,wthick,wlen,wtemp,tamb,text)
+    subroutine wset (n_nodes,nslab,tstop,walldx,slab_splits,wk,wspec,wrho,slab_thickness,wall_thickness,wtemp,tamb,text)
 
     ! initializes temperature profiles, breakpoints used in wall conduction calculations
     
-    ! inputs    numnode     number of nodes in each slab
-    !           nslab       number of slabs
-    !           tstop       final simulation time
-    !           wsplit      fraction of points assigned to slabs 1, 2 and 3
-    !           wk          wall thermal conductivity
-    !           wspec       wall specific heat
-    !           wrho        wall density
-    !           wthick      thickness of each slab
-    !           tamb        ambient temperature seen by interior wall
-    !           text        ambient temperature seen by exterior wall
-    ! outputs   wlen        thickness of wall
-    !           wtemp       wall temperature profile
-    !           walldx      wall position points
+    ! inputs    n_nodes         number of nodes in each slab
+    !           nslab           number of slabs
+    !           tstop           final simulation time
+    !           slab_splits     fraction of points assigned to slabs 1, 2 and 3
+    !           wk              wall thermal conductivity
+    !           wspec           wall specific heat
+    !           wrho            wall density
+    !           slab_thickness  thickness of each slab
+    !           tamb            ambient temperature seen by interior wall
+    !           text            ambient temperature seen by exterior wall
+    ! outputs   wall_thickness  total thickness of wall
+    !           wtemp           wall temperature profile
+    !           walldx          wall node positions
 
     integer, intent(in) :: nslab
-    real(eb), intent(in) :: tstop, wsplit(*), wk(*), wspec(*), wrho(*), wthick(*), tamb, text
-    integer, intent(inout) :: numnode(*)
-    real(eb), intent(out) :: wlen, walldx(*)
+    real(eb), intent(in) :: tstop, slab_splits(*), wk(*), wspec(*), wrho(*), slab_thickness(*), tamb, text
+    integer, intent(inout) :: n_nodes(*)
+    real(eb), intent(out) :: wall_thickness, walldx(*)
 
     integer :: cumpts(10), numpts(10), i, ii, nx, nintx, nsplit, islab, isum, nint, ibeg, iend
     real(eb) :: wtemp(*), xwall(100), xpos(10), xxnx, errfc05, xkrhoc, alpha, xb, xxnsplit, w, xxim1, xxiim1
     real(eb) :: wmxb, xxnslabm2, xxnint, xxi1, xxi2, xxi3, xxnintx, dtdw
 
-    nx = numnode(1)
+    nx = n_nodes(1)
     xxnx = nx
 
     nintx = nx - (nslab+1)
     if (nslab<=2) then
-        nsplit = (wsplit(1)+wsplit(2))*xxnx
+        nsplit = (slab_splits(1)+slab_splits(2))*xxnx
     else
-        nsplit = wsplit(1)*xxnx
+        nsplit = slab_splits(1)*xxnx
     end if
 
     ! calculate total walldepth
     xpos(1) = 0.0_eb
     do islab = 1, nslab
-        xpos(islab+1) = xpos(islab) + wthick(islab)
+        xpos(islab+1) = xpos(islab) + slab_thickness(islab)
     end do
-    wlen = xpos(nslab+1)
+    wall_thickness = xpos(nslab+1)
 
     ! calculate break point based on first slab's properties
     errfc05 = 1.30_eb
     xkrhoc = wk(1)/(wspec(1)*wrho(1))
     alpha = sqrt(xkrhoc)
-    xb = 2.0_eb*alpha*sqrt(tstop)*errfc05*wlen
-    if (xb>0.50_eb*wlen) xb = 0.5_eb*wlen
+    xb = 2.0_eb*alpha*sqrt(tstop)*errfc05*wall_thickness
+    if (xb>0.50_eb*wall_thickness) xb = 0.5_eb*wall_thickness
     if (nslab==1) then
 
         ! set up wall node locations for 1 slab case, bunch points at interior and exterior boundary
@@ -956,9 +957,9 @@ module initialization_routines
         do i = nsplit +2, nx
             ii = nx + 1 - i
             xxiim1 = ii - 1
-            xwall(i) = wlen - (wlen-xb)*(xxiim1*w)**2
+            xwall(i) = wall_thickness - (wall_thickness-xb)*(xxiim1*w)**2
         end do
-        numnode(1+nslab) = nintx
+        n_nodes(1+nslab) = nintx
     else
 
         ! set up wall node locations for multi-slab case, bunch points at interior boundary of first slab, exterior
@@ -966,15 +967,15 @@ module initialization_routines
 
         ! calculate number of points interior to each slab
         xxnintx = nintx
-        numpts(1) = wsplit(1)*xxnintx*min(xb,wthick(1))/wlen
+        numpts(1) = slab_splits(1)*xxnintx*min(xb,slab_thickness(1))/wall_thickness
         if (numpts(1)<1) numpts(1) = 1
-        wmxb = wlen - xb
-        numpts(nslab) = wsplit(3)*xxnintx*min(wmxb,wthick(nslab))/ wlen
+        wmxb = wall_thickness - xb
+        numpts(nslab) = slab_splits(3)*xxnintx*min(wmxb,slab_thickness(nslab))/ wall_thickness
         if (numpts(nslab)<1) numpts(nslab) = 1
         isum = nintx - numpts(1) - numpts(nslab)
         xxnslabm2 = nslab - 2
         do i = 2, nslab - 1
-            numpts(i) = xxnx*wsplit(2)*wthick(nslab)/xxnslabm2/wlen
+            numpts(i) = xxnx*slab_splits(2)*slab_thickness(nslab)/xxnslabm2/wall_thickness
             if (numpts(i)<1) numpts(i) = 1
             isum = isum - numpts(i)
         end do
@@ -985,10 +986,10 @@ module initialization_routines
             numpts(nslab) = 1
         end if
 
-        ! copy numpts data into numnode and keep a running total
+        ! copy numpts data into n_nodes and keep a running total
         cumpts(1) = 1
         do islab = 1, nslab
-            numnode(1+islab) = numpts(islab)
+            n_nodes(1+islab) = numpts(islab)
             cumpts(islab+1) = cumpts(islab) + numpts(islab) + 1
         end do
 

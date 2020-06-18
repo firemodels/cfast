@@ -39,7 +39,7 @@ module conduction_routines
 
     real(eb) :: twint, twext, tgas, wfluxin, wfluxout, wfluxsave, frac, yb, yt, dflor, yy, fu, fluxu, fluxl, tderv
     real(eb) :: k_w(mxslb), c_w(mxslb), rho_w(mxslb)
-    integer :: nslab_w, numnode(mxslb+1)
+    integer :: nslab_w, n_nodes(mxslb+1)
     integer :: ibeg, iend, iw, iroom, iwall, icond, iweq, iwb, jj, j
 
     type(room_type), pointer :: roomptr
@@ -119,11 +119,11 @@ module conduction_routines
             c_w(1:mxslb) = roomptr%c_w(1:mxslb,iwall)
             rho_w(1:mxslb) = roomptr%rho_w(1:mxslb,iwall)
             nslab_w = roomptr%nslab_w(iwall)
-            numnode = roomptr%nodes_w(1:mxslb+1,iwall)
+            n_nodes = roomptr%nodes_w(1:mxslb+1,iwall)
             wtemps = roomptr%t_profile(1:nnodes,iwall)
             walldx = roomptr%walldx(1:nnodes,iwall)
             call conductive_flux (update,twint,twext,dt,k_w,c_w,rho_w, &
-                wtemps,walldx,numnode,nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
+                wtemps,walldx,n_nodes,nslab_w,wfluxin,wfluxout,iwb,tgrad,tderv)
             roomptr%t_profile(1:nnodes,iwall) = wtemps
             ! store wall gradient
             vtgrad(iw) = tgrad(2)
@@ -150,7 +150,7 @@ module conduction_routines
 
 ! --------------------------- conductive_flux -------------------------------------------
 
-    subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,numnode,nslab,wfluxin,wfluxout,iwbound,&
+    subroutine conductive_flux (update,tempin,tempout,dt,wk,wspec,wrho,wtemp,walldx,n_nodes,nslab,wfluxin,wfluxout,iwbound,&
        tgrad,tderv)
 
 
@@ -164,7 +164,7 @@ module conduction_routines
 !> \param   wspec (input): wall specific heat
 !> \param   wrho (input): wall density
 !> \param   walldx (input): wall position points
-!> \param   numnode (input): number of nodes in each slab
+!> \param   n_nodes (input): number of nodes in each slab
 !> \param   nslab (input): number of slabs
 !> \param   wfluxin (input): flux striking interior wall
 !> \param   wfluxout (input): flux striking exterior wall
@@ -176,7 +176,7 @@ module conduction_routines
 !> \param   tgrad (output): temperature gradient
 
     real(eb), intent(in) :: wk(*), wspec(*), wrho(*), walldx(*), tempin, tempout, dt, wfluxin, wfluxout
-    integer, intent(in) :: update, nslab, iwbound, numnode(*)
+    integer, intent(in) :: update, nslab, iwbound, n_nodes(*)
     
     real(eb), intent(out) :: wtemp(*), tgrad(2), tderv
 
@@ -185,7 +185,7 @@ module conduction_routines
     real(eb) :: a(nnodes), b(nnodes), c(nnodes), tnew(nnodes), tderiv(nnodes), ddif(3)
     real(eb) :: xkrhoc, s, hi, him1
 
-    nx = numnode(1)
+    nx = n_nodes(1)
 
     ! construct right hand side (rhs) of tri-diagonal system for interior nodes.  rhs at boundary and slab break
     ! points are defined farther down.
@@ -209,7 +209,7 @@ module conduction_routines
     ! do interior points for each slab
     iend = 0
     do islab = 1, nslab
-        nintx = numnode(1+islab)
+        nintx = n_nodes(1+islab)
         xkrhoc = wk(islab)/(wspec(islab)*wrho(islab))
         s = 2.0_eb*dt*xkrhoc
         ibeg = iend + 2
@@ -226,7 +226,7 @@ module conduction_routines
     ! do break points between each slab
     ibreak = 1
     do islab = 2, nslab
-        nintx = numnode(islab)
+        nintx = n_nodes(islab)
         ibreak = ibreak + nintx + 1
         b(ibreak) = wk(islab-1)/walldx(ibreak-1)
         c(ibreak) = wk(islab)/walldx(ibreak)

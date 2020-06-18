@@ -242,7 +242,7 @@ module room_data
                                                                         !   1 = constant exterior surface temperature, 
                                                                         !   2 = insulated exterior surface, 
                                                                         !   3 = radiates to ambient
-    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
+    real(eb), dimension(3) :: slab_splits = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
                                                                         ! initial fractions for inner, middle and outer wall slab
     
     integer :: n_cons

@@ -109,19 +109,6 @@ module fire_data
 
     end module fire_data
     
-!-----------------------------general_data-----------------------------------------
-    
-module general_data
-    
-    use precision_parameters
-    
-    implicit none
-    save
-    
-    integer :: cfast_input_file_position = 2
-    
-end module
-    
 ! --------------------------- namelist_data -------------------------------------------
 
     module namelist_data
@@ -297,6 +284,7 @@ module setup_data
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile=" ", datafile
     character(len=32) :: mpsdatc
+    integer :: cfast_input_file_position = 2
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &

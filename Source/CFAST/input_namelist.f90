@@ -28,7 +28,7 @@
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
@@ -41,7 +41,7 @@
     
     private
 
-    public namelist_input, read_misc, checkread
+    public namelist_input, read_misc, checkread, cdata_rereadinputfile
 
     contains
     ! --------------------------- namelist_input ----------------------------------
@@ -3158,5 +3158,27 @@ continue
     return
     
     end function newid
+    
+    !---------------------cdata_rereadinputfile---------------------------
+    
+    subroutine cdata_rereadinputfile
+    
+    integer :: ios
+    character(len=256) :: buf
+    
+    !open input file and check to see if it's a new (namelist) format file
+    open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
+    read (unit=iofili,fmt='(a)') buf
+    rewind (unit=iofili)
+    
+    convert_negative_distances = .false.
+    call read_fire(iofili)
+    call read_vent(iofili)
+    call read_devc(iofili)
+    convert_negative_distances = .true. 
+    
+    close(iofili)
+    
+    end subroutine cdata_rereadinputfile
 
     end module namelist_input_routines

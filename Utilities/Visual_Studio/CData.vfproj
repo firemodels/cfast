@@ -61,8 +61,11 @@
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath=".\cdata.f90"/>
+		<File RelativePath=".\cdata_accumlator.f90"/>
+		<File RelativePath=".\cdata_correlationtree.f90"/>
+		<File RelativePath=".\cdata_enoughdone.f90"/>
 		<File RelativePath=".\cdata_output.f90"/>
-		<File RelativePath=".\cdata_routines.f90"/>
+		<File RelativePath=".\cdata_preprocessor.f90"/>
 		<File RelativePath=".\input_pp_namelist.f90"/>
 		<File RelativePath=".\montecarlo.f90"/>
 		<File RelativePath=".\random.f90"/>

@@ -279,22 +279,19 @@ module setup_data
     character(len=128) :: title
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
-    logical :: debugging=.false., validation_flag=.false., netheatflux=.false.
-    integer :: cfast_version, outputformat=0
+    logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
+    integer :: cfast_version, outputformat = 0
     integer, dimension(3) :: rundat
-    character(len=60) :: nnfile=" ", datafile
+    character(len=60) :: nnfile = " ", datafile
     integer :: cfast_input_file_position = 2
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssdiag, iofilcalc, &
-        iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
-    character(len=6), parameter :: heading="VERSN"
+        iofilssdiag, iofilcalc, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
+    character(len=6), parameter :: heading = "VERSN"
     character(len=64) :: project, extension
     character(len=256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
-        sswall, ssmasses, ssvent, &
-        ssdiag, gitfile, errorlogging, stopfile, &
-        queryfile, statusfile, kernelisrunning, sscalculation
+        sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, kernelisrunning, sscalculation
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow=10000, ncol=100

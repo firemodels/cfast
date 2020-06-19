@@ -20,8 +20,14 @@ module initialization_routines
     use option_data, only: foxygen, option, on
     use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
+<<<<<<< HEAD
+        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, wsplit
+    use setup_data, only: iofill, debugging, deltat, init_scalors, alloc_matl, init_matl, alloc_room, init_room, &
+        alloc_vent, init_vent, alloc_devc, init_devc, alloc_fire, init_fire, alloc_ss, init_ss, alloc_dump, init_dump
+=======
         pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, slab_splits
     use setup_data, only: iofill, debugging, deltat
+>>>>>>> firemodels/master
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &
@@ -287,226 +293,276 @@ module initialization_routines
     integer i
     type(room_type), pointer :: roomptr
 
-    ! simple control stuff
-    debugging = .false.
-    jaccol = -2
+    if (init_scalors) then
+        init_scalors = .false.
+        ! simple control stuff
+        debugging = .false.
+        jaccol = -2
 
-    ! DASSL forcing functions
-    p(1:maxteq) = 0.0_eb
+        ! DASSL forcing functions
+        p(1:maxteq) = 0.0_eb
 
-    ! set time-released defaults
-    deltat = 1.0_eb
+        ! set time-released defaults
+        deltat = 1.0_eb
 
-    ! time step checking
-    stpmin = 1.0e-09_eb
-    stpmin_cnt = 0
-    stpmin_cnt_max = 100
-    stpminflag = .true.
+        ! time step checking
+        stpmin = 1.0e-09_eb
+        stpmin_cnt = 0
+        stpmin_cnt_max = 100
+        stpminflag = .true.
 
-    ! define universal constants
+        ! define universal constants
 
-    t_ref = default_temperature
-    pressure_ref = default_pressure
-    interior_abs_pressure = pressure_ref
-    pressure_offset = pressure_ref
-    interior_ambient_temperature = t_ref
-    tgignt = t_ref + 200.0_eb
-    exterior_ambient_temperature = interior_ambient_temperature
-    exterior_abs_pressure = interior_abs_pressure
-    relative_humidity = default_relative_humidity
+        t_ref = default_temperature
+        pressure_ref = default_pressure
+        interior_abs_pressure = pressure_ref
+        pressure_offset = pressure_ref
+        interior_ambient_temperature = t_ref
+        tgignt = t_ref + 200.0_eb
+        exterior_ambient_temperature = interior_ambient_temperature
+        exterior_abs_pressure = interior_abs_pressure
+        relative_humidity = default_relative_humidity
+    end if 
 
     !thermal properties. initialize to nothing
-    n_thrmp = 0
-    allocate (thermalinfo(mxthrmp))
-    thermalinfo(1:mxthrmp)%id          = ' '
-    thermalinfo(1:mxthrmp)%nslab         = 1
-    thermalinfo(1:mxthrmp)%k(1)          = 0.0_eb
-    thermalinfo(1:mxthrmp)%c(1)          = 0.0_eb
-    thermalinfo(1:mxthrmp)%rho(1)        = 0.0_eb
-    thermalinfo(1:mxthrmp)%thickness(1)  = 0.0_eb
-    thermalinfo(1:mxthrmp)%eps           = 0.0_eb
+    if (alloc_matl) then 
+        alloc_matl = .false.
+        allocate (thermalinfo(mxthrmp))
+    end if
+    if (init_matl) then
+        init_matl = .false. 
+        n_thrmp = 0
+        thermalinfo(1:mxthrmp)%id          = ' '
+        thermalinfo(1:mxthrmp)%nslab         = 1
+        thermalinfo(1:mxthrmp)%k(1)          = 0.0_eb
+        thermalinfo(1:mxthrmp)%c(1)          = 0.0_eb
+        thermalinfo(1:mxthrmp)%rho(1)        = 0.0_eb
+        thermalinfo(1:mxthrmp)%thickness(1)  = 0.0_eb
+        thermalinfo(1:mxthrmp)%eps           = 0.0_eb
+    end if
 
     ! rooms
-    n_rooms = 0
-    allocate (roominfo(mxrooms))
-    roominfo(1:mxrooms)%cwidth = xlrg
-    roominfo(1:mxrooms)%cdepth = xlrg
-    roominfo(1:mxrooms)%cheight = xlrg
-    roominfo(1:mxrooms)%x0 = 0.0_eb
-    roominfo(1:mxrooms)%y0 = 0.0_eb
-    roominfo(1:mxrooms)%z0 = 0.0_eb
-    roominfo(1:mxrooms)%x1 = xlrg
-    roominfo(1:mxrooms)%y1 = xlrg
-    roominfo(1:mxrooms)%z1 = xlrg
-    roominfo(1:mxrooms)%ibar = default_grid
-    roominfo(1:mxrooms)%jbar = default_grid
-    roominfo(1:mxrooms)%kbar = default_grid
-    roominfo(1:mxrooms)%deadroom = 0
-    roominfo(1:mxrooms)%hall = .false.
-    roominfo(1:mxrooms)%shaft = .false.
-    roominfo(1:mxrooms)%sprinkler_activated = 0
-    roominfo(1:mxrooms)%qdot_doorjet = 0.0_eb
+    if (alloc_room) then
+        alloc_room = .false.
+        allocate (roominfo(mxrooms))
+    end if
+    if (init_room) then
+        init_room = .false.
+        n_rooms = 0
+        roominfo(1:mxrooms)%id = ' '
+        roominfo(1:mxrooms)%cwidth = xlrg
+        roominfo(1:mxrooms)%cdepth = xlrg
+        roominfo(1:mxrooms)%cheight = xlrg
+        roominfo(1:mxrooms)%x0 = 0.0_eb
+        roominfo(1:mxrooms)%y0 = 0.0_eb
+        roominfo(1:mxrooms)%z0 = 0.0_eb
+        roominfo(1:mxrooms)%x1 = xlrg
+        roominfo(1:mxrooms)%y1 = xlrg
+        roominfo(1:mxrooms)%z1 = xlrg
+        roominfo(1:mxrooms)%ibar = default_grid
+        roominfo(1:mxrooms)%jbar = default_grid
+        roominfo(1:mxrooms)%kbar = default_grid
+        roominfo(1:mxrooms)%deadroom = 0
+        roominfo(1:mxrooms)%hall = .false.
+        roominfo(1:mxrooms)%shaft = .false.
+        roominfo(1:mxrooms)%sprinkler_activated = 0
+        roominfo(1:mxrooms)%qdot_doorjet = 0.0_eb
 
-    do i = 1, mxrooms
-        roomptr => roominfo(i)
-        roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
-        roomptr%cvolume = roomptr%cheight*roomptr%floor_area
-        roomptr%matl(1,1:nwal) = 'OFF'
-        roomptr%surface_on(1:nwal) = .false.
-        roomptr%eps_w(1:nwal) = 0.0_eb
-    end do
+        do i = 1, mxrooms
+            roomptr => roominfo(i)
+            roomptr%floor_area = roomptr%cwidth*roomptr%cdepth
+            roomptr%cvolume = roomptr%cheight*roomptr%floor_area
+            roomptr%matl(1,1:nwal) = 'OFF'
+            roomptr%surface_on(1:nwal) = .false.
+            roomptr%eps_w(1:nwal) = 0.0_eb
+        end do
 
-    adiabatic_walls = .false.
+        adiabatic_walls = .false.
     
-    ! room to room heat transfer
-    n_vcons = 0
+        ! room to room heat transfer
+        n_vcons = 0
 
-    do i = 1, mxrooms
-        roomptr => roominfo(i)
+        do i = 1, mxrooms
+            roomptr => roominfo(i)
         
-        ! variable cross sectional area
-        roomptr%nvars = 0
-        roomptr%var_volume(1:mxpts) = 0.0_eb
-        roomptr%var_area(1:mxpts) = 0.0_eb
-        roomptr%var_height(1:mxpts) = 0.0_eb
+            ! variable cross sectional area
+            roomptr%nvars = 0
+            roomptr%var_volume(1:mxpts) = 0.0_eb
+            roomptr%var_area(1:mxpts) = 0.0_eb
+            roomptr%var_height(1:mxpts) = 0.0_eb
         
-        ! initialize inter-compartment heat transfer fractions
-        roomptr%iheat = 0
-        roomptr%hheat_connections(1:mxrooms) = 0
-        roomptr%heat_frac(1:mxrooms) = 0
+            ! initialize inter-compartment heat transfer fractions
+            roomptr%iheat = 0
+            roomptr%hheat_connections(1:mxrooms) = 0
+            roomptr%heat_frac(1:mxrooms) = 0
         
-        !initialize surface opening fraction
-        roomptr%chi(1:10) = 0._eb
-    end do
+            !initialize surface opening fraction
+            roomptr%chi(1:10) = 0._eb
+        end do
 
-    ! initialize number of furnace temperature nodes
-    n_furn=0
+        ! initialize number of furnace temperature nodes
+        n_furn=0
+    end if
 
-    ! horizontal vents
-    n_hvents = 0
-    allocate (hventinfo(mxhvents))
-    hventinfo(1:mxhvents)%width = 0.0_eb
-    hventinfo(1:mxhvents)%soffit = 0.0_eb
-    hventinfo(1:mxhvents)%sill = 0.0_eb
-    hventinfo(1:mxhvents)%absolute_soffit = 0.0_eb
-    hventinfo(1:mxhvents)%absolute_sill = 0.0_eb
-    hventinfo(1:mxhvents)%face = face_front
-    ! start with vents open
-    hventinfo(1:mxhvents)%opening_type = trigger_by_time
-    hventinfo(1:mxhvents)%opening_triggered = .false.
-    hventinfo(1:mxhvents)%opening_initial_time = 0.0_eb
-    hventinfo(1:mxhvents)%opening_initial_fraction = 1.0_eb
-    hventinfo(1:mxhvents)%opening_final_time = 0.0_eb
-    hventinfo(1:mxhvents)%opening_final_fraction = 1.0_eb
+    ! allocate vents
+    if (alloc_vent) then
+        alloc_vent = .false. 
+        allocate (hventinfo(mxhvents))
+        allocate (leakinfo(mxleaks))
+        allocate (vventinfo(mxvvents))
+        allocate (mventinfo(mxmvents))
+    end if
+    if (init_vent) then
+        init_vent = .false.
+        
+        ! horizontal vents
+        n_hvents = 0
+        hventinfo(1:mxhvents)%id = ' '
+        hventinfo(1:mxhvents)%width = 0.0_eb
+        hventinfo(1:mxhvents)%soffit = 0.0_eb
+        hventinfo(1:mxhvents)%sill = 0.0_eb
+        hventinfo(1:mxhvents)%absolute_soffit = 0.0_eb
+        hventinfo(1:mxhvents)%absolute_sill = 0.0_eb
+        hventinfo(1:mxhvents)%face = face_front
+        ! start with vents open
+        hventinfo(1:mxhvents)%opening_type = trigger_by_time
+        hventinfo(1:mxhvents)%opening_triggered = .false.
+        hventinfo(1:mxhvents)%opening_initial_time = 0.0_eb
+        hventinfo(1:mxhvents)%opening_initial_fraction = 1.0_eb
+        hventinfo(1:mxhvents)%opening_final_time = 0.0_eb
+        hventinfo(1:mxhvents)%opening_final_fraction = 1.0_eb
 
-    ! leakage vents
-    n_leaks = 0
-    allocate (leakinfo(mxleaks))
-    leakinfo(1:mxleaks)%width = 0.0_eb
-    leakinfo(1:mxleaks)%soffit = 0.0_eb
-    leakinfo(1:mxleaks)%sill = 0.0_eb
-    leakinfo(1:mxleaks)%absolute_soffit = 0.0_eb
-    leakinfo(1:mxleaks)%absolute_sill = 0.0_eb
-    leakinfo(1:mxleaks)%face = face_front
-    ! start with vents open
-    leakinfo(1:mxleaks)%opening_type = trigger_by_time
-    leakinfo(1:mxleaks)%opening_triggered = .false.
-    leakinfo(1:mxleaks)%opening_initial_time = 0.0_eb
-    leakinfo(1:mxleaks)%opening_initial_fraction = 1.0_eb
-    leakinfo(1:mxleaks)%opening_final_time = 0.0_eb
-    leakinfo(1:mxleaks)%opening_final_fraction = 1.0_eb
+        ! leakage vents
+        n_leaks = 0
+        leakinfo(1:mxleaks)%id = ' '
+        leakinfo(1:mxleaks)%width = 0.0_eb
+        leakinfo(1:mxleaks)%soffit = 0.0_eb
+        leakinfo(1:mxleaks)%sill = 0.0_eb
+        leakinfo(1:mxleaks)%absolute_soffit = 0.0_eb
+        leakinfo(1:mxleaks)%absolute_sill = 0.0_eb
+        leakinfo(1:mxleaks)%face = face_front
+        ! start with vents open
+        leakinfo(1:mxleaks)%opening_type = trigger_by_time
+        leakinfo(1:mxleaks)%opening_triggered = .false.
+        leakinfo(1:mxleaks)%opening_initial_time = 0.0_eb
+        leakinfo(1:mxleaks)%opening_initial_fraction = 1.0_eb
+        leakinfo(1:mxleaks)%opening_final_time = 0.0_eb
+        leakinfo(1:mxleaks)%opening_final_fraction = 1.0_eb
 
-    ! vertical vents
-    n_vvents = 0
-    allocate (vventinfo(mxvvents))
-    vventinfo(1:mxvvents)%shape = 1
-    vventinfo(1:mxvvents)%area = 0.0_eb
-    ! start with vents open
-    vventinfo(1:mxvvents)%opening_type = trigger_by_time
-    vventinfo(1:mxvvents)%opening_triggered = .false.
-    vventinfo(1:mxvvents)%opening_initial_time = 0.0_eb
-    vventinfo(1:mxvvents)%opening_initial_fraction = 1.0_eb
-    vventinfo(1:mxvvents)%opening_final_time = 0.0_eb
-    vventinfo(1:mxvvents)%opening_final_fraction = 1.0_eb
+        ! vertical vents
+        n_vvents = 0
+        vventinfo(1:mxvvents)%id = ' '
+        vventinfo(1:mxvvents)%shape = 1
+        vventinfo(1:mxvvents)%area = 0.0_eb
+        ! start with vents open
+        vventinfo(1:mxvvents)%opening_type = trigger_by_time
+        vventinfo(1:mxvvents)%opening_triggered = .false.
+        vventinfo(1:mxvvents)%opening_initial_time = 0.0_eb
+        vventinfo(1:mxvvents)%opening_initial_fraction = 1.0_eb
+        vventinfo(1:mxvvents)%opening_final_time = 0.0_eb
+        vventinfo(1:mxvvents)%opening_final_fraction = 1.0_eb
 
-    ! mechanical vents
+        ! mechanical vents
 
-    n_mvents = 0
-    allocate (mventinfo(mxmvents))
-    mventinfo(1:mxmvents)%total_flow(u) = 0.0_eb
-    mventinfo(1:mxmvents)%total_flow(l) = 0.0_eb
-    mventinfo(1:mxmvents)%total_trace_flow(u) = 0.0_eb
-    mventinfo(1:mxmvents)%total_trace_flow(l) = 0.0_eb
-    mventinfo(1:mxmvents)%total_trace_filtered(u) = 0.0_eb
-    mventinfo(1:mxmvents)%total_trace_filtered(l) = 0.0_eb
-    ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering 
-    mventinfo(1:mxmvents)%opening_type = trigger_by_time
-    mventinfo(1:mxmvents)%opening_triggered = .false.
-    mventinfo(1:mxmvents)%opening_initial_time = 0.0_eb
-    mventinfo(1:mxmvents)%opening_initial_fraction = 1.0_eb
-    mventinfo(1:mxmvents)%opening_final_time = 0.0_eb
-    mventinfo(1:mxmvents)%opening_final_fraction = 1.0_eb
-    mventinfo(1:mxmvents)%filter_initial_time = 0.0_eb
-    mventinfo(1:mxmvents)%filter_initial_fraction = 0.0_eb
-    mventinfo(1:mxmvents)%filter_final_time = 0.0_eb
-    mventinfo(1:mxmvents)%filter_final_fraction = 0.0_eb
+        n_mvents = 0
+        mventinfo(1:mxmvents)%id = ' '
+        mventinfo(1:mxmvents)%total_flow(u) = 0.0_eb
+        mventinfo(1:mxmvents)%total_flow(l) = 0.0_eb
+        mventinfo(1:mxmvents)%total_trace_flow(u) = 0.0_eb
+        mventinfo(1:mxmvents)%total_trace_flow(l) = 0.0_eb
+        mventinfo(1:mxmvents)%total_trace_filtered(u) = 0.0_eb
+        mventinfo(1:mxmvents)%total_trace_filtered(l) = 0.0_eb
+        ! note that the fan fraction is unity = on, whereas the filter fraction is unity = 100% filtering 
+        mventinfo(1:mxmvents)%opening_type = trigger_by_time
+        mventinfo(1:mxmvents)%opening_triggered = .false.
+        mventinfo(1:mxmvents)%opening_initial_time = 0.0_eb
+        mventinfo(1:mxmvents)%opening_initial_fraction = 1.0_eb
+        mventinfo(1:mxmvents)%opening_final_time = 0.0_eb
+        mventinfo(1:mxmvents)%opening_final_fraction = 1.0_eb
+        mventinfo(1:mxmvents)%filter_initial_time = 0.0_eb
+        mventinfo(1:mxmvents)%filter_initial_fraction = 0.0_eb
+        mventinfo(1:mxmvents)%filter_final_time = 0.0_eb
+        mventinfo(1:mxmvents)%filter_final_fraction = 0.0_eb
+    end if 
 
-    ! detectors
-    n_detectors = 0
-    allocate (detectorinfo(mxdtect))
-    detectorinfo(1:mxdtect)%rti = default_rti
-    detectorinfo(1:mxdtect)%spray_density = -300.0_eb
-    detectorinfo(1:mxdtect)%center(1) = -1.0_eb
-    detectorinfo(1:mxdtect)%center(2) = -1.0_eb
-    detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb
-    detectorinfo(1:mxdtect)%trigger = default_activation_temperature
-    detectorinfo(1:mxdtect)%velocity = 0.0_eb
-    detectorinfo(1:mxdtect)%velocity_o = 0.0_eb
-    detectorinfo(1:mxdtect)%activation_time = 99999.0_eb
-    detectorinfo(1:mxdtect)%dtype = 2
-    detectorinfo(1:mxdtect)%room = 1
-    detectorinfo(1:mxdtect)%quench = .false.
-    detectorinfo(1:mxdtect)%activated = .false.
-    detectorinfo(1:mxdtect)%reported = .false.
+    ! allocate devices
+    if (alloc_devc) then
+        alloc_devc = .false.
+        allocate (detectorinfo(mxdtect))
+        allocate (targetinfo(mxtarg))
+    end if
+    if (init_devc) then
+        init_devc = .false.
+        
+        ! detectors
+        n_detectors = 0
+        detectorinfo(1:mxdtect)%id = ' '
+        detectorinfo(1:mxdtect)%rti = default_rti
+        detectorinfo(1:mxdtect)%spray_density = -300.0_eb
+        detectorinfo(1:mxdtect)%center(1) = -1.0_eb
+        detectorinfo(1:mxdtect)%center(2) = -1.0_eb
+        detectorinfo(1:mxdtect)%center(3) = -3.0_eb/39.37_eb
+        detectorinfo(1:mxdtect)%trigger = default_activation_temperature
+        detectorinfo(1:mxdtect)%velocity = 0.0_eb
+        detectorinfo(1:mxdtect)%velocity_o = 0.0_eb
+        detectorinfo(1:mxdtect)%activation_time = 99999.0_eb
+        detectorinfo(1:mxdtect)%dtype = 2
+        detectorinfo(1:mxdtect)%room = 1
+        detectorinfo(1:mxdtect)%quench = .false.
+        detectorinfo(1:mxdtect)%activated = .false.
+        detectorinfo(1:mxdtect)%reported = .false.
 
-    ! targets
-    n_targets = 0
-    allocate (targetinfo(mxtarg))
-    targetinfo(1:mxtarg)%room = 0
-    targetinfo(1:mxtarg)%equaton_type = pde
-    targetinfo(1:mxtarg)%back = interior
-    targetinfo(1:mxtarg)%material = 'DEFAULT'
-    targetinfo(1:mxtarg)%fed_gas = 0.0_eb
-    targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
-    targetinfo(1:mxtarg)%fed_heat = 0.0_eb
-    targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
+        ! targets
+        n_targets = 0
+        targetinfo(1:mxtarg)%id = ' '
+        targetinfo(1:mxtarg)%room = 0
+        targetinfo(1:mxtarg)%equaton_type = pde
+        targetinfo(1:mxtarg)%back = interior
+        targetinfo(1:mxtarg)%material = 'DEFAULT'
+        targetinfo(1:mxtarg)%fed_gas = 0.0_eb
+        targetinfo(1:mxtarg)%dfed_gas = 0.0_eb
+        targetinfo(1:mxtarg)%fed_heat = 0.0_eb
+        targetinfo(1:mxtarg)%dfed_heat = 0.0_eb
+    end if 
     
     ! fires
     call initialize_fire_objects
     
     ! spreadsheet output data
-    n_sscomp = 0
-    allocate (sscompinfo(mxss))
-    n_ssdevice = 0
-    allocate (ssdeviceinfo(mxss))
-    n_sswall = 0
-    allocate (sswallinfo(mxss))
-    n_ssmass = 0
-    allocate (ssmassinfo(mxss))
-    n_ssvent = 0
-    allocate (ssventinfo(mxss))
+    if (alloc_ss) then
+        alloc_ss = .false.
+        allocate (sscompinfo(mxss))
+        allocate (ssdeviceinfo(mxss))
+        allocate (sswallinfo(mxss))
+        allocate (ssmassinfo(mxss))
+        allocate (ssventinfo(mxss))
+    end if
+    if (init_ss) then
+        init_ss = .false.
+        n_sscomp = 0
+        n_ssdevice = 0
+        n_sswall = 0
+        n_ssmass = 0
+        n_ssvent = 0
+    end if
     
     ! post-run calculation data
-    n_dumps = 0
-    allocate (dumpinfo(mx_dumps))
-    dumpinfo(1:mx_dumps)%file_type = ' '
-    dumpinfo(1:mx_dumps)%type = ' '
-    dumpinfo(1:mx_dumps)%first_device = ' '
-    dumpinfo(1:mx_dumps)%first_measurement = ''
-    dumpinfo(1:mx_dumps)%second_device = ' '
-    dumpinfo(1:mx_dumps)%second_measurement = ' '
-    dumpinfo(1:mx_dumps)%relative_column = -1
-    dumpinfo(1:mx_dumps)%criteria = -1
+    if (alloc_dump) then
+        alloc_dump = .false.
+        allocate (dumpinfo(mx_dumps))
+    end if
+    if (init_dump) then
+        init_dump = .false.
+        n_dumps = 0
+        dumpinfo(1:mx_dumps)%file_type = ' '
+        dumpinfo(1:mx_dumps)%type = ' '
+        dumpinfo(1:mx_dumps)%first_device = ' '
+        dumpinfo(1:mx_dumps)%first_measurement = ''
+        dumpinfo(1:mx_dumps)%second_device = ' '
+        dumpinfo(1:mx_dumps)%second_measurement = ' '
+        dumpinfo(1:mx_dumps)%relative_column = -1
+        dumpinfo(1:mx_dumps)%criteria = -1
+    end if
 
     return
     end subroutine initialize_memory
@@ -522,48 +578,55 @@ module initialization_routines
 
     lower_o2_limit = default_lower_oxygen_limit
     
-    ! fire data initialized to no fires
-    n_fires = 0
-    allocate (fireinfo(mxfires))
-    fireinfo(1:mxfires)%x_position = -1.0_eb
-    fireinfo(1:mxfires)%y_position = -1.0_eb
-    fireinfo(1:mxfires)%z_position = -1.0_eb
-    fireinfo(1:mxfires)%room = 0
-    fireinfo(1:mxfires)%id = ' '
-    fireinfo(1:mxfires)%chemistry_type = 2
-    fireinfo(1:mxfires)%ignition_type = trigger_by_time
-    fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
-    fireinfo(1:mxfires)%ignition_time = 0.0_eb
-    fireinfo(1:mxfires)%ignited = .false.
-    fireinfo(1:mxfires)%reported = .false.
-    fireinfo(1:mxfires)%modified_plume = 1
-    fireinfo(1:mxfires)%chirad = default_radiative_fraction
-    fireinfo(1:mxfires)%flaming_transition_time = 0._eb
-
-    fireinfo(1:mxfires)%qdot_at_activation(u) = 0.0_eb
-    fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb
-    fireinfo(1:mxfires)%qdot_layers(u) = 0.0_eb
-    fireinfo(1:mxfires)%qdot_layers(l) = 0.0_eb
-
-    ! trace species stuff
-    fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
-    fireinfo(1:mxfires)%total_trace = 0.0_eb
-    summed_total_trace = 0.0_eb
+    if (alloc_fire) then
+        alloc_fire = .false.
+        allocate (fireinfo(mxfires))
+        allocate (tablinfo(mxtabls))
+    end if
     
-    ! no data for fires without user input
-    n_tabls = 0
-    allocate (tablinfo(mxtabls))
-    tablinfo(1:mxtabls)%id = ' '
-    do lsp = 1, ns+3
-        tablinfo(1:mxtabls)%labels(lsp) = ' '
-    end do
-    do i = 1, mxpts
+    ! fire data initialized to no fires
+    if (init_fire) then
+        init_fire = .false.
+        n_fires = 0
+        fireinfo(1:mxfires)%x_position = -1.0_eb
+        fireinfo(1:mxfires)%y_position = -1.0_eb
+        fireinfo(1:mxfires)%z_position = -1.0_eb
+        fireinfo(1:mxfires)%room = 0
+        fireinfo(1:mxfires)%id = ' '
+        fireinfo(1:mxfires)%chemistry_type = 2
+        fireinfo(1:mxfires)%ignition_type = trigger_by_time
+        fireinfo(1:mxfires)%ignition_criterion = 0.0_eb
+        fireinfo(1:mxfires)%ignition_time = 0.0_eb
+        fireinfo(1:mxfires)%ignited = .false.
+        fireinfo(1:mxfires)%reported = .false.
+        fireinfo(1:mxfires)%modified_plume = 1
+        fireinfo(1:mxfires)%chirad = default_radiative_fraction
+        fireinfo(1:mxfires)%flaming_transition_time = 0._eb
+
+        fireinfo(1:mxfires)%qdot_at_activation(u) = 0.0_eb
+        fireinfo(1:mxfires)%qdot_at_activation(l) = 0.0_eb
+        fireinfo(1:mxfires)%qdot_layers(u) = 0.0_eb
+        fireinfo(1:mxfires)%qdot_layers(l) = 0.0_eb
+
+        ! trace species stuff
+        fireinfo(1:mxfires)%total_pyrolysate = 0.0_eb
+        fireinfo(1:mxfires)%total_trace = 0.0_eb
+        summed_total_trace = 0.0_eb
+    
+        ! no data for fires without user input
+        n_tabls = 0
+        tablinfo(1:mxtabls)%id = ' '
         do lsp = 1, ns+3
-            tablinfo(1:mxtabls)%data(i,lsp) = 0.0_eb
+            tablinfo(1:mxtabls)%labels(lsp) = ' '
         end do
-    end do
-    tablinfo(1:mxtabls)%n_points = 0
-    tablinfo(1:mxtabls)%n_columns = 0
+        do i = 1, mxpts
+            do lsp = 1, ns+3
+                tablinfo(1:mxtabls)%data(i,lsp) = 0.0_eb
+            end do
+        end do
+        tablinfo(1:mxtabls)%n_points = 0
+        tablinfo(1:mxtabls)%n_columns = 0
+    end if
 
     return
     end subroutine initialize_fire_objects

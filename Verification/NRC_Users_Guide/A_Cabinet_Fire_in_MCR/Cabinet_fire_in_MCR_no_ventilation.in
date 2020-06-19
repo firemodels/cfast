@@ -1,4 +1,4 @@
-&HEAD VERSION = 7300, TITLE = 'MCR with no ventilation' /
+&HEAD VERSION = 7600, TITLE = 'MCR with no ventilation' /
  
 !! Scenario Configuration 
 &TIME SIMULATION = 3600 PRINT = 600 SMOKEVIEW = 10 SPREADSHEET = 10 / 
@@ -17,7 +17,8 @@
  
 !! Compartments 
 &COMP ID = 'MCR'
-      DEPTH = 13.8 HEIGHT = 5.2 WIDTH = 27.1 CEILING_MATL_ID = 'MCRConcreteW' WALL_MATL_ID = 'MCRGypsum' FLOOR_MATL_ID = 'MCRConcrete'
+      DEPTH = 13.8 HEIGHT = 5.2 WIDTH = 27.1
+      CEILING_MATL_ID = 'MCRConcreteW' CEILING_THICKNESS = 0.9 WALL_MATL_ID = 'MCRGypsum' WALL_THICKNESS = 0.015875 FLOOR_MATL_ID = 'MCRConcrete' FLOOR_THICKNESS = 0.5
       ORIGIN = 0, 0, 0 GRID = 50, 50, 50 /
  
 !! Wall Vents
@@ -44,4 +45,6 @@
 &TABL ID = 'XPE_Neoprene 702 kW_Fire', DATA = 2350, 0, 2, 0.12, 0.082, 0.175, 0, 0.3127314, 0 /
  
 !! Devices
-&DEVC ID = 'Targ 1' COMP_ID = 'MCR' LOCATION = 11.2, 5.5, 1.524 TYPE = 'PLATE' MATL_ID = 'MCROperator'  NORMAL = 0, 0, 1 TEMPERATURE_DEPTH = 0.5 /
+&DEVC ID = 'Targ 1' COMP_ID = 'MCR' LOCATION = 11.2, 5.5, 1.524 TYPE = 'PLATE' MATL_ID = 'MCROperator' FRONT_SURFACE_ORIENTATION = 'CEILING' TEMPERATURE_DEPTH = 0.1016 DEPTH_UNITS = 'M' /
+ 
+&TAIL /

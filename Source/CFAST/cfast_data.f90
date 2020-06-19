@@ -122,23 +122,23 @@ module fire_data
                                                     ! to distance from compartment origin
     logical :: nmlflag = .true.                     ! true if input file is in namelist format
     integer :: input_file_line_number               ! current line read in a namelist-format input file
-    logical :: compflag=.false.                     ! true if each namelist type has been read in
-    logical :: connflag=.false.
-    logical :: devcflag=.false.
-    logical :: tablflag=.false.
-    logical :: insfflag=.false.
-    logical :: fireflag=.false.
-    logical :: headflag=.false.
-    logical :: initflag=.false.
-    logical :: isofflag=.false.
-    logical :: matlflag=.false.
-    logical :: miscflag=.false.
-    logical :: rampflag=.false.
-    logical :: slcfflag=.false.
-    logical :: timeflag=.false.
-    logical :: ventflag=.false. 
-    logical :: diagflag=.false.
-    logical :: dumpflag=.false.
+    logical :: compflag = .false.                     ! true if each namelist type has been read in
+    logical :: connflag = .false.
+    logical :: devcflag = .false.
+    logical :: tablflag = .false.
+    logical :: insfflag = .false.
+    logical :: fireflag = .false.
+    logical :: headflag = .false.
+    logical :: initflag = .false.
+    logical :: isofflag = .false.
+    logical :: matlflag = .false.
+    logical :: miscflag = .false.
+    logical :: rampflag = .false.
+    logical :: slcfflag = .false.
+    logical :: timeflag = .false.
+    logical :: ventflag = .false. 
+    logical :: diagflag = .false.
+    logical :: dumpflag = .false.
 
     end module namelist_data
     
@@ -241,8 +241,8 @@ module room_data
     integer :: iwbound = 3                                              ! boundary condition type 
                                                                         !   1 = constant exterior surface temperature, 
                                                                         !   2 = insulated exterior surface, 
-                                                                        !   3 =radiates to ambient
-    real(eb), dimension(3) :: wsplit = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
+                                                                        !   3 = radiates to ambient
+    real(eb), dimension(3) :: slab_splits = (/0.50_eb, 0.17_eb, 0.33_eb/)    ! computed values for slab thickness, 
                                                                         ! initial fractions for inner, middle and outer wall slab
     
     integer :: n_cons
@@ -279,13 +279,17 @@ module setup_data
     character(len=128) :: title
 
     logical :: nokbd=.false., initializeonly=.false., overwrite_testcase=.true.
-    logical :: debugging=.false., validation_flag=.false., netheatflux=.false.
-    integer :: cfast_version, outputformat=0
+    logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
+    integer :: cfast_version, outputformat = 0
     integer, dimension(3) :: rundat
+<<<<<<< HEAD
     character(len=60) :: nnfile=" ", datafile
     character(len=32) :: mpsdatc
     
     !Flags for CData coode reuse. 
+=======
+    character(len=60) :: nnfile = " ", datafile
+>>>>>>> firemodels/master
     integer :: cfast_input_file_position = 2
     logical :: init_scalors = .true.
     logical :: alloc_matl = .true., init_matl = .true. 
@@ -298,17 +302,14 @@ module setup_data
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
-        iofilssdiag, iofilcalc, &
-        iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
-    character(len=6), parameter :: heading="VERSN"
+        iofilssdiag, iofilcalc, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
+    character(len=6), parameter :: heading = "VERSN"
     character(len=64) :: project, extension
     character(len=256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
-        sswall, ssmasses, ssvent, &
-        ssdiag, gitfile, errorlogging, stopfile, &
-        queryfile, statusfile, kernelisrunning, sscalculation
+        sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, kernelisrunning, sscalculation
 
     ! Work arrays for the csv input routines
-    integer, parameter :: nrow=10000, ncol=100
+    integer, parameter :: nrow = 10000, ncol = 100
     real(eb) :: rarray(nrow,ncol)
     character(len=128) :: carray(nrow,ncol)
 

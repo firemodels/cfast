@@ -31,6 +31,7 @@ Public Class Target
     Private aYPosition As Single                ' Y Position of target or detector
     Private aZPosition As Single                ' Z Position of target or detector
     Private aTargetFacing As String             ' Front face orientation of target: UP, DOWN, FRONT, BACK, LEFT, RIGHT, or a fire ID
+    Private aFixedTemperature As Single         ' Fixed front surfae temperature for calculation of gauge heat flux
     Private aXNormal As Single                  ' X component of normal vector from chosen surface of target
     Private aYNormal As Single                  ' Y component of normal vector from chosen surface of target
     Private aZNormal As Single                  ' Z component of normal vector from chosen surface of target
@@ -57,6 +58,7 @@ Public Class Target
         aZPosition = -1.0
         aType = TypeTarget
         aTargetFacing = "-"
+        aFixedTemperature = -1001
         aXNormal = 0.0
         aYNormal = 0.0
         aZNormal = 1.0
@@ -274,6 +276,17 @@ Public Class Target
         Set(ByVal Value As Single)
             If aInternalLocation <> myUnits.Convert(UnitsNum.Length).ToSI(Value) Then
                 aInternalLocation = myUnits.Convert(UnitsNum.Length).ToSI(Value)
+                aChanged = True
+            End If
+        End Set
+    End Property
+    Public Property FixedTemperature() As Single
+        Get
+            Return myUnits.Convert(UnitsNum.Temperature).FromSI(aFixedTemperature)
+        End Get
+        Set(value As Single)
+            If aFixedTemperature <> myUnits.Convert(UnitsNum.Temperature).ToSI(value) Then
+                aFixedTemperature = myUnits.Convert(UnitsNum.Temperature).ToSI(value)
                 aChanged = True
             End If
         End Set

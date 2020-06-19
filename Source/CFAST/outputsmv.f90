@@ -9,10 +9,11 @@
     use cfast_types, only: detector_type, iso_type, room_type, slice_type, target_type, vent_type
     
     use cparams, only: smoked, face_front, face_left, face_back, face_right
+    
+    use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use room_data, only: n_rooms, roominfo
     use setup_data, only: smvcsv, iofilsmv, iofilsmvplt
     use smkview_data, only: n_iso, isoinfo, n_slice, sliceinfo
-    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none

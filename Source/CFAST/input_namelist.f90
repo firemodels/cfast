@@ -5,22 +5,27 @@
     use fire_routines, only: flame_height
     use initialization_routines, only: initialize_memory
 
-    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
+    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
         vent_type, visual_type, dump_type
+    
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
-        mxthrmp, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
+        mxmatl, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
         w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
-    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
-        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
-        radiative_incident_flux_ast, radi_verification_flag
-    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag, &
-        convert_negative_distances
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
         default_min_cutoff_relp, default_max_cutoff_relp
-    use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, tablinfo
+    
+    use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo, init_devc
+    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
+        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
+        radiative_incident_flux_ast, radi_verification_flag
+    use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
+    use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, &
+        tablinfo, init_fire
+    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag, &
+        convert_negative_distances
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
@@ -28,14 +33,11 @@
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, &
-        init_fire, init_devc, init_vent
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
-    use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
-    use thermal_data, only: n_thrmp, thermalinfo
-    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
+    use material_data, only: n_matl, material_info
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, init_vent
 
     implicit none
     external cfastexit
@@ -342,7 +344,7 @@
 
     integer :: ios,ii
     integer, intent(in) :: lu
-    type(thermal_type), pointer :: thrmpptr
+    type(material_type), pointer :: thrmpptr
 
     real(eb) :: conductivity, density, emissivity, specific_heat, thickness
     character(len=64) :: id, material
@@ -355,7 +357,7 @@
     input_file_line_number = 0
 
     ! Scan entire file to look for 'MATL'
-    n_thrmp = 0
+    n_matl = 0
     matl_loop: do
         call checkread ('MATL',lu,ios)
         if (ios==0) matlflag=.true.
@@ -363,17 +365,17 @@
             exit matl_loop
         end if
         read(lu,MATL,iostat=ios)
-        n_thrmp = n_thrmp + 1
+        n_matl = n_matl + 1
         if (ios>0) then
-            write(*, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_thrmp
-            write(iofill, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_thrmp
+            write(*, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_matl
+            write(iofill, '(a,i3)') '***Error in &MATL: Invalid specification for inputs. Check &MATL input, ' , n_matl
             call cfastexit('read_matl',1)
         end if
     end do matl_loop
 
-    if (n_thrmp>mxthrmp) then
-        write (*,'(a,i3)') '***Error: Too many thermal properties in input data file. Limit is ', mxthrmp
-        write (iofill,'(a,i3)') '***Error: Too many thermal properties in input data file. Limit is ', mxthrmp
+    if (n_matl>mxmatl) then
+        write (*,'(a,i3)') '***Error: Too many thermal properties in input data file. Limit is ', mxmatl
+        write (iofill,'(a,i3)') '***Error: Too many thermal properties in input data file. Limit is ', mxmatl
         call cfastexit('read_matl',2)
     end if
 
@@ -383,9 +385,9 @@
         input_file_line_number = 0
 
         ! Assign value to CFAST variables for further calculations
-        read_matl_loop: do ii=1,n_thrmp
+        read_matl_loop: do ii=1,n_matl
 
-            thrmpptr => thermalinfo(ii)
+            thrmpptr => material_info(ii)
 
             call checkread('MATL',lu,ios)
             call set_defaults
@@ -3062,7 +3064,9 @@ continue
     end subroutine set_defaults
 
     end subroutine read_dump
+    
     ! --------------------------- checkread ---------------------------------------
+    
     subroutine checkread(name,lu,ios)
 
     ! look for the namelist variable name and then stop at that line.
@@ -3094,7 +3098,9 @@ continue
 10  return
 
     end subroutine checkread
+    
     !-------------------------------newid--------------------------------------
+    
     logical function newid(id)
     character(len=*), intent(in) :: id
     
@@ -3106,8 +3112,8 @@ continue
             return
         end if
     enddo
-    do i = 1, n_thrmp
-        if (trim(id)==trim(thermalinfo(i)%id)) then
+    do i = 1, n_matl
+        if (trim(id)==trim(material_info(i)%id)) then
             newid = .false.
             return
         end if

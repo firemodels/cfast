@@ -10,6 +10,7 @@ module target_routines
     
     use cfast_types, only: fire_type, room_type, target_type, detector_type
 
+    use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use diag_data, only: verification_ast, radiative_incident_flux_ast, radi_verification_flag, partial_pressure_co2, &
         partial_pressure_h2o, verification_fire_heat_flux
     use cparams, only: u, l, pde, cylpde, co2, co, hcn, soot, soot_flaming, soot_smolder, nnodes_trg, idx_tempf_trg, &
@@ -18,7 +19,6 @@ module target_routines
     use option_data, only: fcjet, option, off
     use room_data, only: roominfo, exterior_ambient_temperature
     use setup_data, only: iofill, iofilsmv, iofilsmvplt, iofilsmvzone
-    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
 
     implicit none
 

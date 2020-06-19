@@ -25,6 +25,8 @@ module solve_routines
     use cenviro, only: odevara, odevarb, odevarc, constvar, cp, rgas, gamma
     use cparams, only: u, l, m, q, mxrooms, mxtarg, mxnode, mxbranch, mxdiscon, maxeq, ns, check_state, set_state, update_state, &
         nwal, ns_mass, vminfrac, n2, o2, co2, co, h2o, w_from_room, w_to_room, w_from_wall, w_to_wall, w_boundary_condition
+    
+    use devc_data, only: n_detectors, n_targets, targetinfo, idset
     use diag_data, only: radi_verification_flag, verification_time_step, upper_layer_thickness, dbtime, gas_temperature, &
         partial_pressure_co2, partial_pressure_h2o, residfile, ioresid, residcsv, residfirst, residprn, ioslab, slabcsv, prnslab
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, qfurnout
@@ -39,7 +41,6 @@ module solve_routines
     use solver_data, only: maxteq, rpar2, ipar2, p, pold, pdold, pinit, told, dt, aptol, atol, rtol, rptol, awtol, rwtol, algtol, &
         nofp, nequals, nofprd, nofwt, noftu, noftl, nofvu, nofoxyu, nofoxyl, ndisc, discon, stpmin, stpminflag, stpmin_cnt, &
         stpmin_cnt_max, stpmax, stpfirst, jacdim, i_speciesmap, I_wallmap
-    use target_data, only: n_detectors, n_targets, targetinfo, idset
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo
 
     implicit none

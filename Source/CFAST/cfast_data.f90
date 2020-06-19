@@ -16,6 +16,34 @@ module cenviro
 
 end module cenviro
 
+! --------------------------- devc_data -------------------------------------------
+
+module devc_data
+
+    use precision_parameters
+
+    use  cfast_types, only: target_type, detector_type
+    
+    use cparams, only: mxthrmplen, mxtarg, mxdtect
+    
+    implicit none
+    save
+
+    ! variables for calculation of flux to a target
+
+    integer :: idset    ! compartment where detector just went off. more than one
+                        ! sprinkler in a compartment is meaningless to CFAST
+
+    integer :: n_targets                                                        ! number of detectors in the simulation
+    type (target_type), allocatable, dimension(:), target  :: targetinfo        ! structured target data
+
+    integer :: n_detectors                                                      ! number of detectors in the simulation
+    type (detector_type), allocatable, dimension(:), target  :: detectorinfo    ! structured detector data
+    
+    logical :: alloc_devc = .true., init_devc = .true.
+
+end module devc_data
+
 ! --------------------------- diag_data -------------------------------------------
 
 module  diag_data
@@ -74,6 +102,8 @@ module dump_data
     integer :: n_dumps
     type (dump_type), allocatable, dimension(:), target :: dumpinfo
     
+    logical :: alloc_dump = .true., init_dump = .true.
+    
     end module dump_data
 
 ! --------------------------- fire_data -------------------------------------------
@@ -107,7 +137,29 @@ module fire_data
     real(eb), dimension(mxpts) :: furn_time, furn_temp  ! time and furnace temperature as a function of time
     real(eb) :: qfurnout                                ! just sigma * furn_temp(t)^4
 
+    logical :: alloc_fire = .true., init_fire = .true. 
+
     end module fire_data
+
+! --------------------------- material_data -------------------------------------------
+
+module material_data
+
+    use precision_parameters
+
+    use cfast_types, only: material_type
+    
+    use cparams, only : mxmatl
+    
+    implicit none
+    save
+
+    integer n_matl                                                              ! number of thermal properties in the simulation
+    type (material_type), allocatable, dimension(:), target  :: material_info   ! structured thermal property data
+    
+    logical :: alloc_matl = .true., init_matl = .true. 
+
+    end module material_data
     
 ! --------------------------- namelist_data -------------------------------------------
 
@@ -235,6 +287,8 @@ module room_data
     
     integer :: n_rooms
     type(room_type), allocatable, dimension(:), target :: roominfo
+    
+    logical :: alloc_room = .true., init_room = .true. 
 
     ! wall variables
     integer :: nwpts = (nnodes-1)/2                                     ! number of wall nodes 
@@ -284,14 +338,7 @@ module setup_data
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile = " ", datafile
     integer :: cfast_input_file_position = 2
-    logical :: init_scalors = .true.
-    logical :: alloc_matl = .true., init_matl = .true. 
-    logical :: alloc_room = .true., init_room = .true. 
-    logical :: alloc_vent = .true., init_vent = .true. 
-    logical :: alloc_devc = .true., init_devc = .true.
-    logical :: alloc_fire = .true., init_fire = .true. 
-    logical :: alloc_ss = .true., init_ss = .true.
-    logical :: alloc_dump = .true., init_dump = .true. 
+    logical :: init_scalars = .true.  
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
@@ -414,51 +461,9 @@ module spreadsheet_output_data
     
     real(eb) :: outarray(mxss)
     
+    logical :: alloc_ss = .true., init_ss = .true.
+    
 end module spreadsheet_output_data
-
-! --------------------------- target_data -------------------------------------------
-
-module target_data
-
-    use precision_parameters
-
-    use  cfast_types, only: target_type, detector_type
-    
-    use cparams, only: mxthrmplen, mxtarg, mxdtect
-    
-    implicit none
-    save
-
-    ! variables for calculation of flux to a target
-
-    integer :: idset    ! compartment where detector just went off. more than one
-                        ! sprinkler in a compartment is meaningless to CFAST
-
-    integer :: n_targets                                                        ! number of detectors in the simulation
-    type (target_type), allocatable, dimension(:), target  :: targetinfo        ! structured target data
-
-    integer :: n_detectors                                                      ! number of detectors in the simulation
-    type (detector_type), allocatable, dimension(:), target  :: detectorinfo    ! structured detector data
-
-end module target_data
-
-! --------------------------- thermal_data -------------------------------------------
-
-module thermal_data
-
-    use precision_parameters
-
-    use cfast_types, only: thermal_type
-    
-    use cparams, only : mxthrmp
-    
-    implicit none
-    save
-
-    integer n_thrmp                                                         ! number of thermal properties in the simulation
-    type (thermal_type), allocatable, dimension(:), target  :: thermalinfo  ! structured thermal property data
-
-    end module thermal_data
 
 ! --------------------------- vent_data -------------------------------------------
 
@@ -496,6 +501,8 @@ module vent_data
     ! leakage variables
     integer :: n_leaks                                                  ! number of automatically-generated leakage vents
     type(vent_type), allocatable, dimension(:), target :: leakinfo
+    
+    logical :: alloc_vent = .true., init_vent = .true.
 
     end module vent_data
     

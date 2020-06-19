@@ -7,30 +7,32 @@ module initialization_routines
     use solve_routines, only : update_data
     use utility_routines, only: indexi    
 
-    use cfast_types, only: detector_type, fire_type, room_type, target_type, thermal_type, vent_type
+    use cfast_types, only: detector_type, fire_type, room_type, target_type, material_type, vent_type
 
     use cenviro, only: constvar, odevara
-    use cparams, only: u, l, mxrooms, mxthrmplen, mxthrmp, mxhvents, mxvvents, mxmvents, mxleaks, &
+    use cparams, only: u, l, mxrooms, mxthrmplen, mxmatl, mxhvents, mxvvents, mxmvents, mxleaks, &
         mxdtect, mxtarg, mxslb, mx_vsep, mxtabls, mxfires, pde, interior, nwal, idx_tempf_trg, idx_tempb_trg, &
         xlrg, default_grid, face_front, trigger_by_time, h2o, ns_mass, w_from_room, w_to_room, w_from_wall, w_to_wall, &
         smoked, mx_dumps, mxss
     use defaults, only: default_temperature, default_pressure, default_relative_humidity, default_rti, &
         default_activation_temperature, default_lower_oxygen_limit, default_radiative_fraction
-    use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace
+    use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo, alloc_devc, init_devc
+    use dump_data, only: n_dumps, dumpinfo, csvnames, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_walls, iocsv_devices, &
+        alloc_dump, init_dump
+    use fire_data, only: n_fires, fireinfo, n_tabls, tablinfo, n_furn, mxpts, lower_o2_limit, tgignt, summed_total_trace, &
+        alloc_fire, init_fire
+    use material_data, only: n_matl, material_info, alloc_matl, init_matl
     use option_data, only: foxygen, option, on
     use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
-        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, slab_splits
-    use setup_data, only: iofill, debugging, deltat, init_scalors, alloc_matl, init_matl, alloc_room, init_room, &
-        alloc_vent, init_vent, alloc_devc, init_devc, alloc_fire, init_fire, alloc_ss, init_ss, alloc_dump, init_dump
+        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, &
+        slab_splits, alloc_room, init_room
+    use setup_data, only: iofill, debugging, deltat, init_scalars
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &
-        n_ssmass, ssmassinfo, n_ssvent, ssventinfo
-    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
-    use thermal_data, only: n_thrmp, thermalinfo
-    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use dump_data, only: n_dumps, dumpinfo, csvnames, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_walls, iocsv_devices
+        n_ssmass, ssmassinfo, n_ssvent, ssventinfo, alloc_ss, init_ss
+    use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo, alloc_vent, init_vent
 
     implicit none
 
@@ -57,10 +59,10 @@ module initialization_routines
 
     character(len=mxthrmplen) missingtpp
     integer i
-    type(thermal_type), pointer :: thrmpptr
+    type(material_type), pointer :: thrmpptr
 
-    do i = 1, n_thrmp
-        thrmpptr => thermalinfo(i)
+    do i = 1, n_matl
+        thrmpptr => material_info(i)
         if (name==thrmpptr%id) then
             tp = i
             return
@@ -288,8 +290,8 @@ module initialization_routines
     integer i
     type(room_type), pointer :: roomptr
 
-    if (init_scalors) then
-        init_scalors = .false.
+    if (init_scalars) then
+        init_scalars = .false.
         ! simple control stuff
         debugging = .false.
         jaccol = -2
@@ -322,18 +324,18 @@ module initialization_routines
     !thermal properties. initialize to nothing
     if (alloc_matl) then 
         alloc_matl = .false.
-        allocate (thermalinfo(mxthrmp))
+        allocate (material_info(mxmatl))
     end if
     if (init_matl) then
         init_matl = .false. 
-        n_thrmp = 0
-        thermalinfo(1:mxthrmp)%id          = ' '
-        thermalinfo(1:mxthrmp)%nslab         = 1
-        thermalinfo(1:mxthrmp)%k(1)          = 0.0_eb
-        thermalinfo(1:mxthrmp)%c(1)          = 0.0_eb
-        thermalinfo(1:mxthrmp)%rho(1)        = 0.0_eb
-        thermalinfo(1:mxthrmp)%thickness(1)  = 0.0_eb
-        thermalinfo(1:mxthrmp)%eps           = 0.0_eb
+        n_matl = 0
+        material_info(1:mxmatl)%id          = ' '
+        material_info(1:mxmatl)%nslab         = 1
+        material_info(1:mxmatl)%k(1)          = 0.0_eb
+        material_info(1:mxmatl)%c(1)          = 0.0_eb
+        material_info(1:mxmatl)%rho(1)        = 0.0_eb
+        material_info(1:mxmatl)%thickness(1)  = 0.0_eb
+        material_info(1:mxmatl)%eps           = 0.0_eb
     end if
 
     ! rooms
@@ -715,7 +717,7 @@ module initialization_routines
     type(target_type), pointer :: targptr
     type(room_type), pointer :: roomptr
     type(fire_type), pointer :: fireptr
-    type(thermal_type), pointer :: thrmpptr
+    type(material_type), pointer :: thrmpptr
 
     do itarg = 1, n_targets
 
@@ -789,7 +791,7 @@ module initialization_routines
             targptr%material = tcname
         end if
         call get_thermal_property(tcname,tp)
-        thrmpptr => thermalinfo(tp)
+        thrmpptr => material_info(tp)
         targptr%k = thrmpptr%k(1)
         targptr%c = thrmpptr%c(1)
         targptr%rho = thrmpptr%rho(1)
@@ -820,7 +822,7 @@ module initialization_routines
     ! epsw = emmisivity of the wall
     ! nslb = discretization of the wall slabs (number of nodes)
     ! matl contains the name of the thermal data set in the tpp data structure
-    ! n_thrmp is a count of the number of tpp data sets in the tpp data structure
+    ! n_matl is a count of the number of tpp data sets in the tpp data structure
 
     real(eb), intent(in) :: tstop
     integer :: i, j, jj, k, ifromr, itor, ifromw, itow, nslabf, nslabt, nptsf, nptst, wfrom, wto
@@ -832,7 +834,7 @@ module initialization_routines
     integer tp
 
     type(room_type), pointer :: roomptr, from_roomptr, to_roomptr
-    type(thermal_type), pointer :: thrmpptr
+    type(material_type), pointer :: thrmpptr
 
     ! map the thermal data into its appropriate wall specification
     ! if name is "OFF" or "NONE" then just turn all off
@@ -845,7 +847,7 @@ module initialization_routines
                 else
                     do k = 1, roomptr%nslab_w(i)
                         call get_thermal_property(roomptr%matl(k,i),tp)
-                        thrmpptr => thermalinfo(tp)
+                        thrmpptr => material_info(tp)
                         if (k==1) roomptr%eps_w(i) = thrmpptr%eps
                         roomptr%k_w(k,i) = thrmpptr%k(1)
                         roomptr%c_w(k,i) = thrmpptr%c(1)

@@ -4,22 +4,25 @@
 
     use fire_routines, only: flame_height
 
-    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
+    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
         vent_type, visual_type, dump_type
 
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
-        mxthrmp, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
+        mxmatl, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
         w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
-    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
-        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
-        radiative_incident_flux_ast, radi_verification_flag
-    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
         default_min_cutoff_relp, default_max_cutoff_relp
+    
+    use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo
+    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
+        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
+        radiative_incident_flux_ast, radi_verification_flag
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, tablinfo
+    use material_data, only: n_matl, material_info
+    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
@@ -30,8 +33,6 @@
         print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
-    use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
-    use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
 
@@ -255,14 +256,14 @@
     implicit none
     integer, intent(in) :: iounit
     
-    type(thermal_type), pointer :: thrmpptr
+    type(material_type), pointer :: thrmpptr
     character :: buf*(128), tbuf*(11)
     integer :: i
     
-    if (n_thrmp>0) then
-        do i = 1, n_thrmp
+    if (n_matl>0) then
+        do i = 1, n_matl
             call start_namelist(buf, 'MATL')
-            thrmpptr => thermalinfo(i)
+            thrmpptr => material_info(i)
             if (thrmpptr%id /= 'DEFAULT') then
                 call add_token_str(iounit, buf, 'ID = ',thrmpptr%id)
                 call add_token_str(iounit, buf, 'MATERIAL = ', thrmpptr%material)

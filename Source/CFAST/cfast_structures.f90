@@ -269,7 +269,7 @@ module cfast_types
     end type target_type
 
     ! thermal properties structure
-    type, extends(cfast_type) :: thermal_type
+    type, extends(cfast_type) :: material_type
         character(len=128) :: material                  ! long descripter for material 
         integer :: nslab                                ! number of slabs
         real(eb), dimension(mxslb) :: k                 ! thermal conductivity of each slab
@@ -277,7 +277,7 @@ module cfast_types
         real(eb), dimension(mxslb) :: c                 ! specific heat of each slab
         real(eb), dimension(mxslb) :: thickness         ! thickness of each slab
         real(eb) :: eps                                 ! surface emissivity
-    end type thermal_type
+    end type material_type
 
     ! vent data structure
     type, extends(cfast_type) :: vent_type

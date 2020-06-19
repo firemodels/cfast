@@ -6,7 +6,7 @@ module output_routines
     use target_routines, only: get_target_temperatures
     use opening_fractions, only: find_vent_opening_ramp
 
-    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, thermal_type, vent_type
+    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, target_type, material_type, vent_type
     
     use cparams, only: u, l, lbufln, ns, ns_mass, nwal, interior, smoked, heatd, ct, trigger_by_time, trigger_by_temp, &
         w_from_room, w_from_wall, idx_tempf_trg, mx_dumps, cjetvelocitymin
@@ -23,8 +23,8 @@ module output_routines
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
-    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
-    use thermal_data, only: n_thrmp, thermalinfo
+    use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
+    use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, iocsv, iocsv_walls, iocsv_compartments, iocsv_vents, iocsv_masses, iocsv_devices
 
@@ -939,7 +939,7 @@ module output_routines
 
     integer i, j, k
     type(room_type), pointer :: roomptr
-    type(thermal_type), pointer :: thrmpptr
+    type(material_type), pointer :: thrmpptr
 
     ! check to see if any heat transfer is on
     if (.not.adiabatic_walls) then
@@ -964,8 +964,8 @@ module output_routines
 
     ! print out the properties of the materials used
     write (iofilo,5030)
-    do i = 1, n_thrmp
-        thrmpptr => thermalinfo(i)
+    do i = 1, n_matl
+        thrmpptr => material_info(i)
         write (iofilo,5040) thrmpptr%id, thrmpptr%k(1), thrmpptr%c(1), thrmpptr%rho(1), thrmpptr%thickness(1), thrmpptr%eps
         do j = 2, thrmpptr%nslab
             write (iofilo,5050) thrmpptr%k(j), thrmpptr%c(j), thrmpptr%rho(j), thrmpptr%thickness(j)

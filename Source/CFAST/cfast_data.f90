@@ -282,14 +282,7 @@ module setup_data
     logical :: debugging = .false., validation_flag = .false., netheatflux = .false.
     integer :: cfast_version, outputformat = 0
     integer, dimension(3) :: rundat
-<<<<<<< HEAD
-    character(len=60) :: nnfile=" ", datafile
-    character(len=32) :: mpsdatc
-    
-    !Flags for CData coode reuse. 
-=======
     character(len=60) :: nnfile = " ", datafile
->>>>>>> firemodels/master
     integer :: cfast_input_file_position = 2
     logical :: init_scalors = .true.
     logical :: alloc_matl = .true., init_matl = .true. 

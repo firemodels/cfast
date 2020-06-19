@@ -28,13 +28,16 @@
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections, &
         relative_humidity, adiabatic_walls
     use setup_data, only: iofili, iofill, cfast_version, heading, title, time_end, &
-        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile
+        print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile, &
+        init_fire, init_devc, init_vent
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
     use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
     use thermal_data, only: n_thrmp, thermalinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
+    
+    use initialization_routines, only: initialize_memory
 
     implicit none
     external cfastexit
@@ -3111,6 +3114,7 @@ continue
     enddo
     do i = 1, n_hvents
         if (trim(id)==trim(hventinfo(i)%id)) then
+            write(*,*)'id = ',trim(id),' ventid = ',trim(hventinfo(i)%id),' |'
             newid = .false.
             return
         end if
@@ -3168,6 +3172,11 @@ continue
     open (newunit=iofili, file=inputfile, action='read', status='old', iostat=ios)
     read (unit=iofili,fmt='(a)') buf
     rewind (unit=iofili)
+    
+    init_fire = .true.
+    init_vent = .true.
+    init_devc = .true.
+    call initialize_memory
     
     convert_negative_distances = .false.
     call read_fire(iofili)

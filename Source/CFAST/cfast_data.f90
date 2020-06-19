@@ -284,7 +284,17 @@ module setup_data
     integer, dimension(3) :: rundat
     character(len=60) :: nnfile=" ", datafile
     character(len=32) :: mpsdatc
+    
+    !Flags for CData coode reuse. 
     integer :: cfast_input_file_position = 2
+    logical :: init_scalors = .true.
+    logical :: alloc_matl = .true., init_matl = .true. 
+    logical :: alloc_room = .true., init_room = .true. 
+    logical :: alloc_vent = .true., init_vent = .true. 
+    logical :: alloc_devc = .true., init_devc = .true.
+    logical :: alloc_fire = .true., init_fire = .true. 
+    logical :: alloc_ss = .true., init_ss = .true.
+    logical :: alloc_dump = .true., init_dump = .true. 
     
     !File descriptors for cfast
     integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &

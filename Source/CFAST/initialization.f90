@@ -20,14 +20,9 @@ module initialization_routines
     use option_data, only: foxygen, option, on
     use room_data, only: n_rooms, ns, roominfo, initial_mass_fraction, exterior_abs_pressure, interior_abs_pressure, &
         exterior_ambient_temperature, interior_ambient_temperature, exterior_rho, interior_rho, pressure_ref, &
-<<<<<<< HEAD
-        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, wsplit
+        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, slab_splits
     use setup_data, only: iofill, debugging, deltat, init_scalors, alloc_matl, init_matl, alloc_room, init_room, &
         alloc_vent, init_vent, alloc_devc, init_devc, alloc_fire, init_fire, alloc_ss, init_ss, alloc_dump, init_dump
-=======
-        pressure_offset, relative_humidity, adiabatic_walls, t_ref, n_vcons, vertical_connections, n_cons, nnodes, nwpts, slab_splits
-    use setup_data, only: iofill, debugging, deltat
->>>>>>> firemodels/master
     use solver_data, only: p, maxteq, stpmin, stpmin_cnt, stpmin_cnt_max, stpminflag, nofp, nofwt, noftu, nofvu, noftl, &
         nofoxyu, nofoxyl, nofprd, nequals, i_speciesmap, jaccol
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, &

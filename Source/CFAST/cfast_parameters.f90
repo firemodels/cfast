@@ -28,7 +28,7 @@
     real(eb), parameter :: o2f = 1.31e7_eb          ! HRR by oxygen consumption constant in MJ/kg
     real(eb), parameter :: t_max = 900._eb          ! maximum flame temperature
 
-    integer, parameter :: mxthrmp = mxitems         ! maximum number of thermal properties
+    integer, parameter :: mxmatl = mxitems         ! maximum number of thermal properties
     integer, parameter :: mxthrmplen = 16           ! maximum length for thermal property short names
 
     integer, parameter :: trigger_by_time = 1       ! indicies for fire ignition type (also used by vents)

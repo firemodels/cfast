@@ -18,7 +18,7 @@ module fire_routines
     use setup_data, only: iofill, iofilo
     use smkview_data, only: smv_room, smv_height, smv_qdot, smv_xfire, smv_yfire, smv_zfire
     use solver_data, only: atol
-    use target_data, only: detectorinfo, targetinfo
+    use devc_data, only: detectorinfo, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_mvents, mventinfo, vss, vsa, vsas
 
     implicit none

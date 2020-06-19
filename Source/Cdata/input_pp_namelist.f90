@@ -3,23 +3,27 @@
     use precision_parameters
 
     use fire_routines, only: flame_height
+    use utility_routines, only: d1mach
 
-    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, thermal_type, &
+    use cfast_types, only: detector_type, fire_type, ramp_type, room_type, table_type, target_type, material_type, &
         vent_type, visual_type, dump_type, cfast_type
 
     use cparams, only: mxdtect, mxfires, mxhvents, mxvvents, mxramps, mxrooms, mxtarg, mxmvents, mxtabls, mxtablcols, &
-        mxthrmp, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
+        mxmatl, mx_hsep, default_grid, pde, cylpde, smoked, heatd, sprinkd, trigger_by_time, trigger_by_temp, trigger_by_flux, &
         w_from_room, w_to_room, w_from_wall, w_to_wall, mx_dumps
-    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
-        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
-        radiative_incident_flux_ast, radi_verification_flag
-    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
-        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
     use defaults, only: default_version, default_simulation_time, default_print_out_interval, default_smv_out_interval, &
         default_ss_out_interval, default_temperature, default_pressure, default_relative_humidity, default_lower_oxygen_limit, &
         default_sigma_s, default_activation_temperature, default_activation_obscuration, default_rti, default_stpmax, &
         default_min_cutoff_relp, default_max_cutoff_relp
+    
+    use devc_data, only: n_targets, targetinfo, n_detectors, detectorinfo
+    use diag_data, only: rad_solver, partial_pressure_h2o, partial_pressure_co2, gas_temperature, upper_layer_thickness, &
+        verification_time_step, verification_fire_heat_flux, radi_radnnet_flag, verification_ast, &
+        radiative_incident_flux_ast, radi_verification_flag
+    use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
     use fire_data, only: n_fires, fireinfo, n_furn, furn_time, furn_temp, tgignt, lower_o2_limit, mxpts, sigma_s, n_tabls, tablinfo
+    use namelist_data, only: input_file_line_number, headflag, timeflag, initflag, miscflag, matlflag, compflag, devcflag, &
+        rampflag, tablflag, insfflag, fireflag, ventflag, connflag, diagflag, slcfflag, isofflag, dumpflag
     use option_data, only: option, on, off, ffire, fhflow, fvflow, fmflow, fentrain, fcjet, fdfire, frad, fconduc, fconvec, &
         fdebug, fkeyeval, fpsteady, fpdassl, fgasabsorb, fresidprn, flayermixing
     use ramp_data, only: n_ramps, rampinfo
@@ -30,11 +34,8 @@
         print_out_interval, smv_out_interval, ss_out_interval, validation_flag, overwrite_testcase, inputfile
     use solver_data, only: stpmax, stpmin, stpmin_cnt_max, stpminflag
     use smkview_data, only: n_visual, visualinfo
-    use target_data, only: n_targets, targetinfo, n_detectors, detectorinfo
-    use thermal_data, only: n_thrmp, thermalinfo
+    use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
-    use dump_data, only: n_dumps, dumpinfo, num_csvfiles, csvnames
-    use utility_routines, only: d1mach
     
     use pp_params, only: mxgenerators, mxseeds, idx_uniform, rand_dist, mxfields, val_types, idx_real, &
                 idx_char, idx_int, idx_logic, rnd_seeds, restart_values, mxfiresections
@@ -450,10 +451,10 @@
             return
         end if
     enddo
-    do i = 1, n_thrmp
-        if (trim(id)==trim(thermalinfo(i)%id)) then
+    do i = 1, n_matl
+        if (trim(id)==trim(material_info(i)%id)) then
             flag = .true.
-            field%itemptr => thermalinfo(i)
+            field%itemptr => material_info(i)
             return
         end if
     enddo
@@ -539,7 +540,7 @@
         else 
             call cfastexit('find_field',1)
         end if
-    class is (thermal_type)
+    class is (material_type)
         if (trim(fieldid) == 'CONDUCTIVITY') then
             found = .true.
             fldptr%realval%val => item%k(1)

@@ -8,11 +8,12 @@ module spreadsheet_header_routines
     
     use cparams, only: u, l, soot, soot_flaming, soot_smolder, mxrooms, mxfires, mxtarg, mxdtect, mxfires, mxhvents, &
         mxvvents, mxmvents, mxext, mxleaks, mxfslab, ns, smoked
+    
+    use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use diag_data, only: ioresid, ioslab
     use fire_data, only: n_fires, fireinfo, fire_type
     use room_data, only: n_rooms, roominfo, room_type
     use setup_data, only: validation_flag, iofilsmvzone, iofilsmv, iofilssdiag
-    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
 
     implicit none

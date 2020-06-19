@@ -782,14 +782,16 @@
 
     ! The open/close function is done in the physical/mode interface, horizontal_flow, vertical_flow and mechanical_flow
     
+    use precision_parameters
+    
     use cfast_types, only: ramp_type, target_type, vent_type
 
-    use precision_parameters
     use cparams, only: trigger_by_time, trigger_by_temp, trigger_by_flux, idx_tempf_trg
+    
+    use devc_data, only: targetinfo
     use ramp_data, only: n_ramps, rampinfo
     use vent_data, only: hventinfo, vventinfo, mventinfo
     use room_data, only: roominfo, n_rooms
-    use target_data, only: targetinfo
     use setup_data, only: iofilo, iofill
     use namelist_data
 

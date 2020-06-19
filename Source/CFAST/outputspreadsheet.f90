@@ -14,6 +14,8 @@ module spreadsheet_routines
         ns, soot, soot_flaming, soot_smolder, smoked, mx_dumps, mxss, cjetvelocitymin, &
         n2, o2, co2, co, hcn, hcl, fuel, h2o, soot, soot_flaming, soot_smolder, ct, ts, &
         fuel_moles, fuel_Q, fuel_n2, fuel_o2, fuel_co2, fuel_co, fuel_hcn, fuel_hcl, fuel_h2o, fuel_soot
+    
+    use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use diag_data, only: radi_verification_flag
     use fire_data, only: n_fires, fireinfo
     use ramp_data, only: n_ramps, rampinfo
@@ -22,7 +24,6 @@ module spreadsheet_routines
         iofilssdiag, iofilcalc, iofill, ss_out_interval, project, extension
     use spreadsheet_output_data, only: n_sscomp, sscompinfo, n_ssdevice, ssdeviceinfo, n_sswall, sswallinfo, n_ssmass, &
         ssmassinfo, n_ssvent, ssventinfo, outarray
-    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
     use vent_data, only: n_hvents, hventinfo, n_vvents, vventinfo, n_mvents, mventinfo, n_leaks, leakinfo
     use dump_data, only: n_dumps, dumpinfo, csvnames, num_csvfiles, iocsv
 

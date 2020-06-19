@@ -9,7 +9,7 @@
     use utility_routines, only: emix
     use namelist_input_routines, only: namelist_input, read_misc
     
-    use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, thermal_type, vent_type, &
+    use cfast_types, only: detector_type, fire_type, iso_type, room_type, slice_type, target_type, material_type, vent_type, &
         visual_type
 
     use cenviro, only: rgas
@@ -24,8 +24,8 @@
         kernelisrunning, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase, cfast_input_file_position
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
-    use target_data, only: n_detectors, detectorinfo, n_targets, targetinfo
-    use thermal_data, only: n_thrmp, thermalinfo
+    use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
+    use material_data, only: n_matl, material_info
     use vent_data, only: n_hvents, n_vvents, hventinfo, vventinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_ref, pressure_offset, exterior_rho, interior_rho, n_vcons, vertical_connections
@@ -57,7 +57,7 @@
     type(fire_type), pointer :: fireptr
     type(room_type), pointer :: roomptr, roomptr2
     type(target_type), pointer :: targptr
-    type(thermal_type), pointer :: thrmpptr
+    type(material_type), pointer :: thrmpptr
     type(vent_type), pointer :: ventptr    
 
     ! deal with opening the data file and assuring ourselves that it is compatible
@@ -73,7 +73,7 @@
         stop
     end if
 
-    n_thrmp = 0
+    n_matl = 0
  
     ! read in the input file in new (namelist) or old (.csv) format
     if (nmlflag) then
@@ -85,8 +85,8 @@
     end if
 
     ! add the default thermal property
-    n_thrmp = n_thrmp + 1
-    thrmpptr => thermalinfo(n_thrmp)
+    n_matl = n_matl + 1
+    thrmpptr => material_info(n_matl)
     thrmpptr%id = 'DEFAULT'
     thrmpptr%material = 'Default values assigned to surfaces that do no have a material assigned'
     thrmpptr%fyi = 'It is best to not use this material '

@@ -58,7 +58,7 @@
         ! if there's a fire, we may need to modify the convection to account for the ceiling jet
         if (iwall==1.and.n_fires>0) then
             qconv = 0.0_eb
-            ! use thermal_data largest fire in the room as the source for the correlation
+            ! use material_data largest fire in the room as the source for the correlation
             do ifire = 1, n_fires
                 fireptr => fireinfo(ifire)
                 if (fireptr%room==i) then

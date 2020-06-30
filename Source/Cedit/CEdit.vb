@@ -6240,9 +6240,6 @@ Public Class CeditMain
         End If
         UpdateAll()
     End Sub
-    Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click, MenuSave.Click
-        SaveDataFile(False, False)
-    End Sub
     Private Sub MenuUnits_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuUnits.Click
         UserUnits.ShowDialog(Me)
         UpdateAll()
@@ -6263,28 +6260,15 @@ Public Class CeditMain
         End If
         UpdateAll()
     End Sub
+    Private Sub MainSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MainSave.Click, MenuSave.Click
+        SaveDataFileDialog.Title = "Save"
+        SaveDataFile(False, False)
+    End Sub
     Private Sub MenuSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuSaveAs.Click
-        Dim PathName As String, FileExtension As String
-        myUnits.SI = True
+        SaveDataFileDialog.Title = "Save As"
         SaveDataFileDialog.FileName = myEnvironment.InputFileName + ".in"
         SaveDataFileDialog.FilterIndex = 1
-        SaveDataFileDialog.Title = "Save As"
-        SaveDataFileDialog.OverwritePrompt = True
-        If Me.SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
-            If SaveDataFileDialog.FileName <> " " Then
-                WriteInputFileNML(SaveDataFileDialog.FileName)
-                FileExtension = ".in"
-                myEnvironment.InputFileName = SaveDataFileDialog.FileName
-                myEnvironment.InputFilePath = SaveDataFileDialog.FileName
-                Text = "CEdit (" + System.IO.Path.GetFileName(SaveDataFileDialog.FileName) + ")"
-                myRecentFiles.Add(myEnvironment.InputFilePath + "\" + myEnvironment.InputFileName + FileExtension)
-            End If
-            PathName = System.IO.Path.GetDirectoryName(SaveDataFileDialog.FileName) & "\"
-            ChDir(PathName)
-        End If
-        myUnits.SI = False
-        UpdateGUI.Menu()
-        UpdateGUI.General()
+        SaveDataFile(True, True)
     End Sub
     Private Sub MenuExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MenuExit.Click
         Application.Exit()
@@ -6598,7 +6582,6 @@ Public Class CeditMain
         myUnits.SI = True
         If myEnvironment.FileChanged() Or ForceWrite Then
             If Prompt Or myEnvironment.InputFileName = Nothing Or myEnvironment.InputFileName = "" Then
-                SaveDataFileDialog.Title = "Save"
                 SaveDataFileDialog.OverwritePrompt = True
                 If SaveDataFileDialog.ShowDialog() = Windows.Forms.DialogResult.OK Then
                     If SaveDataFileDialog.FileName <> " " Then

@@ -103,7 +103,7 @@
     subroutine cfastexit (name, errorcode)
 
     use output_routines, only: closeoutputfiles, delete_output_files
-    use setup_data, only: validation_flag, iofill, iofilkernel, stopfile
+    use setup_data, only: validation_flag, iofill, stopfile
     
     character(len=*), intent(in) :: name
     integer, intent(in) :: errorcode
@@ -126,7 +126,6 @@
     end if
     
     call closeoutputfiles
-    close (unit=iofilkernel, status='delete')
     call delete_output_files (stopfile)
 
     stop

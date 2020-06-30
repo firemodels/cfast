@@ -16,10 +16,10 @@ module output_routines
     use ramp_data, only: n_ramps, rampinfo
     use room_data, only: n_rooms, roominfo, exterior_ambient_temperature, interior_ambient_temperature, exterior_abs_pressure, &
         interior_abs_pressure, pressure_offset, relative_humidity, adiabatic_walls, n_cons, surface_connections
-    use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilkernel, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    use setup_data, only: cfast_version, iofill, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssc, iofilssd, iofilssw, iofilssm, iofilssv, &
         iofilssdiag, inputfile, iofilcalc, &
-        outputfile, statusfile, kernelisrunning, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
+        outputfile, statusfile, title, outputformat, validation_flag, netheatflux, time_end, print_out_interval, &
         smv_out_interval, ss_out_interval, smvhead, smvdata, smvcsv, &
         ssdiag, sscalculation, sscompartment, ssdevice, sswall, ssmasses, ssvent
     use solver_data, only: atol, nofp, noftu, noftl, nofvu, nofwt, nofoxyl, nofprd
@@ -1375,7 +1375,6 @@ module output_routines
     !
     !     iofili        solver.ini and data files (data file, tpp and objects)
     !     iofill        log file
-    !	  iofilkernel   indicator that the model is running (kernelisrunning)
     !     iofilo        output 
     !     iofilstat     write the status file
     !     iofilsmv      smokeview output (header) - note this is rewound each time the plot data is written)
@@ -1397,7 +1396,6 @@ module output_routines
 
     ! the status files
     open (newunit=iofilstat,file=statusfile,access='append',err=81,iostat=ios)
-    open (newunit=iofilkernel, file=kernelisrunning)
 
     ! the smokeview files
     if (smv_out_interval>0) then
@@ -1482,7 +1480,6 @@ module output_routines
     !
     !     iofili        solver.ini and data files (data file, tpp and objects)
     !     iofill        log file
-    !	  iofilkernel   indicator that the model is running (kernelisrunning)
     !     iofilo        output 
     !     iofilstat     write the status file
     !     iofilsmv      smokeview output (header) - note this is rewound each time the plot data is written)

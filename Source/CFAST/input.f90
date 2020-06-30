@@ -20,8 +20,7 @@
     use namelist_data, only: nmlflag
     use setup_data, only: iofili, iofilg, iofill, inputfile, outputfile, exepath, datapath, project, extension, smvhead, smvdata, &
         smvcsv, smvsinfo, sscompartment, ssdevice, sswall, ssmasses, ssvent, &
-        ssdiag, sscalculation, &
-        kernelisrunning, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
+        ssdiag, sscalculation, heading, validation_flag, gitfile, errorlogging, stopfile, queryfile, statusfile, &
         overwrite_testcase, cfast_input_file_position
     use smkview_data, only: n_slice, n_iso, n_visual, isoinfo, sliceinfo, visualinfo
     use devc_data, only: n_detectors, detectorinfo, n_targets, targetinfo
@@ -505,7 +504,6 @@
     queryfile = datapath(1:lp) // project(1:ld) // '.query'
     statusfile = datapath(1:lp) // project(1:ld) // '.status'
     slabcsv = datapath(1:lp) // project(1:ld) // '_slab.csv'
-    kernelisrunning = datapath(1:lp) // project(1:ld) // '.kernelisrunning'
     sscalculation = datapath(1:lp) // project(1:ld) // '_calculations.csv'
 
     !open input file and check to see if it's a new (namelist) format file
@@ -563,7 +561,6 @@
     call delete_output_files (queryfile)
     call delete_output_files (residcsv)
     call delete_output_files (slabcsv)
-    call delete_output_files (kernelisrunning)
 
     return
 

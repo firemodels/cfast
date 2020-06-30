@@ -341,12 +341,12 @@ module setup_data
     logical :: init_scalars = .true.  
     
     !File descriptors for cfast
-    integer :: iofili, iofill, iofilg, iofilo, iofilkernel, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
+    integer :: iofili, iofill, iofilg, iofilo, iofilstat, iofilsmv, iofilsmvplt, iofilsmvzone, &
         iofilssdiag, iofilcalc, iofilssc, iofilssd, iofilssw, iofilssm, iofilssv
     character(len=6), parameter :: heading = "VERSN"
     character(len=64) :: project, extension
     character(len=256) :: datapath, exepath, inputfile, outputfile, smvhead, smvdata, smvcsv, smvsinfo, sscompartment, ssdevice, &
-        sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, kernelisrunning, sscalculation
+        sswall, ssmasses, ssvent, ssdiag, gitfile, errorlogging, stopfile, queryfile, statusfile, sscalculation
 
     ! Work arrays for the csv input routines
     integer, parameter :: nrow = 10000, ncol = 100

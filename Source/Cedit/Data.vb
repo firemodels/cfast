@@ -7,7 +7,7 @@ Friend Module Data
 
     Friend myRecentFiles As RecentFiles
     Friend myEnvironment As New Environment
-    Friend Const ErrorNames As String = "WarningError  Fatal  Log           "
+    Friend Const ErrorNames As String = "WarningError  Fatal  Log           CFAST  "
     Friend myErrors As New ErrorMessages
 
     Friend myVisuals As New VisualCollection

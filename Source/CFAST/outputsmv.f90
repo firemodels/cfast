@@ -611,6 +611,7 @@ module isosurface
     use smkview_data
 
     implicit none
+    external cfastexit
 
     private
 
